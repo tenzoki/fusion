@@ -56,15 +56,17 @@ If the user is setting up the marketplace itself for the first time, walk them t
 
 ### 4. Update — *picking up new versions*
 
-Read `$FUSION_PLUGIN_ROOT/CLAUDE.md` "Release process" section + the troubleshooting row about the marketplace cache.
+**Easy path:** run `/fusion:upgrade` — it pulls the local marketplace clone and reports the version change. Then type `/plugin install fusion@tenzoki-plugins` and `/reload-plugins` in Claude Code (slash commands can't be invoked from inside a skill body, so the user has to type them).
 
-**Key gotcha:** the marketplace clone at `~/.claude/plugins/marketplaces/<name>/` is what `/plugin install` reads — *not* the GitHub remote. Without a manual `git pull` on that local clone, version bumps don't propagate even after uninstall/reinstall. The fix is:
+**Why it's not fully automatic:** Claude Code's `/plugin install` reads the *local* marketplace clone at `~/.claude/plugins/marketplaces/<name>/`, not the GitHub remote. Without a `git pull` on that clone, version bumps don't propagate locally even after uninstall/reinstall.
+
+**Manual equivalent** (what `/fusion:upgrade` does for you):
 
 ```bash
 git -C ~/.claude/plugins/marketplaces/tenzoki-plugins pull origin main
 ```
 
-Then in Claude Code: `/plugin install fusion@tenzoki-plugins` and `/reload-plugins`.
+For the maintainer-side release flow (bumping `plugin.json` + `marketplace.json`, dual git push), read `$FUSION_PLUGIN_ROOT/CLAUDE.md` "Release process".
 
 ### 5. Configure — *customizing fusion for a project*
 
