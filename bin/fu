@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# fu — launch Claude Code with a fusion agent, no permission prompts.
+#
+# Usage:
+#   fu                  # claude --dangerously-skip-permissions --agent fusion:orchestrator
+#   fu coder            # claude --dangerously-skip-permissions --agent fusion:coder
+#   fu fusion:planner   # already-namespaced names pass through unchanged
+#
+# Lives at ./.fusion/fu in a consuming project (copied by /fusion:setup).
+# Source of truth: tenzoki/fusion → bin/fu.
+
+set -euo pipefail
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  sed -n '2,11p' "$0" | sed 's/^# \{0,1\}//'
+  exit 0
+fi
+
+agent="${1:-orchestrator}"
+case "$agent" in
+  *:*) target="$agent" ;;
+  *)   target="fusion:$agent" ;;
+esac
+
+exec claude --dangerously-skip-permissions --agent "$target"

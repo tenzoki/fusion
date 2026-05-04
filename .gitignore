@@ -1,0 +1,70 @@
+#Claude
+.claude/
+
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build artifacts — TypeScript
+dist/
+!hooks/dist/
+build/
+out/
+*.tsbuildinfo
+
+# Build artifacts — Go (but keep shipped helpers)
+bin/*
+!bin/monitor
+!bin/fusion-rules
+!bin/fu
+*.exe
+# Generated protobuf (rebuild from .proto)
+*.pb.go
+*_grpc.pb.go
+# Named Go binaries in reactor/
+fusion/reactor/reactor
+
+# Secrets and environment
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+credentials.json
+
+# Claude Code local settings (per arch-003: hooks in local only)
+.claude/settings.local.json
+.claude/.needs-reanchor
+
+# fusion-workbench is a runtime artifact created by agents in the consuming project
+fusion-workbench/
+
+# Audit logs (append-only, machine-generated)
+fusion_journal/audit/*.log
+
+# Archives and backups
+*.zip
+*.tar.gz
+*.tgz
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+
+# Test and coverage
+coverage/
+*.lcov
+
+# Temp files
+*.tmp
+*.bak
+*.pid

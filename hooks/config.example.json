@@ -1,0 +1,91 @@
+{
+  "_comment": "Example Compliance Guard Configuration showing illustrative categoryPaths and decisions. Copy relevant sections into config.json and adapt for your project. The ruleFile paths below are project-relative — point them at rules you maintain in your own ./rules/ directory; the plugin only ships fusion-workbench-conventions.md and leaves domain rules to the consuming project.",
+
+  "guard": {
+    "enabled": true,
+    "defaultSensitivity": "medium",
+
+    "protectedPaths": [
+      "agents/**",
+      "rules/**",
+      "hooks/config.json",
+      "hooks/hooks.json",
+      "settings.json",
+      "bin/monitor",
+      "skills/**",
+      ".claude-plugin/plugin.json",
+      "fusion-workbench/.guard-state/**"
+    ],
+
+    "categoryPaths": {
+      "ontology": [
+        "ontology/**",
+        "schemas/**"
+      ],
+      "code-architecture": [
+        "src/core/**",
+        "pkg/**"
+      ],
+      "ui": [
+        "src/ui/**",
+        "static/**"
+      ]
+    },
+
+    "categorySensitivity": {
+      "ontology": "high",
+      "code-architecture": "medium",
+      "ui": "low"
+    }
+  },
+
+  "decisions": [
+    {
+      "id": "onto-structural",
+      "category": "ontology",
+      "statement": "Structural ontology changes (add/remove/consolidate top-level entities, relations, or schema definitions) require review with a domain owner before merge",
+      "ruleFile": "rules/ontology-rules-guidelines.md"
+    },
+    {
+      "id": "onto-no-interpretation",
+      "category": "ontology",
+      "statement": "Read/viewer code may not perform logical transformations on ontology data — no beautification, normalization, or semantic interpretation in the read path",
+      "ruleFile": "rules/ontology-rules-guidelines.md"
+    },
+    {
+      "id": "onto-preserve-behavior",
+      "category": "ontology",
+      "statement": "When changing ontology or its viewer, verify existing functionality is preserved before merging",
+      "ruleFile": "rules/ontology-rules-guidelines.md"
+    },
+    {
+      "id": "arch-deps",
+      "category": "code-architecture",
+      "statement": "Dependencies flow one direction; no cycles. Layers talk only to immediate neighbors.",
+      "ruleFile": "rules/coding-guidelines.md"
+    },
+    {
+      "id": "arch-abstractions",
+      "category": "code-architecture",
+      "statement": "Don't bypass an abstraction because it's inconvenient. If wrong, fix or replace it.",
+      "ruleFile": "rules/coding-guidelines.md"
+    }
+  ],
+
+  "escalation": {
+    "blocksBeforeHalt": 3
+  },
+
+  "churn": {
+    "changesPerSessionWarning": 5,
+    "changesPerSessionCritical": 10,
+    "totalChangesWarning": 8,
+    "totalChangesCritical": 15
+  },
+
+  "crossFile": {
+    "_comment": "Cross-file ping-back detection. A 'ping-back' is an edit to a file that was previously edited and has had at least one OTHER file edited in between. Catches circular edit loops (A,B,A,B,...) that don't trip per-file churn thresholds.",
+    "pingBackWarning": 3,
+    "pingBackCritical": 5
+  }
+}

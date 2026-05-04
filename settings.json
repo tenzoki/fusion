@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Write(fusion-workbench/**)",
+      "Edit(fusion-workbench/**)",
+      "Bash(mkdir -p fusion-workbench/*)",
+      "Bash(mkdir -p fusion-workbench/consult*)",
+      "Bash(echo * >> fusion-workbench/**)",
+      "Bash(cp * fusion-workbench/monitor*)",
+      "Bash(chmod +x fusion-workbench/monitor*)",
+      "Bash(date *)",
+      "Bash(ls fusion-workbench/**)",
+      "Bash(wc -l fusion-workbench/**)",
+      "Bash(cat fusion-workbench/**)",
+      "Bash(git log *)",
+      "Bash(git diff *)",
+      "Bash(git status*)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  }
+}

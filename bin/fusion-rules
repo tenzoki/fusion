@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+# fusion-rules — list rule files an agent must read during Setup
+#
+# Usage: fusion-rules <agent-name>
+#
+# Prints one path per line. Searches three locations in order:
+#   1. The plugin's rules/        (via $FUSION_PLUGIN_ROOT, set by SessionStart)
+#   2. The project's ./rules/     (fusion-agent-specific rules)
+#   3. The project's .claude/rules/ (project-wide rules every Claude session
+#                                    should respect — coding guidelines,
+#                                    ontology rules, normative guides, etc.)
+# Missing files or directories are skipped silently — the agent reads
+# whatever is present.
+#
+# Convention for the project-side split:
+#   - ./rules/        — rules only fusion agents care about (capture layouts,
+#                       taskplanner priority overrides, ontology-review
+#                       heuristics — anything that has no meaning outside a
+#                       fusion-agent context).
+#   - .claude/rules/  — binding project guidelines that any Claude instance
+#                       should follow (the same rules a developer running
+#                       plain Claude Code in this repo would respect).
+#
+# Convention for filename patterns:
+#   - Every agent reads fusion-workbench-conventions.md (shipped by plugin).
+#   - Domain agents additionally match filename patterns:
+#       coder, coderev, bugfixer  → *coding*.md
+#       ontocoder, ontorev        → *ontology*.md, *normative*.md, *verb*.md
+#       planner                   → *coding*.md, *ontology*.md
+#       investigator              → *investigator*.md (project must supply
+#                                   its capture-layout description, e.g.
+#                                   ./rules/investigator-capture-layout.md;
+#                                   see templates/investigator-capture-layout.md)
+#   - All other agents get workbench-conventions only.
+
+set -eu
+
+AGENT="${1:-}"
+if [ -z "$AGENT" ]; then
+  echo "Usage: $0 <agent-name>" >&2
+  exit 1
+fi
+
+case "$AGENT" in
+  coder|coderev|bugfixer)        PATTERNS="coding" ;;
+  ontocoder|ontorev)              PATTERNS="ontology normative verb" ;;
+  planner)                        PATTERNS="coding ontology" ;;
+  investigator)                   PATTERNS="investigator" ;;
+  orchestrator|shaper|taskplanner|reconciler|analyst|consultant)
+                                  PATTERNS="" ;;
+  *)
+    echo "fusion-rules: unknown agent '$AGENT'" >&2
+    exit 2
+    ;;
+esac
+
+emit_if_exists() {
+  [ -f "$1" ] && printf '%s\n' "$1"
+}
+
+emit_pattern_in_dir() {
+  # $1 = directory, $2 = pattern
+  local dir="$1" pat="$2" f
+  [ -d "$dir" ] || return 0
+  # Use a nullglob-safe loop: enable nullglob, restore after.
+  local had_nullglob=0
+  if shopt -q nullglob 2>/dev/null; then had_nullglob=1; fi
+  shopt -s nullglob 2>/dev/null || true
+  for f in "$dir"/*"$pat"*.md; do
+    printf '%s\n' "$f"
+  done
+  [ "$had_nullglob" -eq 1 ] || shopt -u nullglob 2>/dev/null || true
+}
+
+PLUGIN_RULES_DIR="${FUSION_PLUGIN_ROOT:-}/rules"
+PROJECT_RULES_DIR="./rules"
+PROJECT_CLAUDE_RULES_DIR=".claude/rules"
+
+# 1. Always emit the framework ground-truth rule.
+emit_if_exists "$PLUGIN_RULES_DIR/fusion-workbench-conventions.md"
+
+# 2. Domain patterns — plugin first, then fusion-agent-specific project rules,
+#    then project-wide rules in .claude/rules/. Order is read-order, not
+#    precedence: agents read every emitted path. Layered intentionally so a
+#    consuming project can extend the plugin's defaults without overriding.
+for pat in $PATTERNS; do
+  emit_pattern_in_dir "$PLUGIN_RULES_DIR" "$pat"
+  emit_pattern_in_dir "$PROJECT_RULES_DIR" "$pat"
+  emit_pattern_in_dir "$PROJECT_CLAUDE_RULES_DIR" "$pat"
+done

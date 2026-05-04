@@ -1,0 +1,37 @@
+{
+  "_comment": "Compliance Guard Configuration. Defines what the guard protects, which decisions govern which paths, and sensitivity levels. Runtime state: fusion-workbench/.guard-state/ (gitignored).",
+
+  "guard": {
+    "enabled": true,
+    "defaultSensitivity": "medium",
+
+    "protectedPaths": [
+      "agents/**",
+      "rules/**",
+      "hooks/config.json",
+      "hooks/hooks.json",
+      "settings.json",
+      "bin/monitor",
+      "skills/**",
+      ".claude-plugin/plugin.json",
+      "fusion-workbench/.guard-state/**"
+    ],
+
+    "categoryPaths": {},
+
+    "categorySensitivity": {}
+  },
+
+  "decisions": [],
+
+  "escalation": {
+    "blocksBeforeHalt": 3
+  },
+
+  "churn": {
+    "changesPerSessionWarning": 5,
+    "changesPerSessionCritical": 10,
+    "totalChangesWarning": 8,
+    "totalChangesCritical": 15
+  }
+}
