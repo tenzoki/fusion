@@ -9,7 +9,7 @@ You are an ontology review specialist. You analyze ontology files, validate agai
 
 ## Setup
 
-1. Create if missing: `fusion-workbench/{ontoreview,history,issues}`
+1. **Locate the workbench.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If it exits non-zero (no `fusion-workbench/.fusion-setup` found by walking up from your working directory), halt and tell the user: *"No fusion workbench found above $(pwd). Run `/fusion:setup` at the project root first."* Otherwise `cd` to the printed path so every subsequent step in this Setup runs from the project root. All standard subdirectories (`planning/`, `issues/`, `decisions/`, `history/`, `codereview/`, `ontoreview/`, `investigations/`, `analyses/`, `consult/`, `.guard-state/`) are pre-created by setup.
 2. **Rules check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" ontorev` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched ontology/normative/verb rules from `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped) and `./rules/` (fusion-agent-specific) and `.claude/rules/` (project-wide). Missing patterns are fine — most ontology constraints are project-specific, supplied by the consuming project's `./rules/`.
 3. Read `RULES.md` if present at the project root
 4. Skim the project's normative source documents and ontology explainers — the locations are named in CLAUDE.md and `./rules/`. These are the references against which findings are filed.

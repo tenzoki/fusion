@@ -7,37 +7,56 @@
  */
 import { readFileSync, writeFileSync, renameSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
+import { findWorkbenchRoot } from "./workbench-root.js";
 /**
- * Churn state is project-local: stored in fusion-workbench/.guard-state/ under
- * the project root (process.cwd()), NOT in the plugin cache directory.
+ * Churn state lives in `<project-root>/fusion-workbench/.guard-state/churn.json`,
+ * where `<project-root>` is the directory above the `.fusion-setup` marker
+ * found by walking up from the current working directory.
+ *
+ * If no marker is found (project never ran `/fusion:setup`), the path
+ * resolver returns `null` and every state operation becomes a silent no-op
+ * — preventing stray workbench creation when a Claude session's cwd
+ * happens to be in a directory that isn't a fusion project.
  */
-const STATE_DIR = resolve(process.cwd(), "fusion-workbench", ".guard-state");
-const CHURN_PATH = resolve(STATE_DIR, "churn.json");
+function getChurnPaths() {
+    const root = findWorkbenchRoot();
+    if (!root)
+        return null;
+    const stateDir = resolve(root, "fusion-workbench", ".guard-state");
+    return { stateDir, churnPath: resolve(stateDir, "churn.json") };
+}
 const DEFAULT_THRESHOLDS = {
     changesPerSessionWarning: 5,
     changesPerSessionCritical: 10,
     totalChangesWarning: 8,
     totalChangesCritical: 15,
 };
-/** Load churn state from disk. Returns empty state if missing. */
+/** Load churn state from disk. Returns empty state if missing or no workbench. */
 export function loadChurn() {
+    const paths = getChurnPaths();
+    const empty = {
+        files: {},
+        sessionStart: new Date().toISOString(),
+    };
+    if (!paths)
+        return empty;
     try {
-        const content = readFileSync(CHURN_PATH, "utf-8");
+        const content = readFileSync(paths.churnPath, "utf-8");
         return JSON.parse(content);
     }
     catch {
-        return {
-            files: {},
-            sessionStart: new Date().toISOString(),
-        };
+        return empty;
     }
 }
-/** Save churn state to disk atomically. */
+/** Save churn state to disk atomically. No-op if no workbench is set up. */
 export function saveChurn(state) {
-    mkdirSync(STATE_DIR, { recursive: true });
-    const tmpPath = `${CHURN_PATH}.tmp`;
+    const paths = getChurnPaths();
+    if (!paths)
+        return;
+    mkdirSync(paths.stateDir, { recursive: true });
+    const tmpPath = `${paths.churnPath}.tmp`;
     writeFileSync(tmpPath, JSON.stringify(state, null, 2), "utf-8");
-    renameSync(tmpPath, CHURN_PATH);
+    renameSync(tmpPath, paths.churnPath);
 }
 /**
  * Record a file change in the churn state.
@@ -154,8 +173,4 @@ export function resetSession(state) {
     for (const stats of Object.values(state.files)) {
         stats.changesThisSession = 0;
     }
-}
-/** Get the churn state file path (for external tools). */
-export function getChurnPath() {
-    return CHURN_PATH;
 }

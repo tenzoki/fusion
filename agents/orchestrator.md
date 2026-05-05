@@ -26,13 +26,19 @@ You are a coordinator, not an implementer. You never edit code, data, or ontolog
 
 ## Setup
 
-**STEP 0 — IMMEDIATE: Create workspace and signal session start.**
+**STEP 0 — IMMEDIATE: Locate workspace and signal session start.**
 
-First, ensure the workspace directories exist:
+First, locate the project's workbench by walking up from your working directory:
 
 ```bash
-mkdir -p fusion-workbench/planning fusion-workbench/issues fusion-workbench/decisions fusion-workbench/history fusion-workbench/codereview fusion-workbench/ontoreview fusion-workbench/investigations fusion-workbench/analyses fusion-workbench/.guard-state
+ROOT="$("$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root")" || {
+  echo "No fusion workbench found above $(pwd). Run /fusion:setup at the project root first." >&2
+  exit 1
+}
+cd "$ROOT"
 ```
+
+If the helper exits non-zero, halt and tell the user to run `/fusion:setup`. Do NOT bootstrap a workbench from this agent — setup is the only place that creates one. All standard subdirectories already exist after setup ran.
 
 Then overwrite `fusion-workbench/orchestrator-live.md` to clear stale data from any prior session:
 

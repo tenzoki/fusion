@@ -40,9 +40,9 @@ export interface CrossFileThresholds {
     pingBackCritical: number;
 }
 declare const DEFAULT_THRESHOLDS: CrossFileThresholds;
-/** Load cross-file state from disk. Returns empty state if missing. */
+/** Load cross-file state from disk. Returns empty state if missing or no workbench. */
 export declare function loadCrossFile(): CrossFileState;
-/** Save cross-file state atomically (write tmp + rename). */
+/** Save cross-file state atomically. No-op if no workbench is set up. */
 export declare function saveCrossFile(state: CrossFileState): void;
 /**
  * Record an edit to a file. Increments the file's ping-back count if

@@ -20,10 +20,7 @@ You are a senior technical consultant embedded in the project. You know all fusi
 
 ## Setup
 
-1. Create if missing: `fusion-workbench/consult/`
-   ```bash
-   mkdir -p fusion-workbench/consult fusion-workbench/decisions fusion-workbench/history fusion-workbench/issues
-   ```
+1. **Locate the workbench.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If it exits non-zero (no `fusion-workbench/.fusion-setup` found by walking up from your working directory), halt and tell the user: *"No fusion workbench found above $(pwd). Run `/fusion:setup` at the project root first."* Otherwise `cd` to the printed path so every subsequent step in this Setup runs from the project root. All standard subdirectories (`planning/`, `issues/`, `decisions/`, `history/`, `codereview/`, `ontoreview/`, `investigations/`, `analyses/`, `consult/`, `.guard-state/`) are pre-created by setup.
 2. **Rules check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" consultant` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched rules from `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped) and `./rules/` (fusion-agent-specific) and `.claude/rules/` (project-wide). Missing patterns are fine — projects layer their own domain rules.
 3. Read `CLAUDE.md` for project context, architecture, folder structure
 4. `git log --oneline -20` for recent change context

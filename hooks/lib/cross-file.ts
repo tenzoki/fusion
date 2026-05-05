@@ -22,9 +22,20 @@ import {
   existsSync,
 } from "node:fs";
 import { resolve } from "node:path";
+import { findWorkbenchRoot } from "./workbench-root.js";
 
-const STATE_DIR = resolve(process.cwd(), "fusion-workbench", ".guard-state");
-const STATE_PATH = resolve(STATE_DIR, "cross-file.json");
+/**
+ * Cross-file state lives in `<project-root>/fusion-workbench/.guard-state/cross-file.json`.
+ * Returns null when no `.fusion-setup` marker is found upward — every state
+ * operation becomes a silent no-op so that plain Claude sessions in
+ * non-fusion-set-up directories don't bootstrap stray workbenches.
+ */
+function getCrossFilePaths(): { stateDir: string; statePath: string } | null {
+  const root = findWorkbenchRoot();
+  if (!root) return null;
+  const stateDir = resolve(root, "fusion-workbench", ".guard-state");
+  return { stateDir, statePath: resolve(stateDir, "cross-file.json") };
+}
 
 /** Per-file ping-back statistics. */
 export interface FileCrossFileStats {
@@ -68,25 +79,32 @@ const EMPTY_STATE: CrossFileState = {
   lastEditTimestamp: null,
 };
 
-/** Load cross-file state from disk. Returns empty state if missing. */
+/** Load cross-file state from disk. Returns empty state if missing or no workbench. */
 export function loadCrossFile(): CrossFileState {
+  const empty: CrossFileState = {
+    files: {},
+    lastEditFile: null,
+    lastEditTimestamp: null,
+  };
+  const paths = getCrossFilePaths();
+  if (!paths) return empty;
   try {
-    if (!existsSync(STATE_PATH)) {
-      return { files: {}, lastEditFile: null, lastEditTimestamp: null };
-    }
-    const content = readFileSync(STATE_PATH, "utf-8");
+    if (!existsSync(paths.statePath)) return empty;
+    const content = readFileSync(paths.statePath, "utf-8");
     return JSON.parse(content) as CrossFileState;
   } catch {
-    return { files: {}, lastEditFile: null, lastEditTimestamp: null };
+    return empty;
   }
 }
 
-/** Save cross-file state atomically (write tmp + rename). */
+/** Save cross-file state atomically. No-op if no workbench is set up. */
 export function saveCrossFile(state: CrossFileState): void {
-  mkdirSync(STATE_DIR, { recursive: true });
-  const tmp = STATE_PATH + ".tmp";
+  const paths = getCrossFilePaths();
+  if (!paths) return;
+  mkdirSync(paths.stateDir, { recursive: true });
+  const tmp = paths.statePath + ".tmp";
   writeFileSync(tmp, JSON.stringify(state, null, 2), "utf-8");
-  renameSync(tmp, STATE_PATH);
+  renameSync(tmp, paths.statePath);
 }
 
 /**

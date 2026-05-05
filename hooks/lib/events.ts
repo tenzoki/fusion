@@ -3,17 +3,21 @@
  *
  * Writes JSONL to state/events.jsonl. Each line is a self-contained
  * JSON object with timestamp, event type, and context.
+ *
+ * No-op when no fusion workbench is set up at or above the current
+ * working directory (i.e. the project never ran `/fusion:setup`).
  */
 
 import { appendFileSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
+import { findWorkbenchRoot } from "./workbench-root.js";
 
-/**
- * Event log is project-local: stored in fusion-workbench/.guard-state/ under
- * the project root (process.cwd()), NOT in the plugin cache directory.
- */
-const STATE_DIR = resolve(process.cwd(), "fusion-workbench", ".guard-state");
-const EVENTS_PATH = resolve(STATE_DIR, "events.jsonl");
+function getEventsPath(): { stateDir: string; eventsPath: string } | null {
+  const root = findWorkbenchRoot();
+  if (!root) return null;
+  const stateDir = resolve(root, "fusion-workbench", ".guard-state");
+  return { stateDir, eventsPath: resolve(stateDir, "events.jsonl") };
+}
 
 export type GuardEventType =
   | "guard_allow"
@@ -36,14 +40,17 @@ export interface GuardEvent {
   detail?: string;
 }
 
-/** Append a single event to the JSONL log. */
+/** Append a single event to the JSONL log. No-op if no workbench is found. */
 export function emitEvent(
   event: GuardEventType,
   tool?: string,
   file?: string,
   detail?: string,
 ): void {
-  mkdirSync(STATE_DIR, { recursive: true });
+  const paths = getEventsPath();
+  if (!paths) return;
+
+  mkdirSync(paths.stateDir, { recursive: true });
 
   const entry: GuardEvent = {
     ts: new Date().toISOString(),
@@ -53,10 +60,6 @@ export function emitEvent(
     ...(detail && { detail }),
   };
 
-  appendFileSync(EVENTS_PATH, JSON.stringify(entry) + "\n", "utf-8");
+  appendFileSync(paths.eventsPath, JSON.stringify(entry) + "\n", "utf-8");
 }
 
-/** Get the events file path (for external tools). */
-export function getEventsPath(): string {
-  return EVENTS_PATH;
-}

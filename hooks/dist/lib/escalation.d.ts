@@ -25,9 +25,9 @@ export interface EscalationState {
     lastBlockTimestamp: string | null;
     recentEvents: EscalationEvent[];
 }
-/** Load escalation state from disk. Returns empty state if missing. */
+/** Load escalation state from disk. Returns empty state if missing or no workbench. */
 export declare function loadEscalation(): EscalationState;
-/** Save escalation state to disk atomically. */
+/** Save escalation state to disk atomically. No-op if no workbench is set up. */
 export declare function saveEscalation(state: EscalationState): void;
 /** Check if the guard is in halt mode. */
 export declare function isHalted(state: EscalationState): boolean;
@@ -43,5 +43,3 @@ export declare function recordBlock(state: EscalationState, blocksBeforeHalt: nu
 export declare function resetBlockCounter(state: EscalationState): void;
 /** Clear halt mode (human intervention). */
 export declare function clearHalt(state: EscalationState): void;
-/** Get the state file path (for external tools). */
-export declare function getStatePath(): string;

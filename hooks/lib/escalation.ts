@@ -14,14 +14,20 @@
 
 import { readFileSync, writeFileSync, renameSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
+import { findWorkbenchRoot } from "./workbench-root.js";
 
 /**
- * State is project-local: stored in fusion-workbench/.guard-state/ under the
- * project root (process.cwd()), NOT in the plugin cache directory.
- * This ensures each project has its own halt state, block counters, etc.
+ * Escalation state lives in `<project-root>/fusion-workbench/.guard-state/escalation.json`.
+ * Returns null if no `.fusion-setup` marker is found upward — every state
+ * operation becomes a no-op so plain Claude sessions in non-fusion-set-up
+ * directories never bootstrap stray workbenches.
  */
-const STATE_DIR = resolve(process.cwd(), "fusion-workbench", ".guard-state");
-const STATE_PATH = resolve(STATE_DIR, "escalation.json");
+function getEscalationPaths(): { stateDir: string; statePath: string } | null {
+  const root = findWorkbenchRoot();
+  if (!root) return null;
+  const stateDir = resolve(root, "fusion-workbench", ".guard-state");
+  return { stateDir, statePath: resolve(stateDir, "escalation.json") };
+}
 
 export interface EscalationEvent {
   level: "block" | "halt" | "clear";
@@ -48,19 +54,25 @@ const EMPTY_STATE: EscalationState = {
 
 const MAX_RECENT_EVENTS = 10;
 
-/** Load escalation state from disk. Returns empty state if missing. */
+/** Load escalation state from disk. Returns empty state if missing or no workbench. */
 export function loadEscalation(): EscalationState {
+  const empty = { ...EMPTY_STATE, recentEvents: [] };
+  const paths = getEscalationPaths();
+  if (!paths) return empty;
   try {
-    const content = readFileSync(STATE_PATH, "utf-8");
+    const content = readFileSync(paths.statePath, "utf-8");
     return JSON.parse(content) as EscalationState;
   } catch {
-    return { ...EMPTY_STATE, recentEvents: [] };
+    return empty;
   }
 }
 
-/** Save escalation state to disk atomically. */
+/** Save escalation state to disk atomically. No-op if no workbench is set up. */
 export function saveEscalation(state: EscalationState): void {
-  mkdirSync(STATE_DIR, { recursive: true });
+  const paths = getEscalationPaths();
+  if (!paths) return;
+
+  mkdirSync(paths.stateDir, { recursive: true });
 
   // Trim recent events to max
   if (state.recentEvents.length > MAX_RECENT_EVENTS) {
@@ -68,9 +80,9 @@ export function saveEscalation(state: EscalationState): void {
   }
 
   // Atomic write: write to temp then rename
-  const tmpPath = `${STATE_PATH}.tmp`;
+  const tmpPath = `${paths.statePath}.tmp`;
   writeFileSync(tmpPath, JSON.stringify(state, null, 2), "utf-8");
-  renameSync(tmpPath, STATE_PATH);
+  renameSync(tmpPath, paths.statePath);
 }
 
 /** Check if the guard is in halt mode. */
@@ -139,7 +151,3 @@ export function clearHalt(state: EscalationState): void {
   });
 }
 
-/** Get the state file path (for external tools). */
-export function getStatePath(): string {
-  return STATE_PATH;
-}

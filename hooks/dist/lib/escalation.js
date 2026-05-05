@@ -13,13 +13,20 @@
  */
 import { readFileSync, writeFileSync, renameSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
+import { findWorkbenchRoot } from "./workbench-root.js";
 /**
- * State is project-local: stored in fusion-workbench/.guard-state/ under the
- * project root (process.cwd()), NOT in the plugin cache directory.
- * This ensures each project has its own halt state, block counters, etc.
+ * Escalation state lives in `<project-root>/fusion-workbench/.guard-state/escalation.json`.
+ * Returns null if no `.fusion-setup` marker is found upward — every state
+ * operation becomes a no-op so plain Claude sessions in non-fusion-set-up
+ * directories never bootstrap stray workbenches.
  */
-const STATE_DIR = resolve(process.cwd(), "fusion-workbench", ".guard-state");
-const STATE_PATH = resolve(STATE_DIR, "escalation.json");
+function getEscalationPaths() {
+    const root = findWorkbenchRoot();
+    if (!root)
+        return null;
+    const stateDir = resolve(root, "fusion-workbench", ".guard-state");
+    return { stateDir, statePath: resolve(stateDir, "escalation.json") };
+}
 const EMPTY_STATE = {
     haltActive: false,
     consecutiveBlocks: 0,
@@ -27,27 +34,34 @@ const EMPTY_STATE = {
     recentEvents: [],
 };
 const MAX_RECENT_EVENTS = 10;
-/** Load escalation state from disk. Returns empty state if missing. */
+/** Load escalation state from disk. Returns empty state if missing or no workbench. */
 export function loadEscalation() {
+    const empty = { ...EMPTY_STATE, recentEvents: [] };
+    const paths = getEscalationPaths();
+    if (!paths)
+        return empty;
     try {
-        const content = readFileSync(STATE_PATH, "utf-8");
+        const content = readFileSync(paths.statePath, "utf-8");
         return JSON.parse(content);
     }
     catch {
-        return { ...EMPTY_STATE, recentEvents: [] };
+        return empty;
     }
 }
-/** Save escalation state to disk atomically. */
+/** Save escalation state to disk atomically. No-op if no workbench is set up. */
 export function saveEscalation(state) {
-    mkdirSync(STATE_DIR, { recursive: true });
+    const paths = getEscalationPaths();
+    if (!paths)
+        return;
+    mkdirSync(paths.stateDir, { recursive: true });
     // Trim recent events to max
     if (state.recentEvents.length > MAX_RECENT_EVENTS) {
         state.recentEvents = state.recentEvents.slice(-MAX_RECENT_EVENTS);
     }
     // Atomic write: write to temp then rename
-    const tmpPath = `${STATE_PATH}.tmp`;
+    const tmpPath = `${paths.statePath}.tmp`;
     writeFileSync(tmpPath, JSON.stringify(state, null, 2), "utf-8");
-    renameSync(tmpPath, STATE_PATH);
+    renameSync(tmpPath, paths.statePath);
 }
 /** Check if the guard is in halt mode. */
 export function isHalted(state) {
@@ -98,8 +112,4 @@ export function clearHalt(state) {
         message: "Halt mode cleared by human intervention",
         timestamp: new Date().toISOString(),
     });
-}
-/** Get the state file path (for external tools). */
-export function getStatePath() {
-    return STATE_PATH;
 }

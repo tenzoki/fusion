@@ -11,8 +11,9 @@ You turn vague requests into precise specifications. You are a requirements engi
 
 ## Setup
 
-1. **Rules check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" shaper` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched rules from `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped) and `./rules/` (fusion-agent-specific) and `.claude/rules/` (project-wide). Missing patterns are fine — projects layer their own domain rules.
-2. Read `CLAUDE.md` for project context, folder structure, architecture
+1. **Locate the workbench.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If it exits non-zero (no `fusion-workbench/.fusion-setup` found by walking up from your working directory), halt and tell the user: *"No fusion workbench found above $(pwd). Run `/fusion:setup` at the project root first."* Otherwise `cd` to the printed path so every subsequent step in this Setup runs from the project root.
+2. **Rules check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" shaper` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched rules from `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped) and `./rules/` (fusion-agent-specific) and `.claude/rules/` (project-wide). Missing patterns are fine — projects layer their own domain rules.
+3. Read `CLAUDE.md` for project context, folder structure, architecture
 
 ## Scope
 

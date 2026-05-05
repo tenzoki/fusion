@@ -9,13 +9,13 @@ The active agent MUST be `fusion:orchestrator`. This skill inlines the full Setu
 
 Execute every step below in order. Do not begin the user's task work until Setup is complete and any Step 1 decision has been resolved.
 
-## CRITICAL — Workbench is anchored to pwd, NOT the git toplevel
+## CRITICAL — Setup is the ONLY place a workbench is created
 
-The fusion workbench is created **in the user's current working directory** — the directory `pwd` reports. This is intentional: a subfolder may legitimately need its own independent workbench, separate from any workbench at the git root.
+Setup is the single point where a fusion workbench is bootstrapped. The workbench lands at `./fusion-workbench/` relative to the directory `pwd` reports when this skill runs. After setup completes, every subsequent fusion agent and hook locates the workbench by walking *upward* from its working directory until it finds the marker file `fusion-workbench/.fusion-setup` (written in Step 0 below). Without that marker, agents halt and hooks no-op — fusion does NOT bootstrap a workbench in any directory other than the one setup ran in.
 
-**Do NOT prepend `cd <git-toplevel> && …` (or any other `cd`) to the commands below.** Run them exactly as written so the workbench lands at `./fusion-workbench/`. The plugin's hooks resolve `process.cwd()` directly — they will follow whichever directory you operate in.
+This makes setup deliberately strict: run it once, at the project root you want fusion to govern. If you accidentally run setup in a subfolder, the result is two independent fusion projects — one at the subfolder and one at the parent (if it had setup before). Walk up to the intended root before running setup.
 
-If `git rev-parse --show-toplevel` returns a path different from `pwd`, that is fine and expected when fusion is being set up in a subfolder of a git project. Do not "correct" it.
+**Never** prepend `cd <something>` to the commands below. Run them exactly as written so the workbench lands at `./fusion-workbench/` relative to the directory the user invoked setup from.
 
 ## Step 0 — Confirm and create workspace
 
@@ -26,8 +26,20 @@ pwd
 Note the path. The workbench will be created here. Then:
 
 ```bash
-mkdir -p ./fusion-workbench/planning ./fusion-workbench/issues ./fusion-workbench/decisions ./fusion-workbench/history ./fusion-workbench/codereview ./fusion-workbench/ontoreview ./fusion-workbench/investigations ./fusion-workbench/analyses ./fusion-workbench/.guard-state
+mkdir -p ./fusion-workbench/planning ./fusion-workbench/issues ./fusion-workbench/decisions ./fusion-workbench/history ./fusion-workbench/codereview ./fusion-workbench/ontoreview ./fusion-workbench/investigations ./fusion-workbench/analyses ./fusion-workbench/consult ./fusion-workbench/.guard-state
 ```
+
+Write the setup marker (this is the file every agent and hook looks for to confirm fusion is set up here):
+
+```bash
+printf '{"setup_at":"%s","setup_pwd":"%s","plugin_version":"%s"}\n' \
+  "$(date +%Y-%m-%dT%H:%M:%S%z)" \
+  "$(pwd -P)" \
+  "$(grep '"version"' "$FUSION_PLUGIN_ROOT/.claude-plugin/plugin.json" | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')" \
+  > ./fusion-workbench/.fusion-setup
+```
+
+If `./fusion-workbench/` already existed from a prior fusion version (no `.fusion-setup` marker yet), the `mkdir -p` is harmless and the marker write is the only meaningful change — existing content is preserved.
 
 Obtain current time: `date +%H:%M`.
 

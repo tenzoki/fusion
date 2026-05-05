@@ -33,9 +33,9 @@ export interface ChurnThresholds {
     totalChangesWarning: number;
     totalChangesCritical: number;
 }
-/** Load churn state from disk. Returns empty state if missing. */
+/** Load churn state from disk. Returns empty state if missing or no workbench. */
 export declare function loadChurn(): ChurnState;
-/** Save churn state to disk atomically. */
+/** Save churn state to disk atomically. No-op if no workbench is set up. */
 export declare function saveChurn(state: ChurnState): void;
 export declare function recordChange(state: ChurnState, filePath: string): void;
 /**
@@ -56,5 +56,3 @@ export declare function getTopChurnFiles(state: ChurnState, n: number): string[]
  * Call at the start of a new session to keep totalChanges but reset per-session tracking.
  */
 export declare function resetSession(state: ChurnState): void;
-/** Get the churn state file path (for external tools). */
-export declare function getChurnPath(): string;

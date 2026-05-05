@@ -9,15 +9,16 @@ You reconcile plans, issues, and reviews against ground truth. The shape of "gro
 
 ## Setup
 
-1. **Rules check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" reconciler` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched rules from `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped) and `./rules/` (fusion-agent-specific) and `.claude/rules/` (project-wide). Missing patterns are fine — projects layer their own domain rules.
-2. Read `CLAUDE.md` for project context, folder structure, architecture invariants
-3. `git log --oneline -40` for recent change context
-4. Inventory tracking files:
+1. **Locate the workbench.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If it exits non-zero (no `fusion-workbench/.fusion-setup` found by walking up from your working directory), halt and tell the user: *"No fusion workbench found above $(pwd). Run `/fusion:setup` at the project root first."* Otherwise `cd` to the printed path so every subsequent step in this Setup runs from the project root.
+2. **Rules check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" reconciler` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched rules from `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped) and `./rules/` (fusion-agent-specific) and `.claude/rules/` (project-wide). Missing patterns are fine — projects layer their own domain rules.
+3. Read `CLAUDE.md` for project context, folder structure, architecture invariants
+4. `git log --oneline -40` for recent change context
+5. Inventory tracking files:
    - `ls fusion-workbench/planning/`
    - `ls fusion-workbench/issues/`
    - `ls fusion-workbench/codereview/`
    - `ls fusion-workbench/ontoreview/`
-5. Skim recent `fusion-workbench/history/` entries
+6. Skim recent `fusion-workbench/history/` entries
 
 ## Domain Parameter
 
