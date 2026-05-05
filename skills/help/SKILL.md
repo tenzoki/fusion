@@ -56,15 +56,15 @@ If the user is setting up the marketplace itself for the first time, walk them t
 
 ### 4. Update — *picking up new versions*
 
-**Easy path:** run `/fusion:upgrade` — it pulls the local marketplace clone and reports the version change. Then type `/plugin install fusion@tenzoki-plugins` and `/reload-plugins` in Claude Code (slash commands can't be invoked from inside a skill body, so the user has to type them).
+**Easy path:** run `/fusion:upgrade` — it pulls the local marketplace clone and reports the version diff. Then type these three slash commands in Claude Code, in order:
 
-**Why it's not fully automatic:** Claude Code's `/plugin install` reads the *local* marketplace clone at `~/.claude/plugins/marketplaces/<name>/`, not the GitHub remote. Without a `git pull` on that clone, version bumps don't propagate locally even after uninstall/reinstall.
+1. `/plugin uninstall fusion@tenzoki-plugins`
+2. `/plugin install fusion@tenzoki-plugins`
+3. `/reload-plugins`
 
-**Manual equivalent** (what `/fusion:upgrade` does for you):
+**Why three commands:** Claude Code has no `/plugin upgrade` or `/plugin update`. `/plugin install` on an already-installed plugin reports *"already installed globally"* and does not re-fetch — so the upgrade path requires `uninstall` first. Slash commands cannot be invoked from inside a skill body, which is why the user has to type them.
 
-```bash
-git -C ~/.claude/plugins/marketplaces/tenzoki-plugins pull origin main
-```
+**Why `/fusion:upgrade` even exists** (vs. just running the three commands directly): the local *marketplace clone* at `~/.claude/plugins/marketplaces/<name>/` is what `/plugin install` reads, not the GitHub remote. Without a `git pull` on that clone first, the install would re-pull the same version it already had. `/fusion:upgrade` does the pull and reports the diff so the user knows whether reinstalling is worth doing.
 
 For the maintainer-side release flow (bumping `plugin.json` + `marketplace.json`, dual git push), read `$FUSION_PLUGIN_ROOT/CLAUDE.md` "Release process".
 

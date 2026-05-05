@@ -5,9 +5,12 @@ allowed-tools: [Bash, Read]
 
 # Fusion — upgrade
 
-The user wants to upgrade fusion to whatever's published on the marketplace. Claude Code's `/plugin install` reads the **local marketplace clone**, not the GitHub remote. Without a `git pull` on that clone, version bumps don't propagate locally even after uninstall/reinstall.
+The user wants to upgrade fusion to whatever's published on the marketplace. Two facts about Claude Code's plugin system govern what we have to do:
 
-This skill does that pull and reports the result. The user still has to run `/plugin install` and `/reload-plugins` from Claude Code itself — slash commands cannot be invoked from inside a skill body.
+1. **`/plugin install` reads the local marketplace clone, not GitHub.** Without a `git pull` on that clone first, version bumps never reach the local marketplace metadata.
+2. **`/plugin install` is install-once, not auto-upgrade.** When fusion is already installed, `/plugin install fusion@tenzoki-plugins` reports *"already installed globally"* and does nothing. There is no `/plugin upgrade` or `/plugin update` command. The only documented upgrade path is `uninstall` then `install` then `reload`.
+
+This skill does the pull and reports the diff. The user still has to type the three slash commands themselves — slash commands cannot be invoked from inside a skill body.
 
 ## Steps
 
@@ -30,15 +33,18 @@ This skill does that pull and reports the result. The user still has to run `/pl
 4. **Read the new local fusion version** after pulling, same grep as step 2.
 
 5. **Report.** Tell the user, in this order:
-   - The local version before vs. after the pull (e.g. *"fusion: 2.3.0 → 2.3.2"*).
-   - If they're already up to date, say so and stop — no need to reinstall.
-   - If a new version landed, instruct them to run **both** of these from inside Claude Code (the user must type them — you cannot invoke slash commands from a skill):
-     - `/plugin install fusion@tenzoki-plugins`
-     - `/reload-plugins`
+   - The local version before vs. after the pull (e.g. *"fusion: 2.3.0 → 2.6.0"*).
+   - If they're already up to date in the marketplace clone, say so and stop — no need to reinstall.
+   - If a new version landed, instruct them to run **all three** of these from inside Claude Code, in order (the user must type them — you cannot invoke slash commands from a skill):
+     1. `/plugin uninstall fusion@tenzoki-plugins`
+     2. `/plugin install fusion@tenzoki-plugins`
+     3. `/reload-plugins`
+
+   The uninstall step is required: `/plugin install` on an already-installed plugin reports *"already installed globally"* and does not re-fetch. There is no `/plugin upgrade` or `/plugin update` command in Claude Code.
 
 ## Notes for the assistant
 
-- **Do not** attempt to call `/plugin install` or `/reload-plugins` yourself — they only work when typed by the user in Claude Code's prompt.
+- **Do not** attempt to call `/plugin uninstall`, `/plugin install`, or `/reload-plugins` yourself — they only work when typed by the user in Claude Code's prompt.
 - **Do not** modify the marketplace clone beyond a fast-forward pull. If the clone has local changes (`git status` non-empty), report and stop; don't stash or reset without explicit user direction.
 - This skill is fusion-specific. It does not touch other plugins or other marketplaces.
 - If `~/.claude/plugins/marketplaces/` doesn't exist, the user is on a Claude Code version without the plugin system or has never used it. Say so plainly.
