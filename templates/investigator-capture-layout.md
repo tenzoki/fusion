@@ -10,7 +10,7 @@
 
 **Capture root directory:** `<path, e.g. captures/, evidence/, runs/, failures/>`
 
-**Subdirectory naming convention:** `<pattern, e.g. MMDD-NN-<short-tag>, run-<uuid>, YYYYMMDD-HHMMSS-<topic>>`
+**Subdirectory naming convention:** `<pattern, e.g. YYMMDD-NN-<short-tag>, run-<uuid>, YYYYMMDD-HHMMSS-<topic>>`
 
 **How a capture is created:** `<one paragraph: who/what creates a capture, when, and what triggers archival. Examples: a failed CI run, a user-reported bad output, a timed-out agent run, a manual save from the UI.>`
 

@@ -6,13 +6,13 @@ Shared conventions for all agents operating on `fusion-workbench/`. This file is
 
 ```
 fusion-workbench/
-├── planning/      # planner output (MMDD-HHMM[S]-<topic>.md)
-├── issues/        # defects filed by any agent (MMDD-HHMM[S]-<topic>.md)
-├── decisions/     # tracked open questions / decision records (MMDD-HHMM[S]-<topic>.md)
-├── history/       # all agents log here (MMDD-HHMM-<topic>.md)
-├── codereview/    # codereviewer output (MMDD-HHMM-<topic>.md)
-├── ontoreview/    # ontoreviewer output (MMDD-HHMM-<topic>.md)
-├── analyses/      # analyst output (MMDD-HHMM-<topic>.md)
+├── planning/      # planner output (YYMMDD-HHMM[S]-<topic>.md)
+├── issues/        # defects filed by any agent (YYMMDD-HHMM[S]-<topic>.md)
+├── decisions/     # tracked open questions / decision records (YYMMDD-HHMM[S]-<topic>.md)
+├── history/       # all agents log here (YYMMDD-HHMM-<topic>.md)
+├── codereview/    # codereviewer output (YYMMDD-HHMM-<topic>.md)
+├── ontoreview/    # ontoreviewer output (YYMMDD-HHMM-<topic>.md)
+├── analyses/      # analyst output (YYMMDD-HHMM-<topic>.md)
 └── tasklist.md    # generated work queue (taskplanner only)
 ```
 
@@ -35,24 +35,24 @@ A **defect** belongs in `issues/`. A **decision** belongs in `decisions/`. The d
 
 ## Timestamps
 
-Always obtain `MMDD-HHMM` from `date +%m%d-%H%M`. LLMs have no clock — never guess or estimate the time.
+Always obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`. LLMs have no clock — never guess or estimate the time.
 
 ## Filename Patterns
 
 | Directory | Pattern | State marker |
 |-----------|---------|--------------|
-| `planning/` | `MMDD-HHMM[S]-<topic>.md` | yes (issues/planning vocabulary) |
-| `issues/` | `MMDD-HHMM[S]-<topic>.md` | yes (issues/planning vocabulary) |
-| `decisions/` | `MMDD-HHMM[S]-<topic>.md` | yes (decisions vocabulary — richer set) |
-| `history/` | `MMDD-HHMM-<topic>.md` | no |
-| `codereview/` | `MMDD-HHMM-<topic>.md` | no |
-| `ontoreview/` | `MMDD-HHMM-<topic>.md` | no |
-| `analyses/` | `MMDD-HHMM-<topic>.md` | no |
+| `planning/` | `YYMMDD-HHMM[S]-<topic>.md` | yes (issues/planning vocabulary) |
+| `issues/` | `YYMMDD-HHMM[S]-<topic>.md` | yes (issues/planning vocabulary) |
+| `decisions/` | `YYMMDD-HHMM[S]-<topic>.md` | yes (decisions vocabulary — richer set) |
+| `history/` | `YYMMDD-HHMM-<topic>.md` | no |
+| `codereview/` | `YYMMDD-HHMM-<topic>.md` | no |
+| `ontoreview/` | `YYMMDD-HHMM-<topic>.md` | no |
+| `analyses/` | `YYMMDD-HHMM-<topic>.md` | no |
 | `tasklist.md` | fixed | — |
 
 ## State Markers — issues/ and planning/
 
-Files in `issues/` and `planning/` carry a state marker: `MMDD-HHMM[S]-<topic>.md`.
+Files in `issues/` and `planning/` carry a state marker: `YYMMDD-HHMM[S]-<topic>.md`.
 
 | Marker | Meaning |
 |--------|---------|
@@ -66,7 +66,7 @@ Files in `issues/` and `planning/` carry a state marker: `MMDD-HHMM[S]-<topic>.m
 - When an agent begins work: rename `[o]` → `[p]`.
 - When work is done: rename `[p]` → `[c]`.
 - When the user defers: rename to `[d]`.
-- State change = `mv` (rename). Only the marker changes; `MMDD-HHMM` and `<topic>` stay the same.
+- State change = `mv` (rename). Only the marker changes; `YYMMDD-HHMM` and `<topic>` stay the same.
 
 History, codereview, ontoreview, and analyses files do NOT carry state markers.
 
@@ -84,10 +84,10 @@ Files in `decisions/` carry a richer state marker that distinguishes "the answer
 
 **Worked transitions:**
 
-1. **`[o]` → `[a]`**: Reconciler (or analyst) finds that an open decision has been answered in a deliverable. Append `Answered: analyses/0501-1915-D04-detailed-architecture.md §4.3 — Shape C selected`. Rename `[o]` → `[a]`.
+1. **`[o]` → `[a]`**: Reconciler (or analyst) finds that an open decision has been answered in a deliverable. Append `Answered: analyses/260501-1915-D04-detailed-architecture.md §4.3 — Shape C selected`. Rename `[o]` → `[a]`.
 2. **`[a]` → `[i]`**: A coder/ontocoder commit lands that realises the decision. Append `Implemented: a3f7c2e — pkg/transform now uses Shape C dispatch`. Rename `[a]` → `[i]`.
 3. **`[o]` → `[d]`**: User says "defer to v1.x". Append `Deferred: v1.x — pending pilot signal`. Rename `[o]` → `[d]`. (Skipping `[a]` is fine when the deferral itself is the answer.)
-4. **`[a]` → `[s]`**: A new decision overrides the answered one. Append `Superseded by: decisions/MMDD-HHMM[a]-new-decision.md — replaces Shape C with Shape D after Stefan veto`. Rename to `[s]`.
+4. **`[a]` → `[s]`**: A new decision overrides the answered one. Append `Superseded by: decisions/YYMMDD-HHMM[a]-new-decision.md — replaces Shape C with Shape D after Stefan veto`. Rename to `[s]`.
 5. **`[o]` → `[s]`** (rare): A new decision overrides an open one before it was even answered. Same procedure as above.
 
 **`[i]` and `[s]` are terminal.** Do not rename them back to `[o]` or `[a]`. If an implemented decision needs revisiting, file a NEW decision (which may then `Supersede` the `[i]` one).
@@ -163,7 +163,7 @@ This applies to:
 
 **NEVER put issues or decisions inside plan documents, review documents, analyses, code comments, chat output, history logs, or any other location.** Embedded items get lost. Each item is a separate file in the appropriate folder.
 
-**Filename:** `MMDD-HHMM[o]-<topic>.md` (always `[o]` on creation, in either folder).
+**Filename:** `YYMMDD-HHMM[o]-<topic>.md` (always `[o]` on creation, in either folder).
 
 **Issue file format:**
 ```
@@ -180,7 +180,7 @@ Brief but precise — enough context to understand the item without the original
 
 ## Decision Record Template
 
-File: `fusion-workbench/decisions/MMDD-HHMM[o]-<topic>.md`
+File: `fusion-workbench/decisions/YYMMDD-HHMM[o]-<topic>.md`
 
 Body:
 
@@ -224,7 +224,7 @@ Superseded by: <set when status moves to [s]>
 
 ## History Logging
 
-Every session writes a history entry to `fusion-workbench/history/MMDD-HHMM-<topic>.md` describing what was done. Update the entry's status line to `Complete` as the final step of the session — if interrupted before this, completion state is lost.
+Every session writes a history entry to `fusion-workbench/history/YYMMDD-HHMM-<topic>.md` describing what was done. Update the entry's status line to `Complete` as the final step of the session — if interrupted before this, completion state is lost.
 
 The history log is the only durable record of a session. The in-memory task list does not persist. Always update history before finishing.
 

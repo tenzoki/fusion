@@ -198,7 +198,7 @@ State markers and inline progress tracking are defined once in `fusion-workbench
 - **No agent edits files outside its declared scope.** Cross-layer findings flow through `fusion-workbench/issues/`, not direct edits. Scope is enforced by prose in each agent prompt.
 - **Only the orchestrator dispatches other agents.** All other agents are leaf nodes — they do their work and return. The orchestrator is the sole coordinator. It never recurses (no self-invocation), and it never invokes `investigator` (user-initiated only).
 - **Issues live in `fusion-workbench/issues/`, never embedded in plans, reviews, or chat output.** This is enforced in `fusion-workbench-conventions.md` and applies to every agent.
-- **Timestamps come from the system clock** (`date +%m%d-%H%M`), never from estimation. All tracking filenames carry an `MMDD-HHMM` prefix.
+- **Timestamps come from the system clock** (`date +%y%m%d-%H%M`), never from estimation. All tracking filenames carry an `YYMMDD-HHMM` prefix.
 - **`.secret` files are never read.** If an agent needs a secret, it asks the user for an environment variable.
 
 ## Adding a new agent

@@ -96,9 +96,9 @@ When the user asks for a written report or when findings are complex enough to w
 
 Rule of thumb: if the output is one of analyst's typed deliverables, dispatch `analyst`. If the output is the consultant's voice — opinionated, signed, conversational-in-writing — use this mode.
 
-**Report file:** `fusion-workbench/consult/MMDD-HHMM-<topic>.md`
+**Report file:** `fusion-workbench/consult/YYMMDD-HHMM-<topic>.md`
 
-Obtain `MMDD-HHMM` from `date +%m%d-%H%M`.
+Obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`.
 
 **Format:**
 
@@ -142,7 +142,7 @@ If your analysis reveals actionable problems, file them as separate issue files 
 
 **Do NOT add history entries automatically.** Only create a history entry when the user explicitly asks you to log the session. When asked:
 
-- Write to `fusion-workbench/history/MMDD-HHMM-consultant-<topic>.md`
+- Write to `fusion-workbench/history/YYMMDD-HHMM-consultant-<topic>.md`
 - Include: what was discussed, key decisions, recommendations given, issues filed
 
 ## Tools

@@ -1,5 +1,5 @@
 ---
-description: Archive a set of fusion-workbench files described in natural language. Survey the workbench, propose matching items, ask for confirmation, then move them into fusion-workbench/archive/<MMDD-HHMM>-<slug>/.
+description: Archive a set of fusion-workbench files described in natural language. Survey the workbench, propose matching items, ask for confirmation, then move them into fusion-workbench/archive/<YYMMDD-HHMM>-<slug>/.
 argument-hint: <description of what to archive — e.g. "completed planning docs", "last orchestrator session", "old issues from before the auth refactor">
 allowed-tools: [Bash, Read, Write, Edit, AskUserQuestion]
 ---
@@ -11,13 +11,13 @@ Move a curated set of workbench files out of the live workbench and into a times
 ## Where archives go
 
 ```
-fusion-workbench/archive/<MMDD-HHMM>-<slug>/
+fusion-workbench/archive/<YYMMDD-HHMM>-<slug>/
 ```
 
-- `MMDD-HHMM` from `date +%m%d-%H%M` (never guess).
-- `<slug>` is a short kebab-case label derived from the description (lowercase, alphanumerics + dashes, ≤ 40 chars). Example: `0502-1430-completed-planning-docs`.
+- `YYMMDD-HHMM` from `date +%y%m%d-%H%M` (never guess).
+- `<slug>` is a short kebab-case label derived from the description (lowercase, alphanumerics + dashes, ≤ 40 chars). Example: `260502-1430-completed-planning-docs`.
 - One archive folder per `/fusion:archive` invocation. Never reuse a folder.
-- Inside the archive folder, preserve the original directory structure relative to `fusion-workbench/`. Example: `fusion-workbench/planning/0501-1200-auth.md` → `fusion-workbench/archive/0502-1430-completed-planning-docs/planning/0501-1200-auth.md`.
+- Inside the archive folder, preserve the original directory structure relative to `fusion-workbench/`. Example: `fusion-workbench/planning/260501-1200-auth.md` → `fusion-workbench/archive/260502-1430-completed-planning-docs/planning/260501-1200-auth.md`.
 
 ## Inputs
 
@@ -50,9 +50,9 @@ fusion-workbench/archive/<MMDD-HHMM>-<slug>/
    - `cancel` — abort, change nothing
    Do not move anything until `proceed`.
 6. **Archive.** On `proceed`:
-   - `mkdir -p fusion-workbench/archive/<MMDD-HHMM>-<slug>/`
+   - `mkdir -p fusion-workbench/archive/<YYMMDD-HHMM>-<slug>/`
    - For each file, recreate its parent path under the archive folder and `mv` it (do not copy — archive means it leaves the live workbench).
-   - Write a manifest at `fusion-workbench/archive/<MMDD-HHMM>-<slug>/MANIFEST.md` containing: timestamp, description (the user's argument verbatim), source paths archived, file count, total bytes, and the user agent that ran the archive (orchestrator vs direct user invocation if known).
+   - Write a manifest at `fusion-workbench/archive/<YYMMDD-HHMM>-<slug>/MANIFEST.md` containing: timestamp, description (the user's argument verbatim), source paths archived, file count, total bytes, and the user agent that ran the archive (orchestrator vs direct user invocation if known).
 7. **Report.** Print archive path, file count, and remind the user that archives are local — they are not committed automatically.
 
 ## Guardrails

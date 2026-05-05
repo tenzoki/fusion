@@ -8,7 +8,7 @@ Companion to `fusion-workbench-conventions.md`. Three end-to-end examples showin
 
 **Initial state — filed by shaper after the user said "we'll need to pick a vector store, but not now":**
 
-`fusion-workbench/decisions/0501-1430[o]-vector-store-pick.md`:
+`fusion-workbench/decisions/260501-1430[o]-vector-store-pick.md`:
 
 ```markdown
 # Which vector store for v1?
@@ -17,7 +17,7 @@ Companion to `fusion-workbench-conventions.md`. Three end-to-end examples showin
 **Domain:** code
 **Status:** open
 **Filed by:** shaper
-**Cross-references:** issues/0430-1900[o]-rag-sanitisation.md
+**Cross-references:** issues/260430-1900[o]-rag-sanitisation.md
 
 ---
 
@@ -47,10 +47,10 @@ Append to file body:
 
 ```markdown
 ---
-Answered: analyses/0501-1730-vector-store-comparative.md §5 — sqlite-vss selected for v1 (matches recommendation; pgvector kept as v1.x escape hatch).
+Answered: analyses/260501-1730-vector-store-comparative.md §5 — sqlite-vss selected for v1 (matches recommendation; pgvector kept as v1.x escape hatch).
 ```
 
-Rename file: `0501-1430[o]-vector-store-pick.md` → `0501-1430[a]-vector-store-pick.md`.
+Rename file: `260501-1430[o]-vector-store-pick.md` → `260501-1430[a]-vector-store-pick.md`.
 
 **Coder commits the integration — `pkg/vector/sqlite_vss.go` lands:**
 
@@ -61,7 +61,7 @@ Append to file body:
 Implemented: a3f7c2e — pkg/vector/sqlite_vss.go added; loader wired in pkg/rag/retriever.go.
 ```
 
-Rename file: `0501-1430[a]-vector-store-pick.md` → `0501-1430[i]-vector-store-pick.md`. Terminal state.
+Rename file: `260501-1430[a]-vector-store-pick.md` → `260501-1430[i]-vector-store-pick.md`. Terminal state.
 
 ---
 
@@ -69,18 +69,18 @@ Rename file: `0501-1430[a]-vector-store-pick.md` → `0501-1430[i]-vector-store-
 
 Six months later, a customer crosses 5M vectors and sqlite-vss thrashes. A new decision is filed:
 
-`fusion-workbench/decisions/1107-0915[o]-vector-store-revisit.md` is created (with its own Options, Recommendation, etc.). After the user picks pgvector, it transitions `[o] → [a] → [i]` per Example 1.
+`fusion-workbench/decisions/261107-0915[o]-vector-store-revisit.md` is created (with its own Options, Recommendation, etc.). After the user picks pgvector, it transitions `[o] → [a] → [i]` per Example 1.
 
 The original decision file is then updated:
 
-Append to body of `0501-1430[i]-vector-store-pick.md`:
+Append to body of `260501-1430[i]-vector-store-pick.md`:
 
 ```markdown
 ---
-Superseded by: decisions/1107-0915[i]-vector-store-revisit.md — sqlite-vss replaced with pgvector after first customer crossed 5M vectors. Original choice was correct for the constraints known at v1; superseded by scale change.
+Superseded by: decisions/261107-0915[i]-vector-store-revisit.md — sqlite-vss replaced with pgvector after first customer crossed 5M vectors. Original choice was correct for the constraints known at v1; superseded by scale change.
 ```
 
-Rename: `0501-1430[i]-vector-store-pick.md` → `0501-1430[s]-vector-store-pick.md`.
+Rename: `260501-1430[i]-vector-store-pick.md` → `260501-1430[s]-vector-store-pick.md`.
 
 **`[i]` and `[s]` are both terminal.** Going `[i] → [s]` is the one allowed terminal-to-terminal transition because it records the historical fact that a previously-implemented decision has been overridden.
 
@@ -90,14 +90,14 @@ Rename: `0501-1430[i]-vector-store-pick.md` → `0501-1430[s]-vector-store-pick.
 
 The user reads the open decision, decides "not now":
 
-Append to body of `0501-1430[o]-vector-store-pick.md`:
+Append to body of `260501-1430[o]-vector-store-pick.md`:
 
 ```markdown
 ---
 Deferred: v1.x — pilot customers expected at <1M vectors; revisit when first customer crosses 500k. Deferred per user 2026-05-12.
 ```
 
-Rename: `0501-1430[o]-vector-store-pick.md` → `0501-1430[d]-vector-store-pick.md`.
+Rename: `260501-1430[o]-vector-store-pick.md` → `260501-1430[d]-vector-store-pick.md`.
 
 Skipping `[a]` is fine — the deferral itself is the answer.
 

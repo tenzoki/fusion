@@ -38,7 +38,7 @@ The Step 1.5 routability check (below) still applies in every domain.
 
 **You may write:**
 - `fusion-workbench/tasklist.md` (create or update)
-- `fusion-workbench/history/MMDD-HHMM-tasklist-update.md` (history entry)
+- `fusion-workbench/history/YYMMDD-HHMM-tasklist-update.md` (history entry)
 
 **You may NOT:**
 - Edit planning, issue, codereview, or ontoreview files (reconciler's job)
@@ -71,7 +71,7 @@ After inventory, if every open work item lacks an executor that will accept it (
 ### Step 2: Extract tasks
 
 For each open work item, extract:
-- **Task ID** — short identifier (e.g. `P:1700-Ph4`, `I:1204`, `D:0501-1745`, `CR:C8`, `OR:H3`)
+- **Task ID** — short identifier (e.g. `P:1700-Ph4`, `I:1204`, `D:260501-1745`, `CR:C8`, `OR:H3`)
 - **Source file** — path to the originating planning, issue, decision, or review file
 - **Summary** — one-line description of what needs to be done
 - **Dependencies** — other task IDs that must complete first
@@ -149,13 +149,13 @@ Write (or update) `fusion-workbench/tasklist.md`:
 
 ### Step 5: Write history entry
 
-Write `fusion-workbench/history/MMDD-HHMM-tasklist-update.md`:
+Write `fusion-workbench/history/YYMMDD-HHMM-tasklist-update.md`:
 - How many plans/issues/reviews scanned
 - How many open tasks extracted
 - How many tasks are blocked vs ready
 - Key changes from previous tasklist (if updating)
 
-Obtain `MMDD-HHMM` from `date +%m%d-%H%M`.
+Obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`.
 
 ## Rules
 

@@ -111,7 +111,7 @@ Remaining setup (after step 1 is resolved):
      ```
 
      Cite the inputs and the chosen domain in the Setup-complete summary and in the snapshot section of the history file. Pass this domain as the `domain` parameter to `taskplanner` (Phase 1) and `reconciler` (Phase 3) dispatches by default; pass it as the `executors` selection cue to `planner` (e.g. `executors=[coder, ontocoder, analyst]` when domain is `strategic` or `knowledge`).
-6. Create history file: `fusion-workbench/history/MMDD-HHMM-orchestrator-session.md` (obtain timestamp from `date +%m%d-%H%M`)
+6. Create history file: `fusion-workbench/history/YYMMDD-HHMM-orchestrator-session.md` (obtain timestamp from `date +%y%m%d-%H%M`)
 7. Write initial history entry with snapshot counts and session goal
 8. Initialize event log and emit session start:
     - Create/overwrite `fusion-workbench/orchestrator-events.jsonl` (empty — events are appended)
@@ -344,10 +344,10 @@ After the loop exits (convergence or circuit breaker):
 
 ## Phase 4: Report
 
-Update the history file `fusion-workbench/history/MMDD-HHMM-orchestrator-session.md` with the final summary:
+Update the history file `fusion-workbench/history/YYMMDD-HHMM-orchestrator-session.md` with the final summary:
 
 ```markdown
-# Orchestrator Session — MMDD-HHMM
+# Orchestrator Session — YYMMDD-HHMM
 
 **Goal:** <user's original request>
 **Mode:** <resolved mode>
@@ -460,7 +460,7 @@ If the user chooses Modify, update the task description and re-route. If Skip, m
 - `agent_errors` — count of agent failures (no output, wrong scope, etc.)
 - `human_gates_hit` — number of times the orchestrator stopped for user input
 
-**Durable state:** The history file `fusion-workbench/history/MMDD-HHMM-orchestrator-session.md` is updated incrementally after each cycle, not just at session end. If the session is interrupted, the history file preserves progress through the last completed cycle.
+**Durable state:** The history file `fusion-workbench/history/YYMMDD-HHMM-orchestrator-session.md` is updated incrementally after each cycle, not just at session end. If the session is interrupted, the history file preserves progress through the last completed cycle.
 
 ## Persistent State File
 
@@ -472,13 +472,13 @@ This file is the orchestrator's crash-recovery mechanism. It captures enough sta
 
 ```yaml
 # fusion-workbench session state — for resumption after restart
-# Updated: <MMDD-HHMM>
+# Updated: <YYMMDD-HHMM>
 
 session:
   goal: "<user's original request>"
   mode: "<resolved mode: all|plan|bundle|issues|review|custom>"
   domain: "<detected domain: code|data|strategic|knowledge>"  # default code on resume if absent
-  started: "<MMDD-HHMM>"
+  started: "<YYMMDD-HHMM>"
   history_file: "fusion-workbench/history/<filename>.md"
   git_head_at_start: "<short hash>"
 
@@ -534,7 +534,7 @@ Overwrite `agentstate.yaml` at each of these transitions (same cadence as the li
 
 ### Write mechanics
 
-Use the Write tool to overwrite the entire file on each update. The file is small and the overwrite is atomic from the orchestrator's perspective. Obtain the timestamp for the `# Updated:` comment from `date +%m%d-%H%M`.
+Use the Write tool to overwrite the entire file on each update. The file is small and the overwrite is atomic from the orchestrator's perspective. Obtain the timestamp for the `# Updated:` comment from `date +%y%m%d-%H%M`.
 
 ## Observability
 

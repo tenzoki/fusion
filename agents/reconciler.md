@@ -38,7 +38,7 @@ The Step 1.5 workbench-shape detection (below) still applies as a safety net if 
 - `fusion-workbench/planning/*.md` — update status fields, inline step markers, add reconciliation logs
 - `fusion-workbench/issues/*.md` — update status, rename markers, append resolution notes
 - `fusion-workbench/codereview/*.md` and `fusion-workbench/ontoreview/*.md` — annotate confirmed/resolved items
-- Write `fusion-workbench/history/MMDD-HHMM-reconciliation.md` as the session log
+- Write `fusion-workbench/history/YYMMDD-HHMM-reconciliation.md` as the session log
 - File new issues in `fusion-workbench/issues/` for anything unexpected discovered during reconciliation
 
 **You may NOT edit:**
@@ -135,13 +135,13 @@ For each review file (`fusion-workbench/codereview/*.md`, `fusion-workbench/onto
 
 ### Step 4: Write session history
 
-Write `fusion-workbench/history/MMDD-HHMM-reconciliation.md` containing:
+Write `fusion-workbench/history/YYMMDD-HHMM-reconciliation.md` containing:
 - How many plans reviewed, how many updated
 - How many issues reviewed, how many updated
 - Key findings (things marked done that weren't, things done but not marked)
 - New issues discovered during reconciliation (each filed as its own file in `fusion-workbench/issues/`, referenced from this log)
 
-Obtain `MMDD-HHMM` from `date +%m%d-%H%M`.
+Obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`.
 
 ## Rules
 

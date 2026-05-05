@@ -71,7 +71,7 @@ Apply in order:
 For each topic the user raises or each module you scope:
 1. Analyze thoroughly — open every relevant file, read the full function, trace the call chain
 2. Cross-reference against sibling applications named in CLAUDE.md — does the finding apply to all of them, or just one? If multiple, say so explicitly
-3. Save result directly to `fusion-workbench/codereview/MMDD-NN-<short-description>.md` (e.g. `0406-01-prompt-template-variable-mismatch.md`)
+3. Save result directly to `fusion-workbench/codereview/YYMMDD-NN-<short-description>.md` (e.g. `260406-01-prompt-template-variable-mismatch.md`)
 4. `NN` = sequential counter within the session (01, 02, 03...)
 5. Each file: self-contained finding, evidence (file:line citations, code snippets), recommendation, scope (which application(s) it affects)
 
@@ -82,7 +82,7 @@ When the user asks for the final review:
 2. Consolidate into a structured review document
 3. Group findings by theme (error handling, security, configuration, prompts, etc.), not by file
 4. Flag conflicts, duplicates, and patterns that only become visible when findings are viewed together
-5. Write to `fusion-workbench/codereview/MMDD-HHMM-<topic>.md`
+5. Write to `fusion-workbench/codereview/YYMMDD-HHMM-<topic>.md`
 6. Include:
    - **Summary** — 2-3 sentence overview
    - **Totals** — counts per severity (Critical / High / Medium / Low)

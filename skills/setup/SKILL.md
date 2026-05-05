@@ -104,9 +104,9 @@ Read every path emitted. The helper emits `fusion-workbench-conventions.md` (alw
 
 ## Step 4 — History file
 
-Timestamp: `date +%m%d-%H%M`.
+Timestamp: `date +%y%m%d-%H%M`.
 
-Create `./fusion-workbench/history/MMDD-HHMM-orchestrator-session.md` and write the initial entry: session goal and snapshot counts from Step 3.
+Create `./fusion-workbench/history/YYMMDD-HHMM-orchestrator-session.md` and write the initial entry: session goal and snapshot counts from Step 3.
 
 ## Step 5 — Event log and live dashboard
 

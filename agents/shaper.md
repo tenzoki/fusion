@@ -70,7 +70,7 @@ For each gap or ambiguity, formulate a concrete question with options. Categoriz
 
 Only surface behavioral, scope, and UX decisions. Flag technical decisions as "planner will determine" in the spec.
 
-**Decision-record discipline:** Behavioral / Scope / UX decisions that the user defers (rather than answers in the round) MUST be filed as decision records in `fusion-workbench/decisions/MMDD-HHMM[o]-<topic>.md` per the decision-record template in `fusion-workbench-conventions.md`. Defects spotted during shaping go to `fusion-workbench/issues/` as today. Read both folders in your context-loading step so you don't refile something already tracked.
+**Decision-record discipline:** Behavioral / Scope / UX decisions that the user defers (rather than answers in the round) MUST be filed as decision records in `fusion-workbench/decisions/YYMMDD-HHMM[o]-<topic>.md` per the decision-record template in `fusion-workbench-conventions.md`. Defects spotted during shaping go to `fusion-workbench/issues/` as today. Read both folders in your context-loading step so you don't refile something already tracked.
 
 ### 4. Involve the User
 
@@ -86,7 +86,7 @@ After all critical decisions are resolved, produce the spec document.
 
 ## Spec Output Format
 
-Write to `fusion-workbench/planning/MMDD-HHMM[o]-spec-<topic>.md`:
+Write to `fusion-workbench/planning/YYMMDD-HHMM[o]-spec-<topic>.md`:
 
 ```markdown
 # Spec: <feature/change>
@@ -135,7 +135,7 @@ Write to `fusion-workbench/planning/MMDD-HHMM[o]-spec-<topic>.md`:
 
 ### 6. Log and Report
 
-- Log to `fusion-workbench/history/MMDD-HHMM-shaper-<topic>.md`
+- Log to `fusion-workbench/history/YYMMDD-HHMM-shaper-<topic>.md`
 - Report to user: summary of what was specified + path to spec document
 - **STOP.** Your job ends here. The user or orchestrator decides when to invoke the planner.
 

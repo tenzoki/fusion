@@ -11,7 +11,7 @@ This skill walks every open issue in `fusion-workbench/issues/`, classifies each
 
 ## Scope and safety
 
-- **Backup first.** Before any moves, the skill copies `fusion-workbench/issues/` to `fusion-workbench/.migration-v2-backup/issues-<MMDD-HHMM>/`. Rollback = restore from backup.
+- **Backup first.** Before any moves, the skill copies `fusion-workbench/issues/` to `fusion-workbench/.migration-v2-backup/issues-<YYMMDD-HHMM>/`. Rollback = restore from backup.
 - **Move, don't copy.** Items the user marks "decision" are `mv`-ed (with a path-rewrite from `issues/` to `decisions/`).
 - **Original text preserved.** When converting, the SKILL prepends the decision-record template scaffolding (Domain, Status, Filed by, Question, Options, Constraints headers) and keeps the original issue body verbatim under a `## Original issue text` section. The user can edit further later.
 - **One item at a time.** No bulk-classify. Every classify decision goes through `AskUserQuestion`.
@@ -25,7 +25,7 @@ This skill walks every open issue in `fusion-workbench/issues/`, classifies each
 1. Confirm `fusion-workbench/` exists at `pwd`. If not, abort with a message.
 2. Confirm `fusion-workbench/issues/` exists and contains at least one open file. If empty, report "no open issues to migrate" and stop.
 3. `mkdir -p fusion-workbench/.migration-v2-backup`
-4. Backup: `cp -r fusion-workbench/issues fusion-workbench/.migration-v2-backup/issues-$(date +%m%d-%H%M)`
+4. Backup: `cp -r fusion-workbench/issues fusion-workbench/.migration-v2-backup/issues-$(date +%y%m%d-%H%M)`
 5. `mkdir -p fusion-workbench/decisions`
 6. Report the backup path to the user.
 
@@ -91,12 +91,12 @@ For each open issue file (in filename order):
      ---
      <appropriate footer line per the new marker>
      ```
-   - Write the new file at `fusion-workbench/decisions/<MMDD-HHMM>[<new-marker>]-<topic>.md`. Preserve the `MMDD-HHMM` from the original filename.
+   - Write the new file at `fusion-workbench/decisions/<YYMMDD-HHMM>[<new-marker>]-<topic>.md`. Preserve the `YYMMDD-HHMM` from the original filename.
    - Delete (don't `mv` — the body changed) the original file in `fusion-workbench/issues/`.
 
 ### Step 4 — Log and report
 
-Write `fusion-workbench/history/MMDD-HHMM-v2-migration.md` containing:
+Write `fusion-workbench/history/YYMMDD-HHMM-v2-migration.md` containing:
 - Backup path
 - Counts: total reviewed, classified-as-defect, classified-as-decision, skipped, quit-at-N
 - List of files moved (old path → new path) and files left in place
