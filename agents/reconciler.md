@@ -119,7 +119,7 @@ For each issue file (`fusion-workbench/issues/*.md`):
 - Check whether the issue is still open
 - If resolved: append the `---\nResolved: ...` note (per conventions) and rename marker to `[c]`
 - If still open: leave the marker, append reconciliation evidence (what you verified and what's still missing)
-- If the item turns out to be a decision (open question / choice point) misfiled as a defect: leave it for now and surface it in the reconciliation log; the user may invoke `/fusion:migrate-workbench-v2` to reclassify.
+- If the item turns out to be a decision (open question / choice point) misfiled as a defect: leave it for now and surface it in the reconciliation log under a "Misfiled — should move to decisions/" heading. The user can manually `mv` the file from `issues/` to `decisions/` and update its marker (issues vocabulary `[o]/[p]/[c]/[d]` → decisions vocabulary `[o]/[a]/[i]/[d]/[s]`) per `fusion-workbench-conventions.md`.
 
 For each decision file (`fusion-workbench/decisions/*.md` if directory exists):
 - If `[o]` and an answer now exists in `analyses/`, `planning/`, or another decision: append `Answered: <path>:<line> — <one-line summary>` and rename `[o]` → `[a]`.
@@ -129,7 +129,7 @@ For each decision file (`fusion-workbench/decisions/*.md` if directory exists):
 - If still `[o]` and unanswered: leave the marker; add reconciliation evidence noting which analyses or planning files were searched without finding an answer.
 - If a decision file lists a `Cross-references:` entry pointing to a `planning/` step that would realise the decision, surface this in the reconciliation log so the orchestrator knows the planner has already scoped the implementation work.
 
-**When `domain=strategic` or `domain=knowledge`:** do NOT rename issue markers `[o]→[c]` for items whose answer lives in a later analysis or design document. Append an annotation citing where the answer is recorded, but preserve the `[o]` marker — those items are decisions misfiled as issues. Recommend the user run `/fusion:migrate-workbench-v2` to reclassify them into `decisions/` where the richer marker vocabulary can express their true state. Closing an issue only happens when its answer has been *implemented* in code or data.
+**When `domain=strategic` or `domain=knowledge`:** do NOT rename issue markers `[o]→[c]` for items whose answer lives in a later analysis or design document. Append an annotation citing where the answer is recorded, but preserve the `[o]` marker — those items are decisions misfiled as issues. Surface them in the reconciliation log under "Misfiled — should move to decisions/" so the user can manually relocate them (the richer `[o]/[a]/[i]/[d]/[s]` vocabulary in `decisions/` can express their true state). Closing an issue only happens when its answer has been *implemented* in code or data.
 
 For each review file (`fusion-workbench/codereview/*.md`, `fusion-workbench/ontoreview/*.md`):
 - Do not rewrite findings. Only annotate confirmed/resolved items with a brief note citing the evidence (file:line or commit).
