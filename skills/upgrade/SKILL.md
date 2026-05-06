@@ -9,7 +9,13 @@ The user wants to upgrade fusion to whatever is published on the marketplace. Th
 
 1. **`/plugin install` reads the local marketplace clone, not GitHub.** Without a `git pull` on `~/.claude/plugins/marketplaces/tenzoki-plugins/`, version bumps never reach local marketplace metadata.
 2. **`/plugin install` is install-once, not auto-upgrade.** When fusion is already installed, `/plugin install fusion@tenzoki-plugins` reports *"already installed globally"* and does nothing. There is no `/plugin upgrade` or `/plugin update` command. The documented upgrade path is `/plugin uninstall` then `/plugin install` then `/reload-plugins`.
-3. **`/plugin uninstall` is project-aware.** If the user's working directory has a `.claude/settings.json` with `enabledPlugins["fusion@tenzoki-plugins"]: true`, Claude Code intercepts the uninstall and offers to *disable for this project* (in `settings.local.json`) instead of uninstalling globally — to protect team contributors. This blocks the upgrade if you don't notice.
+3. **`/plugin uninstall` is enablement-aware at TWO levels.** Claude Code intercepts the uninstall if fusion is enabled at *either*:
+   - **Project level** — `<pwd>/.claude/settings.json` has `enabledPlugins["fusion@tenzoki-plugins"]: true`. Escape: `cd` to a directory without that.
+   - **User level** — `~/.claude/settings.json` has the same. There is **no `cd` escape** — the user-level setting is in scope from every directory.
+
+   In either case the prompt offers to *disable for this scope* (writing to `settings.local.json`) rather than actually uninstalling. The fix differs by case:
+   - Project-level only → `cd` away, run the three slash commands.
+   - User-level (or both) → no `cd` works. Either edit `~/.claude/settings.json` to remove the fusion entry first, or use **cache surgery** (preferred — keeps the user-level enablement intact for the new install).
 
 This skill does the marketplace pull, detects the version delta, and tells the user the right command sequence given fact 3.
 
@@ -71,27 +77,33 @@ echo "Currently installed: ${INSTALLED:-<none>}"
 - If `$INSTALLED == ""` (no install record): instruct `/plugin install fusion@tenzoki-plugins` and `/reload-plugins` (no uninstall needed). Stop after the user types those.
 - Otherwise the install needs to be replaced. Diagnose the project-enablement state for the user's current directory.
 
-### 7. Detect project-level enablement
+### 7. Detect enablement at both project and user levels
 
 ```bash
-SETTINGS="$(pwd)/.claude/settings.json"
-ENABLED_HERE="no"
-if [ -f "$SETTINGS" ]; then
-  if python3 - "$SETTINGS" <<'PY' >/dev/null 2>&1
+check_enabled() {
+  local f="$1"
+  [ -f "$f" ] || return 1
+  python3 - "$f" <<'PY' >/dev/null 2>&1
 import json, sys
 d = json.load(open(sys.argv[1]))
 sys.exit(0 if d.get("enabledPlugins", {}).get("fusion@tenzoki-plugins") else 1)
 PY
-  then
-    ENABLED_HERE="yes"
-  fi
-fi
-echo "Project enables fusion here: $ENABLED_HERE"
+}
+
+PROJECT_ENABLED="no"
+USER_ENABLED="no"
+check_enabled "$(pwd)/.claude/settings.json" && PROJECT_ENABLED="yes"
+check_enabled "$HOME/.claude/settings.json"  && USER_ENABLED="yes"
+
+echo "Project (pwd) enables fusion: $PROJECT_ENABLED"
+echo "User (~)     enables fusion: $USER_ENABLED"
 ```
 
 ### 8. Present the right path to the user
 
-**Case A — `ENABLED_HERE=no`:** the simple sequence works. Tell the user to type, in order:
+Three cases based on the detection in step 7:
+
+**Case A — neither project nor user enables fusion (`PROJECT_ENABLED=no`, `USER_ENABLED=no`):** the simple sequence works. Tell the user to type, in order:
 
 ```
 /plugin uninstall fusion@tenzoki-plugins
@@ -99,11 +111,11 @@ echo "Project enables fusion here: $ENABLED_HERE"
 /reload-plugins
 ```
 
-**Case B — `ENABLED_HERE=yes`:** the uninstall will be intercepted by the project-enablement guard and offer to disable-for-project rather than uninstalling globally. Two options to give the user:
+**Case B — only the current project enables it (`PROJECT_ENABLED=yes`, `USER_ENABLED=no`):** the project-level guard intercepts the uninstall. Recommend the user `cd` to a non-fusion-enabled directory first (e.g. `~`, or the fusion repo, or any non-fusion-using project), then run the three commands above. A `cd` escape *does* work in this case.
 
-**Option B1 (recommended): cd elsewhere first.** Tell the user to switch to a directory whose `.claude/settings.json` does not enable fusion (e.g. `~`, or any non-fusion-using project, or the fusion repo itself), then run the three commands above. Suggest a concrete `cd` target if you can identify one (the fusion plugin source repo at `$FUSION_PLUGIN_ROOT`'s parent path, or `~`).
+**Case C — user-level enables it (`USER_ENABLED=yes`), regardless of project:** the user-level setting is in scope everywhere. **No `cd` escape works.** Two paths:
 
-**Option B2 (cache surgery):** if the user prefers not to switch directories, you may do the equivalent by directly removing the install record. **Run this only after explicitly confirming with the user.** When confirmed:
+**Option C1 (recommended for upgrade): cache surgery.** Bypasses the plugin manager entirely. Modifies `~/.claude/plugins/` directly — this is Claude-Code-internal state, so confirm with the user before running. When confirmed:
 
 ```bash
 OLD_VER="$INSTALLED"
@@ -117,12 +129,16 @@ json.dump(d, open(p, 'w'), indent=2)
 "
 ```
 
-After surgery, the user only needs the install + reload (uninstall is unnecessary because there's no longer an install record):
+After surgery, the user types only:
 
 ```
 /plugin install fusion@tenzoki-plugins
 /reload-plugins
 ```
+
+(No uninstall needed — there's no install record after the surgery. The user-level enablement in `~/.claude/settings.json` stays as-is, so the new install is auto-enabled.)
+
+**Option C2 (alternative): edit `~/.claude/settings.json`** to remove or false-out fusion's entry, run the three slash commands, then restore the entry. More steps; more risk of leaving the file in a half-state. Cache surgery is simpler.
 
 ## Notes for the assistant
 
