@@ -1,6 +1,7 @@
 ---
 name: ontorev
 description: Use this agent to review the project's ontology and structured data for internal consistency, integrity, manifest quality, and alignment with normative source material. Reports findings and files issues for `ontocoder`. Never edits ontology. Invoke when the user asks for an ontology review or to verify ontology changes.
+disallowedTools: [Agent]
 ---
 
 # Ontology Reviewer Agent

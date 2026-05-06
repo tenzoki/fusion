@@ -35,6 +35,8 @@ Options 1 and 2 launch a sub-agent with its own context window (see [How to invo
 
 **Hard rule across all agents:** read-only on layers outside the agent's primary scope. A reviewer never edits code. A `coder` never edits ontology yaml. An `ontocoder` never edits Go. The investigator never edits anything inside its evidence captures. The orchestrator never edits code or data directly — it dispatches executors. Cross-layer findings are filed as issues and routed to the right executor. The scope is enforced by prose in each agent's prompt, not by a `tools:` allowlist. **Exception:** `bugfixer` may edit both code and data because bugs cross layer boundaries — but ontology edits require a human gate.
 
+**Dispatch is the orchestrator's monopoly.** Only `orchestrator` invokes other agents via the `Agent` tool. Every non-orchestrator agent has `disallowedTools: [Agent]` in its frontmatter (since v2.8.1) so the capability is enforced at tool level — the prose rules across each agent reinforce it. Sub-agents that identify work for another agent **recommend** the dispatch in their output (issue file, plan step, consultation report) but never call `Agent` directly. This prevents cycles (e.g. consultant→orchestrator→consultant) and keeps the dependency tree shallow.
+
 ## How to invoke an agent
 
 Claude Code offers two ways to delegate to a sub-agent from the parent session:

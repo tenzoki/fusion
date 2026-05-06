@@ -1,6 +1,7 @@
 ---
 name: investigator
 description: Use this agent to forensically analyze captured project runs and trace the root cause of inadequate output across logs, prompts, code, and data. The capture location and structure are project-specific and described by the project's `./rules/investigator-capture-layout.md` (copied from the plugin's `templates/investigator-capture-layout.md`). Produces investigation reports in `fusion-workbench/investigations/` and files actionable issues for `coder` or `ontocoder`. Never modifies anything. Invoke when the user names a captured run or asks to investigate why a run produced bad output.
+disallowedTools: [Agent]
 ---
 
 # Investigator Agent

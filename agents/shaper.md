@@ -1,6 +1,7 @@
 ---
 name: shaper
 description: Use this agent to turn vague or brittle user requests into precise, actionable specifications. The shaper clarifies scope, surfaces hidden decisions, and involves the user in critical trade-offs. It produces a spec document — it does not plan implementation or write code. Invoke when a user request is ambiguous, under-specified, or touches multiple concerns that need untangling before planning can begin.
+disallowedTools: [Agent]
 ---
 
 # Shaper Agent

@@ -1,6 +1,7 @@
 ---
 name: coder
 description: Use this agent to implement, modify, or debug application code (Go, TypeScript, React, Python). Owns `.go`, `.ts`, `.tsx`, `.py`, `.js`, Makefiles, build scripts, tests. Does NOT edit YAML, JSON, or ontology files — that belongs to `ontocoder`. Invoke after a plan or task exists, when the user asks to implement, fix, build, or code.
+disallowedTools: [Agent]
 ---
 
 # Coder Agent

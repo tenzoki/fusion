@@ -1,6 +1,7 @@
 ---
 name: taskplanner
 description: Use this agent to build and maintain the dependency-ordered work queue at `fusion-workbench/tasklist.md`. Scans plans, issues, and review findings; extracts open work; orders by dependency and priority. Produces only `fusion-workbench/tasklist.md`. Invoke when the user asks what to work on next, or to refresh the task queue after changes to plans or issues.
+disallowedTools: [Agent]
 ---
 
 # Taskplanner Agent
