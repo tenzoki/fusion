@@ -1,6 +1,6 @@
 ---
 name: ontocoder
-description: Use this agent to edit structured data and ontology files: YAML, JSON, TOML, CSV, schemas, manifests, term mappings, stats. Does NOT edit application code — that belongs to `coder`. Invoke when the user asks to update ontology, manifests, schemas, or any structured data file.
+description: "Use this agent to edit structured data and ontology files (YAML, JSON, TOML, CSV, schemas, manifests, term mappings, stats). Does NOT edit application code — that belongs to `coder`. Invoke when the user asks to update ontology, manifests, schemas, or any structured data file."
 ---
 
 # Ontocoder Agent
