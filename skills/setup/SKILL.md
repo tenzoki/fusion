@@ -76,6 +76,26 @@ mkdir -p ./.fusion
 
 If `$FUSION_PLUGIN_ROOT` is not set or the copy fails, note it in the history file later but do not block Setup.
 
+## Step 0d — Concurrent-session check (advisory)
+
+Fusion has no concurrency lock. Two orchestrators on the same project can corrupt `agentstate.yaml`, double-dispatch tasks, and race on `.guard-state/` counters. Setup checks for an active session marker and warns the user.
+
+```bash
+"$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" check
+```
+
+The helper prints `running`, `stale`, or `none` on stdout, and (when running/stale) the marker contents on stderr.
+
+- **`none` or `stale`:** no active session detected. Write a fresh marker for this orchestrator session and continue:
+  ```bash
+  "$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" write fusion:orchestrator
+  ```
+- **`running`:** another fusion orchestrator session has updated the marker within the last 10 minutes. **Warn the user** with the marker contents (start time, cwd, agent label) and use `AskUserQuestion` to offer:
+  - **Proceed anyway** — overwrite the marker for this session. Document the risk: parallel orchestrators may corrupt workbench state. The user takes responsibility for sequencing.
+  - **Abort** — stop Setup. Tell the user where the other session appears to be running.
+
+  Do not silently overwrite. The whole point of this step is the warning.
+
 ## Step 1 — Interrupted-session check (CRITICAL — do not skip)
 
 Read `./fusion-workbench/agentstate.yaml`.

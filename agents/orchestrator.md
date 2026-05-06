@@ -338,7 +338,7 @@ When a circuit breaker trips, emit a `circuit_breaker` event, update the live da
 
 If all tasks in the queue are `[x] done` or `[d] deferred`, the loop converges. Exit to Phase 4.
 
-Otherwise, emit `cycle_end` event with cycle stats, refresh the queue (incorporate new issues from reviews, remove completed tasks), and start the next cycle.
+Otherwise, emit `cycle_end` event with cycle stats, refresh the queue (incorporate new issues from reviews, remove completed tasks), refresh the active-session marker (`"$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" heartbeat` — keeps a parallel `/fusion:setup` from treating this session as stale), and start the next cycle.
 
 ## Phase 3: Final Reconciliation
 
@@ -404,6 +404,7 @@ Read `fusion-workbench/orchestrator-events.jsonl` and generate a Mermaid sequenc
 - Emit `session_end` event
 - Update live dashboard to show final status with `**Session:** Complete` or `**Session:** Circuit breaker: <reason>`
 - **Delete `fusion-workbench/agentstate.yaml`** — a clean exit means there is nothing to resume. The file's absence signals no interrupted session.
+- **Clear the active-session marker:** `"$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" clear`. After this, a new orchestrator session can start without a concurrency warning.
 - The live dashboard and event log persist after the session — the user may review them later or use them for tooling. Do not delete them.
 
 ### Report to the user
