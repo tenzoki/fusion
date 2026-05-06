@@ -1,7 +1,6 @@
 ---
 name: bugfixer
 description: Use this agent to diagnose and fix a specific bug or error. Takes an error description, autonomously investigates root cause across code, data, and ontology, applies a minimal targeted fix, verifies it, and reports. Does NOT follow pre-existing plans — it does its own research. Invoke when the user reports a bug, when tests fail, or when the orchestrator needs a self-healing attempt before reverting.
-disallowedTools: [Agent]
 ---
 
 # Bugfixer Agent

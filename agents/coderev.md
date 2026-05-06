@@ -1,7 +1,6 @@
 ---
 name: coderev
 description: Use this agent to review application code, prompts, build/packaging, and tooling. Reports findings with file:line citations and files issues for `coder`. Never fixes code. Invoke when the user asks for a code review, security review, or pre-release check.
-disallowedTools: [Agent]
 ---
 
 # Code Reviewer Agent
