@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# fusion-workbench-root — locate the project's fusion workbench by walking up
+#
+# Walks from the current working directory toward the filesystem root,
+# looking for a directory that contains `fusion-workbench/.fusion-setup`.
+# If found, prints the absolute path of that directory (the project root)
+# and exits 0. If not found, prints nothing and exits 1.
+#
+# The marker file `.fusion-setup` is written by `/fusion:setup`. Without
+# it, fusion considers the project not-yet-set-up — agents halt rather
+# than auto-creating a stray workbench, and hooks skip their state writes.
+#
+# Usage in agents:
+#   ROOT="$("$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root")" || {
+#     echo "No fusion workbench found above $(pwd). Run /fusion:setup first." >&2
+#     exit 1
+#   }
+#   cd "$ROOT"
+#
+# Usage in skills/scripts that just want the path:
+#   ROOT="$("$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root" 2>/dev/null)"
+#   [ -n "$ROOT" ] && do_something_in "$ROOT"
+
+set -eu
+
+current="$(pwd -P)"
+while :; do
+  if [ -f "$current/fusion-workbench/.fusion-setup" ]; then
+    printf '%s\n' "$current"
+    exit 0
+  fi
+  parent="$(dirname "$current")"
+  if [ "$parent" = "$current" ]; then
+    # Reached the filesystem root without finding a marker.
+    exit 1
+  fi
+  current="$parent"
+done

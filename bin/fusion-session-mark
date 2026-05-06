@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+# fusion-session-mark — track active fusion orchestrator sessions per project.
+#
+# Records a presence marker at fusion-workbench/.session-marker for the
+# current orchestrator session, with a heartbeat (file mtime) refreshed at
+# each cycle boundary. Used by /fusion:setup and the orchestrator itself
+# to WARN the user when a second orchestrator is started against the same
+# project — fusion has no concurrency lock and parallel orchestrators can
+# corrupt agentstate.yaml, double-dispatch tasks, and race on workbench
+# tracking files.
+#
+# This is advisory, not enforcement: the user can always proceed past the
+# warning. Detection uses file mtime so cross-platform timestamp parsing
+# is unnecessary.
+#
+# Usage:
+#   fusion-session-mark check        Print one line: running | stale | none
+#                                    On running/stale, print marker contents
+#                                    on stderr. Exit 0 if running/stale,
+#                                    1 if none.
+#   fusion-session-mark write [agent]
+#                                    Create or overwrite the marker for the
+#                                    current session. Default agent label
+#                                    is "fusion:orchestrator".
+#   fusion-session-mark heartbeat    Refresh the marker's mtime. No-op if
+#                                    no marker file exists.
+#   fusion-session-mark clear        Remove the marker (clean shutdown).
+#
+# Freshness threshold (mtime <= 10 minutes ago) defaults to 600s; override
+# via env FUSION_SESSION_THRESHOLD_SEC.
+
+set -eu
+
+THRESHOLD_SEC="${FUSION_SESSION_THRESHOLD_SEC:-600}"
+
+resolve_marker() {
+  local root
+  if ! root="$("$(dirname "$0")/fusion-workbench-root" 2>/dev/null)"; then
+    echo "fusion-session-mark: no fusion workbench found above $(pwd)." >&2
+    return 1
+  fi
+  printf '%s/fusion-workbench/.session-marker\n' "$root"
+}
+
+mtime_epoch() {
+  # macOS uses `stat -f %m`, GNU `stat -c %Y`. Try in order.
+  stat -f %m "$1" 2>/dev/null || stat -c %Y "$1"
+}
+
+cmd="${1:-check}"
+
+case "$cmd" in
+  check)
+    marker="$(resolve_marker)" || exit 1
+    if [ ! -f "$marker" ]; then
+      printf 'none\n'
+      exit 1
+    fi
+    age=$(( $(date +%s) - $(mtime_epoch "$marker") ))
+    if [ "$age" -le "$THRESHOLD_SEC" ]; then
+      printf 'running\n'
+      printf '# session marker (heartbeat %ss ago, threshold %ss):\n' "$age" "$THRESHOLD_SEC" >&2
+      cat "$marker" >&2
+      exit 0
+    else
+      printf 'stale\n'
+      printf '# session marker (heartbeat %ss ago, threshold %ss — treating as stale):\n' "$age" "$THRESHOLD_SEC" >&2
+      cat "$marker" >&2
+      exit 0
+    fi
+    ;;
+  write)
+    marker="$(resolve_marker)" || exit 1
+    agent="${2:-fusion:orchestrator}"
+    cat > "$marker" <<EOF
+# Fusion active-session marker. mtime is the heartbeat.
+# Removed on clean shutdown; refreshed at each orchestrator cycle.
+agent: $agent
+started_at: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+cwd: $(pwd -P)
+EOF
+    ;;
+  heartbeat)
+    marker="$(resolve_marker)" || exit 1
+    if [ -f "$marker" ]; then
+      # touch refreshes mtime
+      touch "$marker"
+    fi
+    ;;
+  clear)
+    marker="$(resolve_marker)" || exit 1
+    rm -f "$marker"
+    ;;
+  *)
+    echo "fusion-session-mark: unknown subcommand '$cmd'" >&2
+    echo "Usage: fusion-session-mark {check|write [agent]|heartbeat|clear}" >&2
+    exit 2
+    ;;
+esac

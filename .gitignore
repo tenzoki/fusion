@@ -13,11 +13,16 @@ build/
 out/
 *.tsbuildinfo
 
-# Build artifacts — Go (but keep shipped helpers)
+# Build artifacts — Go (but keep shipped helpers).
+# WARNING: every shipped helper MUST be listed here as `!bin/<name>` or it
+# gets silently dropped from the plugin distribution. New helper added?
+# Add the exception line here AND verify with `git ls-files bin/`.
 bin/*
 !bin/monitor
 !bin/fusion-rules
 !bin/fu
+!bin/fusion-workbench-root
+!bin/fusion-session-mark
 *.exe
 # Generated protobuf (rebuild from .proto)
 *.pb.go
