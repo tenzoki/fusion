@@ -24,12 +24,16 @@ You reconcile plans, issues, and reviews against ground truth. The shape of "gro
 
 The orchestrator passes a `domain` parameter at dispatch time: one of `code | data | strategic | knowledge`. If the dispatcher does not pass one, default to `code`. The domain selects which verification protocol Step 2 below uses.
 
+**Layered on top of every domain:** a three-edge Coherence verdict (Artifact↔Grounding, Artifact↔Goal, Grounding↔Goal) computed from the workbench, written to the orchestrator's session history file's `## Coherence` section. See Step 2.5 below. <!-- v2.9.0 vocabulary: edge labels become Artifact↔Directive / Grounding↔Directive after C2 (foundation_V3 §1.1) -->
+
 | Domain | Verification protocol | Output emphasis |
 |---|---|---|
-| `code` | Verify against codebase — files exist, contain claimed changes; run tests if scope warrants. (Default behaviour.) | Issues triage with `[o]→[c]` renames where work landed; reconciliation log per plan/issue. |
-| `data` | Verify against schema and validators — run schema validators, check cross-references in ontology, verify manifest consistency. | Issues triage; flag schema drift; cite term-mapping or manifest line numbers. |
-| `strategic` | Claim-vs-disk consistency — verify all referenced deliverables exist; check cross-references between architectural docs (P-set, D-set, analyses); check supersession markers; produce open-decision surface. No code-test runs. | Open-decision surface output (HIGH / MEDIUM / LOW), modeled on Section D of a strategic-reconciliation report. Rare `[c]` renames; common annotations citing where in subsequent analyses an issue's content was addressed. |
-| `knowledge` | Verify analyses cite their sources; check internal consistency across analyses; surface unanswered questions; flag analyses whose conclusions were superseded by later work. | Annotated source-citation audit + an "Unanswered question" table. |
+| `code` | Verify against codebase — files exist, contain claimed changes; run tests if scope warrants. (Default behaviour.) | Issues triage with `[o]→[c]` renames where work landed; reconciliation log per plan/issue. **Plus: Coherence verdict (three-edge).** |
+| `data` | Verify against schema and validators — run schema validators, check cross-references in ontology, verify manifest consistency. | Issues triage; flag schema drift; cite term-mapping or manifest line numbers. **Plus: Coherence verdict (three-edge).** |
+| `strategic` | Claim-vs-disk consistency — verify all referenced deliverables exist; check cross-references between architectural docs (P-set, D-set, analyses); check supersession markers; produce open-decision surface. No code-test runs. **Plus: a three-edge Coherence verdict (Artifact↔Grounding, Artifact↔Goal, Grounding↔Goal) computed from the workbench, written to history file's `## Coherence` section.** | Open-decision surface output (HIGH / MEDIUM / LOW), modeled on Section D of a strategic-reconciliation report. Rare `[c]` renames; common annotations citing where in subsequent analyses an issue's content was addressed. **Plus: Coherence verdict (three-edge).** |
+| `knowledge` | Verify analyses cite their sources; check internal consistency across analyses; surface unanswered questions; flag analyses whose conclusions were superseded by later work. | Annotated source-citation audit + an "Unanswered question" table. **Plus: Coherence verdict (three-edge).** |
+
+The three-edge Coherence verdict runs **regardless of domain** — Coherence Review is not strategic-only. The reconciler's domain parameter still selects the *verification protocol* for ground-truth checks; the three-edge verdict is layered on top.
 
 The Step 1.5 workbench-shape detection (below) still applies as a safety net if the orchestrator passes the wrong domain or none at all.
 
@@ -107,6 +111,30 @@ Apply the verification protocol named for the active domain (see Domain Paramete
 - Surface "unanswered question" rows — questions raised in one analysis that no later analysis addresses.
 - Flag superseded analyses (later work has overridden them) with a one-line annotation pointing at the superseder.
 
+### Step 2.5: Three-edge Coherence verdict
+
+<!-- v2.9.0 vocabulary: edge labels Artifact↔Goal / Grounding↔Goal become Artifact↔Directive / Grounding↔Directive after C2 (foundation_V3 §1.1). The Rebalance recommendation's "revise Goal" becomes "revise Directive". -->
+
+This step runs **regardless of domain**. The three-edge verdict is the Coherence Review check at the per-Circle cadence — layered on top of whichever ground-truth verification protocol the domain selected in Step 2.
+
+**Cadence note:** the per-Circle verdict is computed at the end of each *session* — until Circle envelopes (Track C: `decisions/260509-1556[o]-playmaker-and-circles-folder.md`) make Circle boundaries explicit, session boundaries are the available proxy. When Track C lands, this step's trigger will move from session-end to Circle-end.
+
+**The user is informed, not asked.** The reconciler computes the verdict and writes it to history. If the aggregate verdict is `review-needed` or `bounded-closure-proposed`, the orchestrator (not the reconciler) dispatches the Rebalance gate at Phase 3 step 3 (after consuming this verdict). The reconciler does not present `AskUserQuestion`.
+
+**Compute the three edges.** One line each, with cited evidence.
+
+- **Artifact↔Grounding edge** — already implicit in the `code`/`data` protocol output (claims-vs-disk + reviewer-issues count). Restate as one line: `<N> claims verified / <M> drift items / <K> open coderev+ontorev issues`. For `strategic`/`knowledge` domains, restate using their protocol's outputs (deliverable existence + cross-reference consistency for `strategic`; source-citation audit count for `knowledge`).
+- **Artifact↔Goal edge** — read the orchestrator's session history file's `**Goal:**` line and the active plan's `## Goal` (or active spec's equivalent). Walk the commits from `git log <session-start-HEAD>..HEAD` and produce one prose line: `commits move toward / partially toward / orthogonal to / away from the stated Goal`. Cite the commit hashes that motivated the judgement.
+- **Grounding↔Goal edge** — glob `fusion-workbench/decisions/*[a]*.md` and `fusion-workbench/decisions/*[o]*.md`. For each, check whether its content is still consistent with the stated Goal. Produce one prose line: `<N> active decisions consistent / <M> potentially conflicting (cited)`. Cite the conflicting decision-record file paths.
+
+**Compute the aggregate verdict.** One of:
+
+- `coherent` — all three edges OK.
+- `review-needed` — any edge flagged (drift, orthogonal commits, conflicting decisions). The orchestrator dispatches the Rebalance gate.
+- `bounded-closure-proposed` — the Goal is judged definitively unreachable (foundation_V3 §2.1). Surface this explicitly in the verdict; the orchestrator's Rebalance gate offers Accept Bounded Closure as the recommended option.
+
+The verdict is computed deterministically from the edge flags, not from LLM-judgement-from-vibes. Each edge's evidence is cited.
+
 ### Step 3: Update every tracking file
 
 For each plan file (`fusion-workbench/planning/*.md`):
@@ -143,6 +171,32 @@ Write `fusion-workbench/history/YYMMDD-HHMM-reconciliation.md` containing:
 - New issues discovered during reconciliation (each filed as its own file in `fusion-workbench/issues/`, referenced from this log)
 
 Obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`.
+
+**Append the three-edge Coherence verdict to the orchestrator's session history file** — *not* the reconciliation log above. Locate the most recent `fusion-workbench/history/*-orchestrator-session.md` and **append** (do not overwrite) a `## Coherence` section in this exact format:
+
+```markdown
+## Coherence
+
+**Verdict:** coherent | review-needed | bounded-closure-proposed
+
+**Edges:**
+- Artifact↔Grounding: <one line>
+- Artifact↔Goal: <one line>
+- Grounding↔Goal: <one line>
+
+**Rebalance recommendation:** <none | revise Artifact | revise Grounding | revise Goal | accept Bounded Closure>
+```
+
+<!-- v2.9.0 vocabulary: after C2 the edge labels become Artifact↔Directive / Grounding↔Directive, and the recommendation `revise Goal` becomes `revise Directive` (foundation_V3 §1.1). -->
+
+The recommendation maps from the verdict and dominant flagged edge:
+- `coherent` → `none`
+- `review-needed` with `Artifact↔Grounding` flagged → `revise Artifact`
+- `review-needed` with `Grounding↔Goal` flagged → `revise Grounding`
+- `review-needed` with `Artifact↔Goal` flagged (commits orthogonal/away from Goal) → `revise Goal`
+- `bounded-closure-proposed` → `accept Bounded Closure`
+
+If multiple edges are flagged, list the recommendation that resolves the highest-leverage one (Goal first, then Grounding, then Artifact). The orchestrator presents the four-option Rebalance gate regardless; the recommendation is advisory.
 
 ## Rules
 
