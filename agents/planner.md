@@ -82,7 +82,7 @@ You may receive work in two forms:
 **Status:** Draft | Ready for Review | Approved
 **Spec:** <path to shaper spec, or "none — planned from raw request">
 
-## Goal
+## Directive
 
 <What we're building and why — if a spec exists, reference it, don't restate it>
 

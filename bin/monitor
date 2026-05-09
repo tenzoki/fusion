@@ -203,7 +203,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
   .event-type.task_error, .event-type.bugfix_failure { color: var(--red); }
   .event-type.commit { color: var(--green); }
   .event-type.gate_hit { color: var(--orange); }
-  .event-type.cycle_start, .event-type.cycle_end { color: var(--purple); }
+  .event-type.turn_start, .event-type.turn_end { color: var(--purple); }
   .event-type.scope_resolved, .event-type.queue_built { color: var(--cyan); }
   .event-type.review_start, .event-type.review_done { color: var(--purple); }
   .event-type.revert { color: var(--red); }
@@ -457,7 +457,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
     var detail = ev.detail || '';
     if (ev.task) detail = '[' + ev.task + '] ' + detail;
     // Events without an explicit agent field are by definition orchestrator-
-    // emitted (session_start, gate_hit, commit, cycle_*, reconciliation, …).
+    // emitted (session_start, gate_hit, commit, turn_*, reconciliation, …).
     // Default rather than render an unlabeled row, so every event displays
     // <agent>: <detail> uniformly.
     detail = (ev.agent || 'orchestrator') + ': ' + detail;

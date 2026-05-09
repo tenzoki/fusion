@@ -96,7 +96,7 @@ Write to `fusion-workbench/planning/YYMMDD-HHMM[o]-spec-<topic>.md`:
 **Status:** Draft
 **Source:** <user's original request, quoted or paraphrased>
 
-## Goal
+## Directive
 
 <What the system should do after this work is complete. 2-3 sentences max.>
 
