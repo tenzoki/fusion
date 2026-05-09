@@ -65,6 +65,22 @@ Same plumbing, different priorities:
 
 This is what lets fusion be both "the framework you'd run on a Go monorepo" and "the framework you'd run on a strategy team's decision archive" without a fork.
 
+## 5. Directive ≠ static Goal
+
+Earlier versions of this plugin called the user's stated outcome the *Goal*. v2.9.0 renames it to **Directive**, after foundation_V3 §1.1.
+
+A Goal in classical project-management vocabulary is fixed at the start and reached at the end. A Directive is different: it *prognosticates* the Artifact's state at completion, but it is **revisable** as the Circle evolves. When a Turn's Coherence Review reveals that the stated Directive cannot be reached as written — because the Grounding turned out wrong, or the world changed, or the team learned something the Directive didn't anticipate — the user can choose to **Rebalance the Directive** rather than push harder against an Artifact that won't converge.
+
+Three Rebalance options exist:
+
+- **Revise Artifact** — the Artifact is not where we want it; do another Turn.
+- **Revise Grounding** — the basis we built on was wrong; file a new decision.
+- **Revise Directive** — the destination we set was wrong; re-shape.
+
+A fourth option — **Accept Bounded Closure** — applies when the Directive is judged definitively unreachable: what was learned along the way is the Artifact, and the Circle ends acknowledging that.
+
+This is why "Goal → Directive" is not a cosmetic rename. It signals that the orchestrator now treats the user's stated outcome as a *living* element of the work, not a fixed target.
+
 ## What fusion is not
 
 - **Not an autonomous coding agent.** Fusion stops and asks the user before destructive operations, ontology changes, ambiguous tasks, and structural decisions. It is a *human-in-the-loop* framework, deliberately so.
