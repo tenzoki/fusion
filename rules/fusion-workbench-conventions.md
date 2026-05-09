@@ -92,6 +92,15 @@ Files in `decisions/` carry a richer state marker that distinguishes "the answer
 
 **`[i]` and `[s]` are terminal.** Do not rename them back to `[o]` or `[a]`. If an implemented decision needs revisiting, file a NEW decision (which may then `Supersede` the `[i]` one).
 
+**Grounding-Stand vs Grounding-Historie:**
+
+The marker vocabulary mirrors foundation §1.2's two-layer Grounding model:
+
+- `[o]` (open) and `[a]` (answered, awaiting realisation) are **Grounding-Stand** — the current best-of-knowledge the project is working with.
+- `[i]` (implemented), `[s]` (superseded), and `[d]` (deferred) are **Grounding-Historie** — preserved record of what was decided, including elements that have been replaced or postponed.
+
+A flat `decisions/` directory holds both layers; the marker carries the layer information. Reconciliation passes that "list active Grounding" filter on `[o]` + `[a]`; passes that "show project history" include all five.
+
 ## Inline State Tracking
 
 **Filename markers are not enough.** Content inside planning, issue, and decision files must also track progress, so that interruptions don't lose state.

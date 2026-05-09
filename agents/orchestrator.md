@@ -368,6 +368,8 @@ Update the history file `fusion-workbench/history/YYMMDD-HHMM-orchestrator-sessi
 | Tasks skipped/deferred | <N> |
 | Issues created (by reviewers) | <N> |
 | Issues resolved | <N> |
+| Decisions answered (`[o]`→`[a]`) | <N> |
+| Decisions implemented (`[a]`→`[i]`) | <N> |
 | Commits | <N> |
 | Agent errors | <N> |
 | Human gates hit | <N> |
@@ -463,6 +465,8 @@ If the user chooses Modify, update the task description and re-route. If Skip, m
 - `tasks_errored` — tasks that failed validation or agent errors
 - `issues_created` — issues filed by reviewers during incremental review
 - `issues_resolved` — issues resolved during execution
+- `decisions_answered` — count of `[o]` → `[a]` transitions on `decisions/` files this session (Grounding-growth metric)
+- `decisions_implemented` — count of `[a]` → `[i]` transitions on `decisions/` files this session (Grounding-realisation metric)
 - `commits_made` — number of successful commits
 - `agent_errors` — count of agent failures (no output, wrong scope, etc.)
 - `human_gates_hit` — number of times the orchestrator stopped for user input
