@@ -48,7 +48,7 @@ Overwrite `./fusion-workbench/orchestrator-live.md` with (substitute `<HH:MM>`):
 ```markdown
 # Orchestrator — Live
 
-**Cycle:** --/-- | **Tasks:** --/-- | **Commits:** 0 | **Errors:** 0
+**Turn:** --/-- | **Tasks:** --/-- | **Commits:** 0 | **Errors:** 0
 **Started:** <HH:MM> | **Session:** Initializing | **Guard:** checking...
 
 ## Current
@@ -102,10 +102,11 @@ Read `./fusion-workbench/agentstate.yaml`.
 
 - **If it does not exist:** fresh session — continue to Step 2.
 - **If it exists:** a prior session was interrupted. You MUST do ALL of:
+  0a. **Schema check (v2.9.0).** If the saved `agentstate.yaml` contains the legacy fields `cycle:` or `goal:` (instead of the current `turn:` / `directive:`), it is a pre-v2.9.0 snapshot that cannot be replayed against v2.9.0 fields. The schema rename is a hard break — there is no soft alias. Tell the user "schema mismatch — please restart", offer **Restart only** (delete `agentstate.yaml` and proceed with fresh setup), and do not attempt to resume. Skip the remaining sub-steps once Restart is chosen.
   1. Read the file completely.
   2. Present a summary to the user:
-     - Session goal and mode
-     - Progress (cycle number, tasks completed vs total)
+     - Session Directive and mode
+     - Progress (Turn number, tasks completed vs total)
      - The task that was active when the session stopped
      - Remaining tasks (with their status)
      - Plan file and user directive, if any
@@ -138,13 +139,13 @@ Read every path emitted. The helper emits `fusion-workbench-conventions.md` (alw
 
 Timestamp: `date +%y%m%d-%H%M`.
 
-Create `./fusion-workbench/history/YYMMDD-HHMM-orchestrator-session.md` and write the initial entry: session goal and snapshot counts from Step 3.
+Create `./fusion-workbench/history/YYMMDD-HHMM-orchestrator-session.md` and write the initial entry: session Directive and snapshot counts from Step 3.
 
 ## Step 5 — Event log and live dashboard
 
 - Create/overwrite `./fusion-workbench/orchestrator-events.jsonl` (empty — the orchestrator appends events).
 - Append a `session_start` event.
-- Overwrite `./fusion-workbench/orchestrator-live.md` with the real session goal and snapshot counts (replace the placeholder `Initializing` line). The dashboard is now live for the monitor.
+- Overwrite `./fusion-workbench/orchestrator-live.md` with the real session Directive and snapshot counts (replace the placeholder `Initializing` line). The dashboard is now live for the monitor.
 
 ## Done
 
