@@ -13,6 +13,8 @@ fusion-workbench/
 ├── codereview/    # codereviewer output (YYMMDD-HHMM-<topic>.md)
 ├── ontoreview/    # ontoreviewer output (YYMMDD-HHMM-<topic>.md)
 ├── analyses/      # analyst output (YYMMDD-HHMM-<topic>.md)
+├── investigations/# investigator output (YYMMDD-HHMM-<topic>.md)
+├── consult/       # consultant output (YYMMDD-HHMM-<topic>.md)
 └── tasklist.md    # generated work queue (taskplanner only)
 ```
 
@@ -48,6 +50,8 @@ Always obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`. LLMs have no clock — nev
 | `codereview/` | `YYMMDD-HHMM-<topic>.md` | no |
 | `ontoreview/` | `YYMMDD-HHMM-<topic>.md` | no |
 | `analyses/` | `YYMMDD-HHMM-<topic>.md` | no |
+| `investigations/` | `YYMMDD-HHMM-<topic>.md` | no |
+| `consult/` | `YYMMDD-HHMM-<topic>.md` | no |
 | `tasklist.md` | fixed | — |
 
 ## State Markers — issues/ and planning/
