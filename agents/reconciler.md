@@ -144,7 +144,7 @@ This step runs **regardless of domain**. The three-edge verdict is the Coherence
 
 - `coherent` — all three edges OK.
 - `review-needed` — any edge flagged (drift, orthogonal commits, conflicting decisions). The orchestrator dispatches the Rebalance gate.
-- `bounded-closure-proposed` — the Directive is judged definitively unreachable (foundation_V3 §2.1). Surface this explicitly in the verdict; the orchestrator's Rebalance gate offers Accept Bounded Closure as the recommended option.
+- `bounded-closure-proposed` — the Directive is judged definitively unreachable. Surface this explicitly in the verdict; the orchestrator's Rebalance gate offers Accept Bounded Closure as the recommended option.
 
 The verdict is computed deterministically from the edge flags, not from LLM-judgement-from-vibes. Each edge's evidence is cited.
 

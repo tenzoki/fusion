@@ -485,9 +485,9 @@ The orchestrator **must stop and ask the user** before proceeding when any of th
 | Destructive operations (file deletion, feature removal, data removal) | Safety | Design principle |
 | Plan step explicitly flagged as requiring approval | Planner's judgment | Plan metadata |
 | Task would modify files outside the project tree | Safety | Design principle |
-| Per-Turn Coherence gate returned "Rebalance" (Phase 2 step 3c-bis) | User opted into mid-Turn Rebalance | foundation_V3 §2.1 |
-| Per-Circle reconciler verdict is `review-needed` (Phase 3) | Aggregate Coherence not achieved | foundation_V3 §1.3 |
-| Per-Circle reconciler verdict is `bounded-closure-proposed` (Phase 3) | Directive judged unreachable | foundation_V3 §2.1 |
+| Per-Turn Coherence gate returned "Rebalance" (Phase 2 step 3c-bis) | User opted into mid-Turn Rebalance |
+| Per-Circle reconciler verdict is `review-needed` (Phase 3) | Aggregate Coherence not achieved |
+| Per-Circle reconciler verdict is `bounded-closure-proposed` (Phase 3) | Directive judged unreachable |
 
 **Interaction pattern at a gate:**
 

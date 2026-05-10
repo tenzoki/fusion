@@ -98,7 +98,7 @@ Files in `decisions/` carry a richer state marker that distinguishes "the answer
 
 **Grounding-Stand vs Grounding-Historie:**
 
-The marker vocabulary mirrors foundation §1.2's two-layer Grounding model:
+The marker vocabulary mirrors foundation_V3 §1.2's two-layer Grounding model:
 
 - `[o]` (open) and `[a]` (answered, awaiting realisation) are **Grounding-Stand** — the current best-of-knowledge the project is working with.
 - `[i]` (implemented), `[s]` (superseded), and `[d]` (deferred) are **Grounding-Historie** — preserved record of what was decided, including elements that have been replaced or postponed.
