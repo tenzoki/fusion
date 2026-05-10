@@ -44,6 +44,10 @@ Plans you produce are executed by **a parameterised set of executor agents**. Th
 
 When in doubt, prefer the agent whose primary domain matches the file's role in the system, not just its extension. A `.json` file that is a TypeScript build config (`tsconfig.json`) belongs to `coder`; a `.json` file that holds ontology entries belongs to `ontocoder`.
 
+### Parameter parsing
+
+If the dispatch prompt's first non-empty content line is `**Executors:** <comma-separated list>`, parse the list as the active executor set. Each name must be one of `coder | ontocoder | analyst`; ignore any unrecognised entries. If the line is absent or contains no recognised names, default to `[coder, ontocoder]` per the rule above. Do not echo the parsed parameter line back to the user as part of the plan body — it is a control prefix, not part of the directive.
+
 ## Open decisions as planning input
 
 Read `fusion-workbench/decisions/*[o]*.md` and `*[a]*.md` if the directory exists; treat as zero open decisions if not. These are inputs to planning:
