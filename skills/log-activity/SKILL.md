@@ -40,12 +40,11 @@ Collect timestamped activity from ALL of these sources. For each item, record: t
 | `i` | issue files | `fusion-workbench/issues/` |
 | `o` | ontology reviews | `fusion-workbench/ontoreview/` |
 | `c` | code reviews | `fusion-workbench/codereview/` |
-| `r` | REVIEWS | `REVIEWS/` |
 | `w` | workshop/workbench misc | `fusion-workbench/` (root-level files) |
 | `a` | analyses | `fusion-workbench/analyses/` |
 | `n` | investigations | `fusion-workbench/investigations/` |
 | `t` | consult | `fusion-workbench/consult/` |
-| `d` | discussion+decisions | `discussion+decisions/` |
+| `d` | decisions | `fusion-workbench/decisions/` |
 
 **Scanning methods:**
 
@@ -55,14 +54,11 @@ a) **Git commits** (`g`):
    ```
    Parse each line for date, time, and commit subject.
 
-b) **Workbench files** (`h`, `p`, `i`, `o`, `c`, `a`, `n`, `t`):
+b) **Workbench files** (`h`, `p`, `i`, `o`, `c`, `a`, `n`, `t`, `d`):
    - Use `ls -la` on each directory to get modification times
    - Parse filenames for embedded timestamps (e.g., `260408-1523-topic.md` means April 8, 15:23)
    - Read file headers for date metadata if available
-
-c) **REVIEWS and discussion+decisions** (`r`, `d`):
-   - Only scan if these directories exist
-   - Same approach: file modification times and filename timestamps
+   - Only scan directories that exist (e.g., `fusion-workbench/decisions/` may be absent on older workbenches)
 
 ### 4. Group by date
 
@@ -93,12 +89,11 @@ c) **REVIEWS and discussion+decisions** (`r`, `d`):
 | i | issues |
 | o | ontology review |
 | c | code review |
-| r | REVIEWS |
 | w | workbench |
 | a | analyses |
 | n | investigations |
 | t | consult |
-| d | discussion+decisions |
+| d | decisions |
 
 ## Summary
 
