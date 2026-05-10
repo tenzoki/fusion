@@ -19,6 +19,15 @@ You reconcile plans, issues, and reviews against ground truth. The shape of "gro
    - `ls fusion-workbench/codereview/`
    - `ls fusion-workbench/ontoreview/`
 6. Skim recent `fusion-workbench/history/` entries
+7. **Read session anchor.** Read `fusion-workbench/agentstate.yaml` if it exists (the orchestrator deletes it on clean exit, so absence is normal post-session). The fields you need from it for Step 2.5:
+   - `session.directive` — the session Directive (canonical source for the Artifact↔Directive and Grounding↔Directive edges).
+   - `session.git_head_at_start` — the `<session-start-HEAD>` anchor for the `git log <session-start-HEAD>..HEAD` walk in Step 2.5's Artifact↔Directive edge.
+   - `progress.turn` and `progress.turn_start_head` — useful when the reconciler is invoked from Phase 3 right after the Turn loop exits and the per-Turn anchor is still valid.
+
+   If `agentstate.yaml` is absent, fall back to the orchestrator's session history file (next step) for the Directive, and to the first commit at-or-after the session's `**Started:**` time as the `<session-start-HEAD>` anchor (last resort).
+8. **Read the orchestrator's session history file.** Locate the most recent `fusion-workbench/history/*-orchestrator-session.md` and read its `**Directive:**` line and current `**Status:**`. The Directive is the canonical input for Step 2.5's Artifact↔Directive and Grounding↔Directive edges when `agentstate.yaml` is absent or its `session.directive` field is empty.
+
+**Step 2.5's three-edge verdict computation depends on the Directive and the session-start git anchor obtained in steps 7 and 8.** Skipping these reads forces the reconciler to either improvise (guess a Directive from commit messages, pick an arbitrary git anchor) or stall — both are wrong outcomes. Steps 7 and 8 are mandatory; their reads must happen before Step 2.5 runs.
 
 ## Domain Parameter
 
@@ -195,6 +204,8 @@ The recommendation maps from the verdict and dominant flagged edge:
 - `bounded-closure-proposed` → `accept Bounded Closure`
 
 If multiple edges are flagged, list the recommendation that resolves the highest-leverage one (Directive first, then Grounding, then Artifact). The orchestrator presents the four-option Rebalance gate regardless; the recommendation is advisory.
+
+**Rationale for the priority order.** The recommendation prefers fundamental causes over surface ones: a wrong Directive forces wrong Artifact and wrong Grounding, so revising Directive resolves more drift than revising Artifact. The order is: **Revise Directive** (most fundamental — the destination is wrong) → **Revise Grounding** (the basis is wrong) → **Revise Artifact** (the work is wrong but the destination + basis are right) → **Accept Bounded Closure** (the destination is unreachable). However: this is a *recommendation*, not a directive. The user always chooses; the reconciler's prioritisation surfaces the most-likely-fundamental option first to reduce decision fatigue, not to short-circuit user judgement. Foundation V3 §2.1 supports this ordering by treating Grounding-revision and Directive-revision as more impactful than per-Turn Artifact-retries.
 
 ## Rules
 

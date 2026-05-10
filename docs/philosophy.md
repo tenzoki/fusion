@@ -81,6 +81,8 @@ A fourth option — **Accept Bounded Closure** — applies when the Directive is
 
 This is why "Goal → Directive" is not a cosmetic rename. It signals that the orchestrator now treats the user's stated outcome as a *living* element of the work, not a fixed target.
 
+**Note on Circle in v2.9.0.** This plugin does not yet have a first-class `circles/` workbench folder; that arrives with Track C (see `decisions/260509-1556[o]-playmaker-and-circles-folder.md`). Until then, an orchestrator session is the practical proxy for a Circle: the session's history file carries the Directive, accumulates Turns, and concludes with the per-Circle Coherence verdict. When Circle envelopes ship, this section's references to "Circle" become structural, not metaphorical.
+
 ## What fusion is not
 
 - **Not an autonomous coding agent.** Fusion stops and asks the user before destructive operations, ontology changes, ambiguous tasks, and structural decisions. It is a *human-in-the-loop* framework, deliberately so.

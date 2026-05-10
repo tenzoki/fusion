@@ -248,7 +248,13 @@ When in doubt, prefer the agent whose primary domain matches the file's role in 
 
 ## Phase 2: Turn Loop
 
-Maximum 5 Turns (numbered 1 through 5). Each Turn starts by emitting a `turn_start` event and **REFRESHING DASHBOARD** — set `**Turn:** <N>/5` to the current Turn number, reset "This Turn" section to show the Turn's tasks as `[QUEUED]`.
+Maximum 5 Turns (numbered 1 through 5). Each Turn starts by:
+
+1. Recording `progress.turn_start_head` in `agentstate.yaml` with `git rev-parse --short HEAD` (the value `<turn-start-HEAD>` referenced by Step 3c and Step 3c-bis below sources from this field).
+2. Emitting a `turn_start` event.
+3. **REFRESHING DASHBOARD** — set `**Turn:** <N>/5` to the current Turn number, reset "This Turn" section to show the Turn's tasks as `[QUEUED]`.
+
+When the Turn ends (via Step 3e convergence/refresh, Step 3d circuit breaker, or Step 3c-bis early exit), clear `progress.turn_start_head` so the next Turn records a fresh anchor.
 
 ### Step 3a: Execute Ready Tasks
 
@@ -383,7 +389,7 @@ After the loop exits (convergence or circuit breaker):
 
 ## Phase 4: Report
 
-Update the history file `fusion-workbench/history/YYMMDD-HHMM-orchestrator-session.md` with the final summary:
+Update the history file `fusion-workbench/history/YYMMDD-HHMM-orchestrator-session.md` with the final summary. The `## Coherence` section in the template below is appended by the reconciler at Phase 3 step 3 — the orchestrator's own Phase 4 writes never overwrite or modify it. Treat the section as a slot you reserve in the layout; the reconciler owns its content.
 
 ```markdown
 # Orchestrator Session — YYMMDD-HHMM
@@ -419,6 +425,10 @@ Update the history file `fusion-workbench/history/YYMMDD-HHMM-orchestrator-sessi
 
 ### Turn 2
 ...
+
+## Coherence
+
+(Section appended by reconciler in Phase 3. Format defined in `agents/reconciler.md` Step 4. Contains: aggregate verdict, three-edge summary, Rebalance recommendation.)
 
 ## Remaining Work
 
@@ -566,6 +576,8 @@ progress:
   tasks_skipped: <N>
   tasks_errored: <N>
   commits: <N>
+  turn_start_head: "<short hash, recorded at start of current Turn — used by Phase 2 step 3c and step 3c-bis git-rev-list checks; cleared at Turn end>"
+  paused_at_task: "<task ID when Rebalance 'Revise Grounding' paused Phase 2; null/absent otherwise — see Rebalance bounding>"
 
 current_task:
   id: "<task ID>"
@@ -604,6 +616,8 @@ Overwrite `agentstate.yaml` at each of these transitions (same cadence as the li
 | Task skipped/deferred | Task status → `skipped`/`deferred` |
 | Human gate hit | `current_task.status` → `gate` |
 | Turn boundary | `progress.turn` incremented |
+| Turn starts | `progress.turn_start_head` recorded with current `git rev-parse --short HEAD` (cleared on Turn end) |
+| Rebalance Revise Grounding pauses Phase 2 | `progress.paused_at_task` set to current task ID; cleared when Phase 2 resumes after the decision is filed |
 | Session ends normally | **Delete the file.** A clean exit means there is nothing to resume. |
 
 **The file exists only while a session is in progress.** Its presence signals an incomplete session. On normal completion (Phase 4 cleanup), delete the file. This makes the resumption check in Setup unambiguous: file exists = interrupted session.
