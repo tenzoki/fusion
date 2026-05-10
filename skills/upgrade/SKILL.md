@@ -144,7 +144,7 @@ After surgery, the user types only:
 
 - **Slash commands cannot be invoked from a skill body.** Always tell the user the exact sequence to type.
 - **The marketplace clone pull is always safe** (fast-forward `git pull` on a dedicated read-mostly clone). Do it without confirmation.
-- **The cache surgery (option B2) is NOT routine.** It modifies Claude Code's own plugin state under `~/.claude/plugins/`. Confirm with the user before running it. If the user has not explicitly opted in to surgery, default to recommending option B1 (cd elsewhere).
+- **The cache surgery (Option C1) is NOT routine.** It modifies Claude Code's own plugin state under `~/.claude/plugins/`. Confirm with the user before running it. If the user has not explicitly opted in to surgery, default to recommending the `cd` path (Case B — only available when fusion is project-level-only).
 - If the marketplace clone has uncommitted local changes (`git status` non-empty), report and stop; don't stash or reset without explicit user direction.
 - This skill is fusion-specific. It does not touch other plugins or other marketplaces.
 
