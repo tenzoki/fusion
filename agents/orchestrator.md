@@ -507,7 +507,11 @@ Each option has bounded post-action mechanics. No option is allowed to loop unbo
 
 - **Revise Artifact re-entries count against the existing 5-Turn circuit breaker.** Each Revise Artifact choice creates a new Turn — the orchestrator increments the Turn counter and re-enters Phase 2 with the new queue entry. When the Turn counter reaches `max_turns` (default 5), the next per-Turn or per-Circle gate forces Bounded Closure with reason `"Turn limit reached after Rebalance retries."`. This piggybacks on the existing circuit breaker; no new infrastructure needed.
 
-- **Revise Directive is limited to once per session.** The orchestrator increments the in-memory counter `directive_revisions_this_session` (initialised to 0 at session start). The first Revise Directive choice re-enters Step 0b.1 (shaper), regenerating spec + plan + queue. A second Revise Directive in the same session is rejected; the gate instead forces Bounded Closure with reason `"Directive revised twice without convergence."`. Rationale: re-shaping more than once per session usually means the project itself needs to step back, not the current Circle.
+  **At Phase 3 (post-verdict dispatch):** Re-enter Phase 2 with a fresh Turn (Turn counter increments; treated as a new Turn even though the previous Phase-2 loop exited). The orchestrator dispatches `taskplanner` to refresh the queue based on what the reconciler's verdict flagged. If `max_turns` is already reached (5/5), Phase 2 is bypassed and the gate forces Bounded Closure with reason `"max-Turns exceeded; Rebalance from Phase 3 cannot create a new Turn."`.
+
+- **Revise Directive is limited to once per session.** The orchestrator increments the persisted counter `progress.directive_revisions_this_session` in `agentstate.yaml` (initialised to 0 at session start; persisted so the cap holds across session interruption). The first Revise Directive choice re-enters Step 0b.1 (shaper), regenerating spec + plan + queue. A second Revise Directive in the same session is rejected; the gate instead forces Bounded Closure with reason `"Directive revised twice without convergence."`. Rationale: re-shaping more than once per session usually means the project itself needs to step back, not the current Circle.
+
+  **At Phase 3 (post-verdict dispatch):** Re-enter Step 0b.1 (shaper). The orchestrator preserves the existing session history file but appends a new `## Directive revision (post-Phase-3)` section noting the trigger (the reconciler verdict and the user's Rebalance choice). The shaper produces a new spec with the prior commits as Grounding context. Then Step 0b.2 (planner) and Phase 1 (queue rebuild) and Phase 2 (fresh Turn). `progress.directive_revisions_this_session` increments and is persisted before re-entering Step 0b.1; if already at 1, Bounded Closure is forced.
 
 - **Revise Grounding does not increment the Turn counter** (decision-filing is not Artifact work). The orchestrator pauses Phase 2 at the current queue position (records `paused_at_task: <task ID>` in `agentstate.yaml`), then prompts the user via `AskUserQuestion` to choose between:
   (a) **File a new `decisions/[o]` entry** — orchestrator asks the user for the question text and any options/constraints (or for the full decision body if the user prefers to type it directly), then writes the file at `fusion-workbench/decisions/YYMMDD-HHMM[o]-<topic>.md` per the decision-record template in `fusion-workbench-conventions.md`; OR
@@ -515,7 +519,11 @@ Each option has bounded post-action mechanics. No option is allowed to loop unbo
 
   After either branch, the orchestrator emits `rebalance_grounding` and **resumes Phase 2 at the recorded `paused_at_task`** without incrementing the Turn counter. There is no re-entry budget — decision-filing is not recursive. The user can choose Revise Grounding multiple times in a session if multiple decisions need to be filed.
 
+  **At Phase 3 (post-verdict dispatch):** Same decision-filing sub-flow as the Phase-2 case (file new `[o]` OR supersede existing `[i]`), but **without** the `paused_at_task` mechanism — there is no current task at Phase 3. After the user files the decision, the orchestrator emits `rebalance_grounding` and re-runs the Phase-3 reconciler verdict (which may now pass with the new Grounding context). If the verdict still flags `review-needed`, the Rebalance gate fires again — but the Grounding has changed, so the user has new options. No re-entry budget needed; decision-filing is not recursive.
+
 - **Accept Bounded Closure is terminal.** The orchestrator emits `bounded_closure_proposed`, sets the session history file's `**Status:**` to `Bounded Closure: <reason>`, runs the reconciler one final time for the closure record (the reconciler's three-edge verdict captures what was learned — that's the Bounded Closure Artifact), then exits to Phase 4 cleanup. Skip any further Phase 2 work.
+
+  **At Phase 3 (post-verdict dispatch):** Same as the Phase-2 case (terminal). The reconciler has already run for the verdict that triggered this Rebalance gate; do **not** re-run it. Set Status, emit `bounded_closure_proposed`, exit to Phase 4.
 
 ## Error Handling
 
@@ -542,7 +550,7 @@ Each option has bounded post-action mechanics. No option is allowed to loop unbo
 - `decisions_answered` — count of `[o]` → `[a]` transitions on `decisions/` files this session (Grounding-growth metric)
 - `decisions_implemented` — count of `[a]` → `[i]` transitions on `decisions/` files this session (Grounding-realisation metric)
 - `commits_made` — number of successful commits
-- `directive_revisions_this_session` — count of Revise Directive choices accepted at the Rebalance gate this session (initialised to 0; capped at 1 — see Rebalance bounding)
+- `directive_revisions_this_session` — count of Revise Directive choices accepted at the Rebalance gate this session (initialised to 0; capped at 1 — see Rebalance bounding). **Persisted in `agentstate.yaml` (`progress.directive_revisions_this_session`)** so the cap holds across session interruption.
 - `agent_errors` — count of agent failures (no output, wrong scope, etc.)
 - `human_gates_hit` — number of times the orchestrator stopped for user input
 
@@ -578,6 +586,7 @@ progress:
   commits: <N>
   turn_start_head: "<short hash, recorded at start of current Turn — used by Phase 2 step 3c and step 3c-bis git-rev-list checks; cleared at Turn end>"
   paused_at_task: "<task ID when Rebalance 'Revise Grounding' paused Phase 2; null/absent otherwise — see Rebalance bounding>"
+  directive_revisions_this_session: <integer; initialised to 0; capped at 1 — see Rebalance bounding 'Revise Directive'>
 
 current_task:
   id: "<task ID>"
@@ -618,6 +627,7 @@ Overwrite `agentstate.yaml` at each of these transitions (same cadence as the li
 | Turn boundary | `progress.turn` incremented |
 | Turn starts | `progress.turn_start_head` recorded with current `git rev-parse --short HEAD` (cleared on Turn end) |
 | Rebalance Revise Grounding pauses Phase 2 | `progress.paused_at_task` set to current task ID; cleared when Phase 2 resumes after the decision is filed |
+| Rebalance Revise Directive accepted | `progress.directive_revisions_this_session` incremented; persisted before re-entering Step 0b.1 (cap holds across session interruption) |
 | Session ends normally | **Delete the file.** A clean exit means there is nothing to resume. |
 
 **The file exists only while a session is in progress.** Its presence signals an incomplete session. On normal completion (Phase 4 cleanup), delete the file. This makes the resumption check in Setup unambiguous: file exists = interrupted session.

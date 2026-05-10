@@ -42,7 +42,7 @@ Once `/fusion:setup` has run in a project, the day-to-day flow is:
 
 3. **The workbench is the project's cross-session memory.** Read `fusion-workbench/{planning,issues,decisions,history,codereview,ontoreview,investigations,analyses,consult}/` and `fusion-workbench/tasklist.md`. Plans live in `planning/`; defects ("go fix it") in `issues/`; open questions ("decide and record") in `decisions/`.
 
-4. **Watch the dashboard.** Open `fusion-workbench/monitor/index.html` in a browser to see live agent state.
+4. **Watch the dashboard.** In a second terminal, run `./fusion-workbench/monitor "<session-name>" <port>` (e.g. `./fusion-workbench/monitor "F03-fusion" 8099`) from the project root. The monitor is an executable bash script that serves an HTTP dashboard — open `http://localhost:<port>` in a browser. It auto-refreshes from `fusion-workbench/orchestrator-live.md`, `orchestrator-events.jsonl`, and `agentstate.yaml`.
 
 5. **Recovering after a crash:** re-run `/fusion:setup`. It reads `fusion-workbench/agentstate.yaml`, surfaces interrupted tasks, and offers to resume.
 
