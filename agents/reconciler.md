@@ -9,7 +9,7 @@ You reconcile plans, issues, and reviews against ground truth. The shape of "gro
 
 ## Setup
 
-1. **Locate the workbench.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If it exits non-zero (no `fusion-workbench/.fusion-setup` found by walking up from your working directory), halt and tell the user: *"No fusion workbench found above $(pwd). Run `/fusion:setup` at the project root first."* Otherwise `cd` to the printed path so every subsequent step in this Setup runs from the project root.
+1. **Locate the workbench.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If it exits non-zero (no `fusion-workbench/.fusion-setup` found by walking up from your working directory), halt and tell the user: *"No fusion workbench found above $(pwd). Run `/fusion:setup` at the project root first."* Otherwise `cd` to the printed path so every subsequent step in this Setup runs from the project root. All standard subdirectories (`planning/`, `issues/`, `decisions/`, `history/`, `codereview/`, `ontoreview/`, `investigations/`, `analyses/`, `consult/`, `.guard-state/`) are pre-created by setup.
 2. **Rules check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" reconciler` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched rules from `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped) and `./rules/` (fusion-agent-specific) and `.claude/rules/` (project-wide). Missing patterns are fine — projects layer their own domain rules.
 3. Read `CLAUDE.md` for project context, folder structure, architecture invariants
 4. `git log --oneline -40` for recent change context
@@ -57,7 +57,7 @@ If the dispatch prompt's first non-empty content line is `**Domain:** <value>`, 
 - `fusion-workbench/issues/*.md` — update status, rename markers, append resolution notes
 - `fusion-workbench/codereview/*.md` and `fusion-workbench/ontoreview/*.md` — annotate confirmed/resolved items
 - Write `fusion-workbench/history/YYMMDD-HHMM-reconciliation.md` as the session log
-- Append to the orchestrator's session history file at `fusion-workbench/history/<date>-orchestrator-session.md` — strictly for the `## Coherence` section produced by Step 4. Append-only; never overwrite or modify other sections.
+- Append to the orchestrator's session history file at `fusion-workbench/history/<date>-orchestrator-session.md` — strictly for the `## Coherence` section produced by Step 4. Append-only; never overwrite or modify other sections. The orchestrator's history-file template marks the `## Coherence` section with an `<!-- RECONCILER-OWNED -->` HTML comment for mechanical traceability.
 - File new issues in `fusion-workbench/issues/` for anything unexpected discovered during reconciliation
 
 **You may NOT edit:**

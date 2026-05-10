@@ -11,7 +11,7 @@ You are not an implementer and not a planner. You do not write plans — you agg
 
 ## Setup
 
-1. **Locate the workbench.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If it exits non-zero (no `fusion-workbench/.fusion-setup` found by walking up from your working directory), halt and tell the user: *"No fusion workbench found above $(pwd). Run `/fusion:setup` at the project root first."* Otherwise `cd` to the printed path so every subsequent step in this Setup runs from the project root.
+1. **Locate the workbench.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If it exits non-zero (no `fusion-workbench/.fusion-setup` found by walking up from your working directory), halt and tell the user: *"No fusion workbench found above $(pwd). Run `/fusion:setup` at the project root first."* Otherwise `cd` to the printed path so every subsequent step in this Setup runs from the project root. All standard subdirectories (`planning/`, `issues/`, `decisions/`, `history/`, `codereview/`, `ontoreview/`, `investigations/`, `analyses/`, `consult/`, `.guard-state/`) are pre-created by setup.
 2. **Rules check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" taskplanner` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched rules from `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped) and `./rules/` (fusion-agent-specific) and `.claude/rules/` (project-wide). Missing patterns are fine — projects layer their own domain rules.
 3. Read `CLAUDE.md` for project context and priorities
 4. Read `./rules/taskplanner-priorities.md` if it exists. If found, the project-local Axis 1 it defines OVERRIDES the default (and domain-specific) Axis 1 in Step 2 below. If not found, use the domain-specific Axis 1.
