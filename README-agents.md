@@ -31,7 +31,7 @@ Options 1 and 2 launch a sub-agent with its own context window (see [How to invo
 | `bugfixer` | Diagnoses and fixes a specific bug: autonomous investigation, minimal targeted fix, verification | Anything | Any file type (code, data, ontology), `fusion-workbench/{history,issues}/` | Verified fix + history log |
 | `investigator` | Forensic analysis of captured project runs (capture layout supplied by a project-local `./rules/investigator-capture-layout.md`) | Anything (esp. logs, prompts, ontology, code, image files via vision) | `fusion-workbench/investigations/`, `fusion-workbench/issues/`, `fusion-workbench/history/` | Investigation report + issue files |
 | `analyst` | Document study and problem analysis — comparative, gap, risk, feasibility, impact | Anything | `fusion-workbench/analyses/`, `fusion-workbench/issues/`, `fusion-workbench/history/` | Analysis report + issue files |
-| `orchestrator` | Automates multi-task work sessions: cycles through execution, review, and reconciliation until convergence or circuit breaker | Anything | Dispatches agents, creates commits, writes `fusion-workbench/history/` | Progress report + commits + updated tracking files |
+| `orchestrator` | Automates multi-task work sessions: runs Turns of execution, review, and reconciliation until the Directive converges or a circuit breaker fires | Anything | Dispatches agents, creates commits, writes `fusion-workbench/history/` | Progress report + commits + updated tracking files |
 
 **Hard rule across all agents:** read-only on layers outside the agent's primary scope. A reviewer never edits code. A `coder` never edits ontology yaml. An `ontocoder` never edits Go. The investigator never edits anything inside its evidence captures. The orchestrator never edits code or data directly — it dispatches executors. Cross-layer findings are filed as issues and routed to the right executor. The scope is enforced by prose in each agent's prompt, not by a `tools:` allowlist. **Exception:** `bugfixer` may edit both code and data because bugs cross layer boundaries — but ontology edits require a human gate.
 
@@ -75,7 +75,9 @@ ontorev       →  fusion-workbench/ontoreview/<review>.md   + new issue files
 reconciler    →  ground-truth pass over all tracking files in fusion-workbench/
 ```
 
-**Automated outer loop:** The `orchestrator` agent wraps the full pipeline — from shaping through execution, review, and reconciliation — in a managed session. It invokes `shaper` and `planner` (with human gates) when the input needs specification, then dispatches `taskplanner`, executors (`coder`/`ontocoder`), reviewers (`coderev`/`ontorev`), and `reconciler`, committing after each task and feeding review findings back into the next cycle. The orchestrator is the **only** agent that dispatches other agents.
+**Automated outer loop:** The `orchestrator` agent wraps the full pipeline — from shaping through execution, review, and reconciliation — in a managed session. It invokes `shaper` and `planner` (with human gates) when the input needs specification, then dispatches `taskplanner`, executors (`coder`/`ontocoder`), reviewers (`coderev`/`ontorev`), and `reconciler`, committing after each task and feeding review findings back into the next Turn. The orchestrator is the **only** agent that dispatches other agents.
+
+Since v2.9.0, every Turn closes with a **Coherence Review** (per-Turn gate against the Directive); when a Turn's review concludes the Directive is unreachable as written, the orchestrator opens a **Rebalance gate** with four user options (Revise Artifact, Revise Directive, Revise Grounding, Accept Bounded Closure). At session end a **per-Circle three-edge verdict** judges the whole arc. See `docs/philosophy.md` §5 for the full model.
 
 ```
                           ┌──────────────────────────────┐
@@ -97,7 +99,7 @@ reconciler    →  ground-truth pass over all tracking files in fusion-workbench
                     └────────┬──────┘
                              │
               ┌──────────────▼──────────────┐
-              │  convergence loop (max 5)    │
+              │  Turn loop (max 5 Turns)     │
               │  ┌────────┐  ┌───────────┐  │
               │  │ coder  │  │ ontocoder │  │ ← human gate on ontocoder
               │  └───┬────┘  └─────┬─────┘  │
@@ -112,8 +114,12 @@ reconciler    →  ground-truth pass over all tracking files in fusion-workbench
               │      │ coderev /   │        │
               │      │ ontorev     │        │
               │      └──────┬──────┘        │
+              │      ┌──────▼──────┐        │
+              │      │ Coherence   │        │ ← per-Turn gate (v2.9.0+)
+              │      │ Review      │        │   may open Rebalance gate
+              │      └──────┬──────┘        │
               │             │ new issues    │
-              │             │ → next cycle  │
+              │             │ → next Turn   │
               └─────────────┴───────────────┘
 ```
 
@@ -123,7 +129,7 @@ When the orchestrator runs, it produces three artifacts so the human can follow 
 
 | Artifact | File | What it shows | How to view |
 |----------|------|---------------|-------------|
-| **Live dashboard** | `fusion-workbench/orchestrator-live.md` | Current task, cycle progress, queue, blocked items — overwritten at every transition | `watch cat fusion-workbench/orchestrator-live.md` in a second terminal |
+| **Live dashboard** | `fusion-workbench/orchestrator-live.md` | Current task, Turn progress, queue, blocked items — overwritten at every transition | `watch cat fusion-workbench/orchestrator-live.md` in a second terminal |
 | **Event log** | `fusion-workbench/orchestrator-events.jsonl` | Append-only JSONL with timestamped events (task start/done/error, gate hits, commits, reviews, circuit breakers) | `tail -f fusion-workbench/orchestrator-events.jsonl` for streaming, or `jq` for queries |
 | **Sequence diagram** | Appended to the session's history file | Mermaid diagram of all agent dispatches, gate interactions, commits, and reviews | Open the history file in any Markdown viewer with Mermaid support |
 

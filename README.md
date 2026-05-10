@@ -1,6 +1,6 @@
 # fusion
 
-AI agent orchestration framework for Claude Code. Provides 12 specialized agents with a compliance guard, churn detection, and real-time browser-based monitoring.
+AI agent orchestration framework for Claude Code. Provides 13 specialized agents with a compliance guard, churn detection, and real-time browser-based monitoring.
 
 ## What's Inside
 
@@ -8,9 +8,9 @@ AI agent orchestration framework for Claude Code. Provides 12 specialized agents
 fusion/
 ├── .claude-plugin/
 │   └── plugin.json          # Plugin manifest
-├── agents/                   # 12 specialized agents
+├── agents/                   # 13 specialized agents
 │   ├── orchestrator.md       # Multi-task session coordinator (default agent)
-│   ├── shaper.md             # Requirements engineering — vague → precise spec
+│   ├── shaper.md             # Requirements engineering — vague → precise Directive
 │   ├── planner.md            # Implementation planning — spec → step-by-step plan
 │   ├── taskplanner.md        # Work queue builder — plans + issues → ordered tasklist
 │   ├── coder.md              # Application code executor — Go, TS, Python, tests
@@ -20,7 +20,8 @@ fusion/
 │   ├── bugfixer.md           # Diagnostic repair — one bug, one fix, verified
 │   ├── reconciler.md         # Ground-truth reconciliation of tracking files
 │   ├── investigator.md       # Forensic analysis of captured runs
-│   └── analyst.md            # Document study and problem analysis
+│   ├── analyst.md            # Document study and problem analysis
+│   └── consultant.md         # On-demand expert consultation
 ├── skills/                   # Slash commands
 │   ├── commit/SKILL.md       # /commit — AI-generated conventional commit
 │   └── revise-claude-md/SKILL.md  # /revise-claude-md — update project memory
@@ -83,12 +84,12 @@ cd hooks && npm install && npm run build
 
 ## Agent Architecture
 
-The orchestrator is the top-level coordinator. It dispatches specialized agents in a convergence loop:
+The orchestrator is the top-level coordinator. It dispatches specialized agents across a sequence of **Turns** (the iteration unit) until the **Directive** (the user's stated outcome) converges or the session ends:
 
 ```
 orchestrator
-├── shaper        → spec document (when request is vague)
-├── planner       → implementation plan (when spec is ready)
+├── shaper        → Directive document (when request is vague)
+├── planner       → implementation plan (when Directive is ready)
 ├── taskplanner   → ordered work queue
 ├── coder         → code changes (Go, TS, Python)
 ├── ontocoder     → data changes (YAML, JSON, ontology)
@@ -96,10 +97,13 @@ orchestrator
 ├── ontorev       → ontology review + issue filing
 ├── bugfixer      → self-healing on test failure
 ├── reconciler    → ground-truth pass at session end
-└── analyst       → document study and problem analysis
+├── analyst       → document study and problem analysis
+└── consultant    → on-demand expert consultation
 ```
 
 Each agent has strict scope boundaries — a reviewer never edits code, a coder never edits ontology, the orchestrator never implements directly.
+
+Since v2.9.0, every Turn ends with a **Coherence Review** (a per-Turn gate that checks the Turn's output against the Directive) and the session as a whole is judged by a per-Circle three-edge verdict at the end. When a Turn's Coherence Review reveals the Directive is unreachable as written, the orchestrator opens a **Rebalance gate** offering four options: Revise Artifact, Revise Directive, Revise Grounding, or Accept Bounded Closure. See `docs/philosophy.md` §5 for the full model.
 
 ## Compliance Guard
 
