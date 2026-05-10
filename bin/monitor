@@ -16,6 +16,10 @@ if [[ $# -lt 2 ]]; then
   echo "  -i     Refresh interval in seconds (default: 2)" >&2
   echo "" >&2
   echo "  Both name and port are required so multiple monitors can run in parallel." >&2
+  echo "" >&2
+  echo "  Note: if another process is listening on <port> when monitor starts, monitor" >&2
+  echo "  will SIGTERM it before binding (intentional — clears stale prior monitors)." >&2
+  echo "  Pass an unused port if you don't want this behavior." >&2
   exit 1
 fi
 
