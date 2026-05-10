@@ -171,7 +171,7 @@ Parse the user's prompt to determine what work to process.
 
 **Ambiguity handling:** If the user's intent does not clearly map to one mode, or the target plan/bundle/issues cannot be identified, **stop and ask the user**. Present the options you see and let them choose. Do not guess.
 
-**Confirmation:** Before entering the convergence loop, summarize the resolved scope to the user:
+**Confirmation:** Before entering the Turn Loop, summarize the resolved scope to the user:
 - Mode and target
 - Number of tasks identified
 - Which agents will be involved
