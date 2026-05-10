@@ -133,7 +133,7 @@ When the orchestrator runs, it produces three artifacts so the human can follow 
 | **Event log** | `fusion-workbench/orchestrator-events.jsonl` | Append-only JSONL with timestamped events (task start/done/error, gate hits, commits, reviews, circuit breakers) | `tail -f fusion-workbench/orchestrator-events.jsonl` for streaming, or `jq` for queries |
 | **Sequence diagram** | Appended to the session's history file | Mermaid diagram of all agent dispatches, gate interactions, commits, and reviews | Open the history file in any Markdown viewer with Mermaid support |
 
-**Combined view:** Run `./fusion-workbench/progress.sh` in a second terminal to see the dashboard and recent events together, refreshing every 2 seconds. Use `-n 25` for more event lines or `-i 1` for faster refresh.
+**Combined view:** Run `./fusion-workbench/monitor "<session-name>" <port>` (e.g. `./fusion-workbench/monitor "My Session" 8099`) in a second terminal to see the live dashboard and recent events together in a browser. Use `-n 25` for more event lines or `-i 1` for faster refresh.
 
 The sequence diagram is the retrospective summary, appended to the history file at session end.
 
@@ -177,10 +177,17 @@ In a consuming project, drop a markdown file into `./rules/` whose name contains
 
 | Slash command | File | What it does |
 |---------------|------|--------------|
-| `/commit` | `skills/commit/SKILL.md` | Stages, generates a conventional-commit message from the diff, asks the user to confirm, then commits |
-| `/revise-claude-md` | `skills/revise-claude-md/SKILL.md` | Updates the project's `CLAUDE.md` with learnings discovered during the current session |
+| `/fusion:setup` | `skills/setup/SKILL.md` | Bootstraps `fusion-workbench/`, writes the `.fusion-setup` marker, copies the monitor binary, and runs the orchestrator's mandatory Setup procedure |
+| `/fusion:help` | `skills/help/SKILL.md` | Explains what fusion is, daily use, install/update/configure paths, and where deeper docs live |
+| `/fusion:commit` | `skills/commit/SKILL.md` | Stages, generates a conventional-commit message from the diff, asks the user to confirm, then commits |
+| `/fusion:archive` | `skills/archive/SKILL.md` | Archives completed/aged workbench files into `fusion-workbench/archive/<YYMMDD-HHMM>-<slug>/` |
+| `/fusion:log-activity` | `skills/log-activity/SKILL.md` | Scans project activity and generates/updates the activity log |
+| `/fusion:memo` | `skills/memo/SKILL.md` | Appends a memo to the user's personal memo log in `fusion-workbench/memos/` |
+| `/fusion:revise-claude-md` | `skills/revise-claude-md/SKILL.md` | Revises `CLAUDE.md` with learnings discovered during the current session (three-pass: add / update / prune) |
+| `/fusion:unlock` | `skills/unlock/SKILL.md` | Writes a permissive `.claude/settings.local.json` so future sessions skip per-tool approval prompts |
+| `/fusion:upgrade` | `skills/upgrade/SKILL.md` | Pulls the local fusion marketplace clone so Claude Code's plugin system can see the latest fusion version |
 
-Slash commands are independent of sub-agent routing — invoke them from the parent session when you need to commit or revise project-level rules.
+Slash commands are independent of sub-agent routing — invoke them from the parent session when you need to commit, set up, or revise project-level rules.
 
 ## Where the work persists
 
@@ -188,13 +195,15 @@ Every agent writes to `fusion-workbench/` and never to its own scratchpad — a 
 
 ```
 fusion-workbench/
-├── planning/        # planner output
+├── planning/        # planner output (also: shaper specs)
 ├── issues/          # filed by every agent that finds something actionable
+├── decisions/       # open questions / decision records (richer marker vocabulary)
 ├── history/         # every session's log; the durable record
 ├── codereview/      # coderev output
 ├── ontoreview/      # ontorev output
 ├── investigations/  # investigator output
 ├── analyses/        # analyst output
+├── consult/         # consultant reports
 └── tasklist.md      # taskplanner output (dependency-ordered work queue)
 ```
 

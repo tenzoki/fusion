@@ -76,19 +76,24 @@ Read `fusion-workbench/agentstate.yaml`. This is the FIRST thing you do after th
 
 - If the file **does not exist**: this is a fresh session. Continue to step 2.
 - If the file **exists**: a prior session was interrupted. You MUST do all of the following before proceeding:
-  0a. **Schema check (v2.9.0).** If the saved `agentstate.yaml` has the legacy fields `cycle:` / `goal:` instead of the current `turn:` / `directive:`, treat it as a stale snapshot from a pre-v2.9.0 session and offer **Restart only** — do not attempt to resume. The schema rename is a hard break (no soft alias); a v2.8.5 snapshot cannot be replayed against v2.9.0 fields. Tell the user: "schema mismatch — please restart" and proceed with deletion + fresh setup.
-  1. Read the file contents completely.
-  2. Present the saved state to the user as a summary:
+  1. **Schema check (v2.9.0).** If the saved `agentstate.yaml` contains the legacy fields `cycle:` or `goal:` (instead of the current `turn:` / `directive:`), the snapshot is from a pre-v2.9.0 session. The schema rename is a hard break (no soft alias); a v2.8.5 snapshot cannot be replayed against v2.9.0 fields. In this case:
+     a. Tell the user: "schema mismatch detected — your interrupted session is from a pre-v2.9.0 fusion install. The schema rename is a hard break; the saved state cannot be replayed."
+     b. Use `AskUserQuestion` with a **single option**: **Restart** (delete `agentstate.yaml` and proceed with fresh setup).
+     c. STOP and WAIT for the user's response.
+     d. On Restart: `rm fusion-workbench/agentstate.yaml`, then continue to "Remaining setup" below.
+     e. **Skip steps 2-5** — they are for valid resumable snapshots only.
+  2. Read the file contents completely.
+  3. Present the saved state to the user as a summary:
      - Session Directive and mode
      - How far the session got (Turn number, tasks completed vs total)
      - Which task was active when the session stopped
      - Which tasks remain (with their status)
      - The plan file and user directive, if any
-  3. Ask the user what to do (use AskUserQuestion — do NOT skip this):
+  4. Ask the user what to do (use AskUserQuestion — do NOT skip this):
      - **Continue** — resume from where the prior session left off. Use the saved work queue, skip already-completed tasks, pick up from the next unfinished task.
      - **Restart** — discard prior state and start fresh. Delete `agentstate.yaml` and proceed with normal setup.
      - **Modify** — the user provides updated instructions or changes scope before resuming.
-  4. **STOP and WAIT for the user's response. Do not proceed to step 2 until the user has answered.**
+  5. **STOP and WAIT for the user's response. Do not proceed until the user has answered.**
 
 Remaining setup (after step 1 is resolved):
 
@@ -338,6 +343,8 @@ git rev-list <turn-start-HEAD>..HEAD --count
 
 If the count is `0`, **skip the gate cleanly**: emit a single `coherence_review` event with `verdict: "skipped-no-commits"` and proceed directly to Step 3d. Do NOT present `AskUserQuestion` — a Turn with no Artifact change has nothing to review against the Directive.
 
+**Defensive case (missing or invalid anchor).** If `<turn-start-HEAD>` is missing from `agentstate.yaml` (`progress.turn_start_head` empty/null) or is not a valid git ref (the `git rev-list` command errors with non-zero exit), emit a `coherence_review` event with `verdict: "skipped-no-anchor"` and proceed directly to Step 3d. Note the missing anchor in the event's `detail` field for post-session diagnostics. Do NOT halt the loop on a missing anchor; the Coherence gate is advisory, not safety-critical.
+
 **Build the three-edge summary.** Compute these three lines inline; do NOT dispatch another agent.
 
 - **Artifact↔Grounding** — derive from the `coderev` / `ontorev` outputs already on disk for this Turn (Step 3c just wrote them). One line: `OK` or `<N> issues filed`.
@@ -353,7 +360,7 @@ Do NOT split into three questions. The default is Continue — users in flow pre
 
 **On Continue.** Emit `coherence_review` with `verdict: "ok"` and the three edge-summary fields. Proceed to Step 3d (Circuit Breaker Check).
 
-**On Rebalance.** Emit `coherence_review` with `verdict: "review-needed"` and the three edge-summary fields. Dispatch the **Rebalance Gate** (see Human Gate Rules below) — the Turn exits without emitting `turn_end`; the loop ends and Phase 3 picks up.
+**On Rebalance.** Emit `coherence_review` with `verdict: "review-needed"` and the three edge-summary fields. Dispatch the **Rebalance Gate** (see Human Gate Rules below). The Turn exits without emitting `turn_end`. For three of the four choices (Revise Grounding, Revise Directive, Accept Bounded Closure) the loop ends and Phase 3 picks up. **Revise Artifact** is the exception — it re-enters Phase 2 with a new Turn (counter increments). See Rebalance bounding for the per-option mechanics.
 
 ### Step 3d: Circuit Breaker Check
 
@@ -385,6 +392,8 @@ After the loop exits (convergence or circuit breaker):
 1. Invoke `reconciler` once to verify all tracking files reflect ground truth. **Pass the detected workbench domain** (from Setup Step 5) as the `domain` parameter — prefix the dispatch prompt with `**Domain:** <code|data|strategic|knowledge>` on its own line so the agent's Setup picks it up.
 2. Review the reconciler's output for any discrepancies it found. For `domain=strategic` or `domain=knowledge`, expect an Open-decision-surface output instead of (or alongside) standard issues triage.
 3. **Consume the three-edge Coherence verdict.** Read the `## Coherence` section the reconciler appended to the orchestrator's session history file. The aggregate verdict is one of `coherent`, `review-needed`, `bounded-closure-proposed`. If the verdict is `review-needed` or `bounded-closure-proposed`, dispatch the **Rebalance Gate** (see Human Gate Rules) with the verdict and edge summary as context — the user picks among Revise Artifact / Revise Grounding / Revise Directive / Accept Bounded Closure. If the verdict is `coherent`, no gate fires.
+
+   **Defensive case.** If the reconciler's output does not include a parseable `## Coherence` section (no section header, missing `**Verdict:**` line, or verdict value outside the enum `coherent | review-needed | bounded-closure-proposed`), treat the verdict as `review-needed` (conservative fallback — surface the missing data to the user rather than silently skipping). Emit a `coherence_review` event with `verdict: "review-needed"` and a single edge-summary line: `Artifact↔Grounding: reconciler output malformed (cited)` citing the path to the reconciler's session log. Then dispatch the Rebalance gate.
 4. Emit `reconciliation` event with discrepancy count. Update the live dashboard.
 
 ## Phase 4: Report
@@ -421,7 +430,7 @@ Update the history file `fusion-workbench/history/YYMMDD-HHMM-orchestrator-sessi
 - Commits: <short hashes>
 - Review findings: <count new issues>
 - Circuit breaker status: OK
-- Coherence: ok | review-needed | skipped-no-commits
+- Coherence: ok | review-needed | skipped-no-commits | skipped-no-directive | skipped-no-anchor
 
 ### Turn 2
 ...
@@ -494,9 +503,9 @@ If the user chooses Modify, update the task description and re-route. If Skip, m
 
 When a Coherence-related condition triggers (any of the three bottom rows of the gate-rules table above — per-Turn user opt-in, per-Circle `review-needed`, per-Circle `bounded-closure-proposed`), the gate presents **four explicit options** instead of the standard Proceed/Skip/Defer/Modify:
 
-- **Revise Artifact** — re-execute the failing task or queue a new task addressing the drift. The Artifact is not where it should be; the next move is another execution pass. Emits `rebalance_artifact` event. Re-enters Phase 2 with a new queue entry. (Bounding: see Rebalance bounding below.)
+- **Revise Artifact** — the Artifact is not where it should be; the next move is another execution pass. The orchestrator dispatches `taskplanner` with the Coherence-gate's three-edge summary (or the reconciler's verdict at Phase 3) as the drift context, so taskplanner can refresh `tasklist.md` with a new queue entry that addresses the drift. Re-enters Phase 2 with the rebuilt queue. Emits `rebalance_artifact` event. (Bounding: see Rebalance bounding below.)
 - **Revise Grounding** — file a new `decisions/[o]` entry, or supersede an existing `[i]` decision (rename `[i]`→`[s]` and create a new `[o]`, per `fusion-workbench-conventions.md`). The basis we built on was wrong; the next move is to record a new question. Emits `rebalance_grounding` event. (Resume mechanics: see Rebalance bounding below.)
-- **Revise Directive** — re-shape: dispatch `shaper` with the current spec + the drift evidence. The destination we set was wrong; the next move is to re-state what we want. Emits `rebalance_directive` event. Re-enters Phase 0b.1. (Bounding: once-per-session — see Rebalance bounding below.)
+- **Revise Directive** — re-shape: dispatch `shaper` with the current spec + the drift evidence. The destination we set was wrong; the next move is to re-state what we want. Emits `rebalance_directive` event. Re-enters Step 0b.1 (Shape). (Bounding: once-per-session — see Rebalance bounding below.)
 - **Accept Bounded Closure** — the Directive is not reachable as stated; what was learned along the way is the Artifact, and the session ends acknowledging that. Emits `bounded_closure_proposed` event. Marks the session for closure with `Status: Bounded Closure: <reason>` in the history file. Terminal — see Rebalance bounding below.
 
 The Rebalance gate is reachable from Phase 2 step 3c-bis (per-Turn user opt-in) and from Phase 3 (per-Circle reconciler verdict).
@@ -745,7 +754,7 @@ Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit
 | `review_done` | Review complete | Issues filed count |
 | `circuit_breaker` | Circuit breaker tripped | Condition name |
 | `turn_end` | End of Turn | Tasks resolved, issues created |
-| `coherence_review` | Phase 2 step 3c-bis, per-Turn Coherence gate fired | `verdict` (ok \| review-needed \| skipped-no-commits \| skipped-no-directive) + three-edge summary lines (Artifact↔Grounding, Artifact↔Directive, Grounding↔Directive). The `bounded-closure-proposed` verdict is NOT emitted here — that case has its own dedicated `bounded_closure_proposed` event row below, fired by the per-Circle reconciler verdict, not by this per-Turn gate. |
+| `coherence_review` | Phase 2 step 3c-bis, per-Turn Coherence gate fired | `verdict` (ok \| review-needed \| skipped-no-commits \| skipped-no-directive \| skipped-no-anchor) + three-edge summary lines (Artifact↔Grounding, Artifact↔Directive, Grounding↔Directive). The `bounded-closure-proposed` verdict is NOT emitted here — that case has its own dedicated `bounded_closure_proposed` event row below, fired by the per-Circle reconciler verdict, not by this per-Turn gate. |
 | `rebalance_artifact` | Rebalance gate, user chose Revise Artifact | Re-tried task ID or new task description |
 | `rebalance_grounding` | Rebalance gate, user chose Revise Grounding | Decision-record file path created or superseded |
 | `rebalance_directive` | Rebalance gate, user chose Revise Directive | Shaper dispatch reason |

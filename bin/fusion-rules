@@ -23,6 +23,9 @@
 #
 # Convention for filename patterns:
 #   - Every agent reads fusion-workbench-conventions.md (shipped by plugin).
+#   - Every agent also reads decision-record-examples.md (shipped by plugin) —
+#     the worked examples of [o]→[a]→[i], [a]→[s], [o]→[d] transitions are
+#     small and useful for any agent that touches decision records.
 #   - Domain agents additionally match filename patterns:
 #       coder, coderev, bugfixer  → *coding*.md
 #       ontocoder, ontorev        → *ontology*.md, *normative*.md, *verb*.md
@@ -76,8 +79,9 @@ PLUGIN_RULES_DIR="${FUSION_PLUGIN_ROOT:-}/rules"
 PROJECT_RULES_DIR="./rules"
 PROJECT_CLAUDE_RULES_DIR=".claude/rules"
 
-# 1. Always emit the framework ground-truth rule.
+# 1. Always emit the framework ground-truth rules.
 emit_if_exists "$PLUGIN_RULES_DIR/fusion-workbench-conventions.md"
+emit_if_exists "$PLUGIN_RULES_DIR/decision-record-examples.md"
 
 # 2. Domain patterns — plugin first, then fusion-agent-specific project rules,
 #    then project-wide rules in .claude/rules/. Order is read-order, not

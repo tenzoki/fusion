@@ -3,7 +3,7 @@
 #
 # Records a presence marker at fusion-workbench/.session-marker for the
 # current orchestrator session, with a heartbeat (file mtime) refreshed at
-# each cycle boundary. Used by /fusion:setup and the orchestrator itself
+# each Turn boundary. Used by /fusion:setup and the orchestrator itself
 # to WARN the user when a second orchestrator is started against the same
 # project — fusion has no concurrency lock and parallel orchestrators can
 # corrupt agentstate.yaml, double-dispatch tasks, and race on workbench
@@ -74,7 +74,7 @@ case "$cmd" in
     agent="${2:-fusion:orchestrator}"
     cat > "$marker" <<EOF
 # Fusion active-session marker. mtime is the heartbeat.
-# Removed on clean shutdown; refreshed at each orchestrator cycle.
+# Removed on clean shutdown; refreshed at each orchestrator Turn.
 agent: $agent
 started_at: $(date -u +%Y-%m-%dT%H:%M:%SZ)
 cwd: $(pwd -P)

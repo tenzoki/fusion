@@ -207,6 +207,10 @@ HTML_PAGE = r"""<!DOCTYPE html>
   .event-type.scope_resolved, .event-type.queue_built { color: var(--cyan); }
   .event-type.review_start, .event-type.review_done { color: var(--purple); }
   .event-type.revert { color: var(--red); }
+  /* v2.9.0 Coherence and Rebalance events */
+  .event-type.coherence_review { color: var(--cyan); }
+  .event-type.rebalance_artifact, .event-type.rebalance_grounding, .event-type.rebalance_directive { color: var(--purple); }
+  .event-type.bounded_closure_proposed { color: var(--orange); }
   .event-detail { color: var(--fg2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   /* YAML state view */
   .yaml-content {

@@ -23,8 +23,15 @@ fusion/
 │   ├── analyst.md            # Document study and problem analysis
 │   └── consultant.md         # On-demand expert consultation
 ├── skills/                   # Slash commands
-│   ├── commit/SKILL.md       # /commit — AI-generated conventional commit
-│   └── revise-claude-md/SKILL.md  # /revise-claude-md — update project memory
+│   ├── archive/SKILL.md      # /fusion:archive — archive completed/aged workbench files
+│   ├── commit/SKILL.md       # /fusion:commit — AI-generated conventional commit
+│   ├── help/SKILL.md         # /fusion:help — explain fusion's daily use, install, configure
+│   ├── log-activity/SKILL.md # /fusion:log-activity — generate/update activity log
+│   ├── memo/SKILL.md         # /fusion:memo — append a memo to the personal memo log
+│   ├── revise-claude-md/SKILL.md # /fusion:revise-claude-md — update project memory
+│   ├── setup/SKILL.md        # /fusion:setup — bootstrap workbench + load rules
+│   ├── unlock/SKILL.md       # /fusion:unlock — write permissive .claude/settings.local.json
+│   └── upgrade/SKILL.md      # /fusion:upgrade — refresh the local marketplace clone
 ├── hooks/                    # Compliance guard system
 │   ├── hooks.json            # Hook wiring: SessionStart + PreToolUse + PostToolUse
 │   ├── guard.ts              # PreToolUse — blocks writes to protected paths
@@ -160,6 +167,7 @@ fusion-workbench/
 ├── ontoreview/    # Ontology review output
 ├── investigations/ # Forensic analysis reports
 ├── analyses/      # Analyst output
+├── consult/       # Consultation reports
 └── tasklist.md    # Current work queue
 ```
 
@@ -169,7 +177,7 @@ fusion-workbench/
 
 The defect/decision distinction: file in `issues/` if the resolution is "go fix it"; file in `decisions/` if the resolution is "decide and record." See `rules/fusion-workbench-conventions.md` for the full convention and decision-record template.
 
-The orchestrator creates these directories at session start (Setup Step 0). Writes to `fusion-workbench/` are auto-allowed via `settings.json` so the orchestrator's dashboard updates, event logging, and history writes don't prompt the user.
+`/fusion:setup` creates these directories (and writes the `.fusion-setup` marker that all agents and hooks look for). Without setup, agents halt with "no fusion workbench found" and hooks no-op silently — this is intentional, so a Claude session whose cwd happens to land in any non-fusion directory does not spawn a stray workbench. Writes to `fusion-workbench/` are auto-allowed via `settings.json` so the orchestrator's dashboard updates, event logging, and history writes don't prompt the user.
 
 ## Project-Specific Configuration
 
@@ -177,4 +185,4 @@ After installing the plugin, configure for your project:
 
 1. Edit `hooks/config.json` to set your protected paths, decision categories, and thresholds
 2. Edit rules in `rules/` to match your project's coding and architecture standards
-3. The `fusion-workbench/` directory (including `.guard-state/`) is created automatically by agents on first use
+3. Run `/fusion:setup` once at the project root — this creates `fusion-workbench/` (including `.guard-state/`) and writes the `.fusion-setup` marker. All subsequent agents and hooks locate the workbench by walking up from `pwd` to find that marker.

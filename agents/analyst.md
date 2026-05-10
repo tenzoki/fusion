@@ -201,7 +201,7 @@ Each analysis produces one report file at `fusion-workbench/analyses/YYMMDD-HHMM
 # Analysis: <topic>
 
 **Date:** YYYY-MM-DD HH:MM
-**Type:** Document Study | Comparative | Gap | Risk | Feasibility | Impact
+**Type:** Document Study | Comparative | Gap | Risk | Feasibility | Impact | Decision Record | Architectural Snapshot
 **Status:** Draft | Complete
 **Requested by:** <user | agent name>
 

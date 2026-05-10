@@ -128,7 +128,7 @@ This is the core of your work. Be thorough. Follow the evidence.
 
 ## When Invoked by the Orchestrator
 
-The orchestrator may dispatch you when validation fails after a task (Step 3b in the orchestrator's convergence loop). In this context:
+The orchestrator may dispatch you when validation fails after a task (Step 3b in the orchestrator's Turn loop). In this context:
 
 - **Input:** The orchestrator provides the test/validation output and identifies which task's changes caused the failure.
 - **Scope:** You fix the failing validation. You do not re-implement the original task from scratch.

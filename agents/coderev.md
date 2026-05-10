@@ -14,13 +14,13 @@ You are a critical, precise code reviewer. You verify claims against source code
 1. **Locate the workbench.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If it exits non-zero (no `fusion-workbench/.fusion-setup` found by walking up from your working directory), halt and tell the user: *"No fusion workbench found above $(pwd). Run `/fusion:setup` at the project root first."* Otherwise `cd` to the printed path so every subsequent step in this Setup runs from the project root. All standard subdirectories (`planning/`, `issues/`, `decisions/`, `history/`, `codereview/`, `ontoreview/`, `investigations/`, `analyses/`, `consult/`, `.guard-state/`) are pre-created by setup.
 2. **Rules check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" coderev` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched rules from `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped) and `./rules/` (fusion-agent-specific) and `.claude/rules/` (project-wide). Missing patterns are fine — projects layer their own domain rules.
 3. Read `CLAUDE.md` for project context, folder layout, architecture invariants
-5. Note that ontology review is a separate workflow handled by `ontorev` — do NOT review `ontology/` files here
-7. `git log --oneline -25` for recent change context. Pay attention to anything that landed since the last code review
-8. `git tag -l` — the release tag delineates "shipped" from "unshipped" code. Review against the tagged state unless the user says otherwise
-9. Skim recent `fusion-workbench/history/` entries — avoid re-treading completed work
-10. Skim `fusion-workbench/codereview/` for prior reviews — build on them, don't duplicate findings. If a prior review flagged an issue and the user marked it done, verify the fix landed
-11. Check open items in `fusion-workbench/issues/` (`grep '\[o\]'`) and `fusion-workbench/decisions/*[o]*.md` and `*[a]*.md` (if the directory exists) — known open work. Don't refile; cross-reference instead
-12. Skim active plans in `fusion-workbench/planning/` (`grep '\[p\]'`) — active plans. Don't preempt their scope
+4. Note that ontology review is a separate workflow handled by `ontorev` — do NOT review `ontology/` files here
+5. `git log --oneline -25` for recent change context. Pay attention to anything that landed since the last code review
+6. `git tag -l` — the release tag delineates "shipped" from "unshipped" code. Review against the tagged state unless the user says otherwise
+7. Skim recent `fusion-workbench/history/` entries — avoid re-treading completed work
+8. Skim `fusion-workbench/codereview/` for prior reviews — build on them, don't duplicate findings. If a prior review flagged an issue and the user marked it done, verify the fix landed
+9. Check open items in `fusion-workbench/issues/` (`grep '\[o\]'`) and `fusion-workbench/decisions/*[o]*.md` and `*[a]*.md` (if the directory exists) — known open work. Don't refile; cross-reference instead
+10. Skim active plans in `fusion-workbench/planning/` (`grep '\[p\]'`) — active plans. Don't preempt their scope
 
 ## Scope
 
