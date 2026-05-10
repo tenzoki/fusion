@@ -335,7 +335,7 @@ If the count is `0`, **skip the gate cleanly**: emit a single `coherence_review`
 **Build the three-edge summary.** Compute these three lines inline; do NOT dispatch another agent.
 
 - **Artifact↔Grounding** — derive from the `coderev` / `ontorev` outputs already on disk for this Turn (Step 3c just wrote them). One line: `OK` or `<N> issues filed`.
-- **Artifact↔Directive** — read the active plan's `## Directive` section (or the active spec if no plan) and the commit-message summaries from this Turn. Produce one prose line: `commits move toward / partially toward / orthogonal to / away from the stated Directive`.
+- **Artifact↔Directive** — resolve the Directive source from the first non-empty of: the active plan's `## Directive` section (if a plan is active for this session); else the active spec's `## Directive` section (if shaping was done but no plan); else the orchestrator's session history file's `**Directive:**` line. Whichever source is non-empty first wins. If none is available (defensive — should not happen after Setup writes the history file), emit a `coherence_review` event with `verdict: "skipped-no-directive"` and skip the gate cleanly (proceed to Step 3d). Otherwise read the resolved Directive plus the commit-message summaries from this Turn and produce one prose line: `commits move toward / partially toward / orthogonal to / away from the stated Directive`.
 - **Grounding↔Directive** — glob `fusion-workbench/decisions/*[a]*.md` filtered to files last-modified within this Turn. One line: `<N> active decisions consistent / <M> potentially conflicting (cited)`. If the directory is absent or no answered decisions changed, emit `0 active decisions touched this Turn`.
 
 **Present to user via `AskUserQuestion`.** Show the three-edge summary as the question prefix (three lines, one per edge), then ask a single binary question with two options:
@@ -468,7 +468,6 @@ The orchestrator **must stop and ask the user** before proceeding when any of th
 | Per-Turn Coherence gate returned "Rebalance" (Phase 2 step 3c-bis) | User opted into mid-Turn Rebalance | foundation_V3 §2.1 |
 | Per-Circle reconciler verdict is `review-needed` (Phase 3) | Aggregate Coherence not achieved | foundation_V3 §1.3 |
 | Per-Circle reconciler verdict is `bounded-closure-proposed` (Phase 3) | Directive judged unreachable | foundation_V3 §2.1 |
-| Same task fails twice in a row | Implicit Rebalance signal: Grounding/Directive may be wrong, not just Artifact | foundation_V3 §2.1 |
 
 **Interaction pattern at a gate:**
 
@@ -483,14 +482,30 @@ If the user chooses Modify, update the task description and re-route. If Skip, m
 
 ### Rebalance Gate
 
-When a Coherence-related condition triggers (any of the four bottom rows of the gate-rules table above — per-Turn user opt-in, per-Circle `review-needed`, per-Circle `bounded-closure-proposed`, or same-task-failed-twice), the gate presents **four explicit options** instead of the standard Proceed/Skip/Defer/Modify:
+When a Coherence-related condition triggers (any of the three bottom rows of the gate-rules table above — per-Turn user opt-in, per-Circle `review-needed`, per-Circle `bounded-closure-proposed`), the gate presents **four explicit options** instead of the standard Proceed/Skip/Defer/Modify:
 
-- **Revise Artifact** — re-execute the failing task or queue a new task addressing the drift. The Artifact is not where it should be; the next move is another execution pass. Emits `rebalance_artifact` event. Re-enters Phase 2 with a new queue entry.
-- **Revise Grounding** — file a new `decisions/[o]` entry, or supersede an existing `[i]` decision (rename `[i]`→`[s]` and create a new `[o]`, per `fusion-workbench-conventions.md`). The basis we built on was wrong; the next move is to record a new question. Emits `rebalance_grounding` event. Pauses execution; user types the question.
-- **Revise Directive** — re-shape: dispatch `shaper` with the current spec + the drift evidence. The destination we set was wrong; the next move is to re-state what we want. Emits `rebalance_directive` event. Re-enters Phase 0b.1.
-- **Accept Bounded Closure** — the Directive is not reachable as stated; what was learned along the way is the Artifact, and the session ends acknowledging that. Emits `bounded_closure_proposed` event. Marks the session for closure with `Status: Bounded Closure: <reason>` in the history file.
+- **Revise Artifact** — re-execute the failing task or queue a new task addressing the drift. The Artifact is not where it should be; the next move is another execution pass. Emits `rebalance_artifact` event. Re-enters Phase 2 with a new queue entry. (Bounding: see Rebalance bounding below.)
+- **Revise Grounding** — file a new `decisions/[o]` entry, or supersede an existing `[i]` decision (rename `[i]`→`[s]` and create a new `[o]`, per `fusion-workbench-conventions.md`). The basis we built on was wrong; the next move is to record a new question. Emits `rebalance_grounding` event. (Resume mechanics: see Rebalance bounding below.)
+- **Revise Directive** — re-shape: dispatch `shaper` with the current spec + the drift evidence. The destination we set was wrong; the next move is to re-state what we want. Emits `rebalance_directive` event. Re-enters Phase 0b.1. (Bounding: once-per-session — see Rebalance bounding below.)
+- **Accept Bounded Closure** — the Directive is not reachable as stated; what was learned along the way is the Artifact, and the session ends acknowledging that. Emits `bounded_closure_proposed` event. Marks the session for closure with `Status: Bounded Closure: <reason>` in the history file. Terminal — see Rebalance bounding below.
 
-The Rebalance gate is reachable from Phase 2 step 3c-bis (per-Turn user opt-in) and from Phase 3 (per-Circle reconciler verdict). It is also reachable from the existing "task fails twice in a row" pattern, which the orchestrator detects by tracking `tasks_errored` per task ID across a Turn.
+The Rebalance gate is reachable from Phase 2 step 3c-bis (per-Turn user opt-in) and from Phase 3 (per-Circle reconciler verdict).
+
+#### Rebalance bounding
+
+Each option has bounded post-action mechanics. No option is allowed to loop unboundedly.
+
+- **Revise Artifact re-entries count against the existing 5-Turn circuit breaker.** Each Revise Artifact choice creates a new Turn — the orchestrator increments the Turn counter and re-enters Phase 2 with the new queue entry. When the Turn counter reaches `max_turns` (default 5), the next per-Turn or per-Circle gate forces Bounded Closure with reason `"Turn limit reached after Rebalance retries."`. This piggybacks on the existing circuit breaker; no new infrastructure needed.
+
+- **Revise Directive is limited to once per session.** The orchestrator increments the in-memory counter `directive_revisions_this_session` (initialised to 0 at session start). The first Revise Directive choice re-enters Step 0b.1 (shaper), regenerating spec + plan + queue. A second Revise Directive in the same session is rejected; the gate instead forces Bounded Closure with reason `"Directive revised twice without convergence."`. Rationale: re-shaping more than once per session usually means the project itself needs to step back, not the current Circle.
+
+- **Revise Grounding does not increment the Turn counter** (decision-filing is not Artifact work). The orchestrator pauses Phase 2 at the current queue position (records `paused_at_task: <task ID>` in `agentstate.yaml`), then prompts the user via `AskUserQuestion` to choose between:
+  (a) **File a new `decisions/[o]` entry** — orchestrator asks the user for the question text and any options/constraints (or for the full decision body if the user prefers to type it directly), then writes the file at `fusion-workbench/decisions/YYMMDD-HHMM[o]-<topic>.md` per the decision-record template in `fusion-workbench-conventions.md`; OR
+  (b) **Supersede an existing `[i]` decision** — orchestrator presents the list of `[i]` decisions and asks which one. On selection, renames `[i]` → `[s]` (appending `Superseded by: <new-path> — <reason>`) and creates the new `[o]` decision file citing the supersession.
+
+  After either branch, the orchestrator emits `rebalance_grounding` and **resumes Phase 2 at the recorded `paused_at_task`** without incrementing the Turn counter. There is no re-entry budget — decision-filing is not recursive. The user can choose Revise Grounding multiple times in a session if multiple decisions need to be filed.
+
+- **Accept Bounded Closure is terminal.** The orchestrator emits `bounded_closure_proposed`, sets the session history file's `**Status:**` to `Bounded Closure: <reason>`, runs the reconciler one final time for the closure record (the reconciler's three-edge verdict captures what was learned — that's the Bounded Closure Artifact), then exits to Phase 4 cleanup. Skip any further Phase 2 work.
 
 ## Error Handling
 
@@ -517,6 +532,7 @@ The Rebalance gate is reachable from Phase 2 step 3c-bis (per-Turn user opt-in) 
 - `decisions_answered` — count of `[o]` → `[a]` transitions on `decisions/` files this session (Grounding-growth metric)
 - `decisions_implemented` — count of `[a]` → `[i]` transitions on `decisions/` files this session (Grounding-realisation metric)
 - `commits_made` — number of successful commits
+- `directive_revisions_this_session` — count of Revise Directive choices accepted at the Rebalance gate this session (initialised to 0; capped at 1 — see Rebalance bounding)
 - `agent_errors` — count of agent failures (no output, wrong scope, etc.)
 - `human_gates_hit` — number of times the orchestrator stopped for user input
 
@@ -705,7 +721,7 @@ Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit
 | `review_done` | Review complete | Issues filed count |
 | `circuit_breaker` | Circuit breaker tripped | Condition name |
 | `turn_end` | End of Turn | Tasks resolved, issues created |
-| `coherence_review` | Phase 2 step 3c-bis, per-Turn Coherence gate fired | `verdict` (ok \| review-needed \| skipped-no-commits \| bounded-closure-proposed) + three-edge summary lines (Artifact↔Grounding, Artifact↔Directive, Grounding↔Directive) |
+| `coherence_review` | Phase 2 step 3c-bis, per-Turn Coherence gate fired | `verdict` (ok \| review-needed \| skipped-no-commits \| skipped-no-directive) + three-edge summary lines (Artifact↔Grounding, Artifact↔Directive, Grounding↔Directive). The `bounded-closure-proposed` verdict is NOT emitted here — that case has its own dedicated `bounded_closure_proposed` event row below, fired by the per-Circle reconciler verdict, not by this per-Turn gate. |
 | `rebalance_artifact` | Rebalance gate, user chose Revise Artifact | Re-tried task ID or new task description |
 | `rebalance_grounding` | Rebalance gate, user chose Revise Grounding | Decision-record file path created or superseded |
 | `rebalance_directive` | Rebalance gate, user chose Revise Directive | Shaper dispatch reason |

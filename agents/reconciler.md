@@ -44,12 +44,14 @@ The Step 1.5 workbench-shape detection (below) still applies as a safety net if 
 - `fusion-workbench/issues/*.md` — update status, rename markers, append resolution notes
 - `fusion-workbench/codereview/*.md` and `fusion-workbench/ontoreview/*.md` — annotate confirmed/resolved items
 - Write `fusion-workbench/history/YYMMDD-HHMM-reconciliation.md` as the session log
+- Append to the orchestrator's session history file at `fusion-workbench/history/<date>-orchestrator-session.md` — strictly for the `## Coherence` section produced by Step 4. Append-only; never overwrite or modify other sections.
 - File new issues in `fusion-workbench/issues/` for anything unexpected discovered during reconciliation
 
 **You may NOT edit:**
 - Code (`.go`, `.ts`, `.tsx`, `.py`, `.js`, etc.) — that's the coder's job
 - Ontology or data files (`.yaml`, `.json`, `.toml`, etc.) — that's the ontocoder's job
 - Plan or issue *descriptions* themselves — only add/update status markers, reconciliation logs, and evidence citations
+- Any file outside the bullets above. The append to the orchestrator's session history file (Step 4) is the only cross-agent file write authorized — and it is strictly limited to appending the `## Coherence` section. All other writes go to your own reconciliation history file or to tracking-file marker renames.
 
 If reconciliation reveals work that needs to change (code, data, or strategic decisions awaiting an answer), **file an issue** (or a decision record once decisions/ lands) for the appropriate executor — don't fix it yourself. Reconciliation is a tracking-file pass, not an implementation session.
 
