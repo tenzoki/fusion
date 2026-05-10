@@ -66,6 +66,8 @@ These are non-negotiable defaults. The user can override them at the `refine` st
    - `fusion-workbench/material/`
    These hold strategic deliverables, briefings, and source artefacts. They're archive-class only with the user's explicit natural-language ask — never as part of a bulk tier.
 
+   *Note: `handoffs/` and `material/` are not part of the standard layout (per `rules/fusion-workbench-conventions.md`); they appear here as defensive exclusions for any consuming project that may use these names.*
+
 ## Tier definitions
 
 Each tier is **additive**: tier-2 includes tier-1, tier-3 includes tier-2. The default age threshold for "aged" buckets is 14 days; override with `tier-N <D>d` (e.g. `tier-3 21d`).

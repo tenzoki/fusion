@@ -5,9 +5,13 @@ allowed-tools: [Bash, Read, Glob, Grep, Write, Edit]
 
 # Log Activity Command
 
-When the user invokes `/log-activity`, scan all project activity sources and create or update the user's activity log file in the project root.
+When the user invokes `/fusion:log-activity`, scan all project activity sources and create or update the user's activity log file in the project root.
 
 ## Process
+
+### 0. Resolve workbench root
+
+Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If non-empty, `cd` to the printed path so all subsequent paths anchor to the project root. If empty, the user is not in a fusion project — proceed using `pwd` and warn the user that the log will land in the current directory.
 
 ### 1. Determine the current user
 

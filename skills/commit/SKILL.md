@@ -6,7 +6,7 @@ allowed-tools: [Bash, Read, Glob]
 
 # Commit Command
 
-When the user invokes `/commit`, help them commit their changes with a well-crafted commit message.
+When the user invokes `/fusion:commit`, help them commit their changes with a well-crafted commit message.
 
 ## Process
 
