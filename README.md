@@ -44,16 +44,25 @@ fusion/
 │   │   ├── config.ts         # JSON configuration loader
 │   │   ├── escalation.ts     # Escalation state machine (block → halt)
 │   │   ├── events.ts         # JSONL event logger
-│   │   └── churn.ts          # Per-file churn heatmap tracker
+│   │   ├── churn.ts          # Per-file churn heatmap tracker
+│   │   ├── cross-file.ts     # Cross-file ping-back / circular edit detector
+│   │   ├── workbench-root.ts # Walks up from cwd to find fusion-workbench/.fusion-setup
+│   │   └── self-detect.ts    # Detects when cwd is the fusion plugin's own repo (guard stand-down)
 │   ├── dist/                 # Compiled JS (committed, used at runtime)
 │   ├── lib/__tests__/        # 30 tests
 │   ├── package.json          # TypeScript dependencies
 │   └── tsconfig.json         # TypeScript config
 ├── rules/                    # Framework rule shipped by the plugin
 │   └── fusion-workbench-conventions.md
+├── templates/                # Starter files projects copy into their own ./rules/
+│   └── investigator-capture-layout.md
+├── docs/                     # Conceptual docs (also pointed at by skills)
+│   └── philosophy.md
 ├── bin/
 │   ├── monitor               # Real-time browser-based monitoring dashboard
 │   ├── fusion-rules          # Per-agent rule discovery helper (plugin + project)
+│   ├── fusion-workbench-root # Walks up from pwd to find fusion-workbench/.fusion-setup
+│   ├── fusion-session-mark   # Tracks active orchestrator session via .session-marker
 │   └── fu                    # Project-local launcher: claude --dangerously-skip-permissions --agent fusion:<name>
 ├── settings.json             # Plugin defaults, agent, and auto-allowed permissions
 ├── README-agents.md          # Agent architecture overview
@@ -137,7 +146,7 @@ The monitor reads `fusion-workbench/orchestrator-live.md` and `orchestrator-even
 Arguments:
 - `name` (required) — session name, shown in browser tab title
 - `port` (required) — HTTP port
-- `-n <N>` — max event lines (default 20)
+- `-n <N>` — max event lines (default 100)
 - `-i <sec>` — refresh interval (default 2)
 
 ## fu — project-local launcher

@@ -27,6 +27,7 @@ Claude Code
   |
   +-- SessionStart
   |     \-- exports FUSION_PLUGIN_ROOT to $CLAUDE_ENV_FILE
+  |         (also emits a systemMessage banner visible to the user)
   |
   +-- PreToolUse (Write/Edit/MultiEdit/NotebookEdit)
   |     \-- guard.ts
@@ -37,6 +38,7 @@ Claude Code
   +-- PostToolUse (Write/Edit/MultiEdit/NotebookEdit/Bash)
         \-- tracker.ts
               +-- fusion-workbench/.guard-state/churn.json (per-file change counts)
+              +-- fusion-workbench/.guard-state/cross-file.json (cross-file ping-back state)
               \-- fusion-workbench/.guard-state/events.jsonl (audit log)
 ```
 
@@ -105,6 +107,9 @@ The hooks activate automatically on session start. No manual startup needed.
 | `lib/escalation.ts` | Escalation state management | Yes |
 | `lib/events.ts` | Append-only event logger | Yes |
 | `lib/churn.ts` | Churn heatmap tracker | Yes |
+| `lib/cross-file.ts` | Cross-file ping-back tracker (paired-touch / circular edit detector) | Yes |
+| `lib/workbench-root.ts` | Walks up from cwd to find `fusion-workbench/.fusion-setup` (single source of truth for workbench presence in TS) | Yes |
+| `lib/self-detect.ts` | Detects when cwd is the fusion plugin's own repo so the guard stands down | Yes |
 | `package.json` | Dev dependencies (tsx, typescript, vitest) | Yes |
 
 ## Usage
