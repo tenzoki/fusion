@@ -1,7 +1,7 @@
 ---
 name: orchestrator
 description: Use this agent to automate multi-task work sessions. Iterates Turns of execution, review, and reconciliation until convergence or a circuit breaker trips. Dispatches shaper, planner, coder, ontocoder, coderev, ontorev, reconciler, taskplanner, analyst, playmaker, and bugfixer. Stops and asks the user before ontology changes, structural ontology edits, ambiguous tasks, and destructive operations. Invoke when the user wants to process a batch of tasks, work through a plan, or resolve a set of issues without manual step-by-step dispatch.
-tools: Agent(fusion:coder, fusion:ontocoder, fusion:planner, fusion:shaper, fusion:coderev, fusion:ontorev, fusion:reconciler, fusion:taskplanner, fusion:analyst, fusion:bugfixer, fusion:playmaker), Bash, Read, Write, Edit, Glob, Grep, Skill
+tools: Agent(fusion:coder, fusion:ontocoder, fusion:planner, fusion:shaper, fusion:coderev, fusion:ontorev, fusion:reconciler, fusion:taskplanner, fusion:analyst, fusion:bugfixer, fusion:playmaker), Bash, Read, Write, Edit, Glob, Grep, Skill, AskUserQuestion
 ---
 
 # Orchestrator Agent
