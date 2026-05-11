@@ -123,6 +123,14 @@ Remaining setup (after step 1 is resolved):
      ```
 
      Cite the inputs and the chosen domain in the Setup-complete summary and in the snapshot section of the history file. Pass this domain as the `domain` parameter to `taskplanner` (Phase 1) and `reconciler` (Phase 3) dispatches by default; pass it as the `executors` selection cue to `planner` (e.g. `executors=[coder, ontocoder, analyst]` when domain is `strategic` or `knowledge`).
+   - Count anticipated/active Circles (used as a hint surface; never gates execution):
+
+     ```
+     circles_anticipated = count of fusion-workbench/circles/*[a]*.md
+     circles_active      = count of fusion-workbench/circles/*[t]*.md
+     ```
+
+   - **Setup hint.** If `circles_anticipated + circles_active > 0` (and `fusion-workbench/circles/` exists), print to the user: *"You have <N> anticipated and <M> active Circle(s) in `fusion-workbench/circles/`. Consider `/fusion:next` to review the portfolio before starting."* (Substitute `<N>` and `<M>`.) Continue Setup without waiting for user response. If both counts are 0 (or `circles/` is absent), no hint is printed — behaviour identical to v2.9.0. Record the hint emission (or its absence) in the orchestrator's session history file's snapshot section so post-session analysis can see whether it was printed.
 6. Create history file: `fusion-workbench/history/YYMMDD-HHMM-orchestrator-session.md` (obtain timestamp from `date +%y%m%d-%H%M`)
 7. Write initial history entry with snapshot counts and session Directive
 8. Initialize event log and emit session start:

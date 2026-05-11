@@ -134,6 +134,7 @@ Read every path emitted. The helper emits `fusion-workbench-conventions.md` (alw
   - Current git HEAD (if git repo)
 - Guard check: read `./fusion-workbench/.guard-state/escalation.json` (if present). If `haltActive: true`, warn the user immediately — all write operations are blocked. Offer to clear or proceed with the halt active. Also read `./fusion-workbench/.guard-state/churn.json` to note high-thrash files.
 - Workbench-domain detection: run the heuristic in `agents/orchestrator.md` Setup Step 5 (the `decisions_count`/`analyses_count`/`code_files`/`data_files` block). Report the detected domain in the Setup-complete summary. The orchestrator passes this domain as the default `domain` parameter to `taskplanner` and `reconciler` dispatches; the user may override at any individual dispatch.
+- **Circle-count snapshot and hint:** count files in `fusion-workbench/circles/` by marker (`[a]` anticipated, `[t]` active). If any exist, print a one-line advisory pointing to `/fusion:next` for portfolio review. If `circles/` is empty or absent, no hint is printed — opt-in behaviour preserved. The orchestrator's Setup Step 5 contains the canonical implementation.
 
 ## Step 4 — History file
 

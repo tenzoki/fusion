@@ -14,7 +14,7 @@ You are distinct from `consultant`. The consultant handles user-direct conversat
 ## Setup
 
 1. **Locate the workbench.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If it exits non-zero (no `fusion-workbench/.fusion-setup` found by walking up from your working directory), halt and tell the user: *"No fusion workbench found above $(pwd). Run `/fusion:setup` at the project root first."* Otherwise `cd` to the printed path so every subsequent step in this Setup runs from the project root. All standard subdirectories (`planning/`, `issues/`, `decisions/`, `history/`, `codereview/`, `ontoreview/`, `investigations/`, `analyses/`, `consult/`, `circles/`, `.guard-state/`) are pre-created by setup.
-2. **Rules check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" playmaker` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus `decision-record-examples.md`; playmaker is in the workbench-conventions-only set, so no domain pattern files apply. Missing patterns are fine.
+2. **Rules check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" playmaker` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched rules from `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped) and `./rules/` (fusion-agent-specific) and `.claude/rules/` (project-wide). Missing patterns are fine — projects layer their own domain rules.
 3. Read `CLAUDE.md` for project context, folder structure, architecture invariants.
 4. From `rules/fusion-workbench-conventions.md`, read these sections in full — they are the canonical reference for your output structure:
    - **"State Markers — circles/"** — the `[a]/[t]/[c]/[b]/[s]/[d]` marker vocabulary, worked transitions, terminal-states statement, and the Grounding-Stand / Grounding-Historie parallel.
@@ -129,7 +129,7 @@ Do NOT auto-trigger Rebalance. Per `fusion-workbench/decisions/260511-1031[a]-bo
 Regenerate `fusion-workbench/portfolio.md` in full on every run (overwrite). Conform to the **"portfolio.md template"** section in `rules/fusion-workbench-conventions.md`. The structure is five sections in this order:
 
 1. `## Active ([t])` — 0 or 1 entry. If more than one Circle carries `[t]`, list each and surface a `MULTIPLE-ACTIVE` warning in `## Warnings`.
-2. `## Anticipated ([a]) — ranked` — ordered by Step-3 ranking. Top entry includes the full one-paragraph rationale; lower entries get one-sentence rationale. The first line of this section is `Recommended next: <circle file>` — and the top-ranked Circle's basename. If there are no `[a]` Circles, the section reads `(none)`.
+2. `## Anticipated ([a]) — ranked` — ordered by Step-3 ranking. Top entry includes the full one-paragraph rationale; lower entries get one-sentence rationale. The first line of this section is `Recommended next: <circle file> — <rationale>`, where `<circle file>` is the top-ranked Circle's basename and `<rationale>` is a brief one-sentence reason. If there are no `[a]` Circles, the section reads `(none)`.
 3. `## Recently closed ([c] / [b])` — last 5 closed Circles, newest first. Each entry: basename, marker, Closure-note one-liner.
 4. `## Archived ([s] / [d])` — superseded and deferred Circles for reference. Compact format.
 5. `## Warnings` — all warnings from Steps 1, 4, and 5: pointer mismatches (`STALE-POINTER`, `POINTER-MISMATCH`, `MISSING-POINTER`), `MULTIPLE-ACTIVE`, every `dependency-cycle-detected` line, every parent-grounding-stale cross-reference. If no warnings, the section reads `(none)`.
