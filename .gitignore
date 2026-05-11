@@ -46,6 +46,9 @@ credentials.json
 # fusion-workbench is a runtime artifact created by agents in the consuming project
 fusion-workbench/
 
+# .fusion/ holds the project-local `fu` launcher copied from bin/fu at Setup — runtime artifact
+.fusion/
+
 # Audit logs (append-only, machine-generated)
 fusion_journal/audit/*.log
 
