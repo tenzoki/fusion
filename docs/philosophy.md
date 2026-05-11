@@ -4,7 +4,7 @@ Fusion is a multi-agent orchestration framework for Claude Code. It rests on thr
 
 ## 1. Specialization beats generalists
 
-Instead of one assistant that does everything, fusion ships **13 narrow agents** — coder, ontocoder, planner, shaper, taskplanner, reconciler, coderev, ontorev, analyst, investigator, bugfixer, consultant, and an orchestrator that dispatches the others.
+Instead of one assistant that does everything, fusion ships **14 narrow agents** — coder, ontocoder, planner, shaper, taskplanner, playmaker, reconciler, coderev, ontorev, analyst, investigator, bugfixer, consultant, and an orchestrator that dispatches the others.
 
 Each agent has:
 

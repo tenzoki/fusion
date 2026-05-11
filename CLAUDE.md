@@ -6,11 +6,11 @@ This repository is the **source of the fusion Claude Code plugin** (`tenzoki-plu
 
 Plugin published to the `tenzoki-plugins` marketplace (repo: `tenzoki/claude-plugins`). Provides:
 
-- 13 specialized agents — orchestrator (top-level dispatcher) plus coder, ontocoder, coderev, ontorev, planner, shaper, taskplanner, reconciler, analyst, investigator, bugfixer, consultant. Three (`reconciler`, `taskplanner`, `planner`) are parameterised by domain (`code | data | strategic | knowledge`) since v1.11.0.
+- 14 specialized agents — orchestrator (top-level dispatcher) plus coder, ontocoder, coderev, ontorev, planner, shaper, taskplanner, reconciler, analyst, investigator, bugfixer, consultant, playmaker. Three (`reconciler`, `taskplanner`, `planner`) are parameterised by domain (`code | data | strategic | knowledge`) since v1.11.0.
 - Compliance guard with churn/escalation tracking (TypeScript hooks, compiled to `hooks/dist/`)
 - Real-time HTML monitor dashboard (`bin/monitor`)
 - Pattern-based rule discovery helper (`bin/fusion-rules`)
-- User-invocable skills: `/fusion:setup`, `/fusion:help`, `/fusion:upgrade`, `/fusion:memo`, `/fusion:commit`, `/fusion:log-activity`, `/fusion:revise-claude-md`, `/fusion:unlock`, `/fusion:archive`
+- User-invocable skills: `/fusion:setup`, `/fusion:help`, `/fusion:upgrade`, `/fusion:memo`, `/fusion:commit`, `/fusion:log-activity`, `/fusion:revise-claude-md`, `/fusion:unlock`, `/fusion:archive`, `/fusion:next`
 
 ## Layout
 
@@ -30,7 +30,7 @@ Plugin published to the `tenzoki-plugins` marketplace (repo: `tenzoki/claude-plu
 | `docs/` | Conceptual docs that are useful both inside Claude Code (pointed at by skills) and as standalone reading. Currently: `philosophy.md` (the three load-bearing ideas + domain parameter, pointed at by `/fusion:help`). |
 | `skills/<name>/SKILL.md` | User-invocable skill bodies |
 | `README.md`, `README-agents.md`, `README-hooks.md` | User-facing docs |
-| `fusion-workbench/` | **Runtime artifact, gitignored.** Created by the plugin's own hooks when Claude runs in this directory. Safe to delete. Layout: `planning/`, `issues/` (defects), `decisions/` (open questions, since v2.0), `history/`, `codereview/`, `ontoreview/`, `analyses/`, `investigations/`, `consult/`, `tasklist.md`. |
+| `fusion-workbench/` | **Runtime artifact, gitignored.** Created by the plugin's own hooks when Claude runs in this directory. Safe to delete. Layout: `planning/`, `issues/` (defects), `decisions/` (open questions, since v2.0), `history/`, `codereview/`, `ontoreview/`, `analyses/`, `investigations/`, `consult/`, `circles/`, `tasklist.md`. `.active-circle` is a one-line pointer file (single source of truth for the active `[t]` Circle; written by orchestrator on `[a]→[t]` after user confirmation of playmaker's proposal, cleared by orchestrator on `[t]→[c]/[b]`); see `rules/fusion-workbench-conventions.md`. |
 
 ## Conventions
 
@@ -47,6 +47,7 @@ Plugin published to the `tenzoki-plugins` marketplace (repo: `tenzoki/claude-plu
 - **Issues vs decisions (v2.0+)** — defects ("go fix it") in `fusion-workbench/issues/` with markers `[o]/[p]/[c]/[d]`; decisions / open questions ("decide and record") in `fusion-workbench/decisions/` with the richer `[o]/[a]/[i]/[d]/[s]` vocabulary. See `rules/fusion-workbench-conventions.md` for the decision rule and the decision-record template.
 - **SessionStart hook output** — `systemMessage` JSON for user-visible banners; plain stdout is `additionalContext` for the model only.
 - **`.gitignore`** — for shipped binaries inside excluded dirs use `dir/*` (file pattern) so `!path` exceptions work for new files. `dir/` (trailing slash) blocks all re-inclusion of files added later.
+- **Circles (v3+ via Track C)** — projects may opt in to portfolio-level work tracking by populating `fusion-workbench/circles/`. Empty or absent `circles/` preserves single-Circle v2.9.0 behaviour. Playmaker is the dispatchable agent for portfolio ranking; `/fusion:next` is the user surface. See `rules/fusion-workbench-conventions.md` "State Markers — circles/" for the vocabulary.
 
 ## Release process
 
@@ -83,3 +84,5 @@ Use `claude --plugin-dir /path/to/this/repo` to load directly from disk — no i
 | Orchestrator skipped Setup, dashboard never refreshed | "MUST run Setup" in agent prompt was overridden by user task urgency. The fix is `/fusion:setup`. Problem 11. |
 | `/plugin install` keeps returning an old version | Marketplace cache clone at `~/.claude/plugins/marketplaces/` is stale; manual git pull required. Problem 12. |
 | SessionStart banner not visible | Hook used plain stdout instead of `systemMessage` JSON. Problem 13. |
+| Orchestrator skips the portfolio hint when `[a]` Circles exist | `/fusion:setup` not re-run since Track C landed (so `circles/` isn't pre-created) OR `.active-circle` corruption preventing the count snapshot |
+| `/fusion:next` errors with "no Circles yet" but `circles/` has files | All Circle files have terminal markers (`[c]`, `[b]`, `[s]`, `[d]`) — `/fusion:next` short-circuits when no `[a]` or `[t]` exist. File a fresh `[a]` Circle via shaper or the user's own request to the orchestrator. |

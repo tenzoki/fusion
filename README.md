@@ -1,6 +1,6 @@
 # fusion
 
-AI agent orchestration framework for Claude Code. Provides 13 specialized agents with a compliance guard, churn detection, and real-time browser-based monitoring.
+AI agent orchestration framework for Claude Code. Provides 14 specialized agents with a compliance guard, churn detection, and real-time browser-based monitoring.
 
 ## What's Inside
 
@@ -8,8 +8,9 @@ AI agent orchestration framework for Claude Code. Provides 13 specialized agents
 fusion/
 ├── .claude-plugin/
 │   └── plugin.json          # Plugin manifest
-├── agents/                   # 13 specialized agents
+├── agents/                   # 14 specialized agents
 │   ├── orchestrator.md       # Multi-task session coordinator (default agent)
+│   ├── playmaker.md          # Circle portfolio management — ranks anticipated Circles
 │   ├── shaper.md             # Requirements engineering — vague → precise Directive
 │   ├── planner.md            # Implementation planning — spec → step-by-step plan
 │   ├── taskplanner.md        # Work queue builder — plans + issues → ordered tasklist
@@ -28,6 +29,7 @@ fusion/
 │   ├── help/SKILL.md         # /fusion:help — explain fusion's daily use, install, configure
 │   ├── log-activity/SKILL.md # /fusion:log-activity — generate/update activity log
 │   ├── memo/SKILL.md         # /fusion:memo — append a memo to the personal memo log
+│   ├── next/SKILL.md         # /fusion:next — portfolio briefing
 │   ├── revise-claude-md/SKILL.md # /fusion:revise-claude-md — update project memory
 │   ├── setup/SKILL.md        # /fusion:setup — bootstrap workbench + load rules
 │   ├── unlock/SKILL.md       # /fusion:unlock — write permissive .claude/settings.local.json
@@ -104,6 +106,7 @@ The orchestrator is the top-level coordinator. It dispatches specialized agents 
 
 ```
 orchestrator
+├── playmaker     → Circle portfolio brief (when /fusion:next is invoked)
 ├── shaper        → Directive document (when request is vague)
 ├── planner       → implementation plan (when Directive is ready)
 ├── taskplanner   → ordered work queue
@@ -177,12 +180,15 @@ fusion-workbench/
 ├── investigations/ # Forensic analysis reports
 ├── analyses/      # Analyst output
 ├── consult/       # Consultation reports
+├── circles/       # Circles — anticipated, active, closed, bounded, superseded, deferred (richer marker vocabulary)
 └── tasklist.md    # Current work queue
 ```
 
 **State markers — issues/ and planning/:** `[o]` open, `[p]` in progress, `[c]` closed, `[d]` deferred.
 
 **State markers — decisions/:** `[o]` open question, `[a]` answered (recorded answer exists), `[i]` implemented (answer realised in code/data), `[d]` deferred, `[s]` superseded by a later decision.
+
+**State markers — circles/:** `[a]` anticipated, `[t]` active/in-Turn, `[c]` closed-coherent, `[b]` Bounded Closure, `[s]` superseded, `[d]` deferred. See `rules/fusion-workbench-conventions.md` for transitions.
 
 The defect/decision distinction: file in `issues/` if the resolution is "go fix it"; file in `decisions/` if the resolution is "decide and record." See `rules/fusion-workbench-conventions.md` for the full convention and decision-record template.
 
