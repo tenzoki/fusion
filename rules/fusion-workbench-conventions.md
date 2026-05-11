@@ -15,8 +15,11 @@ fusion-workbench/
 ├── analyses/      # analyst output (YYMMDD-HHMM-<topic>.md)
 ├── investigations/# investigator output (YYMMDD-HHMM-<topic>.md)
 ├── consult/       # consultant output (YYMMDD-HHMM-<topic>.md)
+├── circles/       # anticipated, active, closed, and bounded Circles (YYMMDD-HHMM[S]-<directive-slug>.md)
 └── tasklist.md    # generated work queue (taskplanner only)
 ```
+
+`fusion-workbench/.active-circle` is a one-line pointer file containing the basename of the currently `[t]`-marked Circle, or is absent when no Circle is active. The orchestrator reads it at session start; playmaker writes it on `[a]→[t]` activation; orchestrator clears it on `[t]→[c]/[b]/[s]/[d]` transitions. The pointer is the single source of truth for "active Circle" — `agentstate.yaml` does NOT duplicate this field.
 
 The `fusion-workbench/` is anchored to the directory where setup was run — the working directory `pwd` reports, not necessarily the git toplevel. A subfolder may legitimately have its own independent workbench, separate from any workbench at a parent level; the plugin's hooks resolve `process.cwd()` directly and follow whichever directory is active.
 
@@ -35,6 +38,8 @@ A **defect** belongs in `issues/`. A **decision** belongs in `decisions/`. The d
 
 **Decision rule for borderline items:** if the resolution is "go fix it" → defect; if the resolution is "decide and record" → decision. When in doubt, file as an issue and reclassify in the next reconciliation pass — that round-trip is cheap, the misfile cost is low.
 
+A **Circle** belongs in `circles/`. Distinct from defect (`issues/`) and choice point (`decisions/`): a Circle is a unit of work bounded by a Directive + its Grounding + its Artifact (foundation V3 §2.1). When the resolution is "execute this Directive to closure," it's a Circle; when the resolution is "go fix it," it's an issue; when the resolution is "decide and record," it's a decision.
+
 ## Timestamps
 
 Always obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`. LLMs have no clock — never guess or estimate the time.
@@ -52,6 +57,7 @@ Always obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`. LLMs have no clock — nev
 | `analyses/` | `YYMMDD-HHMM-<topic>.md` | no |
 | `investigations/` | `YYMMDD-HHMM-<topic>.md` | no |
 | `consult/` | `YYMMDD-HHMM-<topic>.md` | no |
+| `circles/` | `YYMMDD-HHMM[S]-<directive-slug>.md` | yes (circles vocabulary) |
 | `tasklist.md` | fixed | — |
 
 ## State Markers — issues/ and planning/
@@ -104,6 +110,103 @@ The marker vocabulary mirrors foundation_V3 §1.2's two-layer Grounding model:
 - `[i]` (implemented), `[s]` (superseded), and `[d]` (deferred) are **Grounding-Historie** — preserved record of what was decided, including elements that have been replaced or postponed.
 
 A flat `decisions/` directory holds both layers; the marker carries the layer information. Reconciliation passes that "list active Grounding" filter on `[o]` + `[a]`; passes that "show project history" include all five.
+
+## State Markers — circles/
+
+Files in `circles/` carry a marker that tracks Circle lifecycle. The vocabulary is parallel to but distinct from issues/planning and decisions/.
+
+| Marker | Meaning |
+|--------|---------|
+| `[a]` | **Anticipated** — provisional Directive, no Grounding yet (foundation V3 §2.1). |
+| `[t]` | **Active / in-Turn** — Directive refined, Grounding crystallising, orchestrator running it. |
+| `[c]` | **Closed-coherent** — three-edge Coherence verdict passed. |
+| `[b]` | **Bounded Closure** — Directive judged not reachable; what was learned is the Artifact. |
+| `[s]` | **Superseded** — replaced by another Circle (scope split, redirected). |
+| `[d]` | **Deferred** — anticipated → indefinitely postponed. |
+
+### Worked transitions
+
+- `[a] → [t]` — playmaker proposes activation; user confirms; orchestrator renames and writes `.active-circle`.
+- `[t] → [c]` — Coherence verdict `coherent` at Phase 3; orchestrator renames at Phase 4 and clears `.active-circle`.
+- `[t] → [b]` — user chose **Accept Bounded Closure** at the Rebalance gate; orchestrator renames at Phase 4 and clears `.active-circle`.
+- `[t] → [s]` — user supersedes mid-run; orchestrator renames; a new `[o]` Circle file is created citing the superseded one via `## Dependencies`.
+- `[a] → [d]` — user defers an anticipated Circle indefinitely; manual rename.
+- `[a] → [s]` — rare; the anticipated Circle is replaced before activation by a new Circle that captures the revised intent.
+
+**Terminal-states statement:** `[c]`, `[b]`, `[s]`, `[d]` are terminal — `mv` back to `[a]` or `[t]` is disallowed. If continuation is needed, create a new Circle that cites the terminal one via its `## Dependencies` section.
+
+**Grounding-Stand vs Grounding-Historie parallel:** as with `decisions/`, the marker carries the layer information. `[a]` and `[t]` are Grounding-Stand (current working state); `[c]`, `[b]`, `[s]`, `[d]` are Grounding-Historie (preserved record).
+
+## Circle file template
+
+Circle files live under `fusion-workbench/circles/`. Template:
+
+```markdown
+# <One-line Directive title>
+
+---
+**Domain:** <code|data|strategic|knowledge>
+**Status:** <anticipated | active | closed | bounded | superseded | deferred>
+**Filed by:** <agent name or "user">
+**Active spec/plan:** <path to spec, plan, or "(none yet)">
+**Active session history:** <path to orchestrator session history file, or "(none yet)">
+
+---
+
+## Directive
+
+<What this Circle aims for. The post-completion state of the Artifact, prognosticated. Revisable via Rebalance.>
+
+## Grounding snapshot
+
+<What we know going in. Filled at `[a] → [t]` activation by shaper portfolio-activation mode. Updates on Rebalance.>
+
+## Dependencies
+
+<List of other Circle filenames this Circle depends on. Playmaker flags cycles here.>
+
+## Turn log
+
+<Append-only list of Turn outcomes for this Circle. Format per bullet:
+- Turn N (session YYMMDD-HHMM): commits <hash>..<hash>; Coherence verdict <coherent|review-needed|skipped-...>; session history: <path>>
+
+## Closure note
+
+<Filled when marker becomes [c], [b], [s], or [d]. Cites the orchestrator session history file. For [b], also cites the Bounded-Closure Artifact (what was learned that the Directive could not reach).>
+```
+
+The filename pattern is `YYMMDD-HHMM[S]-<directive-slug>.md` per the State Markers section above.
+
+## portfolio.md template
+
+`fusion-workbench/portfolio.md` is regenerated by playmaker on every run. Template:
+
+```markdown
+# Portfolio
+
+**Generated:** YYMMDD-HHMM (by playmaker session <id>)
+**Domain bias:** <code|data|strategic|knowledge>
+
+## Active ([t])
+
+<One entry expected, or 0. If >1, flag MULTIPLE-ACTIVE warning. Each entry: Circle filename, Directive line, active session history path.>
+
+## Anticipated ([a]) — ranked
+
+<Ordered list by playmaker rank. Top entry includes a one-paragraph rationale for the recommendation. Each entry: Circle filename, Directive line, rank, dependencies summary.>
+
+## Recently closed ([c] / [b])
+
+<Last 5 closed Circles. Each entry: Circle filename, marker, Closure note one-liner.>
+
+## Archived ([s] / [d])
+
+<Superseded and deferred Circles, for reference.>
+
+## Warnings
+
+<Dependency-cycle warnings, parent-grounding-stale notes (cross-references), MULTIPLE-ACTIVE conditions, etc.>
+```
 
 ## Inline State Tracking
 
