@@ -26,6 +26,7 @@ fusion/
 ├── skills/                   # Slash commands
 │   ├── archive/SKILL.md      # /fusion:archive — archive completed/aged workbench files
 │   ├── commit/SKILL.md       # /fusion:commit — AI-generated conventional commit
+│   ├── direct/SKILL.md       # /fusion:direct — draft a Directive into an anticipated Circle (shaper)
 │   ├── help/SKILL.md         # /fusion:help — explain fusion's daily use, install, configure
 │   ├── log-activity/SKILL.md # /fusion:log-activity — generate/update activity log
 │   ├── memo/SKILL.md         # /fusion:memo — append a memo to the personal memo log
