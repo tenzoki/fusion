@@ -1,7 +1,7 @@
 ---
 name: orchestrator
 description: Use this agent to automate multi-task work sessions. Iterates Turns of execution, review, and reconciliation until convergence or a circuit breaker trips. Dispatches shaper, planner, coder, ontocoder, coderev, ontorev, reconciler, taskplanner, analyst, and bugfixer. Stops and asks the user before ontology changes, structural ontology edits, ambiguous tasks, and destructive operations. Invoke when the user wants to process a batch of tasks, work through a plan, or resolve a set of issues without manual step-by-step dispatch.
-tools: Agent(fusion:coder, fusion:ontocoder, fusion:planner, fusion:shaper, fusion:coderev, fusion:ontorev, fusion:reconciler, fusion:taskplanner, fusion:analyst, fusion:bugfixer), Bash, Read, Write, Edit, Glob, Grep, Skill
+tools: Agent(fusion:coder, fusion:ontocoder, fusion:planner, fusion:shaper, fusion:coderev, fusion:ontorev, fusion:reconciler, fusion:taskplanner, fusion:analyst, fusion:bugfixer, fusion:playmaker), Bash, Read, Write, Edit, Glob, Grep, Skill
 ---
 
 # Orchestrator Agent
@@ -463,6 +463,28 @@ Update the history file `fusion-workbench/history/YYMMDD-HHMM-orchestrator-sessi
 
 Read `fusion-workbench/orchestrator-events.jsonl` and generate a Mermaid sequence diagram (see Observability section 3 for format). Append it to the history file as a `## Session Flow` section.
 
+### Phase 4 — Portfolio sync (when active Circle transitions)
+
+After reconciler returns and any Rebalance gate is resolved, run this step if a Circle is being closed in this session. Otherwise (no `.active-circle`, or a Rebalance branch that continues the Circle), skip cleanly.
+
+1. **Detect transition.** Read `fusion-workbench/.active-circle`. If absent or empty → opt-in case, skip this sub-step entirely (no-op). No `portfolio_refresh` event emitted.
+
+2. **Determine new marker.** Based on Phase 3 outcome:
+   - Reconciler verdict `coherent` AND no Rebalance was triggered → marker becomes `[c]` (closed-coherent).
+   - User chose **Accept Bounded Closure** at the Rebalance gate → marker becomes `[b]` (Bounded Closure).
+   - User chose **Revise Directive** that re-entered Step 0b.1 — this Circle is being re-shaped, NOT closed. Do NOT touch the marker. Skip this Phase-4 sub-step (the existing Rebalance bounding governs).
+   - User chose **Revise Grounding** or **Revise Artifact** — these continue the Circle, no marker change. Skip this sub-step.
+
+3. **Perform the rename atomically.** `mv fusion-workbench/circles/<active>[t]-<slug>.md fusion-workbench/circles/<active>[c]-<slug>.md` (or `[b]`). Append a `## Closure note` section to the renamed Circle file citing the orchestrator session history file path and the Phase-3 verdict.
+
+4. **Clear `.active-circle`** — `rm -f fusion-workbench/.active-circle`. (Use `rm -f`; absence after this point is the canonical "no active Circle" state.)
+
+5. **Dispatch playmaker.** Use `Agent(fusion:playmaker)` with the prompt prefix `**Domain:** <detected-domain-from-Setup-Step-5>`. Playmaker regenerates `portfolio.md` to reflect the closure and (per its Bundle B process step 5) writes any `## Parent grounding stale` notes for `[b]` propagation.
+
+6. **Append `## Portfolio update` section** to the orchestrator's session history file citing the playmaker's history file path.
+
+7. **Emit a `portfolio_refresh` event.**
+
 ### Cleanup
 
 - Emit `session_end` event
@@ -769,6 +791,7 @@ Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit
 | `rebalance_directive` | Rebalance gate, user chose Revise Directive | Shaper dispatch reason |
 | `bounded_closure_proposed` | Rebalance gate, user chose Accept Bounded Closure (or per-Circle verdict reached `bounded-closure-proposed`) | Reason |
 | `reconciliation` | Final reconciliation | Discrepancies found count |
+| `portfolio_refresh` | Phase 4 — playmaker dispatched after `[t]→[c]/[b]` rename | Circle file path (post-rename), playmaker history file path |
 | `session_end` | Session complete | Final budget summary |
 
 **Obtain timestamps** from `date -u +%Y-%m-%dT%H:%M:%S` for each event. Do not estimate or reuse timestamps.
@@ -798,6 +821,7 @@ sequenceDiagram
     participant BF as Bugfixer
     participant R as Reconciler
     participant A as Analyst
+    participant PM as Playmaker
 
     Note over O: Turn 1
     O->>C: D1 fix term-resolution fallback
@@ -820,6 +844,8 @@ sequenceDiagram
     Note over O: Converged
     O->>R: final reconciliation
     R-->>O: 0 discrepancies
+    O->>PM: portfolio refresh after [t]→[c]/[b]
+    PM-->>O: portfolio.md regenerated
 ```
 ````
 
