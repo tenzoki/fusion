@@ -33,6 +33,7 @@ Options 1 and 2 launch a sub-agent with its own context window (see [How to invo
 | `investigator` | Forensic analysis of captured project runs (capture layout supplied by a project-local `./rules/investigator-capture-layout.md`) | Anything (esp. logs, prompts, ontology, code, image files via vision) | `fusion-workbench/investigations/`, `fusion-workbench/issues/`, `fusion-workbench/history/` | Investigation report + issue files |
 | `analyst` | Document study and problem analysis — comparative, gap, risk, feasibility, impact | Anything | `fusion-workbench/analyses/`, `fusion-workbench/issues/`, `fusion-workbench/history/` | Analysis report + issue files |
 | `orchestrator` | Automates multi-task work sessions: runs Turns of execution, review, and reconciliation until the Directive converges or a circuit breaker fires | Anything | Dispatches agents, creates commits, writes `fusion-workbench/history/` | Progress report + commits + updated tracking files |
+| `playmaker` | Circle portfolio management — ranks anticipated Circles, proposes next activation, detects cycles, flags parent-Grounding-stale | All of `fusion-workbench/`, `CLAUDE.md`, codebase | `fusion-workbench/circles/<file>.md`, `fusion-workbench/portfolio.md`, `fusion-workbench/history/` | Updated Circle files + portfolio brief + history log |
 
 **Hard rule across all agents:** read-only on layers outside the agent's primary scope. A reviewer never edits code. A `coder` never edits ontology yaml. An `ontocoder` never edits Go. The investigator never edits anything inside its evidence captures. The orchestrator never edits code or data directly — it dispatches executors. Cross-layer findings are filed as issues and routed to the right executor. The scope is enforced by prose in each agent's prompt, not by a `tools:` allowlist. **Exception:** `bugfixer` may edit both code and data because bugs cross layer boundaries — but ontology edits require a human gate.
 
@@ -162,7 +163,7 @@ Agents discover their applicable rules via the helper `bin/fusion-rules <agent-n
 | `coder`, `coderev`, `bugfixer` | `*coding*` | `rules/coding-guidelines.md`, `rules/coding-architecture.md` |
 | `ontocoder`, `ontorev` | `*ontology*`, `*normative*`, `*verb*` | `rules/ontology-rules.md`, `rules/verb-ontology.md`, `rules/normative.md` |
 | `planner` | `*coding*`, `*ontology*` | both groups above |
-| `orchestrator`, `shaper`, `taskplanner`, `reconciler`, `analyst`, `investigator`, `consultant` | (workbench conventions only) | — |
+| `orchestrator`, `shaper`, `taskplanner`, `reconciler`, `analyst`, `investigator`, `consultant`, `playmaker` | (workbench conventions only) | — |
 
 If a pattern has no match in either directory, the agent operates on workbench conventions alone — agents skip missing rules silently rather than failing. Consuming projects can add their own rule files at any time and the next session picks them up automatically.
 

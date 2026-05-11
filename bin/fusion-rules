@@ -34,7 +34,9 @@
 #                                   its capture-layout description, e.g.
 #                                   ./rules/investigator-capture-layout.md;
 #                                   see templates/investigator-capture-layout.md)
-#   - All other agents get workbench-conventions only.
+#   - All other agents get workbench-conventions only. The conventions-only
+#     set currently includes: orchestrator, shaper, taskplanner, reconciler,
+#     analyst, consultant, playmaker.
 
 set -eu
 
@@ -49,7 +51,7 @@ case "$AGENT" in
   ontocoder|ontorev)              PATTERNS="ontology normative verb" ;;
   planner)                        PATTERNS="coding ontology" ;;
   investigator)                   PATTERNS="investigator" ;;
-  orchestrator|shaper|taskplanner|reconciler|analyst|consultant)
+  orchestrator|shaper|taskplanner|reconciler|analyst|consultant|playmaker)
                                   PATTERNS="" ;;
   *)
     echo "fusion-rules: unknown agent '$AGENT'" >&2
