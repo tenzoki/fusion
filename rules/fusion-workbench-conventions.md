@@ -15,11 +15,11 @@ fusion-workbench/
 ├── analyses/      # analyst output (YYMMDD-HHMM-<topic>.md)
 ├── investigations/# investigator output (YYMMDD-HHMM-<topic>.md)
 ├── consult/       # consultant output (YYMMDD-HHMM-<topic>.md)
-├── circles/       # anticipated, active, closed, and bounded Circles (YYMMDD-HHMM[S]-<directive-slug>.md)
+├── circles/       # Circles in all marker states ([a]/[t]/[c]/[b]/[s]/[d]) (YYMMDD-HHMM[S]-<directive-slug>.md)
 └── tasklist.md    # generated work queue (taskplanner only)
 ```
 
-`fusion-workbench/.active-circle` is a one-line pointer file containing the basename of the currently `[t]`-marked Circle, or is absent when no Circle is active. The orchestrator reads it at session start; playmaker writes it on `[a]→[t]` activation; orchestrator clears it on `[t]→[c]/[b]/[s]/[d]` transitions. The pointer is the single source of truth for "active Circle" — `agentstate.yaml` does NOT duplicate this field.
+`fusion-workbench/.active-circle` is a one-line pointer file containing the basename of the currently `[t]`-marked Circle, or is absent when no Circle is active. The orchestrator reads it at session start; the orchestrator writes it on `[a]→[t]` activation (after user confirmation of playmaker's proposal); orchestrator clears it on `[t]→[c]/[b]/[s]/[d]` transitions. The pointer is the single source of truth for "active Circle" — `agentstate.yaml` does NOT duplicate this field.
 
 The `fusion-workbench/` is anchored to the directory where setup was run — the working directory `pwd` reports, not necessarily the git toplevel. A subfolder may legitimately have its own independent workbench, separate from any workbench at a parent level; the plugin's hooks resolve `process.cwd()` directly and follow whichever directory is active.
 
@@ -117,7 +117,7 @@ Files in `circles/` carry a marker that tracks Circle lifecycle. The vocabulary 
 
 | Marker | Meaning |
 |--------|---------|
-| `[a]` | **Anticipated** — provisional Directive, no Grounding yet (foundation V3 §2.1). |
+| `[a]` | **Anticipated** — provisional Directive, no Grounding yet (foundation V3 §2.1). Initial state on creation. |
 | `[t]` | **Active / in-Turn** — Directive refined, Grounding crystallising, orchestrator running it. |
 | `[c]` | **Closed-coherent** — three-edge Coherence verdict passed. |
 | `[b]` | **Bounded Closure** — Directive judged not reachable; what was learned is the Artifact. |
@@ -129,7 +129,7 @@ Files in `circles/` carry a marker that tracks Circle lifecycle. The vocabulary 
 - `[a] → [t]` — playmaker proposes activation; user confirms; orchestrator renames and writes `.active-circle`.
 - `[t] → [c]` — Coherence verdict `coherent` at Phase 3; orchestrator renames at Phase 4 and clears `.active-circle`.
 - `[t] → [b]` — user chose **Accept Bounded Closure** at the Rebalance gate; orchestrator renames at Phase 4 and clears `.active-circle`.
-- `[t] → [s]` — user supersedes mid-run; orchestrator renames; a new `[o]` Circle file is created citing the superseded one via `## Dependencies`.
+- `[t] → [s]` — user supersedes mid-run; orchestrator renames; a new `[a]` Circle file is created citing the superseded one via `## Dependencies`.
 - `[a] → [d]` — user defers an anticipated Circle indefinitely; manual rename.
 - `[a] → [s]` — rare; the anticipated Circle is replaced before activation by a new Circle that captures the revised intent.
 
