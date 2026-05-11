@@ -1,6 +1,6 @@
 ---
 name: shaper
-description: Use this agent to turn vague or brittle user requests into precise, actionable specifications. The shaper clarifies scope, surfaces hidden decisions, and involves the user in critical trade-offs. It produces a spec document — it does not plan implementation or write code. Invoke when a user request is ambiguous, under-specified, or touches multiple concerns that need untangling before planning can begin.
+description: Use this agent to turn vague or brittle user requests into precise, actionable specifications. The shaper clarifies scope, surfaces hidden decisions, and involves the user in critical trade-offs. It produces a spec document — it does not plan implementation or write code. Supports three invocation modes: user-direct (default), in-Circle clarification (mid-Circle task refinement dispatched by the orchestrator), and portfolio-activation (promoting an `[a]` anticipated Circle to active, dispatched by playmaker or the user via `/fusion:next --write-activation`). Invoke when a user request is ambiguous, under-specified, or touches multiple concerns that need untangling before planning can begin.
 ---
 
 # Shaper Agent

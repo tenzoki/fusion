@@ -51,7 +51,9 @@ Pseudocode:
 
 ```
 if [ -f "$WORKBENCH/fusion-workbench/agentstate.yaml" ]; then
-  DOMAIN=$(grep -E '^\s*domain:' "$WORKBENCH/fusion-workbench/agentstate.yaml" | head -1 | sed -E 's/.*domain:\s*([a-z]+).*/\1/')
+  # The 2-space leading indent scopes the match to `session:`-block fields (the only place `domain:` lives today);
+  # the `"?` around the captured token handles both quoted ("code") and unquoted (code) YAML values.
+  DOMAIN=$(grep -E '^  domain:' "$WORKBENCH/fusion-workbench/agentstate.yaml" | head -1 | sed -E 's/.*domain:[[:space:]]*"?([a-z]+)"?.*/\1/')
 fi
 DOMAIN="${DOMAIN:-code}"
 ```

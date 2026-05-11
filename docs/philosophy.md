@@ -81,7 +81,7 @@ A fourth option — **Accept Bounded Closure** — applies when the Directive is
 
 This is why "Goal → Directive" is not a cosmetic rename. It signals that the orchestrator now treats the user's stated outcome as a *living* element of the work, not a fixed target.
 
-**Note on Circle in v2.9.0.** This plugin does not yet have a first-class `circles/` workbench folder; that arrives with Track C (see `decisions/260509-1556[o]-playmaker-and-circles-folder.md`). Until then, an orchestrator session is the practical proxy for a Circle: the session's history file carries the Directive, accumulates Turns, and concludes with the per-Circle Coherence verdict. When Circle envelopes ship, this section's references to "Circle" become structural, not metaphorical.
+**Circles in the post-Track-C model.** Circles are first-class artefacts in `fusion-workbench/circles/`, with the marker vocabulary `[a]` (anticipated), `[t]` (active / in-Turn), `[c]` (closed-coherent), `[b]` (Bounded Closure), `[s]` (superseded), `[d]` (deferred). An orchestrator session is one Turn (or several Turns) within a Circle — not a Circle itself. Anticipated Circles (`[a]`) form the portfolio-roadmap layer, ranked by the `playmaker` agent invoked via `/fusion:next`. Bounded Closure (`[b]`) is preserved as the "Directive judged unreachable, what was learned is the Artifact" outcome — now an explicit marker, not just a session status. See `rules/fusion-workbench-conventions.md` "State Markers — circles/" for the full vocabulary and transitions, and `decisions/260509-1556[i]-playmaker-and-circles-folder.md` for the architectural decision.
 
 ## What fusion is not
 
