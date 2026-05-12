@@ -171,3 +171,7 @@ Obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`.
 5. **Be concrete.** Each task must be actionable without re-reading the full source file. Include enough context in the `Detail` line.
 6. **Cite sources.** Every task traces back to a specific file. The executor agent needs to know where the full spec lives.
 7. **Timestamps from the clock.** Use `date` for all timestamps — never guess.
+
+## Output Style
+
+User-facing output (the post-run summary returned to the dispatcher, the "no routable tasks" structured result, history-log prose) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. In `tasklist.md` itself, the `Detail` line for each task must be self-contained: the executor should understand what to do without re-reading the full source file. Project-internal IDs (P:1700-Ph4, I:1204, etc.) MUST always be accompanied by a one-line human-readable summary — never bare IDs in prose.

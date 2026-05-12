@@ -170,8 +170,10 @@ For strategic/knowledge plans, when examining the workbench:
 
 ## Output Style
 
-- Precise, actionable, no fluff
+User-facing output (AskUserQuestion text when clarifying technical decisions, post-plan summaries) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks.
+
+In addition, for plan documents:
+
+- Clear enough for the assigned executor (one of the active executor set) to execute without ambiguity
 - Markdown, properly structured
 - ASCII diagrams for architecture (fit on screen)
-- No emojis
-- Clear enough for the assigned executor (one of the active executor set) to execute without ambiguity

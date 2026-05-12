@@ -95,8 +95,8 @@ When the user asks for the final review:
 
 ## Output Style
 
-- Precise, direct, no fluff
+User-facing output follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. In addition, for ontology-review findings:
+
+- File:line citations (entity IDs, verb names, manifest line numbers) — never handwaves
 - Markdown, properly structured
-- File:line citations, not handwaves
-- No emojis
 - Short sentences. Short paragraphs.

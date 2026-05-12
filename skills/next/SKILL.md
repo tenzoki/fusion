@@ -186,4 +186,10 @@ The skill never writes `circles/` *content* — the only writes it performs are 
 
 ## Tone
 
+User-facing output follows `rules/user-facing-output.md` (loaded into every agent via `bin/fusion-rules`). For this skill specifically:
+
+- The briefing leads with the **recommendation** (action) — *"Recommended next: <basename> — <rationale>"* — then counts, then warnings. No leading metadata block.
+- Marker syntax in the briefing's prose (e.g. "1 active, 4 anticipated, 12 closed") uses the **words**, not the bracket codes. The bracket codes (`[a]`, `[t]`, etc.) belong in filenames, not summary prose.
+- The activation confirmation message must lead with the **user action**: *"Activation complete. Beginning a fresh orchestrator session — say 'go' or wait for it to pick up the Circle automatically."* — not a paragraph of Turn-loop jargon before that.
+
 Concise. Show one line for the top recommendation, one line for counts, the warnings list (if any). Don't editorialise. The user invoked `/fusion:next` to get a portfolio snapshot, not a discussion — match that energy. The activation confirm is one short prompt with three clear options.

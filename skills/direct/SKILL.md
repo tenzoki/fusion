@@ -103,4 +103,6 @@ This is the entire user-facing output.
 
 ## Tone
 
+User-facing output follows `rules/user-facing-output.md` (loaded into every agent via `bin/fusion-rules`). For this skill specifically: the Step-5 confirmation leads with the **file path** (the action surface — the user wants to know where the Circle lives) and the one-line refined Directive, then the follow-up hints. Don't bury the path in the middle of a paragraph.
+
 Concise. The user invoked this to capture a Directive, not to read meta-commentary. Shaper handles the clarification dialogue; this skill is just the entry point and the post-write confirmation.

@@ -108,6 +108,8 @@ Find the project's data root (commonly named `ontology/`, `data/`, `schemas/`, o
 
 ## Output Style
 
+User-facing output (status reports, AskUserQuestion text, session summaries) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. In addition, for the data you write:
+
 - Data follows project conventions: indent style, key ordering, comment placement, ID format
 - Comments in data files explain **why** an unusual value exists, not what
 - Match existing patterns — a new entry should look like the existing entries

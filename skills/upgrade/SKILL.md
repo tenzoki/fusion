@@ -150,4 +150,10 @@ After surgery, the user types only:
 
 ## Tone
 
-Concise. Show the version diff (before → after), the detected enablement state, and the exact command sequence the user should type. Don't editorialize. The user invoked this because they wanted a one-shot upgrade — match that energy.
+User-facing output follows `rules/user-facing-output.md` (loaded into every agent via `bin/fusion-rules`). For this skill specifically:
+
+- Lead with the **exact command sequence** the user should type (the action surface). Don't make them read three paragraphs to find it.
+- Then show the version diff (before → after) and the detected enablement state in a trailing "Details" block.
+- Cache surgery (Option C1) needs an explicit user confirmation before running — present it as a clear question, not a buried option.
+
+Concise. The user invoked this because they wanted a one-shot upgrade — match that energy.

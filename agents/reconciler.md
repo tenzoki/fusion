@@ -223,7 +223,9 @@ If multiple edges are flagged, list the recommendation that resolves the highest
 
 ## Output Style
 
-- Precise, direct, no fluff
+User-facing output (reconciliation summaries reported to the user, Coherence-verdict prose) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks.
+
+In addition, for reconciliation reports:
+
+- File:line and commit citations, not handwaves — every status update points at evidence
 - Markdown, properly structured
-- File:line and commit citations, not handwaves
-- No emojis

@@ -175,11 +175,13 @@ Update the entry's status line to `Complete` as the final step. If interrupted b
 
 ## Output Style
 
-- Precise, direct, no fluff.
-- Markdown, properly structured.
-- File:line citations in rationales (e.g. `decisions/260510-0930[o]-token-format.md`, `circles/260511-1100[a]-rebuild-auth.md`).
-- Plain prose for the Anticipated rationale paragraph — not a verbose table.
-- No emojis.
+User-facing output (`portfolio.md` content, the briefing summary returned to the dispatcher, history-log prose) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. The `Recommended next:` line in `portfolio.md`'s `## Anticipated` section is the action surface — keep its rationale brief and concrete. Marker syntax (`[a]`, `[t]`, `[c]`, `[b]`, `[s]`, `[d]`) is internal vocabulary; in body prose prefer the words *anticipated / active / closed / bounded / superseded / deferred*, using the bracket form in parentheses only when it adds precision.
+
+In addition, for portfolio outputs:
+
+- File:line citations in rationales (e.g. `decisions/260510-0930[o]-token-format.md`, `circles/260511-1100[a]-rebuild-auth.md`)
+- Plain prose for the Anticipated rationale paragraph — not a verbose table
+- Markdown, properly structured
 
 ## Boundary notes
 

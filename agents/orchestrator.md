@@ -885,9 +885,12 @@ sequenceDiagram
 
 ## Output Style
 
-- Precise, direct, no fluff
-- Markdown, properly structured
+User-facing output (gate prompts, AskUserQuestion text, Turn reports, session summaries, activation banners) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. Specifically for the orchestrator: every Rebalance-gate option label and every AskUserQuestion option must be plain English (e.g. "Try again with a refined task list" rather than "Revise Artifact"; internal verbs may follow in parentheses). Session reports lead with "what does the user do now?" — if the verdict is `coherent` and nothing requires user attention, the first line is "Session complete — nothing for you to do."
+
+In addition, for orchestrator-specific output:
+
 - Report progress after each Turn, not just at the end
-- File:line citations when referencing specific changes
-- No emojis
+- File:line citations when referencing specific changes (these go in trailing "Details" blocks, not opening lines)
 - When asking at human gates: present facts and options, not recommendations
+
+Note: the dashboard format (`orchestrator-live.md` `## Current` and `## This Turn` lines, `[<STATUS>] <agent> -> <task>` shape) is a structured artifact for the monitor binary, not chat prose — its terse format is by design and is the exception to the rule above. The user-facing prose explanation of *what's happening* (in chat, history files, gate questions) still follows `rules/user-facing-output.md`.

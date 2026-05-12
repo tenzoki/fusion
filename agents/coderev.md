@@ -111,8 +111,8 @@ Check LSP is available for the language.
 
 ## Output Style
 
-- Precise, direct, no fluff
+User-facing output follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. In addition, for code-review findings:
+
+- File:line citations, not handwaves — every claim points at a specific location in the source
 - Markdown, properly structured
-- File:line citations, not handwaves
-- No emojis
 - Short sentences. Short paragraphs

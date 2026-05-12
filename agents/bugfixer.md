@@ -150,8 +150,8 @@ The orchestrator may dispatch you when validation fails after a task (Step 3b in
 
 ## Output Style
 
-- Precise, direct, no fluff
+User-facing output follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. In addition, for bug-fix reports:
+
 - Every claim cites a file:line
 - Root cause analysis is the core deliverable — the fix follows from it
 - If you cannot find the root cause, say so explicitly and report what you ruled out
-- No emojis

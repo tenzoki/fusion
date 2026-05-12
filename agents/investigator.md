@@ -189,9 +189,11 @@ When the investigation produces actionable findings, every fix is one issue file
 
 ## Output Style
 
-- Precise, direct, no fluff
-- Markdown, properly structured
+User-facing output (summaries reported to the user when an investigation completes) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. Lead with the root cause and what to do next; the timeline and evidence go in trailing sections.
+
+In addition, for investigation reports:
+
 - File:line and image citations, not handwaves
 - Chronological where chronology matters; thematic where it doesn't
+- Markdown, properly structured
 - Short sentences. Short paragraphs.
-- No emojis

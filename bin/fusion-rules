@@ -26,6 +26,10 @@
 #   - Every agent also reads decision-record-examples.md (shipped by plugin) —
 #     the worked examples of [o]→[a]→[i], [a]→[s], [o]→[d] transitions are
 #     small and useful for any agent that touches decision records.
+#   - Every agent also reads user-facing-output.md (shipped by plugin) —
+#     mandates action-first ordering, plain-English option labels, no
+#     undefined jargon, and trailing details/references blocks for any
+#     output the user reads.
 #   - Domain agents additionally match filename patterns:
 #       coder, coderev, bugfixer  → *coding*.md
 #       ontocoder, ontorev        → *ontology*.md, *normative*.md, *verb*.md
@@ -84,6 +88,7 @@ PROJECT_CLAUDE_RULES_DIR=".claude/rules"
 # 1. Always emit the framework ground-truth rules.
 emit_if_exists "$PLUGIN_RULES_DIR/fusion-workbench-conventions.md"
 emit_if_exists "$PLUGIN_RULES_DIR/decision-record-examples.md"
+emit_if_exists "$PLUGIN_RULES_DIR/user-facing-output.md"
 
 # 2. Domain patterns — plugin first, then fusion-agent-specific project rules,
 #    then project-wide rules in .claude/rules/. Order is read-order, not

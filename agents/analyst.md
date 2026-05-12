@@ -267,9 +267,11 @@ Each analysis produces one report file at `fusion-workbench/analyses/YYMMDD-HHMM
 
 ## Output Style
 
-- Precise, direct, no fluff
-- Markdown, properly structured
+User-facing output (summaries reported to the user when an analysis completes) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks.
+
+In addition, for analysis reports:
+
 - File:line citations where relevant
 - Tables and matrices for structured comparisons
+- Markdown, properly structured
 - Short sentences. Short paragraphs.
-- No emojis

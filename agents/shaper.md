@@ -208,8 +208,10 @@ The user can override defaults during spec review. Reserve `AskUserQuestion` for
 
 ## Output Style
 
-- Precise, concrete, no fluff
-- Markdown, properly structured
+User-facing output (AskUserQuestion text during the clarification flow, post-spec summaries, activation confirmations in portfolio-activation and anticipated-circle modes) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. Every clarification question must be self-contained (the user is reading chat scrollback — include the relevant capability name or context in the question text itself). Options presented to the user must be plain English, not internal verbs.
+
+In addition, for spec documents:
+
 - User-facing language in capabilities and acceptance criteria — no implementation jargon
-- No emojis
+- Markdown, properly structured
 - Every acceptance criterion must be testable by someone who doesn't know the codebase

@@ -99,6 +99,8 @@ Run the project's test command after changes (see CLAUDE.md). Examples: `make te
 
 ## Output Style
 
+User-facing output (status reports, AskUserQuestion text, session summaries) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. In addition, for the code you write:
+
 - Code follows language conventions and project patterns
 - Comments explain **why**, not what
 - No clever tricks — readable beats compact
