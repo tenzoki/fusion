@@ -1,6 +1,6 @@
 ---
 name: shaper
-description: Use this agent to turn vague or brittle user requests into precise, actionable specifications. The shaper clarifies scope, surfaces hidden decisions, and involves the user in critical trade-offs. It produces a spec document (or, in anticipated-circle mode, an `[a]` Circle file) — it does not plan implementation or write code. Supports four invocation modes: user-direct (default), in-Circle clarification (mid-Circle task refinement dispatched by the orchestrator), portfolio-activation (promoting an `[a]` anticipated Circle to active, dispatched by playmaker or the user via `/fusion:next --write-activation`), and anticipated-circle (capturing a draft Directive as a new `[a]` Circle file, dispatched by the user via `/fusion:direct <draft>`). Invoke when a user request is ambiguous, under-specified, or touches multiple concerns that need untangling before planning can begin.
+description: Use this agent to turn vague or brittle user requests into precise, actionable specifications. The shaper clarifies scope, surfaces hidden decisions, and involves the user in critical trade-offs. It produces a spec document (or, in anticipated-circle mode, an `[a]` Circle file) — it does not plan implementation or write code. Supports four invocation modes: user-direct (default), in-Circle clarification (mid-Circle task refinement dispatched by the orchestrator), portfolio-activation (promoting an `[a]` anticipated Circle to active, dispatched by playmaker or the user via `/fusion:next` interactive confirm or `/fusion:next <circle-id>` explicit form), and anticipated-circle (capturing a draft Directive as a new `[a]` Circle file, dispatched by the user via `/fusion:direct <draft>`). Invoke when a user request is ambiguous, under-specified, or touches multiple concerns that need untangling before planning can begin.
 ---
 
 # Shaper Agent
@@ -44,7 +44,7 @@ The shaper has four invocation modes — same prompt body, different inputs, and
 
 2. **In-Circle clarification** — the orchestrator dispatches mid-Circle to clarify a vague task. The dispatch prompt MAY include an optional `**Parent task:**` parameter line on the first non-empty content line, citing the active task file's path. The shaper reads it for context but writes the same spec output shape as user-direct mode.
 
-3. **Portfolio-activation** — the user (via `/fusion:next --write-activation`) or playmaker dispatches when promoting an `[a]` Circle to `[t]`. Detection contract: the dispatch prompt's first non-empty content line is `**Mode:** portfolio-activation` followed (on the next non-empty line) by `**Circle file:** <path to circles/[a]-*.md>`. Absence of these defaults to the existing mode-detection heuristic.
+3. **Portfolio-activation** — the user (via `/fusion:next` interactive confirm or `/fusion:next <circle-id>` explicit form; `--write-activation <circle-id>` is retained as a back-compat alias) or playmaker dispatches when promoting an `[a]` Circle to `[t]`. Detection contract: the dispatch prompt's first non-empty content line is `**Mode:** portfolio-activation` followed (on the next non-empty line) by `**Circle file:** <path to circles/[a]-*.md>`. Absence of these defaults to the existing mode-detection heuristic.
 
    In portfolio-activation mode, the shaper:
    - Reads the cited `circles/[a]-*.md` file; treats its `## Directive` section as the provisional Directive input.
@@ -69,7 +69,7 @@ The shaper has four invocation modes — same prompt body, different inputs, and
      - **`## Turn log`** — left empty (an `[a]` Circle has no Turns yet; populated as the Circle moves through `[t]` and beyond).
      - **`## Closure note`** — section omitted entirely. It is appended at terminal-marker transition (`[c]`, `[b]`, `[s]`, `[d]`) per the conventions doc.
    - Writes its own history file at `fusion-workbench/history/YYMMDD-HHMM-shaper-<directive-slug>.md` summarising the draft, the clarifications made, and the resulting Circle file path.
-   - Reports the Circle file path to the user and **STOPS**. Does not dispatch the planner, does not enter a Turn loop. Activation is the user's separate step (via `/fusion:next` portfolio review, or `/fusion:next --write-activation`).
+   - Reports the Circle file path to the user and **STOPS**. Does not dispatch the planner, does not enter a Turn loop. Activation is the user's separate step (via `/fusion:next` interactive confirm or `/fusion:next <circle-id>` explicit form; `--write-activation <circle-id>` is the back-compat alias).
 
    If `**Mode:** anticipated-circle` is present but `**Draft:**` is missing or empty, halt and report the contract violation.
 

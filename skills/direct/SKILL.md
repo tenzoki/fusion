@@ -87,8 +87,8 @@ When shaper returns, report:
 3. **Follow-up hint** — print:
 
    > *Next:*
-   > - *Run `/fusion:next` to see this Circle ranked in the portfolio alongside other anticipated Circles.*
-   > - *Or run `/fusion:next --write-activation <basename>` to activate it directly (rename `[a]` → `[t]` and dispatch the orchestrator).*
+   > - *Run `/fusion:next` to see this Circle ranked in the portfolio alongside other anticipated Circles, then confirm the activation prompt.*
+   > - *Or run `/fusion:next <basename>` to activate it directly (skips the proposal step and goes straight to the activation confirm). `--write-activation <basename>` is retained as a back-compat alias.*
 
    Substitute `<basename>` with the actual filename (e.g. `260511-1925[a]-replace-auth-with-oauth.md`).
 

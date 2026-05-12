@@ -60,7 +60,7 @@ If the dispatch prompt's first non-empty content line is `**Domain:** <value>`, 
 
 **You may NOT:**
 - Edit plans (`fusion-workbench/planning/`), tasklists (`fusion-workbench/tasklist.md`), decisions (`fusion-workbench/decisions/`), issues (`fusion-workbench/issues/`), code, data files, or any agent prompt
-- Rename Circle markers (`[a]→[t]`, `[t]→[c]`, etc.) — that is the orchestrator's job at Phase 4, or the user's via `/fusion:next --write-activation`
+- Rename Circle markers (`[a]→[t]`, `[t]→[c]`, etc.) — that is the orchestrator's job at Phase 4, or the user's via `/fusion:next` (interactive confirm on the recommended Circle) or `/fusion:next <circle-id>` (explicit form). `--write-activation <circle-id>` is retained as a back-compat alias.
 - Write or modify `fusion-workbench/.active-circle` — the orchestrator owns that pointer
 - Dispatch another agent (you have no `Agent(...)` capability)
 - Invoke skills
@@ -144,7 +144,7 @@ When Step 3 ranking identifies a recommended `[a]→[t]` activation:
 - **Append** a `## Activation proposal` block to the candidate Circle file. The block contains the rationale, the proposed activation timestamp, and the run identifier of this playmaker session.
 
 **Do NOT rename the marker.** Do NOT update `.active-circle`. Both are done by:
-- the user, via `/fusion:next --write-activation <circle-id>` (the skill performs the `mv` and writes the pointer on the user's explicit confirmation), or
+- the user, via `/fusion:next` (interactive confirm on the recommended Circle) or `/fusion:next <circle-id>` (explicit form; `--write-activation <circle-id>` is retained as a back-compat alias). The skill performs the `mv` and writes the pointer on the user's explicit confirmation; or
 - the orchestrator, via the Phase 4 ping after a `[t]→[c]/[b]` rename (the orchestrator dispatches you to refresh `portfolio.md`; the orchestrator never asks you to perform another rename).
 
 Per the conventions doc's `.active-circle` paragraph: "the orchestrator writes it on `[a]→[t]` activation (after user confirmation of playmaker's proposal)." You propose; the user or orchestrator commits.
@@ -186,4 +186,4 @@ Update the entry's status line to `Complete` as the final step. If interrupted b
 - **vs `consultant`** — the consultant handles user-direct conversational topics ("opinion", "second look", "project health"). You handle portfolio mechanics (ranking, cycle detection, propagation flags). The boundary is by design per `fusion-workbench/decisions/260511-1031[a]-consultant-vs-playmaker-boundary.md`; do not overlap.
 - **vs `taskplanner`** — you never read or write `fusion-workbench/tasklist.md`. Per `fusion-workbench/decisions/260511-1031[a]-tasklist-md-scoping-under-circles.md` (resolution: keep `tasklist.md` at top level), the queue stays in taskplanner/orchestrator territory regardless of how many Circles a project carries.
 - **vs `reconciler`** — you never compute Coherence verdicts. The three-edge Coherence verdict is the reconciler's job at Phase 3, and the resulting verdict drives the orchestrator's Phase-4 marker rename that may, in turn, dispatch you. You operate on the post-rename state; you do not produce it.
-- **vs `orchestrator`** — you never rename Circle markers and never write `.active-circle`. The orchestrator owns those transitions; you propose, the orchestrator (or user via `/fusion:next --write-activation`) commits.
+- **vs `orchestrator`** — you never rename Circle markers and never write `.active-circle`. The orchestrator owns those transitions; you propose, the orchestrator (or user via `/fusion:next` interactive confirm, `/fusion:next <circle-id>` explicit form, or the `--write-activation` back-compat alias) commits.

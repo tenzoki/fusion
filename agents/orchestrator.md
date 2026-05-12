@@ -716,15 +716,18 @@ Overwrite this file (not append) at every transition point. The user can monitor
   <tasks with unresolved dependencies, showing what blocks them>
 ```
 
-**The `## Current` line MUST include the agent.** Format: `[<STATUS>] <agent> -> <task summary>`. The agent is `orchestrator` for setup / planning / shaping / Turn-boundary work the orchestrator does itself, the dispatched sub-agent name (`coder`, `ontocoder`, `coderev`, etc.) when a sub-agent is executing a task, and `user` when waiting at a `[GATE]`. Concrete examples:
+**The `## Current` line MUST include the agent. The same rule applies to every line in `## This Turn`** (`[DONE]`, `[RUNNING]`, `[QUEUED]`, `[ERROR]`, `[GATE]`). Format: `[<STATUS>] <agent> -> <task summary>`. The agent is `orchestrator` for setup / planning / shaping / Turn-boundary work the orchestrator does itself, the dispatched sub-agent name (`coder`, `ontocoder`, `coderev`, etc.) when a sub-agent is executing a task, and `user` when waiting at a `[GATE]`. Concrete examples:
 
 ```
 [SETUP]   orchestrator -> Queue built, ready to start Turn 1
 [RUNNING] coder -> Endpoint verification — 5 UI calls + 2 DELETEs (P-2)
 [GATE]    user -> Manual smoke on rebuilt v0.2.1 .app (P-5)
 [DONE]    coder -> v0.2.1 signed+notarised+stapled (P-4) ........ d3cc317
+[DONE]    orchestrator -> Circle activation commit ............. b33dfc3
 [ERROR]   ontocoder -> Schema validation failed on entity X (P-7)
 ```
+
+**Anti-pattern — never put a Conventional Commits type in the agent column.** The agent column is the **agent name**, never the commit type. `chore`, `fix`, `feat`, `refactor`, `docs`, `test` are Conventional Commits types for the commit message body (see Step 3b format) — they do NOT appear in the agent column. Work the orchestrator performs directly (Circle activation rename + `.active-circle` write, queue-construction commits, Phase-4 portfolio sync coordination, etc.) uses `orchestrator` in the agent column. If you find yourself writing `[DONE] chore -> ...` or `[DONE] fix -> ...`, you have confused the commit-message type with the agent column — rewrite the line with `orchestrator` (or the actual dispatched sub-agent).
 
 **Transition points (overwrite the file at each):**
 - Task starts (status line changes to `[RUNNING]`)
