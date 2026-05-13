@@ -216,8 +216,11 @@ fusion-workbench/
 ├── analyses/      # Analyst output
 ├── consult/       # Consultation reports
 ├── circles/       # Circles — anticipated, active, closed, bounded, superseded, deferred (richer marker vocabulary)
+├── memos/         # Personal memo logs, one file per OS user (created on demand by /fusion:memo)
 └── tasklist.md    # Current work queue
 ```
+
+**Human-retrospection skills.** The workbench is a durable record, not just an agent-coordination substrate. Two skills surface it for the user directly: `/fusion:memo` appends short personal notes ("don't forget X") to `fusion-workbench/memos/memos-<username>.md`; `/fusion:log-activity` scans git commits and every workbench subdirectory and writes a per-day activity log at the project root (`activity-log-<username>.md`) — useful for the "what did I actually do in the last four weeks?" question. See `docs/philosophy.md` §2 for the conceptual treatment.
 
 **State markers — issues/ and planning/:** `[o]` open, `[p]` in progress, `[c]` closed, `[d]` deferred.
 

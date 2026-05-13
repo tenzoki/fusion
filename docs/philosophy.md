@@ -20,7 +20,7 @@ A `coder` cannot edit ontology YAML; an `ontocoder` cannot edit Go; a reviewer n
 
 This is the inverse of the "one big assistant" pattern. Fusion is built on the bet that the LLM-context is the bottleneck, and that splitting work across many small contexts beats stuffing everything into one large one.
 
-## 2. Workbench-mediated coordination, not shared memory
+## 2. Workbench-mediated coordination — and human-readable memory
 
 Sub-agents in Claude Code share **no context** with their parent or with each other. By default this is a constraint people work around. Fusion turns it into the design.
 
@@ -42,7 +42,12 @@ Coordination happens through the filesystem, not through agent memory. Three con
 - **Runs are auditable.** Every agent's work leaves a paper trail. Decision rationale, issue history, review findings, and reconciliation passes are all on disk and version-controllable.
 - **Runs are resumable across humans.** The workbench is the project's shared cross-session memory. A new contributor can read it and pick up where the project is, not just where the codebase is.
 
-This makes fusion well-suited for projects where *what you decided and why* matters as much as *what you shipped*.
+**Traceability is a first-class human-facing output, not just an agent-coordination side-effect.** Every plan, decision, issue, review, and session log lands on disk in the same workbench, in plain markdown, navigable directly by the user — no tool needed to read what the project decided last month or which review filed which issue. Two skills surface this material for the human explicitly:
+
+- **`/fusion:memo`** — a personal capture slot for things the user doesn't want to forget but doesn't want to file as an issue or decision either ("Stefan is travelling next week," "check the loader assumption before the next planning pass"). Memos land in `fusion-workbench/memos/memos-<username>.md`, one file per OS user, append-only, verbatim. Not for acting on — for keeping.
+- **`/fusion:log-activity`** — a retrospective. The skill scans git commits and every workbench subdirectory (history, planning, issues, decisions, reviews, analyses, investigations, consult), groups what it finds by calendar date, and writes a per-user activity log at the project root (`activity-log-<username>.md`) with hours worked, a one-line arc per day, and a summary table. The answer to "what did I actually do in the last four weeks?"
+
+This makes fusion well-suited for projects where *what you decided*, *what you did*, and *what you mustn't forget* all matter as much as *what you shipped*.
 
 ## 3. Compliance over speed
 
