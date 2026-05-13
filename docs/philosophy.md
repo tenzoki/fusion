@@ -1,6 +1,8 @@
 # Fusion — Philosophy
 
-Fusion is a multi-agent orchestration framework for Claude Code. Its conceptual core is the **hermeneutic circle**: the idea that pre-understanding and subject matter reshape each other through every encounter. You begin with what you already assume (a *Grounding*), orient toward something you mean to produce (a *Directive*), work on it, and end up understanding both the thing and your own assumptions differently. Fusion ports this principle into AI-assisted project work — each unit of work is a **Circle** moving from Directive toward closure across one or more *Turns*, with **Coherence** between the three poles (Directive, Grounding, Artifact) as the criterion for finishing.
+Fusion is a multi-agent orchestration framework for Claude Code. Its conceptual core is the **hermeneutic circle**: the idea that pre-understanding and subject matter reshape each other through every encounter. You begin with what you already assume (a *Grounding*), orient toward something you mean to produce (a *Directive*), work on it, and end up understanding both the thing and your own assumptions differently. Fusion ports this principle into AI-assisted project work — every fusion session is implicitly a hermeneutic circle, moving from Directive toward closure across one or more *Turns*, with **Coherence** between the three poles (Directive, Grounding, Artifact) as the criterion for finishing.
+
+This conceptual lens — Directive / Grounding / Artifact / Coherence — applies to **every** way of using fusion, whether or not you ever create a file in `fusion-workbench/circles/`. There are two operational paths into it. In the **direct** path, you drive the orchestrator at a single Directive at a time; the Circle is implicit in the session and never reified on disk. In the **portfolio** path, you populate `fusion-workbench/circles/` with one file per anticipated unit of work, and the `playmaker` agent ranks and proposes which one to activate next. Both are first-class. See README.md's "Two ways to use fusion" section for the operational distinction. Empty or absent `circles/` preserves the direct, single-Circle path; the hermeneutic-circle framing throughout this document still applies to it.
 
 The framework rests on a few load-bearing ideas, plus one design parameter that lets the same plumbing serve very different kinds of projects.
 
@@ -108,7 +110,9 @@ The Rebalance gate maps directly onto the triangle from §5. Each option correct
 
 ## 7. The Circle portfolio and the playmaker
 
-Most software-process vocabulary assumes a single linear sequence — a backlog, a sprint, a roadmap. Fusion projects accumulate a different shape: a **portfolio of Circles**, each in one of six lifecycle states.
+This section describes the **portfolio-managed mode** — opt-in, surfaced by populating `fusion-workbench/circles/`. For the direct-orchestrator path (no `circles/` files, one Directive per session), see README.md's "Two ways to use fusion."
+
+Most software-process vocabulary assumes a single linear sequence — a backlog, a sprint, a roadmap. Fusion projects that adopt the portfolio mode accumulate a different shape: a **portfolio of Circles**, each in one of six lifecycle states.
 
 | Marker | State |
 |---|---|
