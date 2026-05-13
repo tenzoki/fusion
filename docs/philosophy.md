@@ -1,6 +1,8 @@
 # Fusion — Philosophy
 
-Fusion is a multi-agent orchestration framework for Claude Code. It rests on three load-bearing ideas, plus one design parameter that lets the same plumbing serve very different kinds of projects.
+Fusion is a multi-agent orchestration framework for Claude Code. Its conceptual core is the **hermeneutic circle**: the idea that pre-understanding and subject matter reshape each other through every encounter. You begin with what you already assume (a *Grounding*), orient toward something you mean to produce (a *Directive*), work on it, and end up understanding both the thing and your own assumptions differently. Fusion ports this principle into AI-assisted project work — each unit of work is a **Circle** moving from Directive toward closure across one or more *Turns*, with **Coherence** between the three poles (Directive, Grounding, Artifact) as the criterion for finishing.
+
+The framework rests on a few load-bearing ideas, plus one design parameter that lets the same plumbing serve very different kinds of projects.
 
 ## 1. Specialization beats generalists
 
@@ -25,10 +27,12 @@ Every agent reads and writes files under `fusion-workbench/`:
 - `planning/` — design documents
 - `issues/` — defects ("go fix it")
 - `decisions/` — open questions ("decide and record")
+- `circles/` — the portfolio of Circles (anticipated, active, closed)
 - `history/` — session logs
 - `codereview/`, `ontoreview/` — review findings
 - `analyses/`, `investigations/`, `consult/` — typed reports
 - `tasklist.md` — the dependency-ordered work queue
+- `portfolio.md` — the playmaker-regenerated view across all Circles
 
 Coordination happens through the filesystem, not through agent memory. Three consequences:
 
@@ -65,23 +69,70 @@ Same plumbing, different priorities:
 
 This is what lets fusion be both "the framework you'd run on a Go monorepo" and "the framework you'd run on a strategy team's decision archive" without a fork.
 
-## 5. Directive ≠ static Goal
+## 5. The Coherence triangle
 
-Earlier versions of this plugin called the user's stated outcome the *Goal*. v2.9.0 renames it to **Directive**, after foundation_V3 §1.1.
+Every Circle has three substantive poles and a process that connects them:
 
-A Goal in classical project-management vocabulary is fixed at the start and reached at the end. A Directive is different: it *prognosticates* the Artifact's state at completion, but it is **revisable** as the Circle evolves. When a Turn's Coherence Review reveals that the stated Directive cannot be reached as written — because the Grounding turned out wrong, or the world changed, or the team learned something the Directive didn't anticipate — the user can choose to **Rebalance the Directive** rather than push harder against an Artifact that won't converge.
+- **Directive** — what the Circle is for; the prognosticated end-state of the Artifact.
+- **Grounding** — what the Circle builds on; the body of assumptions, prior decisions, and conventions you bring in.
+- **Artifact** — what the Circle produces; the code, the analysis, the document.
 
-Three Rebalance options exist:
+**Coherence** is the reciprocal consistency of these three poles. It is not a checklist on the Artifact alone — it is a property of the triangle. Three edges, three questions:
 
-- **Revise Artifact** — the Artifact is not where we want it; do another Turn.
-- **Revise Grounding** — the basis we built on was wrong; file a new decision.
-- **Revise Directive** — the destination we set was wrong; re-shape.
+| Edge | Question |
+|---|---|
+| **Artifact ↔ Grounding** | Does the Artifact respect the Grounding we said we were building on? |
+| **Artifact ↔ Directive** | Does the Artifact move toward the Directive we set? |
+| **Grounding ↔ Directive** | Is our Grounding still adequate for the Directive — or has the world changed under us? |
 
-A fourth option — **Accept Bounded Closure** — applies when the Directive is judged definitively unreachable: what was learned along the way is the Artifact, and the Circle ends acknowledging that.
+Fusion checks this triangle at two cadences.
 
-This is why "Goal → Directive" is not a cosmetic rename. It signals that the orchestrator now treats the user's stated outcome as a *living* element of the work, not a fixed target.
+**Per Turn** — the orchestrator runs a lightweight Coherence gate at the end of every Turn (after commits, before circuit-breaker check). The gate produces a three-line prose summary, one line per edge, and offers a binary choice: **Continue** (keep working) or **Open Rebalance gate** (something is off — let's revisit). The Turn-level gate is fast and advisory; its job is to catch drift before the next Turn compounds it.
 
-**Circles in the post-Track-C model.** Circles are first-class artefacts in `fusion-workbench/circles/`, with the marker vocabulary `[a]` (anticipated), `[t]` (active / in-Turn), `[c]` (closed-coherent), `[b]` (Bounded Closure), `[s]` (superseded), `[d]` (deferred). An orchestrator session is one Turn (or several Turns) within a Circle — not a Circle itself. Anticipated Circles (`[a]`) form the portfolio-roadmap layer, ranked by the `playmaker` agent invoked via `/fusion:next`. Bounded Closure (`[b]`) is preserved as the "Directive judged unreachable, what was learned is the Artifact" outcome — now an explicit marker, not just a session status. See `rules/fusion-workbench-conventions.md` "State Markers — circles/" for the full vocabulary and transitions, and `decisions/260509-1556[i]-playmaker-and-circles-folder.md` for the architectural decision.
+**Per Circle** — when the Circle's work feels done, the `reconciler` agent runs the full three-edge check and emits a `## Coherence` section with a verdict: `coherent`, `review-needed`, or `bounded-closure-proposed`. This is the per-Circle aggregate. A `coherent` verdict closes the Circle as `[c]` (closed-coherent — the bracketed marker appears in the Circle's filename); the other two verdicts route into the Rebalance gate.
+
+Coherence is ultimately a human judgement — the framework's job is to surface the triangle clearly enough that the human can decide, not to grade it automatically. See `fusion-workbench/foundation_V3.md` §1.3 for the conceptual treatment.
+
+## 6. Directive ≠ static Goal
+
+A Goal in classical project-management vocabulary is fixed at the start and reached at the end. A Directive is different: it *prognosticates* the Artifact's end-state, but it is **revisable** as the Circle evolves. When a Coherence check (per-Turn or per-Circle) reveals that the stated Directive cannot be reached as written — because the Grounding turned out wrong, or the world changed, or the team learned something the Directive didn't anticipate — the user enters the **Rebalance gate** rather than push harder against an Artifact that won't converge.
+
+The Rebalance gate maps directly onto the triangle from §5. Each option corrects one pole, or accepts that the corner can't be reached:
+
+- **Revise Artifact** — the Artifact is not where we want it; do another Turn against the same Directive and Grounding.
+- **Revise Grounding** — the basis we built on was wrong; file a new `decisions/[o]` entry (an open question), or supersede an existing implemented decision.
+- **Revise Directive** — the destination we set was wrong; re-shape the Directive with the orchestrator's `shaper` agent.
+- **Accept Bounded Closure** — the Directive is judged definitively unreachable under the current conditions. What was learned along the way is the Artifact, and the Circle ends acknowledging that. The Circle's filename marker becomes `[b]` (Bounded Closure — preserved as an explicit terminal state, not a session error).
+
+"Goal → Directive" is not a cosmetic rename. It signals that the orchestrator treats the user's stated outcome as a *living* element of the work, not a fixed target — and that the framework has a structured way to revise it without abandoning the Circle.
+
+## 7. The Circle portfolio and the playmaker
+
+Most software-process vocabulary assumes a single linear sequence — a backlog, a sprint, a roadmap. Fusion projects accumulate a different shape: a **portfolio of Circles**, each in one of six lifecycle states.
+
+| Marker | State |
+|---|---|
+| `[a]` | **Anticipated** — provisional Directive, no Grounding yet. The portfolio's roadmap layer. |
+| `[t]` | **Active** — Directive refined, Grounding crystallising, orchestrator running it (one at a time). |
+| `[c]` | **Closed-coherent** — three-edge Coherence verdict passed. |
+| `[b]` | **Bounded Closure** — Directive judged unreachable; what was learned is the Artifact. |
+| `[s]` | **Superseded** — replaced by a Circle that captures revised intent. |
+| `[d]` | **Deferred** — anticipated, then indefinitely postponed. |
+
+(Markers `[c]`, `[b]`, `[s]`, `[d]` are terminal. Continuation happens through a new Circle that cites the terminal one as a dependency.)
+
+The **playmaker** agent is fusion's goal-management layer. It manages the portfolio, not any single Circle. On dispatch (via `/fusion:next`, or by the orchestrator at Phase 4 after a Circle closes) it does four things:
+
+1. **Inventories** every Circle file in `fusion-workbench/circles/` and classifies by marker.
+2. **Ranks** anticipated Circles using domain-biased heuristics — for `code` projects it favours Circles whose Grounding snapshot cites few unresolved decisions and whose dependencies are all closed; for `strategic` projects it favours Circles that would unblock the most open decisions when activated.
+3. **Detects dependency cycles** between non-terminal Circles and warns about them — without auto-decomposing or forcing serial activation.
+4. **Flags parent-Grounding-stale conditions** when a Circle closes with Bounded Closure and other Circles cited it as Grounding.
+
+Playmaker is deliberately **advisory and write-narrow**. It proposes activation but never commits the marker rename. It writes its ranked view into `fusion-workbench/portfolio.md` and appends a `## Activation proposal` block to the top-ranked anticipated Circle file — but the actual `[a] → [t]` transition is committed by the user (via `/fusion:next` interactive confirm) or by the orchestrator (at Phase 4). The same separation keeps `.active-circle` (the single-source-of-truth pointer to the currently active Circle) under the orchestrator's exclusive write.
+
+Playmaker is **never invoked from inside an active Turn loop**. Portfolio-level ranking belongs to the boundary between Turns — between Circles, really. Mixing it with execution would conflate "what should we work on next" with "how is the current work going", and the two questions deserve separate contexts.
+
+Playmaker is also distinct from `consultant`: the consultant handles user-direct conversational topics ("project health?", "compare X and Y") and writes opinionated reports to `consult/`. Playmaker handles portfolio mechanics — ranking, cycle detection, propagation flags. The boundary is intentional. See `agents/playmaker.md` for the full agent spec and `fusion-workbench/decisions/260509-1556[i]-playmaker-and-circles-folder.md` for the architectural decision that introduced it.
 
 ## What fusion is not
 
@@ -95,5 +146,7 @@ This is why "Goal → Directive" is not a cosmetic rename. It signals that the o
 - `README-agents.md` — full agent reference (scope, inputs, outputs, when to invoke)
 - `README-hooks.md` — compliance guard configuration
 - `CLAUDE.md` — release process, layout, troubleshooting
-- `rules/fusion-workbench-conventions.md` — workbench layout, marker vocabularies, decision-record template
+- `rules/fusion-workbench-conventions.md` — workbench layout, marker vocabularies, Circle file template, portfolio.md template
+- `fusion-workbench/foundation_V3.md` — the conceptual foundation (German) behind the hermeneutic-circle framing, Coherence triangle, and Bounded Closure
+- `agents/playmaker.md` — full playmaker agent spec
 - Run `/fusion:help` inside Claude Code for an interactive explainer
