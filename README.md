@@ -125,6 +125,40 @@ Each agent has strict scope boundaries — a reviewer never edits code, a coder 
 
 Since v2.9.0, every Turn ends with a **Coherence Review** (a per-Turn gate that checks the Turn's output against the Directive) and the session as a whole is judged by a per-Circle three-edge verdict at the end. When a Turn's Coherence Review reveals the Directive is unreachable as written, the orchestrator opens a **Rebalance gate** offering four options: Revise Artifact, Revise Directive, Revise Grounding, or Accept Bounded Closure. See `docs/philosophy.md` §5 for the full model.
 
+## Two ways to use fusion
+
+Fusion supports two operational modes. Both share the same conceptual model — a session works on a Directive (your stated outcome) against a Grounding (the assumptions you bring in) to produce an Artifact (code, data, analysis), with Coherence between the three as the criterion for finishing. The difference is whether you track future work as files on disk. See `docs/philosophy.md` for the conceptual treatment; this section is the operational guide.
+
+### Mode A — Direct orchestrator
+
+You give the orchestrator a scope at session start and it runs through to closure. No portfolio files are created; the `fusion-workbench/circles/` folder may be empty or absent.
+
+- **What you say:** *"process all open work,"* *"execute plan 0511-track-c,"* *"fix this bug,"* or any one-line custom request.
+- **What the orchestrator does:** runs Phase 0 (resolve scope) → Phase 1 (build work queue) → Phase 2 (Turn loop, with a Coherence Review at the end of each Turn) → Phase 3 (final reconciliation) → Phase 4 (report).
+- **Supported Phase 0 modes:** `all`, `plan`, `bundle`, `issues`, `review`, `custom`. See `agents/orchestrator.md` Phase 0 for the trigger phrases.
+- **What's on disk:** plans, issues, decisions, history, reviews — the normal `fusion-workbench/` artefacts described below. The work cycle is implicit in the session log, not reified as a Circle file.
+
+### Mode B — Portfolio-managed (Circles)
+
+You capture future units of work as files in `fusion-workbench/circles/` and let the `playmaker` agent rank them. Each file is one Directive captured ahead of execution, in one of six lifecycle states (anticipated, active, closed-coherent, bounded, superseded, deferred — see the marker table in `## fusion-workbench` below).
+
+- **Capture work ahead of time** with `/fusion:direct <one-line draft>`. The skill dispatches the `shaper` agent in anticipated-circle mode; shaper clarifies the draft with you and writes a new `[a]` (anticipated) Circle file.
+- **Decide what to work on next** with `/fusion:next`. The skill dispatches `playmaker`, which ranks the anticipated Circles by a domain-biased heuristic (see `agents/playmaker.md`), warns about dependency cycles, and proposes one to activate. You confirm the proposal or pick a different Circle.
+- **Run the active Circle** in the orchestrator until the per-Circle Coherence verdict closes it as `[c]` (closed-coherent) or `[b]` (Bounded Closure — the Directive is judged unreachable and what was learned is the Artifact).
+- **Pick the next one** with `/fusion:next` again.
+
+### When to use which
+
+| You have... | Use |
+|---|---|
+| One clear task to execute now; obvious priority | Mode A (direct) |
+| Multiple anticipated units of work and you want explicit ranking | Mode B (portfolio) |
+| A small project where "what's next" is self-evident | Mode A |
+| A project large enough that dependency tracking and cycle detection are worth the overhead | Mode B |
+| A queue thick enough that you want a visible roadmap in `portfolio.md` | Mode B |
+
+**Mixed use is fine.** Most projects start in Mode A, accumulate `[a]` Circle files over time as future work is captured via `/fusion:direct`, and shift toward Mode B once the queue is thick enough to deserve ranking. The two modes share the same workbench, the same agents, and the same conceptual model — only the surface for choosing the next Directive differs.
+
 ## Compliance Guard
 
 The guard intercepts every file-writing tool call (Write, Edit, MultiEdit, NotebookEdit):
