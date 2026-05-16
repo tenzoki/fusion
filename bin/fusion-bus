@@ -12,19 +12,29 @@ Subcommands:
                         contains <stem> (case-insensitive substring).
   mark-read <stem>      Move the matched message into inbox/.processed/
                         (atomic rename; dual-write race-safe per protocol).
+  daemon start          Launch bin/fusion-bus-daemon in the background
+                        (use --foreground to exec in place for debugging).
+  daemon stop           Send SIGTERM to the running daemon, escalate to
+                        SIGKILL after 5s if it doesn't exit cleanly.
+  daemon status         Print PID, mode, pending count, and recent-route
+                        stats from bus/.daemon-state.json + bus/.daemon.pid.
 
-Exit codes: 0 success, 1 operational error / no match / ambiguous match,
-2 bad invocation. Python 3 stdlib only.
+Exit codes: 0 success, 1 operational error / no match / ambiguous match /
+"daemon expected to be running but isn't", 2 bad invocation. Python 3 stdlib
+only.
 """
 
 from __future__ import annotations
 
 import argparse
 import datetime as _dt
+import json
 import os
 import re
+import signal
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 PROG = "fusion-bus"
@@ -154,6 +164,265 @@ def cmd_mark_read(root: Path, stem: str) -> int:
     return 1
 
 
+# ---------------------------------------------------------------------------
+# Daemon lifecycle (start | stop | status)
+# ---------------------------------------------------------------------------
+#
+# These subcommands manage `bin/fusion-bus-daemon`. The daemon owns the state
+# file `bus/.daemon-state.json` and the PID file `bus/.daemon.pid`; this
+# helper only spawns/signals/reads them. See Path D Step B2 in the plan.
+
+
+def _pid_alive(pid: int) -> bool:
+    """Return True if `pid` exists; mirrors fusion-bus-daemon's pid_alive."""
+    if pid <= 0:
+        return False
+    try:
+        os.kill(pid, 0)
+        return True
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        # PID exists but is owned by another user — still alive.
+        return True
+
+
+def _read_pid_file(pid_path: Path) -> int | None:
+    """Parse bus/.daemon.pid (JSON `{"pid": N, ...}`); return None on failure."""
+    try:
+        with pid_path.open("r", encoding="utf-8") as fh:
+            data = json.load(fh)
+    except (OSError, json.JSONDecodeError):
+        return None
+    if isinstance(data, dict) and isinstance(data.get("pid"), int):
+        return data["pid"]
+    return None
+
+
+def _daemon_binary_path() -> Path:
+    """Sibling `bin/fusion-bus-daemon` next to this script."""
+    return Path(__file__).resolve().parent / "fusion-bus-daemon"
+
+
+def cmd_daemon_start(root: Path, foreground: bool) -> int:
+    bus = root / "fusion-workbench" / "bus"
+    pid_path = bus / ".daemon.pid"
+    log_path = bus / ".daemon.log"
+    daemon_bin = _daemon_binary_path()
+
+    if not daemon_bin.exists():
+        print(f"{PROG}: daemon binary not found at {daemon_bin}", file=sys.stderr)
+        return 1
+
+    # Conflict detection: PID file present?
+    if pid_path.exists():
+        existing_pid = _read_pid_file(pid_path)
+        if existing_pid is not None and _pid_alive(existing_pid):
+            print(f"daemon already running (PID {existing_pid})", file=sys.stderr)
+            return 1
+        # Stale PID file — daemon crashed without cleanup.
+        print(
+            f"stale PID file detected (PID {existing_pid} dead); "
+            "clearing and starting fresh",
+            file=sys.stderr,
+        )
+        try:
+            pid_path.unlink()
+        except FileNotFoundError:
+            pass
+
+    bus.mkdir(parents=True, exist_ok=True)
+
+    if foreground:
+        # Hand off to the daemon binary directly. os.execv replaces this
+        # process; nothing below runs on success.
+        os.execv(str(daemon_bin), [str(daemon_bin)])
+        # Unreachable.
+        return 1
+
+    # Background launch: redirect stdout/stderr into the daemon log.
+    try:
+        log_fh = log_path.open("a", encoding="utf-8")
+    except OSError as exc:
+        print(f"{PROG}: cannot open daemon log {log_path}: {exc}", file=sys.stderr)
+        return 1
+    try:
+        proc = subprocess.Popen(
+            [str(daemon_bin)],
+            stdout=log_fh,
+            stderr=log_fh,
+            stdin=subprocess.DEVNULL,
+            start_new_session=True,
+            close_fds=True,
+        )
+    except OSError as exc:
+        log_fh.close()
+        print(f"{PROG}: failed to launch daemon: {exc}", file=sys.stderr)
+        return 1
+    finally:
+        # Parent does not need the log fd; the child inherits its own copy.
+        log_fh.close()
+
+    # Wait briefly for the daemon to write its PID file.
+    deadline = time.monotonic() + 2.0
+    while time.monotonic() < deadline:
+        if pid_path.exists():
+            launched_pid = _read_pid_file(pid_path)
+            if launched_pid is not None:
+                print(f"daemon started (PID {launched_pid})")
+                return 0
+        # Detect early crash so we don't loop the full 2s for nothing.
+        if proc.poll() is not None:
+            print(
+                f"{PROG}: daemon exited immediately with status {proc.returncode}; "
+                f"see {log_path.relative_to(root)} for details",
+                file=sys.stderr,
+            )
+            return 1
+        time.sleep(0.05)
+
+    # Timed out. The daemon may still be coming up — report the spawn PID
+    # so the user has something to investigate.
+    print(
+        f"{PROG}: daemon launched (PID {proc.pid}) but did not write "
+        f"{pid_path.relative_to(root)} within 2s",
+        file=sys.stderr,
+    )
+    return 1
+
+
+def cmd_daemon_stop(root: Path) -> int:
+    bus = root / "fusion-workbench" / "bus"
+    pid_path = bus / ".daemon.pid"
+
+    if not pid_path.exists():
+        print("daemon not running")
+        return 0
+
+    pid = _read_pid_file(pid_path)
+    if pid is None:
+        print(f"{PROG}: PID file present but unreadable; removing", file=sys.stderr)
+        try:
+            pid_path.unlink()
+        except FileNotFoundError:
+            pass
+        return 1
+
+    if not _pid_alive(pid):
+        # Stale PID file — daemon already gone. Treat as success.
+        try:
+            pid_path.unlink()
+        except FileNotFoundError:
+            pass
+        print(f"daemon stopped (PID {pid})")
+        return 0
+
+    try:
+        os.kill(pid, signal.SIGTERM)
+    except ProcessLookupError:
+        try:
+            pid_path.unlink()
+        except FileNotFoundError:
+            pass
+        print(f"daemon stopped (PID {pid})")
+        return 0
+    except PermissionError as exc:
+        print(f"{PROG}: cannot signal PID {pid}: {exc}", file=sys.stderr)
+        return 1
+
+    # Wait up to 5s for the PID to disappear.
+    deadline = time.monotonic() + 5.0
+    while time.monotonic() < deadline:
+        if not _pid_alive(pid):
+            # The daemon's shutdown path unlinks the PID file itself, but
+            # guard against an orphaned file just in case.
+            if pid_path.exists():
+                try:
+                    pid_path.unlink()
+                except FileNotFoundError:
+                    pass
+            print(f"daemon stopped (PID {pid})")
+            return 0
+        time.sleep(0.2)
+
+    # Escalate to SIGKILL.
+    print(
+        f"{PROG}: daemon (PID {pid}) did not exit after SIGTERM; sending SIGKILL",
+        file=sys.stderr,
+    )
+    try:
+        os.kill(pid, signal.SIGKILL)
+    except ProcessLookupError:
+        pass
+    except PermissionError as exc:
+        print(f"{PROG}: cannot SIGKILL PID {pid}: {exc}", file=sys.stderr)
+        return 1
+
+    # One more grace second after SIGKILL.
+    deadline = time.monotonic() + 1.0
+    while time.monotonic() < deadline:
+        if not _pid_alive(pid):
+            break
+        time.sleep(0.1)
+
+    if pid_path.exists():
+        try:
+            pid_path.unlink()
+        except FileNotFoundError:
+            pass
+    print(f"daemon stopped (PID {pid})")
+    return 0
+
+
+def cmd_daemon_status(root: Path) -> int:
+    bus = root / "fusion-workbench" / "bus"
+    state_path = bus / ".daemon-state.json"
+    pid_path = bus / ".daemon.pid"
+
+    state_exists = state_path.exists()
+    pid_exists = pid_path.exists()
+
+    if not state_exists and not pid_exists:
+        print("daemon not running (no state file, no PID file)")
+        return 1
+    if state_exists and not pid_exists:
+        print(
+            "daemon not running (state file present but no PID file — "
+            "daemon was never started or shut down cleanly)"
+        )
+        return 1
+
+    # PID file present. (state-missing-but-PID-present falls through too —
+    # report what we can and note the missing state.)
+    pid = _read_pid_file(pid_path)
+    alive = _pid_alive(pid) if pid is not None else False
+
+    state: dict = {}
+    if state_exists:
+        try:
+            with state_path.open("r", encoding="utf-8") as fh:
+                loaded = json.load(fh)
+            if isinstance(loaded, dict):
+                state = loaded
+        except (OSError, json.JSONDecodeError):
+            state = {}
+
+    recent = state.get("recent_routes")
+    recent_count = len(recent) if isinstance(recent, list) else 0
+
+    print(f"PID:             {pid if pid is not None else 'unknown'}")
+    print(f"running:         {'yes' if alive else 'no'}")
+    print(f"mode:            {state.get('mode', 'unknown')}")
+    print(f"started_at:      {state.get('started_at', 'unknown')}")
+    print(f"pending_count:   {state.get('pending_count', 0)}")
+    print(f"last_route_at:   {state.get('last_route_at') or 'never'}")
+    print(f"recent_routes:   {recent_count}")
+
+    # Exit 0 only when the daemon is actually running; otherwise 1 so
+    # scripts can tell the difference.
+    return 0 if alive else 1
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(prog=PROG, description="Inspect the fusion workbench bus.")
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -162,6 +431,22 @@ def main(argv: list[str]) -> int:
                            ("mark-read", "Move message into .processed/.")):
         sp = sub.add_parser(name, help=helptext)
         sp.add_argument("stem", help="Case-insensitive substring of the message filename.")
+
+    daemon_parser = sub.add_parser(
+        "daemon", help="Manage the bus router daemon (start | stop | status)."
+    )
+    daemon_sub = daemon_parser.add_subparsers(dest="daemon_cmd", required=True)
+    daemon_start = daemon_sub.add_parser(
+        "start", help="Launch fusion-bus-daemon (background by default)."
+    )
+    daemon_start.add_argument(
+        "--foreground",
+        action="store_true",
+        help="Exec the daemon in place instead of forking to background.",
+    )
+    daemon_sub.add_parser("stop", help="Signal the daemon to exit cleanly.")
+    daemon_sub.add_parser("status", help="Report PID, mode, and queue stats.")
+
     args = parser.parse_args(argv)
     root = resolve_root()
     if args.cmd == "list":
@@ -170,6 +455,13 @@ def main(argv: list[str]) -> int:
         return cmd_show(root, args.stem)
     if args.cmd == "mark-read":
         return cmd_mark_read(root, args.stem)
+    if args.cmd == "daemon":
+        if args.daemon_cmd == "start":
+            return cmd_daemon_start(root, foreground=args.foreground)
+        if args.daemon_cmd == "stop":
+            return cmd_daemon_stop(root)
+        if args.daemon_cmd == "status":
+            return cmd_daemon_status(root)
     return 2
 
 
