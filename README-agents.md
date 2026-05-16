@@ -39,6 +39,30 @@ Options 1 and 2 launch a sub-agent with its own context window (see [How to invo
 
 **Dispatch is the orchestrator's monopoly.** Only `orchestrator` invokes other agents via the `Agent` tool. The constraint is **prose-enforced** in each non-orchestrator agent's prompt — sub-agents that identify work for another agent **recommend** the dispatch in their output (issue file, plan step, consultation report) but never call `Agent` directly. This prevents cycles (e.g. consultant→orchestrator→consultant) and keeps the dependency tree shallow. (A v2.8.1 attempt to enforce this via `disallowedTools: [Agent]` in frontmatter broke agent loading entirely and was rolled back in 2.8.3 — the canonical syntax remains TBD.)
 
+## Bus protocol (v3.4+)
+
+Concurrent agent sessions exchange durable messages through `fusion-workbench/bus/<agent>/inbox/`. A message is a markdown file with `From:` / `To:` / `Re:` / `Filed:` frontmatter; the receiving agent picks it up the next time it runs Setup. Four agents participate today: `orchestrator`, `consultant`, `coderev`, `ontorev`.
+
+The bus activates only when `fusion-workbench/bus/` exists (created by `/fusion:setup` since v3.4). Bus-aware agents probe-and-degrade silently when it does not. Every bus-aware agent's Setup ends with a `bus/<agent>/inbox/` listing of unread items and a session registration via `bin/fusion-bus-session`; the session is cleared at exit.
+
+**The bus does not change dispatch.** Fusion has no daemon and does not auto-route. When an agent files a request, it prints the exact `./.fusion/fu <target-agent>` command and the user opens a second terminal to run it; the target's Setup surfaces the unread item. The orchestrator's dispatch monopoly is unchanged — bus filings are file writes, not `Agent` calls.
+
+User-facing helper for inspecting the bus from the project root:
+
+```
+bin/fusion-bus list             # all unread mail across all agents
+bin/fusion-bus show <stem>      # print one message's contents
+bin/fusion-bus mark-read <stem> # move it to inbox/.processed/ manually
+```
+
+Canonical spec — message naming, reply pairing, session registry, mark-read race-safety: `rules/fusion-workbench-conventions.md` `## Bus protocol`. User-facing walkthrough: `/fusion:help bus`.
+
+### Per-agent bus behaviour
+
+- **`orchestrator`** — may **file** a consultation request to the consultant at four gates: the Rebalance gate, pre-shaping (when the request looks ambiguous), pre-planning (when shaper has produced a spec and planner is next), and post-reconciler `review-needed` verdict. Filing is optional; the user always has the standard non-bus options available too. Resume-time reply consumption handles three cases (reply found / no reply yet / both request and reply present as a defensive pairing). The orchestrator does NOT dispatch consultant — bus is file-mediated handoff with the user as the trigger.
+- **`consultant`** — Primary Mode gains a "Processing bus inbox items" workflow: read the request, draft a reply, atomic-write it to the originating agent's inbox, mark the original read with dual-write tolerance. The consultant remains **user-initiated only** — the bus does not change that contract; it gives the user a more structured way to bring questions to the consultant from another agent session.
+- **`coderev`** and **`ontorev`** — review reports may include an optional **Bus filings** sub-section for cross-cutting findings where the right next move is "consultant input before recommending a coder/ontocoder fix" rather than filing an issue directly. Used sparingly, for findings whose remedy is uncertain or spans multiple layers.
+
 ## How to invoke an agent
 
 Claude Code offers two ways to delegate to a sub-agent from the parent session:
@@ -206,6 +230,7 @@ fusion-workbench/
 ├── investigations/  # investigator output
 ├── analyses/        # analyst output
 ├── consult/         # consultant reports
+├── bus/             # A2A messages (v3.4+, opt-in; orchestrator/consultant/coderev/ontorev)
 └── tasklist.md      # taskplanner output (dependency-ordered work queue)
 ```
 

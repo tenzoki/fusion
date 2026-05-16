@@ -20,7 +20,7 @@ A `coder` cannot edit ontology YAML; an `ontocoder` cannot edit Go; a reviewer n
 
 This is the inverse of the "one big assistant" pattern. Fusion is built on the bet that the LLM-context is the bottleneck, and that splitting work across many small contexts beats stuffing everything into one large one.
 
-## 2. Workbench-mediated coordination — and human-readable memory
+## 2. Workbench-mediated coordination — across time, across humans, across terminals
 
 Sub-agents in Claude Code share **no context** with their parent or with each other. By default this is a constraint people work around. Fusion turns it into the design.
 
@@ -41,6 +41,10 @@ Coordination happens through the filesystem, not through agent memory. Three con
 - **Runs are interruptible.** Crash or close the session mid-flight; the next session reads the workbench and resumes from where the last one left off. The orchestrator's `agentstate.yaml` makes this explicit.
 - **Runs are auditable.** Every agent's work leaves a paper trail. Decision rationale, issue history, review findings, and reconciliation passes are all on disk and version-controllable.
 - **Runs are resumable across humans.** The workbench is the project's shared cross-session memory. A new contributor can read it and pick up where the project is, not just where the codebase is.
+
+The workbench was already the substrate for cross-time coordination (interruptions, audit, resumption); since v3.4 it also coordinates **concurrent agent sessions to each other**. Two terminals running different fusion agents against the same project hand work between themselves through `fusion-workbench/bus/<agent>/inbox/` rather than through the user's copy-paste between chat windows. Same principle as the rest of §2 — durable on-disk handoff in plain markdown — applied to a new surface: cross-terminal rather than cross-time.
+
+The bus is opt-in: agents check for `bus/` and degrade silently when absent. It is also deliberately **user-triggered, not auto-routed** — when one agent files a message into another's inbox, it prints the exact `./.fusion/fu <target-agent>` command for the user to run in a second terminal; the target's Setup surfaces the unread item. Fusion has no daemon and does not inject into running sessions. Full automation is Path D territory and intentionally deferred. Four agents participate today (orchestrator, consultant, coderev, ontorev); and **the consultant remains user-initiated only — the bus gives the user a more structured way to bring questions to consultant from another agent session, but does not turn it into a dispatch target**. See `/fusion:help bus` for usage and `rules/fusion-workbench-conventions.md` `## Bus protocol` for the canonical spec.
 
 **Traceability is a first-class human-facing output, not just an agent-coordination side-effect.** Every plan, decision, issue, review, and session log lands on disk in the same workbench, in plain markdown, navigable directly by the user — no tool needed to read what the project decided last month or which review filed which issue. Two skills surface this material for the human explicitly:
 
