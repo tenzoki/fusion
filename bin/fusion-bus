@@ -18,6 +18,19 @@ Subcommands:
                         SIGKILL after 5s if it doesn't exit cleanly.
   daemon status         Print PID, mode, pending count, and recent-route
                         stats from bus/.daemon-state.json + bus/.daemon.pid.
+  pending               Table of pending injections from bus/.pending/*.json
+                        (works regardless of daemon state).
+  approve <stem>        File an approve command for the matched .pending/
+                        entry; daemon picks up on next tick.
+  deny <stem> [--reason TEXT]
+                        File a deny command; daemon annotates the message
+                        body and routes both files to their .processed/ /
+                        .denied/ targets.
+  pause                 File a pause command (daemon stops reacting).
+  resume                File a resume command.
+  mode <strict|observe|silent>
+                        File a set-mode command (validated against the
+                        closed set).
 
 Exit codes: 0 success, 1 operational error / no match / ambiguous match /
 "daemon expected to be running but isn't", 2 bad invocation. Python 3 stdlib
@@ -42,6 +55,9 @@ PROG = "fusion-bus"
 # (bold-prefixed markdown). The bold-close `**` may sit either side of the
 # colon depending on the writer's convention.
 FM_RE = re.compile(r"^\**(From|To|Re|Filed)\**\s*:\**\s*(.+?)\s*$")
+
+# Valid mode strings — mirrors VALID_MODES in fusion-bus-daemon.
+VALID_MODES = ("strict", "observe", "silent")
 
 
 def resolve_root() -> Path:
@@ -423,6 +439,277 @@ def cmd_daemon_status(root: Path) -> int:
     return 0 if alive else 1
 
 
+# ---------------------------------------------------------------------------
+# Control IPC (pending | approve | deny | pause | resume | mode)
+# ---------------------------------------------------------------------------
+#
+# These subcommands speak to `bin/fusion-bus-daemon` through two files:
+#   - `bus/.daemon-state.json`  — read-only sanity check (running?)
+#   - `bus/.daemon-cmd.json`    — single-command queue we write into
+#
+# The schemas are defined in `rules/fusion-workbench-conventions.md`
+# `## Bus protocol` → `### Path D — daemon and control IPC`. Per the plan,
+# `pending` works regardless of daemon state because it just reads
+# `.pending/*.json`. Every other control subcommand checks daemon state
+# first and exits 1 with "daemon not running — start it with
+# 'fusion-bus daemon start'" when absent or paused.
+
+
+def _now_utc() -> str:
+    """RFC-3339 UTC timestamp with `Z` suffix — matches the daemon's format."""
+    return _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _filed_by() -> str:
+    return os.environ.get("USER", "unknown") or "unknown"
+
+
+def _read_daemon_state(root: Path) -> dict | None:
+    """Load `bus/.daemon-state.json`; return None on missing/unreadable/invalid."""
+    state_path = root / "fusion-workbench" / "bus" / ".daemon-state.json"
+    if not state_path.exists():
+        return None
+    try:
+        with state_path.open("r", encoding="utf-8") as fh:
+            data = json.load(fh)
+    except (OSError, json.JSONDecodeError):
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def _require_running_daemon(root: Path) -> bool:
+    """Enforce the "control commands need a running daemon" rule.
+
+    Returns True when the daemon is running per `.daemon-state.json`. Returns
+    False after printing the canonical message to stderr — caller should
+    `return 1`. Used by every control subcommand except `pending`.
+    """
+    state = _read_daemon_state(root)
+    if state is None or not state.get("running"):
+        print(
+            f"{PROG}: daemon not running — start it with "
+            "'fusion-bus daemon start'",
+            file=sys.stderr,
+        )
+        return False
+    return True
+
+
+def _pending_dir(root: Path) -> Path:
+    return root / "fusion-workbench" / "bus" / ".pending"
+
+
+def _list_pending(root: Path) -> list[Path]:
+    """Return all `.pending/*.json` paths (no sort imposed here)."""
+    pending = _pending_dir(root)
+    if not pending.is_dir():
+        return []
+    return [p for p in pending.iterdir() if p.is_file() and p.suffix == ".json"]
+
+
+def _match_pending(root: Path, stem: str) -> list[Path]:
+    """Case-insensitive basename substring match across `.pending/*.json`.
+
+    Returns the list of matching paths (callers decide how to handle 0 / 1 /
+    multiple). The stem is matched against the filename including the
+    `.json` suffix, mirroring how `cmd_show` / `cmd_mark_read` match against
+    inbox files — the user can use either the full msg-id or any unique
+    fragment of it.
+    """
+    needle = stem.lower()
+    return [p for p in _list_pending(root) if needle in p.name.lower()]
+
+
+def _atomic_write_json(path: Path, payload: dict) -> None:
+    """temp-write-and-rename, matching the daemon's atomic_write_json."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(f"{path.name}.tmp.{os.getpid()}")
+    with tmp.open("w", encoding="utf-8") as fh:
+        json.dump(payload, fh, indent=2, sort_keys=False)
+        fh.write("\n")
+    os.rename(tmp, path)
+
+
+def _write_cmd_file(root: Path, payload: dict) -> Path:
+    """File a single command for the daemon.
+
+    Writes `bus/.daemon-cmd.json` if available, otherwise retries with
+    `.daemon-cmd.1.json`, `.daemon-cmd.2.json`, ... until a free name is
+    found. The daemon globs `.daemon-cmd*.json` oldest-mtime-first each
+    tick, so the suffix is purely a collision-avoidance device — execution
+    order follows file-creation order. Uses `os.open` with `O_CREAT|O_EXCL`
+    to atomically reserve the name, then rewrites via the standard
+    temp-write-and-rename pattern so partial JSON is never visible.
+    """
+    bus = root / "fusion-workbench" / "bus"
+    bus.mkdir(parents=True, exist_ok=True)
+    seq = 0
+    while True:
+        if seq == 0:
+            target = bus / ".daemon-cmd.json"
+        else:
+            target = bus / f".daemon-cmd.{seq}.json"
+        try:
+            # Atomically claim the filename; abort the open immediately.
+            fd = os.open(str(target), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+        except FileExistsError:
+            seq += 1
+            continue
+        os.close(fd)
+        # Now atomically rewrite with the real payload (the daemon may not
+        # tolerate an empty placeholder if it polls between the touch and
+        # the rewrite, so we rename a fully-formed file over the top).
+        _atomic_write_json(target, payload)
+        return target
+
+
+def _candidates_pending_to_stderr(matches: list[Path]) -> None:
+    print(f"{PROG}: multiple matches:", file=sys.stderr)
+    for path in matches:
+        print(f"  {path.stem}", file=sys.stderr)
+
+
+def cmd_pending(root: Path) -> int:
+    """Print a table of `.pending/*.json` entries, sorted by `queued_at`.
+
+    Reads each JSON record's `msg_id`, `target_agent`, `from`, `re`, and
+    `queued_at` fields. Files that fail to parse are skipped silently —
+    they're transient (the daemon's atomic_write_json briefly leaves a
+    `.tmp.<pid>` sibling). Independent of daemon state.
+    """
+    rows = []
+    for path in _list_pending(root):
+        try:
+            with path.open("r", encoding="utf-8") as fh:
+                data = json.load(fh)
+        except (OSError, json.JSONDecodeError):
+            continue
+        if not isinstance(data, dict):
+            continue
+        rows.append((
+            str(data.get("queued_at", "")),
+            str(data.get("msg_id", path.stem)),
+            str(data.get("target_agent", "")),
+            str(data.get("from", "")),
+            str(data.get("re", "")),
+        ))
+    if not rows:
+        print("no pending bus messages")
+        return 0
+    # Sort by queued_at (string sort works for RFC-3339 UTC), then msg_id.
+    rows.sort(key=lambda r: (r[0], r[1]))
+    headers = ("msg_id", "target", "from", "re", "queued_at")
+    # Trim long `re` for table width.
+    table = []
+    for queued, mid, tgt, frm, re_val in rows:
+        if len(re_val) > 70:
+            re_val = re_val[:67] + "..."
+        table.append((mid, tgt, frm, re_val, queued))
+    widths = [max(len(h), max(len(r[i]) for r in table)) for i, h in enumerate(headers)]
+    fmt = "  ".join(f"{{:<{w}}}" for w in widths)
+    print(fmt.format(*headers))
+    print(fmt.format(*("-" * w for w in widths)))
+    for r in table:
+        print(fmt.format(*r))
+    return 0
+
+
+def _resolve_pending_stem(root: Path, stem: str) -> str | None:
+    """Substring-match into `.pending/` and return the full msg-id.
+
+    Returns the canonical msg-id (file stem minus `.json`) when there is
+    exactly one match. Returns None and prints to stderr in the no-match /
+    ambiguous case — callers `return 1`.
+    """
+    matches = _match_pending(root, stem)
+    if not matches:
+        print(f"{PROG}: no pending message matching '{stem}'", file=sys.stderr)
+        return None
+    if len(matches) > 1:
+        _candidates_pending_to_stderr(matches)
+        return None
+    return matches[0].stem
+
+
+def cmd_approve(root: Path, stem: str) -> int:
+    if not _require_running_daemon(root):
+        return 1
+    msg_id = _resolve_pending_stem(root, stem)
+    if msg_id is None:
+        return 1
+    payload = {
+        "cmd": "approve",
+        "arg": msg_id,
+        "filed_by": _filed_by(),
+        "filed_at": _now_utc(),
+    }
+    _write_cmd_file(root, payload)
+    print(f"filed approve command for {msg_id} (daemon will pick up on next tick)")
+    return 0
+
+
+def cmd_deny(root: Path, stem: str, reason: str | None) -> int:
+    if not _require_running_daemon(root):
+        return 1
+    msg_id = _resolve_pending_stem(root, stem)
+    if msg_id is None:
+        return 1
+    payload = {
+        "cmd": "deny",
+        "arg": msg_id,
+        "reason": (reason or "no reason given").strip() or "no reason given",
+        "filed_by": _filed_by(),
+        "filed_at": _now_utc(),
+    }
+    _write_cmd_file(root, payload)
+    print(f"filed deny command for {msg_id} (daemon will pick up on next tick)")
+    return 0
+
+
+def cmd_pause(root: Path) -> int:
+    if not _require_running_daemon(root):
+        return 1
+    _write_cmd_file(root, {
+        "cmd": "pause",
+        "filed_by": _filed_by(),
+        "filed_at": _now_utc(),
+    })
+    print("filed pause command (daemon will pick up on next tick)")
+    return 0
+
+
+def cmd_resume(root: Path) -> int:
+    if not _require_running_daemon(root):
+        return 1
+    _write_cmd_file(root, {
+        "cmd": "resume",
+        "filed_by": _filed_by(),
+        "filed_at": _now_utc(),
+    })
+    print("filed resume command (daemon will pick up on next tick)")
+    return 0
+
+
+def cmd_mode(root: Path, mode: str) -> int:
+    if mode not in VALID_MODES:
+        print(
+            f"{PROG}: invalid mode '{mode}'; expected one of "
+            f"{', '.join(VALID_MODES)}",
+            file=sys.stderr,
+        )
+        return 2
+    if not _require_running_daemon(root):
+        return 1
+    _write_cmd_file(root, {
+        "cmd": "set-mode",
+        "arg": mode,
+        "filed_by": _filed_by(),
+        "filed_at": _now_utc(),
+    })
+    print(f"filed set-mode command (mode={mode}; daemon will pick up on next tick)")
+    return 0
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(prog=PROG, description="Inspect the fusion workbench bus.")
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -447,6 +734,33 @@ def main(argv: list[str]) -> int:
     daemon_sub.add_parser("stop", help="Signal the daemon to exit cleanly.")
     daemon_sub.add_parser("status", help="Report PID, mode, and queue stats.")
 
+    sub.add_parser("pending", help="Table of pending injections (.pending/*.json).")
+    approve_p = sub.add_parser(
+        "approve", help="File an approve command for a .pending/ entry."
+    )
+    approve_p.add_argument(
+        "stem", help="Case-insensitive substring of the pending msg-id."
+    )
+    deny_p = sub.add_parser("deny", help="File a deny command for a .pending/ entry.")
+    deny_p.add_argument(
+        "stem", help="Case-insensitive substring of the pending msg-id."
+    )
+    deny_p.add_argument(
+        "--reason", default=None,
+        help="Denial reason recorded with the command (default: 'no reason given').",
+    )
+    sub.add_parser("pause", help="File a pause command.")
+    sub.add_parser("resume", help="File a resume command.")
+    mode_p = sub.add_parser(
+        "mode", help="File a set-mode command (strict | observe | silent)."
+    )
+    mode_p.add_argument(
+        "mode_value",
+        metavar="mode",
+        choices=VALID_MODES,
+        help="Target mode (validated against the closed set).",
+    )
+
     args = parser.parse_args(argv)
     root = resolve_root()
     if args.cmd == "list":
@@ -462,6 +776,18 @@ def main(argv: list[str]) -> int:
             return cmd_daemon_stop(root)
         if args.daemon_cmd == "status":
             return cmd_daemon_status(root)
+    if args.cmd == "pending":
+        return cmd_pending(root)
+    if args.cmd == "approve":
+        return cmd_approve(root, args.stem)
+    if args.cmd == "deny":
+        return cmd_deny(root, args.stem, args.reason)
+    if args.cmd == "pause":
+        return cmd_pause(root)
+    if args.cmd == "resume":
+        return cmd_resume(root)
+    if args.cmd == "mode":
+        return cmd_mode(root, args.mode_value)
     return 2
 
 
