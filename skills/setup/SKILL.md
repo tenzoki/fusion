@@ -27,7 +27,10 @@ Note the path. The workbench will be created here. Then:
 
 ```bash
 mkdir -p ./fusion-workbench/planning ./fusion-workbench/issues ./fusion-workbench/decisions ./fusion-workbench/history ./fusion-workbench/codereview ./fusion-workbench/ontoreview ./fusion-workbench/investigations ./fusion-workbench/analyses ./fusion-workbench/consult ./fusion-workbench/.guard-state ./fusion-workbench/circles
+mkdir -p ./fusion-workbench/bus/.sessions ./fusion-workbench/bus/orchestrator/inbox/.processed ./fusion-workbench/bus/consultant/inbox/.processed ./fusion-workbench/bus/coderev/inbox/.processed ./fusion-workbench/bus/ontorev/inbox/.processed
 ```
+
+The second line creates the bus directory tree (see `rules/fusion-workbench-conventions.md` `## Bus protocol`). Bus behaviour activates only when `fusion-workbench/bus/` exists, so every setup run — fresh or rerun — provisions it. The four agent inboxes (orchestrator, consultant, coderev, ontorev) match the initial participating set; future-agent participants get their inbox added when their participation lands. The `.processed/` subdirs are pre-created so the move target always exists on day one. `mkdir -p` is idempotent: pre-existing dirs are untouched, missing ones are added — so rerunning setup on a pre-bus workbench just fills in the bus tree.
 
 Write the setup marker (this is the file every agent and hook looks for to confirm fusion is set up here):
 
