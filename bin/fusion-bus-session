@@ -1,0 +1,151 @@
+#!/usr/bin/env bash
+# fusion-bus-session — manage the bus's per-session registry files.
+#
+# Maintains fusion-workbench/bus/.sessions/<session-id>.yaml entries that
+# announce a running bus-participating agent (orchestrator, consultant,
+# coderev, ontorev, etc.) to the rest of the workbench. The Path D daemon
+# (later) will read last_heartbeat against a 600s freshness threshold to
+# decide whether a session is still routable.
+#
+# Schema (six single-line scalars, see rules/fusion-workbench-conventions.md
+# `## Bus protocol` → `### Session registry`):
+#
+#   session_id: <yymmdd-HHMM>-<agent>-<4 hex chars>
+#   agent: <agent>
+#   project: <absolute path of the workbench root>
+#   tmux_pane: "<$TMUX_PANE>"  | null
+#   registered_at: <RFC 3339 UTC>
+#   last_heartbeat: <RFC 3339 UTC>
+#
+# Usage:
+#   fusion-bus-session register <agent>
+#       Allocate a fresh session-id, write the YAML file, and print the
+#       session-id to stdout (no trailing space) so the caller can capture
+#       it. Creates bus/.sessions/ if missing.
+#
+#   fusion-bus-session heartbeat <session-id>
+#       Rewrite the file with last_heartbeat updated to "now" (UTC). The
+#       other five fields are byte-identical. Atomic via temp-file + mv.
+#       Exit non-zero if the session file does not exist.
+#
+#   fusion-bus-session clear <session-id>
+#       Remove the file. Exit non-zero (with a clear message) if it does
+#       not exist — distinguishes "already cleared" from "never existed".
+#
+# Dependencies: date, openssl, printf, mv, cat, mkdir. POSIX-portable;
+# tested on macOS Bash 3.2 and Linux Bash 4+.
+
+set -eu
+
+resolve_root() {
+  local root
+  if ! root="$("$(dirname "$0")/fusion-workbench-root" 2>/dev/null)"; then
+    echo "fusion-bus-session: no fusion workbench found above $(pwd). Run /fusion:setup at the project root first." >&2
+    return 1
+  fi
+  printf '%s\n' "$root"
+}
+
+now_utc() {
+  date -u +%Y-%m-%dT%H:%M:%SZ
+}
+
+cmd="${1:-}"
+
+case "$cmd" in
+  register)
+    agent="${2:-}"
+    if [ -z "$agent" ]; then
+      echo "fusion-bus-session: register requires an agent name" >&2
+      echo "Usage: fusion-bus-session register <agent>" >&2
+      exit 2
+    fi
+    root="$(resolve_root)" || exit 1
+    cd "$root"
+    mkdir -p fusion-workbench/bus/.sessions
+    ts="$(date +%y%m%d-%H%M)"
+    rand="$(openssl rand -hex 2 | tr -d '\n')"
+    sid="${ts}-${agent}-${rand}"
+    file="fusion-workbench/bus/.sessions/${sid}.yaml"
+    now="$(now_utc)"
+    if [ -n "${TMUX_PANE:-}" ]; then
+      tmux_line="tmux_pane: \"${TMUX_PANE}\""
+    else
+      tmux_line="tmux_pane: null"
+    fi
+    {
+      printf 'session_id: %s\n' "$sid"
+      printf 'agent: %s\n' "$agent"
+      printf 'project: %s\n' "$(pwd -P)"
+      printf '%s\n' "$tmux_line"
+      printf 'registered_at: %s\n' "$now"
+      printf 'last_heartbeat: %s\n' "$now"
+    } > "$file"
+    printf '%s' "$sid"
+    ;;
+  heartbeat)
+    sid="${2:-}"
+    if [ -z "$sid" ]; then
+      echo "fusion-bus-session: heartbeat requires a session-id" >&2
+      echo "Usage: fusion-bus-session heartbeat <session-id>" >&2
+      exit 2
+    fi
+    root="$(resolve_root)" || exit 1
+    cd "$root"
+    file="fusion-workbench/bus/.sessions/${sid}.yaml"
+    if [ ! -f "$file" ]; then
+      echo "fusion-bus-session: session file not found: $file" >&2
+      exit 1
+    fi
+    now="$(now_utc)"
+    tmp="${file}.tmp.$$"
+    # Rewrite the file: keep the first five lines as-is, replace the
+    # last_heartbeat line. Hand-rolled to avoid sed -i portability issues
+    # (BSD vs GNU); the file is exactly six lines with a known schema.
+    while IFS= read -r line || [ -n "$line" ]; do
+      case "$line" in
+        last_heartbeat:*)
+          printf 'last_heartbeat: %s\n' "$now"
+          ;;
+        *)
+          printf '%s\n' "$line"
+          ;;
+      esac
+    done < "$file" > "$tmp"
+    mv "$tmp" "$file"
+    ;;
+  clear)
+    sid="${2:-}"
+    if [ -z "$sid" ]; then
+      echo "fusion-bus-session: clear requires a session-id" >&2
+      echo "Usage: fusion-bus-session clear <session-id>" >&2
+      exit 2
+    fi
+    root="$(resolve_root)" || exit 1
+    cd "$root"
+    file="fusion-workbench/bus/.sessions/${sid}.yaml"
+    if [ ! -f "$file" ]; then
+      echo "fusion-bus-session: session file does not exist: $file" >&2
+      exit 1
+    fi
+    rm -f "$file"
+    ;;
+  ""|-h|--help|help)
+    cat >&2 <<'EOF'
+Usage: fusion-bus-session <subcommand> [args]
+
+Subcommands:
+  register <agent>          Allocate a session-id, write the registry file,
+                            and print the session-id to stdout.
+  heartbeat <session-id>    Update last_heartbeat to now (UTC).
+  clear <session-id>        Remove the registry file.
+EOF
+    [ -z "$cmd" ] && exit 2
+    exit 0
+    ;;
+  *)
+    echo "fusion-bus-session: unknown subcommand '$cmd'" >&2
+    echo "Usage: fusion-bus-session {register <agent>|heartbeat <session-id>|clear <session-id>}" >&2
+    exit 2
+    ;;
+esac
