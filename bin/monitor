@@ -62,6 +62,8 @@ import http.server
 import json
 import os
 import sys
+import datetime as _dt
+import glob
 
 MONITOR_NAME = sys.argv[1]
 PORT = int(sys.argv[2])
@@ -73,6 +75,21 @@ LIVE_MD = os.path.join(BASE_DIR, "orchestrator-live.md")
 EVENTS_JSONL = os.path.join(BASE_DIR, "orchestrator-events.jsonl")
 STATE_YAML = os.path.join(BASE_DIR, "agentstate.yaml")
 GUARD_EVENTS_JSONL = os.path.join(BASE_DIR, ".guard-state", "events.jsonl")
+
+# Path D bus daemon IPC paths. The monitor only reads .daemon-state.json /
+# .pending/ / .daemon.log and writes .daemon-cmd*.json via the same
+# O_CREAT|O_EXCL collision pattern as bin/fusion-bus. Everything else under
+# bus/ is the daemon's territory.
+BUS_DIR = os.path.join(BASE_DIR, "bus")
+BUS_STATE_JSON = os.path.join(BUS_DIR, ".daemon-state.json")
+BUS_PENDING_DIR = os.path.join(BUS_DIR, ".pending")
+BUS_LOG = os.path.join(BUS_DIR, ".daemon.log")
+BUS_LOG_TAIL_N = 50
+
+# Closed-set validation for POST /api/bus/cmd. Mirrors VALID_CMDS / VALID_MODES
+# in bin/fusion-bus-daemon — kept in sync by hand (small surface, low churn).
+BUS_VALID_CMDS = ("pause", "resume", "set-mode", "approve", "deny")
+BUS_VALID_MODES = ("strict", "observe", "silent")
 
 # Guard events surfaced as sticky warnings on the dashboard. Other guard
 # events (guard_allow, tracker_record, clears) are bookkeeping and are
@@ -239,6 +256,107 @@ HTML_PAGE = r"""<!DOCTYPE html>
     font-size: 16px;
   }
   .no-file span { display: block; margin-top: 8px; font-size: 13px; }
+  /* Bus traffic panel — Path D daemon view */
+  .bus-section { padding: 4px 0; }
+  .bus-header-row {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
+    padding: 10px 14px; background: var(--bg2); border-radius: 6px;
+    border: 1px solid var(--border); margin-bottom: 14px;
+  }
+  .bus-badge {
+    display: inline-block; padding: 3px 10px; border-radius: 3px;
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    background: var(--bg3); color: var(--fg2); letter-spacing: 0.05em;
+  }
+  .bus-badge.running { color: var(--green); background: rgba(158,206,106,0.12); }
+  .bus-badge.paused  { color: var(--yellow); background: rgba(224,175,104,0.12); }
+  .bus-badge.down    { color: var(--fg3); background: var(--bg3); }
+  .bus-badge.mode-strict  { color: var(--green); background: rgba(158,206,106,0.12); }
+  .bus-badge.mode-observe { color: var(--orange); background: rgba(255,158,100,0.12); }
+  .bus-badge.mode-silent  { color: var(--red); background: rgba(247,118,142,0.12); }
+  .bus-meta { color: var(--fg3); font-size: 12px; margin-left: auto; display: flex; gap: 18px; }
+  .bus-meta strong { color: var(--fg2); font-weight: 500; }
+  .bus-block { margin: 16px 0; }
+  .bus-block h3 {
+    color: var(--cyan); font-size: 13px; margin-bottom: 8px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .bus-table {
+    width: 100%; border-collapse: collapse; font-size: 12px;
+    background: var(--bg2); border-radius: 6px; overflow: hidden;
+  }
+  .bus-table th, .bus-table td {
+    padding: 7px 10px; border-bottom: 1px solid var(--border);
+    text-align: left; vertical-align: top;
+  }
+  .bus-table th {
+    background: var(--bg3); color: var(--accent); font-weight: 600;
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .bus-table tr:last-child td { border-bottom: none; }
+  .bus-table td.bus-msgid { font-family: inherit; color: var(--cyan); }
+  .bus-table td.bus-target { color: var(--purple); }
+  .bus-table td.bus-from   { color: var(--fg2); }
+  .bus-table td.bus-re     { color: var(--fg); max-width: 360px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bus-table td.bus-age    { color: var(--fg3); white-space: nowrap; }
+  .bus-table td.bus-action { color: var(--fg2); }
+  .bus-empty {
+    color: var(--fg3); padding: 14px; font-style: italic;
+    background: var(--bg2); border-radius: 6px; font-size: 12px;
+  }
+  .bus-btn {
+    background: var(--bg3); border: 1px solid var(--border); color: var(--fg2);
+    padding: 4px 10px; border-radius: 4px; cursor: pointer;
+    font-family: inherit; font-size: 11px; margin-right: 4px;
+  }
+  .bus-btn:hover:not(:disabled) { color: var(--fg); border-color: var(--fg3); }
+  .bus-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .bus-btn.approve { color: var(--green); }
+  .bus-btn.deny    { color: var(--red); }
+  .bus-btn.primary { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+  .bus-btn.primary:hover:not(:disabled) { background: var(--cyan); border-color: var(--cyan); color: var(--bg); }
+  .bus-deny-form {
+    margin-top: 6px; display: none; gap: 6px;
+  }
+  .bus-deny-form.open { display: flex; }
+  .bus-deny-form textarea {
+    flex: 1; background: var(--bg); color: var(--fg); border: 1px solid var(--border);
+    border-radius: 4px; padding: 4px 6px; font-family: inherit; font-size: 12px;
+    resize: vertical; min-height: 28px;
+  }
+  .bus-action-cell { white-space: nowrap; min-width: 140px; }
+  .bus-route-action {
+    display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 11px;
+    background: var(--bg3); color: var(--fg2);
+  }
+  .bus-route-action.approved      { color: var(--green); }
+  .bus-route-action.denied        { color: var(--red); }
+  .bus-route-action.auto-injected { color: var(--orange); }
+  .bus-route-action.no-session    { color: var(--yellow); }
+  .bus-route-action.no-pane       { color: var(--yellow); }
+  .bus-route-action.inject-failed { color: var(--red); }
+  .bus-controls-row {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 12px 14px; background: var(--bg2); border-radius: 6px;
+    border: 1px solid var(--border); margin-top: 14px;
+  }
+  .bus-controls-row label { color: var(--fg3); font-size: 12px; }
+  .bus-controls-row select {
+    background: var(--bg3); color: var(--fg); border: 1px solid var(--border);
+    padding: 4px 8px; border-radius: 4px; font-family: inherit; font-size: 12px;
+  }
+  .bus-controls-row select:disabled { opacity: 0.4; cursor: not-allowed; }
+  .bus-log-tail {
+    background: var(--bg2); border-radius: 6px; padding: 10px 12px;
+    max-height: 260px; overflow-y: auto; font-size: 12px;
+    white-space: pre-wrap; word-break: break-all; color: var(--fg2);
+  }
+  .bus-log-tail .log-empty { color: var(--fg3); font-style: italic; }
+  .bus-footer {
+    margin-top: 18px; padding: 8px 14px; color: var(--fg3);
+    font-size: 11px; border-top: 1px solid var(--border);
+  }
 </style>
 </head>
 <body>
@@ -247,6 +365,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
   <button data-page="dashboard" class="active">Dashboard</button>
   <button data-page="events">Event Log</button>
   <button data-page="state">Agent State</button>
+  <button data-page="bus">Bus Traffic</button>
 </nav>
 <div class="status-bar">
   <span><span class="status-dot missing" id="status-dot"></span><span id="status-text">Connecting...</span></span>
@@ -279,6 +398,47 @@ HTML_PAGE = r"""<!DOCTYPE html>
 <div id="state" class="page">
   <div id="state-content">
     <div class="no-file">Waiting for data...<span>Polling every INTERVAL_PLACEHOLDER seconds</span></div>
+  </div>
+</div>
+
+<div id="bus" class="page">
+  <div class="bus-section">
+    <div class="bus-header-row" id="bus-header">
+      <span class="bus-badge down" id="bus-status-badge">daemon down</span>
+      <span class="bus-badge mode-strict" id="bus-mode-badge" style="display:none">strict</span>
+      <span class="bus-meta">
+        <span>Pending: <strong id="bus-pending-count">0</strong></span>
+        <span>Last route: <strong id="bus-last-route">—</strong></span>
+      </span>
+    </div>
+
+    <div class="bus-block">
+      <h3>Pending queue</h3>
+      <div id="bus-pending"><div class="bus-empty">No pending messages.</div></div>
+    </div>
+
+    <div class="bus-block">
+      <h3>Recent routes (last 10)</h3>
+      <div id="bus-recent"><div class="bus-empty">No routes recorded.</div></div>
+    </div>
+
+    <div class="bus-controls-row" id="bus-controls">
+      <button class="bus-btn primary" id="bus-toggle-running" disabled>Pause</button>
+      <label for="bus-mode-select">Mode</label>
+      <select id="bus-mode-select" disabled>
+        <option value="strict">strict</option>
+        <option value="observe">observe</option>
+        <option value="silent">silent</option>
+      </select>
+      <span id="bus-cmd-status" style="color: var(--fg3); font-size: 12px;"></span>
+    </div>
+
+    <div class="bus-block">
+      <h3>Daemon log (last 50 lines)</h3>
+      <div id="bus-log" class="bus-log-tail"><span class="log-empty">No log entries.</span></div>
+    </div>
+
+    <div class="bus-footer" id="bus-footer">Localhost only.</div>
   </div>
 </div>
 
@@ -572,9 +732,271 @@ HTML_PAGE = r"""<!DOCTYPE html>
       .catch(function() {});
   }
 
+  // ------------------------------------------------------------------
+  // Bus traffic panel (Path D)
+  // ------------------------------------------------------------------
+
+  var lastBusKey = '';
+
+  // Render a short relative-age string ("3m ago", "12s ago", "—" when
+  // missing). Used for queued_at, last_route_at, and recent_routes rows.
+  function relativeAge(iso) {
+    if (!iso) return '—';
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return iso;
+    var s = Math.floor((Date.now() - d.getTime()) / 1000);
+    if (s < 0) s = 0;
+    if (s < 60) return s + 's ago';
+    if (s < 3600) return Math.floor(s / 60) + 'm ago';
+    if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+    return Math.floor(s / 86400) + 'd ago';
+  }
+
+  function shortId(id) {
+    if (!id) return '';
+    if (id.length <= 24) return id;
+    return id.substring(0, 24) + '…';
+  }
+
+  function trim60(s) {
+    if (!s) return '';
+    if (s.length <= 60) return s;
+    return s.substring(0, 57) + '…';
+  }
+
+  function setBusCmdStatus(text, color) {
+    var el = document.getElementById('bus-cmd-status');
+    el.textContent = text || '';
+    el.style.color = color || 'var(--fg3)';
+  }
+
+  function postBusCmd(payload, onDone) {
+    setBusCmdStatus('…', 'var(--fg3)');
+    fetch('/api/bus/cmd', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then(function(r) {
+        if (r.status === 204) {
+          setBusCmdStatus('filed ' + payload.cmd, 'var(--green)');
+          // Immediate re-poll so the UI reflects the daemon's reaction
+          // ASAP instead of waiting for the next periodic tick.
+          pollBus();
+          if (onDone) onDone(true);
+        } else {
+          return r.text().then(function(txt) {
+            setBusCmdStatus('error: ' + r.status + ' ' + txt, 'var(--red)');
+            if (onDone) onDone(false);
+          });
+        }
+      })
+      .catch(function(e) {
+        setBusCmdStatus('network error', 'var(--red)');
+        if (onDone) onDone(false);
+      });
+  }
+
+  function renderBusHeader(state, daemonPresent) {
+    var statusBadge = document.getElementById('bus-status-badge');
+    var modeBadge = document.getElementById('bus-mode-badge');
+    var pendingCount = document.getElementById('bus-pending-count');
+    var lastRoute = document.getElementById('bus-last-route');
+
+    if (!daemonPresent || !state) {
+      statusBadge.className = 'bus-badge down';
+      statusBadge.textContent = 'daemon down';
+      modeBadge.style.display = 'none';
+      pendingCount.textContent = '0';
+      lastRoute.textContent = '—';
+      return;
+    }
+    var running = state.running === true;
+    statusBadge.className = 'bus-badge ' + (running ? 'running' : 'paused');
+    statusBadge.textContent = running ? 'running' : 'paused';
+    var mode = state.mode || 'strict';
+    modeBadge.style.display = '';
+    modeBadge.className = 'bus-badge mode-' + mode;
+    modeBadge.textContent = mode;
+    pendingCount.textContent = String(state.pending_count != null ? state.pending_count : 0);
+    lastRoute.textContent = relativeAge(state.last_route_at);
+  }
+
+  function renderBusControls(state, daemonPresent) {
+    var toggleBtn = document.getElementById('bus-toggle-running');
+    var modeSel = document.getElementById('bus-mode-select');
+    if (!daemonPresent || !state) {
+      toggleBtn.disabled = true;
+      toggleBtn.textContent = 'Pause';
+      modeSel.disabled = true;
+      return;
+    }
+    toggleBtn.disabled = false;
+    modeSel.disabled = false;
+    toggleBtn.textContent = state.running ? 'Pause' : 'Resume';
+    toggleBtn.dataset.action = state.running ? 'pause' : 'resume';
+    // Only set value if the user is not actively interacting; otherwise
+    // a periodic poll would clobber their in-progress selection. We use a
+    // simple "focused" check.
+    if (document.activeElement !== modeSel) {
+      modeSel.value = state.mode || 'strict';
+    }
+  }
+
+  function renderPendingTable(pending, daemonPresent) {
+    var host = document.getElementById('bus-pending');
+    if (!pending || pending.length === 0) {
+      host.innerHTML = '<div class="bus-empty">No pending messages.</div>';
+      return;
+    }
+    var html = '<table class="bus-table"><thead><tr>' +
+      '<th>msg_id</th><th>target</th><th>from</th><th>re</th>' +
+      '<th>queued</th><th>actions</th></tr></thead><tbody>';
+    for (var i = 0; i < pending.length; i++) {
+      var e = pending[i];
+      var mid = e.msg_id || '';
+      var disabled = daemonPresent ? '' : ' disabled';
+      html += '<tr data-msgid="' + escapeHtml(mid) + '">' +
+        '<td class="bus-msgid" title="' + escapeHtml(mid) + '">' + escapeHtml(shortId(mid)) + '</td>' +
+        '<td class="bus-target">' + escapeHtml(e.target_agent || '') + '</td>' +
+        '<td class="bus-from">' + escapeHtml(e.from || '') + '</td>' +
+        '<td class="bus-re" title="' + escapeHtml(e.re || '') + '">' + escapeHtml(trim60(e.re || '')) + '</td>' +
+        '<td class="bus-age">' + escapeHtml(relativeAge(e.queued_at)) + '</td>' +
+        '<td class="bus-action-cell">' +
+          '<button class="bus-btn approve" data-action="approve"' + disabled + '>Approve</button>' +
+          '<button class="bus-btn deny"    data-action="deny-open"' + disabled + '>Deny</button>' +
+          '<div class="bus-deny-form">' +
+            '<textarea placeholder="Reason (optional)"></textarea>' +
+            '<button class="bus-btn primary" data-action="deny-submit"' + disabled + '>Submit</button>' +
+            '<button class="bus-btn" data-action="deny-cancel"' + disabled + '>Cancel</button>' +
+          '</div>' +
+        '</td>' +
+        '</tr>';
+    }
+    html += '</tbody></table>';
+    host.innerHTML = html;
+
+    // Wire up per-row buttons.
+    host.querySelectorAll('tr[data-msgid]').forEach(function(row) {
+      var mid = row.getAttribute('data-msgid');
+      var denyForm = row.querySelector('.bus-deny-form');
+      row.querySelectorAll('button[data-action]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var act = btn.getAttribute('data-action');
+          if (act === 'approve') {
+            postBusCmd({ cmd: 'approve', arg: mid });
+          } else if (act === 'deny-open') {
+            denyForm.classList.add('open');
+          } else if (act === 'deny-cancel') {
+            denyForm.classList.remove('open');
+          } else if (act === 'deny-submit') {
+            var ta = denyForm.querySelector('textarea');
+            var reason = (ta && ta.value || '').trim();
+            postBusCmd({ cmd: 'deny', arg: mid, reason: reason });
+            denyForm.classList.remove('open');
+          }
+        });
+      });
+    });
+  }
+
+  function renderRecentRoutes(routes) {
+    var host = document.getElementById('bus-recent');
+    if (!routes || routes.length === 0) {
+      host.innerHTML = '<div class="bus-empty">No routes recorded.</div>';
+      return;
+    }
+    var take = routes.slice(0, 10);
+    var html = '<table class="bus-table"><thead><tr>' +
+      '<th>when</th><th>action</th><th>target</th><th>msg_id</th><th>note</th>' +
+      '</tr></thead><tbody>';
+    for (var i = 0; i < take.length; i++) {
+      var r = take[i];
+      var note = r.reason || r.note || r.approved_by || r.denied_by || '';
+      html += '<tr>' +
+        '<td class="bus-age">' + escapeHtml(relativeAge(r.at)) + '</td>' +
+        '<td class="bus-action"><span class="bus-route-action ' + escapeHtml(r.action || '') + '">' +
+          escapeHtml(r.action || '') + '</span></td>' +
+        '<td class="bus-target">' + escapeHtml(r.target_agent || '') + '</td>' +
+        '<td class="bus-msgid" title="' + escapeHtml(r.msg_id || '') + '">' +
+          escapeHtml(shortId(r.msg_id || '')) + '</td>' +
+        '<td class="bus-from">' + escapeHtml(note) + '</td>' +
+        '</tr>';
+    }
+    html += '</tbody></table>';
+    host.innerHTML = html;
+  }
+
+  function renderBusLog(lines) {
+    var host = document.getElementById('bus-log');
+    if (!lines || lines.length === 0) {
+      host.innerHTML = '<span class="log-empty">No log entries.</span>';
+      return;
+    }
+    host.textContent = lines.join('\n');
+    // Auto-scroll to the bottom (newest line) when user is near the bottom.
+    var nearBottom = (host.scrollTop + host.clientHeight) >= (host.scrollHeight - 40);
+    if (nearBottom) host.scrollTop = host.scrollHeight;
+  }
+
+  function renderBusFooter(user) {
+    var el = document.getElementById('bus-footer');
+    el.textContent = 'Localhost only. $USER: ' + (user || 'unknown');
+  }
+
+  function pollBus() {
+    fetch('/api/bus')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var daemonPresent = data && data.daemon_present !== false && !!data.state;
+        renderBusHeader(data.state, daemonPresent);
+        renderBusControls(data.state, daemonPresent);
+        // Pending list:
+        var pending = (data && data.pending) || [];
+        // Identity check (avoid clobbering an in-flight deny textarea unless
+        // the actual data changed).
+        var key = JSON.stringify({
+          d: daemonPresent,
+          m: data.state ? data.state.mode : null,
+          r: data.state ? data.state.running : null,
+          lr: data.state ? data.state.last_route_at : null,
+          pc: data.state ? data.state.pending_count : null,
+          p: pending.map(function(p) { return p.msg_id; }),
+          rr: data.state ? (data.state.recent_routes || []).map(function(r) {
+            return (r.msg_id || '') + ':' + (r.action || '') + ':' + (r.at || '');
+          }) : [],
+          ll: (data && data.log_tail) ? data.log_tail.length : 0
+        });
+        if (key !== lastBusKey) {
+          lastBusKey = key;
+          renderPendingTable(pending, daemonPresent);
+          renderRecentRoutes(data.state ? (data.state.recent_routes || []) : []);
+        }
+        renderBusLog((data && data.log_tail) || []);
+        renderBusFooter(data && data.user);
+      })
+      .catch(function() {
+        // On fetch failure, render as daemon-down but don't clobber the
+        // footer or log (transient network blip).
+        renderBusHeader(null, false);
+        renderBusControls(null, false);
+      });
+  }
+
+  // Wire up the Pause/Resume button and Mode dropdown once on load.
+  document.getElementById('bus-toggle-running').addEventListener('click', function() {
+    var btn = this;
+    var action = btn.dataset.action || 'pause';
+    postBusCmd({ cmd: action });
+  });
+  document.getElementById('bus-mode-select').addEventListener('change', function() {
+    postBusCmd({ cmd: 'set-mode', arg: this.value });
+  });
+
   function poll() {
     pollDashboard();
     pollState();
+    pollBus();
   }
 
   poll();
@@ -583,6 +1005,134 @@ HTML_PAGE = r"""<!DOCTYPE html>
 </script>
 </body>
 </html>""".replace('MONITOR_NAME_PLACEHOLDER', MONITOR_NAME).replace('INTERVAL_PLACEHOLDER', str(INTERVAL)).replace('MAX_EVENTS_PLACEHOLDER', str(MAX_EVENTS))
+
+
+def _now_utc_z():
+    """RFC-3339 UTC timestamp with Z suffix — matches fusion-bus-daemon."""
+    return _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _atomic_write_json(path, payload):
+    """Temp-write-and-rename so readers (the daemon) never see a partial file."""
+    parent = os.path.dirname(path)
+    if parent:
+        os.makedirs(parent, exist_ok=True)
+    tmp = path + ".tmp." + str(os.getpid())
+    with open(tmp, "w", encoding="utf-8") as fh:
+        json.dump(payload, fh, indent=2, sort_keys=False)
+        fh.write("\n")
+    os.rename(tmp, path)
+
+
+def _write_bus_cmd(payload):
+    """Write `bus/.daemon-cmd.json` if free, else `.daemon-cmd.<seq>.json`.
+
+    Mirrors the collision pattern in `bin/fusion-bus._write_cmd_file`: uses
+    `os.open` with `O_CREAT|O_EXCL` to atomically reserve the name, then
+    atomic-renames the real payload over the placeholder so the daemon never
+    polls a half-written file.
+    """
+    os.makedirs(BUS_DIR, exist_ok=True)
+    seq = 0
+    while True:
+        name = ".daemon-cmd.json" if seq == 0 else f".daemon-cmd.{seq}.json"
+        target = os.path.join(BUS_DIR, name)
+        try:
+            fd = os.open(target, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+        except FileExistsError:
+            seq += 1
+            continue
+        os.close(fd)
+        _atomic_write_json(target, payload)
+        return target
+
+
+def _pid_alive(pid):
+    """Return True if `pid` exists. POSIX-canonical existence check."""
+    try:
+        pid = int(pid)
+    except (TypeError, ValueError):
+        return False
+    if pid <= 0:
+        return False
+    try:
+        os.kill(pid, 0)
+        return True
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        # PID exists but owned by another user — still alive for our purpose.
+        return True
+    except OSError:
+        return False
+
+
+def _read_bus_state():
+    """Read `.daemon-state.json` and return (state, present, alive).
+
+    `present` is True when the state file exists and parses. `alive` is True
+    when `.daemon.pid` exists, parses, and its PID is alive — that's the
+    distinction between "paused" (running:false, alive) and "daemon down"
+    (running:false because the shutdown handler wrote it, pid file deleted).
+    """
+    try:
+        with open(BUS_STATE_JSON, "r", encoding="utf-8") as fh:
+            state = json.load(fh)
+    except FileNotFoundError:
+        return None, False, False
+    except (OSError, json.JSONDecodeError):
+        return None, False, False
+    # Check pid file for liveness — same convention used by fusion-bus-daemon.
+    pid_path = os.path.join(BUS_DIR, ".daemon.pid")
+    alive = False
+    try:
+        with open(pid_path, "r", encoding="utf-8") as fh:
+            pid_data = json.load(fh)
+        alive = _pid_alive(pid_data.get("pid"))
+    except (FileNotFoundError, OSError, json.JSONDecodeError):
+        alive = False
+    return state, True, alive
+
+
+def _read_bus_pending():
+    """List every `bus/.pending/*.json` entry, sorted by `queued_at`.
+
+    Silently skips unparseable files (the daemon's atomic_write_json briefly
+    leaves a `.tmp.<pid>` sibling; that's harmless).
+    """
+    if not os.path.isdir(BUS_PENDING_DIR):
+        return []
+    rows = []
+    for entry in os.listdir(BUS_PENDING_DIR):
+        if not entry.endswith(".json"):
+            continue
+        path = os.path.join(BUS_PENDING_DIR, entry)
+        try:
+            with open(path, "r", encoding="utf-8") as fh:
+                data = json.load(fh)
+        except (OSError, json.JSONDecodeError):
+            continue
+        if isinstance(data, dict):
+            rows.append(data)
+    rows.sort(key=lambda r: (str(r.get("queued_at", "")), str(r.get("msg_id", ""))))
+    return rows
+
+
+def _tail_bus_log(n=BUS_LOG_TAIL_N):
+    """Return the last `n` lines of `bus/.daemon.log` as a list (no trailing newlines).
+
+    Reads the whole file (the daemon's log is append-only and small in
+    practice — kilobytes, not megabytes). If we ever need a true streaming
+    tail, swap in a seek-from-end implementation.
+    """
+    try:
+        with open(BUS_LOG, "r", encoding="utf-8") as fh:
+            lines = fh.read().splitlines()
+    except FileNotFoundError:
+        return []
+    except OSError:
+        return []
+    return lines[-n:] if n > 0 else lines
 
 
 class Handler(http.server.BaseHTTPRequestHandler):
@@ -695,9 +1245,105 @@ class Handler(http.server.BaseHTTPRequestHandler):
             })
             self.wfile.write(resp.encode("utf-8"))
 
+        elif self.path == "/api/bus":
+            self._headers()
+            state, present, alive = _read_bus_state()
+            # `daemon_present` is the frontend's truth-source: True only when
+            # the state file is readable AND the PID it points at is alive.
+            # That maps "stopped daemon" (state file present, but process
+            # dead — last shutdown wrote running:false then exited) to the
+            # same UI as "daemon never started", per the spec's "daemon
+            # down" requirement.
+            daemon_present = present and alive
+            pending = _read_bus_pending() if daemon_present else []
+            log_tail = _tail_bus_log() if (present or alive) else []
+            resp = {
+                "daemon_present": daemon_present,
+                "state": state if daemon_present else None,
+                "pending": pending,
+                "log_tail": log_tail,
+                "user": os.environ.get("USER", "unknown"),
+            }
+            self.wfile.write(json.dumps(resp).encode("utf-8"))
+
         else:
             self._headers(status=404)
             self.wfile.write(b'{"error": "not found"}')
+
+    def do_POST(self):
+        if self.path == "/api/bus/cmd":
+            return self._handle_bus_cmd()
+        self._headers(status=404)
+        self.wfile.write(b'{"error": "not found"}')
+
+    def _handle_bus_cmd(self):
+        """Validate body, refuse if daemon not running, write a cmd file.
+
+        Closed-set validation against BUS_VALID_CMDS / BUS_VALID_MODES; writes
+        via the same O_CREAT|O_EXCL collision pattern as `bin/fusion-bus`.
+        Response codes per the plan: 204 ok, 400 bad request, 503 daemon not
+        running.
+        """
+        length = int(self.headers.get("Content-Length") or 0)
+        if length <= 0 or length > 65536:
+            return self._json_error(400, "missing or oversized body")
+        try:
+            raw = self.rfile.read(length).decode("utf-8")
+            data = json.loads(raw)
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            return self._json_error(400, "malformed JSON body")
+        if not isinstance(data, dict):
+            return self._json_error(400, "body must be a JSON object")
+
+        cmd = (data.get("cmd") or "").strip()
+        if cmd not in BUS_VALID_CMDS:
+            return self._json_error(400, f"unknown cmd: {cmd!r}")
+
+        arg = data.get("arg")
+        reason = data.get("reason")
+
+        # Per-cmd shallow validation.
+        if cmd == "set-mode":
+            if not isinstance(arg, str) or arg not in BUS_VALID_MODES:
+                return self._json_error(400, f"invalid mode: {arg!r}")
+        elif cmd in ("approve", "deny"):
+            if not isinstance(arg, str) or not arg.strip():
+                return self._json_error(400, f"{cmd} requires arg (msg-id)")
+            arg = arg.strip()
+        # pause / resume take no arg.
+
+        # Daemon must be alive (process exists). A "paused" daemon (state
+        # `running: false`, PID still alive) keeps draining its command queue,
+        # so we must accept commands then — otherwise the dashboard's Resume
+        # button could never reach the daemon. 503 only when the daemon
+        # process is genuinely dead.
+        state, present, alive = _read_bus_state()
+        if not present or not alive:
+            return self._json_error(
+                503, "daemon not running — start it with `fusion-bus daemon start`"
+            )
+
+        payload = {
+            "cmd": cmd,
+            "arg": arg if arg is not None else None,
+            "reason": reason if reason is not None else None,
+            "filed_by": os.environ.get("USER", "unknown"),
+            "filed_at": _now_utc_z(),
+        }
+        try:
+            _write_bus_cmd(payload)
+        except OSError as exc:
+            return self._json_error(500, f"failed to write cmd file: {exc}")
+
+        # 204 No Content — body must be empty.
+        self.send_response(204)
+        self.send_header("Cache-Control", "no-cache")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.end_headers()
+
+    def _json_error(self, status, message):
+        self._headers(status=status)
+        self.wfile.write(json.dumps({"error": message}).encode("utf-8"))
 
 
 import socket, signal, subprocess
