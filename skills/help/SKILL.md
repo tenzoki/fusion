@@ -91,9 +91,9 @@ The **bus** lets concurrent agent sessions hand work to each other through the w
 **How to inspect** (from the project root):
 
 ```
-bin/fusion-bus list             # all unread mail across all agents
-bin/fusion-bus show <stem>      # print one message's contents
-bin/fusion-bus mark-read <stem> # move it to inbox/.processed/ manually
+./.fusion/fusion-bus list             # all unread mail across all agents
+./.fusion/fusion-bus show <stem>      # print one message's contents
+./.fusion/fusion-bus mark-read <stem> # move it to inbox/.processed/ manually
 ```
 
 `mark-read` is a cleanup tool — agents normally mark their own messages read. The dual-write is race-safe by design (atomic rename).

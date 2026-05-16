@@ -51,7 +51,7 @@ Plugin published to the `tenzoki-plugins` marketplace (repo: `tenzoki/claude-plu
 - **SessionStart hook output** — `systemMessage` JSON for user-visible banners; plain stdout is `additionalContext` for the model only.
 - **`.gitignore`** — for shipped binaries inside excluded dirs use `dir/*` (file pattern) so `!path` exceptions work for new files. `dir/` (trailing slash) blocks all re-inclusion of files added later.
 - **Circles (v3+ via Track C)** — projects may opt in to portfolio-level work tracking by populating `fusion-workbench/circles/`. Empty or absent `circles/` preserves single-Circle v2.9.0 behaviour. Playmaker is the dispatchable agent for portfolio ranking; `/fusion:next` is the user surface. See `rules/fusion-workbench-conventions.md` "State Markers — circles/" for the vocabulary.
-- **Bus protocol (v3.4+)** — projects may opt in to workbench-mediated A2A messaging by populating `fusion-workbench/bus/`. Empty or absent `bus/` preserves pre-v3.4 single-terminal behaviour. The protocol is spec'd in `rules/fusion-workbench-conventions.md` `## Bus protocol`. Helper: `bin/fusion-bus list|show|mark-read`. See `agents/orchestrator.md` Bus-filing pre-gate pattern for the four orchestrator gates that may file bus consultations.
+- **Bus protocol (v3.4+)** — projects may opt in to workbench-mediated A2A messaging by populating `fusion-workbench/bus/`. Empty or absent `bus/` preserves pre-v3.4 single-terminal behaviour. The protocol is spec'd in `rules/fusion-workbench-conventions.md` `## Bus protocol`. Helper: `./.fusion/fusion-bus list|show|mark-read`. See `agents/orchestrator.md` Bus-filing pre-gate pattern for the four orchestrator gates that may file bus consultations.
 
 ## Release process
 

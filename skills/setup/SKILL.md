@@ -75,7 +75,10 @@ The `fu` script is a project-local convenience for launching Claude Code preconf
 ```bash
 mkdir -p ./.fusion
 [ -f ./.fusion/fu ] || { cp "$FUSION_PLUGIN_ROOT/bin/fu" ./.fusion/fu && chmod +x ./.fusion/fu; }
+[ -f ./.fusion/fusion-bus ] || { cp "$FUSION_PLUGIN_ROOT/bin/fusion-bus" ./.fusion/fusion-bus && chmod +x ./.fusion/fusion-bus; }
 ```
+
+The `fusion-bus` helper is copied alongside `fu` so users can inspect the bus from any project terminal (`./.fusion/fusion-bus list|show|mark-read`). Both copies are idempotent — existing files are left untouched.
 
 If `$FUSION_PLUGIN_ROOT` is not set or the copy fails, note it in the history file later but do not block Setup.
 

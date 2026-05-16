@@ -456,7 +456,7 @@ Every bus-write at a gate is paired with an explicit user-trigger instruction in
 
 ### Mark-read protocol — dual-write, race-safe
 
-A message is considered processed when it is moved from `bus/<agent>/inbox/<file>` to `bus/<agent>/inbox/.processed/<file>`. Both the agent and the user (via `bin/fusion-bus mark-read`) may perform this move; both ownership models are first-class.
+A message is considered processed when it is moved from `bus/<agent>/inbox/<file>` to `bus/<agent>/inbox/.processed/<file>`. Both the agent and the user (via `./.fusion/fusion-bus mark-read`) may perform this move; both ownership models are first-class.
 
 1. The move is `mv` (POSIX atomic rename). One operation either fully succeeds or fails; there is no half-renamed state.
 2. Both parties tolerate "file already in `.processed/`" — silent success, not an error. If the agent finds the source missing because the user already ran `mark-read`, it treats the message as already-marked and continues.

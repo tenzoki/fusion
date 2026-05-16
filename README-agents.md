@@ -50,9 +50,9 @@ The bus activates only when `fusion-workbench/bus/` exists (created by `/fusion:
 User-facing helper for inspecting the bus from the project root:
 
 ```
-bin/fusion-bus list             # all unread mail across all agents
-bin/fusion-bus show <stem>      # print one message's contents
-bin/fusion-bus mark-read <stem> # move it to inbox/.processed/ manually
+./.fusion/fusion-bus list             # all unread mail across all agents
+./.fusion/fusion-bus show <stem>      # print one message's contents
+./.fusion/fusion-bus mark-read <stem> # move it to inbox/.processed/ manually
 ```
 
 Canonical spec — message naming, reply pairing, session registry, mark-read race-safety: `rules/fusion-workbench-conventions.md` `## Bus protocol`. User-facing walkthrough: `/fusion:help bus`.
