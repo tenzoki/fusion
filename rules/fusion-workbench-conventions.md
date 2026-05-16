@@ -440,8 +440,8 @@ session_id: 260516-1430-orchestrator-a7f3
 agent: orchestrator
 project: /Users/kai/Dropbox/qboot/projects/F04-FUSION/codebase/fusion
 tmux_pane: "%5"          # string when $TMUX_PANE is set, else null
-registered_at: 260516-1430
-last_heartbeat: 260516-1437
+registered_at: 2026-05-16T14:30:00Z
+last_heartbeat: 2026-05-16T14:37:00Z
 ```
 
 **Staleness threshold:** 600 seconds (10 minutes) is the canonical value, matching `bin/fusion-session-mark`. Path B does not enforce it (no consumer). Path D's daemon will read `last_heartbeat` and apply this threshold when routing.
