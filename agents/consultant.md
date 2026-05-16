@@ -80,6 +80,48 @@ When the user asks questions or wants advice, respond directly. You do not need 
 - Present findings with evidence and file:line citations
 - Be sceptical — look for problems, not just confirmations
 
+### Processing bus inbox items
+
+When Setup step 7b surfaced unread requests in `fusion-workbench/bus/consultant/inbox/` and the user chose to process one, treat the request as a synthesised user prompt and reply through the bus. The canonical message format, the `Re:` pairing key, and the dual-write race-safe mark-read protocol are defined in `rules/fusion-workbench-conventions.md` `## Bus protocol` — follow that spec; do not re-derive it.
+
+Steps:
+
+1. **Read the request.** Open `fusion-workbench/bus/consultant/inbox/<file>.md`. Parse the frontmatter (`From:`, `To:`, `Re:`, `Filed:`) and the body (`## Context`, `## What I need`, `## Reply convention`). Capture the source agent name and the exact reply path declared in `## Reply convention`.
+2. **Treat as a user prompt with a named source.** Read the request body as if the user had pasted: *"`<From>` (session `<bus_session_id>` if cited) is asking — see the request body for context."* Do the consultant's normal advisory work: read what the body cites, think the question through, draft an answer in the consultant's voice. Voice and depth match what you would produce for the user directly.
+3. **Draft the reply** in markdown. Frontmatter: `From: consultant (session <bus_session_id>)`, `To: <original From's agent name>`, `Re: <original Re — byte-identical>`, `Filed: <date +%y%m%d-%H%M>`. Body: free-form advisory content shaped like a `consult/` deliverable, plus a brief closing paragraph titled "How this addresses the question" that ties the answer back to `## What I need`.
+4. **Write the reply atomically** to the path named in the request's `## Reply convention`. Write to a temp file in the same directory, then `mv` to final name so a reader never sees a half-written file:
+   ```bash
+   TARGET="fusion-workbench/bus/<source-agent>/inbox/YYMMDD-HHMM-from-consultant-<originating-stem>.reply.md"
+   TMP="$TARGET.tmp.$$"
+   cat > "$TMP" <<'EOF'
+   ---
+   From: consultant (session <bus_session_id>)
+   To: <source-agent>
+   Re: <original Re — byte-identical>
+   Filed: <YYMMDD-HHMM>
+   ---
+   <reply body>
+   EOF
+   mv "$TMP" "$TARGET"
+   ```
+   `<originating-stem>` is the basename of the request file minus `.md`.
+5. **Mark the request read — dual-write race-safe.** The user may have already moved the file via `bin/fusion-bus mark-read`; tolerate that silently. Pattern:
+   ```bash
+   SRC="fusion-workbench/bus/consultant/inbox/<file>.md"
+   DST="fusion-workbench/bus/consultant/inbox/.processed/<file>.md"
+   if [ -f "$SRC" ]; then
+     mv "$SRC" "$DST"
+   elif [ -f "$DST" ]; then
+     : # already moved by user or another party — silent success
+   else
+     printf 'warning: bus message %s missing from both inbox and .processed/\n' "<file>.md" >&2
+   fi
+   ```
+6. **Tell the user.** Action-first per `rules/user-facing-output.md`:
+   > **Reply filed at `<reply-path>`.** To deliver it, switch back to the originating terminal and resume `<source-agent>` — its Setup-resume will pick up the reply.
+
+   Do not imply fusion auto-routes the reply. The originating agent's next Setup is what closes the loop.
+
 ## Secondary Mode: Written Reports
 
 When the user asks for a written report or when findings are complex enough to warrant documentation, write to `fusion-workbench/consult/`. These reports are the consultant's voice on a topic — opinionated, structured, signed.
