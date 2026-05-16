@@ -24,6 +24,7 @@ bin/*
 !bin/fusion-workbench-root
 !bin/fusion-session-mark
 !bin/fusion-bus-session
+!bin/fusion-bus
 *.exe
 # Generated protobuf (rebuild from .proto)
 *.pb.go
