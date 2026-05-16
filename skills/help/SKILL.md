@@ -100,6 +100,19 @@ The **bus** lets concurrent agent sessions hand work to each other through the w
 
 **Canonical spec.** `rules/fusion-workbench-conventions.md` `## Bus protocol` — filename format, frontmatter fields (`From`/`To`/`Re`/`Filed`), reply-pairing keys, session registry, and the four bus-aware agents (orchestrator, consultant, coderev, ontorev).
 
+**The daemon (opt-in).** `bin/fusion-bus-daemon` is an optional Python daemon that watches inboxes and routes messages between concurrent sessions. Start it with `./.fusion/fusion-bus daemon start`; it runs in the background and writes its state to `fusion-workbench/bus/.daemon-state.json`. In strict mode (the default) it queues each routed message for your approval; in observe and silent modes it auto-injects directly into the target agent's tmux pane. The monitor dashboard exposes a **Bus Traffic** panel showing pending messages, mode, and recent routes.
+
+**The three modes.**
+- **`strict` (DEFAULT)** — every routed message lands in `.pending/`; the daemon waits for an explicit approve or deny before injecting.
+- **`observe`** — daemon auto-injects; logs the route to `recent_routes` so the dashboard and `pending` CLI surface a notification trail.
+- **`silent`** — daemon auto-injects with no notification trail. For trusted batch flows.
+
+**Control surface.** Two parallel surfaces, both writing the same `bus/.daemon-cmd.json` IPC file:
+- **Dashboard buttons** on the **Bus Traffic** panel: Approve / Deny per pending row, Pause / Resume toggle, mode dropdown.
+- **CLI:** `./.fusion/fusion-bus pending` (list pending), `approve <stem>` / `deny <stem> [--reason ...]`, `pause` / `resume`, `mode <strict|observe|silent>`.
+
+**Path B is still the default.** The daemon is opt-in — started explicitly, never auto-launched. Without it, the bus works exactly as described above: file-based handoff with the user as the trigger.
+
 ---
 
 ## Tone
