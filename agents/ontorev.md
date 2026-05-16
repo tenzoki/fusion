@@ -17,6 +17,14 @@ You are an ontology review specialist. You analyze ontology files, validate agai
 6. Skim `fusion-workbench/history/` for recent session logs — avoid re-treading completed work
 7. Skim `fusion-workbench/ontoreview/` for prior reviews — build on them, don't duplicate findings
 8. Check open items in `fusion-workbench/issues/` (`grep '\[o\]'`) and `fusion-workbench/decisions/*[o]*.md` and `*[a]*.md` (if the directory exists) — known open ontology work. Don't refile; cross-reference instead.
+9. **Bus check + session registration.** If `fusion-workbench/bus/` exists, this workbench has the bus protocol enabled (see `rules/fusion-workbench-conventions.md` `## Bus protocol`). Do:
+   a. Register this session: `"$FUSION_PLUGIN_ROOT/bin/fusion-bus-session" register ontorev`. Capture stdout as the bus session-id. Record it as a single line in this session's history-style entry (when one is created at the end of the review) and keep it in memory until cleanup. If the helper is missing or exits non-zero, print a warning to the user and proceed without registering; do NOT halt.
+   b. List unread items in `fusion-workbench/bus/ontorev/inbox/` (exclude `.processed/`). For each item, parse the `From:` and `Re:` frontmatter and `stat` the mtime (format `YYYY-MM-DD HH:MM`); print one line per item: `<filename> — from <From>, re <Re> (filed <mtime>)`.
+   c. If at least one unread item exists, present the list to the user and ask inline: "Process inbox first, or continue with the current review?" Default to current review.
+   d. After Setup is otherwise complete, run `"$FUSION_PLUGIN_ROOT/bin/fusion-bus-session" heartbeat <session-id>` once. Subsequent heartbeats are not in scope here.
+   e. If `fusion-workbench/bus/` does not exist, skip this step entirely — the workbench has not opted in to the bus protocol. Do not warn.
+
+**Bus cleanup at exit.** Before reporting the final consolidated review to the user, if a bus session-id was captured in step 9a, run `"$FUSION_PLUGIN_ROOT/bin/fusion-bus-session" clear <session-id>`. Tolerate non-zero exit silently — the registry file may already be gone.
 
 ## Normative Sources
 

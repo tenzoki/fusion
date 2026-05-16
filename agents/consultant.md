@@ -26,6 +26,14 @@ You are a senior technical consultant embedded in the project. You know all fusi
 4. `git log --oneline -20` for recent change context
 5. Skim `fusion-workbench/history/` recent entries — understand the current state
 6. Skim open files in `fusion-workbench/issues/` and `fusion-workbench/decisions/` (if it exists) and active plans in `fusion-workbench/planning/`
+7. **Bus check + session registration.** If `fusion-workbench/bus/` exists, this workbench has the bus protocol enabled (see `rules/fusion-workbench-conventions.md` `## Bus protocol`). Do:
+   a. Register this session: `"$FUSION_PLUGIN_ROOT/bin/fusion-bus-session" register consultant`. Capture stdout as the bus session-id. Record it as a single line in this session's history file (when one is created — see History Logging below), e.g. `Bus session: 260516-0608-consultant-a3f7`. Keep the value in memory until the cleanup step. If the helper is missing or exits non-zero, print a warning to the user and proceed without registering; do NOT halt.
+   b. List unread items in `fusion-workbench/bus/consultant/inbox/` (exclude `.processed/`). For each item, parse the `From:` and `Re:` frontmatter and `stat` the mtime (format `YYYY-MM-DD HH:MM`); print one line per item: `<filename> — from <From>, re <Re> (filed <mtime>)`.
+   c. If at least one unread item exists, present the list to the user and ask inline: "Process inbox first, or continue with the current task?" Default to current task — most sessions will not have pending mail.
+   d. After Setup is otherwise complete, run `"$FUSION_PLUGIN_ROOT/bin/fusion-bus-session" heartbeat <session-id>` once. Subsequent heartbeats are not in scope here.
+   e. If `fusion-workbench/bus/` does not exist, skip this step entirely — the workbench has not opted in to the bus protocol. Do not warn.
+
+**Bus cleanup at exit.** Before producing your final summary (or whenever the user signals the session is done), if a bus session-id was captured in step 7a, run `"$FUSION_PLUGIN_ROOT/bin/fusion-bus-session" clear <session-id>`. Tolerate non-zero exit silently — the registry file may already be gone.
 
 ## Scope
 

@@ -131,6 +131,12 @@ Remaining setup (after step 1 is resolved):
      ```
 
    - **Setup hint.** If `circles_anticipated + circles_active > 0` (and `fusion-workbench/circles/` exists), print to the user: *"You have <N> anticipated and <M> active Circle(s) in `fusion-workbench/circles/`. Consider `/fusion:next` to review the portfolio before starting."* (Substitute `<N>` and `<M>`.) Continue Setup without waiting for user response. If both counts are 0 (or `circles/` is absent), no hint is printed — behaviour identical to v2.9.0. Record the hint emission (or its absence) in the orchestrator's session history file's snapshot section so post-session analysis can see whether it was printed.
+5b. **Bus check + session registration.** If `fusion-workbench/bus/` exists, this workbench has the bus protocol enabled (see `rules/fusion-workbench-conventions.md` `## Bus protocol`). Do:
+    a. Register this session: `"$FUSION_PLUGIN_ROOT/bin/fusion-bus-session" register orchestrator`. Capture stdout as the bus session-id and store it in `agentstate.yaml` under `session.bus_session_id` (added below to the schema). If the helper is missing or exits non-zero, print a warning to the user and proceed without registering (leave `session.bus_session_id: null`); do NOT halt.
+    b. List unread items in `fusion-workbench/bus/orchestrator/inbox/` (exclude `.processed/`). For each item, parse the `From:` and `Re:` frontmatter and `stat` the mtime (format `YYYY-MM-DD HH:MM`); print one line per item: `<filename> — from <From>, re <Re> (filed <mtime>)`.
+    c. If at least one unread item exists, present the list and ask via `AskUserQuestion`: **Process inbox first** (handle the messages before resuming the user's task) or **Continue with current task** (proceed; the inbox will still be there next session). Default to current task — most sessions will not have pending mail.
+    d. After the rest of Setup completes (i.e. once Step 8's session-start event is emitted), run `"$FUSION_PLUGIN_ROOT/bin/fusion-bus-session" heartbeat <session-id>` once. Subsequent heartbeats are not in scope for this step.
+    e. If `fusion-workbench/bus/` does not exist, skip 5b entirely — the workbench has not opted in to the bus protocol. Do not warn.
 6. Create history file: `fusion-workbench/history/YYMMDD-HHMM-orchestrator-session.md` (obtain timestamp from `date +%y%m%d-%H%M`)
 7. Write initial history entry with snapshot counts and session Directive
 8. Initialize event log and emit session start:
@@ -492,6 +498,7 @@ After reconciler returns and any Rebalance gate is resolved, run this step if a 
 
 - Emit `session_end` event
 - Update live dashboard to show final status with `**Session:** Complete` or `**Session:** Circuit breaker: <reason>`
+- **Clear the bus session entry** (if registered): if `session.bus_session_id` in `agentstate.yaml` is non-null, run `"$FUSION_PLUGIN_ROOT/bin/fusion-bus-session" clear <bus_session_id>` *before* deleting `agentstate.yaml` (the bus session-id is only available while the state file exists). Tolerate non-zero exit (e.g. file already gone) — log to history and continue. Skip silently if `bus_session_id` is null or absent.
 - **Delete `fusion-workbench/agentstate.yaml`** — a clean exit means there is nothing to resume. The file's absence signals no interrupted session.
 - **Clear the active-session marker:** `"$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" clear`. After this, a new orchestrator session can start without a concurrency warning.
 - The live dashboard and event log persist after the session — the user may review them later or use them for tooling. Do not delete them.
@@ -618,6 +625,7 @@ session:
   started: "<YYMMDD-HHMM>"
   history_file: "fusion-workbench/history/<filename>.md"
   git_head_at_start: "<short hash>"
+  bus_session_id: "<id returned by fusion-bus-session register, or null when bus/ does not exist or registration failed>"  # added in v3.4 (Path B Step B1); optional — absence means the bus protocol is not active for this session
 
 progress:
   turn: <current turn number>
