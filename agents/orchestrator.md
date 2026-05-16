@@ -160,8 +160,15 @@ Remaining setup (after step 1 is resolved):
 6. Create history file: `fusion-workbench/history/YYMMDD-HHMM-orchestrator-session.md` (obtain timestamp from `date +%y%m%d-%H%M`)
 7. Write initial history entry with snapshot counts and session Directive
 8. Initialize event log and emit session start:
-    - Create/overwrite `fusion-workbench/orchestrator-events.jsonl` (empty — events are appended)
-    - Emit a `session_start` event
+    - **Create if missing, never overwrite.** `fusion-workbench/orchestrator-events.jsonl` is append-only across all sessions — it is the cross-session bus-resume probe's source of truth for `gate_filed_consultation` events (read by Step 5b.f above and Step 1b's shared procedure at step 1). Truncating it would clobber unpaired consultations from prior sessions and orphan the reply files. The Phase 4 sequence-diagram generator also reads it cross-session for historical context. Use a touch-or-append pattern, never a truncating `>` redirect:
+      ```bash
+      [ -f fusion-workbench/orchestrator-events.jsonl ] || touch fusion-workbench/orchestrator-events.jsonl
+      ```
+    - Emit a `session_start` event by appending one line (per the "Emitting events" rule below — `>>` only):
+      ```bash
+      TS="$(date -u +%Y-%m-%dT%H:%M:%S)"
+      echo "{\"ts\":\"${TS}\",\"event\":\"session_start\"}" >> fusion-workbench/orchestrator-events.jsonl
+      ```
     - **REFRESH DASHBOARD** — update the dashboard (written in step 0) with session Directive and snapshot counts
 
 ## Scope

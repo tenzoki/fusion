@@ -147,8 +147,15 @@ Create `./fusion-workbench/history/YYMMDD-HHMM-orchestrator-session.md` and writ
 
 ## Step 5 — Event log and live dashboard
 
-- Create/overwrite `./fusion-workbench/orchestrator-events.jsonl` (empty — the orchestrator appends events).
-- Append a `session_start` event.
+- **Create if missing, never overwrite.** `./fusion-workbench/orchestrator-events.jsonl` is append-only across all sessions. The orchestrator's cross-session bus-resume probe (Setup Step 5b.f, and the shared procedure invoked from Step 1b) reads prior `gate_filed_consultation` events from this file to find unpaired consultations that the user filed in an earlier session and may now have a reply for. Truncating at session start would orphan those replies. Use a touch-or-append pattern, never a truncating `>` redirect:
+  ```bash
+  [ -f ./fusion-workbench/orchestrator-events.jsonl ] || touch ./fusion-workbench/orchestrator-events.jsonl
+  ```
+- Append a `session_start` event (one line, appended — never overwrite the file):
+  ```bash
+  TS="$(date -u +%Y-%m-%dT%H:%M:%S)"
+  echo "{\"ts\":\"${TS}\",\"event\":\"session_start\"}" >> ./fusion-workbench/orchestrator-events.jsonl
+  ```
 - Overwrite `./fusion-workbench/orchestrator-live.md` with the real session Directive and snapshot counts (replace the placeholder `Initializing` line). The dashboard is now live for the monitor.
 
 ## Done
