@@ -476,3 +476,46 @@ The orchestrator may file bus messages at exactly four gates. This is the canoni
 4. **Pre-planning sanity check** — when shaper has produced a spec and planner is about to be invoked, the orchestrator may file a consultation on the spec first.
 
 In every case the orchestrator does NOT dispatch the target agent. The consultant remains user-initiated-only; coderev/ontorev are dispatched by the orchestrator only via the standard review flow, never as a bus delivery mechanism.
+
+## Commit lock
+
+A POSIX mutex around `git add` + `git commit` operations against the project's working tree. Defends against the cross-agent staging race where parallel agents' commit operations interleave at the git-index level (commit absorption, orphan commits, WT-left-dirty outcomes).
+
+### When it activates
+
+Always, when any party is about to commit. Workbench-anchored — different projects have independent locks; sessions on the same project share one lock.
+
+### Mechanism
+
+Atomic `mkdir fusion-workbench/.commit-lock/` (POSIX guarantees mkdir either creates the directory exclusively or fails). The holder file `.commit-lock/holder` records three lines: `tag`, `pid`, `acquired_at` (RFC-3339 UTC). Stale-lock detection at 60 seconds: if the holder PID is no longer running AND the lock is older than the threshold, the next acquirer force-releases it.
+
+### Helper
+
+`bin/fusion-commit-lock` with subcommands:
+
+- `acquire <tag>` — block until acquired (200ms poll, exponential backoff to 2s, indefinite wait)
+- `release` — release the lock (must hold or recorded PID dead)
+- `with <tag> -- <cmd...>` — canonical pattern: acquire, run, release on any exit
+- `check` — diagnostic; print lock state, no mutation
+
+The `with` form is canonical; explicit `acquire`/`release` is for special cases like internal control-flow (retry after bugfixer in orchestrator Phase 2 Step 3b).
+
+### Who acquires
+
+- **Orchestrator** at Phase 2 Step 3b — before staging and committing.
+- **Coder / ontocoder / bugfixer** ONLY if they commit directly (rare; default is the orchestrator commits on their behalf).
+- **Other agents** — never commit, never need the lock.
+
+### Tag conventions
+
+Mandatory. Used in stale-lock messages. Format: the agent name (`orchestrator`, `coder`, `ontocoder`, `bugfixer`).
+
+### Failure modes
+
+- **Concurrent acquire from a different party** → polled every 200ms with exponential backoff to 2s. One stderr message after the first failed acquire (`waiting for commit lock held by <other-tag>...`); silent thereafter. Blocks indefinitely — no max-wait timeout.
+- **Crash mid-commit** → next acquirer's stale-lock detector force-releases after 60 seconds if the recorded PID is dead. Stderr warning announces the force-release.
+- **Release-not-held** → non-zero exit with `not currently held by anyone`. Caller should log and proceed (defensive — typically indicates a programming error rather than a race).
+
+### Cross-reference
+
+Issue `fusion-workbench/issues/260516-0534[c]-cross-agent-staging-race-on-unlocked-working-tree.md` (closed by this protocol).

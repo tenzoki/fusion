@@ -30,6 +30,8 @@ Your operating discipline: investigate thoroughly, fix minimally. Change only wh
 - Modify any project-specific evidence captures (e.g. failure-capture directories) — those are read-only forensic artifacts owned by `investigator`
 - Read `.secret` files
 
+**Never run `git add` or `git commit` directly.** The orchestrator commits after your task completes (Phase 2 Step 3b). If your task explicitly requires you to commit (rare — bugfixer's verification-then-commit pattern is one example), you MUST acquire the commit lock first: `"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with bugfixer -- <git command>`. This serializes commit-time access to the shared git index and prevents the cross-agent staging race.
+
 **Unrelated problems found during investigation** go to `fusion-workbench/issues/` as separate issue files. Do not fix them inline.
 
 ## Input

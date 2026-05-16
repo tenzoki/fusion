@@ -1,0 +1,285 @@
+#!/usr/bin/env bash
+# fusion-commit-lock — POSIX mutex around git add + git commit operations.
+#
+# Defends against the cross-agent staging race documented in
+# fusion-workbench/issues/260516-0534-cross-agent-staging-race-on-unlocked-working-tree.md:
+# parallel agents sharing one working tree race on the shared git index,
+# leading to commit absorption, orphan commits, and WT-left-dirty outcomes.
+#
+# The mutex is workbench-anchored: the lock directory lives at
+# fusion-workbench/.commit-lock/. Distinct projects have independent locks;
+# sessions on the same project share one lock.
+#
+# Mechanism: atomic `mkdir fusion-workbench/.commit-lock/` (POSIX guarantees
+# mkdir either creates the directory exclusively or fails). On success, the
+# holder file `.commit-lock/holder` records tag, PID, and acquired_at. The
+# stale-lock detector force-releases the lock if the holder PID is dead and
+# the lock is older than 60 seconds.
+#
+# Usage:
+#   fusion-commit-lock acquire <tag>
+#       Block until the lock is acquired. Tag is mandatory (used in stale-
+#       lock messages — typically the agent name: orchestrator, coder, ...).
+#       Polls every 200ms with exponential backoff capped at 2s. Emits one
+#       stderr message after the first failed acquire; thereafter silent.
+#       Stale-lock detection: if the holder's acquired_at is older than 60
+#       seconds AND the recorded PID is no longer running, force-release.
+#
+#   fusion-commit-lock release
+#       Release the lock. Exits non-zero if the lock is not held, or held
+#       by a different PID (defensive: prevents one agent releasing
+#       another's lock).
+#
+#   fusion-commit-lock with <tag> -- <command...>
+#       Canonical pattern. Acquire, run the command preserving its exit
+#       code, release (even on error or signal via trap). Use this form
+#       unless you have internal control-flow that requires explicit
+#       acquire/release.
+#
+#   fusion-commit-lock check
+#       Diagnostic. Prints "not held" or "held by <tag>/pid <pid> since
+#       <acquired_at>" to stdout. No state mutation.
+#
+# Dependencies: mkdir, rmdir, rm, kill, date, printf, sleep, cat, head,
+# grep. POSIX-portable; tested on macOS Bash 3.2 and Linux Bash 4+.
+
+set -eu
+
+resolve_root() {
+  local root
+  if ! root="$("$(dirname "$0")/fusion-workbench-root" 2>/dev/null)"; then
+    echo "fusion-commit-lock: no fusion workbench found above $(pwd). Run /fusion:setup at the project root first." >&2
+    return 1
+  fi
+  printf '%s\n' "$root"
+}
+
+LOCK_DIR="fusion-workbench/.commit-lock"
+HOLDER_FILE="${LOCK_DIR}/holder"
+STALE_AFTER_SECONDS=60
+
+now_utc() {
+  date -u +%Y-%m-%dT%H:%M:%SZ
+}
+
+# Convert RFC-3339 UTC timestamp to epoch seconds. Best-effort: tries GNU
+# `date -d` first, falls back to BSD `date -j -f`. Prints epoch on stdout;
+# prints nothing on failure.
+ts_to_epoch() {
+  local ts="$1"
+  local epoch
+  if epoch="$(date -u -d "$ts" +%s 2>/dev/null)"; then
+    printf '%s\n' "$epoch"
+    return 0
+  fi
+  if epoch="$(date -u -j -f '%Y-%m-%dT%H:%M:%SZ' "$ts" +%s 2>/dev/null)"; then
+    printf '%s\n' "$epoch"
+    return 0
+  fi
+  return 1
+}
+
+read_holder_field() {
+  local field="$1"
+  if [ ! -f "$HOLDER_FILE" ]; then
+    return 1
+  fi
+  grep "^${field}: " "$HOLDER_FILE" 2>/dev/null | head -n 1 | sed "s/^${field}: //"
+}
+
+is_stale_lock() {
+  # Returns 0 (true) if the lock dir exists, is older than STALE_AFTER_SECONDS,
+  # and the recorded PID is no longer running. Otherwise returns 1.
+  if [ ! -f "$HOLDER_FILE" ]; then
+    return 1
+  fi
+  local acquired_at pid acquired_epoch now_epoch age
+  acquired_at="$(read_holder_field acquired_at || true)"
+  pid="$(read_holder_field pid || true)"
+  if [ -z "$acquired_at" ] || [ -z "$pid" ]; then
+    return 1
+  fi
+  acquired_epoch="$(ts_to_epoch "$acquired_at" || true)"
+  if [ -z "$acquired_epoch" ]; then
+    return 1
+  fi
+  now_epoch="$(date -u +%s)"
+  age=$(( now_epoch - acquired_epoch ))
+  if [ "$age" -lt "$STALE_AFTER_SECONDS" ]; then
+    return 1
+  fi
+  if kill -0 "$pid" 2>/dev/null; then
+    return 1
+  fi
+  return 0
+}
+
+force_release_stale() {
+  local tag pid acquired_at
+  tag="$(read_holder_field tag || echo '?')"
+  pid="$(read_holder_field pid || echo '?')"
+  acquired_at="$(read_holder_field acquired_at || echo '?')"
+  echo "fusion-commit-lock: stale lock detected (held by ${tag}/pid ${pid} since ${acquired_at}); force-releasing" >&2
+  rm -f "$HOLDER_FILE" 2>/dev/null || true
+  rmdir "$LOCK_DIR" 2>/dev/null || true
+}
+
+try_acquire() {
+  # Attempt one mkdir. On success: write holder file and return 0.
+  # On failure: return 1.
+  local tag="$1"
+  if mkdir "$LOCK_DIR" 2>/dev/null; then
+    {
+      printf 'tag: %s\n' "$tag"
+      printf 'pid: %s\n' "$$"
+      printf 'acquired_at: %s\n' "$(now_utc)"
+    } > "$HOLDER_FILE"
+    return 0
+  fi
+  return 1
+}
+
+do_acquire() {
+  local tag="$1"
+  local first_fail=1
+  local delay_ms=200
+  local max_delay_ms=2000
+  while :; do
+    if try_acquire "$tag"; then
+      return 0
+    fi
+    if is_stale_lock; then
+      force_release_stale
+      continue
+    fi
+    if [ "$first_fail" -eq 1 ]; then
+      local other_tag
+      other_tag="$(read_holder_field tag 2>/dev/null || echo '?')"
+      echo "fusion-commit-lock: waiting for commit lock held by ${other_tag}..." >&2
+      first_fail=0
+    fi
+    # Sleep in seconds (fractional seconds work on macOS/Linux bash). Force
+    # C locale so awk prints a `.` decimal separator regardless of LC_NUMERIC.
+    sleep "$(LC_ALL=C awk "BEGIN { printf \"%.3f\", ${delay_ms}/1000 }")"
+    delay_ms=$(( delay_ms * 2 ))
+    if [ "$delay_ms" -gt "$max_delay_ms" ]; then
+      delay_ms="$max_delay_ms"
+    fi
+  done
+}
+
+do_release() {
+  if [ ! -f "$HOLDER_FILE" ]; then
+    echo "fusion-commit-lock: not currently held by anyone" >&2
+    return 1
+  fi
+  local pid tag
+  pid="$(read_holder_field pid || true)"
+  tag="$(read_holder_field tag || echo '?')"
+  # Release authorisation: succeed if (a) the caller's PID matches the
+  # recorded holder PID (same-process canonical case, e.g. `with <tag>`),
+  # OR (b) the recorded PID is no longer running (orphaned lock — caller
+  # is reclaiming a dead holder). Reject only when a *different live*
+  # process holds the lock.
+  if [ "$pid" != "$$" ] && [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
+    echo "fusion-commit-lock: lock held by ${tag}/pid ${pid}, not by you (pid $$)" >&2
+    return 1
+  fi
+  # Try rmdir first (removes holder file too because rmdir on a non-empty
+  # dir fails — we expect the dir to contain only `holder`). If rmdir
+  # fails, fall back to explicit rm+rmdir.
+  if ! rmdir "$LOCK_DIR" 2>/dev/null; then
+    rm -f "$HOLDER_FILE" 2>/dev/null || true
+    rmdir "$LOCK_DIR" 2>/dev/null || {
+      echo "fusion-commit-lock: failed to remove lock directory $LOCK_DIR" >&2
+      return 1
+    }
+  fi
+  return 0
+}
+
+do_check() {
+  if [ ! -d "$LOCK_DIR" ]; then
+    echo "not held"
+    return 0
+  fi
+  local tag pid acquired_at
+  tag="$(read_holder_field tag || echo '?')"
+  pid="$(read_holder_field pid || echo '?')"
+  acquired_at="$(read_holder_field acquired_at || echo '?')"
+  echo "held by ${tag}/pid ${pid} since ${acquired_at}"
+  return 0
+}
+
+cmd="${1:-}"
+
+case "$cmd" in
+  acquire)
+    tag="${2:-}"
+    if [ -z "$tag" ]; then
+      echo "fusion-commit-lock: acquire requires a tag" >&2
+      echo "Usage: fusion-commit-lock acquire <tag>" >&2
+      exit 2
+    fi
+    root="$(resolve_root)" || exit 1
+    cd "$root"
+    do_acquire "$tag"
+    ;;
+  release)
+    root="$(resolve_root)" || exit 1
+    cd "$root"
+    do_release
+    ;;
+  with)
+    tag="${2:-}"
+    sep="${3:-}"
+    if [ -z "$tag" ] || [ "$sep" != "--" ]; then
+      echo "fusion-commit-lock: with requires '<tag> -- <command...>'" >&2
+      echo "Usage: fusion-commit-lock with <tag> -- <command...>" >&2
+      exit 2
+    fi
+    shift 3
+    if [ "$#" -eq 0 ]; then
+      echo "fusion-commit-lock: with requires a command after '--'" >&2
+      exit 2
+    fi
+    root="$(resolve_root)" || exit 1
+    cd "$root"
+    do_acquire "$tag"
+    # Ensure release on any exit path, including SIGINT/SIGTERM.
+    trap 'do_release 2>/dev/null || true' EXIT INT TERM
+    echo "fusion-commit-lock: acquired commit lock as ${tag}; running: $*" >&2
+    rc=0
+    "$@" || rc=$?
+    # Release explicitly so we can print the message; the trap will be a
+    # no-op since the lock is already gone (do_release returns non-zero
+    # silently via `|| true`).
+    do_release 2>/dev/null || true
+    trap - EXIT INT TERM
+    echo "fusion-commit-lock: released commit lock" >&2
+    exit "$rc"
+    ;;
+  check)
+    root="$(resolve_root)" || exit 1
+    cd "$root"
+    do_check
+    ;;
+  ""|-h|--help|help)
+    cat >&2 <<'EOF'
+Usage: fusion-commit-lock <subcommand> [args]
+
+Subcommands:
+  acquire <tag>             Block until the lock is acquired; record tag/pid.
+  release                   Release the lock (must be held by this pid).
+  with <tag> -- <cmd...>    Acquire, run cmd, release. Canonical pattern.
+  check                     Print lock state to stdout (no mutation).
+EOF
+    [ -z "$cmd" ] && exit 2
+    exit 0
+    ;;
+  *)
+    echo "fusion-commit-lock: unknown subcommand '$cmd'" >&2
+    echo "Usage: fusion-commit-lock {acquire <tag>|release|with <tag> -- <cmd...>|check}" >&2
+    exit 2
+    ;;
+esac

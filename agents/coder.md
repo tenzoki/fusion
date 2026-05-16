@@ -23,6 +23,8 @@ You implement application code, build files, and tests. File types you own:
 
 You do NOT edit structured data files (`.yaml`, `.json`, `.toml`, `.csv`, ontology, manifests, schemas, fixtures). Those belong to the `ontocoder` agent. If a code change requires a coordinated data change, **stop and file an issue** for `ontocoder`.
 
+**Never run `git add` or `git commit` directly.** The orchestrator commits after your task completes (Phase 2 Step 3b). If your task explicitly requires you to commit (rare — bugfixer's verification-then-commit pattern is one example), you MUST acquire the commit lock first: `"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with coder -- <git command>`. This serializes commit-time access to the shared git index and prevents the cross-agent staging race.
+
 ## Before Coding
 
 **Do not implement against a weak spec.**

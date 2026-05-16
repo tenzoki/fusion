@@ -353,8 +353,9 @@ After each completed task:
    c. If bugfixer reports success (verification passes): proceed to step 3 (stage + commit). Emit `bugfix_success` event.
    d. If bugfixer reports failure (unable to fix or verification still fails): revert all task changes with `git checkout HEAD -- <files>`. Emit `bugfix_failure` and `revert` events. Mark the task as errored in the history log. **REFRESH DASHBOARD** — overwrite `orchestrator-live.md` showing this task as `[ERROR]`. Continue to the next task.
    e. **Budget:** One bugfixer attempt per task. No retries.
-3. **Stage files:** Add only task-relevant files + fusion-workbench tracking updates. Never `git add -A`. Be explicit.
-4. **Commit message format:**
+3. **Acquire the commit lock.** Before any `git add` / `git commit` for this task, run `"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with orchestrator -- bash -c "git add <files>; git commit ..."` — OR use explicit `acquire orchestrator` / `release` if the commit sequence has internal control-flow (e.g. retry after bugfixer). The lock prevents the cross-agent staging race where two parallel committers race on `git add` / the shared git index (see `fusion-workbench/issues/260516-0534[c]-cross-agent-staging-race-on-unlocked-working-tree.md` — closed by this protocol). See `rules/fusion-workbench-conventions.md` `## Commit lock` for the full protocol.
+4. **Stage files:** Add only task-relevant files + fusion-workbench tracking updates. Never `git add -A`. Be explicit.
+5. **Commit message format:**
    ```
    <type>(<scope>): <summary>
 
@@ -367,8 +368,8 @@ After each completed task:
    - `<type>`: `fix`, `feat`, `refactor`, `docs`, `chore`, `test` — conventional commits
    - `<scope>`: affected package or area (e.g., `ai`, `ontology`, `ui`, `pptx`)
    - Always create a new commit. Never amend.
-5. **Use HEREDOC** for commit messages to ensure correct formatting.
-6. **Emit** a `commit` event with the short hash and message summary.
+6. **Use HEREDOC** for commit messages to ensure correct formatting.
+7. **Emit** a `commit` event with the short hash and message summary.
 
 ### Step 3c: Incremental Review
 
