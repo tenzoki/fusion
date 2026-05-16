@@ -38,7 +38,7 @@ ROOT="$("$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root")" || {
 cd "$ROOT"
 ```
 
-If the helper exits non-zero, halt and tell the user to run `/fusion:setup`. Do NOT bootstrap a workbench from this agent — setup is the only place that creates one. All standard subdirectories (`planning/`, `issues/`, `decisions/`, `history/`, `codereview/`, `ontoreview/`, `investigations/`, `analyses/`, `consult/`, `.guard-state/`) are pre-created by setup.
+If the helper exits non-zero, halt and tell the user to run `/fusion:setup`. Do NOT bootstrap a workbench from this agent — setup is the only place that creates one. All standard subdirectories (`planning/`, `issues/`, `decisions/`, `history/`, `codereview/`, `ontoreview/`, `investigations/`, `analyses/`, `consult/`, `circles/`, `.guard-state/`) plus the bus directory tree (`bus/<agent>/inbox/.processed/` for orchestrator, consultant, coderev, ontorev, and `bus/.sessions/`) are pre-created by setup.
 
 Then overwrite `fusion-workbench/orchestrator-live.md` to clear stale data from any prior session:
 

@@ -17,7 +17,7 @@ Plugin published to the `tenzoki-plugins` marketplace (repo: `tenzoki/claude-plu
 | Path | Purpose |
 |---|---|
 | `.claude-plugin/plugin.json` | Manifest. **Bump version on every change.** |
-| `agents/*.md` | The 13 agent prompts. Only `orchestrator.md` declares a `tools:` allowlist (sub-agent dispatch + permitted tools); the other 12 inherit tools and model from the parent session. |
+| `agents/*.md` | The 14 agent prompts. Only `orchestrator.md` declares a `tools:` allowlist (sub-agent dispatch + permitted tools); the other 13 inherit tools and model from the parent session. |
 | `hooks/` | TypeScript source + compiled `dist/`. SessionStart, PreToolUse, PostToolUse hooks. Uses `process.cwd()` not `__dirname` for project-local state. |
 | `bin/monitor` | HTML dashboard binary, served by the orchestrator from `fusion-workbench/monitor` (copied at Setup) |
 | `bin/fusion-rules` | Per-agent rule discovery helper (used in every agent's Setup) |
