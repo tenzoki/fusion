@@ -81,6 +81,7 @@ WARNING_EVENT_TYPES = {
     "churn_warning", "churn_critical",
     "cross_file_warning", "cross_file_critical",
     "guard_block", "guard_halt",
+    "gate_filed_consultation",
 }
 MAX_WARNINGS_RETURNED = 30
 
@@ -215,6 +216,10 @@ HTML_PAGE = r"""<!DOCTYPE html>
   .event-type.coherence_review { color: var(--cyan); }
   .event-type.rebalance_artifact, .event-type.rebalance_grounding, .event-type.rebalance_directive { color: var(--purple); }
   .event-type.bounded_closure_proposed { color: var(--orange); }
+  /* Consultation bus events (filed/consumed/cancelled) */
+  .event-type.gate_filed_consultation { color: var(--orange); }
+  .event-type.gate_consultation_consumed { color: var(--green); }
+  .event-type.gate_consultation_cancelled { color: var(--fg3); }
   .event-detail { color: var(--fg2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   /* YAML state view */
   .yaml-content {
