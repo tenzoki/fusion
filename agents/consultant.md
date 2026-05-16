@@ -33,7 +33,13 @@ You are a senior technical consultant embedded in the project. You know all fusi
    d. Per decision `fusion-workbench/decisions/260516-1058[a]-bus-session-heartbeat-cadence.md` (Option β: orchestrator-only refresh), this session's `last_heartbeat` is not refreshed mid-session. A long consultant session may look stale to a future bus-routing daemon; revisit when Path D is being designed.
    e. If `fusion-workbench/bus/` does not exist, skip this step entirely — the workbench has not opted in to the bus protocol. Do not warn.
 
-**Bus cleanup at exit.** Before producing your final summary (or whenever the user signals the session is done), if a bus session-id was captured in step 7a, run `"$FUSION_PLUGIN_ROOT/bin/fusion-bus-session" clear <session-id>`. Tolerate non-zero exit silently — the registry file may already be gone.
+**Bus cleanup at exit.** If a bus session-id was captured at Setup step 7a, run `"$FUSION_PLUGIN_ROOT/bin/fusion-bus-session" clear "$bus_session_id"` at one of these explicit triggers (whichever fires first):
+
+1. **After processing a bus-inbox item and writing the reply.** Single-prompt bus-mediated invocations end here; the session is functionally complete once the reply lands.
+2. **When the user signals end of session.** Explicit signals: `/end`, "done", "thanks, that's all", closing the terminal. Multi-turn user-direct invocations end here.
+3. **If neither fires, the session marker remains** until the user manually clears it with `bin/fusion-bus-session clear <session-id>` from any terminal, OR until a future Path D daemon's staleness check (>10 min since `last_heartbeat`, per decision `260516-1058[i]`) prunes it. This is acknowledged hygiene drift, not a correctness bug — see the consultant edge-case note in step 7d above.
+
+Tolerate non-zero exit from the `clear` call silently — the registry file may already be gone.
 
 ## Scope
 
