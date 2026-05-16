@@ -148,6 +148,42 @@ Timestamp: `date +%y%m%d-%H%M`.
 
 Create `./fusion-workbench/history/YYMMDD-HHMM-orchestrator-session.md` and write the initial entry: session Directive and snapshot counts from Step 3.
 
+## Step 4b — Bus check and session registration
+
+Mirrors `agents/orchestrator.md` Setup Step 5b. If `./fusion-workbench/bus/` exists, this workbench has the bus protocol enabled (see `rules/fusion-workbench-conventions.md` `## Bus protocol`). Do:
+
+a. **Register this session.**
+
+   ```bash
+   "$FUSION_PLUGIN_ROOT/bin/fusion-bus-session" register orchestrator
+   ```
+
+   Capture stdout as the bus session-id and store it as `bus_session_id` so Phase 0 can write it into `agentstate.yaml` under `session.bus_session_id`. If the helper is missing or exits non-zero, print a warning to the user and proceed without registering (leave `bus_session_id: null`); do NOT halt.
+
+b. **List unread inbox items.** Enumerate `./fusion-workbench/bus/orchestrator/inbox/` excluding `.processed/`. For each item, parse the `From:` and `Re:` frontmatter and `stat` the mtime (format `YYYY-MM-DD HH:MM`); print one line per item:
+
+   ```
+   <filename> — from <From>, re <Re> (filed <mtime>)
+   ```
+
+c. **If at least one unread item exists,** present the list and ask via `AskUserQuestion`:
+   - **Process inbox first** — handle the messages before resuming the user's task.
+   - **Continue with current task** — proceed; the inbox will still be there next session.
+
+   Default to current task — most sessions will not have pending mail.
+
+d. **After Step 5 completes** (i.e. once the `session_start` event is emitted), run a single heartbeat:
+
+   ```bash
+   "$FUSION_PLUGIN_ROOT/bin/fusion-bus-session" heartbeat <session-id>
+   ```
+
+   Subsequent heartbeats are not in scope for this step.
+
+e. **If `./fusion-workbench/bus/` does not exist,** skip 4b entirely — the workbench has not opted in to the bus protocol (pre-v3.4 workbench or opt-out). Do not warn.
+
+f. **Fresh-session consultation-reply probe.** This sub-step fires only when Step 1 detected no interrupted session (no `agentstate.yaml` present) — i.e. the prior session exited cleanly but the user may have filed a consultation in that session and is now starting a new session to consume the reply. Skip if Step 1 entered the Continue/Restart/Modify flow. Run the *Bus-resume consultation probe — shared procedure* defined in `agents/orchestrator.md` under Step 1b. The probe reads `orchestrator-events.jsonl` (which persists across sessions, unlike `agentstate.yaml`) and finds any `gate_filed_consultation` events not yet paired with `gate_consultation_consumed` or `gate_consultation_cancelled`. If no unpaired events exist (the common case for a truly fresh session), the probe exits cleanly with no user-facing output.
+
 ## Step 5 — Event log and live dashboard
 
 - **Create if missing, never overwrite.** `./fusion-workbench/orchestrator-events.jsonl` is append-only across all sessions. The orchestrator's cross-session bus-resume probe (Setup Step 5b.f, and the shared procedure invoked from Step 1b) reads prior `gate_filed_consultation` events from this file to find unpaired consultations that the user filed in an earlier session and may now have a reply for. Truncating at session start would orphan those replies. Use a touch-or-append pattern, never a truncating `>` redirect:
@@ -163,4 +199,4 @@ Create `./fusion-workbench/history/YYMMDD-HHMM-orchestrator-session.md` and writ
 
 ## Done
 
-Only after every step above completes may you begin the user's actual task. Report Setup complete with: workspace path, history file path, snapshot counts, **detected workbench domain**, and whether an interrupted session was resumed.
+Only after every step above completes may you begin the user's actual task. Report Setup complete with: workspace path, history file path, snapshot counts, **detected workbench domain**, **bus session-id** (or `unregistered` if Step 4b failed / `n/a` if bus is not enabled), and whether an interrupted session was resumed.
