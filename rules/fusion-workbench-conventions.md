@@ -347,3 +347,130 @@ The history log is the only durable record of a session. The in-memory task list
 ## Security
 
 Never read or display `.secret` files. If secrets are needed, ask the user to provide them via environment variables.
+
+## Bus protocol (workbench-mediated A2A messaging)
+
+Concurrent fusion agent sessions exchange durable messages through `fusion-workbench/bus/<agent>/inbox/`. The user remains the trigger — fusion has no daemon and does not auto-route. Path D's daemon will read this layout unchanged; no field is reserved for D that B does not also populate.
+
+### Opt-in
+
+Bus behaviour activates only when `fusion-workbench/bus/` exists. Agents probe-and-degrade silently otherwise. `/fusion:setup` creates the tree; pre-bus workbenches stay quiet until setup is rerun.
+
+### Filesystem layout
+
+```
+fusion-workbench/bus/
+├── .sessions/                      # session-registry YAML files
+├── orchestrator/inbox/.processed/  # processed/ pre-created so mv target always exists
+├── consultant/inbox/.processed/
+├── coderev/inbox/.processed/
+└── ontorev/inbox/.processed/
+```
+
+The protocol recognises four agents initially: `orchestrator`, `consultant`, `coderev`, `ontorev`. Additional agents are added by creating their `<agent>/inbox/.processed/` subtree and listing them here.
+
+### Message-file naming
+
+- Request: `YYMMDD-HHMM-from-<source-agent>-<topic>.md`
+- Reply: `YYMMDD-HHMM-from-<source-agent>-<originating-message-stem>.reply.md`
+
+The reply filename embeds the originating message's basename minus the `.md` so the pairing is grep-able from a shell.
+
+### Required frontmatter
+
+Every message (request or reply) carries four fields:
+
+- `From:` — source agent name
+- `To:` — target agent name
+- `Re:` — short subject string; byte-identical between a request and its reply
+- `Filed:` — timestamp from `date +%y%m%d-%H%M`
+
+The body MUST include a `## Reply convention` section naming the exact target path for the reply.
+
+### Reply pairing keys — both
+
+Replies are paired with their request by **two** redundant keys:
+
+- The `Re:` frontmatter field is byte-identical between request and reply — used by orchestrator-resume to match a returned reply to a previously filed request.
+- The reply filename embeds the originating message's stem — used by `bin/fusion-bus` substring matching.
+
+This redundancy is intentional. `Re:` is human-readable and resume-safe; the filename embed is grep-friendly from any shell.
+
+### Example request
+
+```markdown
+---
+From: orchestrator
+To: consultant
+Re: rebalance-gate-circle-A04-shape-choice
+Filed: 260516-1430
+---
+
+# Consultation request — Rebalance gate
+
+<Directive, three-edge summary, the four standard options, and the specific question.>
+
+## Reply convention
+
+Write the reply to `fusion-workbench/bus/orchestrator/inbox/` as
+`YYMMDD-HHMM-from-consultant-260516-1430-from-orchestrator-rebalance-gate-circle-A04-shape-choice.reply.md`.
+```
+
+### Example reply
+
+```markdown
+---
+From: consultant
+To: orchestrator
+Re: rebalance-gate-circle-A04-shape-choice
+Filed: 260516-1452
+---
+
+# Consultant reply
+
+<Synthesised input. References to spec/plan/issue files as needed.>
+```
+
+### Session registry
+
+Each bus-participating agent registers itself at Setup via `bin/fusion-bus-session register <agent>`. The helper writes `bus/.sessions/<session-id>.yaml`:
+
+```yaml
+session_id: 260516-1430-orchestrator-a7f3
+agent: orchestrator
+project: /Users/kai/Dropbox/qboot/projects/F04-FUSION/codebase/fusion
+tmux_pane: "%5"          # string when $TMUX_PANE is set, else null
+registered_at: 260516-1430
+last_heartbeat: 260516-1437
+```
+
+**Staleness threshold:** 600 seconds (10 minutes) is the canonical value, matching `bin/fusion-session-mark`. Path B does not enforce it (no consumer). Path D's daemon will read `last_heartbeat` and apply this threshold when routing.
+
+### Read-on-Setup discipline
+
+Every bus-participating agent, at the end of its Setup (after the rules check, before the first action), lists unread items in its own `bus/<agent>/inbox/` (excluding `.processed/`). For each item: filename, `From:`, `Re:`, mtime. If at least one item is unread, the agent presents the list to the user and asks whether to process the inbox first or continue with the original task.
+
+### Write-then-tell-the-user discipline at gates
+
+Every bus-write at a gate is paired with an explicit user-trigger instruction in the gate prompt: the exact `./.fusion/fu <agent>` command, the assurance that the target's Setup will surface the item, and no implication that fusion auto-routes. The action-first ordering of `rules/user-facing-output.md` applies.
+
+### Mark-read protocol — dual-write, race-safe
+
+A message is considered processed when it is moved from `bus/<agent>/inbox/<file>` to `bus/<agent>/inbox/.processed/<file>`. Both the agent and the user (via `bin/fusion-bus mark-read`) may perform this move; both ownership models are first-class.
+
+1. The move is `mv` (POSIX atomic rename). One operation either fully succeeds or fails; there is no half-renamed state.
+2. Both parties tolerate "file already in `.processed/`" — silent success, not an error. If the agent finds the source missing because the user already ran `mark-read`, it treats the message as already-marked and continues.
+3. If both parties hit the same file in the same window, one `mv` wins the rename and the other detects the missing source (per rule 2). No file locking is required because POSIX rename is atomic.
+
+This dual-write contract is the reason no locking is needed: atomic rename + tolerant lookup = no corruption regardless of which party moves the file first.
+
+### Orchestrator-fileable gates
+
+The orchestrator may file bus messages at exactly four gates. This is the canonical inventory; per-gate prompt-side details land in `agents/orchestrator.md`.
+
+1. **Rebalance gate** (mid-Turn or post-reconciler) — file a consultation before the user picks among the four standard Rebalance options.
+2. **Pre-shaping ambiguity gate** — when the orchestrator considers invoking shaper because the user's request is ambiguous, it may first file a consultation request.
+3. **Post-reconciler `review-needed` verdict** — file a consultation on the aggregate Coherence verdict before opening the Rebalance gate.
+4. **Pre-planning sanity check** — when shaper has produced a spec and planner is about to be invoked, the orchestrator may file a consultation on the spec first.
+
+In every case the orchestrator does NOT dispatch the target agent. The consultant remains user-initiated-only; coderev/ontorev are dispatched by the orchestrator only via the standard review flow, never as a bus delivery mechanism.
