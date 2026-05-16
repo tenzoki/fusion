@@ -446,6 +446,8 @@ last_heartbeat: 2026-05-16T14:37:00Z
 
 **Staleness threshold:** 600 seconds (10 minutes) is the canonical value, matching `bin/fusion-session-mark`. Path B does not enforce it (no consumer). Path D's daemon will read `last_heartbeat` and apply this threshold when routing.
 
+**Heartbeat cadence:** only the orchestrator refreshes `last_heartbeat` mid-session (at Turn-end, alongside the `fusion-session-mark heartbeat` call). Other bus-aware agents (consultant, coderev, ontorev) are register-only; their `last_heartbeat` reflects session start time. Decision: `fusion-workbench/decisions/260516-1058[a]-bus-session-heartbeat-cadence.md` (Option β). Known limitation: a long consultant session can look stale to a future Path D routing daemon; this will be revisited when Path D is designed.
+
 ### Read-on-Setup discipline
 
 Every bus-participating agent, at the end of its Setup (after the rules check, before the first action), lists unread items in its own `bus/<agent>/inbox/` (excluding `.processed/`). For each item: filename, `From:`, `Re:`, mtime. If at least one item is unread, the agent presents the list to the user and asks whether to process the inbox first or continue with the original task.
