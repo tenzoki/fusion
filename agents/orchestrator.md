@@ -626,11 +626,23 @@ The bus filing pattern is **opt-in per gate**, defaults to declining, and is pur
 
 6. **Emit `gate_filed_consultation` event** to `orchestrator-events.jsonl`. The `detail` object carries `gate`, `request_path`, and `expected_reply_path` (compute the expected reply path as `fusion-workbench/bus/orchestrator/inbox/YYMMDD-HHMM-from-consultant-<originating-stem>.reply.md` — leave the `YYMMDD-HHMM` portion as the literal placeholder string since the consultant will fill it at reply time; B4 matches on the `Re:` field, not on this path). Top-level `turn` is `progress.turn` from `agentstate.yaml` (null for pre-shaping and pre-planning gates which fire before Phase 2 records a turn); `task` is `current_task.id` if set, else null.
 
-7. **Tell the user (action first, plain English per `rules/user-facing-output.md`).** Verbatim template — adjust only the path:
+7. **Tell the user (action first, plain English per `rules/user-facing-output.md`).** Before printing the user-trigger sentence, probe `fusion-workbench/bus/.daemon-state.json` to choose between the daemon-aware wording and the no-daemon (Path B) wording. The probe is a single `Read` of that path; treat any failure (file absent, unreadable, malformed JSON) as "no daemon" and fall through to the Path B branch. Parse `running` (boolean) and `mode` (string: `strict`, `observe`, or `silent`).
 
-   > **File the question, then switch terminals.** I've filed a consultation request at `<request-path>`. To get the consultant's input: open another terminal, run `./.fusion/fu consultant`. The consultant's Setup will list this item and offer to process it. When the consultant writes a reply, the file will appear in `fusion-workbench/bus/orchestrator/inbox/`. You can resume this orchestrator session at any time — I'll pick up the reply on resume.
+   - **If `bus/.daemon-state.json` exists AND `running: true` AND `mode` is `strict` or `observe`:** use the daemon-aware wording. Verbatim template — adjust only the path and `<msg-id>` (the basename of `<request-path>` minus `.md`):
 
-   Do NOT add language that implies the consultant is now running or that the orchestrator dispatched it. The user always runs the second terminal manually.
+     > **File the question, then approve at the dashboard.** I've filed a consultation request at `<request-path>`. The bus daemon will pick this up and queue it for your approval. Approve at the monitor dashboard (the "Bus traffic" panel), or run `./.fusion/fusion-bus approve <msg-id>` from any terminal. Once approved, the daemon will inject a "you have new mail" prompt into the consultant's tmux pane and the consultant's session will read the request. You can resume this orchestrator session at any time — I'll pick up the reply on resume.
+
+     If `mode` is `observe`, append one extra sentence after the template above (single space between the final period and the opening parenthesis):
+
+     > (Mode is currently observe — the daemon will auto-inject without waiting for your approval; you can monitor at the dashboard.)
+
+   - **Otherwise (file absent, unreadable, malformed JSON, `running: false`, OR `mode` is `silent`):** use the existing Path B wording verbatim. Template — adjust only the path:
+
+     > **File the question, then switch terminals.** I've filed a consultation request at `<request-path>`. To get the consultant's input: open another terminal, run `./.fusion/fu consultant`. The consultant's Setup will list this item and offer to process it. When the consultant writes a reply, the file will appear in `fusion-workbench/bus/orchestrator/inbox/`. You can resume this orchestrator session at any time — I'll pick up the reply on resume.
+
+     `silent` mode falls through to the Path B wording because silent is fire-and-forget — the user has no approval surface to act on, and the manual-terminal fallback remains useful in case they choose to act anyway. No extra sentence is appended for `silent`.
+
+   Do NOT add language that implies the consultant is now running or that the orchestrator dispatched it. The user always runs the second terminal manually (Path B), or the daemon routes after their dashboard / CLI approval (Path D strict), or the daemon auto-injects (Path D observe / silent). In none of those branches does the orchestrator itself start the consultant.
 
 8. **Pause the session.** Update `agentstate.yaml` so a resume can pick up where this left off (the existing per-phase write points already cover this; no new schema fields are added in B2 — reply consumption on resume is B4's job and emits its own state). Refresh the active-session marker (`"$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" heartbeat`). Exit cleanly — do not block waiting for the reply. The user resumes the orchestrator when ready; B4 will consume any matching reply on the next Setup.
 
