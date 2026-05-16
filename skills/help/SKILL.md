@@ -1,6 +1,6 @@
 ---
-description: Explain what fusion is, how to use it day-to-day, how to install/update/configure it, and where the deeper docs live. Optional topic argument routes the answer (philosophy | daily | install | update | configure).
-argument-hint: [philosophy | daily | install | update | configure]
+description: Explain what fusion is, how to use it day-to-day, how to install/update/configure it, and where the deeper docs live. Optional topic argument routes the answer (philosophy | daily | install | update | configure | bus).
+argument-hint: [philosophy | daily | install | update | configure | bus]
 allowed-tools: [Read, Bash, Glob]
 ---
 
@@ -8,7 +8,7 @@ allowed-tools: [Read, Bash, Glob]
 
 The user invoked `/fusion:help`. Identify which topic they care about (from any argument they passed, or from the conversational context if no explicit arg), then answer focused on that topic.
 
-If no specific topic is identifiable, give a one-paragraph overview of fusion + the five topics below with one-line summaries, then ask the user which they want to drill into.
+If no specific topic is identifiable, give a one-paragraph overview of fusion + the six topics below with one-line summaries, then ask the user which they want to drill into.
 
 **Read the source files this skill points at; do not paste them whole.** Synthesize a focused answer in your own voice and cite file paths so the user can read the originals if they want.
 
@@ -79,6 +79,26 @@ Three things to configure:
   - `.claude/rules/` — project-wide rules every Claude session should respect (coding/ontology/normative/verb guidelines).
   Both are loaded by `bin/fusion-rules` per agent-name pattern.
 - **Investigator capture layout:** if the project has an evidence-locker (failed runs captured for forensic analysis), copy `$FUSION_PLUGIN_ROOT/templates/investigator-capture-layout.md` to `./rules/investigator-capture-layout.md` and fill it in. Without this, the `investigator` agent halts at Setup.
+
+### 6. Bus — *agent-to-agent messages on disk*
+
+The **bus** lets concurrent agent sessions hand work to each other through the workbench instead of through copy-paste in the user's chat. A message is a markdown file in `fusion-workbench/bus/<target-agent>/inbox/`. The receiving agent picks it up the next time it runs Setup.
+
+**When it activates.** Only when `fusion-workbench/bus/` exists. `/fusion:setup` creates that tree on every run since v3.4, so for any project set up since then the bus is always-on. Pre-bus workbenches can opt in by re-running `/fusion:setup`.
+
+**What you do.** When an agent files a bus request (typically the orchestrator at a gate, or a reviewer with a cross-cutting finding), it prints something like *"open another terminal and run `./.fusion/fu <agent>`"*. You open that terminal, run the command, and the target agent's Setup surfaces the unread inbox item automatically. **You are the trigger.** Fusion does not auto-notify, does not auto-route, does not inject anything into a running session. Full automation is Path D — a separate decision, not in scope here.
+
+**How to inspect** (from the project root):
+
+```
+bin/fusion-bus list             # all unread mail across all agents
+bin/fusion-bus show <stem>      # print one message's contents
+bin/fusion-bus mark-read <stem> # move it to inbox/.processed/ manually
+```
+
+`mark-read` is a cleanup tool — agents normally mark their own messages read. The dual-write is race-safe by design (atomic rename).
+
+**Canonical spec.** `rules/fusion-workbench-conventions.md` `## Bus protocol` — filename format, frontmatter fields (`From`/`To`/`Re`/`Filed`), reply-pairing keys, session registry, and the four bus-aware agents (orchestrator, consultant, coderev, ontorev).
 
 ---
 
