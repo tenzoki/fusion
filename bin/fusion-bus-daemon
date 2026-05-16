@@ -1,0 +1,841 @@
+#!/usr/bin/env python3
+"""fusion-bus-daemon — opt-in router for the workbench bus.
+
+Polls `fusion-workbench/bus/<agent>/inbox/*.md` once per second, looks up the
+target agent's tmux session via `fusion-workbench/bus/.sessions/*.yaml`, and
+(depending on the daemon's current mode) either enqueues the message for
+human approval in `.pending/` or injects a prompt into the target tmux pane.
+
+Reads inbox messages and session-registry files written by Path B
+(`bin/fusion-bus`, `bin/fusion-bus-session`); never modifies them except for
+the dual-write-tolerant "mark processed" move on deny. Owns the four
+directories `.pending/`, `.approved/`, `.approved/.processed/`, and
+`.denied/`, the state file `.daemon-state.json`, the PID file `.daemon.pid`,
+the control queue `.daemon-cmd*.json`, and the append-only `.daemon.log`.
+
+Lifecycle (start/stop/status) lives in `bin/fusion-bus daemon ...`. This
+binary itself takes no arguments — running it directly executes the main
+loop in the foreground.
+
+See rules/fusion-workbench-conventions.md `## Bus protocol` → `### Path D`
+for schemas; Python 3 stdlib only.
+"""
+
+from __future__ import annotations
+
+import argparse
+import datetime as _dt
+import glob
+import json
+import os
+import re
+import signal
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+PROG = "fusion-bus-daemon"
+
+# Matches the same shapes `bin/fusion-bus` accepts: either `Field: value`
+# (YAML-style) or `**Field:** value` (bold-prefixed markdown). The bold-close
+# may sit on either side of the colon.
+FM_RE = re.compile(r"^\**(From|To|Re|Filed)\**\s*:\**\s*(.+?)\s*$")
+
+# Canonical staleness threshold for session heartbeats — 600s mirrors
+# `bin/fusion-session-mark` and is documented in the conventions.
+SESSION_STALENESS_S = 600
+
+# Tick cadence.
+TICK_S = 1.0
+
+# Cap on the FIFO ring of recent routes surfaced through .daemon-state.json.
+RECENT_ROUTES_CAP = 20
+
+# Retry budget for tmux injection. After this many consecutive failures
+# against the same msg_id the daemon gives up and routes the message to
+# `.denied/` with reason `inject-failed: <last error>`.
+INJECT_RETRY_CAP = 3
+
+# Valid mode strings.
+VALID_MODES = ("strict", "observe", "silent")
+
+# Valid control-command strings.
+VALID_CMDS = ("pause", "resume", "set-mode", "approve", "deny")
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+def now_utc() -> str:
+    """RFC-3339 UTC timestamp with `Z` suffix (mirrors fusion-bus-session)."""
+    return _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def resolve_root() -> Path:
+    """Locate the fusion workbench root via bin/fusion-workbench-root.
+
+    Returns the absolute path of the project root (the dir containing
+    `fusion-workbench/.fusion-setup`). Exits 1 with a clear message when no
+    workbench is found upward of CWD — same fallback `bin/fusion-bus` uses.
+    """
+    helper = Path(__file__).resolve().parent / "fusion-workbench-root"
+    try:
+        res = subprocess.run(
+            [str(helper)], capture_output=True, text=True, check=False, timeout=5
+        )
+    except subprocess.TimeoutExpired:
+        print(f"{PROG}: fusion-workbench-root timed out", file=sys.stderr)
+        sys.exit(1)
+    if res.returncode != 0 or not res.stdout.strip():
+        print(
+            f"{PROG}: no fusion workbench found above {Path.cwd()}. "
+            "Run /fusion:setup at the project root first.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    return Path(res.stdout.strip())
+
+
+def atomic_write_json(path: Path, payload) -> None:
+    """Write JSON via temp file + rename. POSIX rename is atomic — readers
+    always see either the prior contents or the new contents, never a
+    half-written file."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(f"{path.name}.tmp.{os.getpid()}")
+    with tmp.open("w", encoding="utf-8") as fh:
+        json.dump(payload, fh, indent=2, sort_keys=False)
+        fh.write("\n")
+    os.rename(tmp, path)
+
+
+def safe_read_json(path: Path):
+    """Load JSON from `path`, returning None on missing/unreadable/invalid."""
+    try:
+        with path.open("r", encoding="utf-8") as fh:
+            return json.load(fh)
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
+def safe_move(src: Path, dst: Path) -> bool:
+    """Move `src` to `dst` tolerating a dual-writer race per Path B.
+
+    Returns True if the file is now at `dst` (whether this call moved it or
+    another party already did). Returns False only when neither `src` nor
+    `dst` exist — i.e. the caller's bookkeeping is wrong.
+    """
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        os.rename(src, dst)
+        return True
+    except FileNotFoundError:
+        return dst.exists()
+    except OSError:
+        # Cross-device or perms — fall through and report as failure.
+        return False
+
+
+def parse_frontmatter(path: Path) -> dict:
+    """Extract `From`/`To`/`Re`/`Filed` from the first 20 lines of `path`."""
+    out = {k: "" for k in ("From", "To", "Re", "Filed")}
+    try:
+        with path.open("r", encoding="utf-8", errors="replace") as fh:
+            for i, line in enumerate(fh):
+                if i >= 20:
+                    break
+                m = FM_RE.match(line.strip())
+                if m:
+                    out[m.group(1)] = m.group(2).strip()
+    except OSError:
+        pass
+    return out
+
+
+def parse_session_yaml(path: Path) -> dict:
+    """Parse the six-line `bus/.sessions/<id>.yaml` schema.
+
+    Hand-rolled key:value splitter to avoid pulling in PyYAML — the file is
+    written by `bin/fusion-bus-session` and has exactly six known fields.
+    Strips surrounding double-quotes around the value (the tmux_pane field
+    quotes its value). Returns an empty dict on read failure.
+    """
+    out = {}
+    try:
+        with path.open("r", encoding="utf-8") as fh:
+            for line in fh:
+                if ":" not in line:
+                    continue
+                k, _, v = line.partition(":")
+                v = v.strip()
+                if v.startswith('"') and v.endswith('"') and len(v) >= 2:
+                    v = v[1:-1]
+                if v == "null":
+                    v = None
+                out[k.strip()] = v
+    except OSError:
+        pass
+    return out
+
+
+def parse_rfc3339(value) -> _dt.datetime | None:
+    """Parse an RFC-3339 UTC timestamp; tolerate the `Z` suffix and `+00:00`."""
+    if not value or not isinstance(value, str):
+        return None
+    candidate = value.strip()
+    if candidate.endswith("Z"):
+        candidate = candidate[:-1] + "+00:00"
+    try:
+        return _dt.datetime.fromisoformat(candidate)
+    except ValueError:
+        return None
+
+
+def pid_alive(pid: int) -> bool:
+    """Return True if `pid` exists. Uses `os.kill(pid, 0)` — the canonical
+    POSIX existence check."""
+    if pid <= 0:
+        return False
+    try:
+        os.kill(pid, 0)
+        return True
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        # The PID exists but belongs to another user — still alive.
+        return True
+
+
+# ---------------------------------------------------------------------------
+# Daemon
+# ---------------------------------------------------------------------------
+
+class Daemon:
+    def __init__(self, project_root: Path):
+        self.project_root = project_root
+        self.bus = project_root / "fusion-workbench" / "bus"
+        self.state_path = self.bus / ".daemon-state.json"
+        self.pid_path = self.bus / ".daemon.pid"
+        self.log_path = self.bus / ".daemon.log"
+        self.pending_dir = self.bus / ".pending"
+        self.approved_dir = self.bus / ".approved"
+        self.processed_dir = self.approved_dir / ".processed"
+        self.denied_dir = self.bus / ".denied"
+        self.sessions_dir = self.bus / ".sessions"
+
+        # In-memory dedup of `no-session` / `no-pane` notices so we don't
+        # spam recent_routes on every tick while the user spins up the
+        # target session. Cleared when the message moves out of inbox.
+        self._notified_no_session: set[str] = set()
+        self._notified_no_pane: set[str] = set()
+
+        # Retry counter for tmux injection per msg_id.
+        self._inject_retries: dict[str, int] = {}
+
+        self._stop = False
+        self._reload_state = False
+
+        # State carried between ticks. Initialised from disk in start().
+        self.state: dict = {}
+
+    # ------------------------------------------------------------------
+    # State / logging
+    # ------------------------------------------------------------------
+
+    def log(self, action: str, msg_id: str | None = None, agent: str | None = None,
+            extra: str = "") -> None:
+        """Append one event line to bus/.daemon.log."""
+        parts = [now_utc(), action]
+        if msg_id:
+            parts.append(f"msg_id={msg_id}")
+        if agent:
+            parts.append(f"agent={agent}")
+        if extra:
+            parts.append(extra)
+        line = " ".join(parts) + "\n"
+        try:
+            self.log_path.parent.mkdir(parents=True, exist_ok=True)
+            with self.log_path.open("a", encoding="utf-8") as fh:
+                fh.write(line)
+        except OSError:
+            # Never let logging failures crash the daemon.
+            pass
+
+    def write_state(self) -> None:
+        """Persist self.state atomically."""
+        atomic_write_json(self.state_path, self.state)
+
+    def init_state(self) -> None:
+        """Load existing state or seed a fresh one.
+
+        On restart we preserve `mode` and `recent_routes` (per the plan) and
+        refresh `running`/`started_at`/`pid`. A stale PID file is detected
+        and cleared here; the lifecycle wrapper in `fusion-bus daemon start`
+        is responsible for refusing to start when a live daemon already
+        owns the PID, so by the time we get here it's safe to take over.
+        """
+        prior = safe_read_json(self.state_path) or {}
+        mode = prior.get("mode") if prior.get("mode") in VALID_MODES else "strict"
+        recent = prior.get("recent_routes")
+        if not isinstance(recent, list):
+            recent = []
+        # Re-count pending so the displayed counter reflects reality after
+        # an unclean shutdown.
+        pending_count = 0
+        if self.pending_dir.is_dir():
+            pending_count = sum(
+                1 for p in self.pending_dir.iterdir()
+                if p.is_file() and p.suffix == ".json"
+            )
+        self.state = {
+            "mode": mode,
+            "running": True,
+            "started_at": now_utc(),
+            "pid": os.getpid(),
+            "pending_count": pending_count,
+            "last_route_at": prior.get("last_route_at"),
+            "recent_routes": recent[-RECENT_ROUTES_CAP:],
+        }
+        self.write_state()
+        # PID file: detect+clear stale.
+        existing = safe_read_json(self.pid_path) if self.pid_path.exists() else None
+        if isinstance(existing, dict) and isinstance(existing.get("pid"), int):
+            if pid_alive(existing["pid"]) and existing["pid"] != os.getpid():
+                # Another daemon is alive. Caller (fusion-bus daemon start)
+                # should have caught this — refuse defensively.
+                print(
+                    f"{PROG}: another daemon is already running "
+                    f"(PID {existing['pid']}); refusing to start.",
+                    file=sys.stderr,
+                )
+                sys.exit(1)
+            self.log("stale-pid-cleared", extra=f"prior_pid={existing.get('pid')}")
+        atomic_write_json(self.pid_path, {"pid": os.getpid(), "started_at": now_utc()})
+
+    def append_recent_route(self, entry: dict) -> None:
+        """Prepend `entry` to recent_routes and cap at RECENT_ROUTES_CAP."""
+        rr = self.state.get("recent_routes", [])
+        rr.insert(0, entry)
+        del rr[RECENT_ROUTES_CAP:]
+        self.state["recent_routes"] = rr
+
+    def recompute_pending_count(self) -> None:
+        if not self.pending_dir.is_dir():
+            self.state["pending_count"] = 0
+            return
+        self.state["pending_count"] = sum(
+            1 for p in self.pending_dir.iterdir()
+            if p.is_file() and p.suffix == ".json"
+        )
+
+    # ------------------------------------------------------------------
+    # Session lookup
+    # ------------------------------------------------------------------
+
+    def find_session(self, agent: str) -> dict | None:
+        """Return the freshest live session for `agent`, or None.
+
+        Filters to sessions whose `agent:` matches and whose
+        `last_heartbeat` is within SESSION_STALENESS_S of now. When
+        multiple match, picks the earliest `registered_at` (deterministic)
+        and logs a warning. Sessions with unparseable timestamps are
+        skipped (treated as stale).
+        """
+        if not self.sessions_dir.is_dir():
+            return None
+        now = _dt.datetime.now(_dt.timezone.utc)
+        candidates = []
+        for path in sorted(self.sessions_dir.glob("*.yaml")):
+            data = parse_session_yaml(path)
+            if data.get("agent") != agent:
+                continue
+            hb = parse_rfc3339(data.get("last_heartbeat"))
+            if hb is None:
+                continue
+            age = (now - hb).total_seconds()
+            if age > SESSION_STALENESS_S:
+                continue
+            candidates.append((data.get("registered_at") or "", data))
+        if not candidates:
+            return None
+        candidates.sort(key=lambda c: c[0])
+        if len(candidates) > 1:
+            self.append_recent_route({
+                "msg_id": None,
+                "target_agent": agent,
+                "action": "multiple-sessions",
+                "at": now_utc(),
+                "note": f"{len(candidates)} live sessions; chose earliest",
+            })
+        return candidates[0][1]
+
+    # ------------------------------------------------------------------
+    # Injection
+    # ------------------------------------------------------------------
+
+    def injection_prompt(self, msg_path_relative: str) -> str:
+        """The canonical sentence the daemon types into the target pane."""
+        return (
+            f"You have a new bus message at {msg_path_relative} — "
+            "please read it and respond per its 'Reply convention' section."
+        )
+
+    def inject_to_pane(self, pane: str, msg_path_relative: str) -> tuple[bool, str]:
+        """Inject the canonical prompt into `pane` via tmux send-keys.
+
+        Returns (success, error_message). The error_message is empty on
+        success, otherwise a short string suitable for `recent_routes` /
+        `.denied/` reason fields. Every subprocess call carries a 5s
+        timeout; any non-zero exit or timeout counts as failure.
+        """
+        prompt = self.injection_prompt(msg_path_relative)
+        try:
+            res = subprocess.run(
+                ["tmux", "send-keys", "-t", pane, prompt, "Enter"],
+                capture_output=True, text=True, check=False, timeout=5,
+            )
+        except FileNotFoundError:
+            return False, "tmux-not-found"
+        except subprocess.TimeoutExpired:
+            return False, "tmux-timeout"
+        except OSError as exc:
+            return False, f"tmux-os-error: {exc}"
+        if res.returncode != 0:
+            stderr = (res.stderr or "").strip().splitlines()[-1:] or [""]
+            return False, f"tmux-exit-{res.returncode}: {stderr[0][:120]}"
+        return True, ""
+
+    # ------------------------------------------------------------------
+    # Inbox scan + enqueue
+    # ------------------------------------------------------------------
+
+    def known_msg_ids(self) -> set[str]:
+        """All msg_ids already represented somewhere in the state machine.
+
+        Used to dedup the inbox scan — if a message is in `.pending/`,
+        `.approved/`, `.approved/.processed/`, or `.denied/` we leave it
+        alone (the daemon's own flow will reach it).
+        """
+        out: set[str] = set()
+        for d in (self.pending_dir, self.approved_dir, self.processed_dir,
+                  self.denied_dir):
+            if not d.is_dir():
+                continue
+            for entry in d.iterdir():
+                if entry.is_file() and entry.suffix == ".json":
+                    out.add(entry.stem)
+        return out
+
+    def scan_inboxes(self) -> None:
+        """Walk every `bus/<agent>/inbox/*.md`, route via current mode."""
+        if not self.bus.is_dir():
+            return
+        if not self.state.get("running"):
+            return
+        known = self.known_msg_ids()
+        mode = self.state.get("mode", "strict")
+        for inbox in sorted(self.bus.glob("*/inbox")):
+            if not inbox.is_dir():
+                continue
+            for path in sorted(inbox.iterdir(), key=lambda p: p.name):
+                if not path.is_file() or path.suffix != ".md":
+                    continue
+                msg_id = path.stem
+                if msg_id in known:
+                    continue
+                self.route_message(path, msg_id, mode)
+
+    def route_message(self, path: Path, msg_id: str, mode: str) -> None:
+        """Resolve target session for `path` and dispatch per `mode`."""
+        fm = parse_frontmatter(path)
+        target_agent = (fm.get("To") or "").strip().lower()
+        if not target_agent:
+            self.log("skip-no-to", msg_id=msg_id)
+            return
+
+        session = self.find_session(target_agent)
+        if session is None:
+            if msg_id not in self._notified_no_session:
+                self._notified_no_session.add(msg_id)
+                self.append_recent_route({
+                    "msg_id": msg_id,
+                    "target_agent": target_agent,
+                    "action": "no-session",
+                    "at": now_utc(),
+                })
+                self.write_state()
+                self.log("no-session", msg_id=msg_id, agent=target_agent)
+            return
+
+        pane = session.get("tmux_pane")
+        if not pane:
+            if msg_id not in self._notified_no_pane:
+                self._notified_no_pane.add(msg_id)
+                self.append_recent_route({
+                    "msg_id": msg_id,
+                    "target_agent": target_agent,
+                    "action": "no-pane",
+                    "at": now_utc(),
+                })
+                self.write_state()
+                self.log("no-pane", msg_id=msg_id, agent=target_agent)
+            return
+
+        # Once we have a viable session, clear any prior "waiting" notices
+        # so the message proceeds cleanly.
+        self._notified_no_session.discard(msg_id)
+        self._notified_no_pane.discard(msg_id)
+
+        msg_path_rel = str(path.relative_to(self.project_root))
+
+        record = {
+            "msg_id": msg_id,
+            "msg_path": msg_path_rel,
+            "target_agent": target_agent,
+            "target_pane": pane,
+            "queued_at": now_utc(),
+            "from": fm.get("From", ""),
+            "re": fm.get("Re", ""),
+        }
+
+        if mode == "strict":
+            self.enqueue_pending(record)
+        elif mode == "observe":
+            self.auto_inject(record, observe=True)
+        elif mode == "silent":
+            self.auto_inject(record, observe=False)
+        else:
+            # Should never happen — init_state validates against VALID_MODES.
+            self.log("invalid-mode", msg_id=msg_id, extra=f"mode={mode}")
+
+    def enqueue_pending(self, record: dict) -> None:
+        target = self.pending_dir / f"{record['msg_id']}.json"
+        atomic_write_json(target, record)
+        self.recompute_pending_count()
+        self.write_state()
+        self.log("enqueued", msg_id=record["msg_id"], agent=record["target_agent"])
+
+    def auto_inject(self, record: dict, observe: bool) -> None:
+        """Observe/silent fast-path: inject straight to the pane.
+
+        observe=True writes a `recent_routes` entry; silent does not.
+        Either way `last_route_at` advances and the inbox message is
+        considered consumed (we record the msg_id under
+        `.approved/.processed/` for dedup so a future tick doesn't replay
+        it). On injection failure, behaviour mirrors the approve path:
+        retry up to INJECT_RETRY_CAP, then move to `.denied/`.
+        """
+        msg_id = record["msg_id"]
+        ok, err = self.inject_to_pane(record["target_pane"], record["msg_path"])
+        if not ok:
+            self.handle_inject_failure(record, err, source="auto-inject",
+                                       observe=observe)
+            return
+        # Drop a processed-record so dedup works without writing .pending/.
+        processed = self.processed_dir / f"{msg_id}.json"
+        injected_record = dict(record)
+        injected_record["approved_at"] = now_utc()
+        injected_record["approved_by"] = "daemon-auto"
+        atomic_write_json(processed, injected_record)
+        self.state["last_route_at"] = now_utc()
+        if observe:
+            self.append_recent_route({
+                "msg_id": msg_id,
+                "target_agent": record["target_agent"],
+                "action": "auto-injected",
+                "at": now_utc(),
+            })
+        self._inject_retries.pop(msg_id, None)
+        self.write_state()
+        self.log("auto-injected" if observe else "silent-injected",
+                 msg_id=msg_id, agent=record["target_agent"])
+
+    def handle_inject_failure(self, record: dict, err: str, source: str,
+                              observe: bool = True) -> None:
+        """Shared retry+give-up path for both approve and auto-inject."""
+        msg_id = record["msg_id"]
+        retries = self._inject_retries.get(msg_id, 0) + 1
+        self._inject_retries[msg_id] = retries
+        if observe:
+            self.append_recent_route({
+                "msg_id": msg_id,
+                "target_agent": record["target_agent"],
+                "action": "inject-failed",
+                "at": now_utc(),
+                "reason": err,
+                "retries": retries,
+            })
+        self.log("inject-failed", msg_id=msg_id, agent=record["target_agent"],
+                 extra=f"retries={retries} err={err}")
+        self.write_state()
+        if retries >= INJECT_RETRY_CAP:
+            self.bail_to_denied(record, f"inject-failed: {err}", source=source)
+            self._inject_retries.pop(msg_id, None)
+
+    def bail_to_denied(self, record: dict, reason: str, source: str) -> None:
+        """Move a message into `.denied/` after exhausted injection retries."""
+        msg_id = record["msg_id"]
+        denied_record = dict(record)
+        denied_record["denied_at"] = now_utc()
+        denied_record["denied_by"] = "daemon"
+        denied_record["denial_reason"] = reason
+        target = self.denied_dir / f"{msg_id}.json"
+        atomic_write_json(target, denied_record)
+        # In strict mode the source file is .pending/<id>.json; in
+        # observe/silent we never wrote a .pending entry. Clean up either
+        # way without erroring if the file is absent.
+        pending = self.pending_dir / f"{msg_id}.json"
+        approved = self.approved_dir / f"{msg_id}.json"
+        for p in (pending, approved):
+            try:
+                p.unlink()
+            except FileNotFoundError:
+                pass
+        self.recompute_pending_count()
+        self.append_recent_route({
+            "msg_id": msg_id,
+            "target_agent": record["target_agent"],
+            "action": "denied",
+            "at": now_utc(),
+            "reason": reason,
+        })
+        self.write_state()
+        self.log("denied", msg_id=msg_id, agent=record["target_agent"],
+                 extra=f"reason={reason} source={source}")
+
+    # ------------------------------------------------------------------
+    # Control commands
+    # ------------------------------------------------------------------
+
+    def drain_commands(self) -> None:
+        """Process every `bus/.daemon-cmd*.json` file, oldest-mtime first."""
+        if not self.bus.is_dir():
+            return
+        # Use glob to match both `.daemon-cmd.json` and `.daemon-cmd.<seq>.json`.
+        # Sort by mtime so callers can serialise via filename suffix.
+        paths = list(self.bus.glob(".daemon-cmd*.json"))
+        paths.sort(key=lambda p: p.stat().st_mtime if p.exists() else 0)
+        for cmd_path in paths:
+            if not cmd_path.exists():
+                continue
+            data = safe_read_json(cmd_path)
+            if data is None:
+                self.log("cmd-invalid-json", extra=str(cmd_path.name))
+                try:
+                    cmd_path.unlink()
+                except FileNotFoundError:
+                    pass
+                continue
+            self.handle_command(data)
+            try:
+                cmd_path.unlink()
+            except FileNotFoundError:
+                pass
+
+    def handle_command(self, data: dict) -> None:
+        cmd = (data.get("cmd") or "").strip()
+        if cmd not in VALID_CMDS:
+            self.log("cmd-unknown", extra=f"cmd={cmd!r}")
+            return
+        if cmd == "pause":
+            self.state["running"] = False
+            self.write_state()
+            self.log("paused")
+            return
+        if cmd == "resume":
+            self.state["running"] = True
+            self.write_state()
+            self.log("resumed")
+            return
+        if cmd == "set-mode":
+            arg = (data.get("arg") or "").strip()
+            if arg not in VALID_MODES:
+                self.log("cmd-bad-mode", extra=f"arg={arg!r}")
+                return
+            self.state["mode"] = arg
+            self.write_state()
+            self.log("mode-set", extra=f"mode={arg}")
+            return
+        if cmd == "approve":
+            self.cmd_approve(data)
+            return
+        if cmd == "deny":
+            self.cmd_deny(data)
+            return
+
+    def cmd_approve(self, data: dict) -> None:
+        msg_id = (data.get("arg") or "").strip()
+        if not msg_id:
+            self.log("approve-no-arg")
+            return
+        pending = self.pending_dir / f"{msg_id}.json"
+        if not pending.exists():
+            self.log("approve-not-pending", msg_id=msg_id)
+            return
+        record = safe_read_json(pending) or {}
+        if not record:
+            self.log("approve-unreadable", msg_id=msg_id)
+            return
+        record["approved_at"] = now_utc()
+        record["approved_by"] = data.get("filed_by") or "unknown"
+        approved = self.approved_dir / f"{msg_id}.json"
+        atomic_write_json(approved, record)
+        try:
+            pending.unlink()
+        except FileNotFoundError:
+            pass
+        self.recompute_pending_count()
+        # Inject.
+        ok, err = self.inject_to_pane(record["target_pane"], record["msg_path"])
+        if not ok:
+            self.handle_inject_failure(record, err, source="approve")
+            return
+        processed = self.processed_dir / f"{msg_id}.json"
+        atomic_write_json(processed, record)
+        try:
+            approved.unlink()
+        except FileNotFoundError:
+            pass
+        self._inject_retries.pop(msg_id, None)
+        self.state["last_route_at"] = now_utc()
+        self.append_recent_route({
+            "msg_id": msg_id,
+            "target_agent": record.get("target_agent", ""),
+            "action": "approved",
+            "at": now_utc(),
+            "approved_by": record["approved_by"],
+        })
+        self.write_state()
+        self.log("approved", msg_id=msg_id, agent=record.get("target_agent"))
+
+    def cmd_deny(self, data: dict) -> None:
+        msg_id = (data.get("arg") or "").strip()
+        if not msg_id:
+            self.log("deny-no-arg")
+            return
+        pending = self.pending_dir / f"{msg_id}.json"
+        if not pending.exists():
+            self.log("deny-not-pending", msg_id=msg_id)
+            return
+        record = safe_read_json(pending) or {}
+        if not record:
+            self.log("deny-unreadable", msg_id=msg_id)
+            return
+        reason = (data.get("reason") or "no reason given").strip()
+        denied_by = data.get("filed_by") or "unknown"
+        denied_at = now_utc()
+        record["denied_at"] = denied_at
+        record["denied_by"] = denied_by
+        record["denial_reason"] = reason
+        denied = self.denied_dir / f"{msg_id}.json"
+        atomic_write_json(denied, record)
+        try:
+            pending.unlink()
+        except FileNotFoundError:
+            pass
+        self.recompute_pending_count()
+        # Annotate originating message body + move to inbox/.processed/.
+        msg_rel = record.get("msg_path", "")
+        if msg_rel:
+            msg_path = self.project_root / msg_rel
+            try:
+                with msg_path.open("a", encoding="utf-8") as fh:
+                    fh.write(
+                        f"\n\n---\nDenied: {reason} by {denied_by} "
+                        f"at {denied_at}\n"
+                    )
+            except OSError:
+                self.log("deny-annotate-failed", msg_id=msg_id)
+            # Move to .processed/ (dual-write tolerant).
+            inbox_processed = msg_path.parent / ".processed" / msg_path.name
+            safe_move(msg_path, inbox_processed)
+        self.append_recent_route({
+            "msg_id": msg_id,
+            "target_agent": record.get("target_agent", ""),
+            "action": "denied",
+            "at": denied_at,
+            "denied_by": denied_by,
+            "reason": reason,
+        })
+        self.write_state()
+        self.log("denied", msg_id=msg_id, agent=record.get("target_agent"),
+                 extra=f"reason={reason}")
+
+    # ------------------------------------------------------------------
+    # Signals
+    # ------------------------------------------------------------------
+
+    def install_signal_handlers(self) -> None:
+        signal.signal(signal.SIGTERM, self._sig_stop)
+        signal.signal(signal.SIGINT, self._sig_stop)
+        # SIGHUP — best-effort live reload. Not available on Windows;
+        # since the daemon is POSIX-only that's fine.
+        if hasattr(signal, "SIGHUP"):
+            signal.signal(signal.SIGHUP, self._sig_reload)
+
+    def _sig_stop(self, signum, frame) -> None:
+        self._stop = True
+
+    def _sig_reload(self, signum, frame) -> None:
+        self._reload_state = True
+
+    # ------------------------------------------------------------------
+    # Main loop
+    # ------------------------------------------------------------------
+
+    def run(self) -> int:
+        self.init_state()
+        self.install_signal_handlers()
+        self.log("started", extra=f"pid={os.getpid()} mode={self.state['mode']}")
+        try:
+            while not self._stop:
+                if self._reload_state:
+                    self._reload_state = False
+                    prior = safe_read_json(self.state_path)
+                    if isinstance(prior, dict):
+                        if prior.get("mode") in VALID_MODES:
+                            self.state["mode"] = prior["mode"]
+                        self.log("sighup-reload",
+                                 extra=f"mode={self.state['mode']}")
+                self.drain_commands()
+                self.scan_inboxes()
+                time.sleep(TICK_S)
+        finally:
+            self.shutdown()
+        return 0
+
+    def shutdown(self) -> None:
+        self.state["running"] = False
+        try:
+            self.write_state()
+        except OSError:
+            pass
+        try:
+            self.pid_path.unlink()
+        except FileNotFoundError:
+            pass
+        self.log("shutdown")
+
+
+# ---------------------------------------------------------------------------
+# Entrypoint
+# ---------------------------------------------------------------------------
+
+def main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(
+        prog=PROG,
+        description=(
+            "fusion bus router daemon — polls bus/<agent>/inbox/, "
+            "looks up tmux panes via bus/.sessions/, and routes via "
+            "approval queue or auto-injection per mode. Takes no arguments."
+        ),
+    )
+    parser.parse_args(argv)
+    project_root = resolve_root()
+    daemon = Daemon(project_root)
+    return daemon.run()
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

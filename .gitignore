@@ -26,6 +26,7 @@ bin/*
 !bin/fusion-bus-session
 !bin/fusion-bus
 !bin/fusion-commit-lock
+!bin/fusion-bus-daemon
 *.exe
 # Generated protobuf (rebuild from .proto)
 *.pb.go
