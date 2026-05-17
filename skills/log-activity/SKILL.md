@@ -104,6 +104,9 @@ b) **Workbench files** (`h`, `p`, `i`, `o`, `c`, `a`, `n`, `t`, `d`):
 | Date | Hours | Commits | Files | Arc |
 |------|-------|---------|-------|-----|
 
+<!-- Per-month Active Hours sections inserted here, newest month first.
+     One ## Active Hours per Day — YYYY-MM section per month encountered. -->
+
 ## Daily Log
 ```
 
@@ -123,25 +126,79 @@ For each new day (not already in log):
 | ... | ... | ... |
 ```
 
-#### Summary table update
+### 6. Update the Summary table — MANDATORY, atomic with each new day
 
-After adding daily entries, update the Summary table at the top of the file. Add a row per new day:
+**For every day you add a new entry to the Daily Log, you MUST add a corresponding row to the Summary table.** This is non-negotiable. Do not move on to the next day until the Summary row is added.
+
+The two writes are atomic — either both land or neither lands. Never write a daily entry without its Summary row; never write a Summary row without its daily entry.
+
+For each new day, append a row to the `## Summary` table:
 
 ```
 | YYYY-MM-DD | <hours> | <commit count> | <file count> | <arc summary> |
 ```
 
-### 6. Write output
+- `<hours>` — decimal active hours (end hour minus start hour; for cross-midnight days, use the 24+ convention so the value stays positive)
+- `<commit count>` — git commits on that day
+- `<file count>` — total workbench-file activity items on that day (all source codes except `g`)
+- `<arc summary>` — one-line theme; same text as the daily entry's `**Arc:**` line
 
-- If creating: write the complete file with header + all daily entries
-- If appending: insert new daily entries before the end of the `## Daily Log` section, then update the Summary table
-- Never duplicate entries for dates that already exist in the file
+**Verification before declaring this step done:** the number of rows in the `## Summary` table must equal the number of `### YYYY-MM-DD` headers in the `## Daily Log` section. If they don't match, you skipped a Summary entry — go back and add it. Run this check explicitly:
 
-### 7. Report to user
+```bash
+grep -c "^### [0-9]" activity-log-$USER.md   # number of daily entries
+grep -cE "^\| [0-9]{4}-[0-9]{2}-[0-9]{2}" activity-log-$USER.md  # number of summary rows
+```
+
+Both numbers must match. If they don't, the file is in an inconsistent state — fix before writing.
+
+### 7. Update per-month "Active Hours per Day" sections — MANDATORY, atomic with each new day
+
+**For every day you add a new entry to the Daily Log, you MUST add (or update) the row for that day in the month section for that day's calendar month.** This is non-negotiable. Same atomicity contract as Step 6.
+
+The per-month sections give a month-at-a-glance view of effort distribution. Their format:
+
+```markdown
+## Active Hours per Day — YYYY-MM
+
+| Day | Active Hours | Time Range |
+|-----|--------------|------------|
+| 01 (Wed) | 4.5 | [09-13.5] |
+| 02 (Thu) | 6.0 | [10-16] |
+| ...
+```
+
+**Placement:** the month sections live between the `## Summary` section (above) and the `## Daily Log` section (below). Newest month first; within a month, days are listed in ascending order (oldest day first).
+
+**Atomicity contract:**
+- When you create the first entry for a day, also add (or create) the month's row for that day.
+- When a new month is encountered (first day of that month appears in your scan), create a new `## Active Hours per Day — YYYY-MM` section and add the row.
+- When updating an existing month section, insert the new day's row in date order — do not append blindly.
+
+**Verification before declaring this step done:** the total row count across all month sections must equal the number of daily entries in the Daily Log. Run:
+
+```bash
+total_month_rows=$(grep -cE "^\| [0-9]{2} \([A-Za-z]{3}\)" activity-log-$USER.md)
+daily_entries=$(grep -c "^### [0-9]" activity-log-$USER.md)
+[ "$total_month_rows" = "$daily_entries" ] || echo "MISMATCH: $total_month_rows month rows vs $daily_entries daily entries — fix before writing"
+```
+
+Numbers must match. If they don't, you skipped or duplicated a month-row — fix.
+
+### 8. Write output
+
+- If creating: write the complete file with header + all daily entries + the new per-month sections (see Step 7).
+- If appending: insert new daily entries before the end of the `## Daily Log` section, insert new month sections / update existing ones if needed (see Step 7). The Summary table update was already done in Step 6 — do not re-update here.
+- Never duplicate entries for dates that already exist in the file.
+
+### 9. Report to user
 
 Tell the user:
 - How many new days were logged
 - Date range covered
+- Number of new month sections created (if any)
+- Confirmation that Summary row count = Daily Log entry count (from Step 6 verification)
+- Confirmation that month-section row totals = Daily Log entry count (from Step 7 verification)
 - Path to the activity log file
 - Total activity items found
 
