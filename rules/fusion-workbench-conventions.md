@@ -466,16 +466,13 @@ A message is considered processed when it is moved from `bus/<agent>/inbox/<file
 
 This dual-write contract is the reason no locking is needed: atomic rename + tolerant lookup = no corruption regardless of which party moves the file first.
 
-### Orchestrator-fileable gates
+### Filing a consultation (user-initiated)
 
-The orchestrator may file bus messages at exactly four gates. This is the canonical inventory; per-gate prompt-side details land in `agents/orchestrator.md`.
+The orchestrator files a bus consultation only when the user asks for one in conversation. There are no orchestrator-internal gate points that file consultations — the orchestrator no longer offers bus filing at Pre-shaping, Pre-planning, Post-reconciler `review-needed`, or the Rebalance gate. Those four gates still fire (shaper still shapes, planner still plans, the reconciler still produces a verdict, the Rebalance gate still presents its four options); they just don't carry a bus pre-option any more.
 
-1. **Rebalance gate** (mid-Turn or post-reconciler) — file a consultation before the user picks among the four standard Rebalance options.
-2. **Pre-shaping ambiguity gate** — when the orchestrator considers invoking shaper because the user's request is ambiguous, it may first file a consultation request.
-3. **Post-reconciler `review-needed` verdict** — file a consultation on the aggregate Coherence verdict before opening the Rebalance gate.
-4. **Pre-planning sanity check** — when shaper has produced a spec and planner is about to be invoked, the orchestrator may file a consultation on the spec first.
+The user-side trigger and the orchestrator's confirmation flow are spec'd in `agents/orchestrator.md` `## User-Initiated Consultation`. The on-the-wire request and reply formats — frontmatter (`From:`, `To:`, `Re:`, `Filed:`), reply pairing keys, dual-write mark-read — are spec'd above in this `## Bus protocol` section and are unchanged from v3.4 onwards.
 
-In every case the orchestrator does NOT dispatch the target agent. The consultant remains user-initiated-only; coderev/ontorev are dispatched by the orchestrator only via the standard review flow, never as a bus delivery mechanism.
+The orchestrator does NOT dispatch the consultant. The consultant remains user-initiated only — the orchestrator writes a file, then tells the user to start the consultant in another terminal. The coderev/ontorev agents are dispatched only via the standard incremental review flow, never as a bus delivery mechanism.
 
 ## Commit lock
 
