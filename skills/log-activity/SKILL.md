@@ -26,7 +26,7 @@ The activity log file is `activity-log-$USER.md` in the project root. For exampl
 ### 2. Check for existing log file
 
 - If the file exists, read it to determine which dates are already logged
-- Extract the list of dates that already have entries (look for `### YYYY-MM-DD` or `## YYYY-MM-DD` headers)
+- Extract the list of dates that already have entries (look for `## YYYY-MM-DD` headers)
 - Only process dates NOT yet logged
 - If the file does not exist, create it from scratch
 
@@ -99,25 +99,26 @@ b) **Workbench files** (`h`, `p`, `i`, `o`, `c`, `a`, `n`, `t`, `d`):
 | t | consult |
 | d | decisions |
 
-## Summary
+## High-level arc
 
-| Date | Hours | Commits | Files | Arc |
-|------|-------|---------|-------|-----|
+<!-- One bullet per logged day, NEWEST FIRST. Bullet format:
+     - **MM-DD Day** [start-end] — one-line theme -->
 
-<!-- Per-month Active Hours sections inserted here, newest month first.
-     One ## Active Hours per Day — YYYY-MM section per month encountered. -->
+## Active Hours per Week
+
+<!-- Inserted by Step 6. Newest week first; rows oldest-week-removed-last. -->
 
 ## Daily Log
 ```
+
+The end-of-file `## Total commits` section is appended on initial create and refreshed on each run — see Step 7.
 
 #### Per-day entry
 
 For each new day (not already in log):
 
 ```markdown
-### YYYY-MM-DD (Day) [startHr-endHr]
-
-**Arc:** <one-line summary of the day's main activity theme>
+## YYYY-MM-DD (Day) [startHr-endHr]
 
 | Time | Topic | Src |
 |------|-------|-----|
@@ -126,83 +127,83 @@ For each new day (not already in log):
 | ... | ... | ... |
 ```
 
-### 6. Update the Summary table — MANDATORY, atomic with each new day
-
-**For every day you add a new entry to the Daily Log, you MUST add a corresponding row to the Summary table.** This is non-negotiable. Do not move on to the next day until the Summary row is added.
-
-The two writes are atomic — either both land or neither lands. Never write a daily entry without its Summary row; never write a Summary row without its daily entry.
-
-For each new day, append a row to the `## Summary` table:
-
-```
-| YYYY-MM-DD | <hours> | <commit count> | <file count> | <arc summary> |
-```
-
-- `<hours>` — decimal active hours (end hour minus start hour; for cross-midnight days, use the 24+ convention so the value stays positive)
-- `<commit count>` — git commits on that day
-- `<file count>` — total workbench-file activity items on that day (all source codes except `g`)
-- `<arc summary>` — one-line theme; same text as the daily entry's `**Arc:**` line
-
-**Verification before declaring this step done:** the number of rows in the `## Summary` table must equal the number of `### YYYY-MM-DD` headers in the `## Daily Log` section. If they don't match, you skipped a Summary entry — go back and add it. Run this check explicitly:
-
-```bash
-grep -c "^### [0-9]" activity-log-$USER.md   # number of daily entries
-grep -cE "^\| [0-9]{4}-[0-9]{2}-[0-9]{2}" activity-log-$USER.md  # number of summary rows
-```
-
-Both numbers must match. If they don't, the file is in an inconsistent state — fix before writing.
-
-### 7. Update per-month "Active Hours per Day" sections — MANDATORY, atomic with each new day
-
-**For every day you add a new entry to the Daily Log, you MUST add (or update) the row for that day in the month section for that day's calendar month.** This is non-negotiable. Same atomicity contract as Step 6.
-
-The per-month sections give a month-at-a-glance view of effort distribution. Their format:
+Also add a one-line bullet to the `## High-level arc` section (newest-first ordering):
 
 ```markdown
-## Active Hours per Day — YYYY-MM
-
-| Day | Active Hours | Time Range |
-|-----|--------------|------------|
-| 01 (Wed) | 4.5 | [09-13.5] |
-| 02 (Thu) | 6.0 | [10-16] |
-| ...
+- **MM-DD Day** [startHr-endHr] — one-line theme
 ```
 
-**Placement:** the month sections live between the `## Summary` section (above) and the `## Daily Log` section (below). Newest month first; within a month, days are listed in ascending order (oldest day first).
+### 6. Build the per-week Active Hours table — MANDATORY, atomic with each new day
 
-**Atomicity contract:**
-- When you create the first entry for a day, also add (or create) the month's row for that day.
-- When a new month is encountered (first day of that month appears in your scan), create a new `## Active Hours per Day — YYYY-MM` section and add the row.
-- When updating an existing month section, insert the new day's row in date order — do not append blindly.
+For each new day added to the Daily Log, locate the ISO week (Mon–Sun) the day falls into and update the corresponding row in the `## Active Hours per Week` table (insert if absent, recompute average if present).
 
-**Verification before declaring this step done:** the total row count across all month sections must equal the number of daily entries in the Daily Log. Run:
+**Format:**
+
+```markdown
+## Active Hours per Week
+
+| Week of (Mon) | Days active | Avg active hours/day |
+|---------------|-------------|----------------------|
+| YYYY-MM-DD    | N           | H.H                  |
+```
+
+- **Week label:** `YYYY-MM-DD` of the Monday of the ISO week (Mon–Sun).
+- **Days active:** count of days in this week that have a parseable `[start-end]` range (not `[—]`). A degenerate `[H-H]` range (e.g. `[22-22]`) DOES count as an active day even though elapsed hours are 0.
+- **Avg active hours/day:** (sum hours) / (days active), rounded to one decimal. Print `n/a` if days_active == 0 (a whole week of `[—]`).
+
+**Hour arithmetic:**
+- Single range `[A-B]` → hours = (B − A); if B < A (cross-midnight), use (B + 24 − A).
+- Multi-range header `[H-H, H-H]` → sum each sub-range using the same rule.
+- Degenerate `[H-H]` → 0 hours, but counts as an active day.
+
+**Ordering:** newest week first.
+
+**Placement:** the table lives between the `## High-level arc` section (above) and the `## Daily Log` section (below).
+
+**Atomicity contract:** when you add a daily entry, you MUST update the per-week row in the same write. Either both land or neither lands.
+
+**Verification before declaring this step done:** every distinct ISO week represented by a daily entry has exactly one row in the per-week table. Run:
 
 ```bash
-total_month_rows=$(grep -cE "^\| [0-9]{2} \([A-Za-z]{3}\)" activity-log-$USER.md)
-daily_entries=$(grep -c "^### [0-9]" activity-log-$USER.md)
-[ "$total_month_rows" = "$daily_entries" ] || echo "MISMATCH: $total_month_rows month rows vs $daily_entries daily entries — fix before writing"
+daily_entries=$(grep -c "^## 2[0-9]\{3\}-" activity-log-$USER.md)
+week_rows=$(grep -cE "^\| [0-9]{4}-[0-9]{2}-[0-9]{2} +\|" activity-log-$USER.md)
+echo "$daily_entries daily entries, $week_rows week rows"
+# Then compute distinct ISO weeks across the daily entries and confirm equality with week_rows.
 ```
 
-Numbers must match. If they don't, you skipped or duplicated a month-row — fix.
+If a distinct ISO week is missing from the table — or a table row has no matching daily entry — fix before writing.
 
-### 8. Write output
+### 7. Write output
 
-- If creating: write the complete file with header + all daily entries + the new per-month sections (see Step 7).
-- If appending: insert new daily entries before the end of the `## Daily Log` section, insert new month sections / update existing ones if needed (see Step 7). The Summary table update was already done in Step 6 — do not re-update here.
-- Never duplicate entries for dates that already exist in the file.
+- On **create:** write header + reversed-order `## High-level arc` (newest day first) + `## Active Hours per Week` table + Daily Log entries (chronological — per-day sections are NOT reversed; only the arc bullets are newest-first) + the end-of-file `## Total commits` section.
+- On **append:** insert new daily entries chronologically into the `## Daily Log` section; prepend the new arc bullet at the top of `## High-level arc` (newest-first); update or insert per-week rows from Step 6; refresh the `## Total commits` count.
+- Never duplicate entries.
 
-### 9. Report to user
+**End-of-file commit-count section** (append on create, refresh on every run):
+
+```markdown
+## Total commits
+
+<N> git commits since project start (<earliest date>).
+```
+
+`<N>` comes from:
+
+```bash
+git log --since=<earliest-date> --oneline | wc -l
+```
+
+### 8. Report to user
 
 Tell the user:
 - How many new days were logged
 - Date range covered
-- Number of new month sections created (if any)
-- `<N> Summary rows` = `<N> daily entries` — matches (from Step 6 verification). If mismatched, report `✗ FAIL: <S> Summary rows vs <D> daily entries` and fall back to Step 6's fix-before-writing flow.
-- `<total> month-section rows across <M> month sections` = `<N> daily entries` — matches (from Step 7 verification). If mismatched, report `✗ FAIL: <total> month rows vs <D> daily entries` and fall back to Step 7's fix-before-writing flow.
+- Number of new per-week rows added (if any) and the verification grep result (distinct ISO weeks in Daily Log == per-week table rows)
 - Path to the activity log file
 - Total activity items found
+- Current total commit count
 
-The numeric values come from the grep commands already run in Steps 6 and 7 (Step 6: `grep -cE "^\| [0-9]{4}-[0-9]{2}-[0-9]{2}"` for Summary rows and `grep -c "^### [0-9]"` for daily entries; Step 7: `total_month_rows` and `daily_entries` shell vars). Print the actual numbers, not just "matches" — the user should be able to spot-check without re-running greps.
+Print the actual numbers, not just "matches" — the user should be able to spot-check without re-running greps.
 
 ## Notes
 
@@ -211,3 +212,4 @@ The numeric values come from the grep commands already run in Steps 6 and 7 (Ste
 - When a day has very few entries, still create the entry — even a single commit is worth logging
 - The arc summary should capture the narrative: what was the focus of the day? (e.g., "ontology refactoring", "bug fixes and reviews", "new agent implementation")
 - Infer the arc from commit messages, file topics, and issue/plan titles
+- The High-level arc lists newest day first; the Daily Log itself is chronological (oldest → newest).
