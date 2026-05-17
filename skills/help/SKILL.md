@@ -86,7 +86,7 @@ The **bus** lets concurrent agent sessions hand work to each other through the w
 
 **When it activates.** Only when `fusion-workbench/bus/` exists. `/fusion:setup` creates that tree on every run since v3.4, so for any project set up since then the bus is always-on. Pre-bus workbenches can opt in by re-running `/fusion:setup`.
 
-**What you do.** When an agent files a bus request (typically the orchestrator at a gate, or a reviewer with a cross-cutting finding), it prints something like *"open another terminal and run `./.fusion/fu <agent>`"*. You open that terminal, run the command, and the target agent's Setup surfaces the unread inbox item automatically. **You are the trigger.** Fusion does not auto-notify, does not auto-route, does not inject anything into a running session. Full automation is Path D — a separate decision, not in scope here.
+**What you do.** When an agent files a bus request (typically the orchestrator at a gate, or a reviewer with a cross-cutting finding), it prints something like *"open another terminal and run `./.fusion/fu <agent>`"*. You open that terminal, run the command, and the target agent's Setup surfaces the unread inbox item automatically. **You are the trigger.** Fusion does not auto-notify, does not auto-route, does not inject anything into a running session.
 
 **How to inspect** (from the project root):
 
@@ -99,19 +99,6 @@ The **bus** lets concurrent agent sessions hand work to each other through the w
 `mark-read` is a cleanup tool — agents normally mark their own messages read. The dual-write is race-safe by design (atomic rename).
 
 **Canonical spec.** `rules/fusion-workbench-conventions.md` `## Bus protocol` — filename format, frontmatter fields (`From`/`To`/`Re`/`Filed`), reply-pairing keys, session registry, and the four bus-aware agents (orchestrator, consultant, coderev, ontorev).
-
-**The daemon (opt-in).** `bin/fusion-bus-daemon` is an optional Python daemon that watches inboxes and routes messages between concurrent sessions. Start it with `./.fusion/fusion-bus daemon start`; it runs in the background and writes its state to `fusion-workbench/bus/.daemon-state.json`. In strict mode (the default) it queues each routed message for your approval; in observe and silent modes it auto-injects directly into the target agent's tmux pane. The monitor dashboard exposes a **Bus Traffic** panel showing pending messages, mode, and recent routes.
-
-**The three modes.**
-- **`strict` (DEFAULT)** — every routed message lands in `.pending/`; the daemon waits for an explicit approve or deny before injecting.
-- **`observe`** — daemon auto-injects; logs the route to `recent_routes` so the dashboard and `pending` CLI surface a notification trail.
-- **`silent`** — daemon auto-injects with no notification trail. For trusted batch flows.
-
-**Control surface.** Two parallel surfaces, both writing the same `bus/.daemon-cmd.json` IPC file:
-- **Dashboard buttons** on the **Bus Traffic** panel: Approve / Deny per pending row, Pause / Resume toggle, mode dropdown.
-- **CLI:** `./.fusion/fusion-bus pending` (list pending), `approve <stem>` / `deny <stem> [--reason ...]`, `pause` / `resume`, `mode <strict|observe|silent>`.
-
-**Path B is still the default.** The daemon is opt-in — started explicitly, never auto-launched. Without it, the bus works exactly as described above: file-based handoff with the user as the trigger.
 
 ---
 
