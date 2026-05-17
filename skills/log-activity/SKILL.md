@@ -197,10 +197,12 @@ Tell the user:
 - How many new days were logged
 - Date range covered
 - Number of new month sections created (if any)
-- Confirmation that Summary row count = Daily Log entry count (from Step 6 verification)
-- Confirmation that month-section row totals = Daily Log entry count (from Step 7 verification)
+- `<N> Summary rows` = `<N> daily entries` — matches (from Step 6 verification). If mismatched, report `✗ FAIL: <S> Summary rows vs <D> daily entries` and fall back to Step 6's fix-before-writing flow.
+- `<total> month-section rows across <M> month sections` = `<N> daily entries` — matches (from Step 7 verification). If mismatched, report `✗ FAIL: <total> month rows vs <D> daily entries` and fall back to Step 7's fix-before-writing flow.
 - Path to the activity log file
 - Total activity items found
+
+The numeric values come from the grep commands already run in Steps 6 and 7 (Step 6: `grep -cE "^\| [0-9]{4}-[0-9]{2}-[0-9]{2}"` for Summary rows and `grep -c "^### [0-9]"` for daily entries; Step 7: `total_month_rows` and `daily_entries` shell vars). Print the actual numbers, not just "matches" — the user should be able to spot-check without re-running greps.
 
 ## Notes
 
