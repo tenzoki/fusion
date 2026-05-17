@@ -250,7 +250,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
 </nav>
 <div class="status-bar">
   <span><span class="status-dot missing" id="status-dot"></span><span id="status-text">Connecting...</span></span>
-  <span id="last-update"></span>
+  <span><span id="last-update"></span><span id="eta-estimate" style="margin-left: 12px; color: var(--fg3);"></span></span>
 </div>
 
 <div id="dashboard" class="page active">
@@ -482,6 +482,89 @@ HTML_PAGE = r"""<!DOCTYPE html>
       '</div>';
   }
 
+  // Compute an ETA string for the currently running task by pairing past
+  // (task_start, task_done) events per agent and averaging the last 10
+  // durations. Returns '' when there's no running task; a labelled '—' when
+  // history is too thin to estimate; the formatted ETA otherwise.
+  //
+  // Algorithm:
+  //   1. Walk events oldest→newest; for each task_done, pop the most-recent
+  //      earlier task_start with the same task id off a per-id stack. The
+  //      pair's duration is grouped by the start.agent ('orchestrator' default).
+  //   2. After the walk, any task_start ids still on a stack are unmatched —
+  //      the last unmatched one (chronologically) is the currently running
+  //      task. If none, no ETA.
+  //   3. For that running task's agent, take the last 10 paired durations,
+  //      compute arithmetic mean. Need ≥3 to render a number; otherwise
+  //      'insufficient history'.
+  //   4. Landing = running.ts + avg, format "HH:MM (Nm avg, agent)".
+  function computeETA(events) {
+    if (!events || events.length === 0) {
+      return 'ETA: — (no events yet)';
+    }
+    // Per-task-id stack of pending task_start events, and the per-agent
+    // duration history accumulated as we walk.
+    var pending = {};       // task_id -> [start_event, start_event, ...]
+    var historyByAgent = {}; // agent -> [durations in chronological completion order]
+    for (var i = 0; i < events.length; i++) {
+      var ev = events[i];
+      if (!ev || !ev.task) continue;
+      if (ev.event === 'task_start') {
+        if (!pending[ev.task]) pending[ev.task] = [];
+        pending[ev.task].push(ev);
+      } else if (ev.event === 'task_done') {
+        var stack = pending[ev.task];
+        if (!stack || stack.length === 0) continue;
+        var startEv = stack.pop();
+        var startMs = new Date(startEv.ts).getTime();
+        var doneMs = new Date(ev.ts).getTime();
+        if (isNaN(startMs) || isNaN(doneMs)) continue;
+        if (doneMs < startMs) continue;  // clock skew / out-of-order — skip
+        var durSec = (doneMs - startMs) / 1000;
+        var ag = startEv.agent || 'orchestrator';
+        if (!historyByAgent[ag]) historyByAgent[ag] = [];
+        historyByAgent[ag].push(durSec);
+      }
+    }
+    // Find currently running task: latest unmatched task_start across all ids.
+    var running = null;
+    var runningTs = -1;
+    for (var tid in pending) {
+      if (!pending.hasOwnProperty(tid)) continue;
+      var arr = pending[tid];
+      if (arr.length === 0) continue;
+      var last = arr[arr.length - 1];
+      var ts = new Date(last.ts).getTime();
+      if (!isNaN(ts) && ts > runningTs) {
+        runningTs = ts;
+        running = last;
+      }
+    }
+    if (!running) return '';  // no task in flight
+    var agent = running.agent || 'orchestrator';
+    var hist = historyByAgent[agent] || [];
+    if (hist.length < 3) {
+      return 'ETA: — (insufficient history for ' + agent + ')';
+    }
+    // Moving average over the last 10 completions for this agent.
+    var window = hist.slice(-10);
+    var sum = 0;
+    for (var j = 0; j < window.length; j++) sum += window[j];
+    var avgSec = sum / window.length;
+    var landingMs = runningTs + avgSec * 1000;
+    var landing = new Date(landingMs);
+    if (isNaN(landing.getTime())) return '';
+    var hh = String(landing.getHours()).padStart(2, '0');
+    var mm = String(landing.getMinutes()).padStart(2, '0');
+    var avgLabel;
+    if (avgSec < 60) {
+      avgLabel = '<1m';
+    } else {
+      avgLabel = Math.round(avgSec / 60) + 'm';
+    }
+    return 'ETA: ' + hh + ':' + mm + ' (' + avgLabel + ' avg, ' + agent + ')';
+  }
+
   function updateStatus(hasFile, age, mode) {
     var dot = document.getElementById('status-dot');
     var text = document.getElementById('status-text');
@@ -522,6 +605,18 @@ HTML_PAGE = r"""<!DOCTYPE html>
       .then(function(data) {
         updateStatus(data.exists, data.age, data.mode);
         renderWarnings(data.warnings);
+        // ETA next to the "Updated:" timestamp — recomputed every poll
+        // from data.events. Empty string when no task is currently running
+        // (so it doesn't show stale data).
+        var etaEl = document.getElementById('eta-estimate');
+        if (etaEl) {
+          var etaStr = computeETA(data.events);
+          if (etaStr) {
+            etaEl.textContent = ' · ' + etaStr;
+          } else {
+            etaEl.textContent = '';
+          }
+        }
         if (data.dashboard && data.dashboard !== lastDashboardMd) {
           lastDashboardMd = data.dashboard;
           document.getElementById('dashboard-content').innerHTML = renderMarkdown(data.dashboard);
