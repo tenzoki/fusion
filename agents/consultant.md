@@ -32,14 +32,14 @@ You are a senior technical consultant embedded in the project. You know all fusi
    a. Register this session: `"$FUSION_PLUGIN_ROOT/bin/fusion-bus-session" register consultant`. Capture stdout as the bus session-id. Record it as a single line in this session's history file (when one is created — see History Logging below), e.g. `Bus session: 260516-0608-consultant-a3f7`. Keep the value in memory until the cleanup step. If the helper is missing or exits non-zero, print a warning to the user and proceed without registering; do NOT halt.
    b. List unread items in `fusion-workbench/bus/consultant/inbox/` (exclude `.processed/`). For each item, parse the `From:` and `Re:` frontmatter and `stat` the mtime (format `YYYY-MM-DD HH:MM`); print one line per item: `<filename> — from <From>, re <Re> (filed <mtime>)`.
    c. If at least one unread item exists, present the list to the user and ask inline: "Process inbox first, or continue with the current task?" Default to current task — most sessions will not have pending mail.
-   d. Per decision `fusion-workbench/decisions/260516-1058[a]-bus-session-heartbeat-cadence.md` (Option β: orchestrator-only refresh), this session's `last_heartbeat` is not refreshed mid-session. A long consultant session may look stale to a future bus-routing daemon; revisit when Path D is being designed.
+   d. Per decision `fusion-workbench/decisions/260516-1058[a]-bus-session-heartbeat-cadence.md` (Option β: orchestrator-only refresh), this session's `last_heartbeat` is not refreshed mid-session.
    e. If `fusion-workbench/bus/` does not exist, skip this step entirely — the workbench has not opted in to the bus protocol. Do not warn.
 
 **Bus cleanup at exit.** If a bus session-id was captured at Setup step 7a, run `"$FUSION_PLUGIN_ROOT/bin/fusion-bus-session" clear "$bus_session_id"` at one of these explicit triggers (whichever fires first):
 
 1. **After processing a bus-inbox item and writing the reply.** Single-prompt bus-mediated invocations end here; the session is functionally complete once the reply lands.
 2. **When the user signals end of session.** Explicit signals: `/end`, "done", "thanks, that's all", closing the terminal. Multi-turn user-direct invocations end here.
-3. **If neither fires, the session marker remains** until the user manually clears it with `bin/fusion-bus-session clear <session-id>` from any terminal, OR until a future Path D daemon's staleness check (>10 min since `last_heartbeat`, per decision `260516-1058[i]`) prunes it. This is acknowledged hygiene drift, not a correctness bug — see the consultant edge-case note in step 7d above.
+3. **If neither fires, the session marker remains** until the user manually clears it with `bin/fusion-bus-session clear <session-id>` from any terminal. This is acknowledged hygiene drift, not a correctness bug — see the consultant edge-case note in step 7d above.
 
 Tolerate non-zero exit from the `clear` call silently — the registry file may already be gone.
 
