@@ -350,7 +350,7 @@ Never read or display `.secret` files. If secrets are needed, ask the user to pr
 
 ## Bus protocol (workbench-mediated A2A messaging)
 
-Concurrent fusion agent sessions exchange durable messages through `fusion-workbench/bus/<agent>/inbox/`. The user remains the trigger — fusion has no daemon and does not auto-route. Path D's daemon will read this layout unchanged; no field is reserved for D that B does not also populate.
+Concurrent fusion agent sessions exchange durable messages through `fusion-workbench/bus/<agent>/inbox/`. The user remains the trigger — fusion has no daemon and does not auto-route.
 
 ### Opt-in
 
@@ -444,9 +444,9 @@ registered_at: 2026-05-16T14:30:00Z
 last_heartbeat: 2026-05-16T14:37:00Z
 ```
 
-**Staleness threshold:** 600 seconds (10 minutes) is the canonical value, matching `bin/fusion-session-mark`. Path B does not enforce it (no consumer). Path D's daemon will read `last_heartbeat` and apply this threshold when routing.
+**Staleness threshold:** 600 seconds (10 minutes) is the canonical value, matching `bin/fusion-session-mark`. Path B does not enforce it (no consumer).
 
-**Heartbeat cadence:** only the orchestrator refreshes `last_heartbeat` mid-session (at Turn-end, alongside the `fusion-session-mark heartbeat` call). Other bus-aware agents (consultant, coderev, ontorev) are register-only; their `last_heartbeat` reflects session start time. Decision: `fusion-workbench/decisions/260516-1058[a]-bus-session-heartbeat-cadence.md` (Option β). Known limitation: a long consultant session can look stale to a future Path D routing daemon; this will be revisited when Path D is designed.
+**Heartbeat cadence:** only the orchestrator refreshes `last_heartbeat` mid-session (at Turn-end, alongside the `fusion-session-mark heartbeat` call). Other bus-aware agents (consultant, coderev, ontorev) are register-only; their `last_heartbeat` reflects session start time. Decision: `fusion-workbench/decisions/260516-1058[a]-bus-session-heartbeat-cadence.md` (Option β).
 
 ### Read-on-Setup discipline
 
@@ -465,140 +465,6 @@ A message is considered processed when it is moved from `bus/<agent>/inbox/<file
 3. If both parties hit the same file in the same window, one `mv` wins the rename and the other detects the missing source (per rule 2). No file locking is required because POSIX rename is atomic.
 
 This dual-write contract is the reason no locking is needed: atomic rename + tolerant lookup = no corruption regardless of which party moves the file first.
-
-### Path D — daemon and control IPC
-
-An opt-in Python daemon (`bin/fusion-bus-daemon`) automates the *transport* of bus messages between concurrent sessions while preserving human-in-the-loop confirmation. The daemon is layered on top of Path B's data layer: it reads what Path B writes, and adds its own IPC surface under `bus/` for control. Path B's `bus/<agent>/inbox/`, message format, frontmatter, reply pairing, and session registry are unchanged. The daemon is opt-in — when it is not running, the bus behaves exactly as documented above.
-
-#### Filesystem layout (daemon-owned files under `bus/`)
-
-```
-fusion-workbench/bus/
-├── .daemon-state.json        # daemon writes; monitor + CLI read
-├── .daemon-cmd.json          # monitor + CLI write; daemon reads + acts + deletes
-├── .daemon.pid               # daemon writes PID on start; clears on clean exit
-├── .daemon.log               # daemon append-only event log (no rotation in v1)
-├── .pending/<msg-id>.json    # one file per pending injection (strict mode)
-├── .approved/<msg-id>.json   # daemon moves here on approve, then injects
-│   └── .processed/           # post-injection audit trail
-└── .denied/<msg-id>.json     # daemon moves here on deny; carries denial reason
-```
-
-`msg-id` is the basename of the originating message minus `.md`. The four directories (`.pending/`, `.approved/`, `.approved/.processed/`, `.denied/`) are pre-created by `/fusion:setup` so the daemon's `mv` targets always exist.
-
-#### `.daemon-state.json` schema (daemon-owned write; all other parties read-only)
-
-```json
-{
-  "mode": "strict",
-  "running": true,
-  "started_at": "2026-05-16T14:30:00Z",
-  "pid": 12345,
-  "pending_count": 2,
-  "last_route_at": "2026-05-16T14:37:12Z",
-  "recent_routes": [
-    {"msg_id": "260516-1430-from-orchestrator-rebalance-gate", "target_agent": "consultant", "action": "approved", "at": "2026-05-16T14:37:12Z"}
-  ]
-}
-```
-
-`recent_routes` is capped at 20 entries (FIFO) for observe-mode notification surfacing. Updates are atomic via temp-write-and-rename.
-
-#### `.daemon-cmd.json` schema (monitor + CLI write; daemon reads, acts, then deletes)
-
-```json
-{
-  "cmd": "approve",
-  "arg": "260516-1430-from-orchestrator-rebalance-gate",
-  "reason": null,
-  "filed_by": "kai",
-  "filed_at": "2026-05-16T14:36:55Z"
-}
-```
-
-`cmd` is drawn from the closed set `pause | resume | set-mode | approve | deny`. Single-command-at-a-time queue: the daemon processes the file then deletes it. When multiple commands arrive in the same tick window, callers serialise via filename-suffix retry: `.daemon-cmd.json` → `.daemon-cmd.1.json` → `.daemon-cmd.2.json` (caller increments until a free name is found). The daemon globs `.daemon-cmd*.json` oldest-first by mtime each tick, so both commands eventually execute in the order their files were written.
-
-#### `.pending/<msg-id>.json` schema (daemon-owned)
-
-```json
-{
-  "msg_id": "260516-1430-from-orchestrator-rebalance-gate",
-  "msg_path": "fusion-workbench/bus/consultant/inbox/260516-1430-from-orchestrator-rebalance-gate.md",
-  "target_agent": "consultant",
-  "target_pane": "%5",
-  "queued_at": "2026-05-16T14:30:01Z",
-  "from": "orchestrator",
-  "re": "rebalance-gate at Turn 3"
-}
-```
-
-`from` and `re` are cached from the originating message frontmatter at enqueue time so the daemon does not reparse on each tick.
-
-#### `.approved/<msg-id>.json` schema
-
-Same shape as `.pending/<msg-id>.json`, plus two added fields:
-
-```json
-{
-  "msg_id": "260516-1430-from-orchestrator-rebalance-gate",
-  "msg_path": "fusion-workbench/bus/consultant/inbox/260516-1430-from-orchestrator-rebalance-gate.md",
-  "target_agent": "consultant",
-  "target_pane": "%5",
-  "queued_at": "2026-05-16T14:30:01Z",
-  "from": "orchestrator",
-  "re": "rebalance-gate at Turn 3",
-  "approved_at": "2026-05-16T14:37:08Z",
-  "approved_by": "kai"
-}
-```
-
-On approve, the daemon moves the file from `.pending/` to `.approved/`, injects via `tmux send-keys`, then moves the file from `.approved/` to `.approved/.processed/` (preserving the audit trail in the same pattern as inbox `.processed/`).
-
-#### `.denied/<msg-id>.json` schema
-
-Same shape as `.pending/`, plus three added fields:
-
-```json
-{
-  "msg_id": "260516-1430-from-orchestrator-rebalance-gate",
-  "msg_path": "fusion-workbench/bus/consultant/inbox/260516-1430-from-orchestrator-rebalance-gate.md",
-  "target_agent": "consultant",
-  "target_pane": "%5",
-  "queued_at": "2026-05-16T14:30:01Z",
-  "from": "orchestrator",
-  "re": "rebalance-gate at Turn 3",
-  "denied_at": "2026-05-16T14:37:15Z",
-  "denied_by": "kai",
-  "denial_reason": "out of scope for this Turn"
-}
-```
-
-On deny the daemon also appends a line `Denied: <reason> by <user> at <ts>` to the *originating message body* in `bus/<target-agent>/inbox/<file>.md`, then moves the originating message to `bus/<target-agent>/inbox/.processed/` (dual-write-tolerant per the Mark-read protocol above). This keeps the denial visible in the Path B message stream; `.denied/<msg-id>.json` stays in place as the daemon-side audit record.
-
-#### Mode semantics
-
-| Mode | Behaviour |
-|---|---|
-| **`strict` (DEFAULT)** | Every routed message lands in `.pending/`. The daemon does NOT inject until the file is moved to `.approved/` by an approve command. Strict is the initial value `/fusion:setup` and the daemon-on-first-start write to `.daemon-state.json`. |
-| `observe` | Daemon injects immediately and appends an entry to `recent_routes` with `action: "auto-injected"`. No `.pending/` entry created. The dashboard and CLI's `pending` surface show recent auto-injects as a side-channel notification. |
-| `silent` | Daemon injects immediately and does NOT touch `recent_routes`. Fire-and-forget. Intended for trusted batch flows. |
-
-#### Control flow — strict mode walk-through
-
-1. Orchestrator (Path B unchanged) writes `bus/consultant/inbox/<file>.md`.
-2. Daemon polls (1s interval), sees the new file, parses frontmatter, looks up the `consultant` session in `bus/.sessions/`, reads `tmux_pane`. Mode is `strict`, so the daemon writes `bus/.pending/<msg-id>.json`; does NOT inject yet. Updates `.daemon-state.json` `pending_count`.
-3. User opens the dashboard (or runs `fusion-bus pending`), sees the message, clicks **Approve** (or runs `fusion-bus approve <msg-id>`). The frontend writes `bus/.daemon-cmd.json` with `cmd: "approve"`, `arg: "<msg-id>"`, `filed_by: $USER`.
-4. Daemon polls (1s interval), reads `.daemon-cmd.json`, validates `msg-id` is in `.pending/`, moves `.pending/<msg-id>.json` to `.approved/<msg-id>.json` (with `approved_at` and `approved_by` appended), deletes `.daemon-cmd.json`. The approve handler then immediately runs `tmux send-keys -t <pane> "You have a new bus message at <msg_path> — please read it and respond per its 'Reply convention' section." Enter`.
-5. After successful injection, the daemon moves `.approved/<msg-id>.json` to `.approved/.processed/<msg-id>.json` (audit trail). Updates `.daemon-state.json` `last_route_at` and `recent_routes`; decrements `pending_count`.
-6. The injected sentence appears in the consultant's tmux pane. The consultant's Claude session processes the injection as a user prompt and reads the cited inbox file (Path B Setup procedure unchanged).
-
-#### Path B compatibility
-
-Path D is purely additive. `bus/<agent>/inbox/`, `bus/.sessions/`, message frontmatter (`From`/`To`/`Re`/`Filed`), reply pairing keys (the `Re:` field and the filename-stem embed), and the dual-write-tolerant mark-read protocol are unchanged. The daemon only reads inbox messages and session-registry files; bus-aware agents only write inbox messages and register their own session. **Path B's writers do not know the daemon exists.** When the daemon is not running, every party falls back to Path B's manual user-trigger flow with no code path or wording change.
-
-#### Trust model
-
-Localhost only. The daemon binds nothing to the network. The dashboard (`bin/monitor`) binds `127.0.0.1` as it already does for the existing panels. `$USER` from the environment is the trust boundary — recorded in `filed_by`, `approved_by`, `denied_by` for audit. No authentication mechanism is specified; any local process under the user's account that can write to `bus/` can issue daemon commands. This matches the fusion-wide assumption that local processes under the user's account are trusted; cross-account isolation is the operating system's responsibility, not fusion's.
 
 ### Orchestrator-fileable gates
 
