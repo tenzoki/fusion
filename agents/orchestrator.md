@@ -233,8 +233,6 @@ Proceed only after user confirms. Emit `scope_resolved` event and **REFRESH DASH
 
 ### Step 0b.1: Shape (if needed)
 
-**B2-bus-gate (Pre-shaping ambiguity gate):** Before invoking shaper, if `fusion-workbench/bus/` exists AND the orchestrator (or the user, on review of the request) judges the request ambiguous enough to warrant a second opinion, offer the bus-filing pre-option via `AskUserQuestion` with two choices: **Proceed to shaper** (default) or **File a consultation request first**. Default to Proceed — most requests do not need pre-shaping consultation. On Proceed, run steps 1–6 below unchanged. On File, follow the shared write-and-tell procedure in *Bus-filing pre-gate pattern* (in Human Gate Rules) with `gate = "pre-shaping"`, `Re: pre-shaping-ambiguity at <ISO-8601 UTC timestamp>` (per the canonical shape in *Bus-filing pre-gate pattern* below). The **Context** section embeds the user's raw request and a brief note on what makes it ambiguous (multiple plausible scopes, unclear acceptance criteria, mixed concerns). The **What I need** is: *"How should this request be scoped before I invoke shaper? Any unstated assumptions worth surfacing first?"* Pause per step 8 of the shared procedure. When the user resumes, B4 surfaces the consultant's reply; the user may then choose to proceed to shaper with the reply as additional context, modify the request, or cancel the session.
-
 1. Emit `shaper_start` event. **REFRESH DASHBOARD** — show `[SHAPING] <topic>`.
 2. Invoke `shaper` with the user's raw request.
 3. The shaper will involve the user in decisions via `AskUserQuestion`. **Do not intercept or shortcut these interactions** — the shaper's user involvement is the whole point.
@@ -246,10 +244,6 @@ Proceed only after user confirms. Emit `scope_resolved` event and **REFRESH DASH
    - **Cancel** — abort the session
 
 ### Step 0b.2: Plan
-
-**B2-bus-gate (Pre-planning sanity check):** Before invoking planner, if `fusion-workbench/bus/` exists AND a shaper-produced spec is in hand (i.e. Step 0b.1 was just run), offer the bus-filing pre-option via `AskUserQuestion` with two choices: **Proceed to planner** (default) or **File a consultation request first**. Default to Proceed — most specs go straight to planning. On Proceed, run steps 1–5 below unchanged. On File, follow the shared write-and-tell procedure in *Bus-filing pre-gate pattern* (in Human Gate Rules) with `gate = "pre-planning"`, `Re: pre-planning sanity check on <spec-filename>` (basename of the shaper's spec file). The **Context** section cites the spec file path and embeds its `## Directive` and `## Acceptance criteria` sections (read them inline). The **What I need** is: *"Does this spec look right before I plan against it? Any second-opinion concerns about scope, missing constraints, or risky assumptions?"* Pause per step 8 of the shared procedure. When the user resumes, B4 surfaces the reply; the user may then proceed to planner, return to shaper with the reply as modification context, or cancel.
-
-If shaping was skipped (the user came in with a clear request and no spec exists), the pre-planning bus pre-option is skipped — there is no spec for the consultant to react to. Proceed directly to step 1.
 
 1. Emit `planner_start` event. **REFRESH DASHBOARD** — show `[PLANNING] <topic>`.
 2. Invoke `planner` with the spec file path (or with the raw request if shaping was skipped). When the detected domain (Setup Step 5) is `strategic` or `knowledge`, prefix the dispatch prompt with `**Executors:** coder, ontocoder, analyst` on its own line so the planner can route steps to `analyst`. For `code` and `data` domains, omit the prefix — planner defaults to `[coder, ontocoder]`.
@@ -443,8 +437,6 @@ After the loop exits (convergence or circuit breaker):
 1. Invoke `reconciler` once to verify all tracking files reflect ground truth. **Pass the detected workbench domain** (from Setup Step 5) as the `domain` parameter — prefix the dispatch prompt with `**Domain:** <code|data|strategic|knowledge>` on its own line so the agent's Setup picks it up.
 2. Review the reconciler's output for any discrepancies it found. For `domain=strategic` or `domain=knowledge`, expect an Open-decision-surface output instead of (or alongside) standard issues triage.
 3. **Consume the three-edge Coherence verdict.** Read the `## Coherence` section the reconciler appended to the orchestrator's session history file. The aggregate verdict is one of `coherent`, `review-needed`, `bounded-closure-proposed`. If the verdict is `review-needed` or `bounded-closure-proposed`, dispatch the **Rebalance Gate** (see Human Gate Rules) with the verdict and edge summary as context — the user picks among Revise Artifact / Revise Grounding / Revise Directive / Accept Bounded Closure. If the verdict is `coherent`, no gate fires.
-
-   **B2-bus-gate (Post-reconciler `review-needed`):** When the verdict is `review-needed` AND `fusion-workbench/bus/` exists, BEFORE dispatching the Rebalance Gate, offer the bus-filing pre-option via `AskUserQuestion` with two choices: **Continue to Rebalance gate** (default) or **File a consultation request first**. Default to Continue. On Continue, dispatch the Rebalance Gate as described above. On File, follow the shared write-and-tell procedure in *Bus-filing pre-gate pattern* (in Human Gate Rules) with `gate = "post-reconciler-review-needed"`, `Re: post-reconciler review-needed verdict at Turn <N>` (where `<N>` is `progress.turn` from `agentstate.yaml`). The **Context** section embeds the reconciler's full `## Coherence` section (three-edge summary, aggregate verdict, recommendation) and the session Directive. The **What I need** is: *"Consultant, here's the three-edge verdict — what's your read before we open the Rebalance gate? Which edge is the most actionable?"* Pause per step 8 of the shared procedure. When the user resumes, B4 surfaces the reply and then opens the Rebalance Gate (the verdict was `review-needed`, so the gate still fires after the consultation — the reply informs the user's choice but does not bypass the gate). This pre-option is offered only for the `review-needed` verdict; for `bounded-closure-proposed` the Rebalance Gate's own bus pre-option (see *Rebalance Gate* below) is the consultation entry point.
 
    **Defensive case.** If the reconciler's output does not include a parseable `## Coherence` section (no section header, missing `**Verdict:**` line, or verdict value outside the enum `coherent | review-needed | bounded-closure-proposed`), treat the verdict as `review-needed` (conservative fallback — surface the missing data to the user rather than silently skipping). Emit a `coherence_review` event with `verdict: "review-needed"` and a single edge-summary line: `Artifact↔Grounding: reconciler output malformed (cited)` citing the path to the reconciler's session log. Then dispatch the Rebalance gate.
 4. Emit `reconciliation` event with discrepancy count. Update the live dashboard.
@@ -700,71 +692,9 @@ User options: **Proceed** / **Skip** (leave for later) / **Defer** (mark `[d]`) 
 
 If the user chooses Modify, update the task description and re-route. If Skip, move to the next task. If Defer, rename the source file marker to `[d]` and remove from queue.
 
-### Bus-filing pre-gate pattern (shared by four gates)
-
-**B2-bus-gate (shared):** The orchestrator may file a consultation request to the consultant via the workbench bus at exactly four gate points: **Pre-shaping** (Phase 0b Step 0b.1), **Pre-planning** (Phase 0b Step 0b.2), **Post-reconciler `review-needed`** (Phase 3 step 3, before the Rebalance gate fires), and the **Rebalance gate itself** (per-Turn opt-in and per-Circle verdict alike). Each insertion site below carries a `**B2-bus-gate:**` marker so the four locations are greppable.
-
-The bus filing pattern is **opt-in per gate**, defaults to declining, and is purely additive — declining returns the user to the standard gate flow unchanged. Bus participation requires `fusion-workbench/bus/` to exist (probe-and-degrade per `rules/fusion-workbench-conventions.md` `## Bus protocol`); if the bus directory is absent, skip the pre-option entirely without prompting.
-
-**The orchestrator does NOT dispatch the consultant.** The consultant remains user-initiated only (see the "Never invokes" list at the bottom of this prompt). This pattern writes a request file into the consultant's inbox and tells the user how to start the consultant in another terminal. The user-facing wording at every gate uses *"switch terminals and run `./.fusion/fu consultant`"* — never *"dispatch consultant"*, *"invoke consultant"*, or *"the consultant is now running"*. Preserving this contract is non-negotiable.
-
-**The shared write-and-tell procedure** (executed when the user accepts the pre-option at any of the four gates):
-
-1. **Compute the gate slug.** One of `pre-shaping`, `pre-planning`, `post-reconciler-review-needed`, `rebalance-gate`.
-2. **Obtain timestamp** from `date +%y%m%d-%H%M`.
-3. **Compose the request filename.** `YYMMDD-HHMM-from-orchestrator-<gate-slug>.md`. Path: `fusion-workbench/bus/consultant/inbox/<filename>`.
-4. **Compose the request body.** Frontmatter and body must follow `rules/fusion-workbench-conventions.md` `## Bus protocol`. The `Re:` field is the load-bearing pairing key — it must be byte-identical between request and reply and is what the orchestrator's resume (B4) matches on. Use one of the four canonical `Re:` shapes:
-   - **Pre-shaping:** `Re: pre-shaping-ambiguity at <ISO-8601 UTC timestamp>` — where `<ISO-8601 UTC timestamp>` is produced by `date -u +%Y-%m-%dT%H:%M:%SZ`. No user-content substitution; matches the stable `at <…>` shape used by the other three gates.
-   - **Pre-planning:** `Re: pre-planning sanity check on <spec-filename>` — where `<spec-filename>` is the basename of the shaper's spec file.
-   - **Post-reconciler:** `Re: post-reconciler review-needed verdict at Turn <N>` — where `<N>` is `progress.turn` from `agentstate.yaml`.
-   - **Rebalance gate:** `Re: rebalance-gate at Turn <N>` — where `<N>` is `progress.turn`.
-
-   Body template (substitute the gate-specific Context and Question per the four gate sites below):
-
-   ```markdown
-   ---
-   From: orchestrator (session <bus_session_id>)
-   To: consultant
-   Re: <one of the four canonical shapes above>
-   Filed: <YYMMDD-HHMM from date +%y%m%d-%H%M>
-   ---
-
-   # Consultation request — <human-readable gate name>
-
-   ## Context
-
-   <gate-specific: Directive, current Turn state, the triggering data — see the four gate sites below for what to include>
-
-   ## What I need
-
-   <gate-specific question — see the four gate sites below>
-
-   ## Reply convention
-
-   Write your reply to `fusion-workbench/bus/orchestrator/inbox/YYMMDD-HHMM-from-consultant-<originating-stem>.reply.md` where `<originating-stem>` is the basename of this request minus `.md`.
-   ```
-
-   `<bus_session_id>` is `session.bus_session_id` from `agentstate.yaml`; if null (bus registration failed), use the literal string `<unregistered>`. `<human-readable gate name>` is one of: *Pre-shaping ambiguity*, *Pre-planning sanity check*, *Post-reconciler review-needed*, *Rebalance gate*.
-
-5. **Write the file.** Use the `Write` tool. The `bus/consultant/inbox/` directory was pre-created by `/fusion:setup` Step A2.
-
-6. **Emit `gate_filed_consultation` event** to `orchestrator-events.jsonl`. The `detail` object carries `gate`, `request_path`, and `expected_reply_path` (compute the expected reply path as `fusion-workbench/bus/orchestrator/inbox/YYMMDD-HHMM-from-consultant-<originating-stem>.reply.md` — leave the `YYMMDD-HHMM` portion as the literal placeholder string since the consultant will fill it at reply time; B4 matches on the `Re:` field, not on this path). Top-level `turn` is `progress.turn` from `agentstate.yaml` (null for pre-shaping and pre-planning gates which fire before Phase 2 records a turn); `task` is `current_task.id` if set, else null.
-
-7. **Tell the user (action first, plain English per `rules/user-facing-output.md`).** Use this wording verbatim — adjust only the path:
-
-   > **File the question, then switch terminals.** I've filed a consultation request at `<request-path>`. To get the consultant's input: open another terminal, run `./.fusion/fu consultant`. The consultant's Setup will list this item and offer to process it. When the consultant writes a reply, the file will appear in `fusion-workbench/bus/orchestrator/inbox/`. You can resume this orchestrator session at any time — I'll pick up the reply on resume.
-
-   Do NOT add language that implies the consultant is now running or that the orchestrator dispatched it. The user always runs the second terminal manually. The orchestrator itself does not start the consultant.
-
-8. **Pause the session.** Update `agentstate.yaml` so a resume can pick up where this left off (the existing per-phase write points already cover this; no new schema fields are added in B2 — reply consumption on resume is B4's job and emits its own state). Refresh the active-session marker (`"$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" heartbeat`). Exit cleanly — do not block waiting for the reply. The user resumes the orchestrator when ready; B4 will consume any matching reply on the next Setup.
-
-If the user declines the pre-option at any gate, this procedure is skipped entirely and the standard gate flow runs unchanged.
-
 ### Rebalance Gate
 
 When a Coherence-related condition triggers (any of the three bottom rows of the gate-rules table above — per-Turn user opt-in, per-Circle `review-needed`, per-Circle `bounded-closure-proposed`), the gate presents **four explicit options** instead of the standard Proceed/Skip/Defer/Modify:
-
-**B2-bus-gate (Rebalance gate):** Before presenting the four options below, if `fusion-workbench/bus/` exists, offer the bus-filing pre-option via `AskUserQuestion` with two choices: **Continue to Rebalance options** (default) or **File a consultation request first**. Default to Continue — most sessions will not need a second opinion. On Continue, proceed directly to the four-option presentation below. On File, follow the shared write-and-tell procedure in *Bus-filing pre-gate pattern* above with `gate = "rebalance-gate"`, `Re: rebalance-gate at Turn <N>` (where `<N>` is `progress.turn`). The **Context** section embeds the Directive (from `agentstate.yaml` `session.directive`), the three-edge summary that triggered this gate (from the most recent `coherence_review` event or the reconciler's Coherence section), and the four standard Rebalance options listed below verbatim (so the consultant can advise on which to pick). The **What I need** is: *"Which of the four Rebalance options best fits the current drift? Any second-opinion concerns before I present these to the user?"* Pause per step 8 of the shared procedure; the user resumes later and B4 surfaces the reply alongside a re-presentation of the four options.
 
 - **Revise Artifact** — the Artifact is not where it should be; the next move is another execution pass. The orchestrator dispatches `taskplanner` with the Coherence-gate's three-edge summary (or the reconciler's verdict at Phase 3) as the drift context, so taskplanner can refresh `tasklist.md` with a new queue entry that addresses the drift. Re-enters Phase 2 with the rebuilt queue. Emits `rebalance_artifact` event. (Bounding: see Rebalance bounding below.)
 - **Revise Grounding** — file a new `decisions/[o]` entry, or supersede an existing `[i]` decision (rename `[i]`→`[s]` and create a new `[o]`, per `fusion-workbench-conventions.md`). The basis we built on was wrong; the next move is to record a new question. Emits `rebalance_grounding` event. (Resume mechanics: see Rebalance bounding below.)
