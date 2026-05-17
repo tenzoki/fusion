@@ -223,7 +223,7 @@ fusion-workbench/
 
 **Human-retrospection skills.** The workbench is a durable record, not just an agent-coordination substrate. Two skills surface it for the user directly: `/fusion:memo` appends short personal notes ("don't forget X") to `fusion-workbench/memos/memos-<username>.md`; `/fusion:log-activity` scans git commits and every workbench subdirectory and writes a per-day activity log at the project root (`activity-log-<username>.md`) — useful for the "what did I actually do in the last four weeks?" question. See `docs/philosophy.md` §2 for the conceptual treatment.
 
-**Bus protocol.** The `bus/` subdirectory is a workbench-mediated A2A messaging surface — file-based inboxes per agent, used by orchestrator pre-gates for consultations and by any agent that needs to leave a message for another. Opt-in: the tree is created at `/fusion:setup` but only carries traffic when an agent or skill actually files into it. See `/fusion:help bus` for the user-facing summary.
+**Bus protocol.** The `bus/` subdirectory is a workbench-mediated A2A messaging surface — file-based inboxes per agent, used when the user asks the orchestrator for a consultation, and by any agent that needs to leave a message for another. Opt-in: the tree is created at `/fusion:setup` but only carries traffic when an agent or skill actually files into it. See `/fusion:help bus` for the user-facing summary.
 
 **State markers — issues/ and planning/:** `[o]` open, `[p]` in progress, `[c]` closed, `[d]` deferred.
 
