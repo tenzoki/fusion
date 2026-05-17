@@ -45,7 +45,7 @@ Concurrent agent sessions exchange durable messages through `fusion-workbench/bu
 
 The bus activates only when `fusion-workbench/bus/` exists (created by `/fusion:setup` since v3.4). Bus-aware agents probe-and-degrade silently when it does not. Every bus-aware agent's Setup ends with a `bus/<agent>/inbox/` listing of unread items and a session registration via `bin/fusion-bus-session`; the session is cleared at exit.
 
-**The bus does not change dispatch.** Fusion has no daemon and does not auto-route. When an agent files a request, it prints the exact `./.fusion/fu <target-agent>` command and the user opens a second terminal to run it; the target's Setup surfaces the unread item. The orchestrator's dispatch monopoly is unchanged — bus filings are file writes, not `Agent` calls.
+**The bus does not change dispatch.** Fusion does not auto-route. When an agent files a request, it prints the exact `./.fusion/fu <target-agent>` command and the user opens a second terminal to run it; the target's Setup surfaces the unread item. The orchestrator's dispatch monopoly is unchanged — bus filings are file writes, not `Agent` calls.
 
 User-facing helper for inspecting the bus from the project root:
 
