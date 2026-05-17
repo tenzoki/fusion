@@ -482,6 +482,21 @@ HTML_PAGE = r"""<!DOCTYPE html>
       '</div>';
   }
 
+  // Parse an event timestamp as UTC, returning Unix epoch ms (NaN on failure).
+  // orchestrator-events.jsonl timestamps are written by `date -u
+  // +%Y-%m-%dT%H:%M:%S` — UTC but without a 'Z' suffix. Per ECMA-262, an
+  // ISO-8601 string with no timezone designator is interpreted as local time,
+  // which would offset every parsed instant by the user's TZ. The fix:
+  // append 'Z' unless the string already carries a timezone designator
+  // (trailing 'Z' or a ±HH:MM / ±HHMM offset), then parse.
+  function parseUTCTs(ts) {
+    if (!ts) return NaN;
+    if (/[zZ]$|[+-]\d{2}:?\d{2}$/.test(ts)) {
+      return new Date(ts).getTime();
+    }
+    return new Date(ts + 'Z').getTime();
+  }
+
   // Compute an ETA string for the currently running task by pairing past
   // (task_start, task_done) events per agent and averaging the last 10
   // durations. Returns '' when there's no running task; a labelled '—' when
@@ -516,8 +531,8 @@ HTML_PAGE = r"""<!DOCTYPE html>
         var stack = pending[ev.task];
         if (!stack || stack.length === 0) continue;
         var startEv = stack.pop();
-        var startMs = new Date(startEv.ts).getTime();
-        var doneMs = new Date(ev.ts).getTime();
+        var startMs = parseUTCTs(startEv.ts);
+        var doneMs = parseUTCTs(ev.ts);
         if (isNaN(startMs) || isNaN(doneMs)) continue;
         if (doneMs < startMs) continue;  // clock skew / out-of-order — skip
         var durSec = (doneMs - startMs) / 1000;
@@ -534,7 +549,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
       var arr = pending[tid];
       if (arr.length === 0) continue;
       var last = arr[arr.length - 1];
-      var ts = new Date(last.ts).getTime();
+      var ts = parseUTCTs(last.ts);
       if (!isNaN(ts) && ts > runningTs) {
         runningTs = ts;
         running = last;
