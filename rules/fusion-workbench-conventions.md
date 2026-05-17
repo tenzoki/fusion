@@ -402,18 +402,20 @@ This redundancy is intentional. `Re:` is human-readable and resume-safe; the fil
 ---
 From: orchestrator
 To: consultant
-Re: rebalance-gate-circle-A04-shape-choice
+Re: shape-decision-for-the-rag-chunking-layer
 Filed: 260516-1430
 ---
 
-# Consultation request — Rebalance gate
+# Consultation request — shape decision for the RAG chunking layer
 
-<Directive, three-edge summary, the four standard options, and the specific question.>
+<Current task context, the back-and-forth so far in this session, and the
+specific question the user wants a second opinion on. Cite any open
+plan/issue/decision files the consultant should read before replying.>
 
 ## Reply convention
 
 Write the reply to `fusion-workbench/bus/orchestrator/inbox/` as
-`YYMMDD-HHMM-from-consultant-260516-1430-from-orchestrator-rebalance-gate-circle-A04-shape-choice.reply.md`.
+`YYMMDD-HHMM-from-consultant-260516-1430-from-orchestrator-shape-decision-for-the-rag-chunking-layer.reply.md`.
 ```
 
 ### Example reply
@@ -422,7 +424,7 @@ Write the reply to `fusion-workbench/bus/orchestrator/inbox/` as
 ---
 From: consultant
 To: orchestrator
-Re: rebalance-gate-circle-A04-shape-choice
+Re: shape-decision-for-the-rag-chunking-layer
 Filed: 260516-1452
 ---
 
