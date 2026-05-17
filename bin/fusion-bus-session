@@ -3,9 +3,11 @@
 #
 # Maintains fusion-workbench/bus/.sessions/<session-id>.yaml entries that
 # announce a running bus-participating agent (orchestrator, consultant,
-# coderev, ontorev, etc.) to the rest of the workbench. The Path D daemon
-# (later) will read last_heartbeat against a 600s freshness threshold to
-# decide whether a session is still routable.
+# coderev, ontorev, etc.) to the rest of the workbench. The last_heartbeat
+# field carries a 600s freshness threshold (see rules/fusion-workbench-
+# conventions.md `## Bus protocol` -> `### Session registry`) for any future
+# router that wants to filter live vs stale sessions; Path B itself does
+# not enforce.
 #
 # Schema (six single-line scalars, see rules/fusion-workbench-conventions.md
 # `## Bus protocol` → `### Session registry`):
