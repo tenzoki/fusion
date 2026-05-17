@@ -547,6 +547,130 @@ After reconciler returns and any Rebalance gate is resolved, run this step if a 
 - Path to the history file
 - Mention that the live dashboard and event log are available for review
 
+## User-Initiated Consultation
+
+At any point during a session, the user may ask the orchestrator (in conversation) to file a consultation request to the consultant via the workbench bus. The orchestrator detects the request, confirms a brief preview, and writes the file to `bus/consultant/inbox/`. The consultant remains user-initiated only — the orchestrator writes a file, then tells the user how to start the consultant in another terminal.
+
+This is the **only** mechanism by which the orchestrator files bus consultations. The bus does not auto-route; the orchestrator does not offer consultations at gate points; the user is the trigger.
+
+### Trigger detection
+
+Two-layer detection on every user message the orchestrator receives (in chat, in response to `AskUserQuestion`, or as continuation prose during a Turn):
+
+1. **Keyword fast-path.** Scan the user's message (case-insensitive substring match) for any of these phrases. Match → trigger detected, proceed to confirmation.
+
+   - `consult`
+   - `ask consultant`
+   - `ask the consultant`
+   - `second opinion`
+   - `get a second opinion`
+   - `what would the consultant think`
+   - `i want consultant input`
+   - `file a consultation`
+   - `consultation request`
+
+   The keyword list is intentionally fixed in this prompt. Projects that want extensions submit a PR; per-project customisation is a follow-up consideration, not v1.
+
+2. **LLM judgment fallback.** If no keyword matches but the user's message reads as a consultation request (paraphrases: *"I'd like another perspective on this,"* *"can we get someone else's take,"* *"I'm not sure — what would an outside view be?"*), recognise it as a trigger anyway. Use judgment sparingly — a clear request to "ask Claude what it thinks" is a trigger; a vague *"I'm uncertain"* is not (offer the user the **Stop and clarify** path instead, the orchestrator's existing ambiguity-handling).
+
+Do NOT auto-trigger on internal orchestrator uncertainty. The user must signal. If the orchestrator thinks consultation would help but the user did not ask, the orchestrator may *suggest* the option ("would you like to file a consultation on this?") and let the user decide — the suggestion itself is not the trigger; the user's affirmative response is.
+
+### Confirmation (brief preview)
+
+On trigger detection, build a preview and present it via `AskUserQuestion`:
+
+1. **Compose a topic line** — one short phrase summarising the question. Derived from the user's trigger message and the current orchestrator state (active Turn, active task, recent gate). Examples:
+   - *"second opinion on the Rebalance gate before I open it"*
+   - *"sanity-check the shaper's spec before planning"*
+   - *"general advice on how to scope task batch C"*
+
+2. **Compose a context summary** — three to five lines describing what context the orchestrator will include in the request body. Examples:
+   - *"Conversational context from the last 2-3 exchanges"*
+   - *"Active Turn 2, current task is `T3 ontology rename` (paused at this gate)"*
+   - *"The shaper-produced spec at `fusion-workbench/planning/260517-1402[o]-foo.md`"*
+   - *"The reconciler's Coherence verdict (`review-needed`, three-edge summary)"*
+
+3. **Compose the user's specific question** — the actual question the consultant is being asked. If the user's trigger message contains a clear question, use it verbatim. If it's a generic "let's consult," ask the user inline: *"What specifically would you like the consultant's input on?"* — get a one-line question, then proceed.
+
+4. **Present via `AskUserQuestion`** with three named options:
+   - **Yes, file it** (default) — write the file and pause the session.
+   - **Modify** — user provides updated wording for the topic, context, or question; loop back to step 1 with the user's revisions folded in.
+   - **Cancel** — abort cleanly; no file written; no event emitted. Return to whatever the orchestrator was doing.
+
+Modify-loop budget: at most 3 modify rounds before the orchestrator asks the user to either commit (Yes, file it) or abort (Cancel). Indefinite refinement is a sign the user is unsure — pushing for a decision is the right move.
+
+### Request body shape
+
+When the user chooses **Yes, file it**:
+
+1. **Compute the filename.** `YYMMDD-HHMM-from-orchestrator-<topic-slug>.md`, where `<topic-slug>` is a short kebab-case slug derived from the topic line (e.g. `pre-rebalance-second-opinion`, `spec-sanity-check-260517`). The slug carries human meaning, not protocol meaning — pairing is on `Re:`, not on filename. Path: `fusion-workbench/bus/consultant/inbox/<filename>`.
+
+2. **Compute the `Re:` field.** This is the load-bearing pairing key — it must be byte-identical between request and reply, and the resume probe matches on it. Shape:
+
+   ```
+   Re: <topic line, as the user confirmed it at preview>
+   ```
+
+   The topic line itself is the `Re:` value (no `at <timestamp>` suffix unless the user explicitly types one). Uniqueness across pending consultations is the user's responsibility — if two pending requests would collide on `Re:`, the orchestrator must surface the collision at the preview step and ask the user to rename one. (In practice this is rare: pending consultations are usually 0 or 1; the user rarely files two on the same topic in the same window.)
+
+3. **Compose the body** per `rules/fusion-workbench-conventions.md` `## Bus protocol`:
+
+   ```markdown
+   ---
+   From: orchestrator (session <bus_session_id>)
+   To: consultant
+   Re: <topic line>
+   Filed: <YYMMDD-HHMM from date +%y%m%d-%H%M>
+   ---
+
+   # Consultation request — <topic line>
+
+   ## Context
+
+   **Session state.** Turn <N>, Mode <mode>, Directive: *"<directive>"*.
+   **Active task (if any):** <task-id> — <task-summary> (status: <queued|running|gate|error>).
+   **Active spec/plan (if any):** <path>.
+   **Recently modified workbench files (if any):** <list of up to 5 paths, by mtime>.
+
+   **Conversational context** (last 2-3 user/orchestrator exchanges that motivated the consultation):
+
+   <verbatim or summarised exchange — keep it brief; the consultant can read the history file for full context>
+
+   ## What I need
+
+   <the user's specific question, verbatim as confirmed at preview>
+
+   ## Reply convention
+
+   Write your reply to `fusion-workbench/bus/orchestrator/inbox/YYMMDD-HHMM-from-consultant-<originating-stem>.reply.md` where `<originating-stem>` is the basename of this request minus `.md`.
+   ```
+
+   `<bus_session_id>` is `session.bus_session_id` from `agentstate.yaml`; if null (bus registration failed or session not yet started Phase 0), use the literal string `<unregistered>`. The "Recently modified workbench files" list is best-effort — empty list is fine if nothing has been written this Turn.
+
+4. **Write the file** with the `Write` tool. `bus/consultant/inbox/` is pre-created by `/fusion:setup`.
+
+5. **Emit `consultation_filed` event** to `orchestrator-events.jsonl`. The `detail` object carries `request_path` and `expected_reply_path` (compute as `fusion-workbench/bus/orchestrator/inbox/YYMMDD-HHMM-from-consultant-<originating-stem>.reply.md` — leave the `YYMMDD-HHMM` portion as the literal placeholder string; the resume probe matches on `Re:`, not on this path). Top-level `turn` is `progress.turn` from `agentstate.yaml` (null if pre-Phase-2); `task` is `current_task.id` if set, else null. Do NOT carry a `gate` slug — there is no gate.
+
+6. **Tell the user** (action first, plain English per `rules/user-facing-output.md`):
+
+   > **Filed. Open another terminal to bring in the consultant.** I've filed your consultation at `<request-path>`. To get the consultant's input: open another terminal, run `./.fusion/fu consultant`. The consultant's Setup will list this item and offer to process it. When the consultant writes a reply, the file will appear in `fusion-workbench/bus/orchestrator/inbox/`. You can resume this orchestrator session at any time — I'll pick up the reply on resume.
+
+   Do NOT add language that implies the consultant is now running or that the orchestrator dispatched it. The user always runs the second terminal manually.
+
+7. **Pause the session.** Update `agentstate.yaml` so a resume can pick up where this left off (the existing per-phase write points cover this; no new schema fields). Refresh the active-session marker (`"$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" heartbeat`). Exit cleanly — do not block waiting for the reply. The user resumes the orchestrator when ready; the resume probe will consume any matching reply on the next Setup.
+
+### Reply consumption (resume-side)
+
+Unchanged from v3.6.0 in mechanism, with two small adjustments:
+
+- The resume probe (Setup Step 1b shared procedure step 1, and Step 5b.f) reads **both** old (`gate_filed_consultation`) and new (`consultation_filed`) event names from `orchestrator-events.jsonl` to find unpaired requests. Going forward only `consultation_filed` is emitted.
+- When a reply is found and presented, the framing no longer mentions "the original gate's options" (there is no originating gate). Use: *"Consultant replied at `<reply-path>` while you were away. Their input is below. You can continue your session now — let me know how you'd like to proceed."* Then return to the user's chat-driven flow.
+- When the user chooses **Cancel the filed request** in the no-reply case, emit `consultation_cancelled` (new name).
+
+### Boundary
+
+The orchestrator does NOT dispatch the consultant. The consultant remains user-initiated only (see "Never invokes" at the bottom of this prompt). This section writes a request file and tells the user how to start the consultant manually. Preserving this contract is non-negotiable.
+
 ## Human Gate Rules
 
 The orchestrator **must stop and ask the user** before proceeding when any of these conditions apply:
