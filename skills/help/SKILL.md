@@ -86,7 +86,7 @@ The **bus** lets concurrent agent sessions hand work to each other through the w
 
 **When it activates.** Only when `fusion-workbench/bus/` exists. `/fusion:setup` creates that tree on every run since v3.4, so for any project set up since then the bus is always-on. Pre-bus workbenches can opt in by re-running `/fusion:setup`.
 
-**What you do.** When an agent files a bus request (typically the orchestrator at a gate, or a reviewer with a cross-cutting finding), it prints something like *"open another terminal and run `./.fusion/fu <agent>`"*. You open that terminal, run the command, and the target agent's Setup surfaces the unread inbox item automatically. **You are the trigger.** Fusion does not auto-notify, does not auto-route, does not inject anything into a running session.
+**What you do.** When you ask the orchestrator for a consultation (in conversation — *"can we get a second opinion on this?"*, *"what would the consultant think?"*), or when a reviewer files a cross-cutting finding, the orchestrator writes a request file and prints something like *"open another terminal and run `./.fusion/fu <agent>`"*. You open that terminal, run the command, and the target agent's Setup surfaces the unread inbox item automatically. **You are the trigger.** Fusion does not auto-notify, does not auto-route, does not inject anything into a running session.
 
 **How to inspect** (from the project root):
 
@@ -98,7 +98,7 @@ The **bus** lets concurrent agent sessions hand work to each other through the w
 
 `mark-read` is a cleanup tool — agents normally mark their own messages read. The dual-write is race-safe by design (atomic rename).
 
-**Canonical spec.** `rules/fusion-workbench-conventions.md` `## Bus protocol` — filename format, frontmatter fields (`From`/`To`/`Re`/`Filed`), reply-pairing keys, session registry, and the four bus-aware agents (orchestrator, consultant, coderev, ontorev).
+**Canonical spec.** `rules/fusion-workbench-conventions.md` `## Bus protocol` — filename format, frontmatter fields (`From`/`To`/`Re`/`Filed`), reply-pairing keys, session registry, and the four bus-aware agents (orchestrator, consultant, coderev, ontorev). User-initiated consultation flow: `agents/orchestrator.md` `## User-Initiated Consultation`.
 
 ---
 
