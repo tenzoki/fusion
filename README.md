@@ -225,8 +225,6 @@ fusion-workbench/
 
 **Bus protocol.** The `bus/` subdirectory is a workbench-mediated A2A messaging surface — file-based inboxes per agent, used by orchestrator pre-gates for consultations and by any agent that needs to leave a message for another. Opt-in: the tree is created at `/fusion:setup` but only carries traffic when an agent or skill actually files into it. See `/fusion:help bus` for the user-facing summary.
 
-**Path D — opt-in daemon for auto-routing bus messages.** A locally-running Python daemon (`bin/fusion-bus-daemon`, started via `./.fusion/fusion-bus daemon start`) watches the bus inboxes and routes messages through `tmux send-keys` with human-in-the-loop approval gating (strict mode default). See `/fusion:help bus` for the full surface.
-
 **State markers — issues/ and planning/:** `[o]` open, `[p]` in progress, `[c]` closed, `[d]` deferred.
 
 **State markers — decisions/:** `[o]` open question, `[a]` answered (recorded answer exists), `[i]` implemented (answer realised in code/data), `[d]` deferred, `[s]` superseded by a later decision.
