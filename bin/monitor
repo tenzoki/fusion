@@ -493,7 +493,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
       text.textContent = '⏸ Paused at gate — waiting on user';
     } else if (mode === 'setup') {
       dot.className = 'status-dot setup';
-      text.textContent = 'Setting up…';
+      text.textContent = '⏸ Awaiting instruction';
     } else if (mode === 'done') {
       dot.className = 'status-dot done';
       text.textContent = 'Session complete';
