@@ -72,6 +72,7 @@ b) **Workbench files** (`h`, `p`, `i`, `o`, `c`, `a`, `n`, `t`, `d`):
   - **Start hour:** earliest activity timestamp
   - **End hour:** latest activity timestamp
   - If end time is after midnight (00:00-05:00), treat it as an extension of the previous day: add hours to 24. Example: activity from 11:00 to 02:30 next day becomes `[11-26.5]` or `[11-26]`
+- **Inactive days within the project span:** if a date between the earliest logged date and today has **no** activity from any source, still emit a daily header `## YYYY-MM-DD (Day) [—]` with no time table. This preserves continuity for the per-week aggregation in Step 6.
 
 ### 5. Format output
 
@@ -135,7 +136,7 @@ Also add a one-line bullet to the `## High-level arc` section (newest-first orde
 
 ### 6. Build the per-week Active Hours table — MANDATORY, atomic with each new day
 
-For each new day added to the Daily Log, locate the ISO week (Mon–Sun) the day falls into and update the corresponding row in the `## Active Hours per Week` table (insert if absent, recompute average if present).
+For each new day added to the Daily Log, locate the ISO week (Mon–Sun) the day falls into and update the corresponding row in the `## Active Hours per Week` table (insert if absent, recompute both `Days active` and `Avg active hours/day` if present).
 
 **Format:**
 
@@ -150,10 +151,10 @@ For each new day added to the Daily Log, locate the ISO week (Mon–Sun) the day
 - **Week label:** `YYYY-MM-DD` of the Monday of the ISO week (Mon–Sun).
 - **Days active:** count of days in this week that have a parseable `[start-end]` range (not `[—]`). A degenerate `[H-H]` range (e.g. `[22-22]`) DOES count as an active day even though elapsed hours are 0.
 - **Avg active hours/day:** (sum hours) / (days active), rounded to one decimal. Print `n/a` if days_active == 0 (a whole week of `[—]`).
+- **Inactive-day marker spelling:** the inactive marker is the em-dash character U+2014 (`—`). Do not substitute hyphen (`-`), en-dash (`–`), horizontal bar (`―`), or double-hyphen (`--`); these will not be matched as inactive and will skew `Days active`.
 
 **Hour arithmetic:**
 - Single range `[A-B]` → hours = (B − A); if B < A (cross-midnight), use (B + 24 − A).
-- Multi-range header `[H-H, H-H]` → sum each sub-range using the same rule.
 - Degenerate `[H-H]` → 0 hours, but counts as an active day.
 
 **Ordering:** newest week first.
@@ -162,21 +163,24 @@ For each new day added to the Daily Log, locate the ISO week (Mon–Sun) the day
 
 **Atomicity contract:** when you add a daily entry, you MUST update the per-week row in the same write. Either both land or neither lands.
 
-**Verification before declaring this step done:** every distinct ISO week represented by a daily entry has exactly one row in the per-week table. Run:
+**Verification before declaring this step done:** every distinct ISO week represented by a daily entry has exactly one row in the per-week table. Run each command on a single line (no backslash-newline continuations):
 
 ```bash
 daily_entries=$(grep -c "^## 2[0-9]\{3\}-" activity-log-$USER.md)
 week_rows=$(grep -cE "^\| [0-9]{4}-[0-9]{2}-[0-9]{2} +\|" activity-log-$USER.md)
-echo "$daily_entries daily entries, $week_rows week rows"
-# Then compute distinct ISO weeks across the daily entries and confirm equality with week_rows.
+distinct_iso_weeks=$(grep -oE "^## [0-9]{4}-[0-9]{2}-[0-9]{2}" activity-log-$USER.md | sed 's/^## //' | xargs -I{} date -j -f "%Y-%m-%d" {} +"%Y-W%V" 2>/dev/null | sort -u | wc -l | tr -d ' ')
+echo "$daily_entries daily entries, $week_rows week rows, $distinct_iso_weeks distinct ISO weeks"
+[ "$distinct_iso_weeks" = "$week_rows" ] || echo "MISMATCH: $distinct_iso_weeks distinct ISO weeks vs $week_rows week rows"
 ```
+
+The `date -j -f` form is macOS-native. On GNU systems (Linux) substitute `date -d "{}" +"%Y-W%V"`. The `2>/dev/null` swallows per-line parse errors so a malformed date doesn't abort the pipeline; the final count is still derivable from the well-formed dates.
 
 If a distinct ISO week is missing from the table — or a table row has no matching daily entry — fix before writing.
 
 ### 7. Write output
 
 - On **create:** write header + reversed-order `## High-level arc` (newest day first) + `## Active Hours per Week` table + Daily Log entries (chronological — per-day sections are NOT reversed; only the arc bullets are newest-first) + the end-of-file `## Total commits` section.
-- On **append:** insert new daily entries chronologically into the `## Daily Log` section; prepend the new arc bullet at the top of `## High-level arc` (newest-first); update or insert per-week rows from Step 6; refresh the `## Total commits` count.
+- On **append:** insert new daily entries chronologically into the `## Daily Log` section; prepend the new arc bullet at the top of `## High-level arc` (newest-first); update or insert per-week rows from Step 6, recomputing both `Days active` and `Avg active hours/day` when an existing row is touched; refresh the `## Total commits` count.
 - Never duplicate entries.
 
 **End-of-file commit-count section** (append on create, refresh on every run):
@@ -198,12 +202,12 @@ git log --since=<earliest-date> --oneline | wc -l
 Tell the user:
 - How many new days were logged
 - Date range covered
-- Number of new per-week rows added (if any) and the verification grep result (distinct ISO weeks in Daily Log == per-week table rows)
+- Number of new per-week rows added (if any) and the three verification numbers from Step 6
 - Path to the activity log file
 - Total activity items found
 - Current total commit count
 
-Print the actual numbers, not just "matches" — the user should be able to spot-check without re-running greps.
+Report the three Step 6 numeric counts explicitly: `<N> daily entries`, `<W> per-week rows`, `<W'> distinct ISO weeks`. The user should be able to spot-check without re-running greps. Do not collapse to "OK" or "matches"; print the numbers.
 
 ## Notes
 
