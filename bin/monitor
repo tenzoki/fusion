@@ -518,18 +518,26 @@ HTML_PAGE = r"""<!DOCTYPE html>
   //      matching task_done) and must not be paired as "running". If no
   //      session_start was seen in the window we fall back to the prior
   //      behaviour (latest unmatched across all ids).
-  //   3. For that running task's agent, take the last 10 paired durations,
-  //      compute arithmetic mean. Need ≥3 to render a number; otherwise
-  //      'insufficient history'.
-  //   4. Landing = running.ts + avg, format "HH:MM (Nm avg, agent)".
+  //   3. Tiered estimate selection driven by the per-agent paired-duration
+  //      count `n` (window = last 10):
+  //        n ≥ 3 → per-agent mean, label "(Nm avg, agent)"
+  //        n == 2 or 1 → per-agent mean, label "(Nm avg, agent, n=K) ⚠ low data"
+  //        n == 0 and global pairs ≥ 1 → cross-agent mean of last 10 paired
+  //          durations across all agents (flattened in chronological completion
+  //          order), label "(Nm avg, all agents) ⚠ no per-agent data"
+  //        zero pairs anywhere → "ETA: — (no completed tasks yet)"
+  //   4. Landing = running.ts + avg, format "HH:MM <suffix>".
   function computeETA(events) {
     if (!events || events.length === 0) {
       return 'ETA: — (no events yet)';
     }
     // Per-task-id stack of pending task_start events, and the per-agent
-    // duration history accumulated as we walk.
+    // duration history accumulated as we walk. historyGlobal flattens
+    // every paired duration across agents in chronological completion order
+    // so the n==0 branch can fall back to a global average.
     var pending = {};       // task_id -> [start_event, start_event, ...]
     var historyByAgent = {}; // agent -> [durations in chronological completion order]
+    var historyGlobal = []; // [duration, duration, ...] across all agents, completion-order
     var latestSessionStartMs = -1;  // most recent session_start ts in window; -1 if none
     for (var i = 0; i < events.length; i++) {
       var ev = events[i];
@@ -559,6 +567,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
         var ag = startEv.agent || 'orchestrator';
         if (!historyByAgent[ag]) historyByAgent[ag] = [];
         historyByAgent[ag].push(durSec);
+        historyGlobal.push(durSec);
       }
     }
     // Find currently running task: latest unmatched task_start across all ids,
@@ -585,26 +594,50 @@ HTML_PAGE = r"""<!DOCTYPE html>
     if (!running) return '';  // no task in flight
     var agent = running.agent || 'orchestrator';
     var hist = historyByAgent[agent] || [];
-    if (hist.length < 3) {
-      return 'ETA: — (insufficient history for ' + agent + ')';
+    // Tiered fallback: prefer per-agent; if no per-agent samples, fall back to
+    // global; if no samples anywhere, surface the cold-start message.
+    function meanOfLast(arr, k) {
+      var w = arr.slice(-k);
+      var s = 0;
+      for (var j = 0; j < w.length; j++) s += w[j];
+      return s / w.length;
     }
-    // Moving average over the last 10 completions for this agent.
-    var window = hist.slice(-10);
-    var sum = 0;
-    for (var j = 0; j < window.length; j++) sum += window[j];
-    var avgSec = sum / window.length;
-    var landingMs = runningTs + avgSec * 1000;
-    var landing = new Date(landingMs);
-    if (isNaN(landing.getTime())) return '';
-    var hh = String(landing.getHours()).padStart(2, '0');
-    var mm = String(landing.getMinutes()).padStart(2, '0');
-    var avgLabel;
-    if (avgSec < 60) {
-      avgLabel = '<1m';
-    } else {
-      avgLabel = Math.round(avgSec / 60) + 'm';
+    function avgLabelOf(avgSec) {
+      return avgSec < 60 ? '<1m' : Math.round(avgSec / 60) + 'm';
     }
-    return 'ETA: ' + hh + ':' + mm + ' (' + avgLabel + ' avg, ' + agent + ')';
+    function formatLanding(avgSec) {
+      var landingMs = runningTs + avgSec * 1000;
+      var landing = new Date(landingMs);
+      if (isNaN(landing.getTime())) return null;
+      var hh = String(landing.getHours()).padStart(2, '0');
+      var mm = String(landing.getMinutes()).padStart(2, '0');
+      return hh + ':' + mm;
+    }
+    var avgSec, hhmm, suffix;
+    if (hist.length >= 3) {
+      avgSec = meanOfLast(hist, 10);
+      hhmm = formatLanding(avgSec);
+      if (hhmm === null) return '';
+      suffix = '(' + avgLabelOf(avgSec) + ' avg, ' + agent + ')';
+      return 'ETA: ' + hhmm + ' ' + suffix;
+    }
+    if (hist.length === 2 || hist.length === 1) {
+      avgSec = meanOfLast(hist, hist.length);
+      hhmm = formatLanding(avgSec);
+      if (hhmm === null) return '';
+      suffix = '(' + avgLabelOf(avgSec) + ' avg, ' + agent + ', n=' + hist.length + ') ⚠ low data';
+      return 'ETA: ' + hhmm + ' ' + suffix;
+    }
+    // hist.length === 0: try global fallback.
+    if (historyGlobal.length >= 1) {
+      avgSec = meanOfLast(historyGlobal, 10);
+      hhmm = formatLanding(avgSec);
+      if (hhmm === null) return '';
+      suffix = '(' + avgLabelOf(avgSec) + ' avg, all agents) ⚠ no per-agent data';
+      return 'ETA: ' + hhmm + ' ' + suffix;
+    }
+    // No completed task anywhere in the window.
+    return 'ETA: — (no completed tasks yet)';
   }
 
   function updateStatus(hasFile, age, mode) {
