@@ -507,9 +507,17 @@ HTML_PAGE = r"""<!DOCTYPE html>
   //   1. Walk events oldest→newest; for each task_done, pop the most-recent
   //      earlier task_start with the same task id off a per-id stack. The
   //      pair's duration is grouped by the start.agent ('orchestrator' default).
+  //      Track the timestamp of the most recent session_start seen so the
+  //      candidate-selection step can reject orphan task_starts from prior
+  //      sessions (see step 2).
   //   2. After the walk, any task_start ids still on a stack are unmatched —
   //      the last unmatched one (chronologically) is the currently running
-  //      task. If none, no ETA.
+  //      task, *provided* its timestamp is at-or-after the most recent
+  //      session_start. Unmatched task_starts that predate the latest
+  //      session_start are orphans (their session ended without emitting a
+  //      matching task_done) and must not be paired as "running". If no
+  //      session_start was seen in the window we fall back to the prior
+  //      behaviour (latest unmatched across all ids).
   //   3. For that running task's agent, take the last 10 paired durations,
   //      compute arithmetic mean. Need ≥3 to render a number; otherwise
   //      'insufficient history'.
@@ -522,9 +530,20 @@ HTML_PAGE = r"""<!DOCTYPE html>
     // duration history accumulated as we walk.
     var pending = {};       // task_id -> [start_event, start_event, ...]
     var historyByAgent = {}; // agent -> [durations in chronological completion order]
+    var latestSessionStartMs = -1;  // most recent session_start ts in window; -1 if none
     for (var i = 0; i < events.length; i++) {
       var ev = events[i];
-      if (!ev || !ev.task) continue;
+      if (!ev) continue;
+      // Track session boundaries before the task-field guard — session_start
+      // has no `task` field and would otherwise be skipped.
+      if (ev.event === 'session_start') {
+        var sessMs = parseUTCTs(ev.ts);
+        if (!isNaN(sessMs) && sessMs > latestSessionStartMs) {
+          latestSessionStartMs = sessMs;
+        }
+        continue;
+      }
+      if (!ev.task) continue;
       if (ev.event === 'task_start') {
         if (!pending[ev.task]) pending[ev.task] = [];
         pending[ev.task].push(ev);
@@ -542,7 +561,12 @@ HTML_PAGE = r"""<!DOCTYPE html>
         historyByAgent[ag].push(durSec);
       }
     }
-    // Find currently running task: latest unmatched task_start across all ids.
+    // Find currently running task: latest unmatched task_start across all ids,
+    // rejecting any candidate that predates the most recent session_start
+    // (those are orphans from a session that has since ended — see step 2 of
+    // the algorithm comment). If no session_start was seen in the window,
+    // latestSessionStartMs stays -1 and the predicate degenerates to the
+    // pre-fix behaviour (always accept).
     var running = null;
     var runningTs = -1;
     for (var tid in pending) {
@@ -551,7 +575,9 @@ HTML_PAGE = r"""<!DOCTYPE html>
       if (arr.length === 0) continue;
       var last = arr[arr.length - 1];
       var ts = parseUTCTs(last.ts);
-      if (!isNaN(ts) && ts > runningTs) {
+      if (isNaN(ts)) continue;
+      if (ts < latestSessionStartMs) continue;  // orphan from prior session
+      if (ts > runningTs) {
         runningTs = ts;
         running = last;
       }
