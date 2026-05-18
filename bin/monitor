@@ -190,6 +190,12 @@ HTML_PAGE = r"""<!DOCTYPE html>
   .md-content th { background: var(--bg3); color: var(--accent); font-weight: 600; }
   /* Status badges in rendered markdown */
   .md-content { word-wrap: break-word; }
+  /* Long unbroken tokens (bus session ids like 260518-0948-orchestrator-341c,
+     active-Circle paths, commit hashes) can overflow narrow viewports because
+     `word-wrap: break-word` only breaks on word boundaries — hyphenated ids
+     are treated as a single long word. break-all permits a hard break anywhere
+     inside `code` / `pre` so the id stays visible regardless of viewport width. */
+  .md-content code, .md-content pre { word-break: break-all; }
   /* Event log */
   .events-section { margin-top: 24px; }
   .events-section h3 { color: var(--cyan); font-size: 14px; margin-bottom: 10px; }
@@ -317,12 +323,39 @@ HTML_PAGE = r"""<!DOCTYPE html>
     b.addEventListener('click', function() { showPage(b.getAttribute('data-page')); });
   });
 
+  // When the dashboard's first counter line still has uninitialised Turn /
+  // Task slots (`--/5 | Tasks: --/--`) the visual reads as "nothing
+  // happening" even though the Session line shows real activity (Phase 0 /
+  // Phase 1 / Setup gate). Until Turn 1 begins, surface the parsed Phase
+  // from the `Session:` line so the user sees what stage the orchestrator
+  // is in rather than a row of dashes. Pure client-side overlay — the file
+  // format the orchestrator writes is untouched.
+  function decorateDashboardMd(md) {
+    if (!md || md.indexOf('--/--') === -1) return md;
+    // Pull Phase from the Session line if present, e.g.
+    //   "Session: Phase 0 form-decision gate" → "Phase 0"
+    //   "Session: Setup"                       → "Setup"
+    var phase = '';
+    var sessMatch = md.match(/^Session:\s*(.+)$/m);
+    if (sessMatch) {
+      var sess = sessMatch[1].trim();
+      var phaseMatch = sess.match(/^(Phase\s+\d+|Setup|Pre-Turn)/i);
+      phase = phaseMatch ? phaseMatch[1] : sess.split(/\s+/).slice(0, 2).join(' ');
+    }
+    if (!phase) phase = 'Setup / Pre-Turn';
+    // Replace the first `Turn: --/N` (or `--/--`) line with a Phase prefix.
+    // Match conservatively so we only touch counter lines, not random text.
+    return md.replace(/^(Turn:\s*[^|\n]*--\/[^|\n]*\|[^\n]*)$/m,
+      'Phase: ' + phase + ' · $1');
+  }
+
   function renderMarkdown(md) {
+    var prepared = decorateDashboardMd(md);
     if (markedReady && typeof marked !== 'undefined') {
-      return marked.parse(md);
+      return marked.parse(prepared);
     }
     // Fallback: wrap in pre
-    return '<pre>' + escapeHtml(md) + '</pre>';
+    return '<pre>' + escapeHtml(prepared) + '</pre>';
   }
 
   function escapeHtml(t) {
@@ -333,10 +366,14 @@ HTML_PAGE = r"""<!DOCTYPE html>
 
   // Render a UTC ISO timestamp in the browser's local timezone. Events are
   // persisted in UTC (canonical) but displayed local so they line up with
-  // the header "Updated" clock the user sees.
+  // the header "Updated" clock the user sees. orchestrator-events.jsonl
+  // timestamps lack a 'Z' designator (written by `date -u +…`); route them
+  // through parseUTCTs so naked timestamps are interpreted as UTC instead of
+  // local — otherwise getHours()/getMinutes() would be wrong by the user's
+  // TZ offset. parseUTCTs is function-declaration-hoisted from below.
   function formatLocalTime(iso, mode) {
     if (!iso) return '';
-    var d = new Date(iso);
+    var d = new Date(parseUTCTs(iso));
     if (isNaN(d.getTime())) return iso;
     var hh = String(d.getHours()).padStart(2, '0');
     var mm = String(d.getMinutes()).padStart(2, '0');
@@ -465,10 +502,33 @@ HTML_PAGE = r"""<!DOCTYPE html>
     return result.join('\n');
   }
 
+  // Render an event's `detail` field as a human-readable string. Events emit
+  // `detail` as either a string (the common case) or an object (richer events
+  // like coherence_review carry structured detail). Without this helper an
+  // object detail renders as the literal "[object Object]" via implicit
+  // toString. Object values are joined as `key=value` pairs with a thin
+  // separator; nested objects/arrays fall back to JSON.stringify so the row
+  // remains readable even for non-flat payloads.
+  function formatDetail(d) {
+    if (d === null || d === undefined) return '';
+    if (typeof d === 'string') return d;
+    if (typeof d === 'object') {
+      var parts = [];
+      for (var k in d) {
+        if (!Object.prototype.hasOwnProperty.call(d, k)) continue;
+        var v = d[k];
+        if (v !== null && typeof v === 'object') v = JSON.stringify(v);
+        parts.push(k + '=' + v);
+      }
+      return parts.join(' · ');
+    }
+    return String(d);
+  }
+
   function formatEvent(ev) {
     var timePart = formatLocalTime(ev.ts || '');
     var evType = ev.event || 'unknown';
-    var detail = ev.detail || '';
+    var detail = formatDetail(ev.detail);
     if (ev.task) detail = '[' + ev.task + '] ' + detail;
     // Events without an explicit agent field are by definition orchestrator-
     // emitted (session_start, gate_hit, commit, turn_*, reconciliation, …).
@@ -658,14 +718,33 @@ HTML_PAGE = r"""<!DOCTYPE html>
     } else if (mode === 'error') {
       dot.className = 'status-dot error';
       text.textContent = 'Error';
-    } else if (age !== undefined && age > 300) {
+    } else if (age !== undefined && age > 3600) {
+      // Past 1h: stronger language, still yellow dot. Past 1h of true silence
+      // is genuinely worth a look — but "investigate" is still softer than
+      // "agent may be stuck".
       dot.className = 'status-dot stale';
-      text.textContent = 'Dashboard stale (' + Math.round(age/60) + 'm ago) — agent may be stuck';
+      text.textContent = 'no updates in ' + Math.round(age/3600) + 'h — investigate';
+    } else if (age !== undefined && age > 900) {
+      // 15min threshold (was 5min). Many legitimate tasks (coder dispatches
+      // across multiple files, reconciler passes, smoke tests) exceed 5min;
+      // the previous "agent may be stuck" copy alarmed users during normal
+      // long-running work. 15min is a more honest first-tier signal.
+      dot.className = 'status-dot stale';
+      text.textContent = 'no updates in ' + Math.round(age/60) + 'm — agent may be working a long task';
     } else {
       dot.className = 'status-dot live';
       text.textContent = 'Live';
     }
-    document.getElementById('last-update').textContent = 'Updated: ' + new Date().toLocaleTimeString();
+    // Wall-clock poll time (browser-local). The file's own age relative to
+    // wall-clock is appended below so the user can distinguish "browser just
+    // refreshed" from "fusion just wrote the file".
+    var nowStr = new Date().toLocaleTimeString();
+    var ageStr = '';
+    if (age !== undefined && age > 60) {
+      if (age > 3600) ageStr = ' (' + Math.round(age / 3600) + 'h ago)';
+      else ageStr = ' (' + Math.round(age / 60) + 'm ago)';
+    }
+    document.getElementById('last-update').textContent = 'Updated: ' + nowStr + ageStr;
   }
 
   function rerender() {
@@ -689,7 +768,10 @@ HTML_PAGE = r"""<!DOCTYPE html>
           if (etaStr) {
             etaEl.textContent = ' · ' + etaStr;
           } else {
-            etaEl.textContent = '';
+            // Keep the slot visible when no task is in flight so the user
+            // sees the layout is intact (and not broken/loading). Em-dash
+            // signals "no estimate available" without alarming.
+            etaEl.textContent = ' · ETA: —';
           }
         }
         if (data.dashboard && data.dashboard !== lastDashboardMd) {
