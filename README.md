@@ -25,6 +25,8 @@ fusion/
 │   └── consultant.md         # On-demand expert consultation
 ├── skills/                   # Slash commands
 │   ├── archive/SKILL.md      # /fusion:archive — archive completed/aged workbench files
+│   ├── circle-pop/SKILL.md   # /fusion:circle-pop — restore a stashed Circle, with drift detection
+│   ├── circle-stash/SKILL.md # /fusion:circle-stash — freeze the active Circle's complete state
 │   ├── commit/SKILL.md       # /fusion:commit — AI-generated conventional commit
 │   ├── direct/SKILL.md       # /fusion:direct — draft a Directive into an anticipated Circle (shaper)
 │   ├── help/SKILL.md         # /fusion:help — explain fusion's daily use, install, configure

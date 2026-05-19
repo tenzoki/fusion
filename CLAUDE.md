@@ -10,7 +10,7 @@ Plugin published to the `tenzoki-plugins` marketplace (repo: `tenzoki/claude-plu
 - Compliance guard with churn/escalation tracking (TypeScript hooks, compiled to `hooks/dist/`)
 - Real-time HTML monitor dashboard (`bin/monitor`)
 - Pattern-based rule discovery helper (`bin/fusion-rules`)
-- User-invocable skills: `/fusion:setup`, `/fusion:help`, `/fusion:upgrade`, `/fusion:memo`, `/fusion:commit`, `/fusion:log-activity`, `/fusion:revise-claude-md`, `/fusion:unlock`, `/fusion:archive`, `/fusion:next`, `/fusion:direct`
+- User-invocable skills: `/fusion:setup`, `/fusion:help`, `/fusion:upgrade`, `/fusion:memo`, `/fusion:commit`, `/fusion:log-activity`, `/fusion:revise-claude-md`, `/fusion:unlock`, `/fusion:archive`, `/fusion:next`, `/fusion:direct`, `/fusion:circle-stash`, `/fusion:circle-pop`
 
 ## Layout
 

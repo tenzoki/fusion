@@ -476,6 +476,83 @@ The user-side trigger and the orchestrator's confirmation flow are spec'd in `ag
 
 The orchestrator does NOT dispatch the consultant. The consultant remains user-initiated only — the orchestrator writes a file, then tells the user to start the consultant in another terminal. The coderev/ontorev agents are dispatched only via the standard incremental review flow, never as a bus delivery mechanism.
 
+## Stashes
+
+A stash is a self-contained, frozen snapshot of an active Circle's complete state — the Circle file, the `.active-circle` pointer, `agentstate.yaml` (when a session is in flight), the dashboard, the task queue, any referenced spec/plan files, the git working tree, the bus session, and unpaired consultations. Stashes free the workspace for unrelated urgent work without losing the in-flight Circle's context.
+
+### Opt-in
+
+Stash behaviour activates only when `fusion-workbench/stashes/` exists. The directory is created by `/fusion:circle-stash` on first invocation; it is NOT created by `/fusion:setup`. Workbenches that never stash never grow a `stashes/` directory.
+
+Stashes are created by `/fusion:circle-stash [reason]` and consumed by `/fusion:circle-pop [stash-id]`. Both skills resolve the workbench root via `bin/fusion-workbench-root` and refuse to run outside a fusion-set-up project.
+
+### Filesystem layout
+
+```
+fusion-workbench/stashes/
+└── <YYMMDD-HHMM>-<directive-slug>/
+    ├── manifest.yaml         # eleven-field index
+    ├── README.md             # human-readable summary + restore command
+    ├── circle.md             # the original Circle file (filename in manifest)
+    ├── agentstate.yaml       # only present when stash captured a running session
+    ├── orchestrator-live.md
+    ├── tasklist.md           # if present at stash time
+    ├── spec.md / plan.md     # copies of files referenced by the Circle (if any)
+    ├── git/
+    │   ├── stash-ref         # raw "git stash list" line + (no changes) sentinel
+    │   └── head              # HEAD short-hash at stash time
+    └── bus/
+        └── snapshot.yaml     # cleared session-id + unpaired-consultation list
+```
+
+The stash id `<YYMMDD-HHMM>-<directive-slug>` is derived from the current time (not the Circle's birth time) so multiple stashes of the same Circle remain distinguishable.
+
+### Manifest schema
+
+Eleven fields, in this order:
+
+```yaml
+stash_id: 260519-1200-stash-smoke              # YYMMDD-HHMM-<slug>
+timestamp: "2026-05-19T12:00:00Z"              # RFC 3339 UTC
+reason: "smoke test"                           # one line
+original_circle_filename: "260519-1200[t]-stash-smoke.md"
+active_circle_content: "260519-1200[t]-stash-smoke.md"
+head_short_hash: "0b7344a"
+git_stash_ref: "stash@{0}"                     # or "(no changes)"
+bus_session_id: "260519-1200-orchestrator-a7f3"  # null if bus disabled or no session
+has_agentstate: true                           # false when stashed without a running session
+has_spec_plan:                                 # array of paths copied; empty when (none yet)
+  - "planning/260518-1000[p]-some-active-plan.md"
+unpaired_consultations: 0
+```
+
+String values are quoted; `null` is the unquoted YAML literal. `has_spec_plan` uses inline `[]` when no paths were copied.
+
+### Lifecycle
+
+- Created by `/fusion:circle-stash` (one stash directory per invocation).
+- Consumed by `/fusion:circle-pop`, which restores state but does NOT auto-delete the stash directory. The user prunes manually: `rm -rf fusion-workbench/stashes/<id>/ && git stash drop <ref>`.
+- A `STASH_IN_PROGRESS` lock file at the stash directory root signals an incomplete write. `/fusion:circle-pop` refuses to read stashes carrying this file.
+- Multiple stashes can coexist (decision `260519-1100[a]-circle-stash-pop-design.md`). `/fusion:circle-pop` lists them when invoked without an argument and asks the user to pick.
+
+### Boundary events
+
+- `circle_stashed` event in `orchestrator-events.jsonl` marks the stash boundary.
+- `circle_popped` event marks the restore boundary.
+- The event log is NOT moved into the stash; it stays append-only across all sessions.
+
+### What stash does NOT touch
+
+- `orchestrator-events.jsonl` — append-only across all sessions; the stash/pop boundaries are recorded by appending event lines, never by truncating or relocating the log.
+- History files in `history/` — immutable session records. `/fusion:circle-stash` appends a `## Stashed Circle` section to the active session's history file (best-effort, when the file can be located), but never moves or rewrites it.
+- `.guard-state/*` — project-wide, not Circle-specific.
+
+### Cross-references
+
+- Design spec: `fusion-workbench/analyses/260519-0438-circle-stash-pop-concept.md`
+- Binding decision: `fusion-workbench/decisions/260519-1100[a]-circle-stash-pop-design.md`
+- Skill bodies: `skills/circle-stash/SKILL.md`, `skills/circle-pop/SKILL.md`
+
 ## Commit lock
 
 A POSIX mutex around `git add` + `git commit` operations against the project's working tree. Defends against the cross-agent staging race where parallel agents' commit operations interleave at the git-index level (commit absorption, orphan commits, WT-left-dirty outcomes).
