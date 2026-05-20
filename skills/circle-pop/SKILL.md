@@ -114,7 +114,7 @@ Two distinct refusals; the user needs to know which condition tripped.
 
 If true:
 
-> **The workspace already has an active Circle.** `.active-circle` points to `<contents>`. Close, Bounded-Close, or stash the current Circle before popping `<STASH_ID>` — pop refuses to overwrite an in-flight active Circle.
+> **The workspace already has an active Circle.** `.active-circle` points to `<contents>`. Close the current Circle, accept what's been learned and end the session (Bounded Closure), or stash it with `/fusion:circle-stash` before popping `<STASH_ID>` — pop refuses to overwrite an in-flight active Circle.
 
 Exit cleanly.
 
@@ -188,17 +188,28 @@ Parse the rest of the manifest into variables:
 ORIGINAL_FILENAME="$(grep -E '^original_circle_filename:' "$STASH_DIR/manifest.yaml" | head -1 | sed -E 's/^original_circle_filename:[[:space:]]*"?([^"]+)"?.*/\1/')"
 ACTIVE_CONTENT="$(grep -E '^active_circle_content:' "$STASH_DIR/manifest.yaml" | head -1 | sed -E 's/^active_circle_content:[[:space:]]*"?([^"]+)"?.*/\1/')"
 GIT_STASH_REF="$(grep -E '^git_stash_ref:' "$STASH_DIR/manifest.yaml" | head -1 | sed -E 's/^git_stash_ref:[[:space:]]*"?([^"]+)"?.*/\1/')"
+GIT_STASH_SHA="$(grep -E '^git_stash_sha:' "$STASH_DIR/manifest.yaml" | head -1 | sed -E 's/^git_stash_sha:[[:space:]]*"?([^"[:space:]]+)"?.*/\1/')"
+if [ "$GIT_STASH_SHA" = "null" ]; then GIT_STASH_SHA=""; fi
 HAS_AGENTSTATE="$(grep -E '^has_agentstate:' "$STASH_DIR/manifest.yaml" | head -1 | sed -E 's/^has_agentstate:[[:space:]]*([a-z]+).*/\1/')"
 MANIFEST_BUS_SESSION_ID="$(grep -E '^bus_session_id:' "$STASH_DIR/manifest.yaml" | head -1 | sed -E 's/^bus_session_id:[[:space:]]*"?([^"[:space:]]+)"?.*/\1/')"
-# has_spec_plan paths: parsed as a YAML list (each line "  - <path>" under the key)
+if [ "$MANIFEST_BUS_SESSION_ID" = "null" ]; then MANIFEST_BUS_SESSION_ID=""; fi
+SPEC_PLAN_PATHS="$(awk '/^has_spec_plan:/{f=1; next} /^[^[:space:]-]/{f=0} f && /^[[:space:]]+- /{sub(/^[[:space:]]+- ?/, ""); gsub(/^"|"$/, ""); print}' "$STASH_DIR/manifest.yaml")"
 ```
+
+`SPEC_PLAN_PATHS` is a newline-separated list of originating paths (possibly empty); each path is unquoted. The awk parser enters the `has_spec_plan:` block, emits one line per `  - "<path>"` entry, and exits the block on the next non-indented key. Inline `has_spec_plan: []` produces an empty result.
 
 ### 6.1 — Move the Circle file back
 
+Refuse if a Circle file with the same name already exists in `circles/` — `mv` would silently overwrite. The Step 3a pre-flight catches the `.active-circle` case, but a same-named anticipated `[a]` or closed `[c]` Circle can collide here.
+
 ```bash
 mkdir -p "$WORKBENCH/fusion-workbench/circles"
-mv "$STASH_DIR/circle.md" "$WORKBENCH/fusion-workbench/circles/$ORIGINAL_FILENAME"
+DEST_CIRCLE="$WORKBENCH/fusion-workbench/circles/$ORIGINAL_FILENAME"
+if [ -e "$DEST_CIRCLE" ]; then echo "ERROR: A Circle file named $ORIGINAL_FILENAME already exists in fusion-workbench/circles/. Move it aside (e.g. rename or archive), then re-run /fusion:circle-pop $STASH_ID. Pop will not silently overwrite it." >&2; exit 1; fi
+mv "$STASH_DIR/circle.md" "$DEST_CIRCLE"
 ```
+
+If the refusal triggers, the stash directory is left untouched — the user can move the conflicting Circle aside and rerun pop with the same stash id.
 
 ### 6.2 — Restore `.active-circle`
 
@@ -218,15 +229,21 @@ If `HAS_AGENTSTATE != true`: skip. The popped session has no in-flight state; `/
 
 ### 6.4 — Register a fresh bus session (if bus is enabled and stash had one)
 
+If `fusion-bus-session register` returns empty (binary missing, registration failed), do NOT patch the field with an empty string — write the unquoted YAML literal `null` instead. An empty quoted string `""` corrupts the bus-aware code paths in the orchestrator, which treat it as a valid session id.
+
 ```bash
-if [ -d "$WORKBENCH/fusion-workbench/bus" ] && [ -n "$MANIFEST_BUS_SESSION_ID" ] && [ "$MANIFEST_BUS_SESSION_ID" != "null" ]; then
+NEW_BUS_ID=""
+if [ -d "$WORKBENCH/fusion-workbench/bus" ] && [ -n "$MANIFEST_BUS_SESSION_ID" ]; then
   if [ -f "$WORKBENCH/fusion-workbench/agentstate.yaml" ]; then
-    NEW_BUS_ID="$("$FUSION_PLUGIN_ROOT/bin/fusion-bus-session" register orchestrator)"
-    # Patch agentstate.yaml's session.bus_session_id field in place.
-    # Use sed with the captured NEW_BUS_ID; the field's line shape is:
-    #   bus_session_id: "<id>" | null
-    sed -i.bak -E "s|^([[:space:]]+bus_session_id:[[:space:]]*).*$|\\1\"$NEW_BUS_ID\"|" "$WORKBENCH/fusion-workbench/agentstate.yaml"
-    rm -f "$WORKBENCH/fusion-workbench/agentstate.yaml.bak"
+    NEW_BUS_ID="$("$FUSION_PLUGIN_ROOT/bin/fusion-bus-session" register orchestrator 2>/dev/null)"
+    if [ -n "$NEW_BUS_ID" ]; then
+      sed -i.bak -E "s|^([[:space:]]+bus_session_id:[[:space:]]*).*$|\\1\"$NEW_BUS_ID\"|" "$WORKBENCH/fusion-workbench/agentstate.yaml"
+      rm -f "$WORKBENCH/fusion-workbench/agentstate.yaml.bak"
+    else
+      sed -i.bak -E "s|^([[:space:]]+bus_session_id:[[:space:]]*).*$|\\1null|" "$WORKBENCH/fusion-workbench/agentstate.yaml"
+      rm -f "$WORKBENCH/fusion-workbench/agentstate.yaml.bak"
+      echo "WARNING: bus session registration failed; agentstate.yaml bus_session_id set to null. The next /fusion:setup will register a fresh session." >&2
+    fi
   fi
 fi
 ```
@@ -244,38 +261,64 @@ If `agentstate.yaml` was not restored (Step 6.3 skipped), skip this — there's 
 
 ### 6.6 — Restore spec/plan files (per-file conflict resolution)
 
-For each path in the manifest's `has_spec_plan` list:
+Iterate the `$SPEC_PLAN_PATHS` list parsed at the top of Step 6. The loop branches per file into copy-silently, no-op, or `AskUserQuestion`-prompted-overwrite.
 
 ```bash
-# DEST = $WORKBENCH/fusion-workbench/<path>
-# STASHED = $STASH_DIR/$(basename <path>)
+CONFLICT_COUNT=0
+RESOLVED_FILES=""
+if [ -n "$SPEC_PLAN_PATHS" ]; then
+  while IFS= read -r rel_path; do
+    [ -z "$rel_path" ] && continue
+    DEST="$WORKBENCH/fusion-workbench/$rel_path"
+    STASHED="$STASH_DIR/$(basename "$rel_path")"
+    if [ ! -f "$STASHED" ]; then echo "warning: stash is missing $(basename "$rel_path") for path $rel_path; skipping." >&2; continue; fi
+    DEST_DIR="$(dirname "$DEST")"
+    mkdir -p "$DEST_DIR"
+    if [ ! -e "$DEST" ]; then
+      cp "$STASHED" "$DEST"
+      RESOLVED_FILES="${RESOLVED_FILES}${rel_path} (restored — destination was absent); "
+    elif cmp -s "$STASHED" "$DEST"; then
+      :  # byte-identical, no-op
+    else
+      # AskUserQuestion gates the overwrite. The skill body issues the question; the loop receives the user's choice.
+      # Question: "Spec/plan file <rel_path> changed during the interruption. Which version should win?"
+      # Options: Overwrite (use the stashed version) | Keep current | Show diff (loops)
+      # On Overwrite: cp "$STASHED" "$DEST"; RESOLVED_FILES="${RESOLVED_FILES}${rel_path} (overwrote with stashed version); "
+      # On Keep current: leave DEST; RESOLVED_FILES="${RESOLVED_FILES}${rel_path} (kept current version); "
+      # On Show diff: run `diff -u "$DEST" "$STASHED"` and re-ask the same question.
+      CONFLICT_COUNT=$((CONFLICT_COUNT+1))
+    fi
+  done <<< "$SPEC_PLAN_PATHS"
+fi
 ```
 
-Three cases:
+Three cases the loop body covers explicitly:
 
-- **DEST does not exist.** Copy without prompting: `cp "$STASHED" "$DEST"` (the urgent work removed the file or never touched it; the stash version is the only candidate).
-
-- **DEST exists and is byte-identical to STASHED.** Copy without prompting (effectively a no-op). Use `cmp -s "$STASHED" "$DEST"` to check.
-
-- **DEST exists and differs from STASHED.** Use `AskUserQuestion`:
-
-  - Question: *"Spec/plan file `<path>` changed during the interruption. Which version should win?"*
+- **DEST does not exist.** Copy without prompting (the urgent work removed the file or never touched it; the stash version is the only candidate).
+- **DEST exists and is byte-identical to STASHED.** No-op. `cmp -s` is the byte-identity test.
+- **DEST exists and differs from STASHED.** Use `AskUserQuestion` to gate the resolution:
+  - Question: *"Spec/plan file `<rel_path>` changed during the interruption. Which version should win?"*
   - Options:
     - **Overwrite (use the stashed version)** — the version the Circle was paused against. `cp "$STASHED" "$DEST"`.
     - **Keep current (the version the urgent work edited)** — leave `DEST` unchanged. The popped Circle resumes against the drifted spec; orchestrator's Coherence check will catch any inconsistency.
     - **Show diff** — runs `diff -u "$DEST" "$STASHED"` and re-asks this same question.
+  - Loop on **Show diff** as many times as the user wants; advance on **Overwrite** or **Keep current**. Each resolved file appends to `RESOLVED_FILES` so the report and the appended Resumed-from-stash block can name what was decided.
 
-  Loop on **Show diff** as many times as the user wants; advance on **Overwrite** or **Keep current**.
-
-If the manifest's `has_spec_plan` is empty or absent, skip this sub-step entirely.
+If the manifest's `has_spec_plan` was empty (the parsed `$SPEC_PLAN_PATHS` is empty), the whole loop is skipped — `CONFLICT_COUNT` stays 0 and `RESOLVED_FILES` stays empty.
 
 ### 6.7 — Apply the git stash (NOT pop)
 
+Apply against the stable commit SHA (`$GIT_STASH_SHA`) when available — positional refs like `stash@{0}` are renumbered by any intervening `git stash push` during the urgent work, and applying the wrong positional ref silently restores unrelated content. The SHA in the manifest is captured at stash time and never moves.
+
 ```bash
-if [ -n "$GIT_STASH_REF" ] && [ "$GIT_STASH_REF" != "(no changes)" ]; then
-  cd "$WORKBENCH" && git stash apply "$GIT_STASH_REF"
+APPLY_TARGET=""
+if [ -n "$GIT_STASH_SHA" ]; then APPLY_TARGET="$GIT_STASH_SHA"; elif [ -n "$GIT_STASH_REF" ] && [ "$GIT_STASH_REF" != "(no changes)" ]; then APPLY_TARGET="$GIT_STASH_REF"; fi
+if [ -n "$APPLY_TARGET" ]; then
+  cd "$WORKBENCH" && git stash apply "$APPLY_TARGET"
 fi
 ```
+
+If the manifest carries no `git_stash_sha` (stashes written before H3 fix, or `(no changes)` stash), fall back to the positional ref. If neither is usable (the `(no changes)` sentinel), skip the apply entirely.
 
 `git stash apply` (not `pop`) is a binding constraint — the stash entry stays in `git stash list` until the user explicitly drops it. If `git stash apply` reports merge conflicts:
 
@@ -301,11 +344,11 @@ Use the `Edit` tool to append the following block to `$WORKBENCH/fusion-workbenc
 
 **Resumed at:** <RFC 3339 UTC timestamp>
 **Stash id:** <STASH_ID>
-**Drift summary:** HEAD at stash `<STASH_HEAD>` → now `<CURRENT_HEAD>` (<COMMIT_DELTA> commits since); `<list of spec/plan paths whose conflict was resolved as 'Overwrite' or 'Keep current', or 'no conflicts'>`.
+**Drift summary:** HEAD at stash `<STASH_HEAD>` → now `<CURRENT_HEAD>` (<COMMIT_DELTA> commits since); `<RESOLVED_FILES — semicolon-separated list of per-file decisions, or "no conflicts">`.
 **Git stash apply:** `<clean | conflicts surfaced — see message above>`
 ```
 
-Substitute the resolved values from Step 4 and Step 6.6.
+Substitute the resolved values from Step 4 and Step 6.6. `RESOLVED_FILES` is the accumulator built by the conflict loop above; if empty, render as `no conflicts`.
 
 ## Step 7 — Emit the `circle_popped` event
 

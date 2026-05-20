@@ -491,7 +491,7 @@ Stashes are created by `/fusion:circle-stash [reason]` and consumed by `/fusion:
 ```
 fusion-workbench/stashes/
 └── <YYMMDD-HHMM>-<directive-slug>/
-    ├── manifest.yaml         # eleven-field index
+    ├── manifest.yaml         # twelve-field index
     ├── README.md             # human-readable summary + restore command
     ├── circle.md             # the original Circle file (filename in manifest)
     ├── agentstate.yaml       # only present when stash captured a running session
@@ -509,7 +509,7 @@ The stash id `<YYMMDD-HHMM>-<directive-slug>` is derived from the current time (
 
 ### Manifest schema
 
-Eleven fields, in this order:
+Twelve fields, in this order:
 
 ```yaml
 stash_id: 260519-1200-stash-smoke              # YYMMDD-HHMM-<slug>
@@ -518,7 +518,8 @@ reason: "smoke test"                           # one line
 original_circle_filename: "260519-1200[t]-stash-smoke.md"
 active_circle_content: "260519-1200[t]-stash-smoke.md"
 head_short_hash: "0b7344a"
-git_stash_ref: "stash@{0}"                     # or "(no changes)"
+git_stash_ref: "stash@{0}"                     # human-readable positional ref, or "(no changes)"
+git_stash_sha: "3f2a7b8c9d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a"  # stable commit SHA from `git rev-parse stash@{0}`; null if (no changes)
 bus_session_id: "260519-1200-orchestrator-a7f3"  # null if bus disabled or no session
 has_agentstate: true                           # false when stashed without a running session
 has_spec_plan:                                 # array of paths copied; empty when (none yet)
@@ -527,6 +528,8 @@ unpaired_consultations: 0
 ```
 
 String values are quoted; `null` is the unquoted YAML literal. `has_spec_plan` uses inline `[]` when no paths were copied.
+
+`git_stash_ref` is human-readable (`stash@{N}`) and recorded for the user. `git_stash_sha` is the stable underlying commit SHA — pop's `git stash apply` uses the SHA so an intervening `git stash push` during the urgent work cannot renumber the positional ref out from under it. The SHA is `null` when the working tree was clean and no stash entry was created.
 
 ### Lifecycle
 
