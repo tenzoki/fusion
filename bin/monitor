@@ -611,6 +611,14 @@ HTML_PAGE = r"""<!DOCTYPE html>
         }
         continue;
       }
+      // Drain pending on session_end — anything unmatched when the session
+      // closes is an orphan from that closed session and must not be rendered
+      // as "running" (issue 260530-0106). Like session_start, this event has
+      // no `task` field, so the branch must come before the guard below.
+      if (ev.event === 'session_end') {
+        pending = {};
+        continue;
+      }
       if (!ev.task) continue;
       if (ev.event === 'task_start') {
         if (!pending[ev.task]) pending[ev.task] = [];
