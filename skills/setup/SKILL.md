@@ -102,6 +102,20 @@ The helper prints `running`, `stale`, or `none` on stdout, and (when running/sta
 
   Do not silently overwrite. The whole point of this step is the warning.
 
+## Step 0e — Ensure stylometric profiles are present locally
+
+The `default-voice-{en,de}.yaml` profiles seed the project's user-facing voice (cadence, vocabulary, structural patterns). They live at `./fusion-workbench/stilwerk/` so each project can edit them without affecting other projects or the plugin.
+
+```bash
+mkdir -p ./fusion-workbench/stilwerk
+[ -f ./fusion-workbench/stilwerk/default-voice-en.yaml ] || { cp "$FUSION_PLUGIN_ROOT/stilwerk/default-voice-en.yaml" ./fusion-workbench/stilwerk/default-voice-en.yaml && echo "default-voice-en.yaml copied"; }
+[ -f ./fusion-workbench/stilwerk/default-voice-de.yaml ] || { cp "$FUSION_PLUGIN_ROOT/stilwerk/default-voice-de.yaml" ./fusion-workbench/stilwerk/default-voice-de.yaml && echo "default-voice-de.yaml copied"; }
+```
+
+Both copies are idempotent — existing files are left untouched, so any project-local edits to the profiles survive subsequent setups.
+
+If `$FUSION_PLUGIN_ROOT` is not set or the copy fails, note it in the history file later but do not block Setup.
+
 ## Step 1 — Interrupted-session check (CRITICAL — do not skip)
 
 Read `./fusion-workbench/agentstate.yaml`.
