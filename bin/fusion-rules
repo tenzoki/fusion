@@ -41,6 +41,18 @@
 #   - All other agents get workbench-conventions only. The conventions-only
 #     set currently includes: orchestrator, shaper, taskplanner, reconciler,
 #     analyst, consultant, playmaker.
+#   - Long-form-prose agents additionally receive the project's stylometric
+#     voice profile path so they can apply it to narrative outputs (session
+#     summary bodies, consultation replies, analysis reports, investigator
+#     timelines, playmaker briefings, prose sections of specs and plans):
+#       orchestrator, consultant, shaper, planner, analyst, investigator,
+#       playmaker
+#     Language is resolved from CLAUDE.md's `**Language:** <lang>` line
+#     (silently defaults to `en`). The emitted path is
+#     ./fusion-workbench/stilwerk/default-voice-<lang>.yaml. If the declared
+#     language's profile is missing and the language is not `en`, the helper
+#     falls back to default-voice-en.yaml. If neither file exists, the helper
+#     emits nothing — the agent's Setup logs the absence in its history file.
 
 set -eu
 
@@ -63,6 +75,14 @@ case "$AGENT" in
     ;;
 esac
 
+# Prose-agent flag — independent of PATTERNS. The seven agents below produce
+# long-form narrative output that the stylometric profile governs.
+case "$AGENT" in
+  orchestrator|consultant|shaper|planner|analyst|investigator|playmaker)
+                                  IS_PROSE_AGENT=1 ;;
+  *)                              IS_PROSE_AGENT=0 ;;
+esac
+
 emit_if_exists() {
   [ -f "$1" ] && printf '%s\n' "$1"
 }
@@ -81,6 +101,45 @@ emit_pattern_in_dir() {
   [ "$had_nullglob" -eq 1 ] || shopt -u nullglob 2>/dev/null || true
 }
 
+emit_stilwerk_for_prose_agent() {
+  # Resolve the project's long-form-prose language from CLAUDE.md and emit the
+  # matching stylometric profile path under ./fusion-workbench/stilwerk/.
+  #
+  # Language source: the first line in ./CLAUDE.md matching
+  #   ^\*\*Language:\*\* *([a-z]{2})
+  # case-sensitive, two lowercase letters. Valid values: en, de. Anything else
+  # (no CLAUDE.md, no match, invalid value) falls through to LANG_CODE=en.
+  #
+  # Resolution: ./fusion-workbench/stilwerk/default-voice-${LANG_CODE}.yaml
+  # If the file exists, emit it. If it does not and LANG_CODE != en, fall back
+  # to default-voice-en.yaml and emit that if present. Otherwise emit nothing
+  # silently — the agent's Setup notes the absence in its history file.
+  local claude_md="./CLAUDE.md"
+  local stilwerk_dir="./fusion-workbench/stilwerk"
+  local lang_code="en"
+  local extracted=""
+  if [ -f "$claude_md" ]; then
+    # Grep for the convention line, take the first match, strip everything
+    # except the two-letter code. The regex is anchored to line start.
+    extracted=$(grep -E '^\*\*Language:\*\* *[a-z]{2}' "$claude_md" 2>/dev/null \
+                | head -n 1 \
+                | sed -E 's/^\*\*Language:\*\* *([a-z]{2}).*/\1/')
+  fi
+  case "$extracted" in
+    en|de) lang_code="$extracted" ;;
+    *)     lang_code="en" ;;
+  esac
+  local profile="$stilwerk_dir/default-voice-${lang_code}.yaml"
+  if [ -f "$profile" ]; then
+    printf '%s\n' "$profile"
+    return 0
+  fi
+  if [ "$lang_code" != "en" ]; then
+    local fallback="$stilwerk_dir/default-voice-en.yaml"
+    [ -f "$fallback" ] && printf '%s\n' "$fallback"
+  fi
+}
+
 PLUGIN_RULES_DIR="${FUSION_PLUGIN_ROOT:-}/rules"
 PROJECT_RULES_DIR="./rules"
 PROJECT_CLAUDE_RULES_DIR=".claude/rules"
@@ -89,6 +148,12 @@ PROJECT_CLAUDE_RULES_DIR=".claude/rules"
 emit_if_exists "$PLUGIN_RULES_DIR/fusion-workbench-conventions.md"
 emit_if_exists "$PLUGIN_RULES_DIR/decision-record-examples.md"
 emit_if_exists "$PLUGIN_RULES_DIR/user-facing-output.md"
+
+# 1b. Long-form-prose agents additionally receive the project's stylometric
+#     voice profile path (resolved from CLAUDE.md's `**Language:**` line).
+if [ "$IS_PROSE_AGENT" -eq 1 ]; then
+  emit_stilwerk_for_prose_agent
+fi
 
 # 2. Domain patterns — plugin first, then fusion-agent-specific project rules,
 #    then project-wide rules in .claude/rules/. Order is read-order, not

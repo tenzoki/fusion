@@ -4,6 +4,8 @@ Every piece of output the user reads — status reports, gate prompts, `AskUserQ
 
 This rule is loaded for every agent. If you find yourself writing output that violates it, rewrite before sending. The user reads everything you produce — make it worth reading.
 
+This rule governs short-form output — status reports, gate prompts, `AskUserQuestion` text, session summary headers, dashboard lines, chat replies. For long-form prose generation (session summary bodies, consultant replies, analyst reports, investigator timelines, playmaker briefings, prose sections of specs and plans), additionally apply the project's stylometric profile at `./fusion-workbench/stilwerk/<lang>.yaml` — resolved per the `**Language:**` line in `CLAUDE.md` (see `rules/fusion-workbench-conventions.md` `## Project language`). Each long-form-prose agent's prompt enumerates which of its outputs the profile governs.
+
 ## Information architecture (in this order)
 
 1. **Action first.** If the user needs to decide, type, click, approve, or wait, that comes at the very top — before any explanation. The first line answers "what does the user do now?" If there's nothing for the user to do, lead with that explicitly: *"Session complete — nothing for you to do."*
@@ -43,7 +45,27 @@ This rule is loaded for every agent. If you find yourself writing output that vi
 ## Length
 
 - **Status reports: ~5–15 lines for normal cases.** A successful session report doesn't need a wall of facts. Lead with the verdict and what (if anything) the user needs to do, then trailing details.
+- **Gate prompts: ≤ 8 lines** including the question and the option list. Anything longer means the gate is doing too much work in one prompt — split it or move context to a referenced file.
+- **`AskUserQuestion` text: ≤ 6 lines for the question stem, ≤ 4 lines per option label.** Option labels are scannable choices, not paragraphs.
+- **Session summary header: ≤ 10 lines before the first "Details" anchor.** The header is what the user reads in scrollback; details live below the fold.
+- **Chat reply default: ≤ 12 lines.** If more is needed, move detail to a "Details" trailing block or to a file and link it.
 - **Wide tables and long lists belong in "Details," not the opening summary.**
+
+Before sending, count the lines. If a cap is exceeded, move material to Details — do not relax the cap.
+
+## Effort estimates
+
+- **No agent emits an effort estimate unless the user explicitly asked for one in the current exchange.** Unsolicited estimates are noise — the monitor's session-scoped ETA already covers that need.
+- **When the user asks**, write exactly one line at the end of the relevant document or reply, in the form `estimated effort (ai-based): about <N> <unit>`. The phrasing is locked: lowercase, the word "about" (not `~`), and an explicit unit — `min`, `h`, or `day`.
+- **The number is AI-paced** — roughly aligned with what the monitor's session-scoped ETA would predict for this kind of work, not a human-hour estimate.
+
+Banned patterns: do not write `~5 hours`, `roughly half a day`, or any hour count not preceded by an explicit user request in the current exchange.
+
+**Before / after:**
+
+Before: `Bundle A: ~6 steps, 5 hours`
+
+After: `Bundle A: 6 steps` — followed, only if the user asked, by a separate trailing line `estimated effort (ai-based): about 45 min`.
 
 ## Examples
 
@@ -60,7 +82,7 @@ This rule is loaded for every agent. If you find yourself writing output that vi
 > The reviewer confirmed the work is consistent with your original goal. 6 commits landed across 4 tasks + 1 reconciliation pass + 1 session-close.
 >
 > **Optional next steps** (if you want to keep going):
-> - Pick up the ontology-coverage plan (Bundle A: ~6 steps, 5 hours)
+> - Pick up the ontology-coverage plan (Bundle A — 6 steps)
 > - Or draft the Stefan consult in parallel (1 step)
 >
 > **Details:**

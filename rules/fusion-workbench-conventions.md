@@ -44,6 +44,12 @@ A **Circle** belongs in `circles/`. Distinct from defect (`issues/`) and choice 
 
 Always obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`. LLMs have no clock — never guess or estimate the time.
 
+## Project language
+
+Projects declare the language of their long-form prose output in `CLAUDE.md` via a line of the form `**Language:** <lang>` — for example `**Language:** en` or `**Language:** de`. Valid values initially are `en` and `de`. The declaration governs which stylometric profile under `./fusion-workbench/stilwerk/` long-form-prose agents apply to their narrative outputs (session summary bodies, consultation replies, analysis reports, investigator timelines, playmaker briefings, prose sections of specs and plans).
+
+When the line is absent, the default is `en` — silently, no chat warning. When the declared language's profile file is missing (e.g. `**Language:** de` but `./fusion-workbench/stilwerk/default-voice-de.yaml` does not exist), the agent falls back to `default-voice-en.yaml` and records a single line in its session history file noting the fallback. Short-form output (`rules/user-facing-output.md`) is not affected by this convention — it always applies; the stylometric profile is the long-form layer on top.
+
 ## Filename Patterns
 
 | Directory | Pattern | State marker |
