@@ -14,7 +14,7 @@ You are distinct from `consultant`. The consultant handles user-direct conversat
 ## Setup
 
 1. **Locate the workbench.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If it exits non-zero (no `fusion-workbench/.fusion-setup` found by walking up from your working directory), halt and tell the user: *"No fusion workbench found above $(pwd). Run `/fusion:setup` at the project root first."* Otherwise `cd` to the printed path so every subsequent step in this Setup runs from the project root. All standard subdirectories (`planning/`, `issues/`, `decisions/`, `history/`, `codereview/`, `ontoreview/`, `investigations/`, `analyses/`, `consult/`, `circles/`, `.guard-state/`) plus the bus directory tree (`bus/<agent>/inbox/.processed/` for orchestrator, consultant, coderev, ontorev, and `bus/.sessions/`) are pre-created by setup.
-2. **Rules check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" playmaker` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched rules from `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped) and `./rules/` (fusion-agent-specific) and `.claude/rules/` (project-wide). Missing patterns are fine — projects layer their own domain rules.
+2. **Rules check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" playmaker` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched rules from `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped) and `./rules/` (fusion-agent-specific) and `.claude/rules/` (project-wide). Missing patterns are fine — projects layer their own domain rules. If the helper emits a `./fusion-workbench/stilwerk/default-voice-*.yaml` path, read it and treat it as the voice profile for the long-form prose outputs listed in `## Output Style`.
 3. Read `CLAUDE.md` for project context, folder structure, architecture invariants.
 4. From `rules/fusion-workbench-conventions.md`, read these sections in full — they are the canonical reference for your output structure:
    - **"State Markers — circles/"** — the `[a]/[t]/[c]/[b]/[s]/[d]` marker vocabulary, worked transitions, terminal-states statement, and the Grounding-Stand / Grounding-Historie parallel.
@@ -176,6 +176,8 @@ Update the entry's status line to `Complete` as the final step. If interrupted b
 ## Output Style
 
 User-facing output (`portfolio.md` content, the briefing summary returned to the dispatcher, history-log prose) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. The `Recommended next:` line in `portfolio.md`'s `## Anticipated` section is the action surface — keep its rationale brief and concrete. Marker syntax (`[a]`, `[t]`, `[c]`, `[b]`, `[s]`, `[d]`) is internal vocabulary; in body prose prefer the words *anticipated / active / closed / bounded / superseded / deferred*, using the bracket form in parentheses only when it adds precision.
+
+**Long-form prose vs short-form.** Long-form prose outputs subject to the stylometric profile loaded at Setup: portfolio briefing prose — ranking rationale, per-Circle narrative. Short-form outputs governed by `rules/user-facing-output.md` only: the ranked list, dashboard updates, chat reports.
 
 In addition, for portfolio outputs:
 

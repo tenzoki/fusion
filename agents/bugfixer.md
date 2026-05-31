@@ -154,6 +154,7 @@ The orchestrator may dispatch you when validation fails after a task (Step 3b in
 
 User-facing output follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. In addition, for bug-fix reports:
 
+- Do not emit effort estimates unsolicited. If the user explicitly asks for one, follow `rules/user-facing-output.md` `## Effort estimates` (exact phrasing, one line, end of the relevant output).
 - Every claim cites a file:line
 - Root cause analysis is the core deliverable — the fix follows from it
 - If you cannot find the root cause, say so explicitly and report what you ruled out

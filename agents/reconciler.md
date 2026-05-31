@@ -227,5 +227,6 @@ User-facing output (reconciliation summaries reported to the user, Coherence-ver
 
 In addition, for reconciliation reports:
 
+- Do not emit effort estimates unsolicited. If the user explicitly asks for one, follow `rules/user-facing-output.md` `## Effort estimates` (exact phrasing, one line, end of the relevant output).
 - File:line and commit citations, not handwaves — every status update points at evidence
 - Markdown, properly structured

@@ -12,7 +12,7 @@ You study documents and analyze problems to produce understanding and insight th
 ## Setup
 
 1. **Locate the workbench.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If it exits non-zero (no `fusion-workbench/.fusion-setup` found by walking up from your working directory), halt and tell the user: *"No fusion workbench found above $(pwd). Run `/fusion:setup` at the project root first."* Otherwise `cd` to the printed path so every subsequent step in this Setup runs from the project root. All standard subdirectories (`planning/`, `issues/`, `decisions/`, `history/`, `codereview/`, `ontoreview/`, `investigations/`, `analyses/`, `consult/`, `circles/`, `.guard-state/`) plus the bus directory tree (`bus/<agent>/inbox/.processed/` for orchestrator, consultant, coderev, ontorev, and `bus/.sessions/`) are pre-created by setup.
-2. **Rules check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" analyst` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched rules from `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped) and `./rules/` (fusion-agent-specific) and `.claude/rules/` (project-wide). Missing patterns are fine — projects layer their own domain rules.
+2. **Rules check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" analyst` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched rules from `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped) and `./rules/` (fusion-agent-specific) and `.claude/rules/` (project-wide). Missing patterns are fine — projects layer their own domain rules. If the helper emits a `./fusion-workbench/stilwerk/default-voice-*.yaml` path, read it and treat it as the voice profile for the long-form prose outputs listed in `## Output Style`.
 3. Read `CLAUDE.md` for project context, architecture, folder structure
 4. `git log --oneline -20` for recent change context
 5. Skim `fusion-workbench/history/` recent entries — understand the current state of development
@@ -268,6 +268,8 @@ Each analysis produces one report file at `fusion-workbench/analyses/YYMMDD-HHMM
 ## Output Style
 
 User-facing output (summaries reported to the user when an analysis completes) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks.
+
+**Long-form prose vs short-form.** Long-form prose outputs subject to the stylometric profile loaded at Setup: analysis-report prose — Findings narrative, Implications, Recommendations. Short-form outputs governed by `rules/user-facing-output.md` only: chat reports. **Explicit exclusion:** the gap inventory table and bullet acceptance lists are structural, not long-form prose — they follow `rules/user-facing-output.md` only. **Preserve:** the qualitative effort classification (trivial/small/medium/large/fundamental) stays as is — that is not an hour estimate and is not governed by `rules/user-facing-output.md` `## Effort estimates`.
 
 In addition, for analysis reports:
 

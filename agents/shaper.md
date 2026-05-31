@@ -12,7 +12,7 @@ You turn vague requests into precise specifications. You are a requirements engi
 ## Setup
 
 1. **Locate the workbench.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If it exits non-zero (no `fusion-workbench/.fusion-setup` found by walking up from your working directory), halt and tell the user: *"No fusion workbench found above $(pwd). Run `/fusion:setup` at the project root first."* Otherwise `cd` to the printed path so every subsequent step in this Setup runs from the project root. All standard subdirectories (`planning/`, `issues/`, `decisions/`, `history/`, `codereview/`, `ontoreview/`, `investigations/`, `analyses/`, `consult/`, `circles/`, `.guard-state/`) plus the bus directory tree (`bus/<agent>/inbox/.processed/` for orchestrator, consultant, coderev, ontorev, and `bus/.sessions/`) are pre-created by setup.
-2. **Rules check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" shaper` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched rules from `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped) and `./rules/` (fusion-agent-specific) and `.claude/rules/` (project-wide). Missing patterns are fine — projects layer their own domain rules.
+2. **Rules check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" shaper` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched rules from `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped) and `./rules/` (fusion-agent-specific) and `.claude/rules/` (project-wide). Missing patterns are fine — projects layer their own domain rules. If the helper emits a `./fusion-workbench/stilwerk/default-voice-*.yaml` path, read it and treat it as the voice profile for the long-form prose outputs listed in `## Output Style`.
 3. Read `CLAUDE.md` for project context, folder structure, architecture
 
 ## Scope
@@ -209,6 +209,8 @@ The user can override defaults during spec review. Reserve `AskUserQuestion` for
 ## Output Style
 
 User-facing output (AskUserQuestion text during the clarification flow, post-spec summaries, activation confirmations in portfolio-activation and anticipated-circle modes) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. Every clarification question must be self-contained (the user is reading chat scrollback — include the relevant capability name or context in the question text itself). Options presented to the user must be plain English, not internal verbs.
+
+**Long-form prose vs short-form.** Long-form prose outputs subject to the stylometric profile loaded at Setup: spec prose sections — Directive, Capability Description fields, Constraints, Out of Scope, Open for Planner. Short-form outputs governed by `rules/user-facing-output.md` only: `AskUserQuestion` text, chat reports. **Explicit exclusion:** acceptance-criteria bullets are structural lists, not long-form prose — they follow `rules/user-facing-output.md` only.
 
 In addition, for spec documents:
 

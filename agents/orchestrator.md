@@ -116,7 +116,7 @@ This sub-step is the read-side of user-initiated consultations (see **User-Initi
 
 Remaining setup (after step 1 is resolved):
 
-2. **Rules check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" orchestrator` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched rules from `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped) and `./rules/` (fusion-agent-specific) and `.claude/rules/` (project-wide). Sub-agents you dispatch run their own rules check for their domain — you only need workbench conventions here.
+2. **Rules check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" orchestrator` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched rules from `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped) and `./rules/` (fusion-agent-specific) and `.claude/rules/` (project-wide). Sub-agents you dispatch run their own rules check for their domain — you only need workbench conventions here. If the helper emits a `./fusion-workbench/stilwerk/default-voice-*.yaml` path, read it and treat it as the voice profile for the long-form prose outputs listed in `## Output Style`.
 3. Read `CLAUDE.md` for project context, folder structure, architecture
 4. `git log --oneline -20` for recent change context (skip if not a git repository)
 5. Snapshot open state:
@@ -1049,6 +1049,8 @@ sequenceDiagram
 ## Output Style
 
 User-facing output (gate prompts, AskUserQuestion text, Turn reports, session summaries, activation banners) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. Specifically for the orchestrator: every Rebalance-gate option label and every AskUserQuestion option must be plain English (e.g. "Try again with a refined task list" rather than "Revise Artifact"; internal verbs may follow in parentheses). Session reports lead with "what does the user do now?" — if the verdict is `coherent` and nothing requires user attention, the first line is "Session complete — nothing for you to do."
+
+**Long-form prose vs short-form.** Long-form prose outputs subject to the stylometric profile loaded at Setup: the Phase 4 session summary body in `history/YYMMDD-HHMM-orchestrator-session.md`. Short-form outputs governed by `rules/user-facing-output.md` only: dashboard lines (`orchestrator-live.md`), gate prompts, `AskUserQuestion` text, chat status messages, monitor strings, commit messages.
 
 In addition, for orchestrator-specific output:
 

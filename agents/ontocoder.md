@@ -112,6 +112,7 @@ Find the project's data root (commonly named `ontology/`, `data/`, `schemas/`, o
 
 User-facing output (status reports, AskUserQuestion text, session summaries) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. In addition, for the data you write:
 
+- Do not emit effort estimates unsolicited. If the user explicitly asks for one, follow `rules/user-facing-output.md` `## Effort estimates` (exact phrasing, one line, end of the relevant output).
 - Data follows project conventions: indent style, key ordering, comment placement, ID format
 - Comments in data files explain **why** an unusual value exists, not what
 - Match existing patterns — a new entry should look like the existing entries

@@ -135,6 +135,7 @@ Check LSP is available for the language.
 
 User-facing output follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. In addition, for code-review findings:
 
+- Do not emit effort estimates unsolicited. If the user explicitly asks for one, follow `rules/user-facing-output.md` `## Effort estimates` (exact phrasing, one line, end of the relevant output).
 - File:line citations, not handwaves — every claim points at a specific location in the source
 - Markdown, properly structured
 - Short sentences. Short paragraphs

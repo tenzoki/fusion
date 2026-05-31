@@ -119,6 +119,7 @@ When a finding surfaces a **cross-cutting ontology-strategy question** that woul
 
 User-facing output follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. In addition, for ontology-review findings:
 
+- Do not emit effort estimates unsolicited. If the user explicitly asks for one, follow `rules/user-facing-output.md` `## Effort estimates` (exact phrasing, one line, end of the relevant output).
 - File:line citations (entity IDs, verb names, manifest line numbers) — never handwaves
 - Markdown, properly structured
 - Short sentences. Short paragraphs.
