@@ -138,6 +138,7 @@ emit_stilwerk_for_prose_agent() {
     local fallback="$stilwerk_dir/default-voice-en.yaml"
     [ -f "$fallback" ] && printf '%s\n' "$fallback"
   fi
+  return 0
 }
 
 PLUGIN_RULES_DIR="${FUSION_PLUGIN_ROOT:-}/rules"
