@@ -1,13 +1,13 @@
 ---
 name: circle-stash
-description: Freeze the complete state of the active Circle (file, pointer, agent state, dashboard, queue, referenced spec/plan, git working tree, bus session) into a self-contained stash directory at fusion-workbench/stashes/<id>/. Use when an urgent interruption demands the workspace and the active Circle must be preserved for later restoration.
+description: Freeze the complete state of the active Circle (file, pointer, agent state, dashboard, queue, referenced spec/plan, git working tree) into a self-contained stash directory at fusion-workbench/stashes/<id>/. Use when an urgent interruption demands the workspace and the active Circle must be preserved for later restoration.
 argument-hint: "[reason]"
 allowed-tools: [Bash, Read, Write, Edit, AskUserQuestion]
 ---
 
 # Fusion — circle-stash (freeze the active Circle)
 
-The user invoked `/fusion:circle-stash [reason]`. This skill freezes the complete state of the currently-active Circle — the Circle file, the `.active-circle` pointer, the orchestrator's in-flight state, the dashboard, the task queue, any referenced spec/plan files, the git working tree, the bus session, and unpaired consultations — into a self-contained directory at `fusion-workbench/stashes/<id>/`. Once stashed, the workspace is free for unrelated urgent work; `/fusion:circle-pop` restores the Circle later.
+The user invoked `/fusion:circle-stash [reason]`. This skill freezes the complete state of the currently-active Circle — the Circle file, the `.active-circle` pointer, the orchestrator's in-flight state, the dashboard, the task queue, any referenced spec/plan files, and the git working tree — into a self-contained directory at `fusion-workbench/stashes/<id>/`. Once stashed, the workspace is free for unrelated urgent work; `/fusion:circle-pop` restores the Circle later.
 
 The skill writes nothing outside `fusion-workbench/stashes/<id>/`, the workbench top-level files it relocates, and a single `circle_stashed` event line at the end of `orchestrator-events.jsonl`. Every mutation is gated by an explicit user confirmation in Step 6.
 
@@ -71,7 +71,7 @@ If `TASK_STATUS == "running"`:
 
 Exit cleanly.
 
-If `agentstate.yaml` is absent entirely (no orchestrator session running but `.active-circle` exists — Decision Fork 4): continue. The manifest will record `session: none` and the bus-session clear + agentstate copy steps are skipped in Step 7.
+If `agentstate.yaml` is absent entirely (no orchestrator session running but `.active-circle` exists — Decision Fork 4): continue. The manifest will record `session: none` and the agentstate copy step is skipped in Step 7.
 
 Record `HAS_AGENTSTATE`:
 
@@ -115,31 +115,6 @@ Gather the facts to show the user before any mutation runs. None of these reads 
   HEAD_SHORT="$(cd "$WORKBENCH" && git rev-parse --short HEAD 2>/dev/null)"
   ```
 
-- **Unpaired consultations count.** Only relevant if `bus/` exists. Read `orchestrator-events.jsonl`; count `consultation_filed` (and pre-v3.7.0 `gate_filed_consultation`) events whose `detail.request_path` is not paired with a later `consultation_consumed` / `consultation_cancelled` (or pre-v3.7.0 `gate_consultation_consumed` / `gate_consultation_cancelled`) event referencing the same path.
-
-  ```bash
-  if [ -d "$WORKBENCH/fusion-workbench/bus" ] && [ -f "$WORKBENCH/fusion-workbench/orchestrator-events.jsonl" ]; then
-    UNPAIRED_CONSULTATIONS="$(python3 -c "
-import json,sys
-filed={}
-paired=set()
-for ln in open('$WORKBENCH/fusion-workbench/orchestrator-events.jsonl'):
-    try: e=json.loads(ln)
-    except: continue
-    ev=e.get('event')
-    rp=(e.get('detail') or {}).get('request_path')
-    if not rp: continue
-    if ev in ('consultation_filed','gate_filed_consultation'):
-        filed[rp]=ln
-    elif ev in ('consultation_consumed','consultation_cancelled','gate_consultation_consumed','gate_consultation_cancelled'):
-        paired.add(rp)
-print(len([p for p in filed if p not in paired]))
-")"
-  else
-    UNPAIRED_CONSULTATIONS=0
-  fi
-  ```
-
 - **Stash id.** Derive from the Circle filename's slug. The Circle filename is `YYMMDD-HHMM[t]-<slug>.md`; the stash id is `YYMMDD-HHMM-<slug>` where `YYMMDD-HHMM` is the current time (not the Circle's birth time — multiple stashes against the same Circle remain distinguishable).
 
   ```bash
@@ -171,7 +146,6 @@ Present the preview block, action-first:
 > - **Turn:** `<TURN_N>/<TURN_MAX>` (or "no session in flight" if `HAS_AGENTSTATE=false`)
 > - **Files to be moved into the stash:** the Circle file, `agentstate.yaml` (if any), `tasklist.md` (if any), `orchestrator-live.md`, plus any referenced spec/plan paths (`<list-or-"none">`).
 > - **Git working tree:** `<GIT_DIRTY_LINES>` uncommitted line(s) will be captured via `git stash push --include-untracked`.
-> - **Pending consultations:** `<UNPAIRED_CONSULTATIONS>` unpaired (will be snapshotted into the stash).
 > - **Stash id:** `<STASH_ID>` — directory `fusion-workbench/stashes/<STASH_ID>/`.
 > - **Reason:** `<REASON>`
 
@@ -190,7 +164,7 @@ The order below is required for crash-recoverability. Each step is independently
 ### 7.0 — Create the stash skeleton
 
 ```bash
-mkdir -p "$STASH_DIR/git" "$STASH_DIR/bus"
+mkdir -p "$STASH_DIR/git"
 ```
 
 ### 7.1 — Write the in-progress lock
@@ -283,49 +257,6 @@ If `git stash push` had nothing to save, the stash-count is unchanged: `GIT_STAS
 
 `HEAD_SHORT` is re-captured here (not just at Step 4) to close the small race window between the preview and the actual freeze — if a commit happened during the confirmation gate, the manifest records the post-commit hash.
 
-### 7.6 — Clear the bus session and snapshot pending consultations (if bus enabled)
-
-The snapshot is written with pure shell (awk over the JSONL event log) — no Python dependency, no quoting-injection surface on paths or session ids, and any failure is surfaced instead of swallowed.
-
-```bash
-if [ -d "$WORKBENCH/fusion-workbench/bus" ]; then
-  if [ "$HAS_AGENTSTATE" = true ]; then
-    BUS_SESSION_ID="$(grep -E '^[[:space:]]+bus_session_id:' "$WORKBENCH/fusion-workbench/agentstate.yaml" | head -1 | sed -E 's/.*bus_session_id:[[:space:]]*"?([^"[:space:]]+)"?.*/\1/')"
-    if [ -n "$BUS_SESSION_ID" ] && [ "$BUS_SESSION_ID" != "null" ]; then
-      "$FUSION_PLUGIN_ROOT/bin/fusion-bus-session" clear "$BUS_SESSION_ID" || true
-    else
-      BUS_SESSION_ID=""
-    fi
-  else
-    BUS_SESSION_ID=""
-  fi
-  # Snapshot the list of unpaired consultations into stash. The event log itself is NOT moved.
-  if [ -n "$BUS_SESSION_ID" ]; then echo "bus_session_id: \"$BUS_SESSION_ID\"" > "$STASH_DIR/bus/snapshot.yaml"; else echo "bus_session_id: null" > "$STASH_DIR/bus/snapshot.yaml"; fi
-  EVENTS="$WORKBENCH/fusion-workbench/orchestrator-events.jsonl"
-  if [ -f "$EVENTS" ]; then
-    UNPAIRED_LINES="$(awk 'BEGIN{FS="\""} { rp=""; ev=""; for (i=1;i<=NF;i++) { if ($i=="event") { ev=$(i+2) } if ($i=="request_path") { rp=$(i+2) } } if (rp=="") next; if (ev=="consultation_filed"||ev=="gate_filed_consultation") { filed[rp]=$0 } else if (ev=="consultation_consumed"||ev=="consultation_cancelled"||ev=="gate_consultation_consumed"||ev=="gate_consultation_cancelled") { paired[rp]=1 } } END { for (p in filed) if (!(p in paired)) print filed[p] }' "$EVENTS")"
-    if [ -n "$UNPAIRED_LINES" ]; then
-      echo "unpaired_consultations:" >> "$STASH_DIR/bus/snapshot.yaml"
-      while IFS= read -r line; do printf '  - %s\n' "$line" >> "$STASH_DIR/bus/snapshot.yaml"; done <<< "$UNPAIRED_LINES"
-    else
-      echo "unpaired_consultations: []" >> "$STASH_DIR/bus/snapshot.yaml"
-    fi
-  else
-    echo "unpaired_consultations: []" >> "$STASH_DIR/bus/snapshot.yaml"
-  fi
-else
-  BUS_SESSION_ID=""
-fi
-```
-
-If `bus/` does not exist (the workbench has not opted in to the bus protocol): skip every bus-related operation. `BUS_SESSION_ID` stays empty; no `bus/snapshot.yaml` is written; the bus subdirectory of the stash is empty (and harmless).
-
-Notes on the snapshot format:
-
-- `bus_session_id` is the YAML unquoted literal `null` when there was no session, or a quoted string when there was.
-- `unpaired_consultations` is a YAML list of one entry per unpaired event. Each entry is the raw JSON event line embedded as a YAML scalar (block-style `- <line>`). Pop does not currently re-feed these into anything; they're a forensic record. If snapshot parsing is added later, the JSON line is round-trippable.
-- The awk parser is tolerant: it extracts `event` and `request_path` by string scanning the quote-delimited JSONL line — robust enough for the orchestrator-emitted shape but not a full JSON parser. Events without both fields are skipped.
-
 ### 7.7 — Delete the now-copied originals
 
 ```bash
@@ -380,11 +311,10 @@ This Circle was stashed by `/fusion:circle-stash`. The complete state lives at `
 
 ### 7.11 — Write the manifest and README
 
-Build the manifest in bash via heredoc so every field comes from a real shell variable — no implementer-substitution of `<placeholder>` tokens at runtime. Branches for `bus_session_id` (quoted string vs. unquoted `null`), `git_stash_sha` (quoted SHA vs. unquoted `null`), and `has_spec_plan` (inline `[]` vs. YAML list block) are explicit:
+Build the manifest in bash via heredoc so every field comes from a real shell variable — no implementer-substitution of `<placeholder>` tokens at runtime. Branches for `git_stash_sha` (quoted SHA vs. unquoted `null`) and `has_spec_plan` (inline `[]` vs. YAML list block) are explicit:
 
 ```bash
 STASH_TIMESTAMP="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-if [ -n "$BUS_SESSION_ID" ]; then BUS_FIELD="\"$BUS_SESSION_ID\""; else BUS_FIELD="null"; fi
 if [ -n "$GIT_STASH_SHA" ]; then SHA_FIELD="\"$GIT_STASH_SHA\""; else SHA_FIELD="null"; fi
 if [ "$HAS_AGENTSTATE" = true ]; then AGENTSTATE_FIELD="true"; else AGENTSTATE_FIELD="false"; fi
 {
@@ -396,14 +326,12 @@ if [ "$HAS_AGENTSTATE" = true ]; then AGENTSTATE_FIELD="true"; else AGENTSTATE_F
   echo "head_short_hash: \"$HEAD_SHORT\""
   echo "git_stash_ref: \"$GIT_STASH_REF\""
   echo "git_stash_sha: $SHA_FIELD"
-  echo "bus_session_id: $BUS_FIELD"
   echo "has_agentstate: $AGENTSTATE_FIELD"
   if [ -z "$HAS_SPEC_PLAN_LIST" ]; then echo "has_spec_plan: []"; else echo "has_spec_plan:"; while IFS= read -r p; do [ -n "$p" ] && printf '  - "%s"\n' "$p"; done <<< "$HAS_SPEC_PLAN_LIST"; fi
-  echo "unpaired_consultations: ${UNPAIRED_CONSULTATIONS:-0}"
 } > "$STASH_DIR/manifest.yaml"
 ```
 
-The resulting `manifest.yaml` is a twelve-field index. Field semantics:
+The resulting `manifest.yaml` is a ten-field index. Field semantics:
 
 | Field | Type | When | Notes |
 |---|---|---|---|
@@ -415,10 +343,8 @@ The resulting `manifest.yaml` is a twelve-field index. Field semantics:
 | `head_short_hash` | quoted string | always | empty quoted string if workbench is not a git repo |
 | `git_stash_ref` | quoted string | always | positional `stash@{N}` line, or `(no changes)` sentinel |
 | `git_stash_sha` | quoted string or `null` | always | underlying commit SHA — load-bearing for pop's apply step |
-| `bus_session_id` | quoted string or `null` | always | unquoted `null` literal when bus disabled or no session |
 | `has_agentstate` | unquoted bool | always | `true` when stash captured a running session |
 | `has_spec_plan` | inline `[]` or YAML list | always | one quoted path per entry under `fusion-workbench/` |
-| `unpaired_consultations` | unquoted integer | always | count, not the list (the list lives in `bus/snapshot.yaml`) |
 
 Use the `Write` tool to create `$STASH_DIR/README.md` (5–10 lines, plain prose) — substitute the captured values:
 
@@ -508,7 +434,6 @@ Action-first per `rules/user-facing-output.md`:
 > - Stash directory: `fusion-workbench/stashes/<STASH_ID>/`
 > - Files moved into the stash: `<MOVED_COUNT>` (Circle file, agent state, dashboard snapshot, queue, plus any spec/plan files)
 > - Git working tree: captured as `<GIT_STASH_REF>` (or `(no changes)` if the tree was clean)
-> - Bus session: `<cleared <BUS_SESSION_ID> | not enabled | no session>`
 
 Exit. Do not chain into another command.
 

@@ -38,7 +38,7 @@ ROOT="$("$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root")" || {
 cd "$ROOT"
 ```
 
-If the helper exits non-zero, halt and tell the user to run `/fusion:setup`. Do NOT bootstrap a workbench from this agent — setup is the only place that creates one. All standard subdirectories (`planning/`, `issues/`, `decisions/`, `history/`, `codereview/`, `ontoreview/`, `investigations/`, `analyses/`, `consult/`, `circles/`, `.guard-state/`) plus the bus directory tree (`bus/<agent>/inbox/.processed/` for orchestrator, consultant, coderev, ontorev, and `bus/.sessions/`) are pre-created by setup.
+If the helper exits non-zero, halt and tell the user to run `/fusion:setup`. Do NOT bootstrap a workbench from this agent — setup is the only place that creates one. All standard subdirectories (`planning/`, `issues/`, `decisions/`, `history/`, `codereview/`, `ontoreview/`, `investigations/`, `analyses/`, `consult/`, `circles/`, `.guard-state/`) are pre-created by setup.
 
 Then overwrite `fusion-workbench/orchestrator-live.md` to clear stale data from any prior session:
 
@@ -95,25 +95,6 @@ Read `fusion-workbench/agentstate.yaml`. This is the FIRST thing you do after th
      - **Modify** — the user provides updated instructions or changes scope before resuming.
   5. **STOP and WAIT for the user's response. Do not proceed until the user has answered.**
 
-### Step 1b — Bus-resume consultation probe (continued from interrupted session)
-
-If `fusion-workbench/bus/` does not exist, skip this sub-step entirely (bus protocol not active for this workbench).
-
-If `fusion-workbench/bus/` exists AND the user resolved Step 1 by choosing **Continue** (resume the interrupted session), run the bus-resume probe described in *Bus-resume consultation probe — shared procedure* below. If the user chose **Restart** or **Modify**, skip Step 1b — the prior session's pending consultations are no longer in flight (Restart) or are being re-scoped (Modify); the user can refile if needed.
-
-This sub-step is the read-side of user-initiated consultations (see **User-Initiated Consultation** above). When the orchestrator previously emitted a `consultation_filed` event (or, for sessions that started before v3.7.0, a `gate_filed_consultation` event) and the user has since started the consultant in another terminal and produced a reply, this probe surfaces the reply on resume and returns control to the user's chat-driven flow.
-
-**Bus-resume consultation probe — shared procedure** (used by Step 1b above and Step 5b.f below):
-
-1. **Identify pending consultations.** Read `fusion-workbench/orchestrator-events.jsonl` (if absent, no pending — exit cleanly). Scan for events whose `event` field is either `consultation_filed` (v3.7.0 forward) or `gate_filed_consultation` (pre-v3.7.0 back-compat) that have NOT been paired with a later `consultation_consumed` / `consultation_cancelled` (v3.7.0 forward) or `gate_consultation_consumed` / `gate_consultation_cancelled` (pre-v3.7.0 back-compat) event referencing the same `detail.request_path`. For each unpaired event, capture `detail.request_path` and `detail.expected_reply_path`. Read the request file at `detail.request_path` and extract its `Re:` frontmatter field — this is the canonical pairing key (per `rules/fusion-workbench-conventions.md` `## Bus protocol` `### Reply pairing keys — both`, the `Re:` field is what orchestrator-resume matches on; the filename embed is grep-friendliness only). Build the ordered list of pending consultations (oldest originating event timestamp first).
-2. **For each pending consultation, in order, probe for a reply.** Glob `fusion-workbench/bus/orchestrator/inbox/*.reply.md` (exclude `.processed/`). For each candidate reply file, parse its frontmatter and extract its `Re:` field. Compare byte-for-byte (string equality — no regex, no canonicalisation) against the pending consultation's `Re:` field. Also check `fusion-workbench/bus/consultant/inbox/.processed/` for the originating request — if it carries a `Cancelled:` line in its body, note that.
-3. **Three cases per pending consultation, handled one at a time** (do NOT batch — each gets its own user prompt):
-   - **Case A — Reply found** (matching `*.reply.md` exists). Read the reply file. Present the reply body to the user with the framing: *"Consultant replied at `<reply-path>` while you were away. Their input is below. You can continue your session now — let me know how you'd like to proceed."* Then return control to the user's chat-driven flow. After the user acknowledges (or moves on with a new instruction), dual-write-tolerant mark-read the reply per `rules/fusion-workbench-conventions.md` `## Bus protocol` `### Mark-read protocol — dual-write, race-safe`: `mv` from `bus/orchestrator/inbox/<file>.reply.md` to `bus/orchestrator/inbox/.processed/<file>.reply.md`. Tolerate the case where the user already moved it via `bin/fusion-bus mark-read` (file missing from inbox AND present in `.processed/` = silent success; missing from both = warn the user with a one-line note and continue). Emit a `consultation_consumed` event paired with the originating `consultation_filed` (or `gate_filed_consultation` if the originating event used the legacy name); the `detail` object carries `request_path` and `reply_path` only (no `gate` field).
-   - **Case B — No reply yet** (no matching `*.reply.md` in `bus/orchestrator/inbox/`). Surface to the user: *"You filed a consultation at `<request-path>` but no reply has arrived yet."* Use `AskUserQuestion` to offer three named options: **Wait** (no-op; exit cleanly — the user can resume again later when a reply is present), **Proceed without the consultant's input** (treat as if no consultation was filed; return to the user's chat-driven flow), **Cancel the filed request**. On Cancel: append a single line `Cancelled: <RFC 3339 UTC timestamp from date -u +%Y-%m-%dT%H:%M:%S>` to the request body, then dual-write-tolerant mark-read the request from `bus/consultant/inbox/<file>.md` to `bus/consultant/inbox/.processed/<file>.md` (the request lives in the consultant's inbox, not the orchestrator's; the protocol's tolerance is symmetric, so the orchestrator may perform a mark-read on another agent's inbox under the same dual-write contract). Emit a `consultation_cancelled` event paired with the originating `consultation_filed` (or `gate_filed_consultation` if the originating event used the legacy name); the `detail` object carries `request_path` and `cancelled_at` only (no `gate` field).
-   - **Case C — Both reply and cancelled-marker present** (defensive: the user cancelled, then a slow consultant replied anyway). Treat as Case A and process the reply. The cancellation is informational; the reply is real work that should not be discarded. Add to the user-facing message: *"Note: this request was previously cancelled, but a consultant reply arrived after the cancellation. The reply is shown below; the cancellation marker is preserved in the request file for audit."* After processing, emit `consultation_consumed` as in Case A (NOT `consultation_cancelled` — the reply consumption is the truthful terminal state).
-4. **Multiple pending consultations** are processed sequentially in the order built in step 1 (oldest originating-event timestamp first; the originating event is `consultation_filed`, or `gate_filed_consultation` for pre-v3.7.0 back-compat). Each gets its own user prompt; do not batch. If the user chooses Wait for any pending consultation, the probe stops at that one (do not continue processing later pending consultations — the user explicitly wanted to defer).
-5. **No consultant dispatch.** This procedure NEVER dispatches the consultant. The consultant was user-invoked in another terminal (per the standard "switch terminals and run `./.fusion/fu consultant`" contract); this step just reads the reply file the consultant already wrote, or files a cancellation when the user gives up waiting. The "Never invokes consultant" boundary at the bottom of this prompt is byte-unchanged.
-
 Remaining setup (after step 1 is resolved):
 
 2. **Rules check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" orchestrator` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched rules from `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped) and `./rules/` (fusion-agent-specific) and `.claude/rules/` (project-wide). Sub-agents you dispatch run their own rules check for their domain — you only need workbench conventions here. If the helper emits a `./fusion-workbench/stilwerk/default-voice-*.yaml` path, read it and treat it as the voice profile for the long-form prose outputs listed in `## Output Style`.
@@ -150,17 +131,10 @@ Remaining setup (after step 1 is resolved):
      ```
 
    - **Setup hint.** If `circles_anticipated + circles_active > 0` (and `fusion-workbench/circles/` exists), print to the user: *"You have <N> anticipated and <M> active Circle(s) in `fusion-workbench/circles/`. Consider `/fusion:next` to review the portfolio before starting."* (Substitute `<N>` and `<M>`.) Continue Setup without waiting for user response. If both counts are 0 (or `circles/` is absent), no hint is printed — behaviour identical to v2.9.0. Record the hint emission (or its absence) in the orchestrator's session history file's snapshot section so post-session analysis can see whether it was printed.
-5b. **Bus check + session registration.** If `fusion-workbench/bus/` exists, this workbench has the bus protocol enabled (see `rules/fusion-workbench-conventions.md` `## Bus protocol`). Do:
-    a. Register this session: `"$FUSION_PLUGIN_ROOT/bin/fusion-bus-session" register orchestrator`. Capture stdout as the bus session-id and **hold it in memory** for the rest of Setup and the session. Do not write `agentstate.yaml` here — that file does not exist yet (it is first written at Phase 0 complete; see the Write Points table below). The Phase-0-complete initial write persists this value under `session.bus_session_id` (added below to the schema), and every subsequent `agentstate.yaml` write keeps the field accurate. Mirror the consultant pattern at `agents/consultant.md:30` — register here, persist at the agent's first natural write point. If the helper is missing or exits non-zero, print a warning to the user and proceed without registering (the in-memory id stays unset; the Phase-0 write records `session.bus_session_id: null`); do NOT halt.
-    b. List unread items in `fusion-workbench/bus/orchestrator/inbox/` (exclude `.processed/`). For each item, parse the `From:` and `Re:` frontmatter and `stat` the mtime (format `YYYY-MM-DD HH:MM`); print one line per item: `<filename> — from <From>, re <Re> (filed <mtime>)`.
-    c. If at least one unread item exists, present the list and ask via `AskUserQuestion`: **Process inbox first** (handle the messages before resuming the user's task) or **Continue with current task** (proceed; the inbox will still be there next session). Default to current task — most sessions will not have pending mail.
-    d. Mid-session refresh of `last_heartbeat` is the orchestrator's responsibility and happens at Turn-end (see Step 3e: Convergence Check). The bus-session `register` call in 5b.a already set `last_heartbeat` to "now"; no post-Setup heartbeat is needed here. Per decision `fusion-workbench/decisions/260516-1058[a]-bus-session-heartbeat-cadence.md` (Option β: orchestrator-only refresh), the other bus-aware agents (consultant, coderev, ontorev) are register-only and do not refresh mid-session.
-    e. If `fusion-workbench/bus/` does not exist, skip 5b entirely — the workbench has not opted in to the bus protocol. Do not warn.
-    f. **Fresh-session consultation-reply probe.** This sub-step fires only when Step 1 detected no interrupted session (no `agentstate.yaml` present) — i.e. the prior session exited cleanly but the user may have filed a consultation in that session and is now starting a new session to consume the reply. Skip if Step 1 entered the Continue/Restart/Modify flow (Step 1b already handled the probe for that case). Run the *Bus-resume consultation probe — shared procedure* defined under Step 1b above. The probe reads `orchestrator-events.jsonl` (which persists across sessions, unlike `agentstate.yaml`) and finds any `consultation_filed` events (or, for pre-v3.7.0 sessions, `gate_filed_consultation`) not yet paired with `consultation_consumed` / `consultation_cancelled` (or pre-v3.7.0 `gate_consultation_consumed` / `gate_consultation_cancelled`). If no unpaired events exist (the common case for a truly fresh session), the probe exits cleanly with no user-facing output.
 6. Create history file: `fusion-workbench/history/YYMMDD-HHMM-orchestrator-session.md` (obtain timestamp from `date +%y%m%d-%H%M`)
 7. Write initial history entry with snapshot counts and session Directive
 8. Initialize event log and emit session start:
-    - **Create if missing, never overwrite.** `fusion-workbench/orchestrator-events.jsonl` is append-only across all sessions — it is the cross-session bus-resume probe's source of truth for `consultation_filed` events (or pre-v3.7.0 `gate_filed_consultation`), read by Step 5b.f above and Step 1b's shared procedure at step 1. Truncating it would clobber unpaired consultations from prior sessions and orphan the reply files. The Phase 4 sequence-diagram generator also reads it cross-session for historical context. Use a touch-or-append pattern, never a truncating `>` redirect:
+    - **Create if missing, never overwrite.** `fusion-workbench/orchestrator-events.jsonl` is append-only across all sessions. The Phase 4 sequence-diagram generator reads it cross-session for historical context, and `/fusion:monitor-reset` archives it rather than deleting in place. Use a touch-or-append pattern, never a truncating `>` redirect:
       ```bash
       [ -f fusion-workbench/orchestrator-events.jsonl ] || touch fusion-workbench/orchestrator-events.jsonl
       ```
@@ -426,7 +400,7 @@ When a circuit breaker trips, emit a `circuit_breaker` event, update the live da
 
 If all tasks in the queue are `[x] done` or `[d] deferred`, the loop converges. Exit to Phase 4.
 
-Otherwise, emit `turn_end` event with Turn stats, refresh the queue (incorporate new issues from reviews, remove completed tasks), refresh the active-session marker (`"$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" heartbeat` — keeps a parallel `/fusion:setup` from treating this session as stale), refresh the bus session `last_heartbeat` if the bus is enabled and this session is registered (if `session.bus_session_id` in `agentstate.yaml` is non-null, run `"$FUSION_PLUGIN_ROOT/bin/fusion-bus-session" heartbeat <session.bus_session_id>` — tolerate non-zero exit silently; skip when `bus_session_id` is null or absent, which means the bus is not active for this session), and start the next Turn. Per decision `fusion-workbench/decisions/260516-1058[a]-bus-session-heartbeat-cadence.md` (Option β: orchestrator-only refresh), the orchestrator is the only bus-aware agent that refreshes `last_heartbeat` mid-session; the other three (consultant, coderev, ontorev) are register-only.
+Otherwise, emit `turn_end` event with Turn stats, refresh the queue (incorporate new issues from reviews, remove completed tasks), refresh the active-session marker (`"$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" heartbeat` — keeps a parallel `/fusion:setup` from treating this session as stale), and start the next Turn.
 
 **Early-exit note (Coherence gate).** If the per-Turn Coherence gate at Step 3c-bis returned "Rebalance" and the user chose anything other than **Revise Artifact**, the loop **exits here without emitting `turn_end`**. The chosen option's `rebalance_*` event (or `bounded_closure_proposed`) was already emitted at the gate; the orchestrator now proceeds directly to Phase 3 with that verdict in hand. Revise Artifact is the only option that re-enters Phase 2 with a new queue entry — the others terminate the Turn.
 
@@ -526,7 +500,6 @@ After reconciler returns and any Rebalance gate is resolved, run this step if a 
 
 - Emit `session_end` event
 - Update live dashboard to show final status with `**Session:** Complete` or `**Session:** Circuit breaker: <reason>`
-- **Clear the bus session entry** (if registered): if `session.bus_session_id` in `agentstate.yaml` is non-null, run `"$FUSION_PLUGIN_ROOT/bin/fusion-bus-session" clear <bus_session_id>` *before* deleting `agentstate.yaml` (the bus session-id is only available while the state file exists). Tolerate non-zero exit (e.g. file already gone) — log to history and continue. Skip silently if `bus_session_id` is null or absent.
 - **Delete `fusion-workbench/agentstate.yaml`** — a clean exit means there is nothing to resume. The file's absence signals no interrupted session.
 - **Clear the active-session marker:** `"$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" clear`. After this, a new orchestrator session can start without a concurrency warning.
 - The live dashboard and event log persist after the session — the user may review them later or use them for tooling. Do not delete them.
@@ -538,130 +511,6 @@ After reconciler returns and any Rebalance gate is resolved, run this step if a 
 - Whether any circuit breakers tripped
 - Path to the history file
 - Mention that the live dashboard and event log are available for review
-
-## User-Initiated Consultation
-
-At any point during a session, the user may ask the orchestrator (in conversation) to file a consultation request to the consultant via the workbench bus. The orchestrator detects the request, confirms a brief preview, and writes the file to `bus/consultant/inbox/`. The consultant remains user-initiated only — the orchestrator writes a file, then tells the user how to start the consultant in another terminal.
-
-This is the **only** mechanism by which the orchestrator files bus consultations. The bus does not auto-route; the orchestrator does not offer consultations at gate points; the user is the trigger.
-
-### Trigger detection
-
-Two-layer detection on every user message the orchestrator receives (in chat, in response to `AskUserQuestion`, or as continuation prose during a Turn):
-
-1. **Keyword fast-path.** Scan the user's message (case-insensitive substring match) for any of these phrases. Match → trigger detected, proceed to confirmation.
-
-   - `consult`
-   - `ask consultant`
-   - `ask the consultant`
-   - `second opinion`
-   - `get a second opinion`
-   - `what would the consultant think`
-   - `i want consultant input`
-   - `file a consultation`
-   - `consultation request`
-
-   The keyword list is intentionally fixed in this prompt. Projects that want extensions submit a PR; per-project customisation is a follow-up consideration, not v1.
-
-2. **LLM judgment fallback.** If no keyword matches but the user's message reads as a consultation request (paraphrases: *"I'd like another perspective on this,"* *"can we get someone else's take,"* *"I'm not sure — what would an outside view be?"*), recognise it as a trigger anyway. Use judgment sparingly — a clear request to "ask Claude what it thinks" is a trigger; a vague *"I'm uncertain"* is not (offer the user the **Stop and clarify** path instead, the orchestrator's existing ambiguity-handling).
-
-Do NOT auto-trigger on internal orchestrator uncertainty. The user must signal. If the orchestrator thinks consultation would help but the user did not ask, the orchestrator may *suggest* the option ("would you like to file a consultation on this?") and let the user decide — the suggestion itself is not the trigger; the user's affirmative response is.
-
-### Confirmation (brief preview)
-
-On trigger detection, build a preview and present it via `AskUserQuestion`:
-
-1. **Compose a topic line** — one short phrase summarising the question. Derived from the user's trigger message and the current orchestrator state (active Turn, active task, recent gate). Examples:
-   - *"second opinion on the Rebalance gate before I open it"*
-   - *"sanity-check the shaper's spec before planning"*
-   - *"general advice on how to scope task batch C"*
-
-2. **Compose a context summary** — three to five lines describing what context the orchestrator will include in the request body. Examples:
-   - *"Conversational context from the last 2-3 exchanges"*
-   - *"Active Turn 2, current task is `T3 ontology rename` (paused at this gate)"*
-   - *"The shaper-produced spec at `fusion-workbench/planning/260517-1402[o]-foo.md`"*
-   - *"The reconciler's Coherence verdict (`review-needed`, three-edge summary)"*
-
-3. **Compose the user's specific question** — the actual question the consultant is being asked. If the user's trigger message contains a clear question, use it verbatim. If it's a generic "let's consult," ask the user inline: *"What specifically would you like the consultant's input on?"* — get a one-line question, then proceed.
-
-4. **Present via `AskUserQuestion`** with three named options:
-   - **Yes, file it** (default) — write the file and pause the session.
-   - **Modify** — user provides updated wording for the topic, context, or question; loop back to step 1 with the user's revisions folded in.
-   - **Cancel** — abort cleanly; no file written; no event emitted. Return to whatever the orchestrator was doing.
-
-Modify-loop budget: at most 3 modify rounds before the orchestrator asks the user to either commit (Yes, file it) or abort (Cancel). Indefinite refinement is a sign the user is unsure — pushing for a decision is the right move.
-
-### Request body shape
-
-When the user chooses **Yes, file it**:
-
-1. **Compute the filename.** `YYMMDD-HHMM-from-orchestrator-<topic-slug>.md`, where `<topic-slug>` is a short kebab-case slug derived from the topic line (e.g. `pre-rebalance-second-opinion`, `spec-sanity-check-260517`). The slug carries human meaning, not protocol meaning — pairing is on `Re:`, not on filename. Path: `fusion-workbench/bus/consultant/inbox/<filename>`.
-
-2. **Compute the `Re:` field.** This is the load-bearing pairing key — it must be byte-identical between request and reply, and the resume probe matches on it. Shape:
-
-   ```
-   Re: <topic line, as the user confirmed it at preview>
-   ```
-
-   The topic line itself is the `Re:` value (no `at <timestamp>` suffix unless the user explicitly types one). Uniqueness across pending consultations is the user's responsibility — if two pending requests would collide on `Re:`, the orchestrator must surface the collision at the preview step and ask the user to rename one. (In practice this is rare: pending consultations are usually 0 or 1; the user rarely files two on the same topic in the same window.)
-
-3. **Compose the body** per `rules/fusion-workbench-conventions.md` `## Bus protocol`:
-
-   ```markdown
-   ---
-   From: orchestrator (session <bus_session_id>)
-   To: consultant
-   Re: <topic line>
-   Filed: <YYMMDD-HHMM from date +%y%m%d-%H%M>
-   ---
-
-   # Consultation request — <topic line>
-
-   ## Context
-
-   **Session state.** Turn <N>, Mode <mode>, Directive: *"<directive>"*.
-   **Active task (if any):** <task-id> — <task-summary> (status: <queued|running|gate|error>).
-   **Active spec/plan (if any):** <path>.
-   **Recently modified workbench files (if any):** <list of up to 5 paths, by mtime>.
-
-   **Conversational context** (last 2-3 user/orchestrator exchanges that motivated the consultation):
-
-   <verbatim or summarised exchange — keep it brief; the consultant can read the history file for full context>
-
-   ## What I need
-
-   <the user's specific question, verbatim as confirmed at preview>
-
-   ## Reply convention
-
-   Write your reply to `fusion-workbench/bus/orchestrator/inbox/YYMMDD-HHMM-from-consultant-<originating-stem>.reply.md` where `<originating-stem>` is the basename of this request minus `.md`.
-   ```
-
-   `<bus_session_id>` is `session.bus_session_id` from `agentstate.yaml`; if null (bus registration failed or session not yet started Phase 0), use the literal string `<unregistered>`. The "Recently modified workbench files" list is best-effort — empty list is fine if nothing has been written this Turn.
-
-4. **Write the file** with the `Write` tool. `bus/consultant/inbox/` is pre-created by `/fusion:setup`.
-
-5. **Emit `consultation_filed` event** to `orchestrator-events.jsonl`. The `detail` object carries `request_path` and `expected_reply_path` (compute as `fusion-workbench/bus/orchestrator/inbox/YYMMDD-HHMM-from-consultant-<originating-stem>.reply.md` — leave the `YYMMDD-HHMM` portion as the literal placeholder string; the resume probe matches on `Re:`, not on this path). Top-level `turn` is `progress.turn` from `agentstate.yaml` (null if pre-Phase-2); `task` is `current_task.id` if set, else null. Do NOT carry a `gate` slug — there is no gate.
-
-6. **Tell the user** (action first, plain English per `rules/user-facing-output.md`):
-
-   > **Filed. Open another terminal to bring in the consultant.** I've filed your consultation at `<request-path>`. To get the consultant's input: open another terminal, run `./.fusion/fu consultant`. The consultant's Setup will list this item and offer to process it. When the consultant writes a reply, the file will appear in `fusion-workbench/bus/orchestrator/inbox/`. You can resume this orchestrator session at any time — I'll pick up the reply on resume.
-
-   Do NOT add language that implies the consultant is now running or that the orchestrator dispatched it. The user always runs the second terminal manually.
-
-7. **Pause the session.** Update `agentstate.yaml` so a resume can pick up where this left off (the existing per-phase write points cover this; no new schema fields). Refresh the active-session marker (`"$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" heartbeat`). Exit cleanly — do not block waiting for the reply. The user resumes the orchestrator when ready; the resume probe will consume any matching reply on the next Setup.
-
-### Reply consumption (resume-side)
-
-Unchanged from v3.6.0 in mechanism, with two small adjustments:
-
-- The resume probe (Setup Step 1b shared procedure step 1, and Step 5b.f) reads **both** old (`gate_filed_consultation`) and new (`consultation_filed`) event names from `orchestrator-events.jsonl` to find unpaired requests. Going forward only `consultation_filed` is emitted.
-- When a reply is found and presented, the framing no longer mentions "the original gate's options" (there is no originating gate). Use: *"Consultant replied at `<reply-path>` while you were away. Their input is below. You can continue your session now — let me know how you'd like to proceed."* Then return to the user's chat-driven flow.
-- When the user chooses **Cancel the filed request** in the no-reply case, emit `consultation_cancelled` (new name).
-
-### Boundary
-
-The orchestrator does NOT dispatch the consultant. The consultant remains user-initiated only (see "Never invokes" at the bottom of this prompt). This section writes a request file and tells the user how to start the consultant manually. Preserving this contract is non-negotiable.
 
 ## Human Gate Rules
 
@@ -777,7 +626,6 @@ session:
   started: "<YYMMDD-HHMM>"
   history_file: "fusion-workbench/history/<filename>.md"
   git_head_at_start: "<short hash>"
-  bus_session_id: "<id returned by fusion-bus-session register, or null when bus/ does not exist or registration failed>"  # added in v3.4 (Path B Step B1); optional — absence means the bus protocol is not active for this session. Captured in memory at Setup Step 5b.a and first persisted at the Phase 0 complete initial write below (not during Setup — `agentstate.yaml` does not exist yet at Step 5b.a). Subsequent writes preserve the field.
 
 progress:
   turn: <current turn number>
@@ -956,9 +804,6 @@ Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit
 | `rebalance_grounding` | Rebalance gate, user chose Revise Grounding | Decision-record file path created or superseded |
 | `rebalance_directive` | Rebalance gate, user chose Revise Directive | Shaper dispatch reason |
 | `bounded_closure_proposed` | Rebalance gate, user chose Accept Bounded Closure (or per-Circle verdict reached `bounded-closure-proposed`) | Reason |
-| `consultation_filed` | The user asked for a consultation (keyword or judgment trigger), confirmed the preview, and the orchestrator wrote the request to `bus/consultant/inbox/`. Emitted once per filed request. See **User-Initiated Consultation** above. | Fields under `detail` (one JSON object): `request_path` (path to the written request file in `bus/consultant/inbox/`), `expected_reply_path` (the reply path the request's `## Reply convention` section names). Top-level `turn` and `task` are populated from the current session state (`turn` is null when filed before Phase 2; `task` is null when no `current_task` is set). |
-| `consultation_consumed` | Resume probe (Setup Step 1b or Step 5b.f) found a matching `*.reply.md` for a previously filed consultation, presented the reply to the user, and dual-write-tolerant mark-read the reply file. Pairs the originating `consultation_filed` event (or `gate_filed_consultation` for back-compat with pre-v3.7.0 events). | Fields under `detail` (one JSON object): `request_path` (same path as the originating event), `reply_path` (path to the reply file just mark-read into `bus/orchestrator/inbox/.processed/`). Top-level `turn` and `task` reflect the resumed session's state at probe time. |
-| `consultation_cancelled` | Resume probe found a pending consultation with no matching reply and the user chose **Cancel the filed request**. The request body was annotated with `Cancelled: <timestamp>` and mark-read into `bus/consultant/inbox/.processed/`. Pairs the originating `consultation_filed` event (or `gate_filed_consultation` for back-compat). | Fields under `detail` (one JSON object): `request_path` (same path as the originating event), `cancelled_at` (RFC 3339 UTC timestamp from `date -u +%Y-%m-%dT%H:%M:%S` — the same value written to the request body). Top-level `turn` and `task` reflect the resumed session's state at probe time. |
 | `reconciliation` | Final reconciliation | Discrepancies found count |
 | `portfolio_refresh` | Phase 4 — playmaker dispatched after `[t]→[c]/[b]` rename | Circle file path (post-rename), playmaker history file path |
 | `session_end` | Session complete | Final budget summary |

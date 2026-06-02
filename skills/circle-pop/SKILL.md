@@ -191,8 +191,6 @@ GIT_STASH_REF="$(grep -E '^git_stash_ref:' "$STASH_DIR/manifest.yaml" | head -1 
 GIT_STASH_SHA="$(grep -E '^git_stash_sha:' "$STASH_DIR/manifest.yaml" | head -1 | sed -E 's/^git_stash_sha:[[:space:]]*"?([^"[:space:]]+)"?.*/\1/')"
 if [ "$GIT_STASH_SHA" = "null" ]; then GIT_STASH_SHA=""; fi
 HAS_AGENTSTATE="$(grep -E '^has_agentstate:' "$STASH_DIR/manifest.yaml" | head -1 | sed -E 's/^has_agentstate:[[:space:]]*([a-z]+).*/\1/')"
-MANIFEST_BUS_SESSION_ID="$(grep -E '^bus_session_id:' "$STASH_DIR/manifest.yaml" | head -1 | sed -E 's/^bus_session_id:[[:space:]]*"?([^"[:space:]]+)"?.*/\1/')"
-if [ "$MANIFEST_BUS_SESSION_ID" = "null" ]; then MANIFEST_BUS_SESSION_ID=""; fi
 SPEC_PLAN_PATHS="$(awk '/^has_spec_plan:/{f=1; next} /^[^[:space:]-]/{f=0} f && /^[[:space:]]+- /{sub(/^[[:space:]]+- ?/, ""); gsub(/^"|"$/, ""); print}' "$STASH_DIR/manifest.yaml")"
 ```
 
@@ -226,29 +224,6 @@ cp "$STASH_DIR/agentstate.yaml" "$WORKBENCH/fusion-workbench/agentstate.yaml"
 ```
 
 If `HAS_AGENTSTATE != true`: skip. The popped session has no in-flight state; `/fusion:setup` will create a fresh one on next run (Decision Fork 4).
-
-### 6.4 — Register a fresh bus session (if bus is enabled and stash had one)
-
-If `fusion-bus-session register` returns empty (binary missing, registration failed), do NOT patch the field with an empty string — write the unquoted YAML literal `null` instead. An empty quoted string `""` corrupts the bus-aware code paths in the orchestrator, which treat it as a valid session id.
-
-```bash
-NEW_BUS_ID=""
-if [ -d "$WORKBENCH/fusion-workbench/bus" ] && [ -n "$MANIFEST_BUS_SESSION_ID" ]; then
-  if [ -f "$WORKBENCH/fusion-workbench/agentstate.yaml" ]; then
-    NEW_BUS_ID="$("$FUSION_PLUGIN_ROOT/bin/fusion-bus-session" register orchestrator 2>/dev/null)"
-    if [ -n "$NEW_BUS_ID" ]; then
-      sed -i.bak -E "s|^([[:space:]]+bus_session_id:[[:space:]]*).*$|\\1\"$NEW_BUS_ID\"|" "$WORKBENCH/fusion-workbench/agentstate.yaml"
-      rm -f "$WORKBENCH/fusion-workbench/agentstate.yaml.bak"
-    else
-      sed -i.bak -E "s|^([[:space:]]+bus_session_id:[[:space:]]*).*$|\\1null|" "$WORKBENCH/fusion-workbench/agentstate.yaml"
-      rm -f "$WORKBENCH/fusion-workbench/agentstate.yaml.bak"
-      echo "WARNING: bus session registration failed; agentstate.yaml bus_session_id set to null. The next /fusion:setup will register a fresh session." >&2
-    fi
-  fi
-fi
-```
-
-If `agentstate.yaml` was not restored (Step 6.3 skipped), skip this — there's no field to patch. If `bus/` does not exist, skip — the workbench has not opted in to the bus protocol.
 
 ### 6.5 — Restore `tasklist.md` and `orchestrator-live.md`
 
@@ -370,7 +345,6 @@ Action-first per `rules/user-facing-output.md`:
 > - Circle file: `fusion-workbench/circles/<ORIGINAL_FILENAME>`
 > - Active-Circle pointer: restored
 > - Agent state: `<restored | not in stash (no session)>`
-> - Bus session: `<re-registered as <NEW_BUS_ID> | bus not enabled | stash had no session>`
 > - Git stash: applied (entry kept at `<GIT_STASH_REF>`)
 > - Spec/plan conflicts resolved: `<count, or "no conflicts">`
 

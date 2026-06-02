@@ -27,10 +27,7 @@ Note the path. The workbench will be created here. Then:
 
 ```bash
 mkdir -p ./fusion-workbench/planning ./fusion-workbench/issues ./fusion-workbench/decisions ./fusion-workbench/history ./fusion-workbench/codereview ./fusion-workbench/ontoreview ./fusion-workbench/investigations ./fusion-workbench/analyses ./fusion-workbench/consult ./fusion-workbench/.guard-state ./fusion-workbench/circles
-mkdir -p ./fusion-workbench/bus/.sessions ./fusion-workbench/bus/orchestrator/inbox/.processed ./fusion-workbench/bus/consultant/inbox/.processed ./fusion-workbench/bus/coderev/inbox/.processed ./fusion-workbench/bus/ontorev/inbox/.processed
 ```
-
-The second line creates the bus directory tree (see `rules/fusion-workbench-conventions.md` `## Bus protocol`). Bus behaviour activates only when `fusion-workbench/bus/` exists, so every setup run — fresh or rerun — provisions it. The four agent inboxes (orchestrator, consultant, coderev, ontorev) match the initial participating set; future-agent participants get their inbox added when their participation lands. The `.processed/` subdirs are pre-created so the move target always exists on day one. `mkdir -p` is idempotent: pre-existing dirs are untouched, missing ones are added — so rerunning setup on a pre-bus workbench just fills in the bus tree.
 
 Write the setup marker (this is the file every agent and hook looks for to confirm fusion is set up here):
 
@@ -75,10 +72,9 @@ The `fu` script is a project-local convenience for launching Claude Code preconf
 ```bash
 mkdir -p ./.fusion
 [ -f ./.fusion/fu ] || { cp "$FUSION_PLUGIN_ROOT/bin/fu" ./.fusion/fu && chmod +x ./.fusion/fu; }
-[ -f ./.fusion/fusion-bus ] || { cp "$FUSION_PLUGIN_ROOT/bin/fusion-bus" ./.fusion/fusion-bus && chmod +x ./.fusion/fusion-bus; }
 ```
 
-The `fusion-bus` helper is copied alongside `fu` so users can inspect the bus from any project terminal (`./.fusion/fusion-bus list|show|mark-read`). Both copies are idempotent — existing files are left untouched.
+The copy is idempotent — an existing file is left untouched.
 
 If `$FUSION_PLUGIN_ROOT` is not set or the copy fails, note it in the history file later but do not block Setup.
 
@@ -162,45 +158,9 @@ Timestamp: `date +%y%m%d-%H%M`.
 
 Create `./fusion-workbench/history/YYMMDD-HHMM-orchestrator-session.md` and write the initial entry: session Directive and snapshot counts from Step 3.
 
-## Step 4b — Bus check and session registration
-
-Mirrors `agents/orchestrator.md` Setup Step 5b. If `./fusion-workbench/bus/` exists, this workbench has the bus protocol enabled (see `rules/fusion-workbench-conventions.md` `## Bus protocol`). Do:
-
-a. **Register this session.**
-
-   ```bash
-   "$FUSION_PLUGIN_ROOT/bin/fusion-bus-session" register orchestrator
-   ```
-
-   Capture stdout as the bus session-id and store it as `bus_session_id` so Phase 0 can write it into `agentstate.yaml` under `session.bus_session_id`. If the helper is missing or exits non-zero, print a warning to the user and proceed without registering (leave `bus_session_id: null`); do NOT halt.
-
-b. **List unread inbox items.** Enumerate `./fusion-workbench/bus/orchestrator/inbox/` excluding `.processed/`. For each item, parse the `From:` and `Re:` frontmatter and `stat` the mtime (format `YYYY-MM-DD HH:MM`); print one line per item:
-
-   ```
-   <filename> — from <From>, re <Re> (filed <mtime>)
-   ```
-
-c. **If at least one unread item exists,** present the list and ask via `AskUserQuestion`:
-   - **Process inbox first** — handle the messages before resuming the user's task.
-   - **Continue with current task** — proceed; the inbox will still be there next session.
-
-   Default to current task — most sessions will not have pending mail.
-
-d. **After Step 5 completes** (i.e. once the `session_start` event is emitted), run a single heartbeat:
-
-   ```bash
-   "$FUSION_PLUGIN_ROOT/bin/fusion-bus-session" heartbeat <session-id>
-   ```
-
-   Subsequent heartbeats are not in scope for this step.
-
-e. **If `./fusion-workbench/bus/` does not exist,** skip 4b entirely — the workbench has not opted in to the bus protocol (pre-v3.4 workbench or opt-out). Do not warn.
-
-f. **Fresh-session consultation-reply probe.** This sub-step fires only when Step 1 detected no interrupted session (no `agentstate.yaml` present) — i.e. the prior session exited cleanly but the user may have filed a consultation in that session and is now starting a new session to consume the reply. Skip if Step 1 entered the Continue/Restart/Modify flow. Run the *Bus-resume consultation probe — shared procedure* defined in `agents/orchestrator.md` under Step 1b. The probe reads `orchestrator-events.jsonl` (which persists across sessions, unlike `agentstate.yaml`) and finds any `consultation_filed` events (or, for pre-v3.7.0 sessions, `gate_filed_consultation`) not yet paired with `consultation_consumed` / `consultation_cancelled` (or pre-v3.7.0 `gate_consultation_consumed` / `gate_consultation_cancelled`). If no unpaired events exist (the common case for a truly fresh session), the probe exits cleanly with no user-facing output.
-
 ## Step 5 — Event log and live dashboard
 
-- **Create if missing, never overwrite.** `./fusion-workbench/orchestrator-events.jsonl` is append-only across all sessions. The orchestrator's cross-session bus-resume probe (Setup Step 5b.f, and the shared procedure invoked from Step 1b) reads prior `consultation_filed` events (or pre-v3.7.0 `gate_filed_consultation`) from this file to find unpaired consultations that the user filed in an earlier session and may now have a reply for. Truncating at session start would orphan those replies. Use a touch-or-append pattern, never a truncating `>` redirect:
+- **Create if missing, never overwrite.** `./fusion-workbench/orchestrator-events.jsonl` is append-only across all sessions. Use a touch-or-append pattern, never a truncating `>` redirect:
   ```bash
   [ -f ./fusion-workbench/orchestrator-events.jsonl ] || touch ./fusion-workbench/orchestrator-events.jsonl
   ```
@@ -213,4 +173,4 @@ f. **Fresh-session consultation-reply probe.** This sub-step fires only when Ste
 
 ## Done
 
-Only after every step above completes may you begin the user's actual task. Report Setup complete with: workspace path, history file path, snapshot counts, **detected workbench domain**, **bus session-id** (or `unregistered` if Step 4b failed / `n/a` if bus is not enabled), and whether an interrupted session was resumed.
+Only after every step above completes may you begin the user's actual task. Report Setup complete with: workspace path, history file path, snapshot counts, **detected workbench domain**, and whether an interrupted session was resumed.

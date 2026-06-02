@@ -46,7 +46,7 @@ Always obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`. LLMs have no clock — nev
 
 ## Project language
 
-Projects declare the language of their long-form prose output in `CLAUDE.md` via a line of the form `**Language:** <lang>` — for example `**Language:** en` or `**Language:** de`. Valid values initially are `en` and `de`. The declaration governs which stylometric profile under `./fusion-workbench/stilwerk/` long-form-prose agents apply to their narrative outputs (session summary bodies, consultation replies, analysis reports, investigator timelines, playmaker briefings, prose sections of specs and plans).
+Projects declare the language of their long-form prose output in `CLAUDE.md` via a line of the form `**Language:** <lang>` — for example `**Language:** en` or `**Language:** de`. Valid values initially are `en` and `de`. The declaration governs which stylometric profile under `./fusion-workbench/stilwerk/` long-form-prose agents apply to their narrative outputs (session summary bodies, consultant reports, analysis reports, investigator timelines, playmaker briefings, prose sections of specs and plans).
 
 When the line is absent, the default is `en` — silently, no chat warning. When the declared language's profile file is missing (e.g. `**Language:** de` but `./fusion-workbench/stilwerk/default-voice-de.yaml` does not exist), the agent falls back to `default-voice-en.yaml` and records a single line in its session history file noting the fallback. Short-form output (`rules/user-facing-output.md`) is not affected by this convention — it always applies; the stylometric profile is the long-form layer on top.
 
@@ -354,137 +354,9 @@ The history log is the only durable record of a session. The in-memory task list
 
 Never read or display `.secret` files. If secrets are needed, ask the user to provide them via environment variables.
 
-## Bus protocol (workbench-mediated A2A messaging)
-
-Concurrent fusion agent sessions exchange durable messages through `fusion-workbench/bus/<agent>/inbox/`. The user remains the trigger — fusion has no daemon and does not auto-route.
-
-### Opt-in
-
-Bus behaviour activates only when `fusion-workbench/bus/` exists. Agents probe-and-degrade silently otherwise. `/fusion:setup` creates the tree; pre-bus workbenches stay quiet until setup is rerun.
-
-### Filesystem layout
-
-```
-fusion-workbench/bus/
-├── .sessions/                      # session-registry YAML files
-├── orchestrator/inbox/.processed/  # processed/ pre-created so mv target always exists
-├── consultant/inbox/.processed/
-├── coderev/inbox/.processed/
-└── ontorev/inbox/.processed/
-```
-
-The protocol recognises four agents initially: `orchestrator`, `consultant`, `coderev`, `ontorev`. Additional agents are added by creating their `<agent>/inbox/.processed/` subtree and listing them here.
-
-### Message-file naming
-
-- Request: `YYMMDD-HHMM-from-<source-agent>-<topic>.md`
-- Reply: `YYMMDD-HHMM-from-<source-agent>-<originating-message-stem>.reply.md`
-
-The reply filename embeds the originating message's basename minus the `.md` so the pairing is grep-able from a shell.
-
-### Required frontmatter
-
-Every message (request or reply) carries four fields:
-
-- `From:` — source agent name
-- `To:` — target agent name
-- `Re:` — short subject string; byte-identical between a request and its reply
-- `Filed:` — timestamp from `date +%y%m%d-%H%M`
-
-The body MUST include a `## Reply convention` section naming the exact target path for the reply.
-
-### Reply pairing keys — both
-
-Replies are paired with their request by **two** redundant keys:
-
-- The `Re:` frontmatter field is byte-identical between request and reply — used by orchestrator-resume to match a returned reply to a previously filed request.
-- The reply filename embeds the originating message's stem — used by `bin/fusion-bus` substring matching.
-
-This redundancy is intentional. `Re:` is human-readable and resume-safe; the filename embed is grep-friendly from any shell.
-
-### Example request
-
-```markdown
----
-From: orchestrator
-To: consultant
-Re: shape-decision-for-the-rag-chunking-layer
-Filed: 260516-1430
----
-
-# Consultation request — shape decision for the RAG chunking layer
-
-<Current task context, the back-and-forth so far in this session, and the
-specific question the user wants a second opinion on. Cite any open
-plan/issue/decision files the consultant should read before replying.>
-
-## Reply convention
-
-Write the reply to `fusion-workbench/bus/orchestrator/inbox/` as
-`YYMMDD-HHMM-from-consultant-260516-1430-from-orchestrator-shape-decision-for-the-rag-chunking-layer.reply.md`.
-```
-
-### Example reply
-
-```markdown
----
-From: consultant
-To: orchestrator
-Re: shape-decision-for-the-rag-chunking-layer
-Filed: 260516-1452
----
-
-# Consultant reply
-
-<Synthesised input. References to spec/plan/issue files as needed.>
-```
-
-### Session registry
-
-Each bus-participating agent registers itself at Setup via `bin/fusion-bus-session register <agent>`. The helper writes `bus/.sessions/<session-id>.yaml`:
-
-```yaml
-session_id: 260516-1430-orchestrator-a7f3
-agent: orchestrator
-project: /Users/kai/Dropbox/qboot/projects/F04-FUSION/codebase/fusion
-tmux_pane: "%5"          # string when $TMUX_PANE is set, else null
-registered_at: 2026-05-16T14:30:00Z
-last_heartbeat: 2026-05-16T14:37:00Z
-```
-
-**Staleness threshold:** 600 seconds (10 minutes) is the canonical value, matching `bin/fusion-session-mark`. Path B does not enforce it (no consumer).
-
-**Heartbeat cadence:** only the orchestrator refreshes `last_heartbeat` mid-session (at Turn-end, alongside the `fusion-session-mark heartbeat` call). Other bus-aware agents (consultant, coderev, ontorev) are register-only; their `last_heartbeat` reflects session start time. Decision: `fusion-workbench/decisions/260516-1058[a]-bus-session-heartbeat-cadence.md` (Option β).
-
-### Read-on-Setup discipline
-
-Every bus-participating agent, at the end of its Setup (after the rules check, before the first action), lists unread items in its own `bus/<agent>/inbox/` (excluding `.processed/`). For each item: filename, `From:`, `Re:`, mtime. If at least one item is unread, the agent presents the list to the user and asks whether to process the inbox first or continue with the original task.
-
-### Write-then-tell-the-user discipline at gates
-
-Every bus-write at a gate is paired with an explicit user-trigger instruction in the gate prompt: the exact `./.fusion/fu <agent>` command, the assurance that the target's Setup will surface the item, and no implication that fusion auto-routes. The action-first ordering of `rules/user-facing-output.md` applies.
-
-### Mark-read protocol — dual-write, race-safe
-
-A message is considered processed when it is moved from `bus/<agent>/inbox/<file>` to `bus/<agent>/inbox/.processed/<file>`. Both the agent and the user (via `./.fusion/fusion-bus mark-read`) may perform this move; both ownership models are first-class.
-
-1. The move is `mv` (POSIX atomic rename). One operation either fully succeeds or fails; there is no half-renamed state.
-2. Both parties tolerate "file already in `.processed/`" — silent success, not an error. If the agent finds the source missing because the user already ran `mark-read`, it treats the message as already-marked and continues.
-3. If both parties hit the same file in the same window, one `mv` wins the rename and the other detects the missing source (per rule 2). No file locking is required because POSIX rename is atomic.
-
-This dual-write contract is the reason no locking is needed: atomic rename + tolerant lookup = no corruption regardless of which party moves the file first.
-
-### Filing a consultation (user-initiated)
-
-The orchestrator files a bus consultation only when the user asks for one in conversation. There are no orchestrator-internal gate points that file consultations — the orchestrator no longer offers bus filing at Pre-shaping, Pre-planning, Post-reconciler `review-needed`, or the Rebalance gate. Those four gates still fire (shaper still shapes, planner still plans, the reconciler still produces a verdict, the Rebalance gate still presents its four options); they just don't carry a bus pre-option any more.
-
-The user-side trigger and the orchestrator's confirmation flow are spec'd in `agents/orchestrator.md` `## User-Initiated Consultation`. The on-the-wire request and reply formats — frontmatter (`From:`, `To:`, `Re:`, `Filed:`), reply pairing keys, dual-write mark-read — are spec'd above in this `## Bus protocol` section and are unchanged from v3.4 onwards.
-
-The orchestrator does NOT dispatch the consultant. The consultant remains user-initiated only — the orchestrator writes a file, then tells the user to start the consultant in another terminal. The coderev/ontorev agents are dispatched only via the standard incremental review flow, never as a bus delivery mechanism.
-
 ## Stashes
 
-A stash is a self-contained, frozen snapshot of an active Circle's complete state — the Circle file, the `.active-circle` pointer, `agentstate.yaml` (when a session is in flight), the dashboard, the task queue, any referenced spec/plan files, the git working tree, the bus session, and unpaired consultations. Stashes free the workspace for unrelated urgent work without losing the in-flight Circle's context.
+A stash is a self-contained, frozen snapshot of an active Circle's complete state — the Circle file, the `.active-circle` pointer, `agentstate.yaml` (when a session is in flight), the dashboard, the task queue, any referenced spec/plan files, and the git working tree. Stashes free the workspace for unrelated urgent work without losing the in-flight Circle's context.
 
 ### Opt-in
 
@@ -497,25 +369,23 @@ Stashes are created by `/fusion:circle-stash [reason]` and consumed by `/fusion:
 ```
 fusion-workbench/stashes/
 └── <YYMMDD-HHMM>-<directive-slug>/
-    ├── manifest.yaml         # twelve-field index
+    ├── manifest.yaml         # ten-field index
     ├── README.md             # human-readable summary + restore command
     ├── circle.md             # the original Circle file (filename in manifest)
     ├── agentstate.yaml       # only present when stash captured a running session
     ├── orchestrator-live.md
     ├── tasklist.md           # if present at stash time
     ├── spec.md / plan.md     # copies of files referenced by the Circle (if any)
-    ├── git/
-    │   ├── stash-ref         # raw "git stash list" line + (no changes) sentinel
-    │   └── head              # HEAD short-hash at stash time
-    └── bus/
-        └── snapshot.yaml     # cleared session-id + unpaired-consultation list
+    └── git/
+        ├── stash-ref         # raw "git stash list" line + (no changes) sentinel
+        └── head              # HEAD short-hash at stash time
 ```
 
 The stash id `<YYMMDD-HHMM>-<directive-slug>` is derived from the current time (not the Circle's birth time) so multiple stashes of the same Circle remain distinguishable.
 
 ### Manifest schema
 
-Twelve fields, in this order:
+Ten fields, in this order:
 
 ```yaml
 stash_id: 260519-1200-stash-smoke              # YYMMDD-HHMM-<slug>
@@ -526,11 +396,9 @@ active_circle_content: "260519-1200[t]-stash-smoke.md"
 head_short_hash: "0b7344a"
 git_stash_ref: "stash@{0}"                     # human-readable positional ref, or "(no changes)"
 git_stash_sha: "3f2a7b8c9d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a"  # stable commit SHA from `git rev-parse stash@{0}`; null if (no changes)
-bus_session_id: "260519-1200-orchestrator-a7f3"  # null if bus disabled or no session
 has_agentstate: true                           # false when stashed without a running session
 has_spec_plan:                                 # array of paths copied; empty when (none yet)
   - "planning/260518-1000[p]-some-active-plan.md"
-unpaired_consultations: 0
 ```
 
 String values are quoted; `null` is the unquoted YAML literal. `has_spec_plan` uses inline `[]` when no paths were copied.

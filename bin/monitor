@@ -81,7 +81,6 @@ WARNING_EVENT_TYPES = {
     "churn_warning", "churn_critical",
     "cross_file_warning", "cross_file_critical",
     "guard_block", "guard_halt",
-    "gate_filed_consultation",
 }
 MAX_WARNINGS_RETURNED = 30
 
@@ -190,9 +189,9 @@ HTML_PAGE = r"""<!DOCTYPE html>
   .md-content th { background: var(--bg3); color: var(--accent); font-weight: 600; }
   /* Status badges in rendered markdown */
   .md-content { word-wrap: break-word; }
-  /* Long unbroken tokens (bus session ids like 260518-0948-orchestrator-341c,
-     active-Circle paths, commit hashes) can overflow narrow viewports because
-     `word-wrap: break-word` only breaks on word boundaries — hyphenated ids
+  /* Long unbroken tokens (active-Circle paths, commit hashes) can overflow
+     narrow viewports because `word-wrap: break-word` only breaks on word
+     boundaries — hyphenated ids
      are treated as a single long word. break-all permits a hard break anywhere
      inside `code` / `pre` so the id stays visible regardless of viewport width. */
   .md-content code, .md-content pre { word-break: break-all; }
@@ -222,10 +221,6 @@ HTML_PAGE = r"""<!DOCTYPE html>
   .event-type.coherence_review { color: var(--cyan); }
   .event-type.rebalance_artifact, .event-type.rebalance_grounding, .event-type.rebalance_directive { color: var(--purple); }
   .event-type.bounded_closure_proposed { color: var(--orange); }
-  /* Consultation bus events (filed/consumed/cancelled) */
-  .event-type.gate_filed_consultation { color: var(--orange); }
-  .event-type.gate_consultation_consumed { color: var(--green); }
-  .event-type.gate_consultation_cancelled { color: var(--fg3); }
   .event-detail { color: var(--fg2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   /* YAML state view */
   .yaml-content {

@@ -37,31 +37,7 @@ Options 1 and 2 launch a sub-agent with its own context window (see [How to invo
 
 **Hard rule across all agents:** read-only on layers outside the agent's primary scope. A reviewer never edits code. A `coder` never edits ontology yaml. An `ontocoder` never edits Go. The investigator never edits anything inside its evidence captures. The orchestrator never edits code or data directly — it dispatches executors. Cross-layer findings are filed as issues and routed to the right executor. The scope is enforced by prose in each agent's prompt, not by a `tools:` allowlist. **Exception:** `bugfixer` may edit both code and data because bugs cross layer boundaries — but ontology edits require a human gate.
 
-**Dispatch is the orchestrator's monopoly.** Only `orchestrator` invokes other agents via the `Agent` tool. The constraint is **prose-enforced** in each non-orchestrator agent's prompt — sub-agents that identify work for another agent **recommend** the dispatch in their output (issue file, plan step, consultation report) but never call `Agent` directly. This prevents cycles (e.g. consultant→orchestrator→consultant) and keeps the dependency tree shallow. (A v2.8.1 attempt to enforce this via `disallowedTools: [Agent]` in frontmatter broke agent loading entirely and was rolled back in 2.8.3 — the canonical syntax remains TBD.)
-
-## Bus protocol (v3.4+)
-
-Concurrent agent sessions exchange durable messages through `fusion-workbench/bus/<agent>/inbox/`. A message is a markdown file with `From:` / `To:` / `Re:` / `Filed:` frontmatter; the receiving agent picks it up the next time it runs Setup. Four agents participate today: `orchestrator`, `consultant`, `coderev`, `ontorev`.
-
-The bus activates only when `fusion-workbench/bus/` exists (created by `/fusion:setup` since v3.4). Bus-aware agents probe-and-degrade silently when it does not. Every bus-aware agent's Setup ends with a `bus/<agent>/inbox/` listing of unread items and a session registration via `bin/fusion-bus-session`; the session is cleared at exit.
-
-**The bus does not change dispatch.** Fusion does not auto-route. When an agent files a request, it prints the exact `./.fusion/fu <target-agent>` command and the user opens a second terminal to run it; the target's Setup surfaces the unread item. The orchestrator's dispatch monopoly is unchanged — bus filings are file writes, not `Agent` calls.
-
-User-facing helper for inspecting the bus from the project root:
-
-```
-./.fusion/fusion-bus list             # all unread mail across all agents
-./.fusion/fusion-bus show <stem>      # print one message's contents
-./.fusion/fusion-bus mark-read <stem> # move it to inbox/.processed/ manually
-```
-
-Canonical spec — message naming, reply pairing, session registry, mark-read race-safety: `rules/fusion-workbench-conventions.md` `## Bus protocol`. User-facing walkthrough: `/fusion:help bus`.
-
-### Per-agent bus behaviour
-
-- **`orchestrator`** — files a consultation request to the consultant when the user asks for one in conversation (keyword triggers like *"second opinion"*, *"ask consultant"*, or paraphrases the orchestrator recognises as consultation intent). The orchestrator no longer offers bus filings at gate points; filing is user-initiated only. Resume-time reply consumption handles three cases (reply found / no reply yet / both request and reply present as a defensive pairing). The orchestrator does NOT dispatch consultant — the user runs the consultant in another terminal after the request file is written. See `agents/orchestrator.md` `## User-Initiated Consultation` for the trigger/confirmation/file-and-tell flow.
-- **`consultant`** — Primary Mode gains a "Processing bus inbox items" workflow: read the request, draft a reply, atomic-write it to the originating agent's inbox, mark the original read with dual-write tolerance. The consultant remains **user-initiated only** — the bus does not change that contract; it gives the user a more structured way to bring questions to the consultant from another agent session.
-- **`coderev`** and **`ontorev`** — review reports may include an optional **Bus filings** sub-section for cross-cutting findings where the right next move is "consultant input before recommending a coder/ontocoder fix" rather than filing an issue directly. Used sparingly, for findings whose remedy is uncertain or spans multiple layers.
+**Dispatch is the orchestrator's monopoly.** Only `orchestrator` invokes other agents via the `Agent` tool. The constraint is **prose-enforced** in each non-orchestrator agent's prompt — sub-agents that identify work for another agent **recommend** the dispatch in their output (issue file, plan step, consultation report) but never call `Agent` directly. This prevents cycles and keeps the dependency tree shallow. (A v2.8.1 attempt to enforce this via `disallowedTools: [Agent]` in frontmatter broke agent loading entirely and was rolled back in 2.8.3 — the canonical syntax remains TBD.)
 
 ## How to invoke an agent
 
@@ -230,7 +206,6 @@ fusion-workbench/
 ├── investigations/  # investigator output
 ├── analyses/        # analyst output
 ├── consult/         # consultant reports
-├── bus/             # A2A messages (v3.4+, opt-in; orchestrator/consultant/coderev/ontorev)
 └── tasklist.md      # taskplanner output (dependency-ordered work queue)
 ```
 
