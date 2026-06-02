@@ -599,6 +599,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
     var historyByAgent = {}; // agent -> [durations in chronological completion order]
     var historyGlobal = []; // [duration, duration, ...] across all agents, completion-order
     var latestSessionStartMs = -1;  // most recent session_start ts in window; -1 if none
+    var lastSessionEndMs = -1;      // most recent session_end ts in window; -1 if none
     for (var i = 0; i < events.length; i++) {
       var ev = events[i];
       if (!ev) continue;
@@ -615,7 +616,14 @@ HTML_PAGE = r"""<!DOCTYPE html>
       // closes is an orphan from that closed session and must not be rendered
       // as "running" (issue 260530-0106). Like session_start, this event has
       // no `task` field, so the branch must come before the guard below.
+      // Also record the timestamp so the running-task boundary below can use
+      // it: see the boundary computation for why max(start, end) is the right
+      // anchor.
       if (ev.event === 'session_end') {
+        var endMs = parseUTCTs(ev.ts);
+        if (!isNaN(endMs) && endMs > lastSessionEndMs) {
+          lastSessionEndMs = endMs;
+        }
         pending = {};
         continue;
       }
@@ -639,11 +647,24 @@ HTML_PAGE = r"""<!DOCTYPE html>
       }
     }
     // Find currently running task: latest unmatched task_start across all ids,
-    // rejecting any candidate that predates the most recent session_start
-    // (those are orphans from a session that has since ended — see step 2 of
-    // the algorithm comment). If no session_start was seen in the window,
-    // latestSessionStartMs stays -1 and the predicate degenerates to the
-    // pre-fix behaviour (always accept).
+    // rejecting any candidate that predates the current session boundary.
+    //
+    // The boundary is max(latest session_start, last session_end), NOT just the
+    // latest session_start. Keying on session_start alone broke two real cases:
+    //   1. A long session whose session_start scrolled out of the last-N-events
+    //      window — no session_start in view, so every running task_start was
+    //      either always-accepted (orphans leak) or, with a stale prior
+    //      session_start in view, wrongly rejected → ETA stuck on "—".
+    //   2. A session that never emitted session_start at all (e.g. a
+    //      manual-conductor session) — same "—" stickiness.
+    // Anchoring to the later of (start, end) handles all of them: after a clean
+    // session_end the pending map is already drained, so a fresh task_start that
+    // post-dates that end is correctly seen as running even with no session_start
+    // in the window; and an interrupted prior session's orphans (which predate
+    // the new session_start) are still rejected. If neither boundary was seen,
+    // both stay -1 and the predicate degenerates to "always accept" (pre-fix
+    // behaviour for a cold window).
+    var sessionBoundaryMs = Math.max(latestSessionStartMs, lastSessionEndMs);
     var running = null;
     var runningTs = -1;
     for (var tid in pending) {
@@ -653,7 +674,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
       var last = arr[arr.length - 1];
       var ts = parseUTCTs(last.ts);
       if (isNaN(ts)) continue;
-      if (ts < latestSessionStartMs) continue;  // orphan from prior session
+      if (ts < sessionBoundaryMs) continue;  // orphan from a prior/ended session
       if (ts > runningTs) {
         runningTs = ts;
         running = last;
@@ -717,7 +738,12 @@ HTML_PAGE = r"""<!DOCTYPE html>
     } else if (mode === 'gate') {
       dot.className = 'status-dot gate';
       text.textContent = '⏸ Paused at gate — waiting on user';
-    } else if (mode === 'setup') {
+    } else if (mode === 'setup' && !(age !== undefined && age > 3600)) {
+      // "Awaiting instruction" is honest right after a session_start, but a
+      // session_start from an interrupted session (Claude killed before it
+      // wrote anything else) would otherwise stick this label forever. After
+      // an hour of silence, fall through to the age-based "stale" branch so a
+      // dead session reads as "investigate" rather than "awaiting instruction".
       dot.className = 'status-dot setup';
       text.textContent = '⏸ Awaiting instruction';
     } else if (mode === 'done') {
@@ -846,6 +872,13 @@ HTML_PAGE = r"""<!DOCTYPE html>
 
 
 class Handler(http.server.BaseHTTPRequestHandler):
+    # Per-connection socket timeout. Without this, a client that opens a
+    # connection and then stalls mid-request (a backgrounded browser tab, a
+    # laptop sleep/wake, a localhost socket blip) would block its worker
+    # indefinitely. With ThreadingHTTPServer below, a wedged worker no longer
+    # freezes the whole server, but the timeout still reclaims the thread.
+    timeout = 15
+
     def log_message(self, format, *args):
         # Suppress default request logging
         pass
@@ -973,8 +1006,17 @@ try:
 except (subprocess.CalledProcessError, ValueError, ProcessLookupError):
     pass
 
-class ReuseServer(http.server.HTTPServer):
+# ThreadingHTTPServer (not the single-threaded HTTPServer): the browser fires
+# two concurrent requests every poll (/api/dashboard + /api/state), and any one
+# slow or stalled connection on a single-threaded server wedges serve_forever()
+# indefinitely — the port stays bound (monitor *looks* alive) but never serves
+# fresh data again. That was the root of the "monitor shows no changes / goes
+# unstable" reports; prior fixes only touched the ETA algorithm, never the
+# server. daemon_threads=True lets the process exit cleanly without joining
+# stuck worker threads.
+class ReuseServer(http.server.ThreadingHTTPServer):
     allow_reuse_address = True
+    daemon_threads = True
     def server_bind(self):
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
