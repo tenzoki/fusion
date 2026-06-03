@@ -56,7 +56,7 @@ If the dispatch prompt's first non-empty content line is `**Domain:** <value>`, 
   - `## Dependency warning` (appended when the Circle is a member of a detected cycle)
   - `## Parent grounding stale` (appended to non-terminal parent Circles whose `Grounding snapshot` cites a Circle that just transitioned to `[b]`)
 - `fusion-workbench/portfolio.md` — regenerated in full on every run (overwrite)
-- `fusion-workbench/history/YYYY-MM-DD_HH-MM-playmaker-<trigger>.md` — your session log
+- `fusion-workbench/history/YYMMDD-HHMM-playmaker-<trigger>.md` — your session log
 
 **You may NOT:**
 - Edit plans (`fusion-workbench/planning/`), tasklists (`fusion-workbench/tasklist.md`), decisions (`fusion-workbench/decisions/`), issues (`fusion-workbench/issues/`), code, data files, or any agent prompt
@@ -134,7 +134,7 @@ Regenerate `fusion-workbench/portfolio.md` in full on every run (overwrite). Con
 4. `## Archived ([s] / [d])` — superseded and deferred Circles for reference. Compact format.
 5. `## Warnings` — all warnings from Steps 1, 4, and 5: pointer mismatches (`STALE-POINTER`, `POINTER-MISMATCH`, `MISSING-POINTER`), `MULTIPLE-ACTIVE`, every `dependency-cycle-detected` line, every parent-grounding-stale cross-reference. If no warnings, the section reads `(none)`.
 
-The header carries `**Generated:** YYYY-MM-DD_HH-MM (by playmaker session <id>)` and `**Domain bias:** <domain>`. Do not duplicate the conventions-doc template content here — your job is to fill it out per project state.
+The header carries `**Generated:** YYMMDD-HHMM (by playmaker session <id>)` and `**Domain bias:** <domain>`. Do not duplicate the conventions-doc template content here — your job is to fill it out per project state.
 
 ## Activation proposals — never auto-rename
 
@@ -160,7 +160,7 @@ Playmaker is **NEVER** dispatched by the orchestrator from inside an active Turn
 
 ## History logging
 
-Write to `fusion-workbench/history/YYYY-MM-DD_HH-MM-playmaker-<trigger>.md`. Obtain `YYYY-MM-DD_HH-MM` from `date +%Y-%m-%d_%H-%M`. The `<trigger>` segment names what invoked you: `user-fusion-next`, `orchestrator-phase4`, or `direct-dispatch`.
+Write to `fusion-workbench/history/YYMMDD-HHMM-playmaker-<trigger>.md`. Obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`. The `<trigger>` segment names what invoked you: `user-fusion-next`, `orchestrator-phase4`, or `direct-dispatch`.
 
 The log records:
 - Counts: how many Circles inventoried per marker class.

@@ -182,7 +182,7 @@ In a consuming project, drop a markdown file into `./rules/` whose name contains
 | `/fusion:setup` | `skills/setup/SKILL.md` | Bootstraps `fusion-workbench/`, writes the `.fusion-setup` marker, copies the monitor binary, and runs the orchestrator's mandatory Setup procedure |
 | `/fusion:help` | `skills/help/SKILL.md` | Explains what fusion is, daily use, install/update/configure paths, and where deeper docs live |
 | `/fusion:commit` | `skills/commit/SKILL.md` | Stages, generates a conventional-commit message from the diff, asks the user to confirm, then commits |
-| `/fusion:archive` | `skills/archive/SKILL.md` | Archives completed/aged workbench files into `fusion-workbench/archive/<YYYY-MM-DD_HH-MM>-<slug>/` |
+| `/fusion:archive` | `skills/archive/SKILL.md` | Archives completed/aged workbench files into `fusion-workbench/archive/<YYMMDD-HHMM>-<slug>/` |
 | `/fusion:log-activity` | `skills/log-activity/SKILL.md` | Scans project activity and generates/updates the activity log |
 | `/fusion:memo` | `skills/memo/SKILL.md` | Appends a memo to the user's personal memo log in `fusion-workbench/memos/` |
 | `/fusion:revise-claude-md` | `skills/revise-claude-md/SKILL.md` | Revises `CLAUDE.md` with learnings discovered during the current session (three-pass: add / update / prune) |
@@ -217,7 +217,7 @@ State markers and inline progress tracking are defined once in `fusion-workbench
 - **No agent edits files outside its declared scope.** Cross-layer findings flow through `fusion-workbench/issues/`, not direct edits. Scope is enforced by prose in each agent prompt.
 - **Only the orchestrator dispatches other agents.** All other agents are leaf nodes — they do their work and return. The orchestrator is the sole coordinator. It never recurses (no self-invocation), and it never invokes `investigator` (user-initiated only).
 - **Issues live in `fusion-workbench/issues/`, never embedded in plans, reviews, or chat output.** This is enforced in `fusion-workbench-conventions.md` and applies to every agent.
-- **Timestamps come from the system clock** (`date +%Y-%m-%d_%H-%M`), never from estimation. All tracking filenames carry an `YYYY-MM-DD_HH-MM` prefix.
+- **Timestamps come from the system clock** (`date +%y%m%d-%H%M`), never from estimation. All tracking filenames carry an `YYMMDD-HHMM` prefix.
 - **`.secret` files are never read.** If an agent needs a secret, it asks the user for an environment variable.
 
 ## Adding a new agent

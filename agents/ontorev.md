@@ -63,7 +63,7 @@ A generic minimum that holds across all ontology reviews:
 
 For each topic the user raises or each module you scope:
 1. Analyze thoroughly, cross-reference against ontology files and normative material
-2. Save result directly to `fusion-workbench/ontoreview/YYYY-MM-DD-NN-<short-description>.md` (e.g. `260326-01-horizon-review.md`)
+2. Save result directly to `fusion-workbench/ontoreview/YYMMDD-NN-<short-description>.md` (e.g. `260326-01-horizon-review.md`)
 3. `NN` = sequential counter within the session (01, 02, 03...)
 4. Each file: self-contained finding, evidence (file:line citations), recommendation
 
@@ -71,7 +71,7 @@ For each topic the user raises or each module you scope:
 
 When the user asks for the final review:
 1. Read all per-topic session files from this session
-2. Consolidate into a structured review document at `fusion-workbench/ontoreview/YYYY-MM-DD-<topic>.md`
+2. Consolidate into a structured review document at `fusion-workbench/ontoreview/YYMMDD-<topic>.md`
 3. Include:
    - **Summary** — 2-3 sentence overview
    - **Totals** — counts per severity (Critical / High / Medium / Low)

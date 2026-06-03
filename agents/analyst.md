@@ -30,8 +30,8 @@ You study documents and analyze problems to produce understanding and insight th
 
 **You may write to these paths and NO others:**
 
-- `fusion-workbench/analyses/YYYY-MM-DD_HH-MM-<topic>.md` — analysis reports
-- `fusion-workbench/history/YYYY-MM-DD_HH-MM-<topic>.md` — session log
+- `fusion-workbench/analyses/YYMMDD-HHMM-<topic>.md` — analysis reports
+- `fusion-workbench/history/YYMMDD-HHMM-<topic>.md` — session log
 - New issue files in `fusion-workbench/issues/` for actionable findings (per `fusion-workbench-conventions.md`)
 
 **All output goes inside `fusion-workbench/`.** Never create top-level directories. If the project has its own `analysis/` or similar directories, those are project data — read-only. Your output path is always `fusion-workbench/analyses/`, regardless of what the project's `CLAUDE.md` or folder structure suggests.
@@ -128,7 +128,7 @@ Author a decision record for an open question — typically when shaping or plan
 1. Frame the question — exactly what choice must be made
 2. Enumerate options (2–4 typical) with pros / cons / constraints
 3. Recommend if you have evidence; otherwise mark "no recommendation, awaits user input"
-4. Write to `fusion-workbench/decisions/YYYY-MM-DD_HH-MM[o]-<topic>.md` per the decision-record template in `fusion-workbench-conventions.md`
+4. Write to `fusion-workbench/decisions/YYMMDD-HHMM[o]-<topic>.md` per the decision-record template in `fusion-workbench-conventions.md`
 5. If the analysis itself answers the question (e.g. a comparative analysis selects an option), file the decision in state `[a]` with `Answered: <this-analysis-path>:<line>` instead of `[o]`.
 6. Always include a `Cross-references:` line in the header listing related issues, plans, prior decisions, and the analysis (if any) that informed the record. The reconciler and taskplanner use this for routing.
 
@@ -145,7 +145,7 @@ Produce a point-in-time architectural overview of the project: components, inter
 2. Trace key flows (e.g. how a user request becomes a stored artefact; how data flows from source → ontology → consumer)
 3. List binding design decisions (with cross-references to `decisions/` files where applicable)
 4. Identify open questions visible from this elevation — file them as new decision records (`[o]`) in `decisions/` if not already tracked
-5. Write to `fusion-workbench/analyses/YYYY-MM-DD_HH-MM-snapshot-<topic>.md` using the architectural-snapshot template below
+5. Write to `fusion-workbench/analyses/YYMMDD-HHMM-snapshot-<topic>.md` using the architectural-snapshot template below
 
 **Architectural snapshot template:**
 
@@ -195,7 +195,7 @@ Regardless of type:
 
 ## Output Format
 
-Each analysis produces one report file at `fusion-workbench/analyses/YYYY-MM-DD_HH-MM-<topic>.md`. Obtain `YYYY-MM-DD_HH-MM` from `date +%Y-%m-%d_%H-%M`.
+Each analysis produces one report file at `fusion-workbench/analyses/YYMMDD-HHMM-<topic>.md`. Obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`.
 
 ```markdown
 # Analysis: <topic>
@@ -234,7 +234,7 @@ Each analysis produces one report file at `fusion-workbench/analyses/YYYY-MM-DD_
 
 ## Filed Issues
 
-- `fusion-workbench/issues/YYYY-MM-DD_HH-MM[o]-<topic>.md` — <one-line summary>
+- `fusion-workbench/issues/YYMMDD-HHMM[o]-<topic>.md` — <one-line summary>
 - ...
 
 ## Sources

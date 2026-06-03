@@ -115,13 +115,11 @@ Gather the facts to show the user before any mutation runs. None of these reads 
   HEAD_SHORT="$(cd "$WORKBENCH" && git rev-parse --short HEAD 2>/dev/null)"
   ```
 
-- **Stash id.** Derive from the Circle filename's slug. The Circle filename is `YYYY-MM-DD_HH-MM[t]-<slug>.md`; the stash id is `YYYY-MM-DD_HH-MM-<slug>` where `YYYY-MM-DD_HH-MM` is the current time (not the Circle's birth time — multiple stashes against the same Circle remain distinguishable).
+- **Stash id.** Derive from the Circle filename's slug. The Circle filename is `YYMMDD-HHMM[t]-<slug>.md`; the stash id is `YYMMDD-HHMM-<slug>` where `YYMMDD-HHMM` is the current time (not the Circle's birth time — multiple stashes against the same Circle remain distinguishable).
 
   ```bash
-  STASH_TS="$(date +%Y-%m-%d_%H-%M)"
-  # Format-agnostic: extract the slug after the [t] marker, so both the current
-  # YYYY-MM-DD_HH-MM prefix and the legacy YYMMDD-HHMM prefix are handled.
-  SLUG="$(echo "$ACTIVE_CIRCLE_FILENAME" | sed -E 's/^.*\[t\]-(.+)\.md$/\1/')"
+  STASH_TS="$(date +%y%m%d-%H%M)"
+  SLUG="$(echo "$ACTIVE_CIRCLE_FILENAME" | sed -E 's/^[0-9]{6}-[0-9]{4}\[t\]-(.+)\.md$/\1/')"
   STASH_ID="${STASH_TS}-${SLUG}"
   STASH_DIR="$WORKBENCH/fusion-workbench/stashes/$STASH_ID"
   ```
@@ -337,7 +335,7 @@ The resulting `manifest.yaml` is a ten-field index. Field semantics:
 
 | Field | Type | When | Notes |
 |---|---|---|---|
-| `stash_id` | string (unquoted, slug-shape) | always | `YYYY-MM-DD_HH-MM-<slug>` |
+| `stash_id` | string (unquoted, slug-shape) | always | `YYMMDD-HHMM-<slug>` |
 | `timestamp` | quoted RFC 3339 UTC | always | with `Z` |
 | `reason` | quoted string | always | `(not specified)` if user skipped |
 | `original_circle_filename` | quoted string | always | the file under `circles/` before move |

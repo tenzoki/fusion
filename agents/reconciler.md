@@ -56,7 +56,7 @@ If the dispatch prompt's first non-empty content line is `**Domain:** <value>`, 
 - `fusion-workbench/planning/*.md` — update status fields, inline step markers, add reconciliation logs
 - `fusion-workbench/issues/*.md` — update status, rename markers, append resolution notes
 - `fusion-workbench/codereview/*.md` and `fusion-workbench/ontoreview/*.md` — annotate confirmed/resolved items
-- Write `fusion-workbench/history/YYYY-MM-DD_HH-MM-reconciliation.md` as the session log
+- Write `fusion-workbench/history/YYMMDD-HHMM-reconciliation.md` as the session log
 - Append to the orchestrator's session history file at `fusion-workbench/history/<date>-orchestrator-session.md` — strictly for the `## Coherence` section produced by Step 4. Append-only; never overwrite or modify other sections. The orchestrator's history-file template marks the `## Coherence` section with an `<!-- RECONCILER-OWNED -->` HTML comment for mechanical traceability.
 - File new issues in `fusion-workbench/issues/` for anything unexpected discovered during reconciliation
 
@@ -177,13 +177,13 @@ For each review file (`fusion-workbench/codereview/*.md`, `fusion-workbench/onto
 
 ### Step 4: Write session history
 
-Write `fusion-workbench/history/YYYY-MM-DD_HH-MM-reconciliation.md` containing:
+Write `fusion-workbench/history/YYMMDD-HHMM-reconciliation.md` containing:
 - How many plans reviewed, how many updated
 - How many issues reviewed, how many updated
 - Key findings (things marked done that weren't, things done but not marked)
 - New issues discovered during reconciliation (each filed as its own file in `fusion-workbench/issues/`, referenced from this log)
 
-Obtain `YYYY-MM-DD_HH-MM` from `date +%Y-%m-%d_%H-%M`.
+Obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`.
 
 **Append the three-edge Coherence verdict to the orchestrator's session history file** — *not* the reconciliation log above. Locate the most recent `fusion-workbench/history/*-orchestrator-session.md` and **append** (do not overwrite) a `## Coherence` section in this exact format:
 
