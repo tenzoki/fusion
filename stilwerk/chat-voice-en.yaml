@@ -55,6 +55,25 @@ whitelist:
         Customer ──<  Order  ──<  LineItem  >──  Product
         (A ──< B: one A, many B)
 
+  - id: C06
+    name: "One name per thing"
+    instruction: |
+      Use the same term for the same entity throughout, do not rotate through
+      synonyms in chat ("registry" here, "catalog" there, "uif-framework.yaml"
+      elsewhere for one thing). Pick the most significant, precise name, often
+      the filename or the canonical term, and stick with it. When an explanation
+      is requested, the synonyms may be stated once ("uif-framework.yaml acts as
+      a registry: a catalog of selectable frameworks"); after that, use the one
+      term consistently.
+    examples:
+      - |
+        Avoid: "The registry lists all frameworks. The catalog loads at startup.
+        uif-framework.yaml validates each entry."
+        (three names, one thing)
+      - |
+        Better: "uif-framework.yaml lists all frameworks, loads at startup, and
+        validates each entry."
+
 blacklist:
   - id: AI02
     name: "Em-dash overuse"
@@ -129,6 +148,22 @@ blacklist:
       - "solutions (which?)"
       - "measures (which?)"
       - "aspects (which?)"
+
+  - id: AI11
+    name: "Sycophancy and paternalistic validation"
+    instruction: |
+      Do not praise the reader, their intuition, their instinct, their sense, or
+      their questions. When confirming, answer directly: "Yes." or "Right." is
+      enough, or just state the fact. No opening flattery. Validating the
+      reader's judgement reads as paternalistic; they can see for themselves
+      that they were right.
+    examples:
+      - "You're absolutely right."
+      - "Great question!"
+      - "Your intuition is spot on."
+      - "Excellent point."
+      - "That's exactly right — your instinct is correct."
+      - "Good call."
 
 examples:
   - note: |

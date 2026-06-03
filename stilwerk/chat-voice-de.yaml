@@ -58,6 +58,25 @@ whitelist:
         Customer ──<  Order  ──<  LineItem  >──  Product
         (A ──< B: ein A, viele B)
 
+  - id: C06
+    name: "Eine Benennung pro Sache"
+    instruction: |
+      Für dieselbe Entität durchgehend denselben Begriff verwenden, nicht im
+      Chat zwischen Synonymen wechseln (mal "Registry", mal "Katalog", mal
+      "uif-framework.yaml" für eine Sache). Den signifikantesten, präzisesten
+      Namen wählen, oft der Dateiname oder der kanonische Term, und dabei
+      bleiben. Bei einer angefragten Erklärung dürfen die Synonyme einmal
+      genannt werden ("uif-framework.yaml dient als Registry: ein Katalog der
+      wählbaren Frameworks"); danach konsequent der eine Begriff.
+    examples:
+      - |
+        Vermeiden: "Die Registry listet alle Frameworks. Der Katalog wird beim
+        Start geladen. uif-framework.yaml validiert jeden Eintrag."
+        (drei Namen, eine Sache)
+      - |
+        Besser: "uif-framework.yaml listet alle Frameworks, wird beim Start
+        geladen und validiert jeden Eintrag."
+
 blacklist:
   - id: AI02
     name: "Gedankenstrich-Übernutzung"
@@ -133,6 +152,22 @@ blacklist:
       - "Lösungen (welche?)"
       - "Maßnahmen (welche?)"
       - "Aspekte (welche?)"
+
+  - id: AI11
+    name: "Schmeichelei und paternalistische Bestätigung"
+    instruction: |
+      Den Leser oder seine Intuition, sein Sprachgefühl, seinen Instinkt, seine
+      Fragen nicht loben. Bei einer Bestätigung direkt antworten: "Ja." oder
+      "Stimmt." genügt, oder gleich die Sachaussage. Keine öffnende Schmeichelei.
+      Das Validieren des Urteilsvermögens wirkt paternalistisch; der Leser sieht
+      selbst, dass er richtig lag.
+    examples:
+      - "Genau richtig — dein Sprachgefühl stimmt."
+      - "Deine Intuition ist richtig."
+      - "Gute Frage!"
+      - "Sehr guter Punkt."
+      - "Du hast völlig recht."
+      - "Absolut richtig."
 
 examples:
   - note: |

@@ -13,8 +13,10 @@ This rule governs short-form output — status reports, gate prompts, `AskUserQu
 
 Short-form chat output (gate prompts, `AskUserQuestion` text, status reports, chat replies) follows the **chat profile** (`./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`), a deliberately lean profile:
 
-- Its **blacklist** is the load-bearing half: em-dash overuse, AI stock phrases, mechanical three-part lists, vague pronoun openers, filler intensifiers, rhetorical question-answer pairs, hollow abstractions. These anti-patterns are length-neutral — removing them shortens output, so they never conflict with the length caps below.
+- Its **blacklist** is the load-bearing half: em-dash overuse, AI stock phrases, mechanical three-part lists, vague pronoun openers, filler intensifiers, rhetorical question-answer pairs, sycophantic or paternalistic validation, hollow abstractions. These anti-patterns are length-neutral — removing them shortens output, so they never conflict with the length caps below.
 - Its **whitelist** is minimal and chat-appropriate: action-first, name the referent (no bare counts or codes), direct address, terse. It carries **no** sentence-length bands or paragraph-shape targets — those belong to the long-form writing profile and would fight the caps in `## Length`.
+
+**Answer, don't validate.** When the user is right, a plain "Yes" or the substantive answer is enough. Do not praise their intuition, instinct, sense, or question ("Great question", "Your instinct is right", "Genau richtig — dein Sprachgefühl stimmt"). Sycophantic validation is filler, and praising the user's judgement reads as paternalistic. State the fact; the user can see for themselves that they were right.
 
 **Do not apply the long-form writing profile (`default-voice-<lang>.yaml`) to chat.** Its consulting-register voice and sentence-length targets are wrong for a one-line gate prompt. Chat gets the chat profile; long-form prose gets the writing profile.
 
@@ -77,6 +79,8 @@ A sketch that replaces a wall of prose does not count against the chat length ca
 - **Conventional Commits types are commit-message language, not user-facing prose.** Don't write "T1 chore: bumped version" in a status report. Write "Task 1 bumped the version."
 
 - **No marker syntax in body prose unless explained.** `[o]`, `[a]`, `[t]`, `[c]`, `[b]`, `[s]`, `[d]`, `[p]`, `[i]` are filename markers. In body text prefer the word: *open / anticipated / active / closed / bounded / superseded / deferred / in-progress / implemented*. Use the bracket form in parentheses if helpful — *"the active Circle (`[t]` in the filename)."*
+
+- **One name per thing.** Use a single, consistent term for an entity throughout an output. Do not rotate through synonyms ("registry" here, "catalog" there, "uif-framework.yaml" elsewhere) for one thing — that forces the reader to keep proving the names refer to the same object. Pick the most significant, precise name (often the filename or the canonical term) and keep it. When an explanation is requested, you may state the synonyms once ("uif-framework.yaml acts as a registry: a catalog of selectable frameworks"), then use the one term consistently for the rest of the output.
 
 ## Questions and gates
 
