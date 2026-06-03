@@ -4,7 +4,52 @@ Every piece of output the user reads — status reports, gate prompts, `AskUserQ
 
 This rule is loaded for every agent. If you find yourself writing output that violates it, rewrite before sending. The user reads everything you produce — make it worth reading.
 
-This rule governs short-form output — status reports, gate prompts, `AskUserQuestion` text, session summary headers, dashboard lines, chat replies. For long-form prose generation (session summary bodies, consultant replies, analyst reports, investigator timelines, playmaker briefings, prose sections of specs and plans), additionally apply the project's stylometric profile at `./fusion-workbench/stilwerk/<lang>.yaml` — resolved per the `**Language:**` line in `CLAUDE.md` (see `rules/fusion-workbench-conventions.md` `## Project language`). Each long-form-prose agent's prompt enumerates which of its outputs the profile governs.
+This rule governs short-form output — status reports, gate prompts, `AskUserQuestion` text, session summary headers, dashboard lines, chat replies. Two stylometric profiles layer on top of it, both resolved per the `**Language:**` line in `CLAUDE.md` (see `rules/fusion-workbench-conventions.md` `## Project language`):
+
+- **Long-form prose** (session summary bodies, consultant replies, analyst reports, investigator timelines, playmaker briefings, prose sections of specs and plans) additionally applies the **writing profile** at `./fusion-workbench/stilwerk/default-voice-<lang>.yaml`. Each long-form-prose agent's prompt enumerates which of its outputs the writing profile governs.
+- **Short-form chat** additionally applies the **chat profile** at `./fusion-workbench/stilwerk/chat-voice-<lang>.yaml` — see `## Style anti-patterns apply to everything` below.
+
+## Style anti-patterns apply to everything
+
+Short-form chat output (gate prompts, `AskUserQuestion` text, status reports, chat replies) follows the **chat profile** (`./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`), a deliberately lean profile:
+
+- Its **blacklist** is the load-bearing half: em-dash overuse, AI stock phrases, mechanical three-part lists, vague pronoun openers, filler intensifiers, rhetorical question-answer pairs, hollow abstractions. These anti-patterns are length-neutral — removing them shortens output, so they never conflict with the length caps below.
+- Its **whitelist** is minimal and chat-appropriate: action-first, name the referent (no bare counts or codes), direct address, terse. It carries **no** sentence-length bands or paragraph-shape targets — those belong to the long-form writing profile and would fight the caps in `## Length`.
+
+**Do not apply the long-form writing profile (`default-voice-<lang>.yaml`) to chat.** Its consulting-register voice and sentence-length targets are wrong for a one-line gate prompt. Chat gets the chat profile; long-form prose gets the writing profile.
+
+**Structured artifacts are exempt from both profiles.** Dashboard lines (`orchestrator-live.md`), commit messages, monitor strings, event-log JSON, and machine-read tables or ID lists keep their terse, parseable shape. The chat profile is about prose habits, not data formats.
+
+If no chat profile is loaded (no `stilwerk/` in the workbench, or the file is missing), the anti-patterns still hold in spirit: they are language-independent and this rule applies regardless.
+
+**The recurring offender** is the telegraphic-with-parentheses style: a clause, an em-dash, a parenthetical jargon aside, another em-dash, a compressed reason crammed into one breath. This pattern shows up most in gate prompts and `AskUserQuestion` option text. Avoid it.
+
+Before (real example — em-dash pile-up, undecodable parenthetical jargon, bare counts with no referent):
+
+> Opt 1 — ja, aber mit explizit gemachter (a)-Wahl für die 13 und einer ehrlichen Notiz-Formulierung, die 8 (redundant) von 13 (echt gedroppt) trennt.
+
+After (plain sentences, referents named, no em-dash, no bare counts):
+
+> Option 1 funktioniert, aber nur, wenn du die "beantwortet"-Wahl für alle 13 Einträge ausdrücklich festhältst. Die Abschlussnotiz sollte die 8 redundanten von den 5 echt verworfenen trennen, sonst liest sich der Audit-Trail später falsch.
+
+The principle is language-independent: name the referent, drop the em-dash, spell out the count.
+
+## Sketch structure instead of narrating it
+
+When the point is a structure — relations in a data model, a dependency graph, a state machine, a layout, a before/after of a tree — a small ASCII sketch is usually clearer than a paragraph, and shorter. Prefer the sketch.
+
+This matters most for abstract relational content. Do not spell out "a customer has many orders, each order has many line items, and every line item points at one product in one category" in sentences when a few boxes and arrows say it at a glance:
+
+```
+Customer ──<  Order  ──<  LineItem  >──  Product  ──  Category
+              (1─*)         (*─1)              (in)
+
+legend:  A ──< B   one A, many B        A >── B   many A, one B
+```
+
+Use ASCII in chat — the terminal renders it directly. Reserve Mermaid for files that get rendered elsewhere (history logs, specs, plans); Mermaid does not render in the chat stream.
+
+A sketch that replaces a wall of prose does not count against the chat length cap in the same way — it *is* the shorter form. But keep sketches tight: if the diagram needs a legend longer than the prose would have been, the prose was fine.
 
 ## Information architecture (in this order)
 
