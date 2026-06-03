@@ -131,7 +131,7 @@ Remaining setup (after step 1 is resolved):
      ```
 
    - **Setup hint.** If `circles_anticipated + circles_active > 0` (and `fusion-workbench/circles/` exists), print to the user: *"You have <N> anticipated and <M> active Circle(s) in `fusion-workbench/circles/`. Consider `/fusion:next` to review the portfolio before starting."* (Substitute `<N>` and `<M>`.) Continue Setup without waiting for user response. If both counts are 0 (or `circles/` is absent), no hint is printed — behaviour identical to v2.9.0. Record the hint emission (or its absence) in the orchestrator's session history file's snapshot section so post-session analysis can see whether it was printed.
-6. Create history file: `fusion-workbench/history/YYMMDD-HHMM-orchestrator-session.md` (obtain timestamp from `date +%y%m%d-%H%M`)
+6. Create history file: `fusion-workbench/history/YYYY-MM-DD_HH-MM-orchestrator-session.md` (obtain timestamp from `date +%Y-%m-%d_%H-%M`)
 7. Write initial history entry with snapshot counts and session Directive
 8. Initialize event log and emit session start:
     - **Create if missing, never overwrite.** `fusion-workbench/orchestrator-events.jsonl` is append-only across all sessions. The Phase 4 sequence-diagram generator reads it cross-session for historical context, and `/fusion:monitor-reset` archives it rather than deleting in place. Use a touch-or-append pattern, never a truncating `>` redirect:
@@ -417,10 +417,10 @@ After the loop exits (convergence or circuit breaker):
 
 ## Phase 4: Report
 
-Update the history file `fusion-workbench/history/YYMMDD-HHMM-orchestrator-session.md` with the final summary. The `## Coherence` section in the template below is appended by the reconciler at Phase 3 step 3 — the orchestrator's own Phase 4 writes never overwrite or modify it. Treat the section as a slot you reserve in the layout; the reconciler owns its content.
+Update the history file `fusion-workbench/history/YYYY-MM-DD_HH-MM-orchestrator-session.md` with the final summary. The `## Coherence` section in the template below is appended by the reconciler at Phase 3 step 3 — the orchestrator's own Phase 4 writes never overwrite or modify it. Treat the section as a slot you reserve in the layout; the reconciler owns its content.
 
 ```markdown
-# Orchestrator Session — YYMMDD-HHMM
+# Orchestrator Session — YYYY-MM-DD_HH-MM
 
 **Directive:** <user's original request, revisable mid-Circle>
 **Mode:** <resolved mode>
@@ -565,7 +565,7 @@ Each option has bounded post-action mechanics. No option is allowed to loop unbo
   **At Phase 3 (post-verdict dispatch):** Re-enter Step 0b.1 (shaper). The orchestrator preserves the existing session history file but appends a new `## Directive revision (post-Phase-3)` section noting the trigger (the reconciler verdict and the user's Rebalance choice). The shaper produces a new spec with the prior commits as Grounding context. Then Step 0b.2 (planner) and Phase 1 (queue rebuild) and Phase 2 (fresh Turn). `progress.directive_revisions_this_session` increments and is persisted before re-entering Step 0b.1; if already at 1, Bounded Closure is forced.
 
 - **Revise Grounding does not increment the Turn counter** (decision-filing is not Artifact work). The orchestrator pauses Phase 2 at the current queue position (records `paused_at_task: <task ID>` in `agentstate.yaml`), then prompts the user via `AskUserQuestion` to choose between:
-  (a) **File a new `decisions/[o]` entry** — orchestrator asks the user for the question text and any options/constraints (or for the full decision body if the user prefers to type it directly), then writes the file at `fusion-workbench/decisions/YYMMDD-HHMM[o]-<topic>.md` per the decision-record template in `fusion-workbench-conventions.md`; OR
+  (a) **File a new `decisions/[o]` entry** — orchestrator asks the user for the question text and any options/constraints (or for the full decision body if the user prefers to type it directly), then writes the file at `fusion-workbench/decisions/YYYY-MM-DD_HH-MM[o]-<topic>.md` per the decision-record template in `fusion-workbench-conventions.md`; OR
   (b) **Supersede an existing `[i]` decision** — orchestrator presents the list of `[i]` decisions and asks which one. On selection, renames `[i]` → `[s]` (appending `Superseded by: <new-path> — <reason>`) and creates the new `[o]` decision file citing the supersession.
 
   After either branch, the orchestrator emits `rebalance_grounding` and **resumes Phase 2 at the recorded `paused_at_task`** without incrementing the Turn counter. There is no re-entry budget — decision-filing is not recursive. The user can choose Revise Grounding multiple times in a session if multiple decisions need to be filed.
@@ -605,7 +605,7 @@ Each option has bounded post-action mechanics. No option is allowed to loop unbo
 - `agent_errors` — count of agent failures (no output, wrong scope, etc.)
 - `human_gates_hit` — number of times the orchestrator stopped for user input
 
-**Durable state:** The history file `fusion-workbench/history/YYMMDD-HHMM-orchestrator-session.md` is updated incrementally after each Turn, not just at session end. If the session is interrupted, the history file preserves progress through the last completed Turn.
+**Durable state:** The history file `fusion-workbench/history/YYYY-MM-DD_HH-MM-orchestrator-session.md` is updated incrementally after each Turn, not just at session end. If the session is interrupted, the history file preserves progress through the last completed Turn.
 
 ## Persistent State File
 
@@ -617,13 +617,13 @@ This file is the orchestrator's crash-recovery mechanism. It captures enough sta
 
 ```yaml
 # fusion-workbench session state — for resumption after restart
-# Updated: <YYMMDD-HHMM>
+# Updated: <YYYY-MM-DD_HH-MM>
 
 session:
   directive: "<user's original request>"
   mode: "<resolved mode: all|plan|bundle|issues|review|custom>"
   domain: "<detected domain: code|data|strategic|knowledge>"  # default code on resume if absent
-  started: "<YYMMDD-HHMM>"
+  started: "<YYYY-MM-DD_HH-MM>"
   history_file: "fusion-workbench/history/<filename>.md"
   git_head_at_start: "<short hash>"
 
@@ -685,7 +685,7 @@ Overwrite `agentstate.yaml` at each of these transitions (same cadence as the li
 
 ### Write mechanics
 
-Use the Write tool to overwrite the entire file on each update. The file is small and the overwrite is atomic from the orchestrator's perspective. Obtain the timestamp for the `# Updated:` comment from `date +%y%m%d-%H%M`.
+Use the Write tool to overwrite the entire file on each update. The file is small and the overwrite is atomic from the orchestrator's perspective. Obtain the timestamp for the `# Updated:` comment from `date +%Y-%m-%d_%H-%M`.
 
 ## Observability
 
@@ -895,7 +895,7 @@ sequenceDiagram
 
 User-facing output (gate prompts, AskUserQuestion text, Turn reports, session summaries, activation banners) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. Specifically for the orchestrator: every Rebalance-gate option label and every AskUserQuestion option must be plain English (e.g. "Try again with a refined task list" rather than "Revise Artifact"; internal verbs may follow in parentheses). Session reports lead with "what does the user do now?" — if the verdict is `coherent` and nothing requires user attention, the first line is "Session complete — nothing for you to do."
 
-**Long-form prose vs short-form.** Long-form prose outputs subject to the stylometric profile loaded at Setup: the Phase 4 session summary body in `history/YYMMDD-HHMM-orchestrator-session.md`. Short-form outputs governed by `rules/user-facing-output.md` plus the project's **chat voice profile** (`./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`, applied per `## Style anti-patterns apply to everything` in that rule; the long-form writing profile does not apply to chat, and structured artifacts like tables, dashboard lines, commit messages, and monitor strings follow `user-facing-output.md` only): dashboard lines (`orchestrator-live.md`), gate prompts, `AskUserQuestion` text, chat status messages, monitor strings, commit messages.
+**Long-form prose vs short-form.** Long-form prose outputs subject to the stylometric profile loaded at Setup: the Phase 4 session summary body in `history/YYYY-MM-DD_HH-MM-orchestrator-session.md`. Short-form outputs governed by `rules/user-facing-output.md` plus the project's **chat voice profile** (`./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`, applied per `## Style anti-patterns apply to everything` in that rule; the long-form writing profile does not apply to chat, and structured artifacts like tables, dashboard lines, commit messages, and monitor strings follow `user-facing-output.md` only): dashboard lines (`orchestrator-live.md`), gate prompts, `AskUserQuestion` text, chat status messages, monitor strings, commit messages.
 
 In addition, for orchestrator-specific output:
 

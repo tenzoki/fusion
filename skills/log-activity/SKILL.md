@@ -60,7 +60,7 @@ a) **Git commits** (`g`):
 
 b) **Workbench files** (`h`, `p`, `i`, `o`, `c`, `a`, `n`, `t`, `d`):
    - Use `ls -la` on each directory to get modification times
-   - Parse filenames for embedded timestamps (e.g., `260408-1523-topic.md` means April 8, 15:23)
+   - Parse filenames for embedded timestamps. Current format: `2026-04-08_15-23-topic.md` means April 8, 15:23. Legacy files may use the older `YYMMDD-HHMM` form (`260408-1523-topic.md`); accept both.
    - Read file headers for date metadata if available
    - Only scan directories that exist (e.g., `fusion-workbench/decisions/` may be absent on older workbenches)
 
@@ -212,7 +212,7 @@ Report the three Step 6 numeric counts explicitly: `<N> daily entries`, `<W> per
 ## Notes
 
 - Be thorough: scan ALL source directories, not just the most recent
-- Timestamps should be extracted from filenames (YYMMDD-HHMM pattern), git log, and file modification times
+- Timestamps should be extracted from filenames (YYYY-MM-DD_HH-MM pattern), git log, and file modification times
 - When a day has very few entries, still create the entry — even a single commit is worth logging
 - The arc summary should capture the narrative: what was the focus of the day? (e.g., "ontology refactoring", "bug fixes and reviews", "new agent implementation")
 - Infer the arc from commit messages, file topics, and issue/plan titles

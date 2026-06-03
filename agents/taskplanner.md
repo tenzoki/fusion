@@ -43,7 +43,7 @@ If the dispatch prompt's first non-empty content line is `**Domain:** <value>`, 
 
 **You may write:**
 - `fusion-workbench/tasklist.md` (create or update)
-- `fusion-workbench/history/YYMMDD-HHMM-tasklist-update.md` (history entry)
+- `fusion-workbench/history/YYYY-MM-DD_HH-MM-tasklist-update.md` (history entry)
 
 **You may NOT:**
 - Edit planning, issue, codereview, or ontoreview files (reconciler's job)
@@ -154,13 +154,13 @@ Write (or update) `fusion-workbench/tasklist.md`:
 
 ### Step 5: Write history entry
 
-Write `fusion-workbench/history/YYMMDD-HHMM-tasklist-update.md`:
+Write `fusion-workbench/history/YYYY-MM-DD_HH-MM-tasklist-update.md`:
 - How many plans/issues/reviews scanned
 - How many open tasks extracted
 - How many tasks are blocked vs ready
 - Key changes from previous tasklist (if updating)
 
-Obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`.
+Obtain `YYYY-MM-DD_HH-MM` from `date +%Y-%m-%d_%H-%M`.
 
 ## Rules
 

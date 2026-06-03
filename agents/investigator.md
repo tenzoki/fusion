@@ -40,8 +40,8 @@ Treat every artifact in a capture as evidence. Read logs in chronological order.
 
 **You may write:**
 
-- `fusion-workbench/investigations/YYMMDD-HHMM-<topic>.md` — investigation reports
-- `fusion-workbench/history/YYMMDD-HHMM-<topic>.md` — session log
+- `fusion-workbench/investigations/YYYY-MM-DD_HH-MM-<topic>.md` — investigation reports
+- `fusion-workbench/history/YYYY-MM-DD_HH-MM-<topic>.md` — session log
 - New issue files in `fusion-workbench/issues/` for actionable findings (per `fusion-workbench-conventions.md`)
 
 If reading existing code, prompts, or ontology files reveals what the failure root cause is, file an issue describing the fix and assign it (in the issue body) to `coder` or `ontocoder` per the routing rules in the `planner` agent.
@@ -92,7 +92,7 @@ Cross-reference visual evidence against the corresponding process logs, AI-call 
 
 ## Output Format
 
-Each investigation produces one report file at `fusion-workbench/investigations/YYMMDD-HHMM-<short-tag>.md`. Obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`.
+Each investigation produces one report file at `fusion-workbench/investigations/YYYY-MM-DD_HH-MM-<short-tag>.md`. Obtain `YYYY-MM-DD_HH-MM` from `date +%Y-%m-%d_%H-%M`.
 
 ```markdown
 # Investigation: <capture name>
@@ -145,7 +145,7 @@ For each piece of evidence, cite source with file path and line range:
 
 ## Filed Issues
 
-- `fusion-workbench/issues/YYMMDD-HHMM[o]-<topic>.md` — <one-line summary, executor>
+- `fusion-workbench/issues/YYYY-MM-DD_HH-MM[o]-<topic>.md` — <one-line summary, executor>
 - ...
 
 ## Cross-References
@@ -174,7 +174,7 @@ For each piece of evidence, cite source with file path and line range:
 
 When the investigation produces actionable findings, every fix is one issue file in `fusion-workbench/issues/`. Per `fusion-workbench-conventions.md`:
 
-- Filename: `YYMMDD-HHMM[o]-<topic>.md`
+- Filename: `YYYY-MM-DD_HH-MM[o]-<topic>.md`
 - Body: title / short description / context, plus a back-reference to the investigation report and the executor (`coder` or `ontocoder`) the fix belongs to
 - Never embed actionable issues inside the investigation report only — they get lost. The report aggregates findings; the issue files are the work tickets.
 

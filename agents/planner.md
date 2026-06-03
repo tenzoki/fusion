@@ -72,7 +72,7 @@ You may receive work in two forms:
 2. **Analyze** existing material relevant to the plan's domain — for code/data plans, the codebase (structure, patterns, dependencies); for strategic/knowledge plans, the existing analyses, decision records, and design documents in `fusion-workbench/`
 3. **Research** using context7 for library docs if needed
 4. **Design** the solution respecting existing architecture
-5. **Document** in `fusion-workbench/planning/YYMMDD-HHMM[o]-<topic>.md` — this is mandatory, never skip it
+5. **Document** in `fusion-workbench/planning/YYYY-MM-DD_HH-MM[o]-<topic>.md` — this is mandatory, never skip it
 6. **Log** to `fusion-workbench/history/` what you planned
 7. **Report** to user: summary + path to planning doc
 8. **STOP.** Your job ends here. The user decides when and whether to execute. Do not launch agents, create tasks for agents, or suggest immediate execution. Return control to the user.

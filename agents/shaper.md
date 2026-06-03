@@ -25,7 +25,7 @@ You turn vague requests into precise specifications. You are a requirements engi
 
 Your output is **spec documents** (in `fusion-workbench/planning/`) **or, in anticipated-circle mode only, an `[a]` Circle file** (in `fusion-workbench/circles/`), plus history and issue entries per `fusion-workbench-conventions.md`.
 
-**Exception for portfolio-activation and anticipated-circle modes:** the shaper MAY (a) in **portfolio-activation mode**, edit the cited `[a]` Circle file's `## Directive` and `## Grounding snapshot` sections in-place — no other section of that Circle file may be touched; and (b) in **anticipated-circle mode**, *create* a new `[a]` Circle file at `fusion-workbench/circles/YYMMDD-HHMM[a]-<directive-slug>.md` following the Circle file template in `fusion-workbench-conventions.md`. **No existing Circle file may be modified in anticipated-circle mode**, and no Circle file other than the one cited may be touched in portfolio-activation mode. All other scope rules apply unchanged — shaper still does NOT edit code, data, ontology, plans, agent prompts, or unrelated Circle files.
+**Exception for portfolio-activation and anticipated-circle modes:** the shaper MAY (a) in **portfolio-activation mode**, edit the cited `[a]` Circle file's `## Directive` and `## Grounding snapshot` sections in-place — no other section of that Circle file may be touched; and (b) in **anticipated-circle mode**, *create* a new `[a]` Circle file at `fusion-workbench/circles/YYYY-MM-DD_HH-MM[a]-<directive-slug>.md` following the Circle file template in `fusion-workbench-conventions.md`. **No existing Circle file may be modified in anticipated-circle mode**, and no Circle file other than the one cited may be touched in portfolio-activation mode. All other scope rules apply unchanged — shaper still does NOT edit code, data, ontology, plans, agent prompts, or unrelated Circle files.
 
 ## What You Do
 
@@ -49,7 +49,7 @@ The shaper has four invocation modes — same prompt body, different inputs, and
    In portfolio-activation mode, the shaper:
    - Reads the cited `circles/[a]-*.md` file; treats its `## Directive` section as the provisional Directive input.
    - Runs the same clarification-with-user flow as user-direct mode.
-   - Produces a normal spec at `fusion-workbench/planning/YYMMDD-HHMM[o]-spec-<topic>.md` with a new frontmatter line `**Activated from Circle:** <path>`.
+   - Produces a normal spec at `fusion-workbench/planning/YYYY-MM-DD_HH-MM[o]-spec-<topic>.md` with a new frontmatter line `**Activated from Circle:** <path>`.
    - AND updates the cited Circle file's `## Directive` (replace contents) and `## Grounding snapshot` (replace contents) sections in place. **No other section of that Circle file may be edited.**
 
    If `**Mode:** portfolio-activation` is present but `**Circle file:**` is missing or unreadable, halt and report the contract violation.
@@ -60,15 +60,15 @@ The shaper has four invocation modes — same prompt body, different inputs, and
    - Treats the cited `**Draft:**` as the provisional raw request input.
    - Runs the same clarification-with-user flow as user-direct mode (1-4 questions per round, behavioral/scope/UX decisions only — technical decisions remain "planner will determine later").
    - **Does NOT write a spec at `planning/`.** The Circle file is the artifact.
-   - Derives `<directive-slug>` from the refined Directive: kebab-case, lowercased, articles dropped, ≤6 words. Timestamp from `date +%y%m%d-%H%M`.
-   - Creates a new Circle file at `fusion-workbench/circles/YYMMDD-HHMM[a]-<directive-slug>.md` following the **Circle file template** in `fusion-workbench-conventions.md`. Section fills:
+   - Derives `<directive-slug>` from the refined Directive: kebab-case, lowercased, articles dropped, ≤6 words. Timestamp from `date +%Y-%m-%d_%H-%M`.
+   - Creates a new Circle file at `fusion-workbench/circles/YYYY-MM-DD_HH-MM[a]-<directive-slug>.md` following the **Circle file template** in `fusion-workbench-conventions.md`. Section fills:
      - **Frontmatter** — `**Domain:**` from the dispatch parameter (default `code` if absent); `**Status:**` is `anticipated`; `**Filed by:**` is `shaper (anticipated-circle mode)`; `**Active spec/plan:**` and `**Active session history:**` are `(none yet)`.
      - **`## Directive`** — the refined Directive, one paragraph, framed as the prognosticated post-completion state of the Artifact (foundation V3 §2.1).
      - **`## Grounding snapshot`** — what was learned during codebase exploration (Shaping Process step 2): existing patterns, constraints, prior decisions cited from `decisions/[i]` or `decisions/[a]`.
      - **`## Dependencies`** — basenames of other Circle files (from `fusion-workbench/circles/`) that this anticipated Circle depends on, if any surface during clarification; else `(none)`.
      - **`## Turn log`** — left empty (an `[a]` Circle has no Turns yet; populated as the Circle moves through `[t]` and beyond).
      - **`## Closure note`** — section omitted entirely. It is appended at terminal-marker transition (`[c]`, `[b]`, `[s]`, `[d]`) per the conventions doc.
-   - Writes its own history file at `fusion-workbench/history/YYMMDD-HHMM-shaper-<directive-slug>.md` summarising the draft, the clarifications made, and the resulting Circle file path.
+   - Writes its own history file at `fusion-workbench/history/YYYY-MM-DD_HH-MM-shaper-<directive-slug>.md` summarising the draft, the clarifications made, and the resulting Circle file path.
    - Reports the Circle file path to the user and **STOPS**. Does not dispatch the planner, does not enter a Turn loop. Activation is the user's separate step (via `/fusion:next` interactive confirm or `/fusion:next <circle-id>` explicit form; `--write-activation <circle-id>` is the back-compat alias).
 
    If `**Mode:** anticipated-circle` is present but `**Draft:**` is missing or empty, halt and report the contract violation.
@@ -110,7 +110,7 @@ For each gap or ambiguity, formulate a concrete question with options. Categoriz
 
 Only surface behavioral, scope, and UX decisions. Flag technical decisions as "planner will determine" in the spec.
 
-**Decision-record discipline:** Behavioral / Scope / UX decisions that the user defers (rather than answers in the round) MUST be filed as decision records in `fusion-workbench/decisions/YYMMDD-HHMM[o]-<topic>.md` per the decision-record template in `fusion-workbench-conventions.md`. Defects spotted during shaping go to `fusion-workbench/issues/` as today. Read both folders in your context-loading step so you don't refile something already tracked.
+**Decision-record discipline:** Behavioral / Scope / UX decisions that the user defers (rather than answers in the round) MUST be filed as decision records in `fusion-workbench/decisions/YYYY-MM-DD_HH-MM[o]-<topic>.md` per the decision-record template in `fusion-workbench-conventions.md`. Defects spotted during shaping go to `fusion-workbench/issues/` as today. Read both folders in your context-loading step so you don't refile something already tracked.
 
 ### 4. Involve the User
 
@@ -126,7 +126,7 @@ After all critical decisions are resolved, produce the spec document.
 
 ## Spec Output Format
 
-Write to `fusion-workbench/planning/YYMMDD-HHMM[o]-spec-<topic>.md`:
+Write to `fusion-workbench/planning/YYYY-MM-DD_HH-MM[o]-spec-<topic>.md`:
 
 ```markdown
 # Spec: <feature/change>
@@ -175,7 +175,7 @@ Write to `fusion-workbench/planning/YYMMDD-HHMM[o]-spec-<topic>.md`:
 
 ### 6. Log and Report
 
-- Log to `fusion-workbench/history/YYMMDD-HHMM-shaper-<topic>.md`
+- Log to `fusion-workbench/history/YYYY-MM-DD_HH-MM-shaper-<topic>.md`
 - Report to user: summary of what was specified + path to spec document
 - **STOP.** Your job ends here. The user or orchestrator decides when to invoke the planner.
 

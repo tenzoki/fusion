@@ -1,5 +1,5 @@
 ---
-description: Archive completed/aged fusion-workbench files. Supports pre-defined safety tiers (tier-1/tier-2/tier-3) or natural-language description. Survey, propose, confirm, then move into fusion-workbench/archive/<YYMMDD-HHMM>-<slug>/.
+description: Archive completed/aged fusion-workbench files. Supports pre-defined safety tiers (tier-1/tier-2/tier-3) or natural-language description. Survey, propose, confirm, then move into fusion-workbench/archive/<YYYY-MM-DD_HH-MM>-<slug>/.
 argument-hint: tier-1 | tier-2 | tier-3 | <natural-language description>
 allowed-tools: [Bash, Read, Write, Edit, AskUserQuestion]
 ---
@@ -11,10 +11,10 @@ Move a curated set of workbench files out of the live workbench and into a times
 ## Where archives go
 
 ```
-fusion-workbench/archive/<YYMMDD-HHMM>-<slug>/
+fusion-workbench/archive/<YYYY-MM-DD_HH-MM>-<slug>/
 ```
 
-- `YYMMDD-HHMM` from `date +%y%m%d-%H%M` (never guess).
+- `YYYY-MM-DD_HH-MM` from `date +%Y-%m-%d_%H-%M` (never guess).
 - `<slug>` is a short kebab-case label (lowercase, alphanumerics + dashes, ≤ 40 chars). For tier mode the slug is `safe-cleanup-tier-<n>`. For natural-language mode it's derived from the description.
 - One archive folder per `/fusion:archive` invocation. Never reuse a folder.
 - Inside the archive folder, preserve the original directory structure relative to `fusion-workbench/`. Example: `fusion-workbench/planning/260501-1200-auth.md` → `fusion-workbench/archive/260502-1430-safe-cleanup-tier-3/planning/260501-1200-auth.md`.
@@ -99,7 +99,7 @@ Adds `history/*.md` whose filename date prefix is older than the threshold. Old 
    - If empty, ask the user via `AskUserQuestion` whether they want `tier-1` / `tier-2` / `tier-3` / `describe`.
 
 3. **Build the candidate list.**
-   - **Tier mode:** mechanically expand the tier's globs. Apply all safety filters above. For aged buckets, parse the `YYMMDD` (or legacy `MMDD`) date prefix and compare to `today - threshold`.
+   - **Tier mode:** mechanically expand the tier's globs. Apply all safety filters above. For aged buckets, parse the date prefix and compare to `today - threshold`. Filenames may carry the current `YYYY-MM-DD_HH-MM` prefix or a legacy prefix (`YYMMDD-HHMM`, or older `MMDD`); accept whichever is present.
    - **Natural-language mode:** survey the directories the description suggests; apply safety filters as defaults but flag any active-marker hits with `[ACTIVE]` rather than silently dropping them — the user may want them in `refine`.
 
 4. **CLAUDE.md citation check.**
@@ -130,11 +130,11 @@ Adds `history/*.md` whose filename date prefix is older than the threshold. Old 
    Do not move anything until `proceed`.
 
 7. **Archive on `proceed`.**
-   - `mkdir -p fusion-workbench/archive/<YYMMDD-HHMM>-<slug>/`
+   - `mkdir -p fusion-workbench/archive/<YYYY-MM-DD_HH-MM>-<slug>/`
    - For each file: recreate its parent path under the archive folder and `mv` it. Move only — never copy.
    - Write the manifest (next step).
 
-8. **Write `MANIFEST.md`** at `fusion-workbench/archive/<YYMMDD-HHMM>-<slug>/MANIFEST.md`:
+8. **Write `MANIFEST.md`** at `fusion-workbench/archive/<YYYY-MM-DD_HH-MM>-<slug>/MANIFEST.md`:
    ```markdown
    # Archive Manifest
 

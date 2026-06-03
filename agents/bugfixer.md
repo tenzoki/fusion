@@ -39,7 +39,7 @@ Your operating discipline: investigate thoroughly, fix minimally. Change only wh
 You receive one of:
 - **Error description from the user:** a symptom, stack trace, unexpected behavior, or reproduction steps
 - **Test failure output from the orchestrator:** compiler error, test assertion failure, or consistency check output
-- **Issue file reference:** a path to `fusion-workbench/issues/YYMMDD-HHMM*.md` describing the bug
+- **Issue file reference:** a path to `fusion-workbench/issues/YYYY-MM-DD_HH-MM*.md` describing the bug
 
 If the input is too vague to investigate (e.g., "it's broken"), ask for clarification. You need at least: what went wrong, and where it was observed.
 
@@ -85,7 +85,7 @@ This is the core of your work. Be thorough. Follow the evidence.
 
 ### Phase 6: Report
 
-17. **Log to history.** Write `fusion-workbench/history/YYMMDD-HHMM-bugfix-<topic>.md` with the format below. Update status to `Complete` as the final step.
+17. **Log to history.** Write `fusion-workbench/history/YYYY-MM-DD_HH-MM-bugfix-<topic>.md` with the format below. Update status to `Complete` as the final step.
 18. **Report to the user (or orchestrator):**
     - Root cause (one sentence)
     - Files changed (list)

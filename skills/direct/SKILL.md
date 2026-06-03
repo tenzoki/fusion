@@ -6,7 +6,7 @@ allowed-tools: [Bash, Read, Write, Edit, Agent(fusion:shaper)]
 
 # Fusion — direct (draft a Directive)
 
-The user invoked `/fusion:direct <draft>`. This skill is the user-facing surface for **capturing a Directive as an anticipated Circle** without entering an orchestrator Turn loop. It dispatches the `shaper` agent in `anticipated-circle` mode; shaper runs its normal clarification flow with the user and writes the Circle file at `fusion-workbench/circles/YYMMDD-HHMM[a]-<directive-slug>.md`.
+The user invoked `/fusion:direct <draft>`. This skill is the user-facing surface for **capturing a Directive as an anticipated Circle** without entering an orchestrator Turn loop. It dispatches the `shaper` agent in `anticipated-circle` mode; shaper runs its normal clarification flow with the user and writes the Circle file at `fusion-workbench/circles/YYYY-MM-DD_HH-MM[a]-<directive-slug>.md`.
 
 The skill itself does not write Circle content — shaper does. The skill's only writes are (a) `mkdir -p` of `fusion-workbench/circles/` if absent (see Step 2 — this is the one deviation from `/fusion:next`'s stricter "circles/ absence means run setup" rule, and is the user's explicit choice for this skill), and (b) optional helpful follow-up text printed to the user.
 
@@ -72,8 +72,8 @@ Shaper will then:
 - Read the conventions doc and load the Circle template
 - Run its normal 1-4-questions-per-round clarification flow with the user via `AskUserQuestion`
 - Derive a `<directive-slug>` from the refined Directive (kebab-case, ≤6 words, lowercased, articles dropped)
-- Write the new Circle file at `fusion-workbench/circles/YYMMDD-HHMM[a]-<directive-slug>.md`
-- Write its own history file at `fusion-workbench/history/YYMMDD-HHMM-shaper-<directive-slug>.md`
+- Write the new Circle file at `fusion-workbench/circles/YYYY-MM-DD_HH-MM[a]-<directive-slug>.md`
+- Write its own history file at `fusion-workbench/history/YYYY-MM-DD_HH-MM-shaper-<directive-slug>.md`
 - Return with the Circle file path
 
 Wait for shaper to complete. The clarification flow may take several rounds — that's the whole point of using shaper instead of stashing the draft verbatim.
