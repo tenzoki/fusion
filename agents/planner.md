@@ -30,7 +30,7 @@ Plans you produce are executed by **a parameterised set of executor agents**. Th
 |-------|---------|------------|-----------|
 | **coder** | Application code, build files, tests | `.go`, `.ts`, `.tsx`, `.py`, `.js`, `.rs`, `.java`, `Makefile`, `package.json`, `go.mod`, test files | always (default) |
 | **ontocoder** | Structured data, ontology, manifests, schemas, fixture data, derived stats/index files, data documentation | `.yaml`, `.yml`, `.json`, `.toml`, `.csv`, `.tsv`, `.xml`, `.ndjson`, ontology/manifest/schema files, data dictionaries, term mappings | always (default) |
-| **analyst** | Strategic-domain executes — decision records, architectural snapshots, comparative analyses needed before code/data work | `.md` outputs to `fusion-workbench/analyses/` (and `fusion-workbench/decisions/` once that folder lands) | when the calling context names `analyst` in the executors set |
+| **analyst** | Strategic-domain executes — decision records, architectural snapshots, comparative analyses needed before code/data work | `.md` outputs to `fusion-workbench/analyses/` (and `fusion-workbench/decisions/`) | when the calling context names `analyst` in the executors set |
 
 **Routing rules:**
 - A step that touches application code → `coder`

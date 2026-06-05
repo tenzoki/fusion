@@ -31,7 +31,7 @@ fusion/
 │   ├── direct/SKILL.md       # /fusion:direct — draft a Directive into an anticipated Circle (shaper)
 │   ├── help/SKILL.md         # /fusion:help — explain fusion's daily use, install, configure
 │   ├── log-activity/SKILL.md # /fusion:log-activity — generate/update activity log
-│   ├── memo/SKILL.md         # /fusion:memo — append a memo to the personal memo log
+│   ├── memo/SKILL.md         # /fusion:memo — append a memo (or a task to tasks-<user>.md)
 │   ├── next/SKILL.md         # /fusion:next — portfolio briefing
 │   ├── revise-claude-md/SKILL.md # /fusion:revise-claude-md — update project memory
 │   ├── setup/SKILL.md        # /fusion:setup — bootstrap workbench + load rules
@@ -57,8 +57,13 @@ fusion/
 │   ├── lib/__tests__/        # 30 tests
 │   ├── package.json          # TypeScript dependencies
 │   └── tsconfig.json         # TypeScript config
-├── rules/                    # Framework rule shipped by the plugin
-│   └── fusion-workbench-conventions.md
+├── rules/                    # Framework rules auto-loaded into every agent
+│   ├── fusion-workbench-conventions.md
+│   ├── decision-record-examples.md
+│   └── user-facing-output.md
+├── stilwerk/                 # Stylometric voice profiles (copied into the workbench at setup)
+│   ├── default-voice-{en,de}.yaml  # long-form writing profile (prose agents)
+│   └── chat-voice-{en,de}.yaml     # short-form chat profile (every agent)
 ├── templates/                # Starter files projects copy into their own ./rules/
 │   └── investigator-capture-layout.md
 ├── docs/                     # Conceptual docs (also pointed at by skills)
@@ -68,7 +73,8 @@ fusion/
 │   ├── fusion-rules          # Per-agent rule discovery helper (plugin + project)
 │   ├── fusion-workbench-root # Walks up from pwd to find fusion-workbench/.fusion-setup
 │   ├── fusion-session-mark   # Tracks active orchestrator session via .session-marker
-│   └── fu                    # Project-local launcher: claude --dangerously-skip-permissions --agent fusion:<name>
+│   └── fusion-commit-lock    # Cross-agent commit serialization lock
+├── install.sh                # HTTPS curl|bash installer (writes ~/.fusion + the fusion launcher)
 ├── settings.json             # Plugin defaults, agent, and auto-allowed permissions
 ├── README-agents.md          # Agent architecture overview
 ├── README-hooks.md           # Guard system documentation
@@ -97,7 +103,7 @@ fusion --uninstall  # remove ~/.fusion and the launcher
 fusion --where      # print the install dir
 ```
 
-Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v3.19.0` to pin a
+Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v3.20.0` to pin a
 release), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN`
 (launcher dir, default `~/.local/bin`).
 

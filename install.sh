@@ -23,7 +23,7 @@
 #
 # Overrides (optional env vars):
 #   FUSION_REF   git ref to fetch (default: heads/main; pin a release with
-#                FUSION_REF=tags/v3.19.0)
+#                FUSION_REF=tags/v3.20.0)
 #   FUSION_HOME  install dir (default: ~/.fusion)
 #   FUSION_BIN   launcher dir (default: ~/.local/bin)
 
@@ -73,10 +73,11 @@ VERSION="$(sed -n 's/.*"version" *: *"\([^"]*\)".*/\1/p' "$SRC/.claude-plugin/pl
 say "Installing to $INSTALL_DIR ..."
 rm -rf "$INSTALL_DIR"
 mkdir -p "$INSTALL_DIR"
-# Copy only the plugin assets — never dev cruft (no node_modules, settings.json,
+# Copy the plugin assets, including settings.json (fusion's scoped permission
+# auto-allows — workbench writes + git ops). Never dev cruft (no node_modules,
 # CLAUDE.md, .gitignore). cp -R preserves the +x bit on bin/ and hook scripts.
 for item in .claude-plugin agents skills rules hooks bin stilwerk templates docs \
-            README.md README-agents.md README-hooks.md LICENSE; do
+            settings.json README.md README-agents.md README-hooks.md LICENSE; do
   [ -e "$SRC/$item" ] && cp -R "$SRC/$item" "$INSTALL_DIR/"
 done
 [ -f "$INSTALL_DIR/.claude-plugin/plugin.json" ] || die "Install copy failed."

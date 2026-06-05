@@ -154,7 +154,7 @@ Per the conventions doc's `.active-circle` paragraph: "the orchestrator writes i
 Playmaker MAY be dispatched by:
 
 - **The user**, directly or via `/fusion:next` (read-only mode is the default).
-- **The orchestrator at Phase 4**, after a `[t]→[c]/[b]` rename has completed (see the orchestrator's prompt; this dispatch is implemented in Bundle D of the Track C plan and is not yet live).
+- **The orchestrator at Phase 4**, after a `[t]→[c]/[b]` rename has completed (see the orchestrator's prompt's Phase 4 "Portfolio sync" step, which dispatches playmaker to regenerate `portfolio.md`).
 
 Playmaker is **NEVER** dispatched by the orchestrator from inside an active Turn loop. Inside a Turn loop the orchestrator is executing one Circle; portfolio-level ranking belongs to the boundary between Turns, not inside them. In-Turn dispatch would conflate execution with ranking and could create race conditions on `portfolio.md`.
 

@@ -66,7 +66,7 @@ If the dispatch prompt's first non-empty content line is `**Domain:** <value>`, 
 - Plan or issue *descriptions* themselves — only add/update status markers, reconciliation logs, and evidence citations
 - Any file outside the bullets above. The append to the orchestrator's session history file (Step 4) is the only cross-agent file write authorized — and it is strictly limited to appending the `## Coherence` section. All other writes go to your own reconciliation history file or to tracking-file marker renames.
 
-If reconciliation reveals work that needs to change (code, data, or strategic decisions awaiting an answer), **file an issue** (or a decision record once decisions/ lands) for the appropriate executor — don't fix it yourself. Reconciliation is a tracking-file pass, not an implementation session.
+If reconciliation reveals work that needs to change (code, data, or strategic decisions awaiting an answer), **file an issue** (or a decision record in `decisions/`) for the appropriate executor — don't fix it yourself. Reconciliation is a tracking-file pass, not an implementation session.
 
 ## Reconciliation Process
 
@@ -88,7 +88,7 @@ Inspect the workbench:
 - `ls fusion-workbench/analyses/ 2>/dev/null | wc -l`
 - For each open issue, count how many describe a defect ("X is broken / wrong / missing") vs an open question ("which X should we pick / how should X work / who decides").
 
-If the workbench has 0 commits AND `analyses/` is non-empty AND ≥50% of open issues are open questions rather than defects, switch to **strategic reconciliation mode**: produce an "Open-decision surface" section (HIGH / MEDIUM / LOW priority items, each with a pointer to where the decision is documented or where it remains open) instead of the standard issues-triage-with-`[c]`-rename output. Append annotations to issues whose questions are answered by later analyses, but do not rename them `[c]` — the decision-tracking convention (planned for v2.0) is the long-term home for those.
+If the workbench has 0 commits AND `analyses/` is non-empty AND ≥50% of open issues are open questions rather than defects, switch to **strategic reconciliation mode**: produce an "Open-decision surface" section (HIGH / MEDIUM / LOW priority items, each with a pointer to where the decision is documented or where it remains open) instead of the standard issues-triage-with-`[c]`-rename output. Append annotations to issues whose questions are answered by later analyses, but do not rename them `[c]` — the `decisions/` convention is the long-term home for those.
 
 ### Step 2: Verify against ground truth
 
@@ -130,7 +130,7 @@ Apply the verification protocol named for the active domain (see Domain Paramete
 
 This step runs **regardless of domain**. The three-edge verdict is the Coherence Review check at the per-Circle cadence — layered on top of whichever ground-truth verification protocol the domain selected in Step 2.
 
-**Cadence note:** the per-Circle verdict is computed at the end of each *session* — until Circle envelopes (Track C: `decisions/260509-1556[o]-playmaker-and-circles-folder.md`) make Circle boundaries explicit, session boundaries are the available proxy. When Track C lands, this step's trigger will move from session-end to Circle-end.
+**Cadence note:** the per-Circle verdict is computed at session end (the orchestrator dispatches the reconciler once at Phase 3, when the Turn loop exits). When a Circle is active (`fusion-workbench/.active-circle` names the `[t]` Circle), that session-end coincides with the Circle boundary, so session-end *is* the per-Circle trigger. For sessions with no active Circle, the session boundary is the proxy.
 
 **The user is informed, not asked.** The reconciler computes the verdict and writes it to history. If the aggregate verdict is `review-needed` or `bounded-closure-proposed`, the orchestrator (not the reconciler) dispatches the Rebalance gate at Phase 3 step 3 (after consuming this verdict). The reconciler does not present `AskUserQuestion`.
 

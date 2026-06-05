@@ -79,7 +79,7 @@ fusion-specific invariants the installer relies on:
 - **Compiled hooks must be committed.** `hooks/dist/*.js` are in git (`.gitignore` has the `!hooks/dist/` exception) and are self-contained (no external `require`s) — the tarball is runnable with no `npm`/`node_modules`. The installer defensively `rm -rf`s `hooks/node_modules` after copy.
 - **`bin/` executables ship with the +x bit** (preserved through tar/`cp -R`).
 - **`CLAUDE_PLUGIN_ROOT` resolves to `~/.fusion`** under `--plugin-dir`, so the SessionStart hook's `export FUSION_PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}` and all `bin/` helpers work.
-- The installer copies only plugin assets (`.claude-plugin agents skills rules hooks bin stilwerk templates docs README*.md`), never `settings.json`, `CLAUDE.md`, or `.gitignore`.
+- The installer copies plugin assets (`.claude-plugin agents skills rules hooks bin stilwerk templates docs settings.json README*.md`) — `settings.json` ships fusion's scoped permission auto-allows so an HTTPS install has permission parity with a marketplace install. It never copies `CLAUDE.md` or `.gitignore` (dev-only), and defensively drops `hooks/node_modules`.
 
 So there are effectively **three version surfaces** to keep coherent: `plugin.json`, `marketplace.json`, and the `install.sh` header comment's `FUSION_REF=tags/vX.Y.Z` example (illustrative only — the default ref is `heads/main`, so a stale example doesn't break installs). The marketplace entry stays as a documented alternative.
 

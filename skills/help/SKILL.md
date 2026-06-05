@@ -51,13 +51,16 @@ For the full agent reference (scope, inputs, outputs, exact dispatch criteria), 
 
 ### 3. Install — *getting fusion into a project*
 
-Read `$FUSION_PLUGIN_ROOT/README.md`. The relevant flow is `/plugin install fusion@tenzoki-plugins` from a Claude Code session, followed by `/fusion:setup` in the project directory.
+Read `$FUSION_PLUGIN_ROOT/README.md`. Two paths:
 
-If the user is setting up the marketplace itself for the first time, walk them through adding the marketplace before the install.
+- **Recommended — HTTPS installer:** `curl -fsSL https://raw.githubusercontent.com/tenzoki/fusion/main/install.sh | bash`. It downloads over plain HTTPS into `~/.fusion` and adds a `fusion` launcher (no git, no SSH, no marketplace cache — it sidesteps the common `Permission denied (publickey)` clone failure). Then run `/fusion:setup` in the project directory.
+- **Alternative — Claude Code marketplace:** `/plugin install fusion@tenzoki-plugins` from a Claude Code session, then `/fusion:setup` in the project. If the user is setting up the marketplace itself for the first time, walk them through adding the marketplace before the install.
 
 ### 4. Update — *picking up new versions*
 
-**Easy path:** run `/fusion:upgrade` — it pulls the local marketplace clone and reports the version diff. Then type these three slash commands in Claude Code, in order:
+**If you installed via the HTTPS installer:** run `fusion --update` — it re-downloads the latest over HTTPS and overwrites `~/.fusion`. That's the whole update; no slash commands, no cache surgery.
+
+**If you installed via the marketplace — easy path:** run `/fusion:upgrade` — it pulls the local marketplace clone and reports the version diff. Then type these three slash commands in Claude Code, in order:
 
 1. `/plugin uninstall fusion@tenzoki-plugins`
 2. `/plugin install fusion@tenzoki-plugins`
