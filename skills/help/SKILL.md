@@ -28,7 +28,7 @@ If the user wants a fast answer, summarize the three pillars in three sentences.
 
 Once `/fusion:setup` has run in a project, the day-to-day flow is:
 
-1. **Use the launcher.** `./.fusion/fu` runs an agent with permissions cleared. Bare `./.fusion/fu` invokes the orchestrator; `./.fusion/fu coder`, `./.fusion/fu planner`, etc. dispatch a specific agent directly.
+1. **Use the launcher.** If you installed via the HTTPS installer, `fusion` runs an agent: bare `fusion` invokes the orchestrator; `fusion coder`, `fusion planner`, etc. dispatch a specific agent directly. Add `--yolo` to clear permission prompts (`fusion --yolo coder`). If you installed via the Claude Code marketplace, start an agent directly with `claude --agent fusion:orchestrator`.
 
 2. **Pick the right entry point** depending on what you're doing:
    - Multi-task batch session → **orchestrator**

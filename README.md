@@ -230,18 +230,24 @@ Arguments:
 - `-n <N>` — max event lines (default 100)
 - `-i <sec>` — refresh interval (default 2)
 
-## fu — project-local launcher
+## fusion — the launcher
 
-`/fusion:setup` copies a small bash launcher into `./.fusion/fu`. It runs Claude Code with `--dangerously-skip-permissions` and a fusion agent, so the typical "approve every tool call" prompt storm at session start goes away.
+The HTTPS installer writes a `fusion` launcher (to `~/.local/bin`). It runs Claude Code with the plugin loaded from `~/.fusion` and a chosen agent:
 
 ```bash
-./.fusion/fu              # launches with --agent fusion:orchestrator
-./.fusion/fu coder        # launches with --agent fusion:coder
-./.fusion/fu fusion:planner   # already-namespaced names pass through
-./.fusion/fu --help
+fusion                   # --agent fusion:orchestrator (default)
+fusion coder             # --agent fusion:coder
+fusion consultant        # --agent fusion:consultant
+fusion fusion:planner    # already-namespaced names pass through
+fusion --yolo            # add --dangerously-skip-permissions (no approval prompts)
+fusion --yolo coder      # same, for a specific agent
+fusion coder -p "..."    # extra args after the agent go straight to claude
+fusion --help            # full usage
 ```
 
-Bare names are auto-prefixed with `fusion:`. For a permanent setup that doesn't bypass approval, see `/fusion:unlock` instead — it writes a permissive `.claude/settings.local.json` that survives across sessions.
+Bare agent names are auto-prefixed with `fusion:`. `--yolo` is opt-in per run — it clears the "approve every tool call" prompt storm. For a permanent setup that doesn't bypass approval, see `/fusion:unlock` instead — it writes a permissive `.claude/settings.local.json` that survives across sessions.
+
+If you installed via the Claude Code marketplace instead of the HTTPS installer, there is no `fusion` launcher; start an agent directly with `claude --agent fusion:orchestrator` (the plugin must be enabled in the project).
 
 ## fusion-workbench
 

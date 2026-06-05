@@ -65,18 +65,6 @@ This makes the monitor show the new session immediately, even while the rest of 
 
 If `$FUSION_PLUGIN_ROOT` is not set or the copy fails, note it in the history file later but do not block Setup.
 
-## Step 0c — Ensure the `fu` launcher is present locally
-
-The `fu` script is a project-local convenience for launching Claude Code preconfigured for fusion (no permission prompts, default agent = `fusion:orchestrator`). It lives at `./.fusion/fu` so the user can run `./.fusion/fu` or alias it.
-
-```bash
-mkdir -p ./.fusion
-[ -f ./.fusion/fu ] || { cp "$FUSION_PLUGIN_ROOT/bin/fu" ./.fusion/fu && chmod +x ./.fusion/fu; }
-```
-
-The copy is idempotent — an existing file is left untouched.
-
-If `$FUSION_PLUGIN_ROOT` is not set or the copy fails, note it in the history file later but do not block Setup.
 
 ## Step 0d — Concurrent-session check (advisory)
 

@@ -111,8 +111,39 @@ case "\${1:-}" in
     echo "\$FUSION_DIR"
     exit 0
     ;;
+  -h|--help)
+    cat <<'USAGE'
+fusion — launch Claude Code with a fusion agent (loads ~/.fusion via --plugin-dir)
+
+  fusion                  orchestrator (default)
+  fusion coder            --agent fusion:coder
+  fusion consultant       --agent fusion:consultant
+  fusion fusion:planner   already-namespaced names pass through
+  fusion --yolo [agent]   add --dangerously-skip-permissions (no prompts)
+  fusion [agent] -p "..." extra args after the agent go straight to claude
+
+  fusion --update         re-download the latest over HTTPS
+  fusion --uninstall      remove ~/.fusion and this launcher
+  fusion --where          print the install dir
+USAGE
+    exit 0
+    ;;
 esac
-exec claude --plugin-dir "\$FUSION_DIR" --agent fusion:orchestrator "\$@"
+
+# Optional --yolo (must come first): clear permission prompts for this run.
+SKIP=""
+if [ "\${1:-}" = "--yolo" ]; then SKIP="--dangerously-skip-permissions"; shift; fi
+
+# First non-flag argument is the agent name (default: orchestrator). Anything
+# after it is passed straight through to claude (e.g. -p "prompt").
+AGENT="orchestrator"
+if [ \$# -gt 0 ] && [ "\${1#-}" = "\$1" ]; then AGENT="\$1"; shift; fi
+case "\$AGENT" in
+  *:*) TARGET="\$AGENT" ;;
+  *)   TARGET="fusion:\$AGENT" ;;
+esac
+
+exec claude \$SKIP --plugin-dir "\$FUSION_DIR" --agent "\$TARGET" "\$@"
 EOF
 chmod +x "$LAUNCHER"
 
