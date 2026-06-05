@@ -58,6 +58,7 @@ Two repos involved: the **plugin** (this repo, `tenzoki/fusion`) and the **marke
 
 Every release:
 
+0. **Validate first:** `claude plugin validate .` must report **passed** (warnings are fine). This catches broken agent frontmatter before it ships — e.g. an unquoted `:` in a `description` makes the whole frontmatter fail to parse and the agent loads with empty metadata. Also run a smoke test that the default agent resolves under the install mechanism: `claude --plugin-dir . --agent fusion:orchestrator -p "reply SMOKE-OK"` (a wrong agent name aborts Claude immediately at startup).
 1. Bump `.claude-plugin/plugin.json` `version`
 2. `git -C <marketplace> pull --rebase origin main` (it can drift if edited from elsewhere)
 3. Bump fusion's `version` in `<marketplace>/.claude-plugin/marketplace.json`
@@ -69,6 +70,18 @@ Every release:
    Then in Claude Code: `/plugin install fusion@tenzoki-plugins` and `/reload-plugins`.
 
 The marketplace **clone** at `~/.claude/plugins/marketplaces/<name>/` is the source-of-truth `/plugin install` reads — not the GitHub remote. Without the manual `git pull` on that clone, version bumps don't propagate locally even after uninstall/reinstall.
+
+### HTTPS installer (`install.sh`) — the recommended end-user path
+
+`install.sh` at the repo root is a `curl | bash` installer that downloads the plugin tarball over plain HTTPS (`https://github.com/tenzoki/fusion/archive/refs/heads/main.tar.gz`), unpacks it into `~/.fusion`, and writes a `~/.local/bin/fusion` launcher that runs `claude --plugin-dir ~/.fusion --agent fusion:orchestrator`. It sidesteps the three marketplace failure modes for end users: git/SSH cloning, the unreliable plugin cache, and broken uninstall. Modelled on `tenzoki/flight`'s installer (v0.6.0).
+
+fusion-specific invariants the installer relies on:
+- **Compiled hooks must be committed.** `hooks/dist/*.js` are in git (`.gitignore` has the `!hooks/dist/` exception) and are self-contained (no external `require`s) — the tarball is runnable with no `npm`/`node_modules`. The installer defensively `rm -rf`s `hooks/node_modules` after copy.
+- **`bin/` executables ship with the +x bit** (preserved through tar/`cp -R`).
+- **`CLAUDE_PLUGIN_ROOT` resolves to `~/.fusion`** under `--plugin-dir`, so the SessionStart hook's `export FUSION_PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}` and all `bin/` helpers work.
+- The installer copies only plugin assets (`.claude-plugin agents skills rules hooks bin stilwerk templates docs README*.md`), never `settings.json`, `CLAUDE.md`, or `.gitignore`.
+
+So there are effectively **three version surfaces** to keep coherent: `plugin.json`, `marketplace.json`, and the `install.sh` header comment's `FUSION_REF=tags/vX.Y.Z` example (illustrative only — the default ref is `heads/main`, so a stale example doesn't break installs). The marketplace entry stays as a documented alternative.
 
 ## Testing during development
 

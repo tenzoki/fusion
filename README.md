@@ -77,6 +77,32 @@ fusion/
 
 ## Installation
 
+### Recommended — HTTPS installer (no git, no SSH, no marketplace cache)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/tenzoki/fusion/main/install.sh | bash
+```
+
+This downloads fusion over plain HTTPS into `~/.fusion` and installs a `fusion`
+launcher that loads the plugin straight from that folder. It avoids the three
+ways the marketplace path breaks for end users: it never clones over git (so a
+git-on-SSH setup or a missing SSH key can't stop it), it doesn't rely on Claude
+Code's plugin cache (which isn't reliably replaced on update/uninstall), and
+uninstall is a plain `rm -rf`.
+
+```bash
+fusion              # start an orchestrator session (loads ~/.fusion via --plugin-dir)
+fusion --update     # re-download the latest over HTTPS, overwrite ~/.fusion
+fusion --uninstall  # remove ~/.fusion and the launcher
+fusion --where      # print the install dir
+```
+
+Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v3.19.0` to pin a
+release), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN`
+(launcher dir, default `~/.local/bin`).
+
+### Alternative — Claude Code marketplace
+
 ```bash
 # Via the tenzoki marketplace
 /plugin marketplace add tenzoki/claude-plugins
@@ -88,6 +114,21 @@ fusion/
 # Or from a local directory
 /plugin install ./
 ```
+
+## Where fusion installs
+
+The HTTPS installer is self-contained and git-free:
+
+- **Plugin files** → `~/.fusion/` (override with `FUSION_HOME`). Contains the full
+  plugin: `.claude-plugin/plugin.json`, `agents/`, `skills/`, `rules/`, `hooks/`
+  (including the pre-compiled `hooks/dist/*.js` guard), `bin/`, `stilwerk/`,
+  `templates/`, `docs/`. No `node_modules` — the compiled hooks are self-contained.
+- **Launcher** → `~/.local/bin/fusion` (override with `FUSION_BIN`). A one-line
+  wrapper: `exec claude --plugin-dir "$HOME/.fusion" --agent fusion:orchestrator "$@"`.
+
+`--update` re-runs the installer (fresh HTTPS download, overwrites `~/.fusion`).
+`--uninstall` removes both the install dir and the launcher. Because the plugin
+loads via `--plugin-dir`, there is no Claude Code cache entry to go stale.
 
 ## Requirements
 
