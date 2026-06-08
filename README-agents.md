@@ -187,7 +187,7 @@ In a consuming project, drop a markdown file into `./rules/` whose name contains
 | `/fusion:memo` | `skills/memo/SKILL.md` | Appends a memo to the user's personal memo log in `fusion-workbench/memos/` |
 | `/fusion:revise-claude-md` | `skills/revise-claude-md/SKILL.md` | Revises `CLAUDE.md` with learnings discovered during the current session (three-pass: add / update / prune) |
 | `/fusion:unlock` | `skills/unlock/SKILL.md` | Writes a permissive `.claude/settings.local.json` so future sessions skip per-tool approval prompts |
-| `/fusion:upgrade` | `skills/upgrade/SKILL.md` | Pulls the local fusion marketplace clone so Claude Code's plugin system can see the latest fusion version |
+| `/fusion:cleanup` | `skills/cleanup/SKILL.md` | Autonomous session wrap-up: files issues for open tasks, commits + pushes the work in meaningful splits, reconciles, archives (tier-1), revises `CLAUDE.md`, logs activity, then commits + pushes the housekeeping artifacts |
 
 Slash commands are independent of sub-agent routing — invoke them from the parent session when you need to commit, set up, or revise project-level rules.
 

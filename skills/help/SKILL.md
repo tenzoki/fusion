@@ -58,17 +58,17 @@ Read `$FUSION_PLUGIN_ROOT/README.md`. Two paths:
 
 ### 4. Update — *picking up new versions*
 
-**If you installed via the HTTPS installer:** run `fusion --update` — it re-downloads the latest over HTTPS and overwrites `~/.fusion`. That's the whole update; no slash commands, no cache surgery.
+**If you installed via the HTTPS installer (recommended):** run `fusion --update` — it re-downloads the latest over HTTPS and overwrites `~/.fusion`. That's the whole update; no slash commands, no cache surgery.
 
-**If you installed via the marketplace — easy path:** run `/fusion:upgrade` — it pulls the local marketplace clone and reports the version diff. Then type these three slash commands in Claude Code, in order:
+**If you installed via the marketplace:** type these three slash commands in Claude Code, in order:
 
 1. `/plugin uninstall fusion@tenzoki-plugins`
 2. `/plugin install fusion@tenzoki-plugins`
 3. `/reload-plugins`
 
-**Why three commands:** Claude Code has no `/plugin upgrade` or `/plugin update`. `/plugin install` on an already-installed plugin reports *"already installed globally"* and does not re-fetch — so the upgrade path requires `uninstall` first. Slash commands cannot be invoked from inside a skill body, which is why the user has to type them.
+**Why three commands:** Claude Code has no `/plugin upgrade` or `/plugin update`. `/plugin install` on an already-installed plugin reports *"already installed globally"* and does not re-fetch — so the upgrade path requires `uninstall` first.
 
-**Why `/fusion:upgrade` even exists** (vs. just running the three commands directly): the local *marketplace clone* at `~/.claude/plugins/marketplaces/<name>/` is what `/plugin install` reads, not the GitHub remote. Without a `git pull` on that clone first, the install would re-pull the same version it already had. `/fusion:upgrade` does the pull and reports the diff so the user knows whether reinstalling is worth doing.
+**One caveat for the marketplace path:** the local *marketplace clone* at `~/.claude/plugins/marketplaces/<name>/` is what `/plugin install` reads, not the GitHub remote. If a version bump hasn't reached it, run `git -C ~/.claude/plugins/marketplaces/tenzoki-plugins pull origin main` first, then the three commands. (The HTTPS installer has none of this friction — prefer it.)
 
 For the maintainer-side release flow (bumping `plugin.json` + `marketplace.json`, dual git push), read `$FUSION_PLUGIN_ROOT/CLAUDE.md` "Release process".
 

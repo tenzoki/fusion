@@ -27,6 +27,7 @@ fusion/
 │   ├── archive/SKILL.md      # /fusion:archive — archive completed/aged workbench files
 │   ├── circle-pop/SKILL.md   # /fusion:circle-pop — restore a stashed Circle, with drift detection
 │   ├── circle-stash/SKILL.md # /fusion:circle-stash — freeze the active Circle's complete state
+│   ├── cleanup/SKILL.md      # /fusion:cleanup — autonomous session wrap-up (issues, commit+push, reconcile, archive, revise, log)
 │   ├── commit/SKILL.md       # /fusion:commit — AI-generated conventional commit
 │   ├── direct/SKILL.md       # /fusion:direct — draft a Directive into an anticipated Circle (shaper)
 │   ├── help/SKILL.md         # /fusion:help — explain fusion's daily use, install, configure
@@ -35,8 +36,7 @@ fusion/
 │   ├── next/SKILL.md         # /fusion:next — portfolio briefing
 │   ├── revise-claude-md/SKILL.md # /fusion:revise-claude-md — update project memory
 │   ├── setup/SKILL.md        # /fusion:setup — bootstrap workbench + load rules
-│   ├── unlock/SKILL.md       # /fusion:unlock — write permissive .claude/settings.local.json
-│   └── upgrade/SKILL.md      # /fusion:upgrade — refresh the local marketplace clone
+│   └── unlock/SKILL.md       # /fusion:unlock — write permissive .claude/settings.local.json
 ├── hooks/                    # Compliance guard system
 │   ├── hooks.json            # Hook wiring: SessionStart + PreToolUse + PostToolUse
 │   ├── guard.ts              # PreToolUse — blocks writes to protected paths
