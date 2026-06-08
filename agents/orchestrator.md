@@ -54,12 +54,12 @@ Then overwrite `fusion-workbench/orchestrator-live.md` to clear stale data from 
 
 Obtain `<HH:MM>` from `date +%H:%M`. This ensures the monitor shows the new session immediately, even while setup is still running.
 
-**STEP 0b — Ensure the monitor binary is available locally.**
+**STEP 0b — Refresh the monitor binary locally.**
 
-Check whether `fusion-workbench/monitor` exists. If not, copy it from the plugin:
+Always re-copy the monitor from the installed plugin so the project's copy matches the current plugin version — a stale local monitor left over from an earlier install is the most common dashboard bug, and a presence-only guard never updates it. Copy to a temp file and atomically `mv` into place, so the overwrite is safe even when a monitor process is currently running (avoids `Text file busy` / `ETXTBSY`):
 
 ```bash
-cp "$FUSION_PLUGIN_ROOT/bin/monitor" fusion-workbench/monitor && chmod +x fusion-workbench/monitor
+[ -n "$FUSION_PLUGIN_ROOT" ] && [ -f "$FUSION_PLUGIN_ROOT/bin/monitor" ] && { cp "$FUSION_PLUGIN_ROOT/bin/monitor" fusion-workbench/monitor.new && chmod +x fusion-workbench/monitor.new && mv -f fusion-workbench/monitor.new fusion-workbench/monitor; }
 ```
 
 `$FUSION_PLUGIN_ROOT` is exported by the plugin's SessionStart hook. This allows the user to start the dashboard from the project root:

@@ -57,10 +57,12 @@ Overwrite `./fusion-workbench/orchestrator-live.md` with (substitute `<HH:MM>`):
 
 This makes the monitor show the new session immediately, even while the rest of Setup runs.
 
-## Step 0b — Ensure the monitor binary is present locally
+## Step 0b — Refresh the monitor binary locally
+
+Always re-copy the monitor from the installed plugin so the project's copy matches the current plugin version (a stale local monitor from an earlier install is the most common dashboard bug). Copy to a temp file and atomically `mv` it into place — this overwrites cleanly even when a monitor process is currently running (avoids `Text file busy` / `ETXTBSY`):
 
 ```bash
-[ -f ./fusion-workbench/monitor ] || { cp "$FUSION_PLUGIN_ROOT/bin/monitor" ./fusion-workbench/monitor && chmod +x ./fusion-workbench/monitor; }
+[ -n "$FUSION_PLUGIN_ROOT" ] && [ -f "$FUSION_PLUGIN_ROOT/bin/monitor" ] && { cp "$FUSION_PLUGIN_ROOT/bin/monitor" ./fusion-workbench/monitor.new && chmod +x ./fusion-workbench/monitor.new && mv -f ./fusion-workbench/monitor.new ./fusion-workbench/monitor; }
 ```
 
 If `$FUSION_PLUGIN_ROOT` is not set or the copy fails, note it in the history file later but do not block Setup.
