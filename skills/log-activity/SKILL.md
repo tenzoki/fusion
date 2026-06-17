@@ -25,10 +25,13 @@ The activity log file is `activity-log-$USER.md` in the project root. For exampl
 
 ### 2. Check for existing log file
 
-- If the file exists, read it to determine which dates are already logged
-- Extract the list of dates that already have entries (look for `## YYYY-MM-DD` headers)
-- Only process dates NOT yet logged
-- If the file does not exist, create it from scratch
+- If the file does not exist, create it from scratch — process every date that has activity.
+- If the file exists, read it to determine which dates are already logged. Extract the list of dates that already have entries (look for `## YYYY-MM-DD` headers).
+- Determine the set of dates to process:
+  - **Every date AFTER the most recently logged date** that has activity — the genuinely new days; AND
+  - **The most recently logged date itself** — re-scan it. A prior run may have logged it mid-day (e.g. the morning of a day still in progress), so it can have gained activity since that run. Skipping it because its header already exists would silently drop the rest of that day's work — this is exactly the bug this rule prevents.
+- All logged dates **older** than the most recent one are complete and MUST NOT be re-processed (they cannot gain new activity).
+- **Refresh, don't duplicate:** when re-processing the most recently logged date, REPLACE its existing daily entry, its arc bullet, and its per-week row contribution in place — never append a second entry for the same date. See Step 7.
 
 ### 3. Scan all activity sources
 
@@ -180,8 +183,11 @@ If a distinct ISO week is missing from the table — or a table row has no match
 ### 7. Write output
 
 - On **create:** write header + reversed-order `## High-level arc` (newest day first) + `## Active Hours per Week` table + Daily Log entries (chronological — per-day sections are NOT reversed; only the arc bullets are newest-first) + the end-of-file `## Total commits` section.
-- On **append:** insert new daily entries chronologically into the `## Daily Log` section; prepend the new arc bullet at the top of `## High-level arc` (newest-first); update or insert per-week rows from Step 6, recomputing both `Days active` and `Avg active hours/day` when an existing row is touched; refresh the `## Total commits` count.
-- Never duplicate entries.
+- On **append:**
+  - For genuinely new days: insert daily entries chronologically into the `## Daily Log` section, and prepend the new arc bullet at the top of `## High-level arc` (newest-first).
+  - For the most-recently-logged date being refreshed (Step 2): REPLACE its existing daily entry and its arc bullet in place — do not insert a second entry or a second bullet for that date.
+  - In both cases: update or insert per-week rows from Step 6, recomputing both `Days active` and `Avg active hours/day` when an existing row is touched; refresh the `## Total commits` count.
+- Never duplicate entries — refreshing the most-recent day replaces, it does not append.
 
 **End-of-file commit-count section** (append on create, refresh on every run):
 
@@ -201,6 +207,7 @@ git log --since=<earliest-date> --oneline | wc -l
 
 Tell the user:
 - How many new days were logged
+- Whether the most-recently-logged prior day was refreshed (re-scanned and replaced), and how many items it gained
 - Date range covered
 - Number of new per-week rows added (if any) and the three verification numbers from Step 6
 - Path to the activity log file
