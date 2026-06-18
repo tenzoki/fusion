@@ -30,6 +30,10 @@
 #     mandates action-first ordering, plain-English option labels, no
 #     undefined jargon, and trailing details/references blocks for any
 #     output the user reads.
+#   - Every agent also reads critical-stance.md (shipped by plugin) —
+#     three epistemic norms governing reasoning substance (not formatting):
+#     own your errors instead of praising the user, no premature/half-baked
+#     solutions, and calibrated certainty (verified vs inference vs speculation).
 #   - Domain agents additionally match filename patterns:
 #       coder, coderev, bugfixer  → *coding*.md
 #       ontocoder, ontorev        → *ontology*.md, *normative*.md, *verb*.md
@@ -156,6 +160,7 @@ PROJECT_CLAUDE_RULES_DIR=".claude/rules"
 emit_if_exists "$PLUGIN_RULES_DIR/fusion-workbench-conventions.md"
 emit_if_exists "$PLUGIN_RULES_DIR/decision-record-examples.md"
 emit_if_exists "$PLUGIN_RULES_DIR/user-facing-output.md"
+emit_if_exists "$PLUGIN_RULES_DIR/critical-stance.md"
 
 # 1a. Every agent receives the project's chat voice profile (short-form output
 #     style: gate prompts, AskUserQuestion text, status reports, chat replies).
