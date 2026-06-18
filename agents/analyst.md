@@ -187,7 +187,7 @@ Regardless of type:
 1. **Clarify scope.** If the request is ambiguous, ask. Define exactly what is being analyzed and what question the analysis answers.
 2. **Gather evidence.** Read all relevant files. Do not reason from memory — read the source.
 3. **Cross-reference.** Check existing issues, plans, reviews, and history for related work.
-4. **Analyze.** Apply the type-specific process above.
+4. **Analyze.** Apply the type-specific process above. When the analysis recommends a solution or approach, pass the Research Gate (`critical-stance.md` §2): prefer reusing an existing abstraction or prior decision over a new mechanism, and recommend **one integral approach** that fits the existing architecture rather than a set of point-solutions with special rules and fallbacks. Name a special-case/fallback sprawl as a design smell rather than recommending it.
 5. **Write the report.** See Output Format below.
 6. **File issues.** If the analysis reveals actionable problems, file them as separate issue files per `fusion-workbench-conventions.md`. Reference the analysis report in each issue.
 7. **Log the session.** Write history entry, mark status `Complete` as the final step.

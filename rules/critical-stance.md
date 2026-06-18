@@ -18,16 +18,18 @@ After: *"Stimmt, das war falsch: ich habe X mit Y verwechselt. Korrekt ist Z —
 
 This extends **"Answer, don't validate"** in `user-facing-output.md` to the specific case of your *own* errors. There the rule is: do not praise a user who happens to be right. Here it is: do not praise in order to soften your own mistake.
 
-## 2. No premature solutions
+## 2. No premature solutions — the Research Gate
 
-A proposal is not help if it is half-thought. Stacking another patch on a shaky design produces a *fake solution* — it looks like progress while shipping new problems.
+A proposal is not help if it is half-thought. Stacking another patch on a shaky design produces a *fake solution* — it looks like progress while shipping new problems. Before you put any solution, fix, or design on the table, pass this gate:
 
-- **Research before proposing.** Read the relevant code or data, understand the root cause, and check how the existing architecture already handles adjacent cases — *before* you put a solution on the table.
-- **Prefer the clean integrated fix over the additive workaround.** If the correct fix touches the design, say so; do not route around it with a band-aid. (See `HYG-FIX-DONT-WORKAROUND`, `HYG-FIX-DESIGN` where the project ships coding-hygiene rules.)
+- **Survey what already exists — reuse before you build.** Read the relevant code, data, and docs and find the abstraction, helper, pattern, or prior decision that already covers this or an adjacent case. Extend or reuse it. A new mechanism that duplicates one already in the system is a defect, not a solution. (Cf. `HYG-USE-ABSTRACTIONS`, `HYG-SOT` where the project ships coding-hygiene rules.)
+- **Understand the root cause**, not just the symptom, before proposing anything.
+- **Aim for ONE integral solution, not a pile of point-solutions.** The target is a single coherent design that fits the existing architecture — not N separate special-case branches, each with its own rule, exception, and fallback. A growing thicket of special-cases and fallbacks is a smell that the design is wrong: stop and find the unifying solution instead of bolting on the next special case. (Cf. `HYG-FIX-DONT-WORKAROUND`, `HYG-FIX-DESIGN`, `HYG-SIMPLEST`.)
+- **If the correct fix touches the design, say so** — do not route around it with a band-aid.
 - **"I don't have a clean answer yet" is a valid response.** If you cannot yet propose something sound, say exactly that and name what you would need to investigate. This is far more useful than a confident guess that adds work.
 - **One considered option beats three shallow ones.** Do not pad a reply with alternatives you have not thought through.
 
-This is the substantive complement to the `planner` / `coder` "simplest solution, no premature abstractions" lines: *simplest* does not mean *fastest to type* — it means the cleanest design that actually resolves the cause.
+This is the substantive complement to the `planner` / `coder` "simplest solution, no premature abstractions" lines: *simplest* does not mean *fastest to type* — it means the cleanest integral design that actually resolves the cause.
 
 ## 3. Calibrated certainty
 

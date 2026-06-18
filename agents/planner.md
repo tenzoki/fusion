@@ -71,7 +71,7 @@ You may receive work in two forms:
 1. **Understand** the requirement, problem, or spec
 2. **Analyze** existing material relevant to the plan's domain — for code/data plans, the codebase (structure, patterns, dependencies); for strategic/knowledge plans, the existing analyses, decision records, and design documents in `fusion-workbench/`
 3. **Research** using context7 for library docs if needed
-4. **Design** the solution respecting existing architecture
+4. **Research Gate, then design** (`critical-stance.md` §2 — mandatory before designing). Survey what already exists and reuse it: find the abstraction, helper, package, or prior decision that already covers this or an adjacent case before designing anything new. The plan MUST converge on **one integral solution** that fits the existing architecture — never a set of point-solutions each with its own special rule and fallback. A thicket of special-cases/fallbacks in the plan means the design is wrong; find the unifying approach instead. Then design, respecting existing architecture.
 5. **Document** in `fusion-workbench/planning/YYMMDD-HHMM[o]-<topic>.md` — this is mandatory, never skip it
 6. **Log** to `fusion-workbench/history/` what you planned
 7. **Report** to user: summary + path to planning doc

@@ -94,8 +94,11 @@ Read the user's input. Identify:
 
 Read relevant existing code, data, and documentation to understand:
 - What exists today that relates to the request
+- What existing solution, abstraction, or prior decision already covers this or an adjacent case (reuse beats new — flag it for the planner rather than letting a duplicate mechanism be specified)
 - What conventions and patterns are already established
 - What constraints the existing system imposes
+
+Shape toward **one integral capability** that fits the existing system, not a sprawl of special-case features each with its own rule and fallback (`critical-stance.md` §2). If the request is pulling toward such a sprawl, surface that as a scope decision for the user rather than encoding it into the spec.
 
 ### 3. Identify Decisions
 
