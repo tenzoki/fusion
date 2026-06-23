@@ -526,6 +526,7 @@ The orchestrator **must stop and ask the user** before proceeding when any of th
 | Destructive operations (file deletion, feature removal, data removal) | Safety | Design principle |
 | Plan step explicitly flagged as requiring approval | Planner's judgment | Plan metadata |
 | Task would modify files outside the project tree | Safety | Design principle |
+| Task would require switching git branches (`git switch`, `git checkout <branch>`, `git worktree add`) | Branch-drift safety — agents never switch branches autonomously | `git-branch-discipline.md` |
 | Per-Turn Coherence gate returned "Rebalance" (Phase 2 step 3c-bis) | User opted into mid-Turn Rebalance |
 | Per-Circle reconciler verdict is `review-needed` (Phase 3) | Aggregate Coherence not achieved |
 | Per-Circle reconciler verdict is `bounded-closure-proposed` (Phase 3) | Directive judged unreachable |
@@ -540,6 +541,8 @@ Present to the user:
 User options: **Proceed** / **Skip** (leave for later) / **Defer** (mark `[d]`) / **Modify** (user provides revised instructions)
 
 If the user chooses Modify, update the task description and re-route. If Skip, move to the next task. If Defer, rename the source file marker to `[d]` and remove from queue.
+
+**Note on the branch-switch gate:** the `git switch` / `git checkout <branch>` / `git worktree add` deny is enforced deterministically by the guard hook (`hooks/guard.ts`) — you cannot work around it by rephrasing the command. If a task genuinely needs a different branch, STOP and surface it. The user (not an agent) may deliberately allow it by setting `FUSION_ALLOW_BRANCH_SWITCH=1` (or `FUSION_ALLOW_WORKTREE=1` for worktrees) in the session env. The file-restore form `git checkout HEAD -- <files>` (the revert strategy) is never blocked.
 
 ### Rebalance Gate
 

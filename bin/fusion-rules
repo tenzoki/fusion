@@ -34,6 +34,11 @@
 #     three epistemic norms governing reasoning substance (not formatting):
 #     own your errors instead of praising the user, no premature/half-baked
 #     solutions, and calibrated certainty (verified vs inference vs speculation).
+#   - Every agent also reads git-branch-discipline.md (shipped by plugin) —
+#     agents never switch git branches autonomously. The rule is enforced
+#     deterministically by hooks/guard.ts (git is reachable only via Bash);
+#     the doc explains why (branch-drift chaos) and what to do instead
+#     (STOP → Human Gate → ask the user; the env overrides are user-only).
 #   - Domain agents additionally match filename patterns:
 #       coder, coderev, bugfixer  → *coding*.md
 #       ontocoder, ontorev        → *ontology*.md, *normative*.md, *verb*.md
@@ -161,6 +166,7 @@ emit_if_exists "$PLUGIN_RULES_DIR/fusion-workbench-conventions.md"
 emit_if_exists "$PLUGIN_RULES_DIR/decision-record-examples.md"
 emit_if_exists "$PLUGIN_RULES_DIR/user-facing-output.md"
 emit_if_exists "$PLUGIN_RULES_DIR/critical-stance.md"
+emit_if_exists "$PLUGIN_RULES_DIR/git-branch-discipline.md"
 
 # 1a. Every agent receives the project's chat voice profile (short-form output
 #     style: gate prompts, AskUserQuestion text, status reports, chat replies).

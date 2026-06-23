@@ -6,6 +6,10 @@
  *   2. Protected paths — unconditionally blocked
  *   3. Decision-governed categories — escalated based on sensitivity
  *
+ * Also intercepts Bash tool calls and DENIES branch/worktree-moving git
+ * operations (git is reachable only via Bash, so this is a complete
+ * choke-point against autonomous branch drift). See lib/git-branch-guard.ts.
+ *
  * Ported from fusion/reactor/pkg/guard/decision_guard.go.
  *
  * Protocol: reads JSON from stdin, writes JSON to stdout.
@@ -18,6 +22,7 @@ import { isFusionPluginCwd } from "./lib/self-detect.js";
 import { loadConfig, findRelevantDecisions, sensitivityLevel } from "./lib/config.js";
 import { loadEscalation, saveEscalation, isHalted, recordBlock, resetBlockCounter, } from "./lib/escalation.js";
 import { emitEvent } from "./lib/events.js";
+import { classifyGitCommand, overridesFromEnv, overrideEnvFor, } from "./lib/git-branch-guard.js";
 /**
  * Normalize a file path to be relative to the project root (CWD).
  *
@@ -63,6 +68,57 @@ function allow() {
 function block(reason) {
     process.stdout.write(JSON.stringify({ decision: "block", reason }) + "\n");
 }
+/**
+ * Guard a Bash tool call against the git branch-switch policy.
+ *
+ * Classifies the command (segmenting on ; && || | and inspecting subshells)
+ * and DENIES any branch/worktree-moving git operation unless the matching
+ * env override is set. Follows the same block/escalation/event pattern as the
+ * write-tool checks. When an override allows a normally-denied command, the
+ * call is allowed AND an override-used note is recorded for visibility.
+ */
+function guardBashCommand(input, config) {
+    const command = typeof input.tool_input.command === "string"
+        ? input.tool_input.command
+        : "";
+    const overrides = overridesFromEnv(process.env);
+    const verdict = classifyGitCommand(command, overrides);
+    // Override path: a normally-denied command was allowed by an env flag.
+    if (verdict.overrideUsed && verdict.overrideKind) {
+        const envVar = overrideEnvFor(verdict.overrideKind);
+        const detail = `Override ${envVar} allowed normally-denied git op: ${verdict.overrideSegment ?? command}`;
+        // Record the override in guard-state for visibility (same state surface
+        // the block path writes to — recentEvents in escalation.json + events.jsonl).
+        const escalation = loadEscalation();
+        escalation.recentEvents.push({
+            level: "clear",
+            trigger: "git_branch_switch_override",
+            message: detail,
+            timestamp: new Date().toISOString(),
+            toolName: "Bash",
+        });
+        saveEscalation(escalation);
+        emitEvent("guard_advisory", "Bash", undefined, detail);
+        allow();
+        return;
+    }
+    // Deny path: a branch/worktree-moving git op with no override.
+    if (verdict.deny) {
+        const escalation = loadEscalation();
+        const halted = recordBlock(escalation, config.escalation.blocksBeforeHalt, "git_branch_switch", verdict.reason ?? "", "Bash", verdict.offendingSegment);
+        saveEscalation(escalation);
+        emitEvent(halted ? "guard_halt" : "guard_block", "Bash", undefined, `Git branch-switch denied: ${verdict.offendingSegment ?? command}`);
+        block(verdict.reason ?? "fusion policy: agents never switch git branches autonomously.");
+        return;
+    }
+    // Allow path: not a branch/worktree-moving git op. Reset the consecutive
+    // block counter the same way the write-tool allow path does.
+    const escalation = loadEscalation();
+    resetBlockCounter(escalation);
+    saveEscalation(escalation);
+    emitEvent("guard_allow", "Bash");
+    allow();
+}
 async function main() {
     // Read hook input from stdin
     const chunks = [];
@@ -82,9 +138,12 @@ async function main() {
         allow(); // Unparseable input — fail open
         return;
     }
-    // Only guard write operations
+    // Tools this guard inspects: write operations + Bash (for the git
+    // branch-switch policy). Everything else is allowed unconditionally.
     const writeTools = ["Write", "Edit", "MultiEdit", "NotebookEdit"];
-    if (!writeTools.includes(input.tool_name)) {
+    const isWriteTool = writeTools.includes(input.tool_name);
+    const isBash = input.tool_name === "Bash";
+    if (!isWriteTool && !isBash) {
         allow();
         return;
     }
@@ -96,10 +155,17 @@ async function main() {
     }
     // Self-detect: if cwd is the fusion plugin's own repo, stand down.
     // The guard's protected paths (agents/**, rules/**, plugin.json, etc.)
-    // are the very files a fusion developer needs to edit.
+    // are the very files a fusion developer needs to edit. The git
+    // branch-switch policy also stands down here — a fusion developer
+    // working on the plugin's own source must be free to switch branches.
     if (isFusionPluginCwd()) {
-        emitEvent("guard_allow", input.tool_name, extractFilePath(input.tool_input) ?? undefined, "Self-detect: cwd is fusion plugin repo — guard standing down");
+        emitEvent("guard_allow", input.tool_name, isWriteTool ? (extractFilePath(input.tool_input) ?? undefined) : undefined, "Self-detect: cwd is fusion plugin repo — guard standing down");
         allow();
+        return;
+    }
+    // Bash branch: git branch-switch policy (deterministic choke-point).
+    if (isBash) {
+        guardBashCommand(input, config);
         return;
     }
     const rawFilePath = extractFilePath(input.tool_input);
