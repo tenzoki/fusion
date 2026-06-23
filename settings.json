@@ -17,6 +17,10 @@
       "Bash(git status*)",
       "Bash(git add *)",
       "Bash(git commit *)"
+    ],
+    "deny": [
+      "Bash(git switch:*)",
+      "Bash(git worktree add:*)"
     ]
   }
 }
