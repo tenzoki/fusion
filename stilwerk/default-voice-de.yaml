@@ -57,7 +57,10 @@ whitelist:
       schafft: "TOGAF-Capability-Modell" statt "Framework"; "Data
       Lineage" statt "Datenfluss"; "Entscheidungsrechte" statt
       "Verantwortlichkeiten". Begriffe bei gemischtem Publikum bei
-      erster Verwendung definieren.
+      erster Verwendung definieren. Projektinterne Codes und Kürzel
+      (Komponenten- oder Strategienamen wie S1, gate.go, must_not) beim
+      ersten Auftreten in drei bis fünf Wörtern erklären, auch vor
+      Fachpublikum: der Leser hält die Codes nicht ständig präsent.
 
   - id: L06
     name: "Deutsche Kontraktionen"
@@ -77,6 +80,21 @@ whitelist:
       ("Sie könnten möglicherweise erwägen, eventuell zu prüfen").
 
 blacklist:
+  - id: K01
+    name: "Klauselketten und Kompression"
+    instruction: |
+      Nicht mehrere Gedanken in eine atemlose Klauselkette pressen. Ein
+      Hauptgedanke pro Satz; jeder Hauptpunkt ein vollständiger Satz mit
+      Subjekt und finitem Verb. Verblose Fragmente ("Recall top,
+      Precision leck") sind keine Sätze. Die Kompression (Klausel,
+      Fachkürzel, Klausel, zusammengepresster Grund, alles in einem
+      Atemzug) ist das Hauptsymptom unleserlicher Analyseprosa. Lieber
+      zwei klare Sätze als einen überladenen. Gilt für Fachpublikum
+      genauso: Dichte ersetzt keine Klarheit.
+    examples:
+      - "S1s Selektion findet hervorragend, diszipliniert aber nicht, Recall top, Precision leck, weil das Gate beim Boot-Flip wegfiel."
+      - "Deterministisches Post-Filter (Registry-validate, unknown droppen, must_not droppen, count-cap), S4s gate.go wiederverwenden, VOR dem Orderer."
+
   - id: D01
     name: "Übergangsdichte"
     max: 0.3
@@ -123,6 +141,8 @@ blacklist:
     examples:
       - "der Befund – der vergangene Woche entstand – bestätigt sich"
       - "drei Optionen – schnell, günstig, gut – davon zwei"
+      - "findet hervorragend, diszipliniert aber nicht — Recall top, Precision leck"
+      - "der Fix ist nicht 'besserer Prompt', sondern S4s Gate vor den Orderer ziehen"
 
   - id: AI03
     name: "Dramatische Selbstverständlichkeiten"

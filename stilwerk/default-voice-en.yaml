@@ -67,7 +67,10 @@ whitelist:
       Prefer the precise term to the generic one when it improves clarity:
       "TOGAF capability model" over "framework"; "data lineage" over
       "data flow"; "decision rights" over "responsibilities". Define
-      terms on first use if the audience is mixed.
+      terms on first use if the audience is mixed. Gloss project-internal
+      codes and abbreviations (component or strategy names like S1,
+      gate.go, must_not) in three to five words on first use, even for
+      expert readers who do not hold the codes in working memory.
 
   - id: R02
     name: "Recommendation register"
@@ -79,6 +82,21 @@ whitelist:
 
 # Patterns to ELIMINATE
 blacklist:
+  - id: K01
+    name: "Clause-chains and compression"
+    instruction: |
+      Do not pack several ideas into one breathless clause-chain. One
+      main idea per sentence; each main point a complete sentence with a
+      subject and a finite verb. Verbless fragments ("Recall top,
+      precision leaks") are not sentences. The compression (clause,
+      jargon code, clause, crushed-in reason, all in one breath) is the
+      main symptom of unreadable analysis prose. Two clear sentences beat
+      one overloaded one. This holds for expert audiences too: density is
+      not clarity.
+    examples:
+      - "S1's selection finds well but does not discipline, recall top, precision leaks because the gate fell out at the boot-flip."
+      - "Deterministic post-filter (registry-validate, drop unknown, drop must_not, count-cap), reuse S4's gate.go, BEFORE the orderer."
+
   - id: D01
     name: "Transition density"
     max: 0.3
@@ -122,6 +140,9 @@ blacklist:
       parentheses, colons, or restructure. Maximum one per 1000 words.
       Em-dashes are a strong AI tell and reduce the gravity of formal
       prose.
+    examples:
+      - "finds well but does not discipline — recall top, precision leaks"
+      - "the fix is not 'a better prompt' but pulling S4's gate before the orderer"
 
   - id: AI03
     name: "Dramatic obviousness"
