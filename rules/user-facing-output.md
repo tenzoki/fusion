@@ -116,6 +116,32 @@ Before: `Bundle A: ~6 steps, 5 hours`
 
 After: `Bundle A: 6 steps` — followed, only if the user asked, by a separate trailing line `estimated effort (ai-based): about 45 min`.
 
+## Self-review before sending: the readability gate
+
+The style rules above are necessary but not self-enforcing. The known failure mode: when the content gets technically dense, agents drop the prose discipline and emit telegraphic, jargon-packed output the user cannot parse. The stylometric profiles already ban this (em-dash overuse, telegraphic style, undefined terms), yet it slips through under load. Treat the rules as a gate you pass the draft through, not as background advice.
+
+**Before you send any substantive explanation — a chat reply, a report body, a recommendation, a finding — run this five-point check on your draft and rewrite anything that fails:**
+
+1. **Thesis first.** Does the first line carry the finding or the recommendation? If the reader reaches paragraph three before learning the point, move it up.
+2. **No em-dash asides.** Scan for `—` used as a parenthetical break. Replace each with a comma, a colon, parentheses, or two sentences. The telegraphic-with-parentheses pattern (clause, jargon aside, clause, compressed reason, all in one breath) is the single most common offender. One `—` per ~1000 words is the ceiling, matching the stylometric profiles.
+3. **Whole sentences, not fragments.** Each point is a grammatical sentence with a subject and a verb. "Recall top, Precision leck" is a fragment; "S1 hat hohen Recall, aber leckende Precision" is a sentence.
+4. **Every code and abbreviation glossed on first use.** This covers project-domain jargon, not only fusion-internal terms. `S1`, `gate.go`, `must_not`, `Orderer`, `AC`, `N=10` each get a referent or a short gloss the first time they appear. The reader does not hold the project's internal codes in working memory; do not assume it.
+5. **Counts are named.** "3 phantom failures", not "3 Fails". "8 of the 13 open items", not "8 of 13".
+
+The gate applies to long-form report bodies and short-form chat alike. It is the same forcing-function shape as "count the lines" in `## Length`: a concrete check you run on the draft, not a principle you hold in the abstract.
+
+### Canonical anti-example (a real failure)
+
+What the gate exists to stop — dense engineering jargon, em-dash chains, bare codes, fragments:
+
+> S1s Selektion findet hervorragend, diszipliniert aber nicht — Recall top, Precision/Constraints leck, weil das deterministische Gate mit dem Boot-Flip wegfiel. Der Fix ist nicht "besserer Prompt", sondern S4s Gate als deterministischen Post-Filter vor den Orderer ziehen.
+
+The same content through the gate — thesis first, no em-dash, whole sentences, each code glossed once:
+
+> **Befund:** S1, die LLM-basierte Framework-Auswahl, findet die richtigen Frameworks zuverlässig (hoher Recall), hält aber die Constraints nicht ein. Precision und Regel-Treue lecken, weil das deterministische Gate beim Boot-Flip wegfiel. Der Fix ist kein besserer Prompt, sondern das bewährte Gate aus S4 als deterministischen Filter hinter S1 zu schalten, noch vor dem Orderer (der Komponente, die die Treffer sortiert).
+
+Same information, same technical terms, readable.
+
 ## Examples
 
 ### Example 1 — session report

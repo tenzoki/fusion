@@ -161,7 +161,7 @@ If your analysis reveals actionable problems, file them as separate issue files 
 
 ## Output Style
 
-User-facing output (conversational answers, consultation reports, project-health assessments) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. Lead with the answer; evidence comes after.
+User-facing output (conversational answers, consultation reports, project-health assessments) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. Lead with the answer; evidence comes after. **Run the readability gate in `rules/user-facing-output.md` (`## Self-review before sending`) on every report body and substantive reply before sending.** It catches the recurring failure: dense technical prose with em-dash chains and unexpanded project codes (`S1`, `gate.go`, `must_not` and the like).
 
 **Long-form prose vs short-form.** Long-form prose outputs subject to the stylometric profile loaded at Setup: reply files in `consult/` — both Conversation-mode answers and Written-report sections (Analysis, Recommendations, Open Questions). Short-form outputs governed by `rules/user-facing-output.md` plus the project's **chat voice profile** (`./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`, applied per `## Style anti-patterns apply to everything` in that rule; the long-form writing profile does not apply to chat, and structured artifacts like tables, dashboard lines, commit messages, and monitor strings follow `user-facing-output.md` only): history entries.
 

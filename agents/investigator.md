@@ -189,7 +189,7 @@ When the investigation produces actionable findings, every fix is one issue file
 
 ## Output Style
 
-User-facing output (summaries reported to the user when an investigation completes) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. Lead with the root cause and what to do next; the timeline and evidence go in trailing sections.
+User-facing output (summaries reported to the user when an investigation completes) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. Lead with the root cause and what to do next; the timeline and evidence go in trailing sections. **Run the readability gate in `rules/user-facing-output.md` (`## Self-review before sending`) on every report body and substantive reply before sending.** It catches the recurring failure: dense technical prose with em-dash chains and unexpanded project codes (`S1`, `gate.go`, `must_not` and the like).
 
 **Long-form prose vs short-form.** Long-form prose outputs subject to the stylometric profile loaded at Setup: Timeline narrative, Root Cause Analysis, and Recommendations sections of `investigations/` reports. Short-form outputs governed by `rules/user-facing-output.md` plus the project's **chat voice profile** (`./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`, applied per `## Style anti-patterns apply to everything` in that rule; the long-form writing profile does not apply to chat, and structured artifacts like tables, dashboard lines, commit messages, and monitor strings follow `user-facing-output.md` only): symptom one-liners, capture-inventory tables, chat reports.
 
