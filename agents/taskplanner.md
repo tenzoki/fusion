@@ -113,6 +113,8 @@ Construct a DAG from all tasks and their dependencies:
 
 Topologically sort the DAG. If cycles exist, flag them at the top of the tasklist as blockers for human resolution.
 
+Render the DAG as a formal, parseable **Mermaid** `flowchart TD` in the tasklist (per `rules/design-diagrams.md`). The dependency graph is itself a decomposition-quality signal: a tangled graph, a god-node every task depends on, or a hidden cycle means the work was sliced badly, not that the work is genuinely complex. Run the coherence self-check in that rule before writing; the independent `conceptrev` evaluator may assess the graph.
+
 ### Step 4: Write tasklist
 
 Write (or update) `fusion-workbench/tasklist.md`:
@@ -124,6 +126,16 @@ Write (or update) `fusion-workbench/tasklist.md`:
 **Domain:** code | data | strategic | knowledge
 **Open tasks:** <count>
 **Blocked:** <count>
+
+## Dependency graph
+
+```mermaid
+flowchart TD
+  %% one node per task (ID + short label); edge A --> B means "B depends on A".
+  %% Group with subgraph blocks by priority tier or source file to make
+  %% layering visible. A clean left-to-right / top-down flow = clean
+  %% decomposition. Cite cycles here if any survived (they are blockers).
+```
 
 ## Tasks
 

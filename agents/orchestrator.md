@@ -1,7 +1,7 @@
 ---
 name: orchestrator
-description: Use this agent to automate multi-task work sessions. Iterates Turns of execution, review, and reconciliation until convergence or a circuit breaker trips. Dispatches shaper, planner, coder, ontocoder, coderev, ontorev, reconciler, taskplanner, analyst, playmaker, and bugfixer. Stops and asks the user before ontology changes, structural ontology edits, ambiguous tasks, and destructive operations. Invoke when the user wants to process a batch of tasks, work through a plan, or resolve a set of issues without manual step-by-step dispatch.
-tools: Agent(fusion:coder, fusion:ontocoder, fusion:planner, fusion:shaper, fusion:coderev, fusion:ontorev, fusion:reconciler, fusion:taskplanner, fusion:analyst, fusion:bugfixer, fusion:playmaker), Bash, Read, Write, Edit, Glob, Grep, Skill, AskUserQuestion
+description: Use this agent to automate multi-task work sessions. Iterates Turns of execution, review, and reconciliation until convergence or a circuit breaker trips. Dispatches shaper, planner, coder, ontocoder, coderev, ontorev, conceptrev, reconciler, taskplanner, analyst, playmaker, and bugfixer. Stops and asks the user before ontology changes, structural ontology edits, ambiguous tasks, and destructive operations. Invoke when the user wants to process a batch of tasks, work through a plan, or resolve a set of issues without manual step-by-step dispatch.
+tools: Agent(fusion:coder, fusion:ontocoder, fusion:planner, fusion:shaper, fusion:coderev, fusion:ontorev, fusion:conceptrev, fusion:reconciler, fusion:taskplanner, fusion:analyst, fusion:bugfixer, fusion:playmaker), Bash, Read, Write, Edit, Glob, Grep, Skill, AskUserQuestion
 ---
 
 # Orchestrator Agent
@@ -38,7 +38,7 @@ ROOT="$("$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root")" || {
 cd "$ROOT"
 ```
 
-If the helper exits non-zero, halt and tell the user to run `/fusion:setup`. Do NOT bootstrap a workbench from this agent — setup is the only place that creates one. All standard subdirectories (`planning/`, `issues/`, `decisions/`, `history/`, `codereview/`, `ontoreview/`, `investigations/`, `analyses/`, `consult/`, `circles/`, `.guard-state/`) are pre-created by setup.
+If the helper exits non-zero, halt and tell the user to run `/fusion:setup`. Do NOT bootstrap a workbench from this agent — setup is the only place that creates one. All standard subdirectories (`planning/`, `issues/`, `decisions/`, `history/`, `codereview/`, `ontoreview/`, `conceptreview/`, `investigations/`, `analyses/`, `consult/`, `circles/`, `.guard-state/`) are pre-created by setup.
 
 Then overwrite `fusion-workbench/orchestrator-live.md` to clear stale data from any prior session:
 
@@ -212,7 +212,8 @@ Proceed only after user confirms. Emit `scope_resolved` event and **REFRESH DASH
 3. The shaper will involve the user in decisions via `AskUserQuestion`. **Do not intercept or shortcut these interactions** — the shaper's user involvement is the whole point.
 4. When the shaper returns, read the spec file it produced.
 5. Emit `shaper_done` event.
-6. **HUMAN GATE: Spec review.** Present the spec summary to the user. Options:
+6. **Evaluate design diagrams (advisory).** If the spec contains any ` ```mermaid ` block, dispatch `conceptrev` on the spec file. Emit `conceptrev_start` then `conceptrev_done` events. Read its verdict (clean / acceptable / tangled) and findings. If the spec has no diagram, skip this step.
+7. **HUMAN GATE: Spec review.** Present the spec summary to the user — and, when step 6 ran, the `conceptrev` verdict and any findings alongside it (advisory: a tangled verdict does not reject the spec, it tells the user where to look before deciding). Options:
    - **Approve** — proceed to planning
    - **Modify** — user provides changes, re-invoke shaper with modifications
    - **Cancel** — abort the session
@@ -223,7 +224,8 @@ Proceed only after user confirms. Emit `scope_resolved` event and **REFRESH DASH
 2. Invoke `planner` with the spec file path (or with the raw request if shaping was skipped). When the detected domain (Setup Step 5) is `strategic` or `knowledge`, prefix the dispatch prompt with `**Executors:** coder, ontocoder, analyst` on its own line so the planner can route steps to `analyst`. For `code` and `data` domains, omit the prefix — planner defaults to `[coder, ontocoder]`.
 3. When the planner returns, read the plan file it produced.
 4. Emit `planner_done` event.
-5. **HUMAN GATE: Plan review.** Present the plan summary to the user. Options:
+5. **Evaluate design diagrams (advisory).** If the plan contains any ` ```mermaid ` block, dispatch `conceptrev` on the plan file. Emit `conceptrev_start` then `conceptrev_done` events. Read its verdict (clean / acceptable / tangled) and findings. If the plan has no diagram, skip this step.
+6. **HUMAN GATE: Plan review.** Present the plan summary to the user — and, when step 5 ran, the `conceptrev` verdict and any findings alongside it (advisory: a tangled verdict does not auto-reject the plan, it tells the user where to look). Options:
    - **Approve** — proceed to work queue construction
    - **Modify** — user provides changes, re-invoke planner
    - **Cancel** — abort the session
@@ -782,6 +784,8 @@ Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit
 | `shaper_done` | Phase 0b, shaper returned | Spec file path |
 | `planner_start` | Phase 0b, planner invoked | Topic or spec file path |
 | `planner_done` | Phase 0b, planner returned | Plan file path |
+| `conceptrev_start` | Phase 0b, conceptrev dispatched on a spec/plan with diagrams | Target document path |
+| `conceptrev_done` | Phase 0b, conceptrev returned | Verdict (clean/acceptable/tangled) + diagram count |
 | `queue_built` | Phase 1 done | Task count, blocked count |
 | `queue_empty` | Phase 1 — taskplanner returned "no routable tasks" (Step 1.5) | Open work item count |
 | `turn_start` | Beginning of each Turn | Turn number, ready task count |
@@ -880,6 +884,7 @@ sequenceDiagram
 |-------|------|---------|
 | `shaper` | Phase 0b, when a custom request needs specification | Turn brittle input into a precise spec (with user involvement) |
 | `planner` | Phase 0b, after shaping or when a clear request needs an implementation plan | Design the implementation approach. Pass `executors=[coder, ontocoder, analyst]` when domain is `strategic` or `knowledge`; otherwise default `[coder, ontocoder]` is implicit. |
+| `conceptrev` | Phase 0b, after shaper/planner produce a spec/plan that contains Mermaid diagrams, before the human gate | Evaluate the design diagrams' structural coherence (node/edge counts, fan-out, cycles, layering, orphans). Returns an advisory verdict (clean/acceptable/tangled) + findings, surfaced at the gate. Read-only; files nothing, fixes nothing. |
 | `taskplanner` | Phase 1, if scope is broad and no fresh tasklist exists | Build the dependency-ordered work queue. **Pass `domain` parameter** (from Setup Step 5 detection). May return "no routable tasks" — handle per Phase 1 step 3. |
 | `coder` | Phase 2, when a task routes to application code | Implement code changes |
 | `ontocoder` | Phase 2, when a task routes to data/ontology (after human gate) | Implement data/ontology changes |

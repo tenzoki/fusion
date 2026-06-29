@@ -119,6 +119,8 @@ Each investigation produces one report file at `fusion-workbench/investigations/
 
 <Chronological walk through process + AI + exception logs. Cite log filenames. Mark the moment(s) where the run derailed.>
 
+Where the failure propagates across components, steps, or LLM calls, render the causal chain as a formal, parseable **Mermaid** diagram (`flowchart` or `sequenceDiagram`) per `rules/design-diagrams.md` (fenced ` ```mermaid `), marking the node/step where the run derailed. A clear chain makes the root cause legible; ASCII art is rejected for structural representation.
+
 ## Evidence
 
 For each piece of evidence, cite source with file path and line range:

@@ -26,6 +26,7 @@ Options 1 and 2 launch a sub-agent with its own context window (see [How to invo
 | `ontocoder` | Implements **structured-data and ontology** changes per a plan or task | Anything | `.yaml`, `.yml`, `.json`, `.toml`, `.csv`, ontology, manifests, schemas, fixture data, derived stats/index files, data documentation, `fusion-workbench/{history,issues}/` | Data edits + history log |
 | `coderev` | Reviews Go / TS / Python code, files findings | Anything | `fusion-workbench/codereview/`, `fusion-workbench/issues/`, `fusion-workbench/history/` | Review report + issue files |
 | `ontorev` | Reviews ontology, manifests, verb hierarchies, files findings | Anything | `fusion-workbench/ontoreview/`, `fusion-workbench/issues/`, `fusion-workbench/history/` | Review report + issue files |
+| `conceptrev` | Evaluates the formal Mermaid design diagrams in plans/specs/analyses — measures graph structure (fan-out, cycles, layering, orphans), returns an advisory coherence verdict. Read-only; files nothing | Anything (esp. planning/analysis docs) | `fusion-workbench/conceptreview/`, `fusion-workbench/history/` | Coherence verdict (clean/acceptable/tangled) + findings |
 | `reconciler` | Reconciles plans / issues / reviews against the actual codebase | Anything | Tracking files in `fusion-workbench/` (status markers, reconciliation logs only) | Updated tracking files + history log |
 | `taskplanner` | Builds the dependency-ordered work queue from open plans, issues, reviews | All `fusion-workbench/` tracking files | `fusion-workbench/tasklist.md`, `fusion-workbench/history/` | A single, executable task list |
 | `bugfixer` | Diagnoses and fixes a specific bug: autonomous investigation, minimal targeted fix, verification | Anything | Any file type (code, data, ontology), `fusion-workbench/{history,issues}/` | Verified fix + history log |
@@ -163,9 +164,11 @@ Agents discover their applicable rules via the helper `bin/fusion-rules <agent-n
 | `coder`, `coderev`, `bugfixer` | `*coding*` | `rules/coding-guidelines.md`, `rules/coding-architecture.md` |
 | `ontocoder`, `ontorev` | `*ontology*`, `*normative*`, `*verb*` | `rules/ontology-rules.md`, `rules/verb-ontology.md`, `rules/normative.md` |
 | `planner` | `*coding*`, `*ontology*` | both groups above |
-| `orchestrator`, `shaper`, `taskplanner`, `reconciler`, `analyst`, `investigator`, `consultant`, `playmaker` | (workbench conventions only) | — |
+| `orchestrator`, `shaper`, `taskplanner`, `reconciler`, `analyst`, `investigator`, `consultant`, `playmaker`, `conceptrev` | (workbench conventions only) | — |
 
 If a pattern has no match in either directory, the agent operates on workbench conventions alone — agents skip missing rules silently rather than failing. Consuming projects can add their own rule files at any time and the next session picks them up automatically.
+
+**Plus a shared rubric:** the plugin-shipped `rules/design-diagrams.md` is emitted (independent of the patterns above) to the design-diagram group — `planner`, `analyst`, `taskplanner`, `shaper`, `investigator` (the producers) and `conceptrev` (the evaluator). It defines how technical design is expressed as formal, parseable Mermaid and the coherence heuristics `conceptrev` judges by, so producer and evaluator share one definition of "coherent".
 
 ### Adding rules
 
@@ -203,6 +206,7 @@ fusion-workbench/
 ├── history/         # every session's log; the durable record
 ├── codereview/      # coderev output
 ├── ontoreview/      # ontorev output
+├── conceptreview/   # conceptrev design-diagram verdicts
 ├── investigations/  # investigator output
 ├── analyses/        # analyst output
 ├── consult/         # consultant reports

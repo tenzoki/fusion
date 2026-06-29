@@ -12,6 +12,7 @@ fusion-workbench/
 ├── history/       # all agents log here (YYMMDD-HHMM-<topic>.md)
 ├── codereview/    # codereviewer output (YYMMDD-HHMM-<topic>.md)
 ├── ontoreview/    # ontoreviewer output (YYMMDD-HHMM-<topic>.md)
+├── conceptreview/ # conceptrev design-diagram verdicts (YYMMDD-HHMM-<doc-slug>.md)
 ├── analyses/      # analyst output (YYMMDD-HHMM-<topic>.md)
 ├── investigations/# investigator output (YYMMDD-HHMM-<topic>.md)
 ├── consult/       # consultant output (YYMMDD-HHMM-<topic>.md)
@@ -63,6 +64,7 @@ Projects declare the language of their prose output in `CLAUDE.md` via a line of
 | `history/` | `YYMMDD-HHMM-<topic>.md` | no |
 | `codereview/` | `YYMMDD-HHMM-<topic>.md` | no |
 | `ontoreview/` | `YYMMDD-HHMM-<topic>.md` | no |
+| `conceptreview/` | `YYMMDD-HHMM-<doc-slug>.md` | no |
 | `analyses/` | `YYMMDD-HHMM-<topic>.md` | no |
 | `investigations/` | `YYMMDD-HHMM-<topic>.md` | no |
 | `consult/` | `YYMMDD-HHMM-<topic>.md` | no |
@@ -87,7 +89,7 @@ Files in `issues/` and `planning/` carry a state marker: `YYMMDD-HHMM[S]-<topic>
 - When the user defers: rename to `[d]`.
 - State change = `mv` (rename). Only the marker changes; `YYMMDD-HHMM` and `<topic>` stay the same.
 
-History, codereview, ontoreview, and analyses files do NOT carry state markers.
+History, codereview, ontoreview, conceptreview, and analyses files do NOT carry state markers.
 
 ## State Markers — decisions/
 

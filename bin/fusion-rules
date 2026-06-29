@@ -39,6 +39,12 @@
 #     deterministically by hooks/guard.ts (git is reachable only via Bash);
 #     the doc explains why (branch-drift chaos) and what to do instead
 #     (STOP → Human Gate → ask the user; the env overrides are user-only).
+#   - Design-diagram agents additionally read design-diagrams.md (shipped by
+#     plugin) — the doctrine for expressing technical design as formal,
+#     parseable Mermaid (when / which type, validity, coherence self-check).
+#     Recipients: planner, analyst, taskplanner, shaper, investigator (the
+#     producers) plus conceptrev (the independent evaluator that judges
+#     produced diagrams by the same shared rubric).
 #   - Domain agents additionally match filename patterns:
 #       coder, coderev, bugfixer  → *coding*.md
 #       ontocoder, ontorev        → *ontology*.md, *normative*.md, *verb*.md
@@ -49,13 +55,13 @@
 #                                   see templates/investigator-capture-layout.md)
 #   - All other agents get workbench-conventions only. The conventions-only
 #     set currently includes: orchestrator, shaper, taskplanner, reconciler,
-#     analyst, consultant, playmaker.
+#     analyst, consultant, playmaker, conceptrev.
 #   - Long-form-prose agents additionally receive the project's stylometric
 #     voice profile path so they can apply it to narrative outputs (session
 #     summary bodies, consultation replies, analysis reports, investigator
 #     timelines, playmaker briefings, prose sections of specs and plans):
 #       orchestrator, consultant, shaper, planner, analyst, investigator,
-#       playmaker
+#       playmaker, conceptrev
 #     Language is resolved from CLAUDE.md's `**Language:** <lang>` line
 #     (silently defaults to `en`). The emitted path is
 #     ./fusion-workbench/stilwerk/default-voice-<lang>.yaml. If the declared
@@ -76,7 +82,7 @@ case "$AGENT" in
   ontocoder|ontorev)              PATTERNS="ontology normative verb" ;;
   planner)                        PATTERNS="coding ontology" ;;
   investigator)                   PATTERNS="investigator" ;;
-  orchestrator|shaper|taskplanner|reconciler|analyst|consultant|playmaker)
+  orchestrator|shaper|taskplanner|reconciler|analyst|consultant|playmaker|conceptrev)
                                   PATTERNS="" ;;
   *)
     echo "fusion-rules: unknown agent '$AGENT'" >&2
@@ -84,12 +90,24 @@ case "$AGENT" in
     ;;
 esac
 
-# Prose-agent flag — independent of PATTERNS. The seven agents below produce
+# Prose-agent flag — independent of PATTERNS. The eight agents below produce
 # long-form narrative output that the stylometric profile governs.
 case "$AGENT" in
-  orchestrator|consultant|shaper|planner|analyst|investigator|playmaker)
+  orchestrator|consultant|shaper|planner|analyst|investigator|playmaker|conceptrev)
                                   IS_PROSE_AGENT=1 ;;
   *)                              IS_PROSE_AGENT=0 ;;
+esac
+
+# Design-diagram-agent flag — independent of PATTERNS. These agents produce
+# technical-design documents whose structure is expressed as formal parseable
+# Mermaid (planner, analyst, taskplanner, shaper, investigator), plus the
+# conceptrev evaluator that judges those diagrams. All read the shared rubric
+# in rules/design-diagrams.md so producer and evaluator use one definition of
+# "coherent".
+case "$AGENT" in
+  planner|analyst|taskplanner|shaper|investigator|conceptrev)
+                                  IS_DIAGRAM_AGENT=1 ;;
+  *)                              IS_DIAGRAM_AGENT=0 ;;
 esac
 
 emit_if_exists() {
@@ -180,6 +198,14 @@ emit_voice_profile "chat-voice"
 #     (long-form narrative outputs), resolved from the same `**Language:**` line.
 if [ "$IS_PROSE_AGENT" -eq 1 ]; then
   emit_voice_profile "default-voice"
+fi
+
+# 1c. Design-diagram agents (the five producers + the conceptrev evaluator)
+#     receive the diagram doctrine: when / which Mermaid type, the
+#     parseable-form requirement, and the coherence self-check heuristics.
+#     Shared rubric so producer and evaluator judge by one definition.
+if [ "$IS_DIAGRAM_AGENT" -eq 1 ]; then
+  emit_if_exists "$PLUGIN_RULES_DIR/design-diagrams.md"
 fi
 
 # 2. Domain patterns — plugin first, then fusion-agent-specific project rules,

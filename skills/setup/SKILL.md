@@ -26,7 +26,7 @@ pwd
 Note the path. The workbench will be created here. Then:
 
 ```bash
-mkdir -p ./fusion-workbench/planning ./fusion-workbench/issues ./fusion-workbench/decisions ./fusion-workbench/history ./fusion-workbench/codereview ./fusion-workbench/ontoreview ./fusion-workbench/investigations ./fusion-workbench/analyses ./fusion-workbench/consult ./fusion-workbench/.guard-state ./fusion-workbench/circles
+mkdir -p ./fusion-workbench/planning ./fusion-workbench/issues ./fusion-workbench/decisions ./fusion-workbench/history ./fusion-workbench/codereview ./fusion-workbench/ontoreview ./fusion-workbench/conceptreview ./fusion-workbench/investigations ./fusion-workbench/analyses ./fusion-workbench/consult ./fusion-workbench/.guard-state ./fusion-workbench/circles
 ```
 
 Write the setup marker (this is the file every agent and hook looks for to confirm fusion is set up here):
