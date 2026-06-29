@@ -109,7 +109,7 @@ The hooks activate automatically on session start. No manual startup needed.
 | `lib/churn.ts` | Churn heatmap tracker | Yes |
 | `lib/cross-file.ts` | Cross-file ping-back tracker (paired-touch / circular edit detector) | Yes |
 | `lib/workbench-root.ts` | Walks up from cwd to find `fusion-workbench/.fusion-setup` (single source of truth for workbench presence in TS) | Yes |
-| `lib/self-detect.ts` | Detects when cwd is the fusion plugin's own repo so the guard stands down | Yes |
+| `lib/self-detect.ts` | Detects when cwd is the fusion plugin's own repo so the **write** guard stands down (the git branch-switch policy stays active even here) | Yes |
 | `package.json` | Dev dependencies (tsx, typescript, vitest) | Yes |
 
 ## Usage

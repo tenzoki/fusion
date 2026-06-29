@@ -153,19 +153,26 @@ async function main() {
         allow();
         return;
     }
-    // Self-detect: if cwd is the fusion plugin's own repo, stand down.
-    // The guard's protected paths (agents/**, rules/**, plugin.json, etc.)
-    // are the very files a fusion developer needs to edit. The git
-    // branch-switch policy also stands down here — a fusion developer
-    // working on the plugin's own source must be free to switch branches.
-    if (isFusionPluginCwd()) {
-        emitEvent("guard_allow", input.tool_name, isWriteTool ? (extractFilePath(input.tool_input) ?? undefined) : undefined, "Self-detect: cwd is fusion plugin repo — guard standing down");
-        allow();
-        return;
-    }
     // Bash branch: git branch-switch policy (deterministic choke-point).
+    // Runs unconditionally when the guard is enabled — INCLUDING in the fusion
+    // plugin's own repo. This hook only ever gated the AGENT's Bash tool calls;
+    // a human developer switches branches in their own terminal, which the hook
+    // never sees. Standing the branch policy down for the plugin repo therefore
+    // removed agent protection for zero human benefit (the branch-switch hole).
+    // The override env vars (FUSION_ALLOW_BRANCH_SWITCH / FUSION_ALLOW_WORKTREE)
+    // remain the deliberate escape hatch for a fusion developer who genuinely
+    // wants an agent to switch branches here.
     if (isBash) {
         guardBashCommand(input, config);
+        return;
+    }
+    // Self-detect: if cwd is the fusion plugin's own repo, stand the WRITE guard
+    // down. The protected paths (agents/**, rules/**, plugin.json, etc.) are the
+    // very files a fusion developer needs to edit. Only write tools reach here —
+    // the branch-switch policy above already ran and is intentionally NOT disabled.
+    if (isFusionPluginCwd()) {
+        emitEvent("guard_allow", input.tool_name, extractFilePath(input.tool_input) ?? undefined, "Self-detect: cwd is fusion plugin repo — write guard standing down");
+        allow();
         return;
     }
     const rawFilePath = extractFilePath(input.tool_input);
