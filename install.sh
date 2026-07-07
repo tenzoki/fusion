@@ -144,6 +144,11 @@ case "\$AGENT" in
   *)   TARGET="fusion:\$AGENT" ;;
 esac
 
+# Export the plugin dir so agent Bash tool calls inherit FUSION_PLUGIN_ROOT
+# without depending on the SessionStart \$CLAUDE_ENV_FILE mechanism (which does
+# not reliably propagate into Bash tool calls). Always the exact dir passed to
+# --plugin-dir, so bin/ and rules/ resolve correctly even with multiple installs.
+export FUSION_PLUGIN_ROOT="\$FUSION_DIR"
 exec claude \$SKIP --plugin-dir "\$FUSION_DIR" --agent "\$TARGET" "\$@"
 EOF
 chmod +x "$LAUNCHER"
