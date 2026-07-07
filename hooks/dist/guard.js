@@ -111,12 +111,19 @@ function guardBashCommand(input, config) {
         block(verdict.reason ?? "fusion policy: agents never switch git branches autonomously.");
         return;
     }
-    // Allow path: not a branch/worktree-moving git op. Reset the consecutive
-    // block counter the same way the write-tool allow path does.
-    const escalation = loadEscalation();
-    resetBlockCounter(escalation);
-    saveEscalation(escalation);
-    emitEvent("guard_allow", "Bash");
+    // Allow path: not a branch/worktree-moving git op. The Bash path is NOT a
+    // write-guard concern, so it participates in NONE of the write-guard
+    // bookkeeping. An innocuous Bash call (ls, git status, an allowed
+    // `git checkout HEAD -- <files>`) must have zero side-effect on guard state:
+    //   - It MUST NOT reset the consecutive-block counter. Agents run Bash
+    //     constantly between write attempts; resetting here would let any
+    //     interleaved Bash zero the counter and defeat the write/branch halt
+    //     escalation (see issue 260707-0750).
+    //   - It MUST NOT emit a guard_allow event. One append per Bash call floods
+    //     events.jsonl and buries the guard_block/guard_halt/guard_advisory
+    //     entries the monitor exists to surface (see issue 260707-0751).
+    // Only genuine forward progress on the guarded write surface (the write-tool
+    // allow path below) resets the counter and emits guard_allow.
     allow();
 }
 async function main() {
