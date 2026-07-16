@@ -33,6 +33,19 @@ ROOT="$("$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root")" || { echo "No fusion w
 cd "$ROOT"
 ```
 
+Then resolve where this session writes and searches:
+
+```bash
+"$FUSION_PLUGIN_ROOT/bin/fusion-paths" orchestrator
+```
+
+Hold the `KEY=value` lines for the rest of the run and use them wherever a later step names a `$OUT_*` or `$SCAN_*` value — they are the only correct answer to "where does this go". Never guess a path when the resolver fails; stop and report. `fusion-paths` takes an *agent* name and a skill resolves under the agent that runs it (`rules/fusion-workbench-conventions.md` `## Path Resolution`); `orchestrator` is the agent whose session a session wrap-up belongs to.
+
+On a non-zero exit, read the code — it says whose fault it is (full table in the conventions' `## Path Resolution` → Exit codes):
+
+- **Exit 3** — the workbench state is inconsistent: `.active-circle` is orphaned or corrupt. Stop and tell the user to fix or delete the pointer. Do not commit over an inconsistent workbench.
+- **Exit 4** — an internal error in `fusion-paths`. The user's workbench is fine; do **not** send them to check `.active-circle`. Report it as a fusion bug.
+
 Capture the starting state for the final report:
 
 ```bash
@@ -45,9 +58,19 @@ If `--dry-run`, announce it now: every subsequent step reports its intent but pe
 
 The goal is that no unfinished work is lost when the session ends.
 
-1. If `fusion-workbench/agentstate.yaml` exists, read it. Its `work_queue` entries with status other than `done`/`skipped`/`deferred` are unfinished.
-2. Read `fusion-workbench/tasklist.md` (if present) for unchecked tasks, and skim `fusion-workbench/planning/*[o]*.md` / `*[p]*.md` for unmarked or `[IN PROGRESS]` steps.
-3. For each genuinely-unfinished task that is **not already tracked by an open issue**, file an issue per the decision/issue conventions in `rules/fusion-workbench-conventions.md`: `fusion-workbench/issues/YYMMDD-HHMM[o]-<slug>.md` (timestamp from `date +%y%m%d-%H%M`, never guessed). Each issue records what the task was, its source file, and why it's still open. Do not duplicate issues that already exist.
+1. If `fusion-workbench/agentstate.yaml` exists, read it. Its `work_queue` entries with status other than `done`/`skipped`/`deferred` are unfinished. (This file is root-anchored — the hooks read it there. It is not resolved by `fusion-paths`.)
+2. Read `$WORKBENCH/$TASKLIST` (if present) for unchecked tasks, and skim every path in `$SCAN_PLANS` for open or in-progress plans with unmarked or `[IN PROGRESS]` steps. `$SCAN_PLANS` may name **two** directories — the active Circle's and the shared one. Skim both, or unfinished work in one of them is silently missed.
+
+   Match the marker with the brackets escaped:
+
+   ```bash
+   for d in $SCAN_PLANS; do ls "$WORKBENCH/$d"/*\[o\]*.md "$WORKBENCH/$d"/*\[p\]*.md 2>/dev/null; done
+   ```
+
+   `[o]` unescaped is a shell bracket expression matching the single character `o`, so `*[o]*.md` silently matches every filename containing an `o` — including `[p]`, `[c]` and `[d]` plans — while looking like it filters. See `rules/fusion-workbench-conventions.md` `## State Markers — circles` for the escaping rule; it applies to every marker in every vocabulary.
+3. For each genuinely-unfinished task that is **not already tracked by an open issue**, file an issue per the decision/issue conventions in `rules/fusion-workbench-conventions.md`: `$WORKBENCH/$OUT_ISSUE/YYMMDD-HHMM[o]-<slug>.md` (timestamp from `date +%y%m%d-%H%M`, never guessed). Each issue records what the task was, its source file, and why it's still open. Check every path in `$SCAN_ISSUES` — both stores — before filing, so an issue that already exists in the shared store is not duplicated into the Circle.
+
+   `$OUT_ISSUE` is the right target for these: an unfinished task from this session arose from the active Directive, which is what the Origin Rule keys on. A defect this session merely *noticed* in unrelated code belongs in the shared store instead — but that is not what this step files.
 4. Finalise the session surfaces:
    - Overwrite `fusion-workbench/orchestrator-live.md` so its header reads `**Session:** Complete` (preserve the dashboard shape from `rules/fusion-workbench-conventions.md` / the orchestrator's live-dashboard format).
    - Delete `fusion-workbench/agentstate.yaml` if it exists (a clean wrap-up means nothing to resume).
@@ -89,7 +112,7 @@ If `--dry-run`, skip the dispatch and just report the detected domain.
 
 ## Step 4 — Archive with safe defaults
 
-Read `$FUSION_PLUGIN_ROOT/skills/archive/SKILL.md` and execute its **tier-1** procedure (the safest tier) autonomously — no confirmation gate, since tier-1 is defined as safe-by-construction. Archive *moves* files into `fusion-workbench/archive/<YYMMDD-HHMM>-safe-cleanup-tier-1/`, preserving structure. If tier-1 finds nothing to archive, report "nothing to archive" and continue.
+Read `$FUSION_PLUGIN_ROOT/skills/archive/SKILL.md` and execute its **tier-1** procedure (the safest tier) autonomously — no confirmation gate, since tier-1 is defined as safe-by-construction. Archive *moves* files; it never deletes. Take the tier definition, the survey and the destination from that skill body rather than assuming them here — it owns them, and restating them here would give the two files two chances to disagree. If tier-1 finds nothing to archive, report "nothing to archive" and continue.
 
 If `--dry-run`, report the tier-1 survey (what would move) without moving anything.
 

@@ -1,5 +1,5 @@
 ---
-description: Append a concise memo to the user's personal memo log (fusion-workbench/memos/memos-<username>.md), or a task to the user's task list (fusion-workbench/memos/tasks-<username>.md)
+description: Append a concise memo to the user's personal memo log (memos-<username>.md), or a task to the user's task list (tasks-<username>.md), in the workbench's shared memo store
 argument-hint: [content, or "task: <todo>", or a directive like "the open tasks"]
 allowed-tools: [Bash, Read, Write, Edit, AskUserQuestion]
 ---
@@ -11,13 +11,29 @@ Append a short, dated entry to the current user's personal log. Two kinds of ent
 - **Memos** — informal captures: notes, options to remember, the shape of an open problem, a pointer to a file. Snapshots the user wants to keep. They are **not** issues, plans, or history entries.
 - **Tasks** — things to do: a todo, an open action, something to pick up later. Kept as a checkbox list so they can be ticked off.
 
-Both live under `fusion-workbench/memos/`, in separate files (see below).
+Both live in the shared memo store, in separate files (see below).
+
+## Step 0 — Resolve the memo store
+
+```bash
+"$FUSION_PLUGIN_ROOT/bin/fusion-paths" orchestrator
+```
+
+Read `WORKBENCH` and `OUT_MEMO` from the output. `$WORKBENCH/$OUT_MEMO` is the directory both files live in — it is the only correct answer to "where does a memo go". Never guess it; if the resolver fails, stop and report.
+
+On a non-zero exit, read the code — it says whose fault it is (full table in `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes):
+
+- **Exit 1** — no workbench above `pwd`. Tell the user to run `/fusion:setup` at the project root first.
+- **Exit 3** — the workbench state is inconsistent: `.active-circle` is orphaned or corrupt. Tell the user to fix or delete the pointer before continuing.
+- **Exit 4** — an internal error in `fusion-paths`. The user's workbench is fine; do **not** send them to check `.active-circle`. Report it as a fusion bug.
+
+**Why `orchestrator` and not `memo`:** `fusion-paths` takes an *agent* name, and skills run inside an agent's session, so a skill resolves under the agent that runs it (`rules/fusion-workbench-conventions.md` `## Path Resolution`). `orchestrator` is the agent whose key set carries `OUT_MEMO`. The value does not depend on the argument: `OUT_MEMO` is unconditionally `shared/memos` because a memo never arises from executing a Directive, so it can never belong to a Circle (Origin Rule). Passing `orchestrator` therefore yields the right store whichever agent — or none — is actually running.
 
 ## File location
 
-- Directory: `fusion-workbench/memos/`
-- Memo file: `fusion-workbench/memos/memos-$USER.md`
-- Task file: `fusion-workbench/memos/tasks-$USER.md`
+- Directory: `$WORKBENCH/$OUT_MEMO`
+- Memo file: `$WORKBENCH/$OUT_MEMO/memos-$USER.md`
+- Task file: `$WORKBENCH/$OUT_MEMO/tasks-$USER.md`
 - One file per OS user per kind; users may split or edit by hand later.
 - Determine `$USER` from the environment: `echo "$USER"`
 
@@ -69,7 +85,7 @@ Append this block to the end of the memo file (leave one blank line before it):
 
 <body — concise, verbatim for captures, factual for conversational refs>
 
-Refs: <optional — path(s) to related files in fusion-workbench/ or the project>
+Refs: <optional — path(s) to related files in the workbench or the project>
 ```
 
 The `Refs:` line is optional. Drop it if there's nothing to point to. Do not invent references.
@@ -86,23 +102,24 @@ If several tasks are captured at once (e.g. "the open tasks"), append one checkb
 
 ## Process
 
-1. Determine `$USER`.
-2. Ensure `fusion-workbench/memos/` exists (`mkdir -p`).
-3. Resolve the invocation mode from the argument.
-4. **Decide memo vs task** per "Memo vs task — which file"; this picks the target file.
-5. Read the target file if it exists. If not, create it with its header (above).
-6. For mode 1 (literal):
+1. Resolve `WORKBENCH` and `OUT_MEMO` per Step 0.
+2. Determine `$USER`.
+3. Ensure `$WORKBENCH/$OUT_MEMO` exists (`mkdir -p`).
+4. Resolve the invocation mode from the argument.
+5. **Decide memo vs task** per "Memo vs task — which file"; this picks the target file.
+6. Read the target file if it exists. If not, create it with its header (above).
+7. For mode 1 (literal):
    - Memo: the argument up to the first newline or colon becomes the topic; the remainder becomes the body. If only one blob was given, generate a short topic from the first line (≤ 60 chars).
    - Task: strip any `task:`/`todo:`/`aufgabe:` keyword; the remainder is the task text.
-7. For mode 2 (conversational ref): identify the referenced content in the recent context, extract it verbatim. Memo: use a short topic like "Options for X discussed in session". Task: one checkbox line per discrete todo.
-8. For mode 3 (empty): ask the user for kind, topic, and content.
-9. Append the new entry to the end of the target file. Do not reorder existing entries. Do not edit prior entries unless the user explicitly says "update the last memo", "tick that task", or similar.
-10. Report to the user: which file (memo or task), its path, the topic or task text, and the line count of the file after the append.
+8. For mode 2 (conversational ref): identify the referenced content in the recent context, extract it verbatim. Memo: use a short topic like "Options for X discussed in session". Task: one checkbox line per discrete todo.
+9. For mode 3 (empty): ask the user for kind, topic, and content.
+10. Append the new entry to the end of the target file. Do not reorder existing entries. Do not edit prior entries unless the user explicitly says "update the last memo", "tick that task", or similar.
+11. Report to the user: which file (memo or task), its path, the topic or task text, and the line count of the file after the append.
 
 ## Guardrails
 
 - Never remove or reorder existing memos or tasks.
 - Never tick or un-tick a task unless the user explicitly asks.
 - Never rewrite the user's pasted content in your own words — verbatim only.
-- Keep entries short. If the user wants a full write-up, direct them to planning/, analyses/, or consult/ instead.
+- Keep entries short. If the user wants a full write-up, direct them to a plan, an analysis, or a consultation instead — those are separate artifact kinds with their own stores.
 - Do not file an issue or plan based on a memo or task — these are for keeping, not for acting.

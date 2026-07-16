@@ -88,7 +88,7 @@ This is the hardest and most important pass. Apply each criterion below; if a li
 - Historical narrative: "this used to work via X, then we changed it to Y" — once Y is the only path, the prehistory is git-log material, not CLAUDE.md material
 - Decorative section dividers, mission statements, "this is fusion" framings (CLAUDE.md is for the AI working on the codebase, not for marketing)
 - Personal commentary that doesn't translate to a decision rule
-- "Future work" lists — those belong in `fusion-workbench/planning/` or issues, not here
+- "Future work" lists — those belong in the workbench, as a plan or an issue, not here
 
 **Verification:** would removing this line cause a future session to make a worse decision? If you can't name a concrete failure mode, the line isn't load-bearing.
 

@@ -11,7 +11,17 @@ When the user invokes `/fusion:log-activity`, scan all project activity sources 
 
 ### 0. Resolve workbench root
 
-Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If non-empty, `cd` to the printed path so all subsequent paths anchor to the project root. If empty, the user is not in a fusion project — proceed using `pwd` and warn the user that the log will land in the current directory.
+Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If non-empty, `cd` to the printed path so all subsequent paths anchor to the project root. If empty, the user is not in a fusion project — proceed using `pwd`, warn the user that the log will land in the current directory, and scan git alone (there is no workbench to scan).
+
+Then resolve the workbench itself:
+
+```bash
+"$FUSION_PLUGIN_ROOT/bin/fusion-paths" orchestrator
+```
+
+Take `WORKBENCH` (absolute) from the output. This skill needs only that one key — see Step 3 for why it scans the tree rather than an enumeration of stores. `WORKBENCH` is emitted for every agent, so the `orchestrator` argument selects nothing beyond it; `fusion-paths` takes an *agent* name and a skill resolves under the agent that runs it (`rules/fusion-workbench-conventions.md` `## Path Resolution`).
+
+On a non-zero exit, read the code (full table in the conventions' `## Path Resolution` → Exit codes): **exit 1** — no workbench, scan git alone as above; **exit 3** — `.active-circle` is orphaned or corrupt, tell the user to fix or delete the pointer; **exit 4** — a bug in `fusion-paths`, not the user's workbench, report it and do not send them to check their pointer.
 
 ### 1. Determine the current user
 
@@ -35,23 +45,25 @@ The activity log file is `activity-log-$USER.md` in the project root. For exampl
 
 ### 3. Scan all activity sources
 
-Collect timestamped activity from ALL of these sources. For each item, record: timestamp, topic/description, source code.
+Collect timestamped activity from git and from the whole workbench tree. For each item, record: timestamp, topic/description, source code.
 
-**Source legend:**
+**Source legend** — the code names the *kind* of artifact, and the kind is the name of the directory the file sits in. The same kind carries the same code whether the file lives inside a Circle or in the shared store:
 
-| Code | Source | Path |
-|------|--------|------|
-| `g` | git commits | `git log` |
-| `h` | history files | `fusion-workbench/history/` |
-| `p` | planning files | `fusion-workbench/planning/` |
-| `i` | issue files | `fusion-workbench/issues/` |
-| `o` | ontology reviews | `fusion-workbench/ontoreview/` |
-| `c` | code reviews | `fusion-workbench/codereview/` |
-| `w` | workshop/workbench misc | `fusion-workbench/` (root-level files) |
-| `a` | analyses | `fusion-workbench/analyses/` |
-| `n` | investigations | `fusion-workbench/investigations/` |
-| `t` | consult | `fusion-workbench/consult/` |
-| `d` | decisions | `fusion-workbench/decisions/` |
+| Code | Artifact kind |
+|------|---------------|
+| `g` | git commits |
+| `h` | session history |
+| `p` | specs and plans |
+| `i` | issues |
+| `d` | decisions |
+| `r` | reviews (code, ontology, concept — one kind since v4; the sender is in the filename) |
+| `a` | analyses |
+| `n` | investigations |
+| `t` | consultations |
+| `k` | Circle records |
+| `w` | workbench root-level files |
+
+Two codes are **retired but still readable**: `o` (ontology reviews) and `c` (code reviews) appear in days logged before v4, when the three review kinds had a directory each. Leave those historic rows alone. New rows use `r`. When updating an existing log whose legend predates v4, add the `r` row and keep `o` and `c` listed, marked as historic — deleting them would strand the rows that use them.
 
 **Scanning methods:**
 
@@ -61,11 +73,17 @@ a) **Git commits** (`g`):
    ```
    Parse each line for date, time, and commit subject.
 
-b) **Workbench files** (`h`, `p`, `i`, `o`, `c`, `a`, `n`, `t`, `d`):
-   - Use `ls -la` on each directory to get modification times
-   - Parse filenames for embedded timestamps (e.g., `260408-1523-topic.md` means April 8, 15:23)
-   - Read file headers for date metadata if available
-   - Only scan directories that exist (e.g., `fusion-workbench/decisions/` may be absent on older workbenches)
+b) **Workbench files** — one scan of the tree, not a walk of an enumerated list of stores:
+
+   ```bash
+   find "$WORKBENCH" -type f -name '*.md' -not -path '*/archive/*' -not -path '*/stashes/*' -not -path '*/stilwerk/*' -exec ls -l -T {} +
+   ```
+
+   - **Derive the code from the containing directory's basename**, per the legend above. A file directly in the workbench root is `w`; a `*-circle.md` inside a Circle directory is `k`.
+   - Parse filenames for embedded timestamps (`260408-1523-topic.md` means April 8, 15:23). Fall back to the modification time when the filename carries no stamp.
+   - Read file headers for date metadata if available.
+
+   **Scan the tree; do not enumerate the stores.** This skill's job is *all* activity, and the tree is what "all" means. An enumeration would have to list every store the layout defines and would silently under-report the day someone adds one, or the day a Circle holds a kind the list forgot — and a missing source here looks exactly like a quiet day. `archive/`, `stashes/` and `stilwerk/` are excluded because they hold moved, frozen, or configured content rather than activity: archived and stashed files would otherwise re-report their original days at their move date.
 
 ### 4. Group by date
 
@@ -92,16 +110,16 @@ b) **Workbench files** (`h`, `p`, `i`, `o`, `c`, `a`, `n`, `t`, `d`):
 | Code | Source |
 |------|--------|
 | g | git commits |
-| h | history files |
-| p | planning |
+| h | session history |
+| p | specs and plans |
 | i | issues |
-| o | ontology review |
-| c | code review |
-| w | workbench |
+| d | decisions |
+| r | reviews |
 | a | analyses |
 | n | investigations |
-| t | consult |
-| d | decisions |
+| t | consultations |
+| k | Circle records |
+| w | workbench root-level files |
 
 ## High-level arc
 
@@ -218,7 +236,7 @@ Report the three Step 6 numeric counts explicitly: `<N> daily entries`, `<W> per
 
 ## Notes
 
-- Be thorough: scan ALL source directories, not just the most recent
+- Be thorough: scan the whole workbench tree, not just the recently-touched parts
 - Timestamps should be extracted from filenames (YYMMDD-HHMM pattern), git log, and file modification times
 - When a day has very few entries, still create the entry — even a single commit is worth logging
 - The arc summary should capture the narrative: what was the focus of the day? (e.g., "ontology refactoring", "bug fixes and reviews", "new agent implementation")

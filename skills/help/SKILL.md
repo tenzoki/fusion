@@ -41,7 +41,9 @@ Once `/fusion:setup` has run in a project, the day-to-day flow is:
    - Strategic advice or second opinion → **consultant**
    - Deep document/problem study before work → **analyst**
 
-3. **The workbench is the project's cross-session memory.** Read `fusion-workbench/{planning,issues,decisions,history,codereview,ontoreview,investigations,analyses,consult}/` and `fusion-workbench/tasklist.md`. Plans live in `planning/`; defects ("go fix it") in `issues/`; open questions ("decide and record") in `decisions/`.
+3. **The workbench is the project's cross-session memory.** `fusion-workbench/` holds one directory per unit of work under `circles/` — each with its own plans, issues, decisions, history, reviews and analyses — plus a `shared/` store for everything that belongs to no unit of work, and `tasklist.md` at the root. Which artifact lands where is the Origin Rule: it belongs to the Circle whose Directive caused it, and to `shared/` when no Circle was active. The kinds are distinguished by what resolves them — plans ("here's the approach"), defects ("go fix it") in issues, open questions ("decide and record") in decisions.
+
+   The layout is defined once, in `$FUSION_PLUGIN_ROOT/rules/fusion-workbench-conventions.md` (`## fusion-workbench Layout`, `## Origin Rule`). Read it there and cite it rather than reciting paths from memory — agents themselves do not hard-code these paths either; they resolve them at run time via `$FUSION_PLUGIN_ROOT/bin/fusion-paths <agent>`. If the user wants to know where a given artifact will land in *their* project, run that resolver and show them, rather than guessing from the layout.
 
 4. **Watch the dashboard.** In a second terminal, run `./fusion-workbench/monitor "<session-name>" <port>` (e.g. `./fusion-workbench/monitor "F03-fusion" 8099`) from the project root. The monitor is an executable bash script that serves an HTTP dashboard — open `http://localhost:<port>` in a browser. It auto-refreshes from `fusion-workbench/orchestrator-live.md`, `orchestrator-events.jsonl`, and `agentstate.yaml`.
 
