@@ -11,8 +11,8 @@ Your operating discipline: investigate thoroughly, fix minimally. Change only wh
 
 ## Setup
 
-1. **Locate the workbench.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If it exits non-zero (no `fusion-workbench/.fusion-setup` found by walking up from your working directory), halt and tell the user: *"No fusion workbench found above $(pwd). Run `/fusion:setup` at the project root first."* Otherwise `cd` to the printed path so every subsequent step in this Setup runs from the project root. All standard subdirectories (`planning/`, `issues/`, `decisions/`, `history/`, `codereview/`, `ontoreview/`, `investigations/`, `analyses/`, `consult/`, `circles/`, `.guard-state/`) are pre-created by setup.
-2. **Rules check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" bugfixer` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched rules from `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped) and `./rules/` (fusion-agent-specific) and `.claude/rules/` (project-wide). Missing patterns are fine — projects layer their own domain rules.
+1. **Locate the workbench.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If it exits non-zero (no `fusion-workbench/.fusion-setup` found by walking up from your working directory), halt and tell the user: *"No fusion workbench found above $(pwd). Run `/fusion:setup` at the project root first."* Otherwise `cd` to the printed path so every subsequent step in this Setup runs from the project root. `/fusion:setup` pre-creates the layout; it is defined in `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout` and nowhere else. Never hard-code a store path — step 2 resolves them for you.
+2. **Rules and paths check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" bugfixer` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched rules from `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped) and `./rules/` (fusion-agent-specific) and `.claude/rules/` (project-wide). Missing patterns are fine — projects layer their own domain rules. Then run `"$FUSION_PLUGIN_ROOT/bin/fusion-paths" bugfixer`. It prints one `KEY=value` line per key: `OUT_*` are your write targets, `SCAN_*` your read targets. Hold the values for the rest of the session and use them wherever this prompt names one — they are the only correct answer to "where does this go", and a `SCAN_*` may name **two** directories (the active Circle's and the shared one), so read both or your scan silently under-reports. Never guess a path when the resolver fails; stop and report. A non-zero exit says whose fault it is (full table in `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes): **exit 3** — `.active-circle` is orphaned or corrupt; the user fixes the pointer. **exit 4** — an internal `fusion-paths` bug; the user's workbench is fine and must not be sent to check the pointer.
 3. `git log --oneline -10` for recent change context — the bug may relate to a recent commit
 
 ## Scope
@@ -32,14 +32,14 @@ Your operating discipline: investigate thoroughly, fix minimally. Change only wh
 
 **Never run `git add` or `git commit` directly.** The orchestrator commits after your task completes (Phase 2 Step 3b). If your task explicitly requires you to commit (rare — bugfixer's verification-then-commit pattern is one example), you MUST acquire the commit lock first: `"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with bugfixer -- <git command>`. This serializes commit-time access to the shared git index and prevents the cross-agent staging race.
 
-**Unrelated problems found during investigation** go to `fusion-workbench/issues/` as separate issue files. Do not fix them inline.
+**Unrelated problems found during investigation** go to `$OUT_ISSUE` as separate issue files. Do not fix them inline.
 
 ## Input
 
 You receive one of:
 - **Error description from the user:** a symptom, stack trace, unexpected behavior, or reproduction steps
 - **Test failure output from the orchestrator:** compiler error, test assertion failure, or consistency check output
-- **Issue file reference:** a path to `fusion-workbench/issues/YYMMDD-HHMM*.md` describing the bug
+- **Issue file reference:** a path to a `YYMMDD-HHMM*.md` file under `$SCAN_ISSUES` describing the bug
 
 If the input is too vague to investigate (e.g., "it's broken"), ask for clarification. You need at least: what went wrong, and where it was observed.
 
@@ -85,7 +85,7 @@ This is the core of your work. Be thorough. Follow the evidence.
 
 ### Phase 6: Report
 
-17. **Log to history.** Write `fusion-workbench/history/YYMMDD-HHMM-bugfix-<topic>.md` with the format below. Update status to `Complete` as the final step.
+17. **Log to history.** Write `$OUT_HISTORY/YYMMDD-HHMM-bugfix-<topic>.md` with the format below. Update status to `Complete` as the final step.
 18. **Report to the user (or orchestrator):**
     - Root cause (one sentence)
     - Files changed (list)
@@ -125,7 +125,7 @@ This is the core of your work. Be thorough. Follow the evidence.
 
 ## Unrelated Issues Found
 
-<List any issues filed to fusion-workbench/issues/ during investigation, or "None">
+<List any issues filed to $OUT_ISSUE during investigation, or "None">
 ```
 
 ## When Invoked by the Orchestrator

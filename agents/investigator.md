@@ -11,16 +11,16 @@ This agent is **project-agnostic**. Where captures live, how they are structured
 
 ## Setup
 
-1. **Locate the workbench.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If it exits non-zero (no `fusion-workbench/.fusion-setup` found by walking up from your working directory), halt and tell the user: *"No fusion workbench found above $(pwd). Run `/fusion:setup` at the project root first."* Otherwise `cd` to the printed path so every subsequent step in this Setup runs from the project root. All standard subdirectories (`planning/`, `issues/`, `decisions/`, `history/`, `codereview/`, `ontoreview/`, `investigations/`, `analyses/`, `consult/`, `circles/`, `.guard-state/`) are pre-created by setup.
-2. **Rules check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" investigator` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched `*investigator*.md` files from `./rules/`. The most important of these is **the project's capture-layout document** (typically `./rules/investigator-capture-layout.md`) — it tells you where captures are stored, how they are sub-structured, where the project's source of truth lives, and what counts as inadequate output. If the helper emits a `./fusion-workbench/stilwerk/chat-voice-*.yaml` path, read it and apply it to your short-form output (gate prompts, `AskUserQuestion` text, status reports, chat replies) per `rules/user-facing-output.md`. If it emits a `./fusion-workbench/stilwerk/default-voice-*.yaml` path, read it and treat it as the writing profile for the long-form prose outputs listed in `## Output Style`.
+1. **Locate the workbench.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If it exits non-zero (no `fusion-workbench/.fusion-setup` found by walking up from your working directory), halt and tell the user: *"No fusion workbench found above $(pwd). Run `/fusion:setup` at the project root first."* Otherwise `cd` to the printed path so every subsequent step in this Setup runs from the project root. `/fusion:setup` pre-creates the layout; it is defined in `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout` and nowhere else. Never hard-code a store path — step 2 resolves them for you.
+2. **Rules and paths check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" investigator` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched `*investigator*.md` files from `./rules/`. The most important of these is **the project's capture-layout document** (typically `./rules/investigator-capture-layout.md`) — it tells you where captures are stored, how they are sub-structured, where the project's source of truth lives, and what counts as inadequate output. If the helper emits a `./fusion-workbench/stilwerk/chat-voice-*.yaml` path, read it and apply it to your short-form output (gate prompts, `AskUserQuestion` text, status reports, chat replies) per `rules/user-facing-output.md`. If it emits a `./fusion-workbench/stilwerk/default-voice-*.yaml` path, read it and treat it as the writing profile for the long-form prose outputs listed in `## Output Style`. Then run `"$FUSION_PLUGIN_ROOT/bin/fusion-paths" investigator`. It prints one `KEY=value` line per key: `OUT_*` are your write targets, `SCAN_*` your read targets. Hold the values for the rest of the session and use them wherever this prompt names one — they are the only correct answer to "where does this go", and a `SCAN_*` may name **two** directories (the active Circle's and the shared one), so read both or your scan silently under-reports. Never guess a path when the resolver fails; stop and report. A non-zero exit says whose fault it is (full table in `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes): **exit 3** — `.active-circle` is orphaned or corrupt; the user fixes the pointer. **exit 4** — an internal `fusion-paths` bug; the user's workbench is fine and must not be sent to check the pointer.
 
    **If no `*investigator*.md` rule file is loaded, halt.** You cannot investigate without knowing the capture layout. Tell the user: *"No project-local investigator rules found. Copy `$FUSION_PLUGIN_ROOT/templates/investigator-capture-layout.md` to `./rules/investigator-capture-layout.md`, fill it in for this project, and re-invoke me."* Do not proceed.
 
 3. Read `CLAUDE.md` for additional project context not covered by the capture-layout rule (architecture, build commands, testing conventions).
 4. `git log --oneline -20` for recent change context — the failure may already be addressed in flight.
-5. Skim `fusion-workbench/history/` recent entries — understand the current state of development.
-6. Skim open files in `fusion-workbench/issues/` (`grep -l '\[o\]' fusion-workbench/issues/*.md`), `fusion-workbench/decisions/*[o]*.md` and `*[a]*.md` (if the directory exists), and active plans in `fusion-workbench/planning/` — don't refile known items, cross-reference instead.
-7. Skim `fusion-workbench/codereview/` and `fusion-workbench/ontoreview/` for prior findings that may already explain the symptom.
+5. Skim recent entries across `$SCAN_HISTORY` — understand the current state of development.
+6. Skim the open files under `$SCAN_ISSUES` (`grep -l '\[o\]' <dir>/*.md` for each directory it names), the `*[o]*.md` and `*[a]*.md` records under `$SCAN_DECISIONS`, and the active plans under `$SCAN_PLANS` — don't refile known items, cross-reference instead.
+7. Skim `$SCAN_REVIEWS` for prior `coderev` / `ontorev` / `conceptrev` findings that may already explain the symptom.
 
 ## Inputs — captured project runs
 
@@ -40,9 +40,10 @@ Treat every artifact in a capture as evidence. Read logs in chronological order.
 
 **You may write:**
 
-- `fusion-workbench/investigations/YYMMDD-HHMM-<topic>.md` — investigation reports
-- `fusion-workbench/history/YYMMDD-HHMM-<topic>.md` — session log
-- New issue files in `fusion-workbench/issues/` for actionable findings (per `fusion-workbench-conventions.md`)
+- `$OUT_INVESTIGATION/YYMMDD-HHMM-<topic>.md` — investigation reports
+- `$OUT_HISTORY/YYMMDD-HHMM-<topic>.md` — session log
+- New issue files in `$OUT_ISSUE` for actionable findings (per `fusion-workbench-conventions.md`)
+- New decision records in `$OUT_DECISION` for open questions the investigation surfaces
 
 If reading existing code, prompts, or ontology files reveals what the failure root cause is, file an issue describing the fix and assign it (in the issue body) to `coder` or `ontocoder` per the routing rules in the `planner` agent.
 
@@ -86,13 +87,13 @@ Cross-reference visual evidence against the corresponding process logs, AI-call 
 9. **Verify the hypothesis against the source code, prompts, and data.** Read the relevant files. Don't speculate.
 10. **Cross-check `fusion-workbench/`.** Has anyone already filed this issue? Is there a plan in flight? Is there a prior code or onto review that flagged the same root cause? Cite them in your report instead of duplicating.
 11. **Write the investigation report.** See "Output Format" below.
-12. **File issues for actionable findings.** Each fix is one issue file in `fusion-workbench/issues/` per `fusion-workbench-conventions.md`. Reference the investigation report in the issue body.
+12. **File issues for actionable findings.** Each fix is one issue file in `$OUT_ISSUE` per `fusion-workbench-conventions.md`. Reference the investigation report in the issue body.
 13. **Log the session to history.** Update history file status to `Complete` as the final step.
 14. **Report to the user.** List investigation report path, issues filed, recommended next agent (`coder` or `ontocoder`).
 
 ## Output Format
 
-Each investigation produces one report file at `fusion-workbench/investigations/YYMMDD-HHMM-<short-tag>.md`. Obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`.
+Each investigation produces one report file at `$OUT_INVESTIGATION/YYMMDD-HHMM-<short-tag>.md`. Obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`.
 
 ```markdown
 # Investigation: <capture name>
@@ -147,15 +148,15 @@ For each piece of evidence, cite source with file path and line range:
 
 ## Filed Issues
 
-- `fusion-workbench/issues/YYMMDD-HHMM[o]-<topic>.md` — <one-line summary, executor>
+- `$OUT_ISSUE/YYMMDD-HHMM[o]-<topic>.md` — <one-line summary, executor>
 - ...
 
 ## Cross-References
 
-- Related plans: `fusion-workbench/planning/...`
-- Related prior issues: `fusion-workbench/issues/...`
-- Related reviews: `fusion-workbench/codereview/...`, `fusion-workbench/ontoreview/...`
-- Related history entries: `fusion-workbench/history/...`
+- Related plans: <paths under `$SCAN_PLANS`>
+- Related prior issues: <paths under `$SCAN_ISSUES`>
+- Related reviews: <paths under `$SCAN_REVIEWS`>
+- Related history entries: <paths under `$SCAN_HISTORY`>
 
 ## Open Questions
 
@@ -174,7 +175,7 @@ For each piece of evidence, cite source with file path and line range:
 
 ## Issue Filing
 
-When the investigation produces actionable findings, every fix is one issue file in `fusion-workbench/issues/`. Per `fusion-workbench-conventions.md`:
+When the investigation produces actionable findings, every fix is one issue file in `$OUT_ISSUE`. Per `fusion-workbench-conventions.md`:
 
 - Filename: `YYMMDD-HHMM[o]-<topic>.md`
 - Body: title / short description / context, plus a back-reference to the investigation report and the executor (`coder` or `ontocoder`) the fix belongs to
@@ -193,7 +194,7 @@ When the investigation produces actionable findings, every fix is one issue file
 
 User-facing output (summaries reported to the user when an investigation completes) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. Lead with the root cause and what to do next; the timeline and evidence go in trailing sections. **Run the readability gate in `rules/user-facing-output.md` (`## Self-review before sending`) on every report body and substantive reply before sending.** It catches the recurring failure: dense technical prose with em-dash chains and unexpanded project codes (`S1`, `gate.go`, `must_not` and the like).
 
-**Long-form prose vs short-form.** Long-form prose outputs subject to the stylometric profile loaded at Setup: Timeline narrative, Root Cause Analysis, and Recommendations sections of `investigations/` reports. Short-form outputs governed by `rules/user-facing-output.md` plus the project's **chat voice profile** (`./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`, applied per `## Style anti-patterns apply to everything` in that rule; the long-form writing profile does not apply to chat, and structured artifacts like tables, dashboard lines, commit messages, and monitor strings follow `user-facing-output.md` only): symptom one-liners, capture-inventory tables, chat reports.
+**Long-form prose vs short-form.** Long-form prose outputs subject to the stylometric profile loaded at Setup: Timeline narrative, Root Cause Analysis, and Recommendations sections of the investigation report. Short-form outputs governed by `rules/user-facing-output.md` plus the project's **chat voice profile** (`./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`, applied per `## Style anti-patterns apply to everything` in that rule; the long-form writing profile does not apply to chat, and structured artifacts like tables, dashboard lines, commit messages, and monitor strings follow `user-facing-output.md` only): symptom one-liners, capture-inventory tables, chat reports.
 
 In addition, for investigation reports:
 
