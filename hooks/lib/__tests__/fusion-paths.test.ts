@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, chmodSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, join } from "node:path";
@@ -281,6 +281,212 @@ describe("bin/fusion-paths", () => {
         for (const [key, value] of Object.entries(parse(run(project, agent).stdout))) {
           expect(value.trim(), `${agent}: ${key} resolved empty`).not.toBe("");
         }
+      }
+    });
+  });
+
+  // Regression coverage for the coderev findings of 2026-07-16. Each case
+  // names the issue it pins.
+  describe("read keys cover the reads the prompts perform (issue 260716-1957)", () => {
+    // Derived by auditing all 15 prompts line by line. Each entry is a read the
+    // prompt demonstrably performs, cited in bin/fusion-paths' key-set comments.
+    // Hand-maintained on both sides today; P-8's lint gate is what makes the
+    // agreement mechanical, once the converted prompts carry $SCAN_*/$OUT_*
+    // references to grep. Until then this is the pin.
+    const requiredScans: Record<string, string[]> = {
+      coder: ["SCAN_HISTORY"],
+      ontocoder: ["SCAN_HISTORY"],
+      coderev: ["SCAN_HISTORY"],
+      ontorev: ["SCAN_HISTORY"],
+      conceptrev: ["SCAN_REVIEWS", "SCAN_INVESTIGATIONS"],
+      shaper: ["SCAN_ISSUES"],
+      taskplanner: ["SCAN_HISTORY"],
+      analyst: ["SCAN_HISTORY"],
+      investigator: ["SCAN_HISTORY", "SCAN_DECISIONS"],
+      consultant: ["SCAN_HISTORY", "SCAN_ISSUES"],
+      playmaker: ["SCAN_ISSUES", "SCAN_CONSULT"],
+    };
+
+    for (const [agent, keys] of Object.entries(requiredScans)) {
+      it(`gives ${agent} ${keys.join(" + ")}`, () => {
+        const p = parse(run(project, agent).stdout);
+        for (const key of keys) {
+          expect(p[key], `${agent} reads this kind but got no ${key}`).toBeDefined();
+        }
+      });
+    }
+
+    it("gives conceptrev no OUT_INVESTIGATION — it reads investigations, never writes one", () => {
+      // A write key for a read-only agent inverts the contract's own semantics:
+      // the prompt would read "write to $OUT_INVESTIGATION" and either violate
+      // read-only or ignore the key.
+      const p = parse(run(project, "conceptrev").stdout);
+      expect(p.OUT_INVESTIGATION).toBeUndefined();
+      expect(p.SCAN_INVESTIGATIONS).toBe("shared/investigations");
+    });
+
+    it("gives investigator no SCAN_INVESTIGATIONS — it writes them and never reads them", () => {
+      // The mirror of the case above: a key for a read the prompt does not
+      // perform would be speculation, not coverage.
+      const p = parse(run(project, "investigator").stdout);
+      expect(p.OUT_INVESTIGATION).toBe("shared/investigations");
+      expect(p.SCAN_INVESTIGATIONS).toBeUndefined();
+    });
+
+    it("keeps SCAN_INVESTIGATIONS / SCAN_CONSULT shared-only, Circle active or not", () => {
+      // Invariant 2 collapses for these two: their kinds exist only in shared/,
+      // so "both stores" has nothing to range over.
+      for (const withCircle of [false, true]) {
+        if (withCircle) activate();
+        expect(parse(run(project, "conceptrev").stdout).SCAN_INVESTIGATIONS).toBe(
+          "shared/investigations",
+        );
+        expect(parse(run(project, "playmaker").stdout).SCAN_CONSULT).toBe("shared/consult");
+      }
+    });
+
+    it("emits no SCAN_MEMOS to anyone — nothing reads memos", () => {
+      for (const agent of ["orchestrator", "playmaker", "consultant", "analyst"]) {
+        expect(parse(run(project, agent).stdout).SCAN_MEMOS).toBeUndefined();
+      }
+    });
+  });
+
+  describe("internal error is exit 4, not exit 3 (issue 260716-2001)", () => {
+    // The `emits no key it cannot resolve` case above asserts the branch is
+    // never taken. This asserts what happens when it is — otherwise a later
+    // renumbering of the code passes silently.
+    it("exits 4 with a bug-not-your-fault message when a key has no value", () => {
+      // Inject an unresolvable key into a real KEYS set, in a copy of the real
+      // script. Nothing is stubbed: this drives the actual value_for branch.
+      // The copy must sit beside a fusion-workbench-root, which it resolves
+      // relative to its own directory — so stage both in a scratch bin/.
+      const bin = join(project, "bin");
+      mkdirSync(bin, { recursive: true });
+      const broken = join(bin, "fusion-paths");
+      const source = readFileSync(fusionPaths, "utf-8");
+      const patched = source.replace(
+        'KEYS="OUT_HISTORY OUT_ISSUE SCAN_ISSUES SCAN_PLANS"',
+        'KEYS="OUT_HISTORY OUT_ISSUE SCAN_ISSUES SCAN_PLANS NO_SUCH_KEY"',
+      );
+      // If the bugfixer key set is ever reworded, the injection silently
+      // becomes a no-op and the test would pass against an unpatched script.
+      expect(patched, "KEYS injection did not apply — update the anchor").not.toBe(source);
+      writeFileSync(broken, patched);
+      chmodSync(broken, 0o755);
+      writeFileSync(
+        join(bin, "fusion-workbench-root"),
+        readFileSync(resolve(dirname(fusionPaths), "fusion-workbench-root"), "utf-8"),
+      );
+      chmodSync(join(bin, "fusion-workbench-root"), 0o755);
+
+      let status = 0;
+      let stderr = "";
+      try {
+        execFileSync(broken, ["bugfixer"], {
+          cwd: project,
+          encoding: "utf-8",
+          stdio: ["ignore", "pipe", "pipe"],
+        });
+      } catch (err: any) {
+        status = err.status;
+        stderr = err.stderr?.toString() ?? "";
+      }
+
+      // 4, never 3: a caller keying on 3 would tell the user to fix a pointer
+      // that is perfectly fine.
+      expect(status).toBe(4);
+      expect(stderr).toContain("internal error");
+      expect(stderr).toContain("NO_SUCH_KEY");
+      expect(stderr).toContain("not a fault in your workbench");
+    });
+
+    it("still exits 3 for an orphaned pointer, keeping the two faults distinct", () => {
+      activate("260101-0000-does-not-exist");
+      expect(run(project, "planner").status).toBe(3);
+    });
+  });
+
+  describe("a key in a KEYS set but missing from ORDER cannot ship silently", () => {
+    // Emission is driven by ORDER. Before this guard, a key added to a KEYS set
+    // and forgotten in ORDER was dropped without a word: exit 0, key simply
+    // absent, the agent's $SCAN_FOO empty, the write landing at the workbench
+    // root. Adding keys to KEYS sets is the routine change (P-4..P-7 are made
+    // of it), which is what makes this the routine mistake worth guarding.
+    function runPatched(patch: (s: string) => string, agent: string): RunResult {
+      const bin = join(project, "bin");
+      mkdirSync(bin, { recursive: true });
+      const script = join(bin, "fusion-paths");
+      const source = readFileSync(fusionPaths, "utf-8");
+      const patched = patch(source);
+      expect(patched, "patch did not apply — update the anchor").not.toBe(source);
+      writeFileSync(script, patched);
+      chmodSync(script, 0o755);
+      writeFileSync(
+        join(bin, "fusion-workbench-root"),
+        readFileSync(resolve(dirname(fusionPaths), "fusion-workbench-root"), "utf-8"),
+      );
+      chmodSync(join(bin, "fusion-workbench-root"), 0o755);
+      try {
+        const stdout = execFileSync(script, [agent], {
+          cwd: project,
+          encoding: "utf-8",
+          stdio: ["ignore", "pipe", "pipe"],
+        });
+        return { status: 0, stdout, stderr: "" };
+      } catch (err: any) {
+        return {
+          status: err.status ?? -1,
+          stdout: err.stdout?.toString() ?? "",
+          stderr: err.stderr?.toString() ?? "",
+        };
+      }
+    }
+
+    it("exits 4 naming the key and the fix", () => {
+      const r = runPatched(
+        (s) =>
+          s.replace(
+            'KEYS="OUT_HISTORY OUT_ISSUE SCAN_ISSUES SCAN_PLANS"',
+            'KEYS="OUT_HISTORY OUT_ISSUE SCAN_ISSUES SCAN_PLANS ORPHAN_KEY"',
+          ),
+        "bugfixer",
+      );
+      expect(r.status).toBe(4);
+      expect(r.stderr).toContain("ORPHAN_KEY");
+      expect(r.stderr).toContain("missing from ORDER");
+      expect(r.stdout).toBe("");
+    });
+
+    it("emits nothing at all when it fails — no partial key set", () => {
+      // A caller reading stdout without checking the exit code must not get
+      // half a contract.
+      const r = runPatched(
+        (s) =>
+          s
+            .replace(/^       PORTFOLIO TASKLIST"$/m, '       PORTFOLIO TASKLIST NO_VALUE_KEY"')
+            .replace(
+              'KEYS="OUT_HISTORY OUT_ISSUE SCAN_ISSUES SCAN_PLANS"',
+              'KEYS="OUT_HISTORY OUT_ISSUE SCAN_ISSUES SCAN_PLANS NO_VALUE_KEY"',
+            ),
+        "bugfixer",
+      );
+      expect(r.status).toBe(4);
+      expect(r.stderr).toContain("no value defined");
+      expect(r.stdout).toBe("");
+    });
+
+    it("every emitted key set is complete and self-consistent for all 15 agents", () => {
+      // The positive counterpart: with the guard in place, a clean run proves
+      // every key in every KEYS set is both ordered and valued.
+      for (const agent of [
+        "orchestrator", "coder", "ontocoder", "bugfixer", "coderev",
+        "ontorev", "conceptrev", "planner", "shaper", "taskplanner",
+        "reconciler", "analyst", "investigator", "consultant", "playmaker",
+      ]) {
+        const r = run(project, agent);
+        expect(r.status, `${agent}: ${r.stderr}`).toBe(0);
+        expect(r.stderr).toBe("");
       }
     });
   });

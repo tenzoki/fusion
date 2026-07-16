@@ -39,14 +39,21 @@ fusion-workbench/
 ├── .active-circle                     # pointer to the active Circle directory
 ├── .fusion-setup                      # setup marker (JSON: timestamp + plugin version)
 │
-│   # ── Root-anchored. The hooks and the monitor read these HERE. Do not move them. ──
-├── agentstate.yaml
-├── orchestrator-live.md
-├── orchestrator-events.jsonl
-└── .guard-state/
+│   # ── Root-anchored. The hooks, the monitor and the bin/ helpers read these ──
+│   # ── HERE, at fixed root-relative paths. Do not move them.               ──
+├── agentstate.yaml                     # hooks/tracker.ts:33-36, bin/monitor:72-75
+├── orchestrator-live.md                # hooks/tracker.ts:33-36, bin/monitor:72-75
+├── orchestrator-events.jsonl           # hooks/tracker.ts:33-36, bin/monitor:72-75
+├── .guard-state/                       # hooks/tracker.ts:33-36, bin/monitor:72-75
+├── .commit-lock/                       # bin/fusion-commit-lock (created and removed per commit)
+└── .session-marker                     # bin/fusion-session-mark
 ```
 
-**The four root-anchored surfaces are not negotiable.** `agentstate.yaml`, `orchestrator-live.md`, `orchestrator-events.jsonl` and `.guard-state/` are read at fixed root-relative paths by `hooks/tracker.ts:33-36` and `bin/monitor:72-75`. They are session state and project state, not Circle artifacts — a session may span Circles, and `.guard-state/` counters are project-wide. Never relocate them into a Circle or into `shared/`; doing so silently breaks the tracker and the dashboard, which have no fallback path. This placement is what makes the guarantee "hooks behave unchanged across the layout" structural rather than promised.
+**The root-anchored surfaces are not negotiable.** Each is read at a fixed root-relative path by the consumer named beside it in the tree, and none of those consumers has a fallback path — relocating one into a Circle or into `shared/` breaks it silently.
+
+They are root-anchored because none of them belongs to a unit of work. `agentstate.yaml`, `orchestrator-live.md` and `orchestrator-events.jsonl` are session state, and a session may span Circles. `.guard-state/` counters are project-wide. `.commit-lock/` guards the project's git index, which no single Circle owns. `.session-marker` answers "is an orchestrator already running in this project", which is meaningless scoped to a Circle. This placement is what makes the guarantee "hooks behave unchanged across the layout" structural rather than promised.
+
+The list is exhaustive as written, and it is a list rather than a count on purpose: a count goes stale on the next helper that needs project-wide state, and this one already had. When a `bin/` helper or a hook adds a root-anchored surface, it lands in this tree in the same commit — this document is the definition, and an incomplete tree invites exactly the reasoning-by-omission it exists to prevent.
 
 **`shared/` mirrors the Circle's artifact kinds, plus three of its own.** Every kind a Circle can hold has a shared counterpart, because any of them can be produced with no Circle active and must still have a home. `investigations/`, `consult/` and `memos/` exist only in `shared/`: an investigation studies a failure capture, a consultation answers a question, and a memo records a note — none of the three is produced by executing a Directive, so none can originate in a Circle.
 
@@ -87,7 +94,21 @@ In **Setup step 2**, alongside `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" <agent>`.
 
 ### Contract
 
-Signature `fusion-paths <agent>`. Output: one `KEY=value` line per emitted key on stdout. Paths are workbench-relative except `WORKBENCH` itself, which is absolute. Multi-value keys are space-separated. Exit 2 on unknown agent, exit 1 when no workbench is found — the same shape as `bin/fusion-rules`.
+Signature `fusion-paths <agent>`. Output: one `KEY=value` line per emitted key on stdout. Paths are workbench-relative except `WORKBENCH` itself, which is absolute. Multi-value keys are space-separated.
+
+#### Exit codes
+
+| Code | Meaning | Shared with `bin/fusion-rules`? |
+|---|---|---|
+| 0 | Success | yes |
+| 1 | Usage error, or no workbench found above `pwd` | yes |
+| 2 | Unknown agent | yes |
+| 3 | `.active-circle` is corrupt or orphaned — a **workbench-state** fault | no |
+| 4 | Internal error: a key is emitted that the resolver cannot value — a **fusion bug** | no |
+
+The 0/1/2 shape is `bin/fusion-rules`'; 3 and 4 are this resolver's own, and the divergence is written down here so the "same shape as fusion-rules" claim stays checkable.
+
+**3 and 4 must never be merged.** They address different people. Exit 3 is the user's to fix: their pointer is stale, and the advice "fix `.active-circle` before continuing" is right. Exit 4 is not fixable from the workbench at all, and a caller that keys on the code would hand the user that same advice about a pointer that is perfectly fine. Distinguishing them only in the stderr text is not enough — prompts key on the code.
 
 In the Value column, `A → B` means: `A` when a Circle is active, `B` when none is.
 
@@ -111,6 +132,8 @@ In the Value column, `A → B` means: `A` when a Circle is active, `B` when none
 | `SCAN_HISTORY` | `<circle>/history shared/history` | |
 | `SCAN_REVIEWS` | `<circle>/reviews shared/reviews` | |
 | `SCAN_ANALYSES` | `<circle>/analyses shared/analyses` | |
+| `SCAN_INVESTIGATIONS` | `shared/investigations` | Read counterpart of `OUT_INVESTIGATION`. Shared-only — see invariant 2. |
+| `SCAN_CONSULT` | `shared/consult` | Read counterpart of `OUT_CONSULT`. Shared-only — see invariant 2. |
 | `SCAN_CIRCLES` | `circles` | Portfolio-wide scans (playmaker, `/fusion:next`). |
 | `PORTFOLIO` | `portfolio.md` | |
 | `TASKLIST` | `tasklist.md` | |
@@ -120,13 +143,25 @@ In the Value column, `A → B` means: `A` when a Circle is active, `B` when none
 1. **With no active Circle, every `OUT_*` points into `shared/`.** There is no error state and no refusal for "no Circle active" — work happens outside Circles routinely, and it has a defined home. This is the Origin Rule's "unknown origin means `shared/`" expressed executably.
 2. **Every `SCAN_*` always carries both stores** — the Circle's and the shared one — even when a Circle is active. An agent searching for open decisions must see the Circle's *and* the project's. With no active Circle, a `SCAN_*` collapses to the shared store alone.
 
+   `SCAN_INVESTIGATIONS` and `SCAN_CONSULT` look like exceptions and are not. Their kinds exist only in `shared/` (an investigation and a consultation cannot originate in a Circle — see `## fusion-workbench Layout`), so "both stores" has nothing to range over and collapses to one. The invariant is not weakened for them; it is satisfied vacuously. The asymmetry is intentional, and it follows from the layout rather than sitting beside it.
+
+   There is deliberately no `SCAN_MEMOS`. `memos/` is shared like the other two, but no agent reads it — a memo is written for the user, not for an agent. A key is emitted when a prompt reads the kind, not because the symmetry of the table would look better with it.
+
 ### Emission is per-agent
 
 Like `bin/fusion-rules`, the resolver emits only the keys an agent needs — a coder gets no `OUT_PLAN`, a playmaker gets no `OUT_ISSUE`. The per-agent key set is defined by `bin/fusion-paths` itself; this table defines what each key *means*.
 
+**A key set is a claim about a prompt, and the claim runs one way.** Every directory an agent's prompt *reads* must have a `SCAN_*` key in that agent's set; every kind it *writes* must have an `OUT_*`. Under-emission is the defect that matters: an agent with no key for a read it performs leaves its prompt two bad options — re-introduce a path literal, or drop the read — and both are invisible at the time and expensive later. A `SCAN_*` key for a read the prompt does not perform is speculation, and does not earn a key.
+
+`OUT_*` is a write key and `SCAN_*` is a read key; handing a read-only agent an `OUT_*` for a directory it only reads inverts the contract and is a defect in its own right, not a harmless spare.
+
 ### Failure behaviour
 
-A `.active-circle` pointing at a directory that does not exist is an error: message on stderr, non-zero exit, no silent fall back to `shared/`. A stale pointer means the workbench's state is inconsistent, and quietly writing to the wrong store is worse than stopping (`HYG-NO-SILENT-FAIL`).
+A `.active-circle` pointing at a directory that does not exist is an error: message on stderr, exit 3, no silent fall back to `shared/`. A stale pointer means the workbench's state is inconsistent, and quietly writing to the wrong store is worse than stopping (`HYG-NO-SILENT-FAIL`).
+
+A key the resolver cannot value exits 4 rather than emitting `KEY=`. An empty right-hand side would send an agent's writes to the workbench root — the same silent-wrong-place failure, arrived at from the other direction.
+
+Callers must distinguish the two: **exit 3 is the user's to fix, exit 4 is ours.** A prompt that treats any non-zero exit as "your `.active-circle` is broken" is wrong on 4 and sends the user hunting a fault that is not theirs.
 
 ## Issues vs Decisions — when to use which
 
@@ -237,7 +272,22 @@ Each decision store holds both layers; the marker carries the layer information.
 
 Two reasons this is worth the small oddity. First, **path stability**: every reference into a Circle — from a session history, from `portfolio.md`, from another Circle's decision, from a stash manifest — stays valid for the Circle's whole life. Were the marker on the directory, every state change would break every one of them. Second, **an immutable natural key**: the later Plane mirror needs a per-Circle identifier that does not mutate, or the guarantee "transferring twice creates no duplicates" cannot hold.
 
-State stays cheap to read as a glob: `circles/*/[t]-circle.md` costs what `circles/*[t]*.md` used to. The price is that `ls circles/` no longer shows state at a glance; `portfolio.md` and `/fusion:next` are the built answers for that. The marker convention is not actually broken — the marker still names the state of the *record*, and the record is `circle.md`; the directory merely encloses it and its artifacts.
+State stays cheap to read as a glob, but **the brackets must be escaped**. `[t]` is a shell bracket expression matching the single character `t`, so the natural-looking `circles/*/[t]-circle.md` searches for `circles/*/t-circle.md` and matches the empty set. Under `bash` this fails *silently*: the unmatched pattern expands to itself, the customary `[ -e "$f" ] || continue` guard drops it, and the count comes back `0` on a workbench full of Circles (`HYG-NO-SILENT-FAIL`).
+
+Two forms are correct. Use them verbatim:
+
+| Purpose | Form |
+|---|---|
+| Records in one state | `circles/*/\[t\]-circle.md` |
+| All records, marker read from the name | `circles/*/*-circle.md`, then `basename` → `sed -nE 's/^\[([a-z])\].*/\1/p'` |
+
+The second form is preferred wherever the task is counting or enumerating: it contains no bracket expression at all, so it cannot be re-broken by a copy-paste that drops the backslashes, and it yields the marker as data rather than requiring one glob per state.
+
+`find` is **not** an escape hatch. `find circles -name '[t]-circle.md'` is also wrong: the quotes protect the pattern from the *shell*, but `find` then globs it itself with the same bracket semantics. It needs the same escaping — `find circles -name '\[t\]-circle.md'`.
+
+This applies to every marker in every vocabulary — `[o]`, `[a]`, `[t]`, `[c]`, `[i]`, `[p]`, `[b]`, `[s]`, `[d]` — anywhere a filename carrying one is matched by a glob, in any agent prompt or skill body.
+
+The price of the marker-on-the-record design is that `ls circles/` no longer shows state at a glance; `portfolio.md` and `/fusion:next` are the built answers for that. The marker convention is not actually broken — the marker still names the state of the *record*, and the record is `circle.md`; the directory merely encloses it and its artifacts.
 
 The vocabulary is parallel to but distinct from issues/planning and decisions. It is unchanged by the container layout.
 
@@ -278,8 +328,8 @@ The Circle record is `<circle-dir>/[S]-circle.md`. Creating a Circle means creat
 **Domain:** <code|data|strategic|knowledge>
 **Status:** <anticipated | active | closed | bounded | superseded | deferred>
 **Filed by:** <agent name or "user">
-**Active spec/plan:** <filename inside this Circle's planning/, or "(none yet)">
-**Active session history:** <filename inside this Circle's history/, or "(none yet)">
+**Active spec/plan:** <workbench-relative path to the spec or plan, or "(none yet)">
+**Active session history:** <workbench-relative path to the session history file, or "(none yet)">
 
 ---
 
@@ -307,7 +357,12 @@ The Circle record is `<circle-dir>/[S]-circle.md`. Creating a Circle means creat
 
 The directory is `YYMMDD-HHMM-<directive-slug>/` and the record inside it is `[S]-circle.md`, per the State Markers section above.
 
-## portfolio.md template
+**`Active spec/plan:` and `Active session history:` hold workbench-relative paths, not bare filenames.** In the ordinary case the path points inside the Circle (`circles/260716-1847-umbau/planning/260716-1910[p]-plan-foo.md`) and looks redundant. It is not, because the cross-store case is real and routine:
+
+- A spec written before the Circle existed lands in `shared/planning/` — every `/fusion:direct` run and every shaper run in anticipated-circle mode produces one, since with no Circle active every `OUT_*` points at `shared/` (invariant 1).
+- A migrated pre-v4 Circle names a plan that the migration moved to `shared/planning/`, correctly: unknown origin means `shared/` (Origin Rule, corollary 1). The file genuinely is not in the Circle, and rewriting the field to claim otherwise would point it at nothing.
+
+A path resolves in both cases; a bare filename resolves only in the first, and fails silently in the second — the consumers (`/fusion:circle-stash`'s best-effort lookup, playmaker's `portfolio.md` rendering, the orchestrator's resume) all degrade without announcing it. This does not weaken the container premise: a Circle still *holds* its artifacts, and the Origin Rule still decides which. The field merely reports where the file is rather than assuming it.
 
 `$PORTFOLIO` is regenerated by playmaker on every run. Template:
 

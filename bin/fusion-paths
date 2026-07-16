@@ -22,11 +22,17 @@
 #   everything else  workbench-relative
 #   multi-value keys (SCAN_*)  space-separated
 #
-# Exit codes (the shape of bin/fusion-rules, plus one):
+# Exit codes (0/1/2 are the shape of bin/fusion-rules; 3 and 4 are this
+# resolver's own). Callers key on the code, so no code carries two meanings:
 #   0  success
 #   1  usage error, or no workbench found above pwd
 #   2  unknown agent
 #   3  .active-circle is corrupt or orphaned (points at a missing directory)
+#      — a workbench-STATE fault. The user fixes the pointer.
+#   4  internal error: a key in a KEYS set has no value in value_for()
+#      — a fusion BUG. The user cannot fix it by touching the workbench, and
+#      must not be told to (see rules/fusion-workbench-conventions.md
+#      "## Path Resolution" → Exit codes).
 #
 # Resolution rules (from the conventions' "## Path Resolution"):
 #   - Active Circle   → every OUT_* points into circles/<name>/
@@ -37,6 +43,9 @@
 #     originate in a Circle.
 #   - Every SCAN_* carries BOTH stores when a Circle is active, and collapses
 #     to the shared store alone when none is. Searching must cover both.
+#     SCAN_CONSULT and SCAN_INVESTIGATIONS are the two exceptions, and only
+#     apparently so: their kinds exist solely in shared/, so "both stores"
+#     collapses to one. The rule is not weakened — it has nothing to range over.
 #   - An orphaned .active-circle is an error: stderr + non-zero exit, no silent
 #     fall back to shared/ (HYG-NO-SILENT-FAIL). A stale pointer means the
 #     workbench's state is inconsistent, and quietly writing to the wrong store
@@ -45,7 +54,19 @@
 # Per-agent emission mirrors bin/fusion-rules: each agent receives only the
 # keys it needs — a coder gets no OUT_PLAN, a playmaker gets no OUT_ISSUE.
 # The key sets below are derived from what each agent's prompt actually reads
-# and writes.
+# and writes, audited prompt by prompt (all 15) on 2026-07-16.
+#
+# The audit is hand-made, and hand-made is how the first version drifted. It
+# cannot yet be mechanical: a pre-conversion prompt names a directory in prose,
+# and no grep can tell "Skim fusion-workbench/issues/" (a read) from "file to
+# fusion-workbench/issues/" (a write) without judgment. The conversion in
+# P-4..P-7 is precisely what creates that signal — after it, `$SCAN_ISSUES` vs
+# `$OUT_ISSUE` in the prompt IS the machine-readable read/write marker. So the
+# consumer-agreement test belongs in P-8's lint gate, over the converted
+# prompts, and it is specified there:
+#   fusion-workbench/issues/260716-1957[o]-fusion-paths-key-sets-miss-reads-agents-perform.md
+# Until then a key set is a claim about a prompt that nothing checks. Change one
+# only against the prompt's text, and cite the line.
 #
 # Note on skill callers: the signature takes an AGENT name. Skills execute
 # inside an agent's session, so a skill resolves paths under the agent that
@@ -76,42 +97,69 @@ case "$AGENT" in
           SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_REVIEWS
           SCAN_ANALYSES SCAN_CIRCLES PORTFOLIO TASKLIST" ;;
   coder|ontocoder)
+    # SCAN_HISTORY: both read the latest history log when resuming an
+    # interrupted session (coder.md:75, ontocoder.md:83).
     KEYS="OUT_HISTORY OUT_ISSUE OUT_DECISION
-          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS TASKLIST" ;;
+          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY TASKLIST" ;;
   bugfixer)
+    # No SCAN_HISTORY: bugfixer.md:88 writes a history log and never reads one.
     KEYS="OUT_HISTORY OUT_ISSUE SCAN_ISSUES SCAN_PLANS" ;;
   coderev|ontorev)
+    # SCAN_HISTORY: both skim recent history to avoid re-treading completed
+    # work (coderev.md:20, ontorev.md:17).
     KEYS="OUT_REVIEW OUT_ISSUE OUT_DECISION OUT_HISTORY
-          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_REVIEWS" ;;
+          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_REVIEWS" ;;
   conceptrev)
-    KEYS="OUT_REVIEW OUT_INVESTIGATION
-          SCAN_PLANS SCAN_ANALYSES TASKLIST" ;;
+    # No OUT_INVESTIGATION: conceptrev.md:32 has exactly one written artifact,
+    # the assessment; :42 reads investigations as INPUT. A write key for a
+    # read-only agent inverts the contract — SCAN_INVESTIGATIONS is the read.
+    # SCAN_REVIEWS: :22 skims prior verdicts before writing a new one.
+    KEYS="OUT_REVIEW
+          SCAN_PLANS SCAN_ANALYSES SCAN_REVIEWS SCAN_INVESTIGATIONS TASKLIST" ;;
   planner)
+    # No SCAN_HISTORY: planner.md:76 logs to history and never reads it.
     KEYS="OUT_PLAN OUT_HISTORY OUT_ISSUE OUT_DECISION
           SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_ANALYSES" ;;
   shaper)
+    # SCAN_ISSUES: shaper.md:116 — "Read both folders in your context-loading
+    # step so you don't refile something already tracked."
     KEYS="OUT_PLAN OUT_HISTORY OUT_ISSUE OUT_DECISION OUT_CIRCLE
-          SCAN_PLANS SCAN_DECISIONS SCAN_CIRCLES" ;;
+          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_CIRCLES" ;;
   taskplanner)
+    # SCAN_HISTORY: taskplanner.md:62 — "skim recent entries for context".
     KEYS="OUT_HISTORY
-          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_REVIEWS TASKLIST" ;;
+          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_REVIEWS
+          TASKLIST" ;;
   reconciler)
     KEYS="OUT_HISTORY OUT_ISSUE
           SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_REVIEWS
           SCAN_ANALYSES" ;;
   analyst)
+    # SCAN_HISTORY: analyst.md:18 — "Skim recent entries".
     KEYS="OUT_ANALYSIS OUT_HISTORY OUT_ISSUE OUT_DECISION
-          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_ANALYSES" ;;
+          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_ANALYSES" ;;
   investigator)
+    # SCAN_HISTORY (:21) and SCAN_DECISIONS (:22) — both read at Setup, neither
+    # was emitted. No SCAN_INVESTIGATIONS: investigator.md names
+    # investigations/ at :3, :43 and :95, and all three are writes. It does not
+    # read prior investigations. Adding the key for a read the prompt does not
+    # perform would be speculation (HYG-NO-SPECULATION); if that read is wanted,
+    # it is a prompt change first.
     KEYS="OUT_INVESTIGATION OUT_HISTORY OUT_ISSUE OUT_DECISION
-          SCAN_PLANS SCAN_ISSUES SCAN_REVIEWS" ;;
+          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_REVIEWS" ;;
   consultant)
+    # SCAN_ISSUES + SCAN_HISTORY: consultant.md:29-30 — "Skim recent history
+    # entries", "Skim open files in issues/ and decisions/". No SCAN_CONSULT:
+    # the consultant writes consult reports (:76, :95), it does not read them.
     KEYS="OUT_CONSULT OUT_HISTORY OUT_ISSUE OUT_DECISION
-          SCAN_PLANS SCAN_DECISIONS" ;;
+          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY" ;;
   playmaker)
+    # SCAN_ISSUES: playmaker.md:103 counts pending issues when scoring a
+    # Circle — a read. It never files one (:62, :68), hence no OUT_ISSUE.
+    # SCAN_CONSULT: :48 reads consult/ when a Grounding snapshot cites it.
     KEYS="OUT_CIRCLE OUT_HISTORY PORTFOLIO
-          SCAN_CIRCLES SCAN_PLANS SCAN_DECISIONS SCAN_ANALYSES SCAN_HISTORY
-          TASKLIST" ;;
+          SCAN_CIRCLES SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_ANALYSES
+          SCAN_HISTORY SCAN_CONSULT TASKLIST" ;;
   *)
     echo "fusion-paths: unknown agent '$AGENT'" >&2
     exit 2
@@ -199,15 +247,25 @@ value_for() {
     SCAN_HISTORY)       scan_value "history" ;;
     SCAN_REVIEWS)       scan_value "reviews" ;;
     SCAN_ANALYSES)      scan_value "analyses" ;;
+    # Read counterparts of the unconditionally-shared kinds. Shared-only, so
+    # the "both stores" invariant collapses to one — the kind has no Circle
+    # counterpart to carry.
+    SCAN_INVESTIGATIONS) printf '%s' "shared/investigations" ;;
+    SCAN_CONSULT)       printf '%s' "shared/consult" ;;
     SCAN_CIRCLES)       printf '%s' "circles" ;;
     PORTFOLIO)          printf '%s' "portfolio.md" ;;
     TASKLIST)           printf '%s' "tasklist.md" ;;
     *)
-      # Unreachable: every key in a KEYS set must be resolvable here. Loud
-      # rather than silent, so a future key added to a set without a value
-      # cannot ship as an empty string.
-      echo "fusion-paths: internal error — no value defined for key '$1'" >&2
-      exit 3
+      # Reached when a key is in ORDER but has no value here — the second half
+      # of the same guarantee the ORDER check below enforces. Between them:
+      # a key must be in a KEYS set, in ORDER, and valued here, or the run
+      # stops. None of the three can be forgotten silently.
+      # Loud rather than silent, so a key added without a value cannot ship as
+      # an empty string and send an agent's writes to the workbench root.
+      # Exit 4, not 3: a caller that keys on 3 tells the user to fix
+      # .active-circle, and there is nothing wrong with their pointer.
+      echo "fusion-paths: internal error — no value defined for key '$1'. This is a bug in fusion-paths, not a fault in your workbench." >&2
+      exit 4
       ;;
   esac
 }
@@ -218,7 +276,8 @@ value_for() {
 ORDER="OUT_PLAN OUT_HISTORY OUT_ISSUE OUT_DECISION OUT_REVIEW OUT_ANALYSIS
        OUT_INVESTIGATION OUT_CONSULT OUT_MEMO OUT_CIRCLE
        SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_REVIEWS
-       SCAN_ANALYSES SCAN_CIRCLES PORTFOLIO TASKLIST"
+       SCAN_ANALYSES SCAN_INVESTIGATIONS SCAN_CONSULT SCAN_CIRCLES
+       PORTFOLIO TASKLIST"
 
 has_key() {
   local want="$1" k
@@ -228,20 +287,50 @@ has_key() {
   return 1
 }
 
+# Emission is driven by ORDER, not by KEYS, so a key present in a KEYS set but
+# absent from ORDER is never looked up — it does not reach value_for, and the
+# unreachable-branch guard there never fires. It simply vanishes: the agent is
+# not given the key, its prompt expands $SCAN_FOO to the empty string, and the
+# write lands at the workbench root. Silent, and exactly the failure mode the
+# value_for guard exists to prevent, arrived at one step earlier.
+#
+# Adding keys to KEYS sets is the routine change here (P-4..P-7 are made of
+# it), so this check guards the routine mistake rather than the exotic one.
+for key in $KEYS; do
+  found=0
+  for known in $ORDER; do
+    [ "$key" = "$known" ] && { found=1; break; }
+  done
+  if [ "$found" = 0 ]; then
+    echo "fusion-paths: internal error — key '$key' is in the '$AGENT' key set but missing from ORDER, so it would never be emitted. Add it to ORDER and to value_for(). This is a bug in fusion-paths, not a fault in your workbench." >&2
+    exit 4
+  fi
+done
+
+# Build the whole output before writing any of it. A failure mid-loop would
+# otherwise leave a partial key set on stdout alongside the error — and a
+# caller that reads stdout without checking the exit code would act on half a
+# contract. Every non-zero exit now yields no output at all, matching the
+# orphaned-pointer path above.
+
 # WORKBENCH is always emitted, and is the only absolute path.
-printf 'WORKBENCH=%s\n' "$WORKBENCH"
+OUT="$(printf 'WORKBENCH=%s\n' "$WORKBENCH")"
 
 # CIRCLE is emitted only when a Circle is active. Its absence is how a caller
 # tells "no Circle" from "Circle active".
 if [ -n "$CIRCLE" ]; then
-  printf 'CIRCLE=%s\n' "$CIRCLE"
+  OUT="$OUT
+$(printf 'CIRCLE=%s' "$CIRCLE")"
 fi
 
 for key in $ORDER; do
   if has_key "$key"; then
-    # Assign first, then print: under `set -e` a failing value_for aborts the
+    # Assign first, then append: under `set -e` a failing value_for aborts the
     # run rather than emitting `KEY=` with an empty value.
     val="$(value_for "$key")"
-    printf '%s=%s\n' "$key" "$val"
+    OUT="$OUT
+$key=$val"
   fi
 done
+
+printf '%s\n' "$OUT"
