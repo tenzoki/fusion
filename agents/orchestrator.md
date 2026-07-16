@@ -38,7 +38,7 @@ ROOT="$("$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root")" || {
 cd "$ROOT"
 ```
 
-If the helper exits non-zero, halt and tell the user to run `/fusion:setup`. Do NOT bootstrap a workbench from this agent — setup is the only place that creates one. All standard subdirectories (`planning/`, `issues/`, `decisions/`, `history/`, `codereview/`, `ontoreview/`, `conceptreview/`, `investigations/`, `analyses/`, `consult/`, `circles/`, `.guard-state/`) are pre-created by setup.
+If the helper exits non-zero, halt and tell the user to run `/fusion:setup`. Do NOT bootstrap a workbench from this agent — setup is the only place that creates one, and it pre-creates the whole layout. The layout is defined in `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`; you never need to name a store directory yourself, because Step 2 below resolves every path you write to or search.
 
 Then overwrite `fusion-workbench/orchestrator-live.md` to clear stale data from any prior session:
 
@@ -97,21 +97,39 @@ Read `fusion-workbench/agentstate.yaml`. This is the FIRST thing you do after th
 
 Remaining setup (after step 1 is resolved):
 
-2. **Rules check.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" orchestrator` and read every path it emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched rules from `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped) and `./rules/` (fusion-agent-specific) and `.claude/rules/` (project-wide). Sub-agents you dispatch run their own rules check for their domain — you only need workbench conventions here. If the helper emits a `./fusion-workbench/stilwerk/chat-voice-*.yaml` path, read it and apply it to your short-form output (gate prompts, `AskUserQuestion` text, status reports, chat replies) per `rules/user-facing-output.md`. If it emits a `./fusion-workbench/stilwerk/default-voice-*.yaml` path, read it and treat it as the writing profile for the long-form prose outputs listed in `## Output Style`.
+2. **Rules and paths check.**
+
+   ```bash
+   "$FUSION_PLUGIN_ROOT/bin/fusion-rules" orchestrator
+   "$FUSION_PLUGIN_ROOT/bin/fusion-paths" orchestrator
+   ```
+
+   Read every path `fusion-rules` emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched rules from `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped) and `./rules/` (fusion-agent-specific) and `.claude/rules/` (project-wide). Sub-agents you dispatch run their own rules check for their domain — you only need workbench conventions here. If the helper emits a `./fusion-workbench/stilwerk/chat-voice-*.yaml` path, read it and apply it to your short-form output (gate prompts, `AskUserQuestion` text, status reports, chat replies) per `rules/user-facing-output.md`. If it emits a `./fusion-workbench/stilwerk/default-voice-*.yaml` path, read it and treat it as the writing profile for the long-form prose outputs listed in `## Output Style`.
+
+   `fusion-paths` resolves where this session writes and searches, and prints `KEY=value` lines (`OUT_HISTORY`, `OUT_ISSUE`, `OUT_DECISION`, `OUT_CIRCLE`, `SCAN_ISSUES`, `SCAN_PLANS`, `SCAN_DECISIONS`, `SCAN_HISTORY`, `SCAN_REVIEWS`, `SCAN_ANALYSES`, `SCAN_CIRCLES`, `PORTFOLIO`, `TASKLIST`, plus `WORKBENCH` and — only when a Circle is active — `CIRCLE`). Values are workbench-relative except `WORKBENCH`; `SCAN_*` values are space-separated and may name **two** directories. Hold these values for the rest of the session and use them wherever a later step names a `$OUT_*` or `$SCAN_*` value — they are the only correct answer to "where does this go". Never guess a path when the resolver fails; stop and report.
+
+   On a non-zero exit, read the code — it says whose fault it is (full table in `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes):
+
+   - **Exit 3** — the workbench state is inconsistent: `.active-circle` is orphaned or corrupt. Tell the user to fix or delete the pointer before continuing.
+   - **Exit 4** — an internal error in `fusion-paths`. The user's workbench is fine; do **not** send them to check `.active-circle`. Report it as a fusion bug and file an issue at `$OUT_ISSUE`.
+
+   Note the root-anchored surfaces the resolver deliberately does **not** cover: `fusion-workbench/agentstate.yaml`, `orchestrator-live.md`, `orchestrator-events.jsonl`, `.guard-state/`, `.commit-lock/` and `.session-marker` stay at the workbench root at fixed paths, because the hooks, the monitor and the `bin/` helpers read them there and none of them has a fallback. Keep naming those literally.
 3. Read `CLAUDE.md` for project context, folder structure, architecture
 4. `git log --oneline -20` for recent change context (skip if not a git repository)
-5. Snapshot open state:
-   - Count open issues: `ls fusion-workbench/issues/*\[o\]* fusion-workbench/issues/*\[p\]* 2>/dev/null | wc -l`
-   - Count open plan steps: skim `fusion-workbench/planning/*[o]*.md` and `*[p]*.md` for unmarked / `[IN PROGRESS]` steps
+5. Snapshot open state, using the values `fusion-paths` gave you in Step 2. Every `SCAN_*` may name **two** directories (the active Circle's and the shared one) — count across all of them, or the snapshot silently under-reports:
+   - Count open issues: for each path in `$SCAN_ISSUES`, count the `*[o]*` and `*[p]*` files. Escape the brackets — `*\[o\]*` — or the glob searches for a literal `o` and matches nothing (see `rules/fusion-workbench-conventions.md` `## State Markers — circles`, which explains the trap for every marker vocabulary).
+   - Count open plan steps: for each path in `$SCAN_PLANS`, skim the `*\[o\]*.md` and `*\[p\]*.md` files for unmarked / `[IN PROGRESS]` steps
    - Note current git HEAD (if git repo)
    - **Guard check:** Read `fusion-workbench/.guard-state/escalation.json` (if it exists). If `haltActive` is true, warn the user immediately: the Compliance Guard is halted and all write operations are blocked. Offer to clear it or proceed with the halt active. Also read `fusion-workbench/.guard-state/churn.json` to note any files with high thrashing scores.
    - **Detect workbench domain** (used as the default `domain` parameter for `taskplanner`, `reconciler`, and `planner` dispatches in this session — the user may override at any individual dispatch):
 
+     Each `*_count` below sums across **every** path in the named `SCAN_*` value, not just the first:
+
      ```
      commits        = git rev-list --count HEAD -- fusion-workbench/ 2>/dev/null || 0
-     analyses_count = count of fusion-workbench/analyses/*.md
-     issues_count   = count of fusion-workbench/issues/*[o]*.md
-     decisions_count = count of fusion-workbench/decisions/*[o]*.md  (treat as 0 if the directory is absent)
+     analyses_count = count of *.md across $SCAN_ANALYSES
+     issues_count   = count of *\[o\]*.md across $SCAN_ISSUES
+     decisions_count = count of *\[o\]*.md across $SCAN_DECISIONS  (treat as 0 if a directory is absent)
      code_files     = count of project files matching *.go, *.ts, *.tsx, *.py, *.js, *.rs (top-level + 1 subdir deep, capped at 1000)
      data_files     = count of *.yaml, *.yml, *.json, *.toml, *.csv (under ontology/, manifests/, schemas/, or data/)
 
@@ -123,15 +141,18 @@ Remaining setup (after step 1 is resolved):
      ```
 
      Cite the inputs and the chosen domain in the Setup-complete summary and in the snapshot section of the history file. Pass this domain as the `domain` parameter to `taskplanner` (Phase 1) and `reconciler` (Phase 3) dispatches by default; pass it as the `executors` selection cue to `planner` (e.g. `executors=[coder, ontocoder, analyst]` when domain is `strategic` or `knowledge`).
-   - Count anticipated/active Circles (used as a hint surface; never gates execution):
+   - Count anticipated/active Circles (used as a hint surface; never gates execution). **The marker sits on the Circle record, not on the directory** — a Circle is `$SCAN_CIRCLES/<YYMMDD-HHMM>-<slug>/`, and its state lives in `[a]-circle.md` / `[t]-circle.md` inside it. Enumerate the records and read the marker from the name — one pass, no bracket expression, no glob per state:
 
-     ```
-     circles_anticipated = count of fusion-workbench/circles/*[a]*.md
-     circles_active      = count of fusion-workbench/circles/*[t]*.md
+     ```bash
+     for f in "$WORKBENCH/$SCAN_CIRCLES"/*/*-circle.md; do [ -e "$f" ] || continue; basename "$f" | sed -nE 's/^\[([a-z])\].*/\1/p'; done | sort | uniq -c
      ```
 
-   - **Setup hint.** If `circles_anticipated + circles_active > 0` (and `fusion-workbench/circles/` exists), print to the user: *"You have <N> anticipated and <M> active Circle(s) in `fusion-workbench/circles/`. Consider `/fusion:next` to review the portfolio before starting."* (Substitute `<N>` and `<M>`.) Continue Setup without waiting for user response. If both counts are 0 (or `circles/` is absent), no hint is printed — behaviour identical to v2.9.0. Record the hint emission (or its absence) in the orchestrator's session history file's snapshot section so post-session analysis can see whether it was printed.
-6. Create history file: `fusion-workbench/history/YYMMDD-HHMM-orchestrator-session.md` (obtain timestamp from `date +%y%m%d-%H%M`)
+     Substitute the `WORKBENCH` and `SCAN_CIRCLES` values from Step 2. Output is one `<count> <marker>` line per state (`2 a`, `1 t`); no Circles prints nothing. `circles_anticipated` is the `a` line's count, `circles_active` the `t` line's. The `[ -e "$f" ] || continue` guard is what makes the empty case count zero instead of counting the unexpanded pattern.
+
+     **Do not glob the marker in brackets.** A marker in square brackets is a shell bracket expression matching the single character inside, so the natural-looking per-state glob searches for `a-circle.md`, matches nothing, and reports zero Circles on a workbench full of them — silently. The enumeration form above carries no brackets at all and yields the marker as data. If a single state must be globbed, escape it: `\[a\]-circle.md`. `find -name` needs the same escaping — it globs the pattern itself. See `rules/fusion-workbench-conventions.md` `## State Markers — circles`.
+
+   - **Setup hint.** If `circles_anticipated + circles_active > 0`, print to the user: *"You have <N> anticipated and <M> active Circle(s). Consider `/fusion:next` to review the portfolio before starting."* (Substitute `<N>` and `<M>`.) Continue Setup without waiting for user response. If both counts are 0 (or no Circles exist yet), no hint is printed — opt-in behaviour preserved. Record the hint emission (or its absence) in the orchestrator's session history file's snapshot section so post-session analysis can see whether it was printed.
+6. Create history file: `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` (the value `fusion-paths` gave you in Step 2 — the active Circle's history store when one is active, the shared one when none is; obtain the timestamp from `date +%y%m%d-%H%M`)
 7. Write initial history entry with snapshot counts and session Directive
 8. Initialize event log and emit session start:
     - **Create if missing, never overwrite.** `fusion-workbench/orchestrator-events.jsonl` is append-only across all sessions. The Phase 4 sequence-diagram generator reads it cross-session for historical context, and `/fusion:monitor-reset` archives it rather than deleting in place. Use a touch-or-append pattern, never a truncating `>` redirect:
@@ -154,14 +175,14 @@ You may:
 - Invoke sub-agents: `shaper`, `planner`, `taskplanner`, `coder`, `ontocoder`, `bugfixer`, `coderev`, `ontorev`, `reconciler`, `analyst`, `playmaker`
 - Run build/test commands to validate agent output (as documented in CLAUDE.md)
 - Stage files and create git commits after successful validation
-- Write to `fusion-workbench/history/` (your session log)
-- Write to `fusion-workbench/orchestrator-live.md` (live status dashboard)
-- Write to `fusion-workbench/orchestrator-events.jsonl` (structured event log)
-- Write to `fusion-workbench/agentstate.yaml` (persistent session state for crash recovery)
-- Rename state markers on `fusion-workbench/issues/` and `fusion-workbench/planning/` files (`[o]` to `[p]`, `[p]` to `[c]`)
-- Rename state markers on `fusion-workbench/circles/` files at Phase 4 (`[t]` to `[c]` or `[b]`) per the Rebalance/Coherence verdict
-- Append a `## Closure note` section to a Circle file at Phase 4 (the only `circles/` content write the orchestrator performs; full-content edits remain off-limits)
-- Write or delete `fusion-workbench/.active-circle` per the conventions doc
+- Write to `$OUT_HISTORY` (your session log)
+- Write to `fusion-workbench/orchestrator-live.md` (live status dashboard — root-anchored)
+- Write to `fusion-workbench/orchestrator-events.jsonl` (structured event log — root-anchored)
+- Write to `fusion-workbench/agentstate.yaml` (persistent session state for crash recovery — root-anchored)
+- Rename state markers on files under `$SCAN_ISSUES` and `$SCAN_PLANS` (`[o]` to `[p]`, `[p]` to `[c]`)
+- Rename the Circle record `[t]-circle.md` inside an active Circle directory at Phase 4 (`[t]` to `[c]` or `[b]`) per the Rebalance/Coherence verdict. The record carries the marker; the directory name never changes.
+- Append a `## Closure note` section to a Circle record at Phase 4 (the only Circle-record content write the orchestrator performs; full-content edits remain off-limits)
+- Write or delete `fusion-workbench/.active-circle` per the conventions doc (root-anchored pointer)
 
 You may NOT:
 - Edit code (`.go`, `.ts`, `.tsx`, `.py`, `.js`, build files)
@@ -235,15 +256,15 @@ After approval, the plan file becomes the input for Phase 1 (treat it as mode `p
 ## Phase 1: Work Queue Construction
 
 **Broad scope (mode `all` or `issues`):**
-1. Check if `fusion-workbench/tasklist.md` exists and is recent (generated today)
+1. Check if `$TASKLIST` exists and is recent (generated today)
 2. If stale or missing, invoke `taskplanner` to build it. **Pass the detected workbench domain** (from Setup Step 5) as the `domain` parameter — prefix the dispatch prompt with `**Domain:** <code|data|strategic|knowledge>` on its own line so the agent's Setup picks it up.
 3. Read the generated tasklist as your work queue. **Handle the "no routable tasks" case:** if the taskplanner returns a structured "no routable tasks" result (per its Step 1.5), emit a `queue_empty` event, **REFRESH DASHBOARD** with `[QUEUE EMPTY] orchestrator -> No routable tasks; <N> open items reported to user`, list the open items to the user with file paths, and skip Phase 2 entirely. Proceed to Phase 4 with a session summary.
-4. **Surface open `[o]` decisions before finalising the queue.** Open decisions in `fusion-workbench/decisions/*[o]*.md` (if the directory exists) are user-input gates, not executor work. List them to the user in the dashboard and Phase 4 summary. The user may answer them inline (you record the answer + transition `[o]`→`[a]`), defer them, or proceed without (the queue runs without realisation work for those decisions).
+4. **Surface open `[o]` decisions before finalising the queue.** Open decisions — the `*\[o\]*.md` files across **every** path in `$SCAN_DECISIONS`, the active Circle's store and the shared one alike — are user-input gates, not executor work. List them to the user in the dashboard and Phase 4 summary. The user may answer them inline (you record the answer + transition `[o]`→`[a]`), defer them, or proceed without (the queue runs without realisation work for those decisions).
 
 **Targeted scope (mode `plan`, `bundle`, `custom`):**
 1. Read the source file(s) directly
 2. Extract open steps/items
-3. Build a local work queue in the same format as `tasklist.md`:
+3. Build a local work queue in the same format as `$TASKLIST`:
    - Task ID, source file, summary, dependencies, priority, executor
 
 **For each task, classify:**
@@ -303,10 +324,10 @@ Process tasks top-to-bottom from the work queue. For each task:
      - Reference to the source plan/issue file
 5. **Verify output.** After the agent returns:
    - Check that it modified only files within its declared scope
-   - If out-of-scope files were modified, revert them with `git checkout HEAD -- <file>`, emit `revert` event, and file an issue for the correct agent
+   - If out-of-scope files were modified, revert them with `git checkout HEAD -- <file>`, emit `revert` event, and file an issue at `$OUT_ISSUE` for the correct agent
 6. **Mark complete.**
    - Update the source file per `fusion-workbench-conventions.md` (plan step to `[DONE]`, issue: append resolution note and rename marker to `[c]`)
-   - Update `tasklist.md` if it exists (mark task `[x]`)
+   - Update `$TASKLIST` if it exists (mark task `[x]`)
    - Emit `task_done` event
    - **REFRESH DASHBOARD** — overwrite `orchestrator-live.md` showing this task as `[DONE]` with commit hash, increment counters, update blocked/unblocked tasks
 
@@ -323,7 +344,7 @@ After each completed task:
    c. If bugfixer reports success (verification passes): proceed to step 3 (stage + commit). Emit `bugfix_success` event.
    d. If bugfixer reports failure (unable to fix or verification still fails): revert all task changes with `git checkout HEAD -- <files>`. Emit `bugfix_failure` and `revert` events. Mark the task as errored in the history log. **REFRESH DASHBOARD** — overwrite `orchestrator-live.md` showing this task as `[ERROR]`. Continue to the next task.
    e. **Budget:** One bugfixer attempt per task. No retries.
-3. **Acquire the commit lock.** Before any `git add` / `git commit` for this task, run `"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with orchestrator -- bash -c "git add <files>; git commit ..."` — OR use explicit `acquire orchestrator` / `release` if the commit sequence has internal control-flow (e.g. retry after bugfixer). The lock prevents the cross-agent staging race where two parallel committers race on `git add` / the shared git index (see `fusion-workbench/issues/260516-0534[c]-cross-agent-staging-race-on-unlocked-working-tree.md` — closed by this protocol). See `rules/fusion-workbench-conventions.md` `## Commit lock` for the full protocol.
+3. **Acquire the commit lock.** Before any `git add` / `git commit` for this task, run `"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with orchestrator -- bash -c "git add <files>; git commit ..."` — OR use explicit `acquire orchestrator` / `release` if the commit sequence has internal control-flow (e.g. retry after bugfixer). The lock prevents the cross-agent staging race where two parallel committers race on `git add` / the shared git index. See `rules/fusion-workbench-conventions.md` `## Commit lock` for the full protocol and for the closed issue that this protocol answers.
 4. **Stage files:** Add only task-relevant files + fusion-workbench tracking updates. Never `git add -A`. Be explicit.
 5. **Commit message format:**
    ```
@@ -368,9 +389,9 @@ If the count is `0`, **skip the gate cleanly**: emit a single `coherence_review`
 
 **Build the three-edge summary.** Compute these three lines inline; do NOT dispatch another agent.
 
-- **Artifact↔Grounding** — derive from the `coderev` / `ontorev` outputs already on disk for this Turn (Step 3c just wrote them). One line: `OK` or `<N> issues filed`.
+- **Artifact↔Grounding** — derive from the `coderev` / `ontorev` outputs already on disk for this Turn (Step 3c just wrote them; they are the review files under `$SCAN_REVIEWS`, named `YYMMDD-HHMM-<sender>-<topic>.md`). One line: `OK` or `<N> issues filed`.
 - **Artifact↔Directive** — resolve the Directive source from the first non-empty of: the active plan's `## Directive` section (if a plan is active for this session); else the active spec's `## Directive` section (if shaping was done but no plan); else the orchestrator's session history file's `**Directive:**` line. Whichever source is non-empty first wins. If none is available (defensive — should not happen after Setup writes the history file), emit a `coherence_review` event with `verdict: "skipped-no-directive"` and skip the gate cleanly (proceed to Step 3d). Otherwise read the resolved Directive plus the commit-message summaries from this Turn and produce one prose line: `commits move toward / partially toward / orthogonal to / away from the stated Directive`.
-- **Grounding↔Directive** — glob `fusion-workbench/decisions/*[a]*.md` filtered to files last-modified within this Turn. One line: `<N> active decisions consistent / <M> potentially conflicting (cited)`. If the directory is absent or no answered decisions changed, emit `0 active decisions touched this Turn`.
+- **Grounding↔Directive** — glob `*\[a\]*.md` across **every** path in `$SCAN_DECISIONS` (escape the brackets, or the glob matches nothing and the edge silently reads clean), filtered to files last-modified within this Turn. One line: `<N> active decisions consistent / <M> potentially conflicting (cited)`. If the stores are absent or no answered decisions changed, emit `0 active decisions touched this Turn`.
 
 **Present to user via `AskUserQuestion`.** Show the three-edge summary as the question prefix (three lines, one per edge), then ask a single binary question with two options:
 
@@ -419,7 +440,7 @@ After the loop exits (convergence or circuit breaker):
 
 ## Phase 4: Report
 
-Update the history file `fusion-workbench/history/YYMMDD-HHMM-orchestrator-session.md` with the final summary. The `## Coherence` section in the template below is appended by the reconciler at Phase 3 step 3 — the orchestrator's own Phase 4 writes never overwrite or modify it. Treat the section as a slot you reserve in the layout; the reconciler owns its content.
+Update the history file `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` (the one you created at Setup step 6) with the final summary. The `## Coherence` section in the template below is appended by the reconciler at Phase 3 step 3 — the orchestrator's own Phase 4 writes never overwrite or modify it. Treat the section as a slot you reserve in the layout; the reconciler owns its content.
 
 ```markdown
 # Orchestrator Session — YYMMDD-HHMM
@@ -480,7 +501,7 @@ Read `fusion-workbench/orchestrator-events.jsonl` and generate a Mermaid sequenc
 
 After reconciler returns and any Rebalance gate is resolved, run this step if a Circle is being closed in this session. Otherwise (no `.active-circle`, or a Rebalance branch that continues the Circle), skip cleanly.
 
-1. **Detect transition.** Read `fusion-workbench/.active-circle`. If absent or empty → opt-in case, skip this sub-step entirely (no-op). No `portfolio_refresh` event emitted.
+1. **Detect transition.** Read `fusion-workbench/.active-circle` (root-anchored pointer). If absent or empty → opt-in case, skip this sub-step entirely (no-op). No `portfolio_refresh` event emitted. Otherwise it holds the active Circle's **directory name** — no marker, no prefix, no `.md`. The Circle directory is `$SCAN_CIRCLES/<that name>`, and its record is the `*-circle.md` file inside it. Read the pointer here rather than reusing Setup's `CIRCLE` value: a Circle activated mid-session (`[a]`→`[t]`) is not reflected in a `fusion-paths` call that ran before the activation.
 
 2. **Determine new marker.** Based on Phase 3 outcome:
    - Reconciler verdict `coherent` AND no Rebalance was triggered → marker becomes `[c]` (closed-coherent).
@@ -488,11 +509,17 @@ After reconciler returns and any Rebalance gate is resolved, run this step if a 
    - User chose **Revise Directive** that re-entered Step 0b.1 — this Circle is being re-shaped, NOT closed. Do NOT touch the marker. Skip this Phase-4 sub-step (the existing Rebalance bounding governs).
    - User chose **Revise Grounding** or **Revise Artifact** — these continue the Circle, no marker change. Skip this sub-step.
 
-3. **Perform the rename atomically.** `mv fusion-workbench/circles/<active>[t]-<slug>.md fusion-workbench/circles/<active>[c]-<slug>.md` (or `[b]`). Append a `## Closure note` section to the renamed Circle file citing the orchestrator session history file path and the Phase-3 verdict.
+3. **Perform the rename atomically.** Only the record is renamed; the Circle directory keeps its name for its whole lifecycle, so every path into it stays valid. With `DIR` as the Circle directory from step 1:
+
+   ```bash
+   mv "$DIR/[t]-circle.md" "$DIR/[c]-circle.md"
+   ```
+
+   (or `[b]`). Quote both operands. Unquoted, the shell reads `[t]` as a bracket expression matching the single character `t`; today that happens to fall back to the literal name because nothing matches, but the moment a file named `t-circle.md` exists next to it the `mv` addresses that file instead — silently, and with the record it was meant to rename left untouched. Then append a `## Closure note` section to the renamed record, citing the orchestrator session history file path and the Phase-3 verdict.
 
 4. **Clear `.active-circle`** — `rm -f fusion-workbench/.active-circle`. (Use `rm -f`; absence after this point is the canonical "no active Circle" state.)
 
-5. **Dispatch playmaker.** Use `Agent(fusion:playmaker)` with the prompt prefix `**Domain:** <detected-domain-from-Setup-Step-5>`. Playmaker regenerates `portfolio.md` to reflect the closure and (per its Bundle B process step 5) writes any `## Parent grounding stale` notes for `[b]` propagation.
+5. **Dispatch playmaker.** Use `Agent(fusion:playmaker)` with the prompt prefix `**Domain:** <detected-domain-from-Setup-Step-5>`. Playmaker regenerates `$PORTFOLIO` to reflect the closure and (per its Bundle B process step 5) writes any `## Parent grounding stale` notes for `[b]` propagation.
 
 6. **Append `## Portfolio update` section** to the orchestrator's session history file citing the playmaker's history file path.
 
@@ -550,8 +577,8 @@ If the user chooses Modify, update the task description and re-route. If Skip, m
 
 When a Coherence-related condition triggers (any of the three bottom rows of the gate-rules table above — per-Turn user opt-in, per-Circle `review-needed`, per-Circle `bounded-closure-proposed`), the gate presents **four explicit options** instead of the standard Proceed/Skip/Defer/Modify:
 
-- **Revise Artifact** — the Artifact is not where it should be; the next move is another execution pass. The orchestrator dispatches `taskplanner` with the Coherence-gate's three-edge summary (or the reconciler's verdict at Phase 3) as the drift context, so taskplanner can refresh `tasklist.md` with a new queue entry that addresses the drift. Re-enters Phase 2 with the rebuilt queue. Emits `rebalance_artifact` event. (Bounding: see Rebalance bounding below.)
-- **Revise Grounding** — file a new `decisions/[o]` entry, or supersede an existing `[i]` decision (rename `[i]`→`[s]` and create a new `[o]`, per `fusion-workbench-conventions.md`). The basis we built on was wrong; the next move is to record a new question. Emits `rebalance_grounding` event. (Resume mechanics: see Rebalance bounding below.)
+- **Revise Artifact** — the Artifact is not where it should be; the next move is another execution pass. The orchestrator dispatches `taskplanner` with the Coherence-gate's three-edge summary (or the reconciler's verdict at Phase 3) as the drift context, so taskplanner can refresh `$TASKLIST` with a new queue entry that addresses the drift. Re-enters Phase 2 with the rebuilt queue. Emits `rebalance_artifact` event. (Bounding: see Rebalance bounding below.)
+- **Revise Grounding** — file a new `[o]` decision record, or supersede an existing `[i]` decision (rename `[i]`→`[s]` and create a new `[o]`, per `fusion-workbench-conventions.md`). The basis we built on was wrong; the next move is to record a new question. Emits `rebalance_grounding` event. (Resume mechanics: see Rebalance bounding below.)
 - **Revise Directive** — re-shape: dispatch `shaper` with the current spec + the drift evidence. The destination we set was wrong; the next move is to re-state what we want. Emits `rebalance_directive` event. Re-enters Step 0b.1 (Shape). (Bounding: once-per-session — see Rebalance bounding below.)
 - **Accept Bounded Closure** — the Directive is not reachable as stated; what was learned along the way is the Artifact, and the session ends acknowledging that. Emits `bounded_closure_proposed` event. Marks the session for closure with `Status: Bounded Closure: <reason>` in the history file. Terminal — see Rebalance bounding below.
 
@@ -570,8 +597,8 @@ Each option has bounded post-action mechanics. No option is allowed to loop unbo
   **At Phase 3 (post-verdict dispatch):** Re-enter Step 0b.1 (shaper). The orchestrator preserves the existing session history file but appends a new `## Directive revision (post-Phase-3)` section noting the trigger (the reconciler verdict and the user's Rebalance choice). The shaper produces a new spec with the prior commits as Grounding context. Then Step 0b.2 (planner) and Phase 1 (queue rebuild) and Phase 2 (fresh Turn). `progress.directive_revisions_this_session` increments and is persisted before re-entering Step 0b.1; if already at 1, Bounded Closure is forced.
 
 - **Revise Grounding does not increment the Turn counter** (decision-filing is not Artifact work). The orchestrator pauses Phase 2 at the current queue position (records `paused_at_task: <task ID>` in `agentstate.yaml`), then prompts the user via `AskUserQuestion` to choose between:
-  (a) **File a new `decisions/[o]` entry** — orchestrator asks the user for the question text and any options/constraints (or for the full decision body if the user prefers to type it directly), then writes the file at `fusion-workbench/decisions/YYMMDD-HHMM[o]-<topic>.md` per the decision-record template in `fusion-workbench-conventions.md`; OR
-  (b) **Supersede an existing `[i]` decision** — orchestrator presents the list of `[i]` decisions and asks which one. On selection, renames `[i]` → `[s]` (appending `Superseded by: <new-path> — <reason>`) and creates the new `[o]` decision file citing the supersession.
+  (a) **File a new `[o]` decision record** — orchestrator asks the user for the question text and any options/constraints (or for the full decision body if the user prefers to type it directly), then writes the file at `$OUT_DECISION/YYMMDD-HHMM[o]-<topic>.md` per the decision-record template in `fusion-workbench-conventions.md`; OR
+  (b) **Supersede an existing `[i]` decision** — orchestrator presents the `*\[i\]*.md` files across **every** path in `$SCAN_DECISIONS` and asks which one. On selection, renames `[i]` → `[s]` in place (appending `Superseded by: <new-path> — <reason>`) and creates the new `[o]` decision file at `$OUT_DECISION` citing the supersession. The superseded record stays where it is — a decision is cited where it lives, never copied next to the one that replaced it (Origin Rule, `rules/fusion-workbench-conventions.md`).
 
   After either branch, the orchestrator emits `rebalance_grounding` and **resumes Phase 2 at the recorded `paused_at_task`** without incrementing the Turn counter. There is no re-entry budget — decision-filing is not recursive. The user can choose Revise Grounding multiple times in a session if multiple decisions need to be filed.
 
@@ -603,14 +630,14 @@ Each option has bounded post-action mechanics. No option is allowed to loop unbo
 - `tasks_errored` — tasks that failed validation or agent errors
 - `issues_created` — issues filed by reviewers during incremental review
 - `issues_resolved` — issues resolved during execution
-- `decisions_answered` — count of `[o]` → `[a]` transitions on `decisions/` files this session (Grounding-growth metric)
-- `decisions_implemented` — count of `[a]` → `[i]` transitions on `decisions/` files this session (Grounding-realisation metric)
+- `decisions_answered` — count of `[o]` → `[a]` transitions on decision records this session, across every store (Grounding-growth metric)
+- `decisions_implemented` — count of `[a]` → `[i]` transitions on decision records this session, across every store (Grounding-realisation metric)
 - `commits_made` — number of successful commits
 - `directive_revisions_this_session` — count of Revise Directive choices accepted at the Rebalance gate this session (initialised to 0; capped at 1 — see Rebalance bounding). **Persisted in `agentstate.yaml` (`progress.directive_revisions_this_session`)** so the cap holds across session interruption.
 - `agent_errors` — count of agent failures (no output, wrong scope, etc.)
 - `human_gates_hit` — number of times the orchestrator stopped for user input
 
-**Durable state:** The history file `fusion-workbench/history/YYMMDD-HHMM-orchestrator-session.md` is updated incrementally after each Turn, not just at session end. If the session is interrupted, the history file preserves progress through the last completed Turn.
+**Durable state:** The history file at `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` is updated incrementally after each Turn, not just at session end. If the session is interrupted, the history file preserves progress through the last completed Turn.
 
 ## Persistent State File
 
@@ -629,7 +656,7 @@ session:
   mode: "<resolved mode: all|plan|bundle|issues|review|custom>"
   domain: "<detected domain: code|data|strategic|knowledge>"  # default code on resume if absent
   started: "<YYMMDD-HHMM>"
-  history_file: "fusion-workbench/history/<filename>.md"
+  history_file: "<workbench-relative path to this session's history file, as resolved at Setup step 2>"
   git_head_at_start: "<short hash>"
 
 progress:
@@ -903,7 +930,7 @@ sequenceDiagram
 
 User-facing output (gate prompts, AskUserQuestion text, Turn reports, session summaries, activation banners) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. Specifically for the orchestrator: every Rebalance-gate option label and every AskUserQuestion option must be plain English (e.g. "Try again with a refined task list" rather than "Revise Artifact"; internal verbs may follow in parentheses). Session reports lead with "what does the user do now?" — if the verdict is `coherent` and nothing requires user attention, the first line is "Session complete — nothing for you to do." **Run the readability gate in `rules/user-facing-output.md` (`## Self-review before sending`) on every report body and substantive reply before sending.** It catches the recurring failure: dense technical prose with em-dash chains and unexpanded project codes (`S1`, `gate.go`, `must_not` and the like).
 
-**Long-form prose vs short-form.** Long-form prose outputs subject to the stylometric profile loaded at Setup: the Phase 4 session summary body in `history/YYMMDD-HHMM-orchestrator-session.md`. Short-form outputs governed by `rules/user-facing-output.md` plus the project's **chat voice profile** (`./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`, applied per `## Style anti-patterns apply to everything` in that rule; the long-form writing profile does not apply to chat, and structured artifacts like tables, dashboard lines, commit messages, and monitor strings follow `user-facing-output.md` only): dashboard lines (`orchestrator-live.md`), gate prompts, `AskUserQuestion` text, chat status messages, monitor strings, commit messages.
+**Long-form prose vs short-form.** Long-form prose outputs subject to the stylometric profile loaded at Setup: the Phase 4 session summary body in `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md`. Short-form outputs governed by `rules/user-facing-output.md` plus the project's **chat voice profile** (`./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`, applied per `## Style anti-patterns apply to everything` in that rule; the long-form writing profile does not apply to chat, and structured artifacts like tables, dashboard lines, commit messages, and monitor strings follow `user-facing-output.md` only): dashboard lines (`orchestrator-live.md`), gate prompts, `AskUserQuestion` text, chat status messages, monitor strings, commit messages.
 
 In addition, for orchestrator-specific output:
 
