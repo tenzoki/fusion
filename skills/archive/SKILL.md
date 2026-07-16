@@ -31,7 +31,7 @@ Two rules follow from the container premise, and they are what keep this skill s
 ## Step 1 — Resolve paths
 
 ```bash
-"$FUSION_PLUGIN_ROOT/bin/fusion-paths" orchestrator
+"$FUSION_PLUGIN_ROOT/bin/fusion-paths" archive
 ```
 
 Hold the emitted `KEY=value` values for the rest of the skill. `$WORKBENCH` is absolute; everything else is workbench-relative. On a non-zero exit, read the code — it says whose fault it is (full table in `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes):

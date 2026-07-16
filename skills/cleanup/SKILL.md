@@ -36,10 +36,10 @@ cd "$ROOT"
 Then resolve where this session writes and searches:
 
 ```bash
-"$FUSION_PLUGIN_ROOT/bin/fusion-paths" orchestrator
+"$FUSION_PLUGIN_ROOT/bin/fusion-paths" cleanup
 ```
 
-Hold the `KEY=value` lines for the rest of the run and use them wherever a later step names a `$OUT_*` or `$SCAN_*` value — they are the only correct answer to "where does this go". Never guess a path when the resolver fails; stop and report. `fusion-paths` takes an *agent* name and a skill resolves under the agent that runs it (`rules/fusion-workbench-conventions.md` `## Path Resolution`); `orchestrator` is the agent whose session a session wrap-up belongs to.
+Hold the `KEY=value` lines for the rest of the run and use them wherever a later step names a `$OUT_*` or `$SCAN_*` value — they are the only correct answer to "where does this go". Never guess a path when the resolver fails; stop and report. `fusion-paths` takes the name of the consumer asking, and this skill is its own consumer — its key set is read from this file (`rules/fusion-workbench-conventions.md` `## Path Resolution`).
 
 On a non-zero exit, read the code — it says whose fault it is (full table in the conventions' `## Path Resolution` → Exit codes):
 

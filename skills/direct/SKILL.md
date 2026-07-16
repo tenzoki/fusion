@@ -15,7 +15,7 @@ The skill itself does not write Circle content — shaper does. Its only writes 
 ## Step 1 — Pre-flight: resolve paths
 
 ```bash
-"$FUSION_PLUGIN_ROOT/bin/fusion-paths" orchestrator
+"$FUSION_PLUGIN_ROOT/bin/fusion-paths" direct
 ```
 
 Hold the emitted values. On a non-zero exit, read the code — it says whose fault it is (full table in `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes):

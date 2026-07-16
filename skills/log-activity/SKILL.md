@@ -16,10 +16,10 @@ Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If non-empty, `cd` to the
 Then resolve the workbench itself:
 
 ```bash
-"$FUSION_PLUGIN_ROOT/bin/fusion-paths" orchestrator
+"$FUSION_PLUGIN_ROOT/bin/fusion-paths" log-activity
 ```
 
-Take `WORKBENCH` (absolute) from the output. This skill needs only that one key — see Step 3 for why it scans the tree rather than an enumeration of stores. `WORKBENCH` is emitted for every agent, so the `orchestrator` argument selects nothing beyond it; `fusion-paths` takes an *agent* name and a skill resolves under the agent that runs it (`rules/fusion-workbench-conventions.md` `## Path Resolution`).
+Take `WORKBENCH` (absolute) from the output. It is the only key this skill gets, and that is the whole answer: `fusion-paths` reads a consumer's key set out of its prompt (`rules/fusion-workbench-conventions.md` `## Path Resolution`), this file names no `$OUT_*` or `$SCAN_*`, and `WORKBENCH` is emitted unconditionally. See Step 3 for why it scans the tree rather than an enumeration of stores.
 
 On a non-zero exit, read the code (full table in the conventions' `## Path Resolution` → Exit codes): **exit 1** — no workbench, scan git alone as above; **exit 3** — `.active-circle` is orphaned or corrupt, tell the user to fix or delete the pointer; **exit 4** — a bug in `fusion-paths`, not the user's workbench, report it and do not send them to check their pointer.
 

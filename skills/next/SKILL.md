@@ -21,7 +21,7 @@ The skill writes nothing on the briefing path. The only writes it performs are p
 ## Step 1 — Pre-flight: resolve paths
 
 ```bash
-"$FUSION_PLUGIN_ROOT/bin/fusion-paths" orchestrator
+"$FUSION_PLUGIN_ROOT/bin/fusion-paths" next
 ```
 
 Hold the emitted `KEY=value` values for the rest of the skill. `$WORKBENCH` is absolute; every other value is workbench-relative. Never guess a path when the resolver fails — read the exit code, it says whose fault it is (full table in `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes):

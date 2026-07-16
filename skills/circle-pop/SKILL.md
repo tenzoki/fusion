@@ -21,7 +21,7 @@ The skill mutates state only after the user explicitly confirms in Step 5. Until
 ## Step 1 — Pre-flight: resolve paths
 
 ```bash
-"$FUSION_PLUGIN_ROOT/bin/fusion-paths" orchestrator
+"$FUSION_PLUGIN_ROOT/bin/fusion-paths" circle-pop
 ```
 
 Hold the emitted `KEY=value` values. `$WORKBENCH` is absolute; every other value is workbench-relative. On a non-zero exit, read the code — it says whose fault it is (full table in `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes):

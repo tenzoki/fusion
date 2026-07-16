@@ -9,10 +9,39 @@ import { dirname, resolve, join } from "node:path";
 // import, so the tests drive the real script through child_process against a
 // throwaway workbench fixture — the same thing an agent's Setup step does.
 // This test is at hooks/lib/__tests__/; the script is at bin/.
-const fusionPaths = resolve(
-  dirname(fileURLToPath(import.meta.url)),
-  "../../../bin/fusion-paths",
-);
+const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
+const fusionPaths = join(pluginRoot, "bin", "fusion-paths");
+
+const AGENTS = [
+  "orchestrator", "coder", "ontocoder", "bugfixer", "coderev",
+  "ontorev", "conceptrev", "planner", "shaper", "taskplanner",
+  "reconciler", "analyst", "investigator", "consultant", "playmaker",
+];
+
+const SKILLS = [
+  "archive", "circle-pop", "circle-stash", "cleanup", "commit",
+  "direct", "help", "log-activity", "memo", "next",
+  "revise-claude-md", "setup", "unlock",
+];
+
+/** The prompt file a name resolves to — the same rule the script applies. */
+function promptPath(name: string): string {
+  const agent = join(pluginRoot, "agents", `${name}.md`);
+  return AGENTS.includes(name) ? agent : join(pluginRoot, "skills", name, "SKILL.md");
+}
+
+/**
+ * The keys a prompt names. This is the contract's own definition of a key set
+ * — "the prompt defines which keys a consumer gets" — restated independently
+ * of the script, so the tests below assert agreement rather than assuming it.
+ * WORKBENCH and CIRCLE are excluded: both are emitted unconditionally and
+ * belong to no set.
+ */
+function keysNamedIn(name: string): string[] {
+  const body = readFileSync(promptPath(name), "utf-8");
+  const found = body.match(/\$(?:(?:OUT|SCAN)_[A-Z][A-Z_]*|PORTFOLIO|TASKLIST)/g) ?? [];
+  return [...new Set(found.map((m) => m.slice(1)))].sort();
+}
 
 interface RunResult {
   status: number;
@@ -82,7 +111,10 @@ describe("bin/fusion-paths", () => {
   describe("active Circle", () => {
     it("points every OUT_* into the Circle", () => {
       activate();
-      const r = run(project, "planner");
+      // shaper, because its prompt names all four Circle-bound OUT_* keys.
+      // The agent is a vehicle for the OUT_BASE rule; the set is derived from
+      // the prompt, so the vehicle has to be a prompt that names them.
+      const r = run(project, "shaper");
       expect(r.status).toBe(0);
       const p = parse(r.stdout);
 
@@ -129,7 +161,9 @@ describe("bin/fusion-paths", () => {
         "shared/investigations",
       );
       expect(parse(run(project, "consultant").stdout).OUT_CONSULT).toBe("shared/consult");
-      expect(parse(run(project, "orchestrator").stdout).OUT_MEMO).toBe("shared/memos");
+      // memo, not orchestrator: the memo skill is the only consumer that names
+      // OUT_MEMO, now that each asks under its own name.
+      expect(parse(run(project, "memo").stdout).OUT_MEMO).toBe("shared/memos");
     });
 
     it("tolerates a pointer written without a trailing newline", () => {
@@ -141,7 +175,7 @@ describe("bin/fusion-paths", () => {
 
   describe("no Circle", () => {
     it("points every OUT_* into shared/ and emits no CIRCLE", () => {
-      const r = run(project, "planner");
+      const r = run(project, "shaper");
       expect(r.status).toBe(0);
       const p = parse(r.stdout);
 
@@ -198,11 +232,11 @@ describe("bin/fusion-paths", () => {
     });
   });
 
-  describe("unknown agent", () => {
+  describe("unknown name", () => {
     it("exits 2, matching bin/fusion-rules", () => {
       const r = run(project, "nosuchagent");
       expect(r.status).toBe(2);
-      expect(r.stderr).toContain("unknown agent");
+      expect(r.stderr).toContain("unknown name");
       expect(r.stdout).toBe("");
     });
 
@@ -236,24 +270,7 @@ describe("bin/fusion-paths", () => {
     });
 
     it("gives every agent WORKBENCH and at least one key", () => {
-      const agents = [
-        "orchestrator",
-        "coder",
-        "ontocoder",
-        "bugfixer",
-        "coderev",
-        "ontorev",
-        "conceptrev",
-        "planner",
-        "shaper",
-        "taskplanner",
-        "reconciler",
-        "analyst",
-        "investigator",
-        "consultant",
-        "playmaker",
-      ];
-      for (const agent of agents) {
+      for (const agent of AGENTS) {
         const r = run(project, agent);
         expect(r.status, `${agent} must resolve`).toBe(0);
         const p = parse(r.stdout);
@@ -285,70 +302,52 @@ describe("bin/fusion-paths", () => {
     });
   });
 
-  // Regression coverage for the coderev findings of 2026-07-16. Each case
-  // names the issue it pins.
-  describe("read keys cover the reads the prompts perform (issue 260716-1957)", () => {
-    // Derived by auditing all 15 prompts line by line. Each entry is a read the
-    // prompt demonstrably performs, cited in bin/fusion-paths' key-set comments.
-    // Hand-maintained on both sides today; P-8's lint gate is what makes the
-    // agreement mechanical, once the converted prompts carry $SCAN_*/$OUT_*
-    // references to grep. Until then this is the pin.
-    const requiredScans: Record<string, string[]> = {
-      coder: ["SCAN_HISTORY"],
-      ontocoder: ["SCAN_HISTORY"],
-      coderev: ["SCAN_HISTORY"],
-      ontorev: ["SCAN_HISTORY"],
-      conceptrev: ["SCAN_REVIEWS", "SCAN_INVESTIGATIONS"],
-      shaper: ["SCAN_ISSUES"],
-      taskplanner: ["SCAN_HISTORY"],
-      analyst: ["SCAN_HISTORY"],
-      investigator: ["SCAN_HISTORY", "SCAN_DECISIONS"],
-      consultant: ["SCAN_HISTORY", "SCAN_ISSUES"],
-      playmaker: ["SCAN_ISSUES", "SCAN_CONSULT"],
-    };
+  // The key set is derived from the prompt, so these assert agreement between
+  // the emitted set and the prompt's text — the contract's own rule ("the
+  // prompt defines which keys a consumer gets"), checked rather than assumed.
+  // They replace a hand-audited expectation table that was a second copy of
+  // the same claim: it went 14/15 (see the reconciler pin below).
+  describe("the emitted key set is exactly the set the prompt names", () => {
+    for (const name of [...AGENTS, ...SKILLS]) {
+      it(`${name}: emits every key it names and no other`, () => {
+        const r = run(project, name);
+        expect(r.status, `${name}: ${r.stderr}`).toBe(0);
 
-    for (const [agent, keys] of Object.entries(requiredScans)) {
-      it(`gives ${agent} ${keys.join(" + ")}`, () => {
-        const p = parse(run(project, agent).stdout);
-        for (const key of keys) {
-          expect(p[key], `${agent} reads this kind but got no ${key}`).toBeDefined();
-        }
+        const emitted = Object.keys(parse(r.stdout))
+          .filter((k) => k !== "WORKBENCH" && k !== "CIRCLE")
+          .sort();
+
+        // Both directions at once. Under-emission (a key the prompt names and
+        // the resolver withholds) was the live defect: $OUT_DECISION expanded
+        // empty and the reconciler's decision records landed at the workbench
+        // root. Over-emission is now structurally impossible, and this is
+        // where that is pinned.
+        expect(emitted).toEqual(keysNamedIn(name));
       });
     }
 
-    // The mirror of requiredScans: kinds a prompt demonstrably *writes*. The
-    // 2026-07-16 audit checked reads far harder than writes and missed
-    // reconciler's OUT_DECISION as a result — a write key is what the read
-    // table above has no slot for.
-    const requiredWrites: Record<string, string[]> = {
-      // reconciler.md:65 — "file an issue in $OUT_ISSUE (or a decision record
-      // in $OUT_DECISION)"; :159 names it as the relocation destination for a
-      // misfiled defect.
-      reconciler: ["OUT_ISSUE", "OUT_DECISION"],
-      planner: ["OUT_PLAN", "OUT_HISTORY"],
-      analyst: ["OUT_ANALYSIS", "OUT_HISTORY"],
-      coderev: ["OUT_REVIEW", "OUT_ISSUE"],
-      ontorev: ["OUT_REVIEW", "OUT_ISSUE"],
-      conceptrev: ["OUT_REVIEW"],
-      shaper: ["OUT_PLAN", "OUT_CIRCLE"],
-      investigator: ["OUT_INVESTIGATION"],
-      consultant: ["OUT_CONSULT"],
-      playmaker: ["OUT_CIRCLE", "PORTFOLIO"],
-      coder: ["OUT_HISTORY", "OUT_ISSUE"],
-      ontocoder: ["OUT_HISTORY", "OUT_ISSUE"],
-      bugfixer: ["OUT_HISTORY", "OUT_ISSUE"],
-      taskplanner: ["OUT_HISTORY", "TASKLIST"],
-      orchestrator: ["OUT_HISTORY", "OUT_ISSUE", "OUT_DECISION", "OUT_MEMO"],
-    };
+    it("gives log-activity WORKBENCH alone — it names no key", () => {
+      // The skill that broke the agent-only namespace: it reads consultations
+      // and investigations, SCAN_CONSULT is named only by playmaker and
+      // SCAN_INVESTIGATIONS only by conceptrev, and no agent names both, so no
+      // agent argument resolved it. It scans the tree from WORKBENCH instead —
+      // and asking under its own name is what makes that legible rather than a
+      // borrowed argument that "selects nothing".
+      const p = parse(run(project, "log-activity").stdout);
+      expect(Object.keys(p)).toEqual(["WORKBENCH"]);
+    });
 
-    for (const [agent, keys] of Object.entries(requiredWrites)) {
-      it(`gives ${agent} ${keys.join(" + ")}`, () => {
-        const p = parse(run(project, agent).stdout);
-        for (const key of keys) {
-          expect(p[key], `${agent} writes this kind but got no ${key}`).toBeDefined();
-        }
-      });
-    }
+    it("gives memo OUT_MEMO under its own name — no agent prompt writes memos", () => {
+      // OUT_MEMO used to hang off the orchestrator, whose prompt never writes
+      // a memo. The key now sits with its only writer.
+      expect(parse(run(project, "memo").stdout).OUT_MEMO).toBe("shared/memos");
+      expect(parse(run(project, "orchestrator").stdout).OUT_MEMO).toBeUndefined();
+    });
+
+    it("keeps OUT_MEMO shared even with a Circle active, whoever asks", () => {
+      activate();
+      expect(parse(run(project, "memo").stdout).OUT_MEMO).toBe("shared/memos");
+    });
 
     it("gives reconciler OUT_DECISION — it files decision records (reconciler.md:65)", () => {
       // The specific regression. Absent the key, $OUT_DECISION expanded to the
@@ -398,53 +397,85 @@ describe("bin/fusion-paths", () => {
     });
   });
 
+  // The guards below are driven through a staged copy of the real script, with
+  // fixture prompts as the input. Nothing is stubbed: the script derives its
+  // key set from `<its own dir>/../agents/` and `../skills/`, so staging it in
+  // a scratch bin/ makes the scratch project its plugin root and the fixtures
+  // its prompts. This is the derivation path itself, not a simulation of it.
+  //
+  // The previous versions of these tests patched a `KEYS="…"` literal in the
+  // script's source. That anchor is gone with the declared sets — and a
+  // fixture prompt is the better lever anyway: it injects the fault where a
+  // real fault would now originate, in a prompt.
+  function stage(): string {
+    const bin = join(project, "bin");
+    mkdirSync(bin, { recursive: true });
+    for (const helper of ["fusion-paths", "fusion-workbench-root"]) {
+      const dst = join(bin, helper);
+      writeFileSync(dst, readFileSync(join(pluginRoot, "bin", helper), "utf-8"));
+      chmodSync(dst, 0o755);
+    }
+    return bin;
+  }
+
+  /** Stage the script and give the scratch plugin root one agent prompt. */
+  function stageWithAgent(name: string, body: string): void {
+    stage();
+    mkdirSync(join(project, "agents"), { recursive: true });
+    writeFileSync(join(project, "agents", `${name}.md`), body);
+  }
+
+  function runStaged(name: string): RunResult {
+    try {
+      const stdout = execFileSync(join(project, "bin", "fusion-paths"), [name], {
+        cwd: project,
+        encoding: "utf-8",
+        stdio: ["ignore", "pipe", "pipe"],
+      });
+      return { status: 0, stdout, stderr: "" };
+    } catch (err: any) {
+      return {
+        status: err.status ?? -1,
+        stdout: err.stdout?.toString() ?? "",
+        stderr: err.stderr?.toString() ?? "",
+      };
+    }
+  }
+
   describe("internal error is exit 4, not exit 3 (issue 260716-2001)", () => {
     // The `emits no key it cannot resolve` case above asserts the branch is
     // never taken. This asserts what happens when it is — otherwise a later
     // renumbering of the code passes silently.
     it("exits 4 with a bug-not-your-fault message when a key has no value", () => {
-      // Inject an unresolvable key into a real KEYS set, in a copy of the real
-      // script. Nothing is stubbed: this drives the actual value_for branch.
-      // The copy must sit beside a fusion-workbench-root, which it resolves
-      // relative to its own directory — so stage both in a scratch bin/.
-      const bin = join(project, "bin");
-      mkdirSync(bin, { recursive: true });
-      const broken = join(bin, "fusion-paths");
+      // A key that IS in ORDER but has no value_for branch. Derivation alone
+      // cannot produce this — an unknown key is caught by the ORDER check
+      // first — so ORDER is patched to admit it, and a fixture prompt names
+      // it. This drives the actual value_for fallthrough.
+      const bin = stage();
       const source = readFileSync(fusionPaths, "utf-8");
       const patched = source.replace(
-        'KEYS="OUT_HISTORY OUT_ISSUE SCAN_ISSUES SCAN_PLANS"',
-        'KEYS="OUT_HISTORY OUT_ISSUE SCAN_ISSUES SCAN_PLANS NO_SUCH_KEY"',
+        /^       PORTFOLIO TASKLIST"$/m,
+        '       PORTFOLIO TASKLIST OUT_NOVALUE"',
       );
-      // If the bugfixer key set is ever reworded, the injection silently
-      // becomes a no-op and the test would pass against an unpatched script.
-      expect(patched, "KEYS injection did not apply — update the anchor").not.toBe(source);
-      writeFileSync(broken, patched);
-      chmodSync(broken, 0o755);
-      writeFileSync(
-        join(bin, "fusion-workbench-root"),
-        readFileSync(resolve(dirname(fusionPaths), "fusion-workbench-root"), "utf-8"),
-      );
-      chmodSync(join(bin, "fusion-workbench-root"), 0o755);
+      expect(patched, "ORDER injection did not apply — update the anchor").not.toBe(source);
+      writeFileSync(join(bin, "fusion-paths"), patched);
+      chmodSync(join(bin, "fusion-paths"), 0o755);
+      mkdirSync(join(project, "agents"), { recursive: true });
+      // The injected key must be shaped like a real one ($OUT_*) or the
+      // derivation correctly ignores it and never reaches value_for at all.
+      writeFileSync(join(project, "agents", "fixture.md"), "Write to $OUT_NOVALUE.\n");
 
-      let status = 0;
-      let stderr = "";
-      try {
-        execFileSync(broken, ["bugfixer"], {
-          cwd: project,
-          encoding: "utf-8",
-          stdio: ["ignore", "pipe", "pipe"],
-        });
-      } catch (err: any) {
-        status = err.status;
-        stderr = err.stderr?.toString() ?? "";
-      }
+      const r = runStaged("fixture");
 
       // 4, never 3: a caller keying on 3 would tell the user to fix a pointer
       // that is perfectly fine.
-      expect(status).toBe(4);
-      expect(stderr).toContain("internal error");
-      expect(stderr).toContain("NO_SUCH_KEY");
-      expect(stderr).toContain("not a fault in your workbench");
+      expect(r.status).toBe(4);
+      expect(r.stderr).toContain("no value defined");
+      expect(r.stderr).toContain("OUT_NOVALUE");
+      expect(r.stderr).toContain("not a fault in your workbench");
+      // A caller reading stdout without checking the exit code must not get
+      // half a contract.
+      expect(r.stdout).toBe("");
     });
 
     it("still exits 3 for an orphaned pointer, keeping the two faults distinct", () => {
@@ -453,86 +484,90 @@ describe("bin/fusion-paths", () => {
     });
   });
 
-  describe("a key in a KEYS set but missing from ORDER cannot ship silently", () => {
-    // Emission is driven by ORDER. Before this guard, a key added to a KEYS set
-    // and forgotten in ORDER was dropped without a word: exit 0, key simply
-    // absent, the agent's $SCAN_FOO empty, the write landing at the workbench
-    // root. Adding keys to KEYS sets is the routine change (P-4..P-7 are made
-    // of it), which is what makes this the routine mistake worth guarding.
-    function runPatched(patch: (s: string) => string, agent: string): RunResult {
-      const bin = join(project, "bin");
-      mkdirSync(bin, { recursive: true });
-      const script = join(bin, "fusion-paths");
-      const source = readFileSync(fusionPaths, "utf-8");
-      const patched = patch(source);
-      expect(patched, "patch did not apply — update the anchor").not.toBe(source);
-      writeFileSync(script, patched);
-      chmodSync(script, 0o755);
-      writeFileSync(
-        join(bin, "fusion-workbench-root"),
-        readFileSync(resolve(dirname(fusionPaths), "fusion-workbench-root"), "utf-8"),
-      );
-      chmodSync(join(bin, "fusion-workbench-root"), 0o755);
-      try {
-        const stdout = execFileSync(script, [agent], {
-          cwd: project,
-          encoding: "utf-8",
-          stdio: ["ignore", "pipe", "pipe"],
-        });
-        return { status: 0, stdout, stderr: "" };
-      } catch (err: any) {
-        return {
-          status: err.status ?? -1,
-          stdout: err.stdout?.toString() ?? "",
-          stderr: err.stderr?.toString() ?? "",
-        };
-      }
-    }
-
-    it("exits 4 naming the key and the fix", () => {
-      const r = runPatched(
-        (s) =>
-          s.replace(
-            'KEYS="OUT_HISTORY OUT_ISSUE SCAN_ISSUES SCAN_PLANS"',
-            'KEYS="OUT_HISTORY OUT_ISSUE SCAN_ISSUES SCAN_PLANS ORPHAN_KEY"',
-          ),
-        "bugfixer",
-      );
+  describe("a key named in a prompt but unknown to the resolver cannot ship silently", () => {
+    // Emission is driven by ORDER. A derived key absent from ORDER is never
+    // looked up, so it never reaches value_for: it would simply vanish — exit
+    // 0, key absent, the prompt's $SCAN_FOO empty, the write landing at the
+    // workbench root. Silent, and the same failure the value_for guard exists
+    // to prevent, one step earlier.
+    //
+    // Derivation changes what this catches, not whether it is needed: the key
+    // can no longer be mistyped in the resolver, so what it catches now is a
+    // key mistyped in a prompt, or a genuinely new key introduced before the
+    // resolver learned to value it.
+    it("exits 4 naming the prompt, the key and the fix", () => {
+      stageWithAgent("fixture", "Skim $SCAN_ISUES for open defects.\n");
+      const r = runStaged("fixture");
       expect(r.status).toBe(4);
-      expect(r.stderr).toContain("ORPHAN_KEY");
-      expect(r.stderr).toContain("missing from ORDER");
+      expect(r.stderr).toContain("SCAN_ISUES");
+      expect(r.stderr).toContain("does not know");
+      expect(r.stderr).toContain("agents/fixture.md");
       expect(r.stdout).toBe("");
     });
 
-    it("emits nothing at all when it fails — no partial key set", () => {
-      // A caller reading stdout without checking the exit code must not get
-      // half a contract.
-      const r = runPatched(
-        (s) =>
-          s
-            .replace(/^       PORTFOLIO TASKLIST"$/m, '       PORTFOLIO TASKLIST NO_VALUE_KEY"')
-            .replace(
-              'KEYS="OUT_HISTORY OUT_ISSUE SCAN_ISSUES SCAN_PLANS"',
-              'KEYS="OUT_HISTORY OUT_ISSUE SCAN_ISSUES SCAN_PLANS NO_VALUE_KEY"',
-            ),
-        "bugfixer",
+    it("does not mistake the prompts' own `$OUT_*` boilerplate for a key", () => {
+      // Every converted prompt contains the sentence "use them wherever a
+      // later step names a `$OUT_*` or `$SCAN_*` value". If the derivation
+      // matched those, every agent would exit 4 on every run.
+      stageWithAgent(
+        "fixture",
+        "Use them wherever a later step names a `$OUT_*` or `$SCAN_*` value. File to $OUT_ISSUE.\n",
       );
-      expect(r.status).toBe(4);
-      expect(r.stderr).toContain("no value defined");
-      expect(r.stdout).toBe("");
+      const r = runStaged("fixture");
+      expect(r.status).toBe(0);
+      expect(Object.keys(parse(r.stdout)).sort()).toEqual(["OUT_ISSUE", "WORKBENCH"]);
     });
 
     it("every emitted key set is complete and self-consistent for all 15 agents", () => {
-      // The positive counterpart: with the guard in place, a clean run proves
-      // every key in every KEYS set is both ordered and valued.
-      for (const agent of [
-        "orchestrator", "coder", "ontocoder", "bugfixer", "coderev",
-        "ontorev", "conceptrev", "planner", "shaper", "taskplanner",
-        "reconciler", "analyst", "investigator", "consultant", "playmaker",
-      ]) {
+      // The positive counterpart: with the guards in place, a clean run proves
+      // every key every prompt names is both ordered and valued.
+      for (const agent of AGENTS) {
         const r = run(project, agent);
         expect(r.status, `${agent}: ${r.stderr}`).toBe(0);
         expect(r.stderr).toBe("");
+      }
+    });
+
+    it("resolves every skill too, with no stderr", () => {
+      for (const skill of SKILLS) {
+        const r = run(project, skill);
+        expect(r.status, `${skill}: ${r.stderr}`).toBe(0);
+        expect(r.stderr).toBe("");
+      }
+    });
+  });
+
+  describe("the name namespace is flat: agents and skills together", () => {
+    it("has no name that is both an agent and a skill", () => {
+      // The one real cost of the flat namespace. No collision exists today;
+      // this is what tells us the day one is introduced, at the point where a
+      // name is added rather than at the point where a consumer gets the wrong
+      // paths.
+      const collisions = AGENTS.filter((a) => SKILLS.includes(a));
+      expect(collisions).toEqual([]);
+    });
+
+    it("exits 4 on a collision rather than silently preferring one prompt", () => {
+      stageWithAgent("fixture", "File to $OUT_ISSUE.\n");
+      mkdirSync(join(project, "skills", "fixture"), { recursive: true });
+      writeFileSync(join(project, "skills", "fixture", "SKILL.md"), "Write to $OUT_MEMO.\n");
+
+      const r = runStaged("fixture");
+      // Not exit 2: the name is known, twice over. Not a silent pick: either
+      // choice hands a consumer another consumer's paths.
+      expect(r.status).toBe(4);
+      expect(r.stderr).toContain("both an agent");
+      expect(r.stderr).toContain("Rename");
+      expect(r.stdout).toBe("");
+    });
+
+    it("rejects a name that could escape agents/ or skills/", () => {
+      // The name is interpolated into a path, so this guard is a safety
+      // property rather than a style rule.
+      for (const bad of ["../etc/passwd", "..", "coder/../coder", "Coder"]) {
+        const r = run(project, bad);
+        expect(r.status, `${bad} must not resolve`).toBe(2);
+        expect(r.stdout).toBe("");
       }
     });
   });

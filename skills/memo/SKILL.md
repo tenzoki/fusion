@@ -16,7 +16,7 @@ Both live in the shared memo store, in separate files (see below).
 ## Step 0 — Resolve the memo store
 
 ```bash
-"$FUSION_PLUGIN_ROOT/bin/fusion-paths" orchestrator
+"$FUSION_PLUGIN_ROOT/bin/fusion-paths" memo
 ```
 
 Read `WORKBENCH` and `OUT_MEMO` from the output. `$WORKBENCH/$OUT_MEMO` is the directory both files live in — it is the only correct answer to "where does a memo go". Never guess it; if the resolver fails, stop and report.
@@ -27,7 +27,7 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
 - **Exit 3** — the workbench state is inconsistent: `.active-circle` is orphaned or corrupt. Tell the user to fix or delete the pointer before continuing.
 - **Exit 4** — an internal error in `fusion-paths`. The user's workbench is fine; do **not** send them to check `.active-circle`. Report it as a fusion bug.
 
-**Why `orchestrator` and not `memo`:** `fusion-paths` takes an *agent* name, and skills run inside an agent's session, so a skill resolves under the agent that runs it (`rules/fusion-workbench-conventions.md` `## Path Resolution`). `orchestrator` is the agent whose key set carries `OUT_MEMO`. The value does not depend on the argument: `OUT_MEMO` is unconditionally `shared/memos` because a memo never arises from executing a Directive, so it can never belong to a Circle (Origin Rule). Passing `orchestrator` therefore yields the right store whichever agent — or none — is actually running.
+**Why `memo`:** `fusion-paths` takes the name of the consumer asking, and a skill is its own consumer (`rules/fusion-workbench-conventions.md` `## Path Resolution`). This skill's key set is read from this file, so `OUT_MEMO` is emitted here because this file names it. `OUT_MEMO` is unconditionally `shared/memos` — a memo never arises from executing a Directive, so it can never belong to a Circle (Origin Rule) — which means the store is right whichever agent, or none, is actually running.
 
 ## File location
 

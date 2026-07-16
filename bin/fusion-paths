@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
-# fusion-paths — resolve an agent's workbench write and search targets
+# fusion-paths — resolve a consumer's workbench write and search targets
 #
-# Usage: fusion-paths <agent-name>
+# Usage: fusion-paths <name>
+#
+# <name> is an agent (agents/<name>.md) or a skill (skills/<name>/SKILL.md).
+# The two share one flat namespace: each consumer asks for its own keys under
+# its own name — `fusion-paths coder`, `fusion-paths memo`.
 #
 # Prints one KEY=value line per emitted key on stdout. The single resolution
 # point for the workbench layout: no agent prompt and no skill body hard-codes
@@ -26,10 +30,11 @@
 # resolver's own). Callers key on the code, so no code carries two meanings:
 #   0  success
 #   1  usage error, or no workbench found above pwd
-#   2  unknown agent
+#   2  unknown name (no such agent and no such skill)
 #   3  .active-circle is corrupt or orphaned (points at a missing directory)
 #      — a workbench-STATE fault. The user fixes the pointer.
-#   4  internal error: a key in a KEYS set has no value in value_for()
+#   4  internal error: the prompt names a key this resolver cannot order or
+#      value, or one name is both an agent and a skill
 #      — a fusion BUG. The user cannot fix it by touching the workbench, and
 #      must not be told to (see rules/fusion-workbench-conventions.md
 #      "## Path Resolution" → Exit codes).
@@ -51,50 +56,79 @@
 #     workbench's state is inconsistent, and quietly writing to the wrong store
 #     is worse than stopping.
 #
-# Per-agent emission mirrors bin/fusion-rules: each agent receives only the
-# keys it needs — a coder gets no OUT_PLAN, a playmaker gets no OUT_ISSUE.
-# The key sets below are derived from what each agent's prompt actually reads
-# and writes, audited prompt by prompt (all 15) on 2026-07-16, and re-checked
-# against the converted prompts on 2026-07-17.
+# ---------------------------------------------------------------------------
+# Why the key sets are derived and not declared
+# ---------------------------------------------------------------------------
+# Emission is per-consumer, as in bin/fusion-rules: each gets only the keys it
+# needs — a coder gets no OUT_PLAN, a playmaker gets no OUT_ISSUE. What each
+# needs is READ OUT OF ITS PROMPT, not declared here.
 #
-# The audit is hand-made, and hand-made is how the first version drifted — and
-# how it drifted again: the 2026-07-16 pass missed reconciler's OUT_DECISION,
-# found only when P-6 converted the prompt and `$OUT_DECISION` expanded empty.
-# One miss in fifteen, from the one pass that read every prompt on purpose.
+# The declared version failed twice. The sets were built in T2-A by a
+# deliberate line-by-line audit of all 15 prompts, and that audit went 14/15:
+# it missed that reconciler files decision records, so $OUT_DECISION expanded
+# empty and every record it filed landed at the workbench root. Silent — the
+# write succeeded, in the wrong place. Found only when P-6 converted the
+# prompt; fixed in 45d8a71. The problem was never care. A declared set is a
+# second copy of what the prompt already says, and every prompt edit re-rolls
+# the dice on the copy (HYG-SOT).
 #
-# The signal that pass lacked now exists. A pre-conversion prompt named a
-# directory in prose, and no grep could tell "Skim fusion-workbench/issues/" (a
-# read) from "file to fusion-workbench/issues/" (a write) without judgment.
-# P-4..P-7 created the marker: `$SCAN_ISSUES` vs `$OUT_ISSUE` in the prompt IS
-# now machine-readable, so the consumer-agreement check is mechanical and
-# belongs in P-8's lint gate:
-#   fusion-workbench/issues/260716-1957[o]-fusion-paths-key-sets-miss-reads-agents-perform.md
+# T2-A judged mechanical derivation impossible, and it was: a pre-conversion
+# prompt named a directory in prose, and no grep separates "Skim
+# fusion-workbench/issues/" (a read) from "file to fusion-workbench/issues/"
+# (a write) without judgment. P-4..P-7 removed that obstacle by converting the
+# prompts. `$SCAN_ISSUES` vs `$OUT_ISSUE` in the prompt body IS the read/write
+# marker now, and it is machine-readable. So the prompt is the single source,
+# and the rule the conventions state — every directory a consumer reads needs a
+# SCAN_* key, every kind it writes needs an OUT_* — holds by construction
+# instead of by audit.
 #
-# Two things that gate must get right, both learned from the re-check:
-#   - It must union each agent's prompt with the skills that run in its session
-#     (see the skill note below), or it will call the orchestrator's OUT_MEMO,
-#     OUT_CIRCLE and SCAN_HISTORY spare. They are used — by /fusion:memo,
-#     /fusion:circle-pop and /fusion:circle-stash.
-#   - Under-emission and over-emission are different findings. A key the prompt
-#     uses and the resolver withholds is a live bug (writes land at the
-#     workbench root). A key the resolver emits and the prompt never names is
-#     ambiguous: the prompt may be missing the path, not the set the key.
+# Derivation is at run time, not generated into this file at build time:
+#   - It costs ONE grep over ONE file. The set is derived for the requested
+#     name only, so `fusion-paths coder` reads agents/coder.md and nothing
+#     else. (The cost feared when this was decided — "a grep over 26 files on
+#     every call" — assumed all sets were built per call. They are not.)
+#   - A generated block would be a third artifact to maintain and ship, and it
+#     would go stale exactly the way the declared sets did: whenever someone
+#     edits a prompt and does not re-run the generator. That is the same defect
+#     with an extra step.
 #
-# Until that gate lands, a key set is a claim about a prompt that nothing
-# checks. Change one only against the prompt's text, and cite the line.
+# This diverges from bin/fusion-rules, which hand-maintains its agent → rule
+# pattern mapping, and the divergence is deliberate. fusion-rules has no source
+# to derive from: an agent's prompt does not name the rule-file patterns that
+# apply to it, so its mapping is a genuine authored fact. This resolver's key
+# set is not a fact — it is a restatement of the prompt. The two scripts stay
+# symmetric where symmetry was the point (one argument, KEY=value on stdout,
+# same Setup step, same 0/1/2 exit shape); only the internal table differs,
+# because only one of them has a source of truth to read.
 #
-# Note on skill callers: the signature takes an AGENT name. Skills execute
-# inside an agent's session, so a skill resolves paths under the agent that
-# runs it (e.g. /fusion:memo runs in the orchestrator's session, which is why
-# the orchestrator carries OUT_MEMO). If a later step needs skill names as a
-# first-class argument namespace, extend the case statement below — do not
-# hard-code the path in the skill body.
+# What derivation gives up: over-emission — a key emitted that no prompt names
+# — becomes structurally impossible, and with it the signal it carried. That
+# signal was real but misfiled. When a declared set held a key the prompt never
+# used, the finding was usually "this prompt is missing a step" (coderev and
+# ontorev have no history-log step though 13 of 15 agents do; planner names
+# issue entries with no path), not "this key is spare". A prompt gap is found
+# by reading the prompt. It was only visible here by accident, as the diff
+# between a human's belief about a prompt and the prompt's text — and it cost
+# the under-emission defect above to keep. The eleven known cases are recorded
+# as prompt-gap findings in
+# fusion-workbench/issues/260717-0031[o]-p8-lint-gate-scope-open-questions-from-conversions.md
+# so they survive this change rather than dissolving into it.
+#
+# Consequence for P-8's lint gate: under- and over-emission both leave its
+# scope. Its remaining job is the one it was really for — no store-path literal
+# in a prompt.
+#
+# Note on skills: a skill passes its OWN name. `/fusion:memo` resolves
+# `fusion-paths memo` and gets OUT_MEMO from skills/memo/SKILL.md. The one
+# exception is `/fusion:setup`, which is the orchestrator's Setup procedure
+# factored into a skill: its Step 2 resolves values the ORCHESTRATOR holds for
+# the whole session, so it asks for `orchestrator` and is right to.
 
 set -eu
 
-AGENT="${1:-}"
-if [ -z "$AGENT" ]; then
-  echo "Usage: $0 <agent-name>" >&2
+NAME="${1:-}"
+if [ -z "$NAME" ]; then
+  echo "Usage: $0 <name>   # an agent (agents/<name>.md) or a skill (skills/<name>/SKILL.md)" >&2
   exit 1
 fi
 
@@ -104,93 +138,64 @@ if [ "$#" -gt 1 ]; then
 fi
 
 # ---------------------------------------------------------------------------
-# 1. Per-agent key sets.
+# 1. Resolve the name to exactly one prompt file, and derive its key set.
 # ---------------------------------------------------------------------------
-case "$AGENT" in
-  orchestrator)
-    KEYS="OUT_HISTORY OUT_ISSUE OUT_DECISION OUT_MEMO OUT_CIRCLE
-          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_REVIEWS
-          SCAN_ANALYSES SCAN_CIRCLES PORTFOLIO TASKLIST" ;;
-  coder|ontocoder)
-    # SCAN_HISTORY: both read the latest history log when resuming an
-    # interrupted session (coder.md:75, ontocoder.md:83).
-    KEYS="OUT_HISTORY OUT_ISSUE OUT_DECISION
-          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY TASKLIST" ;;
-  bugfixer)
-    # No SCAN_HISTORY: bugfixer.md:88 writes a history log and never reads one.
-    KEYS="OUT_HISTORY OUT_ISSUE SCAN_ISSUES SCAN_PLANS" ;;
-  coderev|ontorev)
-    # SCAN_HISTORY: both skim recent history to avoid re-treading completed
-    # work (coderev.md:20, ontorev.md:17).
-    KEYS="OUT_REVIEW OUT_ISSUE OUT_DECISION OUT_HISTORY
-          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_REVIEWS" ;;
-  conceptrev)
-    # No OUT_INVESTIGATION: conceptrev.md:32 has exactly one written artifact,
-    # the assessment; :42 reads investigations as INPUT. A write key for a
-    # read-only agent inverts the contract — SCAN_INVESTIGATIONS is the read.
-    # SCAN_REVIEWS: :22 skims prior verdicts before writing a new one.
-    KEYS="OUT_REVIEW
-          SCAN_PLANS SCAN_ANALYSES SCAN_REVIEWS SCAN_INVESTIGATIONS TASKLIST" ;;
-  planner)
-    # No SCAN_HISTORY: planner.md:76 logs to history and never reads it.
-    KEYS="OUT_PLAN OUT_HISTORY OUT_ISSUE OUT_DECISION
-          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_ANALYSES" ;;
-  shaper)
-    # SCAN_ISSUES: shaper.md:116 — "Read both folders in your context-loading
-    # step so you don't refile something already tracked."
-    KEYS="OUT_PLAN OUT_HISTORY OUT_ISSUE OUT_DECISION OUT_CIRCLE
-          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_CIRCLES" ;;
-  taskplanner)
-    # SCAN_HISTORY: taskplanner.md:62 — "skim recent entries for context".
-    KEYS="OUT_HISTORY
-          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_REVIEWS
-          TASKLIST" ;;
-  reconciler)
-    # OUT_DECISION: reconciler.md:65 files a decision record beside an issue
-    # ("file an issue in $OUT_ISSUE (or a decision record in $OUT_DECISION)"),
-    # and :159 names it as the destination when a misfiled defect is relocated.
-    # Missed by the 2026-07-16 audit: a decision-store *write* reads as a
-    # decision-store mention, and SCAN_DECISIONS was already present.
-    KEYS="OUT_HISTORY OUT_ISSUE OUT_DECISION
-          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_REVIEWS
-          SCAN_ANALYSES" ;;
-  analyst)
-    # SCAN_HISTORY: analyst.md:18 — "Skim recent entries".
-    KEYS="OUT_ANALYSIS OUT_HISTORY OUT_ISSUE OUT_DECISION
-          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_ANALYSES" ;;
-  investigator)
-    # SCAN_HISTORY (:21) and SCAN_DECISIONS (:22) — both read at Setup, neither
-    # was emitted. No SCAN_INVESTIGATIONS: investigator.md names
-    # investigations/ at :3, :43 and :95, and all three are writes. It does not
-    # read prior investigations. Adding the key for a read the prompt does not
-    # perform would be speculation (HYG-NO-SPECULATION); if that read is wanted,
-    # it is a prompt change first.
-    KEYS="OUT_INVESTIGATION OUT_HISTORY OUT_ISSUE OUT_DECISION
-          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_REVIEWS" ;;
-  consultant)
-    # SCAN_ISSUES + SCAN_HISTORY: consultant.md:29-30 — "Skim recent history
-    # entries", "Skim open files in issues/ and decisions/". No SCAN_CONSULT:
-    # the consultant writes consult reports (:76, :95), it does not read them.
-    KEYS="OUT_CONSULT OUT_HISTORY OUT_ISSUE OUT_DECISION
-          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY" ;;
-  playmaker)
-    # SCAN_ISSUES: playmaker.md:103 counts pending issues when scoring a
-    # Circle — a read. It never files one (:62, :68), hence no OUT_ISSUE.
-    # SCAN_CONSULT: :48 reads consult/ when a Grounding snapshot cites it.
-    KEYS="OUT_CIRCLE OUT_HISTORY PORTFOLIO
-          SCAN_CIRCLES SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_ANALYSES
-          SCAN_HISTORY SCAN_CONSULT TASKLIST" ;;
-  *)
-    echo "fusion-paths: unknown agent '$AGENT'" >&2
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd -P)"
+PLUGIN_ROOT="$(dirname "$SCRIPT_DIR")"
+
+# Names are flat lowercase slugs. The guard is a safety property, not a style
+# rule: the name is interpolated into a path below, so anything with a slash or
+# a dot segment could read a file outside agents/ and skills/.
+#
+# POSIX classes, not `[!a-z0-9-]`: a range in a case pattern is collation-based,
+# and under most locales `a-z` also matches uppercase. That let `Coder` through
+# — and on a case-insensitive filesystem it then resolved to agents/coder.md,
+# so the guard was passing for the wrong reason on the machine most likely to
+# run it.
+case "$NAME" in
+  *[![:lower:][:digit:]-]*)
+    echo "fusion-paths: unknown name '$NAME'. A name is an agent (agents/<name>.md) or a skill (skills/<name>/SKILL.md), and is a lowercase slug." >&2
     exit 2
     ;;
 esac
+
+AGENT_PROMPT="$PLUGIN_ROOT/agents/$NAME.md"
+SKILL_PROMPT="$PLUGIN_ROOT/skills/$NAME/SKILL.md"
+
+if [ -f "$AGENT_PROMPT" ] && [ -f "$SKILL_PROMPT" ]; then
+  # Agents and skills share one flat namespace, so a name that is both has two
+  # prompts and two key sets, and no basis to prefer either. Silently picking
+  # one would hand a consumer another consumer's paths. No collision exists
+  # today (checked over all 15 agents and all 13 skills, 2026-07-17); this
+  # fires the moment someone creates one, at which point the fix is a rename.
+  echo "fusion-paths: internal error — '$NAME' is both an agent (agents/$NAME.md) and a skill (skills/$NAME/SKILL.md). The namespace is flat, so the key set is ambiguous. Rename one of them. This is a bug in fusion, not a fault in your workbench." >&2
+  exit 4
+elif [ -f "$AGENT_PROMPT" ]; then
+  PROMPT="$AGENT_PROMPT"
+elif [ -f "$SKILL_PROMPT" ]; then
+  PROMPT="$SKILL_PROMPT"
+else
+  echo "fusion-paths: unknown name '$NAME'. Expected an agent (agents/$NAME.md) or a skill (skills/$NAME/SKILL.md)." >&2
+  exit 2
+fi
+
+# The prompt's own `$OUT_*` / `$SCAN_*` / `$PORTFOLIO` / `$TASKLIST` references
+# ARE the key set. WORKBENCH and CIRCLE are deliberately not matched: both are
+# emitted unconditionally, so they are not part of any consumer's set.
+#
+# `$OUT_*` and `$SCAN_*` appear literally in the prompts' boilerplate ("use
+# them wherever a later step names a `$OUT_*` value"). They do not match: the
+# pattern requires a letter after the underscore, and `*` is not one.
+#
+# A consumer whose prompt names no key derives an empty set and receives
+# WORKBENCH alone. That is a true answer, not a failure — /fusion:help and
+# /fusion:commit file nothing.
+KEYS="$(grep -oE '\$(OUT|SCAN)_[A-Z][A-Z_]*|\$PORTFOLIO|\$TASKLIST' "$PROMPT" | tr -d '$' | sort -u | tr '\n' ' ')"
 
 # ---------------------------------------------------------------------------
 # 2. Locate the workbench. Delegated to bin/fusion-workbench-root — the single
 #    source of truth for "is this project fusion-set-up, and where".
 # ---------------------------------------------------------------------------
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd -P)"
 if ! PROJECT_ROOT="$("$SCRIPT_DIR/fusion-workbench-root")"; then
   echo "fusion-paths: no fusion workbench found above $(pwd). Run /fusion:setup first." >&2
   exit 1
@@ -278,8 +283,8 @@ value_for() {
     *)
       # Reached when a key is in ORDER but has no value here — the second half
       # of the same guarantee the ORDER check below enforces. Between them:
-      # a key must be in a KEYS set, in ORDER, and valued here, or the run
-      # stops. None of the three can be forgotten silently.
+      # a derived key must be in ORDER and valued here, or the run stops.
+      # Neither can be forgotten silently.
       # Loud rather than silent, so a key added without a value cannot ship as
       # an empty string and send an agent's writes to the workbench root.
       # Exit 4, not 3: a caller that keys on 3 tells the user to fix
@@ -291,7 +296,7 @@ value_for() {
 }
 
 # ---------------------------------------------------------------------------
-# 5. Emit. Canonical order, filtered by the agent's key set.
+# 5. Emit. Canonical order, filtered by the derived key set.
 # ---------------------------------------------------------------------------
 ORDER="OUT_PLAN OUT_HISTORY OUT_ISSUE OUT_DECISION OUT_REVIEW OUT_ANALYSIS
        OUT_INVESTIGATION OUT_CONSULT OUT_MEMO OUT_CIRCLE
@@ -307,22 +312,26 @@ has_key() {
   return 1
 }
 
-# Emission is driven by ORDER, not by KEYS, so a key present in a KEYS set but
-# absent from ORDER is never looked up — it does not reach value_for, and the
-# unreachable-branch guard there never fires. It simply vanishes: the agent is
-# not given the key, its prompt expands $SCAN_FOO to the empty string, and the
-# write lands at the workbench root. Silent, and exactly the failure mode the
-# value_for guard exists to prevent, arrived at one step earlier.
+# Emission is driven by ORDER, not by KEYS, so a derived key absent from ORDER
+# is never looked up — it does not reach value_for, and the unreachable-branch
+# guard there never fires. It simply vanishes: the consumer is not given the
+# key, its prompt expands $SCAN_FOO to the empty string, and the write lands at
+# the workbench root. Silent, and exactly the failure mode the value_for guard
+# exists to prevent, arrived at one step earlier.
 #
-# Adding keys to KEYS sets is the routine change here (P-4..P-7 are made of
-# it), so this check guards the routine mistake rather than the exotic one.
+# Derivation changes what this catches but not that it is needed. The key can
+# no longer be mistyped HERE — it is read from the prompt — so what it now
+# catches is a key mistyped THERE ($SCAN_ISUES), or a genuinely new key
+# introduced in a prompt before this resolver learned to value it. Both are
+# authoring errors in the same class, and both stop the run rather than
+# quietly dropping a path.
 for key in $KEYS; do
   found=0
   for known in $ORDER; do
     [ "$key" = "$known" ] && { found=1; break; }
   done
   if [ "$found" = 0 ]; then
-    echo "fusion-paths: internal error — key '$key' is in the '$AGENT' key set but missing from ORDER, so it would never be emitted. Add it to ORDER and to value_for(). This is a bug in fusion-paths, not a fault in your workbench." >&2
+    echo "fusion-paths: internal error — '$PROMPT' names \$$key, which this resolver does not know. Either it is a typo in the prompt, or the key is new and must be added to ORDER and to value_for() in $0. This is a bug in fusion, not a fault in your workbench." >&2
     exit 4
   fi
 done
