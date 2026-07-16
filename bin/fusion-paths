@@ -1,0 +1,247 @@
+#!/usr/bin/env bash
+# fusion-paths — resolve an agent's workbench write and search targets
+#
+# Usage: fusion-paths <agent-name>
+#
+# Prints one KEY=value line per emitted key on stdout. The single resolution
+# point for the workbench layout: no agent prompt and no skill body hard-codes
+# a store path — the prompt says "write your plan to $OUT_PLAN", this script
+# says what $OUT_PLAN is.
+#
+# The layout, the Origin Rule and the meaning of every key are defined in
+# rules/fusion-workbench-conventions.md (sections "## fusion-workbench Layout",
+# "## Origin Rule (Herkunftsregel)", "## Path Resolution (Pfadauflösung)").
+# That document and this script are the only two places a store-directory path
+# literal may appear.
+#
+# Called from Setup step 2, alongside `fusion-rules <agent>` — the step every
+# agent demonstrably runs. Resolve once, use the values for the session.
+#
+# Output shape:
+#   WORKBENCH   absolute path to fusion-workbench/
+#   everything else  workbench-relative
+#   multi-value keys (SCAN_*)  space-separated
+#
+# Exit codes (the shape of bin/fusion-rules, plus one):
+#   0  success
+#   1  usage error, or no workbench found above pwd
+#   2  unknown agent
+#   3  .active-circle is corrupt or orphaned (points at a missing directory)
+#
+# Resolution rules (from the conventions' "## Path Resolution"):
+#   - Active Circle   → every OUT_* points into circles/<name>/
+#   - No .active-circle → every OUT_* points into shared/. This is not an error
+#     state: work outside Circles is routine and has a defined home.
+#   - OUT_INVESTIGATION / OUT_CONSULT / OUT_MEMO are unconditionally shared.
+#     None of the three arises from executing a Directive, so none can
+#     originate in a Circle.
+#   - Every SCAN_* carries BOTH stores when a Circle is active, and collapses
+#     to the shared store alone when none is. Searching must cover both.
+#   - An orphaned .active-circle is an error: stderr + non-zero exit, no silent
+#     fall back to shared/ (HYG-NO-SILENT-FAIL). A stale pointer means the
+#     workbench's state is inconsistent, and quietly writing to the wrong store
+#     is worse than stopping.
+#
+# Per-agent emission mirrors bin/fusion-rules: each agent receives only the
+# keys it needs — a coder gets no OUT_PLAN, a playmaker gets no OUT_ISSUE.
+# The key sets below are derived from what each agent's prompt actually reads
+# and writes.
+#
+# Note on skill callers: the signature takes an AGENT name. Skills execute
+# inside an agent's session, so a skill resolves paths under the agent that
+# runs it (e.g. /fusion:memo runs in the orchestrator's session, which is why
+# the orchestrator carries OUT_MEMO). If a later step needs skill names as a
+# first-class argument namespace, extend the case statement below — do not
+# hard-code the path in the skill body.
+
+set -eu
+
+AGENT="${1:-}"
+if [ -z "$AGENT" ]; then
+  echo "Usage: $0 <agent-name>" >&2
+  exit 1
+fi
+
+if [ "$#" -gt 1 ]; then
+  echo "fusion-paths: expected exactly one argument, got $#" >&2
+  exit 1
+fi
+
+# ---------------------------------------------------------------------------
+# 1. Per-agent key sets.
+# ---------------------------------------------------------------------------
+case "$AGENT" in
+  orchestrator)
+    KEYS="OUT_HISTORY OUT_ISSUE OUT_DECISION OUT_MEMO OUT_CIRCLE
+          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_REVIEWS
+          SCAN_ANALYSES SCAN_CIRCLES PORTFOLIO TASKLIST" ;;
+  coder|ontocoder)
+    KEYS="OUT_HISTORY OUT_ISSUE OUT_DECISION
+          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS TASKLIST" ;;
+  bugfixer)
+    KEYS="OUT_HISTORY OUT_ISSUE SCAN_ISSUES SCAN_PLANS" ;;
+  coderev|ontorev)
+    KEYS="OUT_REVIEW OUT_ISSUE OUT_DECISION OUT_HISTORY
+          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_REVIEWS" ;;
+  conceptrev)
+    KEYS="OUT_REVIEW OUT_INVESTIGATION
+          SCAN_PLANS SCAN_ANALYSES TASKLIST" ;;
+  planner)
+    KEYS="OUT_PLAN OUT_HISTORY OUT_ISSUE OUT_DECISION
+          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_ANALYSES" ;;
+  shaper)
+    KEYS="OUT_PLAN OUT_HISTORY OUT_ISSUE OUT_DECISION OUT_CIRCLE
+          SCAN_PLANS SCAN_DECISIONS SCAN_CIRCLES" ;;
+  taskplanner)
+    KEYS="OUT_HISTORY
+          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_REVIEWS TASKLIST" ;;
+  reconciler)
+    KEYS="OUT_HISTORY OUT_ISSUE
+          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_REVIEWS
+          SCAN_ANALYSES" ;;
+  analyst)
+    KEYS="OUT_ANALYSIS OUT_HISTORY OUT_ISSUE OUT_DECISION
+          SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_ANALYSES" ;;
+  investigator)
+    KEYS="OUT_INVESTIGATION OUT_HISTORY OUT_ISSUE OUT_DECISION
+          SCAN_PLANS SCAN_ISSUES SCAN_REVIEWS" ;;
+  consultant)
+    KEYS="OUT_CONSULT OUT_HISTORY OUT_ISSUE OUT_DECISION
+          SCAN_PLANS SCAN_DECISIONS" ;;
+  playmaker)
+    KEYS="OUT_CIRCLE OUT_HISTORY PORTFOLIO
+          SCAN_CIRCLES SCAN_PLANS SCAN_DECISIONS SCAN_ANALYSES SCAN_HISTORY
+          TASKLIST" ;;
+  *)
+    echo "fusion-paths: unknown agent '$AGENT'" >&2
+    exit 2
+    ;;
+esac
+
+# ---------------------------------------------------------------------------
+# 2. Locate the workbench. Delegated to bin/fusion-workbench-root — the single
+#    source of truth for "is this project fusion-set-up, and where".
+# ---------------------------------------------------------------------------
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd -P)"
+if ! PROJECT_ROOT="$("$SCRIPT_DIR/fusion-workbench-root")"; then
+  echo "fusion-paths: no fusion workbench found above $(pwd). Run /fusion:setup first." >&2
+  exit 1
+fi
+WORKBENCH="$PROJECT_ROOT/fusion-workbench"
+
+# ---------------------------------------------------------------------------
+# 3. Read .active-circle. Absent → no Circle (not an error). Present but
+#    corrupt or orphaned → error, no silent fallback.
+# ---------------------------------------------------------------------------
+POINTER="$WORKBENCH/.active-circle"
+CIRCLE=""
+if [ -f "$POINTER" ]; then
+  # A bare directory name: no marker, no circles/ prefix, no .md.
+  CIRCLE_NAME="$(head -n 1 "$POINTER" | tr -d '\r' | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//')"
+
+  if [ -z "$CIRCLE_NAME" ]; then
+    echo "fusion-paths: $POINTER is empty. It must hold the active Circle's directory name (e.g. 260716-1847-workbench-umbau), or be absent when no Circle is active." >&2
+    exit 3
+  fi
+
+  case "$CIRCLE_NAME" in
+    */*|.|..)
+      echo "fusion-paths: $POINTER holds '$CIRCLE_NAME'. It must be a bare directory name — no path separators, no 'circles/' prefix, no '.md' suffix." >&2
+      exit 3
+      ;;
+  esac
+
+  if [ ! -d "$WORKBENCH/circles/$CIRCLE_NAME" ]; then
+    echo "fusion-paths: $POINTER points at 'circles/$CIRCLE_NAME', which does not exist. The workbench state is inconsistent — refusing to fall back to shared/. Fix or delete the pointer." >&2
+    exit 3
+  fi
+
+  CIRCLE="circles/$CIRCLE_NAME"
+fi
+
+# ---------------------------------------------------------------------------
+# 4. Resolve values.
+# ---------------------------------------------------------------------------
+
+# OUT_* base: the active Circle when there is one, the shared store when not.
+if [ -n "$CIRCLE" ]; then
+  OUT_BASE="$CIRCLE"
+else
+  OUT_BASE="shared"
+fi
+
+scan_value() {
+  # $1 = artifact subdirectory name. Always both stores when a Circle is
+  # active; the shared store alone when none is.
+  if [ -n "$CIRCLE" ]; then
+    printf '%s %s' "$CIRCLE/$1" "shared/$1"
+  else
+    printf '%s' "shared/$1"
+  fi
+}
+
+value_for() {
+  case "$1" in
+    OUT_PLAN)           printf '%s' "$OUT_BASE/planning" ;;
+    OUT_HISTORY)        printf '%s' "$OUT_BASE/history" ;;
+    OUT_ISSUE)          printf '%s' "$OUT_BASE/issues" ;;
+    OUT_DECISION)       printf '%s' "$OUT_BASE/decisions" ;;
+    OUT_REVIEW)         printf '%s' "$OUT_BASE/reviews" ;;
+    OUT_ANALYSIS)       printf '%s' "$OUT_BASE/analyses" ;;
+    # Unconditionally shared — never Circle-bound.
+    OUT_INVESTIGATION)  printf '%s' "shared/investigations" ;;
+    OUT_CONSULT)        printf '%s' "shared/consult" ;;
+    OUT_MEMO)           printf '%s' "shared/memos" ;;
+    OUT_CIRCLE)         printf '%s' "circles" ;;
+    SCAN_PLANS)         scan_value "planning" ;;
+    SCAN_ISSUES)        scan_value "issues" ;;
+    SCAN_DECISIONS)     scan_value "decisions" ;;
+    SCAN_HISTORY)       scan_value "history" ;;
+    SCAN_REVIEWS)       scan_value "reviews" ;;
+    SCAN_ANALYSES)      scan_value "analyses" ;;
+    SCAN_CIRCLES)       printf '%s' "circles" ;;
+    PORTFOLIO)          printf '%s' "portfolio.md" ;;
+    TASKLIST)           printf '%s' "tasklist.md" ;;
+    *)
+      # Unreachable: every key in a KEYS set must be resolvable here. Loud
+      # rather than silent, so a future key added to a set without a value
+      # cannot ship as an empty string.
+      echo "fusion-paths: internal error — no value defined for key '$1'" >&2
+      exit 3
+      ;;
+  esac
+}
+
+# ---------------------------------------------------------------------------
+# 5. Emit. Canonical order, filtered by the agent's key set.
+# ---------------------------------------------------------------------------
+ORDER="OUT_PLAN OUT_HISTORY OUT_ISSUE OUT_DECISION OUT_REVIEW OUT_ANALYSIS
+       OUT_INVESTIGATION OUT_CONSULT OUT_MEMO OUT_CIRCLE
+       SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_REVIEWS
+       SCAN_ANALYSES SCAN_CIRCLES PORTFOLIO TASKLIST"
+
+has_key() {
+  local want="$1" k
+  for k in $KEYS; do
+    [ "$k" = "$want" ] && return 0
+  done
+  return 1
+}
+
+# WORKBENCH is always emitted, and is the only absolute path.
+printf 'WORKBENCH=%s\n' "$WORKBENCH"
+
+# CIRCLE is emitted only when a Circle is active. Its absence is how a caller
+# tells "no Circle" from "Circle active".
+if [ -n "$CIRCLE" ]; then
+  printf 'CIRCLE=%s\n' "$CIRCLE"
+fi
+
+for key in $ORDER; do
+  if has_key "$key"; then
+    # Assign first, then print: under `set -e` a failing value_for aborts the
+    # run rather than emitting `KEY=` with an empty value.
+    val="$(value_for "$key")"
+    printf '%s=%s\n' "$key" "$val"
+  fi
+done
