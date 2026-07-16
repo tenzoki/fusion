@@ -316,6 +316,52 @@ describe("bin/fusion-paths", () => {
       });
     }
 
+    // The mirror of requiredScans: kinds a prompt demonstrably *writes*. The
+    // 2026-07-16 audit checked reads far harder than writes and missed
+    // reconciler's OUT_DECISION as a result — a write key is what the read
+    // table above has no slot for.
+    const requiredWrites: Record<string, string[]> = {
+      // reconciler.md:65 — "file an issue in $OUT_ISSUE (or a decision record
+      // in $OUT_DECISION)"; :159 names it as the relocation destination for a
+      // misfiled defect.
+      reconciler: ["OUT_ISSUE", "OUT_DECISION"],
+      planner: ["OUT_PLAN", "OUT_HISTORY"],
+      analyst: ["OUT_ANALYSIS", "OUT_HISTORY"],
+      coderev: ["OUT_REVIEW", "OUT_ISSUE"],
+      ontorev: ["OUT_REVIEW", "OUT_ISSUE"],
+      conceptrev: ["OUT_REVIEW"],
+      shaper: ["OUT_PLAN", "OUT_CIRCLE"],
+      investigator: ["OUT_INVESTIGATION"],
+      consultant: ["OUT_CONSULT"],
+      playmaker: ["OUT_CIRCLE", "PORTFOLIO"],
+      coder: ["OUT_HISTORY", "OUT_ISSUE"],
+      ontocoder: ["OUT_HISTORY", "OUT_ISSUE"],
+      bugfixer: ["OUT_HISTORY", "OUT_ISSUE"],
+      taskplanner: ["OUT_HISTORY", "TASKLIST"],
+      orchestrator: ["OUT_HISTORY", "OUT_ISSUE", "OUT_DECISION", "OUT_MEMO"],
+    };
+
+    for (const [agent, keys] of Object.entries(requiredWrites)) {
+      it(`gives ${agent} ${keys.join(" + ")}`, () => {
+        const p = parse(run(project, agent).stdout);
+        for (const key of keys) {
+          expect(p[key], `${agent} writes this kind but got no ${key}`).toBeDefined();
+        }
+      });
+    }
+
+    it("gives reconciler OUT_DECISION — it files decision records (reconciler.md:65)", () => {
+      // The specific regression. Absent the key, $OUT_DECISION expanded to the
+      // empty string and every decision record the reconciler filed landed at
+      // the workbench root instead of the decision store. Silent: the write
+      // succeeded, just in the wrong place.
+      expect(parse(run(project, "reconciler").stdout).OUT_DECISION).toBe("shared/decisions");
+      activate();
+      expect(parse(run(project, "reconciler").stdout).OUT_DECISION).toBe(
+        `circles/${CIRCLE_NAME}/decisions`,
+      );
+    });
+
     it("gives conceptrev no OUT_INVESTIGATION — it reads investigations, never writes one", () => {
       // A write key for a read-only agent inverts the contract's own semantics:
       // the prompt would read "write to $OUT_INVESTIGATION" and either violate

@@ -54,19 +54,34 @@
 # Per-agent emission mirrors bin/fusion-rules: each agent receives only the
 # keys it needs — a coder gets no OUT_PLAN, a playmaker gets no OUT_ISSUE.
 # The key sets below are derived from what each agent's prompt actually reads
-# and writes, audited prompt by prompt (all 15) on 2026-07-16.
+# and writes, audited prompt by prompt (all 15) on 2026-07-16, and re-checked
+# against the converted prompts on 2026-07-17.
 #
-# The audit is hand-made, and hand-made is how the first version drifted. It
-# cannot yet be mechanical: a pre-conversion prompt names a directory in prose,
-# and no grep can tell "Skim fusion-workbench/issues/" (a read) from "file to
-# fusion-workbench/issues/" (a write) without judgment. The conversion in
-# P-4..P-7 is precisely what creates that signal — after it, `$SCAN_ISSUES` vs
-# `$OUT_ISSUE` in the prompt IS the machine-readable read/write marker. So the
-# consumer-agreement test belongs in P-8's lint gate, over the converted
-# prompts, and it is specified there:
+# The audit is hand-made, and hand-made is how the first version drifted — and
+# how it drifted again: the 2026-07-16 pass missed reconciler's OUT_DECISION,
+# found only when P-6 converted the prompt and `$OUT_DECISION` expanded empty.
+# One miss in fifteen, from the one pass that read every prompt on purpose.
+#
+# The signal that pass lacked now exists. A pre-conversion prompt named a
+# directory in prose, and no grep could tell "Skim fusion-workbench/issues/" (a
+# read) from "file to fusion-workbench/issues/" (a write) without judgment.
+# P-4..P-7 created the marker: `$SCAN_ISSUES` vs `$OUT_ISSUE` in the prompt IS
+# now machine-readable, so the consumer-agreement check is mechanical and
+# belongs in P-8's lint gate:
 #   fusion-workbench/issues/260716-1957[o]-fusion-paths-key-sets-miss-reads-agents-perform.md
-# Until then a key set is a claim about a prompt that nothing checks. Change one
-# only against the prompt's text, and cite the line.
+#
+# Two things that gate must get right, both learned from the re-check:
+#   - It must union each agent's prompt with the skills that run in its session
+#     (see the skill note below), or it will call the orchestrator's OUT_MEMO,
+#     OUT_CIRCLE and SCAN_HISTORY spare. They are used — by /fusion:memo,
+#     /fusion:circle-pop and /fusion:circle-stash.
+#   - Under-emission and over-emission are different findings. A key the prompt
+#     uses and the resolver withholds is a live bug (writes land at the
+#     workbench root). A key the resolver emits and the prompt never names is
+#     ambiguous: the prompt may be missing the path, not the set the key.
+#
+# Until that gate lands, a key set is a claim about a prompt that nothing
+# checks. Change one only against the prompt's text, and cite the line.
 #
 # Note on skill callers: the signature takes an AGENT name. Skills execute
 # inside an agent's session, so a skill resolves paths under the agent that
@@ -131,7 +146,12 @@ case "$AGENT" in
           SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_REVIEWS
           TASKLIST" ;;
   reconciler)
-    KEYS="OUT_HISTORY OUT_ISSUE
+    # OUT_DECISION: reconciler.md:65 files a decision record beside an issue
+    # ("file an issue in $OUT_ISSUE (or a decision record in $OUT_DECISION)"),
+    # and :159 names it as the destination when a misfiled defect is relocated.
+    # Missed by the 2026-07-16 audit: a decision-store *write* reads as a
+    # decision-store mention, and SCAN_DECISIONS was already present.
+    KEYS="OUT_HISTORY OUT_ISSUE OUT_DECISION
           SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_REVIEWS
           SCAN_ANALYSES" ;;
   analyst)
