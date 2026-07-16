@@ -1,74 +1,77 @@
 ---
 description: Portfolio briefing — dispatches playmaker, renders the next-recommended Circle, and offers interactive activation.
-argument-hint: "[<circle-id>]"
+argument-hint: "[<circle-dirname>]"
 allowed-tools: [Bash, Read, Write, AskUserQuestion, Agent(fusion:playmaker)]
 ---
 
 # Fusion — next (portfolio briefing + interactive activation)
 
-The user invoked `/fusion:next`. This skill is the user-facing surface for the Circle portfolio: it dispatches the `playmaker` agent, reads the regenerated `fusion-workbench/portfolio.md`, renders the inline summary (top-recommended Circle + counts + warnings), and offers an interactive activation prompt for the recommended Circle.
+The user invoked `/fusion:next`. This skill is the user-facing surface for the Circle portfolio: it dispatches the `playmaker` agent, reads the regenerated portfolio file, renders the inline summary (top-recommended Circle + counts + warnings), and offers an interactive activation prompt for the recommended Circle.
 
-The skill writes nothing on the briefing path. The only writes it performs are part of the activation branch (Step 6): the `[a]→[t]` marker rename, the `.active-circle` overwrite, and a dashboard placeholder write to `orchestrator-live.md`. All writes are gated by an explicit user confirmation.
+The skill writes nothing on the briefing path. The only writes it performs are part of the activation branch (Step 6): the `[a]→[t]` record rename, the `.active-circle` write, and a dashboard placeholder write. All writes are gated by an explicit user confirmation.
+
+**A Circle is a directory, and the state marker sits on the record inside it** — `circles/<dirname>/[a]-circle.md` → `[t]-circle.md`. The directory name never changes. See `rules/fusion-workbench-conventions.md` `## State Markers — circles`.
 
 **Invocation forms:**
 
 - `/fusion:next` — briefing + interactive confirm on the top-recommended Circle (default).
-- `/fusion:next <circle-id>` — explicit-filename form. Skips the proposal step and goes straight to the confirm for that specific Circle. `<circle-id>` is the basename of an `[a]` Circle file in `fusion-workbench/circles/`.
-- `/fusion:next --write-activation <circle-id>` — back-compat alias for the explicit form. The explicit `/fusion:next <circle-id>` form is preferred.
+- `/fusion:next <circle-dirname>` — explicit form. Skips the proposal step and goes straight to the confirm for that specific Circle. `<circle-dirname>` is the **directory name** of an anticipated Circle (e.g. `260716-1847-workbench-umbau`) — no marker, no `.md`.
+- `/fusion:next --write-activation <circle-dirname>` — back-compat alias for the explicit form. The explicit form is preferred.
 
-## Step 1 — Pre-flight check
-
-Three possible states; each is handled differently.
+## Step 1 — Pre-flight: resolve paths
 
 ```bash
-WORKBENCH="$("$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root" 2>/dev/null)" || WORKBENCH=""
+"$FUSION_PLUGIN_ROOT/bin/fusion-paths" orchestrator
 ```
 
-- **No workbench** (`$WORKBENCH` is empty): halt with the standard message:
+Hold the emitted `KEY=value` values for the rest of the skill. `$WORKBENCH` is absolute; every other value is workbench-relative. Never guess a path when the resolver fails — read the exit code, it says whose fault it is (full table in `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes):
 
-  > *No fusion workbench found above $(pwd). Run `/fusion:setup` at the project root first.*
+- **Exit 1** — no workbench above `pwd`. Halt:
+
+  > *Keine fusion-workbench über `$(pwd)` gefunden. Führe zuerst `/fusion:setup` im Projektwurzelverzeichnis aus.*
 
   Exit cleanly. Do NOT bootstrap a workbench from here — `/fusion:setup` is the single point of workbench creation.
 
-- **Workbench present but `circles/` absent or empty**:
+- **Exit 3** — `.active-circle` is orphaned or corrupt. The workbench state is inconsistent. Report the resolver's stderr message verbatim and tell the user to fix or delete the pointer. Do not proceed.
 
-  ```bash
-  if [ ! -d "$WORKBENCH/fusion-workbench/circles" ] || [ -z "$(ls -A "$WORKBENCH/fusion-workbench/circles" 2>/dev/null)" ]; then
-    # empty-or-absent branch
-  fi
-  ```
+- **Exit 4** — an internal error in `fusion-paths`. The user's workbench is fine; do **not** send them to check `.active-circle`. Report it as a fusion bug and stop.
 
-  Print exactly one line:
+`CIRCLE` is emitted only when a Circle is active. Its presence or absence is how this skill tells the two states apart — do not read `.active-circle` yourself to decide.
 
-  > *No Circles yet — `fusion-workbench/circles/` is empty. Type a fresh request to the orchestrator to start the first one.*
+Then check whether any Circle exists at all:
 
-  Exit. Do NOT dispatch playmaker. Do NOT bootstrap `circles/` (that's part of `/fusion:setup`).
+```bash
+if [ ! -d "$WORKBENCH/$SCAN_CIRCLES" ] || [ -z "$(ls -A "$WORKBENCH/$SCAN_CIRCLES" 2>/dev/null)" ]; then echo empty; fi
+```
 
-- **Workbench and `circles/` both present and non-empty**: proceed to Step 2.
+If empty or absent, print exactly one line and exit — do NOT dispatch playmaker, do NOT create the directory (that is `/fusion:setup`'s job):
+
+> *Noch keine Circles vorhanden. Tipp dem Orchestrator eine Anfrage, dann entsteht der erste.*
+
+Otherwise proceed to Step 2.
 
 ## Step 2 — Detect domain
 
 Decide which `**Domain:**` value to pass to playmaker.
 
-- If the parent context is an orchestrator session and `$WORKBENCH/fusion-workbench/agentstate.yaml` exists, read its `session.domain` field. That value is the most accurate — the orchestrator detected it at Setup Step 5.
+- If the parent context is an orchestrator session and `$WORKBENCH/agentstate.yaml` exists, read its `session.domain` field. That value is the most accurate — the orchestrator detected it at Setup Step 5.
 - Otherwise (no `agentstate.yaml`, or no `session.domain` field): fall back to `code`.
 
-Pseudocode:
+`agentstate.yaml` is root-anchored, at a fixed workbench-relative path — see `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`.
 
-```
-if [ -f "$WORKBENCH/fusion-workbench/agentstate.yaml" ]; then
-  # The 2-space leading indent scopes the match to `session:`-block fields (the only place `domain:` lives today);
-  # the `"?` around the captured token handles both quoted ("code") and unquoted (code) YAML values.
-  DOMAIN=$(grep -E '^  domain:' "$WORKBENCH/fusion-workbench/agentstate.yaml" | head -1 | sed -E 's/.*domain:[[:space:]]*"?([a-z]+)"?.*/\1/')
-fi
+```bash
+DOMAIN=""
+if [ -f "$WORKBENCH/agentstate.yaml" ]; then DOMAIN="$(grep -E '^  domain:' "$WORKBENCH/agentstate.yaml" | head -1 | sed -E 's/.*domain:[[:space:]]*"?([a-z]+)"?.*/\1/')"; fi
 DOMAIN="${DOMAIN:-code}"
 ```
+
+The 2-space leading indent scopes the match to `session:`-block fields (the only place `domain:` lives today); the `"?` around the captured token handles both quoted (`"code"`) and unquoted (`code`) YAML values.
 
 `<detected-domain>` ∈ `{code, data, strategic, knowledge}` for the remainder of this skill.
 
 ## Step 3 — Dispatch playmaker
 
-Use the `Agent` tool with target `fusion:playmaker`. The dispatch prompt's first non-empty content line MUST be the domain parameter; the rest of the prompt is empty for the default invocation (playmaker reads everything it needs from the workbench).
+Use the `Agent` tool with target `fusion:playmaker`. The dispatch prompt's first non-empty content line MUST be the domain parameter; the rest of the prompt is empty for the default invocation (playmaker resolves its own paths at its Setup and reads what it needs from the workbench).
 
 Prompt body:
 
@@ -76,92 +79,89 @@ Prompt body:
 **Domain:** <detected-domain>
 ```
 
-No other parameters. Playmaker reads, ranks, regenerates `portfolio.md`, writes its own history file, and returns. It never auto-renames Circle markers and never writes `.active-circle`.
+No other parameters. Playmaker reads, ranks, regenerates the portfolio file, writes its own history file, and returns. It never renames Circle records and never writes `.active-circle`.
 
-**Explicit-form short-circuit:** if the user invoked `/fusion:next <circle-id>` or `/fusion:next --write-activation <circle-id>`, the dispatch in this step is still useful (keeps `portfolio.md` fresh and re-runs cycle/warning checks before we mutate state) but the briefing render in Step 5 may be skipped if the user clearly wants to act on a specific Circle. In that case go straight to Step 6 with `<circle-id>` as the target. If the explicit `<circle-id>` does not exist or does not carry the `[a]` marker, halt with a clear mismatch report — do not fall back to the recommended one.
+**Explicit-form short-circuit:** if the user invoked `/fusion:next <circle-dirname>` (or the `--write-activation` alias), the dispatch in this step is still useful — it keeps the portfolio fresh and re-runs cycle and warning checks before we mutate state — but the briefing render in Step 5 may be skipped. In that case go straight to Step 6 with `<circle-dirname>` as the target. If the explicit target does not exist, or its record does not carry the `[a]` marker, halt with a clear mismatch report; do not fall back to the recommended one.
 
-## Step 4 — Read portfolio.md
+## Step 4 — Read the portfolio
 
 ```bash
-cat "$WORKBENCH/fusion-workbench/portfolio.md"
+cat "$WORKBENCH/$PORTFOLIO"
 ```
 
-The file was just (re)written by playmaker. Treat its current content as authoritative.
+The file was just regenerated by playmaker. Treat its current content as authoritative.
 
 ## Step 5 — Render inline to the user
 
-Extract and present three things from `portfolio.md`:
+Extract and present three things from the portfolio file:
 
-1. **Top recommendation** — the first line of the `## Anticipated ([a]) — ranked` section is shaped `Recommended next: <circle file> — <rationale>`. Render it as a clear one-line message to the user, e.g. *"Recommended next: `260511-1100[a]-rebuild-auth.md` — three dependencies all `[c]`, one open decision cited."* If the section reads `(none)` (no `[a]` Circles), say so plainly.
+1. **Top recommendation** — the first entry of the `## Anticipated ([a]) — ranked` section names a Circle directory and a rationale. Render it as one clear line, e.g. *"Empfehlung: `260511-1100-rebuild-auth` — drei Abhängigkeiten alle geschlossen, eine offene Entscheidung zitiert."* If the section reads `(none)`, say so plainly.
 
-2. **Counts** — extract the number of files under each marker class. Either by counting headings/entries within `portfolio.md`'s four state sections (`## Active`, `## Anticipated — ranked`, `## Recently closed`, `## Archived`), or — when `portfolio.md` already lists explicit per-section counts — read those directly. Render as a compact line, e.g. *"Counts: 1 active, 4 anticipated, 12 closed, 2 bounded."*
+2. **Counts** — the number of Circles per marker class. Either count entries within the portfolio's four state sections, or read explicit per-section counts when the file already carries them. Render as one compact line, e.g. *"Stand: 1 aktiv, 4 geplant, 12 geschlossen, 2 begrenzt abgeschlossen."*
 
-3. **Warnings** — quote (verbatim or summarised) any content in `portfolio.md`'s `## Warnings` section: `dependency-cycle-detected`, `MULTIPLE-ACTIVE`, `STALE-POINTER`, `POINTER-MISMATCH`, `MISSING-POINTER`, parent-grounding-stale cross-references. If the section reads `(none)`, omit this part.
+3. **Warnings** — quote (verbatim or summarised) any content in the `## Warnings` section: `dependency-cycle-detected`, `MULTIPLE-ACTIVE`, `STALE-POINTER`, `POINTER-MISMATCH`, `MISSING-POINTER`, parent-grounding-stale cross-references. If it reads `(none)`, omit this part.
 
 After rendering the briefing, proceed to Step 6.
 
 ## Step 6 — Interactive activation
 
-This step has two entry paths:
+Two entry paths:
 
-- **Default (no argument).** Use the top-recommended `[a]` Circle from the `## Anticipated ([a]) — ranked` section's first line. If `(none)` or no `[a]` Circles exist, skip Step 6 entirely — the briefing was the whole output.
-- **Explicit (`/fusion:next <circle-id>` or `--write-activation <circle-id>`).** Use the cited `<circle-id>` as the target.
+- **Default (no argument).** Use the top-recommended anticipated Circle from Step 5. If none exist, skip Step 6 entirely — the briefing was the whole output.
+- **Explicit (`/fusion:next <circle-dirname>`).** Use the cited directory name as the target.
 
-**Gate — active Circle already exists.** Before prompting the user, check whether an active `[t]` Circle is already in play:
+**Gate — a Circle is already active.** `fusion-paths` emitted a `CIRCLE=` line in Step 1 exactly when one is. If it did, do NOT offer activation. Print one line naming the active Circle and exit; the briefing has already done its job. This is what keeps the activation branch from stomping an in-progress Circle.
+
+**Prompt.** Use `AskUserQuestion`. Follow `rules/user-facing-output.md` and the chat profile at `./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`; the language comes from the `**Language:**` line in `CLAUDE.md` (see `rules/fusion-workbench-conventions.md` `## Project language`). German shape:
+
+> **Frage:** Circle `<candidate-dirname>` jetzt aktivieren? Das benennt den Datensatz von `[a]` auf `[t]` um, setzt den Zeiger `.active-circle` und startet eine frische Orchestrator-Sitzung.
+>
+> **Option "Aktivieren"** (Standard): Führt die Umbenennung und den Zeiger-Schreibvorgang aus.
+> **Option "Andere wählen"**: Zeigt die geplanten Circles zur Auswahl.
+> **Option "Nur schauen"**: Beendet ohne Änderung.
+
+On **Andere wählen**, list the anticipated Circles from the portfolio's `## Anticipated` section as a follow-up `AskUserQuestion` (one option per directory name), then proceed with the chosen one. If the section has only one entry, this option is equivalent to **Aktivieren**; merge them.
+
+On **Aktivieren** (or after a selection) carry out the following in order.
+
+### 6.1 — Verify the target
+
+Read the target Circle's record and confirm it carries the `[a]` marker. Enumerate the record rather than globbing the marker — `circles/*/[a]-circle.md` is a **bracket expression matching the single character `a`**, so it searches for `a-circle.md`, matches nothing, and reports zero Circles on a workbench full of them, silently. `find -name '[a]-circle.md'` has the identical bug: `find` globs the pattern itself. See `rules/fusion-workbench-conventions.md` `## State Markers — circles`.
 
 ```bash
-if [ -f "$WORKBENCH/fusion-workbench/.active-circle" ]; then
-  ACTIVE=$(cat "$WORKBENCH/fusion-workbench/.active-circle")
-  # If the cited file still exists and still carries [t], an active Circle is in play
-  if [ -n "$ACTIVE" ] && [ -f "$WORKBENCH/fusion-workbench/circles/$ACTIVE" ] && echo "$ACTIVE" | grep -q '\[t\]'; then
-    # Active Circle exists — do not offer activation. Exit cleanly.
-    :
-  fi
-fi
+CDIR="$WORKBENCH/$SCAN_CIRCLES/<candidate-dirname>"
+REC=""; for f in "$CDIR"/*-circle.md; do [ -e "$f" ] || continue; REC="$f"; done
+MARKER="$(basename "$REC" | sed -nE 's/^\[([a-z])\].*/\1/p')"
 ```
 
-If an active `[t]` Circle is already in play, do NOT offer activation. Print one line stating which Circle is active and exit. The briefing has already done its job.
+If `$CDIR` is not a directory, `$REC` is empty, or `$MARKER` is not `a`, halt and report the mismatch. Do not rename, do not write the pointer. A directory holding no record, or more than one, is a workbench-state fault the user must resolve — say which it is.
 
-**Prompt — the recommended/explicit Circle is the candidate.** Use `AskUserQuestion`:
+### 6.2 — Rename the record
 
-- Question: *"Activate Circle `<candidate-basename>` now? This renames `[a]`→`[t]`, updates `.active-circle`, and starts a fresh orchestrator session."*
-- Options:
-  - **Activate** (default) — proceed with the rename + pointer write + dashboard placeholder + chain-into-session sequence below.
-  - **Pick another** — list the `[a]` Circles from `portfolio.md`'s `## Anticipated` section as a follow-up `AskUserQuestion` (each `[a]` basename is one option). User picks one. Then proceed with the rename for the chosen file. If `## Anticipated` has only one entry, this option is equivalent to **Activate**; merge them.
-  - **Skip** — exit cleanly, no state change. This is the "I just wanted to peek" exit.
-
-On **Activate** (or after **Pick another** selection) carry out the following in order:
-
-### 6.1 — Verify the citation
-
-Confirm the target file exists at `$WORKBENCH/fusion-workbench/circles/<basename>` and that the basename contains the `[a]` marker. If either check fails, halt and report the mismatch — do not rename, do not write the pointer.
-
-### 6.2 — Perform the rename
-
-Replace the `[a]` substring with `[t]` in the basename, then `mv` the file:
+Only the record is renamed. The directory name never changes; that stability is the whole point of the marker-on-the-record design (`rules/fusion-workbench-conventions.md` `## State Markers — circles`).
 
 ```bash
-OLD="$WORKBENCH/fusion-workbench/circles/<basename>"
-NEW="$WORKBENCH/fusion-workbench/circles/$(echo '<basename>' | sed 's/\[a\]/[t]/')"
-mv "$OLD" "$NEW"
+mv "$CDIR/[a]-circle.md" "$CDIR/[t]-circle.md"
 ```
 
-### 6.3 — Overwrite `.active-circle`
+The brackets are safe here: this is a literal argument to `mv`, not a glob. It is only *pattern matching* that must avoid the bracket form.
 
-Write the new basename (the `[t]` form) as the sole content of `$WORKBENCH/fusion-workbench/.active-circle`:
+### 6.3 — Write `.active-circle`
+
+The pointer holds the **directory name** — no marker, no `circles/` prefix, no `.md`:
 
 ```bash
-basename "$NEW" > "$WORKBENCH/fusion-workbench/.active-circle"
+printf '%s\n' "<candidate-dirname>" > "$WORKBENCH/.active-circle"
 ```
 
 ### 6.4 — Overwrite the dashboard placeholder
 
-The orchestrator's dashboard (`fusion-workbench/orchestrator-live.md`) may carry stale state from a previous session ("Session: Complete", final commit list, etc.). To make it impossible to confuse the prior session's final state with the current one, overwrite the dashboard with a transition placeholder. Use the `Write` tool to overwrite the file with this exact content (substitute `<new-basename>` with the renamed basename, the `[t]` form):
+The dashboard may carry stale state from a previous session ("Session: Complete", a final commit list). Overwrite it so the prior session's final state cannot be mistaken for the current one. Use the `Write` tool to overwrite `$WORKBENCH/orchestrator-live.md` with this exact content (substitute the directory name):
 
 ```markdown
 # Orchestrator — Live
 
-**Active Circle:** <new-basename>
+**Active Circle:** <candidate-dirname>
 **Session:** Not started — orchestrator Setup will refresh this dashboard on next session start
 
 ## Current
@@ -172,24 +172,24 @@ This is a minimal placeholder — the orchestrator overwrites it in full at the 
 
 ### 6.5 — Chain into a fresh orchestrator session
 
-The skill's final output to the user must phrase itself as an implicit directive that the orchestrator agent (the parent session reading this output) will pick up and act on. Print, verbatim except for the `<new-basename>` substitution:
+The skill's final output must phrase itself as an implicit directive that the orchestrator (the parent session reading this output) will pick up. Print, verbatim except for the substitution:
 
-> *Activation complete. The Circle is now `[t]` and `.active-circle` points at it.*
+> *Aktiviert. Der Circle steht auf `[t]`, der Zeiger `.active-circle` zeigt darauf.*
 >
-> *Beginning a fresh orchestrator session against this Circle. The orchestrator should now run Setup (which will overwrite the dashboard), read the active Circle's `## Directive` from `fusion-workbench/circles/<new-basename>`, treat that Directive as the session Directive, and proceed with Phase 0 → Phase 1 → Phase 2.*
+> *Es beginnt eine frische Orchestrator-Sitzung gegen diesen Circle. Der Orchestrator führt jetzt Setup aus (das überschreibt das Dashboard), liest das `## Directive` aus dem Datensatz des Circles `<candidate-dirname>`, nimmt es als Sitzungs-Directive und fährt mit Phase 0 → Phase 1 → Phase 2 fort.*
 
 That message is itself the directive. The orchestrator's own prompt instructs it to run Setup at the start of work, so emitting this text is sufficient to trigger Setup on the parent thread.
 
 ## Boundaries
 
-The skill never writes `circles/` *content* — the only writes it performs are the marker rename (`[a]`→`[t]`), the `.active-circle` overwrite, and the `orchestrator-live.md` placeholder, all in Step 6, and all gated by the user's explicit confirmation. `portfolio.md` itself is written by playmaker, not by this skill. Safe to invoke during an active orchestrator session — playmaker is read-everything-write-only-`circles/`-and-`portfolio.md`, so it cannot interfere with the active Turn loop's writes. The Step 6 activation branch is short-circuited when an active `[t]` Circle is already in play, so it cannot stomp an in-progress Circle.
+The skill never writes Circle *content*. Its only writes are the record rename (`[a]`→`[t]`), the `.active-circle` write, and the dashboard placeholder, all in Step 6, all gated by explicit confirmation. The portfolio file is written by playmaker, not by this skill. Safe to invoke during an active orchestrator session — playmaker reads everything and writes only Circle records and the portfolio, so it cannot interfere with the active Turn loop's writes. The Step 6 activation branch is short-circuited when a Circle is already active.
 
 ## Tone
 
-User-facing output follows `rules/user-facing-output.md` (loaded into every agent via `bin/fusion-rules`). For this skill specifically:
+User-facing output follows `rules/user-facing-output.md` (loaded into every agent via `bin/fusion-rules`) plus the chat profile for the project's language. For this skill specifically:
 
-- The briefing leads with the **recommendation** (action) — *"Recommended next: <basename> — <rationale>"* — then counts, then warnings. No leading metadata block.
-- Marker syntax in the briefing's prose (e.g. "1 active, 4 anticipated, 12 closed") uses the **words**, not the bracket codes. The bracket codes (`[a]`, `[t]`, etc.) belong in filenames, not summary prose.
-- The activation confirmation message must lead with the **user action**: *"Activation complete. Beginning a fresh orchestrator session — say 'go' or wait for it to pick up the Circle automatically."* — not a paragraph of Turn-loop jargon before that.
+- The briefing leads with the **recommendation** (action), then counts, then warnings. No leading metadata block.
+- Marker syntax in prose uses the **words** ("1 aktiv, 4 geplant"), not the bracket codes. The bracket codes belong in filenames.
+- The activation confirmation leads with the **user action**, not a paragraph of Turn-loop jargon.
 
-Concise. Show one line for the top recommendation, one line for counts, the warnings list (if any). Don't editorialise. The user invoked `/fusion:next` to get a portfolio snapshot, not a discussion — match that energy. The activation confirm is one short prompt with three clear options.
+Concise. One line for the recommendation, one for counts, the warnings list if any. The user invoked `/fusion:next` for a snapshot, not a discussion. The activation confirm is one short prompt with three clear options.

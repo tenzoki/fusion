@@ -1,23 +1,55 @@
 ---
-description: Archive completed/aged fusion-workbench files. Supports pre-defined safety tiers (tier-1/tier-2/tier-3) or natural-language description. Survey, propose, confirm, then move into fusion-workbench/archive/<YYMMDD-HHMM>-<slug>/.
+description: Archive completed/aged fusion-workbench artifacts. Supports pre-defined safety tiers (tier-1/tier-2/tier-3) or natural-language description. Survey, propose, confirm, then move into the workbench's archive store.
 argument-hint: tier-1 | tier-2 | tier-3 | <natural-language description>
 allowed-tools: [Bash, Read, Write, Edit, AskUserQuestion]
 ---
 
 # Archive
 
-Move a curated set of workbench files out of the live workbench and into a timestamped archive subfolder. Archives are local, on-disk snapshots — moved, not copied — so the live workbench stays focused while git preserves the bytes.
+Move a curated set of workbench artifacts out of the live workbench and into a timestamped archive subfolder. Archives are local, on-disk snapshots — moved, not copied — so the live workbench stays focused while git preserves the bytes.
+
+## What changed with the Circle-container layout
+
+**A closed Circle archives in one piece.** A Circle is a directory holding its own planning, issues, decisions, history, reviews and analyses (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`). Archiving it is one `mv` of one directory — not a collection pass across ten type folders hunting for files that belong together. The tier logic below is the same idea it always was; it just has less to do.
+
+Two rules follow from the container premise, and they are what keep this skill simple:
+
+1. **Circle artifacts travel with their Circle.** This skill never reaches inside a Circle to archive individual files. A Circle's closed issue is archived when the Circle is, and not before.
+2. **The per-file passes therefore only ever touch the shared store.** Everything a tier enumerates below either is a whole terminal Circle or lives in `shared/`.
 
 ## Where archives go
 
 ```
-fusion-workbench/archive/<YYMMDD-HHMM>-<slug>/
+<archive store>/<YYMMDD-HHMM>-<slug>/
 ```
 
 - `YYMMDD-HHMM` from `date +%y%m%d-%H%M` (never guess).
 - `<slug>` is a short kebab-case label (lowercase, alphanumerics + dashes, ≤ 40 chars). For tier mode the slug is `safe-cleanup-tier-<n>`. For natural-language mode it's derived from the description.
 - One archive folder per `/fusion:archive` invocation. Never reuse a folder.
-- Inside the archive folder, preserve the original directory structure relative to `fusion-workbench/`. Example: `fusion-workbench/planning/260501-1200-auth.md` → `fusion-workbench/archive/260502-1430-safe-cleanup-tier-3/planning/260501-1200-auth.md`.
+- Inside the archive folder, preserve the original path relative to `$WORKBENCH`. A Circle directory keeps its whole subtree.
+
+## Step 1 — Resolve paths
+
+```bash
+"$FUSION_PLUGIN_ROOT/bin/fusion-paths" orchestrator
+```
+
+Hold the emitted `KEY=value` values for the rest of the skill. `$WORKBENCH` is absolute; everything else is workbench-relative. On a non-zero exit, read the code — it says whose fault it is (full table in `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes):
+
+- **Exit 1** — no workbench above `pwd`. Halt: there is nothing to archive. Tell the user to run `/fusion:setup` at the project root.
+- **Exit 3** — `.active-circle` is orphaned or corrupt. Report the resolver's stderr verbatim; tell the user to fix or delete the pointer. Do not proceed — archiving against an inconsistent workbench state is how artifacts get lost.
+- **Exit 4** — an internal error in `fusion-paths`. The user's workbench is fine; do **not** send them to check `.active-circle`. Report it as a fusion bug and stop.
+
+`CIRCLE` is emitted only when a Circle is active. That line is what tells the two states apart.
+
+**Deriving the shared store.** Every `SCAN_*` value carries both stores — the active Circle's and the shared one — and collapses to the shared store alone when no Circle is active (`rules/fusion-workbench-conventions.md` `## Path Resolution` → invariant 2). The shared store of a kind is therefore what remains of its `SCAN_*` value after dropping the active Circle's path:
+
+```bash
+shared_of() { for p in $1; do case "$p" in "${CIRCLE:-__no_active_circle__}"/*) continue ;; esac; printf '%s\n' "$p"; done; }
+SHARED_PLANS="$(shared_of "$SCAN_PLANS")"; SHARED_ISSUES="$(shared_of "$SCAN_ISSUES")"; SHARED_DECISIONS="$(shared_of "$SCAN_DECISIONS")"; SHARED_REVIEWS="$(shared_of "$SCAN_REVIEWS")"; SHARED_HISTORY="$(shared_of "$SCAN_HISTORY")"
+```
+
+This derives the shared store from the invariant, not from the order the resolver happens to print the two paths in. Do not take "the last field" — that ordering is not part of the contract.
 
 ## Argument modes
 
@@ -29,112 +61,120 @@ The skill takes one of:
 
 ## Marker vocabulary (per `rules/fusion-workbench-conventions.md`)
 
-| Folder | Markers | Terminal? |
+| Artifact kind | Markers | Terminal? |
 |---|---|---|
-| `issues/`, `planning/` | `[o]` open · `[p]` in-progress · `[c]` closed · `[d]` deferred | only `[c]` |
-| `decisions/` | `[o]` open · `[a]` answered · `[i]` implemented · `[d]` deferred · `[s]` superseded | `[i]` and `[s]` |
-| `history/`, `codereview/`, `ontoreview/`, `analyses/`, `investigations/`, `consult/` | none | n/a |
+| Circle record | `[a]` anticipated · `[t]` active · `[c]` closed-coherent · `[b]` bounded closure · `[s]` superseded · `[d]` deferred | `[c]`, `[b]`, `[s]`, `[d]` |
+| Defect, spec/plan | `[o]` open · `[p]` in-progress · `[c]` closed · `[d]` deferred | only `[c]` |
+| Decision record | `[o]` open · `[a]` answered · `[i]` implemented · `[d]` deferred · `[s]` superseded | `[i]` and `[s]` |
+| History, review, analysis, investigation, consultation, memo | none | n/a |
 
-**Terminal** = work is done; the file is a record, not a live work item. Only terminal-state files are safe to bulk-archive without per-file review.
+**Terminal** = work is done; the artifact is a record, not a live work item. Only terminal-state artifacts are safe to bulk-archive without per-file review.
+
+**Terminal is not the same as archive-class.** `[d]` (deferred) is terminal in both the Circle and the defect vocabularies, and is still excluded from every tier — see safety filter 2.
 
 ## Safety filters (apply to ALL modes)
 
-These are non-negotiable defaults. The user can override them at the `refine` step in natural-language mode but the tier modes treat them as hard guardrails.
+These are non-negotiable defaults. The user can override them at the `refine` step in natural-language mode, but the tier modes treat them as hard guardrails.
 
-1. **Reserved files — never archive:**
-   - `fusion-workbench/agentstate.yaml`
-   - `fusion-workbench/orchestrator-live.md`
-   - `fusion-workbench/orchestrator-events.jsonl`
-   - `fusion-workbench/tasklist.md`
-   - Anything under `fusion-workbench/.guard-state/`
-   - Anything already under `fusion-workbench/archive/`
+1. **Reserved — never archive.** The root-anchored surfaces, because their consumers read them at fixed paths and none has a fallback (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`):
+   - `$WORKBENCH/agentstate.yaml`, `$WORKBENCH/orchestrator-live.md`, `$WORKBENCH/orchestrator-events.jsonl`
+   - `$WORKBENCH/$TASKLIST`, `$WORKBENCH/$PORTFOLIO`
+   - `$WORKBENCH/.guard-state/`, `$WORKBENCH/.commit-lock/`, `$WORKBENCH/.session-marker`, `$WORKBENCH/.active-circle`, `$WORKBENCH/.fusion-setup`
+   - `$WORKBENCH/monitor`, `$WORKBENCH/stilwerk/`, `$WORKBENCH/stashes/`
+   - Anything already under the archive store.
 
 2. **Active markers — never archive in tier modes:**
-   - `[o]` (open) — live work
-   - `[p]` (in-progress) — live work
-   - `[d]` (deferred) — *deferred ≠ done*; the user may want to revisit. Excluded by default.
-   - `[a]` (decisions/) — answer recorded but not yet realised in code/data. Archiving breaks decision↔implementation traceability. Promote to `[i]` when implementation lands; do not bulk-archive `[a]`.
+   - The **active Circle** (`$CIRCLE`) and any anticipated (`[a]`) or active (`[t]`) Circle — live work.
+   - `[d]` Circles — *deferred ≠ done*; the user may want to revisit. Terminal, but excluded by default.
+   - `[o]` (open) and `[p]` (in-progress) defects and plans — live work.
+   - `[d]` defects and plans — same reasoning as `[d]` Circles.
+   - `[a]` decisions — answer recorded but not yet realised in code/data. Archiving breaks decision↔implementation traceability. Promote to `[i]` when implementation lands; do not bulk-archive `[a]`.
 
-3. **CLAUDE.md citation check:** if a file is referenced from `CLAUDE.md` (by relative path or filename), exclude it from the proposal regardless of tier or marker. CLAUDE.md is auto-loaded into every Claude session — its references must remain resolvable.
+3. **CLAUDE.md citation check:** if a file is referenced from `CLAUDE.md` (by relative path or filename), exclude it from the proposal regardless of tier or marker. CLAUDE.md is auto-loaded into every Claude session — its references must remain resolvable. For a Circle directory, check its directory name and its record.
 
-4. **User-controlled folders** — never include in tier modes:
-   - `fusion-workbench/memos/`
-   - `fusion-workbench/handoffs/`
-   - `fusion-workbench/investigations/`
-   - `fusion-workbench/analyses/`
-   - `fusion-workbench/consult/`
-   - `fusion-workbench/material/`
-   These hold strategic deliverables, briefings, and source artefacts. They're archive-class only with the user's explicit natural-language ask — never as part of a bulk tier.
+4. **Out of tier scope by construction.** The tiers below enumerate what they include; anything they do not name is unreachable from a tier. That covers investigations, consultations, memos and analyses in the shared store — they hold strategic deliverables, briefings and source artefacts, and they are archive-class only with the user's explicit natural-language ask.
 
-   *Note: `handoffs/` and `material/` are not part of the standard layout (per `rules/fusion-workbench-conventions.md`); they appear here as defensive exclusions for any consuming project that may use these names.*
+   This is deliberately a positive enumeration rather than an exclusion list. An exclusion list has to be kept in step with every directory the layout gains, and goes silently out of date when it isn't. What a tier does not name, a tier cannot touch.
 
 ## Tier definitions
 
 Each tier is **additive**: tier-2 includes tier-1, tier-3 includes tier-2. The default age threshold for "aged" buckets is 14 days; override with `tier-N <D>d` (e.g. `tier-3 21d`).
 
-### Tier 1 — Terminal markers only
+### Tier 1 — Terminal Circles + terminal markers in the shared store
 
-| Folder | Glob | Reason |
+| Target | Selection | Reason |
 |---|---|---|
-| `issues/` | `*[c]*.md` | closed issue, terminal |
-| `planning/` | `*[c]*.md` | closed plan, terminal |
-| `decisions/` | `*[i]*.md` | implemented decision, terminal |
-| `decisions/` | `*[s]*.md` | superseded decision, terminal |
+| `$SCAN_CIRCLES/<dirname>/` | record marker is `[c]`, `[b]` or `[s]` | closed, bounded or superseded Circle — terminal; moves as one directory |
+| `$SHARED_ISSUES` | `*[c]*.md` | closed defect, terminal |
+| `$SHARED_PLANS` | `*[c]*.md` | closed plan, terminal |
+| `$SHARED_DECISIONS` | `*[i]*.md` | implemented decision, terminal |
+| `$SHARED_DECISIONS` | `*[s]*.md` | superseded decision, terminal |
 
-### Tier 2 — Tier 1 + aged reviews
+### Tier 2 — Tier 1 + aged shared reviews
 
-Adds `codereview/*.md` and `ontoreview/*.md` whose filename date prefix is older than the threshold. Reviews don't carry markers; aging is the only signal.
+Adds `$SHARED_REVIEWS/*.md` whose filename date prefix is older than the threshold. Reviews don't carry markers; aging is the only signal. All three review kinds (coderev, ontorev, conceptrev) share this one store and are distinguished by the sender in the filename.
 
-### Tier 3 — Tier 2 + aged history
+### Tier 3 — Tier 2 + aged shared history
 
-Adds `history/*.md` whose filename date prefix is older than the threshold. Old session logs are archive-class; the orchestrator only reads recent history for context.
+Adds `$SHARED_HISTORY/*.md` whose filename date prefix is older than the threshold. Old session logs are archive-class; the orchestrator only reads recent history for context.
 
 ## Process
 
-1. **Resolve workbench root.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If empty, halt — there's nothing to archive. `cd` to the printed path so all subsequent paths are relative to it.
+1. **Resolve paths.** Step 1 above. `cd` to the directory holding `$WORKBENCH` so relative paths resolve.
 
 2. **Parse the argument.**
-   - Match against `^tier-[123]( +(\d+)d)?$` for tier mode (capture optional age threshold; default 14).
+   - Match against `^tier-[123]( +(\d+)d)?$` for tier mode (capture the optional age threshold; default 14).
    - Otherwise treat as a natural-language description.
-   - If empty, ask the user via `AskUserQuestion` whether they want `tier-1` / `tier-2` / `tier-3` / `describe`.
+   - If empty, ask via `AskUserQuestion` whether they want `tier-1` / `tier-2` / `tier-3` / describe.
 
 3. **Build the candidate list.**
-   - **Tier mode:** mechanically expand the tier's globs. Apply all safety filters above. For aged buckets, parse the `YYMMDD` (or legacy `MMDD`) date prefix and compare to `today - threshold`.
-   - **Natural-language mode:** survey the directories the description suggests; apply safety filters as defaults but flag any active-marker hits with `[ACTIVE]` rather than silently dropping them — the user may want them in `refine`.
+
+   **Circles (all tiers).** Enumerate the records and read the marker from the name. One pass, no bracket expression, no glob per state:
+
+   ```bash
+   for f in "$WORKBENCH/$SCAN_CIRCLES"/*/*-circle.md; do [ -e "$f" ] || continue; d="$(basename "$(dirname "$f")")"; m="$(basename "$f" | sed -nE 's/^\[([a-z])\].*/\1/p')"; case "$m" in c|b|s) printf '%s\t%s\n' "$m" "$d" ;; esac; done
+   ```
+
+   **Do not write `$SCAN_CIRCLES/*/[c]-circle.md`.** `[c]` is a shell bracket expression matching the single character `c`, so the glob searches for `c-circle.md`, matches nothing, and reports zero Circles on a workbench full of them — silently, because the unmatched pattern expands to itself and the `[ -e "$f" ] || continue` guard drops it. `find -name '[c]-circle.md'` has the identical bug: `find` globs the pattern itself. If a single state must be globbed, escape it: `*/\[c\]-circle.md`. See `rules/fusion-workbench-conventions.md` `## State Markers — circles`. The enumeration form above is preferred precisely because it carries no brackets to lose in a copy-paste.
+
+   Skip any directory equal to `$CIRCLE`'s basename as a second guard — the active Circle's record carries `[t]` and is already excluded by marker, but a workbench whose pointer and marker disagree is exactly the case where a single guard isn't one.
+
+   A Circle directory holding no record, or more than one, is a workbench-state fault: report it, exclude it, do not guess which record is real.
+
+   **Shared files (per tier).** Mechanically expand the tier's globs against the `$SHARED_*` values derived in Step 1. For aged buckets, parse the `YYMMDD` (or legacy `MMDD`) date prefix and compare to `today - threshold`.
+
+   **Natural-language mode.** Survey what the description suggests; apply safety filters as defaults but flag any active-marker hits with `[ACTIVE]` rather than silently dropping them — the user may want them at `refine`.
 
 4. **CLAUDE.md citation check.**
    ```bash
-   for f in <candidates>; do
-     bn="$(basename "$f")"
-     rel="${f#fusion-workbench/}"
-     if grep -q -F -e "$bn" -e "$rel" CLAUDE.md 2>/dev/null; then
-       # exclude $f
-     fi
-   done
+   for f in <candidates>; do bn="$(basename "$f")"; rel="${f#$WORKBENCH/}"; if grep -q -F -e "$bn" -e "$rel" CLAUDE.md 2>/dev/null; then : ; fi; done
    ```
    Cited files are dropped from the proposal automatically.
 
 5. **Propose.** Print to the user:
    - Mode (tier-N + threshold, or the natural-language description verbatim).
    - Resolved slug + target archive path.
-   - Per-bucket counts (e.g. *"Tier 1 closed issues: 169 · superseded decisions: 4 · implemented decisions: 1 · closed planning: 41 — total 215"*).
-   - File count and total bytes.
-   - Anything dropped by the safety filters with a one-line summary (e.g. *"Excluded: 3 files cited from CLAUDE.md, 2 [a] decisions, 5 recent reviews"*).
-   - In natural-language mode, list `[ACTIVE]`-flagged hits explicitly so the user can see them.
+   - Per-bucket counts. Name the Circles individually — a Circle is a large, meaningful unit and the user should see which ones by name, with their Directive line, not just a count. Files may be counted in bulk.
+   - Total file count and total bytes.
+   - Anything dropped by the safety filters, with a one-line summary.
+   - In natural-language mode, list `[ACTIVE]`-flagged hits explicitly.
 
-6. **Confirm via `AskUserQuestion`.** Offer:
-   - `proceed` — archive exactly this list
-   - `refine` — change scope (drop or add specific items, change tier, change threshold)
-   - `cancel` — abort, change nothing
+6. **Confirm via `AskUserQuestion`.** Write the prompt in the project's language per the `**Language:**` line in `CLAUDE.md` (see `rules/fusion-workbench-conventions.md` `## Project language`), following `rules/user-facing-output.md` and the chat profile at `./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`. Offer:
+   - **Archivieren** — archive exactly this list
+   - **Ändern** — change scope (drop or add items, change tier, change threshold)
+   - **Abbrechen** — abort, change nothing
 
-   Do not move anything until `proceed`.
+   Do not move anything until the user picks the first.
 
-7. **Archive on `proceed`.**
-   - `mkdir -p fusion-workbench/archive/<YYMMDD-HHMM>-<slug>/`
-   - For each file: recreate its parent path under the archive folder and `mv` it. Move only — never copy.
+7. **Archive on confirmation.**
+   - `mkdir -p "$WORKBENCH/archive/<YYMMDD-HHMM>-<slug>/"`
+   - For each Circle: recreate the parent path under the archive folder and `mv` the whole directory. One move per Circle.
+   - For each shared file: recreate its parent path under the archive folder and `mv` it.
+   - Move only — never copy.
+   - **A collision never overwrites.** If a destination exists, leave the source in place, say so on stderr, and count it. Losing an artifact to a silent clobber is the one outcome this skill must never produce (`HYG-NO-SILENT-FAIL`).
    - Write the manifest (next step).
 
-8. **Write `MANIFEST.md`** at `fusion-workbench/archive/<YYMMDD-HHMM>-<slug>/MANIFEST.md`:
+8. **Write `MANIFEST.md`** at `<archive store>/<YYMMDD-HHMM>-<slug>/MANIFEST.md`:
    ```markdown
    # Archive Manifest
 
@@ -143,27 +183,37 @@ Adds `history/*.md` whose filename date prefix is older than the threshold. Old 
    **Slug:** <slug>
    **Invoked by:** <orchestrator | direct user>
 
-   ## Counts
+   ## Circles archived
 
-   - <per-bucket counts as in the proposal>
-   - **Total:** <N> files, <total> bytes
+   <one per line: directory name, marker, Directive one-liner>
 
    ## Files archived
 
-   <one path per line, original location relative to fusion-workbench/>
+   <one path per line, original location relative to the workbench root>
+
+   ## Counts
+
+   - <per-bucket counts as in the proposal>
+   - **Total:** <N> Circles, <M> files, <total> bytes
 
    ## Safety filters applied
 
-   - <list of filters that excluded items, e.g. "3 cited from CLAUDE.md", "5 recent reviews">
+   - <list of filters that excluded items, e.g. "3 cited from CLAUDE.md", "5 recent reviews", "1 deferred Circle">
+
+   ## Collisions
+
+   <any destination that already existed, and therefore was not moved — or "none">
    ```
 
-9. **Report.** Print archive path, file count, manifest path. Remind the user that archives are local — not committed automatically. They can `git add fusion-workbench/archive/<dir>/` if they want the snapshot in version control.
+9. **Report.** Print archive path, Circle count, file count, manifest path. Any collision needs the user's attention — it means an artifact stayed put. Remind the user that archives are local and not committed automatically; they can `git add` the archive directory if they want the snapshot in version control.
 
 ## Guardrails
 
-- **Move, do not copy.** The point is to shrink the live workbench. If the user wants a copy without removal, ask `AskUserQuestion` whether to switch to copy mode before doing it.
-- **Never delete the archive folder.** This skill only ever creates and adds.
+- **Move, do not copy.** The point is to shrink the live workbench. If the user wants a copy without removal, ask via `AskUserQuestion` before doing it.
+- **Never reach inside a Circle.** Individual files within a Circle directory are not archive candidates; the Circle is. A user who explicitly asks for one file out of a Circle in natural-language mode is asking to break the container — surface that consequence before doing it.
+- **Never archive the active Circle**, and never archive an anticipated one. Terminal Circles only.
+- **Never delete the archive folder.** This skill only creates and adds.
 - **Never touch git.** No `git add`, no `git commit`. The user decides whether to commit the archive.
-- **Never modify content of files being archived.** Move only; do not rewrite, reformat, or "tidy".
-- **If the survey returns zero matches:** report that and stop. Do not invent files. Do not broaden the search without re-asking.
-- **The CLAUDE.md citation check is a hard exclusion** — do not surface cited files even with `[ACTIVE]` flags. If the user wants to archive something cited from CLAUDE.md, they have to update CLAUDE.md first.
+- **Never modify content of what's being archived.** Move only; do not rewrite, reformat, or "tidy".
+- **If the survey returns zero matches:** report that and stop. Do not invent candidates. Do not broaden the search without re-asking.
+- **The CLAUDE.md citation check is a hard exclusion** — do not surface cited files even with `[ACTIVE]` flags. To archive something cited from CLAUDE.md, the user updates CLAUDE.md first.
