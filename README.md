@@ -33,6 +33,7 @@ fusion/
 │   ├── help/SKILL.md         # /fusion:help — explain fusion's daily use, install, configure
 │   ├── log-activity/SKILL.md # /fusion:log-activity — generate/update activity log
 │   ├── memo/SKILL.md         # /fusion:memo — append a memo (or a task to tasks-<user>.md)
+│   ├── migrate/SKILL.md      # /fusion:migrate — migrate a pre-v4 type-folder workbench to the Circle-container layout
 │   ├── next/SKILL.md         # /fusion:next — portfolio briefing
 │   ├── revise-claude-md/SKILL.md # /fusion:revise-claude-md — update project memory
 │   ├── setup/SKILL.md        # /fusion:setup — bootstrap workbench + load rules
@@ -71,6 +72,7 @@ fusion/
 ├── bin/
 │   ├── monitor               # Real-time browser-based monitoring dashboard
 │   ├── fusion-rules          # Per-agent rule discovery helper (plugin + project)
+│   ├── fusion-paths          # Per-consumer workbench path resolver (Circle vs shared/)
 │   ├── fusion-workbench-root # Walks up from pwd to find fusion-workbench/.fusion-setup
 │   ├── fusion-session-mark   # Tracks active orchestrator session via .session-marker
 │   └── fusion-commit-lock    # Cross-agent commit serialization lock
@@ -257,25 +259,34 @@ If you installed via the Claude Code marketplace instead of the HTTPS installer,
 
 ## fusion-workbench
 
-The plugin uses `fusion-workbench/` at the project root as the shared workspace for all agents:
+The plugin uses `fusion-workbench/` at the project root as the shared workspace for all agents. Since v4.0.0 the layout is **Circle-as-container**: a Circle is a directory holding everything one unit of work produces; work with no Circle affiliation lives in `shared/`; session and hook state stays at the root.
 
 ```
 fusion-workbench/
-├── planning/      # Plans (with state markers)
-├── issues/        # Defects filed by any agent
-├── decisions/     # Open questions / decision records (richer marker vocabulary)
-├── history/       # Session logs
-├── codereview/    # Code review output
-├── ontoreview/    # Ontology review output
-├── investigations/ # Forensic analysis reports
-├── analyses/      # Analyst output
-├── consult/       # Consultation reports
-├── circles/       # Circles — anticipated, active, closed, bounded, superseded, deferred (richer marker vocabulary)
-├── memos/         # Personal memo logs, one file per OS user (created on demand by /fusion:memo)
-└── tasklist.md    # Current work queue
+├── circles/
+│   └── <stamp>-<slug>/     # one directory per unit of work (stable name, NO marker)
+│       ├── [m]-circle.md   #   the Circle record — carries the state marker
+│       ├── planning/       #   spec + plan of THIS unit of work
+│       ├── issues/         #   defects that arose from this Circle's Directive
+│       ├── decisions/      #   decision records raised inside this Circle
+│       ├── history/        #   session logs
+│       ├── reviews/        #   codereview + ontoreview + conceptreview, merged (sender in filename)
+│       └── analyses/       #   analyst output
+├── shared/                 # everything with no Circle affiliation (same kinds, plus three of its own)
+│   ├── planning/  issues/  decisions/  history/  reviews/  analyses/
+│   ├── investigations/     #   shared-only — an investigation never originates in a Circle
+│   ├── consult/            #   shared-only — a consultation never originates in a Circle
+│   └── memos/              #   shared-only — one file per OS user (created on demand by /fusion:memo)
+├── portfolio.md            # playmaker output
+├── tasklist.md             # taskplanner work queue
+├── .active-circle          # pointer holding the active Circle's directory name
+└── (root-anchored session/hook state: agentstate.yaml, orchestrator-live.md,
+     orchestrator-events.jsonl, .guard-state/, .commit-lock/, .session-marker, monitor)
 ```
 
-**Human-retrospection skills.** The workbench is a durable record, not just an agent-coordination substrate. Two skills surface it for the user directly: `/fusion:memo` appends short personal notes ("don't forget X") to `fusion-workbench/memos/memos-<username>.md`; `/fusion:log-activity` scans git commits and every workbench subdirectory and writes a per-day activity log at the project root (`activity-log-<username>.md`) — useful for the "what did I actually do in the last four weeks?" question. See `docs/philosophy.md` §2 for the conceptual treatment.
+**Where an artifact goes is the Origin Rule:** it belongs to the Circle whose Directive caused it to exist; with no active Circle it goes to `shared/`; cross-cutting relevance is cited, not placed. Agents never hard-code these paths — they resolve write/scan targets through `bin/fusion-paths <name>` at Setup and cite `rules/fusion-workbench-conventions.md`, which is the single home for the full layout and the resolution contract.
+
+**Human-retrospection skills.** The workbench is a durable record, not just an agent-coordination substrate. Two skills surface it for the user directly: `/fusion:memo` appends short personal notes ("don't forget X") to `fusion-workbench/shared/memos/memos-<username>.md`; `/fusion:log-activity` scans git commits and the workbench and writes a per-day activity log at the project root (`activity-log-<username>.md`) — useful for the "what did I actually do in the last four weeks?" question. See `docs/philosophy.md` §2 for the conceptual treatment.
 
 **State markers — issues/ and planning/:** `[o]` open, `[p]` in progress, `[c]` closed, `[d]` deferred.
 

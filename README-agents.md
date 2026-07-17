@@ -18,23 +18,25 @@ Options 1 and 2 launch a sub-agent with its own context window (see [How to invo
 
 ## The agents
 
+Since v4.0.0 the **Writes** column names artifact *kinds*, not fixed root paths. Each kind resolves at run time through `bin/fusion-paths` into the active Circle (`<circle>/planning/`, `<circle>/issues/`, …) or into `shared/` when no Circle is active — the Origin Rule decides which. The three former review folders (`codereview/`, `ontoreview/`, `conceptreview/`) are merged into one `reviews/`, with the reviewing agent named in the filename.
+
 | Agent | Role | Reads | Writes | Output goes to |
 |-------|------|-------|--------|----------------|
-| `shaper` | Turns vague/brittle user requests into precise specs with user involvement | Anything | `fusion-workbench/planning/` (spec files), `fusion-workbench/issues/`, `fusion-workbench/history/` | Spec document with capabilities, acceptance criteria, and user decisions |
-| `planner` | Designs implementation plans from specs or clear requests, no code changes | Anything | `fusion-workbench/planning/`, `fusion-workbench/issues/`, `fusion-workbench/history/` | Markdown plan with explicit step-by-step executor routing |
-| `coder` | Implements **application code** per a plan or task | Anything | `.go`, `.ts`, `.tsx`, `.py`, `.js`, build files, tests, `fusion-workbench/{history,issues}/` | Code edits + history log |
-| `ontocoder` | Implements **structured-data and ontology** changes per a plan or task | Anything | `.yaml`, `.yml`, `.json`, `.toml`, `.csv`, ontology, manifests, schemas, fixture data, derived stats/index files, data documentation, `fusion-workbench/{history,issues}/` | Data edits + history log |
-| `coderev` | Reviews Go / TS / Python code, files findings | Anything | `fusion-workbench/codereview/`, `fusion-workbench/issues/`, `fusion-workbench/history/` | Review report + issue files |
-| `ontorev` | Reviews ontology, manifests, verb hierarchies, files findings | Anything | `fusion-workbench/ontoreview/`, `fusion-workbench/issues/`, `fusion-workbench/history/` | Review report + issue files |
-| `conceptrev` | Evaluates the formal Mermaid design diagrams in plans/specs/analyses — measures graph structure (fan-out, cycles, layering, orphans), returns an advisory coherence verdict. Read-only; files nothing | Anything (esp. planning/analysis docs) | `fusion-workbench/conceptreview/`, `fusion-workbench/history/` | Coherence verdict (clean/acceptable/tangled) + findings |
+| `shaper` | Turns vague/brittle user requests into precise specs with user involvement | Anything | `planning/` (spec files), `issues/`, `history/` | Spec document with capabilities, acceptance criteria, and user decisions |
+| `planner` | Designs implementation plans from specs or clear requests, no code changes | Anything | `planning/`, `issues/`, `history/` | Markdown plan with explicit step-by-step executor routing |
+| `coder` | Implements **application code** per a plan or task | Anything | `.go`, `.ts`, `.tsx`, `.py`, `.js`, build files, tests, `history/`, `issues/` | Code edits + history log |
+| `ontocoder` | Implements **structured-data and ontology** changes per a plan or task | Anything | `.yaml`, `.yml`, `.json`, `.toml`, `.csv`, ontology, manifests, schemas, fixture data, derived stats/index files, data documentation, `history/`, `issues/` | Data edits + history log |
+| `coderev` | Reviews Go / TS / Python code, files findings | Anything | `reviews/`, `issues/`, `history/` (`$OUT_REVIEW` etc., resolved per-Circle or `shared/`) | Review report + issue files |
+| `ontorev` | Reviews ontology, manifests, verb hierarchies, files findings | Anything | `reviews/`, `issues/`, `history/` | Review report + issue files |
+| `conceptrev` | Evaluates the formal Mermaid design diagrams in plans/specs/analyses — measures graph structure (fan-out, cycles, layering, orphans), returns an advisory coherence verdict. Read-only; files nothing | Anything (esp. planning/analysis docs) | `reviews/`, `history/` | Coherence verdict (clean/acceptable/tangled) + findings |
 | `reconciler` | Reconciles plans / issues / reviews against the actual codebase | Anything | Tracking files in `fusion-workbench/` (status markers, reconciliation logs only) | Updated tracking files + history log |
-| `taskplanner` | Builds the dependency-ordered work queue from open plans, issues, reviews | All `fusion-workbench/` tracking files | `fusion-workbench/tasklist.md`, `fusion-workbench/history/` | A single, executable task list |
-| `bugfixer` | Diagnoses and fixes a specific bug: autonomous investigation, minimal targeted fix, verification | Anything | Any file type (code, data, ontology), `fusion-workbench/{history,issues}/` | Verified fix + history log |
-| `consultant` | On-demand expert consultation — answers a specific question from a referenced corpus, files issues for whatever work the answer reveals | Anything | `fusion-workbench/consult/`, `fusion-workbench/issues/`, `fusion-workbench/history/` | Consultation report + issue files |
-| `investigator` | Forensic analysis of captured project runs (capture layout supplied by a project-local `./rules/investigator-capture-layout.md`) | Anything (esp. logs, prompts, ontology, code, image files via vision) | `fusion-workbench/investigations/`, `fusion-workbench/issues/`, `fusion-workbench/history/` | Investigation report + issue files |
-| `analyst` | Document study and problem analysis — comparative, gap, risk, feasibility, impact | Anything | `fusion-workbench/analyses/`, `fusion-workbench/issues/`, `fusion-workbench/history/` | Analysis report + issue files |
-| `orchestrator` | Automates multi-task work sessions: runs Turns of execution, review, and reconciliation until the Directive converges or a circuit breaker fires | Anything | Dispatches agents, creates commits, writes `fusion-workbench/history/` | Progress report + commits + updated tracking files |
-| `playmaker` | Circle portfolio management — ranks anticipated Circles, proposes next activation, detects cycles, flags parent-Grounding-stale | All of `fusion-workbench/`, `CLAUDE.md`, codebase | `fusion-workbench/circles/<file>.md`, `fusion-workbench/portfolio.md`, `fusion-workbench/history/` | Updated Circle files + portfolio brief + history log |
+| `taskplanner` | Builds the dependency-ordered work queue from open plans, issues, reviews | All `fusion-workbench/` tracking files | `tasklist.md`, `history/` | A single, executable task list |
+| `bugfixer` | Diagnoses and fixes a specific bug: autonomous investigation, minimal targeted fix, verification | Anything | Any file type (code, data, ontology), `history/`, `issues/` | Verified fix + history log |
+| `consultant` | On-demand expert consultation — answers a specific question from a referenced corpus, files issues for whatever work the answer reveals | Anything | `consult/` (shared-only), `issues/`, `history/` | Consultation report + issue files |
+| `investigator` | Forensic analysis of captured project runs (capture layout supplied by a project-local `./rules/investigator-capture-layout.md`) | Anything (esp. logs, prompts, ontology, code, image files via vision) | `investigations/` (shared-only), `issues/`, `history/` | Investigation report + issue files |
+| `analyst` | Document study and problem analysis — comparative, gap, risk, feasibility, impact | Anything | `analyses/`, `issues/`, `history/` | Analysis report + issue files |
+| `orchestrator` | Automates multi-task work sessions: runs Turns of execution, review, and reconciliation until the Directive converges or a circuit breaker fires | Anything | Dispatches agents, creates commits, writes `history/` | Progress report + commits + updated tracking files |
+| `playmaker` | Circle portfolio management — ranks anticipated Circles, proposes next activation, detects cycles, flags parent-Grounding-stale | All of `fusion-workbench/`, `CLAUDE.md`, codebase | `circles/<stamp>-<slug>/[m]-circle.md`, `portfolio.md`, `history/` | Updated Circle records + portfolio brief + history log |
 
 **Hard rule across all agents:** read-only on layers outside the agent's primary scope. A reviewer never edits code. A `coder` never edits ontology yaml. An `ontocoder` never edits Go. The investigator never edits anything inside its evidence captures. The orchestrator never edits code or data directly — it dispatches executors. Cross-layer findings are filed as issues and routed to the right executor. The scope is enforced by prose in each agent's prompt, not by a `tools:` allowlist. **Exception:** `bugfixer` may edit both code and data because bugs cross layer boundaries — but ontology edits require a human gate.
 
@@ -63,17 +65,17 @@ This keeps the definitions minimal and avoids drift between agent-specific and s
 Most non-trivial work follows a chain. Each step is handled by one sub-agent invocation:
 
 ```
-shaper        →  fusion-workbench/planning/<spec>.md      (when request is brittle/vague)
+shaper        →  planning/<spec>.md                       (when request is brittle/vague)
    ↓
-planner       →  fusion-workbench/planning/<plan>.md
+planner       →  planning/<plan>.md
    ↓
 taskplanner   →  fusion-workbench/tasklist.md             (queue of work for executors)
    ↓
 coder         →  application code edits
 ontocoder     →  data / ontology edits                (run in parallel with coder when independent)
    ↓
-coderev       →  fusion-workbench/codereview/<review>.md   + new issue files
-ontorev       →  fusion-workbench/ontoreview/<review>.md   + new issue files
+coderev       →  reviews/<review>.md                       + new issue files
+ontorev       →  reviews/<review>.md                       + new issue files
    ↓
 reconciler    →  ground-truth pass over all tracking files in fusion-workbench/
 ```
@@ -142,7 +144,7 @@ The sequence diagram is the retrospective summary, appended to the history file 
 
 Two side loops feed into the chain at any point (outside the orchestrator's scope):
 
-- **investigator** — when a captured project run shows inadequate output, the investigator walks the logs, vision-analyzes any screenshots, traces the failure across prompts / orchestrator / ontology / source material, files issues, and writes a report to `fusion-workbench/investigations/`. Capture location and structure are project-specific and described by the project's `./rules/investigator-capture-layout.md` (template at `templates/`).
+- **investigator** — when a captured project run shows inadequate output, the investigator walks the logs, vision-analyzes any screenshots, traces the failure across prompts / orchestrator / ontology / source material, files issues, and writes a report to `shared/investigations/` (investigations are always shared — they never originate in a Circle). Capture location and structure are project-specific and described by the project's `./rules/investigator-capture-layout.md` (template at `templates/`).
 - **reconciler** — periodically run between sessions to make sure plan and issue states reflect what is actually in the codebase (file headers lie, the codebase doesn't). Also invoked by the orchestrator at session end.
 
 ## Plugin structure
@@ -182,12 +184,13 @@ In a consuming project, drop a markdown file into `./rules/` whose name contains
 
 | Slash command | File | What it does |
 |---------------|------|--------------|
-| `/fusion:setup` | `skills/setup/SKILL.md` | Bootstraps `fusion-workbench/`, writes the `.fusion-setup` marker, copies the monitor binary, and runs the orchestrator's mandatory Setup procedure |
+| `/fusion:setup` | `skills/setup/SKILL.md` | Bootstraps `fusion-workbench/`, writes the `.fusion-setup` marker, copies the monitor binary, and runs the orchestrator's mandatory Setup procedure. Since v4.0.0 it detects a pre-v4 type-folder workbench and refuses, pointing at `/fusion:migrate` |
+| `/fusion:migrate` | `skills/migrate/SKILL.md` | Migrates a pre-v4 type-folder workbench to the v4.0.0 Circle-container layout: moves the old root type-folders wholesale into `shared/` (unknown origin → `shared/`) and stands up the `circles/` scaffold. Idempotent |
 | `/fusion:help` | `skills/help/SKILL.md` | Explains what fusion is, daily use, install/update/configure paths, and where deeper docs live |
 | `/fusion:commit` | `skills/commit/SKILL.md` | Stages, generates a conventional-commit message from the diff, asks the user to confirm, then commits |
 | `/fusion:archive` | `skills/archive/SKILL.md` | Archives completed/aged workbench files into `fusion-workbench/archive/<YYMMDD-HHMM>-<slug>/` |
 | `/fusion:log-activity` | `skills/log-activity/SKILL.md` | Scans project activity and generates/updates the activity log |
-| `/fusion:memo` | `skills/memo/SKILL.md` | Appends a memo to the user's personal memo log in `fusion-workbench/memos/` |
+| `/fusion:memo` | `skills/memo/SKILL.md` | Appends a memo to the user's personal memo log in `fusion-workbench/shared/memos/` |
 | `/fusion:revise-claude-md` | `skills/revise-claude-md/SKILL.md` | Revises `CLAUDE.md` with learnings discovered during the current session (three-pass: add / update / prune) |
 | `/fusion:unlock` | `skills/unlock/SKILL.md` | Writes a permissive `.claude/settings.local.json` so future sessions skip per-tool approval prompts |
 | `/fusion:cleanup` | `skills/cleanup/SKILL.md` | Autonomous session wrap-up: files issues for open tasks, commits + pushes the work in meaningful splits, reconciles, archives (tier-1), revises `CLAUDE.md`, logs activity, then commits + pushes the housekeeping artifacts |
@@ -198,29 +201,30 @@ Slash commands are independent of sub-agent routing — invoke them from the par
 
 Every agent writes to `fusion-workbench/` and never to its own scratchpad — a sub-agent's context window does not survive the parent session, and even within a session the agents share no memory with each other.
 
+Since v4.0.0 the workbench is **Circle-as-container**: a Circle is a directory holding everything one unit of work produces, and work with no Circle affiliation lives in `shared/`. Agents do not hard-code these paths — they resolve their write and scan targets through `bin/fusion-paths <name>` at Setup (alongside `bin/fusion-rules`) and where an artifact lands follows the Origin Rule (it belongs to the Circle whose Directive caused it; with no active Circle it goes to `shared/`).
+
 ```
 fusion-workbench/
-├── planning/        # planner output (also: shaper specs)
-├── issues/          # filed by every agent that finds something actionable
-├── decisions/       # open questions / decision records (richer marker vocabulary)
-├── history/         # every session's log; the durable record
-├── codereview/      # coderev output
-├── ontoreview/      # ontorev output
-├── conceptreview/   # conceptrev design-diagram verdicts
-├── investigations/  # investigator output
-├── analyses/        # analyst output
-├── consult/         # consultant reports
-└── tasklist.md      # taskplanner output (dependency-ordered work queue)
+├── circles/<stamp>-<slug>/     # one directory per unit of work; [m]-circle.md carries the marker
+│   ├── planning/  issues/  decisions/  history/  analyses/
+│   └── reviews/                # coderev + ontorev + conceptrev output, merged (sender in filename)
+├── shared/                     # everything with no Circle affiliation
+│   ├── planning/  issues/  decisions/  history/  reviews/  analyses/
+│   ├── investigations/         # investigator output — shared-only
+│   ├── consult/                # consultant reports — shared-only
+│   └── memos/                  # personal memo logs — shared-only
+├── portfolio.md                # playmaker output
+└── tasklist.md                 # taskplanner output (dependency-ordered work queue)
 ```
 
-State markers and inline progress tracking are defined once in `fusion-workbench-conventions.md` (auto-loaded from the plugin's `rules/` directory). Every agent confirms the rule is in context during Setup so the conventions are uniform.
+The layout, the Origin Rule, the `bin/fusion-paths` resolution contract, the state markers, and inline progress tracking are all defined once in `fusion-workbench-conventions.md` (auto-loaded from the plugin's `rules/` directory). Every agent confirms the rule is in context during Setup so the conventions are uniform.
 
 ## Invariants
 
 - **No agent modifies its own definition file.** Updates to `agents/*.md` are made by the user or via a normal code change — never by the agent itself.
-- **No agent edits files outside its declared scope.** Cross-layer findings flow through `fusion-workbench/issues/`, not direct edits. Scope is enforced by prose in each agent prompt.
+- **No agent edits files outside its declared scope.** Cross-layer findings flow through the `issues/` store (in the active Circle or `shared/`), not direct edits. Scope is enforced by prose in each agent prompt.
 - **Only the orchestrator dispatches other agents.** All other agents are leaf nodes — they do their work and return. The orchestrator is the sole coordinator. It never recurses (no self-invocation), and it never invokes `investigator` (user-initiated only).
-- **Issues live in `fusion-workbench/issues/`, never embedded in plans, reviews, or chat output.** This is enforced in `fusion-workbench-conventions.md` and applies to every agent.
+- **Issues live in an `issues/` store (resolved into the active Circle or `shared/`), never embedded in plans, reviews, or chat output.** This is enforced in `fusion-workbench-conventions.md` and applies to every agent.
 - **Timestamps come from the system clock** (`date +%y%m%d-%H%M`), never from estimation. All tracking filenames carry an `YYMMDD-HHMM` prefix.
 - **`.secret` files are never read.** If an agent needs a secret, it asks the user for an environment variable.
 
