@@ -320,7 +320,7 @@ The price of the marker-on-the-record design is that `ls circles/` no longer sho
 
 The vocabulary is parallel to but distinct from issues/planning and decisions. It is unchanged by the container layout.
 
-Binding decision: `decisions/260716-1910[a]-circle-marker-am-verzeichnis-oder-an-der-circle-datei.md`.
+Binding decision: `decisions/260716-1910_i_circle-marker-am-verzeichnis-oder-an-der-circle-datei.md`.
 
 | Marker | Meaning |
 |--------|---------|
@@ -629,7 +629,7 @@ String values are quoted; `null` is the unquoted YAML literal.
 - Created by `/fusion:circle-stash` (one stash directory per invocation).
 - Consumed by `/fusion:circle-pop`, which restores state but does NOT auto-delete the stash directory. The user prunes manually: `rm -rf fusion-workbench/stashes/<id>/ && git stash drop <ref>`.
 - A `STASH_IN_PROGRESS` lock file at the stash directory root signals an incomplete write. `/fusion:circle-pop` refuses to read stashes carrying this file.
-- Multiple stashes can coexist (decision `260519-1100[a]-circle-stash-pop-design.md`). `/fusion:circle-pop` lists them when invoked without an argument and asks the user to pick.
+- Multiple stashes can coexist (decision `260519-1100_a_circle-stash-pop-design.md`). `/fusion:circle-pop` lists them when invoked without an argument and asks the user to pick.
 
 ### Boundary events
 
@@ -648,7 +648,7 @@ Session history is the one nuance: it lives *inside* the stashed Circle and ther
 ### Cross-references
 
 - Design spec: `analyses/260519-0438-circle-stash-pop-concept.md` (pre-container; now under `shared/`)
-- Binding decision: `decisions/260519-1100[a]-circle-stash-pop-design.md`
+- Binding decision: `decisions/260519-1100_a_circle-stash-pop-design.md`
 - Skill bodies: `skills/circle-stash/SKILL.md`, `skills/circle-pop/SKILL.md`
 
 ## Commit lock
@@ -692,4 +692,4 @@ Mandatory. Used in stale-lock messages. Format: the agent name (`orchestrator`, 
 
 ### Cross-reference
 
-Issue `260516-0534[c]-cross-agent-staging-race-on-unlocked-working-tree.md` (closed by this protocol; pre-container, now under `shared/issues/`).
+Issue `260516-0534_c_cross-agent-staging-race-on-unlocked-working-tree.md` (closed by this protocol; pre-container, now under `shared/issues/`).

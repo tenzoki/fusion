@@ -23,7 +23,7 @@
 #
 # Overrides (optional env vars):
 #   FUSION_REF   git ref to fetch (default: heads/main; pin a release with
-#                FUSION_REF=tags/v3.20.0)
+#                FUSION_REF=tags/v5.0.0)
 #   FUSION_HOME  install dir (default: ~/.fusion)
 #   FUSION_BIN   launcher dir (default: ~/.local/bin)
 
