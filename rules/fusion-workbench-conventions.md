@@ -308,7 +308,7 @@ Two forms are correct. Use them verbatim:
 | Purpose | Form |
 |---|---|
 | Records in one state | `circles/*/_t_circle.md` |
-| All records, marker read from the name | `circles/*/*-circle.md`, then `basename` → `sed -nE 's/^_([a-z])_.*/\1/p'` |
+| All records, marker read from the name | `circles/*/*_circle.md`, then `basename` → `sed -nE 's/^_([a-z])_.*/\1/p'` |
 
 The second form is preferred wherever the task is counting or enumerating: it reads the marker as data rather than requiring one glob per state.
 

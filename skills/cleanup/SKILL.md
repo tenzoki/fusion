@@ -61,14 +61,14 @@ The goal is that no unfinished work is lost when the session ends.
 1. If `fusion-workbench/agentstate.yaml` exists, read it. Its `work_queue` entries with status other than `done`/`skipped`/`deferred` are unfinished. (This file is root-anchored — the hooks read it there. It is not resolved by `fusion-paths`.)
 2. Read `$WORKBENCH/$TASKLIST` (if present) for unchecked tasks, and skim every path in `$SCAN_PLANS` for open or in-progress plans with unmarked or `[IN PROGRESS]` steps. `$SCAN_PLANS` may name **two** directories — the active Circle's and the shared one. Skim both, or unfinished work in one of them is silently missed.
 
-   Match the marker with the brackets escaped:
+   Match the marker (the underscore is inert — no escaping needed):
 
    ```bash
-   for d in $SCAN_PLANS; do ls "$WORKBENCH/$d"/*\[o\]*.md "$WORKBENCH/$d"/*\[p\]*.md 2>/dev/null; done
+   for d in $SCAN_PLANS; do ls "$WORKBENCH/$d"/*_o_*.md "$WORKBENCH/$d"/*_p_*.md 2>/dev/null; done
    ```
 
-   `[o]` unescaped is a shell bracket expression matching the single character `o`, so `*[o]*.md` silently matches every filename containing an `o` — including `[p]`, `[c]` and `[d]` plans — while looking like it filters. See `rules/fusion-workbench-conventions.md` `## State Markers — circles` for the escaping rule; it applies to every marker in every vocabulary.
-3. For each genuinely-unfinished task that is **not already tracked by an open issue**, file an issue per the decision/issue conventions in `rules/fusion-workbench-conventions.md`: `$WORKBENCH/$OUT_ISSUE/YYMMDD-HHMM[o]-<slug>.md` (timestamp from `date +%y%m%d-%H%M`, never guessed). Each issue records what the task was, its source file, and why it's still open. Check every path in `$SCAN_ISSUES` — both stores — before filing, so an issue that already exists in the shared store is not duplicated into the Circle.
+   The underscore marker is inert as a glob: `*_o_*.md` matches the open plans literally and never collides with `_p_`, `_c_` or `_d_` plans, because slugs are hyphen-separated and never contain an underscore. See `rules/fusion-workbench-conventions.md` `## State Markers — circles`; the convention applies to every marker in every vocabulary.
+3. For each genuinely-unfinished task that is **not already tracked by an open issue**, file an issue per the decision/issue conventions in `rules/fusion-workbench-conventions.md`: `$WORKBENCH/$OUT_ISSUE/YYMMDD-HHMM_o_<slug>.md` (timestamp from `date +%y%m%d-%H%M`, never guessed). Each issue records what the task was, its source file, and why it's still open. Check every path in `$SCAN_ISSUES` — both stores — before filing, so an issue that already exists in the shared store is not duplicated into the Circle.
 
    `$OUT_ISSUE` is the right target for these: an unfinished task from this session arose from the active Directive, which is what the Origin Rule keys on. A defect this session merely *noticed* in unrelated code belongs in the shared store instead — but that is not what this step files.
 4. Finalise the session surfaces:

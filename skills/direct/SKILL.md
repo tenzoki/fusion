@@ -8,7 +8,7 @@ allowed-tools: [Bash, Read, Write, Edit, Agent(fusion:shaper)]
 
 The user invoked `/fusion:direct <draft>`. This skill is the user-facing surface for **capturing a Directive as an anticipated Circle** without entering an orchestrator Turn loop. It dispatches the `shaper` agent in `anticipated-circle` mode; shaper runs its normal clarification flow with the user and creates the Circle.
 
-A Circle is a directory, not a file: shaper creates `<dirname>/` with its record `[a]-circle.md` and the six artifact subdirectories. See `rules/fusion-workbench-conventions.md` `## Circle record template`.
+A Circle is a directory, not a file: shaper creates `<dirname>/` with its record `_a_circle.md` and the six artifact subdirectories. See `rules/fusion-workbench-conventions.md` `## Circle record template`.
 
 The skill itself does not write Circle content — shaper does. Its only writes are (a) a `mkdir -p` of the Circle store if absent (Step 2 — the one deviation from `/fusion:next`'s stricter "run setup" rule, and a deliberate choice for this skill), and (b) the follow-up text printed to the user.
 
@@ -81,7 +81,7 @@ Shaper will then:
 - Read the conventions and load the Circle record template
 - Run its normal 1-4-questions-per-round clarification flow with the user via `AskUserQuestion`
 - Derive a `<directive-slug>` from the refined Directive (kebab-case, ≤6 words, lowercased, articles dropped)
-- Create the Circle directory `YYMMDD-HHMM-<directive-slug>/`, its record `[a]-circle.md`, and the six artifact subdirectories
+- Create the Circle directory `YYMMDD-HHMM-<directive-slug>/`, its record `_a_circle.md`, and the six artifact subdirectories
 - Write its own history file
 - Return with the Circle directory name
 

@@ -60,15 +60,15 @@ Otherwise resolve the Circle's directory and its record:
 ```bash
 CIRCLE_PATH="$WORKBENCH/$CIRCLE"
 CIRCLE_DIRNAME="$(basename "$CIRCLE")"
-REC=""; REC_COUNT=0; for f in "$CIRCLE_PATH"/*-circle.md; do [ -e "$f" ] || continue; REC="$f"; REC_COUNT=$((REC_COUNT+1)); done
+REC=""; REC_COUNT=0; for f in "$CIRCLE_PATH"/*_circle.md; do [ -e "$f" ] || continue; REC="$f"; REC_COUNT=$((REC_COUNT+1)); done
 CIRCLE_RECORD="$(basename "${REC:-}")"
 ```
 
-Enumerate the record; never glob the marker. `*/[t]-circle.md` is a **bracket expression matching the single character `t`**, so it searches for `t-circle.md`, matches nothing, and reports zero records for a Circle that has one — silently, because the unmatched pattern expands to itself and the `[ -e "$f" ] || continue` guard drops it. `find -name '[t]-circle.md'` has the identical bug: `find` globs the pattern itself. See `rules/fusion-workbench-conventions.md` `## State Markers — circles`.
+Enumerate the record rather than globbing per state. The underscore marker is inert, so `*/_t_circle.md` matches literally (no escaping) and `find -name '_t_circle.md'` needs no special handling; the enumeration above reads the marker as data in one pass. See `rules/fusion-workbench-conventions.md` `## State Markers — circles`.
 
 If `REC_COUNT` is 0 or greater than 1, halt and say which it is — a Circle directory holding no record, or more than one, is a workbench-state fault the user must resolve:
 
-> **Der aktive Circle hat keinen eindeutigen Datensatz.** `<CIRCLE>` enthält `<REC_COUNT>` Dateien der Form `*-circle.md`; genau eine wird erwartet. Bring das in Ordnung, bevor du wegpackst — sonst weiß `/fusion:circle-pop` nicht, was es zurückholen soll.
+> **Der aktive Circle hat keinen eindeutigen Datensatz.** `<CIRCLE>` enthält `<REC_COUNT>` Dateien der Form `*_circle.md`; genau eine wird erwartet. Bring das in Ordnung, bevor du wegpackst — sonst weiß `/fusion:circle-pop` nicht, was es zurückholen soll.
 
 Exit cleanly.
 
@@ -444,4 +444,4 @@ User-facing output follows `rules/user-facing-output.md` plus the chat profile f
 - Every refusal in Steps 1–3 leads with the user action ("Aktiviere zuerst einen mit `/fusion:next`", "Warte, bis die laufende Aufgabe fertig ist") before explaining why.
 - The Step 6 preview leads with what the user is about to do, then the details block. No leading metadata.
 - The Step 9 report leads with the action that just completed and the next command, then the details.
-- Marker syntax stays in filenames; in prose say "aktiver Circle", not "[t] Circle".
+- Marker syntax stays in filenames; in prose say "aktiver Circle", not "_t_ Circle".

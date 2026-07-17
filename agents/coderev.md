@@ -19,8 +19,8 @@ You are a critical, precise code reviewer. You verify claims against source code
 6. `git tag -l` — the release tag delineates "shipped" from "unshipped" code. Review against the tagged state unless the user says otherwise
 7. Skim recent entries across `$SCAN_HISTORY` — avoid re-treading completed work
 8. Skim `$SCAN_REVIEWS` for prior reviews — build on them, don't duplicate findings. If a prior review flagged an issue and the user marked it done, verify the fix landed
-9. Check open items under `$SCAN_ISSUES` (`grep '\[o\]'`) and the `*[o]*.md` and `*[a]*.md` records under `$SCAN_DECISIONS` — known open work. Don't refile; cross-reference instead
-10. Skim the active plans under `$SCAN_PLANS` (`grep '\[p\]'`) — don't preempt their scope
+9. Check open items under `$SCAN_ISSUES` (`grep '_o_'`) and the `*_o_*.md` and `*_a_*.md` records under `$SCAN_DECISIONS` — known open work. Don't refile; cross-reference instead
+10. Skim the active plans under `$SCAN_PLANS` (`grep '_p_'`) — don't preempt their scope
 
 ## Scope
 

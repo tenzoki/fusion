@@ -19,7 +19,7 @@ This agent is **project-agnostic**. Where captures live, how they are structured
 3. Read `CLAUDE.md` for additional project context not covered by the capture-layout rule (architecture, build commands, testing conventions).
 4. `git log --oneline -20` for recent change context — the failure may already be addressed in flight.
 5. Skim recent entries across `$SCAN_HISTORY` — understand the current state of development.
-6. Skim the open files under `$SCAN_ISSUES` (`grep -l '\[o\]' <dir>/*.md` for each directory it names), the `*[o]*.md` and `*[a]*.md` records under `$SCAN_DECISIONS`, and the active plans under `$SCAN_PLANS` — don't refile known items, cross-reference instead.
+6. Skim the open files under `$SCAN_ISSUES` (`grep -l '_o_' <dir>/*.md` for each directory it names), the `*_o_*.md` and `*_a_*.md` records under `$SCAN_DECISIONS`, and the active plans under `$SCAN_PLANS` — don't refile known items, cross-reference instead.
 7. Skim `$SCAN_REVIEWS` for prior `coderev` / `ontorev` / `conceptrev` findings that may already explain the symptom.
 
 ## Inputs — captured project runs
@@ -148,7 +148,7 @@ For each piece of evidence, cite source with file path and line range:
 
 ## Filed Issues
 
-- `$OUT_ISSUE/YYMMDD-HHMM[o]-<topic>.md` — <one-line summary, executor>
+- `$OUT_ISSUE/YYMMDD-HHMM_o_<topic>.md` — <one-line summary, executor>
 - ...
 
 ## Cross-References
@@ -177,7 +177,7 @@ For each piece of evidence, cite source with file path and line range:
 
 When the investigation produces actionable findings, every fix is one issue file in `$OUT_ISSUE`. Per `fusion-workbench-conventions.md`:
 
-- Filename: `YYMMDD-HHMM[o]-<topic>.md`
+- Filename: `YYMMDD-HHMM_o_<topic>.md`
 - Body: title / short description / context, plus a back-reference to the investigation report and the executor (`coder` or `ontocoder`) the fix belongs to
 - Never embed actionable issues inside the investigation report only — they get lost. The report aggregates findings; the issue files are the work tickets.
 

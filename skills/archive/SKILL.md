@@ -63,14 +63,14 @@ The skill takes one of:
 
 | Artifact kind | Markers | Terminal? |
 |---|---|---|
-| Circle record | `[a]` anticipated · `[t]` active · `[c]` closed-coherent · `[b]` bounded closure · `[s]` superseded · `[d]` deferred | `[c]`, `[b]`, `[s]`, `[d]` |
-| Defect, spec/plan | `[o]` open · `[p]` in-progress · `[c]` closed · `[d]` deferred | only `[c]` |
-| Decision record | `[o]` open · `[a]` answered · `[i]` implemented · `[d]` deferred · `[s]` superseded | `[i]` and `[s]` |
+| Circle record | `_a_` anticipated · `_t_` active · `_c_` closed-coherent · `_b_` bounded closure · `_s_` superseded · `_d_` deferred | `_c_`, `_b_`, `_s_`, `_d_` |
+| Defect, spec/plan | `_o_` open · `_p_` in-progress · `_c_` closed · `_d_` deferred | only `_c_` |
+| Decision record | `_o_` open · `_a_` answered · `_i_` implemented · `_d_` deferred · `_s_` superseded | `_i_` and `_s_` |
 | History, review, analysis, investigation, consultation, memo | none | n/a |
 
 **Terminal** = work is done; the artifact is a record, not a live work item. Only terminal-state artifacts are safe to bulk-archive without per-file review.
 
-**Terminal is not the same as archive-class.** `[d]` (deferred) is terminal in both the Circle and the defect vocabularies, and is still excluded from every tier — see safety filter 2.
+**Terminal is not the same as archive-class.** `_d_` (deferred) is terminal in both the Circle and the defect vocabularies, and is still excluded from every tier — see safety filter 2.
 
 ## Safety filters (apply to ALL modes)
 
@@ -84,11 +84,11 @@ These are non-negotiable defaults. The user can override them at the `refine` st
    - Anything already under the archive store.
 
 2. **Active markers — never archive in tier modes:**
-   - The **active Circle** (`$CIRCLE`) and any anticipated (`[a]`) or active (`[t]`) Circle — live work.
-   - `[d]` Circles — *deferred ≠ done*; the user may want to revisit. Terminal, but excluded by default.
-   - `[o]` (open) and `[p]` (in-progress) defects and plans — live work.
-   - `[d]` defects and plans — same reasoning as `[d]` Circles.
-   - `[a]` decisions — answer recorded but not yet realised in code/data. Archiving breaks decision↔implementation traceability. Promote to `[i]` when implementation lands; do not bulk-archive `[a]`.
+   - The **active Circle** (`$CIRCLE`) and any anticipated (`_a_`) or active (`_t_`) Circle — live work.
+   - `_d_` Circles — *deferred ≠ done*; the user may want to revisit. Terminal, but excluded by default.
+   - `_o_` (open) and `_p_` (in-progress) defects and plans — live work.
+   - `_d_` defects and plans — same reasoning as `_d_` Circles.
+   - `_a_` decisions — answer recorded but not yet realised in code/data. Archiving breaks decision↔implementation traceability. Promote to `_i_` when implementation lands; do not bulk-archive `_a_`.
 
 3. **CLAUDE.md citation check:** if a file is referenced from `CLAUDE.md` (by relative path or filename), exclude it from the proposal regardless of tier or marker. CLAUDE.md is auto-loaded into every Claude session — its references must remain resolvable. For a Circle directory, check its directory name and its record.
 
@@ -104,11 +104,11 @@ Each tier is **additive**: tier-2 includes tier-1, tier-3 includes tier-2. The d
 
 | Target | Selection | Reason |
 |---|---|---|
-| `$SCAN_CIRCLES/<dirname>/` | record marker is `[c]`, `[b]` or `[s]` | closed, bounded or superseded Circle — terminal; moves as one directory |
-| `$SHARED_ISSUES` | `*[c]*.md` | closed defect, terminal |
-| `$SHARED_PLANS` | `*[c]*.md` | closed plan, terminal |
-| `$SHARED_DECISIONS` | `*[i]*.md` | implemented decision, terminal |
-| `$SHARED_DECISIONS` | `*[s]*.md` | superseded decision, terminal |
+| `$SCAN_CIRCLES/<dirname>/` | record marker is `_c_`, `_b_` or `_s_` | closed, bounded or superseded Circle — terminal; moves as one directory |
+| `$SHARED_ISSUES` | `*_c_*.md` | closed defect, terminal |
+| `$SHARED_PLANS` | `*_c_*.md` | closed plan, terminal |
+| `$SHARED_DECISIONS` | `*_i_*.md` | implemented decision, terminal |
+| `$SHARED_DECISIONS` | `*_s_*.md` | superseded decision, terminal |
 
 ### Tier 2 — Tier 1 + aged shared reviews
 
@@ -132,12 +132,12 @@ Adds `$SHARED_HISTORY/*.md` whose filename date prefix is older than the thresho
    **Circles (all tiers).** Enumerate the records and read the marker from the name. One pass, no bracket expression, no glob per state:
 
    ```bash
-   for f in "$WORKBENCH/$SCAN_CIRCLES"/*/*-circle.md; do [ -e "$f" ] || continue; d="$(basename "$(dirname "$f")")"; m="$(basename "$f" | sed -nE 's/^\[([a-z])\].*/\1/p')"; case "$m" in c|b|s) printf '%s\t%s\n' "$m" "$d" ;; esac; done
+   for f in "$WORKBENCH/$SCAN_CIRCLES"/*/*_circle.md; do [ -e "$f" ] || continue; d="$(basename "$(dirname "$f")")"; m="$(basename "$f" | sed -nE 's/^_([a-z])_.*/\1/p')"; case "$m" in c|b|s) printf '%s\t%s\n' "$m" "$d" ;; esac; done
    ```
 
-   **Do not write `$SCAN_CIRCLES/*/[c]-circle.md`.** `[c]` is a shell bracket expression matching the single character `c`, so the glob searches for `c-circle.md`, matches nothing, and reports zero Circles on a workbench full of them — silently, because the unmatched pattern expands to itself and the `[ -e "$f" ] || continue` guard drops it. `find -name '[c]-circle.md'` has the identical bug: `find` globs the pattern itself. If a single state must be globbed, escape it: `*/\[c\]-circle.md`. See `rules/fusion-workbench-conventions.md` `## State Markers — circles`. The enumeration form above is preferred precisely because it carries no brackets to lose in a copy-paste.
+   **Enumerate the records; do not glob one marker at a time.** The underscore marker is inert as a glob — `_c_circle.md` matches literally, no escaping — so the enumeration form above (which reads the marker as data in one pass) is the form to use; a per-state glob such as `$SCAN_CIRCLES/*/_c_circle.md` also resolves correctly, and `find -name '_c_circle.md'` needs no special handling. See `rules/fusion-workbench-conventions.md` `## State Markers — circles`.
 
-   Skip any directory equal to `$CIRCLE`'s basename as a second guard — the active Circle's record carries `[t]` and is already excluded by marker, but a workbench whose pointer and marker disagree is exactly the case where a single guard isn't one.
+   Skip any directory equal to `$CIRCLE`'s basename as a second guard — the active Circle's record carries `_t_` and is already excluded by marker, but a workbench whose pointer and marker disagree is exactly the case where a single guard isn't one.
 
    A Circle directory holding no record, or more than one, is a workbench-state fault: report it, exclude it, do not guess which record is real.
 

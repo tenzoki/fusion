@@ -43,8 +43,8 @@ When `$TASKLIST` exists and the user asks you to proceed/continue:
 4. Update the task in `$TASKLIST`: change `[ ]` to `[x]`
 5. Update the source file per `fusion-workbench-conventions.md`:
    - Plan step → `[DONE]`
-   - Issue → append `Resolved:` note + rename marker `[o]` (or `[p]`) → `[c]`
-   - Decision (under `$SCAN_DECISIONS`, marker `[a]`) — if your task realises the recorded answer in code, append `Implemented: <short-hash> — <one-line summary>` and rename `[a]` → `[i]`. Cite the commit hash you just produced.
+   - Issue → append `Resolved:` note + rename marker `_o_` (or `_p_`) → `_c_`
+   - Decision (under `$SCAN_DECISIONS`, marker `_a_`) — if your task realises the recorded answer in code, append `Implemented: <short-hash> — <one-line summary>` and rename `_a_` → `_i_`. Cite the commit hash you just produced.
 6. Move to the next task or report to user
 
 ## Coding Rules

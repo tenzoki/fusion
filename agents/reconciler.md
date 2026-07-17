@@ -33,9 +33,9 @@ The orchestrator passes a `domain` parameter at dispatch time: one of `code | da
 
 | Domain | Verification protocol | Output emphasis |
 |---|---|---|
-| `code` | Verify against codebase — files exist, contain claimed changes; run tests if scope warrants. (Default behaviour.) | Issues triage with `[o]→[c]` renames where work landed; reconciliation log per plan/issue. **Plus: Coherence verdict (three-edge).** |
+| `code` | Verify against codebase — files exist, contain claimed changes; run tests if scope warrants. (Default behaviour.) | Issues triage with `_o_→_c_` renames where work landed; reconciliation log per plan/issue. **Plus: Coherence verdict (three-edge).** |
 | `data` | Verify against schema and validators — run schema validators, check cross-references in ontology, verify manifest consistency. | Issues triage; flag schema drift; cite term-mapping or manifest line numbers. **Plus: Coherence verdict (three-edge).** |
-| `strategic` | Claim-vs-disk consistency — verify all referenced deliverables exist; check cross-references between architectural docs (P-set, D-set, analyses); check supersession markers; produce open-decision surface. No code-test runs. | Open-decision surface output (HIGH / MEDIUM / LOW), modeled on Section D of a strategic-reconciliation report. Rare `[c]` renames; common annotations citing where in subsequent analyses an issue's content was addressed. **Plus: Coherence verdict (three-edge).** |
+| `strategic` | Claim-vs-disk consistency — verify all referenced deliverables exist; check cross-references between architectural docs (P-set, D-set, analyses); check supersession markers; produce open-decision surface. No code-test runs. | Open-decision surface output (HIGH / MEDIUM / LOW), modeled on Section D of a strategic-reconciliation report. Rare `_c_` renames; common annotations citing where in subsequent analyses an issue's content was addressed. **Plus: Coherence verdict (three-edge).** |
 | `knowledge` | Verify analyses cite their sources; check internal consistency across analyses; surface unanswered questions; flag analyses whose conclusions were superseded by later work. | Annotated source-citation audit + an "Unanswered question" table. **Plus: Coherence verdict (three-edge).** |
 
 The three-edge Coherence verdict runs **regardless of domain** — Coherence Review is not strategic-only. The reconciler's domain parameter still selects the *verification protocol* for ground-truth checks; the three-edge verdict is layered on top.
@@ -71,7 +71,7 @@ If reconciliation reveals work that needs to change (code, data, or strategic de
 Read every `*.md` under every directory each of these names — and each may name two, the active Circle's store and the shared one:
 - `$SCAN_PLANS` — all plans with their claimed status
 - `$SCAN_ISSUES` — all issues with their claimed status
-- `$SCAN_DECISIONS` — all decisions with their claimed status (`[o]/[a]/[i]/[d]/[s]`)
+- `$SCAN_DECISIONS` — all decisions with their claimed status (`_o_/_a_/_i_/_d_/_s_`)
 - `$SCAN_REVIEWS` — all review findings from `coderev`, `ontorev` and `conceptrev` (the sender is in the filename)
 - `$SCAN_HISTORY` — completed session logs (skim for what was actually done)
 
@@ -84,7 +84,7 @@ Inspect the workbench:
 - Count the analyses on disk: `ls` every directory in `$SCAN_ANALYSES` and sum the entries.
 - For each open issue, count how many describe a defect ("X is broken / wrong / missing") vs an open question ("which X should we pick / how should X work / who decides").
 
-If the workbench has 0 commits AND `$SCAN_ANALYSES` is non-empty AND ≥50% of open issues are open questions rather than defects, switch to **strategic reconciliation mode**: produce an "Open-decision surface" section (HIGH / MEDIUM / LOW priority items, each with a pointer to where the decision is documented or where it remains open) instead of the standard issues-triage-with-`[c]`-rename output. Append annotations to issues whose questions are answered by later analyses, but do not rename them `[c]` — the decision store is the long-term home for those.
+If the workbench has 0 commits AND `$SCAN_ANALYSES` is non-empty AND ≥50% of open issues are open questions rather than defects, switch to **strategic reconciliation mode**: produce an "Open-decision surface" section (HIGH / MEDIUM / LOW priority items, each with a pointer to where the decision is documented or where it remains open) instead of the standard issues-triage-with-`_c_`-rename output. Append annotations to issues whose questions are answered by later analyses, but do not rename them `_c_` — the decision store is the long-term home for those.
 
 ### Step 2: Verify against ground truth
 
@@ -111,7 +111,7 @@ Apply the verification protocol named for the active domain (see Domain Paramete
 
 - Verify every deliverable named in plans / agentstate / prior session logs exists on disk with the claimed line count and last-modified time. Note drift.
 - Walk cross-references between architectural docs (e.g. P-set, D-set, analyses): does each cited section/line still exist? Are supersession markers ("D04 supersedes P7") consistently noted?
-- Audit the `[o]` issue set: which questions have been answered in subsequent analyses (annotate, do not rename — see Step 3)? Which remain genuinely open?
+- Audit the `_o_` issue set: which questions have been answered in subsequent analyses (annotate, do not rename — see Step 3)? Which remain genuinely open?
 - Produce an **open-decision surface**: HIGH (blocks v1 implementation start or first customer commitment) / MEDIUM (sub-pilot deliverables; resolution shapes implementation work) / LOW (operational / cosmetic / interface-level deferrals). Each item points to where the decision is documented (or where it remains open).
 - No code-test runs.
 
@@ -126,7 +126,7 @@ Apply the verification protocol named for the active domain (see Domain Paramete
 
 This step runs **regardless of domain**. The three-edge verdict is the Coherence Review check at the per-Circle cadence — layered on top of whichever ground-truth verification protocol the domain selected in Step 2.
 
-**Cadence note:** the per-Circle verdict is computed at session end (the orchestrator dispatches the reconciler once at Phase 3, when the Turn loop exits). When a Circle is active (`fusion-workbench/.active-circle` names the `[t]` Circle), that session-end coincides with the Circle boundary, so session-end *is* the per-Circle trigger. For sessions with no active Circle, the session boundary is the proxy.
+**Cadence note:** the per-Circle verdict is computed at session end (the orchestrator dispatches the reconciler once at Phase 3, when the Turn loop exits). When a Circle is active (`fusion-workbench/.active-circle` names the `_t_` Circle), that session-end coincides with the Circle boundary, so session-end *is* the per-Circle trigger. For sessions with no active Circle, the session boundary is the proxy.
 
 **The user is informed, not asked.** The reconciler computes the verdict and writes it to history. If the aggregate verdict is `review-needed` or `bounded-closure-proposed`, the orchestrator (not the reconciler) dispatches the Rebalance gate at Phase 3 step 3 (after consuming this verdict). The reconciler does not present `AskUserQuestion`.
 
@@ -134,7 +134,7 @@ This step runs **regardless of domain**. The three-edge verdict is the Coherence
 
 - **Artifact↔Grounding edge** — already implicit in the `code`/`data` protocol output (claims-vs-disk + reviewer-issues count). Restate as one line: `<N> claims verified / <M> drift items / <K> open coderev+ontorev issues`. For `strategic`/`knowledge` domains, restate using their protocol's outputs (deliverable existence + cross-reference consistency for `strategic`; source-citation audit count for `knowledge`).
 - **Artifact↔Directive edge** — read the orchestrator's session history file's `**Directive:**` line and the active plan's `## Directive` (or active spec's equivalent). Walk the commits from `git log <session-start-HEAD>..HEAD` and produce one prose line: `commits move toward / partially toward / orthogonal to / away from the stated Directive`. Cite the commit hashes that motivated the judgement.
-- **Grounding↔Directive edge** — for each directory in `$SCAN_DECISIONS`, glob `*[a]*.md` and `*[o]*.md`. For each record, check whether its content is still consistent with the stated Directive. Produce one prose line: `<N> active decisions consistent / <M> potentially conflicting (cited)`. Cite the conflicting decision-record file paths.
+- **Grounding↔Directive edge** — for each directory in `$SCAN_DECISIONS`, glob `*_a_*.md` and `*_o_*.md`. For each record, check whether its content is still consistent with the stated Directive. Produce one prose line: `<N> active decisions consistent / <M> potentially conflicting (cited)`. Cite the conflicting decision-record file paths.
 
 **Compute the aggregate verdict.** One of:
 
@@ -150,23 +150,23 @@ For each plan file under `$SCAN_PLANS`:
 - Update the top-level `Status:` field (Draft / In Progress / Partially Complete / Complete / Superseded)
 - For each phase or step, update the inline marker (`[DONE]`, `[IN PROGRESS]`, unmarked) per `fusion-workbench-conventions.md`
 - Add a `## Reconciliation Log` section at the bottom with date, findings summary, and evidence citations (file:line or git commit)
-- If all steps are `[DONE]`: rename filename marker to `[c]` and set `**Status:** Complete`
+- If all steps are `[DONE]`: rename filename marker to `_c_` and set `**Status:** Complete`
 
 For each issue file under `$SCAN_ISSUES`:
 - Check whether the issue is still open
-- If resolved: append the `---\nResolved: ...` note (per conventions) and rename marker to `[c]`
+- If resolved: append the `---\nResolved: ...` note (per conventions) and rename marker to `_c_`
 - If still open: leave the marker, append reconciliation evidence (what you verified and what's still missing)
-- If the item turns out to be a decision (open question / choice point) misfiled as a defect: leave it for now and surface it in the reconciliation log under a "Misfiled — should be a decision" heading. The user can manually `mv` the file from its issue store to the decision store beside it (`$OUT_ISSUE` → `$OUT_DECISION` for a file in the active Circle; the shared pair otherwise) and update its marker (issues vocabulary `[o]/[p]/[c]/[d]` → decisions vocabulary `[o]/[a]/[i]/[d]/[s]`) per `fusion-workbench-conventions.md`.
+- If the item turns out to be a decision (open question / choice point) misfiled as a defect: leave it for now and surface it in the reconciliation log under a "Misfiled — should be a decision" heading. The user can manually `mv` the file from its issue store to the decision store beside it (`$OUT_ISSUE` → `$OUT_DECISION` for a file in the active Circle; the shared pair otherwise) and update its marker (issues vocabulary `_o_/_p_/_c_/_d_` → decisions vocabulary `_o_/_a_/_i_/_d_/_s_`) per `fusion-workbench-conventions.md`.
 
 For each decision file under `$SCAN_DECISIONS`:
-- If `[o]` and an answer now exists under `$SCAN_ANALYSES`, `$SCAN_PLANS`, or in another decision: append `Answered: <path>:<line> — <one-line summary>` and rename `[o]` → `[a]`.
-- If `[a]` and a commit now realises the answer: append `Implemented: <short-hash> — <one-line summary>` and rename `[a]` → `[i]`.
-- If a later decision overrides this one: append `Superseded by: <path> — <reason>` and rename to `[s]`.
-- Never rename `[i]` or `[s]` back to earlier states; file a new decision instead.
-- If still `[o]` and unanswered: leave the marker; add reconciliation evidence noting which analyses or planning files were searched without finding an answer.
+- If `_o_` and an answer now exists under `$SCAN_ANALYSES`, `$SCAN_PLANS`, or in another decision: append `Answered: <path>:<line> — <one-line summary>` and rename `_o_` → `_a_`.
+- If `_a_` and a commit now realises the answer: append `Implemented: <short-hash> — <one-line summary>` and rename `_a_` → `_i_`.
+- If a later decision overrides this one: append `Superseded by: <path> — <reason>` and rename to `_s_`.
+- Never rename `_i_` or `_s_` back to earlier states; file a new decision instead.
+- If still `_o_` and unanswered: leave the marker; add reconciliation evidence noting which analyses or planning files were searched without finding an answer.
 - If a decision file lists a `Cross-references:` entry pointing to a plan step that would realise the decision, surface this in the reconciliation log so the orchestrator knows the planner has already scoped the implementation work.
 
-**When `domain=strategic` or `domain=knowledge`:** do NOT rename issue markers `[o]→[c]` for items whose answer lives in a later analysis or design document. Append an annotation citing where the answer is recorded, but preserve the `[o]` marker — those items are decisions misfiled as issues. Surface them in the reconciliation log under "Misfiled — should be a decision" so the user can manually relocate them (the richer `[o]/[a]/[i]/[d]/[s]` vocabulary of the decision store can express their true state). Closing an issue only happens when its answer has been *implemented* in code or data.
+**When `domain=strategic` or `domain=knowledge`:** do NOT rename issue markers `_o_→_c_` for items whose answer lives in a later analysis or design document. Append an annotation citing where the answer is recorded, but preserve the `_o_` marker — those items are decisions misfiled as issues. Surface them in the reconciliation log under "Misfiled — should be a decision" so the user can manually relocate them (the richer `_o_/_a_/_i_/_d_/_s_` vocabulary of the decision store can express their true state). Closing an issue only happens when its answer has been *implemented* in code or data.
 
 For each review file under `$SCAN_REVIEWS`:
 - Do not rewrite findings. Only annotate confirmed/resolved items with a brief note citing the evidence (file:line or commit).

@@ -58,17 +58,17 @@ Read every file in:
 Each key below may name two directories — the active Circle's store and the shared one. Scan both, or the queue silently misses work.
 - `$SCAN_PLANS` — plans with step-level status
 - `$SCAN_ISSUES` — issues with state markers
-- `$SCAN_DECISIONS` — decision records with the richer marker vocabulary `[o]/[a]/[i]/[d]/[s]`
+- `$SCAN_DECISIONS` — decision records with the richer marker vocabulary `_o_/_a_/_i_/_d_/_s_`
 - `$SCAN_REVIEWS` — review findings from `coderev`, `ontorev` and `conceptrev` (the sender is in the filename)
 - `$SCAN_HISTORY` — skim recent entries for context
 
 Collect all **open work items**:
 - any plan step not marked `[DONE]`
-- any issue with marker `[o]` or `[p]`
-- any decision with marker `[o]` (user-input gate — surface but do not queue unless a project-rule says open-questions are work items) or `[a]` (answer recorded; implementation may be a queueable task — see Step 2)
+- any issue with marker `_o_` or `_p_`
+- any decision with marker `_o_` (user-input gate — surface but do not queue unless a project-rule says open-questions are work items) or `_a_` (answer recorded; implementation may be a queueable task — see Step 2)
 - any unresolved codereview or ontoreview finding
 
-Skip files with terminal markers — issues/planning `[c]`/`[d]`, decisions `[i]`/`[d]`/`[s]` — entirely. They have no open work.
+Skip files with terminal markers — issues/planning `_c_`/`_d_`, decisions `_i_`/`_d_`/`_s_` — entirely. They have no open work.
 
 ### Step 1.5: Routability check
 
@@ -85,9 +85,9 @@ For each open work item, extract:
 - **Executor** — one of the executors named in the active set (default: `coder`, `ontocoder`; the calling context may add `analyst` for strategic-domain work). Route per file type and change scope.
 
 **Decision items specifically:**
-- A decision in state `[a]` (answered, awaiting implementation) MAY yield an implementation task — route to the executor that will realise the answer (often `coder` or `ontocoder`; `analyst` if the realisation is itself a written deliverable).
-- A decision in state `[o]` (user-input gate) is reported as an open user-decision blocker but NOT queued as a task unless a project-local rule explicitly says open questions are work items.
-- A decision in state `[i]` / `[d]` / `[s]` is closed work and skipped.
+- A decision in state `_a_` (answered, awaiting implementation) MAY yield an implementation task — route to the executor that will realise the answer (often `coder` or `ontocoder`; `analyst` if the realisation is itself a written deliverable).
+- A decision in state `_o_` (user-input gate) is reported as an open user-decision blocker but NOT queued as a task unless a project-local rule explicitly says open questions are work items.
+- A decision in state `_i_` / `_d_` / `_s_` is closed work and skipped.
 
 **Priority Axis 1 — applies only when `domain=code`** (other domains use the table in the Domain Parameter section above; project rule still overrides):
 
@@ -160,7 +160,7 @@ flowchart TD
 **If `$TASKLIST` already exists:**
 - Read it first
 - Preserve `[x] done` and `[~] in progress` markers from the existing file for tasks that are still present
-- Remove tasks whose source file marker is now `[c]` or `[d]`
+- Remove tasks whose source file marker is now `_c_` or `_d_`
 - Add new tasks discovered since the last run
 - Re-sort based on current dependency state
 - Note what changed in a `## Changelog` section at the bottom (added/removed/reordered tasks with date)
@@ -180,7 +180,7 @@ Obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`.
 1. **Do not create a planning file.** The tasklist IS the output.
 2. **Do not implement anything.** This is analysis and list-building only.
 3. **Do not modify source files.** Don't touch planning, issue, or review files. Only write `$TASKLIST` and a history entry.
-4. **Respect closed/deferred state.** If a source file is `[c]` or `[d]`, skip it.
+4. **Respect closed/deferred state.** If a source file is `_c_` or `_d_`, skip it.
 5. **Be concrete.** Each task must be actionable without re-reading the full source file. Include enough context in the `Detail` line.
 6. **Cite sources.** Every task traces back to a specific file. The executor agent needs to know where the full spec lives.
 7. **Timestamps from the clock.** Use `date` for all timestamps — never guess.

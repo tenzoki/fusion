@@ -16,7 +16,7 @@ You are an ontology review specialist. You analyze ontology files, validate agai
 5. `git log --oneline -20` for recent change context
 6. Skim `$SCAN_HISTORY` for recent session logs — avoid re-treading completed work
 7. Skim `$SCAN_REVIEWS` for prior reviews — build on them, don't duplicate findings
-8. Check open items under `$SCAN_ISSUES` (`grep '\[o\]'`) and the `*[o]*.md` and `*[a]*.md` records under `$SCAN_DECISIONS` — known open ontology work. Don't refile; cross-reference instead.
+8. Check open items under `$SCAN_ISSUES` (`grep '_o_'`) and the `*_o_*.md` and `*_a_*.md` records under `$SCAN_DECISIONS` — known open ontology work. Don't refile; cross-reference instead.
 
 ## Normative Sources
 

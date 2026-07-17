@@ -79,7 +79,7 @@ b) **Workbench files** — one scan of the tree, not a walk of an enumerated lis
    find "$WORKBENCH" -type f -name '*.md' -not -path '*/archive/*' -not -path '*/stashes/*' -not -path '*/stilwerk/*' -exec ls -l -T {} +
    ```
 
-   - **Derive the code from the containing directory's basename**, per the legend above. A file directly in the workbench root is `w`; a `*-circle.md` inside a Circle directory is `k`.
+   - **Derive the code from the containing directory's basename**, per the legend above. A file directly in the workbench root is `w`; a `*_circle.md` inside a Circle directory is `k`.
    - Parse filenames for embedded timestamps (`260408-1523-topic.md` means April 8, 15:23). Fall back to the modification time when the filename carries no stamp.
    - Read file headers for date metadata if available.
 

@@ -16,7 +16,7 @@ You study documents and analyze problems to produce understanding and insight th
 3. Read `CLAUDE.md` for project context, architecture, folder structure
 4. `git log --oneline -20` for recent change context
 5. Skim recent entries across `$SCAN_HISTORY` — understand the current state of development
-6. Skim the open files under `$SCAN_ISSUES`, the `*[o]*.md` and `*[a]*.md` records under `$SCAN_DECISIONS`, and the active plans under `$SCAN_PLANS` — cross-reference, don't duplicate
+6. Skim the open files under `$SCAN_ISSUES`, the `*_o_*.md` and `*_a_*.md` records under `$SCAN_DECISIONS`, and the active plans under `$SCAN_PLANS` — cross-reference, don't duplicate
 
 ## Scope
 
@@ -129,8 +129,8 @@ Author a decision record for an open question — typically when shaping or plan
 1. Frame the question — exactly what choice must be made
 2. Enumerate options (2–4 typical) with pros / cons / constraints
 3. Recommend if you have evidence; otherwise mark "no recommendation, awaits user input"
-4. Write to `$OUT_DECISION/YYMMDD-HHMM[o]-<topic>.md` per the decision-record template in `fusion-workbench-conventions.md`
-5. If the analysis itself answers the question (e.g. a comparative analysis selects an option), file the decision in state `[a]` with `Answered: <this-analysis-path>:<line>` instead of `[o]`.
+4. Write to `$OUT_DECISION/YYMMDD-HHMM_o_<topic>.md` per the decision-record template in `fusion-workbench-conventions.md`
+5. If the analysis itself answers the question (e.g. a comparative analysis selects an option), file the decision in state `_a_` with `Answered: <this-analysis-path>:<line>` instead of `_o_`.
 6. Always include a `Cross-references:` line in the header listing related issues, plans, prior decisions, and the analysis (if any) that informed the record. The reconciler and taskplanner use this for routing.
 
 **Output path:** `$OUT_DECISION`. The analysis report (if separately authored) goes to `$OUT_ANALYSIS`; the decision record cross-references it.
@@ -145,7 +145,7 @@ Produce a point-in-time architectural overview of the project: components, inter
 1. Inventory components (modules, services, interfaces, data stores)
 2. Trace key flows (e.g. how a user request becomes a stored artefact; how data flows from source → ontology → consumer)
 3. List binding design decisions (with cross-references to the decision records under `$SCAN_DECISIONS` where applicable)
-4. Identify open questions visible from this elevation — file them as new decision records (`[o]`) in `$OUT_DECISION` if not already tracked
+4. Identify open questions visible from this elevation — file them as new decision records (`_o_`) in `$OUT_DECISION` if not already tracked
 5. Write to `$OUT_ANALYSIS/YYMMDD-HHMM-snapshot-<topic>.md` using the architectural-snapshot template below
 
 **Architectural snapshot template:**
@@ -172,7 +172,7 @@ Produce a point-in-time architectural overview of the project: components, inter
 ## Binding decisions
 | Decision | Status | Source |
 |---|---|---|
-| ... | [a] / [i] / [d] / [s] | <path to the decision record or analysis> |
+| ... | _a_ / _i_ / _d_ / _s_ | <path to the decision record or analysis> |
 
 ## Open questions
 <new decisions filed during snapshot>
@@ -237,7 +237,7 @@ When a finding is structural — system shape, component relationships, data or 
 
 ## Filed Issues
 
-- `$OUT_ISSUE/YYMMDD-HHMM[o]-<topic>.md` — <one-line summary>
+- `$OUT_ISSUE/YYMMDD-HHMM_o_<topic>.md` — <one-line summary>
 - ...
 
 ## Sources

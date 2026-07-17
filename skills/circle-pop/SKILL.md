@@ -155,7 +155,7 @@ If `SHAPE=legacy`, halt — before any mutation, and without touching the stash:
 
 > **Dieser Stash stammt aus der Zeit vor der Circle-Verzeichnis-Struktur und lässt sich nicht automatisch zurückholen.** Er enthält `circle.md` als lose Datei statt eines `circle/`-Verzeichnisses; seine Spec- und Plan-Kopien gehören zu Dateien, die heute in der gemeinsamen Ablage liegen. Welche davon in den Circle gehören, kann pop nicht erraten — und rät auch nicht.
 >
-> *So holst du ihn von Hand zurück:* Leg unter dem Circle-Speicher ein Verzeichnis mit dem Namen aus `original_circle_filename` (Zeitstempel und Slug, ohne Marker und ohne `.md`) an, leg `circle.md` als `[t]-circle.md` hinein, erzeuge daneben die Unterverzeichnisse aus der Vorlage in `rules/fusion-workbench-conventions.md`, schreib den Verzeichnisnamen in `.active-circle` und wende den Arbeitsbaum mit `git stash apply <git_stash_sha aus dem Manifest>` an. Nichts im Stash wird dabei angefasst; er bleibt dein Sicherheitsnetz.
+> *So holst du ihn von Hand zurück:* Leg unter dem Circle-Speicher ein Verzeichnis mit dem Namen aus `original_circle_filename` (Zeitstempel und Slug, ohne Marker und ohne `.md`) an, leg `circle.md` als `_t_circle.md` hinein, erzeuge daneben die Unterverzeichnisse aus der Vorlage in `rules/fusion-workbench-conventions.md`, schreib den Verzeichnisnamen in `.active-circle` und wende den Arbeitsbaum mit `git stash apply <git_stash_sha aus dem Manifest>` an. Nichts im Stash wird dabei angefasst; er bleibt dein Sicherheitsnetz.
 >
 > *Fürs nächste Mal:* Stashes vor einem Versionssprung zurückholen, nicht danach.
 
@@ -332,4 +332,4 @@ User-facing output follows `rules/user-facing-output.md` plus the chat profile f
 - The drift warning in Step 5 leads with "HEAD hat sich bewegt" and the actionable numbers, and says plainly that the Circle itself did not drift.
 - The legacy-shape refusal in Step 4 leads with the fact that it cannot be automated, then gives the manual recipe. It never half-restores.
 - The Step 9 report leads with "Circle zurückgeholt" and the next command, then the prune hint, then details.
-- Marker syntax stays in filenames; in prose say "aktiver Circle", not "[t] Circle".
+- Marker syntax stays in filenames; in prose say "aktiver Circle", not "_t_ Circle".

@@ -50,11 +50,11 @@ If the dispatch prompt's first non-empty content line is `**Executors:** <comma-
 
 ## Open decisions as planning input
 
-Read the `*[o]*.md` and `*[a]*.md` records under every directory in `$SCAN_DECISIONS`; treat as zero open decisions if none exist. These are inputs to planning:
+Read the `*_o_*.md` and `*_a_*.md` records under every directory in `$SCAN_DECISIONS`; treat as zero open decisions if none exist. These are inputs to planning:
 
-- A decision marker `[o]` (open question) signals a user-input gate the planner cannot resolve — surface it in the plan's "Open Questions" section, or stop and ask if the question blocks all planning.
-- A decision marker `[a]` (answered) means the answer is recorded but implementation is unrealised — a planner step may be needed to realise it (which then transitions the decision to `[i]` after the executor commits). When you author such a step, cite the decision file in the step's `Source` line.
-- Decision markers `[i]`, `[d]`, `[s]` are terminal — skip them.
+- A decision marker `_o_` (open question) signals a user-input gate the planner cannot resolve — surface it in the plan's "Open Questions" section, or stop and ask if the question blocks all planning.
+- A decision marker `_a_` (answered) means the answer is recorded but implementation is unrealised — a planner step may be needed to realise it (which then transitions the decision to `_i_` after the executor commits). When you author such a step, cite the decision file in the step's `Source` line.
+- Decision markers `_i_`, `_d_`, `_s_` are terminal — skip them.
 
 ## Input: Specs vs Raw Requests
 
@@ -72,7 +72,7 @@ You may receive work in two forms:
 2. **Analyze** existing material relevant to the plan's domain — for code/data plans, the codebase (structure, patterns, dependencies); for strategic/knowledge plans, the existing analyses, decision records, and design documents in `fusion-workbench/`
 3. **Research** using context7 for library docs if needed
 4. **Research Gate, then design** (`critical-stance.md` §2 — mandatory before designing). Survey what already exists and reuse it: find the abstraction, helper, package, or prior decision that already covers this or an adjacent case before designing anything new. The plan MUST converge on **one integral solution** that fits the existing architecture — never a set of point-solutions each with its own special rule and fallback. A thicket of special-cases/fallbacks in the plan means the design is wrong; find the unifying approach instead. Then design, respecting existing architecture.
-5. **Document** in `$OUT_PLAN/YYMMDD-HHMM[o]-<topic>.md` — this is mandatory, never skip it
+5. **Document** in `$OUT_PLAN/YYMMDD-HHMM_o_<topic>.md` — this is mandatory, never skip it
 6. **Log** to `$OUT_HISTORY` what you planned
 7. **Report** to user: summary + path to planning doc
 8. **STOP.** Your job ends here. The user decides when and whether to execute. Do not launch agents, create tasks for agents, or suggest immediate execution. Return control to the user.
