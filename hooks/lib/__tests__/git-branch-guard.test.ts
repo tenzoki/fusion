@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   classifyGitCommand,
   extractCommandSegments,
+  stripDataRegions,
   isEnvFlagSet,
   overridesFromEnv,
 } from "../git-branch-guard.js";
@@ -328,6 +329,142 @@ describe("bare `git checkout <target>` — filesystem + ref-aware resolution", (
   it("without a resolver, the ambiguous bare form still fails closed", () => {
     // No resolver passed → cannot prove file-restore → DENY.
     expect(deny("git checkout agents/coder.md").deny).toBe(true);
+  });
+});
+
+describe("shell data regions — heredocs and single quotes (issue 260716-2005)", () => {
+  // The three probes from the issue, plus the double-quote counter-case.
+
+  it("ALLOWS a quoted heredoc whose body has a backticked `git switch` (probe 3)", () => {
+    const cmd =
+      "cat > /tmp/probe3.txt <<'EOF'\n" +
+      "a hook that denies `git switch` in backticks\n" +
+      "EOF";
+    expect(deny(cmd).deny).toBe(false);
+  });
+
+  it("ALLOWS a quoted heredoc whose body has a bare git switch (probe 2)", () => {
+    const cmd =
+      "cat > /tmp/probe2.txt <<'EOF'\n" +
+      "prose that says git switch main plainly\n" +
+      "EOF";
+    expect(deny(cmd).deny).toBe(false);
+  });
+
+  it("ALLOWS a quoted heredoc with a backticked `git worktree add` (docs case)", () => {
+    const cmd =
+      "cat > rules/git-branch-discipline.md <<'DOC'\n" +
+      "Agents are blocked from `git switch` and `git worktree add ../wt x`.\n" +
+      "DOC";
+    expect(deny(cmd).deny).toBe(false);
+  });
+
+  it("ALLOWS a double-quoted-delimiter heredoc (<<\"EOF\") with backticked git", () => {
+    const cmd =
+      'cat <<"EOF"\n' +
+      "see `git switch main` for details\n" +
+      "EOF";
+    expect(deny(cmd).deny).toBe(false);
+  });
+
+  it("ALLOWS a `<<-` quoted heredoc with a tab-indented terminator", () => {
+    const cmd =
+      "\tcat <<-'EOF'\n" +
+      "\tmentions `git switch main` in indented prose\n" +
+      "\tEOF";
+    expect(deny(cmd).deny).toBe(false);
+  });
+
+  it("ALLOWS backticked git switch inside a single-quoted string", () => {
+    expect(deny("echo 'run `git switch main` here'").deny).toBe(false);
+  });
+
+  it("ALLOWS a $() mention of git switch inside a single-quoted string", () => {
+    expect(deny("echo 'run $(git switch main) here'").deny).toBe(false);
+  });
+
+  // Regressions: real commands must STILL be denied.
+
+  it("STILL DENIES a real `git switch main` command (no regression)", () => {
+    expect(deny("git switch main").deny).toBe(true);
+  });
+
+  it("STILL DENIES backticked git switch inside a DOUBLE-quoted string", () => {
+    // bash DOES substitute inside double quotes → this is a real invocation.
+    const v = deny('echo "run `git switch main` here"');
+    expect(v.deny).toBe(true);
+    expect(v.kind).toBe("branch-switch");
+  });
+
+  it("STILL DENIES $(git switch) inside a DOUBLE-quoted string", () => {
+    expect(deny('echo "$(git switch main)"').deny).toBe(true);
+  });
+
+  it("STILL DENIES an UNQUOTED-delimiter heredoc with a backticked git switch", () => {
+    // bash expands `...` in an unquoted-delimiter heredoc body → deny.
+    const cmd =
+      "cat <<EOF\n" +
+      "expands `git switch main` here\n" +
+      "EOF";
+    expect(deny(cmd).deny).toBe(true);
+  });
+
+  it("STILL DENIES an UNQUOTED-delimiter heredoc with $(git switch) in the body", () => {
+    const cmd =
+      "cat <<EOF\n" +
+      "expands $(git switch main) here\n" +
+      "EOF";
+    expect(deny(cmd).deny).toBe(true);
+  });
+
+  it("DENIES a real git switch on the redirect line even with a quoted heredoc after", () => {
+    const cmd =
+      "git switch main <<'EOF'\n" +
+      "body mentioning `git checkout other`\n" +
+      "EOF";
+    expect(deny(cmd).deny).toBe(true);
+  });
+
+  it("fails closed when a quoted heredoc terminator never appears", () => {
+    // No closing EOF → body is NOT proven inert → treated as code → deny.
+    const cmd = "cat <<'EOF'\ngit switch main\n";
+    expect(deny(cmd).deny).toBe(true);
+  });
+
+  it("fails closed on an unterminated single quote hiding a backtick git switch", () => {
+    // Unterminated ' → remainder treated as code → backtick recursion → deny.
+    expect(deny("echo 'unterminated `git switch main`").deny).toBe(true);
+  });
+});
+
+describe("stripDataRegions", () => {
+  it("blanks a single-quoted body but keeps the quotes and length", () => {
+    expect(stripDataRegions("echo 'abc'")).toBe("echo '   '");
+  });
+
+  it("leaves a double-quoted body verbatim (bash expands there)", () => {
+    expect(stripDataRegions('echo "a`b`c"')).toBe('echo "a`b`c"');
+  });
+
+  it("drops a quoted heredoc body to spaces but keeps the newlines", () => {
+    const out = stripDataRegions("cat <<'EOF'\n`x`\nEOF");
+    expect(out).not.toContain("`");
+    expect(out).toContain("EOF");
+  });
+
+  it("keeps an unquoted heredoc body verbatim (bash expands there)", () => {
+    const out = stripDataRegions("cat <<EOF\n`x`\nEOF");
+    expect(out).toContain("`x`");
+  });
+
+  it("leaves a here-string <<< as code", () => {
+    expect(stripDataRegions("cat <<< word")).toBe("cat <<< word");
+  });
+
+  it("is a no-op for a command with no data regions", () => {
+    expect(stripDataRegions("git checkout HEAD -- foo.go")).toBe(
+      "git checkout HEAD -- foo.go",
+    );
   });
 });
 

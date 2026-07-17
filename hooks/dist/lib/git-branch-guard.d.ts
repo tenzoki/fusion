@@ -77,6 +77,35 @@ export interface CheckoutResolver {
     isRef(target: string, cwdHints: string[]): boolean;
 }
 /**
+ * Remove definite shell *data regions* from a command so that the substitution
+ * recursion and operator segmentation which follow only ever classify
+ * executable *code*. Bash performs NO expansion or command substitution in
+ * these regions, so a git-looking string inside them is inert text, never a
+ * command:
+ *
+ *   - single-quoted strings:             '… `git switch` …'
+ *   - quoted-delimiter heredoc bodies:   <<'EOF' … EOF   and   <<"EOF" … EOF
+ *
+ * Regions where bash DOES expand `$(…)` / backticks are preserved verbatim so
+ * a real hidden command still gets classified (this is what keeps the guard
+ * fail-closed):
+ *
+ *   - double-quoted strings:             "… `git switch` …"   (bash substitutes)
+ *   - unquoted-delimiter heredoc bodies: <<EOF … EOF          (bash expands body)
+ *
+ * Removed content is replaced with spaces; newlines are kept so surrounding
+ * token boundaries survive. Parsing is fail-closed on ambiguity: an
+ * unterminated quote, or a heredoc whose terminator never appears, leaves the
+ * remainder AS-IS (treated as code) rather than silently dropping it — matching
+ * this module's over-segment-not-under bias.
+ *
+ * Known conservative limitation: a single-quoted string nested inside a
+ * double-quoted `$(…)` (e.g. `"$(echo 'x')"`) is not blanked, because the
+ * double-quoted span is copied verbatim without re-entering quote tracking.
+ * That errs toward DENY (data treated as code), never toward a missed switch.
+ */
+export declare function stripDataRegions(command: string): string;
+/**
  * Split a command string into the segments that each run as their own command.
  * Segments on `;`, `&&`, `||`, `|`. Also recursively inspects the *contents*
  * of `$(...)` and backtick subshells (their inner commands run too).
@@ -84,6 +113,11 @@ export interface CheckoutResolver {
  * This is a deliberately conservative lexer: it does not try to be a full
  * shell parser. It over-segments rather than under-segments, which is the
  * fail-closed direction.
+ *
+ * NOTE: callers that start from a raw Bash command string should pass it
+ * through `stripDataRegions()` first (as `classifyGitCommand` does) so that
+ * inert data regions — single-quoted strings and quoted-delimiter heredoc
+ * bodies — do not get mis-parsed as command substitution.
  */
 export declare function extractCommandSegments(command: string): string[];
 export interface GitGuardOverrides {
