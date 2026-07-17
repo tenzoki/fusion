@@ -144,10 +144,10 @@ Remaining setup (after step 1 is resolved):
    - Count anticipated/active Circles (used as a hint surface; never gates execution). **The marker sits on the Circle record, not on the directory** — a Circle is `$SCAN_CIRCLES/<YYMMDD-HHMM>-<slug>/`, and its state lives in `_a_circle.md` / `_t_circle.md` inside it. Enumerate the records and read the marker from the name — one pass, no bracket expression, no glob per state:
 
      ```bash
-     for f in "$WORKBENCH/$SCAN_CIRCLES"/*/*_circle.md; do [ -e "$f" ] || continue; basename "$f" | sed -nE 's/^_([a-z])_.*/\1/p'; done | sort | uniq -c
+     find "$WORKBENCH/$SCAN_CIRCLES" -mindepth 2 -maxdepth 2 -name '*_circle.md' 2>/dev/null | while IFS= read -r f; do basename "$f" | sed -nE 's/^_([a-z])_.*/\1/p'; done | sort | uniq -c
      ```
 
-     Substitute the `WORKBENCH` and `SCAN_CIRCLES` values from Step 2. Output is one `<count> <marker>` line per state (`2 a`, `1 t`); no Circles prints nothing. `circles_anticipated` is the `a` line's count, `circles_active` the `t` line's. The `[ -e "$f" ] || continue` guard is what makes the empty case count zero instead of counting the unexpanded pattern.
+     Substitute the `WORKBENCH` and `SCAN_CIRCLES` values from Step 2. Output is one `<count> <marker>` line per state (`2 a`, `1 t`); no Circles prints nothing. `circles_anticipated` is the `a` line's count, `circles_active` the `t` line's. `find` drives the loop so a missing or empty `circles/` yields no input and the count is zero — no unmatched glob to abort under zsh, no unexpanded pattern to miscount.
 
      **The underscore marker is inert as a glob.** `_a_circle.md` matches literally — no character-class surprise, no escaping — so the enumeration above (and any per-state glob such as `*/_a_circle.md`) resolves correctly, and `find -name '_a_circle.md'` needs no special handling. The enumeration form is still preferred: it reads the marker as data in one pass. See `rules/fusion-workbench-conventions.md` `## State Markers — circles`.
 

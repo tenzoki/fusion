@@ -130,7 +130,7 @@ Read the target Circle's record and confirm it carries the `_a_` marker. Enumera
 
 ```bash
 CDIR="$WORKBENCH/$SCAN_CIRCLES/<candidate-dirname>"
-REC=""; for f in "$CDIR"/*_circle.md; do [ -e "$f" ] || continue; REC="$f"; done
+REC=""; while IFS= read -r f; do REC="$f"; done < <(find "$CDIR" -mindepth 1 -maxdepth 1 -name '*_circle.md' 2>/dev/null)
 MARKER="$(basename "$REC" | sed -nE 's/^_([a-z])_.*/\1/p')"
 ```
 

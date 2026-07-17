@@ -60,7 +60,7 @@ Otherwise resolve the Circle's directory and its record:
 ```bash
 CIRCLE_PATH="$WORKBENCH/$CIRCLE"
 CIRCLE_DIRNAME="$(basename "$CIRCLE")"
-REC=""; REC_COUNT=0; for f in "$CIRCLE_PATH"/*_circle.md; do [ -e "$f" ] || continue; REC="$f"; REC_COUNT=$((REC_COUNT+1)); done
+REC=""; REC_COUNT=0; while IFS= read -r f; do REC="$f"; REC_COUNT=$((REC_COUNT+1)); done < <(find "$CIRCLE_PATH" -mindepth 1 -maxdepth 1 -name '*_circle.md' 2>/dev/null)
 CIRCLE_RECORD="$(basename "${REC:-}")"
 ```
 
@@ -225,7 +225,7 @@ The path is recorded in `agentstate.yaml.session.history_file`; if that is absen
 HIST_FILE=""
 if [ "$HAS_AGENTSTATE" = true ]; then HIST_FILE="$(grep -E '^[[:space:]]+history_file:' "$WORKBENCH/agentstate.yaml" | head -1 | sed -E 's/.*history_file:[[:space:]]*"?([^"]+)"?.*/\1/')"; fi
 if [ -n "$HIST_FILE" ] && [ -f "$WORKBENCH/$HIST_FILE" ]; then HIST_FILE="$WORKBENCH/$HIST_FILE"; else HIST_FILE=""; fi
-if [ -z "$HIST_FILE" ]; then for d in $SCAN_HISTORY; do for f in "$WORKBENCH/$d"/*-orchestrator-session.md; do [ -e "$f" ] || continue; [ -z "$HIST_FILE" ] && HIST_FILE="$f"; [ "$f" -nt "$HIST_FILE" ] && HIST_FILE="$f"; done; done; fi
+if [ -z "$HIST_FILE" ]; then for d in $SCAN_HISTORY; do while IFS= read -r f; do [ -z "$HIST_FILE" ] && HIST_FILE="$f"; [ "$f" -nt "$HIST_FILE" ] && HIST_FILE="$f"; done < <(find "$WORKBENCH/$d" -mindepth 1 -maxdepth 1 -name '*-orchestrator-session.md' 2>/dev/null); done; fi
 ```
 
 If `$HIST_FILE` resolves to an existing file, append via the `Edit` tool:

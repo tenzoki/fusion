@@ -34,7 +34,7 @@ Stopping *before* the `mkdir` is what makes this worth doing. The `mkdir -p` bel
 Detection is by artifact presence, not by version — a workbench with no out-of-format artifacts has nothing to migrate regardless of which version created it. It fires on two shapes: a pre-v4 type-folder / flat-Circle layout, **and** a container-layout workbench whose filenames still carry the old bracket-form state marker (`…[o]-….md`) instead of the underscore form. Both route to `/fusion:migrate`, which brings the workbench fully to the current format. Read-only:
 
 ```bash
-WB=./fusion-workbench; OLD=0; if [ -d "$WB" ]; then for d in planning issues decisions history analyses investigations consult memos codereview ontoreview conceptreview; do [ -d "$WB/$d" ] && { echo "  $d/ (Typ-Ordner der Wurzel)"; OLD=1; }; done; for f in "$WB"/circles/*.md; do [ -e "$f" ] || continue; printf '%s' "$(basename "$f" .md)" | grep -qE '^[0-9]{6}-[0-9]{4}\[[a-z]\]' && { echo "  circles/$(basename "$f") (Circle-Datei im alten Marker-Format)"; OLD=1; }; done; BM="$(find "$WB" -type f -name '*[[]*[]]*.md' 2>/dev/null | head -1)"; [ -n "$BM" ] && { echo "  Dateien mit Klammer-Marker im Namen (Format vor der Umstellung auf Unterstrich), z.B. ${BM#"$WB"/}"; OLD=1; }; fi; echo "OLD=$OLD"
+WB=./fusion-workbench; OLD=0; if [ -d "$WB" ]; then for d in planning issues decisions history analyses investigations consult memos codereview ontoreview conceptreview; do [ -d "$WB/$d" ] && { echo "  $d/ (Typ-Ordner der Wurzel)"; OLD=1; }; done; while IFS= read -r f; do printf '%s' "$(basename "$f" .md)" | grep -qE '^[0-9]{6}-[0-9]{4}\[[a-z]\]' && { echo "  circles/$(basename "$f") (Circle-Datei im alten Marker-Format)"; OLD=1; }; done < <(find "$WB/circles" -mindepth 1 -maxdepth 1 -name '*.md' 2>/dev/null); BM="$(find "$WB" -type f -name '*[[]*[]]*.md' 2>/dev/null | head -1)"; [ -n "$BM" ] && { echo "  Dateien mit Klammer-Marker im Namen (Format vor der Umstellung auf Unterstrich), z.B. ${BM#"$WB"/}"; OLD=1; }; fi; echo "OLD=$OLD"
 ```
 
 - **`OLD=0`** — nothing pre-v4 here. Continue with the `mkdir` below. Say nothing about it.
@@ -189,10 +189,10 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
 - **Circle-count snapshot and hint:** count Circles under `$SCAN_CIRCLES` by the marker on their record, not on the directory. Enumerate the records and read the marker from the name — one pass, no bracket expression, no glob per state:
 
   ```bash
-  for f in ./fusion-workbench/circles/*/*_circle.md; do [ -e "$f" ] || continue; basename "$f" | sed -nE 's/^_([a-z])_.*/\1/p'; done | sort | uniq -c
+  find ./fusion-workbench/circles -mindepth 2 -maxdepth 2 -name '*_circle.md' 2>/dev/null | while IFS= read -r f; do basename "$f" | sed -nE 's/^_([a-z])_.*/\1/p'; done | sort | uniq -c
   ```
 
-  Output is one `<count> <marker>` line per state (`2 a`, `1 t`); no Circles prints nothing. The `[ -e "$f" ] || continue` guard is what makes the empty case count zero instead of counting the unexpanded pattern.
+  Output is one `<count> <marker>` line per state (`2 a`, `1 t`); no Circles prints nothing. `find` drives the loop so a missing or empty `circles/` yields no input and the count is zero — no unmatched glob to abort under zsh, no unexpanded pattern to miscount.
 
   **The underscore marker is inert as a glob.** `_a_circle.md` matches literally — no character-class surprise, no escaping — so the enumeration above (and any per-state glob such as `circles/*/_a_circle.md`) resolves correctly, and `find -name '_a_circle.md'` needs no special handling. The enumeration form is still preferred: it reads the marker as data in one pass. See `rules/fusion-workbench-conventions.md` `## State Markers — circles`.
 

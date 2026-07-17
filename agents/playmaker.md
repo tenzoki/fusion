@@ -73,7 +73,7 @@ If your portfolio scan reveals work that needs to change (a defect, an unanswere
 A Circle is a **directory** whose record carries the marker: `$SCAN_CIRCLES/<YYMMDD-HHMM>-<slug>/_S_circle.md`. Enumerate the records and read the marker from each record's filename:
 
 ```bash
-for f in "$WORKBENCH/$SCAN_CIRCLES"/*/*_circle.md; do [ -e "$f" ] || continue; echo "$(basename "$(dirname "$f")") $(basename "$f" | sed -nE 's/^_([a-z])_.*/\1/p')"; done
+find "$WORKBENCH/$SCAN_CIRCLES" -mindepth 2 -maxdepth 2 -name '*_circle.md' 2>/dev/null | while IFS= read -r f; do echo "$(basename "$(dirname "$f")") $(basename "$f" | sed -nE 's/^_([a-z])_.*/\1/p')"; done
 ```
 
 **Enumerate the records; do not glob one marker at a time.** The underscore marker is inert as a glob — `_a_circle.md` matches literally, no escaping — so the enumeration above (which reads the marker as data in one pass) is the form to use; a per-state glob such as `$SCAN_CIRCLES/*/_a_circle.md` also resolves correctly, and `find -name '_a_circle.md'` needs no special handling. See `rules/fusion-workbench-conventions.md` `## State Markers — circles`.

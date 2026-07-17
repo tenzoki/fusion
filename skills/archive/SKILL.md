@@ -132,7 +132,7 @@ Adds `$SHARED_HISTORY/*.md` whose filename date prefix is older than the thresho
    **Circles (all tiers).** Enumerate the records and read the marker from the name. One pass, no bracket expression, no glob per state:
 
    ```bash
-   for f in "$WORKBENCH/$SCAN_CIRCLES"/*/*_circle.md; do [ -e "$f" ] || continue; d="$(basename "$(dirname "$f")")"; m="$(basename "$f" | sed -nE 's/^_([a-z])_.*/\1/p')"; case "$m" in c|b|s) printf '%s\t%s\n' "$m" "$d" ;; esac; done
+   find "$WORKBENCH/$SCAN_CIRCLES" -mindepth 2 -maxdepth 2 -name '*_circle.md' 2>/dev/null | while IFS= read -r f; do d="$(basename "$(dirname "$f")")"; m="$(basename "$f" | sed -nE 's/^_([a-z])_.*/\1/p')"; case "$m" in c|b|s) printf '%s\t%s\n' "$m" "$d" ;; esac; done
    ```
 
    **Enumerate the records; do not glob one marker at a time.** The underscore marker is inert as a glob — `_c_circle.md` matches literally, no escaping — so the enumeration form above (which reads the marker as data in one pass) is the form to use; a per-state glob such as `$SCAN_CIRCLES/*/_c_circle.md` also resolves correctly, and `find -name '_c_circle.md'` needs no special handling. See `rules/fusion-workbench-conventions.md` `## State Markers — circles`.

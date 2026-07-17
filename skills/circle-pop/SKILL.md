@@ -80,7 +80,7 @@ Otherwise proceed to Step 3 with `STASH_ID` set.
 
 ```bash
 CANDIDATES=""
-if [ -d "$STASH_STORE" ]; then for d in "$STASH_STORE"/*/; do [ -d "$d" ] || continue; [ -f "$d/manifest.yaml" ] || continue; [ -f "$d/STASH_IN_PROGRESS" ] && continue; CANDIDATES="$CANDIDATES $(basename "$d")"; done; fi
+if [ -d "$STASH_STORE" ]; then while IFS= read -r d; do [ -f "$d/manifest.yaml" ] || continue; [ -f "$d/STASH_IN_PROGRESS" ] && continue; CANDIDATES="$CANDIDATES $(basename "$d")"; done < <(find "$STASH_STORE" -mindepth 1 -maxdepth 1 -type d); fi
 ```
 
 Branch on the count:

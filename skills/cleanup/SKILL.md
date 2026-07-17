@@ -64,10 +64,10 @@ The goal is that no unfinished work is lost when the session ends.
    Match the marker (the underscore is inert — no escaping needed):
 
    ```bash
-   for d in $SCAN_PLANS; do ls "$WORKBENCH/$d"/*_o_*.md "$WORKBENCH/$d"/*_p_*.md 2>/dev/null; done
+   for d in $SCAN_PLANS; do find "$WORKBENCH/$d" -mindepth 1 -maxdepth 1 \( -name '*_o_*.md' -o -name '*_p_*.md' \) 2>/dev/null | sort; done
    ```
 
-   The underscore marker is inert as a glob: `*_o_*.md` matches the open plans literally and never collides with `_p_`, `_c_` or `_d_` plans, because slugs are hyphen-separated and never contain an underscore. See `rules/fusion-workbench-conventions.md` `## State Markers — circles`; the convention applies to every marker in every vocabulary.
+   The underscore marker is inert as a glob: `-name '*_o_*.md'` matches the open plans literally and never collides with `_p_`, `_c_` or `_d_` plans, because slugs are hyphen-separated and never contain an underscore. `find` drives the enumeration so a missing or empty plans dir yields no output and never aborts the shell under zsh (an unmatched `ls` glob does). See `rules/fusion-workbench-conventions.md` `## State Markers — circles`; the convention applies to every marker in every vocabulary.
 3. For each genuinely-unfinished task that is **not already tracked by an open issue**, file an issue per the decision/issue conventions in `rules/fusion-workbench-conventions.md`: `$WORKBENCH/$OUT_ISSUE/YYMMDD-HHMM_o_<slug>.md` (timestamp from `date +%y%m%d-%H%M`, never guessed). Each issue records what the task was, its source file, and why it's still open. Check every path in `$SCAN_ISSUES` — both stores — before filing, so an issue that already exists in the shared store is not duplicated into the Circle.
 
    `$OUT_ISSUE` is the right target for these: an unfinished task from this session arose from the active Directive, which is what the Origin Rule keys on. A defect this session merely *noticed* in unrelated code belongs in the shared store instead — but that is not what this step files.
