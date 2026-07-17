@@ -20,7 +20,7 @@ const AGENTS = [
 
 const SKILLS = [
   "archive", "circle-pop", "circle-stash", "cleanup", "commit",
-  "direct", "help", "log-activity", "memo", "next",
+  "direct", "help", "log-activity", "memo", "migrate", "next",
   "revise-claude-md", "setup", "unlock",
 ];
 

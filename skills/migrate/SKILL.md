@@ -1,0 +1,114 @@
+---
+description: Migrate a pre-v4 fusion workbench to the Circle-container layout — move the root type folders into shared/, merge the three review folders, and turn Circle files into Circle directories. Surveys first, asks before moving, never overwrites.
+allowed-tools: [Bash, Read, AskUserQuestion]
+---
+
+# Migrate a pre-v4 workbench
+
+A workbench created before v4 keeps its artifacts in type folders at the workbench root (`planning/`, `issues/`, `decisions/`, …). The Circle-container layout puts them in `shared/` (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`). This skill moves them, and it asks first.
+
+Run it once, when `/fusion:setup` tells you to. It is idempotent: on a workbench already in the container layout it surveys, finds nothing, and stops without asking anything.
+
+## Why this skill does not call `bin/fusion-paths`
+
+Every other skill resolves its write targets through `bin/fusion-paths <own-name>`, and `rules/fusion-workbench-conventions.md` `## Path Resolution` is emphatic that a store path belongs in exactly two places: that document and that resolver. This skill is the one consumer that names the layout literally, and the reason is not convenience.
+
+1. **The resolver refuses to run on this skill's own input.** A pre-v4 `.active-circle` holds the old pointer form — `260716-1847[t]-umbau.md`, a filename with a marker and a `.md` suffix. `bin/fusion-paths` requires a bare directory name and exits 3 on anything else (`bin/fusion-paths:220-225`). So on precisely the workbenches this skill exists to serve — pre-v4, with a Circle active — the resolver fails by design. A migration cannot depend on a helper that refuses its own precondition.
+2. **Its values would be the wrong ones anyway.** With a Circle active, `OUT_PLAN` is `<circle>/planning`. The migration must move every pre-v4 artifact to `shared/`, unconditionally: a pre-v4 artifact never recorded which Directive caused it, and unknown origin means `shared/` (Origin Rule, corollary 1). `OUT_*` promises the opposite of what this skill needs.
+3. **Half the paths it needs have no keys and never will.** `planning/`, `codereview/`, `memos/` at the workbench root are the *old* layout. The resolver knows only the new one; there is no key to ask for.
+
+The subject matter of this skill is the transition between two layouts, so it is the only consumer that must name both sides of it. Every other consumer names one side and asks the resolver which it is. The carve-out is recorded in `rules/fusion-workbench-conventions.md` `## Path Resolution` alongside `/fusion:setup`'s.
+
+The workbench anchor still comes from a helper — `bin/fusion-workbench-root`, the same primitive `fusion-paths` itself delegates to. Only the store paths below are literal.
+
+## Step 1 — Locate the workbench
+
+```bash
+ROOT="$("$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root")" || { echo "Keine fusion-workbench oberhalb von $(pwd). Führe zuerst /fusion:setup im Projektwurzelverzeichnis aus." >&2; exit 1; }
+```
+
+`cd "$ROOT"` so the relative paths below resolve. On a non-zero exit, halt: there is no workbench to migrate, and the user needs `/fusion:setup` first.
+
+## Step 2 — Survey what would move
+
+**Detection is by artifact presence, not by version.** A pre-v4 workbench is one where at least one old-layout artifact still exists: a type folder at the workbench root, or a `circles/*.md` file (the old marker-in-filename form). The `plugin_version` in `.fusion-setup` is *not* the detector — it answers the wrong question, because a workbench with no old artifacts has nothing to migrate regardless of which version created it, and `/fusion:setup` overwrites the field on every run anyway. Report the old version to the user as context if you like; key the decision on the artifacts.
+
+**This is also the idempotency guarantee, and it constrains what the detector may look for.** The detector must only look for things the executor can *remove* — not for things it merely *inspects*. If a move fails, its source stays put, the detector fires again next run, and the user gets another chance; no state flag can drift out of sync with the filesystem, because the filesystem *is* the flag. But that design has no memory of "the user already saw this one", so anything the executor will never remove must never enter the trigger, or the skill asks a question forever that has nothing left to do — and a prompt that fires forever gets clicked through without reading, which is what makes the *next*, real migration question dangerous.
+
+Hence the counters below are split three ways:
+
+| Counter | Meaning | Triggers the question? |
+|---|---|---|
+| `FOUND` | Things the migration will move, plus conflicts it refuses but the user can resolve | **yes** |
+| `SKIPPED` | `circles/*.md` with no marker — not part of the migration, never moved | no — reported as a standing note |
+| `CONFLICTS` | Two markered Circle files collapsing to one directory name | counted into `FOUND`; the user resolves by deciding which file is real |
+
+`SKIPPED` is out of the trigger because a `circles/README.md` is legitimate and permanent — a directory whose purpose is non-obvious is exactly where someone puts a README, and the migration has no business removing it. `CONFLICTS` stays in the trigger because it *is* resolvable, and re-asking after the user has resolved it is the recovery path.
+
+Run this first. It is read-only:
+
+```bash
+WB=./fusion-workbench; FOUND=0; SKIPPED=0; CONFLICTS=0; for d in planning issues decisions history analyses investigations consult memos; do [ -d "$WB/$d" ] || continue; printf '  %-16s -> shared/%-16s %s Eintrag/Einträge\n' "$d/" "$d/" "$(find "$WB/$d" -mindepth 1 -maxdepth 1 | wc -l | tr -d ' ')"; FOUND=1; done; for pair in codereview:coderev ontoreview:ontorev conceptreview:conceptrev; do d="${pair%%:*}"; [ -d "$WB/$d" ] || continue; printf '  %-16s -> shared/%-16s %s Eintrag/Einträge\n' "$d/" "reviews/" "$(find "$WB/$d" -mindepth 1 -maxdepth 1 | wc -l | tr -d ' ')"; FOUND=1; done; TMP="$(mktemp)"; for f in "$WB"/circles/*.md; do [ -e "$f" ] || continue; b="$(basename "$f" .md)"; m="$(printf '%s' "$b" | sed -nE 's/^[0-9]{6}-[0-9]{4}\[([a-z])\].*$/\1/p')"; if [ -z "$m" ]; then printf '  circles/%s — kein Marker, wird ignoriert (nicht Teil der Migration)\n' "$(basename "$f")"; SKIPPED=$((SKIPPED+1)); else printf '%s\t%s\t%s\n' "$(printf '%s' "$b" | sed -E 's/\[[a-z]\]//')" "$m" "$(basename "$f")" >> "$TMP"; fi; done; for dir in $(cut -f1 "$TMP" 2>/dev/null | sort -u); do n="$(awk -F'\t' -v d="$dir" '$1==d' "$TMP" | wc -l | tr -d ' ')"; if [ "$n" -gt 1 ]; then printf '  KONFLIKT: %s Dateien ergeben alle circles/%s/ — keine wird verschoben:\n' "$n" "$dir"; awk -F'\t' -v d="$dir" '$1==d {printf "      circles/%s\n", $3}' "$TMP"; CONFLICTS=$((CONFLICTS+1)); else printf '  circles/%s -> circles/%s/[%s]-circle.md\n' "$(awk -F'\t' -v d="$dir" '$1==d {print $3}' "$TMP")" "$dir" "$(awk -F'\t' -v d="$dir" '$1==d {print $2}' "$TMP")"; fi; FOUND=1; done; rm -f "$TMP"; if [ -f "$WB/.active-circle" ]; then cur="$(head -n1 "$WB/.active-circle" | tr -d '\r' | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//')"; case "$cur" in *.md) printf '  .active-circle  %s -> %s\n' "$cur" "$(printf '%s' "$cur" | sed -E 's/\.md$//; s/\[[a-z]\]//')"; FOUND=1 ;; esac; fi; [ "$FOUND" = 0 ] && [ "$SKIPPED" = 0 ] && echo "  (nichts — bereits im neuen Layout)"; [ "$FOUND" = 0 ] && [ "$SKIPPED" -gt 0 ] && echo "  (nichts zu verschieben — die oben genannten Dateien ohne Marker gehören nicht zur Migration)"; if git rev-parse --is-inside-work-tree >/dev/null 2>&1 && [ -n "$(git ls-files "$WB" | head -1)" ]; then echo "MODE=git"; else echo "MODE=plain"; fi; echo "FOUND=$FOUND"; echo "SKIPPED=$SKIPPED"; echo "CONFLICTS=$CONFLICTS"
+```
+
+**If `FOUND=0`: stop here.** The workbench is already in the container layout. Do not ask the question — there is nothing the migration would do. Tell the user so in one line, and add the `SKIPPED` note if there is one (below).
+
+- If `SKIPPED=0` too, report *"Die workbench ist bereits im Circle-Layout. Nichts zu tun."* and stop.
+- If `SKIPPED>0`, add one standing line naming the files and their status, e.g. *"`circles/README.md` trägt keinen Marker und bleibt von der Migration unberührt."* It is a note, not an action item, and it must not become a question: the file is legitimate and nothing will ever move it.
+
+**If `CONFLICTS>0`**, show the conflict lines prominently in the question below. The user has to decide which file is real before those Circles can migrate; the rest of the migration proceeds regardless.
+
+## Step 3 — Ask before moving
+
+Note `MODE` — the user must know before deciding whether the move will be reviewable:
+
+- `MODE=git` — the workbench is tracked. Moves use `git mv`, history is preserved, the whole migration lands as one reviewable diff, and a retreat is `git revert`.
+- `MODE=plain` — the workbench is untracked or gitignored (fusion's own repo is this case), or the project is not a git repo. `git mv` cannot work here. Moves use plain `mv`. **Say this out loud in the question.** The migration will not appear in any diff and cannot be undone with git.
+
+Use `AskUserQuestion`. Write the prompt in the project's language per the `**Language:**` line in `CLAUDE.md` (see `rules/fusion-workbench-conventions.md` `## Project language`), and follow `rules/user-facing-output.md` plus the chat profile at `./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`. Show the survey output above the question so the user sees the actual file counts, not a summary of them. German shape:
+
+> **Frage:** Diese workbench hat noch das alte Layout. Ich stelle sie auf die Circle-Struktur um: die Typ-Ordner wandern nach `shared/`, die drei Review-Ordner werden zu `shared/reviews/` zusammengeführt, und die Circle-Dateien werden zu Circle-Verzeichnissen. Verschoben wird mit `git mv`, der Umzug ist also als ein Diff prüfbar. Gelöscht wird nichts. Die Liste oben zeigt, was sich bewegt.
+>
+> **Option "Umstellen"** (empfohlen): Verschiebt die Artefakte wie aufgelistet.
+> **Option "Abbrechen"**: Lässt die Altbestände in der Wurzel liegen. `/fusion:setup` verweigert dann weiter den Start, bis die workbench umgestellt ist. Du kannst `/fusion:migrate` jederzeit erneut aufrufen.
+
+For `MODE=plain`, replace the `git mv` sentence with the honest one: *"Diese workbench ist nicht versioniert, verschoben wird mit `mv`. Der Umzug taucht in keinem Diff auf und lässt sich nicht per `git revert` zurücknehmen."*
+
+Do not migrate without an explicit choice. The user's own `CLAUDE.md` may declare a different language; the two options and their consequences stay the same.
+
+## Step 4 — Execute (only after the user chose to migrate)
+
+The migration creates the destination scaffold itself. It cannot assume `/fusion:setup` ran first: setup refuses to proceed on a pre-v4 workbench (that is what sent the user here), so on the ordinary path nothing has created `shared/` yet. The `mkdir -p` calls below are inside the loops, per destination, and are idempotent either way.
+
+```bash
+set -u; WB="./fusion-workbench"; FALLBACKS=0; COLLISIONS=0; MOVED=0; SKIPPED=0; if git rev-parse --is-inside-work-tree >/dev/null 2>&1 && [ -n "$(git ls-files "$WB" | head -1)" ]; then MODE=git; else MODE=plain; echo "HINWEIS: workbench nicht versioniert. Verschoben wird mit mv; der Umzug ist nicht als Diff prüfbar und nicht per git revert rücknehmbar." >&2; fi; move_one() { if [ -e "$2" ]; then echo "KOLLISION: $2 existiert bereits. $1 bleibt liegen." >&2; COLLISIONS=$((COLLISIONS+1)); return 1; fi; if [ "$MODE" = git ] && git mv "$1" "$2" 2>/dev/null; then MOVED=$((MOVED+1)); return 0; fi; if mv "$1" "$2"; then if [ "$MODE" = git ]; then echo "HINWEIS: $1 ist nicht versioniert, mit mv verschoben (nicht im Diff)." >&2; FALLBACKS=$((FALLBACKS+1)); fi; MOVED=$((MOVED+1)); return 0; fi; echo "FEHLER: $1 -> $2 fehlgeschlagen." >&2; return 1; }; rewrite_fields() { r="$1"; ch=0; for t in planning issues decisions history analyses investigations consult memos; do if grep -qE "^\*\*Active (spec/plan|session history):\*\* $t/" "$r" 2>/dev/null; then sed -E "s#^(\*\*Active (spec/plan|session history):\*\* )$t/#\1shared/$t/#" "$r" > "$r.tmp" && mv "$r.tmp" "$r"; ch=1; fi; done; [ "$ch" = 1 ] && echo "  Felder in $(basename "$r") auf shared/ nachgezogen (dort liegen die Dateien jetzt)."; return 0; }; for d in planning issues decisions history analyses investigations consult memos; do [ -d "$WB/$d" ] || continue; mkdir -p "$WB/shared/$d"; for f in "$WB/$d"/* "$WB/$d"/.[!.]*; do [ -e "$f" ] || continue; move_one "$f" "$WB/shared/$d/$(basename "$f")" || true; done; rmdir "$WB/$d" 2>/dev/null || echo "HINWEIS: $WB/$d ist nicht leer und bleibt bestehen." >&2; done; for pair in codereview:coderev ontoreview:ontorev conceptreview:conceptrev; do src="${pair%%:*}"; sender="${pair##*:}"; [ -d "$WB/$src" ] || continue; mkdir -p "$WB/shared/reviews"; for f in "$WB/$src"/* "$WB/$src"/.[!.]*; do [ -e "$f" ] || continue; b="$(basename "$f")"; case "$b" in *"-$sender-"*) nb="$b" ;; *) nb="$(printf '%s' "$b" | sed -E "s/^([0-9]{6}-[0-9]{4})-/\1-$sender-/")" ;; esac; move_one "$f" "$WB/shared/reviews/$nb" || true; done; rmdir "$WB/$src" 2>/dev/null || echo "HINWEIS: $WB/$src ist nicht leer und bleibt bestehen." >&2; done; TMP="$(mktemp)"; for f in "$WB"/circles/*.md; do [ -e "$f" ] || continue; b="$(basename "$f" .md)"; m="$(printf '%s' "$b" | sed -nE 's/^[0-9]{6}-[0-9]{4}\[([a-z])\].*$/\1/p')"; if [ -z "$m" ]; then echo "IGNORIERT: $f trägt keinen Marker und gehört nicht zur Migration. Bleibt unverändert liegen." >&2; SKIPPED=$((SKIPPED+1)); continue; fi; printf '%s\t%s\t%s\n' "$(printf '%s' "$b" | sed -E 's/\[[a-z]\]//')" "$m" "$f" >> "$TMP"; done; for dir in $(cut -f1 "$TMP" 2>/dev/null | sort -u); do n="$(awk -F'\t' -v d="$dir" '$1==d' "$TMP" | wc -l | tr -d ' ')"; if [ "$n" -gt 1 ]; then echo "KONFLIKT: $n Circle-Dateien ergeben alle circles/$dir/ und unterscheiden sich nur im Marker. Ein Circle hat genau einen Zustand — welche gilt, kann nur der Mensch entscheiden. Keine wird verschoben:" >&2; awk -F'\t' -v d="$dir" '$1==d {print "    " $3}' "$TMP" >&2; COLLISIONS=$((COLLISIONS+1)); continue; fi; m="$(awk -F'\t' -v d="$dir" '$1==d {print $2}' "$TMP")"; f="$(awk -F'\t' -v d="$dir" '$1==d {print $3}' "$TMP")"; mkdir -p "$WB/circles/$dir"; if move_one "$f" "$WB/circles/$dir/[$m]-circle.md"; then mkdir -p "$WB/circles/$dir/planning" "$WB/circles/$dir/issues" "$WB/circles/$dir/decisions" "$WB/circles/$dir/history" "$WB/circles/$dir/reviews" "$WB/circles/$dir/analyses"; rewrite_fields "$WB/circles/$dir/[$m]-circle.md"; else rmdir "$WB/circles/$dir" 2>/dev/null || true; fi; done; rm -f "$TMP"; if [ -f "$WB/.active-circle" ]; then cur="$(head -n1 "$WB/.active-circle" | tr -d '\r' | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//')"; case "$cur" in *.md) new="$(printf '%s' "$cur" | sed -E 's/\.md$//; s/\[[a-z]\]//')"; if [ -d "$WB/circles/$new" ]; then printf '%s\n' "$new" > "$WB/.active-circle"; echo "Zeiger .active-circle: $cur -> $new"; else echo "WARNUNG: .active-circle zeigt auf $cur, aber circles/$new fehlt. Zeiger unverändert; bitte von Hand prüfen." >&2; fi ;; esac; fi; echo "---"; echo "verschoben=$MOVED kollisionen=$COLLISIONS mv-fallbacks=$FALLBACKS ignoriert=$SKIPPED mode=$MODE"
+```
+
+What the moves do, and why each is what it is:
+
+- **Type folders move by content, not by directory.** `git mv <dir> shared/<dir>` nests the source *inside* the destination (`shared/planning/planning/`) whenever the destination already exists — and it can, either because a prior partial run created it or because a converted agent wrote there before the migration ran. Both `git mv` and `mv` behave this way. Moving entry by entry and then `rmdir`-ing the drained folder is what avoids it.
+- **Every type folder goes to `shared/` wholesale.** No file is inspected, no Circle affiliation is guessed. Pre-v4 artifacts never recorded which Directive caused them, so under the Origin Rule their origin is unknown, and unknown origin means `shared/`. That is what makes this a mechanical move instead of an act of interpretation. Re-filing anything into a Circle afterwards is a deliberate, separate act by the user.
+- **The three review folders merge, and the sender is inserted into the filename.** `codereview/260519-0438-loader-check.md` becomes `shared/reviews/260519-0438-coderev-loader-check.md`. This is not decoration: the conventions make `<sender>` mandatory on a review filename precisely because the three kinds now share one directory, and inserting it makes same-name collisions across the three sources **impossible by construction** rather than merely unlikely. Files that already carry their sender are left alone; files that do not match the `YYMMDD-HHMM-` stamp shape get no insert and can still collide.
+- **A real collision never overwrites.** If the destination exists, the source stays where it is, the script says so on stderr, and the drained folder survives the `rmdir`. The next run detects it again. Losing an artifact to a silent clobber is the one outcome this skill must never produce (`HYG-NO-SILENT-FAIL`); leaving a file behind with a loud message is recoverable, overwriting it is not.
+- **Circle files become Circle directories.** `circles/260716-1847[t]-umbau.md` becomes `circles/260716-1847-umbau/[t]-circle.md`: the marker moves off the filename onto the record inside a stable directory. The six artifact subdirectories are created alongside it, per the Circle record template. A `circles/*.md` file with no parsable marker is ignored loudly and left in place rather than guessed at — and it does not re-trigger the migration question (see the counter table in Step 2).
+- **Two Circle files that differ only by marker are refused, not merged.** The directory name is the marker-stripped filename, so `260101-0903[a]-dup.md` and `260101-0903[t]-dup.md` both map to `circles/260101-0903-dup/`. Their records would land side by side — different filenames, so no collision fires — producing one Circle directory holding two records with two different states. The conventions admit no such shape and no consumer handles it: the record is the sole carrier of Circle state, so a directory with two records has no defined state, and playmaker would see one Circle that is both `[a]` and `[t]`. The grouping pass therefore detects the collapse **before** any move, refuses the whole group, counts it into `kollisionen`, and leaves both files where they are. Which one is real is a question only the user can answer. This is the same posture as everywhere else in this skill: refuse loudly, never guess (`HYG-NO-SILENT-FAIL`).
+- **The record's path fields are re-pointed at `shared/`.** A pre-v4 record's `**Active spec/plan:**` and `**Active session history:**` hold workbench-relative paths written under the old layout (`planning/260716-1910[p]-plan-foo.md`). The migration has just moved those targets to `shared/planning/`, so the fields are rewritten to match. This is not a cosmetic fix: the orchestrator resumes from `**Active session history:**`, `/fusion:circle-stash` locates it best-effort, and playmaker renders it into `portfolio.md` — all three degrade without announcing it, which is precisely the failure `HYG-NO-SILENT-FAIL` forbids. Note the fields must **not** be rewritten to point inside the Circle: the plan genuinely is in `shared/`, correctly, because a pre-v4 artifact never recorded which Directive caused it and unknown origin means `shared/` (Origin Rule, corollary 1). Only values starting with a known type-folder name are touched; `(none yet)` and anything else is left alone.
+- **`.active-circle` is re-pointed** from the old filename form to the bare directory name `bin/fusion-paths` expects. If the target directory is missing, the pointer is left untouched and flagged — `bin/fusion-paths` exits 3 on an orphaned pointer, which is the correct loud failure.
+
+## Step 5 — Report
+
+Report the tail counters (`verschoben`, `kollisionen`, `mv-fallbacks`, `ignoriert`) and tell the user what to do next:
+
+- **`kollisionen=0`** — the migration is complete. Tell the user to run `/fusion:setup` now; it will find the container layout and proceed normally.
+- **`kollisionen>0`** — some artifacts stayed put. Name them. It means either a real name collision or a refused Circle pair, and both need the user's decision. `/fusion:setup` will still refuse to start until they are resolved and `/fusion:migrate` has been run again.
+- **`ignoriert>0`** — informational. Those files are staying put by design and will never move.
+
+For `MODE=plain`, remind the user that the move is not in any diff, so a `git revert` is not available if they want to retreat.
+
+## Guardrails
+
+- **Never migrate without an explicit user choice.** The survey is read-only; nothing moves before Step 3's answer.
+- **Never overwrite.** A destination that exists means the source stays and the collision is reported. Move only; never copy, never delete.
+- **Never touch the root-anchored surfaces.** `agentstate.yaml`, `orchestrator-live.md`, `orchestrator-events.jsonl`, `.guard-state/`, `.commit-lock/`, `.session-marker`, `monitor`, `stilwerk/`, `.fusion-setup` stay where they are; their consumers read them at fixed root-relative paths and none has a fallback (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`).
+- **Never guess a Circle affiliation.** Everything migrated goes to `shared/`. Re-filing into a Circle is the user's separate, deliberate act.
+- **Never touch git beyond `git mv`.** No `git add`, no `git commit`. The user decides whether to commit the migration.
