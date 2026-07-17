@@ -29,12 +29,12 @@ Note the path. The workbench will be created here.
 
 **This runs before the `mkdir` below, and the order is the whole point.** A workbench created before v4 keeps its artifacts in type folders at the workbench root (`planning/`, `issues/`, `decisions/`, …); the container layout puts them in `shared/`. Setup does **not** migrate — `/fusion:migrate` does. Setup's job here is to notice and stop.
 
-Stopping *before* the `mkdir` is what makes this worth doing. The `mkdir -p` below creates `shared/planning/` and friends; run it against a pre-v4 workbench and the workbench is now split across two layouts — old artifacts at the root, an empty new store beside them — and every agent dispatched afterwards writes into the new one while every old artifact sits unreachable in the old. That is not hypothetical: it is filed as `fusion-workbench/issues/260717-0115[o]-live-workbench-split-across-two-layouts-during-conversion.md`. The marker write further down is the second reason: it overwrites `plugin_version`, destroying the only record of which version produced the workbench.
+Stopping *before* the `mkdir` is what makes this worth doing. The `mkdir -p` below creates `shared/planning/` and friends; run it against a pre-v4 workbench and the workbench is now split across two layouts — old artifacts at the root, an empty new store beside them — and every agent dispatched afterwards writes into the new one while every old artifact sits unreachable in the old. That is not hypothetical: it is filed as `fusion-workbench/issues/260717-0115_o_live-workbench-split-across-two-layouts-during-conversion.md`. The marker write further down is the second reason: it overwrites `plugin_version`, destroying the only record of which version produced the workbench.
 
-Detection is by artifact presence, not by version — a workbench with no old artifacts has nothing to migrate regardless of which version created it. Read-only:
+Detection is by artifact presence, not by version — a workbench with no out-of-format artifacts has nothing to migrate regardless of which version created it. It fires on two shapes: a pre-v4 type-folder / flat-Circle layout, **and** a container-layout workbench whose filenames still carry the old bracket-form state marker (`…[o]-….md`) instead of the underscore form. Both route to `/fusion:migrate`, which brings the workbench fully to the current format. Read-only:
 
 ```bash
-WB=./fusion-workbench; OLD=0; if [ -d "$WB" ]; then for d in planning issues decisions history analyses investigations consult memos codereview ontoreview conceptreview; do [ -d "$WB/$d" ] && { echo "  $d/ (Typ-Ordner der Wurzel)"; OLD=1; }; done; for f in "$WB"/circles/*.md; do [ -e "$f" ] || continue; printf '%s' "$(basename "$f" .md)" | grep -qE '^[0-9]{6}-[0-9]{4}\[[a-z]\]' && { echo "  circles/$(basename "$f") (Circle-Datei im alten Marker-Format)"; OLD=1; }; done; fi; echo "OLD=$OLD"
+WB=./fusion-workbench; OLD=0; if [ -d "$WB" ]; then for d in planning issues decisions history analyses investigations consult memos codereview ontoreview conceptreview; do [ -d "$WB/$d" ] && { echo "  $d/ (Typ-Ordner der Wurzel)"; OLD=1; }; done; for f in "$WB"/circles/*.md; do [ -e "$f" ] || continue; printf '%s' "$(basename "$f" .md)" | grep -qE '^[0-9]{6}-[0-9]{4}\[[a-z]\]' && { echo "  circles/$(basename "$f") (Circle-Datei im alten Marker-Format)"; OLD=1; }; done; BM="$(find "$WB" -type f -name '*[[]*[]]*.md' 2>/dev/null | head -1)"; [ -n "$BM" ] && { echo "  Dateien mit Klammer-Marker im Namen (Format vor der Umstellung auf Unterstrich), z.B. ${BM#"$WB"/}"; OLD=1; }; fi; echo "OLD=$OLD"
 ```
 
 - **`OLD=0`** — nothing pre-v4 here. Continue with the `mkdir` below. Say nothing about it.
@@ -181,20 +181,20 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
 - Read `CLAUDE.md` for project context, folder structure, architecture.
 - `git log --oneline -20` for recent change context (skip if not a git repo).
 - Snapshot open state, using the values `fusion-paths` gave you in Step 2. Every `SCAN_*` may name **two** directories (the active Circle's and the shared one) — count both, or the snapshot silently under-reports:
-  - Open issues: for each path in `$SCAN_ISSUES`, count `*[o]*` and `*[p]*` files.
-  - Open plan steps: for each path in `$SCAN_PLANS`, skim `*[o]*.md` and `*[p]*.md`.
+  - Open issues: for each path in `$SCAN_ISSUES`, count `*_o_*` and `*_p_*` files.
+  - Open plan steps: for each path in `$SCAN_PLANS`, skim `*_o_*.md` and `*_p_*.md`.
   - Current git HEAD (if git repo)
 - Guard check: read `./fusion-workbench/.guard-state/escalation.json` (if present). If `haltActive: true`, warn the user immediately — all write operations are blocked. Offer to clear or proceed with the halt active. Also read `./fusion-workbench/.guard-state/churn.json` to note high-thrash files.
 - Workbench-domain detection: run the heuristic in `agents/orchestrator.md` Setup Step 5 (the `decisions_count`/`analyses_count`/`code_files`/`data_files` block). Report the detected domain in the Setup-complete summary. The orchestrator passes this domain as the default `domain` parameter to `taskplanner` and `reconciler` dispatches; the user may override at any individual dispatch.
 - **Circle-count snapshot and hint:** count Circles under `$SCAN_CIRCLES` by the marker on their record, not on the directory. Enumerate the records and read the marker from the name — one pass, no bracket expression, no glob per state:
 
   ```bash
-  for f in ./fusion-workbench/circles/*/*-circle.md; do [ -e "$f" ] || continue; basename "$f" | sed -nE 's/^\[([a-z])\].*/\1/p'; done | sort | uniq -c
+  for f in ./fusion-workbench/circles/*/*_circle.md; do [ -e "$f" ] || continue; basename "$f" | sed -nE 's/^_([a-z])_.*/\1/p'; done | sort | uniq -c
   ```
 
   Output is one `<count> <marker>` line per state (`2 a`, `1 t`); no Circles prints nothing. The `[ -e "$f" ] || continue` guard is what makes the empty case count zero instead of counting the unexpanded pattern.
 
-  **Do not write `circles/*/[a]-circle.md`.** `[a]` is a shell bracket expression matching the single character `a`; the glob searches for `a-circle.md`, matches nothing, and reports zero Circles on a workbench full of them — silently. If a single state must be globbed, escape it: `circles/*/\[a\]-circle.md`. See `rules/fusion-workbench-conventions.md` `## State Markers — circles`.
+  **The underscore marker is inert as a glob.** `_a_circle.md` matches literally — no character-class surprise, no escaping — so the enumeration above (and any per-state glob such as `circles/*/_a_circle.md`) resolves correctly, and `find -name '_a_circle.md'` needs no special handling. The enumeration form is still preferred: it reads the marker as data in one pass. See `rules/fusion-workbench-conventions.md` `## State Markers — circles`.
 
   If any Circles exist, print a one-line advisory pointing to `/fusion:next` for portfolio review. If none exist, no hint is printed — opt-in behaviour preserved. The orchestrator's Setup Step 5 contains the canonical implementation.
 
