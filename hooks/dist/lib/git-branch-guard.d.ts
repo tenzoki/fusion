@@ -8,15 +8,30 @@
  *
  * Design (LOCKED):
  *   DENY  (HEAD moves): git switch …, git checkout -b/-B/--detach/--orphan/-,
- *         git checkout <ref> with NO `--` separator, git worktree add …
- *   ALLOW (HEAD stays): git checkout … -- <paths> (file restore), all read-only
- *         git, git branch listing/create-without-switch, everything non-git.
+ *         git checkout <branch/ref> with NO `--` separator, git worktree add …
+ *   ALLOW (HEAD stays): git checkout … -- <paths> (file restore), git restore …,
+ *         all read-only git, git branch listing/create-without-switch,
+ *         everything non-git.
  *
  * The load-bearing allow-case is fusion's own revert strategy
- * (`git checkout HEAD -- <files>`), which MUST stay allowed. The `--`
- * separator is the discriminator.
+ * (`git checkout HEAD -- <files>`), which MUST stay allowed. A `--`
+ * separator is the primary, unambiguous discriminator: everything after it
+ * is a pathspec, so HEAD cannot move.
  *
- * Fail-closed: an ambiguous `git checkout` without a `--` separator → DENY.
+ * The bare, `--`-less form `git checkout <target>` is genuinely ambiguous —
+ * git resolves it in favour of a branch/ref if one exists, otherwise treats
+ * <target> as a path to restore. The classifier resolves that ambiguity with
+ * a caller-supplied `CheckoutResolver` (filesystem + git-ref aware):
+ *   - `git checkout foo.go` where foo.go EXISTS on disk AND is NOT a valid
+ *     ref → file restore → ALLOW.
+ *   - `git checkout feature/x` where feature/x IS a valid ref → branch switch
+ *     → DENY (a branch that merely shares a name with a file is a ref → DENY,
+ *     matching git's own ref-first resolution).
+ *   - `git checkout nonexistent` → not a file → DENY.
+ *
+ * Fail-closed: when NO resolver is supplied (or a `--git-dir`/`--work-tree`
+ * global makes on-disk resolution unreliable), the ambiguous form → DENY.
+ * A real branch switch always fails-closed because a valid ref → DENY.
  *
  * This module is PURE and EXPORTED so it is unit-testable without the hook
  * firing. It takes the command string plus the two env-flag booleans and
@@ -46,6 +61,22 @@ export interface GitGuardVerdict {
     overrideSegment?: string;
 }
 /**
+ * Resolves whether a bare `git checkout <target>` argument is a file to
+ * restore or a ref to switch to. Kept as an injected interface so this module
+ * stays PURE and unit-testable — the real implementation (filesystem +
+ * `git rev-parse`) lives at the hook boundary in guard.ts, tests pass a mock.
+ *
+ * `cwdHints` carries any `-C <dir>` global options seen before the subcommand,
+ * in order, so the implementation can resolve paths and refs in the same
+ * directory git itself would use.
+ */
+export interface CheckoutResolver {
+    /** True if `target` names an existing path (file or dir), resolved under the effective cwd. */
+    pathExists(target: string, cwdHints: string[]): boolean;
+    /** True if `target` resolves to a valid git ref/object in the repo at the effective cwd. */
+    isRef(target: string, cwdHints: string[]): boolean;
+}
+/**
  * Split a command string into the segments that each run as their own command.
  * Segments on `;`, `&&`, `||`, `|`. Also recursively inspects the *contents*
  * of `$(...)` and backtick subshells (their inner commands run too).
@@ -68,7 +99,7 @@ export interface GitGuardOverrides {
  *
  * The two overrides are independent (least privilege).
  */
-export declare function classifyGitCommand(command: string, overrides: GitGuardOverrides): GitGuardVerdict;
+export declare function classifyGitCommand(command: string, overrides: GitGuardOverrides, resolver?: CheckoutResolver): GitGuardVerdict;
 /** Parse an env-var truthy flag ("1" or "true", case-insensitive). */
 export declare function isEnvFlagSet(value: string | undefined): boolean;
 /** Build the overrides struct from the process environment. */

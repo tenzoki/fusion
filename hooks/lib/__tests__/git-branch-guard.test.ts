@@ -5,7 +5,10 @@ import {
   isEnvFlagSet,
   overridesFromEnv,
 } from "../git-branch-guard.js";
-import type { GitGuardOverrides } from "../git-branch-guard.js";
+import type {
+  GitGuardOverrides,
+  CheckoutResolver,
+} from "../git-branch-guard.js";
 
 const NO_OVERRIDE: GitGuardOverrides = {
   allowBranchSwitch: false,
@@ -22,6 +25,26 @@ const ALLOW_WORKTREE: GitGuardOverrides = {
 
 function deny(cmd: string, overrides = NO_OVERRIDE) {
   return classifyGitCommand(cmd, overrides);
+}
+
+/**
+ * Build a deterministic mock resolver from explicit sets of existing files and
+ * valid refs. Mirrors the runtime resolver's contract without touching disk or
+ * shelling out to git.
+ */
+function mockResolver(files: string[], refs: string[]): CheckoutResolver {
+  return {
+    pathExists: (t) => files.includes(t),
+    isRef: (t) => refs.includes(t),
+  };
+}
+
+function classifyWith(
+  cmd: string,
+  resolver: CheckoutResolver,
+  overrides = NO_OVERRIDE,
+) {
+  return classifyGitCommand(cmd, overrides, resolver);
 }
 
 describe("git branch-switch classifier — DENY cases", () => {
@@ -210,6 +233,101 @@ describe("git branch-switch classifier — fail-closed on ambiguity", () => {
 
   it("allows git -C /repo checkout HEAD -- foo (-- separator wins)", () => {
     expect(deny("git -C /repo checkout HEAD -- foo.go").deny).toBe(false);
+  });
+});
+
+describe("bare `git checkout <target>` — filesystem + ref-aware resolution", () => {
+  it("ALLOWS git checkout <existing-file> that is not a ref (the fixed bug)", () => {
+    const r = mockResolver(["agents/coder.md"], []);
+    const v = classifyWith("git checkout agents/coder.md", r);
+    expect(v.deny).toBe(false);
+  });
+
+  it("ALLOWS git checkout of several existing non-ref files", () => {
+    const r = mockResolver(["a.go", "b.ts"], []);
+    expect(classifyWith("git checkout a.go b.ts", r).deny).toBe(false);
+  });
+
+  it("BLOCKS git checkout <nonexistent-arg-that-is-not-a-file> (conservative)", () => {
+    const r = mockResolver([], []);
+    expect(classifyWith("git checkout not-a-file", r).deny).toBe(true);
+  });
+
+  it("BLOCKS git checkout <real-branch> even with no matching file (ref wins)", () => {
+    const r = mockResolver([], ["feature/plane"]);
+    const v = classifyWith("git checkout feature/plane", r);
+    expect(v.deny).toBe(true);
+    expect(v.kind).toBe("branch-switch");
+  });
+
+  it("BLOCKS git checkout <name> when a branch AND a file share that name (ref wins)", () => {
+    const r = mockResolver(["deploy"], ["deploy"]);
+    expect(classifyWith("git checkout deploy", r).deny).toBe(true);
+  });
+
+  it("BLOCKS if any positional is a ref, even when others are files", () => {
+    const r = mockResolver(["a.go"], ["main"]);
+    expect(classifyWith("git checkout a.go main", r).deny).toBe(true);
+  });
+
+  it("BLOCKS if any positional is not an existing file, even when others are", () => {
+    const r = mockResolver(["a.go"], []);
+    expect(classifyWith("git checkout a.go ghost.go", r).deny).toBe(true);
+  });
+
+  it("still ALLOWS the -- pathspec form regardless of resolver", () => {
+    const r = mockResolver([], ["main"]);
+    expect(classifyWith("git checkout -- main", r).deny).toBe(false);
+    expect(classifyWith("git checkout HEAD -- main", r).deny).toBe(false);
+  });
+
+  it("still BLOCKS git checkout -b even for an existing-file name", () => {
+    const r = mockResolver(["newbranch"], []);
+    expect(classifyWith("git checkout -b newbranch", r).deny).toBe(true);
+  });
+
+  it("respects -C <dir> cwd hints when resolving files/refs", () => {
+    const r: CheckoutResolver = {
+      // Only resolves the file when the -C hint is threaded through.
+      pathExists: (t, hints) =>
+        hints.includes("/repo") && t === "sub/file.md",
+      isRef: () => false,
+    };
+    expect(classifyWith("git -C /repo checkout sub/file.md", r).deny).toBe(false);
+    // Without the -C hint the same resolver would not see the file → block.
+    expect(classifyWith("git checkout sub/file.md", r).deny).toBe(true);
+  });
+
+  it("fails closed on --git-dir / --work-tree globals even with a resolver", () => {
+    const r = mockResolver(["file.md"], []);
+    expect(
+      classifyWith("git --git-dir=/x/.git checkout file.md", r).deny,
+    ).toBe(true);
+    expect(
+      classifyWith("git --work-tree=/x checkout file.md", r).deny,
+    ).toBe(true);
+  });
+
+  it("appends the restore hint to the deny reason for the ambiguous form", () => {
+    const r = mockResolver([], []);
+    const v = classifyWith("git checkout something", r);
+    expect(v.reason).toMatch(/git restore <file>/);
+    expect(v.reason).toMatch(/git checkout -- <file>/);
+  });
+
+  it("does NOT append the restore hint to a plain git switch deny", () => {
+    const v = deny("git switch main");
+    expect(v.reason).not.toMatch(/git restore <file>/);
+  });
+
+  it("ALLOWS git restore <path> (not a checkout/switch/worktree op)", () => {
+    expect(deny("git restore foo.go").deny).toBe(false);
+    expect(deny("git restore --staged foo.go").deny).toBe(false);
+  });
+
+  it("without a resolver, the ambiguous bare form still fails closed", () => {
+    // No resolver passed → cannot prove file-restore → DENY.
+    expect(deny("git checkout agents/coder.md").deny).toBe(true);
   });
 });
 

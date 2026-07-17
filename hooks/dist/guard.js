@@ -17,12 +17,48 @@
  *   Block: {"decision":"block","reason":"..."}
  */
 import { resolve, relative, isAbsolute } from "node:path";
+import { existsSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { matchesAny } from "./lib/paths.js";
 import { isFusionPluginCwd } from "./lib/self-detect.js";
 import { loadConfig, findRelevantDecisions, sensitivityLevel } from "./lib/config.js";
 import { loadEscalation, saveEscalation, isHalted, recordBlock, resetBlockCounter, } from "./lib/escalation.js";
 import { emitEvent } from "./lib/events.js";
 import { classifyGitCommand, overridesFromEnv, overrideEnvFor, } from "./lib/git-branch-guard.js";
+/**
+ * Real filesystem + git-ref resolver for the ambiguous bare-`git checkout
+ * <target>` form. Resolves paths and refs in the effective cwd (process cwd
+ * plus any `-C <dir>` global options, applied in order — the same directory
+ * git itself would use). Fails safe: any error → treat as "not a path / not a
+ * ref", which fails the ALLOW conditions and lets the classifier deny.
+ */
+function effectiveCwd(cwdHints) {
+    let dir = process.cwd();
+    for (const hint of cwdHints)
+        dir = resolve(dir, hint);
+    return dir;
+}
+const checkoutResolver = {
+    pathExists(target, cwdHints) {
+        try {
+            return existsSync(resolve(effectiveCwd(cwdHints), target));
+        }
+        catch {
+            return false;
+        }
+    },
+    isRef(target, cwdHints) {
+        try {
+            // Exit 0 (+ prints the resolved object) iff target is a valid ref/object.
+            // stdio ignored; execFileSync throws on any non-zero exit → not a ref.
+            execFileSync("git", ["-C", effectiveCwd(cwdHints), "rev-parse", "--verify", "--quiet", target], { stdio: "ignore" });
+            return true;
+        }
+        catch {
+            return false;
+        }
+    },
+};
 /**
  * Normalize a file path to be relative to the project root (CWD).
  *
@@ -82,7 +118,7 @@ function guardBashCommand(input, config) {
         ? input.tool_input.command
         : "";
     const overrides = overridesFromEnv(process.env);
-    const verdict = classifyGitCommand(command, overrides);
+    const verdict = classifyGitCommand(command, overrides, checkoutResolver);
     // Override path: a normally-denied command was allowed by an env flag.
     if (verdict.overrideUsed && verdict.overrideKind) {
         const envVar = overrideEnvFor(verdict.overrideKind);

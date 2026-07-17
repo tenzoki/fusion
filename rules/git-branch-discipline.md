@@ -8,16 +8,18 @@ This rule is loaded for every agent. It is enforced **deterministically** by the
 
 - `git switch …` — any form (including `-c`, `-C`, `--detach`, `-`)
 - `git checkout` with `-b` / `-B` / `--detach` / `--orphan` / `-`
-- `git checkout <ref>` with no `--` separator (a branch/commit switch)
+- `git checkout <branch/ref>` with no `--` separator (a branch/commit switch) — a valid ref is always denied, so a branch that merely shares a name with a file stays denied (git resolves the ref first)
 - `git worktree add …`
 
 The deny applies to the whole `Bash` call if **any** segment is a deny-case — the guard segments on `;`, `&&`, `||`, `|` and inspects `$(…)` / backtick subshells, so you cannot smuggle a branch switch inside a compound command.
 
 ## What stays allowed (HEAD does not move)
 
-- `git checkout … -- <paths>` — file restore. The `--` separator is the discriminator.
+- `git checkout … -- <paths>` — file restore. The `--` separator is the primary, unambiguous discriminator.
 - `git checkout HEAD -- <files>` — **fusion's own revert strategy.** Always allowed.
 - `git checkout -- <files>`, `git checkout <ref> -- <files>` — file restore from a ref.
+- `git restore <files>` (incl. `--staged`) — file restore; never moves HEAD.
+- `git checkout <file>` (bare, no `--`) — allowed **only** when every positional arg exists on disk **and** none is a valid git ref. This is the "I meant to restore a file" convenience form. A real branch (or a branch sharing a file's name) is a valid ref → still denied. A nonexistent target → denied (fail-closed). Resolution respects a leading `-C <dir>`; a `--git-dir` / `--work-tree` global forces a conservative deny.
 - All read-only git (`status`, `log`, `diff`, `branch` listing, `worktree list`, …).
 - `git branch <new>` — create a branch without switching to it.
 - Everything that is not a git command.
@@ -26,7 +28,7 @@ The deny applies to the whole `Bash` call if **any** segment is a deny-case — 
 
 A prose rule alone does not stop an LLM agent from switching branches under task pressure (cf. `CLAUDE.md` "Problem 11" — "MUST run Setup" was overridden by task urgency). Autonomous branch switching causes **branch-drift chaos**: work lands on the wrong branch, the orchestrator's revert strategy (`git checkout HEAD -- <files>`) targets the wrong tree, commits interleave across branches, and interrupted-session resume becomes unreliable. Git is reachable only via `Bash`, so the guard hook is a complete choke-point — the cheapest place to make the failure impossible rather than merely discouraged.
 
-The classifier is **fail-closed**: an ambiguous `git checkout` without a `--` separator is denied. Over-blocking a weird construct is the correct direction; the user wants chaos prevented.
+The classifier is **fail-closed**: for a bare `git checkout <target>` (no `--`), the allow requires positive proof that every target is an existing file that is *not* also a ref — proved via an on-disk + `git rev-parse` check. Anything short of that proof (a valid ref, a nonexistent target, an unresolvable `--git-dir`/`--work-tree` global, or no resolver at all) is denied. Over-blocking a weird construct is the correct direction; the user wants chaos prevented.
 
 ## What to do instead
 

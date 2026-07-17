@@ -18,6 +18,8 @@
  */
 
 import { resolve, relative, isAbsolute } from "node:path";
+import { existsSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { matchesAny } from "./lib/paths.js";
 import { isFusionPluginCwd } from "./lib/self-detect.js";
 import { loadConfig, findRelevantDecisions, sensitivityLevel } from "./lib/config.js";
@@ -35,6 +37,44 @@ import {
   overridesFromEnv,
   overrideEnvFor,
 } from "./lib/git-branch-guard.js";
+import type { CheckoutResolver } from "./lib/git-branch-guard.js";
+
+/**
+ * Real filesystem + git-ref resolver for the ambiguous bare-`git checkout
+ * <target>` form. Resolves paths and refs in the effective cwd (process cwd
+ * plus any `-C <dir>` global options, applied in order — the same directory
+ * git itself would use). Fails safe: any error → treat as "not a path / not a
+ * ref", which fails the ALLOW conditions and lets the classifier deny.
+ */
+function effectiveCwd(cwdHints: string[]): string {
+  let dir = process.cwd();
+  for (const hint of cwdHints) dir = resolve(dir, hint);
+  return dir;
+}
+
+const checkoutResolver: CheckoutResolver = {
+  pathExists(target: string, cwdHints: string[]): boolean {
+    try {
+      return existsSync(resolve(effectiveCwd(cwdHints), target));
+    } catch {
+      return false;
+    }
+  },
+  isRef(target: string, cwdHints: string[]): boolean {
+    try {
+      // Exit 0 (+ prints the resolved object) iff target is a valid ref/object.
+      // stdio ignored; execFileSync throws on any non-zero exit → not a ref.
+      execFileSync(
+        "git",
+        ["-C", effectiveCwd(cwdHints), "rev-parse", "--verify", "--quiet", target],
+        { stdio: "ignore" },
+      );
+      return true;
+    } catch {
+      return false;
+    }
+  },
+};
 
 /** Hook input from Claude Code (PreToolUse). */
 interface HookInput {
@@ -113,7 +153,7 @@ function guardBashCommand(
       : "";
 
   const overrides = overridesFromEnv(process.env);
-  const verdict = classifyGitCommand(command, overrides);
+  const verdict = classifyGitCommand(command, overrides, checkoutResolver);
 
   // Override path: a normally-denied command was allowed by an env flag.
   if (verdict.overrideUsed && verdict.overrideKind) {
