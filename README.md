@@ -193,9 +193,9 @@ You give the orchestrator a scope at session start and it runs through to closur
 
 You capture future units of work as files in `fusion-workbench/circles/` and let the `playmaker` agent rank them. Each file is one Directive captured ahead of execution, in one of six lifecycle states (anticipated, active, closed-coherent, bounded, superseded, deferred — see the marker table in `## fusion-workbench` below).
 
-- **Capture work ahead of time** with `/fusion:direct <one-line draft>`. The skill dispatches the `shaper` agent in anticipated-circle mode; shaper clarifies the draft with you and writes a new `[a]` (anticipated) Circle file.
+- **Capture work ahead of time** with `/fusion:direct <one-line draft>`. The skill dispatches the `shaper` agent in anticipated-circle mode; shaper clarifies the draft with you and writes a new `_a_` (anticipated) Circle file.
 - **Decide what to work on next** with `/fusion:next`. The skill dispatches `playmaker`, which ranks the anticipated Circles by a domain-biased heuristic (see `agents/playmaker.md`), warns about dependency cycles, and proposes one to activate. You confirm the proposal or pick a different Circle.
-- **Run the active Circle** in the orchestrator until the per-Circle Coherence verdict closes it as `[c]` (closed-coherent) or `[b]` (Bounded Closure — the Directive is judged unreachable and what was learned is the Artifact).
+- **Run the active Circle** in the orchestrator until the per-Circle Coherence verdict closes it as `_c_` (closed-coherent) or `_b_` (Bounded Closure — the Directive is judged unreachable and what was learned is the Artifact).
 - **Pick the next one** with `/fusion:next` again.
 
 ### When to use which
@@ -208,7 +208,7 @@ You capture future units of work as files in `fusion-workbench/circles/` and let
 | A project large enough that dependency tracking and cycle detection are worth the overhead | Mode B |
 | A queue thick enough that you want a visible roadmap in `portfolio.md` | Mode B |
 
-**Mixed use is fine.** Most projects start in Mode A, accumulate `[a]` Circle files over time as future work is captured via `/fusion:direct`, and shift toward Mode B once the queue is thick enough to deserve ranking. The two modes share the same workbench, the same agents, and the same conceptual model — only the surface for choosing the next Directive differs.
+**Mixed use is fine.** Most projects start in Mode A, accumulate `_a_` Circle files over time as future work is captured via `/fusion:direct`, and shift toward Mode B once the queue is thick enough to deserve ranking. The two modes share the same workbench, the same agents, and the same conceptual model — only the surface for choosing the next Directive differs.
 
 ## Compliance Guard
 
@@ -265,7 +265,7 @@ The plugin uses `fusion-workbench/` at the project root as the shared workspace 
 fusion-workbench/
 ├── circles/
 │   └── <stamp>-<slug>/     # one directory per unit of work (stable name, NO marker)
-│       ├── [m]-circle.md   #   the Circle record — carries the state marker
+│       ├── _t_circle.md   #   the Circle record — carries the state marker
 │       ├── planning/       #   spec + plan of THIS unit of work
 │       ├── issues/         #   defects that arose from this Circle's Directive
 │       ├── decisions/      #   decision records raised inside this Circle
@@ -288,11 +288,11 @@ fusion-workbench/
 
 **Human-retrospection skills.** The workbench is a durable record, not just an agent-coordination substrate. Two skills surface it for the user directly: `/fusion:memo` appends short personal notes ("don't forget X") to `fusion-workbench/shared/memos/memos-<username>.md`; `/fusion:log-activity` scans git commits and the workbench and writes a per-day activity log at the project root (`activity-log-<username>.md`) — useful for the "what did I actually do in the last four weeks?" question. See `docs/philosophy.md` §2 for the conceptual treatment.
 
-**State markers — issues/ and planning/:** `[o]` open, `[p]` in progress, `[c]` closed, `[d]` deferred.
+**State markers — issues/ and planning/:** `_o_` open, `_p_` in progress, `_c_` closed, `_d_` deferred.
 
-**State markers — decisions/:** `[o]` open question, `[a]` answered (recorded answer exists), `[i]` implemented (answer realised in code/data), `[d]` deferred, `[s]` superseded by a later decision.
+**State markers — decisions/:** `_o_` open question, `_a_` answered (recorded answer exists), `_i_` implemented (answer realised in code/data), `_d_` deferred, `_s_` superseded by a later decision.
 
-**State markers — circles/:** `[a]` anticipated, `[t]` active/in-Turn, `[c]` closed-coherent, `[b]` Bounded Closure, `[s]` superseded, `[d]` deferred. See `rules/fusion-workbench-conventions.md` for transitions.
+**State markers — circles/:** `_a_` anticipated, `_t_` active/in-Turn, `_c_` closed-coherent, `_b_` Bounded Closure, `_s_` superseded, `_d_` deferred. See `rules/fusion-workbench-conventions.md` for transitions.
 
 The defect/decision distinction: file in `issues/` if the resolution is "go fix it"; file in `decisions/` if the resolution is "decide and record." See `rules/fusion-workbench-conventions.md` for the full convention and decision-record template.
 
