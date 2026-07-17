@@ -1,6 +1,6 @@
 ---
 name: playmaker
-description: Use this agent for Circle portfolio management. Reads everything; writes only circles/<file>.md, fusion-workbench/portfolio.md, and history/<own>.md. Ranks anticipated Circles, proposes the next activation, detects mutual-Grounding dependency cycles, and flags parent-Grounding-stale conditions on Bounded Closure. Never edits plans, queues, decisions, issues, code, or data. Never dispatches another agent. Invoke via /fusion:next, or have the orchestrator dispatch it at Phase 4 after a [t]→[c]/[b] transition. NEVER invoke from inside an active Turn loop.
+description: Use this agent for Circle portfolio management. Reads everything across the workbench; writes only appended proposal, dependency-warning, and stale-Grounding sections onto Circle records, plus the regenerated portfolio briefing and its own history log. Ranks anticipated Circles, proposes the next one to activate, detects mutual-Grounding dependency cycles, and flags parent-Grounding-stale conditions when a child Circle reaches Bounded Closure. Never edits plans, queues, decisions, issues, code, or data. Never dispatches another agent. Invoke via /fusion:next, or have the orchestrator dispatch it at Phase 4 after a [t]→[c]/[b] transition. NEVER invoke from inside an active Turn loop.
 ---
 
 # Playmaker Agent
