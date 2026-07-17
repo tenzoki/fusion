@@ -13,7 +13,7 @@ fusion-workbench/
 ├── circles/
 │   └── 260716-1847-workbench-umbau/   # one directory per unit of work
 │       │                              # stable name: <YYMMDD-HHMM>-<directive-slug>, NO marker
-│       ├── [t]-circle.md              # the Circle record — carries the state marker
+│       ├── _t_circle.md              # the Circle record — carries the state marker
 │       ├── planning/                  # spec and plan of THIS unit of work
 │       ├── issues/
 │       ├── decisions/
@@ -59,7 +59,7 @@ The list is exhaustive as written, and it is a list rather than a count on purpo
 
 **The three review types collapse into one `reviews/`.** codereview, ontoreview and conceptreview differ by sender, not by kind. The sender is in the filename (`YYMMDD-HHMM-<sender>-<topic>.md`) and in the document header. Inside one Circle they do not earn a directory each.
 
-`fusion-workbench/.active-circle` is a one-line pointer file containing the **directory name** of the active Circle (e.g. `260716-1847-workbench-umbau`) — no marker, no `circles/` prefix, no `.md`. It is absent when no Circle is active. Because the directory name is stable across the Circle's whole lifecycle, the pointer no longer has to be re-pointed on every marker change: the orchestrator **writes** it once on `[a]→[t]` activation (after user confirmation of playmaker's proposal) and **deletes** it on `[t]→[c]/[b]/[s]/[d]` closure. Nothing else touches it. The pointer is the single source of truth for "active Circle" — `agentstate.yaml` does NOT duplicate this field.
+`fusion-workbench/.active-circle` is a one-line pointer file containing the **directory name** of the active Circle (e.g. `260716-1847-workbench-umbau`) — no marker, no `circles/` prefix, no `.md`. It is absent when no Circle is active. Because the directory name is stable across the Circle's whole lifecycle, the pointer no longer has to be re-pointed on every marker change: the orchestrator **writes** it once on `_a_→_t_` activation (after user confirmation of playmaker's proposal) and **deletes** it on `_t_→_c_/_b_/_s_/_d_` closure. Nothing else touches it. The pointer is the single source of truth for "active Circle" — `agentstate.yaml` does NOT duplicate this field.
 
 The `fusion-workbench/` is anchored to the directory where setup was run — the working directory `pwd` reports, not necessarily the git toplevel. A subfolder may legitimately have its own independent workbench, separate from any workbench at a parent level; the plugin's hooks resolve `process.cwd()` directly and follow whichever directory is active.
 
@@ -229,10 +229,10 @@ Patterns attach to the **kind of artifact**, not to a directory. The same kind c
 | Artifact kind | Written to | Pattern | State marker |
 |---|---|---|---|
 | Circle directory | `$OUT_CIRCLE/` | `YYMMDD-HHMM-<directive-slug>/` | no — the directory name is stable |
-| Circle record | inside the Circle directory | `[S]-circle.md` | yes (circles vocabulary) |
-| Spec / plan | `$OUT_PLAN` | `YYMMDD-HHMM[S]-<topic>.md` | yes (issues/planning vocabulary) |
-| Defect | `$OUT_ISSUE` | `YYMMDD-HHMM[S]-<topic>.md` | yes (issues/planning vocabulary) |
-| Decision record | `$OUT_DECISION` | `YYMMDD-HHMM[S]-<topic>.md` | yes (decisions vocabulary — richer set) |
+| Circle record | inside the Circle directory | `_S_circle.md` | yes (circles vocabulary) |
+| Spec / plan | `$OUT_PLAN` | `YYMMDD-HHMM_S_<topic>.md` | yes (issues/planning vocabulary) |
+| Defect | `$OUT_ISSUE` | `YYMMDD-HHMM_S_<topic>.md` | yes (issues/planning vocabulary) |
+| Decision record | `$OUT_DECISION` | `YYMMDD-HHMM_S_<topic>.md` | yes (decisions vocabulary — richer set) |
 | Session history | `$OUT_HISTORY` | `YYMMDD-HHMM-<topic>.md` | no |
 | Review (code / onto / concept) | `$OUT_REVIEW` | `YYMMDD-HHMM-<sender>-<topic>.md` | no |
 | Analysis | `$OUT_ANALYSIS` | `YYMMDD-HHMM-<topic>.md` | no |
@@ -246,20 +246,20 @@ Patterns attach to the **kind of artifact**, not to a directory. The same kind c
 
 ## State Markers — issues and planning
 
-Defect files and spec/plan files carry a state marker: `YYMMDD-HHMM[S]-<topic>.md`. This holds in a Circle and in `shared/` alike.
+Defect files and spec/plan files carry a state marker: `YYMMDD-HHMM_S_<topic>.md`. This holds in a Circle and in `shared/` alike.
 
 | Marker | Meaning |
 |--------|---------|
-| `[o]` | Open — initial state on creation |
-| `[p]` | In progress — agent is actively working on it |
-| `[c]` | Closed — resolved, or user decided to close |
-| `[d]` | Deferred — user decided, or agent proposed and user confirmed |
+| `_o_` | Open — initial state on creation |
+| `_p_` | In progress — agent is actively working on it |
+| `_c_` | Closed — resolved, or user decided to close |
+| `_d_` | Deferred — user decided, or agent proposed and user confirmed |
 
 **Rules:**
-- Every new file starts as `[o]`.
-- When an agent begins work: rename `[o]` → `[p]`.
-- When work is done: rename `[p]` → `[c]`.
-- When the user defers: rename to `[d]`.
+- Every new file starts as `_o_`.
+- When an agent begins work: rename `_o_` → `_p_`.
+- When work is done: rename `_p_` → `_c_`.
+- When the user defers: rename to `_d_`.
 - State change = `mv` (rename). Only the marker changes; `YYMMDD-HHMM` and `<topic>` stay the same.
 
 History, review, analysis, investigation, consultation, and memo files do NOT carry state markers.
@@ -270,51 +270,51 @@ Decision records carry a richer state marker that distinguishes "the answer is r
 
 | Marker | Meaning |
 |--------|---------|
-| `[o]` | Open — the question has been filed but not yet answered. Initial state on creation. |
-| `[a]` | Answered — a recorded answer exists somewhere on disk (typically an analysis, a plan, a session history, or the decision record itself). The file body MUST cite the answer's location with `Answered: <path>:<line> — <one-line summary>`. Cite the path as it stands, whether that is inside a Circle or in `shared/`. The decision is not yet realised in code or data. |
-| `[i]` | Implemented — the answer has been realised: code or data on disk now reflects the decision. The file body MUST cite the implementation with `Implemented: <commit hash> or <path>:<line> — <one-line summary>`. This is the terminal state for decisions whose realisation is verifiable. |
-| `[d]` | Deferred — the user explicitly pushed the decision out (to v1.x, to a future workbench, etc.). The file body MUST cite the deferral target. |
-| `[s]` | Superseded — a later decision has overridden this one. The file body MUST cite the superseding decision file: `Superseded by: <path> — <reason>`. |
+| `_o_` | Open — the question has been filed but not yet answered. Initial state on creation. |
+| `_a_` | Answered — a recorded answer exists somewhere on disk (typically an analysis, a plan, a session history, or the decision record itself). The file body MUST cite the answer's location with `Answered: <path>:<line> — <one-line summary>`. Cite the path as it stands, whether that is inside a Circle or in `shared/`. The decision is not yet realised in code or data. |
+| `_i_` | Implemented — the answer has been realised: code or data on disk now reflects the decision. The file body MUST cite the implementation with `Implemented: <commit hash> or <path>:<line> — <one-line summary>`. This is the terminal state for decisions whose realisation is verifiable. |
+| `_d_` | Deferred — the user explicitly pushed the decision out (to v1.x, to a future workbench, etc.). The file body MUST cite the deferral target. |
+| `_s_` | Superseded — a later decision has overridden this one. The file body MUST cite the superseding decision file: `Superseded by: <path> — <reason>`. |
 
 **Worked transitions:**
 
-1. **`[o]` → `[a]`**: Reconciler (or analyst) finds that an open decision has been answered in a deliverable. Append `Answered: circles/260501-1900-transform-shape/analyses/260501-1915-D04-detailed-architecture.md §4.3 — Shape C selected`. Rename `[o]` → `[a]`.
-2. **`[a]` → `[i]`**: A coder/ontocoder commit lands that realises the decision. Append `Implemented: a3f7c2e — pkg/transform now uses Shape C dispatch`. Rename `[a]` → `[i]`.
-3. **`[o]` → `[d]`**: User says "defer to v1.x". Append `Deferred: v1.x — pending pilot signal`. Rename `[o]` → `[d]`. (Skipping `[a]` is fine when the deferral itself is the answer.)
-4. **`[a]` → `[s]`**: A new decision overrides the answered one. Append `Superseded by: <path>/YYMMDD-HHMM[a]-new-decision.md — replaces Shape C with Shape D after expert veto`. Rename to `[s]`. The superseding record may live in another Circle or in `shared/` — cite it where it is; never copy it next to the superseded one.
-5. **`[o]` → `[s]`** (rare): A new decision overrides an open one before it was even answered. Same procedure as above.
+1. **`_o_` → `_a_`**: Reconciler (or analyst) finds that an open decision has been answered in a deliverable. Append `Answered: circles/260501-1900-transform-shape/analyses/260501-1915-D04-detailed-architecture.md §4.3 — Shape C selected`. Rename `_o_` → `_a_`.
+2. **`_a_` → `_i_`**: A coder/ontocoder commit lands that realises the decision. Append `Implemented: a3f7c2e — pkg/transform now uses Shape C dispatch`. Rename `_a_` → `_i_`.
+3. **`_o_` → `_d_`**: User says "defer to v1.x". Append `Deferred: v1.x — pending pilot signal`. Rename `_o_` → `_d_`. (Skipping `_a_` is fine when the deferral itself is the answer.)
+4. **`_a_` → `_s_`**: A new decision overrides the answered one. Append `Superseded by: <path>/YYMMDD-HHMM_a_new-decision.md — replaces Shape C with Shape D after expert veto`. Rename to `_s_`. The superseding record may live in another Circle or in `shared/` — cite it where it is; never copy it next to the superseded one.
+5. **`_o_` → `_s_`** (rare): A new decision overrides an open one before it was even answered. Same procedure as above.
 
-**`[i]` and `[s]` are terminal.** Do not rename them back to `[o]` or `[a]`. If an implemented decision needs revisiting, file a NEW decision (which may then `Supersede` the `[i]` one).
+**`_i_` and `_s_` are terminal.** Do not rename them back to `_o_` or `_a_`. If an implemented decision needs revisiting, file a NEW decision (which may then `Supersede` the `_i_` one).
 
 **Grounding-Stand vs Grounding-Historie:**
 
 The marker vocabulary mirrors foundation_V3 §1.2's two-layer Grounding model:
 
-- `[o]` (open) and `[a]` (answered, awaiting realisation) are **Grounding-Stand** — the current best-of-knowledge the project is working with.
-- `[i]` (implemented), `[s]` (superseded), and `[d]` (deferred) are **Grounding-Historie** — preserved record of what was decided, including elements that have been replaced or postponed.
+- `_o_` (open) and `_a_` (answered, awaiting realisation) are **Grounding-Stand** — the current best-of-knowledge the project is working with.
+- `_i_` (implemented), `_s_` (superseded), and `_d_` (deferred) are **Grounding-Historie** — preserved record of what was decided, including elements that have been replaced or postponed.
 
-Each decision store holds both layers; the marker carries the layer information. Reconciliation passes that "list active Grounding" filter on `[o]` + `[a]`; passes that "show project history" include all five. A scan for active Grounding must cover every path in `$SCAN_DECISIONS`, not just the Circle's.
+Each decision store holds both layers; the marker carries the layer information. Reconciliation passes that "list active Grounding" filter on `_o_` + `_a_`; passes that "show project history" include all five. A scan for active Grounding must cover every path in `$SCAN_DECISIONS`, not just the Circle's.
 
 ## State Markers — circles
 
-**The marker sits on the Circle record, not on the directory.** A Circle is `circles/<YYMMDD-HHMM>-<directive-slug>/`, and the directory name never changes across the Circle's lifecycle. The state lives in the record inside it: `[a]-circle.md` → `[t]-circle.md` → `[c]-circle.md`. A state change is a `mv` of that one file.
+**The marker sits on the Circle record, not on the directory.** A Circle is `circles/<YYMMDD-HHMM>-<directive-slug>/`, and the directory name never changes across the Circle's lifecycle. The state lives in the record inside it: `_a_circle.md` → `_t_circle.md` → `_c_circle.md`. A state change is a `mv` of that one file.
 
 Two reasons this is worth the small oddity. First, **path stability**: every reference into a Circle — from a session history, from `portfolio.md`, from another Circle's decision, from a stash manifest — stays valid for the Circle's whole life. Were the marker on the directory, every state change would break every one of them. Second, **an immutable natural key**: the later Plane mirror needs a per-Circle identifier that does not mutate, or the guarantee "transferring twice creates no duplicates" cannot hold.
 
-State stays cheap to read as a glob, but **the brackets must be escaped**. `[t]` is a shell bracket expression matching the single character `t`, so the natural-looking `circles/*/[t]-circle.md` searches for `circles/*/t-circle.md` and matches the empty set. Under `bash` this fails *silently*: the unmatched pattern expands to itself, the customary `[ -e "$f" ] || continue` guard drops it, and the count comes back `0` on a workbench full of Circles (`HYG-NO-SILENT-FAIL`).
+The delimiter is an underscore, not brackets, and that choice is what keeps the marker cheap to read as a glob. `[` and `]` are shell-glob metacharacters: a marker written in bracket form inside a glob is silently a *character class* matching the single marker letter, so a glob of the shape `circles/*/…-circle.md` with a bracketed `t` resolves to `circles/*/t-circle.md`, matches the empty set, and under `bash` fails *silently* — the unmatched pattern expands to itself, the customary `[ -e "$f" ] || continue` guard drops it, and the count comes back `0` on a workbench full of Circles (`HYG-NO-SILENT-FAIL`). That trap was hit five times in a single session. The underscore is inert in both glob and regex: `_t_circle.md` matches literally, with no escaping and no character-class surprise.
 
 Two forms are correct. Use them verbatim:
 
 | Purpose | Form |
 |---|---|
-| Records in one state | `circles/*/\[t\]-circle.md` |
-| All records, marker read from the name | `circles/*/*-circle.md`, then `basename` → `sed -nE 's/^\[([a-z])\].*/\1/p'` |
+| Records in one state | `circles/*/_t_circle.md` |
+| All records, marker read from the name | `circles/*/*-circle.md`, then `basename` → `sed -nE 's/^_([a-z])_.*/\1/p'` |
 
-The second form is preferred wherever the task is counting or enumerating: it contains no bracket expression at all, so it cannot be re-broken by a copy-paste that drops the backslashes, and it yields the marker as data rather than requiring one glob per state.
+The second form is preferred wherever the task is counting or enumerating: it reads the marker as data rather than requiring one glob per state.
 
-`find` is **not** an escape hatch. `find circles -name '[t]-circle.md'` is also wrong: the quotes protect the pattern from the *shell*, but `find` then globs it itself with the same bracket semantics. It needs the same escaping — `find circles -name '\[t\]-circle.md'`.
+`find` needs no special handling: `find circles -name '_t_circle.md'` is correct as written — the underscore is not a metacharacter to `find`'s `-name` matcher any more than it is to the shell.
 
-This applies to every marker in every vocabulary — `[o]`, `[a]`, `[t]`, `[c]`, `[i]`, `[p]`, `[b]`, `[s]`, `[d]` — anywhere a filename carrying one is matched by a glob, in any agent prompt or skill body.
+This applies to every marker in every vocabulary — `_o_`, `_a_`, `_t_`, `_c_`, `_i_`, `_p_`, `_b_`, `_s_`, `_d_` — anywhere a filename carrying one is matched by a glob, in any agent prompt or skill body.
 
 The price of the marker-on-the-record design is that `ls circles/` no longer shows state at a glance; `portfolio.md` and `/fusion:next` are the built answers for that. The marker convention is not actually broken — the marker still names the state of the *record*, and the record is `circle.md`; the directory merely encloses it and its artifacts.
 
@@ -324,31 +324,31 @@ Binding decision: `decisions/260716-1910[a]-circle-marker-am-verzeichnis-oder-an
 
 | Marker | Meaning |
 |--------|---------|
-| `[a]` | **Anticipated** — provisional Directive, no Grounding yet (foundation V3 §2.1). Initial state on creation. |
-| `[t]` | **Active / in-Turn** — Directive refined, Grounding crystallising, orchestrator running it. |
-| `[c]` | **Closed-coherent** — three-edge Coherence verdict passed. |
-| `[b]` | **Bounded Closure** — Directive judged not reachable; what was learned is the Artifact. |
-| `[s]` | **Superseded** — replaced by another Circle (scope split, redirected). |
-| `[d]` | **Deferred** — anticipated → indefinitely postponed. |
+| `_a_` | **Anticipated** — provisional Directive, no Grounding yet (foundation V3 §2.1). Initial state on creation. |
+| `_t_` | **Active / in-Turn** — Directive refined, Grounding crystallising, orchestrator running it. |
+| `_c_` | **Closed-coherent** — three-edge Coherence verdict passed. |
+| `_b_` | **Bounded Closure** — Directive judged not reachable; what was learned is the Artifact. |
+| `_s_` | **Superseded** — replaced by another Circle (scope split, redirected). |
+| `_d_` | **Deferred** — anticipated → indefinitely postponed. |
 
 ### Worked transitions
 
-Every transition renames only `<circle-dir>/[S]-circle.md`. The directory is never renamed.
+Every transition renames only `<circle-dir>/_S_circle.md`. The directory is never renamed.
 
-- `[a] → [t]` — playmaker proposes activation; user confirms; orchestrator renames the record and writes `.active-circle` with the directory name.
-- `[t] → [c]` — Coherence verdict `coherent` at Phase 3; orchestrator renames the record at Phase 4 and deletes `.active-circle`.
-- `[t] → [b]` — user chose **Accept Bounded Closure** at the Rebalance gate; orchestrator renames the record at Phase 4 and deletes `.active-circle`.
-- `[t] → [s]` — user supersedes mid-run; orchestrator renames the record and deletes `.active-circle`; a new `[a]` Circle directory is created, citing the superseded one via `## Dependencies`.
-- `[a] → [d]` — user defers an anticipated Circle indefinitely; manual rename of the record. `.active-circle` is not involved — an `[a]` Circle was never active.
-- `[a] → [s]` — rare; the anticipated Circle is replaced before activation by a new Circle that captures the revised intent.
+- `_a_ → _t_` — playmaker proposes activation; user confirms; orchestrator renames the record and writes `.active-circle` with the directory name.
+- `_t_ → _c_` — Coherence verdict `coherent` at Phase 3; orchestrator renames the record at Phase 4 and deletes `.active-circle`.
+- `_t_ → _b_` — user chose **Accept Bounded Closure** at the Rebalance gate; orchestrator renames the record at Phase 4 and deletes `.active-circle`.
+- `_t_ → _s_` — user supersedes mid-run; orchestrator renames the record and deletes `.active-circle`; a new `_a_` Circle directory is created, citing the superseded one via `## Dependencies`.
+- `_a_ → _d_` — user defers an anticipated Circle indefinitely; manual rename of the record. `.active-circle` is not involved — an `_a_` Circle was never active.
+- `_a_ → _s_` — rare; the anticipated Circle is replaced before activation by a new Circle that captures the revised intent.
 
-**Terminal-states statement:** `[c]`, `[b]`, `[s]`, `[d]` are terminal — `mv` back to `[a]` or `[t]` is disallowed. If continuation is needed, create a new Circle that cites the terminal one via its `## Dependencies` section. A terminal Circle keeps its directory and all its artifacts in place; closure is not a move.
+**Terminal-states statement:** `_c_`, `_b_`, `_s_`, `_d_` are terminal — `mv` back to `_a_` or `_t_` is disallowed. If continuation is needed, create a new Circle that cites the terminal one via its `## Dependencies` section. A terminal Circle keeps its directory and all its artifacts in place; closure is not a move.
 
-**Grounding-Stand vs Grounding-Historie parallel:** as with `decisions/`, the marker carries the layer information. `[a]` and `[t]` are Grounding-Stand (current working state); `[c]`, `[b]`, `[s]`, `[d]` are Grounding-Historie (preserved record).
+**Grounding-Stand vs Grounding-Historie parallel:** as with `decisions/`, the marker carries the layer information. `_a_` and `_t_` are Grounding-Stand (current working state); `_c_`, `_b_`, `_s_`, `_d_` are Grounding-Historie (preserved record).
 
 ## Circle record template
 
-The Circle record is `<circle-dir>/[S]-circle.md`. Creating a Circle means creating the directory, the record, and the six artifact subdirectories (`planning/`, `issues/`, `decisions/`, `history/`, `reviews/`, `analyses/`) — a Circle without its subdirectories forces the next agent to invent them. Template:
+The Circle record is `<circle-dir>/_S_circle.md`. Creating a Circle means creating the directory, the record, and the six artifact subdirectories (`planning/`, `issues/`, `decisions/`, `history/`, `reviews/`, `analyses/`) — a Circle without its subdirectories forces the next agent to invent them. Template:
 
 ```markdown
 # <One-line Directive title>
@@ -368,7 +368,7 @@ The Circle record is `<circle-dir>/[S]-circle.md`. Creating a Circle means creat
 
 ## Grounding snapshot
 
-<What we know going in. Filled at `[a] → [t]` activation by shaper portfolio-activation mode. Updates on Rebalance.>
+<What we know going in. Filled at `_a_ → _t_` activation by shaper portfolio-activation mode. Updates on Rebalance.>
 
 ## Dependencies
 
@@ -381,12 +381,12 @@ The Circle record is `<circle-dir>/[S]-circle.md`. Creating a Circle means creat
 
 ## Closure note
 
-<Filled when marker becomes [c], [b], [s], or [d]. Cites the orchestrator session history file. For [b], also cites the Bounded-Closure Artifact (what was learned that the Directive could not reach).>
+<Filled when marker becomes _c_, _b_, _s_, or _d_. Cites the orchestrator session history file. For _b_, also cites the Bounded-Closure Artifact (what was learned that the Directive could not reach).>
 ```
 
-The directory is `YYMMDD-HHMM-<directive-slug>/` and the record inside it is `[S]-circle.md`, per the State Markers section above.
+The directory is `YYMMDD-HHMM-<directive-slug>/` and the record inside it is `_S_circle.md`, per the State Markers section above.
 
-**`Active spec/plan:` and `Active session history:` hold workbench-relative paths, not bare filenames.** In the ordinary case the path points inside the Circle (`circles/260716-1847-umbau/planning/260716-1910[p]-plan-foo.md`) and looks redundant. It is not, because the cross-store case is real and routine:
+**`Active spec/plan:` and `Active session history:` hold workbench-relative paths, not bare filenames.** In the ordinary case the path points inside the Circle (`circles/260716-1847-umbau/planning/260716-1910_p_plan-foo.md`) and looks redundant. It is not, because the cross-store case is real and routine:
 
 - A spec written before the Circle existed lands in `shared/planning/` — every `/fusion:direct` run and every shaper run in anticipated-circle mode produces one, since with no Circle active every `OUT_*` points at `shared/` (invariant 1).
 - A migrated pre-v4 Circle names a plan that the migration moved to `shared/planning/`, correctly: unknown origin means `shared/` (Origin Rule, corollary 1). The file genuinely is not in the Circle, and rewriting the field to claim otherwise would point it at nothing.
@@ -401,19 +401,19 @@ A path resolves in both cases; a bare filename resolves only in the first, and f
 **Generated:** YYMMDD-HHMM (by playmaker session <id>)
 **Domain bias:** <code|data|strategic|knowledge>
 
-## Active ([t])
+## Active (_t_)
 
 <One entry expected, or 0. If >1, flag MULTIPLE-ACTIVE warning. Each entry: Circle directory name, Directive line, active session history path.>
 
-## Anticipated ([a]) — ranked
+## Anticipated (_a_) — ranked
 
 <Ordered list by playmaker rank. Top entry includes a one-paragraph rationale for the recommendation. Each entry: Circle directory name, Directive line, rank, dependencies summary.>
 
-## Recently closed ([c] / [b])
+## Recently closed (_c_ / _b_)
 
 <Last 5 closed Circles. Each entry: Circle directory name, marker, Closure note one-liner.>
 
-## Archived ([s] / [d])
+## Archived (_s_ / _d_)
 
 <Superseded and deferred Circles, for reference.>
 
@@ -432,7 +432,7 @@ A path resolves in both cases; a bare filename resolves only in the first, and f
   `3. [IN PROGRESS] **Step Title**`
 - When you complete a step: mark it `[DONE]`:
   `1. [DONE] **Step Title**`
-- When all steps are `[DONE]`: set `**Status:** Complete` in the header and rename the filename marker to `[c]`.
+- When all steps are `[DONE]`: set `**Status:** Complete` in the header and rename the filename marker to `_c_`.
 
 ### Issue files
 
@@ -441,7 +441,7 @@ When an issue is resolved, append below the existing content:
 ---
 Resolved: <brief description of what was done>
 ```
-Then rename the filename marker to `[c]`.
+Then rename the filename marker to `_c_`.
 
 ### Decision files
 
@@ -451,25 +451,25 @@ Decision files have their own resolution annotations matching the marker semanti
 ---
 Answered: <path>:<line> — <one-line summary>
 ```
-(rename `[o]` → `[a]`)
+(rename `_o_` → `_a_`)
 
 ```
 ---
 Implemented: <commit hash> or <path>:<line> — <one-line summary>
 ```
-(rename `[a]` → `[i]`, or `[o]` → `[i]` if the implementation skipped the recorded-answer step)
+(rename `_a_` → `_i_`, or `_o_` → `_i_` if the implementation skipped the recorded-answer step)
 
 ```
 ---
 Deferred: <target — one-line reason>
 ```
-(rename to `[d]`)
+(rename to `_d_`)
 
 ```
 ---
 Superseded by: <path to new decision> — <reason>
 ```
-(rename to `[s]`)
+(rename to `_s_`)
 
 ### When to update
 
@@ -495,7 +495,7 @@ This applies to:
 
 **NEVER put issues or decisions inside plan documents, review documents, analyses, code comments, chat output, history logs, or any other location.** Embedded items get lost. Each item is a separate file in its own store.
 
-**Filename:** `YYMMDD-HHMM[o]-<topic>.md` (always `[o]` on creation, for either kind).
+**Filename:** `YYMMDD-HHMM_o_<topic>.md` (always `_o_` on creation, for either kind).
 
 **Issue file format:**
 ```
@@ -512,7 +512,7 @@ Brief but precise — enough context to understand the item without the original
 
 ## Decision Record Template
 
-File: `$OUT_DECISION/YYMMDD-HHMM[o]-<topic>.md`
+File: `$OUT_DECISION/YYMMDD-HHMM_o_<topic>.md`
 
 Body:
 
@@ -548,10 +548,10 @@ Body:
 <If the filing agent has a recommendation, state it with reasoning. Otherwise omit.>
 
 ---
-Answered: <set when status moves to [a]>
-Implemented: <set when status moves to [i]>
-Deferred: <set when status moves to [d]>
-Superseded by: <set when status moves to [s]>
+Answered: <set when status moves to _a_>
+Implemented: <set when status moves to _i_>
+Deferred: <set when status moves to _d_>
+Superseded by: <set when status moves to _s_>
 ```
 
 ## History Logging
@@ -584,7 +584,7 @@ fusion-workbench/stashes/
     ├── manifest.yaml         # nine-field index
     ├── README.md             # human-readable summary + restore command
     ├── circle/               # the whole Circle directory, verbatim
-    │   ├── [t]-circle.md     #   record with its marker (filename in manifest)
+    │   ├── _t_circle.md     #   record with its marker (filename in manifest)
     │   ├── planning/         #   spec and plan travel with the Circle
     │   ├── issues/
     │   ├── decisions/
@@ -610,7 +610,7 @@ stash_id: 260519-1200-stash-smoke              # YYMMDD-HHMM-<slug>
 timestamp: "2026-05-19T12:00:00Z"              # RFC 3339 UTC
 reason: "smoke test"                           # one line
 original_circle_dirname: "260519-1200-stash-smoke"   # the Circle directory name (no marker)
-original_circle_record: "[t]-circle.md"        # the record filename, marker included
+original_circle_record: "_t_circle.md"        # the record filename, marker included
 active_circle_content: "260519-1200-stash-smoke"     # verbatim content of .active-circle at stash time
 head_short_hash: "0b7344a"
 git_stash_ref: "stash@{0}"                     # human-readable positional ref, or "(no changes)"

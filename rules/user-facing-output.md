@@ -67,7 +67,7 @@ A sketch that replaces a wall of prose does not count against the chat length ca
 - **Spell out fusion-internal terms on first use** in any given output. Examples:
   - Not "Turn loop" → "the work cycle (one Turn = one batch of tasks + a review)."
   - Not "Directive" alone → "the session Directive (your stated goal)."
-  - Not "[t] marker" → "the active Circle (`[t]` in the filename)."
+  - Not "_t_ marker" → "the active Circle (`_t_` in the filename)."
   - Once spelled out within an output, the short form is fine for the rest of that same output.
 
 - **Never use workbench-internal IDs without their human-readable summary.**
@@ -78,7 +78,7 @@ A sketch that replaces a wall of prose does not count against the chat length ca
 
 - **Conventional Commits types are commit-message language, not user-facing prose.** Don't write "T1 chore: bumped version" in a status report. Write "Task 1 bumped the version."
 
-- **No marker syntax in body prose unless explained.** `[o]`, `[a]`, `[t]`, `[c]`, `[b]`, `[s]`, `[d]`, `[p]`, `[i]` are filename markers. In body text prefer the word: *open / anticipated / active / closed / bounded / superseded / deferred / in-progress / implemented*. Use the bracket form in parentheses if helpful — *"the active Circle (`[t]` in the filename)."*
+- **No marker syntax in body prose unless explained.** `_o_`, `_a_`, `_t_`, `_c_`, `_b_`, `_s_`, `_d_`, `_p_`, `_i_` are filename markers. In body text prefer the word: *open / anticipated / active / closed / bounded / superseded / deferred / in-progress / implemented*. Use the marker form in parentheses if helpful — *"the active Circle (`_t_` in the filename)."*
 
 - **One name per thing.** Use a single, consistent term for an entity throughout an output. Do not rotate through synonyms ("registry" here, "catalog" there, "uif-framework.yaml" elsewhere) for one thing — that forces the reader to keep proving the names refer to the same object. Pick the most significant, precise name (often the filename or the canonical term) and keep it. When an explanation is requested, you may state the synonyms once ("uif-framework.yaml acts as a registry: a catalog of selectable frameworks"), then use the one term consistently for the rest of the output.
 
@@ -148,7 +148,7 @@ Same information, same technical terms, readable.
 
 **Before** (cryptic, jargon-heavy, no clear user action):
 
-> Verdict: coherent (Phase 3 reconciler) Commits: 6 (4 task + 1 reconciliation + 1 session-close) - 60e009b T1 CLAUDE.md Framework Topics bullet + Bundle C validator-status - 17cf23d T2 3 Bundle-C coderev Notes closed (loader/validator topics) - 4414f18 T3 typical_engine_types → typical_shapes (R14 ratified) - d1d59e7 T4 Q7.x [a]→[i] walk × 5 + plan 260510-2151 [o]→[c]
+> Verdict: coherent (Phase 3 reconciler) Commits: 6 (4 task + 1 reconciliation + 1 session-close) - 60e009b T1 CLAUDE.md Framework Topics bullet + Bundle C validator-status - 17cf23d T2 3 Bundle-C coderev Notes closed (loader/validator topics) - 4414f18 T3 typical_engine_types → typical_shapes (R14 ratified) - d1d59e7 T4 Q7.x _a_→_i_ walk × 5 + plan 260510-2151 _o_→_c_
 
 **After** (action-first, plain-English, details at the bottom):
 
@@ -175,7 +175,7 @@ Same information, same technical terms, readable.
 
 **Before** (one sentence packs five unrelated ideas, all jargon):
 
-> The next orchestrator session will pick up the Turn loop against this Circle's Directive — close the 7 Stefan-blocked open issues by source-querying normative/extracts/, landing changes with pending-stefan provenance markers, escaping to decisions/[o] on ambiguity, and consolidating per-issue close-notes + dossier under consult/.
+> The next orchestrator session will pick up the Turn loop against this Circle's Directive — close the 7 Stefan-blocked open issues by source-querying normative/extracts/, landing changes with pending-stefan provenance markers, escaping to decisions/_o_ on ambiguity, and consolidating per-issue close-notes + dossier under consult/.
 
 **After** (clear action, brief reason, no jargon dump):
 
