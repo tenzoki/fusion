@@ -22,6 +22,13 @@
 #                       plain Claude Code in this repo would respect).
 #
 # Convention for filename patterns:
+#   - Every agent reads agent-setup.md FIRST (shipped by plugin) — the single
+#     authoring home for the Setup contract: "read every emitted path", the
+#     fusion-paths KEY=value / OUT_* vs SCAN_* semantics (incl. the two-
+#     directories-per-SCAN_* nuance and the exit-3/exit-4 distinction), the
+#     generalised pattern-kind clause, and the universal voice-profile-read
+#     instruction. Emitted before fusion-workbench-conventions.md so an agent
+#     reads "how Setup works" before the detailed conventions.
 #   - Every agent reads fusion-workbench-conventions.md (shipped by plugin).
 #   - Every agent also reads decision-record-examples.md (shipped by plugin) —
 #     the worked examples of [o]→[a]→[i], [a]→[s], [o]→[d] transitions are
@@ -250,7 +257,9 @@ PLUGIN_RULES_DIR="${FUSION_PLUGIN_ROOT:-}/rules"
 PROJECT_RULES_DIR="./rules"
 PROJECT_CLAUDE_RULES_DIR=".claude/rules"
 
-# 1. Always emit the framework ground-truth rules.
+# 1. Always emit the framework ground-truth rules. agent-setup.md goes first so
+#    an agent reads "how Setup works" before the detailed conventions.
+emit_if_exists "$PLUGIN_RULES_DIR/agent-setup.md"
 emit_if_exists "$PLUGIN_RULES_DIR/fusion-workbench-conventions.md"
 emit_if_exists "$PLUGIN_RULES_DIR/decision-record-examples.md"
 emit_if_exists "$PLUGIN_RULES_DIR/user-facing-output.md"

@@ -27,6 +27,7 @@ const AGENTS = [
   "orchestrator", "coder", "ontocoder", "bugfixer", "coderev",
   "ontorev", "conceptrev", "planner", "shaper", "taskplanner",
   "reconciler", "analyst", "investigator", "consultant", "playmaker",
+  "editor",
 ];
 
 interface RunResult {
@@ -142,6 +143,40 @@ describe("context-manifest: HYG-NO-REGRESS — byte-identical when absent", () =
   it("preserves the exit-code contract: unknown agent → 2, no arg → 1", () => {
     expect(run(emptyProject, "no-such-agent").status).toBe(2);   // genuinely unknown agent
     expect(run(emptyProject).status).toBe(1);
+  });
+});
+
+describe("agent-setup.md is emitted always-on, first, for every agent (Circle D Bundle 0)", () => {
+  // agent-setup.md is a plugin-shipped always-on framework rule (the sixth), the
+  // single authoring home for the Setup contract. It must be emitted for every one
+  // of the 16 agents, with no manifest, and emitted FIRST — before the detailed
+  // fusion-workbench-conventions.md — so an agent reads "how Setup works" before
+  // the conventions. This is an intended extension of the always-on set, NOT a
+  // HYG-NO-REGRESS break (that guard protects the manifest-absent==pre-manifest
+  // property; the always-on set is deliberately extended here).
+  const setup = "agent-setup.md";
+  const conventions = "fusion-workbench-conventions.md";
+
+  it(`emits ${setup} for all 16 agents (no manifest)`, () => {
+    expect(AGENTS.length).toBe(16); // 15 original + editor
+    for (const agent of AGENTS) {
+      const out = lines(run(emptyProject, agent).stdout);
+      expect(
+        out.some((l) => l.endsWith(`/rules/${setup}`)),
+        `${agent} must emit ${setup}`,
+      ).toBe(true);
+    }
+  });
+
+  it(`emits ${setup} before ${conventions}`, () => {
+    for (const agent of AGENTS) {
+      const out = lines(run(emptyProject, agent).stdout);
+      const setupIdx = out.findIndex((l) => l.endsWith(`/rules/${setup}`));
+      const convIdx = out.findIndex((l) => l.endsWith(`/rules/${conventions}`));
+      expect(setupIdx, `${agent} emits ${setup}`).toBeGreaterThanOrEqual(0);
+      expect(convIdx, `${agent} emits ${conventions}`).toBeGreaterThanOrEqual(0);
+      expect(setupIdx, `${agent}: ${setup} before ${conventions}`).toBeLessThan(convIdx);
+    }
   });
 });
 
