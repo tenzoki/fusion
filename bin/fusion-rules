@@ -55,7 +55,7 @@
 #                                   see templates/investigator-capture-layout.md)
 #   - All other agents get workbench-conventions only. The conventions-only
 #     set currently includes: orchestrator, shaper, taskplanner, reconciler,
-#     analyst, consultant, playmaker, conceptrev.
+#     analyst, consultant, playmaker, conceptrev, editor.
 #
 # Optional topic-scoped loading (the context manifest):
 #   A consuming project MAY add ./rules/context-manifest.yaml to load large
@@ -82,9 +82,10 @@
 #   - Long-form-prose agents additionally receive the project's stylometric
 #     voice profile path so they can apply it to narrative outputs (session
 #     summary bodies, consultation replies, analysis reports, investigator
-#     timelines, playmaker briefings, prose sections of specs and plans):
+#     timelines, playmaker briefings, prose sections of specs and plans,
+#     editor deliverables):
 #       orchestrator, consultant, shaper, planner, analyst, investigator,
-#       playmaker, conceptrev
+#       playmaker, conceptrev, editor
 #     Language is resolved from CLAUDE.md's `**Language:** <lang>` line
 #     (silently defaults to `en`). The emitted path is
 #     ./fusion-workbench/stilwerk/default-voice-<lang>.yaml. If the declared
@@ -110,7 +111,7 @@ case "$AGENT" in
   ontocoder|ontorev)              PATTERNS="ontology normative verb" ;;
   planner)                        PATTERNS="coding ontology" ;;
   investigator)                   PATTERNS="investigator" ;;
-  orchestrator|shaper|taskplanner|reconciler|analyst|consultant|playmaker|conceptrev)
+  orchestrator|shaper|taskplanner|reconciler|analyst|consultant|playmaker|conceptrev|editor)
                                   PATTERNS="" ;;
   *)
     echo "fusion-rules: unknown agent '$AGENT'" >&2
@@ -121,7 +122,7 @@ esac
 # Prose-agent flag — independent of PATTERNS. The eight agents below produce
 # long-form narrative output that the stylometric profile governs.
 case "$AGENT" in
-  orchestrator|consultant|shaper|planner|analyst|investigator|playmaker|conceptrev)
+  orchestrator|consultant|shaper|planner|analyst|investigator|playmaker|conceptrev|editor)
                                   IS_PROSE_AGENT=1 ;;
   *)                              IS_PROSE_AGENT=0 ;;
 esac

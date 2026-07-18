@@ -1,6 +1,6 @@
 # fusion
 
-AI agent orchestration framework for Claude Code. Provides 14 specialized agents with a compliance guard, churn detection, and real-time browser-based monitoring.
+AI agent orchestration framework for Claude Code. Provides 16 specialized agents with a compliance guard, churn detection, and real-time browser-based monitoring.
 
 ## What's Inside
 
@@ -8,7 +8,7 @@ AI agent orchestration framework for Claude Code. Provides 14 specialized agents
 fusion/
 ├── .claude-plugin/
 │   └── plugin.json          # Plugin manifest
-├── agents/                   # 14 specialized agents
+├── agents/                   # 16 specialized agents
 │   ├── orchestrator.md       # Multi-task session coordinator (default agent)
 │   ├── playmaker.md          # Circle portfolio management — ranks anticipated Circles
 │   ├── shaper.md             # Requirements engineering — vague → precise Directive
@@ -18,11 +18,13 @@ fusion/
 │   ├── ontocoder.md          # Structured data executor — YAML, JSON, ontology
 │   ├── coderev.md            # Code reviewer — findings + issue filing
 │   ├── ontorev.md            # Ontology reviewer — findings + issue filing
+│   ├── conceptrev.md         # Design-diagram evaluator — advisory coherence verdict
 │   ├── bugfixer.md           # Diagnostic repair — one bug, one fix, verified
 │   ├── reconciler.md         # Ground-truth reconciliation of tracking files
 │   ├── investigator.md       # Forensic analysis of captured runs
 │   ├── analyst.md            # Document study and problem analysis
-│   └── consultant.md         # On-demand expert consultation
+│   ├── consultant.md         # On-demand expert consultation
+│   └── editor.md             # Produce-only Redakteur — deliverables, decks, translation
 ├── skills/                   # Slash commands
 │   ├── archive/SKILL.md      # /fusion:archive — archive completed/aged workbench files
 │   ├── circle-pop/SKILL.md   # /fusion:circle-pop — restore a stashed Circle, with drift detection

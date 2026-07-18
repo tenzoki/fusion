@@ -16,6 +16,7 @@ const AGENTS = [
   "orchestrator", "coder", "ontocoder", "bugfixer", "coderev",
   "ontorev", "conceptrev", "planner", "shaper", "taskplanner",
   "reconciler", "analyst", "investigator", "consultant", "playmaker",
+  "editor",
 ];
 
 const SKILLS = [
@@ -518,7 +519,7 @@ describe("bin/fusion-paths", () => {
       expect(Object.keys(parse(r.stdout)).sort()).toEqual(["OUT_ISSUE", "WORKBENCH"]);
     });
 
-    it("every emitted key set is complete and self-consistent for all 15 agents", () => {
+    it("every emitted key set is complete and self-consistent for all 16 agents", () => {
       // The positive counterpart: with the guards in place, a clean run proves
       // every key every prompt names is both ordered and valued.
       for (const agent of AGENTS) {

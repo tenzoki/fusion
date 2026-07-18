@@ -140,7 +140,7 @@ describe("context-manifest: HYG-NO-REGRESS — byte-identical when absent", () =
   });
 
   it("preserves the exit-code contract: unknown agent → 2, no arg → 1", () => {
-    expect(run(emptyProject, "editor").status).toBe(2);   // editor is not a known agent yet (Circle C)
+    expect(run(emptyProject, "no-such-agent").status).toBe(2);   // genuinely unknown agent
     expect(run(emptyProject).status).toBe(1);
   });
 });

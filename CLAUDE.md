@@ -6,7 +6,7 @@ This repository is the **source of the fusion Claude Code plugin** (`tenzoki-plu
 
 Plugin published to the `tenzoki-plugins` marketplace (repo: `tenzoki/claude-plugins`). Provides:
 
-- 15 specialized agents — orchestrator (top-level dispatcher) plus coder, ontocoder, coderev, ontorev, conceptrev, planner, shaper, taskplanner, reconciler, analyst, investigator, bugfixer, consultant, playmaker. Three (`reconciler`, `taskplanner`, `planner`) are parameterised by domain (`code | data | strategic | knowledge`) since v1.11.0. `conceptrev` (added v3.24.0) is the design-diagram evaluator — it parses the Mermaid diagrams that planning/analysis agents emit and returns an advisory coherence verdict at the plan/spec gate.
+- 16 specialized agents — orchestrator (top-level dispatcher) plus coder, ontocoder, coderev, ontorev, conceptrev, planner, shaper, taskplanner, reconciler, analyst, investigator, bugfixer, consultant, playmaker, editor. Three (`reconciler`, `taskplanner`, `planner`) are parameterised by domain (`code | data | strategic | knowledge`) since v1.11.0. `conceptrev` (added v3.24.0) is the design-diagram evaluator — it parses the Mermaid diagrams that planning/analysis agents emit and returns an advisory coherence verdict at the plan/spec gate. `editor` (added v5.2.0) is the produce-only Redakteur — it writes, revises, translates (en↔de), and renders customer-ready deliverables (Markdown, branded pptx) to a project-side location; it never reviews, files issues, or dispatches.
 - Compliance guard with churn/escalation tracking (TypeScript hooks, compiled to `hooks/dist/`)
 - Real-time HTML monitor dashboard (`bin/monitor`)
 - Pattern-based rule discovery helper (`bin/fusion-rules`)
@@ -18,7 +18,7 @@ Plugin published to the `tenzoki-plugins` marketplace (repo: `tenzoki/claude-plu
 | Path | Purpose |
 |---|---|
 | `.claude-plugin/plugin.json` | Manifest. **Bump version on every change.** |
-| `agents/*.md` | The 15 agent prompts. Only `orchestrator.md` declares a `tools:` allowlist (sub-agent dispatch + permitted tools); the other 14 inherit tools and model from the parent session. |
+| `agents/*.md` | The 16 agent prompts. Only `orchestrator.md` declares a `tools:` allowlist (sub-agent dispatch + permitted tools); the other 15 inherit tools and model from the parent session. |
 | `hooks/` | TypeScript source + compiled `dist/`. SessionStart, PreToolUse, PostToolUse hooks. Uses `process.cwd()` not `__dirname` for project-local state. |
 | `bin/monitor` | HTML dashboard binary, served by the orchestrator from `fusion-workbench/monitor` (copied at Setup) |
 | `bin/fusion-rules` | Per-agent rule discovery helper (used in every agent's Setup). Takes an optional second arg `fusion-rules <agent> [<topic>]` and reads an optional consuming-project manifest `./rules/context-manifest.yaml` to emit topic- and agent-scoped units (a `path` file or a `skill:<name>` pointer). When the manifest is absent, output is **byte-identical** to before (`HYG-NO-REGRESS`); a malformed manifest fails loudly (exit 3). Topic is derived from the active Circle (slug keywords, or an explicit `Topic:`/`Tags:` record line) unless the CLI arg overrides it. Convention authored in `rules/context-manifest.md` + `rules/context-lean-claude-md.md`. Added v5.x (Circle B). |

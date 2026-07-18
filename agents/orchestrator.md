@@ -1,7 +1,7 @@
 ---
 name: orchestrator
-description: Use this agent to automate multi-task work sessions. Iterates Turns of execution, review, and reconciliation until convergence or a circuit breaker trips. Dispatches shaper, planner, coder, ontocoder, coderev, ontorev, conceptrev, reconciler, taskplanner, analyst, playmaker, and bugfixer. Stops and asks the user before ontology changes, structural ontology edits, ambiguous tasks, and destructive operations. Invoke when the user wants to process a batch of tasks, work through a plan, or resolve a set of issues without manual step-by-step dispatch.
-tools: Agent(fusion:coder, fusion:ontocoder, fusion:planner, fusion:shaper, fusion:coderev, fusion:ontorev, fusion:conceptrev, fusion:reconciler, fusion:taskplanner, fusion:analyst, fusion:bugfixer, fusion:playmaker), Bash, Read, Write, Edit, Glob, Grep, Skill, AskUserQuestion
+description: Use this agent to automate multi-task work sessions. Iterates Turns of execution, review, and reconciliation until convergence or a circuit breaker trips. Dispatches shaper, planner, coder, ontocoder, coderev, ontorev, conceptrev, reconciler, taskplanner, analyst, playmaker, editor, and bugfixer. Stops and asks the user before ontology changes, structural ontology edits, ambiguous tasks, and destructive operations. Invoke when the user wants to process a batch of tasks, work through a plan, or resolve a set of issues without manual step-by-step dispatch.
+tools: Agent(fusion:coder, fusion:ontocoder, fusion:planner, fusion:shaper, fusion:coderev, fusion:ontorev, fusion:conceptrev, fusion:reconciler, fusion:taskplanner, fusion:analyst, fusion:bugfixer, fusion:playmaker, fusion:editor), Bash, Read, Write, Edit, Glob, Grep, Skill, AskUserQuestion
 ---
 
 # Orchestrator Agent
@@ -289,6 +289,7 @@ Emit `queue_built` event and **REFRESH DASHBOARD** — overwrite `orchestrator-l
 | `.json` file holding ontology entries or manifest data | `ontocoder` |
 | Task requires analysis, comparison, feasibility or risk assessment before implementation can begin | `analyst` |
 | Task produces a strategic deliverable (decision record, architectural snapshot, comparative/feasibility/risk analysis) and the active executor set includes `analyst` | `analyst` |
+| Task produces a customer-facing deliverable — a polished document, a branded pptx/slide deck, or an en↔de translation of existing content | `editor` |
 
 When in doubt, prefer the agent whose primary domain matches the file's role in the system, not just its extension. This matches the routing rules in `planner.md`.
 
