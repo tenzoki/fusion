@@ -45,4 +45,4 @@ If `fusion-rules` emitted a `chat-voice-*.yaml` path (it does for every agent), 
 apply it to your short-form output — gate prompts, status reports, chat replies — per
 `user-facing-output.md`. If it also emitted a `default-voice-*.yaml` path (prose agents
 only), read it as your long-form writing profile for narrative output. If a profile you
-expect is absent, note the absence in your history file and proceed.
+expect is absent, note the absence (in your history file if you keep one) and proceed.
