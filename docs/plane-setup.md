@@ -95,6 +95,60 @@ at the state-change points it already owns (Circle activation, per-Turn when iss
 or decisions changed, and Phase 4 closure); you never call `push` by hand for the
 mirror to work.
 
+## First run
+
+### Getting the code
+
+The bridge ships on `main`, so a plain update picks it up:
+
+```bash
+fusion --update
+```
+
+(The HTTPS installer fetches `heads/main`.) Then run `/fusion:setup` once in the
+consuming project — it copies `plane.config.yaml` into the workbench. Setup is
+idempotent and never clobbers a config you have already filled in, so re-running it
+on an existing workbench is safe.
+
+### Push on a throwaway Circle first
+
+Before you rely on the mirror, activate or pick a disposable Circle and let one push
+land. Then look at the Plane board and check the issue appeared, carries the right
+kind label, and sits in the state matching the fusion marker.
+
+The reason is narrow and worth knowing: `doctor` verifies the key, the config, and
+`states/` reachability — it does **not** verify the issue create/update body. That
+body uses Plane API v1 conventional fields (`name`, `description_html`, `state`,
+`parent`). They are standard, but they have not been confirmed against every
+self-hosted build. If a field name is wrong on your instance, the symptom is a
+missing or malformed issue body — and `push --rebuild-map` could not recover the map
+afterwards, because it rebuilds by reading the natural key embedded in the
+description. So the first real push is the live check that `doctor` can't do for you.
+
+The sub-issue `parent` path is already safe either way: if an instance rejects or
+ignores `parent`, the helper falls back to the verified `issues/{id}/links/` endpoint,
+so the child still gets attached.
+
+### Seeding is safe for your existing stories
+
+When a Circle was seeded from a Plane issue via `/fusion:seed-from-plane`, the mirror
+writes **state only** back to that issue. It never rewrites the title or the
+description — your original story text is preserved as written. Issues that fusion
+itself created keep the full mirrored body.
+
+This is not a convention you have to remember: an `origin` field in `.plane-map.json`
+records who authored each issue, `push` branches on it, and tests cover the
+distinction. `push --plan` also shows the write scope per issue (`state-only` vs
+`full`) if you want to see it before anything goes over the wire.
+
+### What "it worked" looks like
+
+- `bin/fusion-plane doctor` reports green on all three checks.
+- One push produces the expected Plane issues, correctly labelled and stated.
+- A second push of the same Circle creates nothing new — it updates in place.
+- A push while Plane is unreachable writes a `.plane-outbox.jsonl` line and reports
+  `deferred`, without blocking the Turn.
+
 ## Runtime files (no action needed)
 
 `fusion-plane` writes two files at the workbench root, both gitignored with the rest
