@@ -19,7 +19,11 @@
 #                     reconstructs .plane-map.json from Plane before reconcile.
 #   plan  --circle <dir>|--all
 #                     Alias for `push --plan ...` (dry-run; emits JSON, no curl).
-#   seed  <seq>       STUB — implemented in a later step (bounded seeding read).
+#   seed  <seq>       Bounded one-shot read: resolve a Plane sequence_id, GET the
+#                     issue's title+description once, emit them as JSON for the
+#                     seeding skill. `--record-origin <circle-dir> <uuid>` writes
+#                     the origin UUID under the new Circle's key (Phase B, no net).
+#                     `--plan --fixture <json>` is the dry-run test seam.
 #   map   [<key>]     Dump .plane-map.json, or inspect one natural key.
 #   states            Resolve and print canonical → instance → UUID state map.
 #   doctor            Report key presence, config validity, states/ reachability.
@@ -830,10 +834,162 @@ cmd_doctor() {
   return "$rc"
 }
 
+# ── seed: the bounded one-shot seeding read (agenda item 4 / plan Step 5) ─────
+# Two phases, cleanly split so the map key can be the not-yet-created Circle's
+# stable directory name:
+#
+#   Phase A  seed <seq>                    THE bounded read. Resolve
+#            sequence_id→UUID (Martin's verified GET issues/?per_page=100 |
+#            jq 'select(.sequence_id==$s)' lookup) and GET the issue's title +
+#            description ONCE. Emit the fetched text + origin UUID as JSON on
+#            stdout for the skill to consume. Writes NOTHING to the map — the
+#            Circle directory (the natural key) does not exist yet.
+#            (Reuse: MARTIN.md /new-fe-feature "read-once-then-materialise":
+#            resolve the ticket by sequence_id, pull its description as the
+#            brief, then hand off — the read has happened, files take over.)
+#
+#   Phase B  seed --record-origin <circle-dir> <origin-plane-id>
+#            Pure map write, no network. The SKILL calls this AFTER shaper has
+#            created the Circle and returned its directory name, recording the
+#            origin Plane UUID under that stable natural key so the seeded
+#            Circle's future push --circle lands on the SAME origin story
+#            (closing Martin's round-trip). Map stays helper-owned; last_state
+#            is left empty so the first real push PATCHes the origin to the
+#            marker-derived state rather than assuming it is already synced.
+#
+# Dry-run seam (Step 8): `seed --plan --fixture <captured issue JSON>` (or
+# FUSION_PLANE_SEED_FIXTURE / FUSION_PLANE_DRYRUN=1) runs the identical
+# lookup+extract jq against a captured `GET issues/` response and emits the same
+# result JSON — executing NO curl. Same seam shape as `push --plan` (files/
+# fixtures in, JSON op out, no network).
+#
+# C4 never-silent fallback: absent key / Plane-down / transport error prints the
+# issue's board URL and the exact fetch command, asks the user to paste the
+# description, and returns EXIT_DEFERRED (non-crash). The skill relays it and
+# proceeds into the same Circle-creation path with the pasted text.
+
+# seed_defer_manual <seq> <reason> — C4 fallback: emit the manual-paste hint
+# (human-readable to stderr, machine JSON to stdout) and let the caller defer.
+seed_defer_manual() {
+  local seq="$1" reason="$2" board_url fetch_cmd
+  board_url="$(printf '%s/%s/projects/%s/issues' "${BASE_URL%/}" "$WORKSPACE_SLUG" "$PROJECT_ID")"
+  # The exact command the user runs in their OWN interactive zsh (where
+  # $PLANE_API_KEY lives) to read the story and paste its description.
+  fetch_cmd="zsh -ic 'curl -s -H \"X-API-Key: \$PLANE_API_KEY\" \"$BASE/issues/?per_page=100\"' | jq '.results[] | select(.sequence_id==$seq)'"
+  info "seed deferred ($reason) — never silent. Fetch story #$seq manually and paste its description:"
+  info "  Plane board: $board_url"
+  info "  Fetch cmd:   $fetch_cmd"
+  jq -cn --argjson s "$seq" --arg r "$reason" --arg b "$board_url" --arg f "$fetch_cmd" \
+    '{op:"seed", sequence_id:$s, status:"deferred", reason:$r, board_url:$b, fetch_cmd:$f,
+      origin_plane_id:null, title:null, description:null}'
+}
+
 cmd_seed() {
-  # STUB — the bounded one-shot seeding read is implemented in a later step.
-  err "seed: not yet implemented (bounded seeding read — see plan Step 5)."
-  return "$EXIT_USAGE"
+  local seq="" fixture="" want_plan=0 mode="read" record_dir="" record_pid=""
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --plan)          want_plan=1 ;;
+      --fixture)       shift; fixture="${1:-}"; [ -n "$fixture" ] || { err "seed: --fixture needs a path"; return "$EXIT_USAGE"; } ;;
+      --fixture=*)     fixture="${1#--fixture=}" ;;
+      --record-origin) mode="record" ;;
+      -*)              err "seed: unknown flag '$1'"; return "$EXIT_USAGE" ;;
+      *)
+        if [ "$mode" = "record" ]; then
+          if   [ -z "$record_dir" ]; then record_dir="$1"
+          elif [ -z "$record_pid" ]; then record_pid="$1"
+          else err "seed --record-origin takes exactly <circle-dir> <origin-plane-id>"; return "$EXIT_USAGE"
+          fi
+        elif [ -z "$seq" ]; then
+          seq="$1"
+        else
+          err "seed: unexpected extra argument '$1'"; return "$EXIT_USAGE"
+        fi
+        ;;
+    esac
+    shift
+  done
+  [ "${FUSION_PLANE_DRYRUN:-0}" = "1" ] && want_plan=1
+  [ -z "$fixture" ] && [ -n "${FUSION_PLANE_SEED_FIXTURE:-}" ] && fixture="$FUSION_PLANE_SEED_FIXTURE"
+
+  resolve_workbench || return "$EXIT_CONFIG"
+
+  # ── Phase B: record the origin UUID under the now-known Circle key ──────────
+  if [ "$mode" = "record" ]; then
+    [ -n "$record_dir" ] && [ -n "$record_pid" ] || {
+      err "seed --record-origin needs <circle-dir> <origin-plane-id>"; return "$EXIT_USAGE"; }
+    map_ensure
+    # kind=circle; last_state empty on purpose (see header) — the next
+    # `push --circle <dir>` reconciles the origin issue to the marker state.
+    map_set "$record_dir" "$record_pid" circle ""
+    info "recorded origin: $record_dir → $record_pid (kind=circle). Next 'push --circle $record_dir' syncs its state."
+    printf 'STATUS: origin recorded (%s → %s)\n' "$record_dir" "$record_pid"
+    return "$EXIT_OK"
+  fi
+
+  # ── Phase A: the bounded read ───────────────────────────────────────────────
+  [ -n "$seq" ] || { err "seed: need a <seq> (Plane sequence_id)"; return "$EXIT_USAGE"; }
+  case "$seq" in ''|*[!0-9]*) err "seed: <seq> must be a numeric Plane sequence_id"; return "$EXIT_USAGE" ;; esac
+
+  cfg_load || return "$EXIT_CONFIG"
+  build_base
+
+  local issues_json=""
+  if [ -n "$fixture" ]; then
+    # Dry-run / fixture path: no network, config values only format the URL.
+    [ -f "$fixture" ] || { err "seed: fixture not found: $fixture"; return "$EXIT_CONFIG"; }
+    issues_json="$(cat "$fixture")"
+  else
+    if [ "$want_plan" -eq 1 ]; then
+      err "seed --plan requires --fixture <captured issue JSON> (dry-run performs no network read)."
+      return "$EXIT_USAGE"
+    fi
+    # Live read: needs valid config + a key. Absent key / Plane-down → defer.
+    config_valid || return "$EXIT_CONFIG"
+    if ! plane_key_present; then
+      seed_defer_manual "$seq" "PLANE_API_KEY absent"
+      return "$EXIT_DEFERRED"
+    fi
+    if ! plane_curl GET "$BASE/issues/?per_page=100"; then
+      seed_defer_manual "$seq" "Plane unreachable (curl rc $PLANE_CURL_RC)"
+      return "$EXIT_DEFERRED"
+    fi
+    case "$PLANE_HTTP_CODE" in
+      2*) issues_json="$PLANE_BODY" ;;
+      *)  seed_defer_manual "$seq" "HTTP $PLANE_HTTP_CODE"; return "$EXIT_DEFERRED" ;;
+    esac
+  fi
+
+  # sequence_id → issue (Martin's verified lookup; numeric compare via --argjson).
+  local issue origin_id title desc url
+  issue="$(printf '%s' "$issues_json" \
+    | jq -c --argjson s "$seq" '(.results // .) | map(select(.sequence_id==$s)) | (.[0] // empty)' 2>/dev/null || true)"
+  if [ -z "$issue" ] || [ "$issue" = "null" ]; then
+    err "seed: no issue with sequence_id=$seq in the fetched set (check the story number)."
+    return "$EXIT_USAGE"
+  fi
+
+  origin_id="$(printf '%s' "$issue" | jq -r '.id // empty')"
+  title="$(printf '%s' "$issue" | jq -r '.name // empty')"
+  # Prefer the plain-text description; fall back to the HTML field, then empty.
+  desc="$(printf '%s' "$issue" | jq -r '(.description_stripped // .description_html // "")')"
+  url="$(issue_web_url "$origin_id")"
+
+  if [ -z "$origin_id" ]; then
+    err "seed: matched issue has no id — cannot bind the round-trip."
+    return "$EXIT_CONFIG"
+  fi
+
+  # Emit the fetched brief + origin UUID for the skill. The map entry is NOT
+  # written here (the Circle key is unknown until shaper creates it) — the skill
+  # calls `seed --record-origin <circle-dir> <origin_id>` afterwards (Phase B).
+  jq -cn \
+    --argjson s "$seq" --arg id "$origin_id" --arg url "$url" \
+    --arg t "$title" --arg d "$desc" \
+    --argjson dry "$( [ -n "$fixture" ] && echo true || echo false )" \
+    --arg rec "seed --record-origin <circle-dir> $origin_id" \
+    '{op:"seed", status:"ok", dry_run:$dry, sequence_id:$s, origin_plane_id:$id,
+      issue_url:$url, title:$t, description:$d, record_origin_cmd:$rec}'
+  return "$EXIT_OK"
 }
 
 usage() {
@@ -847,15 +1003,22 @@ Subcommands:
                         --rebuild-map  rebuild .plane-map.json from Plane first.
   plan --circle <dir>|--all
                         Dry-run alias for `push --plan`.
-  seed <seq>            STUB (bounded seeding read — later step).
+  seed <seq>            Bounded one-shot read: resolve sequence_id, GET the
+                        issue title+description once, emit JSON for the skill.
+    seed --record-origin <circle-dir> <origin-plane-id>
+                        Phase B: record the origin UUID under the new Circle's
+                        key (no network) — closes the seed→push round-trip.
+    seed --plan --fixture <captured issue JSON>
+                        Dry-run seam: lookup+extract against a fixture, no curl.
   map [<natural-key>]   Dump .plane-map.json, or inspect one entry.
   states                Resolve+print canonical → instance → UUID states.
   doctor                Report key presence, config validity, states/ reach.
 
 Env:
   PLANE_API_KEY            (in ~/.zshrc) the only place the key ever lives.
-  FUSION_PLANE_DRYRUN=1    force --plan for any push.
+  FUSION_PLANE_DRYRUN=1    force --plan for any push / seed.
   FUSION_PLANE_WORKBENCH   override workbench dir (test seam).
+  FUSION_PLANE_SEED_FIXTURE  captured `GET issues/` JSON for `seed --plan` (test seam).
 EOF
 }
 
