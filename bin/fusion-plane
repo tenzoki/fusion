@@ -51,7 +51,13 @@
 #
 # Runtime state (workbench-root, gitignored with the rest of fusion-workbench/):
 #   plane.config.yaml   consumer-filled config (base_url, slugs, state names)
-#   .plane-map.json     natural key → { plane_id, kind, last_state, last_pushed }
+#   .plane-map.json     natural key → { plane_id, kind, last_state, last_pushed,
+#                       origin } where origin is "fusion" (fusion POSTed the
+#                       issue and owns its body → full mirror on push) or "seed"
+#                       (the issue is a human's pre-existing Plane story, bound
+#                       via `seed --record-origin` → push writes STATE ONLY, never
+#                       the title/description). Absent origin == "fusion" (legacy
+#                       maps keep their existing behaviour).
 #   .plane-outbox.jsonl deferred-transition notes { ts, natural_key, ... }
 #
 # Test seam: FUSION_PLANE_WORKBENCH=<dir> overrides workbench resolution so the
@@ -305,13 +311,33 @@ artifact_title() {
 map_ensure() { [ -f "$MAP" ] || printf '{}\n' > "$MAP"; }
 map_get_id()    { [ -f "$MAP" ] || { printf ''; return; }; jq -r --arg k "$1" '.[$k].plane_id  // empty' "$MAP"; }
 map_get_state() { [ -f "$MAP" ] || { printf ''; return; }; jq -r --arg k "$1" '.[$k].last_state // empty' "$MAP"; }
+
+# map_get_origin <natural-key> — WHO AUTHORED the Plane issue behind this key:
+#   "seed"   the issue pre-existed in Plane (a human's story); fusion bound it to
+#            a Circle via `seed --record-origin`. fusion must NEVER overwrite its
+#            title/description — pushes write state only.
+#   "fusion" fusion POSTed the issue itself and owns its body — full mirroring.
+# BACKWARD COMPATIBILITY: an entry written before this field existed (and any
+# entry from `push --rebuild-map`) has no `origin` and defaults to "fusion" —
+# exactly the behaviour those maps already had.
+map_get_origin() {
+  [ -f "$MAP" ] || { printf 'fusion'; return; }
+  jq -r --arg k "$1" '.[$k].origin // "fusion"' "$MAP"
+}
+
 map_set() {
-  # map_set <natural-key> <plane_id> <kind> <last_state>
-  local nk="$1" pid="$2" kind="$3" st="$4" tmp
+  # map_set <natural-key> <plane_id> <kind> <last_state> [<origin>]
+  # <origin> omitted => PRESERVE the entry's existing origin (defaulting to
+  # "fusion" for a new/legacy entry). A push must never silently relabel a
+  # seed-origin entry as fusion-owned — that would re-enable the destructive
+  # full-body write on the next run.
+  local nk="$1" pid="$2" kind="$3" st="$4" origin="${5:-}" tmp
   map_ensure
+  [ -n "$origin" ] || origin="$(map_get_origin "$nk")"
   tmp="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-map.XXXXXX")"
-  jq --arg k "$nk" --arg id "$pid" --arg kind "$kind" --arg st "$st" --arg t "$(now_utc)" \
-     '.[$k] = {plane_id:$id, kind:$kind, last_state:$st, last_pushed:$t}' "$MAP" > "$tmp" \
+  jq --arg k "$nk" --arg id "$pid" --arg kind "$kind" --arg st "$st" \
+     --arg o "$origin" --arg t "$(now_utc)" \
+     '.[$k] = {plane_id:$id, kind:$kind, last_state:$st, last_pushed:$t, origin:$o}' "$MAP" > "$tmp" \
      && mv "$tmp" "$MAP"
 }
 
@@ -353,15 +379,23 @@ RATE_LIMITED=0
 # op_json — build one plan op object (deterministic: no timestamps, state by
 # NAME not UUID, so --plan needs no network).
 op_json() {
-  # op_json <op> <kind> <nk> <title> <marker> <canonical> <instance> <plane_id> <parent_key> <relpath>
+  # op_json <op> <kind> <nk> <title> <marker> <canonical> <instance> <plane_id> <parent_key> <relpath> <write_scope>
+  # write_scope makes the seed-origin protection VISIBLE in the dry run:
+  #   "full"       fusion owns the issue → name + description_html + state.
+  #   "state-only" seed-origin issue (a human's story) → state ONLY; the `writes`
+  #                list is the exact set of body fields the PATCH will carry.
   jq -cn \
     --arg op "$1" --arg kind "$2" --arg nk "$3" --arg title "$4" --arg marker "$5" \
     --arg state "$6" --arg state_instance "$7" --arg pid "$8" --arg pk "$9" --arg src "${10}" \
+    --arg scope "${11}" \
     '{op:$op, kind:$kind, natural_key:$nk, title:$title, marker:$marker,
       state:$state, state_instance:$state_instance,
       plane_id:(if $pid=="" then null else $pid end),
       parent_key:(if $pk=="" then null else $pk end),
       attach:(if $pk=="" then null else "sub-issue" end),
+      write_scope:$scope,
+      writes:(if $scope=="state-only" then ["state"]
+              else ["name","description_html","state"] end),
       embed_key:$nk, source:$src}'
 }
 
@@ -403,6 +437,7 @@ process_artifact() {
   # process_artifact <kind> <file> <natural-key> <parent-key>
   local kind="$1" file="$2" nk="$3" parent_key="$4"
   local base marker canonical inst title relpath existing_id existing_state op
+  local origin write_scope
   base="$(basename "$file")"
   marker="$(marker_from_filename "$base")"
   if [ -z "$marker" ]; then
@@ -428,11 +463,21 @@ process_artifact() {
     op="noop"
   fi
 
+  # ── THE seed-origin branch — one decision, one place ────────────────────────
+  # A seed-origin issue is a HUMAN's Plane story that fusion merely bound to a
+  # Circle. Mirroring fusion's body onto it would destroy the story text, so the
+  # push writes state and nothing else. Everything fusion authored itself keeps
+  # the full-body mirror. Decided in
+  # circles/260719-1536-plane-mirror-integration/decisions/
+  # 260719-2313_o_round-trip-write-overwrites-origin-story-description.md (Option 1).
+  origin="$(map_get_origin "$nk")"
+  if [ "$origin" = "seed" ]; then write_scope="state-only"; else write_scope="full"; fi
+
   if [ "$DRYRUN" -eq 1 ]; then
     # Dry-run: emit only actionable ops (create/update); a fully reconciled
     # Circle yields an empty ops list — the idempotency property, observable.
     if [ "$op" != "noop" ]; then
-      OPS+=("$(op_json "$op" "$kind" "$nk" "$title" "$marker" "$canonical" "$inst" "$existing_id" "$parent_key" "$relpath")")
+      OPS+=("$(op_json "$op" "$kind" "$nk" "$title" "$marker" "$canonical" "$inst" "$existing_id" "$parent_key" "$relpath" "$write_scope")")
     fi
     return 0
   fi
@@ -460,7 +505,7 @@ process_artifact() {
   # Build write body. Embed the natural key in the description so a lost map can
   # be rebuilt (push --rebuild-map). Fold in `parent` (DR-1 default) when a
   # parent exists.
-  body="$(build_write_body "$kind" "$title" "$nk" "$relpath" "$uuid" "$parent_id")"
+  body="$(build_write_body "$kind" "$title" "$nk" "$relpath" "$uuid" "$parent_id" "$write_scope")"
 
   if [ "$op" = "create" ]; then
     if ! plane_curl POST "$BASE/issues/" "$body"; then
@@ -486,9 +531,11 @@ process_artifact() {
             "Create the Plane issue for $nk manually and set state \"$canonical\"."
           return 0
         fi
-        map_set "$nk" "$new_id" "$kind" "$canonical"
+        # fusion POSTed this issue, so fusion owns its body — record that.
+        map_set "$nk" "$new_id" "$kind" "$canonical" fusion
         existing_id="$new_id"
       else
+        # Update: origin omitted => preserved (a seed entry stays seed).
         map_set "$nk" "$existing_id" "$kind" "$canonical"
       fi
       # DR-1 attach — single call site.
@@ -511,10 +558,21 @@ process_artifact() {
 }
 
 # build_write_body — the create/PATCH JSON. state UUID is resolved (live only).
+# Two shapes, selected by <write_scope> (computed once in process_artifact):
+#   state-only  seed-origin issue — PATCH the state and NOTHING else. No name, no
+#               description_html, no parent: the human's story text is untouched.
+#   full        fusion-owned issue — the mirror body (title + fusion-key-bearing
+#               description + state, plus `parent` when it has one).
 build_write_body() {
-  # build_write_body <kind> <title> <nk> <relpath> <state_uuid> <parent_id>
-  local kind="$1" title="$2" nk="$3" relpath="$4" uuid="$5" parent_id="$6"
+  # build_write_body <kind> <title> <nk> <relpath> <state_uuid> <parent_id> <write_scope>
+  local kind="$1" title="$2" nk="$3" relpath="$4" uuid="$5" parent_id="$6" scope="${7:-full}"
   local desc
+
+  if [ "$scope" = "state-only" ]; then
+    jq -cn --arg state "$uuid" '{state:$state}'
+    return 0
+  fi
+
   desc="$(printf 'Mirrored fusion %s.\n\nfusion-key: %s\nsource: %s' "$kind" "$nk" "$relpath")"
   jq -cn --arg name "$title" --arg desc "$desc" --arg state "$uuid" --arg parent "$parent_id" \
     '{name:$name, description_html:("<p>"+$desc+"</p>"), state:$state}
@@ -856,6 +914,9 @@ cmd_doctor() {
 #            (closing Martin's round-trip). Map stays helper-owned; last_state
 #            is left empty so the first real push PATCHes the origin to the
 #            marker-derived state rather than assuming it is already synced.
+#            The entry is stamped origin="seed", which makes every later push
+#            against it STATE-ONLY — the human wrote that story's description and
+#            fusion must not overwrite it with its own mirror body.
 #
 # Dry-run seam (Step 8): `seed --plan --fixture <captured issue JSON>` (or
 # FUSION_PLANE_SEED_FIXTURE / FUSION_PLANE_DRYRUN=1) runs the identical
@@ -920,8 +981,11 @@ cmd_seed() {
     map_ensure
     # kind=circle; last_state empty on purpose (see header) — the next
     # `push --circle <dir>` reconciles the origin issue to the marker state.
-    map_set "$record_dir" "$record_pid" circle ""
-    info "recorded origin: $record_dir → $record_pid (kind=circle). Next 'push --circle $record_dir' syncs its state."
+    # origin=seed is the DURABLE discriminator: this issue is a human's story,
+    # so every future push writes its state only and never its body. (last_state
+    # ""  is not a substitute — it disappears after the first push.)
+    map_set "$record_dir" "$record_pid" circle "" seed
+    info "recorded origin: $record_dir → $record_pid (kind=circle, origin=seed — pushes write state only). Next 'push --circle $record_dir' syncs its state."
     printf 'STATUS: origin recorded (%s → %s)\n' "$record_dir" "$record_pid"
     return "$EXIT_OK"
   fi

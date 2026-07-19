@@ -294,6 +294,101 @@ describe("fusion-plane seed --plan: bounded extraction", () => {
 });
 
 // ===========================================================================
+// 3b. Round-trip write safety — a seed-origin story's body is never overwritten
+//     (decision 260719-2313 …round-trip-write-overwrites-origin-story-description,
+//     Option 1: push writes STATE ONLY for seed-origin issues).
+//
+//     The map's `origin` field is the durable discriminator: "seed" (the issue
+//     is a human's pre-existing Plane story, bound via `seed --record-origin`)
+//     vs "fusion" (fusion POSTed it and owns its body). `last_state: ""` is NOT
+//     a discriminator — it disappears after the first push, which is exactly why
+//     the explicit field exists.
+// ===========================================================================
+describe("fusion-plane push --plan: seed-origin write safety", () => {
+  /** A workbench whose map binds the demo Circle to `planeId` with `origin`. */
+  function workbenchWithCircleEntry(origin: "seed" | "fusion" | null): string {
+    const wb = freshWorkbench();
+    const entry: Record<string, unknown> = {
+      plane_id: "origin-uuid-0042",
+      kind: "circle",
+      // Stale state so the Circle (_t_ → In Progress) produces an actionable
+      // update op rather than a noop — the op is what we assert on.
+      last_state: "Backlog",
+      last_pushed: "2026-07-19T00:00:00Z",
+    };
+    if (origin !== null) entry.origin = origin;
+    writeFileSync(join(wb, ".plane-map.json"), JSON.stringify({ [CIRCLE]: entry }));
+    return wb;
+  }
+
+  it("a seed-origin artifact plans a state-only write (no title, no description)", () => {
+    const wb = workbenchWithCircleEntry("seed");
+    const { ops } = plan(run(wb, "push", "--circle", CIRCLE, "--plan").stdout);
+    const op = opFor(ops, CIRCLE);
+    expect(op.op).toBe("update");
+    expect(op.write_scope, "a human's story must not get fusion's mirror body").toBe("state-only");
+    expect(op.writes).toEqual(["state"]);
+    // The destructive fields must be absent from the planned PATCH body.
+    expect(op.writes).not.toContain("description_html");
+    expect(op.writes).not.toContain("name");
+    // State still syncs — that is the whole point of the round-trip push.
+    expect(op.state).toBe("In Progress");
+    expect(op.plane_id).toBe("origin-uuid-0042");
+  });
+
+  it("a fusion-owned artifact keeps the full mirror body", () => {
+    const wb = workbenchWithCircleEntry("fusion");
+    const { ops } = plan(run(wb, "push", "--circle", CIRCLE, "--plan").stdout);
+    const op = opFor(ops, CIRCLE);
+    expect(op.write_scope).toBe("full");
+    expect(op.writes).toEqual(["name", "description_html", "state"]);
+  });
+
+  it("BACKWARD COMPAT: an entry with no `origin` field behaves as fusion-owned", () => {
+    // Every map written before this field existed (and every entry produced by
+    // `push --rebuild-map`) lacks `origin`. Those maps must keep working exactly
+    // as they did — full-body mirroring, unchanged.
+    const wb = workbenchWithCircleEntry(null);
+    const { ops } = plan(run(wb, "push", "--circle", CIRCLE, "--plan").stdout);
+    const op = opFor(ops, CIRCLE);
+    expect(op.write_scope).toBe("full");
+    expect(op.writes).toEqual(["name", "description_html", "state"]);
+  });
+
+  it("a fresh create is full-scope — fusion authors the issue it POSTs", () => {
+    const { ops } = plan(run(freshWorkbench(), "push", "--all", "--plan").stdout);
+    expect(ops.every((o) => o.op === "create")).toBe(true);
+    expect(ops.every((o) => o.write_scope === "full")).toBe(true);
+  });
+
+  it("`seed --record-origin` stamps origin=seed on the map entry it writes", () => {
+    // The write-safety branch is only as good as the flag that drives it: the
+    // Phase B map write is where "this is a human's story" becomes durable.
+    const wb = freshWorkbench();
+    const newCircle = "260719-9999-seeded-circle";
+    expect(run(wb, "seed", "--record-origin", newCircle, "origin-uuid-0042").status).toBe(0);
+    const entry = JSON.parse(run(wb, "map", newCircle).stdout);
+    expect(entry).toMatchObject({ plane_id: "origin-uuid-0042", kind: "circle", origin: "seed" });
+  });
+
+  it("the seed flag survives a state sync — it is not consumed by the first push", () => {
+    // The regression this guards: if a push relabelled the entry fusion-owned
+    // (or if `last_state: ""` were treated as the discriminator), the SECOND
+    // push would happily overwrite the human's description. Re-planning after a
+    // simulated state sync must still be state-only.
+    const wb = freshWorkbench();
+    run(wb, "seed", "--record-origin", CIRCLE, "origin-uuid-0042");
+    const mapPath = join(wb, ".plane-map.json");
+    const map = JSON.parse(readFileSync(mapPath, "utf-8"));
+    // Simulate what a completed push records: a real last_state, origin intact.
+    map[CIRCLE].last_state = "Backlog";
+    writeFileSync(mapPath, JSON.stringify(map));
+    const { ops } = plan(run(wb, "push", "--circle", CIRCLE, "--plan").stdout);
+    expect(opFor(ops, CIRCLE).write_scope).toBe("state-only");
+  });
+});
+
+// ===========================================================================
 // 4. Offline / C4 — never-silent, outbox line, deferred status, no crash
 // ===========================================================================
 describe("fusion-plane push (live): offline C4 doctrine", () => {
