@@ -52,7 +52,7 @@ If the dispatch prompt's first non-empty content line is `**Executors:** <comma-
 
 Read the `*_o_*.md` and `*_a_*.md` records under every directory in `$SCAN_DECISIONS`; treat as zero open decisions if none exist. These are inputs to planning:
 
-- A decision marker `_o_` (open question) signals a user-input gate the planner cannot resolve — surface it in the plan's "Open Questions" section, or stop and ask if the question blocks all planning.
+- A decision marker `_o_` (open question) signals a user-input gate the planner cannot resolve — surface it in the plan's "Open Questions" section, or, if the question blocks all planning, raise it through the channel in `## Tool Discipline` (interactive `AskUserQuestion` when run top-level, a returned question to the orchestrator when dispatched) and stop.
 - A decision marker `_a_` (answered) means the answer is recorded but implementation is unrealised — a planner step may be needed to realise it (which then transitions the decision to `_i_` after the executor commits). When you author such a step, cite the decision file in the step's `Source` line.
 - Decision markers `_i_`, `_d_`, `_s_` are terminal — skip them.
 

@@ -97,23 +97,13 @@ Read `fusion-workbench/agentstate.yaml`. This is the FIRST thing you do after th
 
 Remaining setup (after step 1 is resolved):
 
-2. **Rules and paths check.**
+2. **Rules and paths.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" orchestrator` and `"$FUSION_PLUGIN_ROOT/bin/fusion-paths" orchestrator`. Read every path `fusion-rules` emits, and follow `rules/agent-setup.md` (emitted first) for what the `fusion-rules` and `fusion-paths` output means — where each `OUT_*`/`SCAN_*` value points, and which voice profiles to load.
 
-   ```bash
-   "$FUSION_PLUGIN_ROOT/bin/fusion-rules" orchestrator
-   "$FUSION_PLUGIN_ROOT/bin/fusion-paths" orchestrator
-   ```
+   Orchestrator-specific additions to that shared contract:
 
-   Read every path `fusion-rules` emits. The helper emits `fusion-workbench-conventions.md` (always) plus pattern-matched rules from `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped) and `./rules/` (fusion-agent-specific) and `.claude/rules/` (project-wide). Sub-agents you dispatch run their own rules check for their domain — you only need workbench conventions here. If the helper emits a `./fusion-workbench/stilwerk/chat-voice-*.yaml` path, read it and apply it to your short-form output (gate prompts, `AskUserQuestion` text, status reports, chat replies) per `rules/user-facing-output.md`. If it emits a `./fusion-workbench/stilwerk/default-voice-*.yaml` path, read it and treat it as the writing profile for the long-form prose outputs listed in `## Output Style`.
-
-   `fusion-paths` resolves where this session writes and searches, and prints `KEY=value` lines (`OUT_HISTORY`, `OUT_ISSUE`, `OUT_DECISION`, `OUT_CIRCLE`, `SCAN_ISSUES`, `SCAN_PLANS`, `SCAN_DECISIONS`, `SCAN_HISTORY`, `SCAN_REVIEWS`, `SCAN_ANALYSES`, `SCAN_CIRCLES`, `PORTFOLIO`, `TASKLIST`, plus `WORKBENCH` and — only when a Circle is active — `CIRCLE`). Values are workbench-relative except `WORKBENCH`; `SCAN_*` values are space-separated and may name **two** directories. Hold these values for the rest of the session and use them wherever a later step names a `$OUT_*` or `$SCAN_*` value — they are the only correct answer to "where does this go". Never guess a path when the resolver fails; stop and report.
-
-   On a non-zero exit, read the code — it says whose fault it is (full table in `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes):
-
-   - **Exit 3** — the workbench state is inconsistent: `.active-circle` is orphaned or corrupt. Tell the user to fix or delete the pointer before continuing.
-   - **Exit 4** — an internal error in `fusion-paths`. The user's workbench is fine; do **not** send them to check `.active-circle`. Report it as a fusion bug and file an issue at `$OUT_ISSUE`.
-
-   Note the root-anchored surfaces the resolver deliberately does **not** cover: `fusion-workbench/agentstate.yaml`, `orchestrator-live.md`, `orchestrator-events.jsonl`, `.guard-state/`, `.commit-lock/` and `.session-marker` stay at the workbench root at fixed paths, because the hooks, the monitor and the `bin/` helpers read them there and none of them has a fallback. Keep naming those literally.
+   - **Sub-agents run their own rules check.** Sub-agents you dispatch run their own rules check for their domain — you only need workbench conventions here.
+   - **On exit 4**, beyond what `agent-setup.md` says (an internal `fusion-paths` bug; the user's workbench is fine, so do **not** send them to check `.active-circle`), report it as a fusion bug and file an issue at `$OUT_ISSUE`.
+   - **Root-anchored surfaces the resolver does not cover.** `fusion-workbench/agentstate.yaml`, `orchestrator-live.md`, `orchestrator-events.jsonl`, `.guard-state/`, `.commit-lock/` and `.session-marker` stay at the workbench root at fixed paths, because the hooks, the monitor and the `bin/` helpers read them there and none of them has a fallback. Keep naming those literally.
 3. Read `CLAUDE.md` for project context, folder structure, architecture
 4. `git log --oneline -20` for recent change context (skip if not a git repository)
 5. Snapshot open state, using the values `fusion-paths` gave you in Step 2. Every `SCAN_*` may name **two** directories (the active Circle's and the shared one) — count across all of them, or the snapshot silently under-reports:
