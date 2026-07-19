@@ -1,0 +1,50 @@
+{
+  "260719-1536-demo-circle": {
+    "plane_id": "plane-260719-1536-demo-circle",
+    "kind": "circle",
+    "last_state": "In Progress",
+    "last_pushed": "2026-07-19T00:00:00Z"
+  },
+  "260719-1536-demo-circle::issues/260719-1600_o_open-issue.md": {
+    "plane_id": "plane-260719-1536-demo-circle--issues-260719-1600-o-open-issue-md",
+    "kind": "fusion-issue",
+    "last_state": "Todo",
+    "last_pushed": "2026-07-19T00:00:00Z"
+  },
+  "260719-1536-demo-circle::issues/260719-1601_c_closed-issue.md": {
+    "plane_id": "plane-260719-1536-demo-circle--issues-260719-1601-c-closed-issue-md",
+    "kind": "fusion-issue",
+    "last_state": "Done",
+    "last_pushed": "2026-07-19T00:00:00Z"
+  },
+  "260719-1536-demo-circle::issues/260719-1602_d_dropped-issue.md": {
+    "plane_id": "plane-260719-1536-demo-circle--issues-260719-1602-d-dropped-issue-md",
+    "kind": "fusion-issue",
+    "last_state": "Cancelled",
+    "last_pushed": "2026-07-19T00:00:00Z"
+  },
+  "260719-1536-demo-circle::decisions/260719-1603_a_answered.md": {
+    "plane_id": "plane-260719-1536-demo-circle--decisions-260719-1603-a-answered-md",
+    "kind": "decision",
+    "last_state": "In Progress",
+    "last_pushed": "2026-07-19T00:00:00Z"
+  },
+  "260719-1536-demo-circle::decisions/260719-1604_i_implemented.md": {
+    "plane_id": "plane-260719-1536-demo-circle--decisions-260719-1604-i-implemented-md",
+    "kind": "decision",
+    "last_state": "Done",
+    "last_pushed": "2026-07-19T00:00:00Z"
+  },
+  "shared::issues/260719-1700_o_shared-issue.md": {
+    "plane_id": "plane-shared--issues-260719-1700-o-shared-issue-md",
+    "kind": "fusion-issue",
+    "last_state": "Todo",
+    "last_pushed": "2026-07-19T00:00:00Z"
+  },
+  "shared::decisions/260719-1701_o_shared-decision.md": {
+    "plane_id": "plane-shared--decisions-260719-1701-o-shared-decision-md",
+    "kind": "decision",
+    "last_state": "Todo",
+    "last_pushed": "2026-07-19T00:00:00Z"
+  }
+}

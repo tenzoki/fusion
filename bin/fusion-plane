@@ -592,7 +592,7 @@ reconcile_all() {
   if [ -d "$WORKBENCH/circles" ]; then
     while IFS= read -r d; do
       [ -n "$d" ] || continue
-      reconcile_circle "$d"
+      reconcile_circle "${d%/}"
     done < <(ls -d "$WORKBENCH"/circles/*/ 2>/dev/null | LC_ALL=C sort)
   fi
   reconcile_shared

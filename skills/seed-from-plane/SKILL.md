@@ -46,7 +46,7 @@ Then check the argument:
 "$FUSION_PLUGIN_ROOT/bin/fusion-plane" seed <seq>
 ```
 
-This resolves `sequence_id`→issue UUID (Martin's verified `GET issues/?per_page=100 | jq 'select(.sequence_id==$s)'` lookup) and GETs the issue's title + description **once**. It writes nothing to the map yet — the Circle's natural key does not exist until `shaper` creates the directory (that binding happens in Step 6).
+This resolves `sequence_id`→issue UUID (Martin's verified `GET issues?per_page=100 | jq 'select(.sequence_id==$s)'` lookup against Plane's issues list endpoint) and GETs the issue's title + description **once**. It writes nothing to the map yet — the Circle's natural key does not exist until `shaper` creates the directory (that binding happens in Step 6).
 
 Parse `bin/fusion-plane seed`'s **stdout JSON** and branch on `status`:
 
