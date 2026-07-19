@@ -1,0 +1,881 @@
+#!/usr/bin/env bash
+# fusion-plane — push-only, idempotent mirror of the fusion work queue into a
+# Plane project, plus a bounded one-shot seeding read. Bash + curl + jq,
+# reusing Martin's verified self-hosted Plane primitives (see MARTIN.md).
+#
+# THE MODEL (see the bounded-bridge plan): the mirror is one idempotent
+# reconcile function plus trigger surfaces. reconcile(circle) reads the
+# Circle's files (record, issues, decisions), computes the *desired* Plane
+# state, diffs it against a persisted natural-key → Plane-UUID map, and issues
+# the minimal create/update calls. Because desired state is a pure function of
+# the files, running reconcile more or fewer times changes nothing — that one
+# property delivers idempotency, offline rebuild-from-files, and never-silent
+# deferral at once.
+#
+# Subcommands:
+#   push [--circle <dir>|--all] [--plan] [--rebuild-map] [--closure]
+#                     Reconcile one Circle (or all) into Plane. --plan is the
+#                     dry-run seam (JSON op list, no curl). --rebuild-map
+#                     reconstructs .plane-map.json from Plane before reconcile.
+#   plan  --circle <dir>|--all
+#                     Alias for `push --plan ...` (dry-run; emits JSON, no curl).
+#   seed  <seq>       STUB — implemented in a later step (bounded seeding read).
+#   map   [<key>]     Dump .plane-map.json, or inspect one natural key.
+#   states            Resolve and print canonical → instance → UUID state map.
+#   doctor            Report key presence, config validity, states/ reachability.
+#
+# ── KEY HANDLING (verbatim reuse of Martin's verified wrapper) ───────────────
+#   Every Plane HTTP call runs through:
+#       zsh -ic "curl -s -H \"X-API-Key: \$PLANE_API_KEY\" ... \"<url>\""
+#   because the non-interactive Bash-tool shell does NOT inherit $PLANE_API_KEY
+#   (it lives in ~/.zshrc). The key is NEVER read from a file and NEVER written
+#   anywhere by this script — plane_key_present() reads it via zsh only to test
+#   non-emptiness; its value is never echoed, logged, or persisted.
+#
+# ── NO HARDCODED STATE UUID ──────────────────────────────────────────────────
+#   State UUIDs are resolved name → UUID at runtime via GET states/ (Martin's
+#   doctrine), cached once per run. No Plane state UUID literal appears in this
+#   source (a lint test enforces this).
+#
+# ── C4 OFFLINE DOCTRINE (never silent) ───────────────────────────────────────
+#   No-network / DNS / connection-refused, HTTP 5xx/4xx, 429 rate-limit, and an
+#   absent key each append a human-readable line to .plane-outbox.jsonl AND
+#   yield a distinct "deferred" status (exit EXIT_DEFERRED, never a crash). The
+#   outbox is a human record of what was pending, NOT a correctness queue —
+#   correctness is restored by the next reconcile (a pure function of files).
+#   The outbox is drained (cleared) for a Circle once its reconcile succeeds.
+#
+# Runtime state (workbench-root, gitignored with the rest of fusion-workbench/):
+#   plane.config.yaml   consumer-filled config (base_url, slugs, state names)
+#   .plane-map.json     natural key → { plane_id, kind, last_state, last_pushed }
+#   .plane-outbox.jsonl deferred-transition notes { ts, natural_key, ... }
+#
+# Test seam: FUSION_PLANE_WORKBENCH=<dir> overrides workbench resolution so the
+# vitest suite can point at a fixture workbench (its own plane.config.yaml +
+# circles/…). FUSION_PLANE_DRYRUN=1 forces --plan for any push.
+#
+# Dependencies: bash, zsh (login profile exports the key), curl, jq, awk, sed,
+# date, mktemp, sort. jq is required (JSON map/plan); config YAML is parsed by a
+# targeted awk reader (no yq dependency).
+
+set -eu
+
+# ── Exit codes ───────────────────────────────────────────────────────────────
+EXIT_OK=0
+EXIT_CONFIG=1        # missing/invalid config, bad usage of a live command
+EXIT_USAGE=2         # wrong subcommand / arguments
+EXIT_DEFERRED=10     # C4: work deferred to the outbox — non-error, non-crash
+
+SELF="$(basename "$0")"
+
+err()  { printf '%s: %s\n' "$SELF" "$*" >&2; }
+info() { printf '%s: %s\n' "$SELF" "$*" >&2; }
+
+# ── Workbench + config paths ─────────────────────────────────────────────────
+WORKBENCH=""
+CONFIG_FILE=""
+MAP=""
+OUTBOX=""
+
+resolve_workbench() {
+  if [ -n "${FUSION_PLANE_WORKBENCH:-}" ]; then
+    WORKBENCH="$FUSION_PLANE_WORKBENCH"
+  else
+    local root
+    if ! root="$("$(dirname "$0")/fusion-workbench-root" 2>/dev/null)"; then
+      err "no fusion workbench found above $(pwd). Run /fusion:setup at the project root first."
+      return 1
+    fi
+    WORKBENCH="$root/fusion-workbench"
+  fi
+  CONFIG_FILE="$WORKBENCH/plane.config.yaml"
+  MAP="$WORKBENCH/.plane-map.json"
+  OUTBOX="$WORKBENCH/.plane-outbox.jsonl"
+}
+
+now_utc() { date -u +%Y-%m-%dT%H:%M:%SZ; }
+
+# ── Config: targeted YAML reader (fixed, fusion-authored shape) ───────────────
+# Normalises plane.config.yaml into TAB-separated key<TAB>value lines. Two
+# levels only: top-level scalars, and one nested block (states, state_fallback).
+# Nested keys are emitted as "<section>.<key>". Values are unquoted; inline
+# comments stripped; arrays kept raw for the fallback getter.
+AWK_CFG='
+function trim(s){ sub(/^[ \t]+/,"",s); sub(/[ \t]+$/,"",s); return s }
+function unquote(s){ if (substr(s,1,1)=="\"" && substr(s,length(s),1)=="\"") s=substr(s,2,length(s)-2); return s }
+function clean_val(v,   t){
+  t=trim(v)
+  if (substr(t,1,1)=="\"") { sub(/^"/,"",t); sub(/".*$/,"",t); return t }
+  if (substr(t,1,1)=="[") return t
+  sub(/[ \t]+#.*$/,"",t); return trim(t)
+}
+{
+  line=$0
+  m=match(line,/[^ ]/)
+  if (m==0) next
+  content=substr(line,m)
+  if (substr(content,1,1)=="#") next
+  indent=m-1
+  ci=index(content,":")
+  if (ci==0) next
+  key=unquote(trim(substr(content,1,ci-1)))
+  rest=substr(content,ci+1)
+  val=clean_val(rest)
+  if (indent==0) {
+    if (trim(rest)=="") { section=key; next }
+    printf "%s\t%s\n", key, val
+    section=""
+  } else {
+    printf "%s.%s\t%s\n", section, key, val
+  }
+}'
+
+CONFIG_KV=""
+cfg_load() {
+  if [ ! -f "$CONFIG_FILE" ]; then
+    err "config not found: $CONFIG_FILE (copy templates/plane.config.yaml into the workbench and fill it in)"
+    return 1
+  fi
+  CONFIG_KV="$(awk "$AWK_CFG" "$CONFIG_FILE")"
+}
+
+cfg_get()      { printf '%s\n' "$CONFIG_KV" | awk -F'\t' -v k="$1" '$1==k{sub(/^[^\t]*\t/,""); print; exit}'; }
+cfg_state()    { cfg_get "states.$1"; }
+cfg_fallback() { cfg_get "state_fallback.$1" | tr -d '[]"' | tr ',' ' '; }
+
+# Base REST path assembled the way Martin does:
+#   <base_url>/api/v1/workspaces/<workspace_slug>/projects/<project_id>
+BASE=""
+BASE_URL=""
+WORKSPACE_SLUG=""
+PROJECT_ID=""
+build_base() {
+  BASE_URL="$(cfg_get base_url)"
+  WORKSPACE_SLUG="$(cfg_get workspace_slug)"
+  PROJECT_ID="$(cfg_get project_id)"
+  BASE="${BASE_URL%/}/api/v1/workspaces/${WORKSPACE_SLUG}/projects/${PROJECT_ID}"
+}
+
+config_valid() {
+  # Returns 0 if the required scalars are present and non-placeholder-ish.
+  local ok=0
+  [ -n "$BASE_URL" ]        || { err "config: base_url is empty"; ok=1; }
+  [ -n "$WORKSPACE_SLUG" ]  || { err "config: workspace_slug is empty"; ok=1; }
+  [ -n "$PROJECT_ID" ]      || { err "config: project_id is empty"; ok=1; }
+  return $ok
+}
+
+# ── HTTP wrapper — Martin's `zsh -ic` key wrapper, verbatim pattern ──────────
+# plane_curl METHOD URL [JSON_BODY]
+#   Runs curl inside `zsh -ic` so $PLANE_API_KEY (from ~/.zshrc) is in scope.
+#   $PLANE_API_KEY stays literal (\$) for zsh; $BASE/URL expand in outer bash.
+#   JSON bodies go through a temp file (--data-binary @file) to avoid quoting
+#   hell inside the zsh -ic string; the temp file holds no secret and is removed.
+# Sets globals: PLANE_HTTP_CODE, PLANE_BODY, PLANE_CURL_RC (curl transport rc).
+# Returns 0 when curl ran (an HTTP response arrived), non-zero on transport
+# failure (no network / DNS / connection refused / timeout).
+PLANE_HTTP_CODE=""
+PLANE_BODY=""
+PLANE_CURL_RC=0
+plane_curl() {
+  local method="$1" url="$2" body="${3:-}"
+  local tmpbody="" cmd out rc
+  local common="-s -w '\\n%{http_code}' -X ${method} -H \"X-API-Key: \$PLANE_API_KEY\""
+  if [ -n "$body" ]; then
+    tmpbody="$(mktemp "${TMPDIR:-/tmp}/fusion-plane.XXXXXX")"
+    printf '%s' "$body" > "$tmpbody"
+    common="$common -H 'Content-Type: application/json' --data-binary @${tmpbody}"
+  fi
+  cmd="curl ${common} \"${url}\""
+  out="$(zsh -ic "$cmd" 2>/dev/null)" && rc=0 || rc=$?
+  [ -n "$tmpbody" ] && rm -f "$tmpbody"
+  PLANE_CURL_RC=$rc
+  if [ "$rc" -ne 0 ]; then
+    PLANE_HTTP_CODE=""
+    PLANE_BODY=""
+    return "$rc"
+  fi
+  PLANE_HTTP_CODE="$(printf '%s' "$out" | tail -n1)"
+  PLANE_BODY="$(printf '%s' "$out" | sed '$d')"
+  return 0
+}
+
+# Key presence check — tests $PLANE_API_KEY non-emptiness via zsh's exit code
+# ONLY. The value is never captured, printed, logged, or written anywhere.
+plane_key_present() {
+  zsh -ic 'test -n "${PLANE_API_KEY:-}"' >/dev/null 2>&1
+}
+
+# ── States: name → UUID resolution at runtime (Martin: never hardcode) ───────
+STATES_JSON=""
+fetch_states() {
+  # Cached per run.
+  [ -n "$STATES_JSON" ] && return 0
+  if ! plane_curl GET "$BASE/states/"; then
+    return 1   # transport failure
+  fi
+  case "$PLANE_HTTP_CODE" in
+    2*) STATES_JSON="$PLANE_BODY"; return 0 ;;
+    *)  return 2 ;;   # HTTP error
+  esac
+}
+
+# state_uuid <instance-state-name> — look the instance name up in the cached
+# states list. Handles both a bare array and a {results:[...]} envelope.
+state_uuid() {
+  [ -n "$STATES_JSON" ] || return 1
+  printf '%s' "$STATES_JSON" \
+    | jq -r --arg n "$1" '(.results // .) | map(select(.name==$n)) | (.[0].id // empty)'
+}
+
+# resolve_canonical_state <canonical> — canonical fusion state name → instance
+# name (via config) → UUID (via states/), applying the configured fallback
+# order of canonical names when the primary name does not resolve.
+resolve_canonical_state() {
+  local canon="$1" inst uuid fb fbinst
+  inst="$(cfg_state "$canon")"; [ -n "$inst" ] || inst="$canon"
+  uuid="$(state_uuid "$inst" || true)"
+  if [ -z "$uuid" ]; then
+    for fb in $(cfg_fallback "$canon"); do
+      fbinst="$(cfg_state "$fb")"; [ -n "$fbinst" ] || fbinst="$fb"
+      uuid="$(state_uuid "$fbinst" || true)"
+      [ -n "$uuid" ] && break
+    done
+  fi
+  printf '%s' "$uuid"
+}
+
+# ── Marker → canonical Plane state (the plan's mapping table) ────────────────
+canonical_state_for() {
+  local kind="$1" marker="$2"
+  case "$kind" in
+    circle)
+      case "$marker" in
+        a) echo "Backlog" ;;
+        t) echo "In Progress" ;;
+        c|b) echo "Done" ;;
+        s|d) echo "Cancelled" ;;
+        *) echo "" ;;
+      esac ;;
+    fusion-issue)
+      case "$marker" in
+        o) echo "Todo" ;;
+        p) echo "In Progress" ;;
+        c) echo "Done" ;;
+        d) echo "Cancelled" ;;
+        *) echo "" ;;
+      esac ;;
+    decision)
+      case "$marker" in
+        o) echo "Todo" ;;
+        a) echo "In Progress" ;;
+        i) echo "Done" ;;
+        s|d) echo "Cancelled" ;;
+        *) echo "" ;;
+      esac ;;
+    *) echo "" ;;
+  esac
+}
+
+# marker_from_filename — extract the single-char underscore state marker.
+# Circle record: _<m>_circle.md. Issue/decision: <stamp>_<m>_<slug>.md.
+marker_from_filename() {
+  local base="$1" m
+  m="$(printf '%s' "$base" | sed -nE 's/^_([a-z])_circle\.md$/\1/p')"
+  if [ -z "$m" ]; then
+    m="$(printf '%s' "$base" | sed -nE 's/^[0-9]{6}-[0-9]{4}_([a-z])_.*/\1/p')"
+  fi
+  printf '%s' "$m"
+}
+
+# artifact_title — first markdown H1, falling back to the natural key. Truncated
+# to keep Plane titles sane and deterministic.
+artifact_title() {
+  local file="$1" fallback="$2" h1
+  h1="$(grep -m1 '^# ' "$file" 2>/dev/null | sed 's/^# //' || true)"
+  [ -n "$h1" ] || h1="$fallback"
+  printf '%s' "$h1" | cut -c1-200
+}
+
+# ── Natural-key → Plane map (jq-backed; helper-owned) ────────────────────────
+map_ensure() { [ -f "$MAP" ] || printf '{}\n' > "$MAP"; }
+map_get_id()    { [ -f "$MAP" ] || { printf ''; return; }; jq -r --arg k "$1" '.[$k].plane_id  // empty' "$MAP"; }
+map_get_state() { [ -f "$MAP" ] || { printf ''; return; }; jq -r --arg k "$1" '.[$k].last_state // empty' "$MAP"; }
+map_set() {
+  # map_set <natural-key> <plane_id> <kind> <last_state>
+  local nk="$1" pid="$2" kind="$3" st="$4" tmp
+  map_ensure
+  tmp="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-map.XXXXXX")"
+  jq --arg k "$nk" --arg id "$pid" --arg kind "$kind" --arg st "$st" --arg t "$(now_utc)" \
+     '.[$k] = {plane_id:$id, kind:$kind, last_state:$st, last_pushed:$t}' "$MAP" > "$tmp" \
+     && mv "$tmp" "$MAP"
+}
+
+# ── Outbox (C4 never-silent) ─────────────────────────────────────────────────
+outbox_append() {
+  # outbox_append <natural-key> <intended-state> <reason> <manual-hint>
+  jq -cn --arg ts "$(now_utc)" --arg nk "$1" --arg st "$2" --arg r "$3" --arg mh "$4" \
+    '{ts:$ts, natural_key:$nk, intended_state:$st, reason:$r, manual_hint:$mh}' >> "$OUTBOX"
+}
+
+# outbox_drain_circle <circle-dir-name> — remove outbox lines whose natural_key
+# is this Circle or a sub-artifact of it (called once its reconcile succeeds).
+outbox_drain_circle() {
+  local name="$1" tmp
+  [ -f "$OUTBOX" ] || return 0
+  tmp="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-outbox.XXXXXX")"
+  jq -c --arg d "$name" \
+    'select((.natural_key==$d or (.natural_key|startswith($d+"::")))|not)' \
+    "$OUTBOX" > "$tmp" 2>/dev/null || true
+  mv "$tmp" "$OUTBOX"
+  [ -s "$OUTBOX" ] || rm -f "$OUTBOX"
+}
+
+# Web URL for a Plane issue (best-effort; used as the DR-1 links fallback body).
+issue_web_url() {
+  printf '%s/%s/projects/%s/issues/%s' \
+    "${BASE_URL%/}" "$WORKSPACE_SLUG" "$PROJECT_ID" "$1"
+}
+
+# ── Reconcile core ───────────────────────────────────────────────────────────
+# Mode flags / run state.
+DRYRUN=0
+CLOSURE=0
+declare -a OPS=()     # dry-run: accumulated create/update op objects (JSON)
+PUSHED=0
+DEFERRED=0
+RATE_LIMITED=0
+
+# op_json — build one plan op object (deterministic: no timestamps, state by
+# NAME not UUID, so --plan needs no network).
+op_json() {
+  # op_json <op> <kind> <nk> <title> <marker> <canonical> <instance> <plane_id> <parent_key> <relpath>
+  jq -cn \
+    --arg op "$1" --arg kind "$2" --arg nk "$3" --arg title "$4" --arg marker "$5" \
+    --arg state "$6" --arg state_instance "$7" --arg pid "$8" --arg pk "$9" --arg src "${10}" \
+    '{op:$op, kind:$kind, natural_key:$nk, title:$title, marker:$marker,
+      state:$state, state_instance:$state_instance,
+      plane_id:(if $pid=="" then null else $pid end),
+      parent_key:(if $pk=="" then null else $pk end),
+      attach:(if $pk=="" then null else "sub-issue" end),
+      embed_key:$nk, source:$src}'
+}
+
+# defer — C4: record an outbox note and count the deferral (never silent).
+defer() {
+  # defer <nk> <intended-state> <reason> <manual-hint>
+  outbox_append "$1" "$2" "$3" "$4"
+  DEFERRED=$((DEFERRED + 1))
+  info "deferred: $1 → \"$2\" ($3)"
+}
+
+# attach_child — DR-1 attach as a SINGLE swappable function, ONE call site.
+# Default: the child was created/updated with its `parent` field set to the
+# Circle's Plane UUID (folded into the write body — no extra call). We verify
+# from that same response (Martin's "verify the field with one call"); if the
+# self-hosted instance rejected/ignored `parent`, fall back to the verified
+# issues/{id}/links/ endpoint (a link on the parent pointing at the child).
+attach_child() {
+  # attach_child <child_id> <parent_id> <title> <response_json>
+  local child_id="$1" parent_id="$2" title="$3" resp="$4" got
+  got="$(printf '%s' "$resp" | jq -r '.parent // empty' 2>/dev/null || true)"
+  if [ "$got" = "$parent_id" ]; then
+    return 0   # sub-issue parent accepted — done, no extra call
+  fi
+  # Fallback: verified links endpoint.
+  local body
+  body="$(jq -cn --arg u "$(issue_web_url "$child_id")" --arg t "$title" '{url:$u, title:$t}')"
+  if plane_curl POST "$BASE/issues/${parent_id}/links/" "$body"; then
+    case "$PLANE_HTTP_CODE" in
+      2*) return 0 ;;
+    esac
+  fi
+  info "attach fallback (links) did not confirm for child $child_id → parent $parent_id"
+  return 1
+}
+
+# process_artifact — the per-artifact core, shared by dry-run and live modes.
+process_artifact() {
+  # process_artifact <kind> <file> <natural-key> <parent-key>
+  local kind="$1" file="$2" nk="$3" parent_key="$4"
+  local base marker canonical inst title relpath existing_id existing_state op
+  base="$(basename "$file")"
+  marker="$(marker_from_filename "$base")"
+  if [ -z "$marker" ]; then
+    info "skip (no marker parsed): $file"
+    return 0
+  fi
+  canonical="$(canonical_state_for "$kind" "$marker")"
+  if [ -z "$canonical" ]; then
+    info "skip (marker '$marker' has no $kind state): $file"
+    return 0
+  fi
+  inst="$(cfg_state "$canonical")"; [ -n "$inst" ] || inst="$canonical"
+  title="$(artifact_title "$file" "$nk")"
+  relpath="${file#"$WORKBENCH"/}"
+
+  existing_id="$(map_get_id "$nk")"
+  existing_state="$(map_get_state "$nk")"
+  if [ -z "$existing_id" ]; then
+    op="create"
+  elif [ "$existing_state" != "$canonical" ]; then
+    op="update"
+  else
+    op="noop"
+  fi
+
+  if [ "$DRYRUN" -eq 1 ]; then
+    # Dry-run: emit only actionable ops (create/update); a fully reconciled
+    # Circle yields an empty ops list — the idempotency property, observable.
+    if [ "$op" != "noop" ]; then
+      OPS+=("$(op_json "$op" "$kind" "$nk" "$title" "$marker" "$canonical" "$inst" "$existing_id" "$parent_key" "$relpath")")
+    fi
+    return 0
+  fi
+
+  # ── Live mode ──────────────────────────────────────────────────────────────
+  [ "$op" = "noop" ] && return 0
+
+  # If we already hit a rate limit this run, defer the remainder (C4).
+  if [ "$RATE_LIMITED" -eq 1 ]; then
+    defer "$nk" "$canonical" "rate limit (429) earlier this run" "$(manual_hint "$op" "$nk" "$canonical" "$existing_id")"
+    return 0
+  fi
+
+  local uuid parent_id="" body resp new_id
+  uuid="$(resolve_canonical_state "$canonical" || true)"
+  if [ -z "$uuid" ]; then
+    defer "$nk" "$canonical" "state name unresolved on instance" \
+      "Set the Plane issue to a state matching \"$canonical\" (name not found in states/)."
+    return 0
+  fi
+  if [ -n "$parent_key" ]; then
+    parent_id="$(map_get_id "$parent_key")"
+  fi
+
+  # Build write body. Embed the natural key in the description so a lost map can
+  # be rebuilt (push --rebuild-map). Fold in `parent` (DR-1 default) when a
+  # parent exists.
+  body="$(build_write_body "$kind" "$title" "$nk" "$relpath" "$uuid" "$parent_id")"
+
+  if [ "$op" = "create" ]; then
+    if ! plane_curl POST "$BASE/issues/" "$body"; then
+      defer "$nk" "$canonical" "no network (curl rc $PLANE_CURL_RC)" \
+        "POST a new Plane issue for $nk and set state \"$canonical\"."
+      return 0
+    fi
+  else
+    if ! plane_curl PATCH "$BASE/issues/${existing_id}/" "$body"; then
+      defer "$nk" "$canonical" "no network (curl rc $PLANE_CURL_RC)" \
+        "$(manual_hint update "$nk" "$canonical" "$existing_id")"
+      return 0
+    fi
+  fi
+
+  case "$PLANE_HTTP_CODE" in
+    2*)
+      resp="$PLANE_BODY"
+      if [ "$op" = "create" ]; then
+        new_id="$(printf '%s' "$resp" | jq -r '.id // empty' 2>/dev/null || true)"
+        if [ -z "$new_id" ]; then
+          defer "$nk" "$canonical" "create returned no id (HTTP $PLANE_HTTP_CODE)" \
+            "Create the Plane issue for $nk manually and set state \"$canonical\"."
+          return 0
+        fi
+        map_set "$nk" "$new_id" "$kind" "$canonical"
+        existing_id="$new_id"
+      else
+        map_set "$nk" "$existing_id" "$kind" "$canonical"
+      fi
+      # DR-1 attach — single call site.
+      if [ -n "$parent_id" ]; then
+        attach_child "$existing_id" "$parent_id" "$title" "$resp" || true
+      fi
+      PUSHED=$((PUSHED + 1))
+      sleep 0.2   # pace calls under 60/min
+      ;;
+    429)
+      RATE_LIMITED=1
+      defer "$nk" "$canonical" "rate limit (HTTP 429)" \
+        "$(manual_hint "$op" "$nk" "$canonical" "$existing_id")"
+      ;;
+    *)
+      defer "$nk" "$canonical" "HTTP $PLANE_HTTP_CODE: $(printf '%s' "$PLANE_BODY" | head -c 200)" \
+        "$(manual_hint "$op" "$nk" "$canonical" "$existing_id")"
+      ;;
+  esac
+}
+
+# build_write_body — the create/PATCH JSON. state UUID is resolved (live only).
+build_write_body() {
+  # build_write_body <kind> <title> <nk> <relpath> <state_uuid> <parent_id>
+  local kind="$1" title="$2" nk="$3" relpath="$4" uuid="$5" parent_id="$6"
+  local desc
+  desc="$(printf 'Mirrored fusion %s.\n\nfusion-key: %s\nsource: %s' "$kind" "$nk" "$relpath")"
+  jq -cn --arg name "$title" --arg desc "$desc" --arg state "$uuid" --arg parent "$parent_id" \
+    '{name:$name, description_html:("<p>"+$desc+"</p>"), state:$state}
+     + (if $parent=="" then {} else {parent:$parent} end)'
+}
+
+# manual_hint — the exact transition a human would make in the Plane UI, printed
+# on the absent-key / deferred path (Martin's fallback doctrine).
+manual_hint() {
+  # manual_hint <op> <nk> <canonical> <plane_id>
+  local op="$1" nk="$2" canonical="$3" pid="$4"
+  if [ "$op" = "create" ] || [ -z "$pid" ]; then
+    printf 'In Plane, create an issue for "%s" and set its state to "%s".' "$nk" "$canonical"
+  else
+    printf 'In Plane, open %s and set its state to "%s".' "$(issue_web_url "$pid")" "$canonical"
+  fi
+}
+
+# ── Reconcile one Circle / shared / all ──────────────────────────────────────
+resolve_circle_dir() {
+  local arg="$1"
+  if [ -d "$arg" ]; then
+    CIRCLE_DIR="$arg"
+  elif [ -d "$WORKBENCH/circles/$arg" ]; then
+    CIRCLE_DIR="$WORKBENCH/circles/$arg"
+  else
+    err "circle not found: $arg (looked at '$arg' and '$WORKBENCH/circles/$arg')"
+    return 1
+  fi
+}
+
+reconcile_circle() {
+  local dir="$1" name record f
+  name="$(basename "$dir")"
+  record="$(ls "$dir"/*_circle.md 2>/dev/null | head -n1 || true)"
+  if [ -z "$record" ]; then
+    info "no *_circle.md in $dir — skipping"
+    return 0
+  fi
+  process_artifact circle "$record" "$name" ""
+  if [ -d "$dir/issues" ]; then
+    while IFS= read -r f; do
+      [ -n "$f" ] && process_artifact fusion-issue "$f" "$name::issues/$(basename "$f")" "$name"
+    done < <(ls "$dir"/issues/*.md 2>/dev/null | LC_ALL=C sort)
+  fi
+  if [ -d "$dir/decisions" ]; then
+    while IFS= read -r f; do
+      [ -n "$f" ] && process_artifact decision "$f" "$name::decisions/$(basename "$f")" "$name"
+    done < <(ls "$dir"/decisions/*.md 2>/dev/null | LC_ALL=C sort)
+  fi
+  # Drain the outbox for this Circle only when its reconcile fully succeeded
+  # (live mode, nothing deferred). Correctness is restored by the next reconcile.
+  if [ "$DRYRUN" -eq 0 ] && [ "$DEFERRED" -eq 0 ]; then
+    outbox_drain_circle "$name"
+  fi
+}
+
+# Shared artifacts have no Circle record → top-level Plane issues (no parent).
+reconcile_shared() {
+  local f
+  if [ -d "$WORKBENCH/shared/issues" ]; then
+    while IFS= read -r f; do
+      [ -n "$f" ] && process_artifact fusion-issue "$f" "shared::issues/$(basename "$f")" ""
+    done < <(ls "$WORKBENCH"/shared/issues/*.md 2>/dev/null | LC_ALL=C sort)
+  fi
+  if [ -d "$WORKBENCH/shared/decisions" ]; then
+    while IFS= read -r f; do
+      [ -n "$f" ] && process_artifact decision "$f" "shared::decisions/$(basename "$f")" ""
+    done < <(ls "$WORKBENCH"/shared/decisions/*.md 2>/dev/null | LC_ALL=C sort)
+  fi
+}
+
+reconcile_all() {
+  local d
+  if [ -d "$WORKBENCH/circles" ]; then
+    while IFS= read -r d; do
+      [ -n "$d" ] || continue
+      reconcile_circle "$d"
+    done < <(ls -d "$WORKBENCH"/circles/*/ 2>/dev/null | LC_ALL=C sort)
+  fi
+  reconcile_shared
+}
+
+emit_plan() {
+  if [ "${#OPS[@]}" -eq 0 ]; then
+    printf '{"ops":[]}\n'
+  else
+    printf '%s\n' "${OPS[@]}" | jq -s '{ops: .}'
+  fi
+}
+
+# push --rebuild-map: reconstruct .plane-map.json from Plane by reading the
+# embedded fusion-key out of each issue's description (live; best-effort).
+rebuild_map() {
+  info "rebuilding .plane-map.json from Plane (embedded fusion-key)…"
+  if ! plane_curl GET "$BASE/issues/?per_page=100"; then
+    err "rebuild-map: Plane unreachable (curl rc $PLANE_CURL_RC) — map not changed"
+    return "$EXIT_DEFERRED"
+  fi
+  case "$PLANE_HTTP_CODE" in
+    2*) : ;;
+    *)  err "rebuild-map: HTTP $PLANE_HTTP_CODE — map not changed"; return "$EXIT_DEFERRED" ;;
+  esac
+  local tmp
+  tmp="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-rebuild.XXXXXX")"
+  printf '%s' "$PLANE_BODY" | jq '
+    (.results // .) as $issues
+    | reduce $issues[] as $i ({};
+        ( ($i.description // "") | capture("fusion-key: (?<k>[^\n<]+)").k // empty ) as $key
+        | if $key == "" then . else .[$key|ltrimstr(" ")|rtrimstr(" ")] =
+            {plane_id:$i.id, kind:"unknown", last_state:"", last_pushed:""} end)
+  ' > "$tmp" 2>/dev/null || { err "rebuild-map: could not parse issues"; rm -f "$tmp"; return "$EXIT_CONFIG"; }
+  mv "$tmp" "$MAP"
+  info "rebuild-map: wrote $(jq 'length' "$MAP") entries"
+}
+
+# ── Subcommands ──────────────────────────────────────────────────────────────
+cmd_push() {
+  local target="" want_all=0 rebuild=0
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --plan)        DRYRUN=1 ;;
+      --all)         want_all=1 ;;
+      # --closure is accepted for forward-compat with the orchestrator wiring
+      # (plan Step 6). The Done transition it implies is ALREADY handled by the
+      # marker→state mapping (a _c_/_b_ Circle maps to Done). The extra closing
+      # comment + history-file link is Step 6's semantics and is intentionally
+      # NOT implemented here (its comments-endpoint body shape is unverified in
+      # MARTIN.md). Accepting the flag now keeps the wiring edit body-only.
+      --closure)     CLOSURE=1 ;;
+      --rebuild-map) rebuild=1 ;;
+      --circle)      shift; target="${1:-}"; [ -n "$target" ] || { err "--circle needs a directory"; return "$EXIT_USAGE"; } ;;
+      --circle=*)    target="${1#--circle=}" ;;
+      *)             err "push: unknown flag '$1'"; return "$EXIT_USAGE" ;;
+    esac
+    shift
+  done
+  [ "${FUSION_PLANE_DRYRUN:-0}" = "1" ] && DRYRUN=1
+
+  resolve_workbench || return "$EXIT_CONFIG"
+  cfg_load          || return "$EXIT_CONFIG"
+  build_base
+  map_ensure
+
+  # Live commands need config + key; dry-run needs neither network nor key.
+  if [ "$DRYRUN" -eq 0 ]; then
+    config_valid || return "$EXIT_CONFIG"
+    if ! plane_key_present; then
+      # Absent key: attempt NO call. Emit the manual transitions to the outbox
+      # and to the operator, return the deferred status (Martin's doctrine).
+      info "PLANE_API_KEY absent — no calls made; recording manual transitions."
+      emit_manual_only "$want_all" "$target" "PLANE_API_KEY absent"
+      return "$EXIT_DEFERRED"
+    fi
+    if [ "$rebuild" -eq 1 ]; then
+      rebuild_map || true
+    fi
+    if ! fetch_states; then
+      err "states/ unreachable — deferring this push (C4)."
+      emit_manual_only "$want_all" "$target" "Plane unreachable (states/ — curl rc $PLANE_CURL_RC / HTTP ${PLANE_HTTP_CODE:-none})"
+      return "$EXIT_DEFERRED"
+    fi
+  fi
+
+  if [ "$want_all" -eq 1 ]; then
+    reconcile_all
+  elif [ -n "$target" ]; then
+    resolve_circle_dir "$target" || return "$EXIT_CONFIG"
+    reconcile_circle "$CIRCLE_DIR"
+  else
+    err "push: specify --circle <dir> or --all"
+    return "$EXIT_USAGE"
+  fi
+
+  if [ "$DRYRUN" -eq 1 ]; then
+    emit_plan
+    return "$EXIT_OK"
+  fi
+
+  # Live summary — never silent.
+  if [ "$DEFERRED" -gt 0 ]; then
+    printf 'STATUS: deferred (%d pushed, %d deferred) — see %s\n' "$PUSHED" "$DEFERRED" "$OUTBOX"
+    return "$EXIT_DEFERRED"
+  fi
+  printf 'STATUS: ok (%d pushed)\n' "$PUSHED"
+  return "$EXIT_OK"
+}
+
+# emit_manual_only — absent-key / states-unreachable path: walk the target's
+# artifacts and record a manual-transition outbox note for each (no calls). The
+# reason is passed in so the note is accurate (key-absent vs Plane-down).
+emit_manual_only() {
+  local want_all="$1" target="$2" reason="$3"
+  # Record one deferral note per artifact. The manual hint is map-aware: an
+  # already-mirrored artifact points at its Plane issue URL; a new one asks for
+  # a create.
+  _manual_defer() {
+    local kind="$1" nk="$2" file="$3" marker canonical op pid
+    marker="$(marker_from_filename "$(basename "$file")")"
+    canonical="$(canonical_state_for "$kind" "$marker")"
+    [ -n "$canonical" ] || return 0
+    pid="$(map_get_id "$nk")"
+    if [ -n "$pid" ]; then op="update"; else op="create"; fi
+    defer "$nk" "$canonical" "$reason" "$(manual_hint "$op" "$nk" "$canonical" "$pid")"
+  }
+  _manual_walk_circle() {
+    local dir="$1" name record f
+    name="$(basename "$dir")"
+    record="$(ls "$dir"/*_circle.md 2>/dev/null | head -n1 || true)"
+    if [ -n "$record" ]; then _manual_defer circle "$name" "$record"; fi
+    for f in "$dir"/issues/*.md; do
+      if [ -e "$f" ]; then _manual_defer fusion-issue "$name::issues/$(basename "$f")" "$f"; fi
+    done
+    for f in "$dir"/decisions/*.md; do
+      if [ -e "$f" ]; then _manual_defer decision "$name::decisions/$(basename "$f")" "$f"; fi
+    done
+  }
+  if [ "$want_all" -eq 1 ]; then
+    local d
+    for d in "$WORKBENCH"/circles/*/; do if [ -d "$d" ]; then _manual_walk_circle "$d"; fi; done
+  elif [ -n "$target" ]; then
+    resolve_circle_dir "$target" && _manual_walk_circle "$CIRCLE_DIR"
+  fi
+  printf 'STATUS: deferred (0 pushed, %d deferred) — see %s\n' "$DEFERRED" "$OUTBOX"
+}
+
+cmd_plan() {
+  # Alias for `push --plan <same args>`.
+  DRYRUN=1
+  cmd_push --plan "$@"
+}
+
+cmd_states() {
+  resolve_workbench || return "$EXIT_CONFIG"
+  cfg_load          || return "$EXIT_CONFIG"
+  build_base
+  config_valid      || return "$EXIT_CONFIG"
+  if ! plane_key_present; then
+    err "PLANE_API_KEY absent — cannot resolve states/. Export it in ~/.zshrc."
+    return "$EXIT_CONFIG"
+  fi
+  if ! fetch_states; then
+    err "states/ unreachable (curl rc $PLANE_CURL_RC / HTTP ${PLANE_HTTP_CODE:-none})."
+    return "$EXIT_CONFIG"
+  fi
+  local canon inst uuid
+  printf '%-14s %-20s %s\n' "canonical" "instance-name" "uuid"
+  for canon in "Backlog" "Todo" "In Progress" "Done" "Cancelled"; do
+    inst="$(cfg_state "$canon")"; [ -n "$inst" ] || inst="$canon"
+    uuid="$(resolve_canonical_state "$canon" || true)"
+    printf '%-14s %-20s %s\n' "$canon" "$inst" "${uuid:-<unresolved>}"
+  done
+}
+
+cmd_map() {
+  resolve_workbench || return "$EXIT_CONFIG"
+  map_ensure
+  if [ "$#" -ge 1 ] && [ -n "$1" ]; then
+    jq --arg k "$1" '.[$k] // "no such key"' "$MAP"
+  else
+    jq '.' "$MAP"
+  fi
+}
+
+cmd_doctor() {
+  local rc=0
+  if ! resolve_workbench; then
+    return "$EXIT_CONFIG"
+  fi
+  printf 'workbench:        %s\n' "$WORKBENCH"
+
+  if [ -f "$CONFIG_FILE" ]; then
+    printf 'config file:      present (%s)\n' "$CONFIG_FILE"
+    if cfg_load; then
+      build_base
+      if config_valid; then
+        printf 'config valid:     yes (base=%s ws=%s project=%s)\n' "$BASE_URL" "$WORKSPACE_SLUG" "$PROJECT_ID"
+      else
+        printf 'config valid:     NO — required fields missing\n'
+        rc="$EXIT_CONFIG"
+      fi
+    else
+      printf 'config valid:     NO — could not parse\n'
+      rc="$EXIT_CONFIG"
+    fi
+  else
+    printf 'config file:      MISSING (%s) — copy templates/plane.config.yaml\n' "$CONFIG_FILE"
+    rc="$EXIT_CONFIG"
+  fi
+
+  if plane_key_present; then
+    printf 'PLANE_API_KEY:    present (in shell env; never read from a file)\n'
+  else
+    printf 'PLANE_API_KEY:    ABSENT — export it in ~/.zshrc (never store it in config)\n'
+    rc="$EXIT_CONFIG"
+  fi
+
+  # states/ reachability only when config+key are usable.
+  if [ "$rc" -eq 0 ]; then
+    if fetch_states; then
+      local n
+      n="$(printf '%s' "$STATES_JSON" | jq '((.results // .)|length)' 2>/dev/null || echo '?')"
+      printf 'states/ reachable: yes (%s states)\n' "$n"
+    else
+      printf 'states/ reachable: NO (curl rc %s / HTTP %s)\n' "$PLANE_CURL_RC" "${PLANE_HTTP_CODE:-none}"
+      rc="$EXIT_CONFIG"
+    fi
+  else
+    printf 'states/ reachable: skipped (fix config/key first)\n'
+  fi
+
+  if [ "$rc" -eq 0 ]; then
+    printf 'doctor:           OK\n'
+  else
+    printf 'doctor:           NOT OK — see lines above\n'
+  fi
+  return "$rc"
+}
+
+cmd_seed() {
+  # STUB — the bounded one-shot seeding read is implemented in a later step.
+  err "seed: not yet implemented (bounded seeding read — see plan Step 5)."
+  return "$EXIT_USAGE"
+}
+
+usage() {
+  cat >&2 <<'EOF'
+Usage: fusion-plane <subcommand> [args]
+
+Subcommands:
+  push [--circle <dir>|--all] [--plan] [--rebuild-map] [--closure]
+                        Reconcile a Circle (or all) into Plane.
+                        --plan      dry-run: emit the JSON op list, no curl.
+                        --rebuild-map  rebuild .plane-map.json from Plane first.
+  plan --circle <dir>|--all
+                        Dry-run alias for `push --plan`.
+  seed <seq>            STUB (bounded seeding read — later step).
+  map [<natural-key>]   Dump .plane-map.json, or inspect one entry.
+  states                Resolve+print canonical → instance → UUID states.
+  doctor                Report key presence, config validity, states/ reach.
+
+Env:
+  PLANE_API_KEY            (in ~/.zshrc) the only place the key ever lives.
+  FUSION_PLANE_DRYRUN=1    force --plan for any push.
+  FUSION_PLANE_WORKBENCH   override workbench dir (test seam).
+EOF
+}
+
+cmd="${1:-}"
+[ "$#" -gt 0 ] && shift || true
+case "$cmd" in
+  push)   cmd_push "$@" ;;
+  plan)   cmd_plan "$@" ;;
+  seed)   cmd_seed "$@" ;;
+  map)    cmd_map "${1:-}" ;;
+  states) cmd_states ;;
+  doctor) cmd_doctor ;;
+  ""|-h|--help|help)
+    usage
+    [ -z "$cmd" ] && exit "$EXIT_USAGE"
+    exit "$EXIT_OK"
+    ;;
+  *)
+    err "unknown subcommand '$cmd'"
+    usage
+    exit "$EXIT_USAGE"
+    ;;
+esac

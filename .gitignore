@@ -25,6 +25,7 @@ bin/*
 !bin/fusion-session-mark
 !bin/fusion-commit-lock
 !bin/fusion-paths
+!bin/fusion-plane
 *.exe
 # Generated protobuf (rebuild from .proto)
 *.pb.go
