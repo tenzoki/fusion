@@ -172,7 +172,7 @@ You may:
 - Rename state markers on files under `$SCAN_ISSUES` and `$SCAN_PLANS` (`_o_` to `_p_`, `_p_` to `_c_`)
 - Rename the Circle record `_t_circle.md` inside an active Circle directory at Phase 4 (`_t_` to `_c_` or `_b_`) per the Rebalance/Coherence verdict. The record carries the marker; the directory name never changes.
 - Append a `## Closure note` section to a Circle record at Phase 4 (the only Circle-record content write the orchestrator performs; full-content edits remain off-limits)
-- Write or delete `fusion-workbench/.active-circle` per the conventions doc (root-anchored pointer)
+- Write or delete `fusion-workbench/.active-circle` per the conventions doc (root-anchored pointer). On `_a_`→`_t_` activation, immediately after writing the pointer, run the Plane activation push if Plane is configured (see **Plane mirror**, call point 1).
 
 You may NOT:
 - Edit code (`.go`, `.ts`, `.tsx`, `.py`, `.js`, build files)
@@ -182,6 +182,24 @@ You may NOT:
 - Invoke yourself (no recursion)
 
 Cross-layer edits flow through the correct executor agent, never through you.
+
+## Plane mirror (push-only, optional side-effect)
+
+fusion can mirror its work queue — the active Circle, its issues, and its decisions — into a Plane project as a secondary read-along view via `"$FUSION_PLUGIN_ROOT/bin/fusion-plane" push`. The mirror is **strictly a side-effect** of state transitions you already perform. It is never work in its own right, and it never gates the Turn.
+
+**Only call the mirror when Plane is configured.** Check for `fusion-workbench/plane.config.yaml` first; call `fusion-plane push` only when that file is present. If it is absent, Plane is not wired up for this project — **skip the push entirely** (do not call the helper). `bin/fusion-plane` treats a missing config as a hard error (exit 1), so guarding on the file's presence is what keeps a non-Plane project from ever seeing a Plane error. A configured project also needs `$PLANE_API_KEY` in the shell, but a missing key is handled gracefully (deferred, see below) — presence of the config file is the only precondition for making the call.
+
+**Call points** (each pushes the active Circle by its directory name — the same value stored in `.active-circle`):
+
+1. **After Circle activation** (`_a_`→`_t_` rename plus the `.active-circle` write): `"$FUSION_PLUGIN_ROOT/bin/fusion-plane" push --circle <dir>`. Run it immediately after you write `.active-circle`, so the newly-active Circle appears in Plane as In Progress.
+2. **At end of Turn (Phase 3 / Step 3e), only when issues or decisions changed this Turn:** `"$FUSION_PLUGIN_ROOT/bin/fusion-plane" push --circle <dir>` to reconcile the delta. If nothing was filed or transitioned this Turn, skip the call.
+3. **At Phase 4 closure** (`_t_`→`_c_`/`_b_`), **before** clearing `.active-circle`: `"$FUSION_PLUGIN_ROOT/bin/fusion-plane" push --circle <dir> --closure` (drives the Circle to Done and attaches the closing artifacts). The `.active-circle` pointer must still exist when this runs, so sequence it before the `rm -f`.
+
+**Missing a push is harmless.** The mirror is a pure reconcile from files, so the next push reconstructs the correct Plane state — skipping or losing one changes nothing.
+
+**Deferred is not an error.** When Plane is unreachable, `$PLANE_API_KEY` is absent, or a rate limit is hit, the helper writes a human-readable note to `.plane-outbox.jsonl`, prints a `STATUS: deferred (<pushed> pushed, <deferred> deferred)` line, and exits with code **10** — a distinct *deferred* status, never a crash. **Never treat exit 10 as a failure, and never block, retry, or abort the Turn on it.** Surface it instead: add a `Plane: <N> deferred` note to the live dashboard and to the Phase 4 session report, so the user knows some transitions await the next reconcile. (Any other non-zero exit — e.g. exit 1, a genuine config problem — is a setup issue you report once and move past; still never block the Turn.)
+
+**Emit a `plane_push` event** after each call, carrying the call point and the pushed/deferred counts.
 
 ## Phase 0: Scope Resolution
 
@@ -414,7 +432,7 @@ When a circuit breaker trips, emit a `circuit_breaker` event, update the live da
 
 If all tasks in the queue are `[x] done` or `_d_ deferred`, the loop converges. Exit to Phase 4.
 
-Otherwise, emit `turn_end` event with Turn stats, refresh the queue (incorporate new issues from reviews, remove completed tasks), refresh the active-session marker (`"$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" heartbeat` — keeps a parallel `/fusion:setup` from treating this session as stale), and start the next Turn.
+Otherwise, emit `turn_end` event with Turn stats, refresh the queue (incorporate new issues from reviews, remove completed tasks), refresh the active-session marker (`"$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" heartbeat` — keeps a parallel `/fusion:setup` from treating this session as stale), and start the next Turn. **If issues or decisions changed this Turn and Plane is configured, run the end-of-Turn Plane push now** (see **Plane mirror**, call point 2) — a side-effect, never a gate; a `deferred` result (exit 10) is surfaced, never blocking.
 
 **Early-exit note (Coherence gate).** If the per-Turn Coherence gate at Step 3c-bis returned "Rebalance" and the user chose anything other than **Revise Artifact**, the loop **exits here without emitting `turn_end`**. The chosen option's `rebalance_*` event (or `bounded_closure_proposed`) was already emitted at the gate; the orchestrator now proceeds directly to Phase 3 with that verdict in hand. Revise Artifact is the only option that re-enters Phase 2 with a new queue entry — the others terminate the Turn.
 
@@ -508,7 +526,7 @@ After reconciler returns and any Rebalance gate is resolved, run this step if a 
 
    (or `_b_`). Quote both operands. Unquoted, the shell reads `_t_` as a bracket expression matching the single character `t`; today that happens to fall back to the literal name because nothing matches, but the moment a file named `t-circle.md` exists next to it the `mv` addresses that file instead — silently, and with the record it was meant to rename left untouched. Then append a `## Closure note` section to the renamed record, citing the orchestrator session history file path and the Phase-3 verdict.
 
-4. **Clear `.active-circle`** — `rm -f fusion-workbench/.active-circle`. (Use `rm -f`; absence after this point is the canonical "no active Circle" state.)
+4. **Push closure to Plane, then clear `.active-circle`.** If Plane is configured (`fusion-workbench/plane.config.yaml` present), first run `"$FUSION_PLUGIN_ROOT/bin/fusion-plane" push --circle <dir> --closure` with `<dir>` the Circle directory name from step 1 — this drives the Circle to Done and attaches the closing artifacts. It **must** run while the pointer still exists, so it precedes the clear; a `deferred` result (exit 10) is surfaced in the session report, never blocking (see **Plane mirror**). Then clear the pointer — `rm -f fusion-workbench/.active-circle`. (Use `rm -f`; absence after this point is the canonical "no active Circle" state.)
 
 5. **Dispatch playmaker.** Use `Agent(fusion:playmaker)` with the prompt prefix `**Domain:** <detected-domain-from-Setup-Step-5>`. Playmaker regenerates `$PORTFOLIO` to reflect the closure and (per its Bundle B process step 5) writes any `## Parent grounding stale` notes for `_b_` propagation.
 
@@ -831,6 +849,7 @@ Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit
 | `bounded_closure_proposed` | Rebalance gate, user chose Accept Bounded Closure (or per-Circle verdict reached `bounded-closure-proposed`) | Reason |
 | `reconciliation` | Final reconciliation | Discrepancies found count |
 | `portfolio_refresh` | Phase 4 — playmaker dispatched after `_t_→_c_/_b_` rename | Circle file path (post-rename), playmaker history file path |
+| `plane_push` | After a Plane mirror push (activation, end-of-Turn delta, or Phase-4 closure) when Plane is configured | Call point, pushed count, deferred count |
 | `session_end` | Session complete | Final budget summary |
 
 **Obtain timestamps** from `date -u +%Y-%m-%dT%H:%M:%S` for each event. Do not estimate or reuse timestamps.
