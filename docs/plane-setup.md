@@ -185,8 +185,23 @@ an empty op list.
 **5. Clean up.** Delete the test issues in Plane, then close or drop the throwaway
 Circle. **Also remove its entries from `fusion-workbench/.plane-map.json`** — deleting
 an issue in Plane does not prune the map, and the next push would try to PATCH a dead
-UUID, get a 404, and defer. There is no `map --forget` subcommand; edit the JSON, or
-delete the whole file if this Circle was the only thing you had mirrored.
+UUID, get a 404, and defer.
+
+```bash
+bin/fusion-plane map --forget <circle-dir>
+```
+
+Run it once per stale entry. Circle sub-artifacts are keyed
+`<circle-dir>::issues/<file>.md` and `<circle-dir>::decisions/<file>.md` — a
+`bin/fusion-plane map` dump lists them all. Forgetting a key that is not in the map
+reports `not found` and exits 1 rather than pretending to succeed, so a typo is
+visible.
+
+If you deleted several issues and would rather not name each one,
+`bin/fusion-plane map --prune` drops every entry whose Plane issue returns a 404. It
+needs the API key and a reachable Plane; on any inconclusive answer — no network, a
+5xx, a rate limit — it deletes **nothing** and exits 10, so an outage can never cost
+you map entries.
 
 #### Why this is worth doing
 
@@ -205,9 +220,12 @@ so the child still gets attached.
 - **Empty description, or no `fusion-key:` line** → the body field name is wrong for
   this instance. Fix `build_write_body` in `bin/fusion-plane`.
 - **Description looks right on the board but `push --rebuild-map` finds nothing** →
-  narrower variant of the same thing: fusion writes `description_html`, while
-  rebuild reads the plain `description` field. If your instance does not populate one
-  from the other, rebuild needs to read the HTML field instead.
+  no longer expected. Rebuild used to read only the plain `description` field while
+  fusion writes `description_html`, so it found nothing on any instance that does not
+  derive one from the other. It now reads `description_stripped`, then
+  `description_html`, then `description`, taking the first that carries the key. If it
+  still finds nothing, the key is genuinely not in the body — treat it as the
+  empty-description case above.
 - **Wrong or missing state** → run `bin/fusion-plane states`. It prints canonical →
   instance-name → UUID and marks anything it cannot resolve as `<unresolved>`; compare
   that against the `states:` names in `plane.config.yaml` and the actual state names on

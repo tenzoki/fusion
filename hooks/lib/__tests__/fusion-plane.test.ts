@@ -389,6 +389,167 @@ describe("fusion-plane push --plan: seed-origin write safety", () => {
 });
 
 // ===========================================================================
+// 3c. Map maintenance — `map --forget` / `map --prune`
+//     (issue 260720-0039 …no-map-forget-stale-entries-after-deleting-plane-issues).
+//
+//     Deleting a mirrored issue in the Plane UI — exactly what the documented
+//     first-run cleanup tells the user to do — leaves a dead UUID in the map.
+//     The next push PATCHes it, takes a 404 and defers. `--forget` is the clean
+//     remedy; without it the only way out was hand-editing JSON.
+// ===========================================================================
+describe("fusion-plane map --forget / --prune", () => {
+  /** A workbench whose map holds two unrelated entries. */
+  function workbenchWithTwoEntries(): string {
+    const wb = freshWorkbench();
+    writeFileSync(
+      join(wb, ".plane-map.json"),
+      JSON.stringify({
+        [CIRCLE]: { plane_id: "plane-deleted-in-ui", kind: "circle", last_state: "In Progress" },
+        "shared::issues/260719-1700_o_shared-issue.md": {
+          plane_id: "plane-still-alive",
+          kind: "fusion-issue",
+          last_state: "Todo",
+        },
+      }),
+    );
+    return wb;
+  }
+
+  const readMap = (wb: string) => JSON.parse(readFileSync(join(wb, ".plane-map.json"), "utf-8"));
+
+  it("removes the named entry and leaves the others intact", () => {
+    const wb = workbenchWithTwoEntries();
+    const r = run(wb, "map", "--forget", CIRCLE);
+    expect(r.status).toBe(0);
+    expect(r.stdout).toContain("forgotten");
+    const map = readMap(wb);
+    expect(Object.keys(map)).toEqual(["shared::issues/260719-1700_o_shared-issue.md"]);
+    // The surviving entry is untouched, not merely present.
+    expect(map["shared::issues/260719-1700_o_shared-issue.md"]).toMatchObject({
+      plane_id: "plane-still-alive",
+      last_state: "Todo",
+    });
+  });
+
+  it("a forgotten key makes the next push a create, not a PATCH of the dead UUID", () => {
+    // The whole point of the subcommand: recover the state where fusion will
+    // POST a fresh issue instead of 404-ing against one deleted in the UI.
+    const wb = workbenchWithTwoEntries();
+    // Before: the map knows the Circle record at its current state → no op for
+    // it at all. (Its children are absent from this map, so they plan creates;
+    // the Circle record is the one this test is about.)
+    expect(opFor(plan(run(wb, "push", "--circle", CIRCLE, "--plan").stdout).ops, CIRCLE)).toBeUndefined();
+    run(wb, "map", "--forget", CIRCLE);
+    const op = opFor(plan(run(wb, "push", "--circle", CIRCLE, "--plan").stdout).ops, CIRCLE);
+    expect(op.op).toBe("create");
+    expect(op.plane_id).toBeNull();
+  });
+
+  it("reports an absent key rather than silently succeeding", () => {
+    const wb = workbenchWithTwoEntries();
+    const r = run(wb, "map", "--forget", "no-such-circle");
+    expect(r.status, "a mutation that did not happen is not a success").not.toBe(0);
+    expect(r.stderr + r.stdout).toContain("no such key");
+    // And it changed nothing.
+    expect(Object.keys(readMap(wb))).toHaveLength(2);
+  });
+
+  it("--forget with no key is a usage error", () => {
+    const r = run(freshWorkbench(), "map", "--forget");
+    expect(r.status).toBe(2); // EXIT_USAGE
+  });
+
+  it("plain `map` and `map <key>` still work (dispatch regression guard)", () => {
+    // `map` used to forward only $1; the flags required forwarding "$@". These
+    // two forms must survive that change.
+    const wb = workbenchWithTwoEntries();
+    expect(Object.keys(JSON.parse(run(wb, "map").stdout))).toHaveLength(2);
+    expect(JSON.parse(run(wb, "map", CIRCLE).stdout)).toMatchObject({ plane_id: "plane-deleted-in-ui" });
+    expect(JSON.parse(run(wb, "map", "no-such-key").stdout)).toBe("no such key");
+  });
+
+  it("C4: --prune deletes NOTHING when Plane cannot be reached (or the key is absent)", () => {
+    // The doctrine that makes --prune safe to ship: only a definitive 404 counts
+    // as gone. Against the unreachable `.test` fixture host — or with no key at
+    // all — every entry must survive and the status must be deferred, never a
+    // silent "pruned 2".
+    const wb = workbenchWithTwoEntries();
+    const before = readMap(wb);
+    const r = run(wb, "map", "--prune");
+    expect(r.status).toBe(EXIT_DEFERRED);
+    expect(r.stdout).toContain("deferred");
+    expect(readMap(wb), "an outage must never cost map entries").toEqual(before);
+  });
+
+  it("--forget and --prune are mutually exclusive", () => {
+    const r = run(workbenchWithTwoEntries(), "map", "--forget", CIRCLE, "--prune");
+    expect(r.status).toBe(2); // EXIT_USAGE
+    expect(r.stderr).toContain("mutually exclusive");
+  });
+});
+
+// ===========================================================================
+// 3d. rebuild-map field fallback
+//     (issue 260720-0039 …rebuild-map-reads-description-but-push-writes-description-html).
+//
+//     `build_write_body` embeds the natural key in `description_html`, but
+//     rebuild used to read `.description` alone. On an instance that does not
+//     derive one field from the other, the board looks perfect while the
+//     map-loss recovery path silently rebuilds nothing. The extraction must try
+//     the same chain the seed path uses.
+// ===========================================================================
+describe("fusion-plane push --rebuild-map: embedded-key field fallback", () => {
+  const rebuildFixture = join(fixtureRoot, "rebuild-issues.json");
+
+  /** Rebuild from the captured issues JSON (no curl), then read the map back. */
+  function rebuiltMap(): Record<string, any> {
+    const wb = freshWorkbench();
+    // The push itself defers (unreachable fixture host); the rebuild runs first
+    // and is what we assert on.
+    run(wb, "push", "--circle", CIRCLE, "--rebuild-map", "--fixture", rebuildFixture);
+    return JSON.parse(readFileSync(join(wb, ".plane-map.json"), "utf-8"));
+  }
+
+  it("finds the key when it sits in description_html (what push actually writes)", () => {
+    // THE regression: this is the field `build_write_body` populates, and the
+    // one the old single-field read missed.
+    expect(rebuiltMap()["260719-1536-html-circle"]).toMatchObject({ plane_id: "plane-uuid-html" });
+  });
+
+  it("finds the key when it sits in the plain description", () => {
+    expect(rebuiltMap()["260719-1536-plain-circle"]).toMatchObject({ plane_id: "plane-uuid-plain" });
+  });
+
+  it("finds the key when it sits in description_stripped", () => {
+    expect(rebuiltMap()["260719-1536-stripped-circle"]).toMatchObject({ plane_id: "plane-uuid-stripped" });
+  });
+
+  it("survives a non-string description (ProseMirror doc) and reads the HTML field", () => {
+    // Some Plane builds return `description` as a JSON document object. Passing
+    // that to jq's `capture` errors, which the caller's 2>/dev/null turned into
+    // a bare "could not parse issues" — losing the whole rebuild, not just the
+    // one issue. The type guard keeps the rest of the set readable.
+    const map = rebuiltMap();
+    expect(map["260719-1536-prosemirror-circle"]).toMatchObject({ plane_id: "plane-uuid-prosemirror" });
+    expect(Object.keys(map).length, "one odd issue must not abort the whole rebuild").toBe(4);
+  });
+
+  it("ignores issues carrying no embedded fusion-key (a human's own story)", () => {
+    const map = rebuiltMap();
+    expect(Object.values(map).some((e: any) => e.plane_id === "plane-uuid-human")).toBe(false);
+  });
+
+  it("rebuilt entries carry the documented placeholder shape", () => {
+    expect(rebuiltMap()["260719-1536-html-circle"]).toEqual({
+      plane_id: "plane-uuid-html",
+      kind: "unknown",
+      last_state: "",
+      last_pushed: "",
+    });
+  });
+});
+
+// ===========================================================================
 // 4. Offline / C4 — never-silent, outbox line, deferred status, no crash
 // ===========================================================================
 describe("fusion-plane push (live): offline C4 doctrine", () => {

@@ -25,6 +25,10 @@
 #                     the origin UUID under the new Circle's key (Phase B, no net).
 #                     `--plan --fixture <json>` is the dry-run test seam.
 #   map   [<key>]     Dump .plane-map.json, or inspect one natural key.
+#                     `--forget <key>` drops one entry (reports whether it was
+#                     there — never a silent no-op). `--prune` drops every entry
+#                     whose Plane issue is definitively gone (HTTP 404); an
+#                     unreachable Plane deletes NOTHING (C4).
 #   states            Resolve and print canonical → instance → UUID state map.
 #   doctor            Report key presence, config validity, states/ reachability.
 #
@@ -63,6 +67,10 @@
 # Test seam: FUSION_PLANE_WORKBENCH=<dir> overrides workbench resolution so the
 # vitest suite can point at a fixture workbench (its own plane.config.yaml +
 # circles/…). FUSION_PLANE_DRYRUN=1 forces --plan for any push.
+# `push --rebuild-map --fixture <captured issues JSON>` (or
+# FUSION_PLANE_ISSUES_FIXTURE) runs the rebuild extraction against a captured
+# `GET issues/` response instead of the wire — same seam shape as
+# `seed --plan --fixture`.
 #
 # Dependencies: bash, zsh (login profile exports the key), curl, jq, awk, sed,
 # date, mktemp, sort. jq is required (JSON map/plan); config YAML is parsed by a
@@ -664,34 +672,62 @@ emit_plan() {
   fi
 }
 
+# JQ_REBUILD_MAP — reconstruct the natural-key → Plane-UUID map from a
+# `GET issues/` response by reading the embedded `fusion-key:` line back out.
+#
+# FIELD FALLBACK (must stay consistent with the seed path's
+# `.description_stripped // .description_html`): different Plane builds populate
+# different body fields, and `build_write_body` writes the key into
+# `description_html`. Reading only ONE field made the whole map-loss recovery
+# path fail silently on any instance that does not derive one field from the
+# other — the board looked correct while rebuild found nothing. So try all three,
+# in the seed path's order, and take the first that yields a key.
+#
+# `select(type=="string")` is load-bearing: Plane's `description` is a
+# ProseMirror document (an object) on some builds, and `capture` errors on a
+# non-string input — which the caller's `2>/dev/null` would have turned into a
+# bare "could not parse issues".
+JQ_REBUILD_MAP='
+  (.results // .) as $issues
+  | reduce $issues[] as $i ({};
+      ( [$i.description_stripped, $i.description_html, $i.description]
+        | map(select(type == "string"))
+        | map(capture("fusion-key: (?<k>[^\n<]+)").k)
+        | (.[0] // "") ) as $key
+      | if $key == "" then . else .[$key|ltrimstr(" ")|rtrimstr(" ")] =
+          {plane_id:$i.id, kind:"unknown", last_state:"", last_pushed:""} end)'
+
 # push --rebuild-map: reconstruct .plane-map.json from Plane by reading the
-# embedded fusion-key out of each issue's description (live; best-effort).
+# embedded fusion-key out of each issue's body (live; best-effort).
+# rebuild_map [<fixture>] — with a fixture path, read the captured issues JSON
+# from that file instead of the wire (test seam; no curl, no key needed).
 rebuild_map() {
-  info "rebuilding .plane-map.json from Plane (embedded fusion-key)…"
-  if ! plane_curl GET "$BASE/issues/?per_page=100"; then
-    err "rebuild-map: Plane unreachable (curl rc $PLANE_CURL_RC) — map not changed"
-    return "$EXIT_DEFERRED"
+  local fixture="${1:-}" issues_json tmp
+  if [ -n "$fixture" ]; then
+    [ -f "$fixture" ] || { err "rebuild-map: fixture not found: $fixture"; return "$EXIT_CONFIG"; }
+    info "rebuilding .plane-map.json from fixture $fixture (embedded fusion-key)…"
+    issues_json="$(cat "$fixture")"
+  else
+    info "rebuilding .plane-map.json from Plane (embedded fusion-key)…"
+    if ! plane_curl GET "$BASE/issues/?per_page=100"; then
+      err "rebuild-map: Plane unreachable (curl rc $PLANE_CURL_RC) — map not changed"
+      return "$EXIT_DEFERRED"
+    fi
+    case "$PLANE_HTTP_CODE" in
+      2*) issues_json="$PLANE_BODY" ;;
+      *)  err "rebuild-map: HTTP $PLANE_HTTP_CODE — map not changed"; return "$EXIT_DEFERRED" ;;
+    esac
   fi
-  case "$PLANE_HTTP_CODE" in
-    2*) : ;;
-    *)  err "rebuild-map: HTTP $PLANE_HTTP_CODE — map not changed"; return "$EXIT_DEFERRED" ;;
-  esac
-  local tmp
   tmp="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-rebuild.XXXXXX")"
-  printf '%s' "$PLANE_BODY" | jq '
-    (.results // .) as $issues
-    | reduce $issues[] as $i ({};
-        ( ($i.description // "") | capture("fusion-key: (?<k>[^\n<]+)").k // empty ) as $key
-        | if $key == "" then . else .[$key|ltrimstr(" ")|rtrimstr(" ")] =
-            {plane_id:$i.id, kind:"unknown", last_state:"", last_pushed:""} end)
-  ' > "$tmp" 2>/dev/null || { err "rebuild-map: could not parse issues"; rm -f "$tmp"; return "$EXIT_CONFIG"; }
+  printf '%s' "$issues_json" | jq "$JQ_REBUILD_MAP" > "$tmp" 2>/dev/null \
+    || { err "rebuild-map: could not parse issues"; rm -f "$tmp"; return "$EXIT_CONFIG"; }
   mv "$tmp" "$MAP"
   info "rebuild-map: wrote $(jq 'length' "$MAP") entries"
 }
 
 # ── Subcommands ──────────────────────────────────────────────────────────────
 cmd_push() {
-  local target="" want_all=0 rebuild=0
+  local target="" want_all=0 rebuild=0 rebuild_fixture=""
   while [ "$#" -gt 0 ]; do
     case "$1" in
       --plan)        DRYRUN=1 ;;
@@ -704,6 +740,9 @@ cmd_push() {
       # MARTIN.md). Accepting the flag now keeps the wiring edit body-only.
       --closure)     CLOSURE=1 ;;
       --rebuild-map) rebuild=1 ;;
+      # Test seam: rebuild the map from a captured `GET issues/` response.
+      --fixture)     shift; rebuild_fixture="${1:-}"; [ -n "$rebuild_fixture" ] || { err "push: --fixture needs a path"; return "$EXIT_USAGE"; } ;;
+      --fixture=*)   rebuild_fixture="${1#--fixture=}" ;;
       --circle)      shift; target="${1:-}"; [ -n "$target" ] || { err "--circle needs a directory"; return "$EXIT_USAGE"; } ;;
       --circle=*)    target="${1#--circle=}" ;;
       *)             err "push: unknown flag '$1'"; return "$EXIT_USAGE" ;;
@@ -711,11 +750,19 @@ cmd_push() {
     shift
   done
   [ "${FUSION_PLANE_DRYRUN:-0}" = "1" ] && DRYRUN=1
+  [ -z "$rebuild_fixture" ] && [ -n "${FUSION_PLANE_ISSUES_FIXTURE:-}" ] && rebuild_fixture="$FUSION_PLANE_ISSUES_FIXTURE"
 
   resolve_workbench || return "$EXIT_CONFIG"
   cfg_load          || return "$EXIT_CONFIG"
   build_base
   map_ensure
+
+  # A fixture-driven rebuild needs neither key nor network, so it runs ahead of
+  # the live gate below (and clears the flag, leaving that branch untouched).
+  if [ "$rebuild" -eq 1 ] && [ -n "$rebuild_fixture" ]; then
+    rebuild_map "$rebuild_fixture" || return "$?"
+    rebuild=0
+  fi
 
   # Live commands need config + key; dry-run needs neither network nor key.
   if [ "$DRYRUN" -eq 0 ]; then
@@ -827,11 +874,99 @@ cmd_states() {
   done
 }
 
+# map_forget <natural-key> — drop ONE entry. Reports whether it was there; an
+# absent key is a reported failure (EXIT_CONFIG), never a silent no-op, because
+# the caller asked for a mutation that did not happen.
+map_forget() {
+  local nk="$1" tmp
+  map_ensure
+  if [ "$(jq -r --arg k "$nk" 'has($k)' "$MAP")" != "true" ]; then
+    err "map --forget: no such key '$nk' — map not changed"
+    printf 'STATUS: not found (%s)\n' "$nk"
+    return "$EXIT_CONFIG"
+  fi
+  tmp="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-map.XXXXXX")"
+  jq --arg k "$nk" 'del(.[$k])' "$MAP" > "$tmp" && mv "$tmp" "$MAP"
+  printf 'STATUS: forgotten (%s) — %s entries remain\n' "$nk" "$(jq 'length' "$MAP")"
+}
+
+# map_prune — drop every entry whose Plane issue is DEFINITIVELY gone.
+#
+# C4 doctrine: only an HTTP 404 counts as gone. A transport failure, a 5xx, a
+# 429, an absent key — every "we could not tell" answer leaves the entry alone
+# and returns EXIT_DEFERRED. An unreachable Plane must never delete anything;
+# that would turn a network outage into map loss.
+map_prune() {
+  local nk pid tmp checked=0 dropped=0 unknown=0
+  map_ensure
+  cfg_load     || return "$EXIT_CONFIG"
+  build_base
+  config_valid || return "$EXIT_CONFIG"
+  if ! plane_key_present; then
+    err "map --prune: PLANE_API_KEY absent — cannot confirm any issue is gone; map not changed"
+    printf 'STATUS: deferred (0 pruned) — key absent\n'
+    return "$EXIT_DEFERRED"
+  fi
+  while IFS= read -r nk; do
+    [ -n "$nk" ] || continue
+    pid="$(map_get_id "$nk")"
+    [ -n "$pid" ] || continue
+    checked=$((checked + 1))
+    if ! plane_curl GET "$BASE/issues/${pid}/"; then
+      info "prune: keeping '$nk' — Plane unreachable (curl rc $PLANE_CURL_RC), cannot confirm"
+      unknown=$((unknown + 1))
+      continue
+    fi
+    case "$PLANE_HTTP_CODE" in
+      404)
+        tmp="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-map.XXXXXX")"
+        jq --arg k "$nk" 'del(.[$k])' "$MAP" > "$tmp" && mv "$tmp" "$MAP"
+        info "prune: dropped '$nk' (Plane issue $pid is gone — HTTP 404)"
+        dropped=$((dropped + 1))
+        ;;
+      2*) : ;;
+      *)
+        info "prune: keeping '$nk' — HTTP $PLANE_HTTP_CODE is not a definitive 404"
+        unknown=$((unknown + 1))
+        ;;
+    esac
+    sleep 0.2   # pace calls under 60/min
+  done < <(jq -r 'keys[]' "$MAP")
+  if [ "$unknown" -gt 0 ]; then
+    printf 'STATUS: deferred (%d pruned of %d checked, %d unconfirmed) — nothing deleted on doubt\n' \
+      "$dropped" "$checked" "$unknown"
+    return "$EXIT_DEFERRED"
+  fi
+  printf 'STATUS: ok (%d pruned of %d checked)\n' "$dropped" "$checked"
+}
+
 cmd_map() {
+  local forget="" want_prune=0 key=""
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --forget)   shift; forget="${1:-}"; [ -n "$forget" ] || { err "map --forget needs a natural key"; return "$EXIT_USAGE"; } ;;
+      --forget=*) forget="${1#--forget=}"; [ -n "$forget" ] || { err "map --forget needs a natural key"; return "$EXIT_USAGE"; } ;;
+      --prune)    want_prune=1 ;;
+      -*)         err "map: unknown flag '$1'"; return "$EXIT_USAGE" ;;
+      "")         : ;;
+      *)          [ -z "$key" ] || { err "map: unexpected extra argument '$1'"; return "$EXIT_USAGE"; }; key="$1" ;;
+    esac
+    shift
+  done
+  if [ -n "$forget" ] && [ "$want_prune" -eq 1 ]; then
+    err "map: --forget and --prune are mutually exclusive"
+    return "$EXIT_USAGE"
+  fi
+
   resolve_workbench || return "$EXIT_CONFIG"
   map_ensure
-  if [ "$#" -ge 1 ] && [ -n "$1" ]; then
-    jq --arg k "$1" '.[$k] // "no such key"' "$MAP"
+
+  if [ -n "$forget" ]; then
+    map_forget "$forget"
+  elif [ "$want_prune" -eq 1 ]; then
+    map_prune
+  elif [ -n "$key" ]; then
+    jq --arg k "$key" '.[$k] // "no such key"' "$MAP"
   else
     jq '.' "$MAP"
   fi
@@ -1064,7 +1199,11 @@ Subcommands:
   push [--circle <dir>|--all] [--plan] [--rebuild-map] [--closure]
                         Reconcile a Circle (or all) into Plane.
                         --plan      dry-run: emit the JSON op list, no curl.
-                        --rebuild-map  rebuild .plane-map.json from Plane first.
+                        --rebuild-map  rebuild .plane-map.json from Plane first,
+                                   reading the embedded fusion-key back out of
+                                   description_stripped / _html / description.
+                                   With --fixture <json>, rebuild from a captured
+                                   `GET issues/` response instead (test seam).
   plan --circle <dir>|--all
                         Dry-run alias for `push --plan`.
   seed <seq>            Bounded one-shot read: resolve sequence_id, GET the
@@ -1075,6 +1214,14 @@ Subcommands:
     seed --plan --fixture <captured issue JSON>
                         Dry-run seam: lookup+extract against a fixture, no curl.
   map [<natural-key>]   Dump .plane-map.json, or inspect one entry.
+    map --forget <natural-key>
+                        Drop ONE entry (use after deleting its issue in Plane,
+                        so the next push creates rather than PATCHing a dead
+                        UUID). Reports whether the key was there; an absent key
+                        exits 1 rather than silently succeeding.
+    map --prune         Drop every entry whose Plane issue is definitively gone
+                        (HTTP 404). Needs the key and a reachable Plane; on any
+                        inconclusive answer it deletes NOTHING and exits 10.
   states                Resolve+print canonical → instance → UUID states.
   doctor                Report key presence, config validity, states/ reach.
 
@@ -1083,6 +1230,7 @@ Env:
   FUSION_PLANE_DRYRUN=1    force --plan for any push / seed.
   FUSION_PLANE_WORKBENCH   override workbench dir (test seam).
   FUSION_PLANE_SEED_FIXTURE  captured `GET issues/` JSON for `seed --plan` (test seam).
+  FUSION_PLANE_ISSUES_FIXTURE  captured `GET issues/` JSON for `push --rebuild-map` (test seam).
 EOF
 }
 
@@ -1092,7 +1240,7 @@ case "$cmd" in
   push)   cmd_push "$@" ;;
   plan)   cmd_plan "$@" ;;
   seed)   cmd_seed "$@" ;;
-  map)    cmd_map "${1:-}" ;;
+  map)    cmd_map "$@" ;;
   states) cmd_states ;;
   doctor) cmd_doctor ;;
   ""|-h|--help|help)
