@@ -1,8 +1,8 @@
 # Plane setup — wiring the fusion work-queue mirror
 
 fusion can mirror its work queue into a [Plane](https://plane.so) project: every
-Circle, fusion issue, and decision appears as a Plane issue, labelled by kind and
-kept in the matching state. The mirror is **push-only and idempotent** — files in
+Circle, fusion issue, and decision appears as a Plane issue, kept in the matching
+state, with its children attached. The mirror is **push-only and idempotent** — files in
 `fusion-workbench/` are always the source of truth, Plane is a secondary read-along
 view. fusion stays fully operational when Plane is unreachable and rebuilds the
 mirror from files on the next reconcile.
@@ -112,22 +112,108 @@ on an existing workbench is safe.
 
 ### Push on a throwaway Circle first
 
-Before you rely on the mirror, activate or pick a disposable Circle and let one push
-land. Then look at the Plane board and check the issue appeared, carries the right
-kind label, and sits in the state matching the fusion marker.
+Before you rely on the mirror, put one push through a Circle you are willing to throw
+away, and check the result on the board by hand. It takes about five minutes.
 
-The reason is narrow and worth knowing: `doctor` verifies the key, the config, and
-`states/` reachability — it does **not** verify the issue create/update body. That
-body uses Plane API v1 conventional fields (`name`, `description_html`, `state`,
-`parent`). They are standard, but they have not been confirmed against every
-self-hosted build. If a field name is wrong on your instance, the symptom is a
-missing or malformed issue body — and `push --rebuild-map` could not recover the map
-afterwards, because it rebuilds by reading the natural key embedded in the
-description. So the first real push is the live check that `doctor` can't do for you.
+#### The procedure
+
+**0. Dry run first — zero risk, nothing goes over the wire.**
+
+```bash
+bin/fusion-plane push --plan --circle <circle-dir>
+```
+
+This emits, as JSON, exactly the operations it *would* perform: one op per artifact,
+each with its `kind` (`circle` / `fusion-issue` / `decision`), the target `state`, the
+`write_scope` (`full` vs `state-only`), and the `writes` list — the precise set of body
+fields the call will carry. If any of that looks wrong, stop here; nothing has
+happened. The dry run needs no API key and makes no network call. It does need
+`fusion-workbench/plane.config.yaml` to exist and parse — without it the helper exits
+1 rather than planning against defaults.
+
+**1. Create a disposable Circle.** "Throwaway" means a Circle created only for this
+check, whose Plane issues you delete afterwards, so no real work lands on the board.
+The quickest way:
+
+```bash
+/fusion:direct "Plane bridge smoke test"
+```
+
+That writes an anticipated (`_a_`) Circle, which maps to **Backlog**. A fresh `_a_`
+Circle has no issues or decisions yet, so it pushes as a single top-level Plane issue
+with no children — fine for checks 1-4 below, but it will not exercise the sub-issue
+path. Note also that *activating* a Circle makes the orchestrator push on its own; for
+a pure check, leave it anticipated and push by hand.
+
+**2. The real push.**
+
+```bash
+bin/fusion-plane push --circle <circle-dir>
+```
+
+Expect a final `STATUS:` line — `STATUS: ok (1 pushed)` on success, or
+`STATUS: deferred (0 pushed, 1 deferred) — see …/.plane-outbox.jsonl` if something was
+unreachable. The count is artifacts actually created or updated.
+
+**3. Check four things on the Plane board.** This is the actual verification:
+
+1. the issue exists, and its title matches the Circle's H1;
+2. its state matches the fusion marker (`_a_` → Backlog, `_t_` → In Progress, `_c_`/`_b_`
+   → Done);
+3. children, if the Circle has any, are attached to it — as nested sub-issues, or as
+   links (see below);
+4. **the description is non-empty and contains the embedded natural key** — the line
+   `fusion-key: <circle-directory-name>`.
+
+Check 4 is *the* critical one. An empty description, or one missing the key, means
+`description_html` is the wrong body field name on your instance. It is the single
+failure that is otherwise completely silent: the push reports `ok`, the issue looks
+plausible on the board, and you only discover the problem later when
+`push --rebuild-map` cannot reconstruct the map — because rebuilding works by reading
+that embedded key back out.
+
+Note what is *not* on this list: fusion does **not** write Plane labels. The `kind`
+(`circle` / `fusion-issue` / `decision`) lives in `push --plan` output and in
+`.plane-map.json`; it is not sent to the board, so do not go looking for a kind label
+there.
+
+**4. Idempotency check.** Run the same push again. No second issue may appear — the
+existing one is only updated. Two observable signals: the live run reports
+`STATUS: ok (0 pushed)`, and `push --plan --circle <circle-dir>` now emits `{"ops":[]}`,
+an empty op list.
+
+**5. Clean up.** Delete the test issues in Plane, then close or drop the throwaway
+Circle. **Also remove its entries from `fusion-workbench/.plane-map.json`** — deleting
+an issue in Plane does not prune the map, and the next push would try to PATCH a dead
+UUID, get a 404, and defer. There is no `map --forget` subcommand; edit the JSON, or
+delete the whole file if this Circle was the only thing you had mirrored.
+
+#### Why this is worth doing
+
+`doctor` verifies the key, the config, and `states/` reachability — it does **not**
+verify the issue create/update body. That body uses Plane API v1 conventional fields
+(`name`, `description_html`, `state`, `parent`). They are standard, but they have not
+been confirmed against every self-hosted build. So the first real push is the live
+check that `doctor` cannot do for you.
 
 The sub-issue `parent` path is already safe either way: if an instance rejects or
 ignores `parent`, the helper falls back to the verified `issues/{id}/links/` endpoint,
 so the child still gets attached.
+
+#### If a check fails
+
+- **Empty description, or no `fusion-key:` line** → the body field name is wrong for
+  this instance. Fix `build_write_body` in `bin/fusion-plane`.
+- **Description looks right on the board but `push --rebuild-map` finds nothing** →
+  narrower variant of the same thing: fusion writes `description_html`, while
+  rebuild reads the plain `description` field. If your instance does not populate one
+  from the other, rebuild needs to read the HTML field instead.
+- **Wrong or missing state** → run `bin/fusion-plane states`. It prints canonical →
+  instance-name → UUID and marks anything it cannot resolve as `<unresolved>`; compare
+  that against the `states:` names in `plane.config.yaml` and the actual state names on
+  your board.
+- **Children appear as links rather than nested sub-issues** → the `parent` fallback
+  engaged. Expected behaviour on instances that ignore `parent`, not a failure.
 
 ### Seeding is safe for your existing stories
 
@@ -144,8 +230,9 @@ distinction. `push --plan` also shows the write scope per issue (`state-only` vs
 ### What "it worked" looks like
 
 - `bin/fusion-plane doctor` reports green on all three checks.
-- One push produces the expected Plane issues, correctly labelled and stated.
-- A second push of the same Circle creates nothing new — it updates in place.
+- One push produces the expected Plane issues, in the right states, with the
+  `fusion-key:` line present in each description.
+- A second push of the same Circle creates nothing new — it reports `0 pushed`.
 - A push while Plane is unreachable writes a `.plane-outbox.jsonl` line and reports
   `deferred`, without blocking the Turn.
 
