@@ -46,7 +46,7 @@ credentials.json
 .claude/.needs-reanchor
 
 # fusion-workbench is a runtime artifact created by agents in the consuming project
-fusion-workbench/
+## fusion-workbench/
 
 # .fusion/ holds the project-local `fu` launcher copied from bin/fu at Setup — runtime artifact
 .fusion/
