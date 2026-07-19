@@ -37,7 +37,7 @@ Since v4.0.0 the **Writes** column names artifact *kinds*, not fixed root paths.
 | `analyst` | Document study and problem analysis — comparative, gap, risk, feasibility, impact | Anything | `analyses/`, `issues/`, `history/` | Analysis report + issue files |
 | `editor` | Produce-only Redakteur — writes, revises, translates (en↔de), and renders **customer-ready deliverables**; branded decks via `dl-brand-pptx` + `pptx` | Anything | **Project-side deliverables** (Markdown, branded pptx, translations), `history/` (session log only) | Finished deliverable + history log |
 | `orchestrator` | Automates multi-task work sessions: runs Turns of execution, review, and reconciliation until the Directive converges or a circuit breaker fires | Anything | Dispatches agents, creates commits, writes `history/` | Progress report + commits + updated tracking files |
-| `playmaker` | Circle portfolio management — ranks anticipated Circles, proposes next activation, detects cycles, flags parent-Grounding-stale | All of `fusion-workbench/`, `CLAUDE.md`, codebase | `circles/<stamp>-<slug>/[m]-circle.md`, `portfolio.md`, `history/` | Updated Circle records + portfolio brief + history log |
+| `playmaker` | Circle portfolio management — ranks anticipated Circles, proposes next activation, detects cycles, flags parent-Grounding-stale | All of `fusion-workbench/`, `CLAUDE.md`, codebase | `circles/<stamp>-<slug>/_a_circle.md`, `portfolio.md`, `history/` | Updated Circle records + portfolio brief + history log |
 
 **Hard rule across all agents:** read-only on layers outside the agent's primary scope. A reviewer never edits code. A `coder` never edits ontology yaml. An `ontocoder` never edits Go. The investigator never edits anything inside its evidence captures. The orchestrator never edits code or data directly — it dispatches executors. Cross-layer findings are filed as issues and routed to the right executor. The scope is enforced by prose in each agent's prompt, not by a `tools:` allowlist. **Exception:** `bugfixer` may edit both code and data because bugs cross layer boundaries — but ontology edits require a human gate.
 
@@ -150,13 +150,20 @@ Two side loops feed into the chain at any point (outside the orchestrator's scop
 
 ## Plugin structure
 
-The plugin ships exactly one rule file: `rules/fusion-workbench-conventions.md` — the framework conventions every agent must follow (state markers, filename patterns, issue filing, history logging). Domain-specific rules (coding standards, ontology constraints, etc.) are **supplied by the consuming project** in its own `./rules/` directory.
+The plugin ships a set of framework rule files under `rules/`, split into an always-on core and conditionally-emitted extras:
 
-Agents discover their applicable rules via the helper `bin/fusion-rules <agent-name>`, which runs in each agent's Setup. The helper:
+- **Always-on core** (every agent, in this order): `agent-setup.md` — emitted **first**, the factored Setup contract every one of the 16 prompts points at (read-every-emitted-path, the `bin/fusion-paths` `OUT_*`/`SCAN_*` semantics, exit-code handling) — then `fusion-workbench-conventions.md` (layout, state markers, filename patterns, issue filing, history logging), `decision-record-examples.md`, `user-facing-output.md`, `critical-stance.md`, and `git-branch-discipline.md`, plus the project's short-form `chat-voice-<lang>.yaml` stylometric profile.
+- **Conditional:** `design-diagrams.md` for the design-diagram agents (the five producers + `conceptrev`); the long-form `default-voice-<lang>.yaml` for the prose agents; and per-agent domain patterns (below).
+- **Mechanism docs:** `context-manifest.md` and `context-lean-claude-md.md` author the optional topic-scoped loading convention (below); they are shipped, not auto-emitted.
 
-1. Always emits `$FUSION_PLUGIN_ROOT/rules/fusion-workbench-conventions.md`.
-2. Globs filename patterns against both `$FUSION_PLUGIN_ROOT/rules/` (plugin-shipped extras, if any) and `./rules/` (project-local).
-3. Returns each match on its own line. The agent reads every emitted path.
+Domain-specific rules (coding standards, ontology constraints, etc.) are **supplied by the consuming project** in its own `./rules/` (fusion-agent-specific) or `.claude/rules/` (project-wide) directory.
+
+Agents discover their applicable rules via the helper `bin/fusion-rules <agent-name> [<topic>]`, which runs in each agent's Setup. The helper:
+
+1. Emits the always-on core first — `agent-setup.md` ahead of everything, so an agent reads *how Setup works* before the detailed conventions — then the conditional extras for its agent kind.
+2. Globs domain filename patterns against `$FUSION_PLUGIN_ROOT/rules/`, `./rules/` (fusion-agent-specific), and `.claude/rules/` (project-wide).
+3. If the consuming project ships `./rules/context-manifest.yaml`, additionally emits the manifest units whose agent **and** topic match — a `path` unit as a file to read, a `skill:<name>` unit as an on-demand pointer. The topic comes from the optional `<topic>` argument, else the active Circle (an explicit `Topic:`/`Tags:` line, else the Circle slug). With the manifest **absent**, output is byte-identical to the pre-manifest behaviour.
+4. Returns each match on its own line. The agent reads every emitted path.
 
 `$FUSION_PLUGIN_ROOT` is exported by the plugin's `SessionStart` hook.
 
@@ -167,7 +174,7 @@ Agents discover their applicable rules via the helper `bin/fusion-rules <agent-n
 | `coder`, `coderev`, `bugfixer` | `*coding*` | `rules/coding-guidelines.md`, `rules/coding-architecture.md` |
 | `ontocoder`, `ontorev` | `*ontology*`, `*normative*`, `*verb*` | `rules/ontology-rules.md`, `rules/verb-ontology.md`, `rules/normative.md` |
 | `planner` | `*coding*`, `*ontology*` | both groups above |
-| `orchestrator`, `shaper`, `taskplanner`, `reconciler`, `analyst`, `investigator`, `consultant`, `playmaker`, `conceptrev` | (workbench conventions only) | — |
+| `orchestrator`, `shaper`, `taskplanner`, `reconciler`, `analyst`, `investigator`, `consultant`, `playmaker`, `conceptrev`, `editor` | (workbench conventions only) | — |
 
 If a pattern has no match in either directory, the agent operates on workbench conventions alone — agents skip missing rules silently rather than failing. Consuming projects can add their own rule files at any time and the next session picks them up automatically.
 
@@ -195,6 +202,10 @@ In a consuming project, drop a markdown file into `./rules/` whose name contains
 | `/fusion:revise-claude-md` | `skills/revise-claude-md/SKILL.md` | Revises `CLAUDE.md` with learnings discovered during the current session (three-pass: add / update / prune) |
 | `/fusion:unlock` | `skills/unlock/SKILL.md` | Writes a permissive `.claude/settings.local.json` so future sessions skip per-tool approval prompts |
 | `/fusion:cleanup` | `skills/cleanup/SKILL.md` | Autonomous session wrap-up: files issues for open tasks, commits + pushes the work in meaningful splits, reconciles, archives (tier-1), revises `CLAUDE.md`, logs activity, then commits + pushes the housekeeping artifacts |
+| `/fusion:next` | `skills/next/SKILL.md` | Portfolio briefing — dispatches `playmaker`, renders the next-recommended Circle, and offers interactive activation |
+| `/fusion:direct` | `skills/direct/SKILL.md` | Drafts a Directive as an anticipated (`_a_`) Circle — `shaper` refines a one-line draft via clarifying questions and writes the Circle record without starting a Turn loop |
+| `/fusion:circle-stash` | `skills/circle-stash/SKILL.md` | Freezes the complete state of the active Circle (its directory, the pointer, agent state, dashboard, queue, working tree) into a self-contained stash for later restoration |
+| `/fusion:circle-pop` | `skills/circle-pop/SKILL.md` | Restores a stashed Circle into the workbench, with HEAD-hash drift detection. Pairs with `/fusion:circle-stash` |
 
 Slash commands are independent of sub-agent routing — invoke them from the parent session when you need to commit, set up, or revise project-level rules.
 
@@ -206,7 +217,7 @@ Since v4.0.0 the workbench is **Circle-as-container**: a Circle is a directory h
 
 ```
 fusion-workbench/
-├── circles/<stamp>-<slug>/     # one directory per unit of work; [m]-circle.md carries the marker
+├── circles/<stamp>-<slug>/     # one directory per unit of work; _t_circle.md carries the marker (all states glob as *_circle.md)
 │   ├── planning/  issues/  decisions/  history/  analyses/
 │   └── reviews/                # coderev + ontorev + conceptrev output, merged (sender in filename)
 ├── shared/                     # everything with no Circle affiliation

@@ -43,6 +43,7 @@ A unit of work is a **Circle**. Most sessions run one Circle implicitly. When yo
 ## Where to read more
 
 - `README.md` — install, setup, first session, best practices, configuration.
+- [`working-model.md`](working-model.md) — how the working model operates: the Circle flow, the spec-driven pipeline, the gates, and the compliance guard, walked end to end (the "how" companion to this "why").
 - `README-agents.md` — the full agent reference (scope, inputs, outputs, when to invoke).
 - `README-hooks.md` — the compliance guard in detail.
 - `CLAUDE.md` — layout, release process, troubleshooting (for plugin developers).

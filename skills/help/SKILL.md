@@ -20,9 +20,11 @@ If a question goes beyond what the docs cover, **say so** — do not invent.
 
 ### 1. Philosophy — *why fusion exists*
 
-Read `$FUSION_PLUGIN_ROOT/docs/philosophy.md`. It covers the three load-bearing ideas (specialization beats generalists, workbench-mediated coordination, compliance over speed) and the domain-parameter design that lets the same plumbing serve `code | data | strategic | knowledge` projects.
+Read `$FUSION_PLUGIN_ROOT/docs/philosophy.md`. It covers the five "Why it's built this way" pillars — specialization beats generalists, coordination through files (not shared memory), traceability as a first-class output, compliance over speed, and one framework across many project shapes — the last being the domain-parameter design that lets the same plumbing serve `code | data | strategic | knowledge` projects.
 
-If the user wants a fast answer, summarize the three pillars in three sentences. If they want to go deep, walk them through the doc.
+For *how the machinery actually runs* — the Circle lifecycle, the spec-driven flow, the gates, and the compliance guard end to end — point the user at `$FUSION_PLUGIN_ROOT/docs/working-model.md` (the operational companion to this "why" doc).
+
+If the user wants a fast answer, summarize the pillars in a few sentences. If they want to go deep, walk them through the doc.
 
 ### 2. Daily practice — *how to use it once installed*
 
@@ -36,7 +38,8 @@ Once `/fusion:setup` has run in a project, the day-to-day flow is:
    - Concrete change with a clear ask → **planner** directly
    - One bug to fix → **bugfixer**
    - Forensic look at a captured failed run → **investigator**
-   - "What should I work on next?" → **taskplanner**
+   - Customer-ready deliverable, branded deck, or en↔de translation → **editor**
+   - "What should I work on next?" → `/fusion:next` for the portfolio briefing + next-Circle activation (**playmaker**); **taskplanner** builds the in-Circle work queue
    - Tracking files feel stale → **reconciler**
    - Strategic advice or second opinion → **consultant**
    - Deep document/problem study before work → **analyst**
@@ -49,7 +52,7 @@ Once `/fusion:setup` has run in a project, the day-to-day flow is:
 
 5. **Recovering after a crash:** re-run `/fusion:setup`. It reads `fusion-workbench/agentstate.yaml`, surfaces interrupted tasks, and offers to resume.
 
-For the full agent reference (scope, inputs, outputs, exact dispatch criteria), point the user at `$FUSION_PLUGIN_ROOT/README-agents.md`.
+For the full agent reference (scope, inputs, outputs, exact dispatch criteria), point the user at `$FUSION_PLUGIN_ROOT/README-agents.md`. For the working model behind the day-to-day flow — the Circle lifecycle, spec-driven flow, the gates, and the compliance guard walked end to end — point them at `$FUSION_PLUGIN_ROOT/docs/working-model.md`.
 
 ### 3. Install — *getting fusion into a project*
 
@@ -82,7 +85,7 @@ Three things to configure:
 - **Project rules:** read `$FUSION_PLUGIN_ROOT/bin/fusion-rules` (the header comment is the spec). Two project-side rule locations:
   - `./rules/` — fusion-agent-specific rules (e.g. `investigator-capture-layout.md`, `taskplanner-priorities.md`) that have no meaning outside a fusion context.
   - `.claude/rules/` — project-wide rules every Claude session should respect (coding/ontology/normative/verb guidelines).
-  Both are loaded by `bin/fusion-rules` per agent-name pattern.
+  Both are loaded by `bin/fusion-rules` per agent-name pattern. For large knowledge bodies you don't want loaded on every run, a project may also ship `./rules/context-manifest.yaml` — it registers topic-scoped loadable units (each a rule file or a `skill:<name>` pointer), pulled only when the agent **and** the active topic match (`bin/fusion-rules <agent> [<topic>]`). This lets `CLAUDE.md` stay a lean index rather than carrying everything inline. The mechanism is authored in `$FUSION_PLUGIN_ROOT/rules/context-manifest.md` (and the lean-`CLAUDE.md` convention in `rules/context-lean-claude-md.md`); absent the manifest, loading is byte-identical to before.
 - **Investigator capture layout:** if the project has an evidence-locker (failed runs captured for forensic analysis), copy `$FUSION_PLUGIN_ROOT/templates/investigator-capture-layout.md` to `./rules/investigator-capture-layout.md` and fill it in. Without this, the `investigator` agent halts at Setup.
 
 ---
