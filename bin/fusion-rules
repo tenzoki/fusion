@@ -126,7 +126,7 @@ case "$AGENT" in
     ;;
 esac
 
-# Prose-agent flag — independent of PATTERNS. The eight agents below produce
+# Prose-agent flag — independent of PATTERNS. The nine agents below produce
 # long-form narrative output that the stylometric profile governs.
 case "$AGENT" in
   orchestrator|consultant|shaper|planner|analyst|investigator|playmaker|conceptrev|editor)
