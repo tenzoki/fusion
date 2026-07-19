@@ -22,8 +22,9 @@
 # npm, no node_modules are required at install time.
 #
 # Overrides (optional env vars):
-#   FUSION_REF   git ref to fetch (default: heads/main; pin a release with
-#                FUSION_REF=tags/v5.0.0)
+#   FUSION_REF   git ref to fetch (default: heads/main). Every release is
+#                tagged v<version>, so pin one with FUSION_REF=tags/v<version>
+#                — e.g. FUSION_REF=tags/v5.5.1 for the current release.
 #   FUSION_HOME  install dir (default: ~/.fusion)
 #   FUSION_BIN   launcher dir (default: ~/.local/bin)
 

@@ -67,7 +67,8 @@ Every release:
 2. `git -C <marketplace> pull --rebase origin main` (it can drift if edited from elsewhere)
 3. Bump fusion's `version` in `<marketplace>/.claude-plugin/marketplace.json`
 4. Commit and push **both** repos
-5. To pick up the new version locally:
+5. **Tag the fusion release** on the commit you just pushed: `git tag -a v<version> -m "fusion v<version>" && git push origin v<version>`. The tag is what `install.sh`'s `FUSION_REF=tags/v<version>` pinning resolves against — skip it and the documented pin is unusable for that version. (Tagging started at v5.5.0; `v5.5.0` was applied retroactively to its release commit.)
+6. To pick up the new version locally:
    ```bash
    git -C ~/.claude/plugins/marketplaces/tenzoki-plugins pull origin main
    ```
@@ -85,7 +86,7 @@ fusion-specific invariants the installer relies on:
 - **`CLAUDE_PLUGIN_ROOT` resolves to `~/.fusion`** under `--plugin-dir`, so the SessionStart hook's `export FUSION_PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}` and all `bin/` helpers work.
 - The installer copies plugin assets (`.claude-plugin agents skills rules hooks bin stilwerk templates docs settings.json README*.md`) — `settings.json` ships fusion's scoped permission auto-allows so an HTTPS install has permission parity with a marketplace install. It never copies `CLAUDE.md` or `.gitignore` (dev-only), and defensively drops `hooks/node_modules`.
 
-So there are effectively **three version surfaces** to keep coherent: `plugin.json`, `marketplace.json`, and the `install.sh` header comment's `FUSION_REF=tags/vX.Y.Z` example (illustrative only — the default ref is `heads/main`, so a stale example doesn't break installs). The marketplace entry stays as a documented alternative.
+So there are effectively **three version surfaces** to keep coherent: `plugin.json`, `marketplace.json`, and the `install.sh` header comment's `FUSION_REF=tags/v<version>` example. The default ref is `heads/main`, so a stale example still doesn't break a plain install — but since step 5 tags every release, the example now names a tag that actually exists and a user who copies it gets exactly that version. Refresh it at each release rather than letting it drift back to a version nobody tagged. The marketplace entry stays as a documented alternative.
 
 ## Testing during development
 
