@@ -93,11 +93,26 @@ This serves a live HTML dashboard at `http://localhost:8099` (reading `orchestra
 - **Direct mode vs. portfolio.** For one obvious task, just tell the orchestrator (direct mode). When you have several units of future work whose priority isn't obvious, capture them as Circles with `/fusion:direct` and let `/fusion:next` rank them. Small projects rarely need the portfolio; large ones benefit from the dependency and cycle detection.
 - **Keep `CLAUDE.md` and `./rules/` current.** Agents load your project rules every session through `fusion-rules`. Stale rules mean stale behavior — treat them as living config, not documentation.
 - **Prefer `/fusion:unlock` over `--yolo` for a low-friction setup.** `/fusion:unlock` writes a permissive `.claude/settings.local.json` that persists across sessions without blanket-skipping the safety prompts `--yolo` removes. `--yolo` is per-run and unconditional; `/fusion:unlock` is a considered, durable choice.
-- **Know when the guard is the wrong tool.** The compliance guard shines on high-trust work — ontology, schemas, regulated code, multi-domain knowledge — where a bad edit costs more than a slow one. For hot-loop prototyping where you want to thrash a file freely, the guard's churn detection will fight you; that's a signal you're in the wrong mode for fusion, not a bug.
+- **Tune the guard to the work.** The compliance guard shines on high-trust work — ontology, schemas, regulated code, multi-domain knowledge — where a bad edit costs more than a slow one. For hot-loop prototyping where you want to thrash a file freely, two things get in the way: writes to protected or high-sensitivity paths get blocked, and every re-edit of the same file adds a churn *warning* that turns the monitor into noise (the churn tracker only warns — it never blocks a write). Neither is a bug; it just means you want the guard dialed down. See [Tuning or disabling the compliance guard](#tuning-or-disabling-the-compliance-guard) below.
 
 ## Configuration
 
 - **Compliance guard** — `hooks/config.json` defines protected paths, decision-to-path mappings and sensitivity levels, escalation thresholds (block → halt), churn thresholds, and cross-file ping-back detection. Copy [`hooks/config.example.json`](hooks/config.example.json) for a project-specific starting point. Runtime state lives per-project in `fusion-workbench/.guard-state/` (gitignored). See [`README-hooks.md`](README-hooks.md) for the full guard model.
+
+### Tuning or disabling the compliance guard
+
+The guard isn't all-or-nothing. It runs on a spectrum from full enforcement to advisory to off, assembled from the fields already in `hooks/config.json` (plus two session env vars). Pick the row that matches how much friction you want:
+
+| Goal | Change |
+|---|---|
+| Off entirely | `guard.enabled: false` — disables the write guard **and** the branch-switch block |
+| Advisory-only (warns, never blocks) | keep `enabled: true`; set `protectedPaths: []`; leave decision sensitivities at `medium`/`low` (only `high` blocks) |
+| Looser, not off | trim `protectedPaths`, raise the `churn.*` / `crossFile.*` thresholds, keep sensitivities ≤ `medium` |
+| Allow one agent branch switch | session env `FUSION_ALLOW_BRANCH_SWITCH=1` (or `FUSION_ALLOW_WORKTREE=1`) — not config |
+| Clear a stuck halt | `node ${CLAUDE_PLUGIN_ROOT}/hooks/dist/clear-halt.js` |
+
+  Only three things ever block a write: a write to a **protected path** (any sensitivity), a write to a **decision-governed path at `high` sensitivity**, and an active **halt** (which trips after `escalation.blocksBeforeHalt` consecutive blocks, default 3). Churn and cross-file detection are advisory — they emit warning events for the monitor but never block a write or halt on their own. `guard.enabled: false` stands the whole guard down, including the git branch-switch check. See [`README-hooks.md`](README-hooks.md) for the full model.
+
 - **Rules** — three layers, all discovered by `bin/fusion-rules` at each agent's Setup: the plugin's own `rules/` (framework ground truth, always loaded), the project's `./rules/` (fusion-agent-specific rules — capture layouts, priority overrides), and the project's `.claude/rules/` (project-wide rules every Claude session should respect — coding and ontology standards). Missing files are skipped silently; add what your project needs.
 - **Language and voice** — set `**Language:** en` (or `de`) in your project `CLAUDE.md`. Setup copies four stylometric profiles into `fusion-workbench/stilwerk/`: `default-voice-{en,de}.yaml` (long-form writing, for prose agents) and `chat-voice-{en,de}.yaml` (short-form chat, for every agent). The `**Language:**` line selects which pair applies.
 

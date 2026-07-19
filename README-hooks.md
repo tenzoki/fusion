@@ -18,7 +18,7 @@ Consecutive blocks accumulate. After a configurable threshold (default: 3), the 
 
 ### Churn Detection
 
-A PostToolUse tracker records every file mutation. When the same file is changed too many times in a session (thrashing), the guard raises warnings and can escalate to the orchestrator.
+A PostToolUse tracker records every file mutation. When the same file is changed too many times in a session (thrashing), it emits `churn_warning` / `churn_critical` events (and `cross_file_*` events for circular edits) that the monitor and orchestrator can see. This detection is **observation-only**: PostToolUse runs *after* the write, so it can never block a write or trip the halt on its own — it is a signal, not an enforcement point. Only the PreToolUse guard blocks.
 
 ## Architecture
 
@@ -29,8 +29,8 @@ Claude Code
   |     \-- exports FUSION_PLUGIN_ROOT to $CLAUDE_ENV_FILE
   |         (also emits a systemMessage banner visible to the user)
   |
-  +-- PreToolUse (Write/Edit/MultiEdit/NotebookEdit)
-  |     \-- guard.ts
+  +-- PreToolUse (Write/Edit/MultiEdit/NotebookEdit/Bash)
+  |     \-- guard.ts   (Bash inspected for the git branch-switch policy)
   |           +-- config.json (rules, paths, decisions, thresholds)
   |           +-- fusion-workbench/.guard-state/escalation.json (halt flag, block count)
   |           \-- fusion-workbench/.guard-state/events.jsonl (audit log)
@@ -62,7 +62,7 @@ The effective hook configuration:
     ],
     "PreToolUse": [
       {
-        "matcher": "Write|Edit|MultiEdit|NotebookEdit",
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit|Bash",
         "hooks": [
           { "type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/dist/guard.js" }
         ]
@@ -84,6 +84,7 @@ The effective hook configuration:
 
 Edit `hooks/config.json` to define:
 
+- **Enabled** — `guard.enabled` is the master on/off switch; `false` disables the guard entirely, including the branch-switch check
 - **Protected paths** — which files are off-limits
 - **Category paths** — which file areas map to which decision categories
 - **Decisions** — the actual rules, each with an ID, category, statement, and optional rule file reference
@@ -113,6 +114,20 @@ The hooks activate automatically on session start. No manual startup needed.
 | `package.json` | Dev dependencies (tsx, typescript, vitest) | Yes |
 
 ## Usage
+
+### Tuning or disabling the guard
+
+The guard runs on a spectrum — full enforcement, advisory, or off — assembled from fields already in `config.json` (plus two session env vars). Pick the row that matches how much friction you want:
+
+| Goal | Change |
+|---|---|
+| Off entirely | `guard.enabled: false` — disables the write guard **and** the branch-switch block |
+| Advisory-only (warns, never blocks) | keep `enabled: true`; set `protectedPaths: []`; leave decision sensitivities at `medium`/`low` (only `high` blocks) |
+| Looser, not off | trim `protectedPaths`, raise the `churn.*` / `crossFile.*` thresholds, keep sensitivities ≤ `medium` |
+| Allow one agent branch switch | session env `FUSION_ALLOW_BRANCH_SWITCH=1` (or `FUSION_ALLOW_WORKTREE=1`) — not config |
+| Clear a stuck halt | `node ${CLAUDE_PLUGIN_ROOT}/hooks/dist/clear-halt.js` (see [Clearing a halt](#clearing-a-halt)) |
+
+Three things block a write, and only these: a write to a **protected path** (any sensitivity), a write to a **decision-governed path at `high` sensitivity**, and an active **halt** (after `escalation.blocksBeforeHalt` consecutive blocks, default 3). Churn and cross-file detection are advisory — they emit warning events but never block. `guard.enabled: false` stands the whole guard down, branch-switch check included.
 
 ### Clearing a halt
 
