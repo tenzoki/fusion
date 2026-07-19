@@ -136,6 +136,16 @@ Both copies are idempotent — existing files are left untouched, so any project
 
 If `$FUSION_PLUGIN_ROOT` is not set or the copy fails, note it in the history file later but do not block Setup.
 
+## Step 0e — Ensure the Plane config template is present locally
+
+`bin/fusion-plane` (the Plane work-queue mirror) reads `./fusion-workbench/plane.config.yaml` for the instance's `base_url`, `workspace_slug`, `project_id`, and state-name mapping (the API key is never in this file — it lives in `$PLANE_API_KEY`; see `docs/plane-setup.md`). Seed the template so the file exists for the user to fill in. The copy is idempotent — a filled-in config is never overwritten:
+
+```bash
+[ -f ./fusion-workbench/plane.config.yaml ] || { cp "$FUSION_PLUGIN_ROOT/templates/plane.config.yaml" ./fusion-workbench/plane.config.yaml && echo "plane.config.yaml template copied — fill it in per docs/plane-setup.md"; }
+```
+
+The Plane bridge is optional: an unfilled template simply means no mirror runs (`fusion-plane doctor` reports it plainly). If `$FUSION_PLUGIN_ROOT` is not set or the copy fails, note it in the history file later but do not block Setup.
+
 ## Step 1 — Interrupted-session check (CRITICAL — do not skip)
 
 Read `./fusion-workbench/agentstate.yaml`.
