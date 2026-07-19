@@ -119,6 +119,30 @@ describe("fusion-plane push --plan: artifact→Plane mapping and attach", () => 
     expect(opFor(ops, "shared::decisions/260719-1701_o_shared-decision.md").kind).toBe("decision");
   });
 
+  it("plans the configured kind label for every fusion-owned artifact", () => {
+    // Issue 260720-0039: the plan's mapping table specifies a kind label per
+    // artifact, and the helper used to send none. The dry run must show the label
+    // that would be applied, by NAME (a dry run makes no call, so no UUID exists
+    // yet — the name→UUID resolution is the live labels/ step).
+    //
+    // The fixture config deliberately RENAMES all three labels, so these
+    // assertions also prove the value comes from the `labels:` rename map rather
+    // than from a hardcoded kind string.
+    const { ops } = plan(run(freshWorkbench(), "push", "--all", "--plan").stdout);
+    expect(opFor(ops, CIRCLE).label).toBe("Zirkel");
+    expect(opFor(ops, issueKey("260719-1600_o_open-issue.md")).label).toBe("Fusion Issue");
+    expect(opFor(ops, decisionKey("260719-1603_a_answered.md")).label).toBe("Entscheidung");
+    // shared/ artifacts are top-level but still labelled by kind.
+    expect(opFor(ops, "shared::issues/260719-1700_o_shared-issue.md").label).toBe("Fusion Issue");
+    expect(opFor(ops, "shared::decisions/260719-1701_o_shared-decision.md").label).toBe("Entscheidung");
+  });
+
+  it("gives every artifact a label — no fusion-created artifact goes unlabelled", () => {
+    const { ops } = plan(run(freshWorkbench(), "push", "--all", "--plan").stdout);
+    expect(ops).toHaveLength(8);
+    expect(ops.every((o) => typeof o.label === "string" && o.label.length > 0)).toBe(true);
+  });
+
   it("maps the filename marker to the Plane state by name, per artifact type", () => {
     const { ops } = plan(run(freshWorkbench(), "push", "--all", "--plan").stdout);
     // Circle _t_ active -> In Progress.
@@ -334,6 +358,26 @@ describe("fusion-plane push --plan: seed-origin write safety", () => {
     // State still syncs — that is the whole point of the round-trip push.
     expect(op.state).toBe("In Progress");
     expect(op.plane_id).toBe("origin-uuid-0042");
+  });
+
+  it("a seed-origin artifact carries NO kind label — labels are not an exception", () => {
+    // When kind labels were added (issue 260720-0039) the state-only invariant
+    // had to survive: decision 260719-2313 settled that a seed-origin issue gets
+    // state writes ONLY, so fusion never modifies a human's story beyond its
+    // state. A label is a modification of that story, so it is withheld too —
+    // the same write_scope branch governs both.
+    const wb = workbenchWithCircleEntry("seed");
+    const { ops } = plan(run(wb, "push", "--circle", CIRCLE, "--plan").stdout);
+    const op = opFor(ops, CIRCLE);
+    expect(op.write_scope).toBe("state-only");
+    expect(op.label, "a human's story must not gain a fusion label").toBeNull();
+    expect(op.writes).toEqual(["state"]);
+  });
+
+  it("a fusion-owned artifact DOES carry the kind label (the contrast case)", () => {
+    const wb = workbenchWithCircleEntry("fusion");
+    const { ops } = plan(run(wb, "push", "--circle", CIRCLE, "--plan").stdout);
+    expect(opFor(ops, CIRCLE).label).toBe("Zirkel");
   });
 
   it("a fusion-owned artifact keeps the full mirror body", () => {
@@ -631,6 +675,32 @@ describe("fusion-plane lint guards: no hardcoded state UUID in the helper", () =
     const hits = uuidHits(copy.join("\n"));
     expect(hits.length).toBeGreaterThan(0);
     expect(hits.find((h) => h.line === injectAt + 1)?.literal).toBe("a935e1f0-fc7c-4392-8b93-2f4551e0254f");
+  });
+});
+
+describe("fusion-plane lint guards: kind labels resolve at runtime, like states", () => {
+  // The UUID guard above already covers label UUIDs (it forbids EVERY UUID
+  // literal in the helper). These two assert the positive half of the contract:
+  // the names live in config, and the helper reaches the labels/ endpoint to
+  // turn them into UUIDs rather than assuming any ID.
+  const templatePath = join(pluginRoot, "templates", "plane.config.yaml");
+
+  it("the template ships a `labels:` rename map with the three canonical keys", () => {
+    const text = readFileSync(templatePath, "utf-8");
+    expect(text).toMatch(/^labels:/m);
+    // Canonical keys, in the same left-key/right-value shape as `states:`.
+    for (const kind of ["circle", "fusion-issue", "decision"]) {
+      expect(text, `labels: must carry the canonical key '${kind}'`).toMatch(
+        new RegExp(`^\\s+"${kind}"\\s*:`, "m"),
+      );
+    }
+  });
+
+  it("the helper resolves label names through the labels/ endpoint", () => {
+    const src = readFileSync(fusionPlane, "utf-8");
+    expect(src, "labels must be fetched, not assumed").toContain("$BASE/labels/");
+    // Create-if-missing: the board may legitimately lack a label fusion needs.
+    expect(src).toMatch(/plane_curl POST "\$BASE\/labels\/"/);
   });
 });
 

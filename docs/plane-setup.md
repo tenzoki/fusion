@@ -1,8 +1,9 @@
 # Plane setup — wiring the fusion work-queue mirror
 
 fusion can mirror its work queue into a [Plane](https://plane.so) project: every
-Circle, fusion issue, and decision appears as a Plane issue, kept in the matching
-state, with its children attached. The mirror is **push-only and idempotent** — files in
+Circle, fusion issue, and decision appears as a Plane issue, labelled by kind
+(`circle` / `fusion-issue` / `decision`), kept in the matching state, with its children
+attached. The mirror is **push-only and idempotent** — files in
 `fusion-workbench/` are always the source of truth, Plane is a secondary read-along
 view. fusion stays fully operational when Plane is unreachable and rebuilds the
 mirror from files on the next reconcile.
@@ -71,6 +72,22 @@ keys fixed. fusion resolves each name to its UUID at runtime via the project's
 `states/` endpoint and **never hardcodes a state UUID**. The optional `state_fallback:`
 block handles a board that lacks a state (e.g. no "Cancelled" → fall back to "Done").
 
+The `labels:` block works the same way for the kind label every fusion-created issue
+carries. Its three canonical keys (`circle` / `fusion-issue` / `decision`) are fixed;
+each value is the label name on your board, so a renamed or localised board changes
+only the values. As with states, fusion resolves each name to its UUID at runtime via
+the project's `labels/` endpoint and **never hardcodes a label UUID**.
+
+Two behaviours worth knowing:
+
+- **Create-if-missing.** If a configured label name does not exist on your board,
+  fusion creates it once and uses the returned UUID. You do not have to pre-create the
+  three labels by hand.
+- **A label never blocks a push.** If the `labels/` endpoint is unreachable or refuses
+  the create, the push proceeds *without* the label and says so — on stderr, and in the
+  final `STATUS:` line. A label is metadata; losing it must never cost you the state
+  transition.
+
 The key invariant: **there is no `api_key` / `token` / `secret` field in this file.**
 A lint test fails the build if one appears.
 
@@ -125,8 +142,11 @@ bin/fusion-plane push --plan --circle <circle-dir>
 
 This emits, as JSON, exactly the operations it *would* perform: one op per artifact,
 each with its `kind` (`circle` / `fusion-issue` / `decision`), the target `state`, the
-`write_scope` (`full` vs `state-only`), and the `writes` list — the precise set of body
-fields the call will carry. If any of that looks wrong, stop here; nothing has
+`label` that would be applied (by name — the dry run resolves no UUIDs because it makes
+no call), the `write_scope` (`full` vs `state-only`), and the `writes` list — the precise
+set of body fields the call will carry. `label` is reported separately from `writes`
+because it is best-effort: it is dropped, with a printed note, if the live `labels/`
+call cannot resolve or create it. If any of that looks wrong, stop here; nothing has
 happened. The dry run needs no API key and makes no network call. It does need
 `fusion-workbench/plane.config.yaml` to exist and parse — without it the helper exits
 1 rather than planning against defaults.
@@ -155,7 +175,7 @@ Expect a final `STATUS:` line — `STATUS: ok (1 pushed)` on success, or
 `STATUS: deferred (0 pushed, 1 deferred) — see …/.plane-outbox.jsonl` if something was
 unreachable. The count is artifacts actually created or updated.
 
-**3. Check four things on the Plane board.** This is the actual verification:
+**3. Check five things on the Plane board.** This is the actual verification:
 
 1. the issue exists, and its title matches the Circle's H1;
 2. its state matches the fusion marker (`_a_` → Backlog, `_t_` → In Progress, `_c_`/`_b_`
@@ -163,7 +183,10 @@ unreachable. The count is artifacts actually created or updated.
 3. children, if the Circle has any, are attached to it — as nested sub-issues, or as
    links (see below);
 4. **the description is non-empty and contains the embedded natural key** — the line
-   `fusion-key: <circle-directory-name>`.
+   `fusion-key: <circle-directory-name>`;
+5. it carries the right **kind label** — `circle` for the Circle record, `fusion-issue`
+   and `decision` for its children (or whatever you renamed those to in the `labels:`
+   block). If the label was missing on your board, fusion created it on this push.
 
 Check 4 is *the* critical one. An empty description, or one missing the key, means
 `description_html` is the wrong body field name on your instance. It is the single
@@ -172,10 +195,10 @@ plausible on the board, and you only discover the problem later when
 `push --rebuild-map` cannot reconstruct the map — because rebuilding works by reading
 that embedded key back out.
 
-Note what is *not* on this list: fusion does **not** write Plane labels. The `kind`
-(`circle` / `fusion-issue` / `decision`) lives in `push --plan` output and in
-`.plane-map.json`; it is not sent to the board, so do not go looking for a kind label
-there.
+One exception to check 5: a Circle **seeded from an existing Plane story** carries no
+kind label, deliberately. Such a story is yours, not fusion's, and fusion writes only
+its state — never its title, description, or labels. See "Seeding is safe for your
+existing stories" below.
 
 **4. Idempotency check.** Run the same push again. No second issue may appear — the
 existing one is only updated. Two observable signals: the live run reports
@@ -206,10 +229,17 @@ you map entries.
 #### Why this is worth doing
 
 `doctor` verifies the key, the config, and `states/` reachability — it does **not**
-verify the issue create/update body. That body uses Plane API v1 conventional fields
-(`name`, `description_html`, `state`, `parent`). They are standard, but they have not
-been confirmed against every self-hosted build. So the first real push is the live
-check that `doctor` cannot do for you.
+verify the issue create/update body, and it does not touch `labels/` at all. That body
+uses Plane API v1 conventional fields (`name`, `description_html`, `state`, `parent`,
+`labels`). They are standard, but they have not been confirmed against every
+self-hosted build. So the first real push is the live check that `doctor` cannot do for
+you.
+
+The label path is the least-verified part: `GET labels/`, `POST labels/ {"name": …}`,
+and `labels: [<uuid>]` in the issue body are the documented Plane v1 shapes, but they
+have not been exercised against a live self-hosted instance. Check 5 above is what
+confirms them for your build — and if the shape is wrong, the push still lands the
+state and only the label is missing.
 
 The sub-issue `parent` path is already safe either way: if an instance rejects or
 ignores `parent`, the helper falls back to the verified `issues/{id}/links/` endpoint,
@@ -232,13 +262,18 @@ so the child still gets attached.
   your board.
 - **Children appear as links rather than nested sub-issues** → the `parent` fallback
   engaged. Expected behaviour on instances that ignore `parent`, not a failure.
+- **No kind label on the issue** → check stderr and the `STATUS:` line from the push.
+  A note naming the label and the reason means fusion could not resolve or create it
+  and deliberately pushed without it. Silence there instead means the label was sent
+  but your instance did not apply it — the `labels:` body field is wrong for this
+  build. Either way the state transition already landed; only the label is missing.
 
 ### Seeding is safe for your existing stories
 
 When a Circle was seeded from a Plane issue via `/fusion:seed-from-plane`, the mirror
 writes **state only** back to that issue. It never rewrites the title or the
-description — your original story text is preserved as written. Issues that fusion
-itself created keep the full mirrored body.
+description, and it never adds a kind label — your original story is preserved as
+written. Issues that fusion itself created keep the full mirrored body and the label.
 
 This is not a convention you have to remember: an `origin` field in `.plane-map.json`
 records who authored each issue, `push` branches on it, and tests cover the
@@ -248,8 +283,8 @@ distinction. `push --plan` also shows the write scope per issue (`state-only` vs
 ### What "it worked" looks like
 
 - `bin/fusion-plane doctor` reports green on all three checks.
-- One push produces the expected Plane issues, in the right states, with the
-  `fusion-key:` line present in each description.
+- One push produces the expected Plane issues, in the right states, each carrying its
+  kind label and the `fusion-key:` line in its description.
 - A second push of the same Circle creates nothing new — it reports `0 pushed`.
 - A push while Plane is unreachable writes a `.plane-outbox.jsonl` line and reports
   `deferred`, without blocking the Turn.

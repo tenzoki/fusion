@@ -45,6 +45,29 @@
 #   doctrine), cached once per run. No Plane state UUID literal appears in this
 #   source (a lint test enforces this).
 #
+# ── KIND LABELS (same doctrine, never blocking) ──────────────────────────────
+#   Every artifact fusion CREATES in Plane carries one label naming its kind:
+#   circle / fusion-issue / decision. The names come from the config's `labels:`
+#   rename map (so a localised board changes only the values); the UUIDs are
+#   resolved name → UUID at runtime via GET labels/, cached once per run exactly
+#   like states/. No label UUID literal appears here either.
+#
+#   Create-if-missing: a configured label name absent from the board is created
+#   once via POST labels/ and the returned UUID is used (and folded into the
+#   per-run cache, so the rest of the run needs no further call).
+#
+#   NEVER BLOCKING (C4 spirit): if the labels/ endpoint is unreachable, returns
+#   an error, or refuses the create, the push proceeds WITHOUT labels and prints
+#   a note (and counts it in the final STATUS line). A label is metadata; losing
+#   it must never cost the state transition, so this path does NOT defer, does
+#   NOT touch the outbox, and does NOT change the exit code.
+#
+#   SEED-ORIGIN ISSUES GET NO LABEL. A seed-origin issue is a human's own Plane
+#   story that fusion merely bound to a Circle; decision 260719-2313 settled that
+#   such an issue receives STATE writes only. Labels are not an exception — the
+#   same write_scope="state-only" branch that withholds name/description also
+#   withholds the label.
+#
 # ── C4 OFFLINE DOCTRINE (never silent) ───────────────────────────────────────
 #   No-network / DNS / connection-refused, HTTP 5xx/4xx, 429 rate-limit, and an
 #   absent key each append a human-readable line to .plane-outbox.jsonl AND
@@ -115,7 +138,8 @@ now_utc() { date -u +%Y-%m-%dT%H:%M:%SZ; }
 
 # ── Config: targeted YAML reader (fixed, fusion-authored shape) ───────────────
 # Normalises plane.config.yaml into TAB-separated key<TAB>value lines. Two
-# levels only: top-level scalars, and one nested block (states, state_fallback).
+# levels only: top-level scalars, and one nested block (states, labels,
+# state_fallback).
 # Nested keys are emitted as "<section>.<key>". Values are unquoted; inline
 # comments stripped; arrays kept raw for the fallback getter.
 AWK_CFG='
@@ -159,6 +183,7 @@ cfg_load() {
 
 cfg_get()      { printf '%s\n' "$CONFIG_KV" | awk -F'\t' -v k="$1" '$1==k{sub(/^[^\t]*\t/,""); print; exit}'; }
 cfg_state()    { cfg_get "states.$1"; }
+cfg_label()    { cfg_get "labels.$1"; }
 cfg_fallback() { cfg_get "state_fallback.$1" | tr -d '[]"' | tr ',' ' '; }
 
 # Base REST path assembled the way Martin does:
@@ -261,6 +286,98 @@ resolve_canonical_state() {
     done
   fi
   printf '%s' "$uuid"
+}
+
+# ── Labels: kind name → UUID resolution at runtime (mirrors states/) ─────────
+# Same three-step shape as states/: fetch once per run into a cache, look the
+# configured name up in that cache, never hardcode a UUID. The one addition is
+# create-if-missing — a state must already exist on the board, but a label fusion
+# needs may legitimately not, and creating it is cheap and non-destructive.
+LABELS_JSON=""
+LABELS_FETCH_FAILED=0
+LABELS_SKIPPED=0
+# Per-run memo of kind → resolved UUID, as "<kind><TAB><uuid|->" lines ("-" means
+# "already tried and failed this run"). Bash 3.2 has no associative arrays, and
+# with three fixed kinds a memo line is simpler than any alternative.
+LABEL_MEMO=""
+
+fetch_labels() {
+  # Cached per run (identical contract to fetch_states).
+  [ -n "$LABELS_JSON" ] && return 0
+  [ "$LABELS_FETCH_FAILED" -eq 1 ] && return 1
+  if ! plane_curl GET "$BASE/labels/"; then
+    LABELS_FETCH_FAILED=1
+    return 1   # transport failure
+  fi
+  case "$PLANE_HTTP_CODE" in
+    2*) LABELS_JSON="$PLANE_BODY"; return 0 ;;
+    *)  LABELS_FETCH_FAILED=1; return 2 ;;   # HTTP error
+  esac
+}
+
+# label_uuid <instance-label-name> — look the name up in the cached labels list.
+# Handles both a bare array and a {results:[...]} envelope, like state_uuid.
+label_uuid() {
+  [ -n "$LABELS_JSON" ] || return 1
+  printf '%s' "$LABELS_JSON" \
+    | jq -r --arg n "$1" '(.results // .) | map(select(.name==$n)) | (.[0].id // empty)'
+}
+
+label_memo_get() { printf '%s\n' "$LABEL_MEMO" | awk -F'\t' -v k="$1" '$1==k{print $2; exit}'; }
+label_memo_put() { LABEL_MEMO="$(printf '%s\n%s\t%s' "$LABEL_MEMO" "$1" "$2")"; }
+
+# label_skip <kind> <reason> — remember the failure, say it out loud once per
+# kind, and let the caller carry on WITHOUT a label. Never defers, never counts
+# as a deferral, never changes the exit code (a label is metadata).
+label_skip() {
+  label_memo_put "$1" '-'
+  LABELS_SKIPPED=$((LABELS_SKIPPED + 1))
+  info "label '$1' unavailable ($2) — pushing without the kind label."
+  return 1
+}
+
+# resolve_kind_label <kind> — canonical kind → instance label name (via config)
+# → UUID (via labels/, creating the label if the board lacks it). Prints the UUID
+# on success; prints nothing and returns non-zero when no label can be had.
+resolve_kind_label() {
+  local kind="$1" name uuid memo body new_id
+  memo="$(label_memo_get "$kind")"
+  if [ -n "$memo" ]; then
+    [ "$memo" = "-" ] && return 1
+    printf '%s' "$memo"; return 0
+  fi
+  name="$(cfg_label "$kind")"; [ -n "$name" ] || name="$kind"
+
+  if ! fetch_labels; then
+    label_skip "$kind" "labels/ unreachable (curl rc $PLANE_CURL_RC / HTTP ${PLANE_HTTP_CODE:-none})"
+    return 1
+  fi
+  uuid="$(label_uuid "$name" || true)"
+  if [ -n "$uuid" ]; then
+    label_memo_put "$kind" "$uuid"
+    printf '%s' "$uuid"; return 0
+  fi
+
+  # Create-if-missing: the board has no label by this name yet.
+  body="$(jq -cn --arg n "$name" '{name:$n}')"
+  if ! plane_curl POST "$BASE/labels/" "$body"; then
+    label_skip "$kind" "create failed, Plane unreachable (curl rc $PLANE_CURL_RC)"
+    return 1
+  fi
+  case "$PLANE_HTTP_CODE" in
+    2*) : ;;
+    *)  label_skip "$kind" "create returned HTTP $PLANE_HTTP_CODE"; return 1 ;;
+  esac
+  new_id="$(printf '%s' "$PLANE_BODY" | jq -r '.id // empty' 2>/dev/null || true)"
+  if [ -z "$new_id" ]; then
+    label_skip "$kind" "create returned no id"
+    return 1
+  fi
+  # Fold the new label into the per-run cache so nothing re-fetches or re-creates.
+  LABELS_JSON="$(printf '%s' "$LABELS_JSON" | jq -c --argjson new "$PLANE_BODY" '((.results // .) + [$new])')"
+  label_memo_put "$kind" "$new_id"
+  info "created Plane label '$name' for kind '$kind'."
+  printf '%s' "$new_id"
 }
 
 # ── Marker → canonical Plane state (the plan's mapping table) ────────────────
@@ -387,15 +504,21 @@ RATE_LIMITED=0
 # op_json — build one plan op object (deterministic: no timestamps, state by
 # NAME not UUID, so --plan needs no network).
 op_json() {
-  # op_json <op> <kind> <nk> <title> <marker> <canonical> <instance> <plane_id> <parent_key> <relpath> <write_scope>
+  # op_json <op> <kind> <nk> <title> <marker> <canonical> <instance> <plane_id> <parent_key> <relpath> <write_scope> <label>
   # write_scope makes the seed-origin protection VISIBLE in the dry run:
   #   "full"       fusion owns the issue → name + description_html + state.
   #   "state-only" seed-origin issue (a human's story) → state ONLY; the `writes`
   #                list is the exact set of body fields the PATCH will carry.
+  # <label> is the configured kind-label NAME (never a UUID — the dry run makes
+  # no network call, so no UUID exists yet). It is null for a state-only write,
+  # where a human's story must not gain a fusion label either. It is reported
+  # SEPARATELY from `writes` on purpose: `writes` lists the body fields fusion
+  # always sends, whereas the label is best-effort and is dropped (with a printed
+  # note) if the live labels/ call cannot resolve or create it.
   jq -cn \
     --arg op "$1" --arg kind "$2" --arg nk "$3" --arg title "$4" --arg marker "$5" \
     --arg state "$6" --arg state_instance "$7" --arg pid "$8" --arg pk "$9" --arg src "${10}" \
-    --arg scope "${11}" \
+    --arg scope "${11}" --arg label "${12}" \
     '{op:$op, kind:$kind, natural_key:$nk, title:$title, marker:$marker,
       state:$state, state_instance:$state_instance,
       plane_id:(if $pid=="" then null else $pid end),
@@ -404,6 +527,7 @@ op_json() {
       write_scope:$scope,
       writes:(if $scope=="state-only" then ["state"]
               else ["name","description_html","state"] end),
+      label:(if $label=="" then null else $label end),
       embed_key:$nk, source:$src}'
 }
 
@@ -481,11 +605,19 @@ process_artifact() {
   origin="$(map_get_origin "$nk")"
   if [ "$origin" = "seed" ]; then write_scope="state-only"; else write_scope="full"; fi
 
+  # The kind label rides on the SAME branch: fusion-owned artifacts get one, a
+  # human's seeded story does not (decision 260719-2313 — state writes only).
+  local label_name=""
+  if [ "$write_scope" = "full" ]; then
+    label_name="$(cfg_label "$kind")"
+    [ -n "$label_name" ] || label_name="$kind"
+  fi
+
   if [ "$DRYRUN" -eq 1 ]; then
     # Dry-run: emit only actionable ops (create/update); a fully reconciled
     # Circle yields an empty ops list — the idempotency property, observable.
     if [ "$op" != "noop" ]; then
-      OPS+=("$(op_json "$op" "$kind" "$nk" "$title" "$marker" "$canonical" "$inst" "$existing_id" "$parent_key" "$relpath" "$write_scope")")
+      OPS+=("$(op_json "$op" "$kind" "$nk" "$title" "$marker" "$canonical" "$inst" "$existing_id" "$parent_key" "$relpath" "$write_scope" "$label_name")")
     fi
     return 0
   fi
@@ -499,7 +631,7 @@ process_artifact() {
     return 0
   fi
 
-  local uuid parent_id="" body resp new_id
+  local uuid parent_id="" body resp new_id label_id=""
   uuid="$(resolve_canonical_state "$canonical" || true)"
   if [ -z "$uuid" ]; then
     defer "$nk" "$canonical" "state name unresolved on instance" \
@@ -510,10 +642,17 @@ process_artifact() {
     parent_id="$(map_get_id "$parent_key")"
   fi
 
+  # Resolve the kind label (name → UUID, creating it if the board lacks it). A
+  # failure here is metadata-only: label_id stays empty, the body carries no
+  # labels, and the state transition proceeds unaffected.
+  if [ -n "$label_name" ]; then
+    label_id="$(resolve_kind_label "$kind" || true)"
+  fi
+
   # Build write body. Embed the natural key in the description so a lost map can
   # be rebuilt (push --rebuild-map). Fold in `parent` (DR-1 default) when a
-  # parent exists.
-  body="$(build_write_body "$kind" "$title" "$nk" "$relpath" "$uuid" "$parent_id" "$write_scope")"
+  # parent exists, and the kind label when one resolved.
+  body="$(build_write_body "$kind" "$title" "$nk" "$relpath" "$uuid" "$parent_id" "$write_scope" "$label_id")"
 
   if [ "$op" = "create" ]; then
     if ! plane_curl POST "$BASE/issues/" "$body"; then
@@ -568,12 +707,15 @@ process_artifact() {
 # build_write_body — the create/PATCH JSON. state UUID is resolved (live only).
 # Two shapes, selected by <write_scope> (computed once in process_artifact):
 #   state-only  seed-origin issue — PATCH the state and NOTHING else. No name, no
-#               description_html, no parent: the human's story text is untouched.
+#               description_html, no parent, NO LABEL: the human's story is
+#               untouched beyond its state (decision 260719-2313).
 #   full        fusion-owned issue — the mirror body (title + fusion-key-bearing
-#               description + state, plus `parent` when it has one).
+#               description + state, plus `parent` when it has one and the kind
+#               label when one resolved).
+# An empty <label_uuid> simply omits `labels` — the push never blocks on a label.
 build_write_body() {
-  # build_write_body <kind> <title> <nk> <relpath> <state_uuid> <parent_id> <write_scope>
-  local kind="$1" title="$2" nk="$3" relpath="$4" uuid="$5" parent_id="$6" scope="${7:-full}"
+  # build_write_body <kind> <title> <nk> <relpath> <state_uuid> <parent_id> <write_scope> <label_uuid>
+  local kind="$1" title="$2" nk="$3" relpath="$4" uuid="$5" parent_id="$6" scope="${7:-full}" label="${8:-}"
   local desc
 
   if [ "$scope" = "state-only" ]; then
@@ -583,8 +725,10 @@ build_write_body() {
 
   desc="$(printf 'Mirrored fusion %s.\n\nfusion-key: %s\nsource: %s' "$kind" "$nk" "$relpath")"
   jq -cn --arg name "$title" --arg desc "$desc" --arg state "$uuid" --arg parent "$parent_id" \
+    --arg label "$label" \
     '{name:$name, description_html:("<p>"+$desc+"</p>"), state:$state}
-     + (if $parent=="" then {} else {parent:$parent} end)'
+     + (if $parent=="" then {} else {parent:$parent} end)
+     + (if $label=="" then {} else {labels:[$label]} end)'
 }
 
 # manual_hint — the exact transition a human would make in the Plane UI, printed
@@ -799,12 +943,17 @@ cmd_push() {
     return "$EXIT_OK"
   fi
 
-  # Live summary — never silent.
+  # Live summary — never silent. An unresolvable kind label is reported here too,
+  # but it is metadata: it never turns an ok push into a deferred one.
+  local label_note=""
+  if [ "$LABELS_SKIPPED" -gt 0 ]; then
+    label_note="$(printf ' — %d kind label(s) unavailable, pushed without them' "$LABELS_SKIPPED")"
+  fi
   if [ "$DEFERRED" -gt 0 ]; then
-    printf 'STATUS: deferred (%d pushed, %d deferred) — see %s\n' "$PUSHED" "$DEFERRED" "$OUTBOX"
+    printf 'STATUS: deferred (%d pushed, %d deferred)%s — see %s\n' "$PUSHED" "$DEFERRED" "$label_note" "$OUTBOX"
     return "$EXIT_DEFERRED"
   fi
-  printf 'STATUS: ok (%d pushed)\n' "$PUSHED"
+  printf 'STATUS: ok (%d pushed)%s\n' "$PUSHED" "$label_note"
   return "$EXIT_OK"
 }
 

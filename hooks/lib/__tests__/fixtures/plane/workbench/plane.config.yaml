@@ -11,3 +11,9 @@ states:
   "Cancelled": "Cancelled"
 state_fallback:
   "Cancelled": ["Done"]
+# Deliberately RENAMED label names (a localised board): the tests assert these
+# values, which proves the kind label is read from config rather than hardcoded.
+labels:
+  "circle": "Zirkel"
+  "fusion-issue": "Fusion Issue"
+  "decision": "Entscheidung"
