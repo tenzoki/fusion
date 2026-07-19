@@ -83,7 +83,7 @@ reconciler    →  ground-truth pass over all tracking files in fusion-workbench
 
 **Automated outer loop:** The `orchestrator` agent wraps the full pipeline — from shaping through execution, review, and reconciliation — in a managed session. It invokes `shaper` and `planner` (with human gates) when the input needs specification, then dispatches `taskplanner`, executors (`coder`/`ontocoder`), reviewers (`coderev`/`ontorev`), and `reconciler`, committing after each task and feeding review findings back into the next Turn. The orchestrator is the **only** agent that dispatches other agents.
 
-Since v2.9.0, every Turn closes with a **Coherence Review** (per-Turn gate against the Directive); when a Turn's review concludes the Directive is unreachable as written, the orchestrator opens a **Rebalance gate** with four user options (Revise Artifact, Revise Directive, Revise Grounding, Accept Bounded Closure). At session end a **per-Circle three-edge verdict** judges the whole arc. See `docs/philosophy.md` §5 for the full model.
+Since v2.9.0, every Turn closes with a **Coherence Review** (per-Turn gate against the Directive); when a Turn's review concludes the Directive is unreachable as written, the orchestrator opens a **Rebalance gate** with four user options (Revise Artifact, Revise Directive, Revise Grounding, Accept Bounded Closure). At session end a **per-Circle three-edge verdict** judges the whole arc. See `docs/working-model.md` (the gates, Coherence Review, and Rebalance model) for the full model.
 
 ```
                           ┌──────────────────────────────┐
@@ -174,7 +174,8 @@ Agents discover their applicable rules via the helper `bin/fusion-rules <agent-n
 | `coder`, `coderev`, `bugfixer` | `*coding*` | `rules/coding-guidelines.md`, `rules/coding-architecture.md` |
 | `ontocoder`, `ontorev` | `*ontology*`, `*normative*`, `*verb*` | `rules/ontology-rules.md`, `rules/verb-ontology.md`, `rules/normative.md` |
 | `planner` | `*coding*`, `*ontology*` | both groups above |
-| `orchestrator`, `shaper`, `taskplanner`, `reconciler`, `analyst`, `investigator`, `consultant`, `playmaker`, `conceptrev`, `editor` | (workbench conventions only) | — |
+| `investigator` | `*investigator*` | `rules/investigator-capture-layout.md` |
+| `orchestrator`, `shaper`, `taskplanner`, `reconciler`, `analyst`, `consultant`, `playmaker`, `conceptrev`, `editor` | (workbench conventions only) | — |
 
 If a pattern has no match in either directory, the agent operates on workbench conventions alone — agents skip missing rules silently rather than failing. Consuming projects can add their own rule files at any time and the next session picks them up automatically.
 
