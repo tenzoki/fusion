@@ -431,6 +431,46 @@ comment_id_for_marker() {
         '(.results // .) | map(select((.comment_html // "") | contains($marker))) | (.[0].id // empty)'
 }
 
+# upsert_spec_comment <file> <nk> <issue_id> — attach or refresh the Circle
+# record body as ONE idempotent comment on the mirrored issue. Idempotency: GET
+# the issue's comments, match THIS Circle's marker; a match PATCHes that comment
+# in place, no match POSTs a new one — so a re-push updates rather than duplicates.
+# NON-BLOCKING (C4 spirit, exactly like the kind-label path): a transport failure
+# or ANY non-2xx at either step calls comment_skip and returns 0 — it NEVER defers,
+# NEVER touches the outbox, and NEVER changes the exit code (the state transition
+# has already completed before this is reached). Every call runs through plane_curl;
+# no comment UUID literal appears here. Callers invoke it as `… || true` so the
+# internal comment_skip (which returns 1) cannot trip set -e — the same guard
+# resolve_kind_label uses around label_skip.
+upsert_spec_comment() {
+  local file="$1" nk="$2" issue_id="$3" body cid
+  body="$(build_comment_body "$file" "$nk")"
+  if ! plane_curl GET "$BASE/issues/${issue_id}/comments/?per_page=100"; then
+    comment_skip "comments/ unreachable (curl rc $PLANE_CURL_RC)"
+    return 0
+  fi
+  case "$PLANE_HTTP_CODE" in
+    2*) : ;;
+    *)  comment_skip "comments/ list returned HTTP $PLANE_HTTP_CODE"; return 0 ;;
+  esac
+  cid="$(comment_id_for_marker "$PLANE_BODY" "$nk" || true)"
+  if [ -n "$cid" ]; then
+    if ! plane_curl PATCH "$BASE/issues/${issue_id}/comments/${cid}/" "$body"; then
+      comment_skip "comment PATCH failed, Plane unreachable (curl rc $PLANE_CURL_RC)"
+      return 0
+    fi
+  else
+    if ! plane_curl POST "$BASE/issues/${issue_id}/comments/" "$body"; then
+      comment_skip "comment POST failed, Plane unreachable (curl rc $PLANE_CURL_RC)"
+      return 0
+    fi
+  fi
+  case "$PLANE_HTTP_CODE" in
+    2*) return 0 ;;
+    *)  comment_skip "comment write returned HTTP $PLANE_HTTP_CODE"; return 0 ;;
+  esac
+}
+
 # ── Marker → canonical Plane state (the plan's mapping table) ────────────────
 canonical_state_for() {
   local kind="$1" marker="$2"
@@ -674,89 +714,136 @@ process_artifact() {
     if [ "$op" != "noop" ]; then
       OPS+=("$(op_json "$op" "$kind" "$nk" "$title" "$marker" "$canonical" "$inst" "$existing_id" "$parent_key" "$relpath" "$write_scope" "$label_name")")
     fi
+    # Spec-comment (opt-in): a SEPARATE op — never a field on op_json, because a
+    # noop Circle emits no op_json yet still refreshes its comment (fork 1). So
+    # this is emitted for a Circle whenever the gate is on, independent of
+    # create/update/noop. The PATCH-vs-POST branch is resolved offline from the
+    # comments fixture (a captured GET issues/<id>/comments/): a marker match →
+    # PATCH + that comment_id, otherwise POST; with no fixture the method is POST.
+    if [ "$kind" = circle ] && spec_comment_enabled; then
+      local comment_html cmethod="POST" cid=""
+      comment_html="$(build_comment_body "$file" "$nk" | jq -r '.comment_html')"
+      if [ -n "$COMMENTS_FIXTURE" ] && [ -f "$COMMENTS_FIXTURE" ]; then
+        cid="$(comment_id_for_marker "$(cat "$COMMENTS_FIXTURE")" "$nk" || true)"
+        [ -n "$cid" ] && cmethod="PATCH"
+      fi
+      OPS+=("$(jq -cn --arg op "spec-comment" --arg nk "$nk" --arg marker "$marker" \
+        --arg html "$comment_html" --arg method "$cmethod" --arg cid "$cid" \
+        '{op:$op, natural_key:$nk, kind:"circle", marker:$marker,
+          comment_html:$html, method:$method}
+         + (if $cid=="" then {} else {comment_id:$cid} end)')")
+    fi
     return 0
   fi
 
   # ── Live mode ──────────────────────────────────────────────────────────────
-  [ "$op" = "noop" ] && return 0
+  # state_ok tracks whether Plane now carries the correct state for this artifact
+  # — set ONLY on a 2xx state write OR on a noop (already correct), NEVER on a
+  # defer path. It is a local, so it is re-initialised to 0 on every
+  # process_artifact call and can never leak across artifacts in the --all loop.
+  # It is the sole gate on the spec-comment tail: a deferred state write leaves it
+  # 0, so the comment is never attempted after a deferral (C4 invariant).
+  local state_ok=0
 
-  # If we already hit a rate limit this run, defer the remainder (C4).
-  if [ "$RATE_LIMITED" -eq 1 ]; then
-    defer "$nk" "$canonical" "rate limit (429) earlier this run" "$(manual_hint "$op" "$nk" "$canonical" "$existing_id")"
-    return 0
-  fi
-
-  local uuid parent_id="" body resp new_id label_id=""
-  uuid="$(resolve_canonical_state "$canonical" || true)"
-  if [ -z "$uuid" ]; then
-    defer "$nk" "$canonical" "state name unresolved on instance" \
-      "Set the Plane issue to a state matching \"$canonical\" (name not found in states/)."
-    return 0
-  fi
-  if [ -n "$parent_key" ]; then
-    parent_id="$(map_get_id "$parent_key")"
-  fi
-
-  # Resolve the kind label (name → UUID, creating it if the board lacks it). A
-  # failure here is metadata-only: label_id stays empty, the body carries no
-  # labels, and the state transition proceeds unaffected.
-  if [ -n "$label_name" ]; then
-    label_id="$(resolve_kind_label "$kind" || true)"
-  fi
-
-  # Build write body. Embed the natural key in the description so a lost map can
-  # be rebuilt (push --rebuild-map). Fold in `parent` (DR-1 default) when a
-  # parent exists, and the kind label when one resolved.
-  body="$(build_write_body "$kind" "$title" "$nk" "$relpath" "$uuid" "$parent_id" "$write_scope" "$label_id")"
-
-  if [ "$op" = "create" ]; then
-    if ! plane_curl POST "$BASE/issues/" "$body"; then
-      defer "$nk" "$canonical" "no network (curl rc $PLANE_CURL_RC)" \
-        "POST a new Plane issue for $nk and set state \"$canonical\"."
+  if [ "$op" != "noop" ]; then
+    # If we already hit a rate limit this run, defer the remainder (C4).
+    if [ "$RATE_LIMITED" -eq 1 ]; then
+      defer "$nk" "$canonical" "rate limit (429) earlier this run" "$(manual_hint "$op" "$nk" "$canonical" "$existing_id")"
       return 0
     fi
-  else
-    if ! plane_curl PATCH "$BASE/issues/${existing_id}/" "$body"; then
-      defer "$nk" "$canonical" "no network (curl rc $PLANE_CURL_RC)" \
-        "$(manual_hint update "$nk" "$canonical" "$existing_id")"
+
+    local uuid parent_id="" body resp new_id label_id=""
+    uuid="$(resolve_canonical_state "$canonical" || true)"
+    if [ -z "$uuid" ]; then
+      defer "$nk" "$canonical" "state name unresolved on instance" \
+        "Set the Plane issue to a state matching \"$canonical\" (name not found in states/)."
       return 0
     fi
-  fi
+    if [ -n "$parent_key" ]; then
+      parent_id="$(map_get_id "$parent_key")"
+    fi
 
-  case "$PLANE_HTTP_CODE" in
-    2*)
-      resp="$PLANE_BODY"
-      if [ "$op" = "create" ]; then
-        new_id="$(printf '%s' "$resp" | jq -r '.id // empty' 2>/dev/null || true)"
-        if [ -z "$new_id" ]; then
-          defer "$nk" "$canonical" "create returned no id (HTTP $PLANE_HTTP_CODE)" \
-            "Create the Plane issue for $nk manually and set state \"$canonical\"."
-          return 0
+    # Resolve the kind label (name → UUID, creating it if the board lacks it). A
+    # failure here is metadata-only: label_id stays empty, the body carries no
+    # labels, and the state transition proceeds unaffected.
+    if [ -n "$label_name" ]; then
+      label_id="$(resolve_kind_label "$kind" || true)"
+    fi
+
+    # Build write body. Embed the natural key in the description so a lost map can
+    # be rebuilt (push --rebuild-map). Fold in `parent` (DR-1 default) when a
+    # parent exists, and the kind label when one resolved.
+    body="$(build_write_body "$kind" "$title" "$nk" "$relpath" "$uuid" "$parent_id" "$write_scope" "$label_id")"
+
+    if [ "$op" = "create" ]; then
+      if ! plane_curl POST "$BASE/issues/" "$body"; then
+        defer "$nk" "$canonical" "no network (curl rc $PLANE_CURL_RC)" \
+          "POST a new Plane issue for $nk and set state \"$canonical\"."
+        return 0
+      fi
+    else
+      if ! plane_curl PATCH "$BASE/issues/${existing_id}/" "$body"; then
+        defer "$nk" "$canonical" "no network (curl rc $PLANE_CURL_RC)" \
+          "$(manual_hint update "$nk" "$canonical" "$existing_id")"
+        return 0
+      fi
+    fi
+
+    case "$PLANE_HTTP_CODE" in
+      2*)
+        resp="$PLANE_BODY"
+        if [ "$op" = "create" ]; then
+          new_id="$(printf '%s' "$resp" | jq -r '.id // empty' 2>/dev/null || true)"
+          if [ -z "$new_id" ]; then
+            defer "$nk" "$canonical" "create returned no id (HTTP $PLANE_HTTP_CODE)" \
+              "Create the Plane issue for $nk manually and set state \"$canonical\"."
+            return 0
+          fi
+          # fusion POSTed this issue, so fusion owns its body — record that.
+          map_set "$nk" "$new_id" "$kind" "$canonical" fusion
+          existing_id="$new_id"
+        else
+          # Update: origin omitted => preserved (a seed entry stays seed).
+          map_set "$nk" "$existing_id" "$kind" "$canonical"
         fi
-        # fusion POSTed this issue, so fusion owns its body — record that.
-        map_set "$nk" "$new_id" "$kind" "$canonical" fusion
-        existing_id="$new_id"
-      else
-        # Update: origin omitted => preserved (a seed entry stays seed).
-        map_set "$nk" "$existing_id" "$kind" "$canonical"
-      fi
-      # DR-1 attach — single call site.
-      if [ -n "$parent_id" ]; then
-        attach_child "$existing_id" "$parent_id" "$title" "$resp" || true
-      fi
-      PUSHED=$((PUSHED + 1))
-      sleep 0.2   # pace calls under 60/min
-      ;;
-    429)
-      RATE_LIMITED=1
-      defer "$nk" "$canonical" "rate limit (HTTP 429)" \
-        "$(manual_hint "$op" "$nk" "$canonical" "$existing_id")"
-      ;;
-    *)
-      defer "$nk" "$canonical" "HTTP $PLANE_HTTP_CODE: $(printf '%s' "$PLANE_BODY" | head -c 200)" \
-        "$(manual_hint "$op" "$nk" "$canonical" "$existing_id")"
-      ;;
-  esac
+        # DR-1 attach — single call site.
+        if [ -n "$parent_id" ]; then
+          attach_child "$existing_id" "$parent_id" "$title" "$resp" || true
+        fi
+        PUSHED=$((PUSHED + 1))
+        state_ok=1
+        sleep 0.2   # pace calls under 60/min
+        ;;
+      429)
+        RATE_LIMITED=1
+        defer "$nk" "$canonical" "rate limit (HTTP 429)" \
+          "$(manual_hint "$op" "$nk" "$canonical" "$existing_id")"
+        ;;
+      *)
+        defer "$nk" "$canonical" "HTTP $PLANE_HTTP_CODE: $(printf '%s' "$PLANE_BODY" | head -c 200)" \
+          "$(manual_hint "$op" "$nk" "$canonical" "$existing_id")"
+        ;;
+    esac
+  else
+    # State noop: Plane already carries the correct state for this artifact. No
+    # write is needed or made — but the state IS correct, so a Circle's opt-in
+    # spec-comment should still refresh (fork 1: fire on every non-deferred push,
+    # including a Backlog→Backlog re-push of an edited anticipated-Circle brief).
+    state_ok=1
+  fi
+
+  # ── Spec-comment tail (opt-in, auxiliary, non-blocking) ─────────────────────
+  # Single call site, gated ONLY on kind=circle + the opt-in + state_ok — NOT on
+  # write_scope, so a seed-origin (state-only) Circle still gets its brief as a
+  # comment while its description stays untouched (decision 260719-2313). Because
+  # state_ok is set only on a 2xx write or a noop and every defer path returned or
+  # left it 0, a deferred state write never reaches upsert_spec_comment. The
+  # `|| true` keeps the internal comment_skip (return 1) from tripping set -e,
+  # exactly as the resolve_kind_label call guards label_skip. existing_id holds
+  # the new id after a create, the mapped id on update/noop.
+  if [ "$state_ok" -eq 1 ] && [ "$kind" = circle ] && spec_comment_enabled; then
+    upsert_spec_comment "$file" "$nk" "$existing_id" || true
+  fi
 }
 
 # build_write_body — the create/PATCH JSON. state UUID is resolved (live only).
@@ -1009,6 +1096,11 @@ cmd_push() {
   local label_note=""
   if [ "$LABELS_SKIPPED" -gt 0 ]; then
     label_note="$(printf ' — %d kind label(s) unavailable, pushed without them' "$LABELS_SKIPPED")"
+  fi
+  # A skipped spec-comment is metadata too (never a deferral); fold it into the
+  # same note, same shape as the label clause.
+  if [ "$COMMENTS_SKIPPED" -gt 0 ]; then
+    label_note="$(printf '%s — %d spec-comment(s) skipped' "$label_note" "$COMMENTS_SKIPPED")"
   fi
   if [ "$DEFERRED" -gt 0 ]; then
     printf 'STATUS: deferred (%d pushed, %d deferred)%s — see %s\n' "$PUSHED" "$DEFERRED" "$label_note" "$OUTBOX"
