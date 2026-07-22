@@ -89,6 +89,22 @@ labels:
   "fusion-issue": "fusion-issue"     # a fusion issue (issues/*.md)
   "decision": "decision"             # a decision record (decisions/*.md)
 
+# ── Spec comment (optional, default OFF) ────────────────────────────────────
+#   By default a mirrored issue's DESCRIPTION is a deliberately thin stub
+#   ("Mirrored fusion <kind>" + the fusion-key + source). Turn this on and each
+#   Circle push additionally attaches the Circle record's full brief as one
+#   idempotent Plane COMMENT — refreshed on every push, keyed on a hidden marker
+#   so a re-push updates that same comment rather than piling up new ones.
+#
+#   The comment is auxiliary and non-blocking: it never touches the description
+#   (a seed-origin story keeps its human-written description and merely gains the
+#   brief as a comment), and a failed comment write never costs the state
+#   transition — it self-heals on the next push. Circles only; issues and
+#   decisions are unaffected.
+#
+#   Leave commented for the default (off). Uncomment and set true to enable.
+# spec_comment: true
+
 # ── State fallback order (optional) ─────────────────────────────────────────
 #   If a canonical state's name (from `states` above) does not resolve on your
 #   Plane instance, fusion-plane tries the fallbacks listed here, in order,

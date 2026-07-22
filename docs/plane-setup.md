@@ -91,6 +91,39 @@ Two behaviours worth knowing:
 The key invariant: **there is no `api_key` / `token` / `secret` field in this file.**
 A lint test fails the build if one appears.
 
+### The full brief as a comment (`spec_comment`, optional)
+
+By default the mirror keeps each issue's **description** a deliberately thin stub:
+`Mirrored fusion <kind>`, the embedded `fusion-key:` line, and the source. That is
+enough for the board to identify the issue and for `push --rebuild-map` to find it
+again; the authoritative brief stays in files.
+
+If you want the full Circle brief visible on the board too, opt in — uncomment
+`spec_comment` in `plane.config.yaml` and set it to `true`:
+
+```yaml
+spec_comment: true
+```
+
+Absent or `false` (the default), nothing changes. With it on, each **Circle** push
+attaches the Circle record's full body as one Plane **comment**, refreshed on every
+push and keyed on a hidden marker so a re-push updates that same comment instead of
+piling up new ones. The split is deliberate: the description stays the thin mirror
+stub, the full spec rides in the comment. The bridge only ever writes an issue's
+name, description, and state — never comments — so the brief in the comment survives
+every re-push untouched by the description path.
+
+This applies to **seed-origin** stories too. A Circle seeded from an existing Plane
+story keeps its own human-written description (fusion never rewrites it) and simply
+gains the brief as a comment alongside it — the comment never overwrites the
+description.
+
+The comment write is **non-blocking**, the same doctrine as the kind label: if the
+comments endpoint is unreachable or refuses the write, the push still lands the state
+transition and says so in the `STATUS:` line. A failed comment never costs you the
+state change, and it self-heals on the next push. It is a Circle-only feature —
+fusion issues and decisions are unaffected.
+
 ## 4. Verify with `fusion-plane doctor`
 
 Before the first real push, confirm everything resolves:
