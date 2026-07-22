@@ -380,6 +380,57 @@ resolve_kind_label() {
   printf '%s' "$new_id"
 }
 
+# ── Spec-comment: the full Circle record body as one idempotent Plane comment ─
+# OPT-IN (config `spec_comment: true`, default off). When enabled, a Circle push
+# attaches — or refreshes — the record body as a SINGLE comment on the mirrored
+# issue, keyed on an HTML-comment marker so re-pushes update it in place rather
+# than piling up duplicates. NON-BLOCKING exactly like the kind-label path: a
+# failed comment op prints a note, never defers, never touches the outbox, and
+# never changes the exit code (the state transition has already completed before
+# the comment is attempted). These are the pure primitives; process_artifact
+# wires them (plan Step 2). No comment UUID literal appears here (lint invariant).
+COMMENTS_SKIPPED=0
+
+# spec_comment_enabled — the opt-in gate. Absent OR `false` ⇒ disabled (default
+# off); read through the same cfg_get as base_url / states / labels.
+spec_comment_enabled() { [ "$(cfg_get spec_comment)" = "true" ]; }
+
+# build_comment_body <file> <key> — the exact Plane comment body:
+#   {"comment_html": "<!-- fusion-spec-comment:<key> -->\n<pre><escaped body></pre>"}
+# jq @html escapes & < > in a single ampersand-first pass, so a record body with
+# angle brackets or ampersands (a Mermaid `A --> B`, an HTML tag, `a && b`) can
+# break neither the HTML nor the JSON. The marker is fusion-authored and carries
+# only the key, so it is emitted LITERALLY, outside the escaped <pre> body.
+build_comment_body() {
+  local file="$1" key="$2"
+  jq -Rs --arg key "$key" \
+    '{comment_html: ("<!-- fusion-spec-comment:\($key) -->\n<pre>" + (.|@html) + "</pre>")}' \
+    "$file"
+}
+
+# comment_skip <reason> — mirrors label_skip: say it out loud once, count it, and
+# let the caller carry on WITHOUT the comment. Never defers, never counts as a
+# deferral, never touches the outbox, never changes the exit code (a comment is
+# auxiliary — losing it must never cost the state transition).
+comment_skip() {
+  COMMENTS_SKIPPED=$((COMMENTS_SKIPPED + 1))
+  info "spec-comment unavailable ($1) — the state transition is unaffected; next push retries."
+  return 1
+}
+
+# comment_id_for_marker <comments_json> <key> — find fusion's existing spec-comment
+# for this Circle. Matches by this Circle's exact marker ONLY, so a comment bearing
+# a different key's marker is never matched. Handles both a bare array and a
+# {results:[...]} envelope, exactly like state_uuid / label_uuid. Prints the
+# comment id on a match; prints nothing when none carries the marker.
+comment_id_for_marker() {
+  local comments_json="$1" key="$2" marker
+  marker="<!-- fusion-spec-comment:$key -->"
+  printf '%s' "$comments_json" \
+    | jq -r --arg marker "$marker" \
+        '(.results // .) | map(select((.comment_html // "") | contains($marker))) | (.[0].id // empty)'
+}
+
 # ── Marker → canonical Plane state (the plan's mapping table) ────────────────
 canonical_state_for() {
   local kind="$1" marker="$2"
@@ -496,6 +547,10 @@ issue_web_url() {
 # Mode flags / run state.
 DRYRUN=0
 CLOSURE=0
+COMMENTS_FIXTURE=""   # test seam: captured `GET issues/<id>/comments/` JSON that
+                      # drives the dry-run PATCH-vs-POST branch offline (Step 2).
+                      # Distinct from the rebuild `--fixture`, which is a captured
+                      # `GET issues/` response — see cmd_push.
 declare -a OPS=()     # dry-run: accumulated create/update op objects (JSON)
 PUSHED=0
 DEFERRED=0
@@ -876,17 +931,22 @@ cmd_push() {
     case "$1" in
       --plan)        DRYRUN=1 ;;
       --all)         want_all=1 ;;
-      # --closure is accepted for forward-compat with the orchestrator wiring
-      # (plan Step 6). The Done transition it implies is ALREADY handled by the
-      # marker→state mapping (a _c_/_b_ Circle maps to Done). The extra closing
-      # comment + history-file link is Step 6's semantics and is intentionally
-      # NOT implemented here (its comments-endpoint body shape is unverified in
-      # MARTIN.md). Accepting the flag now keeps the wiring edit body-only.
+      # --closure is accepted as a no-op for forward-compat with the orchestrator
+      # wiring. The Done transition it implies is ALREADY handled by the
+      # marker→state mapping (a _c_/_b_ Circle maps to Done), so the flag itself
+      # changes nothing. The full-spec comment hook it once gated is now
+      # IMPLEMENTED as the `spec_comment` opt-in (config, default off) and fires on
+      # EVERY Circle push — not closure-gated — so it needs no flag of its own.
       --closure)     CLOSURE=1 ;;
       --rebuild-map) rebuild=1 ;;
       # Test seam: rebuild the map from a captured `GET issues/` response.
       --fixture)     shift; rebuild_fixture="${1:-}"; [ -n "$rebuild_fixture" ] || { err "push: --fixture needs a path"; return "$EXIT_USAGE"; } ;;
       --fixture=*)   rebuild_fixture="${1#--fixture=}" ;;
+      # Test seam: drive the spec-comment PATCH-vs-POST branch offline from a
+      # captured `GET issues/<id>/comments/` response. DISTINCT from the rebuild
+      # --fixture above (that one is a captured `GET issues/`).
+      --comments-fixture)   shift; COMMENTS_FIXTURE="${1:-}"; [ -n "$COMMENTS_FIXTURE" ] || { err "push: --comments-fixture needs a path"; return "$EXIT_USAGE"; } ;;
+      --comments-fixture=*) COMMENTS_FIXTURE="${1#--comments-fixture=}" ;;
       --circle)      shift; target="${1:-}"; [ -n "$target" ] || { err "--circle needs a directory"; return "$EXIT_USAGE"; } ;;
       --circle=*)    target="${1#--circle=}" ;;
       *)             err "push: unknown flag '$1'"; return "$EXIT_USAGE" ;;
@@ -895,6 +955,7 @@ cmd_push() {
   done
   [ "${FUSION_PLANE_DRYRUN:-0}" = "1" ] && DRYRUN=1
   [ -z "$rebuild_fixture" ] && [ -n "${FUSION_PLANE_ISSUES_FIXTURE:-}" ] && rebuild_fixture="$FUSION_PLANE_ISSUES_FIXTURE"
+  [ -z "$COMMENTS_FIXTURE" ] && [ -n "${FUSION_PLANE_COMMENTS_FIXTURE:-}" ] && COMMENTS_FIXTURE="$FUSION_PLANE_COMMENTS_FIXTURE"
 
   resolve_workbench || return "$EXIT_CONFIG"
   cfg_load          || return "$EXIT_CONFIG"
