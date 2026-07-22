@@ -752,3 +752,120 @@ describe("fusion-plane lint guards: the config template stores no secret", () =>
     }
   });
 });
+
+// ===========================================================================
+// 6. Opt-in spec-comment (plan 260722-2021, spec 260722-1943).
+//
+//    With `spec_comment: true` in the workbench config, every Circle push emits
+//    a SEPARATE dry-run op `{op:"spec-comment", …}` alongside the create/update
+//    op — the Circle record body, HTML-escaped and <pre>-wrapped, keyed on an
+//    HTML-comment marker `<!-- fusion-spec-comment:<nk> -->`. The PATCH-vs-POST
+//    branch resolves offline from a captured comments list injected through the
+//    `--comments-fixture` / FUSION_PLANE_COMMENTS_FIXTURE seam (distinct from the
+//    rebuild `--fixture`). Gate OFF ⇒ byte-for-byte the same op stream as before.
+//
+//    The gate is enabled by APPENDING `spec_comment: true` to the FRESH COPY's
+//    config (never the committed fixture) — the same copy-and-mutate discipline
+//    the map-based tests above use for `.plane-map.json`.
+// ===========================================================================
+describe("fusion-plane push --plan: spec-comment", () => {
+  const withMarkerFixture = join(fixtureRoot, "comments-with-marker.json");
+  const otherKeyFixture = join(fixtureRoot, "comments-other-key.json");
+
+  /** A fresh copy with the opt-in appended to its config. */
+  function enabledWorkbench(): string {
+    const wb = freshWorkbench();
+    const cfg = join(wb, "plane.config.yaml");
+    // Top-level scalar appended after the nested `labels:` block — read by
+    // `cfg_get spec_comment` exactly as `base_url` is.
+    writeFileSync(cfg, readFileSync(cfg, "utf-8") + "\nspec_comment: true\n");
+    return wb;
+  }
+
+  /** The spec-comment op for a Circle. Distinct from the create/update op, which
+   *  carries the SAME natural_key and is emitted first — so `opFor` would return
+   *  that one, never this. */
+  function specCommentOp(ops: any[], key: string): any {
+    return ops.find((o) => o.op === "spec-comment" && o.natural_key === key);
+  }
+
+  it("emits a marker-bearing, <pre>-wrapped spec-comment op for the Circle", () => {
+    // C5-1, C5-3, C2 marker: gate on, no comments fixture → a spec-comment op
+    // exists for the Circle; its comment_html is a string carrying the exact
+    // marker for this Circle's key, opening <pre> and closing </pre>.
+    const { ops } = plan(run(enabledWorkbench(), "push", "--all", "--plan").stdout);
+    const sc = specCommentOp(ops, CIRCLE);
+    expect(sc, "an enabled push must emit a spec-comment op for the Circle").toBeDefined();
+    expect(sc.kind).toBe("circle");
+    expect(typeof sc.comment_html).toBe("string");
+    // Exact marker string for the demo Circle's natural key (its directory name).
+    expect(sc.comment_html.startsWith(`<!-- fusion-spec-comment:260719-1536-demo-circle -->\n<pre>`)).toBe(true);
+    expect(sc.comment_html.endsWith("</pre>")).toBe(true);
+    // Marker is derived from the natural key, not hardcoded.
+    expect(sc.comment_html).toContain(`<!-- fusion-spec-comment:${CIRCLE} -->`);
+  });
+
+  it("HTML-escapes & < > in the record body, single ampersand-first pass", () => {
+    // C3, C5-3: overwrite the Circle record IN THE FRESH COPY with a body full of
+    // markup-breaking characters; the escaped body must carry the entities, no
+    // raw tag, and no double-escaped ampersand.
+    const wb = enabledWorkbench();
+    writeFileSync(
+      join(wb, "circles", CIRCLE, "_t_circle.md"),
+      "# Escaping Test Circle\n\nMermaid edge: A --> B\nHTML tag: <tag>\nShell and: a && b\n",
+    );
+    const { ops } = plan(run(wb, "push", "--circle", CIRCLE, "--plan").stdout);
+    const sc = specCommentOp(ops, CIRCLE);
+    expect(sc.comment_html).toContain("&amp;");
+    expect(sc.comment_html).toContain("&lt;");
+    expect(sc.comment_html).toContain("&gt;");
+    // The literal tag must appear escaped, never as live markup. (Raw `<` still
+    // occurs in the marker and the <pre> wrapper — only `<tag>` must be gone.)
+    expect(sc.comment_html).not.toContain("<tag>");
+    // Ampersand escaped exactly once — `a && b` → `a &amp;&amp; b`, never `&amp;amp;`.
+    expect(sc.comment_html).not.toContain("&amp;amp;");
+  });
+
+  it("PATCHes the matched comment when the fixture carries this Circle's marker", () => {
+    // C5-2 PATCH: a captured comments list bearing this Circle's marker →
+    // method PATCH + the matched comment_id.
+    const { ops } = plan(
+      run(enabledWorkbench(), "push", "--circle", CIRCLE, "--plan", "--comments-fixture", withMarkerFixture).stdout,
+    );
+    const sc = specCommentOp(ops, CIRCLE);
+    expect(sc.method).toBe("PATCH");
+    expect(sc.comment_id).toBe("comment-uuid-1");
+  });
+
+  it("POSTs a new comment when the fixture holds only a different Circle's marker", () => {
+    // C2-3, C5-2 POST: the marker match is by exact key — a different Circle's
+    // comment is never matched, so the method is POST and no comment_id is set.
+    const { ops } = plan(
+      run(enabledWorkbench(), "push", "--circle", CIRCLE, "--plan", "--comments-fixture", otherKeyFixture).stdout,
+    );
+    const sc = specCommentOp(ops, CIRCLE);
+    expect(sc.method).toBe("POST");
+    expect(sc.comment_id).toBeUndefined();
+  });
+
+  it("gate off → no spec-comment op, and the op stream is unchanged (8 ops)", () => {
+    // C1-1, C1-2, C5-4: the default fixture config carries no `spec_comment`
+    // field, so the gate is off and the op count matches the pre-change baseline
+    // asserted in the mapping suite above (record + 3 issues + 2 decisions +
+    // 1 shared issue + 1 shared decision = 8).
+    const { ops } = plan(run(freshWorkbench(), "push", "--all", "--plan").stdout);
+    expect(ops.some((o) => o.op === "spec-comment")).toBe(false);
+    expect(ops).toHaveLength(8);
+  });
+
+  it("C4: gate on + unreachable host still defers the state and exits 10", () => {
+    // C4-1, C4-4: with the opt-in enabled, a live push against the unreachable
+    // `.test` host defers the state write first (state_ok stays 0), so the
+    // comment is never attempted — the exit code is the state path's 10, never a
+    // crash and never a comment-driven change.
+    const wb = enabledWorkbench();
+    const r = run(wb, "push", "--all");
+    expect(r.status).toBe(EXIT_DEFERRED);
+    expect(r.stderr + r.stdout).toContain("deferred");
+  });
+});
