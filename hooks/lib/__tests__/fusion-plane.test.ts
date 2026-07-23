@@ -771,6 +771,13 @@ describe("fusion-plane lint guards: the config template stores no secret", () =>
 describe("fusion-plane push --plan: spec-comment", () => {
   const withMarkerFixture = join(fixtureRoot, "comments-with-marker.json");
   const otherKeyFixture = join(fixtureRoot, "comments-other-key.json");
+  // Same comments as withMarkerFixture, but shaped as a BARE JSON array rather
+  // than a {results:[…]} envelope — the regression guard for the jq
+  // `(.results? // .)` fallback. Under the old `(.results // .)` idiom, jq 1.8.1
+  // raised "Cannot index array with string \"results\"" on this shape, so
+  // comment_id_for_marker printed nothing and the match silently fell through to
+  // POST. See shared/issues/260722-2227_p_jq-results-fallback-throws-on-bare-array.
+  const bareArrayMarkerFixture = join(fixtureRoot, "comments-with-marker-bare-array.json");
 
   /** A fresh copy with the opt-in appended to its config. */
   function enabledWorkbench(): string {
@@ -831,6 +838,20 @@ describe("fusion-plane push --plan: spec-comment", () => {
     // method PATCH + the matched comment_id.
     const { ops } = plan(
       run(enabledWorkbench(), "push", "--circle", CIRCLE, "--plan", "--comments-fixture", withMarkerFixture).stdout,
+    );
+    const sc = specCommentOp(ops, CIRCLE);
+    expect(sc.method).toBe("PATCH");
+    expect(sc.comment_id).toBe("comment-uuid-1");
+  });
+
+  it("PATCHes on a BARE-ARRAY comments fixture (jq .results? fallback regression)", () => {
+    // Regression for the `(.results? // .)` fix: comment_id_for_marker must match
+    // this Circle's marker whether the injected comments list is a {results:[…]}
+    // envelope OR a bare array. Under the pre-fix `(.results // .)` pattern jq
+    // errored on the bare array, the id came back empty, and this Circle's own
+    // spec-comment was wrongly POSTed as a duplicate instead of PATCHed in place.
+    const { ops } = plan(
+      run(enabledWorkbench(), "push", "--circle", CIRCLE, "--plan", "--comments-fixture", bareArrayMarkerFixture).stdout,
     );
     const sc = specCommentOp(ops, CIRCLE);
     expect(sc.method).toBe("PATCH");

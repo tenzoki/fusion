@@ -268,7 +268,7 @@ fetch_states() {
 state_uuid() {
   [ -n "$STATES_JSON" ] || return 1
   printf '%s' "$STATES_JSON" \
-    | jq -r --arg n "$1" '(.results // .) | map(select(.name==$n)) | (.[0].id // empty)'
+    | jq -r --arg n "$1" '(.results? // .) | map(select(.name==$n)) | (.[0].id // empty)'
 }
 
 # resolve_canonical_state <canonical> — canonical fusion state name → instance
@@ -320,7 +320,7 @@ fetch_labels() {
 label_uuid() {
   [ -n "$LABELS_JSON" ] || return 1
   printf '%s' "$LABELS_JSON" \
-    | jq -r --arg n "$1" '(.results // .) | map(select(.name==$n)) | (.[0].id // empty)'
+    | jq -r --arg n "$1" '(.results? // .) | map(select(.name==$n)) | (.[0].id // empty)'
 }
 
 label_memo_get() { printf '%s\n' "$LABEL_MEMO" | awk -F'\t' -v k="$1" '$1==k{print $2; exit}'; }
@@ -374,7 +374,7 @@ resolve_kind_label() {
     return 1
   fi
   # Fold the new label into the per-run cache so nothing re-fetches or re-creates.
-  LABELS_JSON="$(printf '%s' "$LABELS_JSON" | jq -c --argjson new "$PLANE_BODY" '((.results // .) + [$new])')"
+  LABELS_JSON="$(printf '%s' "$LABELS_JSON" | jq -c --argjson new "$PLANE_BODY" '((.results? // .) + [$new])')"
   label_memo_put "$kind" "$new_id"
   info "created Plane label '$name' for kind '$kind'."
   printf '%s' "$new_id"
@@ -428,7 +428,7 @@ comment_id_for_marker() {
   marker="<!-- fusion-spec-comment:$key -->"
   printf '%s' "$comments_json" \
     | jq -r --arg marker "$marker" \
-        '(.results // .) | map(select((.comment_html // "") | contains($marker))) | (.[0].id // empty)'
+        '(.results? // .) | map(select((.comment_html // "") | contains($marker))) | (.[0].id // empty)'
 }
 
 # upsert_spec_comment <file> <nk> <issue_id> — attach or refresh the Circle
@@ -974,7 +974,7 @@ emit_plan() {
 # non-string input — which the caller's `2>/dev/null` would have turned into a
 # bare "could not parse issues".
 JQ_REBUILD_MAP='
-  (.results // .) as $issues
+  (.results? // .) as $issues
   | reduce $issues[] as $i ({};
       ( [$i.description_stripped, $i.description_html, $i.description]
         | map(select(type == "string"))
@@ -1311,7 +1311,7 @@ cmd_doctor() {
   if [ "$rc" -eq 0 ]; then
     if fetch_states; then
       local n
-      n="$(printf '%s' "$STATES_JSON" | jq '((.results // .)|length)' 2>/dev/null || echo '?')"
+      n="$(printf '%s' "$STATES_JSON" | jq '((.results? // .)|length)' 2>/dev/null || echo '?')"
       printf 'states/ reachable: yes (%s states)\n' "$n"
     else
       printf 'states/ reachable: NO (curl rc %s / HTTP %s)\n' "$PLANE_CURL_RC" "${PLANE_HTTP_CODE:-none}"
@@ -1463,7 +1463,7 @@ cmd_seed() {
   # sequence_id → issue (Martin's verified lookup; numeric compare via --argjson).
   local issue origin_id title desc url
   issue="$(printf '%s' "$issues_json" \
-    | jq -c --argjson s "$seq" '(.results // .) | map(select(.sequence_id==$s)) | (.[0] // empty)' 2>/dev/null || true)"
+    | jq -c --argjson s "$seq" '(.results? // .) | map(select(.sequence_id==$s)) | (.[0] // empty)' 2>/dev/null || true)"
   if [ -z "$issue" ] || [ "$issue" = "null" ]; then
     err "seed: no issue with sequence_id=$seq in the fetched set (check the story number)."
     return "$EXIT_USAGE"

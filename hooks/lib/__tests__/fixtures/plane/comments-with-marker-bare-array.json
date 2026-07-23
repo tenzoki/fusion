@@ -1,0 +1,10 @@
+[
+  {
+    "id": "comment-uuid-1",
+    "comment_html": "<!-- fusion-spec-comment:260719-1536-demo-circle -->\n<pre>an earlier, now-stale spec-comment body</pre>"
+  },
+  {
+    "id": "comment-uuid-unrelated",
+    "comment_html": "<p>a human's unrelated comment, no fusion marker</p>"
+  }
+]
