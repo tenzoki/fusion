@@ -239,10 +239,13 @@ Patterns attach to the **kind of artifact**, not to a directory. The same kind c
 | Investigation | `$OUT_INVESTIGATION` | `YYMMDD-HHMM-<topic>.md` | no |
 | Consultation | `$OUT_CONSULT` | `YYMMDD-HHMM-<topic>.md` | no |
 | Memo | `$OUT_MEMO` | `memos-<username>.md` / `tasks-<username>.md` | no |
+| Cadence digest | `$OUT_MEMO` | `cadence-<username>.md` | no |
 | Portfolio | `$PORTFOLIO` | fixed | — |
 | Task queue | `$TASKLIST` | fixed | — |
 
 `<sender>` on a review file is `coderev`, `ontorev`, or `conceptrev`. It is what distinguishes the three review kinds now that they share one `reviews/` directory — it is mandatory, and the document header repeats it.
+
+The two kinds sharing `$OUT_MEMO` differ in write semantics: the memo and task files are **append** logs (`/fusion:memo` adds to them), while the cadence digest is **overwritten** on each `/fusion:cadence` run — it is a fresh snapshot of the work cadence, not a history of its own runs.
 
 ## State Markers — issues and planning
 
@@ -262,7 +265,7 @@ Defect files and spec/plan files carry a state marker: `YYMMDD-HHMM_S_<topic>.md
 - When the user defers: rename to `_d_`.
 - State change = `mv` (rename). Only the marker changes; `YYMMDD-HHMM` and `<topic>` stay the same.
 
-History, review, analysis, investigation, consultation, and memo files do NOT carry state markers.
+History, review, analysis, investigation, consultation, memo, and cadence files do NOT carry state markers.
 
 ## State Markers — decisions
 
