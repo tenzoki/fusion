@@ -917,9 +917,11 @@ function applyDirEffect(
 
   const resolved = resolveWord(words[idx], literals);
   const raw = resolved.unresolved === true ? words[idx] : resolved.value;
-  // `(cd rules && ls)` glues the subshell opener to the builtin. The
-  // spaced form `( cd rules …` is already handled by GRAMMAR_PREFIXES.
-  const name = programName(raw.replace(/^\(+/, ""));
+  // `(cd rules && ls)` glues the subshell opener to the builtin; `tokenize`
+  // strips it, so nothing is peeled here. (It used to be peeled HERE, for the
+  // directory builtins only, because subshell scoping was unreachable
+  // otherwise and widening the verbs was a gate decision. The gate passed.)
+  const name = programName(raw);
   if (!DIR_BUILTINS.has(name)) return;
 
   const args = words.slice(idx + 1);

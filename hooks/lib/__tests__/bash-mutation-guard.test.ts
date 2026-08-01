@@ -1469,15 +1469,54 @@ describe("virtual cwd — the residuals, asserted so they stay visible", () => {
     expect(denies("echo $(cd /tmp); echo $(rm rules/x.md)")).toBe(true);
   });
 
-  it("does not classify a command word glued to a ( — the paren-subshell gap", () => {
-    // `(rm x)` tokenizes to `(rm` + `x)`, and neither the command word nor the
-    // operand survives the parenthesis. The virtual cwd sees THROUGH the glued
-    // `(cd`, because the scoping requires it, but the mutation verbs do not —
-    // widening them is a reviewable change, not a side effect of this step.
-    // Pre-dates step 4 and is filed as
-    // `issues/260801-1610_o_paren-subshell-glues-its-parentheses-to-the-command-word-and-the-last-operand.md`.
-    expect(denies("(rm rules/x.md)")).toBe(false);
-    expect(denies("(rm rules/x.md )")).toBe(false); // the OPEN paren is enough
-    expect(denies("( rm rules/x.md )")).toBe(true); // spaced: nothing is glued
+});
+
+/* ------------------------------------------------------------------ *
+ * 13c. The paren-subshell hole, closed
+ * ------------------------------------------------------------------ */
+
+/**
+ * `(rm x)` used to tokenize to `(rm` + `x)`, and neither the command word nor
+ * the operand survived the parenthesis — a one-character bypass of the whole
+ * verb table. The virtual cwd already saw THROUGH the glued `(cd`, because the
+ * scoping required it; widening the verbs was gated, and the gate passed.
+ * `tokenize` now strips a subshell's parentheses for every consumer.
+ * (`issues/260801-1610_c_paren-subshell-glues-its-parentheses-to-the-command-word-and-the-last-operand.md`)
+ */
+describe("a (…) subshell no longer hides its command or its last operand", () => {
+  it("classifies a verb glued to the opening paren", () => {
+    expectAllDeny([
+      "(rm rules/x.md)",
+      "(rm rules/x.md )",
+      "( rm rules/x.md )", // the spaced form, which always worked
+      "((rm rules/x.md))",
+      "(mv rules/x.md /tmp/)",
+      "echo ok && (rm agents/coder.md)",
+    ]);
+  });
+
+  it("classifies an operand glued to the closing paren", () => {
+    // The operand carried a trailing `)`, so it matched `rules/**` only by the
+    // glob's accident and missed a non-glob pattern such as `hooks/config.json`
+    // outright.
+    expect(denies("(cd hooks && rm config.json)")).toBe(true);
+    expect(denies("(rm hooks/config.json)")).toBe(true);
+  });
+
+  it("still discards the subshell's own cd", () => {
+    // The strip is in the tokenizer; the scope counter reads the segment TEXT,
+    // so it still sees both parentheses and still restores the directory.
+    expect(denies("(cd /tmp && rm -rf x)")).toBe(false);
+    expect(denies("(cd rules && ls) && rm x.md")).toBe(false);
+    expect(denies("(cd hooks && rm -rf dist)")).toBe(false);
+  });
+
+  it("leaves a $(…) substitution's own parentheses alone", () => {
+    // The filler carries a balanced pair that is not grammar. Stripping it
+    // would change no verdict (it stays unresolved either way) but would put an
+    // unbalanced `$(…` in front of a human in the deny reason.
+    const v = classify("rm $(echo rules/x.md)");
+    expect(v.deny).toBe(true);
+    expect(v.targetPath).toBe("$(…)");
   });
 });

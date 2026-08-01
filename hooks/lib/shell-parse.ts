@@ -485,9 +485,56 @@ export function extractCommandSegments(command: string): string[] {
   return segments;
 }
 
-/** Tokenize a single segment into whitespace-separated words. */
+/**
+ * Remove the parentheses of a `(…)` SUBSHELL from one word.
+ *
+ * `scanSegments` models `$(…)` and backticks but NOT the plain `(…)` subshell:
+ * its parentheses are ordinary characters in the segment text, so they arrive
+ * glued to the words they touch — `(rm rules/x.md)` is `["(rm", "rules/x.md)"]`.
+ * Glued that way neither the command word nor the operand is recognisable, and
+ * every classifier reading these tokens was blind to the command inside:
+ * `(rm rules/x.md)` and `(git switch main)` both ran.
+ *
+ * The `$(…)` filler is exempt. It carries a balanced pair that is NOT shell
+ * grammar (see `SUBSTITUTION_FILLER`), so `rm $(echo x)` must keep its filler
+ * whole while `(echo $(pwd))` still sheds the real subshell's parens.
+ *
+ * The strip is unconditional otherwise, because a parenthesis in CODE position
+ * is grammar. A filename that genuinely contains one has to be quoted — capture
+ * mode hands that over as a placeholder, with no paren in the token — or
+ * backslash-escaped, where the paren is lost here; that can only ever SHORTEN a
+ * word, and a shorter word cannot match a protected pattern a longer one did
+ * not, so it costs no allow and buys no false deny.
+ */
+function stripSubshellParens(token: string): string {
+  let out = token.replace(/^\(+/, "");
+  // Peel trailing `)` one at a time, stopping at the filler's own close, so
+  // `$(…))` sheds the subshell's paren and keeps the filler's.
+  while (out.endsWith(")") && !out.endsWith(SUBSTITUTION_FILLER)) {
+    out = out.slice(0, -1);
+  }
+  return out;
+}
+
+/**
+ * Tokenize a single segment into whitespace-separated words, with the
+ * parentheses of a `(…)` subshell removed (`stripSubshellParens`). A word that
+ * was NOTHING but parentheses disappears, which is what the spaced form
+ * `( rm x )` should leave behind.
+ *
+ * The strip lives here rather than in either classifier because both consume
+ * this function and both had the hole. It leaves the SEGMENTER untouched, which
+ * is what keeps the change contained: blank mode still reproduces the historical
+ * segmentation byte for byte, and the subshell-scope counter in
+ * `bash-mutation-guard.ts` reads a segment's raw TEXT rather than its tokens, so
+ * it still sees every parenthesis it has to balance.
+ */
 export function tokenize(segment: string): string[] {
-  return segment.trim().split(/\s+/).filter((t) => t.length > 0);
+  return segment
+    .trim()
+    .split(/\s+/)
+    .map(stripSubshellParens)
+    .filter((t) => t.length > 0);
 }
 
 /** A segment plus where it started, so the caller can restore source order. */

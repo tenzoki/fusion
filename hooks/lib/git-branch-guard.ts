@@ -288,7 +288,29 @@ export interface GitGuardOverrides {
  * branch-switch policy. Segments the command; if ANY segment is a deny-case,
  * the whole call is denied (unless the matching env override lifts it).
  *
- * The two overrides are independent (least privilege).
+ * ## The two overrides are independent, and the scan has to stay that way
+ *
+ * An override waives ONE class. The scan therefore does not stop at the first
+ * deny-case segment — it stops at the first UN-OVERRIDDEN one. Returning at the
+ * first deny-case (which is what this did until
+ * `issues/260801-1745_c_one-git-override-lifts-the-deny-for-the-other-git-class.md`)
+ * left every later segment unclassified the moment one override was set, so
+ * `FUSION_ALLOW_WORKTREE=1 git worktree add ../wt f && git switch main` allowed
+ * a branch switch the user never authorised — the exact permission the second
+ * variable exists to withhold.
+ *
+ * An overridden segment is remembered and the walk continues. A later
+ * un-overridden deny WINS over it: the deny is the more restrictive verdict and
+ * the one the user did not waive. Both classes overridden in one command allows,
+ * and should — both permissions were granted explicitly.
+ *
+ * The verdict SHAPE is unchanged, and deliberately so. `overrideUsed` still
+ * means "a normally-denied op was ALLOWED", so it is set only on the allow
+ * return; a deny verdict never carries it, even when an earlier segment was
+ * overridden, because on that call nothing was let through and `guard.ts` would
+ * be recording an override-used note for a blocked command. When several
+ * segments were overridden, `overrideSegment` names the FIRST — the honest
+ * simple answer, and the one the note read before.
  */
 export function classifyGitCommand(
   command: string,
@@ -306,6 +328,10 @@ export function classifyGitCommand(
   // heredocs) are preserved, keeping the guard fail-closed.
   const segments = extractCommandSegments(stripDataRegions(command));
 
+  // The first segment an override let through, held back rather than returned
+  // so the rest of the command is still classified against the OTHER class.
+  let waived: { kind: GitGuardKind; segment: string } | undefined;
+
   for (const segment of segments) {
     const result = classifySegment(segment, resolver);
     if (result === null) continue;
@@ -317,14 +343,10 @@ export function classifyGitCommand(
       (kind === "worktree-add" && overrides.allowWorktree);
 
     if (overrideActive) {
-      // The user deliberately allowed this class. Allow, but flag for the
-      // hook to record an override-used note for visibility.
-      return {
-        deny: false,
-        overrideUsed: true,
-        overrideKind: kind,
-        overrideSegment: segment,
-      };
+      // The user deliberately allowed this class — for THIS segment. Keep
+      // scanning; a later segment of the other class is still denied.
+      if (waived === undefined) waived = { kind, segment };
+      continue;
     }
 
     return {
@@ -332,6 +354,17 @@ export function classifyGitCommand(
       reason,
       offendingSegment: segment,
       kind,
+    };
+  }
+
+  if (waived !== undefined) {
+    // Every deny-case in the command was individually authorised. Allow, and
+    // flag for the hook to record an override-used note for visibility.
+    return {
+      deny: false,
+      overrideUsed: true,
+      overrideKind: waived.kind,
+      overrideSegment: waived.segment,
     };
   }
 

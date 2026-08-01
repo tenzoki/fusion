@@ -23,6 +23,10 @@ const ALLOW_WORKTREE: GitGuardOverrides = {
   allowBranchSwitch: false,
   allowWorktree: true,
 };
+const ALLOW_BOTH: GitGuardOverrides = {
+  allowBranchSwitch: true,
+  allowWorktree: true,
+};
 
 function deny(cmd: string, overrides = NO_OVERRIDE) {
   return classifyGitCommand(cmd, overrides);
@@ -216,6 +220,107 @@ describe("git branch-switch classifier — env overrides (least privilege)", () 
 
   it("worktree override does NOT lift the branch-switch deny (independent)", () => {
     expect(classifyGitCommand("git checkout main", ALLOW_WORKTREE).deny).toBe(true);
+  });
+});
+
+/**
+ * The scan used to RETURN at the first deny-case segment, so an active override
+ * for that class ended the walk and every later segment — including a deny-case
+ * of the OTHER class — went unclassified. One override then granted both
+ * classes for the rest of the command, which is precisely what two independent
+ * variables exist to prevent.
+ * (`issues/260801-1745_c_one-git-override-lifts-the-deny-for-the-other-git-class.md`)
+ */
+describe("git branch-switch classifier — one override never waives the other class", () => {
+  it("still denies the branch switch that follows an overridden worktree add", () => {
+    const v = classifyGitCommand(
+      "git worktree add ../wt f && git switch main",
+      ALLOW_WORKTREE,
+    );
+    expect(v.deny).toBe(true);
+    expect(v.kind).toBe("branch-switch");
+    expect(v.offendingSegment).toContain("git switch main");
+    // Nothing was let through, so no override-used note is claimed.
+    expect(v.overrideUsed).toBeUndefined();
+  });
+
+  it("still denies the worktree add that follows an overridden branch switch", () => {
+    const v = classifyGitCommand(
+      "git switch main && git worktree add ../wt f",
+      ALLOW_BRANCH,
+    );
+    expect(v.deny).toBe(true);
+    expect(v.kind).toBe("worktree-add");
+    expect(v.offendingSegment).toContain("git worktree add");
+  });
+
+  it("denies when the un-overridden class comes FIRST too", () => {
+    expect(
+      classifyGitCommand(
+        "git switch main && git worktree add ../wt f",
+        ALLOW_WORKTREE,
+      ).deny,
+    ).toBe(true);
+  });
+
+  it("allows a mixed-class command when BOTH overrides are set", () => {
+    // Each op was individually authorised, so there is nothing left to withhold.
+    for (const cmd of [
+      "git worktree add ../wt f && git switch main",
+      "git switch main && git worktree add ../wt f",
+    ]) {
+      const v = classifyGitCommand(cmd, ALLOW_BOTH);
+      expect(v.deny, cmd).toBe(false);
+      expect(v.overrideUsed, cmd).toBe(true);
+    }
+  });
+
+  it("names the FIRST overridden segment when several were overridden", () => {
+    const v = classifyGitCommand(
+      "git switch one && git switch two",
+      ALLOW_BRANCH,
+    );
+    expect(v.deny).toBe(false);
+    expect(v.overrideUsed).toBe(true);
+    expect(v.overrideKind).toBe("branch-switch");
+    expect(v.overrideSegment).toContain("git switch one");
+  });
+
+  it("still allows a single overridden op, note and all", () => {
+    const v = classifyGitCommand("git switch main", ALLOW_BRANCH);
+    expect(v.deny).toBe(false);
+    expect(v.overrideUsed).toBe(true);
+    expect(v.overrideSegment).toContain("git switch main");
+  });
+
+  it("leaves an innocuous command free of any override note", () => {
+    expect(classifyGitCommand("git status && ls", ALLOW_BOTH)).toEqual({
+      deny: false,
+    });
+  });
+});
+
+/**
+ * `(git switch main)` tokenized to `["(git", "switch", "main)"]`, so the command
+ * word was `(git` and the segment classified as a non-git command. Closed in
+ * `shell-parse.ts` `tokenize`, which both classifiers consume.
+ * (`issues/260801-1610_c_paren-subshell-glues-its-parentheses-to-the-command-word-and-the-last-operand.md`)
+ */
+describe("git branch-switch classifier — a (…) subshell no longer hides the verb", () => {
+  it("denies a git switch inside a literal subshell", () => {
+    expect(deny("(git switch main)").deny).toBe(true);
+    expect(deny("( git switch main )").deny).toBe(true);
+    expect(deny("cd x && (git switch main)").deny).toBe(true);
+  });
+
+  it("denies a git worktree add inside a literal subshell", () => {
+    const v = deny("(git worktree add ../wt f)");
+    expect(v.deny).toBe(true);
+    expect(v.kind).toBe("worktree-add");
+  });
+
+  it("still allows the revert path inside a subshell", () => {
+    expect(deny("(git checkout HEAD -- foo.go)").deny).toBe(false);
   });
 });
 

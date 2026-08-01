@@ -8,6 +8,7 @@ import {
   tokenize,
   extractCommandSegments,
   stripDataRegions,
+  SUBSTITUTION_FILLER,
 } from "../shell-parse.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -345,6 +346,55 @@ describe("capture mode keeps a quoted operand readable", () => {
     expect(parsed.literals.size).toBe(0);
     expect(perSegment[0]).toEqual(["mv", "q0", "/tmp/"]);
     expect(resolveWord("q0", parsed.literals)).toEqual({ value: "q0" });
+  });
+});
+
+/**
+ * A `(…)` subshell is not modelled by the segmenter, so its parentheses arrive
+ * glued to the words they touch and hid both the command word and the last
+ * operand from every classifier. `tokenize` peels them
+ * (`issues/260801-1610_c_paren-subshell-glues-its-parentheses-to-the-command-word-and-the-last-operand.md`).
+ */
+describe("tokenize peels a (…) subshell's parentheses", () => {
+  it("frees the command word and the last operand", () => {
+    expect(tokenize("(rm rules/x.md)")).toEqual(["rm", "rules/x.md"]);
+    expect(tokenize("(git switch main)")).toEqual(["git", "switch", "main"]);
+  });
+
+  it("drops a word that was nothing but parentheses", () => {
+    expect(tokenize("( rm x )")).toEqual(["rm", "x"]);
+    expect(tokenize("((cd a && b))")).toEqual(["cd", "a", "&&", "b"]);
+  });
+
+  it("leaves a parenthesis in the MIDDLE of a word alone", () => {
+    expect(tokenize("a(b")).toEqual(["a(b"]);
+    expect(tokenize("f() {")).toEqual(["f(", "{"]);
+  });
+
+  it("keeps the $(…) filler whole, parentheses and all", () => {
+    // Its pair is not shell grammar; peeling it would leave an unbalanced
+    // `$(…` in the deny reason a human reads.
+    expect(tokenize(`rm ${SUBSTITUTION_FILLER}`)).toEqual([
+      "rm",
+      SUBSTITUTION_FILLER,
+    ]);
+    // A real subshell closing around a substitution sheds ONE paren, not both.
+    expect(tokenize(`(echo ${SUBSTITUTION_FILLER})`)).toEqual([
+      "echo",
+      SUBSTITUTION_FILLER,
+    ]);
+  });
+
+  it("does not disturb the segmenter it feeds on", () => {
+    // The strip is in the tokenizer only, so segment TEXT — which the mutation
+    // guard's subshell-scope counter reads — still carries every parenthesis.
+    expect(
+      parseCommand("(cd rules && ls) && rm x.md", { quoted: "capture" }).segments,
+    ).toEqual([
+      { text: "(cd rules", depth: 0 },
+      { text: "ls)", depth: 0 },
+      { text: "rm x.md", depth: 0 },
+    ]);
   });
 });
 
