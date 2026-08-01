@@ -20,9 +20,31 @@
  * rules/x.md` writes it and denies. Adding a verb later is a row and two tests,
  * not a new code path.
  *
+ * A leading WRAPPER program (`WRAPPER_PROGRAMS` below) is skipped rather than
+ * read as the command, so `sudo rm rules/x.md` and `sudo env rm rules/x.md`
+ * classify as the `rm` they are. Each wrapper's own flags — and, for `timeout`,
+ * its duration operand — are consumed by the wrapper's row, so the skip never
+ * assumes the second word is the verb.
+ *
  * Output redirection (`>`, `>>`, `>|`, `N>`, glued or separated) is scanned
  * separately and position-independently, because a redirection binds to the
  * whole simple command wherever it appears — `>` makes ANY program a mutation.
+ *
+ * ## Ancestors count
+ *
+ * An operand that is not itself protected still denies when it is an ANCESTOR
+ * DIRECTORY of a protected path: `rm -rf hooks` destroys `hooks/config.json`,
+ * `mv hooks /tmp` relocates it out from under the guard. Each protected
+ * pattern's glob-free leading segments are its literal prefix, and an operand
+ * that is a proper directory prefix of one denies (`isAncestorOfProtected`).
+ * The consequence is deliberate and was accepted at the plan's Q3 gate:
+ * `rm -rf hooks`, `rm -rf fusion-workbench` and `mv hooks /tmp` deny, while
+ * `rm -rf node_modules` and `rm -rf dist` do not. The check is uniform across
+ * written operands rather than special-cased to destructive verbs, so a
+ * destination directory is covered too — `cp /tmp/config.json hooks/` cannot
+ * overwrite a protected file through a directory the classifier never inspects.
+ * The project root itself is NOT treated as an ancestor: `cp x .` writes into
+ * the root without destroying it, and denying it would catch ordinary work.
  *
  * ## Fail-closed, and its bound
  *
@@ -42,17 +64,15 @@
  * it does not eliminate it, and no claim that `protectedPaths` is enforced
  * should be made without that qualification.
  *
- * One residual is a PARSER consequence and not a choice made here:
- * `shell-parse` lifts a `$(…)` / backtick body out into its own segment and
- * leaves a single space behind, so a substitution used as an OPERAND vanishes
- * rather than surviving as an unresolvable word. `rm $(echo rules/x.md)`
- * therefore reaches this classifier as a bare `rm` with no positionals and is
- * allowed, where `rm $VAR` denies. The substitution's own body is still
- * classified, so `$(rm rules/x.md)` denies; only the case where the verb is
- * outside and the path is inside slips through. Closing it means making the
- * lifted substitution leave an unresolvable token behind in capture mode,
- * which is a change to `shell-parse` and to the deny surface, so it is stated
- * here rather than patched around.
+ * The wrapper list is the same kind of bound. A program that runs another
+ * program and is not a row still hides the verb underneath it — `parallel rm
+ * rules/x.md` is the obvious one, and it is left out because its flag grammar
+ * is large enough to be its own false-positive risk. Adding a wrapper is a row,
+ * not a code path.
+ *
+ * A whole-tree operand that is not a path is invisible for the same reason a
+ * glob is matched literally: `rm -rf *` and `rm -rf .` name no directory the
+ * ancestor check can compare, so neither is caught.
  *
  * This module is PURE and EXPORTED so it is unit-testable without the hook
  * firing. It never touches the filesystem, the environment, or the process:
@@ -159,6 +179,20 @@ function shortFlagLetters(flag: string): string {
  * matches a protected-path glob. `sed -i '' 's/MUST/may/' rules/x.md` therefore
  * denies on `rules/x.md` and `sed -i '' 's/a/b/' notes.txt` allows, on both
  * platforms, with no platform branch in the code.
+ *
+ * Two things widen a row's reach beyond the literal command it names, and both
+ * are reviewed with the table rather than apart from it:
+ *
+ *   - A row is reached THROUGH a wrapper (`WRAPPER_PROGRAMS`). `sudo rm …`,
+ *     `xargs rm …` and `sudo env rm …` are the `rm` row.
+ *   - A written operand matches by ANCESTRY as well as by pattern
+ *     (`ancestorOfProtected`). `rm -rf hooks` is the `rm` row hitting
+ *     `hooks/config.json` without naming it.
+ *
+ * Neither is per-verb, so a new row inherits both. Adding a verb whose operands
+ * are usually directories is therefore a wider change than adding one that
+ * names files, and `mkdir`, `chmod`, `chown`, `touch`, `rsync`, `patch`, `tar`
+ * and `gzip` are deliberately NOT rows.
  */
 export const MUTATION_VERBS: Readonly<Record<string, VerbSpec>> = {
   mv: { written: "all", targetDir: "adds" },
@@ -183,6 +217,53 @@ export const MUTATION_VERBS: Readonly<Record<string, VerbSpec>> = {
     valueFlags: ["-e", "-f"],
     inPlaceOnly: isPerlInPlaceFlag,
   },
+};
+
+/**
+ * A program that RUNS another program. Its own flags (and, for `timeout`, one
+ * positional) are consumed, and whatever follows is classified as the real
+ * command — otherwise `sudo rm rules/x.md` reads as the unrecognised program
+ * `sudo` and is allowed, which is a one-word bypass of the whole table.
+ *
+ * THE FLAGS ARE THE WHOLE DIFFICULTY. A wrapper's value-taking flag swallows
+ * the next token, so `sudo -u root rm x` must not read `root` as the command,
+ * and `timeout 5 rm x` must not read `5` as it. Only the SHORT forms need
+ * listing: `--user=root` and `--kill-after=5s` are single tokens and fall out
+ * of the generic "a token starting with `-` is a flag" rule.
+ *
+ * `positionalArgs` is the wrapper's own non-flag arguments before the command
+ * word — one for `timeout` (the duration), none for anything else. `nice -5`
+ * needs no entry: it starts with `-` and is skipped as an ordinary flag.
+ *
+ * Skipping a wrapper cannot manufacture a false positive on its own. It only
+ * ever exposes an inner command word to the SAME table; if the inner program is
+ * not a verb the verdict is unchanged. `command -v rm` becomes a bare `rm` with
+ * no operands, which writes nothing.
+ */
+export interface WrapperSpec {
+  /** Short flags that consume the FOLLOWING token as their value. */
+  valueFlags?: readonly string[];
+  /** The wrapper's own positional arguments, before the wrapped command word. */
+  positionalArgs?: number;
+}
+
+export const WRAPPER_PROGRAMS: Readonly<Record<string, WrapperSpec>> = {
+  sudo: {
+    valueFlags: ["-u", "-g", "-p", "-C", "-h", "-r", "-t", "-T", "-U", "-D"],
+  },
+  doas: { valueFlags: ["-u", "-C"] },
+  env: { valueFlags: ["-u", "-C", "-S"] },
+  command: {},
+  nice: { valueFlags: ["-n"] },
+  ionice: { valueFlags: ["-c", "-n", "-p"] },
+  timeout: { valueFlags: ["-s", "-k"], positionalArgs: 1 },
+  xargs: {
+    valueFlags: ["-n", "-P", "-I", "-L", "-l", "-s", "-E", "-d", "-a"],
+  },
+  time: { valueFlags: ["-o", "-f"] },
+  nohup: {},
+  setsid: {},
+  stdbuf: { valueFlags: ["-i", "-o", "-e"] },
 };
 
 /**
@@ -220,6 +301,20 @@ function protectedReason(segment: string, path: string): string {
     `fusion policy: this Bash command writes a protected path. The segment ` +
     `\`${segment}\` writes \`${path}\`, which is under compliance guard ` +
     `protection.` +
+    NO_WORKAROUND
+  );
+}
+
+function ancestorReason(
+  segment: string,
+  path: string,
+  pattern: string,
+): string {
+  return (
+    `fusion policy: this Bash command writes a directory that CONTAINS a ` +
+    `protected path. The segment \`${segment}\` writes \`${path}\`, which ` +
+    `contains \`${pattern}\` — under compliance guard protection. Removing or ` +
+    `moving the directory would take the protected path with it.` +
     NO_WORKAROUND
   );
 }
@@ -363,6 +458,15 @@ function findCommandWord(words: string[]): number {
   return -1;
 }
 
+/**
+ * Own-property lookup in one of the tables. A plain `table[name]` would answer
+ * with an inherited `Object.prototype` member for a program named `constructor`
+ * or `toString`, which is nonsense rather than a row.
+ */
+function row<T>(table: Readonly<Record<string, T>>, name: string): T | undefined {
+  return Object.hasOwn(table, name) ? table[name] : undefined;
+}
+
 /** `/bin/rm` → `rm`. A local script named `rm` is treated as `rm` (fail-closed). */
 function programName(word: string): string {
   const slash = word.lastIndexOf("/");
@@ -394,7 +498,7 @@ function resolveGit(args: string[]): { spec: VerbSpec; args: string[] } | null {
   }
   const sub = args[i];
   if (sub === undefined) return null;
-  const spec = MUTATION_GIT_SUBCOMMANDS[sub];
+  const spec = row(MUTATION_GIT_SUBCOMMANDS, sub);
   if (spec === undefined) return null;
   return { spec, args: args.slice(i + 1) };
 }
@@ -461,29 +565,78 @@ function writtenOperands(spec: VerbSpec, args: string[]): string[] {
   return written;
 }
 
-/** The written operands named by the segment's verb, if it recognises one. */
+/**
+ * Consume a wrapper's own flags, environment assignments and positionals,
+ * returning the words of the command it runs. An empty result means the wrapper
+ * ran nothing this classifier can see (`sudo -v`, a bare `env`).
+ */
+function skipWrapper(spec: WrapperSpec, args: string[]): string[] {
+  let i = 0;
+  while (i < args.length) {
+    const a = args[i];
+    // `env FOO=1 rm x`, `sudo FOO=1 rm x` — an assignment is not the command.
+    if (ENV_ASSIGNMENT_RE.test(a)) {
+      i++;
+      continue;
+    }
+    if (a === "--") {
+      i++;
+      break;
+    }
+    if (a.length > 1 && a.startsWith("-")) {
+      i += spec.valueFlags?.includes(a) === true ? 2 : 1;
+      continue;
+    }
+    break;
+  }
+  return args.slice(i + (spec.positionalArgs ?? 0));
+}
+
+/**
+ * The written operands named by the segment's verb, if it recognises one.
+ *
+ * Wrappers are skipped in a loop rather than once, so `sudo env rm rules/x.md`
+ * reaches the same `rm` a bare invocation would. The loop terminates because a
+ * hop always drops at least the wrapper's own command word, so `rest` strictly
+ * shrinks; the bound is the word count and exists only so a future edit cannot
+ * turn this into an unbounded loop. A FIXED cap would be worse than none:
+ * `sudo sudo … rm rules/x.md` is a real command, and a chain one longer than
+ * the cap would walk straight through the classifier.
+ */
 function verbOperands(
   words: string[],
   literals: Map<string, string>,
 ): string[] {
-  const cmdIdx = findCommandWord(words);
-  if (cmdIdx === -1) return [];
+  let rest = words;
 
-  // Resolved against the literal table so `'rm' -rf x` is still `rm`.
-  const resolved = resolveWord(words[cmdIdx], literals);
-  // A command word that is itself an expansion (`$CMD foo`) names an
-  // unrecognised program → allowed, per the documented residual.
-  const raw = resolved.unresolved === true ? words[cmdIdx] : resolved.value;
-  const name = programName(raw);
-  const args = words.slice(cmdIdx + 1);
+  for (let hop = 0; hop <= words.length; hop++) {
+    const cmdIdx = findCommandWord(rest);
+    if (cmdIdx === -1) return [];
 
-  if (name === "git") {
-    const git = resolveGit(args);
-    return git === null ? [] : writtenOperands(git.spec, git.args);
+    // Resolved against the literal table so `'rm' -rf x` is still `rm`.
+    const resolved = resolveWord(rest[cmdIdx], literals);
+    // A command word that is itself an expansion (`$CMD foo`) names an
+    // unrecognised program → allowed, per the documented residual.
+    const raw = resolved.unresolved === true ? rest[cmdIdx] : resolved.value;
+    const name = programName(raw);
+    const args = rest.slice(cmdIdx + 1);
+
+    const wrapper = row(WRAPPER_PROGRAMS, name);
+    if (wrapper !== undefined) {
+      rest = skipWrapper(wrapper, args);
+      continue;
+    }
+
+    if (name === "git") {
+      const git = resolveGit(args);
+      return git === null ? [] : writtenOperands(git.spec, git.args);
+    }
+
+    const spec = row(MUTATION_VERBS, name);
+    return spec === undefined ? [] : writtenOperands(spec, args);
   }
 
-  const spec = MUTATION_VERBS[name];
-  return spec === undefined ? [] : writtenOperands(spec, args);
+  return [];
 }
 
 /* ------------------------------------------------------------------ *
@@ -500,6 +653,56 @@ function isProtected(path: string, opts: MutationOptions): boolean {
     return true;
   }
   return false;
+}
+
+/**
+ * A pattern's glob-free leading path segments. `agents/**` → `agents`;
+ * `hooks/config.json` → itself; a pattern whose FIRST segment is a glob yields
+ * the empty string, because nothing about where it lives is known statically.
+ *
+ * Truncation is on a SEGMENT boundary, not at the first metacharacter, so
+ * `rules/*.md` yields `rules` rather than `rules/`.
+ */
+function literalPrefix(pattern: string): string {
+  const kept: string[] = [];
+  for (const part of pattern.split("/")) {
+    if (/[*?[]/.test(part)) break;
+    kept.push(part);
+  }
+  return kept.join("/");
+}
+
+/** Drop a trailing separator so `hooks/` and `hooks` compare alike. */
+function withoutTrailingSlash(path: string): string {
+  return path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path;
+}
+
+/**
+ * Does this operand name a directory that CONTAINS a protected path? Returns
+ * the protected pattern it contains, so the deny reason can name it.
+ *
+ * `rm -rf hooks` destroys `hooks/config.json` and `mv hooks /tmp` moves it
+ * beyond the guard's reach, yet neither operand matches a protected pattern.
+ * Comparison is against each pattern's literal prefix and on a path-segment
+ * boundary, so `rules-draft` is not read as an ancestor of `rules/**`.
+ *
+ * The project root is excluded deliberately. `.` is an ancestor of everything,
+ * and `cp x .` writes INTO the root rather than destroying it — denying that
+ * would catch ordinary work for no gain, since `rm -rf .` is refused by `rm`
+ * itself.
+ */
+function ancestorOfProtected(
+  path: string,
+  opts: MutationOptions,
+): string | null {
+  const base = withoutTrailingSlash(path);
+  if (base.length === 0 || base === "." || base === "/") return null;
+
+  for (const pattern of opts.protectedPaths) {
+    const prefix = literalPrefix(pattern);
+    if (prefix.length > 0 && prefix.startsWith(base + "/")) return pattern;
+  }
+  return null;
 }
 
 /** A written operand, resolved as far as the guard can take it. */
@@ -530,6 +733,7 @@ function resolveTarget(
 
 type SegmentHit =
   | { kind: "protected"; path: string }
+  | { kind: "ancestor"; path: string; pattern: string }
   | { kind: "unresolved"; token: string };
 
 /**
@@ -556,9 +760,10 @@ function renderSegment(segment: string, literals: Map<string, string>): string {
  * Classify one already-segmented command. Returns the offending target, or null
  * when the segment writes nothing protected.
  *
- * A resolved protected match is reported in preference to an unresolved
- * operand, so `mv $SRC rules/` denies naming the visible protected target
- * rather than the variable.
+ * The three passes are ordered by how well the verdict explains itself: a
+ * direct protected match first, then a directory containing one, then the
+ * fail-closed case. So `mv $SRC rules/` denies naming the visible protected
+ * target rather than the variable, and `rm -rf hooks $X` names `hooks`.
  */
 function classifySegment(
   segment: string,
@@ -583,7 +788,16 @@ function classifySegment(
     return { kind: "protected", path: target.path };
   }
 
-  // Pass 2 — fail-closed: a recognised mutation writing somewhere unknowable.
+  // Pass 2 — a target that is an ancestor directory of a protected path.
+  for (const target of targets) {
+    if (target.kind !== "path") continue;
+    const pattern = ancestorOfProtected(target.path, opts);
+    if (pattern === null) continue;
+    if (opts.exempt?.(target.path) === true) continue;
+    return { kind: "ancestor", path: target.path, pattern };
+  }
+
+  // Pass 3 — fail-closed: a recognised mutation writing somewhere unknowable.
   for (let i = 0; i < targets.length; i++) {
     if (targets[i].kind === "unresolved") {
       return { kind: "unresolved", token: written[i] };
@@ -629,6 +843,15 @@ export function classifyBashMutation(
       return {
         deny: true,
         reason: protectedReason(offendingSegment, hit.path),
+        offendingSegment,
+        targetPath: hit.path,
+      };
+    }
+
+    if (hit.kind === "ancestor") {
+      return {
+        deny: true,
+        reason: ancestorReason(offendingSegment, hit.path, hit.pattern),
         offendingSegment,
         targetPath: hit.path,
       };

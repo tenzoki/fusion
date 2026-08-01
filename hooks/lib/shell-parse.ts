@@ -32,6 +32,25 @@
  *
  * Quoted-delimiter heredoc bodies stay blanked in BOTH modes. They are data
  * that a command reads, never an operand that a command writes.
+ *
+ * ## What a lifted command substitution leaves behind
+ *
+ * A `$(…)` / backtick body is lifted out into its own segment, because it runs
+ * as its own command. What lands in the OUTER segment at run time is the
+ * substitution's VALUE, and the two modes want that value described
+ * differently:
+ *
+ *   - `"blank"` — a single space, so the outer segmentation is exactly what it
+ *     has always been. The git classifier asks only which commands run, and the
+ *     substitution's value is never one of them.
+ *
+ *   - `"capture"` — `SUBSTITUTION_FILLER`, a token carrying a `$` so that
+ *     `resolveWord` reports it `{ unresolved: true }`. A consumer enforcing a
+ *     fail-closed rule needs the operand to still BE there and be unknowable;
+ *     with a space it vanished instead, and `rm $(echo rules/x.md)` reached the
+ *     mutation classifier as a bare `rm` with no operands while `rm $VAR`
+ *     denied. The filler glues to its neighbours exactly as the value would, so
+ *     `"$(pwd)/build"` stays one word.
  */
 
 /**
@@ -49,6 +68,16 @@ const PLACEHOLDER_CHAR = "\u0001";
 
 /** Matches a capture-mode placeholder token anywhere inside a word. */
 const PLACEHOLDER_RE = /\u0001q\d+\u0001/g;
+
+/**
+ * What a lifted `$(…)` / backtick substitution leaves in the outer segment in
+ * CAPTURE mode. It must contain a `$` (so `resolveWord` reports it unresolved),
+ * no whitespace (so it glues to its neighbours the way the substitution's value
+ * would), no segment operator, and no `=` (so it can never read as a leading
+ * `VAR=value` assignment) — and it has to stay readable when a deny reason
+ * quotes the segment back at a human. Blank mode keeps the historical space.
+ */
+const SUBSTITUTION_FILLER = "$(…)";
 
 /** How `parseCommand` treats single-quoted regions. */
 export type QuotedMode = "blank" | "capture";
@@ -450,18 +479,20 @@ function findBalancedParen(text: string, openIdx: number): number {
  * bodies at `depth + 1`. Every segment records its absolute start offset (via
  * `base`) so the caller can sort the whole tree back into source order.
  *
- * The operator set, the "replace a lifted subshell with one space" rule and the
- * trim-and-drop-empties rule mirror `extractCommandSegments` exactly; only the
- * ORDER and the added depth differ. One deliberate divergence: an unterminated
- * backtick makes the remainder a subshell body here (fail-closed, matching how
- * an unbalanced `$(` is already treated), where the flat segmenter leaves a
- * lone backtick as literal text.
+ * The operator set and the trim-and-drop-empties rule mirror
+ * `extractCommandSegments` exactly; only the ORDER, the added depth and the
+ * `filler` left in place of a lifted subshell differ. Passing `" "` as the
+ * filler reproduces the flat segmenter exactly, which is what blank mode does.
+ * One deliberate divergence: an unterminated backtick makes the remainder a
+ * subshell body here (fail-closed, matching how an unbalanced `$(` is already
+ * treated), where the flat segmenter leaves a lone backtick as literal text.
  */
 function scanSegments(
   text: string,
   depth: number,
   base: number,
   out: LocatedSegment[],
+  filler: string,
 ): void {
   const n = text.length;
   let cur = "";
@@ -487,8 +518,8 @@ function scanSegments(
       const end = findBalancedParen(text, i + 1);
       const bodyStart = i + 2;
       const body = end === -1 ? text.slice(bodyStart) : text.slice(bodyStart, end);
-      scanSegments(body, depth + 1, base + bodyStart, out);
-      push(" ", i); // the substitution's VALUE, not its text, lands here
+      scanSegments(body, depth + 1, base + bodyStart, out, filler);
+      push(filler, i); // the substitution's VALUE, not its text, lands here
       i = end === -1 ? n : end + 1;
       continue;
     }
@@ -498,8 +529,8 @@ function scanSegments(
       const close = text.indexOf("`", i + 1);
       const bodyStart = i + 1;
       const body = close === -1 ? text.slice(bodyStart) : text.slice(bodyStart, close);
-      scanSegments(body, depth + 1, base + bodyStart, out);
-      push(" ", i);
+      scanSegments(body, depth + 1, base + bodyStart, out, filler);
+      push(filler, i);
       i = close === -1 ? n : close + 1;
       continue;
     }
@@ -532,7 +563,8 @@ function scanSegments(
  * `quoted: "blank"` reproduces `extractCommandSegments(stripDataRegions(cmd))`
  * — the same segments, now in source order and carrying their subshell depth.
  * `quoted: "capture"` additionally hands back the single-quoted literals, so a
- * consumer can read a quoted path as a path (see the module docstring).
+ * consumer can read a quoted path as a path, and leaves an unresolvable filler
+ * where a lifted `$(…)` stood instead of a space (see the module docstring).
  */
 export function parseCommand(
   command: string,
@@ -552,7 +584,13 @@ export function parseCommand(
   const prepared = stripData(source, options.quoted, literals);
 
   const located: LocatedSegment[] = [];
-  scanSegments(prepared, 0, 0, located);
+  scanSegments(
+    prepared,
+    0,
+    0,
+    located,
+    options.quoted === "capture" ? SUBSTITUTION_FILLER : " ",
+  );
   located.sort((a, b) => a.start - b.start);
 
   return {
