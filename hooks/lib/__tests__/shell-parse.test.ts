@@ -145,6 +145,106 @@ describe("segments come back in source order with a depth", () => {
   });
 });
 
+/**
+ * A `\` at end of line is removed by bash BEFORE tokenization, so the two lines
+ * are one logical line with no separator at all. Until this was fixed the pair
+ * was emitted verbatim and the newline terminated the segment, which hid every
+ * operand after the continuation from both classifiers
+ * (`issues/260801-1513_c_backslash-line-continuation-splits-a-command-and-hides-its-operands.md`).
+ */
+describe("a backslash line continuation splices two lines into one command", () => {
+  for (const quoted of ["blank", "capture"] as const) {
+    it(`joins the continued lines into a single segment (${quoted} mode)`, () => {
+      const { parsed, perSegment } = words("git worktree \\\n  add ../wt x", quoted);
+      expect(parsed.segments.length).toBe(1);
+      expect(perSegment[0]).toEqual(["git", "worktree", "add", "../wt", "x"]);
+    });
+  }
+
+  it("removes the pair rather than substituting a space", () => {
+    // Bash splices with NO separator: `rm\<nl>x` is `rmx`, not `rm x`. The
+    // space in `rm \<nl>x` is the one that was already written before the `\`.
+    expect(stripDataRegions("rm \\\nrules/x.md")).toBe("rm rules/x.md");
+    expect(stripDataRegions("r\\\nm x")).toBe("rm x");
+  });
+
+  it("does not treat an escaped backslash before a newline as a continuation", () => {
+    // `\\` is consumed as one escaped backslash, so the newline after it is a
+    // real command terminator: two segments, exactly as without the escape.
+    const segs = parseCommand("git worktree \\\\\n add ../wt x", {
+      quoted: "blank",
+    }).segments;
+    expect(segs.map((s) => s.text)).toEqual(["git worktree \\\\", "add ../wt x"]);
+  });
+
+  it("leaves a lone trailing backslash alone", () => {
+    expect(stripDataRegions("rm x \\")).toBe("rm x \\");
+  });
+
+  it("does NOT splice inside single quotes — the quotes suppress the escape", () => {
+    const { parsed, perSegment } = words("echo 'rm \\\n rules/x.md'", "capture");
+    // One command word (`echo`), and the literal still carries the pair.
+    expect(perSegment.map((w) => w[0])).toEqual(["echo"]);
+    expect([...parsed.literals.values()]).toEqual(["rm \\\n rules/x.md"]);
+  });
+
+  it("DOES splice inside double quotes — bash removes it there", () => {
+    const { parsed, perSegment } = words('rm "rules/\\\nx.md"', "capture");
+    expect(parsed.segments.length).toBe(1);
+    expect(perSegment[0].length).toBe(2);
+    expect(resolveWord(perSegment[0][1], parsed.literals)).toEqual({
+      value: "rules/x.md",
+    });
+  });
+
+  it("keeps every other double-quoted escape pair byte-for-byte", () => {
+    expect(stripDataRegions('echo "a \\" b \\$X"')).toBe('echo "a \\" b \\$X"');
+  });
+
+  it("does not reinterpret a continuation inside a heredoc body", () => {
+    // A heredoc body is data the command READS. A quoted delimiter blanks it;
+    // an unquoted one is retained as code (fail-closed, so a hidden `$(…)`
+    // still classifies) but its content is passed through untouched either way.
+    const quotedDelim = "cat > /tmp/n <<'EOF'\nrm \\\nrules/x.md\nEOF";
+    expect(words(quotedDelim, "capture").perSegment.flat()).toEqual([
+      "cat",
+      ">",
+      "/tmp/n",
+      "<<",
+      "EOF",
+    ]);
+    const bareDelim = "cat > /tmp/n <<EOF\nrm \\\nrules/x.md\nEOF";
+    expect(
+      parseCommand(bareDelim, { quoted: "capture" }).segments.map((s) => s.text),
+    ).toEqual(["cat > /tmp/n <<", "rm \\", "rules/x.md", "EOF"]);
+  });
+
+  it("splices inside a $(…) body and still leaves the filler outside", () => {
+    const segs = parseCommand("rm \\\n$(echo \\\n x)", { quoted: "capture" })
+      .segments;
+    expect(segs).toEqual([
+      { text: "rm $(…)", depth: 0 },
+      { text: "echo  x", depth: 1 },
+    ]);
+  });
+
+  it("agrees with the legacy segmenter on a continued command (blank mode)", () => {
+    // The harvested corpus contains no continuation, so pin the equivalence
+    // for this shape directly.
+    for (const cmd of [
+      "git worktree \\\n add ../wt x",
+      "git switch \\\n main",
+      "git worktree \\\\\n add ../wt x",
+      "echo 'a \\\n b' && git switch \\\n main",
+    ]) {
+      expect(
+        parseCommand(cmd, { quoted: "blank" }).segments.map((s) => s.text),
+        `command: ${JSON.stringify(cmd)}`,
+      ).toEqual(extractCommandSegments(stripDataRegions(cmd)));
+    }
+  });
+});
+
 describe("capture mode keeps a quoted operand readable", () => {
   it("resolves the second word of mv 'rules/x.md' /tmp/", () => {
     const { parsed, perSegment } = words("mv 'rules/x.md' /tmp/", "capture");

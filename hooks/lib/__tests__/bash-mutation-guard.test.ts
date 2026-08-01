@@ -1123,33 +1123,58 @@ describe("the accepted residual (allowed by design, asserted so it stays visible
 });
 
 /* ------------------------------------------------------------------ *
- * 13. Known gaps — asserted at their CURRENT behaviour, on purpose
+ * 12b. A backslash line continuation is one command, not two
  * ------------------------------------------------------------------ */
 
 /**
- * KNOWN GAP — a backslash line continuation hides the operands.
- *
- * `shell-parse` does not honour `\` at end of line: the escape pair is emitted
- * verbatim and the newline then terminates the segment, so everything after the
- * continuation stops being an operand of the verb before it. The git classifier
- * has the same hole (`git worktree \` + newline + `add …` is allowed; `git
- * switch` survives only because the bare verb denies on its own).
+ * Was a KNOWN GAP, now closed. `shell-parse` did not honour `\` at end of line:
+ * the escape pair was emitted verbatim and the newline then terminated the
+ * segment, so everything after the continuation stopped being an operand of the
+ * verb before it. The git classifier had the same hole (`git worktree \` +
+ * newline + `add …` was allowed; `git switch` survived only because the bare
+ * verb denies on its own).
  *
  * Filed as
- * `issues/260801-1513_o_backslash-line-continuation-splits-a-command-and-hides-its-operands.md`.
- * The fix belongs in `shell-parse.ts` and widens both classifiers, so it needs a
- * gate. These cases assert the CURRENT behaviour so that fixing the parser makes
- * them fail — which is the signal to flip them to `expectAllDeny`.
+ * `issues/260801-1513_c_backslash-line-continuation-splits-a-command-and-hides-its-operands.md`
+ * and fixed in `stripData`, which now splices the continuation out the way bash
+ * does before tokenizing. These cases were written asserting the broken
+ * (allowing) behaviour and are flipped here; the parser-level boundaries the fix
+ * turns on — single vs double quotes, `\\` before a newline, heredoc bodies —
+ * are pinned in `shell-parse.test.ts`.
  */
-describe("KNOWN GAP — a backslash line continuation hides the operands", () => {
-  it("allows a continued mutation (should deny; see the issue)", () => {
-    expectAllAllow(["rm \\\n  rules/x.md", "mv \\\n  rules/x.md \\\n  /tmp/"]);
+describe("a backslash line continuation is one command, not two", () => {
+  it("denies a continued mutation", () => {
+    expectAllDeny(["rm \\\n  rules/x.md", "mv \\\n  rules/x.md \\\n  /tmp/"]);
   });
 
   it("still denies the same command written on one line", () => {
     expectAllDeny(["rm   rules/x.md", "mv   rules/x.md   /tmp/"]);
   });
+
+  it("does not treat an ESCAPED backslash before a newline as a continuation", () => {
+    // `rm \\` + newline + `rules/x.md` is `rm \` (a file literally named
+    // backslash) and then `rules/x.md` in command position — two commands,
+    // neither of which writes a protected path. Splicing them would invent a
+    // mutation bash never performs.
+    expectAllAllow(["rm \\\\\n  rules/x.md"]);
+  });
+
+  it("keeps a continuation inside single quotes inert", () => {
+    // Single quotes suppress the escape, so the two lines stay literal text —
+    // and being quoted, they are an operand of `echo`, never a command.
+    expectAllAllow(["echo 'rm \\\n rules/x.md'"]);
+  });
+
+  it("splices a continuation inside double quotes into the operand", () => {
+    // Bash removes `\` + newline inside double quotes too, so this really is
+    // `rm rules/x.md`.
+    expectAllDeny(['rm "rules/\\\nx.md"']);
+  });
 });
+
+/* ------------------------------------------------------------------ *
+ * 13. Known gaps — asserted at their CURRENT behaviour, on purpose
+ * ------------------------------------------------------------------ */
 
 /**
  * NOT YET IMPLEMENTED — plan step 4, virtual working directory tracking.

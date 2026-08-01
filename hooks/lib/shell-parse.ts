@@ -173,6 +173,12 @@ function capture(literal: string, literals: Map<string, string>): string {
  * as code) rather than silently dropping it — matching this module's
  * over-segment-not-under bias.
  *
+ * This is also where a `\`-at-end-of-line CONTINUATION is removed, because bash
+ * removes it in the same pre-tokenization pass that gives quoting its meaning:
+ * it is spliced out in code position and inside double quotes, and left alone
+ * inside single quotes (which suppress the escape) and inside a heredoc body
+ * (data, consumed whole a few branches down, never reinterpreted here).
+ *
  * Known conservative limitation: a single-quoted string nested inside a
  * double-quoted `$(…)` (e.g. `"$(echo 'x')"`) is not blanked or captured,
  * because the double-quoted span is copied verbatim without re-entering quote
@@ -194,8 +200,25 @@ function stripData(
   while (i < n) {
     const ch = command[i];
 
-    // Backslash escape in code context: emit the pair verbatim.
+    // Backslash escape in code context.
     if (ch === "\\" && i + 1 < n) {
+      // `\` + newline is a LINE CONTINUATION. Bash removes both characters
+      // before tokenizing, so the two lines become ONE logical line with no
+      // separator at all (`rm \<nl>x` is `rm x`; `rm\<nl>x` is `rmx`).
+      // Emitting nothing reproduces that. Passing the pair through instead
+      // left the newline for the segmenter, which terminates a command on it
+      // — so everything after a continuation stopped being an operand of the
+      // verb before it, and `git worktree \<nl>add ../wt x` reached the git
+      // classifier as a bare `git worktree`.
+      if (command[i + 1] === "\n") {
+        i += 2;
+        continue;
+      }
+      // Any other escape pair is emitted verbatim. Consuming the pair here is
+      // also what keeps the `\\` boundary right: in `\\<nl>` the two
+      // backslashes are taken together as an escaped backslash, so the
+      // newline that follows is a real command terminator, not a
+      // continuation.
       out += command[i] + command[i + 1];
       i += 2;
       continue;
@@ -223,9 +246,17 @@ function stripData(
     // as a single-quote / heredoc opener. Honour backslash escapes.
     if (ch === '"') {
       let j = i + 1;
+      let body = "";
       let closed = false;
       while (j < n) {
         if (command[j] === "\\" && j + 1 < n) {
+          // A line continuation is spliced out inside double quotes too —
+          // bash removes it there exactly as in code position. (Single quotes
+          // are the one place it stays literal, and a single-quoted region
+          // never reaches this loop: it is consumed whole by the branch
+          // below.) Every other escape pair is copied verbatim, so the span
+          // is byte-identical to the source when it holds no continuation.
+          if (command[j + 1] !== "\n") body += command[j] + command[j + 1];
           j += 2;
           continue;
         }
@@ -233,13 +264,14 @@ function stripData(
           closed = true;
           break;
         }
+        body += command[j];
         j++;
       }
       if (!closed) {
         out += command.slice(i); // unterminated → treat rest as code
         break;
       }
-      out += command.slice(i, j + 1);
+      out += '"' + body + '"';
       i = j + 1;
       continue;
     }
