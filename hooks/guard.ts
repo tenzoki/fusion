@@ -6,9 +6,19 @@
  *   2. Protected paths — unconditionally blocked
  *   3. Decision-governed categories — escalated based on sensitivity
  *
- * Also intercepts Bash tool calls and DENIES branch/worktree-moving git
- * operations (git is reachable only via Bash, so this is a complete
- * choke-point against autonomous branch drift). See lib/git-branch-guard.ts.
+ * Also intercepts Bash tool calls, for two independent policies:
+ *   a. Branch policy — DENIES branch/worktree-moving git operations (git is
+ *      reachable only via Bash, so this is a complete choke-point against
+ *      autonomous branch drift). See lib/git-branch-guard.ts. Runs everywhere,
+ *      including in the fusion plugin's own repo.
+ *   b. Protected-path policy — DENIES file-mutating shell commands (mv, rm,
+ *      cp, sed -i, redirection, …) whose written operands land on
+ *      guard.protectedPaths, the same list check 2 above applies to the write
+ *      tools. See lib/bash-mutation-guard.ts. This IS a write-guard concern
+ *      and therefore stands down in the plugin's own repo, exactly as the
+ *      write tools do.
+ * Neither policy touches the Bash allow path's zero-side-effect property (no
+ * counter reset, no guard_allow event) — see guardBashCommand.
  *
  * Ported from fusion/reactor/pkg/guard/decision_guard.go.
  *
@@ -38,6 +48,7 @@ import {
   overrideEnvFor,
 } from "./lib/git-branch-guard.js";
 import type { CheckoutResolver } from "./lib/git-branch-guard.js";
+import { classifyBashMutation } from "./lib/bash-mutation-guard.js";
 
 /**
  * Real filesystem + git-ref resolver for the ambiguous bare-`git checkout
@@ -135,13 +146,22 @@ function block(reason: string): void {
 }
 
 /**
- * Guard a Bash tool call against the git branch-switch policy.
+ * Guard a Bash tool call against the two shell policies, in this order:
  *
- * Classifies the command (segmenting on ; && || | and inspecting subshells)
- * and DENIES any branch/worktree-moving git operation unless the matching
- * env override is set. Follows the same block/escalation/event pattern as the
- * write-tool checks. When an override allows a normally-denied command, the
- * call is allowed AND an override-used note is recorded for visibility.
+ *   1. The git branch-switch policy. Classifies the command (segmenting on
+ *      ; && || | and inspecting subshells) and DENIES any branch/worktree-moving
+ *      git operation unless the matching env override is set. When an override
+ *      allows a normally-denied command, the call is allowed AND an
+ *      override-used note is recorded for visibility.
+ *   2. The protected-path policy. DENIES a file-mutating command whose written
+ *      operands resolve onto config.guard.protectedPaths. Gated on the
+ *      self-detect stand-down (see the comment at the check itself).
+ *
+ * Git first, so a call carrying both a branch switch and a mutation denies on
+ * the branch — the sharper, better-established policy names the verdict.
+ *
+ * Both denies follow the same block/escalation/event pattern as the write-tool
+ * checks. The allow path stays free of ALL write-guard bookkeeping.
  */
 function guardBashCommand(
   input: HookInput,
@@ -198,8 +218,65 @@ function guardBashCommand(
     return;
   }
 
-  // Allow path: not a branch/worktree-moving git op. The Bash path is NOT a
-  // write-guard concern, so it participates in NONE of the write-guard
+  // Protected-path check: a file-mutating shell command whose written operands
+  // land on config.guard.protectedPaths — the same list, the same
+  // "protected_path" trigger and the same escalation counter the write tools
+  // use, so the monitor and the three-block halt treat both surfaces alike.
+  //
+  // GATED ON THE SELF-DETECT STAND-DOWN, unlike the git policy above. This is a
+  // WRITE-guard concern: the protected paths (agents/**, rules/**, plugin.json)
+  // are exactly the files a fusion developer's agents legitimately move, delete
+  // and rewrite, and they do so through a shell as often as through Edit.
+  // Leaving it active here while the write tools stand down would be incoherent
+  // — `Edit rules/x.md` allowed but `mv rules/x.md rules/retired/` denied,
+  // which teaches an agent to route around the guard rather than respect it.
+  // The branch policy's reasoning does NOT transfer: a human switches branches
+  // in their own terminal (which this hook never sees), so gating the agent
+  // there costs the developer nothing, whereas gating shell writes here costs
+  // them the repo. Consumers of the plugin get the check unconditionally, which
+  // is where it protects something.
+  //
+  // Deny-only: this check never allows, never resets the counter and never
+  // emits guard_allow, so the allow path below keeps its stated property.
+  if (!isFusionPluginCwd()) {
+    const mutation = classifyBashMutation(command, {
+      protectedPaths: config.guard.protectedPaths,
+      // Same normalisation the write path applies before matchesAny, so the
+      // relative globs in the config match a shell operand the same way they
+      // match a tool_input.file_path. The classifier additionally runs
+      // path.normalize() on the result, collapsing any `..` an operand carries.
+      normalize: normalizeToRelative,
+    });
+
+    if (mutation.deny) {
+      const reason =
+        mutation.reason ??
+        "Protected path: this command writes a path under compliance guard protection.";
+      const escalation = loadEscalation();
+      const halted = recordBlock(
+        escalation,
+        config.escalation.blocksBeforeHalt,
+        "protected_path",
+        reason,
+        "Bash",
+        mutation.targetPath,
+      );
+      saveEscalation(escalation);
+      emitEvent(
+        halted ? "guard_halt" : "guard_block",
+        "Bash",
+        mutation.targetPath,
+        "Protected path",
+      );
+      block(reason);
+      return;
+    }
+  }
+
+  // Allow path: not a branch/worktree-moving git op, and not a mutation of a
+  // protected path. Both checks above are DENY-ONLY — they either block and
+  // return, or fall through here having written nothing — so reaching this
+  // point still means the call participates in NONE of the write-guard
   // bookkeeping. An innocuous Bash call (ls, git status, an allowed
   // `git checkout HEAD -- <files>`) must have zero side-effect on guard state:
   //   - It MUST NOT reset the consecutive-block counter. Agents run Bash
@@ -236,7 +313,8 @@ async function main(): Promise<void> {
   }
 
   // Tools this guard inspects: write operations + Bash (for the git
-  // branch-switch policy). Everything else is allowed unconditionally.
+  // branch-switch and protected-path policies). Everything else is allowed
+  // unconditionally.
   const writeTools = ["Write", "Edit", "MultiEdit", "NotebookEdit"];
   const isWriteTool = writeTools.includes(input.tool_name);
   const isBash = input.tool_name === "Bash";
@@ -253,15 +331,22 @@ async function main(): Promise<void> {
     return;
   }
 
-  // Bash branch: git branch-switch policy (deterministic choke-point).
-  // Runs unconditionally when the guard is enabled — INCLUDING in the fusion
-  // plugin's own repo. This hook only ever gated the AGENT's Bash tool calls;
-  // a human developer switches branches in their own terminal, which the hook
-  // never sees. Standing the branch policy down for the plugin repo therefore
-  // removed agent protection for zero human benefit (the branch-switch hole).
-  // The override env vars (FUSION_ALLOW_BRANCH_SWITCH / FUSION_ALLOW_WORKTREE)
-  // remain the deliberate escape hatch for a fusion developer who genuinely
-  // wants an agent to switch branches here.
+  // Bash branch: the git branch-switch policy (deterministic choke-point) and
+  // the protected-path mutation policy. The two differ in where they stand
+  // down, so guardBashCommand — not this dispatch — owns the self-detect call.
+  //
+  // The BRANCH policy runs unconditionally when the guard is enabled —
+  // INCLUDING in the fusion plugin's own repo. This hook only ever gated the
+  // AGENT's Bash tool calls; a human developer switches branches in their own
+  // terminal, which the hook never sees. Standing the branch policy down for
+  // the plugin repo therefore removed agent protection for zero human benefit
+  // (the branch-switch hole). The override env vars
+  // (FUSION_ALLOW_BRANCH_SWITCH / FUSION_ALLOW_WORKTREE) remain the deliberate
+  // escape hatch for a fusion developer who genuinely wants an agent to switch
+  // branches here.
+  //
+  // The MUTATION policy is a write-guard concern and does stand down here, for
+  // the reasons given at the check itself.
   if (isBash) {
     guardBashCommand(input, config);
     return;
