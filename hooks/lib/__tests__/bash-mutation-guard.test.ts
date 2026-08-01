@@ -1052,6 +1052,32 @@ const ORDINARY_AGENT_COMMANDS = [
   // the documented residual, stated as a test
   "chmod +x bin/fusion-plane",
   "curl -sL https://example.com/x.tgz -o /tmp/x.tgz",
+  // WORKING FROM A SUBDIRECTORY — added with virtual-cwd tracking (step 4),
+  // which resolves every relative operand through whatever `cd` came before it
+  // and therefore carries the step's own false-positive risk. Ordinary agent
+  // work uses `cd` constantly, so the corpus has to exercise it.
+  "cd hooks && npm run build",
+  "cd hooks && npx vitest run 2>&1 | tail -20",
+  "cd hooks && rm -rf dist && npm run build",
+  "cd hooks && rm -rf node_modules && npm ci",
+  "cd hooks && rm -f dist/guard.js",
+  "cd hooks && sed -i '' 's/a/b/' dist/guard.js",
+  "cd hooks && cp config.json /tmp/config.backup.json",
+  "cd hooks && npm test > /tmp/test.log 2>&1",
+  "cd rules && grep -rn MUST .",
+  "cd rules && wc -l *.md",
+  "cd fusion-workbench && ls circles",
+  "cd fusion-workbench && rm -rf circles/old-circle",
+  "cd /tmp && rm -rf probe",
+  "cd /tmp && mkdir -p work && cd work && rm -rf out",
+  "cd ../.. && ls",
+  "cd $(git rev-parse --show-toplevel) && git status",
+  "cd ~/Downloads && ls -la",
+  "cd hooks; npm test; cd ..",
+  "cd hooks && npm test; cd -",
+  "pushd hooks > /dev/null && npm test; popd > /dev/null",
+  "(cd hooks && rm -rf dist)",
+  "cd node_modules && rm -rf .cache",
 ];
 
 describe("MUST NEVER DENY — the ordinary-agent-command corpus", () => {
@@ -1173,25 +1199,285 @@ describe("a backslash line continuation is one command, not two", () => {
 });
 
 /* ------------------------------------------------------------------ *
- * 13. Known gaps — asserted at their CURRENT behaviour, on purpose
+ * 13. The virtual working directory (plan step 4)
  * ------------------------------------------------------------------ */
 
 /**
- * NOT YET IMPLEMENTED — plan step 4, virtual working directory tracking.
+ * A relative operand means nothing without knowing where the shell is standing.
+ * `cd fusion-workbench && rm -rf .guard-state` is the sharpest case the issue
+ * names — the operand matches no protected pattern, and the escalation counter
+ * that halts a misbehaving agent lives behind it.
  *
- * A `cd` is not applied to the operands that follow it, so a relative operand is
- * resolved against the project root. `cd fusion-workbench && rm -rf .guard-state`
- * is the sharpest case the issue names and it is one `cd` away from trivial.
- *
- * These assert the current behaviour so step 4 has a failing test that names
- * exactly what to flip. They are step 4's acceptance criteria, inverted.
+ * These cases were written in step 3 asserting the untracked (allowing)
+ * behaviour and are flipped here; they are the plan's step-4 acceptance criteria
+ * plus the forms the criteria do not name.
  */
-describe("NOT YET IMPLEMENTED — cd is not tracked (plan step 4)", () => {
-  it("allows a mutation reached through cd (step 4 flips these to deny)", () => {
-    expectAllAllow(["cd fusion-workbench && rm -rf .guard-state", "cd rules && rm x.md"]);
+describe("virtual cwd — a mutation reached through cd", () => {
+  it("denies the headline case, naming the resolved path", () => {
+    const v = classify("cd fusion-workbench && rm -rf .guard-state");
+    expect(v.deny).toBe(true);
+    expect(v.targetPath).toBe("fusion-workbench/.guard-state");
+    expect(v.offendingSegment).toBe("rm -rf .guard-state");
   });
 
-  it("already allows the ordinary-work cases step 4 must keep allowing", () => {
-    expectAllAllow(["cd build && rm -rf out", "cd $D && rm -rf /tmp/x"]);
+  it("resolves relative operands through the cd", () => {
+    expectAllDeny([
+      "cd rules && rm x.md",
+      "cd hooks && rm config.json",
+      "cd agents && mv coder.md /tmp/",
+      "cd bin && rm monitor",
+      "cd skills && rm -rf setup",
+      "cd fusion-workbench/.guard-state && rm -f escalation.json",
+      "cd rules; rm x.md", // `;` separates exactly as `&&` does
+    ]);
+  });
+
+  it("resolves a `..` inside the operand against the cd, not the root", () => {
+    expect(denies("cd hooks && rm ../rules/x.md")).toBe(true);
+    expect(denies("cd hooks && rm ../README.md")).toBe(false);
+    expect(denies("cd rules && rm ../build/out.js")).toBe(false);
+  });
+
+  it("applies to redirection targets, wrappers and the git subcommands alike", () => {
+    expectAllDeny([
+      "cd rules && echo x > x.md",
+      "cd hooks && printf '' > config.json",
+      "cd rules && tee x.md",
+      "cd rules && sudo rm x.md",
+      "cd hooks && sed -i '' 's/a/b/' config.json",
+      "cd rules && git mv x.md /tmp/",
+    ]);
+  });
+
+  it("keeps ordinary work in a subdirectory allowed", () => {
+    expectAllAllow([
+      "cd build && rm -rf out",
+      "cd hooks && rm -rf dist",
+      "cd hooks && rm -f dist/guard.js",
+      "cd fusion-workbench && rm -rf circles",
+      "cd node_modules && rm -rf .cache",
+    ]);
+  });
+});
+
+describe("virtual cwd — the forms a cd target can take", () => {
+  it("reads every literal spelling of the same directory", () => {
+    expectAllDeny([
+      "cd rules && rm x.md",
+      "cd ./rules && rm x.md",
+      "cd rules/ && rm x.md",
+      "cd 'rules' && rm x.md",
+      'cd "rules" && rm x.md',
+      "cd -P rules && rm x.md", // -L / -P are flags, not the directory
+      "cd -- rules && rm x.md",
+      "cd /project/rules && rm x.md", // absolute, back under the project root
+      "cd /project && rm rules/x.md",
+      "cd rules && cd /project/agents && rm coder.md", // absolute wins over the base
+      "cd fusion-workbench && cd .guard-state && rm escalation.json",
+    ]);
+  });
+
+  it("uses chdir as an alias of cd", () => {
+    expect(denies("chdir rules && rm x.md")).toBe(true);
+  });
+});
+
+describe("virtual cwd — walking out of the project", () => {
+  it("allows a mutation under an absolute directory elsewhere", () => {
+    expectAllAllow([
+      "cd /tmp && rm -rf x",
+      "cd /tmp && echo x > y.md",
+      "cd /var/folders/t && rm -rf scratch",
+      "cd rules && cd /tmp && rm -rf x", // the second cd replaces the first
+    ]);
+  });
+
+  it("allows a mutation above the project root", () => {
+    expectAllAllow([
+      "cd ../.. && rm -rf y",
+      "cd .. && rm -rf sibling",
+      "cd rules && cd .. && cd .. && rm -rf y",
+    ]);
+  });
+
+  it("treats a bare cd and a ~ as somewhere outside the tree, not as unknown", () => {
+    // `~` is home expansion the shell performs from the environment. It is the
+    // project root only if the project IS the home directory, so a relative
+    // operand under it can match no relative pattern — and denying `cd &&
+    // rm -rf junk` would be a false positive for nothing.
+    expectAllAllow([
+      "cd && rm -rf junk",
+      "cd ~ && rm -rf junk",
+      "cd ~/tmp && rm -rf junk",
+      "cd ~/scratch && rm -rf out",
+      "cd ~ && cd tmp && rm -rf junk", // a relative hop from outside stays outside
+    ]);
+  });
+
+  it("still resolves an ABSOLUTE operand from an unnameable directory", () => {
+    expect(denies("cd ~ && rm /project/rules/x.md")).toBe(true);
+    expect(denies("cd $D && rm /project/rules/x.md")).toBe(true);
+  });
+});
+
+describe("virtual cwd — cd - and the directory stack", () => {
+  it("swaps back with cd -", () => {
+    expect(denies("cd rules && cd - && rm x.md")).toBe(false);
+    expect(denies("cd build && cd - && rm rules/x.md")).toBe(true);
+    expect(denies("cd rules && cd /tmp && cd - && rm x.md")).toBe(true);
+  });
+
+  it("denies a leading cd - , whose $OLDPWD is inherited and unknowable", () => {
+    expect(denies("cd - && rm -rf junk")).toBe(true);
+  });
+
+  it("tracks pushd and popd as the cd they are", () => {
+    expect(denies("pushd rules && rm x.md")).toBe(true);
+    expect(denies("pushd rules > /dev/null && rm x.md && popd")).toBe(true);
+    expect(denies("pushd rules && popd && rm x.md")).toBe(false);
+    expect(denies("pushd /tmp && rm -rf junk && popd")).toBe(false);
+  });
+
+  it("treats a popd on an empty stack as the no-op bash makes it", () => {
+    // The stack starts empty in every Bash call, so `popd` errors and the
+    // shell stays where it is.
+    expect(denies("popd && rm x.md")).toBe(false);
+    expect(denies("popd && rm rules/x.md")).toBe(true);
+  });
+
+  it("gives up on the stack rotations it does not model", () => {
+    expectAllDeny(["pushd && rm x.md", "popd +1 && rm x.md"]);
+  });
+});
+
+describe("virtual cwd — an unknowable directory is fail-closed", () => {
+  it("denies a relative mutation after an unresolvable cd", () => {
+    // Same discipline as `mv $SRC rules/`: the guard cannot prove the target is
+    // outside the protected paths, so it does not guess. The cost is that
+    // `cd "$(git rev-parse --show-toplevel)" && rm -rf hooks/dist` denies — the
+    // agent's way out is an absolute path or no `cd` at all.
+    expectAllDeny([
+      "cd $D && rm -rf x",
+      "cd $HOME && rm -rf tmp",
+      "cd `pwd`/build && rm -rf out",
+      'cd "$(git rev-parse --show-toplevel)" && rm -rf hooks/dist',
+      "cd $D && echo x > out.log",
+    ]);
+  });
+
+  it("allows an absolute mutation after an unresolvable cd", () => {
+    expectAllAllow(["cd $D && rm -rf /tmp/x", 'cd "$(dirname "$0")" && rm -f /tmp/y']);
+  });
+
+  it("allows a non-mutation after an unresolvable cd — the bound still holds", () => {
+    expectAllAllow([
+      'cd "$(dirname "$0")" && npm test',
+      "cd $(git rev-parse --show-toplevel) && git status",
+      "cd $D && ls -la",
+    ]);
+  });
+
+  it("names the working directory, not the operand, in the reason", () => {
+    const v = classify("cd $D && rm -rf x");
+    expect(v.deny).toBe(true);
+    expect(v.reason).toContain("working directory the guard cannot determine");
+    expect(v.reason).toContain("cd");
+    // Distinct from the plain unresolvable-operand reason, which would send the
+    // agent off to rewrite an operand that is already literal.
+    expect(v.reason).not.toBe(classify("rm $X").reason);
+  });
+});
+
+describe("virtual cwd — a cd inside a subshell does not leak out", () => {
+  it("discards a cd made inside a $(…) body", () => {
+    expectAllAllow(["echo $(cd rules) && rm x.md", "echo `cd rules` && rm x.md"]);
+  });
+
+  it("discards a cd made inside a (…) subshell", () => {
+    expectAllAllow([
+      "(cd rules && ls) && rm x.md",
+      "( cd rules && ls ) && rm x.md",
+      "(cd rules); rm x.md",
+      "(cd hooks && npm test) && rm dist/guard.js",
+    ]);
+  });
+
+  it("still applies the enclosing cd INSIDE the subshell", () => {
+    // A subshell inherits its parent's working directory; only its own changes
+    // are discarded.
+    expectAllDeny([
+      "cd rules && echo $(rm x.md)",
+      "$(cd rules && rm x.md)",
+      "( cd rules && rm x.md )",
+      "cd rules && ( rm x.md )",
+    ]);
+  });
+
+  it("keeps a cd made in a loop body, which bash does not discard", () => {
+    // `for … done` and `{ …; }` run in the current shell, so the cd persists.
+    expect(denies("for d in a; do cd rules; done; rm x.md")).toBe(true);
+    expect(denies("{ cd rules; }; rm x.md")).toBe(true);
+  });
+});
+
+describe("virtual cwd — where it meets the ancestor rule", () => {
+  it("catches `rm -rf .` once the cd has moved somewhere protected", () => {
+    // At the project root `.` is excluded from the ancestor check by design
+    // (`cp x .` must stay allowed, and `rm -rf .` is refused by `rm` itself).
+    // A cd gives `.` a name, and the exclusion no longer applies.
+    expect(denies("rm -rf .")).toBe(false);
+    expect(denies("cd rules && rm -rf .")).toBe(true);
+    expect(denies("cd hooks && rm -rf .")).toBe(true);
+    expect(denies("cd build && rm -rf .")).toBe(false);
+  });
+
+  it("catches a write INTO the current directory once it is protected", () => {
+    expect(denies("cp /tmp/x .")).toBe(false);
+    expect(denies("cd rules && cp /tmp/x .")).toBe(true);
+    expect(denies("cd build && cp /tmp/x .")).toBe(false);
+  });
+
+  it("names the directory the ancestor reason talks about", () => {
+    const v = classify("cd fusion-workbench && rm -rf .");
+    expect(v.deny).toBe(true);
+    expect(v.targetPath).toBe("fusion-workbench");
+    expect(v.reason).toContain("CONTAINS a protected path");
+    expect(v.reason).toContain("fusion-workbench/.guard-state/**");
+  });
+});
+
+/* ------------------------------------------------------------------ *
+ * 13b. Residuals the virtual cwd does not close
+ * ------------------------------------------------------------------ */
+
+/**
+ * Asserted at their current behaviour so they stay visible, in the shape of
+ * section 12. None of them is a REGRESSION — each is a place the walk stops.
+ */
+describe("virtual cwd — the residuals, asserted so they stay visible", () => {
+  it("cannot walk back INTO the project by name", () => {
+    // The classifier is given a normaliser, not the project directory's own
+    // name, so a path that leaves and returns is outside its coordinate space.
+    expect(denies("cd .. && cd project && rm rules/x.md")).toBe(false);
+  });
+
+  it("shares one directory between sibling substitutions in ONE segment", () => {
+    // `shell-parse` reports a depth but not a subshell identity, so two `$(…)`
+    // bodies inside the same outer segment are indistinguishable from one body
+    // with two segments. Separate outer segments are correctly independent.
+    expect(denies("echo $(cd /tmp) $(rm rules/x.md)")).toBe(false);
+    expect(denies("echo $(cd /tmp); echo $(rm rules/x.md)")).toBe(true);
+  });
+
+  it("does not classify a command word glued to a ( — the paren-subshell gap", () => {
+    // `(rm x)` tokenizes to `(rm` + `x)`, and neither the command word nor the
+    // operand survives the parenthesis. The virtual cwd sees THROUGH the glued
+    // `(cd`, because the scoping requires it, but the mutation verbs do not —
+    // widening them is a reviewable change, not a side effect of this step.
+    // Pre-dates step 4 and is filed as
+    // `issues/260801-1610_o_paren-subshell-glues-its-parentheses-to-the-command-word-and-the-last-operand.md`.
+    expect(denies("(rm rules/x.md)")).toBe(false);
+    expect(denies("(rm rules/x.md )")).toBe(false); // the OPEN paren is enough
+    expect(denies("( rm rules/x.md )")).toBe(true); // spaced: nothing is glued
   });
 });

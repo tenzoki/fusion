@@ -46,6 +46,21 @@
  * The project root itself is NOT treated as an ancestor: `cp x .` writes into
  * the root without destroying it, and denying it would catch ordinary work.
  *
+ * ## Where a relative operand resolves from
+ *
+ * `cd fusion-workbench && rm -rf .guard-state` writes a protected path while
+ * naming none, so the classifier carries a VIRTUAL WORKING DIRECTORY across a
+ * compound command's segments (`walkVirtualCwd` below) and resolves every
+ * relative operand against it. `cd`, `chdir`, `pushd` and `popd` move it; a
+ * `cd` whose target is only known at run time makes it UNKNOWN, and a relative
+ * operand under an unknown directory is unresolved and therefore denied, for
+ * the same reason `mv $SRC rules/` is. Walking OUT of the project (`cd /tmp`,
+ * `cd ../..`, `cd ~`) is tracked as faithfully as walking in, so a mutation out
+ * there matches no relative pattern and stays allowed.
+ *
+ * The tracking is scoped: a `cd` inside a `(…)` subshell or a `$(…)` body is
+ * discarded when it closes, exactly as bash discards it.
+ *
  * ## Fail-closed, and its bound
  *
  * A shell can build a path at run time. When an operand of a RECOGNISED verb
@@ -71,8 +86,17 @@
  * not a code path.
  *
  * A whole-tree operand that is not a path is invisible for the same reason a
- * glob is matched literally: `rm -rf *` and `rm -rf .` name no directory the
- * ancestor check can compare, so neither is caught.
+ * glob is matched literally: `rm -rf *` names no directory the ancestor check
+ * can compare, so it is not caught. (`rm -rf .` IS caught once a `cd` has moved
+ * the virtual working directory somewhere protected — see the ancestor note
+ * above — and is not at the project root, where `rm` refuses it anyway.)
+ *
+ * Two sibling `$(…)` substitutions inside ONE outer segment share a virtual
+ * working directory, because `shell-parse` reports a depth but not a subshell
+ * identity: `$(cd /tmp) $(rm rules/x.md)` therefore resolves the second body
+ * from `/tmp` and allows. It is contrived enough to be a residual rather than a
+ * defect; anything an agent actually writes puts the two in separate segments,
+ * where they are correctly independent.
  *
  * This module is PURE and EXPORTED so it is unit-testable without the hook
  * firing. It never touches the filesystem, the environment, or the process:
@@ -82,7 +106,12 @@
 
 import { normalize as normalizePath } from "node:path";
 import { matchesAny } from "./paths.js";
-import { parseCommand, resolveWord, tokenize } from "./shell-parse.js";
+import {
+  SUBSTITUTION_FILLER,
+  parseCommand,
+  resolveWord,
+  tokenize,
+} from "./shell-parse.js";
 
 export interface MutationVerdict {
   /** false = allow, true = deny the whole Bash call. */
@@ -326,6 +355,24 @@ function unresolvedReason(segment: string, token: string): string {
     `which the guard cannot prove is outside the protected paths, so it is ` +
     `denied (fail-closed). If the target is genuinely unprotected, write the ` +
     `path out literally instead of building it at run time.` +
+    NO_WORKAROUND
+  );
+}
+
+/**
+ * The operand is a perfectly ordinary relative path; it is the DIRECTORY it
+ * hangs off that the guard lost track of. Saying so is the difference between
+ * an agent rewriting the path (which cannot help) and dropping the `cd` (which
+ * does).
+ */
+function unknownCwdReason(segment: string, token: string): string {
+  return (
+    `fusion policy: this Bash command mutates a relative path from a working ` +
+    `directory the guard cannot determine. An earlier \`cd\` in this command ` +
+    `moved somewhere only known at run time, so the segment \`${segment}\` ` +
+    `writes \`${token}\` at an unknowable location and it is denied ` +
+    `(fail-closed). Name the target as an absolute path, or drop the \`cd\` ` +
+    `and write the path from the project root.` +
     NO_WORKAROUND
   );
 }
@@ -705,26 +752,247 @@ function ancestorOfProtected(
   return null;
 }
 
+/* ------------------------------------------------------------------ *
+ * The virtual working directory
+ * ------------------------------------------------------------------ */
+
+/**
+ * Where a segment's relative operands hang off.
+ *
+ *   `known`   — a directory the guard can name. `dir` is `""` for the project
+ *               root, and otherwise a path in the same coordinate space the
+ *               operands arrive in: project-relative while the shell is inside
+ *               the tree, `..`-prefixed or absolute once it walks out.
+ *   `outside` — a directory the guard cannot name but knows is not the project
+ *               tree: `$HOME`, reached by a bare `cd`, `cd ~` or `cd ~/x`. A
+ *               relative operand there can match no relative protected pattern,
+ *               so it resolves to nothing rather than denying.
+ *   `unknown` — a directory the guard cannot determine at all: `cd $D`,
+ *               `cd "$(git rev-parse --show-toplevel)"`, `pushd +1`. A relative
+ *               operand there is UNRESOLVED, and a recognised verb writing it
+ *               denies, exactly as `mv $SRC rules/` does.
+ *
+ * The `outside` / `unknown` split is the one judgement call here. `~` is
+ * SYNTAX the classifier can see, denoting a directory that is the project root
+ * only if the project IS the home directory — so treating it as "somewhere
+ * else" costs nothing real and keeps `cd && rm -rf junk` working. `$D` is a
+ * VALUE the classifier cannot see, and it can expand to the project root;
+ * guessing would reopen the hole this whole module exists to close.
+ *
+ * `$HOME` is deliberately NOT read as `~`, even though bash expands both from
+ * the same variable. The classifier resolves no variable, ever — `resolveWord`
+ * is the single authority on what a word denotes, and carving out one name
+ * would make it two. The cost is that `cd $HOME && rm -rf tmp` denies where
+ * `cd ~ && rm -rf tmp` allows; the deny reason names the working directory as
+ * the cause and an absolute path is the way through.
+ */
+type Cwd =
+  | { kind: "known"; dir: string }
+  | { kind: "outside" }
+  | { kind: "unknown" };
+
+const CWD_ROOT: Cwd = { kind: "known", dir: "" };
+const CWD_OUTSIDE: Cwd = { kind: "outside" };
+const CWD_UNKNOWN: Cwd = { kind: "unknown" };
+
+/** Append a relative path to a virtual directory (`""` = the project root). */
+function joinCwd(dir: string, value: string): string {
+  if (dir.length === 0) return value;
+  return dir.endsWith("/") ? dir + value : `${dir}/${value}`;
+}
+
+/** `.` and `""` both mean the project root; keep one spelling. */
+function canonicalDir(dir: string): string {
+  return dir === "." ? "" : dir;
+}
+
+/** Where `cd <value>` lands, given where the shell currently stands. */
+function resolveDir(base: Cwd, value: string): Cwd {
+  if (value.length === 0) return base; // `cd ''` succeeds and stays put
+  if (value.startsWith("/")) {
+    return { kind: "known", dir: canonicalDir(normalizePath(value)) };
+  }
+  // A relative hop from a directory we could not name is still unnameable —
+  // and still unnameable in the same WAY, so `cd ~ && cd x` stays outside.
+  if (base.kind !== "known") return base;
+  return {
+    kind: "known",
+    dir: canonicalDir(normalizePath(joinCwd(base.dir, value))),
+  };
+}
+
 /** A written operand, resolved as far as the guard can take it. */
 type Target =
   | { kind: "path"; path: string }
-  | { kind: "unresolved" }
+  | { kind: "unresolved"; viaCwd: boolean }
+  | { kind: "outside" }
   | { kind: "empty" };
 
 function resolveTarget(
   token: string,
   literals: Map<string, string>,
   opts: MutationOptions,
+  cwd: Cwd,
 ): Target {
   const resolved = resolveWord(token, literals);
-  if (resolved.unresolved === true) return { kind: "unresolved" };
+  if (resolved.unresolved === true) return { kind: "unresolved", viaCwd: false };
   if (resolved.value.length === 0) return { kind: "empty" };
+
+  const value = resolved.value;
+  const absolute = value.startsWith("/");
+  if (!absolute) {
+    // A relative operand says nothing on its own — it is a path only once the
+    // guard knows where the shell is standing.
+    if (cwd.kind === "unknown") return { kind: "unresolved", viaCwd: true };
+    if (cwd.kind === "outside") return { kind: "outside" };
+  }
+
+  const base = cwd.kind === "known" ? cwd.dir : "";
+  const joined = absolute ? value : joinCwd(base, value);
 
   // Glob metacharacters are matched as LITERAL text rather than expanded, which
   // is fail-closed for the patterns that matter: `rules/**` compiles to
   // `^rules/.*$` and therefore matches the literal string `rules/*.md`.
-  const path = normalizePath(opts.normalize(resolved.value));
+  const path = normalizePath(opts.normalize(joined));
   return { kind: "path", path };
+}
+
+/**
+ * The directory-changing builtins. `chdir` is not a bash builtin at all, but it
+ * costs one set entry and no program by that name does anything else.
+ */
+const DIR_BUILTINS = new Set(["cd", "chdir", "pushd", "popd"]);
+
+/** As much of a shell's directory state as a static classifier can carry. */
+interface ShellState {
+  cwd: Cwd;
+  /** `$OLDPWD`, where `cd -` goes back to. Unknown until the first `cd`. */
+  prev: Cwd;
+  /** The `pushd` / `popd` directory stack, innermost last. */
+  dirStack: Cwd[];
+}
+
+function freshState(): ShellState {
+  // A Bash tool call starts at the project root with an empty directory stack
+  // and no `$OLDPWD` it can rely on.
+  return { cwd: CWD_ROOT, prev: CWD_UNKNOWN, dirStack: [] };
+}
+
+function cloneState(s: ShellState): ShellState {
+  return { cwd: s.cwd, prev: s.prev, dirStack: [...s.dirStack] };
+}
+
+/** What the first non-flag argument of a directory builtin asks for. */
+type DirArg =
+  | { kind: "none" }
+  | { kind: "previous" }
+  | { kind: "opaque" }
+  | { kind: "word"; token: string };
+
+function firstDirArg(args: string[]): DirArg {
+  for (const a of args) {
+    if (a === "--") continue;
+    if (a === "-") return { kind: "previous" };
+    if (a.startsWith("+")) return { kind: "opaque" }; // `pushd +2` rotates
+    if (a.length > 1 && a.startsWith("-")) continue; // `-L`, `-P`, `-e`, `-n`
+    return { kind: "word", token: a };
+  }
+  return { kind: "none" };
+}
+
+/**
+ * Apply a segment's directory builtin, if it has one, to the running state.
+ *
+ * Only the first non-flag operand is read: `cd a b` is an error in bash, and
+ * every other form the guard cannot model resolves to `unknown` rather than to
+ * a guess.
+ */
+function applyDirEffect(
+  state: ShellState,
+  words: string[],
+  literals: Map<string, string>,
+): void {
+  const idx = findCommandWord(words);
+  if (idx === -1) return;
+
+  const resolved = resolveWord(words[idx], literals);
+  const raw = resolved.unresolved === true ? words[idx] : resolved.value;
+  // `(cd rules && ls)` glues the subshell opener to the builtin. The
+  // spaced form `( cd rules …` is already handled by GRAMMAR_PREFIXES.
+  const name = programName(raw.replace(/^\(+/, ""));
+  if (!DIR_BUILTINS.has(name)) return;
+
+  const args = words.slice(idx + 1);
+
+  if (name === "popd") {
+    // `popd +1` / `popd -n` rotate or suppress rather than pop.
+    if (args.some((a) => a.startsWith("+") || (a.length > 1 && a.startsWith("-")))) {
+      state.prev = state.cwd;
+      state.cwd = CWD_UNKNOWN;
+      return;
+    }
+    const back = state.dirStack.pop();
+    // An empty stack makes `popd` an error, and bash stays where it is.
+    if (back === undefined) return;
+    state.prev = state.cwd;
+    state.cwd = back;
+    return;
+  }
+
+  if (name === "pushd") state.dirStack.push(state.cwd);
+
+  const target = firstDirArg(args);
+  const here = state.cwd;
+  const back = state.prev;
+  state.prev = here;
+
+  switch (target.kind) {
+    case "none":
+      // `cd` alone goes `$HOME`; a bare `pushd` rotates the stack, which the
+      // guard does not model.
+      state.cwd = name === "pushd" ? CWD_UNKNOWN : CWD_OUTSIDE;
+      return;
+    case "previous":
+      // `cd -` is an exact swap of `$PWD` and `$OLDPWD`.
+      state.cwd = back;
+      return;
+    case "opaque":
+      state.cwd = CWD_UNKNOWN;
+      return;
+    case "word": {
+      // A leading `~` in CODE position is home expansion. A quoted `'~'` never
+      // reaches here as a bare tilde — it arrives as a placeholder.
+      if (target.token.startsWith("~")) {
+        state.cwd = CWD_OUTSIDE;
+        return;
+      }
+      const w = resolveWord(target.token, literals);
+      state.cwd = w.unresolved === true ? CWD_UNKNOWN : resolveDir(here, w.value);
+      return;
+    }
+  }
+}
+
+/**
+ * Count the REAL subshell parentheses in a segment.
+ *
+ * `shell-parse` lifts `$(…)` bodies out and leaves `SUBSTITUTION_FILLER` where
+ * they stood; the filler carries a balanced paren pair that is not grammar, so
+ * it is removed first — otherwise `cd $(pwd)` would open and close a scope
+ * around its own `cd` and discard it. Single-quoted text is already an opaque
+ * placeholder and contributes nothing. Double-quoted text is not, so
+ * `echo "(x)"` counts a balanced pair it should not; that opens and closes a
+ * scope around one innocuous segment and changes no verdict.
+ */
+function parenCounts(text: string): { opens: number; closes: number } {
+  const cleaned = text.split(SUBSTITUTION_FILLER).join(" ");
+  let opens = 0;
+  let closes = 0;
+  for (const ch of cleaned) {
+    if (ch === "(") opens++;
+    else if (ch === ")") closes++;
+  }
+  return { opens, closes };
 }
 
 /* ------------------------------------------------------------------ *
@@ -734,7 +1002,7 @@ function resolveTarget(
 type SegmentHit =
   | { kind: "protected"; path: string }
   | { kind: "ancestor"; path: string; pattern: string }
-  | { kind: "unresolved"; token: string };
+  | { kind: "unresolved"; token: string; viaCwd: boolean };
 
 /**
  * Render a parsed word back to something a human reads. Capture mode replaces
@@ -757,28 +1025,25 @@ function renderSegment(segment: string, literals: Map<string, string>): string {
 }
 
 /**
- * Classify one already-segmented command. Returns the offending target, or null
- * when the segment writes nothing protected.
+ * Classify one already-segmented command's words. Returns the offending target,
+ * or null when the segment writes nothing protected.
  *
  * The three passes are ordered by how well the verdict explains itself: a
  * direct protected match first, then a directory containing one, then the
  * fail-closed case. So `mv $SRC rules/` denies naming the visible protected
  * target rather than the variable, and `rm -rf hooks $X` names `hooks`.
  */
-function classifySegment(
-  segment: string,
+function classifyWords(
+  words: string[],
+  redirectTargets: string[],
   literals: Map<string, string>,
   opts: MutationOptions,
-  nextSegmentHead?: string,
+  cwd: Cwd,
 ): SegmentHit | null {
-  const tokens = tokenize(segment);
-  if (tokens.length === 0) return null;
-
-  const { words, redirectTargets } = scanSegment(tokens, nextSegmentHead);
   const written = [...verbOperands(words, literals), ...redirectTargets];
   if (written.length === 0) return null;
 
-  const targets = written.map((t) => resolveTarget(t, literals, opts));
+  const targets = written.map((t) => resolveTarget(t, literals, opts, cwd));
 
   // Pass 1 — a target that resolves to a protected path.
   for (const target of targets) {
@@ -797,14 +1062,26 @@ function classifySegment(
     return { kind: "ancestor", path: target.path, pattern };
   }
 
-  // Pass 3 — fail-closed: a recognised mutation writing somewhere unknowable.
+  // Pass 3 — fail-closed: a recognised mutation writing somewhere unknowable,
+  // either because the operand does not resolve or because the directory it
+  // hangs off does not.
   for (let i = 0; i < targets.length; i++) {
-    if (targets[i].kind === "unresolved") {
-      return { kind: "unresolved", token: written[i] };
+    const target = targets[i];
+    if (target.kind === "unresolved") {
+      return { kind: "unresolved", token: written[i], viaCwd: target.viaCwd };
     }
   }
 
   return null;
+}
+
+/** A directory state put aside while a nested scope runs, and what closes it. */
+interface SavedScope {
+  /** Segment depth the scope was opened at. */
+  depth: number;
+  /** `depth` — a `$(…)` body; `paren` — a `(…)` subshell. */
+  kind: "depth" | "paren";
+  state: ShellState;
 }
 
 /**
@@ -812,6 +1089,22 @@ function classifySegment(
  * protected paths. Segments the command; if ANY segment writes a protected
  * path, or is a recognised mutation with an unresolvable target, the whole call
  * is denied.
+ *
+ * ## The virtual-cwd walk
+ *
+ * Segments arrive in SOURCE ORDER with a nesting depth, which is what makes a
+ * left-to-right walk carrying a working directory possible at all. Two kinds of
+ * scope discard a `cd` when they close, matching bash:
+ *
+ *   - a `$(…)` or backtick body, which `shell-parse` reports as depth ≥ 1 and
+ *     which always follows the outer segment it was lifted out of, so it
+ *     INHERITS the directory in force there;
+ *   - a `(…)` subshell, which `shell-parse` does not model — it is depth 0 with
+ *     the parentheses left in the text — so the parens are counted here.
+ *
+ * Both push the state aside on entry and restore it on exit, so
+ * `(cd rules && ls) && rm x.md` deletes `x.md` from the project root and
+ * `cd rules && rm x.md` deletes it from `rules/`.
  */
 export function classifyBashMutation(
   command: string,
@@ -824,47 +1117,90 @@ export function classifyBashMutation(
 
   const { segments, literals } = parseCommand(command, { quoted: "capture" });
 
+  let state = freshState();
+  const saved: SavedScope[] = [];
+  let openDepth = 0;
+
   for (let i = 0; i < segments.length; i++) {
     const segment = segments[i];
-    // A redirection operator left dangling by the `&` / `|` segment split
-    // finds its target at the head of the next same-depth segment.
-    const next = segments[i + 1];
-    const nextHead =
-      next !== undefined && next.depth === segment.depth
-        ? tokenize(next.text)[0]
-        : undefined;
+    const depth = segment.depth;
 
-    const hit = classifySegment(segment.text, literals, opts, nextHead);
-    if (hit === null) continue;
+    // Left a `$(…)` body (or several): every `cd` inside it is discarded.
+    while (saved.length > 0 && saved[saved.length - 1].depth > depth) {
+      state = saved.pop()!.state;
+    }
+    // Entered one: it inherits the enclosing directory and returns it intact.
+    if (depth > openDepth) {
+      saved.push({ depth, kind: "depth", state: cloneState(state) });
+    }
+    openDepth = depth;
 
-    const offendingSegment = renderSegment(segment.text, literals);
-
-    if (hit.kind === "protected") {
-      return {
-        deny: true,
-        reason: protectedReason(offendingSegment, hit.path),
-        offendingSegment,
-        targetPath: hit.path,
-      };
+    const { opens, closes } = parenCounts(segment.text);
+    for (let k = 0; k < opens; k++) {
+      saved.push({ depth, kind: "paren", state: cloneState(state) });
     }
 
-    if (hit.kind === "ancestor") {
-      return {
-        deny: true,
-        reason: ancestorReason(offendingSegment, hit.path, hit.pattern),
-        offendingSegment,
-        targetPath: hit.path,
-      };
+    const tokens = tokenize(segment.text);
+    if (tokens.length > 0) {
+      // A redirection operator left dangling by the `&` / `|` segment split
+      // finds its target at the head of the next same-depth segment.
+      const next = segments[i + 1];
+      const nextHead =
+        next !== undefined && next.depth === depth
+          ? tokenize(next.text)[0]
+          : undefined;
+
+      const { words, redirectTargets } = scanSegment(tokens, nextHead);
+      const hit = classifyWords(words, redirectTargets, literals, opts, state.cwd);
+      if (hit !== null) return denyVerdict(segment.text, literals, hit);
+      applyDirEffect(state, words, literals);
     }
 
-    const token = renderWord(hit.token, literals);
-    return {
-      deny: true,
-      reason: unresolvedReason(offendingSegment, token),
-      offendingSegment,
-      targetPath: token,
-    };
+    for (let k = 0; k < closes; k++) {
+      const top = saved[saved.length - 1];
+      // Only a paren opened at this depth can be closed here; a stray `)` (a
+      // `case` arm, say) closes nothing.
+      if (top === undefined || top.kind !== "paren" || top.depth !== depth) break;
+      state = saved.pop()!.state;
+    }
   }
 
   return { deny: false };
+}
+
+/** Render a segment hit as the denying verdict it is. */
+function denyVerdict(
+  segmentText: string,
+  literals: Map<string, string>,
+  hit: SegmentHit,
+): MutationVerdict {
+  const offendingSegment = renderSegment(segmentText, literals);
+
+  if (hit.kind === "protected") {
+    return {
+      deny: true,
+      reason: protectedReason(offendingSegment, hit.path),
+      offendingSegment,
+      targetPath: hit.path,
+    };
+  }
+
+  if (hit.kind === "ancestor") {
+    return {
+      deny: true,
+      reason: ancestorReason(offendingSegment, hit.path, hit.pattern),
+      offendingSegment,
+      targetPath: hit.path,
+    };
+  }
+
+  const token = renderWord(hit.token, literals);
+  return {
+    deny: true,
+    reason: hit.viaCwd
+      ? unknownCwdReason(offendingSegment, token)
+      : unresolvedReason(offendingSegment, token),
+    offendingSegment,
+    targetPath: token,
+  };
 }

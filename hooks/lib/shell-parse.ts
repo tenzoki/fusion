@@ -76,8 +76,13 @@ const PLACEHOLDER_RE = /\u0001q\d+\u0001/g;
  * would), no segment operator, and no `=` (so it can never read as a leading
  * `VAR=value` assignment) — and it has to stay readable when a deny reason
  * quotes the segment back at a human. Blank mode keeps the historical space.
+ *
+ * EXPORTED because it carries a balanced `(`/`)` pair that is NOT shell grammar.
+ * A consumer counting real subshell parentheses in a segment (the virtual-cwd
+ * walk in `bash-mutation-guard.ts`) has to remove the filler first, and it must
+ * not have to know the filler's spelling to do it.
  */
-const SUBSTITUTION_FILLER = "$(…)";
+export const SUBSTITUTION_FILLER = "$(…)";
 
 /** How `parseCommand` treats single-quoted regions. */
 export type QuotedMode = "blank" | "capture";
