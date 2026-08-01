@@ -1,6 +1,6 @@
 {
   "name": "fusion",
-  "version": "5.7.0",
+  "version": "5.8.0",
   "description": "Multi-domain AI agent orchestration framework. 16 project-agnostic specialized agents (3 parameterised by domain — code/data/strategic/knowledge; investigator parameterised by a project-supplied capture-layout rule) with a compliance guard, churn detection, decision-record tracking, a real-time browser-based monitor with session-scoped ETA estimation, and an optional push-only Plane work-queue mirror. /fusion:help inside Claude Code for self-explainer.",
   "author": {
     "name": "Kai / qantr GmbH"

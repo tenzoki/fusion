@@ -6,9 +6,23 @@
  *   2. Protected paths — unconditionally blocked
  *   3. Decision-governed categories — escalated based on sensitivity
  *
- * Also intercepts Bash tool calls and DENIES branch/worktree-moving git
- * operations (git is reachable only via Bash, so this is a complete
- * choke-point against autonomous branch drift). See lib/git-branch-guard.ts.
+ * Also intercepts Bash tool calls, for two independent policies:
+ *   a. Branch policy — DENIES branch/worktree-moving git operations (git is
+ *      reachable only via Bash, so this is a complete choke-point against
+ *      autonomous branch drift). See lib/git-branch-guard.ts. Runs everywhere,
+ *      including in the fusion plugin's own repo.
+ *   b. Protected-path policy — DENIES file-mutating shell commands (mv, rm,
+ *      cp, sed -i, redirection, …) whose written operands land on
+ *      guard.protectedPaths, the same list check 2 above applies to the write
+ *      tools. See lib/bash-mutation-guard.ts. This IS a write-guard concern
+ *      and therefore stands down in the plugin's own repo, exactly as the
+ *      write tools do.
+ * The policies are INDEPENDENT in both directions: an env override that lifts
+ * policy (a) for a git operation is not consent to policy (b), so a command
+ * pairing an overridden branch switch with a protected-path write still denies
+ * on the write. See guardBashCommand for the evaluation order.
+ * Neither policy touches the Bash allow path's zero-side-effect property (no
+ * counter reset, no guard_allow event) — see guardBashCommand.
  *
  * Ported from fusion/reactor/pkg/guard/decision_guard.go.
  *
@@ -25,6 +39,7 @@ import { loadConfig, findRelevantDecisions, sensitivityLevel } from "./lib/confi
 import { loadEscalation, saveEscalation, isHalted, recordBlock, resetBlockCounter, } from "./lib/escalation.js";
 import { emitEvent } from "./lib/events.js";
 import { classifyGitCommand, overridesFromEnv, overrideEnvFor, } from "./lib/git-branch-guard.js";
+import { classifyBashMutation } from "./lib/bash-mutation-guard.js";
 /**
  * Real filesystem + git-ref resolver for the ambiguous bare-`git checkout
  * <target>` form. Resolves paths and refs in the effective cwd (process cwd
@@ -105,13 +120,32 @@ function block(reason) {
     process.stdout.write(JSON.stringify({ decision: "block", reason }) + "\n");
 }
 /**
- * Guard a Bash tool call against the git branch-switch policy.
+ * Guard a Bash tool call against the two shell policies. Three outcomes are
+ * sequenced, in this order:
  *
- * Classifies the command (segmenting on ; && || | and inspecting subshells)
- * and DENIES any branch/worktree-moving git operation unless the matching
- * env override is set. Follows the same block/escalation/event pattern as the
- * write-tool checks. When an override allows a normally-denied command, the
- * call is allowed AND an override-used note is recorded for visibility.
+ *   1. GIT DENY. Classify the command (segmenting on ; && || | and inspecting
+ *      subshells) and DENY any branch/worktree-moving git operation the env
+ *      overrides do not cover. This runs first and returns, so a call carrying
+ *      both an un-overridden branch switch and a protected-path write denies on
+ *      the branch: the sharper, better-established policy names the verdict, and
+ *      one tool call records exactly ONE block. Recording two would double-count
+ *      the consecutive-block counter that drives the halt.
+ *   2. MUTATION DENY. DENY a file-mutating command whose written operands
+ *      resolve onto config.guard.protectedPaths. Gated on the self-detect
+ *      stand-down (see the comment at the check itself). It runs on BOTH routes
+ *      out of step 1 — git-clean and git-override-allowed — because an override
+ *      waives only what it names. FUSION_ALLOW_BRANCH_SWITCH authorises a branch
+ *      switch; it is not consent to rewrite the protected paths, so
+ *      `git switch main && rm rules/x.md` denies on the rm and the reason the
+ *      user reads names the file, not the branch.
+ *   3. OVERRIDE ALLOW. Only once both denies have passed is the override-used
+ *      note recorded and the call allowed. Recording it later than step 2 keeps
+ *      the note honest: it says a git op was let through, and after a step-2
+ *      block nothing was let through.
+ *
+ * At most one block is recorded per call, on whichever deny fires first.
+ * Both denies follow the same block/escalation/event pattern as the write-tool
+ * checks. The innocuous allow path stays free of ALL write-guard bookkeeping.
  */
 function guardBashCommand(input, config) {
     const command = typeof input.tool_input.command === "string"
@@ -119,7 +153,75 @@ function guardBashCommand(input, config) {
         : "";
     const overrides = overridesFromEnv(process.env);
     const verdict = classifyGitCommand(command, overrides, checkoutResolver);
-    // Override path: a normally-denied command was allowed by an env flag.
+    // STEP 1 — git deny: a branch/worktree-moving git op with no override.
+    // Returns, so the mutation check below never adds a second block for the same
+    // tool call. An override does NOT reach here: it leaves verdict.deny false and
+    // is handled at step 3, after the mutation check has had its say.
+    if (verdict.deny) {
+        const escalation = loadEscalation();
+        const halted = recordBlock(escalation, config.escalation.blocksBeforeHalt, "git_branch_switch", verdict.reason ?? "", "Bash", verdict.offendingSegment);
+        saveEscalation(escalation);
+        emitEvent(halted ? "guard_halt" : "guard_block", "Bash", undefined, `Git branch-switch denied: ${verdict.offendingSegment ?? command}`);
+        block(verdict.reason ?? "fusion policy: agents never switch git branches autonomously.");
+        return;
+    }
+    // STEP 2 — protected-path check: a file-mutating shell command whose written
+    // operands land on config.guard.protectedPaths — the same list, the same
+    // "protected_path" trigger and the same escalation counter the write tools
+    // use, so the monitor and the three-block halt treat both surfaces alike.
+    //
+    // REACHED ON BOTH ROUTES OUT OF STEP 1 — the git-clean one and the
+    // git-override-allowed one. The override env vars grant exactly one
+    // permission each: FUSION_ALLOW_BRANCH_SWITCH says "this agent may move HEAD",
+    // FUSION_ALLOW_WORKTREE says "this agent may add a worktree". Neither says
+    // anything about the protected paths, and a check that returned early on the
+    // override would silently waive a permission nobody granted (it did, until
+    // this was fixed: `git switch main && rm rules/x.md` ran in full).
+    //
+    // GATED ON THE SELF-DETECT STAND-DOWN, unlike the git policy above. This is a
+    // WRITE-guard concern: the protected paths (agents/**, rules/**, plugin.json)
+    // are exactly the files a fusion developer's agents legitimately move, delete
+    // and rewrite, and they do so through a shell as often as through Edit.
+    // Leaving it active here while the write tools stand down would be incoherent
+    // — `Edit rules/x.md` allowed but `mv rules/x.md rules/retired/` denied,
+    // which teaches an agent to route around the guard rather than respect it.
+    // The branch policy's reasoning does NOT transfer: a human switches branches
+    // in their own terminal (which this hook never sees), so gating the agent
+    // there costs the developer nothing, whereas gating shell writes here costs
+    // them the repo. Consumers of the plugin get the check unconditionally, which
+    // is where it protects something.
+    //
+    // Deny-only: this check never allows, never resets the counter and never
+    // emits guard_allow, so the allow path below keeps its stated property.
+    if (!isFusionPluginCwd()) {
+        const mutation = classifyBashMutation(command, {
+            protectedPaths: config.guard.protectedPaths,
+            // Same normalisation the write path applies before matchesAny, so the
+            // relative globs in the config match a shell operand the same way they
+            // match a tool_input.file_path. The classifier additionally runs
+            // path.normalize() on the result, collapsing any `..` an operand carries.
+            normalize: normalizeToRelative,
+        });
+        if (mutation.deny) {
+            const reason = mutation.reason ??
+                "Protected path: this command writes a path under compliance guard protection.";
+            const escalation = loadEscalation();
+            const halted = recordBlock(escalation, config.escalation.blocksBeforeHalt, "protected_path", reason, "Bash", mutation.targetPath);
+            saveEscalation(escalation);
+            emitEvent(halted ? "guard_halt" : "guard_block", "Bash", mutation.targetPath, "Protected path");
+            block(reason);
+            return;
+        }
+    }
+    // STEP 3 — override note: a normally-denied git op that an env flag allowed,
+    // and that survived the protected-path check above. Recorded here rather than
+    // at step 1 so the note is written only for a call that actually goes through;
+    // a step-2 block means nothing was allowed and there is nothing to note.
+    //
+    // Not a deny — it falls through to the same allow() below. It is also the one
+    // conditional on this path that writes state without blocking, and it is
+    // reachable ONLY when the user set an override, so an innocuous Bash call
+    // still touches nothing.
     if (verdict.overrideUsed && verdict.overrideKind) {
         const envVar = overrideEnvFor(verdict.overrideKind);
         const detail = `Override ${envVar} allowed normally-denied git op: ${verdict.overrideSegment ?? command}`;
@@ -135,22 +237,15 @@ function guardBashCommand(input, config) {
         });
         saveEscalation(escalation);
         emitEvent("guard_advisory", "Bash", undefined, detail);
-        allow();
-        return;
     }
-    // Deny path: a branch/worktree-moving git op with no override.
-    if (verdict.deny) {
-        const escalation = loadEscalation();
-        const halted = recordBlock(escalation, config.escalation.blocksBeforeHalt, "git_branch_switch", verdict.reason ?? "", "Bash", verdict.offendingSegment);
-        saveEscalation(escalation);
-        emitEvent(halted ? "guard_halt" : "guard_block", "Bash", undefined, `Git branch-switch denied: ${verdict.offendingSegment ?? command}`);
-        block(verdict.reason ?? "fusion policy: agents never switch git branches autonomously.");
-        return;
-    }
-    // Allow path: not a branch/worktree-moving git op. The Bash path is NOT a
-    // write-guard concern, so it participates in NONE of the write-guard
-    // bookkeeping. An innocuous Bash call (ls, git status, an allowed
-    // `git checkout HEAD -- <files>`) must have zero side-effect on guard state:
+    // Allow path: not a branch/worktree-moving git op the overrides left denied,
+    // and not a mutation of a protected path. Steps 1 and 2 are DENY-ONLY — each
+    // either blocks and returns, or falls through having written nothing — and
+    // step 3 writes only when the user set an override, which no innocuous call
+    // does. So reaching this point on an ordinary command still means it
+    // participates in NONE of the write-guard bookkeeping. An innocuous Bash call
+    // (ls, git status, an allowed `git checkout HEAD -- <files>`) must have zero
+    // side-effect on guard state:
     //   - It MUST NOT reset the consecutive-block counter. Agents run Bash
     //     constantly between write attempts; resetting here would let any
     //     interleaved Bash zero the counter and defeat the write/branch halt
@@ -182,7 +277,8 @@ async function main() {
         return;
     }
     // Tools this guard inspects: write operations + Bash (for the git
-    // branch-switch policy). Everything else is allowed unconditionally.
+    // branch-switch and protected-path policies). Everything else is allowed
+    // unconditionally.
     const writeTools = ["Write", "Edit", "MultiEdit", "NotebookEdit"];
     const isWriteTool = writeTools.includes(input.tool_name);
     const isBash = input.tool_name === "Bash";
@@ -196,15 +292,22 @@ async function main() {
         allow();
         return;
     }
-    // Bash branch: git branch-switch policy (deterministic choke-point).
-    // Runs unconditionally when the guard is enabled — INCLUDING in the fusion
-    // plugin's own repo. This hook only ever gated the AGENT's Bash tool calls;
-    // a human developer switches branches in their own terminal, which the hook
-    // never sees. Standing the branch policy down for the plugin repo therefore
-    // removed agent protection for zero human benefit (the branch-switch hole).
-    // The override env vars (FUSION_ALLOW_BRANCH_SWITCH / FUSION_ALLOW_WORKTREE)
-    // remain the deliberate escape hatch for a fusion developer who genuinely
-    // wants an agent to switch branches here.
+    // Bash branch: the git branch-switch policy (deterministic choke-point) and
+    // the protected-path mutation policy. The two differ in where they stand
+    // down, so guardBashCommand — not this dispatch — owns the self-detect call.
+    //
+    // The BRANCH policy runs unconditionally when the guard is enabled —
+    // INCLUDING in the fusion plugin's own repo. This hook only ever gated the
+    // AGENT's Bash tool calls; a human developer switches branches in their own
+    // terminal, which the hook never sees. Standing the branch policy down for
+    // the plugin repo therefore removed agent protection for zero human benefit
+    // (the branch-switch hole). The override env vars
+    // (FUSION_ALLOW_BRANCH_SWITCH / FUSION_ALLOW_WORKTREE) remain the deliberate
+    // escape hatch for a fusion developer who genuinely wants an agent to switch
+    // branches here.
+    //
+    // The MUTATION policy is a write-guard concern and does stand down here, for
+    // the reasons given at the check itself.
     if (isBash) {
         guardBashCommand(input, config);
         return;

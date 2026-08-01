@@ -36,7 +36,15 @@
  * This module is PURE and EXPORTED so it is unit-testable without the hook
  * firing. It takes the command string plus the two env-flag booleans and
  * returns a typed verdict.
+ *
+ * The shell-lexing primitives it runs on (`stripDataRegions`,
+ * `extractCommandSegments`, `tokenize`) are generic and live in
+ * `shell-parse.ts`, which a second classifier also consumes. The first two are
+ * re-exported here under their original names because they are part of this
+ * module's established surface.
  */
+import { extractCommandSegments, stripDataRegions, tokenize, } from "./shell-parse.js";
+export { extractCommandSegments, stripDataRegions } from "./shell-parse.js";
 const DENY_REASON = "fusion policy: agents never switch git branches autonomously (prevents " +
     "branch-drift chaos). If this task genuinely needs a different branch, STOP " +
     "and ask the user. The user can deliberately allow it by setting " +
@@ -52,298 +60,6 @@ const CHECKOUT_RESTORE_HINT = " If you meant to RESTORE a file (not switch branc
     "<file>` or `git checkout -- <file>` — both are always allowed. The bare " +
     "`git checkout <file>` form is allowed only when <file> exists on disk and " +
     "is not also a branch/ref name.";
-/**
- * Blank every non-newline character of a string (newlines survive so line and
- * token boundaries in the surrounding command are preserved).
- */
-function blankData(s) {
-    return s.replace(/[^\n]/g, " ");
-}
-/**
- * Find the start index of a heredoc's terminator line at or after `from`.
- * The terminator is a line equal to `delim` (for a `<<-` heredoc, leading tabs
- * are stripped before the comparison, matching bash). Returns -1 when the
- * delimiter never reappears — the caller treats that as "not a data region"
- * and leaves the text as code (fail-closed).
- */
-function findHeredocTerminator(command, from, hd) {
-    const n = command.length;
-    let pos = from;
-    for (;;) {
-        let lineEnd = command.indexOf("\n", pos);
-        if (lineEnd === -1)
-            lineEnd = n;
-        const line = command.slice(pos, lineEnd);
-        const forMatch = hd.dash ? line.replace(/^\t+/, "") : line;
-        if (forMatch === hd.delim)
-            return pos;
-        if (lineEnd === n)
-            return -1; // no more lines, terminator never seen
-        pos = lineEnd + 1;
-    }
-}
-/**
- * Remove definite shell *data regions* from a command so that the substitution
- * recursion and operator segmentation which follow only ever classify
- * executable *code*. Bash performs NO expansion or command substitution in
- * these regions, so a git-looking string inside them is inert text, never a
- * command:
- *
- *   - single-quoted strings:             '… `git switch` …'
- *   - quoted-delimiter heredoc bodies:   <<'EOF' … EOF   and   <<"EOF" … EOF
- *
- * Regions where bash DOES expand `$(…)` / backticks are preserved verbatim so
- * a real hidden command still gets classified (this is what keeps the guard
- * fail-closed):
- *
- *   - double-quoted strings:             "… `git switch` …"   (bash substitutes)
- *   - unquoted-delimiter heredoc bodies: <<EOF … EOF          (bash expands body)
- *
- * Removed content is replaced with spaces; newlines are kept so surrounding
- * token boundaries survive. Parsing is fail-closed on ambiguity: an
- * unterminated quote, or a heredoc whose terminator never appears, leaves the
- * remainder AS-IS (treated as code) rather than silently dropping it — matching
- * this module's over-segment-not-under bias.
- *
- * Known conservative limitation: a single-quoted string nested inside a
- * double-quoted `$(…)` (e.g. `"$(echo 'x')"`) is not blanked, because the
- * double-quoted span is copied verbatim without re-entering quote tracking.
- * That errs toward DENY (data treated as code), never toward a missed switch.
- */
-export function stripDataRegions(command) {
-    const n = command.length;
-    let out = "";
-    let i = 0;
-    // Heredocs whose body has not yet been consumed, in declaration order.
-    let pending = [];
-    while (i < n) {
-        const ch = command[i];
-        // Backslash escape in code context: emit the pair verbatim.
-        if (ch === "\\" && i + 1 < n) {
-            out += command[i] + command[i + 1];
-            i += 2;
-            continue;
-        }
-        // Single-quoted string → data. Look ahead for the close; unterminated =
-        // fail-closed (emit the remainder as code).
-        if (ch === "'") {
-            const close = command.indexOf("'", i + 1);
-            if (close === -1) {
-                out += command.slice(i);
-                break;
-            }
-            out += "'" + blankData(command.slice(i + 1, close)) + "'";
-            i = close + 1;
-            continue;
-        }
-        // Double-quoted string → code (bash expands `$(…)` and backticks inside).
-        // Skip past it as one verbatim unit so an inner `'` or `<<` is not misread
-        // as a single-quote / heredoc opener. Honour backslash escapes.
-        if (ch === '"') {
-            let j = i + 1;
-            let closed = false;
-            while (j < n) {
-                if (command[j] === "\\" && j + 1 < n) {
-                    j += 2;
-                    continue;
-                }
-                if (command[j] === '"') {
-                    closed = true;
-                    break;
-                }
-                j++;
-            }
-            if (!closed) {
-                out += command.slice(i); // unterminated → treat rest as code
-                break;
-            }
-            out += command.slice(i, j + 1);
-            i = j + 1;
-            continue;
-        }
-        // Here-string `<<<` is NOT a heredoc — bash expands its word. Leave as code.
-        if (ch === "<" &&
-            command[i + 1] === "<" &&
-            command[i + 2] === "<") {
-            out += "<<<";
-            i += 3;
-            continue;
-        }
-        // Heredoc redirect `<<[-] DELIM`. Parse the delimiter; a quoted (or
-        // backslash-escaped) delimiter suppresses expansion in the body → data.
-        if (ch === "<" && command[i + 1] === "<") {
-            let j = i + 2;
-            let dash = false;
-            if (command[j] === "-") {
-                dash = true;
-                j++;
-            }
-            while (j < n && (command[j] === " " || command[j] === "\t"))
-                j++;
-            let quoted = false;
-            let delim = "";
-            const q = command[j];
-            if (q === "'" || q === '"') {
-                quoted = true;
-                j++;
-                while (j < n && command[j] !== q) {
-                    delim += command[j];
-                    j++;
-                }
-                if (j < n)
-                    j++; // consume the closing quote
-            }
-            else if (q === "\\") {
-                quoted = true; // `\EOF` also suppresses expansion in bash
-                j++;
-                while (j < n && /[A-Za-z0-9_]/.test(command[j])) {
-                    delim += command[j];
-                    j++;
-                }
-            }
-            else {
-                while (j < n && /[A-Za-z0-9_]/.test(command[j])) {
-                    delim += command[j];
-                    j++;
-                }
-            }
-            if (delim.length > 0) {
-                pending.push({ delim, dash, strip: quoted });
-                out += "<<"; // inert marker; the delimiter word itself is dropped
-                i = j;
-                continue;
-            }
-            // Not a real delimiter → emit a single `<` and advance.
-            out += ch;
-            i++;
-            continue;
-        }
-        // End of a redirect line: consume the bodies of any pending heredocs.
-        if (ch === "\n" && pending.length > 0) {
-            out += "\n";
-            i++;
-            let bailed = false;
-            for (const hd of pending) {
-                const term = findHeredocTerminator(command, i, hd);
-                if (term === -1) {
-                    // Terminator never appears → fail-closed: rest is code.
-                    out += command.slice(i);
-                    i = n;
-                    bailed = true;
-                    break;
-                }
-                const body = command.slice(i, term);
-                out += hd.strip ? blankData(body) : body;
-                let termEnd = command.indexOf("\n", term);
-                if (termEnd === -1)
-                    termEnd = n;
-                out += command.slice(term, termEnd); // terminator line is inert code
-                if (termEnd < n) {
-                    out += "\n";
-                    i = termEnd + 1;
-                }
-                else {
-                    i = n;
-                }
-            }
-            pending = [];
-            if (bailed)
-                break;
-            continue;
-        }
-        out += ch;
-        i++;
-    }
-    return out;
-}
-/**
- * Split a command string into the segments that each run as their own command.
- * Segments on `;`, `&&`, `||`, `|`. Also recursively inspects the *contents*
- * of `$(...)` and backtick subshells (their inner commands run too).
- *
- * This is a deliberately conservative lexer: it does not try to be a full
- * shell parser. It over-segments rather than under-segments, which is the
- * fail-closed direction.
- *
- * NOTE: callers that start from a raw Bash command string should pass it
- * through `stripDataRegions()` first (as `classifyGitCommand` does) so that
- * inert data regions — single-quoted strings and quoted-delimiter heredoc
- * bodies — do not get mis-parsed as command substitution.
- */
-export function extractCommandSegments(command) {
-    const segments = [];
-    // Recursively pull out subshell bodies ($(...) and `...`), classify their
-    // inner commands too, and strip them from the outer string so the outer
-    // segmentation is not confused by operators inside the subshell.
-    let outer = command;
-    // $(...) — handle nesting by scanning for balanced parens.
-    let guard = 0;
-    for (;;) {
-        if (guard++ > 1000)
-            break; // pathological input — stop (outer still segmented)
-        const start = outer.indexOf("$(");
-        if (start === -1)
-            break;
-        let depth = 0;
-        let end = -1;
-        for (let i = start + 1; i < outer.length; i++) {
-            const ch = outer[i];
-            if (ch === "(")
-                depth++;
-            else if (ch === ")") {
-                depth--;
-                if (depth === 0) {
-                    end = i;
-                    break;
-                }
-            }
-        }
-        if (end === -1) {
-            // Unbalanced — treat the rest as subshell body (fail-closed) and stop.
-            const body = outer.slice(start + 2);
-            segments.push(...extractCommandSegments(body));
-            outer = outer.slice(0, start);
-            break;
-        }
-        const body = outer.slice(start + 2, end);
-        segments.push(...extractCommandSegments(body));
-        outer = outer.slice(0, start) + " " + outer.slice(end + 1);
-    }
-    // Backtick subshells `...`
-    const backtickParts = outer.split("`");
-    if (backtickParts.length >= 3) {
-        // Odd indices are subshell bodies.
-        for (let i = 1; i < backtickParts.length; i += 2) {
-            segments.push(...extractCommandSegments(backtickParts[i]));
-        }
-        // Outer is everything outside the backticks, joined with spaces.
-        outer = backtickParts.filter((_, i) => i % 2 === 0).join(" ");
-    }
-    // Split the (subshell-stripped) outer string on the segment operators.
-    // Replace each operator with a sentinel, then split.
-    const SENTINEL = " ";
-    const flattened = outer
-        .replace(/\|\|/g, SENTINEL)
-        .replace(/&&/g, SENTINEL)
-        .replace(/;/g, SENTINEL)
-        .replace(/\|/g, SENTINEL)
-        .replace(/&/g, SENTINEL)
-        // A newline is a command terminator in shell too, so it separates
-        // segments. This is what makes a fail-closed (retained-as-code) heredoc
-        // body classify on its own line rather than being shadowed by the
-        // `cat`/redirect command that opened the heredoc.
-        .replace(/[\r\n]+/g, SENTINEL);
-    for (const part of flattened.split(SENTINEL)) {
-        const trimmed = part.trim();
-        if (trimmed)
-            segments.push(trimmed);
-    }
-    return segments;
-}
-/** Tokenize a single segment into whitespace-separated words. */
-function tokenize(segment) {
-    return segment.trim().split(/\s+/).filter((t) => t.length > 0);
-}
 /**
  * Locate the `git <subcommand> …` invocation inside a segment's tokens,
  * skipping over leading env-assignments (e.g. `FOO=bar git …`) and a `git`
@@ -487,7 +203,29 @@ const OVERRIDE_FOR = {
  * branch-switch policy. Segments the command; if ANY segment is a deny-case,
  * the whole call is denied (unless the matching env override lifts it).
  *
- * The two overrides are independent (least privilege).
+ * ## The two overrides are independent, and the scan has to stay that way
+ *
+ * An override waives ONE class. The scan therefore does not stop at the first
+ * deny-case segment — it stops at the first UN-OVERRIDDEN one. Returning at the
+ * first deny-case (which is what this did until
+ * `issues/260801-1745_c_one-git-override-lifts-the-deny-for-the-other-git-class.md`)
+ * left every later segment unclassified the moment one override was set, so
+ * `FUSION_ALLOW_WORKTREE=1 git worktree add ../wt f && git switch main` allowed
+ * a branch switch the user never authorised — the exact permission the second
+ * variable exists to withhold.
+ *
+ * An overridden segment is remembered and the walk continues. A later
+ * un-overridden deny WINS over it: the deny is the more restrictive verdict and
+ * the one the user did not waive. Both classes overridden in one command allows,
+ * and should — both permissions were granted explicitly.
+ *
+ * The verdict SHAPE is unchanged, and deliberately so. `overrideUsed` still
+ * means "a normally-denied op was ALLOWED", so it is set only on the allow
+ * return; a deny verdict never carries it, even when an earlier segment was
+ * overridden, because on that call nothing was let through and `guard.ts` would
+ * be recording an override-used note for a blocked command. When several
+ * segments were overridden, `overrideSegment` names the FIRST — the honest
+ * simple answer, and the one the note read before.
  */
 export function classifyGitCommand(command, overrides, resolver) {
     if (!command || command.trim().length === 0) {
@@ -499,6 +237,9 @@ export function classifyGitCommand(command, overrides, resolver) {
     // substitution. Code regions where bash DOES expand (double quotes, unquoted
     // heredocs) are preserved, keeping the guard fail-closed.
     const segments = extractCommandSegments(stripDataRegions(command));
+    // The first segment an override let through, held back rather than returned
+    // so the rest of the command is still classified against the OTHER class.
+    let waived;
     for (const segment of segments) {
         const result = classifySegment(segment, resolver);
         if (result === null)
@@ -507,20 +248,27 @@ export function classifyGitCommand(command, overrides, resolver) {
         const overrideActive = (kind === "branch-switch" && overrides.allowBranchSwitch) ||
             (kind === "worktree-add" && overrides.allowWorktree);
         if (overrideActive) {
-            // The user deliberately allowed this class. Allow, but flag for the
-            // hook to record an override-used note for visibility.
-            return {
-                deny: false,
-                overrideUsed: true,
-                overrideKind: kind,
-                overrideSegment: segment,
-            };
+            // The user deliberately allowed this class — for THIS segment. Keep
+            // scanning; a later segment of the other class is still denied.
+            if (waived === undefined)
+                waived = { kind, segment };
+            continue;
         }
         return {
             deny: true,
             reason,
             offendingSegment: segment,
             kind,
+        };
+    }
+    if (waived !== undefined) {
+        // Every deny-case in the command was individually authorised. Allow, and
+        // flag for the hook to record an override-used note for visibility.
+        return {
+            deny: false,
+            overrideUsed: true,
+            overrideKind: waived.kind,
+            overrideSegment: waived.segment,
         };
     }
     return { deny: false };

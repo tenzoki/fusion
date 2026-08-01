@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "test": "vitest run",
+    "test": "tsc && vitest run",
     "test:watch": "vitest"
   },
   "devDependencies": {

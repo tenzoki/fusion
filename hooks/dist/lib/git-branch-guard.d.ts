@@ -36,7 +36,14 @@
  * This module is PURE and EXPORTED so it is unit-testable without the hook
  * firing. It takes the command string plus the two env-flag booleans and
  * returns a typed verdict.
+ *
+ * The shell-lexing primitives it runs on (`stripDataRegions`,
+ * `extractCommandSegments`, `tokenize`) are generic and live in
+ * `shell-parse.ts`, which a second classifier also consumes. The first two are
+ * re-exported here under their original names because they are part of this
+ * module's established surface.
  */
+export { extractCommandSegments, stripDataRegions } from "./shell-parse.js";
 export type GitGuardKind = "branch-switch" | "worktree-add";
 export interface GitGuardVerdict {
     /** false = allow, true = deny the whole Bash call. */
@@ -76,50 +83,6 @@ export interface CheckoutResolver {
     /** True if `target` resolves to a valid git ref/object in the repo at the effective cwd. */
     isRef(target: string, cwdHints: string[]): boolean;
 }
-/**
- * Remove definite shell *data regions* from a command so that the substitution
- * recursion and operator segmentation which follow only ever classify
- * executable *code*. Bash performs NO expansion or command substitution in
- * these regions, so a git-looking string inside them is inert text, never a
- * command:
- *
- *   - single-quoted strings:             '… `git switch` …'
- *   - quoted-delimiter heredoc bodies:   <<'EOF' … EOF   and   <<"EOF" … EOF
- *
- * Regions where bash DOES expand `$(…)` / backticks are preserved verbatim so
- * a real hidden command still gets classified (this is what keeps the guard
- * fail-closed):
- *
- *   - double-quoted strings:             "… `git switch` …"   (bash substitutes)
- *   - unquoted-delimiter heredoc bodies: <<EOF … EOF          (bash expands body)
- *
- * Removed content is replaced with spaces; newlines are kept so surrounding
- * token boundaries survive. Parsing is fail-closed on ambiguity: an
- * unterminated quote, or a heredoc whose terminator never appears, leaves the
- * remainder AS-IS (treated as code) rather than silently dropping it — matching
- * this module's over-segment-not-under bias.
- *
- * Known conservative limitation: a single-quoted string nested inside a
- * double-quoted `$(…)` (e.g. `"$(echo 'x')"`) is not blanked, because the
- * double-quoted span is copied verbatim without re-entering quote tracking.
- * That errs toward DENY (data treated as code), never toward a missed switch.
- */
-export declare function stripDataRegions(command: string): string;
-/**
- * Split a command string into the segments that each run as their own command.
- * Segments on `;`, `&&`, `||`, `|`. Also recursively inspects the *contents*
- * of `$(...)` and backtick subshells (their inner commands run too).
- *
- * This is a deliberately conservative lexer: it does not try to be a full
- * shell parser. It over-segments rather than under-segments, which is the
- * fail-closed direction.
- *
- * NOTE: callers that start from a raw Bash command string should pass it
- * through `stripDataRegions()` first (as `classifyGitCommand` does) so that
- * inert data regions — single-quoted strings and quoted-delimiter heredoc
- * bodies — do not get mis-parsed as command substitution.
- */
-export declare function extractCommandSegments(command: string): string[];
 export interface GitGuardOverrides {
     /** FUSION_ALLOW_BRANCH_SWITCH — lifts the deny for git switch / git checkout <ref>/-b. */
     allowBranchSwitch: boolean;
@@ -131,7 +94,29 @@ export interface GitGuardOverrides {
  * branch-switch policy. Segments the command; if ANY segment is a deny-case,
  * the whole call is denied (unless the matching env override lifts it).
  *
- * The two overrides are independent (least privilege).
+ * ## The two overrides are independent, and the scan has to stay that way
+ *
+ * An override waives ONE class. The scan therefore does not stop at the first
+ * deny-case segment — it stops at the first UN-OVERRIDDEN one. Returning at the
+ * first deny-case (which is what this did until
+ * `issues/260801-1745_c_one-git-override-lifts-the-deny-for-the-other-git-class.md`)
+ * left every later segment unclassified the moment one override was set, so
+ * `FUSION_ALLOW_WORKTREE=1 git worktree add ../wt f && git switch main` allowed
+ * a branch switch the user never authorised — the exact permission the second
+ * variable exists to withhold.
+ *
+ * An overridden segment is remembered and the walk continues. A later
+ * un-overridden deny WINS over it: the deny is the more restrictive verdict and
+ * the one the user did not waive. Both classes overridden in one command allows,
+ * and should — both permissions were granted explicitly.
+ *
+ * The verdict SHAPE is unchanged, and deliberately so. `overrideUsed` still
+ * means "a normally-denied op was ALLOWED", so it is set only on the allow
+ * return; a deny verdict never carries it, even when an earlier segment was
+ * overridden, because on that call nothing was let through and `guard.ts` would
+ * be recording an override-used note for a blocked command. When several
+ * segments were overridden, `overrideSegment` names the FIRST — the honest
+ * simple answer, and the one the note read before.
  */
 export declare function classifyGitCommand(command: string, overrides: GitGuardOverrides, resolver?: CheckoutResolver): GitGuardVerdict;
 /** Parse an env-var truthy flag ("1" or "true", case-insensitive). */
