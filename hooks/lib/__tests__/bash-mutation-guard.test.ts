@@ -6,9 +6,9 @@ import {
   classifyBashMutation,
   MUTATION_VERBS,
   MUTATION_GIT_SUBCOMMANDS,
-  WRAPPER_PROGRAMS,
 } from "../bash-mutation-guard.js";
 import type { MutationOptions } from "../bash-mutation-guard.js";
+import { GRAMMAR_PREFIXES, WRAPPER_PROGRAMS } from "../command-word.js";
 import { parseCommand, tokenize } from "../shell-parse.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -356,6 +356,7 @@ const WRAPPER_INVOCATIONS: Record<string, string> = {
   doas: "doas",
   env: "env",
   command: "command",
+  exec: "exec",
   nice: "nice",
   ionice: "ionice",
   timeout: "timeout 5",
@@ -825,6 +826,87 @@ describe("shell grammar around the command word", () => {
     ]);
   });
 
+  /**
+   * The set carried the BODY introducers (`then`, `else`, `do`) and not the
+   * HEADS, so `while :; do rm rules/x.md; done` denied and
+   * `if rm -rf rules; then :; fi` allowed — the mechanism understood in one
+   * position and missing in the other.
+   * (`issues/260801-1857_c_compound-command-head-hides-the-verb-from-both-bash-classifiers.md`)
+   */
+  it("sees the verb behind a compound-command head", () => {
+    expectAllDeny([
+      "if rm -rf rules/x.md; then echo ok; fi",
+      "if rm -rf agents; then :; fi",
+      "if true; then :; elif rm rules/x.md; then :; fi",
+      "while rm rules/x.md; do :; done",
+      "until rm rules/x.md; do :; done",
+      "coproc rm rules/x.md",
+      "if mv rules/x.md /tmp/; then :; fi",
+      "while sudo rm rules/x.md; do :; done",
+    ]);
+  });
+
+  it("covers every token in GRAMMAR_PREFIXES, in both directions", () => {
+    // Driven off the set itself, so a token added without a case fails here
+    // rather than shipping unexercised — the shape the wrapper block uses.
+    for (const prefix of GRAMMAR_PREFIXES) {
+      expect(denies(`${prefix} rm rules/x.md`), `${prefix} + protected`).toBe(true);
+      expect(denies(`${prefix} rm /tmp/x`), `${prefix} + unprotected`).toBe(false);
+    }
+  });
+
+  it("keeps ordinary conditionals and loops allowed", () => {
+    expectAllAllow([
+      "if [ -f hooks/config.json ]; then echo yes; fi",
+      "if [ -d hooks/dist ]; then rm -rf hooks/dist; fi",
+      "if ! command -v jq; then echo missing; fi",
+      "while read -r f; do wc -l \"$f\"; done < /tmp/list",
+      "until curl -sf http://localhost:3000; do sleep 1; done",
+      "if git diff --quiet; then echo clean; fi",
+    ]);
+  });
+
+  /**
+   * A leading backslash suppresses alias expansion and runs the same program,
+   * so `\rm` is `rm`. `resolveWord` emitted the escape pair verbatim, leaving a
+   * command word in no table.
+   * (`issues/260801-1858_c_a-backslash-escaped-command-word-is-unrecognised-by-both-classifiers.md`)
+   */
+  it("sees the verb behind a backslash escape", () => {
+    expectAllDeny([
+      "\\rm -rf rules",
+      "\\rm -rf agents",
+      "\\mv rules/x.md /tmp/",
+      "\\cp /tmp/y rules/x.md",
+      "\\sed -i '' 's/a/b/' rules/x.md",
+      "r\\m -rf rules", // bash removes the backslash mid-word too
+      "\\sudo \\rm rules/x.md", // through a wrapper that is itself escaped
+    ]);
+  });
+
+  it("leaves an escaped non-verb and an escaped space alone", () => {
+    expectAllAllow([
+      "\\ls rules/",
+      "\\cat rules/x.md",
+      "\\rm /tmp/x",
+      "rm my\\ file.txt", // an escaped space, not a protected path
+    ]);
+  });
+
+  it("removes a backslash escape from an operand too", () => {
+    // The residual this fix was scoped against reasoned that an escape in an
+    // OPERAND is harmless because it can only shorten a word. It is not: an
+    // escape KEPT in the word lengthens it, and a protected pattern with no
+    // glob in it stops matching. `hooks/config\.json` was allowed.
+    expect(denies("rm hooks/config\\.json")).toBe(true);
+    expect(classify("rm hooks/config\\.json").targetPath).toBe(
+      "hooks/config.json",
+    );
+    // `\$FOO` is a literal `$FOO` to bash and a fail-closed deny here: the
+    // expansion test runs before the unescape, by design.
+    expect(denies("rm \\$FOO")).toBe(true);
+  });
+
   it("does not match an inherited Object.prototype member as a row", () => {
     expectAllAllow([
       "constructor rules/x.md",
@@ -1078,6 +1160,20 @@ const ORDINARY_AGENT_COMMANDS = [
   "pushd hooks > /dev/null && npm test; popd > /dev/null",
   "(cd hooks && rm -rf dist)",
   "cd node_modules && rm -rf .cache",
+  // CONDITIONALS AND LOOPS — added with the compound-command heads
+  // (`issues/260801-1857_c_…`), which put `if` / `elif` / `while` / `until` in
+  // front of the same verb table `then` / `else` / `do` already fed. Ordinary
+  // agent work is full of these, so widening the skip has to be checked here
+  // rather than assumed.
+  "if [ -f hooks/config.json ]; then echo present; fi",
+  "if [ -d hooks/dist ]; then rm -rf hooks/dist; fi",
+  "if ! command -v jq; then echo 'install jq'; fi",
+  "if git diff --quiet; then echo clean; else echo dirty; fi",
+  "while read -r f; do wc -l \"$f\"; done < /tmp/list",
+  "until curl -sf http://localhost:3000; do sleep 1; done",
+  "for f in rules/*.md; do head -1 \"$f\"; done",
+  "if cd hooks && npm test; then echo ok; fi",
+  "exec npm test",
 ];
 
 describe("MUST NEVER DENY — the ordinary-agent-command corpus", () => {

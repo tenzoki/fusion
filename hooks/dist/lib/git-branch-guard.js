@@ -3,8 +3,15 @@
  *
  * Prose rules alone do not stop LLM agents from switching git branches under
  * task pressure. The only effective lever is this classifier, which runs on
- * every agent `Bash` call (git is reachable only via Bash, so this is a
- * complete choke-point) and DENIES branch/worktree-moving git operations.
+ * every agent `Bash` call and DENIES branch/worktree-moving git operations.
+ *
+ * git is reachable only via Bash, so every attempt an agent can make passes
+ * through here — but this is a choke-point on the tool CALL, not a proof of
+ * impossibility. The classifier reads the command TEXT, so a command that hides
+ * the verb from its own text is not seen: `eval 'git switch main'`,
+ * `bash -c '…'`, a `case` arm, and a branch switch inside a script the agent
+ * invokes are all allowed today. `rules/git-branch-discipline.md` states the
+ * same bound for the agents that read it.
  *
  * Design (LOCKED):
  *   DENY  (HEAD moves): git switch …, git checkout -b/-B/--detach/--orphan/-,
@@ -42,9 +49,28 @@
  * `shell-parse.ts`, which a second classifier also consumes. The first two are
  * re-exported here under their original names because they are part of this
  * module's established surface.
+ *
+ * WHICH WORD IS THE COMMAND is likewise not decided here: `command-word.ts`
+ * answers it for both classifiers. This module used to answer it alone, and
+ * worse — it skipped a leading `VAR=value` assignment and nothing else, so a
+ * compound-command head (`if git switch main; then …`), a body introducer
+ * (`do git switch main`), a wrapper (`sudo git switch main`, `exec git switch
+ * main`) and a backslash-escaped command word (`\git switch main`) each hid the
+ * verb from a policy the bare form is denied by. The asymmetry with the
+ * mutation classifier, which had all three skips, was accidental rather than
+ * decided; sharing one resolver is what removes it
+ * (`issues/260801-1857_c_compound-command-head-hides-the-verb-from-both-bash-classifiers.md`,
+ * `issues/260801-1858_c_a-backslash-escaped-command-word-is-unrecognised-by-both-classifiers.md`).
  */
+import { resolveInvocation } from "./command-word.js";
 import { extractCommandSegments, stripDataRegions, tokenize, } from "./shell-parse.js";
 export { extractCommandSegments, stripDataRegions } from "./shell-parse.js";
+/**
+ * This classifier parses in BLANK mode, where a single-quoted region is erased
+ * rather than captured, so there is never a literal table to consult. The empty
+ * map is the whole of it — `resolveWord` only ever reads from it.
+ */
+const NO_LITERALS = new Map();
 const DENY_REASON = "fusion policy: agents never switch git branches autonomously (prevents " +
     "branch-drift chaos). If this task genuinely needs a different branch, STOP " +
     "and ask the user. The user can deliberately allow it by setting " +
@@ -61,38 +87,23 @@ const CHECKOUT_RESTORE_HINT = " If you meant to RESTORE a file (not switch branc
     "`git checkout <file>` form is allowed only when <file> exists on disk and " +
     "is not also a branch/ref name.";
 /**
- * Locate the `git <subcommand> …` invocation inside a segment's tokens,
- * skipping over leading env-assignments (e.g. `FOO=bar git …`) and a `git`
- * binary path. Returns the index of the `git` token, or -1 if the segment is
- * not a git invocation.
- */
-function findGitInvocation(tokens) {
-    for (let i = 0; i < tokens.length; i++) {
-        const t = tokens[i];
-        // Leading VAR=value env-assignments are skipped.
-        if (/^[A-Za-z_][A-Za-z0-9_]*=/.test(t))
-            continue;
-        // The git binary — bare `git` or a path ending in `/git`.
-        if (t === "git" || t.endsWith("/git"))
-            return i;
-        // First non-env token is not git → not a git command.
-        return -1;
-    }
-    return -1;
-}
-/**
  * Classify a single already-segmented command. Returns a SegmentDeny for a
  * denied operation, or null if the segment is allowed. `resolver` (when
  * present) resolves the ambiguous bare-`git checkout <target>` form.
+ *
+ * The segment is a git call when its resolved command word is `git` — which
+ * covers `FOO=bar git …`, `/usr/bin/git …`, `"git" …`, `\git …`,
+ * `sudo git …`, `exec git …` and `if git …; then`, because
+ * `resolveInvocation` has already stripped the assignment, the path, the
+ * quoting, the escape, the wrapper and the grammar word respectively.
  */
 function classifySegment(segment, resolver) {
-    const tokens = tokenize(segment);
-    const gitIdx = findGitInvocation(tokens);
-    if (gitIdx === -1)
-        return null; // not a git command → allow
+    const invocation = resolveInvocation(tokenize(segment), NO_LITERALS);
+    if (invocation === null || invocation.name !== "git")
+        return null;
     // Args after `git`, dropping global options like `-C <dir>`, `-c k=v`,
     // `--git-dir=…`, `--work-tree=…` that can precede the subcommand.
-    const rest = tokens.slice(gitIdx + 1);
+    const rest = invocation.args;
     // `-C <dir>` global options in order — passed to the resolver so it resolves
     // paths/refs in the directory git itself would use.
     const cwdHints = [];

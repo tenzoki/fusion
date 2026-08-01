@@ -47,13 +47,21 @@ Only the operands a verb **writes** count. `cp rules/x.md /tmp/y` and
 `dd if=rules/x.md of=/tmp/y` read a protected path and stay allowed; copying *out of*
 a protected directory is never the problem.
 
-### Wrappers are seen through
+### The command word is resolved, not just read
 
-A leading wrapper program is skipped and the command underneath it is classified.
-`sudo rm rules/x.md`, `xargs rm rules/x.md` and `sudo env rm rules/x.md` are all the
-`rm` row. The wrapper list covers `sudo`, `doas`, `env`, `command`, `nice`, `ionice`,
-`timeout`, `xargs`, `time`, `nohup`, `setsid` and `stdbuf`. **`sudo` is not an escape**,
-and neither is chaining wrappers.
+Whatever stands between the start of a segment and its verb is skipped, so the verb
+underneath is classified:
+
+- a leading `VAR=value` **environment assignment** — `FOO=1 rm rules/x.md`;
+- a **shell grammar word** — the compound-command heads and body introducers (`if`,
+  `elif`, `while`, `until`, `then`, `else`, `do`), `!`, `{`, `(` and `coproc`. Both
+  `if rm -rf rules; then :; fi` and `while :; do rm rules/x.md; done` are the `rm` row;
+- a **wrapper program** that runs another program — `sudo`, `doas`, `env`, `command`,
+  `exec`, `nice`, `ionice`, `timeout`, `xargs`, `time`, `nohup`, `setsid`, `stdbuf`.
+  **`sudo` is not an escape**, and neither is chaining wrappers: `sudo env rm rules/x.md`
+  is the `rm` row;
+- a **path, quoting or a backslash escape** — `/bin/rm`, `'rm'`, `"rm"` and `\rm` all
+  name `rm`. `\rm` is the idiom for suppressing an alias, and it runs the same program.
 
 ### An ancestor directory is covered, in both directions
 
@@ -146,8 +154,9 @@ If a task genuinely requires writing a protected path from a shell:
 
 1. **STOP.** Do not rephrase the command. The guard segments on `;`, `&&`, `||`, `|`,
    `&` and newlines, splices backslash line continuations, inspects `$(…)` and backtick
-   subshells, reads single- and double-quoted operands as the paths they are, and sees
-   through wrappers. A differently-worded command is the same command.
+   subshells, reads single- and double-quoted operands as the paths they are, removes
+   backslash escapes, and sees through grammar words and wrappers. A differently-worded
+   command is the same command.
 2. **Do not re-route through `Edit` or `Write`.** They are guarded on the same list.
    Routing around one surface to reach the other is the failure this rule exists to
    prevent.
@@ -180,7 +189,13 @@ Known and accepted:
   is allowed, because `xargs` receives its operands on the pipe rather than as words.
 - **An unrecognised program that writes a protected path still writes it.**
   `curl -o rules/x.md …`, `python3 -c "…"`, `eval '…'`, `bash -c '…'`, `parallel`, and a
-  project's own build script are all outside the table.
+  project's own build script are all outside the table. `eval` and `bash -c` are outside
+  it for a specific reason: they take a STRING that bash re-parses, so there is no
+  argument list to walk the way there is for `sudo`.
+- **Shell grammar that puts an ordinary-looking word in command position is not seen.**
+  A `case` arm (`build) rm rules/x.md;;`) and a function definition
+  (`f() { rm rules/x.md; }`) both leave a word the classifier cannot tell apart from a
+  program name, so the verb behind it is never reached.
 - **Verbs deliberately not in the table**: `mkdir`, `chmod`, `chown`, `touch`, `tar`,
   `rsync`, `patch`, `gzip`. Each was left out because its operands are usually
   directories and a row would carry the ancestor rule with it.
@@ -189,9 +204,14 @@ Known and accepted:
 - **Two sibling `$(…)` substitutions inside one outer segment share a directory**, so
   `$(cd /tmp) $(rm rules/x.md)` is allowed. The same pair in separate segments is
   correctly independent.
-- **No backslash escape is processed inside a word.** A backslash-escaped closing
-  parenthesis in a filename (`rm x\)`) loses the paren. It can only shorten a word, so it
-  costs no allow and buys no false deny.
+- **A backslash-escaped closing parenthesis in a filename loses the paren.** `rm x\)`
+  resolves to `x`, because the tokenizer peels a `(…)` subshell's parentheses before the
+  escape is read. It can only shorten a word, so it costs no allow and buys no false
+  deny. (Every OTHER escape is removed the way bash removes it: `\rm` is `rm`, and
+  `rm hooks/config\.json` writes `hooks/config.json`. The one deliberate exception is a
+  backslash before a `$` — `rm \$FOO` denies fail-closed rather than resolving to a file
+  named `$FOO`, because the expansion check runs first and over-blocking is the safe
+  direction.)
 - **Glob and brace expansion are matched as literal text**, not expanded. `rm -rf *` and
   `rm -rf {rules,agents}` are allowed, because neither names a directory the ancestor
   check can compare.

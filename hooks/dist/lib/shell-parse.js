@@ -613,7 +613,11 @@ export function parseCommand(command, options) {
  * position make a word unresolved.
  *
  * Surrounding double quotes are dropped when nothing inside them expands, so
- * `"plain.txt"` resolves to `plain.txt`.
+ * `"plain.txt"` resolves to `plain.txt`, and a backslash escape in code
+ * position is removed the way bash removes it, so `\rm` resolves to `rm`. That
+ * second one is load-bearing for the CALLER'S command word: an unprocessed
+ * escape does not merely shorten a path there, it renames the program out of
+ * whatever table the caller is about to consult.
  */
 export function resolveWord(token, literals) {
     if (token.length === 0)
@@ -648,8 +652,17 @@ export function resolveWord(token, literals) {
         if (part.text.includes("$") || part.text.includes("`")) {
             return { unresolved: true };
         }
-        // Nothing expands in what is left, so double quotes are pure syntax.
-        value += part.text.replace(/"/g, "");
+        // Bash removes a backslash in code position and takes the next character
+        // literally, so `\rm` denotes `rm` and `x\)` denotes `x)`. A lone trailing
+        // backslash escapes nothing and survives.
+        //
+        // ORDER IS PINNED: the unescape runs AFTER the expansion test above, never
+        // before. `\$FOO` is a literal `$FOO` to bash, and the test has already
+        // reported the word unresolved by the time the escape is removed — an
+        // over-block, which is the safe direction. Unescaping first would hand the
+        // test a word with no `$` left in it and turn a fail-closed deny into an
+        // allow, which is the direction that costs an allow rather than a deny.
+        value += part.text.replace(/\\(.)/g, "$1").replace(/"/g, "");
     }
     return { value };
 }

@@ -3,8 +3,15 @@
  *
  * Prose rules alone do not stop LLM agents from switching git branches under
  * task pressure. The only effective lever is this classifier, which runs on
- * every agent `Bash` call (git is reachable only via Bash, so this is a
- * complete choke-point) and DENIES branch/worktree-moving git operations.
+ * every agent `Bash` call and DENIES branch/worktree-moving git operations.
+ *
+ * git is reachable only via Bash, so every attempt an agent can make passes
+ * through here — but this is a choke-point on the tool CALL, not a proof of
+ * impossibility. The classifier reads the command TEXT, so a command that hides
+ * the verb from its own text is not seen: `eval 'git switch main'`,
+ * `bash -c '…'`, a `case` arm, and a branch switch inside a script the agent
+ * invokes are all allowed today. `rules/git-branch-discipline.md` states the
+ * same bound for the agents that read it.
  *
  * Design (LOCKED):
  *   DENY  (HEAD moves): git switch …, git checkout -b/-B/--detach/--orphan/-,
@@ -42,6 +49,18 @@
  * `shell-parse.ts`, which a second classifier also consumes. The first two are
  * re-exported here under their original names because they are part of this
  * module's established surface.
+ *
+ * WHICH WORD IS THE COMMAND is likewise not decided here: `command-word.ts`
+ * answers it for both classifiers. This module used to answer it alone, and
+ * worse — it skipped a leading `VAR=value` assignment and nothing else, so a
+ * compound-command head (`if git switch main; then …`), a body introducer
+ * (`do git switch main`), a wrapper (`sudo git switch main`, `exec git switch
+ * main`) and a backslash-escaped command word (`\git switch main`) each hid the
+ * verb from a policy the bare form is denied by. The asymmetry with the
+ * mutation classifier, which had all three skips, was accidental rather than
+ * decided; sharing one resolver is what removes it
+ * (`issues/260801-1857_c_compound-command-head-hides-the-verb-from-both-bash-classifiers.md`,
+ * `issues/260801-1858_c_a-backslash-escaped-command-word-is-unrecognised-by-both-classifiers.md`).
  */
 export { extractCommandSegments, stripDataRegions } from "./shell-parse.js";
 export type GitGuardKind = "branch-switch" | "worktree-add";

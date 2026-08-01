@@ -20,11 +20,13 @@
  * rules/x.md` writes it and denies. Adding a verb later is a row and two tests,
  * not a new code path.
  *
- * A leading WRAPPER program (`WRAPPER_PROGRAMS` below) is skipped rather than
- * read as the command, so `sudo rm rules/x.md` and `sudo env rm rules/x.md`
- * classify as the `rm` they are. Each wrapper's own flags — and, for `timeout`,
- * its duration operand — are consumed by the wrapper's row, so the skip never
- * assumes the second word is the verb.
+ * WHICH WORD NAMES THE PROGRAM is not decided here. `command-word.ts` answers
+ * that for both Bash classifiers: it skips a leading `VAR=value` assignment, a
+ * shell grammar word (`if`, `while`, `{`, `!`, …) and any WRAPPER program that
+ * runs another program, so `sudo rm rules/x.md`, `sudo env rm rules/x.md` and
+ * `if rm rules/x.md; then …` all classify as the `rm` they are. Each wrapper's
+ * own flags — and, for `timeout`, its duration operand — are consumed by the
+ * wrapper's row, so the skip never assumes the second word is the verb.
  *
  * Output redirection (`>`, `>>`, `>|`, `N>`, glued or separated) is scanned
  * separately and position-independently, because a redirection binds to the
@@ -79,11 +81,16 @@
  * it does not eliminate it, and no claim that `protectedPaths` is enforced
  * should be made without that qualification.
  *
- * The wrapper list is the same kind of bound. A program that runs another
- * program and is not a row still hides the verb underneath it — `parallel rm
- * rules/x.md` is the obvious one, and it is left out because its flag grammar
- * is large enough to be its own false-positive risk. Adding a wrapper is a row,
- * not a code path.
+ * The wrapper list is the same kind of bound, and it is stated where the list
+ * lives (`command-word.ts`): a program that runs another program and is not a
+ * row still hides the verb underneath it (`parallel rm rules/x.md`), and a
+ * program that takes its command as a STRING bash re-parses (`eval`,
+ * `bash -c`) is outside the mechanism entirely.
+ *
+ * Shell grammar the word-level resolver cannot name is the third bound. A
+ * `case` arm and a function definition both put an ordinary-looking word in
+ * command position (`build) rm rules/x.md;;`, `f() { rm rules/x.md; }`) that no
+ * table can distinguish from a program, so the verb behind it is not reached.
  *
  * A whole-tree operand that is not a path is invisible for the same reason a
  * glob is matched literally: `rm -rf *` names no directory the ancestor check
@@ -171,7 +178,8 @@ export interface VerbSpec {
  * Two things widen a row's reach beyond the literal command it names, and both
  * are reviewed with the table rather than apart from it:
  *
- *   - A row is reached THROUGH a wrapper (`WRAPPER_PROGRAMS`). `sudo rm …`,
+ *   - A row is reached THROUGH a wrapper (`WRAPPER_PROGRAMS` in
+ *     `command-word.ts`) or a grammar word. `sudo rm …`, `if rm …; then`,
  *     `xargs rm …` and `sudo env rm …` are the `rm` row.
  *   - A written operand matches by ANCESTRY as well as by pattern
  *     (`ancestorOfProtected`). `rm -rf hooks` is the `rm` row hitting
@@ -183,34 +191,6 @@ export interface VerbSpec {
  * and `gzip` are deliberately NOT rows.
  */
 export declare const MUTATION_VERBS: Readonly<Record<string, VerbSpec>>;
-/**
- * A program that RUNS another program. Its own flags (and, for `timeout`, one
- * positional) are consumed, and whatever follows is classified as the real
- * command — otherwise `sudo rm rules/x.md` reads as the unrecognised program
- * `sudo` and is allowed, which is a one-word bypass of the whole table.
- *
- * THE FLAGS ARE THE WHOLE DIFFICULTY. A wrapper's value-taking flag swallows
- * the next token, so `sudo -u root rm x` must not read `root` as the command,
- * and `timeout 5 rm x` must not read `5` as it. Only the SHORT forms need
- * listing: `--user=root` and `--kill-after=5s` are single tokens and fall out
- * of the generic "a token starting with `-` is a flag" rule.
- *
- * `positionalArgs` is the wrapper's own non-flag arguments before the command
- * word — one for `timeout` (the duration), none for anything else. `nice -5`
- * needs no entry: it starts with `-` and is skipped as an ordinary flag.
- *
- * Skipping a wrapper cannot manufacture a false positive on its own. It only
- * ever exposes an inner command word to the SAME table; if the inner program is
- * not a verb the verdict is unchanged. `command -v rm` becomes a bare `rm` with
- * no operands, which writes nothing.
- */
-export interface WrapperSpec {
-    /** Short flags that consume the FOLLOWING token as their value. */
-    valueFlags?: readonly string[];
-    /** The wrapper's own positional arguments, before the wrapped command word. */
-    positionalArgs?: number;
-}
-export declare const WRAPPER_PROGRAMS: Readonly<Record<string, WrapperSpec>>;
 /**
  * Mutating `git` subcommands. Every other subcommand is a non-mutation here —
  * including `git checkout … -- <paths>`, fusion's own revert strategy, which

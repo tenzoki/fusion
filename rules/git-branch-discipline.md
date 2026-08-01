@@ -15,6 +15,8 @@ The guard runs a second, independent `Bash` policy: a shell command that **write
 
 The deny applies to the whole `Bash` call if **any** segment is a deny-case. The guard segments on `;`, `&&`, `||`, `|`, `&` and newlines, splices backslash line continuations before segmenting, strips `(…)` subshell parentheses, and inspects `$(…)` / backtick subshells. You cannot smuggle a branch switch inside a compound command.
 
+Nor behind an extra word. The classifier resolves the command word before it reads it, so a leading `VAR=value` assignment, a compound-command head or body introducer (`if`, `elif`, `while`, `until`, `then`, `else`, `do`), a wrapper program (`sudo`, `env`, `exec`, `xargs`, `nohup`, `timeout`, `command`, `nice`, `time`, …), a path (`/usr/bin/git`), quoting (`"git"`) and a backslash escape (`\git`) all resolve to the same `git` the bare form does. `if git switch main; then :; fi`, `sudo git switch main`, `exec git switch main` and `\git switch main` are denied exactly as `git switch main` is.
+
 ## What stays allowed (HEAD does not move)
 
 - `git checkout … -- <paths>` — file restore. The `--` separator is the primary, unambiguous discriminator.
@@ -30,7 +32,7 @@ The deny applies to the whole `Bash` call if **any** segment is a deny-case. The
 
 A prose rule alone does not stop an LLM agent from switching branches under task pressure (cf. `CLAUDE.md` "Problem 11" — "MUST run Setup" was overridden by task urgency). Autonomous branch switching causes **branch-drift chaos**: work lands on the wrong branch, the orchestrator's revert strategy (`git checkout HEAD -- <files>`) targets the wrong tree, commits interleave across branches, and interrupted-session resume becomes unreliable. Git is reachable only via `Bash`, so the hook sees every attempt an agent can make: it is the cheapest place to make the failure hard rather than merely discouraged.
 
-**It is a choke-point on the tool call, not a proof of impossibility.** The classifier reads the command text, so a command that hides the verb from its own text is not seen — `eval 'git switch main'` and `bash -c 'git switch main'` are both allowed today, as is a branch switch inside a script the agent invokes. Reaching for one of those to get past a deny is exactly the behaviour this rule forbids, whatever the guard happened to allow.
+**It is a choke-point on the tool call, not a proof of impossibility.** The classifier reads the command text, so a command that hides the verb from its own text is not seen — `eval 'git switch main'` and `bash -c 'git switch main'` are both allowed today, as is a branch switch inside a script the agent invokes, inside a `case` arm (`main) git switch main;;`) or inside a function body. Reaching for one of those to get past a deny is exactly the behaviour this rule forbids, whatever the guard happened to allow.
 
 The classifier is **fail-closed**: for a bare `git checkout <target>` (no `--`), the allow requires positive proof that every target is an existing file that is *not* also a ref — proved via an on-disk + `git rev-parse` check. Anything short of that proof (a valid ref, a nonexistent target, an unresolvable `--git-dir`/`--work-tree` global, or no resolver at all) is denied. Over-blocking a weird construct is the correct direction; the user wants chaos prevented.
 

@@ -20,11 +20,13 @@
  * rules/x.md` writes it and denies. Adding a verb later is a row and two tests,
  * not a new code path.
  *
- * A leading WRAPPER program (`WRAPPER_PROGRAMS` below) is skipped rather than
- * read as the command, so `sudo rm rules/x.md` and `sudo env rm rules/x.md`
- * classify as the `rm` they are. Each wrapper's own flags — and, for `timeout`,
- * its duration operand — are consumed by the wrapper's row, so the skip never
- * assumes the second word is the verb.
+ * WHICH WORD NAMES THE PROGRAM is not decided here. `command-word.ts` answers
+ * that for both Bash classifiers: it skips a leading `VAR=value` assignment, a
+ * shell grammar word (`if`, `while`, `{`, `!`, …) and any WRAPPER program that
+ * runs another program, so `sudo rm rules/x.md`, `sudo env rm rules/x.md` and
+ * `if rm rules/x.md; then …` all classify as the `rm` they are. Each wrapper's
+ * own flags — and, for `timeout`, its duration operand — are consumed by the
+ * wrapper's row, so the skip never assumes the second word is the verb.
  *
  * Output redirection (`>`, `>>`, `>|`, `N>`, glued or separated) is scanned
  * separately and position-independently, because a redirection binds to the
@@ -79,11 +81,16 @@
  * it does not eliminate it, and no claim that `protectedPaths` is enforced
  * should be made without that qualification.
  *
- * The wrapper list is the same kind of bound. A program that runs another
- * program and is not a row still hides the verb underneath it — `parallel rm
- * rules/x.md` is the obvious one, and it is left out because its flag grammar
- * is large enough to be its own false-positive risk. Adding a wrapper is a row,
- * not a code path.
+ * The wrapper list is the same kind of bound, and it is stated where the list
+ * lives (`command-word.ts`): a program that runs another program and is not a
+ * row still hides the verb underneath it (`parallel rm rules/x.md`), and a
+ * program that takes its command as a STRING bash re-parses (`eval`,
+ * `bash -c`) is outside the mechanism entirely.
+ *
+ * Shell grammar the word-level resolver cannot name is the third bound. A
+ * `case` arm and a function definition both put an ordinary-looking word in
+ * command position (`build) rm rules/x.md;;`, `f() { rm rules/x.md; }`) that no
+ * table can distinguish from a program, so the verb behind it is not reached.
  *
  * A whole-tree operand that is not a path is invisible for the same reason a
  * glob is matched literally: `rm -rf *` names no directory the ancestor check
@@ -106,6 +113,12 @@
 
 import { normalize as normalizePath } from "node:path";
 import { matchesAny } from "./paths.js";
+import {
+  findCommandWord,
+  programName,
+  resolveInvocation,
+  row,
+} from "./command-word.js";
 import {
   SUBSTITUTION_FILLER,
   parseCommand,
@@ -212,7 +225,8 @@ function shortFlagLetters(flag: string): string {
  * Two things widen a row's reach beyond the literal command it names, and both
  * are reviewed with the table rather than apart from it:
  *
- *   - A row is reached THROUGH a wrapper (`WRAPPER_PROGRAMS`). `sudo rm …`,
+ *   - A row is reached THROUGH a wrapper (`WRAPPER_PROGRAMS` in
+ *     `command-word.ts`) or a grammar word. `sudo rm …`, `if rm …; then`,
  *     `xargs rm …` and `sudo env rm …` are the `rm` row.
  *   - A written operand matches by ANCESTRY as well as by pattern
  *     (`ancestorOfProtected`). `rm -rf hooks` is the `rm` row hitting
@@ -249,53 +263,6 @@ export const MUTATION_VERBS: Readonly<Record<string, VerbSpec>> = {
 };
 
 /**
- * A program that RUNS another program. Its own flags (and, for `timeout`, one
- * positional) are consumed, and whatever follows is classified as the real
- * command — otherwise `sudo rm rules/x.md` reads as the unrecognised program
- * `sudo` and is allowed, which is a one-word bypass of the whole table.
- *
- * THE FLAGS ARE THE WHOLE DIFFICULTY. A wrapper's value-taking flag swallows
- * the next token, so `sudo -u root rm x` must not read `root` as the command,
- * and `timeout 5 rm x` must not read `5` as it. Only the SHORT forms need
- * listing: `--user=root` and `--kill-after=5s` are single tokens and fall out
- * of the generic "a token starting with `-` is a flag" rule.
- *
- * `positionalArgs` is the wrapper's own non-flag arguments before the command
- * word — one for `timeout` (the duration), none for anything else. `nice -5`
- * needs no entry: it starts with `-` and is skipped as an ordinary flag.
- *
- * Skipping a wrapper cannot manufacture a false positive on its own. It only
- * ever exposes an inner command word to the SAME table; if the inner program is
- * not a verb the verdict is unchanged. `command -v rm` becomes a bare `rm` with
- * no operands, which writes nothing.
- */
-export interface WrapperSpec {
-  /** Short flags that consume the FOLLOWING token as their value. */
-  valueFlags?: readonly string[];
-  /** The wrapper's own positional arguments, before the wrapped command word. */
-  positionalArgs?: number;
-}
-
-export const WRAPPER_PROGRAMS: Readonly<Record<string, WrapperSpec>> = {
-  sudo: {
-    valueFlags: ["-u", "-g", "-p", "-C", "-h", "-r", "-t", "-T", "-U", "-D"],
-  },
-  doas: { valueFlags: ["-u", "-C"] },
-  env: { valueFlags: ["-u", "-C", "-S"] },
-  command: {},
-  nice: { valueFlags: ["-n"] },
-  ionice: { valueFlags: ["-c", "-n", "-p"] },
-  timeout: { valueFlags: ["-s", "-k"], positionalArgs: 1 },
-  xargs: {
-    valueFlags: ["-n", "-P", "-I", "-L", "-l", "-s", "-E", "-d", "-a"],
-  },
-  time: { valueFlags: ["-o", "-f"] },
-  nohup: {},
-  setsid: {},
-  stdbuf: { valueFlags: ["-i", "-o", "-e"] },
-};
-
-/**
  * Mutating `git` subcommands. Every other subcommand is a non-mutation here —
  * including `git checkout … -- <paths>`, fusion's own revert strategy, which
  * MUST stay allowed (`git-branch-guard.ts` owns the branch question).
@@ -304,17 +271,6 @@ export const MUTATION_GIT_SUBCOMMANDS: Readonly<Record<string, VerbSpec>> = {
   mv: { written: "all" },
   rm: { written: "all" },
 };
-
-/**
- * Tokens that are shell GRAMMAR rather than a program, skipped when looking for
- * the command word so `{ rm rules/x.md; }` and `do rm rules/x.md` are still
- * classified. Skipping these cannot mis-identify an ordinary program: none of
- * them is one.
- */
-const GRAMMAR_PREFIXES = new Set(["{", "(", "!", "then", "else", "do"]);
-
-/** A leading `VAR=value` environment assignment before the command word. */
-const ENV_ASSIGNMENT_RE = /^[A-Za-z_][A-Za-z0-9_]*=/;
 
 /* ------------------------------------------------------------------ *
  * Deny reasons
@@ -494,32 +450,6 @@ function isTargetDirFlag(token: string): boolean {
   );
 }
 
-/** Index of the command word, skipping env assignments and grammar prefixes. */
-function findCommandWord(words: string[]): number {
-  for (let i = 0; i < words.length; i++) {
-    const w = words[i];
-    if (ENV_ASSIGNMENT_RE.test(w)) continue;
-    if (GRAMMAR_PREFIXES.has(w)) continue;
-    return i;
-  }
-  return -1;
-}
-
-/**
- * Own-property lookup in one of the tables. A plain `table[name]` would answer
- * with an inherited `Object.prototype` member for a program named `constructor`
- * or `toString`, which is nonsense rather than a row.
- */
-function row<T>(table: Readonly<Record<string, T>>, name: string): T | undefined {
-  return Object.hasOwn(table, name) ? table[name] : undefined;
-}
-
-/** `/bin/rm` → `rm`. A local script named `rm` is treated as `rm` (fail-closed). */
-function programName(word: string): string {
-  const slash = word.lastIndexOf("/");
-  return slash === -1 ? word : word.slice(slash + 1);
-}
-
 /**
  * Locate a mutating `git` subcommand, skipping the global options that can
  * precede it (`-C <dir>`, `-c k=v`, `--git-dir[=…]`, `--work-tree[=…]`, any
@@ -613,77 +543,28 @@ function writtenOperands(spec: VerbSpec, args: string[]): string[] {
 }
 
 /**
- * Consume a wrapper's own flags, environment assignments and positionals,
- * returning the words of the command it runs. An empty result means the wrapper
- * ran nothing this classifier can see (`sudo -v`, a bare `env`).
- */
-function skipWrapper(spec: WrapperSpec, args: string[]): string[] {
-  let i = 0;
-  while (i < args.length) {
-    const a = args[i];
-    // `env FOO=1 rm x`, `sudo FOO=1 rm x` — an assignment is not the command.
-    if (ENV_ASSIGNMENT_RE.test(a)) {
-      i++;
-      continue;
-    }
-    if (a === "--") {
-      i++;
-      break;
-    }
-    if (a.length > 1 && a.startsWith("-")) {
-      i += spec.valueFlags?.includes(a) === true ? 2 : 1;
-      continue;
-    }
-    break;
-  }
-  return args.slice(i + (spec.positionalArgs ?? 0));
-}
-
-/**
  * The written operands named by the segment's verb, if it recognises one.
  *
- * Wrappers are skipped in a loop rather than once, so `sudo env rm rules/x.md`
- * reaches the same `rm` a bare invocation would. The loop terminates because a
- * hop always drops at least the wrapper's own command word, so `rest` strictly
- * shrinks; the bound is the word count and exists only so a future edit cannot
- * turn this into an unbounded loop. A FIXED cap would be worse than none:
- * `sudo sudo … rm rules/x.md` is a real command, and a chain one longer than
- * the cap would walk straight through the classifier.
+ * The command word — behind any env assignments, shell grammar and wrapper
+ * programs — is resolved by `command-word.ts`, which the git classifier shares.
+ * An unrecognised program (including a command word that is itself an
+ * expansion) names no row and therefore writes nothing this classifier can see.
  */
 function verbOperands(
   words: string[],
   literals: Map<string, string>,
 ): string[] {
-  let rest = words;
+  const invocation = resolveInvocation(words, literals);
+  if (invocation === null) return [];
+  const { name, args } = invocation;
 
-  for (let hop = 0; hop <= words.length; hop++) {
-    const cmdIdx = findCommandWord(rest);
-    if (cmdIdx === -1) return [];
-
-    // Resolved against the literal table so `'rm' -rf x` is still `rm`.
-    const resolved = resolveWord(rest[cmdIdx], literals);
-    // A command word that is itself an expansion (`$CMD foo`) names an
-    // unrecognised program → allowed, per the documented residual.
-    const raw = resolved.unresolved === true ? rest[cmdIdx] : resolved.value;
-    const name = programName(raw);
-    const args = rest.slice(cmdIdx + 1);
-
-    const wrapper = row(WRAPPER_PROGRAMS, name);
-    if (wrapper !== undefined) {
-      rest = skipWrapper(wrapper, args);
-      continue;
-    }
-
-    if (name === "git") {
-      const git = resolveGit(args);
-      return git === null ? [] : writtenOperands(git.spec, git.args);
-    }
-
-    const spec = row(MUTATION_VERBS, name);
-    return spec === undefined ? [] : writtenOperands(spec, args);
+  if (name === "git") {
+    const git = resolveGit(args);
+    return git === null ? [] : writtenOperands(git.spec, git.args);
   }
 
-  return [];
+  const spec = row(MUTATION_VERBS, name);
+  return spec === undefined ? [] : writtenOperands(spec, args);
 }
 
 /* ------------------------------------------------------------------ *

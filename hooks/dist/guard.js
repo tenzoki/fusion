@@ -7,10 +7,14 @@
  *   3. Decision-governed categories — escalated based on sensitivity
  *
  * Also intercepts Bash tool calls, for two independent policies:
- *   a. Branch policy — DENIES branch/worktree-moving git operations (git is
- *      reachable only via Bash, so this is a complete choke-point against
- *      autonomous branch drift). See lib/git-branch-guard.ts. Runs everywhere,
- *      including in the fusion plugin's own repo.
+ *   a. Branch policy — DENIES branch/worktree-moving git operations. git is
+ *      reachable only via Bash, so every attempt an agent can make passes
+ *      through here; that makes this a choke-point on the tool CALL, not a
+ *      proof of impossibility. The classifier reads the command text, so a
+ *      command that hides the verb from its own text (`eval '…'`,
+ *      `bash -c '…'`, a `case` arm, a script the agent invokes) is not seen.
+ *      See lib/git-branch-guard.ts. Runs everywhere, including in the fusion
+ *      plugin's own repo.
  *   b. Protected-path policy — DENIES file-mutating shell commands (mv, rm,
  *      cp, sed -i, redirection, …) whose written operands land on
  *      guard.protectedPaths, the same list check 2 above applies to the write
@@ -292,8 +296,9 @@ async function main() {
         allow();
         return;
     }
-    // Bash branch: the git branch-switch policy (deterministic choke-point) and
-    // the protected-path mutation policy. The two differ in where they stand
+    // Bash branch: the git branch-switch policy (deterministic, on every tool
+    // call — see the header for what that does and does not bound) and the
+    // protected-path mutation policy. The two differ in where they stand
     // down, so guardBashCommand — not this dispatch — owns the self-detect call.
     //
     // The BRANCH policy runs unconditionally when the guard is enabled —

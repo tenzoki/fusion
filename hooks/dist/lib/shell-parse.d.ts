@@ -166,6 +166,10 @@ export declare function parseCommand(command: string, options: ParseOptions): Pa
  * position make a word unresolved.
  *
  * Surrounding double quotes are dropped when nothing inside them expands, so
- * `"plain.txt"` resolves to `plain.txt`.
+ * `"plain.txt"` resolves to `plain.txt`, and a backslash escape in code
+ * position is removed the way bash removes it, so `\rm` resolves to `rm`. That
+ * second one is load-bearing for the CALLER'S command word: an unprocessed
+ * escape does not merely shorten a path there, it renames the program out of
+ * whatever table the caller is about to consult.
  */
 export declare function resolveWord(token: string, literals: Map<string, string>): ResolvedWord;

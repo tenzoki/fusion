@@ -324,6 +324,85 @@ describe("git branch-switch classifier — a (…) subshell no longer hides the 
   });
 });
 
+/**
+ * This classifier located `git` with its own scan, which skipped a leading
+ * `VAR=value` assignment and nothing else. The mutation classifier had two more
+ * skips — shell grammar words and wrapper programs — and the asymmetry was
+ * accidental: `git switch main` denied, `if git switch main; then :; fi`,
+ * `sudo git switch main`, `exec git switch main` and `\git switch main` all
+ * allowed. Both now resolve the command word through `command-word.ts`.
+ * (`issues/260801-1857_c_compound-command-head-hides-the-verb-from-both-bash-classifiers.md`,
+ * `issues/260801-1858_c_a-backslash-escaped-command-word-is-unrecognised-by-both-classifiers.md`)
+ */
+describe("git branch-switch classifier — the command word cannot be hidden", () => {
+  it("denies a branch switch behind a compound-command head", () => {
+    for (const cmd of [
+      "if git switch main; then :; fi",
+      "if git checkout main; then :; fi",
+      "while git switch main; do :; done",
+      "until git switch main; do :; done",
+      "if true; then :; elif git switch main; then :; fi",
+      "while :; do git switch main; done",
+      "if git worktree add ../wt f; then :; fi",
+      "coproc git switch main",
+    ]) {
+      expect(deny(cmd).deny, cmd).toBe(true);
+    }
+  });
+
+  it("denies a branch switch behind a wrapper program", () => {
+    for (const cmd of [
+      "sudo git switch main",
+      "sudo -u root git switch main",
+      "exec git switch main",
+      "env git switch main",
+      "nohup git switch main",
+      "timeout 5 git switch main",
+      "sudo env git worktree add ../wt f",
+    ]) {
+      expect(deny(cmd).deny, cmd).toBe(true);
+    }
+  });
+
+  it("denies a backslash-escaped or quoted git", () => {
+    for (const cmd of [
+      "\\git switch main",
+      "\\git worktree add ../wt f",
+      '"git" switch main',
+      "/usr/bin/git switch main",
+      "if \\git switch main; then :; fi",
+    ]) {
+      expect(deny(cmd).deny, cmd).toBe(true);
+    }
+  });
+
+  it("does not manufacture a deny out of the same forms", () => {
+    // Skipping a grammar word or a wrapper only ever exposes the SAME
+    // subcommand table; a read-only git op stays allowed however it is reached.
+    for (const cmd of [
+      "if git status; then echo clean; fi",
+      "while git fetch; do sleep 1; done",
+      "sudo git status",
+      "exec git log --oneline -5",
+      "\\git status",
+      "if git checkout HEAD -- rules/x.md; then :; fi",
+      "sudo git checkout HEAD -- foo.go",
+      "\\git restore foo.go",
+      "if [ -d .git ]; then echo repo; fi",
+      "exec npm test",
+    ]) {
+      expect(deny(cmd).deny, cmd).toBe(false);
+    }
+  });
+
+  it("reports the segment the deny came from, not the whole command", () => {
+    const v = deny("echo start && sudo git switch main && echo done");
+    expect(v.deny).toBe(true);
+    expect(v.kind).toBe("branch-switch");
+    expect(v.offendingSegment).toContain("git switch main");
+  });
+});
+
 describe("git branch-switch classifier — fail-closed on ambiguity", () => {
   it("denies git checkout with a weird ref and no -- separator", () => {
     expect(deny("git checkout origin/main").deny).toBe(true);
