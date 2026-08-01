@@ -17,6 +17,10 @@
  *      tools. See lib/bash-mutation-guard.ts. This IS a write-guard concern
  *      and therefore stands down in the plugin's own repo, exactly as the
  *      write tools do.
+ * The policies are INDEPENDENT in both directions: an env override that lifts
+ * policy (a) for a git operation is not consent to policy (b), so a command
+ * pairing an overridden branch switch with a protected-path write still denies
+ * on the write. See guardBashCommand for the evaluation order.
  * Neither policy touches the Bash allow path's zero-side-effect property (no
  * counter reset, no guard_allow event) — see guardBashCommand.
  *
@@ -146,22 +150,32 @@ function block(reason: string): void {
 }
 
 /**
- * Guard a Bash tool call against the two shell policies, in this order:
+ * Guard a Bash tool call against the two shell policies. Three outcomes are
+ * sequenced, in this order:
  *
- *   1. The git branch-switch policy. Classifies the command (segmenting on
- *      ; && || | and inspecting subshells) and DENIES any branch/worktree-moving
- *      git operation unless the matching env override is set. When an override
- *      allows a normally-denied command, the call is allowed AND an
- *      override-used note is recorded for visibility.
- *   2. The protected-path policy. DENIES a file-mutating command whose written
- *      operands resolve onto config.guard.protectedPaths. Gated on the
- *      self-detect stand-down (see the comment at the check itself).
+ *   1. GIT DENY. Classify the command (segmenting on ; && || | and inspecting
+ *      subshells) and DENY any branch/worktree-moving git operation the env
+ *      overrides do not cover. This runs first and returns, so a call carrying
+ *      both an un-overridden branch switch and a protected-path write denies on
+ *      the branch: the sharper, better-established policy names the verdict, and
+ *      one tool call records exactly ONE block. Recording two would double-count
+ *      the consecutive-block counter that drives the halt.
+ *   2. MUTATION DENY. DENY a file-mutating command whose written operands
+ *      resolve onto config.guard.protectedPaths. Gated on the self-detect
+ *      stand-down (see the comment at the check itself). It runs on BOTH routes
+ *      out of step 1 — git-clean and git-override-allowed — because an override
+ *      waives only what it names. FUSION_ALLOW_BRANCH_SWITCH authorises a branch
+ *      switch; it is not consent to rewrite the protected paths, so
+ *      `git switch main && rm rules/x.md` denies on the rm and the reason the
+ *      user reads names the file, not the branch.
+ *   3. OVERRIDE ALLOW. Only once both denies have passed is the override-used
+ *      note recorded and the call allowed. Recording it later than step 2 keeps
+ *      the note honest: it says a git op was let through, and after a step-2
+ *      block nothing was let through.
  *
- * Git first, so a call carrying both a branch switch and a mutation denies on
- * the branch — the sharper, better-established policy names the verdict.
- *
+ * At most one block is recorded per call, on whichever deny fires first.
  * Both denies follow the same block/escalation/event pattern as the write-tool
- * checks. The allow path stays free of ALL write-guard bookkeeping.
+ * checks. The innocuous allow path stays free of ALL write-guard bookkeeping.
  */
 function guardBashCommand(
   input: HookInput,
@@ -175,28 +189,10 @@ function guardBashCommand(
   const overrides = overridesFromEnv(process.env);
   const verdict = classifyGitCommand(command, overrides, checkoutResolver);
 
-  // Override path: a normally-denied command was allowed by an env flag.
-  if (verdict.overrideUsed && verdict.overrideKind) {
-    const envVar = overrideEnvFor(verdict.overrideKind);
-    const detail =
-      `Override ${envVar} allowed normally-denied git op: ${verdict.overrideSegment ?? command}`;
-    // Record the override in guard-state for visibility (same state surface
-    // the block path writes to — recentEvents in escalation.json + events.jsonl).
-    const escalation = loadEscalation();
-    escalation.recentEvents.push({
-      level: "clear",
-      trigger: "git_branch_switch_override",
-      message: detail,
-      timestamp: new Date().toISOString(),
-      toolName: "Bash",
-    });
-    saveEscalation(escalation);
-    emitEvent("guard_advisory", "Bash", undefined, detail);
-    allow();
-    return;
-  }
-
-  // Deny path: a branch/worktree-moving git op with no override.
+  // STEP 1 — git deny: a branch/worktree-moving git op with no override.
+  // Returns, so the mutation check below never adds a second block for the same
+  // tool call. An override does NOT reach here: it leaves verdict.deny false and
+  // is handled at step 3, after the mutation check has had its say.
   if (verdict.deny) {
     const escalation = loadEscalation();
     const halted = recordBlock(
@@ -218,10 +214,18 @@ function guardBashCommand(
     return;
   }
 
-  // Protected-path check: a file-mutating shell command whose written operands
-  // land on config.guard.protectedPaths — the same list, the same
+  // STEP 2 — protected-path check: a file-mutating shell command whose written
+  // operands land on config.guard.protectedPaths — the same list, the same
   // "protected_path" trigger and the same escalation counter the write tools
   // use, so the monitor and the three-block halt treat both surfaces alike.
+  //
+  // REACHED ON BOTH ROUTES OUT OF STEP 1 — the git-clean one and the
+  // git-override-allowed one. The override env vars grant exactly one
+  // permission each: FUSION_ALLOW_BRANCH_SWITCH says "this agent may move HEAD",
+  // FUSION_ALLOW_WORKTREE says "this agent may add a worktree". Neither says
+  // anything about the protected paths, and a check that returned early on the
+  // override would silently waive a permission nobody granted (it did, until
+  // this was fixed: `git switch main && rm rules/x.md` ran in full).
   //
   // GATED ON THE SELF-DETECT STAND-DOWN, unlike the git policy above. This is a
   // WRITE-guard concern: the protected paths (agents/**, rules/**, plugin.json)
@@ -273,12 +277,41 @@ function guardBashCommand(
     }
   }
 
-  // Allow path: not a branch/worktree-moving git op, and not a mutation of a
-  // protected path. Both checks above are DENY-ONLY — they either block and
-  // return, or fall through here having written nothing — so reaching this
-  // point still means the call participates in NONE of the write-guard
-  // bookkeeping. An innocuous Bash call (ls, git status, an allowed
-  // `git checkout HEAD -- <files>`) must have zero side-effect on guard state:
+  // STEP 3 — override note: a normally-denied git op that an env flag allowed,
+  // and that survived the protected-path check above. Recorded here rather than
+  // at step 1 so the note is written only for a call that actually goes through;
+  // a step-2 block means nothing was allowed and there is nothing to note.
+  //
+  // Not a deny — it falls through to the same allow() below. It is also the one
+  // conditional on this path that writes state without blocking, and it is
+  // reachable ONLY when the user set an override, so an innocuous Bash call
+  // still touches nothing.
+  if (verdict.overrideUsed && verdict.overrideKind) {
+    const envVar = overrideEnvFor(verdict.overrideKind);
+    const detail =
+      `Override ${envVar} allowed normally-denied git op: ${verdict.overrideSegment ?? command}`;
+    // Record the override in guard-state for visibility (same state surface
+    // the block path writes to — recentEvents in escalation.json + events.jsonl).
+    const escalation = loadEscalation();
+    escalation.recentEvents.push({
+      level: "clear",
+      trigger: "git_branch_switch_override",
+      message: detail,
+      timestamp: new Date().toISOString(),
+      toolName: "Bash",
+    });
+    saveEscalation(escalation);
+    emitEvent("guard_advisory", "Bash", undefined, detail);
+  }
+
+  // Allow path: not a branch/worktree-moving git op the overrides left denied,
+  // and not a mutation of a protected path. Steps 1 and 2 are DENY-ONLY — each
+  // either blocks and returns, or falls through having written nothing — and
+  // step 3 writes only when the user set an override, which no innocuous call
+  // does. So reaching this point on an ordinary command still means it
+  // participates in NONE of the write-guard bookkeeping. An innocuous Bash call
+  // (ls, git status, an allowed `git checkout HEAD -- <files>`) must have zero
+  // side-effect on guard state:
   //   - It MUST NOT reset the consecutive-block counter. Agents run Bash
   //     constantly between write attempts; resetting here would let any
   //     interleaved Bash zero the counter and defeat the write/branch halt
