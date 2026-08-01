@@ -193,6 +193,40 @@ const GIT_VERB_CASES: VerbCase[] = [
     deny: ["git rm rules/x.md", "git rm --cached agents/coder.md", "git rm -r skills/setup"],
     allow: ["git rm build/out.js", "git rm --cached /tmp/x"],
   },
+  {
+    // `git clean -fdx rules` deletes every untracked file under a protected
+    // directory. It mutates only under `-f`, so the dry run stays a read.
+    verb: "clean",
+    deny: ["git clean -fdx rules", "git clean -f agents/coder.md", "git clean -fd skills"],
+    allow: [
+      "git clean -n rules", // dry run: -n without -f writes nothing
+      "git clean -fdx hooks/dist",
+      "git clean -fdx build",
+      "git clean -fdx -e rules/keep build", // the exclude PATTERN is not a target
+      "git clean -fdx --exclude rules/keep build",
+    ],
+  },
+  {
+    // The bare form is `git checkout -- <paths>` under its modern name and MUST
+    // stay allowed; `--source=<commit>` is a different operation.
+    verb: "restore",
+    deny: [
+      "git restore --source=HEAD~1 rules/x.md",
+      "git restore --source HEAD~1 agents/coder.md",
+      "git restore -s HEAD~1 skills/setup/SKILL.md",
+    ],
+    allow: [
+      "git restore rules/x.md",
+      "git restore --staged agents/coder.md",
+      "git restore --source=HEAD~1 build/out.js",
+    ],
+  },
+  {
+    // `git stash push <paths>` removes the named paths from the working tree.
+    verb: "stash",
+    deny: ["git stash push rules/x.md", "git stash push -u agents/", "git stash -- rules/x.md"],
+    allow: ["git stash", "git stash list", "git stash pop", "git stash push build/out.js"],
+  },
 ];
 
 describe("verb table — every row denies a written protected operand", () => {
@@ -305,6 +339,39 @@ describe("verb table — in-place flag variants", () => {
       "perl -pe 's/a/b/' rules/x.md",
       "perl -ne 'print' agents/coder.md",
       "perl -I lib -e 'print' rules/x.md",
+    ]);
+  });
+
+  /**
+   * A short flag's VALUE is not more flag letters. `-Ilib` used to read as the
+   * letter run `Ilib`, whose lowercase `i` made every `perl -I<dir>` call an
+   * in-place rewrite of its own script
+   * (`issues/260801-1903_c_perl-include-flag-glued-to-its-value-is-misread-as-the-in-place-flag.md`).
+   * The glued form is the common spelling, and the separated form already
+   * behaved as the docstring promised — so the two disagreed.
+   *
+   * What the truncation gives up: a letter after a value-taking one is no
+   * longer read as a flag. That is what perl and sed do with it too — in
+   * `-Ilib` the `lib` is the include directory, not `-l -i -b` — so the deny
+   * side loses nothing the tool would have honoured. The discriminating case is
+   * the second block: an in-place flag written SEPARATELY still denies.
+   */
+  it("does not read a glued flag VALUE as more flag letters", () => {
+    expectAllAllow([
+      "perl -Ilib rules/gen.pl",
+      "perl -Ilib -e 'print' rules/gen.pl",
+      "perl -Mstrict rules/gen.pl",
+      "perl -Ilib script.pl",
+      "sed -fscript.sed rules/x.md", // the `i` in `script` is not -i either
+    ]);
+  });
+
+  it("still denies when the in-place flag is genuinely there", () => {
+    expectAllDeny([
+      "perl -Ilib -i rules/gen.pl",
+      "perl -Ilib -i.bak -pe 's/a/b/' rules/gen.pl",
+      "perl -i -Ilib rules/gen.pl",
+      "sed -fscript.sed -i '' rules/x.md",
     ]);
   });
 });
@@ -690,11 +757,42 @@ describe("inertness — quoted text is never a command", () => {
     expectAllDeny(["rm -rf rules/", "mv rules/x.md /tmp/", "echo x > rules/x.md"]);
   });
 
-  it("denies the known double-quote false positive, so a change is visible", () => {
-    // A double-quoted region is code to the parser (bash expands there), so the
-    // `>` inside reads as a redirection. The single-quoted form allows.
-    expect(denies('echo "x > rules/y.md"')).toBe(true);
-    expect(denies("echo 'x > rules/y.md'")).toBe(false);
+  /**
+   * WAS a known false positive, now fixed. A double-quoted region used to reach
+   * the scanner as code, so a `>` in ordinary prose read as a redirection and
+   * `git commit -m "docs: rules/a.md -> rules/b.md"` denied on `rules/b.md` —
+   * a deny on the most-run write command in the system, with a reason no agent
+   * could act on
+   * (`issues/260801-1901_c_a-redirect-operator-inside-a-double-quoted-string-is-read-as-a-redirection.md`).
+   * Capture mode now mints a placeholder for a double-quoted span that expands
+   * nothing, which is what bash does with it: no redirection, no word
+   * splitting, no segmentation.
+   *
+   * What the fix gives up is stated by the second block: a span carrying `$`, a
+   * backtick or an escape is STILL code, because bash expands there. That is
+   * the fail-closed direction and flipping it would let `"$(rm rules/x.md)"`
+   * through.
+   */
+  it("treats a double-quoted span that expands nothing as prose", () => {
+    expectAllAllow([
+      'echo "x > rules/y.md"',
+      "echo 'x > rules/y.md'",
+      'git commit -m "docs: rules/a.md -> rules/b.md"',
+      'echo "moved rules/a.md -> rules/b.md"',
+      'gh pr create --body "moves a -> agents/b.md"',
+      'echo "a; rm -rf rules/"',
+      'echo "a && rm -rf rules/"',
+      'echo "a | rm -rf rules/"',
+    ]);
+  });
+
+  it("keeps an EXPANDING double-quoted span as code, so the hidden command still denies", () => {
+    expectAllDeny([
+      'echo "$(rm rules/x.md)"',
+      'echo "`rm rules/x.md`"',
+      'echo "x" > "rules/y.md"', // the operator itself is in code position
+      'echo "x" >"rules/y.md"',
+    ]);
   });
 });
 
@@ -751,6 +849,53 @@ describe("redirection — every writing form denies a protected target", () => {
       "echo done >> /tmp/session.log",
       "sort /tmp/a >/tmp/b",
       "./build.sh > build/out.js",
+    ]);
+  });
+
+  /**
+   * The fail-closed rule stops at the verb table's edge, and the redirection
+   * scanner does not carry it across
+   * (`issues/260801-1859_c_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`).
+   * `npm test > "$LOG"` used to deny while three documents stated that an
+   * unrecognised program is allowed however unparseable its arguments are.
+   *
+   * What this gives up, precisely: a segment with NO recognised verb whose
+   * redirect target cannot be resolved. `echo x > "$F"`, `echo x > "rules/$F"`
+   * and `cd $D && echo x > y.md` all allow now. The trade is deliberate — the
+   * table's own baseline already allows `curl -o rules/x.md`, a LITERAL
+   * protected path with an unrecognised program, so denying the invisible case
+   * while allowing the visible one was the inconsistency. Both discriminating
+   * neighbours are pinned below: a resolvable target still denies whatever the
+   * program is, and a recognised verb still fails closed.
+   */
+  it("does NOT carry fail-closed into a program outside the table", () => {
+    expectAllAllow([
+      'npm test > "$LOG"',
+      'npm test > "$TMPDIR/test.log"',
+      "echo hi >> ~/notes.md",
+      "cat report.md > ~/backup.md",
+      'echo x > "$F"',
+      'echo x > "rules/$F"',
+      "echo x > $(mktemp)",
+      "cd $D && echo x > y.md",
+    ]);
+  });
+
+  it("still denies a RESOLVABLE target on the same programs", () => {
+    expectAllDeny([
+      "npm test > rules/x.md",
+      "echo hi >> rules/x.md",
+      "cat report.md > agents/coder.md",
+      "cd rules && echo x > y.md",
+    ]);
+  });
+
+  it("still fails closed once the segment names a recognised verb", () => {
+    expectAllDeny([
+      'rm /tmp/a > "$F"',
+      'tee "$LOG"',
+      'sed -i "" s/a/b/ /tmp/x > "$F"',
+      'cd $D && rm -rf x > "$F"',
     ]);
   });
 
@@ -1069,6 +1214,19 @@ describe("an empty protectedPaths list", () => {
  * the classifier only with the user's explicit agreement, the way the three
  * approved widenings were taken at the plan's Q3 gate — and add the newly-denied
  * command to a labelled case above rather than deleting it from here.
+ *
+ * The corpus was measured against a catch-all protected list and found to be
+ * unrepresentative in the one direction that matters
+ * (`issues/260801-1900_c_the-must-never-deny-corpus-omits-the-largest-false-positive-family.md`):
+ * not one entry put a VARIABLE OR SUBSTITUTION IN A WRITTEN-OPERAND POSITION,
+ * which is the largest false-positive family the fail-closed rule produces. The
+ * family is now split in two and both halves are here:
+ *
+ *   - the shapes that must allow — a redirect target on a program outside the
+ *     verb table, prose containing a redirect operator — are in this list;
+ *   - the shapes that still deny are in `KNOWN_FALSE_POSITIVES` below, asserted
+ *     at their current behaviour so a later narrowing shows up as a test flip
+ *     rather than as nothing.
  */
 const ORDINARY_AGENT_COMMANDS = [
   // build and test
@@ -1174,11 +1332,88 @@ const ORDINARY_AGENT_COMMANDS = [
   "for f in rules/*.md; do head -1 \"$f\"; done",
   "if cd hooks && npm test; then echo ok; fi",
   "exec npm test",
+  // A VARIABLE OR SUBSTITUTION AS THE THING BEING WRITTEN — the family the
+  // corpus was missing entirely. These are the half that must allow: the
+  // program is outside the verb table, so the fail-closed rule does not reach
+  // its redirect target ("Fail-closed, and its bound"). The half that still
+  // denies is `KNOWN_FALSE_POSITIVES`.
+  'npm test > "$TMPDIR/test.log"',
+  'npm test > "$LOG" 2>&1',
+  "npm run build > $BUILD_LOG",
+  "echo hi >> ~/notes.md",
+  "cat report.md > ~/backup.md",
+  'go build -o "$BIN" ./cmd/x',
+  'cd "$(git rev-parse --show-toplevel)" && npm test > /tmp/build.log',
+  "sed -n '1,20p' rules/critical-stance.md > /tmp/head.txt",
+  "jq '.version' .claude-plugin/plugin.json > /tmp/v.txt",
+  // PROSE CARRYING A REDIRECT OPERATOR — commit messages and PR bodies about
+  // the very directories fusion protects.
+  'git commit -m "docs: rules/a.md -> rules/b.md"',
+  'echo "moved rules/a.md -> rules/b.md"',
+  'gh pr create --body "moves a -> agents/b.md"',
+  'git commit -m "fix: guard reads a > inside a string as a redirect"',
+  // THE GIT SUBCOMMANDS ADDED TO THE TABLE — their non-mutating forms.
+  "git clean -n rules",
+  "git clean -fdx hooks/dist",
+  "git stash",
+  "git stash pop",
+  "git restore rules/x.md",
+  // PERL'S INCLUDE FLAG, glued to its value — not the in-place flag.
+  "perl -Ilib script.pl",
+  "perl -Ilib rules/gen.pl",
+  "perl -Ilib -e 'print' rules/gen.pl",
 ];
 
+/**
+ * KNOWN FALSE POSITIVES — denied today, ACCEPTED rather than intended.
+ *
+ * The other half of the variable-in-written-position family. Each is a
+ * legitimate command an agent might write, and each is denied because the
+ * fail-closed rule reaches every operand of a recognised verb and cannot tell
+ * `$TMPDIR` from `rules`. They are asserted, not endorsed: a later narrowing
+ * that fixes one flips a test here instead of passing silently, which is what
+ * `ORDINARY_AGENT_COMMANDS` cannot do for a behaviour it does not contain.
+ *
+ * The way through, for an agent that meets one, is in the deny reason: write
+ * the path out literally, or name it absolutely, or drop the `cd`.
+ */
+const KNOWN_FALSE_POSITIVES = [
+  'rm -f "$TMPDIR/probe.txt"',
+  'rm -rf "$BUILD_DIR"',
+  'mv "$f" /tmp/',
+  'cp build/out.js "$DEST"',
+  'truncate -s 0 "$LOG"',
+  'npm test 2>&1 | tee "$LOG"',
+  'for f in build/*.js; do rm "$f"; done',
+  'while read -r f; do rm -f "$f"; done < /tmp/list',
+  'cd "$TMPDIR" && rm -rf work',
+  'cd "$(git rev-parse --show-toplevel)" && rm -rf hooks/dist',
+  "rm -rf ~/.cache/fusion",
+];
+
+/**
+ * The catch-all list: every path is protected, so a command denies under it iff
+ * the classifier DETECTS A WRITE in it. That is the measurement the old count
+ * floor could not make — `expect(ORDINARY_AGENT_COMMANDS.length)
+ * .toBeGreaterThanOrEqual(42)` asserted on the fixture's own size and would
+ * have passed with twenty hard commands swapped for twenty trivial ones.
+ */
+const EVERYTHING_PROTECTED = ["**"];
+
+function exercisesADetectedWrite(cmd: string): boolean {
+  return denies(cmd, { protectedPaths: EVERYTHING_PROTECTED });
+}
+
 describe("MUST NEVER DENY — the ordinary-agent-command corpus", () => {
-  it("holds at least the 42 commands the earlier matrices covered", () => {
-    expect(ORDINARY_AGENT_COMMANDS.length).toBeGreaterThanOrEqual(42);
+  it("holds enough commands that actually exercise a detected write", () => {
+    // A floor on the load-bearing half only. A command with no write the
+    // classifier can see (`npm test`, `git status --short`, `date +%y%m%d`)
+    // holds nothing down, however many of them there are — and roughly a third
+    // of this corpus is that kind. 29 of the 102 entries carry a detected write
+    // as this is written; the floor sits below that so a deliberate removal is
+    // possible and a quiet substitution is not.
+    const loadBearing = ORDINARY_AGENT_COMMANDS.filter(exercisesADetectedWrite);
+    expect(loadBearing.length).toBeGreaterThanOrEqual(27);
   });
 
   for (const cmd of ORDINARY_AGENT_COMMANDS) {
@@ -1187,6 +1422,23 @@ describe("MUST NEVER DENY — the ordinary-agent-command corpus", () => {
       expect(v.deny, v.reason ?? "").toBe(false);
     });
   }
+});
+
+describe("KNOWN FALSE POSITIVES — accepted, asserted so a narrowing is visible", () => {
+  for (const cmd of KNOWN_FALSE_POSITIVES) {
+    it(`still denies (accepted): ${cmd}`, () => {
+      expect(denies(cmd)).toBe(true);
+    });
+  }
+
+  it("each one is a recognised verb, which is why it is denied and the corpus half is not", () => {
+    // The discriminator between the two blocks. If a command lands here with no
+    // recognised verb in it, the fail-closed bound has been widened again.
+    for (const cmd of KNOWN_FALSE_POSITIVES) {
+      const v = classify(cmd);
+      expect(v.reason, cmd).toMatch(/fail-closed/);
+    }
+  });
 });
 
 /* ------------------------------------------------------------------ *
@@ -1234,6 +1486,29 @@ describe("the accepted residual (allowed by design, asserted so it stays visible
   it("allows a mutation whose operands arrive on stdin", () => {
     // `xargs` is skipped, but the paths never appear in the command string.
     expectAllAllow(["find . -name '*.md' | xargs rm -rf", "xargs rm < /tmp/list"]);
+  });
+
+  it("allows the git subcommands that name their targets elsewhere", () => {
+    // `git apply` / `git am` read their targets out of the patch file, which is
+    // out of scope for a text classifier — the same residual `patch` sits in.
+    // A `git clean` with no path operand names no directory to compare, exactly
+    // as `rm -rf *` does not.
+    expectAllAllow([
+      "git apply /tmp/x.patch",
+      "git am /tmp/x.mbox",
+      "git clean -fdx",
+      "git clean -fd",
+    ]);
+  });
+
+  it("denies a redirect operator in a TRAILING COMMENT (the residual errs to deny)", () => {
+    // The lexer has no notion of a comment, so `#` is an ordinary word and the
+    // `>` after it is scanned as code. Stripping comments is a change to the
+    // segmenter that blank mode — pinned byte-for-byte against the legacy one
+    // the git classifier consumes — cannot take, so it stays stated rather than
+    // half-fixed. It over-blocks, which is the safe direction.
+    expect(denies("ls -la # writes > rules/x.md")).toBe(true);
+    expect(denies("npm test # && rm rules/x.md")).toBe(true);
   });
 
   it("allows a shell expansion the classifier matches as literal text", () => {
@@ -1457,8 +1732,19 @@ describe("virtual cwd — an unknowable directory is fail-closed", () => {
       "cd $HOME && rm -rf tmp",
       "cd `pwd`/build && rm -rf out",
       'cd "$(git rev-parse --show-toplevel)" && rm -rf hooks/dist',
-      "cd $D && echo x > out.log",
+      "cd $D && tee out.log",
     ]);
+  });
+
+  it("does NOT reach a redirection whose program is outside the table", () => {
+    // The narrowing from
+    // `issues/260801-1859_c_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`:
+    // fail-closed applies once a table verb is recognised, and `echo` is not
+    // one. `cd $D && echo x > out.log` was the deny this costs — named here
+    // rather than dropped, because it is the sharpest form of the give-up: the
+    // operand is a perfectly ordinary relative path and only the directory is
+    // unknown. The recognised-verb neighbour above still denies.
+    expectAllAllow(["cd $D && echo x > out.log", 'cd "$(pwd)" && npm test > out.log']);
   });
 
   it("allows an absolute mutation after an unresolvable cd", () => {

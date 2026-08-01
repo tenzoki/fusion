@@ -22,13 +22,21 @@
  *   - `"capture"` — a single-quoted region (quotes included) is replaced by an
  *     opaque placeholder token and the literal text is recorded in a side
  *     table. Correct for the mutation classifier, where `mv 'rules/x.md' /tmp/`
- *     carries an ordinary path that blanking would destroy.
+ *     carries an ordinary path that blanking would destroy. A DOUBLE-quoted
+ *     span is captured on the same terms when it expands nothing — no `$`, no
+ *     backtick, no backslash escape — because bash performs no redirection and
+ *     no word splitting inside it either, and reading a `>` in a commit message
+ *     as an operator is a false positive on prose.
  *
  * Capture mode keeps quoted content INERT by construction rather than by
  * blanking: the placeholder contains no whitespace and no shell operator, so
  * `echo 'mv rules/x.md /tmp'` tokenizes to exactly two words and `mv` is never
  * in command position. A placeholder can only ever REDUCE segmentation, never
  * introduce a segment or a command word that blanking would have hidden.
+ *
+ * The double-quoted capture is bounded ON PURPOSE by those three characters: a
+ * span bash would expand stays code, so a hidden `$(…)` is still lifted into
+ * its own segment and the fail-closed direction is unchanged.
  *
  * Quoted-delimiter heredoc bodies stay blanked in BOTH modes. They are data
  * that a command reads, never an operand that a command writes.

@@ -31,6 +31,9 @@
  * Output redirection (`>`, `>>`, `>|`, `N>`, glued or separated) is scanned
  * separately and position-independently, because a redirection binds to the
  * whole simple command wherever it appears — `>` makes ANY program a mutation.
+ * An operator inside a double-quoted span is not one: bash redirects nothing
+ * there, and `shell-parse`'s capture mode hands such a span over as an opaque
+ * placeholder so a commit message about `rules/a.md -> rules/b.md` is prose.
  *
  * ## Ancestors count
  *
@@ -72,6 +75,14 @@
  * UNRECOGNISED program is allowed however unparseable its arguments are, so
  * ordinary shell work is untouched.
  *
+ * The bound holds for a REDIRECTION TARGET too, which is the one place it used
+ * to leak: `npm test > "$LOG"` and `cat report.md > ~/backup.md` are ordinary
+ * per-session idioms, and denying them was stricter than the table's own
+ * baseline, which allows `curl -o rules/x.md` — a literal protected path with
+ * an unrecognised program. A redirect target that RESOLVES is still checked
+ * whatever the program is (`sort /tmp/a > rules/x.md` denies); it is only the
+ * fail-closed pass that stops at the table's edge.
+ *
  * ## The accepted residual (documented, not hidden)
  *
  * An unrecognised program that writes a protected path still writes it
@@ -97,6 +108,14 @@
  * can compare, so it is not caught. (`rm -rf .` IS caught once a `cd` has moved
  * the virtual working directory somewhere protected — see the ancestor note
  * above — and is not at the project root, where `rm` refuses it anyway.)
+ *
+ * A `#` COMMENT is not stripped, in either direction: the lexer has no notion
+ * of one, so `ls -la # writes > rules/x.md` is scanned as code and denies on
+ * the redirect its comment only describes, while `rm rules/x.md # noop` is
+ * denied for the right reason and `echo hi # && rm rules/x.md` is denied for
+ * the wrong one. Stripping comments is a change to the lexer that blank mode
+ * (pinned byte-for-byte against the legacy segmenter) cannot take, so it stays
+ * a stated residual rather than half a fix. It errs toward DENY.
  *
  * Two sibling `$(…)` substitutions inside ONE outer segment share a virtual
  * working directory, because `shell-parse` reports a depth but not a subshell
@@ -152,10 +171,14 @@ export interface VerbSpec {
      */
     targetDir?: "adds" | "replaces";
     /**
-     * Present when the verb only mutates under an in-place flag (`sed -i`,
-     * `perl -i`). Returns true for a flag token that turns it into a mutation.
+     * Present when the verb only mutates under a FLAG: `sed -i` / `perl -i`
+     * rewrite in place where the bare form reads, `git clean -f` deletes where
+     * the bare form refuses, `git restore --source=<commit>` overwrites from an
+     * arbitrary commit where the bare form is the revert strategy. Returns true
+     * for a flag token that turns the verb into a mutation; without one the verb
+     * writes nothing.
      */
-    inPlaceOnly?: (flag: string) => boolean;
+    mutatesOnlyWhen?: (flag: string) => boolean;
     /** `key=value` operands that name a written file (`dd of=…`). */
     keyOperands?: readonly string[];
 }
@@ -192,9 +215,40 @@ export interface VerbSpec {
  */
 export declare const MUTATION_VERBS: Readonly<Record<string, VerbSpec>>;
 /**
- * Mutating `git` subcommands. Every other subcommand is a non-mutation here —
- * including `git checkout … -- <paths>`, fusion's own revert strategy, which
- * MUST stay allowed (`git-branch-guard.ts` owns the branch question).
+ * Mutating `git` subcommands — the tree-writing half of git, since the branch
+ * question belongs to `git-branch-guard.ts`.
+ *
+ * The three added rows were in neither the table nor the residual list, which
+ * is the state a reader cannot tell a deliberate omission from a forgotten one
+ * in
+ * (`issues/260801-1902_c_git-clean-restore-and-stash-mutate-protected-paths-and-are-in-neither-the-table-nor-the-residual-list.md`).
+ *
+ * `mv` and `rm` are the unconditional rows. The other three write the working
+ * tree only under a flag, and the flag is what separates them from the form
+ * fusion depends on:
+ *
+ *   - `clean` mutates with `-f`, refuses without it, so `git clean -n rules`
+ *     (a dry run, a read) allows and `git clean -fdx rules` denies. `-e` takes
+ *     the exclude PATTERN as its value and must not become a positional, or
+ *     `git clean -fdx -e rules/keep .` would deny on the pattern it is told to
+ *     spare.
+ *   - `restore` bare is `git checkout -- <paths>` under its modern name —
+ *     fusion's own revert strategy, which MUST stay allowed, as must
+ *     `git restore --staged <paths>`, which writes only the index. With
+ *     `--source=<commit>` it overwrites the working tree from anywhere in
+ *     history, which the revert strategy's permission does not cover.
+ *   - `stash push <paths>` REMOVES the named paths from the working tree. The
+ *     row reads every positional, so the subcommand word of `git stash pop` and
+ *     friends lands in the written set as the literal `pop` — a path that
+ *     matches nothing, which is why one row covers the whole family without a
+ *     sub-sub-command table.
+ *
+ * What is deliberately NOT here: `git apply` and `git am`, whose targets are
+ * named inside the patch file rather than on the command line. Reading a patch
+ * is out of scope for a text classifier, so they sit in the residual list next
+ * to `patch`. A bare `git clean -fdx` with no path operand is the same kind of
+ * residual — it names no directory the ancestor check can compare, exactly as
+ * `rm -rf *` does not.
  */
 export declare const MUTATION_GIT_SUBCOMMANDS: Readonly<Record<string, VerbSpec>>;
 /**

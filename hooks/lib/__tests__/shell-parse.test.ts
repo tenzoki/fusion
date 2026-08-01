@@ -338,6 +338,84 @@ describe("capture mode keeps a quoted operand readable", () => {
     expect(perSegment.some((w) => w[0] === "rm")).toBe(true);
   });
 
+  /**
+   * A DOUBLE-quoted span is captured on the same terms as a single-quoted one
+   * when there is nothing in it to expand, because bash performs no
+   * redirection, no word splitting and no segmentation inside it either. Until
+   * this landed, `git commit -m "docs: rules/a.md -> rules/b.md"` reached the
+   * mutation classifier as code and the `>` in the message read as a
+   * redirection into `rules/b.md`
+   * (`issues/260801-1901_c_a-redirect-operator-inside-a-double-quoted-string-is-read-as-a-redirection.md`).
+   */
+  it("captures a double-quoted span that expands nothing", () => {
+    const { parsed, perSegment } = words(
+      'git commit -m "docs: rules/a.md -> rules/b.md"',
+      "capture",
+    );
+    expect(parsed.segments.length).toBe(1);
+    expect(perSegment[0].length).toBe(4);
+    expect(resolveWord(perSegment[0][3], parsed.literals)).toEqual({
+      value: "docs: rules/a.md -> rules/b.md",
+    });
+  });
+
+  it("lets a captured double-quoted span open no segment and no redirect", () => {
+    for (const inert of [
+      'echo "> rules/x.md"',
+      'echo "; rm -rf rules/"',
+      'echo "&& rm -rf rules/"',
+      'echo "| rm -rf rules/"',
+      'echo "a\nrm -rf rules/"',
+    ]) {
+      const { perSegment } = words(inert, "capture");
+      expect(perSegment.map((w) => w[0]), `command: ${JSON.stringify(inert)}`).toEqual([
+        "echo",
+      ]);
+    }
+  });
+
+  it("keeps an EXPANDING double-quoted span as code — the fail-closed direction", () => {
+    // The bound of the capture. A `$`, a backtick or an escape means bash would
+    // act on the span, so it must still reach the classifiers as code: the
+    // `$(…)` body is lifted into its own segment and the outer word resolves
+    // unresolved.
+    const sub = parseCommand('echo "$(rm rules/x.md)"', { quoted: "capture" });
+    expect(sub.segments.map((s) => s.text)).toEqual(['echo "$(…)"', "rm rules/x.md"]);
+
+    const tick = parseCommand('echo "`git switch main`"', { quoted: "capture" });
+    expect(tick.segments.some((s) => s.text === "git switch main")).toBe(true);
+
+    const { parsed, perSegment } = words('rm "rules/$X"', "capture");
+    expect(resolveWord(perSegment[0][1], parsed.literals)).toEqual({ unresolved: true });
+    expect(parsed.literals.size).toBe(0);
+  });
+
+  it("leaves an escape-carrying span to the code path, which removes the escape", () => {
+    // Capturing would hand back `a\"b` where the word denotes `a"b`, because
+    // only `resolveWord`'s code branch unescapes.
+    const { parsed, perSegment } = words('rm "a\\"b"', "capture");
+    expect(parsed.literals.size).toBe(0);
+    expect(resolveWord(perSegment[0][1], parsed.literals)).toEqual({ value: 'ab' });
+  });
+
+  it("changes nothing in BLANK mode, which the git classifier consumes", () => {
+    for (const cmd of [
+      'git commit -m "docs: rules/a.md -> rules/b.md"',
+      'echo "> rules/x.md"',
+      'echo "$(git switch main)"',
+      'git commit -m "a && git switch main"',
+    ]) {
+      // Sorted, because the flat segmenter reports subshell bodies ahead of the
+      // outer segment they were lifted from and `parseCommand` reports source
+      // order. The equivalence being pinned here is the SET of segments.
+      expect(
+        parseCommand(cmd, { quoted: "blank" }).segments.map((s) => s.text).sort(),
+        `command: ${JSON.stringify(cmd)}`,
+      ).toEqual(extractCommandSegments(stripDataRegions(cmd)).sort());
+      expect(stripDataRegions(cmd)).toBe(cmd);
+    }
+  });
+
   it("cannot have a placeholder forged from the raw command", () => {
     const forged = "mv \u0001q0\u0001 /tmp/";
     const { parsed, perSegment } = words(forged, "capture");

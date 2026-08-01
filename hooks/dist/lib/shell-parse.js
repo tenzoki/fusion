@@ -22,13 +22,21 @@
  *   - `"capture"` — a single-quoted region (quotes included) is replaced by an
  *     opaque placeholder token and the literal text is recorded in a side
  *     table. Correct for the mutation classifier, where `mv 'rules/x.md' /tmp/`
- *     carries an ordinary path that blanking would destroy.
+ *     carries an ordinary path that blanking would destroy. A DOUBLE-quoted
+ *     span is captured on the same terms when it expands nothing — no `$`, no
+ *     backtick, no backslash escape — because bash performs no redirection and
+ *     no word splitting inside it either, and reading a `>` in a commit message
+ *     as an operator is a false positive on prose.
  *
  * Capture mode keeps quoted content INERT by construction rather than by
  * blanking: the placeholder contains no whitespace and no shell operator, so
  * `echo 'mv rules/x.md /tmp'` tokenizes to exactly two words and `mv` is never
  * in command position. A placeholder can only ever REDUCE segmentation, never
  * introduce a segment or a command word that blanking would have hidden.
+ *
+ * The double-quoted capture is bounded ON PURPOSE by those three characters: a
+ * span bash would expand stays code, so a hidden `$(…)` is still lifted into
+ * its own segment and the fail-closed direction is unchanged.
  *
  * Quoted-delimiter heredoc bodies stay blanked in BOTH modes. They are data
  * that a command reads, never an operand that a command writes.
@@ -128,13 +136,15 @@ function capture(literal, literals) {
  * a real hidden command still gets classified (this is what keeps the guard
  * fail-closed):
  *
- *   - double-quoted strings:             "… `git switch` …"   (bash substitutes)
+ *   - double-quoted strings that carry `$`, a backtick or an escape:
+ *                                        "… `git switch` …"   (bash substitutes)
  *   - unquoted-delimiter heredoc bodies: <<EOF … EOF          (bash expands body)
  *
  * In `"blank"` mode removed content is replaced with spaces; newlines are kept
  * so surrounding token boundaries survive. In `"capture"` mode a single-quoted
- * region is replaced by a placeholder instead (heredoc bodies are still
- * blanked). Parsing is fail-closed on ambiguity: an unterminated quote, or a
+ * region is replaced by a placeholder instead, as is a double-quoted region
+ * with nothing in it to expand (heredoc bodies are still blanked). Parsing is
+ * fail-closed on ambiguity: an unterminated quote, or a
  * heredoc whose terminator never appears, leaves the remainder AS-IS (treated
  * as code) rather than silently dropping it — matching this module's
  * over-segment-not-under bias.
@@ -198,9 +208,11 @@ function stripData(command, mode, literals) {
             i = close + 1;
             continue;
         }
-        // Double-quoted string → code (bash expands `$(…)` and backticks inside).
-        // Skip past it as one verbatim unit so an inner `'` or `<<` is not misread
-        // as a single-quote / heredoc opener. Honour backslash escapes.
+        // Double-quoted string. Scanned as one verbatim unit so an inner `'` or
+        // `<<` is not misread as a single-quote / heredoc opener, honouring
+        // backslash escapes. What it becomes is decided at the close: code when
+        // bash would expand it, an inert placeholder in capture mode when it would
+        // not (see there).
         if (ch === '"') {
             let j = i + 1;
             let body = "";
@@ -229,7 +241,27 @@ function stripData(command, mode, literals) {
                 out += command.slice(i); // unterminated → treat rest as code
                 break;
             }
-            out += '"' + body + '"';
+            // In CAPTURE mode a double-quoted span that expands NOTHING is data, not
+            // code: bash performs no redirection, no word splitting and no
+            // segmentation inside it. Minting a placeholder is what stops
+            // `git commit -m "docs: rules/a.md -> rules/b.md"` reading its own commit
+            // message as a redirection into `rules/b.md`
+            // (`issues/260801-1901_c_a-redirect-operator-inside-a-double-quoted-string-is-read-as-a-redirection.md`).
+            //
+            // Three characters veto the capture, and each keeps a property:
+            //   - `$` and a backtick — bash DOES expand there, so the span has to
+            //     stay code or a hidden `$(rm rules/x.md)` / `$(git switch main)`
+            //     would never reach a classifier. This is the fail-closed direction
+            //     and it must not flip.
+            //   - `\` — the span carries an escape pair this loop copied verbatim,
+            //     and only the CODE path removes it (`resolveWord`). Capturing would
+            //     hand back `a\"b` where the word denotes `a"b`.
+            // Blank mode is untouched, so `stripDataRegions` stays byte-identical to
+            // the legacy segmenter the git classifier consumes.
+            out +=
+                mode === "capture" && !/[$`\\]/.test(body)
+                    ? capture(body, literals)
+                    : '"' + body + '"';
             i = j + 1;
             continue;
         }

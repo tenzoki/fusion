@@ -31,6 +31,9 @@
  * Output redirection (`>`, `>>`, `>|`, `N>`, glued or separated) is scanned
  * separately and position-independently, because a redirection binds to the
  * whole simple command wherever it appears — `>` makes ANY program a mutation.
+ * An operator inside a double-quoted span is not one: bash redirects nothing
+ * there, and `shell-parse`'s capture mode hands such a span over as an opaque
+ * placeholder so a commit message about `rules/a.md -> rules/b.md` is prose.
  *
  * ## Ancestors count
  *
@@ -72,6 +75,14 @@
  * UNRECOGNISED program is allowed however unparseable its arguments are, so
  * ordinary shell work is untouched.
  *
+ * The bound holds for a REDIRECTION TARGET too, which is the one place it used
+ * to leak: `npm test > "$LOG"` and `cat report.md > ~/backup.md` are ordinary
+ * per-session idioms, and denying them was stricter than the table's own
+ * baseline, which allows `curl -o rules/x.md` — a literal protected path with
+ * an unrecognised program. A redirect target that RESOLVES is still checked
+ * whatever the program is (`sort /tmp/a > rules/x.md` denies); it is only the
+ * fail-closed pass that stops at the table's edge.
+ *
  * ## The accepted residual (documented, not hidden)
  *
  * An unrecognised program that writes a protected path still writes it
@@ -98,6 +109,14 @@
  * the virtual working directory somewhere protected — see the ancestor note
  * above — and is not at the project root, where `rm` refuses it anyway.)
  *
+ * A `#` COMMENT is not stripped, in either direction: the lexer has no notion
+ * of one, so `ls -la # writes > rules/x.md` is scanned as code and denies on
+ * the redirect its comment only describes, while `rm rules/x.md # noop` is
+ * denied for the right reason and `echo hi # && rm rules/x.md` is denied for
+ * the wrong one. Stripping comments is a change to the lexer that blank mode
+ * (pinned byte-for-byte against the legacy segmenter) cannot take, so it stays
+ * a stated residual rather than half a fix. It errs toward DENY.
+ *
  * Two sibling `$(…)` substitutions inside ONE outer segment share a virtual
  * working directory, because `shell-parse` reports a depth but not a subshell
  * identity: `$(cd /tmp) $(rm rules/x.md)` therefore resolves the second body
@@ -123,18 +142,50 @@ import { SUBSTITUTION_FILLER, parseCommand, resolveWord, tokenize, } from "./she
 function isSedInPlaceFlag(flag) {
     if (flag.startsWith("--"))
         return /^--in-place(=|$)/.test(flag);
-    return shortFlagLetters(flag).includes("i");
+    return shortFlagLetters(flag, SED_VALUE_LETTERS).includes("i");
 }
 /** `perl -i` / `-i.bak` / `-pi`. `-I` (include path) is a different flag. */
 function isPerlInPlaceFlag(flag) {
     if (flag.startsWith("--"))
         return false;
-    return shortFlagLetters(flag).includes("i");
+    return shortFlagLetters(flag, PERL_VALUE_LETTERS).includes("i");
 }
-/** The letter run of a short-flag token: `-i.bak` → `i`, `-ni` → `ni`. */
-function shortFlagLetters(flag) {
+/**
+ * Short flags whose VALUE is glued to the letter, so everything after the
+ * letter is the flag's argument rather than more flags.
+ *
+ * `sed`: `-e script`, `-f file`, `-l N`, `-i[suffix]`.
+ * `perl`: `-C`, `-D`, `-e`, `-E`, `-F`, `-i`, `-I`, `-l`, `-m`, `-M`, `-V`,
+ * `-x`. (`-0` is a digit and ends the letter run on its own.)
+ */
+const SED_VALUE_LETTERS = "efil";
+const PERL_VALUE_LETTERS = "CDeEFiIlmMVx";
+/**
+ * The letter run of a short-flag token, stopping at the first letter that
+ * CONSUMES THE REST OF THE TOKEN: `-i.bak` → `i`, `-ni` → `ni`, `-Ilib` → `I`.
+ *
+ * The truncation is what keeps a flag's argument out of its letters. `-Ilib`
+ * used to read as `Ilib`, whose lowercase `i` turned `perl` into an in-place
+ * rewrite and every positional of a `perl -I<dir>` call into a written target
+ * (`issues/260801-1903_c_perl-include-flag-glued-to-its-value-is-misread-as-the-in-place-flag.md`).
+ * `sed -fscript.sed` has the same shape through the `i` in `script`. In both
+ * the trailing text is the flag's own argument, which the tool does not read as
+ * flag letters either — the truncation matches the program's own parsing rather
+ * than approximating it.
+ *
+ * The stopping letter is KEPT, so `-i.bak` still reports the `i` that makes it
+ * in-place, and `-pi` still reports `pi`.
+ */
+function shortFlagLetters(flag, valueLetters) {
     const m = /^-([A-Za-z]*)/.exec(flag);
-    return m === null ? "" : m[1];
+    if (m === null)
+        return "";
+    const letters = m[1];
+    for (let i = 0; i < letters.length; i++) {
+        if (valueLetters.includes(letters[i]))
+            return letters.slice(0, i + 1);
+    }
+    return letters;
 }
 /**
  * THE VERB TABLE. Exported because it is the review surface: a false positive
@@ -183,22 +234,78 @@ export const MUTATION_VERBS = {
     sed: {
         written: "all",
         valueFlags: ["-e", "-f", "-l"],
-        inPlaceOnly: isSedInPlaceFlag,
+        mutatesOnlyWhen: isSedInPlaceFlag,
     },
     perl: {
         written: "all",
         valueFlags: ["-e", "-f"],
-        inPlaceOnly: isPerlInPlaceFlag,
+        mutatesOnlyWhen: isPerlInPlaceFlag,
     },
 };
+/** `git clean` refuses to delete anything without `-f` / `--force`. */
+function isGitCleanForceFlag(flag) {
+    if (flag.startsWith("--"))
+        return flag === "--force";
+    return /^-[A-Za-z]*f/.test(flag);
+}
 /**
- * Mutating `git` subcommands. Every other subcommand is a non-mutation here —
- * including `git checkout … -- <paths>`, fusion's own revert strategy, which
- * MUST stay allowed (`git-branch-guard.ts` owns the branch question).
+ * `git restore --source=<commit>` reads the file from an arbitrary commit
+ * rather than from the index, which makes it a different operation wearing the
+ * revert strategy's name.
+ */
+function isGitRestoreSourceFlag(flag) {
+    return flag === "-s" || flag === "--source" || flag.startsWith("--source=");
+}
+/**
+ * Mutating `git` subcommands — the tree-writing half of git, since the branch
+ * question belongs to `git-branch-guard.ts`.
+ *
+ * The three added rows were in neither the table nor the residual list, which
+ * is the state a reader cannot tell a deliberate omission from a forgotten one
+ * in
+ * (`issues/260801-1902_c_git-clean-restore-and-stash-mutate-protected-paths-and-are-in-neither-the-table-nor-the-residual-list.md`).
+ *
+ * `mv` and `rm` are the unconditional rows. The other three write the working
+ * tree only under a flag, and the flag is what separates them from the form
+ * fusion depends on:
+ *
+ *   - `clean` mutates with `-f`, refuses without it, so `git clean -n rules`
+ *     (a dry run, a read) allows and `git clean -fdx rules` denies. `-e` takes
+ *     the exclude PATTERN as its value and must not become a positional, or
+ *     `git clean -fdx -e rules/keep .` would deny on the pattern it is told to
+ *     spare.
+ *   - `restore` bare is `git checkout -- <paths>` under its modern name —
+ *     fusion's own revert strategy, which MUST stay allowed, as must
+ *     `git restore --staged <paths>`, which writes only the index. With
+ *     `--source=<commit>` it overwrites the working tree from anywhere in
+ *     history, which the revert strategy's permission does not cover.
+ *   - `stash push <paths>` REMOVES the named paths from the working tree. The
+ *     row reads every positional, so the subcommand word of `git stash pop` and
+ *     friends lands in the written set as the literal `pop` — a path that
+ *     matches nothing, which is why one row covers the whole family without a
+ *     sub-sub-command table.
+ *
+ * What is deliberately NOT here: `git apply` and `git am`, whose targets are
+ * named inside the patch file rather than on the command line. Reading a patch
+ * is out of scope for a text classifier, so they sit in the residual list next
+ * to `patch`. A bare `git clean -fdx` with no path operand is the same kind of
+ * residual — it names no directory the ancestor check can compare, exactly as
+ * `rm -rf *` does not.
  */
 export const MUTATION_GIT_SUBCOMMANDS = {
     mv: { written: "all" },
     rm: { written: "all" },
+    clean: {
+        written: "all",
+        valueFlags: ["-e", "--exclude"],
+        mutatesOnlyWhen: isGitCleanForceFlag,
+    },
+    restore: {
+        written: "all",
+        valueFlags: ["-s", "--source"],
+        mutatesOnlyWhen: isGitRestoreSourceFlag,
+    },
+    stash: { written: "all" },
 };
 /* ------------------------------------------------------------------ *
  * Deny reasons
@@ -385,7 +492,7 @@ function writtenOperands(spec, args) {
     }
     const positionals = [];
     let targetDir;
-    let inPlace = false;
+    let mutates = false;
     let endOfFlags = false;
     for (let i = 0; i < args.length; i++) {
         const a = args[i];
@@ -396,6 +503,13 @@ function writtenOperands(spec, args) {
         if (a === "--") {
             endOfFlags = true;
             continue;
+        }
+        // Asked FIRST, and of every flag token, because the flag that turns a verb
+        // into a mutation can also be the flag that takes a value: `git restore
+        // --source HEAD~1 rules/x.md` is a mutation whose `--source` is consumed by
+        // the branch below and would otherwise never be seen.
+        if (a.length > 1 && a.startsWith("-") && spec.mutatesOnlyWhen?.(a) === true) {
+            mutates = true;
         }
         if (spec.targetDir !== undefined && isTargetDirFlag(a)) {
             const eq = a.indexOf("=");
@@ -409,15 +523,12 @@ function writtenOperands(spec, args) {
             i++; // the flag's value is not a positional
             continue;
         }
-        if (a.length > 1 && a.startsWith("-")) {
-            if (spec.inPlaceOnly?.(a) === true)
-                inPlace = true;
+        if (a.length > 1 && a.startsWith("-"))
             continue;
-        }
         positionals.push(a);
     }
-    // A verb that only mutates in place is not a mutation without its flag.
-    if (spec.inPlaceOnly !== undefined && !inPlace)
+    // A verb that only mutates under a flag is not a mutation without it.
+    if (spec.mutatesOnlyWhen !== undefined && !mutates)
         return [];
     let written;
     if (spec.written === "all")
@@ -667,10 +778,11 @@ function applyDirEffect(state, words, literals) {
  * `shell-parse` lifts `$(…)` bodies out and leaves `SUBSTITUTION_FILLER` where
  * they stood; the filler carries a balanced paren pair that is not grammar, so
  * it is removed first — otherwise `cd $(pwd)` would open and close a scope
- * around its own `cd` and discard it. Single-quoted text is already an opaque
- * placeholder and contributes nothing. Double-quoted text is not, so
- * `echo "(x)"` counts a balanced pair it should not; that opens and closes a
- * scope around one innocuous segment and changes no verdict.
+ * around its own `cd` and discard it. Quoted text is an opaque placeholder and
+ * contributes nothing, EXCEPT a double-quoted span carrying a `$`, a backtick
+ * or an escape, which capture mode leaves as code: `echo "(\$x)"` counts a
+ * balanced pair it should not, which opens and closes a scope around one
+ * innocuous segment and changes no verdict.
  */
 function parenCounts(text) {
     const cleaned = text.split(SUBSTITUTION_FILLER).join(" ");
@@ -713,7 +825,8 @@ function renderSegment(segment, literals) {
  * target rather than the variable, and `rm -rf hooks $X` names `hooks`.
  */
 function classifyWords(words, redirectTargets, literals, opts, cwd) {
-    const written = [...verbOperands(words, literals), ...redirectTargets];
+    const verbWritten = verbOperands(words, literals);
+    const written = [...verbWritten, ...redirectTargets];
     if (written.length === 0)
         return null;
     const targets = written.map((t) => resolveTarget(t, literals, opts, cwd));
@@ -741,6 +854,21 @@ function classifyWords(words, redirectTargets, literals, opts, cwd) {
     // Pass 3 — fail-closed: a recognised mutation writing somewhere unknowable,
     // either because the operand does not resolve or because the directory it
     // hangs off does not.
+    //
+    // RECOGNISED is the whole bound, and it is the segment's PROGRAM that has to
+    // be recognised, not the target. A redirection makes any program a mutation
+    // for a target the guard can read — `curl -s … > rules/x.md` denies on pass 1
+    // — but it does not drag the fail-closed rule into programs outside the
+    // table. It used to: `npm test > "$LOG"` denied, while the three documents
+    // stating the bound all said an unrecognised program is allowed however
+    // unparseable its arguments are
+    // (`issues/260801-1859_c_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`).
+    // Denying it was also stricter than the table's own baseline, which allows
+    // `curl -o rules/x.md` outright — a LITERAL protected path with an
+    // unrecognised program. A rule cannot be looser on the visible case than on
+    // the invisible one.
+    if (verbWritten.length === 0)
+        return null;
     for (let i = 0; i < targets.length; i++) {
         const target = targets[i];
         if (target.kind === "unresolved") {

@@ -35,13 +35,24 @@ Three families:
 
 | Family | Commands |
 |---|---|
-| Relocate or destroy | `mv`, `rm`, `cp`, `ln`, `install`, `git mv`, `git rm` |
-| In-place rewrite | `sed -i`, `perl -i`, `truncate`, `tee`, `dd of=…` |
+| Relocate or destroy | `mv`, `rm`, `cp`, `ln`, `install`, `git mv`, `git rm`, `git clean -f`, `git stash push` |
+| In-place rewrite | `sed -i`, `perl -i`, `truncate`, `tee`, `dd of=…`, `git restore --source=…` |
 | Redirection | `>`, `>>`, `>|`, `N>`, glued (`>file`) or separated (`> file`) |
 
 Redirection is scanned position-independently, because a redirection binds to the whole
 simple command wherever it appears. `>` makes any program a mutation, including
-`printf '' > rules/x.md` and `cat > rules/x.md <<'EOF'`.
+`printf '' > rules/x.md` and `cat > rules/x.md <<'EOF'`. An operator inside a quoted
+string is not one — bash redirects nothing there — so
+`git commit -m "docs: rules/a.md -> rules/b.md"` is prose and is allowed.
+
+Three of the git rows mutate only under a flag, which is what keeps their read and revert
+forms allowed:
+
+| Allowed | Denied on a protected path |
+|---|---|
+| `git clean -n rules` (dry run) | `git clean -fdx rules` |
+| `git restore rules/x.md`, `git restore --staged rules/x.md` | `git restore --source=HEAD~1 rules/x.md` |
+| `git stash`, `git stash pop`, `git stash list` | `git stash push rules/x.md` |
 
 Only the operands a verb **writes** count. `cp rules/x.md /tmp/y` and
 `dd if=rules/x.md of=/tmp/y` read a protected path and stay allowed; copying *out of*
@@ -116,6 +127,12 @@ arguments are.** `curl -o $OUT https://x`, `make $TARGET` and `npm run $SCRIPT` 
 untouched. The fail-closed rule never applies to ordinary shell work; it applies only
 once a table verb has been recognised.
 
+That includes a **redirection target**. `npm test > "$LOG"`, `npm test > "$TMPDIR/x.log"`
+and `cat report.md > ~/backup.md` are allowed, because none of those programs is a table
+row. What the bound does *not* cover is a target that resolves: `sort /tmp/a > rules/x.md`
+and `curl -s https://x > rules/x.md` are denied, and so is any redirection once the
+segment names a table verb (`rm /tmp/a > "$F"`).
+
 When a fail-closed deny is wrong for your case, the way through is to write the path out
 literally, or to name it absolutely, or to drop the `cd`. The deny reason says which.
 
@@ -141,7 +158,11 @@ answer is the Human Gate below.
 - Everything the guard does not recognise as a mutation, whatever its arguments.
 - `echo hi 2>&1` and `>&2`, which name a file descriptor rather than a file.
 - Quoted text that is not a command: `echo 'rm -rf rules/'` is inert, as is a
-  **quoted-delimiter** heredoc body (`<<'EOF'`).
+  **quoted-delimiter** heredoc body (`<<'EOF'`). Double quotes are inert too as long as
+  there is nothing in them for bash to expand, which is what makes
+  `git commit -m "moves rules/a.md -> rules/b.md"` an ordinary commit. A double-quoted
+  span carrying `$`, a backtick or an escape stays code, so `echo "$(rm rules/x.md)"` is
+  still denied.
 
 One practical consequence of that last point. An **unquoted** heredoc delimiter (`<<EOF`)
 leaves the body as code, because bash still expands there, so a heredoc body that happens
@@ -199,6 +220,16 @@ Known and accepted:
 - **Verbs deliberately not in the table**: `mkdir`, `chmod`, `chown`, `touch`, `tar`,
   `rsync`, `patch`, `gzip`. Each was left out because its operands are usually
   directories and a row would carry the ancestor rule with it.
+- **The git subcommands the check does not reach.** `git apply` and `git am` name their
+  targets inside the patch file rather than on the command line, so they sit here with
+  `patch`. A `git clean -fdx` with **no path operand** is allowed for the same reason
+  `rm -rf *` is: it names no directory the ancestor check can compare.
+- **An unresolvable redirect target on a program outside the table is not denied.**
+  `echo x > "$F"` and `cd $D && echo x > y.md` are allowed. This is the fail-closed bound
+  above, seen from the residual side.
+- **A `#` comment is not stripped**, so a redirect operator in a trailing comment is read
+  as code: `ls -la # writes > rules/x.md` is denied on the write its comment only
+  describes. This one errs toward deny; the way through is to drop the comment.
 - **The classifier cannot walk out and back by name.** `cd .. && cd fusion && rm rules/x.md`
   is allowed: the guard is given a path normaliser, not the project directory's own name.
 - **Two sibling `$(…)` substitutions inside one outer segment share a directory**, so
