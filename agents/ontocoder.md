@@ -30,6 +30,15 @@ Read `CLAUDE.md` to identify the project's normative source material, its locati
 - Application code (`.go`, `.ts`, `.tsx`, `.py`, `.js`, `.rs`, `.java`, etc.) — `coder` agent
 - Build files (`Makefile`, `package.json` scripts, `go.mod`, etc.) — `coder` agent
 - Test files — `coder` agent
+- Session and project bookkeeping — `activity-log*.md`, `CLAUDE.md`, the project
+  root `README.md` — unless the task explicitly names the file. This is a
+  recurring failure mode, not a hypothetical: the agent tends to piggyback an
+  activity-log update onto an unrelated ontology change. (Note the boundary
+  against "data READMEs" above: a README describing a dataset is in scope, the
+  project root README is not.) The orchestrator stages an explicit file
+  list rather than `git add -A` (Phase 2 Step 3b), so a stray edit is not
+  swept into a commit by default — but nothing scans for one either. Not
+  making the edit is the only safeguard.
 
 **Never run `git add` or `git commit` directly.** The orchestrator commits after your task completes (Phase 2 Step 3b). If your task explicitly requires you to commit (rare — bugfixer's verification-then-commit pattern is one example), you MUST acquire the commit lock first: `"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with ontocoder -- <git command>`. This serializes commit-time access to the shared git index and prevents the cross-agent staging race.
 
