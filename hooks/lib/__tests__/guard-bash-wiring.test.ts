@@ -1,18 +1,15 @@
 import { describe, it, expect } from "vitest";
-import {
-  existsSync,
-  mkdirSync,
-  mkdtempSync,
-  readFileSync,
-  realpathSync,
-  rmSync,
-  writeFileSync,
-} from "node:fs";
-import { execFileSync } from "node:child_process";
-import { tmpdir } from "node:os";
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 import { classifyBashMutation } from "../bash-mutation-guard.js";
+import {
+  CASE_TIMEOUT,
+  readEscalation,
+  readEvents,
+  runBash,
+  withProject,
+} from "./helpers/guard-harness.js";
 
 // ---------------------------------------------------------------------------
 // Wiring gate for plan step 5 — classifyBashMutation inside guardBashCommand.
@@ -242,89 +239,29 @@ describe("guard.ts Bash path — the arguments it passes actually bite", () => {
 });
 
 // ---------------------------------------------------------------------------
-// End-to-end: run guard.ts as the hook actually runs — a fresh process, JSON on
-// stdin, JSON on stdout — inside a throwaway project that has a workbench, so
-// the escalation counter and the event log are real files we can read back.
+// End-to-end: run the guard as the hook actually runs — a fresh process, JSON
+// on stdin, JSON on stdout — inside a throwaway project that has a workbench,
+// so the escalation counter and the event log are real files we can read back.
 //
 // This is what the textual gates above cannot prove: how MANY blocks a single
 // tool call records, and that an innocuous call writes nothing at all.
+//
+// The throwaway-project machinery lives in helpers/guard-harness.ts, shared
+// with guard-bash-integration.test.ts (plan step 6). The cases below stay here
+// because they are about the OVERRIDE interaction specifically — the property
+// the step that wrote them established. There is no skip condition: `tsx` and
+// `vitest` come from the same node_modules, so a skip could only hide a real
+// problem.
 // ---------------------------------------------------------------------------
-const hooksDir = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
-const tsxBin = resolve(hooksDir, "node_modules/.bin/tsx");
 
-interface GuardRun {
-  decision?: string;
-  reason?: string;
-}
-
-interface Escalation {
-  consecutiveBlocks: number;
-  recentEvents: { level: string; trigger: string }[];
-}
-
-/** A throwaway project root with a workbench marker, cleaned up after `fn`. */
-function withProject<T>(fn: (root: string) => T): T {
-  // realpath because macOS hands out /var/… symlinks for /private/var/… and the
-  // guard compares against the child process's own cwd.
-  const root = realpathSync(mkdtempSync(resolve(tmpdir(), "fusion-guard-")));
-  try {
-    mkdirSync(resolve(root, "fusion-workbench"), { recursive: true });
-    writeFileSync(resolve(root, "fusion-workbench", ".fusion-setup"), "{}\n");
-    return fn(root);
-  } finally {
-    rmSync(root, { recursive: true, force: true });
-  }
-}
-
-function runGuard(
-  root: string,
-  command: string,
-  overrides: Record<string, string> = {},
-): GuardRun {
-  // Strip any override the developer's own shell carries, so the no-override
-  // cases mean what they say.
-  const env = { ...process.env };
-  delete env.FUSION_ALLOW_BRANCH_SWITCH;
-  delete env.FUSION_ALLOW_WORKTREE;
-
-  const stdout = execFileSync(tsxBin, [resolve(hooksDir, "guard.ts")], {
-    cwd: root,
-    encoding: "utf-8",
-    env: { ...env, ...overrides },
-    input: JSON.stringify({
-      session_id: "wiring-test",
-      hook_event_name: "PreToolUse",
-      tool_name: "Bash",
-      tool_input: { command },
-    }),
-  });
-  return JSON.parse(stdout) as GuardRun;
-}
-
-function readEscalation(root: string): Escalation | null {
-  const p = resolve(root, "fusion-workbench", ".guard-state", "escalation.json");
-  return existsSync(p) ? (JSON.parse(readFileSync(p, "utf-8")) as Escalation) : null;
-}
-
-function readEvents(root: string): { event: string; detail?: string }[] {
-  const p = resolve(root, "fusion-workbench", ".guard-state", "events.jsonl");
-  if (!existsSync(p)) return [];
-  return readFileSync(p, "utf-8")
-    .split("\n")
-    .filter((l) => l.trim().length > 0)
-    .map((l) => JSON.parse(l) as { event: string; detail?: string });
-}
-
-const E2E_TIMEOUT = 30_000;
-
-describe.skipIf(!existsSync(tsxBin))(
+describe(
   "guard.ts Bash path end-to-end — override, mutation, and the block count",
   () => {
     it(
       "denies the protected-path write even though FUSION_ALLOW_BRANCH_SWITCH is set",
       () => {
-        withProject((root) => {
-          const res = runGuard(root, "git switch main && rm rules/x.md", {
+        withProject(({ root }) => {
+          const res = runBash(root, "git switch main && rm rules/x.md", {
             FUSION_ALLOW_BRANCH_SWITCH: "1",
           });
 
@@ -344,14 +281,14 @@ describe.skipIf(!existsSync(tsxBin))(
           expect(readEvents(root).map((e) => e.event)).toEqual(["guard_block"]);
         });
       },
-      E2E_TIMEOUT,
+      CASE_TIMEOUT,
     );
 
     it(
       "denies the protected-path write even though FUSION_ALLOW_WORKTREE is set",
       () => {
-        withProject((root) => {
-          const res = runGuard(
+        withProject(({ root }) => {
+          const res = runBash(
             root,
             "git worktree add ../wt feature && rm -f agents/coder.md",
             { FUSION_ALLOW_WORKTREE: "1" },
@@ -367,14 +304,14 @@ describe.skipIf(!existsSync(tsxBin))(
           ]);
         });
       },
-      E2E_TIMEOUT,
+      CASE_TIMEOUT,
     );
 
     it(
       "still allows an overridden branch switch on its own, and still notes it",
       () => {
-        withProject((root) => {
-          const res = runGuard(root, "git switch main", {
+        withProject(({ root }) => {
+          const res = runBash(root, "git switch main", {
             FUSION_ALLOW_BRANCH_SWITCH: "1",
           });
 
@@ -391,14 +328,14 @@ describe.skipIf(!existsSync(tsxBin))(
           expect(events[0].detail).toContain("FUSION_ALLOW_BRANCH_SWITCH");
         });
       },
-      E2E_TIMEOUT,
+      CASE_TIMEOUT,
     );
 
     it(
       "still denies a branch switch when no override is set",
       () => {
-        withProject((root) => {
-          const res = runGuard(root, "git switch main");
+        withProject(({ root }) => {
+          const res = runBash(root, "git switch main");
 
           expect(res.decision).toBe("block");
           expect(res.reason).toContain("never switch git branches");
@@ -410,14 +347,14 @@ describe.skipIf(!existsSync(tsxBin))(
           ]);
         });
       },
-      E2E_TIMEOUT,
+      CASE_TIMEOUT,
     );
 
     it(
       "records ONE block for a call that is both git-denied and mutation-denied",
       () => {
-        withProject((root) => {
-          const res = runGuard(root, "git switch main && rm rules/x.md");
+        withProject(({ root }) => {
+          const res = runBash(root, "git switch main && rm rules/x.md");
 
           // Git denies first, so the user reads the branch reason. Two
           // recordBlock calls for one tool call would double-count the counter
@@ -431,38 +368,38 @@ describe.skipIf(!existsSync(tsxBin))(
           expect(readEvents(root)).toHaveLength(1);
         });
       },
-      E2E_TIMEOUT,
+      CASE_TIMEOUT,
     );
 
     it(
       "leaves guard state untouched for an innocuous call (260707-0750/0751)",
       () => {
-        withProject((root) => {
-          expect(runGuard(root, "ls -la").decision).toBeUndefined();
+        withProject(({ root }) => {
+          expect(runBash(root, "ls -la").decision).toBeUndefined();
 
           // Neither file exists: no counter write, no guard_allow append.
           expect(readEscalation(root)).toBeNull();
           expect(readEvents(root)).toEqual([]);
         });
       },
-      E2E_TIMEOUT,
+      CASE_TIMEOUT,
     );
 
     it(
       "does not let an innocuous call reset the consecutive-block counter",
       () => {
-        withProject((root) => {
-          runGuard(root, "rm rules/x.md");
+        withProject(({ root }) => {
+          runBash(root, "rm rules/x.md");
           expect(readEscalation(root)?.consecutiveBlocks).toBe(1);
 
-          runGuard(root, "git status");
+          runBash(root, "git status");
           expect(readEscalation(root)?.consecutiveBlocks).toBe(1);
 
           // And the innocuous call in between appended no event of its own.
           expect(readEvents(root).map((e) => e.event)).toEqual(["guard_block"]);
         });
       },
-      E2E_TIMEOUT,
+      CASE_TIMEOUT,
     );
   },
 );
