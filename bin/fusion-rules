@@ -46,6 +46,13 @@
 #     deterministically by hooks/guard.ts (git is reachable only via Bash);
 #     the doc explains why (branch-drift chaos) and what to do instead
 #     (STOP → Human Gate → ask the user; the env overrides are user-only).
+#   - Every agent also reads protected-path-discipline.md (shipped by plugin) —
+#     the sibling Bash policy: a shell command that WRITES a path in
+#     guard.protectedPaths (mv/rm/cp/sed -i/redirection, wrappers seen through,
+#     ancestor directories, cd tracked, fail-closed on an unresolvable operand)
+#     is denied by hooks/guard.ts the same way Edit/Write are. The doc states
+#     what is denied, what stays allowed, what to do instead (STOP → Human
+#     Gate; there is no override for this one), and the residuals honestly.
 #   - Design-diagram agents additionally read design-diagrams.md (shipped by
 #     plugin) — the doctrine for expressing technical design as formal,
 #     parseable Mermaid (when / which type, validity, coherence self-check).
@@ -265,6 +272,7 @@ emit_if_exists "$PLUGIN_RULES_DIR/decision-record-examples.md"
 emit_if_exists "$PLUGIN_RULES_DIR/user-facing-output.md"
 emit_if_exists "$PLUGIN_RULES_DIR/critical-stance.md"
 emit_if_exists "$PLUGIN_RULES_DIR/git-branch-discipline.md"
+emit_if_exists "$PLUGIN_RULES_DIR/protected-path-discipline.md"
 
 # 1a. Every agent receives the project's chat voice profile (short-form output
 #     style: gate prompts, AskUserQuestion text, status reports, chat replies).

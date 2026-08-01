@@ -2,6 +2,8 @@
 
 This rule is loaded for every agent. It is enforced **deterministically** by the PreToolUse guard hook (`hooks/guard.ts`), not by your goodwill — every `Bash` call is classified before it runs, and branch/worktree-moving git operations are denied. The rule text here exists so you understand *why* the deny happens and *what to do instead*; it is not the enforcement surface.
 
+The guard runs a second, independent `Bash` policy: a shell command that **writes** a path in `guard.protectedPaths` is denied on the same call. That one has its own rule, `protected-path-discipline.md`, which every agent also loads. The two policies share a hook and nothing else — different verbs, different overrides, and different behaviour in the plugin's own repository.
+
 ## The rule
 
 **Agents never switch git branches autonomously.** The following git operations are DENIED:
@@ -11,7 +13,7 @@ This rule is loaded for every agent. It is enforced **deterministically** by the
 - `git checkout <branch/ref>` with no `--` separator (a branch/commit switch) — a valid ref is always denied, so a branch that merely shares a name with a file stays denied (git resolves the ref first)
 - `git worktree add …`
 
-The deny applies to the whole `Bash` call if **any** segment is a deny-case — the guard segments on `;`, `&&`, `||`, `|` and inspects `$(…)` / backtick subshells, so you cannot smuggle a branch switch inside a compound command.
+The deny applies to the whole `Bash` call if **any** segment is a deny-case. The guard segments on `;`, `&&`, `||`, `|`, `&` and newlines, splices backslash line continuations before segmenting, strips `(…)` subshell parentheses, and inspects `$(…)` / backtick subshells. You cannot smuggle a branch switch inside a compound command.
 
 ## What stays allowed (HEAD does not move)
 
@@ -26,7 +28,9 @@ The deny applies to the whole `Bash` call if **any** segment is a deny-case — 
 
 ## Why
 
-A prose rule alone does not stop an LLM agent from switching branches under task pressure (cf. `CLAUDE.md` "Problem 11" — "MUST run Setup" was overridden by task urgency). Autonomous branch switching causes **branch-drift chaos**: work lands on the wrong branch, the orchestrator's revert strategy (`git checkout HEAD -- <files>`) targets the wrong tree, commits interleave across branches, and interrupted-session resume becomes unreliable. Git is reachable only via `Bash`, so the guard hook is a complete choke-point — the cheapest place to make the failure impossible rather than merely discouraged.
+A prose rule alone does not stop an LLM agent from switching branches under task pressure (cf. `CLAUDE.md` "Problem 11" — "MUST run Setup" was overridden by task urgency). Autonomous branch switching causes **branch-drift chaos**: work lands on the wrong branch, the orchestrator's revert strategy (`git checkout HEAD -- <files>`) targets the wrong tree, commits interleave across branches, and interrupted-session resume becomes unreliable. Git is reachable only via `Bash`, so the hook sees every attempt an agent can make: it is the cheapest place to make the failure hard rather than merely discouraged.
+
+**It is a choke-point on the tool call, not a proof of impossibility.** The classifier reads the command text, so a command that hides the verb from its own text is not seen — `eval 'git switch main'` and `bash -c 'git switch main'` are both allowed today, as is a branch switch inside a script the agent invokes. Reaching for one of those to get past a deny is exactly the behaviour this rule forbids, whatever the guard happened to allow.
 
 The classifier is **fail-closed**: for a bare `git checkout <target>` (no `--`), the allow requires positive proof that every target is an existing file that is *not* also a ref — proved via an on-disk + `git rev-parse` check. Anything short of that proof (a valid ref, a nonexistent target, an unresolvable `--git-dir`/`--work-tree` global, or no resolver at all) is denied. Over-blocking a weird construct is the correct direction; the user wants chaos prevented.
 
@@ -41,5 +45,7 @@ If a task genuinely requires a different branch:
    - `FUSION_ALLOW_WORKTREE=1` (or `true`) — lifts the deny for `git worktree add`.
 
    When an override allows a normally-denied command, the guard records an override-used note in `fusion-workbench/.guard-state/` for visibility.
+
+   **Each override waives only what it names.** `FUSION_ALLOW_BRANCH_SWITCH` does not lift the worktree deny, `FUSION_ALLOW_WORKTREE` does not lift the branch deny, and neither says anything about the protected paths: with `FUSION_ALLOW_BRANCH_SWITCH=1`, `git switch main && rm rules/x.md` still denies, on the `rm`.
 
 A secondary belt lives in `settings.json` (`Bash(git switch:*)` and `Bash(git worktree add:*)` deny rules); the hook handles the `git checkout` nuance that a blanket settings rule cannot (it would break the file-restore form).
