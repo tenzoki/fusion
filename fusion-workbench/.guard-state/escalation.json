@@ -1,0 +1,23 @@
+{
+  "haltActive": false,
+  "consecutiveBlocks": 2,
+  "lastBlockTimestamp": "2026-08-01T15:45:24.956Z",
+  "recentEvents": [
+    {
+      "level": "block",
+      "trigger": "git_branch_switch",
+      "message": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+      "timestamp": "2026-08-01T11:41:21.945Z",
+      "toolName": "Bash",
+      "filePath": "git switch main"
+    },
+    {
+      "level": "block",
+      "trigger": "git_branch_switch",
+      "message": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+      "timestamp": "2026-08-01T15:45:24.956Z",
+      "toolName": "Bash",
+      "filePath": "git switch main\""
+    }
+  ]
+}
