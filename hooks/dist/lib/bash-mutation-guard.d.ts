@@ -181,6 +181,26 @@ export interface VerbSpec {
     mutatesOnlyWhen?: (flag: string) => boolean;
     /** `key=value` operands that name a written file (`dd of=…`). */
     keyOperands?: readonly string[];
+    /**
+     * A SECOND DISPATCH HOP keyed on the verb's first operand, for a verb that
+     * is really a family of commands with different operand roles. `git stash`
+     * is eleven commands and only one of them names working-tree paths; reading
+     * every positional of all eleven put `pop` in the written set as a path
+     * (`issues/260801-1956_c_the-git-stash-row-reads-its-sub-subcommand-and-refs-as-written-paths.md`).
+     * When present, `written`/`valueFlags` on THIS row are not consulted — the
+     * matched sub-row answers instead.
+     */
+    subcommands?: SubcommandDispatch;
+}
+/** The second hop's table, plus the row that applies when no word selects one. */
+export interface SubcommandDispatch {
+    /** One row per named sub-subcommand. */
+    table: Readonly<Record<string, VerbSpec>>;
+    /**
+     * The row for a call with NO sub-subcommand word — `git stash`,
+     * `git stash -u` and `git stash -- <paths>` are all the implicit `push`.
+     */
+    implicit: VerbSpec;
 }
 /**
  * THE VERB TABLE. Exported because it is the review surface: a false positive
@@ -214,42 +234,6 @@ export interface VerbSpec {
  * and `gzip` are deliberately NOT rows.
  */
 export declare const MUTATION_VERBS: Readonly<Record<string, VerbSpec>>;
-/**
- * Mutating `git` subcommands — the tree-writing half of git, since the branch
- * question belongs to `git-branch-guard.ts`.
- *
- * The three added rows were in neither the table nor the residual list, which
- * is the state a reader cannot tell a deliberate omission from a forgotten one
- * in
- * (`issues/260801-1902_c_git-clean-restore-and-stash-mutate-protected-paths-and-are-in-neither-the-table-nor-the-residual-list.md`).
- *
- * `mv` and `rm` are the unconditional rows. The other three write the working
- * tree only under a flag, and the flag is what separates them from the form
- * fusion depends on:
- *
- *   - `clean` mutates with `-f`, refuses without it, so `git clean -n rules`
- *     (a dry run, a read) allows and `git clean -fdx rules` denies. `-e` takes
- *     the exclude PATTERN as its value and must not become a positional, or
- *     `git clean -fdx -e rules/keep .` would deny on the pattern it is told to
- *     spare.
- *   - `restore` bare is `git checkout -- <paths>` under its modern name —
- *     fusion's own revert strategy, which MUST stay allowed, as must
- *     `git restore --staged <paths>`, which writes only the index. With
- *     `--source=<commit>` it overwrites the working tree from anywhere in
- *     history, which the revert strategy's permission does not cover.
- *   - `stash push <paths>` REMOVES the named paths from the working tree. The
- *     row reads every positional, so the subcommand word of `git stash pop` and
- *     friends lands in the written set as the literal `pop` — a path that
- *     matches nothing, which is why one row covers the whole family without a
- *     sub-sub-command table.
- *
- * What is deliberately NOT here: `git apply` and `git am`, whose targets are
- * named inside the patch file rather than on the command line. Reading a patch
- * is out of scope for a text classifier, so they sit in the residual list next
- * to `patch`. A bare `git clean -fdx` with no path operand is the same kind of
- * residual — it names no directory the ancestor check can compare, exactly as
- * `rm -rf *` does not.
- */
 export declare const MUTATION_GIT_SUBCOMMANDS: Readonly<Record<string, VerbSpec>>;
 /**
  * Classify a full (possibly compound) Bash command string against the guard's

@@ -142,50 +142,113 @@ import { SUBSTITUTION_FILLER, parseCommand, resolveWord, tokenize, } from "./she
 function isSedInPlaceFlag(flag) {
     if (flag.startsWith("--"))
         return /^--in-place(=|$)/.test(flag);
-    return shortFlagLetters(flag, SED_VALUE_LETTERS).includes("i");
+    return shortFlagLetters(flag, SED_FLAG_GRAMMAR).includes("i");
 }
-/** `perl -i` / `-i.bak` / `-pi`. `-I` (include path) is a different flag. */
+/**
+ * `perl -i` / `-i.bak` / `-pi` / `-lpi`. `-I` (include path) is a different
+ * flag, and telling the two apart is what `ShortFlagGrammar` is for.
+ */
 function isPerlInPlaceFlag(flag) {
     if (flag.startsWith("--"))
         return false;
-    return shortFlagLetters(flag, PERL_VALUE_LETTERS).includes("i");
+    return shortFlagLetters(flag, PERL_FLAG_GRAMMAR).includes("i");
+}
+/** An optional count glued to the letter: `perl -l7`, `perl -077`. */
+function digitRun(rest) {
+    let n = 0;
+    while (n < rest.length && rest[n] >= "0" && rest[n] <= "9")
+        n++;
+    return n;
+}
+/** `perl -V:configvar` — a value only when the next character is a colon. */
+function colonSuffix(rest) {
+    return rest.startsWith(":") ? rest.length : 0;
 }
 /**
- * Short flags whose VALUE is glued to the letter, so everything after the
- * letter is the flag's argument rather than more flags.
+ * The two grammars, MEASURED against perl 5.34.1 and both seds rather than
+ * inferred. The previous single-category version was checked only against the
+ * flags it was written for (`-Ilib`, `-fscript.sed`) and not against the
+ * clusters it changed, which is how it shipped allowing the everyday
+ * `perl -lpi -e`. Each line below is the answer to a command that was actually
+ * run — "does a trailing `i` in this cluster still rewrite the file?":
  *
- * `sed`: `-e script`, `-f file`, `-l N`, `-i[suffix]`.
- * `perl`: `-C`, `-D`, `-e`, `-E`, `-F`, `-i`, `-I`, `-l`, `-m`, `-M`, `-V`,
- * `-x`. (`-0` is a digit and ends the letter run on its own.)
+ *   perl -lpi   MUTATES     `l` takes only digits, so `p` and `i` are flags
+ *   perl -l7pi  MUTATES     the digit run is `l`'s value; `p` and `i` follow
+ *   perl -0pi   MUTATES     same shape on the digit-led flag
+ *   perl -Vpi   MUTATES     `V`'s value is a `:configvar` or nothing at all
+ *   perl -Ipi   unchanged   `I` swallowed `pi` as an include directory
+ *   perl -Cpi   unchanged   "Unknown Unicode option letter 'p'" — C's value
+ *   perl -Dpi   unchanged   `D` takes a letter/number debug list
+ *   perl -xpi   unchanged   "No Perl script found" — `x` took `pi` as a dir
+ *   perl -mpi   unchanged   "Can't locate pi.pm" — `m`/`M` take a module name
+ *   perl -Fpi / -epi / -Epi unchanged
+ *
+ * So `C`, `D` and `x` are greedy after all — a cluster like `perl -Ci` does
+ * NOT edit in place, and denying it would be a false positive rather than the
+ * restored protection it looks like.
+ *
+ * `sed`'s `l` is the one letter the two platforms disagree on, and the
+ * disagreement is resolved toward DENY: BSD `-l` takes no value, so
+ * `sed -li '' 's/a/b/' f` really does rewrite the file (measured: it does),
+ * while GNU `-l` takes a mandatory N and swallows the `i` (measured: no
+ * rewrite). Read as an optional-value letter the cluster denies — correct on
+ * BSD, and on GNU a false positive on a command that edits nothing anyway.
+ * That is the same no-platform-branch reasoning `-i` itself already carries.
  */
-const SED_VALUE_LETTERS = "efil";
-const PERL_VALUE_LETTERS = "CDeEFiIlmMVx";
+const SED_FLAG_GRAMMAR = {
+    // `-e script`, `-f file`. `-i[suffix]` is the letter being looked for and
+    // its suffix is free text, so ending the run on it costs nothing.
+    greedy: "efi",
+    optional: { l: digitRun },
+};
+const PERL_FLAG_GRAMMAR = {
+    // `-C<list>`, `-D<list>`, `-e`/`-E <code>`, `-F<pattern>`, `-I<dir>`,
+    // `-m`/`-M <module>`, `-x<dir>` — and `-i[suffix]`, as above.
+    greedy: "CDeEFiImMx",
+    optional: { l: digitRun, "0": digitRun, V: colonSuffix },
+};
 /**
- * The letter run of a short-flag token, stopping at the first letter that
- * CONSUMES THE REST OF THE TOKEN: `-i.bak` → `i`, `-ni` → `ni`, `-Ilib` → `I`.
+ * The flag letters of a short-flag token, in order, with each letter's own
+ * value SKIPPED rather than read as more letters.
  *
- * The truncation is what keeps a flag's argument out of its letters. `-Ilib`
- * used to read as `Ilib`, whose lowercase `i` turned `perl` into an in-place
- * rewrite and every positional of a `perl -I<dir>` call into a written target
- * (`issues/260801-1903_c_perl-include-flag-glued-to-its-value-is-misread-as-the-in-place-flag.md`).
- * `sed -fscript.sed` has the same shape through the `i` in `script`. In both
- * the trailing text is the flag's own argument, which the tool does not read as
- * flag letters either — the truncation matches the program's own parsing rather
- * than approximating it.
+ *   -i.bak → `i`      -ni  → `ni`     -lpi  → `lpi`
+ *   -Ilib  → `I`      -l7pi → `lpi`   -0pi  → `0pi`
  *
- * The stopping letter is KEPT, so `-i.bak` still reports the `i` that makes it
- * in-place, and `-pi` still reports `pi`.
+ * A greedy letter ends the run and is KEPT, so `-i.bak` still reports the `i`
+ * that makes it in-place while `-Ilib` reports an `I` with no `i` after it.
+ * That pair is the discriminator, and it is why one category will not do: no
+ * single set of "value letters" gets both `perl -lpi` (deny) and `perl -Ilib`
+ * (allow) right, because the two clusters need opposite answers about the
+ * letter that follows.
+ *
+ * A leading DIGIT run is a value too, not the end of the token. The old
+ * `/^-([A-Za-z]*)/` yielded the empty string for `-0pi` and never examined a
+ * letter, so perl's `-0` form was invisible in both builds.
  */
-function shortFlagLetters(flag, valueLetters) {
-    const m = /^-([A-Za-z]*)/.exec(flag);
-    if (m === null)
+function shortFlagLetters(flag, grammar) {
+    if (!flag.startsWith("-") || flag.startsWith("--"))
         return "";
-    const letters = m[1];
-    for (let i = 0; i < letters.length; i++) {
-        if (valueLetters.includes(letters[i]))
-            return letters.slice(0, i + 1);
+    let out = "";
+    let i = 1;
+    while (i < flag.length) {
+        const ch = flag[i];
+        const consume = row(grammar.optional, ch);
+        if (consume !== undefined) {
+            out += ch;
+            i += 1 + consume(flag.slice(i + 1));
+            continue;
+        }
+        // The rest of the token belongs to this letter, so no later character in
+        // it is a flag.
+        if (grammar.greedy.includes(ch))
+            return out + ch;
+        // Anything that is neither a flag letter nor part of a value ends the run.
+        if (!/^[A-Za-z]$/.test(ch))
+            return out;
+        out += ch;
+        i += 1;
     }
-    return letters;
+    return out;
 }
 /**
  * THE VERB TABLE. Exported because it is the review surface: a false positive
@@ -279,11 +342,17 @@ function isGitRestoreSourceFlag(flag) {
  *     `git restore --staged <paths>`, which writes only the index. With
  *     `--source=<commit>` it overwrites the working tree from anywhere in
  *     history, which the revert strategy's permission does not cover.
- *   - `stash push <paths>` REMOVES the named paths from the working tree. The
- *     row reads every positional, so the subcommand word of `git stash pop` and
- *     friends lands in the written set as the literal `pop` — a path that
- *     matches nothing, which is why one row covers the whole family without a
- *     sub-sub-command table.
+ *   - `stash` is a FAMILY, and it gets the sub-subcommand table it looked like
+ *     it could do without (`GIT_STASH`). Only `push` names working-tree paths.
+ *     Reading every positional of every form instead put the sub-subcommand
+ *     word itself in the written set, on the theory that `pop` is "a path that
+ *     matches nothing" — true only at the project root, and only for a word
+ *     that collides with no pattern. From inside a protected directory
+ *     `cd hooks && git stash pop` resolved `pop` to `hooks/pop` and denied,
+ *     and a message or a ref (`git stash push -m "$MSG"`,
+ *     `git stash show "$REF"`) reached the fail-closed pass as an unresolvable
+ *     write
+ *     (`issues/260801-1956_c_the-git-stash-row-reads-its-sub-subcommand-and-refs-as-written-paths.md`).
  *
  * What is deliberately NOT here: `git apply` and `git am`, whose targets are
  * named inside the patch file rather than on the command line. Reading a patch
@@ -292,6 +361,58 @@ function isGitRestoreSourceFlag(flag) {
  * residual — it names no directory the ancestor check can compare, exactly as
  * `rm -rf *` does not.
  */
+/**
+ * `git stash push [-m <msg>] [--] [<pathspec>…]` — the only stash form that
+ * names working-tree paths. `-m`/`--message` must take its value the way
+ * `git clean`'s `-e` does, or a commit message becomes a positional and every
+ * `git stash push -m "$MSG"` denies fail-closed on the message.
+ * `--pathspec-from-file <file>` READS that file; it is a value flag for the
+ * same reason and its contents are a residual, as `git apply`'s patch is.
+ */
+const GIT_STASH_PUSH = {
+    written: "all",
+    valueFlags: ["-m", "--message", "--pathspec-from-file"],
+};
+/** A stash form whose operands are a ref, a message or a branch — never a path. */
+const NAMES_NO_PATH = { written: "none" };
+/**
+ * The stash family, measured against git 2.53.0 rather than assumed:
+ *
+ *   git stash -- rules/x.md   stashed rules/x.md and left other.txt alone,
+ *                             so the bare form with a pathspec IS `push`
+ *   git stash foo             "fatal: subcommand wasn't specified; 'push'
+ *                             can't be assumed due to unexpected token 'foo'"
+ *
+ * That second line is why an unrecognised bare word writes nothing: git
+ * refuses the command outright rather than treating the word as a pathspec.
+ * Every non-`push` form was run with a path operand and git refused all of
+ * them — `git stash pop rules/x.md` and friends leave the file untouched.
+ *
+ * `save` takes a MESSAGE, not pathspecs: `git stash save rules/x.md` stashes
+ * the whole tree under the message `rules/x.md`. It and a bare `git stash` DO
+ * revert protected paths, wholesale — but they name nothing the ancestor check
+ * can compare, which is the same residual as `git clean -fdx` with no operand
+ * and the reason `git stash` itself has always been allowed.
+ *
+ * A sub-subcommand that is NOT a literal (`git stash $X …`) could be `push`,
+ * so it is fail-closed rather than assumed benign.
+ */
+const GIT_STASH = {
+    implicit: GIT_STASH_PUSH,
+    table: {
+        push: GIT_STASH_PUSH,
+        save: NAMES_NO_PATH,
+        pop: NAMES_NO_PATH,
+        apply: NAMES_NO_PATH,
+        list: NAMES_NO_PATH,
+        show: NAMES_NO_PATH,
+        drop: NAMES_NO_PATH,
+        clear: NAMES_NO_PATH,
+        branch: NAMES_NO_PATH,
+        create: NAMES_NO_PATH,
+        store: NAMES_NO_PATH,
+    },
+};
 export const MUTATION_GIT_SUBCOMMANDS = {
     mv: { written: "all" },
     rm: { written: "all" },
@@ -305,7 +426,7 @@ export const MUTATION_GIT_SUBCOMMANDS = {
         valueFlags: ["-s", "--source"],
         mutatesOnlyWhen: isGitRestoreSourceFlag,
     },
-    stash: { written: "all" },
+    stash: { written: "none", subcommands: GIT_STASH },
 };
 /* ------------------------------------------------------------------ *
  * Deny reasons
@@ -479,6 +600,30 @@ function resolveGit(args) {
 }
 /** Apply a verb's operand roles to its arguments, returning the WRITTEN tokens. */
 function writtenOperands(spec, args) {
+    if (spec.subcommands !== undefined) {
+        const first = args[0];
+        // No sub-subcommand WORD: `git stash`, `git stash -u`, `git stash -- <p>`.
+        // A flag cannot select a row, and `--` introduces the implicit form's
+        // pathspecs, so both fall through to `implicit` with their args intact.
+        if (first === undefined || first.startsWith("-")) {
+            return writtenOperands(spec.subcommands.implicit, args);
+        }
+        const nested = row(spec.subcommands.table, first);
+        if (nested !== undefined)
+            return writtenOperands(nested, args.slice(1));
+        // An unrecognised BARE WORD is not a sub-subcommand, and git will not read
+        // it as a pathspec either — it refuses the whole command ("'push' can't be
+        // assumed due to unexpected token"). Nothing is written, so treating the
+        // word as a path would deny on a typo, which is the bug this table fixes.
+        if (/^[A-Za-z][A-Za-z-]*$/.test(first))
+            return [];
+        // A sub-subcommand built AT RUN TIME is a different matter: `git stash $X
+        // rules/x.md` may well be `push`, and reading it as "not push" would be
+        // guessing in the direction that loses the deny. Fail closed on the word,
+        // and read the rest as the implicit form so a visible protected pathspec
+        // still names the deny rather than the variable.
+        return [first, ...writtenOperands(spec.subcommands.implicit, args.slice(1))];
+    }
     if (spec.keyOperands !== undefined) {
         const out = [];
         for (const a of args) {

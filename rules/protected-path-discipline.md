@@ -45,18 +45,39 @@ simple command wherever it appears. `>` makes any program a mutation, including
 string is not one — bash redirects nothing there — so
 `git commit -m "docs: rules/a.md -> rules/b.md"` is prose and is allowed.
 
-Three of the git rows mutate only under a flag, which is what keeps their read and revert
-forms allowed:
+Three of the git rows are conditional, which is what keeps their read and revert forms
+allowed. `clean` and `restore` mutate only under a flag. `stash` is discriminated by its
+**sub-subcommand** instead: only `git stash push` names working-tree paths, so a stash
+ref, a `-m` message and the sub-subcommand word itself are never read as paths — from any
+directory.
 
 | Allowed | Denied on a protected path |
 |---|---|
 | `git clean -n rules` (dry run) | `git clean -fdx rules` |
 | `git restore rules/x.md`, `git restore --staged rules/x.md` | `git restore --source=HEAD~1 rules/x.md` |
-| `git stash`, `git stash pop`, `git stash list` | `git stash push rules/x.md` |
+| `git stash`, `git stash pop`, `git stash show "$REF"`, `git stash push -m "$MSG"` | `git stash push rules/x.md`, `git stash -- rules/x.md` |
 
 Only the operands a verb **writes** count. `cp rules/x.md /tmp/y` and
 `dd if=rules/x.md of=/tmp/y` read a protected path and stay allowed; copying *out of*
 a protected directory is never the problem.
+
+### Clustered short flags are read letter by letter
+
+`sed` and `perl` mutate only in place, and the in-place flag is usually buried in a
+cluster. The guard reads the cluster the way the tool does, which means knowing which
+letters swallow the rest of the token as their own value and which do not:
+
+| Denied — the `i` is a flag | Allowed — the `i` is inside a value |
+|---|---|
+| `perl -lpi -e 's/a/b/' rules/x.md` | `perl -Ilib rules/gen.pl` (`-I` takes a directory) |
+| `perl -0pi -e '…' rules/x.md` | `perl -Mstrict rules/gen.pl` (`-M` takes a module) |
+| `sed -ni 's/a/b/p' rules/x.md` | `sed -fscript.sed rules/x.md` (`-f` takes a file) |
+
+`-lpi` is three flags because perl's `-l` takes at most a digit run, so the `p` and the
+`i` after it are flags in their own right. `-Ilib` is one flag because `-I`'s directory
+runs to the end of the token. Both spellings are everyday, which is why the distinction
+is drawn per letter rather than per tool — and why `perl -Ci`, `-Di` and `-xi` are
+*allowed*: those letters take a value too, so perl never sees an in-place flag there.
 
 ### The command word is resolved, not just read
 

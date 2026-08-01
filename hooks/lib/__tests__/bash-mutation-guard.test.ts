@@ -222,12 +222,90 @@ const GIT_VERB_CASES: VerbCase[] = [
     ],
   },
   {
-    // `git stash push <paths>` removes the named paths from the working tree.
+    // `git stash push <paths>` removes the named paths from the working tree —
+    // and it is the ONLY stash form that names paths. Reading every positional
+    // of every form made the sub-subcommand word itself a written path, so
+    // `cd hooks && git stash pop` denied on `hooks/pop`
+    // (`issues/260801-1956_c_the-git-stash-row-reads-its-sub-subcommand-and-refs-as-written-paths.md`).
     verb: "stash",
-    deny: ["git stash push rules/x.md", "git stash push -u agents/", "git stash -- rules/x.md"],
-    allow: ["git stash", "git stash list", "git stash pop", "git stash push build/out.js"],
+    deny: [
+      "git stash push rules/x.md",
+      "git stash push -u agents/",
+      "git stash -- rules/x.md", // measured: the bare form with a pathspec IS push
+      "git stash push -m msg rules/x.md",
+      "git stash push -- rules/x.md",
+    ],
+    allow: [
+      "git stash",
+      "git stash list",
+      "git stash pop",
+      "git stash push build/out.js",
+      // The sub-subcommand word is not a path, wherever it is run from.
+      "cd hooks && git stash pop",
+      "cd rules && git stash list",
+      "cd agents && git stash drop",
+      "cd hooks && git stash apply",
+      "cd hooks && git stash clear",
+      // A message and a ref are not paths either, so neither reaches the
+      // fail-closed pass.
+      'git stash push -m "$MSG"',
+      'git stash show "$REF"',
+      'git stash apply "$STASH"',
+      'git stash branch "$NEW" "$STASH"',
+      "git stash save 'work in progress on rules/x.md'",
+      // Knock-on of the row: with no written operand the redirect target is no
+      // longer dragged into the fail-closed pass, which is the exact case the
+      // sibling fix set out to allow.
+      'git stash list > "$LOG"',
+      'git stash show > "$OUT"',
+      // git refuses to assume `push` for an unexpected token, so a typo writes
+      // nothing rather than denying on a phantom path.
+      "cd hooks && git stash poop",
+      // Measured against git 2.53.0: every non-push form with a path operand
+      // is refused outright ("subcommand wasn't specified; 'push' can't be
+      // assumed"), leaving the file untouched. `save` takes the path as its
+      // MESSAGE.
+      "git stash pop rules/x.md",
+      "git stash apply rules/x.md",
+      "git stash drop rules/x.md",
+      "git stash show rules/x.md",
+      "git stash list -- rules/x.md",
+      "git stash save rules/x.md",
+      "cd hooks && git stash show -- config.json",
+    ],
   },
 ];
+
+/**
+ * The sub-subcommand decides which stash form this is, so one built at run time
+ * leaves the guard unable to tell `push` from `pop`. Guessing "not push" is the
+ * direction that loses a deny, so the word is fail-closed — and the rest of the
+ * line is still read as the implicit form, which is what lets a visible
+ * protected pathspec name the deny instead of the variable (the same pass
+ * ordering that makes `mv $SRC rules/` report `rules/`).
+ */
+describe("git stash — a run-time sub-subcommand is fail-closed, a typo is not", () => {
+  it("denies when the sub-subcommand cannot be resolved", () => {
+    expectAllDeny([
+      "git stash $X rules/x.md",
+      'git stash "$X" rules/x.md',
+      "git stash $SUB -- rules/x.md",
+      "cd hooks && git stash $X -- x.md",
+    ]);
+  });
+
+  it("names the visible protected pathspec rather than the variable", () => {
+    expect(classify("git stash $X rules/x.md").targetPath).toBe("rules/x.md");
+  });
+
+  it("allows a literal word git will simply refuse", () => {
+    expectAllAllow([
+      "git stash poop",
+      "cd hooks && git stash poop",
+      "cd rules && git stash typo",
+    ]);
+  });
+});
 
 describe("verb table — every row denies a written protected operand", () => {
   it("covers every verb in MUTATION_VERBS", () => {
@@ -347,22 +425,66 @@ describe("verb table — in-place flag variants", () => {
    * letter run `Ilib`, whose lowercase `i` made every `perl -I<dir>` call an
    * in-place rewrite of its own script
    * (`issues/260801-1903_c_perl-include-flag-glued-to-its-value-is-misread-as-the-in-place-flag.md`).
-   * The glued form is the common spelling, and the separated form already
-   * behaved as the docstring promised — so the two disagreed.
    *
-   * What the truncation gives up: a letter after a value-taking one is no
-   * longer read as a flag. That is what perl and sed do with it too — in
-   * `-Ilib` the `lib` is the include directory, not `-l -i -b` — so the deny
-   * side loses nothing the tool would have honoured. The discriminating case is
-   * the second block: an in-place flag written SEPARATELY still denies.
+   * The FIRST fix truncated the run at any value-taking letter, and the note
+   * closing that issue claimed the deny side lost "nothing the tools would
+   * honour". That was false, and the two blocks below are why: `-Ilib` and
+   * `-lpi` need OPPOSITE answers about the letter that follows, so one
+   * category of "value letter" cannot serve both
+   * (`issues/260801-1955_c_value-letter-truncation-loses-the-in-place-flag-for-perl-lpi.md`).
+   *
+   * THE DISCRIMINATING PAIR is `perl -lpi …` (deny) against `perl -Ilib …`
+   * (allow). Either one alone is satisfiable by reverting or by leaving the
+   * bug in; only both together prove the two classes are really distinguished.
    */
-  it("does not read a glued flag VALUE as more flag letters", () => {
+  it("THE DISCRIMINATING PAIR — an optional-value letter keeps the run, a mandatory one ends it", () => {
+    expect(denies("perl -lpi -e 's/a/b/' rules/x.md")).toBe(true);
+    expect(denies("perl -Ilib script.pl")).toBe(false);
+  });
+
+  it("does not read a MANDATORY glued flag value as more flag letters", () => {
+    // Measured against perl 5.34.1: each of these leaves the file unchanged,
+    // because the letters after the flag are its value. `-Ci`, `-Di` and `-xi`
+    // are in this block on measurement, not on the filed issue's say-so — it
+    // listed them as regressions, but perl reads `pi` in `-Cpi` as a Unicode
+    // option list, `-xpi` as an extract directory, and neither edits anything.
     expectAllAllow([
       "perl -Ilib rules/gen.pl",
       "perl -Ilib -e 'print' rules/gen.pl",
       "perl -Mstrict rules/gen.pl",
       "perl -Ilib script.pl",
+      "perl -Ci -e 'print' rules/x.md",
+      "perl -Di -e 'print' rules/x.md",
+      "perl -xi -e 'print' rules/x.md",
+      "perl -Fi -e 'print' rules/x.md",
+      "perl -mi -e 'print' rules/x.md",
+      "perl -Mi -e 'print' rules/x.md",
+      "perl -V:osname rules/x.md", // -V's value is a `:configvar`, so it ends here
       "sed -fscript.sed rules/x.md", // the `i` in `script` is not -i either
+    ]);
+  });
+
+  it("an OPTIONAL-value letter does not hide the in-place flag behind it", () => {
+    // Every one of these was measured MUTATING the file, and every one allowed
+    // before this fix. `-lpi` is the canonical perl one-liner.
+    expectAllDeny([
+      "perl -lpi -e 's/a/b/' rules/x.md",
+      "perl -lni -e 'print' rules/x.md",
+      "perl -lpi.bak -e 's/a/b/' rules/x.md",
+      "perl -l7pi -e 's/a/b/' rules/x.md", // the digit run is -l's whole value
+      "perl -l07pi -e 's/a/b/' rules/x.md",
+      "perl -Vpi -e 's/a/b/' rules/x.md", // -V without a colon takes no value
+      "sed -li 's/a/b/' rules/x.md", // BSD -l takes no value: this really edits
+    ]);
+  });
+
+  it("a LEADING DIGIT run is a flag value, not the end of the token", () => {
+    // `/^-([A-Za-z]*)/` matched the empty string for `-0pi` and examined no
+    // letter at all, so perl's record-separator form was invisible in every
+    // build before this one — pre-existing rather than a regression.
+    expectAllDeny([
+      "perl -0pi -e 's/a/b/' rules/x.md",
+      "perl -077pi -e 's/a/b/' rules/x.md",
     ]);
   });
 
@@ -1358,10 +1480,39 @@ const ORDINARY_AGENT_COMMANDS = [
   "git stash",
   "git stash pop",
   "git restore rules/x.md",
+  // THE STASH FAMILY, from wherever an agent happens to be standing. The row
+  // used to read the sub-subcommand as a path, so every one of these denied
+  // from inside a protected directory, and the message and ref forms denied
+  // from anywhere. `/fusion:circle-stash` is built on these.
+  "cd hooks && git stash pop",
+  "cd rules && git stash list",
+  "cd agents && git stash show",
+  'git stash push -m "$MSG"',
+  'git stash push -m "wip: rules/x.md and agents/coder.md"',
+  'git stash show "$REF"',
+  'git stash apply "$STASH"',
+  'git stash list > "$LOG"',
+  "git stash save 'wip on the guard'",
   // PERL'S INCLUDE FLAG, glued to its value — not the in-place flag.
   "perl -Ilib script.pl",
   "perl -Ilib rules/gen.pl",
   "perl -Ilib -e 'print' rules/gen.pl",
+  // ...and the other side of that pair: a MANDATORY glued value ends the flag
+  // letters, so these read no `i` and stay allowed, while `perl -lpi` denies.
+  "perl -Mstrict -e 'print' rules/gen.pl",
+  "perl -Ilib -Mstrict script.pl",
+  "sed -fscript.sed rules/x.md",
+  // THE IN-PLACE FORMS POINTED OUTSIDE THE TREE. These are the load-bearing
+  // half of the flag-grammar change: the classifier must read the `i` (so the
+  // operand really is resolved and matched) and still allow, which a rule that
+  // simply stopped seeing `-lpi` would also pass. Running them under the
+  // catch-all list is what tells the two apart.
+  "perl -lpi -e 's/a/b/' /tmp/notes.txt",
+  "perl -0pi -e 's/a/b/' /tmp/notes.txt",
+  "sed -li 's/a/b/' /tmp/scratch.txt",
+  "perl -Ilib -i.bak -pe 's/a/b/' /tmp/gen.pl",
+  // The one stash form that DOES name paths, pointed at build output.
+  "git stash push build/out.js",
 ];
 
 /**
@@ -1409,9 +1560,17 @@ describe("MUST NEVER DENY — the ordinary-agent-command corpus", () => {
     // A floor on the load-bearing half only. A command with no write the
     // classifier can see (`npm test`, `git status --short`, `date +%y%m%d`)
     // holds nothing down, however many of them there are — and roughly a third
-    // of this corpus is that kind. 29 of the 102 entries carry a detected write
+    // of this corpus is that kind. 32 of the 119 entries carry a detected write
     // as this is written; the floor sits below that so a deliberate removal is
     // possible and a quiet substitution is not.
+    //
+    // The count fell to 27 when the `git stash` row learned its own
+    // sub-subcommands: `git stash pop` and `git stash list` had been counting
+    // as load-bearing only because the row read `pop` and `list` as written
+    // paths, which is the bug. A phantom write is not coverage, so the four
+    // in-place-outside-the-tree forms and `git stash push build/out.js` were
+    // added to restore the margin with real ones rather than lowering the
+    // floor to fit.
     const loadBearing = ORDINARY_AGENT_COMMANDS.filter(exercisesADetectedWrite);
     expect(loadBearing.length).toBeGreaterThanOrEqual(27);
   });
