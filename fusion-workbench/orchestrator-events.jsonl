@@ -576,3 +576,33 @@
 {"ts":"2026-08-02T15:36:22","event":"circle_closed","detail":"260801-1244-rule-provenance-header: _t_ -> _c_, pointer cleared"}
 {"ts":"2026-08-02T15:43:53","event":"portfolio_refresh","detail":"circles/260801-1244-rule-provenance-header/_c_circle.md; shared/history/260802-1736-playmaker-direct-dispatch.md"}
 {"ts":"2026-08-02T15:43:53","event":"session_end","detail":"3 turns, 8 tasks, 9 commits, 0 errors, 6 gates; Circle closed coherent"}
+{"ts":"2026-08-02T16:28:11","event":"circle_activated","detail":"260801-1244-guard-rules-write: _a_ -> _t_"}
+{"ts":"2026-08-02T16:28:11","event":"plane_push","detail":"activation; 0 pushed, 1 deferred"}
+{"ts":"2026-08-02T16:28:11","event":"session_start","detail":"Circle 260801-1244-guard-rules-write; domain=code; mode=custom"}
+{"ts":"2026-08-02T16:51:39","event":"scope_resolved","detail":"mode=custom; C5a+C5b; shaping skipped by user; config name settled as fusion-guard.json"}
+{"ts":"2026-08-02T16:51:39","event":"planner_start","detail":"C5a+C5b, 12 acceptance criteria"}
+{"ts":"2026-08-02T17:04:24","event":"planner_done","detail":"circles/260801-1244-guard-rules-write/planning/260802-1856_o_plan-guard-rules-write.md; 10 steps, 2-Turn split proposed"}
+{"ts":"2026-08-02T17:04:24","event":"conceptrev_start","detail":"plan 260802-1856, 3 mermaid diagrams"}
+{"ts":"2026-08-02T19:49:25","event":"conceptrev_done","detail":"verdict=acceptable; 3 diagrams; Turn boundary confirmed dependency-closed"}
+{"ts":"2026-08-02T19:49:25","event":"gate_response","detail":"plan approved, 2-Turn split; floor question answered (applies once file exists)"}
+{"ts":"2026-08-02T19:49:25","event":"queue_built","detail":"10 steps, Turn 1 = steps 1-5, Turn 2 = steps 6-10"}
+{"ts":"2026-08-02T19:49:25","event":"turn_start","turn":1,"detail":"steps 1-5: fixture, exemption predicate, flag on both surfaces, dashboard"}
+{"ts":"2026-08-02T19:49:25","event":"task_start","turn":1,"task":"S1","agent":"coder","detail":"fixture harness gaps"}
+{"ts":"2026-08-02T19:57:25","event":"task_done","turn":1,"task":"S1","agent":"coder","detail":"harness extended, env strip proven by falsification"}
+{"ts":"2026-08-02T19:57:25","event":"commit","turn":1,"task":"S1","detail":"768242c"}
+{"ts":"2026-08-02T19:57:25","event":"task_done","turn":1,"task":"S2","agent":"coder","detail":"exemption predicate, 60 cases; two boundary holes closed"}
+{"ts":"2026-08-02T19:57:25","event":"commit","turn":1,"task":"S2","detail":"6b3aa5c"}
+{"ts":"2026-08-02T19:57:25","event":"task_start","turn":1,"task":"S3","agent":"coder","detail":"flag on the write-tool path"}
+{"ts":"2026-08-02T20:03:44","event":"task_done","turn":1,"task":"S3","agent":"coder","detail":"write-tool path; 851 tests"}
+{"ts":"2026-08-02T20:03:44","event":"task_start","turn":1,"task":"S4","agent":"coder","detail":"flag on the Bash path"}
+{"ts":"2026-08-02T20:15:46","event":"commit","turn":1,"task":"S4","detail":"45f53d4"}
+{"ts":"2026-08-02T20:15:46","event":"task_done","turn":1,"task":"S4","agent":"coder","detail":"Bash path; 871 tests; deferred C5c criterion closed"}
+{"ts":"2026-08-02T20:15:46","event":"task_start","turn":1,"task":"S5","agent":"coder","detail":"monitor renders advisories"}
+{"ts":"2026-08-02T20:21:55","event":"task_done","turn":1,"task":"S5","agent":"coder","detail":"monitor advisory level"}
+{"ts":"2026-08-02T20:21:55","event":"commit","turn":1,"task":"S5","detail":"bf75941"}
+{"ts":"2026-08-02T20:21:55","event":"review_start","turn":1,"agent":"coderev","detail":"5 commits, Turn 1 of the guard rules-write Circle"}
+{"ts":"2026-08-02T20:33:24","event":"review_done","turn":1,"agent":"coderev","detail":"4 issues: 2 High (symlink grant escalation, un-canonicalised protected match), 2 Low"}
+{"ts":"2026-08-02T20:33:24","event":"coherence_review","turn":1,"verdict":"review-needed","detail":"A-G: 6 issues, 2 High and both boundary breaks | A-D: Directive says exempt rule dirs and nothing else; as built the flag reaches every protected path via a symlink and can clear a halt | G-D: 1 answered decision consistent"}
+{"ts":"2026-08-02T20:39:34","event":"turn_end","turn":1,"detail":"5 tasks resolved, 6 issues created, 5 commits"}
+{"ts":"2026-08-02T20:39:34","event":"turn_start","turn":2,"detail":"2 High boundary findings + the halt gap; config loader deferred to Turn 3"}
+{"ts":"2026-08-02T20:39:34","event":"task_start","turn":2,"task":"T2-A","agent":"coder","detail":"canonicalise before the protected check; close the symlink route; halt above the exemption"}

@@ -1,0 +1,36 @@
+# fusion-workbench session state — for resumption after restart
+# Updated: 260802-1827
+
+session:
+  directive: "A project can permit rule-file writes deliberately, per session, and never silently. FUSION_ALLOW_RULES_WRITE exempts only the project's rule directories and logs every exempted write; project-level guard config at the project root replaces the one-list-per-install model."
+  mode: "custom"
+  domain: "code"
+  started: "260802-1827"
+  history_file: "circles/260801-1244-guard-rules-write/history/260802-1827-orchestrator-session.md"
+  git_head_at_start: "c7f117b"
+
+progress:
+  turn: 0
+  max_turns: 5
+  tasks_total: 0
+  tasks_done: 0
+  tasks_skipped: 0
+  tasks_errored: 0
+  commits: 0
+  turn_start_head: null
+  paused_at_task: null
+  directive_revisions_this_session: 0
+
+current_task:
+  id: "planning"
+  summary: "Planner producing the implementation plan for C5a + C5b"
+  agent: "planner"
+  status: "running"
+  source_file: "circles/260801-1244-guard-rules-write/_t_circle.md"
+
+work_queue: []
+
+plan_context:
+  spec_file: "shared/planning/260801-1122_o_spec-normative-consolidation.md"
+  user_directive: "go on with guard-rules-write"
+  key_findings: "Config file name settled by user as fusion-guard.json (was a working name in the spec). Shaping skipped by user decision: spec is Final, its four open questions are implementation mechanics. 11 of 12 acceptance criteria describe consuming-project behaviour and cannot be verified in this repo, where the write guard stands down. Reuse candidate: hooks/lib/__tests__/guard-bash-integration.test.ts spawns dist/guard.js against a tmpdir project root."

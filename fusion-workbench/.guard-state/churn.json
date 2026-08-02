@@ -487,65 +487,137 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/orchestrator-live.md": {
-      "totalChanges": 2,
-      "changesThisSession": 2,
-      "lastChange": "2026-08-02T12:05:46.812Z",
-      "thrashingScore": 0
+      "totalChanges": 3,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-02T20:39:45.755Z",
+      "thrashingScore": 1
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/provenance-header-lint.test.ts": {
       "totalChanges": 12,
-      "changesThisSession": 12,
+      "changesThisSession": 0,
       "lastChange": "2026-08-02T12:07:47.900Z",
       "thrashingScore": 24
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-rule-provenance-header/history/260802-1332-coder-provenance-gate-review-fixes.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-02T11:33:07.199Z",
       "thrashingScore": 0
     },
     "260802-1343_o_claude-md-parenthetical-claims-provenance-is-the-only-subject-outside-the-workbench.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-02T11:43:42.128Z",
       "thrashingScore": 0
     },
     "260802-1344_o_corpus-test-name-and-vacuity-message-still-say-rules-star-md-after-the-set-became-recursive.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-02T11:43:51.501Z",
       "thrashingScore": 0
     },
     "260802-1345_o_the-recursion-fix-raises-the-node-floor-to-20-12-and-no-engines-field-declares-it.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-02T11:44:06.703Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-rule-provenance-header/reviews/260802-1345-coderev-turn2-rule-provenance-header.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-02T11:45:13.741Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/CLAUDE.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-02T12:07:45.104Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/hooks/package.json": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-02T12:07:52.288Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-rule-provenance-header/history/260802-1408-coder-turn3-review-followups.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-02T12:09:03.657Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/paths.ts": {
+      "totalChanges": 3,
+      "changesThisSession": 3,
+      "lastChange": "2026-08-02T20:54:42.453Z",
+      "thrashingScore": 3
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/rules-write-exemption.ts": {
+      "totalChanges": 2,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-02T20:49:20.738Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/fs-locator.ts": {
+      "totalChanges": 4,
+      "changesThisSession": 4,
+      "lastChange": "2026-08-02T21:03:19.560Z",
+      "thrashingScore": 5
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/bash-mutation-guard.ts": {
+      "totalChanges": 12,
+      "changesThisSession": 12,
+      "lastChange": "2026-08-02T20:51:42.954Z",
+      "thrashingScore": 24
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/guard.ts": {
+      "totalChanges": 9,
+      "changesThisSession": 9,
+      "lastChange": "2026-08-02T20:55:00.216Z",
+      "thrashingScore": 17
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/rules-write-exemption.test.ts": {
+      "totalChanges": 3,
+      "changesThisSession": 3,
+      "lastChange": "2026-08-02T20:56:02.719Z",
+      "thrashingScore": 3
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/bash-mutation-guard.test.ts": {
+      "totalChanges": 4,
+      "changesThisSession": 4,
+      "lastChange": "2026-08-02T20:57:06.586Z",
+      "thrashingScore": 5
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/da740e4d-bd1f-44ee-84d3-16276a11ff7f/scratchpad/probe.ts": {
+      "totalChanges": 3,
+      "changesThisSession": 3,
+      "lastChange": "2026-08-02T21:03:43.096Z",
+      "thrashingScore": 3
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/guard-rules-write-integration.test.ts": {
+      "totalChanges": 9,
+      "changesThisSession": 9,
+      "lastChange": "2026-08-02T21:08:38.714Z",
+      "thrashingScore": 17
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fs-locator.test.ts": {
+      "totalChanges": 2,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-02T21:10:21.829Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/guard-bash-wiring.test.ts": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-02T21:10:42.493Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260802-2315-turn2-guard-boundary-hardening.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-02T21:15:10.174Z",
       "thrashingScore": 0
     }
   },
-  "sessionStart": "2026-08-02T11:26:53.947Z"
+  "sessionStart": "2026-08-02T20:39:45.755Z"
 }

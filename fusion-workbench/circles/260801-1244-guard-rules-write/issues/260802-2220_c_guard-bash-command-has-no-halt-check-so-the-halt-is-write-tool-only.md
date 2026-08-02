@@ -57,3 +57,6 @@ Option 1 or 3 is a behaviour change and wants a decision record. Option 2 is a d
 Found inside `circles/260801-1244-guard-rules-write` while proving that the new flag does not lift a
 halt. Filed in this Circle's store because the Directive's own criterion is what exposed it, though
 the defect itself predates the Circle.
+
+---
+Resolved: 49bb4da — option 3, per the reviewer, which overruled the orchestrator recommendation of option 2. MutationVerdict.mutates is reported independently of deny, so a halted guard denies every recognised mutation and still permits reads. The exemption is applied inside classification, which is what makes the flag unable to lift a halt; ordering two calls could not have expressed that.

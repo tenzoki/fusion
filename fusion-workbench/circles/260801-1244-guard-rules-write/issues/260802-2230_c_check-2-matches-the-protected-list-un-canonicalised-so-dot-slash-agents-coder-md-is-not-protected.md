@@ -116,3 +116,8 @@ asserts it.
 Found in `circles/260801-1244-guard-rules-write` while hunting the third spelling. The defect
 predates the Circle; the Circle is what makes it consequential, because the diff's stated
 threat model asserts the input class is real.
+
+---
+Resolved: 49bb4da — protection is now matched against the collapsed path. NOT via the proposed one-liner: canonicalise also strips a trailing separator, which widens the set it is matched against, so reusing it here turned Edit agents/ into an allow. paths.ts exports collapseSegments for protection and canonicalise for the grant, and isProjectRulePath keeps its own call because the Bash path hands it operands guard.ts never sees.
+
+One member of this class remains open and is filed separately at 260802-2320: case folding on a case-insensitive filesystem.

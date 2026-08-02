@@ -406,9 +406,9 @@
       "lastEditTimestamp": "2026-08-02T06:49:36.700Z"
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/orchestrator-live.md": {
-      "pingBackCount": 1,
-      "totalEdits": 2,
-      "lastEditTimestamp": "2026-08-02T12:05:46.813Z"
+      "pingBackCount": 2,
+      "totalEdits": 3,
+      "lastEditTimestamp": "2026-08-02T20:39:45.757Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/provenance-header-lint.test.ts": {
       "pingBackCount": 1,
@@ -454,8 +454,68 @@
       "pingBackCount": 0,
       "totalEdits": 1,
       "lastEditTimestamp": "2026-08-02T12:09:03.659Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/paths.ts": {
+      "pingBackCount": 1,
+      "totalEdits": 3,
+      "lastEditTimestamp": "2026-08-02T20:54:42.454Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/rules-write-exemption.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-02T20:49:20.739Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/fs-locator.ts": {
+      "pingBackCount": 1,
+      "totalEdits": 4,
+      "lastEditTimestamp": "2026-08-02T21:03:19.561Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/bash-mutation-guard.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 12,
+      "lastEditTimestamp": "2026-08-02T20:51:42.955Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/guard.ts": {
+      "pingBackCount": 1,
+      "totalEdits": 9,
+      "lastEditTimestamp": "2026-08-02T20:55:00.218Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/rules-write-exemption.test.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 3,
+      "lastEditTimestamp": "2026-08-02T20:56:02.721Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/bash-mutation-guard.test.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 4,
+      "lastEditTimestamp": "2026-08-02T20:57:06.587Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/da740e4d-bd1f-44ee-84d3-16276a11ff7f/scratchpad/probe.ts": {
+      "pingBackCount": 1,
+      "totalEdits": 3,
+      "lastEditTimestamp": "2026-08-02T21:03:43.097Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/guard-rules-write-integration.test.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 9,
+      "lastEditTimestamp": "2026-08-02T21:08:38.716Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fs-locator.test.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-02T21:10:21.831Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/guard-bash-wiring.test.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-02T21:10:42.495Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260802-2315-turn2-guard-boundary-hardening.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-02T21:15:10.175Z"
     }
   },
-  "lastEditFile": "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-rule-provenance-header/history/260802-1408-coder-turn3-review-followups.md",
-  "lastEditTimestamp": "2026-08-02T12:09:03.659Z"
+  "lastEditFile": "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260802-2315-turn2-guard-boundary-hardening.md",
+  "lastEditTimestamp": "2026-08-02T21:15:10.175Z"
 }

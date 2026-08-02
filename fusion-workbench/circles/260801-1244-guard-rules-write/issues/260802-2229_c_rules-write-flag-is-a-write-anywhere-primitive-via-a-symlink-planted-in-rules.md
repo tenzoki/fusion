@@ -120,3 +120,6 @@ above. No fixture beyond `makeProject({ escalation: { haltActive: true } })` is 
 Found in `circles/260801-1244-guard-rules-write` while probing the Directive's "and nothing
 else" boundary for a third escape spelling beyond the two the Step 2 coder found. It is not a
 spelling — it is the layer below the spelling.
+
+---
+Resolved: 49bb4da — the grant now asks the filesystem instead of the path text. isProjectRulePath resolves through realpathSync.native and requires the result strictly inside a resolved rule directory; a hard link never gets a grant (realpath cannot see one, refused via nlink on regular files); ln is not exemptible at all. A dangling symlink is expanded by hand, bounded at 40 hops, after a first fix granted on the ENOENT realpath throws for a missing target.

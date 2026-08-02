@@ -1,25 +1,33 @@
 # Orchestrator — Live
 
-**Turn:** 3/5 | **Tasks:** 8/8 | **Commits:** 8 | **Errors:** 0
-**Started:** 08:48 | **Domain:** code | **Elapsed Turns:** 3 | **Guard:** OK (2 prior blocks, not halted)
+**Turn:** 2/5 | **Tasks:** 5/8 | **Commits:** 5 | **Errors:** 0
+**Started:** 18:27 | **Domain:** code | **Elapsed Turns:** 1 | **Guard:** OK
 
 ## Current
-  [RUNNING] reconciler -> ground-truth pass, domain code
+  [RUNNING] coder -> T2-A close the two boundary breaks + the halt gap
 
-## Turn 3 (done)
-  [DONE]    coder -> T3-A three one-line follow-ups ............... b568ad9
-
-## Turn 2 (done)
-  [DONE]    coder -> T2-A gate recursion + prose test + comment ... cc004fc
-  [DONE]    coder -> T2-B conventions lede + rationale ............ 7703330
-  [DONE]    coderev -> 4 verified fixed, 3 new
+## This Turn
+  [RUNNING] coder -> T2-A canonicalise before the protected check; close the
+            symlink grant route; halt check above the exemption
 
 ## Turn 1 (done)
-  [DONE]    coder -> P-1..P-5 ....... 929dbf5 c2c2a04 de9d5aa 482e9c3 cac3726
-  [DONE]    coderev -> 7 findings, none critical
+  [DONE]    coder -> S1 harness for consuming-project fixtures ....... 768242c
+  [DONE]    coder -> S2 exemption predicate, 60 cases ............... 6b3aa5c
+  [DONE]    coder -> S3 the flag on the write-tool path ............. 0f341e0
+  [DONE]    coder -> S4 the flag on the Bash path .................. 45f53d4
+  [DONE]    coder -> S5 monitor renders advisories ................. bf75941
+  [DONE]    coderev -> 4 findings, 2 of them High
 
 ## Snapshot
-  Session HEAD:       e8988d9  ->  b568ad9  (8 commits)
-  Suite:              green, 780 tests (was 753)
-  Issues:             7 closed, 3 left open in the Circle
-  Acceptance:         8 of 8 criteria pass, proven end to end
+  Turn-start HEAD:    bf75941
+  Suite:              green, 871 tests
+  Circle issues:      6 open, 3 in progress
+
+## Blocking findings
+  The flag reaches every protected path via a symlink named inside rules/,
+  and can clear an active halt in two commands.
+  The protected-path check matches before collapsing, so a ./ prefix walks
+  past the whole list. Pre-existing, ships today.
+
+## Turn 3 (planned)
+  S6 config loader, S7 template, S8 setup seeding, S9 docs, S10 release
