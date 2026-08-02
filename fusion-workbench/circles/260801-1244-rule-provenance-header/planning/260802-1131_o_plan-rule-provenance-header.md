@@ -338,7 +338,7 @@ A sanity check that the gate names its corpus. Then read the failing-direction t
 
 ---
 
-### 4. Acceptance sweep
+### 4. [DONE] Acceptance sweep
 
 - **Executor:** `coder`
 - **Dependencies:** Steps 1, 2 and 3
