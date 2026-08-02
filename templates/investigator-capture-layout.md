@@ -1,6 +1,10 @@
 # Investigator Capture Layout — TEMPLATE
 
+**Provenance:** replace this line with the record, Circle, or commit that motivated your project's capture layout.
+
 > **Copy this file** to `./rules/investigator-capture-layout.md` in your project, then fill in every `<bracketed placeholder>` and remove the parts that don't apply. The `investigator` agent loads it via `bin/fusion-rules investigator` (pattern `*investigator*.md` from `./rules/`).
+>
+> The `Provenance:` line above is yours to replace as well. It carries no angle brackets, so it is easy to read past.
 >
 > Without a filled-in copy, the investigator cannot know where your project's evidence captures live or how to read them. Its Setup will halt and ask you to create it from this template.
 
