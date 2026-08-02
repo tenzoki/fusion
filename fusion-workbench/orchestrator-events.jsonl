@@ -574,3 +574,5 @@
 {"ts":"2026-08-02T15:32:38","event":"rebalance_directive","detail":"bounded: correct Directive text on the Circle record only; no re-shape, no re-plan, work unchanged"}
 {"ts":"2026-08-02T15:36:22","event":"plane_push","detail":"closure; 0 pushed, 12 deferred (PLANE_API_KEY absent)"}
 {"ts":"2026-08-02T15:36:22","event":"circle_closed","detail":"260801-1244-rule-provenance-header: _t_ -> _c_, pointer cleared"}
+{"ts":"2026-08-02T15:43:53","event":"portfolio_refresh","detail":"circles/260801-1244-rule-provenance-header/_c_circle.md; shared/history/260802-1736-playmaker-direct-dispatch.md"}
+{"ts":"2026-08-02T15:43:53","event":"session_end","detail":"3 turns, 8 tasks, 9 commits, 0 errors, 6 gates; Circle closed coherent"}

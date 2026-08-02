@@ -2,7 +2,7 @@
 
 **Directive:** Every rule file names the decision record, Circle, or analysis that produced it. The convention is documented in `rules/fusion-workbench-conventions.md`; all of the plugin's rule files carry a header, each naming a record or stating honestly that none is recoverable; a lint gate in the plugin's test suite fails when a file in `rules/` lacks a header and names the offending file. (Source: `circles/260801-1244-rule-provenance-header/_t_circle.md` `## Directive`; capability C8 of `shared/planning/260801-1122_o_spec-normative-consolidation.md`.)
 **Mode:** custom (Circle Directive with an existing spec, no implementation plan yet)
-**Status:** In progress
+**Status:** Complete
 
 ## Setup snapshot
 
@@ -43,9 +43,184 @@ Three questions the Circle record and the spec (line 663) both leave open:
 2. The header's required position in the file.
 3. Whether the lint test validates that a cited record path resolves.
 
+## Budget
+
+| Metric | Count |
+|--------|-------|
+| Turns | 3 |
+| Tasks resolved | 8 |
+| Tasks skipped/deferred | 0 |
+| Issues created (by reviewers) | 10 |
+| Issues resolved | 7 |
+| Decisions answered (`_o_`→`_a_`) | 1 |
+| Decisions implemented (`_a_`→`_i_`) | 2 |
+| Commits | 9 |
+| Agent errors | 0 |
+| Human gates hit | 6 |
+
 ## Per-Turn Log
 
-(No Turn started yet.)
+### Turn 1
+
+- Tasks: the ten-file backfill, the conventions section, the lint gate, the investigator-template
+  placeholder header, the acceptance sweep. All five completed.
+- Commits: `929dbf5`, `c2c2a04`, `de9d5aa`, `482e9c3`, `cac3726`
+- Review: `coderev` filed 7 findings, none critical
+- Circuit breaker: OK
+- Coherence: ok
+
+### Turn 2
+
+- Tasks: two, fixing 4 of the 7 findings. The gate did not recurse into `rules/` subdirectories; a
+  test asserted a fact about the corpus rather than about the gate; the ten-line rationale was
+  falsified by Turn 1's own insertions; the conventions lede excluded the section just added to it.
+- Commits: `cc004fc`, `7703330`
+- Review: `coderev` verified all four fixes and filed 3 new findings from the fix pass
+- Circuit breaker: OK
+- Coherence: ok
+
+### Turn 3
+
+- Tasks: one, fixing all 3 fix-pass findings. A false exclusivity claim in `CLAUDE.md`; two stale
+  strings describing the gated set as flat after it became recursive; an undeclared Node floor.
+- Commits: `b568ad9`
+- Review: deliberately skipped. Three one-line edits inside code reviewed twice already, and the
+  one factual claim among them was verified with line numbers by the executor, which also corrected
+  one of the reviewer's own citations.
+- Circuit breaker: OK
+- Coherence: ok
+
+## Deviations from the plan, recorded rather than absorbed
+
+1. **A fifth task was added at the plan gate** by the user, after asking whether consuming projects
+   need a migration for the new convention. The answer was no, on two independent grounds:
+   `bin/fusion-rules` never opens a rule file's content, and the gate runs only in this repository.
+   But `templates/investigator-capture-layout.md` is a rule file projects copy into their own
+   `rules/`, so it would have shipped non-conforming. It appears in neither the spec nor the plan,
+   and it is the third of the three paths beyond the plan's declared eleven.
+2. **The version bump and the `CLAUDE.md` line** were deferred to session close by user decision, on
+   the planner's recommendation. `CLAUDE.md` was nonetheless edited in Turns 2 and 3, to fix a stale
+   enumeration and then a false claim introduced by that fix.
+3. **A shared issue was filed mid-session** about `/fusion:next` leaving a Circle record's
+   `**Status:**` field stale at activation. The reconciler's later survey found the defect is
+   broader and differently shaped than filed: two of nine Circle records disagree with their marker,
+   in opposite directions.
+4. **A coder reported that `bin/fusion-rules coder` emitted no chat voice profile.** Checked against
+   both the installed plugin and this repository: it does. Only the long-form writing profile is
+   absent, correctly, since `coder` is not a prose agent. Recorded because it may mean that agent
+   did not actually run its rules check.
+
+## Remaining Work
+
+Three findings left open in the Circle's issue store by explicit user decision:
+
+- `260802-1252` — both pre-existing `Binding decision:` instances are dead links
+- `260802-1255` — five `report()` assertions interpolate `HEADER_WINDOW` on both sides, so they
+  cannot detect a wrong constant
+- `260802-1256` — the template placeholder opts out of the template's own fill-in convention
+
+Two filed in the shared store during or immediately after the session:
+
+- `260802-0920` — `/fusion:next` activates a Circle without updating its `**Status:**` field
+- `260802-1740` — a citation path carrying a state marker dies on ordinary progress
+
+Deferred by user decision at the plan gate: the `.claude-plugin/plugin.json` version bump and the
+`CLAUDE.md` line about the new gate, both to the normal release and `/fusion:revise-claude-md` flows.
+
+## Commits
+
+| Hash | Message | Task |
+|------|---------|------|
+| `929dbf5` | ten rule files get a Provenance header | P-1 |
+| `c2c2a04` | the conventions section documenting the convention | P-2 |
+| `de9d5aa` | the lint gate | P-3 |
+| `482e9c3` | placeholder header on the investigator template | P-4 |
+| `cac3726` | acceptance sweep, 8 of 8 criteria | P-5 |
+| `cc004fc` | the gate now recurses into `rules/` subdirectories | T2-A |
+| `7703330` | the conventions lede now covers the section it hosts | T2-B |
+| `b568ad9` | three follow-ups from the Turn 2 review | T3-A |
+| `060859b` | close the Circle as coherent | Phase 4 |
+
+## Session Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant O as Orchestrator
+    participant S as Shaper
+    participant P as Planner
+    participant CV as Conceptrev
+    participant C as Coder
+    participant CR as Coderev
+    participant R as Reconciler
+    participant PM as Playmaker
+
+    O->>PM: portfolio ranking
+    PM-->>O: activate rule-provenance-header
+    U-->>O: activate it
+    O->>S: correct Grounding, settle 3 open questions
+    S-->>O: 4 questions need the user
+    O->>U: GATE 4 questions
+    U-->>O: keyword, position, no path check, admission+commit
+    O->>S: write the spec
+    S-->>O: spec, backfill is 10 files not 9
+    O->>CV: evaluate spec diagram
+    CV-->>O: acceptable, 1 missing edge
+    O->>U: GATE spec review
+    U-->>O: approve, fix 2 small things
+    O->>S: diagram edge + repoint record
+    S-->>O: done
+    O->>P: implementation plan
+    P-->>O: 4 steps, all coder
+    O->>CV: evaluate plan diagrams
+    CV-->>O: acceptable, parser-validated
+    O->>U: GATE plan review
+    U-->>O: approve; do we need a migration?
+    O->>U: no; but the template is a rule file
+    U-->>O: add it as a fifth step
+
+    Note over O: Turn 1
+    O->>C: P-1 ten provenance headers
+    C-->>O: done (929dbf5)
+    O->>C: P-2 conventions section
+    C-->>O: done (c2c2a04)
+    O->>C: P-3 lint gate
+    C-->>O: done (de9d5aa)
+    O->>C: P-4 template header
+    C-->>O: done (482e9c3)
+    O->>C: P-5 acceptance sweep
+    C-->>O: 8 of 8 (cac3726)
+    O->>CR: review 12 changed paths
+    CR-->>O: 7 findings, none critical
+    O->>U: GATE coherence + what next
+    U-->>O: Turn 2 on the four that matter
+
+    Note over O: Turn 2
+    O->>C: T2-A recursion + prose test + comment
+    C-->>O: done (cc004fc)
+    O->>C: T2-B lede + rationale + CLAUDE.md
+    C-->>O: done (7703330)
+    O->>CR: review 3 changed paths
+    CR-->>O: 4 verified fixed, 3 new
+    O->>U: GATE Turn 3 or close
+    U-->>O: Turn 3 on all three
+
+    Note over O: Turn 3
+    O->>C: T3-A three one-line fixes
+    C-->>O: done (b568ad9)
+    Note over O: review skipped, recorded
+
+    Note over O: Converged
+    O->>R: final reconciliation
+    R-->>O: review-needed, revise Directive
+    O->>U: GATE Rebalance
+    U-->>O: correct the goal text, then close
+    O->>S: correct Directive + fill Turn log
+    S-->>O: done
+    Note over O: Circle closed _t_ to _c_ (060859b)
+    O->>PM: portfolio refresh
+    PM-->>O: next is guard-rules-write, not the curator
+```
 
 ## Coherence
 
@@ -66,3 +241,19 @@ Three questions the Circle record and the spec (line 663) both leave open:
 The recommendation is advisory and it is narrow. Nothing about the work needs redoing — the Artifact is sound and the Grounding is settled. What wants revising is the Directive text on `_t_circle.md`, so it says ten rather than nine, and so its payoff clause states the forward-only scope the spec already accepted as a limitation. Left as written, the record hands the curator Circle a premise stronger than what was built.
 
 Accept Bounded Closure is *not* the reading here. The Directive's mechanism was reached in full; only its final clause is out of reach for the existing corpus, and that was known and accepted at the spec gate rather than discovered at the boundary.
+
+## Portfolio update
+
+Playmaker regenerated `portfolio.md` after the closure
+(`shared/history/260802-1736-playmaker-direct-dispatch.md`). The recommendation changed: next is
+`260801-1244-guard-rules-write`, not the curator, even though the curator's hard block was what this
+Circle removed. The reason is a consequence of the Circle before this one: `hooks/config.json`
+protects `rules/**`, and since `260801-1244-guard-bash-inspection` closed, that list is checked on
+shell commands as well as on the write tools. No route into a consuming project's rule files is open
+any more, and `FUSION_ALLOW_RULES_WRITE` is exactly what the guard-rules-write Circle builds. The
+curator's record calls that dependency soft, which is right for building the agent here and
+understated for the projects the curator exists to serve.
+
+Playmaker also re-affirmed its recommendation to split the curator before activation, on stronger
+evidence: this Circle was forecast as the small bounded case and ran three Turns and eight commits
+against a four-step plan, with fourteen non-workbench paths against a plan bounded to eleven.

@@ -42,3 +42,57 @@ Two filed issues sit adjacent and are not part of this Circle: `shared/issues/26
 Depended on by `260801-1244-curator`, but weakly: the curator is buildable and testable in this repository without the exemption, and needs it only for its rule-file writes to be exercisable in a consuming project.
 
 ## Turn log
+
+## Activation proposal
+
+**Recommended as the next Circle — playmaker run 260802-1736 (trigger: direct-dispatch, domain
+bias `code`), and this is a change from the previous three runs, which ranked this Circle second.**
+
+The Circle ranked ahead of it, `260801-1244-rule-provenance-header`, closed coherent at commit
+`060859b`, so the field is now two anticipated Circles rather than three. Both pass the
+code-domain criteria without argument. This Circle's one dependency,
+`260801-1244-guard-bash-inspection`, carries the closed marker. The rival's hard dependency also
+closed this run, and neither Circle's `## Grounding snapshot` cites an open decision record: the
+shared decision store holds no open record at all, and the three this Circle cites are two
+answered (`shared/decisions/260801-1020_a_where-does-normative-consistency-live.md`,
+`shared/decisions/260801-1020_a_may-any-fusion-writer-touch-rules.md`) and one now implemented
+(`shared/decisions/260801-1020_i_provenance-header-on-rule-files.md`, which moved from answered
+to implemented at the closure). Zero open decisions and zero unmet dependencies on both sides, so
+the ranking turns on unblock value, and there the position reversed.
+
+**Why this now outranks the curator.** Closing `260801-1244-guard-bash-inspection` sealed the
+shell route into `rules/`, which was the last unguarded way in. `hooks/config.json` lists
+`rules/**` under `guard.protectedPaths`, and the guard now checks that list on file-mutating
+shell commands as well as on the four write tools. In a consuming project there is therefore no
+route by which a curator can write or retire a rule file, and the flag that is supposed to open
+one, `FUSION_ALLOW_RULES_WRITE`, is exactly what this Circle builds. The spec's own reconciler
+recorded the same state on 260801-2029: the retirement requirement is "enforceable in principle
+(the shell route is guarded) but not enforced in fact (the flag and the advisory do not exist)".
+The curator record calls its dependency here soft, and that label is right for building and
+testing the agent in this repository, where the write guard stands down. It understates the
+position for a consuming project, where a curator shipped before this Circle cannot perform its
+rule-file half at all.
+
+**The second reason is that this Circle is the last one that unblocks anything.** With it closed,
+the curator activates with no unmet dependency of either kind, and the remaining work is a single
+sequence rather than a choice.
+
+**Suggested activation timestamp:** 260802-1736 (or whenever the user activates).
+
+**Activation notes, which do not change the ranking.** Two sizing cautions carry forward and are
+now better evidenced than when they were first written. This Circle touches the same guard code as
+the Circle that overran (`260801-1244-guard-bash-inspection`: sixteen commits and three Turns
+against eight planned steps), and its own acceptance criteria cannot be verified here, because the
+write guard stands down in the plugin's own tree (`hooks/lib/self-detect.ts:18-33`). The Circle
+that closed this run was forecast as the small, bounded, in-repo-verifiable case and still ran
+three Turns and eight commits against a four-step plan, filing ten review findings and delivering
+fourteen non-workbench paths against a plan that bounded itself to eleven. Two overruns in a row,
+the second on the case chosen for its boundedness, argue that the plan for this Circle should
+budget the consuming-project fixture work as its own step rather than treating verification as a
+final sweep. The record's open questions for the planner are unchanged: how `hooks/lib/config.ts`
+reaches the project root without a circular import, the configuration file format and resolution
+order, how `loadConfig`'s cache interacts with two sources, and whether `/fusion:setup` should
+seed `fusion-guard.json` in this repository at all.
+
+*No `mv` and no `.active-circle` write by playmaker — the user confirms via `/fusion:next`, or the
+orchestrator activates. Proposal, not commitment.*
