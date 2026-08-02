@@ -3,7 +3,9 @@
  *
  * Intercepts Write/Edit/MultiEdit tool calls and checks them against:
  *   1. Halt state — if active, block ALL writes
- *   2. Protected paths — unconditionally blocked
+ *   2. Protected paths — blocked, with one exemption: FUSION_ALLOW_RULES_WRITE
+ *      lets a write to a project rule path through, recorded as an advisory.
+ *      See lib/rules-write-exemption.ts.
  *   3. Decision-governed categories — escalated based on sensitivity
  *
  * Also intercepts Bash tool calls, for two independent policies:
@@ -57,6 +59,11 @@ import {
 } from "./lib/git-branch-guard.js";
 import type { CheckoutResolver } from "./lib/git-branch-guard.js";
 import { classifyBashMutation } from "./lib/bash-mutation-guard.js";
+import {
+  isProjectRulePath,
+  rulesWriteDetail,
+  rulesWriteExemptionActive,
+} from "./lib/rules-write-exemption.js";
 
 /**
  * Real filesystem + git-ref resolver for the ambiguous bare-`git checkout
@@ -428,28 +435,75 @@ async function main(): Promise<void> {
     return;
   }
 
-  // CHECK 2: Protected paths — unconditional block
+  // CHECK 2: Protected paths — blocked, with exactly ONE exemption.
   if (matchesAny(filePath, config.guard.protectedPaths)) {
-    const reason = `Protected path: ${filePath} cannot be modified directly. This path is under compliance guard protection.`;
+    // THE RULES-WRITE EXEMPTION. Both halves must hold: the user deliberately
+    // set FUSION_ALLOW_RULES_WRITE, and the path is one of the rule paths that
+    // flag names. lib/rules-write-exemption.ts owns the boundary and also
+    // canonicalises the path before matching it, because the write-tool path
+    // hands it spellings (`rules/`, `rules/../agents/coder.md`) that
+    // normalizeToRelative leaves uncollapsed. The Bash mutation path asks the
+    // same module the same two questions, so a security-relevant rule is not
+    // written twice, once per surface, and cannot drift apart.
+    //
+    // Three properties a later editor must not break:
+    //
+    //   1. CHECK 1 STAYS ABOVE THIS. A halted guard blocks an exempted write
+    //      like every other write. The flag grants exactly one permission, the
+    //      way the two git overrides do, and lifting a halt is not it. Moving
+    //      this branch above the halt check — or clearing the halt here — would
+    //      turn the flag into a way out of halt.
+    //   2. ONE SAVE PER CALL. The note is pushed into the IN-MEMORY escalation
+    //      object and nothing more. Every path out of here persists it exactly
+    //      once: CHECK 3's block, and the ordinary allow that CHECK 3's
+    //      advisory and its no-match route both fall into. A saveEscalation at
+    //      this site would write the file twice for one tool call.
+    //   3. IT WAIVES THIS CHECK AND NOTHING ELSE. Execution falls through to
+    //      CHECK 3, which still governs the write, and then to the allow path,
+    //      which resets the consecutive-block counter and emits guard_allow. So
+    //      one exempted Edit produces guard_advisory FOLLOWED BY guard_allow,
+    //      not guard_advisory alone.
+    const exempted =
+      rulesWriteExemptionActive(process.env) && isProjectRulePath(filePath);
 
-    const halted = recordBlock(
-      escalation,
-      config.escalation.blocksBeforeHalt,
-      "protected_path",
-      reason,
-      input.tool_name,
-      filePath,
-    );
-    saveEscalation(escalation);
+    if (!exempted) {
+      const reason = `Protected path: ${filePath} cannot be modified directly. This path is under compliance guard protection.`;
 
-    emitEvent(
-      halted ? "guard_halt" : "guard_block",
-      input.tool_name,
+      const halted = recordBlock(
+        escalation,
+        config.escalation.blocksBeforeHalt,
+        "protected_path",
+        reason,
+        input.tool_name,
+        filePath,
+      );
+      saveEscalation(escalation);
+
+      emitEvent(
+        halted ? "guard_halt" : "guard_block",
+        input.tool_name,
+        filePath,
+        "Protected path",
+      );
+      block(reason);
+      return;
+    }
+
+    // Same note the git override records at guardBashCommand STEP 3: one
+    // clear-level escalation entry naming the variable and what it let through,
+    // and one guard_advisory carrying the same string. This one also carries the
+    // path, in both the entry and the event, because a rules-write exemption
+    // always has one and a branch override does not.
+    const detail = rulesWriteDetail([filePath]);
+    escalation.recentEvents.push({
+      level: "clear",
+      trigger: "rules_write_exemption",
+      message: detail,
+      timestamp: new Date().toISOString(),
+      toolName: input.tool_name,
       filePath,
-      "Protected path",
-    );
-    block(reason);
-    return;
+    });
+    emitEvent("guard_advisory", input.tool_name, filePath, detail);
   }
 
   // CHECK 3: Decision-governed categories

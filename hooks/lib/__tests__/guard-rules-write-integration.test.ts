@@ -8,6 +8,7 @@ import {
   projectConfig,
   readEvents,
   readEscalation,
+  runGuard,
   runWrite,
   withProject,
 } from "./helpers/guard-harness.js";
@@ -183,6 +184,238 @@ describe("harness capabilities the rules-write cases depend on", () => {
         if (saved === undefined) delete process.env.FUSION_ALLOW_RULES_WRITE;
         else process.env.FUSION_ALLOW_RULES_WRITE = saved;
       }
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+// ---------------------------------------------------------------------------
+// The exemption on the write-tool path — plan step 3.
+//
+// Every case runs against a throwaway project root that is NOT a plugin root,
+// so CHECK 2 actually runs. Paths are passed ABSOLUTE (`resolve(root, …)`),
+// which is both what Claude Code sends and what `normalizeToRelative` can
+// relativize; the plan's `Edit ./rules/anything.md` is not reachable as
+// written, because a relative `./rules/x.md` matches no protected pattern and
+// would be allowed with the flag unset too — a case built on it would pass for
+// the wrong reason. The last case below passes raw relative paths deliberately,
+// and says why.
+//
+// The flag is handed to the child through `runWrite`'s overrides. The harness
+// strips it from every other spawn (see the case above), so the flag-unset half
+// is genuinely unset regardless of the developer's own shell.
+// ---------------------------------------------------------------------------
+
+const FLAG_SET = { FUSION_ALLOW_RULES_WRITE: "1" };
+
+describe("FUSION_ALLOW_RULES_WRITE on the write-tool path", () => {
+  it(
+    "blocks an Edit to a rule file when the flag is unset",
+    () => {
+      // The control for every case below. If this stopped blocking, the
+      // flag-set cases would prove nothing: they would be asserting an allow
+      // that was already there.
+      withProject(({ root }) => {
+        const res = runWrite(root, resolve(root, "rules/x.md"));
+
+        expect(res.decision).toBe("block");
+        expect(res.reason).toContain("Protected path");
+        expect(res.reason).toContain("rules/x.md");
+
+        const state = readEscalation(root);
+        expect(state?.consecutiveBlocks).toBe(1);
+        expect(state?.haltActive).toBe(false);
+        expect(readEvents(root).map((e) => e.event)).toEqual(["guard_block"]);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "allows the same Edit with the flag set, and records one advisory",
+    () => {
+      withProject(({ root }) => {
+        const res = runWrite(root, resolve(root, "rules/x.md"), "Edit", FLAG_SET);
+
+        expect(res.decision).toBeUndefined();
+
+        // The advisory is FIRST, not ONLY: the exemption waives CHECK 2 and
+        // nothing else, so the write continues into the ordinary allow path,
+        // which emits guard_allow. Asserting the whole sequence pins that.
+        const events = readEvents(root);
+        expect(events.map((e) => e.event)).toEqual([
+          "guard_advisory",
+          "guard_allow",
+        ]);
+        expect(events[0]?.tool).toBe("Edit");
+        expect(events[0]?.file).toBe("rules/x.md");
+        expect(events[0]?.detail).toContain("FUSION_ALLOW_RULES_WRITE");
+        expect(events[0]?.detail).toContain("rules/x.md");
+
+        // One clear-level entry in escalation.json, the same shape the git
+        // override note writes, and no block recorded.
+        const state = readEscalation(root);
+        const clears = (state?.recentEvents ?? []).filter(
+          (e) => e.level === "clear",
+        );
+        expect(clears).toHaveLength(1);
+        expect(clears[0]?.trigger).toBe("rules_write_exemption");
+        expect(clears[0]?.message).toContain("FUSION_ALLOW_RULES_WRITE");
+        expect(clears[0]?.filePath).toBe("rules/x.md");
+        expect(clears[0]?.toolName).toBe("Edit");
+        expect(state?.consecutiveBlocks).toBe(0);
+        expect(state?.haltActive).toBe(false);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "exempts a rule file inside retired/, which needs no pattern of its own",
+    () => {
+      // `rules/retired/` is the destination the curator job moves a retired
+      // rule into. It is inside `rules/`, so it falls out of the same pattern —
+      // asserted rather than assumed, because the whole retirement flow rests
+      // on it.
+      withProject(({ root }) => {
+        const res = runWrite(
+          root,
+          resolve(root, "rules/retired/old.md"),
+          "Write",
+          FLAG_SET,
+        );
+
+        expect(res.decision).toBeUndefined();
+        const events = readEvents(root);
+        expect(events[0]?.event).toBe("guard_advisory");
+        expect(events[0]?.file).toBe("rules/retired/old.md");
+        expect(events[0]?.tool).toBe("Write");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "still blocks agents/** with the flag set",
+    () => {
+      withProject(({ root }) => {
+        const res = runWrite(
+          root,
+          resolve(root, "agents/coder.md"),
+          "Edit",
+          FLAG_SET,
+        );
+
+        expect(res.decision).toBe("block");
+        expect(res.reason).toContain("Protected path");
+
+        const state = readEscalation(root);
+        expect(state?.consecutiveBlocks).toBe(1);
+        expect(
+          (state?.recentEvents ?? []).some(
+            (e) => e.trigger === "rules_write_exemption",
+          ),
+        ).toBe(false);
+        expect(readEvents(root).map((e) => e.event)).toEqual(["guard_block"]);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "still blocks skills/** with the flag set",
+    () => {
+      withProject(({ root }) => {
+        const res = runWrite(
+          root,
+          resolve(root, "skills/demo/SKILL.md"),
+          "Edit",
+          FLAG_SET,
+        );
+
+        expect(res.decision).toBe("block");
+        expect(res.reason).toContain("Protected path");
+        expect(readEscalation(root)?.consecutiveBlocks).toBe(1);
+        expect(readEvents(root).map((e) => e.event)).toEqual(["guard_block"]);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "does not lift an active halt",
+    () => {
+      // The property the flag most obviously must not have. CHECK 1 runs above
+      // CHECK 2, so a halted guard blocks the exempted write like any other —
+      // and the halt state must survive the call untouched, which is why the
+      // state is asserted and not only the verdict.
+      withProject(
+        ({ root }) => {
+          const res = runWrite(
+            root,
+            resolve(root, "rules/x.md"),
+            "Edit",
+            FLAG_SET,
+          );
+
+          expect(res.decision).toBe("block");
+          expect(res.reason).toContain("[HALTED]");
+
+          const state = readEscalation(root);
+          expect(state?.haltActive).toBe(true);
+          expect(state?.consecutiveBlocks).toBe(3);
+          expect(
+            (state?.recentEvents ?? []).some(
+              (e) => e.trigger === "rules_write_exemption",
+            ),
+          ).toBe(false);
+          expect(readEvents(root).map((e) => e.event)).toEqual(["guard_halt"]);
+        },
+        { escalation: { haltActive: true, consecutiveBlocks: 3 } },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "does not exempt an un-canonical spelling that names a non-rule path",
+    () => {
+      // These two spellings arrive UNCOLLAPSED here and nowhere else.
+      // `normalizeToRelative` returns a relative path untouched (guard.ts), and
+      // an absolute one goes through `resolve`, which would collapse both. So
+      // the raw relative form is the only way to reach the predicate with them,
+      // and `runGuard` is used directly to bypass any helper that might
+      // normalise on the way in.
+      withProject(({ root }) => {
+        // Control: the relative route itself works and IS exempted, so the two
+        // denials below are the canonicalisation, not a rejection of relative
+        // paths.
+        const ok = runGuard(
+          root,
+          "Edit",
+          { file_path: "rules/x.md" },
+          FLAG_SET,
+        );
+        expect(ok.decision).toBeUndefined();
+
+        // Matches `rules/**` textually, WRITES agents/coder.md.
+        const traversal = runGuard(
+          root,
+          "Edit",
+          { file_path: "rules/../agents/coder.md" },
+          FLAG_SET,
+        );
+        expect(traversal.decision).toBe("block");
+        expect(traversal.reason).toContain("Protected path");
+
+        // The bare rule directory. `rules/**` compiles to `^rules/.*$`, whose
+        // `.*` matches the empty string, so `rules/` matches while `rules`
+        // does not. The flag permits writing rule FILES; it does not permit
+        // taking the directory.
+        const dir = runGuard(root, "Edit", { file_path: "rules/" }, FLAG_SET);
+        expect(dir.decision).toBe("block");
+        expect(dir.reason).toContain("Protected path");
+      });
     },
     CASE_TIMEOUT,
   );

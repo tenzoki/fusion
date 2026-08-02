@@ -296,7 +296,7 @@ The Turn boundary sits between Step 5 and Step 6. See `## Sizing` for why.
 - **Acceptance criteria served:** the boundary half of `:322` through `:325`.
 - **Verification:** `cd hooks && npx vitest run lib/__tests__/rules-write-exemption.test.ts` — covering the exempt set, the never-exempt set including `fusion-guard.json`, the bare `rules` directory being outside the exempt set, and the flag spellings including `"0"`, `"yes"`, empty string and undefined.
 
-### Step 3 — C5a on the write-tool path
+### Step 3 [DONE] — C5a on the write-tool path
 
 - **Executor:** `coder`
 - **Files:** `hooks/guard.ts`, `hooks/lib/__tests__/guard-rules-write-integration.test.ts`
