@@ -157,7 +157,7 @@ function fileWithHeaderAt(n: number): string {
 }
 
 describe("provenance-header lint: every rule file carries a header", () => {
-  it("passes on the whole corpus — every rules/*.md has a header in the window", () => {
+  it("passes on the whole corpus — every rules/**/*.md has a header in the window", () => {
     const missing = gatedFiles()
       .filter(({ abs }) => headerLine(readFileSync(abs, "utf-8")) === null)
       .map(({ rel }) => rel);
@@ -172,7 +172,7 @@ describe("provenance-header lint: every rule file carries a header", () => {
     // corpus test with zero files scanned.
     expect(
       gatedFiles().length,
-      `no rules/*.md files found under ${pluginRoot} — the corpus test above would pass vacuously`,
+      `no rules/**/*.md files found under ${pluginRoot} — the corpus test above would pass vacuously`,
     ).toBeGreaterThan(0);
   });
 });

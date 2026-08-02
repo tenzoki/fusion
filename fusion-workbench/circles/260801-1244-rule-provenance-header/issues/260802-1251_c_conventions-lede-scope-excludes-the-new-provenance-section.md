@@ -47,3 +47,6 @@ Roughly:
 Note for whoever picks this up: `circles/260801-1244-curator` C9 partitions this file
 into shards. If the partition is close, the lede is rewritten there anyway and this fix
 should be folded into it rather than applied twice.
+
+---
+Resolved: 7703330 — the lede now reads "and for the rule files those agents load" and lists provenance headers as a ninth subject. CLAUDE.md got the same addition plus a parenthetical naming it as the one subject governed outside fusion-workbench/.

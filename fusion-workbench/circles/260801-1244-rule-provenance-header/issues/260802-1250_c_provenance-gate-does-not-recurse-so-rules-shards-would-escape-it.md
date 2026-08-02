@@ -56,3 +56,6 @@ directory names too, so a directory literally named `something.md` would reach
 Whichever is taken, correct the header-comment claim at `:19-21` to say what the file set
 actually is. Sibling precedent for nesting exists: `path-literal-lint.test.ts` reads
 `skills/*/SKILL.md`, one level down.
+
+---
+Resolved: cc004fc — gatedFiles() now uses readdirSync({ recursive: true, withFileTypes: true }), filtered on isFile(), with rel built by relative() so a nested file is reported at a path the reader can open. Verified by mutation: removing recursive fails 3 of 27 tests while the corpus test stays green. Traversal is driven through a temp tree, since the flat corpus cannot distinguish the two behaviours.

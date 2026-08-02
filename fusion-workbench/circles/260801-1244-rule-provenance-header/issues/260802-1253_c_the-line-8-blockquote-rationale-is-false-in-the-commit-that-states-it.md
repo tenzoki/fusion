@@ -48,3 +48,6 @@ is "wide enough that a file whose lede is a blockquote can carry the header afte
 lede instead". That remains true for `context-manifest.md` only if you mentally remove
 the header first (blockquote back to 3-8, header lands at 10). Worth a clause saying so,
 or the sentence invites a reader to try it and land at line 12.
+
+---
+Resolved: cc004fc (test comment) and 7703330 (conventions prose). Both sites now state the measured bound: the longest lede runs 5 to 10, an after-lede header would land at 12, and the margin is zero, which costs nothing because every file carries its header on line 3.

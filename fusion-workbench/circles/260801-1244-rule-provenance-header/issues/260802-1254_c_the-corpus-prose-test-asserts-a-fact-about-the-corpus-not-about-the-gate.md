@@ -57,3 +57,6 @@ against going vacuous (`:318-323`). It proves the position rule; the
   covers every file's header.
 - Rewrite `:207-210` to say what is true: the line is rejected because the keyword does
   not open it. Case and the colon are covered by the fixtures at `:186-187`.
+
+---
+Resolved: cc004fc — the corpus-reading test is removed and the fixture relabelled. The comment claimed coverage the fixture could not reach: the line dies at the anchor before case or colon is evaluated. Case, colon and anchor rejection each keep their dedicated fixture; position is proven by the conventions-file test, whose decoy genuinely matches the regex.
