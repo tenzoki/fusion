@@ -144,6 +144,11 @@ const SEED_FILES: Record<string, string> = {
   "rules/x.md": "# a rule\n",
   "agents/coder.md": "# an agent\n",
   "skills/demo/SKILL.md": "# a skill\n",
+  // The retirement destination a rule-file move needs, and the second rule
+  // root. Both exist in every project so a case can name them without first
+  // having to build the directory it wants to write into.
+  "rules/retired/.keep": "",
+  ".claude/rules/local.md": "# a project-wide rule\n",
   // Unprotected, for the allow side.
   "notes.txt": "notes\n",
   "build/out.js": "// built\n",
@@ -153,12 +158,51 @@ const SEED_FILES: Record<string, string> = {
   "fusion-workbench/.fusion-setup": '{"harness":true}\n',
 };
 
-function seed(root: string): void {
-  for (const [rel, content] of Object.entries(SEED_FILES)) {
+function seed(root: string, files: Record<string, string>): void {
+  for (const [rel, content] of Object.entries(files)) {
     const abs = resolve(root, rel);
     mkdirSync(dirname(abs), { recursive: true });
     writeFileSync(abs, content, "utf-8");
   }
+}
+
+/** The state a freshly-seeded `escalation.json` starts from. */
+const EMPTY_ESCALATION: EscalationSnapshot = {
+  haltActive: false,
+  consecutiveBlocks: 0,
+  lastBlockTimestamp: null,
+  recentEvents: [],
+};
+
+function seedEscalation(
+  root: string,
+  partial: Partial<EscalationSnapshot>,
+): void {
+  const dir = stateDir(root);
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(
+    resolve(dir, "escalation.json"),
+    JSON.stringify({ ...EMPTY_ESCALATION, ...partial }, null, 2),
+    "utf-8",
+  );
+}
+
+export interface ProjectOptions {
+  /** Add `.claude-plugin/plugin.json` naming fusion, so self-detect stands down. */
+  plugin?: boolean;
+  /**
+   * Extra project files, merged OVER `SEED_FILES`, so a case can add a file
+   * (`fusion-guard.json`) or replace a seeded one. Paths are root-relative;
+   * parent directories are created.
+   */
+  files?: Record<string, string>;
+  /**
+   * Guard state to write BEFORE the guard runs, merged over an empty snapshot.
+   * `{ haltActive: true }` is a halted project without the three real denials
+   * it would otherwise take to reach one — which also decouples the case from
+   * the escalation threshold.
+   */
+  escalation?: Partial<EscalationSnapshot>;
 }
 
 /**
@@ -169,13 +213,17 @@ function seed(root: string): void {
  * stand-down without borrowing the real repository, whose `.guard-state/`
  * counters a test must never touch.
  */
-export function makeProject(opts: { plugin?: boolean } = {}): Project {
+export function makeProject(opts: ProjectOptions = {}): Project {
   const base = realpathSync(mkdtempSync(resolve(tmpdir(), "fusion-guard-")));
   const root = resolve(base, "project");
   const alias = resolve(base, "alias");
 
   mkdirSync(root, { recursive: true });
-  seed(root);
+  seed(root, { ...SEED_FILES, ...(opts.files ?? {}) });
+
+  if (opts.escalation !== undefined) {
+    seedEscalation(root, opts.escalation);
+  }
 
   if (opts.plugin === true) {
     mkdirSync(resolve(root, ".claude-plugin"), { recursive: true });
@@ -211,9 +259,17 @@ function disposeProject(project: Project): void {
   rmSync(dirname(project.root), { recursive: true, force: true });
 }
 
-/** Run `fn` against a fresh throwaway project, cleaned up afterwards. */
-export function withProject<T>(fn: (project: Project) => T): T {
-  const project = makeProject();
+/**
+ * Run `fn` against a fresh throwaway project, cleaned up afterwards.
+ *
+ * `opts` is optional and forwarded to `makeProject`, so every existing call
+ * site keeps its meaning: `withProject(fn)` is still a default project.
+ */
+export function withProject<T>(
+  fn: (project: Project) => T,
+  opts: Omit<ProjectOptions, "plugin"> = {},
+): T {
+  const project = makeProject(opts);
   try {
     return fn(project);
   } finally {
@@ -225,13 +281,26 @@ export function withProject<T>(fn: (project: Project) => T): T {
  * Run `fn` against a fresh throwaway root that LOOKS like the fusion plugin's
  * own source tree, so the self-detect stand-down applies.
  */
-export function withPluginProject<T>(fn: (project: Project) => T): T {
-  const project = makeProject({ plugin: true });
+export function withPluginProject<T>(
+  fn: (project: Project) => T,
+  opts: Omit<ProjectOptions, "plugin"> = {},
+): T {
+  const project = makeProject({ ...opts, plugin: true });
   try {
     return fn(project);
   } finally {
     disposeProject(project);
   }
+}
+
+/**
+ * `fusion-guard.json` content for a `files` map.
+ *
+ * An object is stringified; a string is written verbatim, so a case can supply
+ * text that is deliberately not JSON and assert what the loader does with it.
+ */
+export function projectConfig(value: object | string): string {
+  return typeof value === "string" ? value : JSON.stringify(value, null, 2) + "\n";
 }
 
 /* ------------------------------------------------------------------ *
@@ -253,12 +322,45 @@ interface HookInput {
 }
 
 /**
+ * Every environment variable the guard reads as a permission, stripped from the
+ * child unless a case asks for it by passing it in `overrides`.
+ *
+ * Without the strip, a developer who exports one of these in their own shell
+ * gets different verdicts from everyone else, and the flag-UNSET half of every
+ * case that depends on one silently stops testing anything: it asserts a deny
+ * that the developer's environment has already lifted. The failure is invisible
+ * — the suite is green on both machines, and only one of them is checking the
+ * property.
+ *
+ * `FUSION_ALLOW_RULES_WRITE` is here for exactly the reason the two branch
+ * variables are. It gates the rules-write exemption, so an exported copy would
+ * void the flag-unset half of the criteria that exemption is meant to prove.
+ */
+const STRIPPED_ENV_VARS = [
+  "FUSION_ALLOW_BRANCH_SWITCH",
+  "FUSION_ALLOW_WORKTREE",
+  "FUSION_ALLOW_RULES_WRITE",
+] as const;
+
+/**
+ * The environment `runGuard` hands to the child, exported so a case can assert
+ * on the strip itself. Overrides are applied last, so a case that deliberately
+ * sets one of the stripped variables still gets it.
+ */
+export function childEnv(
+  overrides: Record<string, string> = {},
+): NodeJS.ProcessEnv {
+  const env = { ...process.env };
+  for (const name of STRIPPED_ENV_VARS) delete env[name];
+  return { ...env, ...overrides };
+}
+
+/**
  * Spawn the guard as a real subprocess with `cwd` set to `root`, feed it one
  * PreToolUse payload, and return the parsed verdict.
  *
- * The two override env vars are stripped unless a case passes them, so a
- * developer whose own shell exports `FUSION_ALLOW_BRANCH_SWITCH` gets the same
- * verdicts everyone else does.
+ * The permission env vars are stripped unless a case passes them — see
+ * `childEnv`.
  */
 export function runGuard(
   root: string,
@@ -267,10 +369,6 @@ export function runGuard(
   overrides: Record<string, string> = {},
 ): GuardResult {
   const entry = guardEntry();
-
-  const env = { ...process.env };
-  delete env.FUSION_ALLOW_BRANCH_SWITCH;
-  delete env.FUSION_ALLOW_WORKTREE;
 
   const input: HookInput = {
     session_id: "guard-harness",
@@ -282,7 +380,7 @@ export function runGuard(
   const run = spawnSync(entry.bin, entry.args, {
     cwd: root,
     encoding: "utf-8",
-    env: { ...env, ...overrides },
+    env: childEnv(overrides),
     input: JSON.stringify(input),
   });
 
