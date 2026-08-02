@@ -516,3 +516,61 @@
 {"ts":"2026-08-01T18:49:11","event":"portfolio_refresh","detail":"portfolio.md regenerated; next = 260801-1244-rule-provenance-header"}
 {"ts":"2026-08-01T18:49:11","event":"session_end","detail":"3 turns, 16 commits, 14 tasks, coherent"}
 {"ts":"2026-08-01T21:02:15","event":"session_start","detail":"setup only; no directive stated yet; domain=code; no active Circle"}
+{"ts":"2026-08-01T21:18:27","event":"session_start","detail":"setup complete; no directive stated yet; domain=code"}
+{"ts":"2026-08-01T21:59:59","event":"session_start","detail":"setup only; no directive stated yet; domain=code"}
+{"ts":"2026-08-02T06:29:05","event":"circle_activated","detail":"260801-1244-rule-provenance-header: _a_ -> _t_, .active-circle written"}
+{"ts":"2026-08-02T06:29:05","event":"plane_push","detail":"activation; 0 pushed, 1 deferred (PLANE_API_KEY absent)"}
+{"ts":"2026-08-02T06:49:40","event":"session_start","detail":"Circle 260801-1244-rule-provenance-header; domain=code; mode=custom"}
+{"ts":"2026-08-02T08:13:18","event":"scope_resolved","detail":"mode=custom; C8 provenance headers; shaper->planner->coder; 1 gate answered (shaper settles header shape)"}
+{"ts":"2026-08-02T08:13:18","event":"shaper_start","detail":"in-circle grounding refresh + 3 open gate-shape questions"}
+{"ts":"2026-08-02T09:06:41","event":"shaper_done","detail":"circles/260801-1244-rule-provenance-header/planning/260802-1103_o_spec-rule-provenance-header.md"}
+{"ts":"2026-08-02T09:06:41","event":"conceptrev_start","detail":"spec 260802-1103, 1 mermaid diagram"}
+{"ts":"2026-08-02T09:09:20","event":"conceptrev_done","detail":"verdict=acceptable; 1 diagram; missing edge CONV->RULES"}
+{"ts":"2026-08-02T09:26:12","event":"gate_response","detail":"spec approved with two fixes; both applied"}
+{"ts":"2026-08-02T09:26:12","event":"planner_start","detail":"spec 260802-1103_o_spec-rule-provenance-header.md"}
+{"ts":"2026-08-02T09:35:13","event":"planner_done","detail":"circles/260801-1244-rule-provenance-header/planning/260802-1131_o_plan-rule-provenance-header.md; 4 steps, all coder"}
+{"ts":"2026-08-02T09:35:13","event":"conceptrev_start","detail":"plan 260802-1131, 2 mermaid diagrams"}
+{"ts":"2026-08-02T10:19:27","event":"conceptrev_done","detail":"verdict=acceptable; 2 diagrams; parser-validated"}
+{"ts":"2026-08-02T10:19:27","event":"gate_response","detail":"plan approved; 5th step added by user (template header); version bump + CLAUDE.md deferred to session close"}
+{"ts":"2026-08-02T10:19:27","event":"queue_built","detail":"5 tasks, all coder, 0 blocked at start"}
+{"ts":"2026-08-02T10:19:27","event":"turn_start","turn":1,"detail":"5 tasks ready"}
+{"ts":"2026-08-02T10:24:47","event":"task_done","turn":1,"task":"P-1","agent":"coder","detail":"ten headers backfilled"}
+{"ts":"2026-08-02T10:24:47","event":"commit","turn":1,"task":"P-1","detail":"929dbf5 docs(rules): give all ten rule files a Provenance header"}
+{"ts":"2026-08-02T10:24:47","event":"task_start","turn":1,"task":"P-2","agent":"coder","detail":"conventions section"}
+{"ts":"2026-08-02T10:27:42","event":"task_done","turn":1,"task":"P-2","agent":"coder","detail":"conventions section added"}
+{"ts":"2026-08-02T10:27:42","event":"commit","turn":1,"task":"P-2","detail":"c2c2a04 docs(rules): document the provenance-header convention"}
+{"ts":"2026-08-02T10:27:42","event":"task_start","turn":1,"task":"P-3","agent":"coder","detail":"lint gate test file"}
+{"ts":"2026-08-02T10:32:54","event":"task_done","turn":1,"task":"P-3","agent":"coder","detail":"lint gate, 24 tests"}
+{"ts":"2026-08-02T10:32:54","event":"commit","turn":1,"task":"P-3","detail":"de9d5aa test(hooks): lint gate for provenance headers on rule files"}
+{"ts":"2026-08-02T10:32:54","event":"task_start","turn":1,"task":"P-4","agent":"coder","detail":"investigator template header"}
+{"ts":"2026-08-02T10:35:46","event":"task_done","turn":1,"task":"P-4","agent":"coder","detail":"template header + lede clause"}
+{"ts":"2026-08-02T10:35:46","event":"commit","turn":1,"task":"P-4","detail":"482e9c3 docs(templates): placeholder Provenance header"}
+{"ts":"2026-08-02T10:35:46","event":"task_start","turn":1,"task":"P-5","agent":"coder","detail":"acceptance sweep"}
+{"ts":"2026-08-02T10:41:29","event":"task_done","turn":1,"task":"P-5","agent":"coder","detail":"8/8 criteria pass"}
+{"ts":"2026-08-02T10:41:29","event":"commit","turn":1,"task":"P-5","detail":"cac3726 chore(workbench): acceptance sweep"}
+{"ts":"2026-08-02T10:41:29","event":"review_start","turn":1,"agent":"coderev","detail":"12 changed paths across 5 commits"}
+{"ts":"2026-08-02T11:26:24","event":"review_done","turn":1,"agent":"coderev","detail":"7 issues filed, none critical"}
+{"ts":"2026-08-02T11:26:24","event":"coherence_review","turn":1,"verdict":"ok","detail":"A-G: 7 issues, none blocking | A-D: 5 commits move toward Directive, 8/8 criteria | G-D: 1 active decision, consistent"}
+{"ts":"2026-08-02T11:26:24","event":"turn_end","turn":1,"detail":"5 tasks resolved, 7 issues created, 5 commits"}
+{"ts":"2026-08-02T11:26:45","event":"turn_start","turn":2,"detail":"4 review findings queued"}
+{"ts":"2026-08-02T11:26:45","event":"task_start","turn":2,"task":"T2-A","agent":"coder","detail":"gate recursion + prose test + test comment"}
+{"ts":"2026-08-02T11:34:06","event":"task_done","turn":2,"task":"T2-A","agent":"coder","detail":"recursion + prose test + comment; 27 tests"}
+{"ts":"2026-08-02T11:34:06","event":"commit","turn":2,"task":"T2-A","detail":"cc004fc fix(hooks): the provenance gate now recurses"}
+{"ts":"2026-08-02T11:34:06","event":"task_start","turn":2,"task":"T2-B","agent":"coder","detail":"conventions lede scope + line-8 rationale + CLAUDE.md"}
+{"ts":"2026-08-02T11:45:50","event":"task_done","turn":2,"task":"T2-B","agent":"coder","detail":"lede scope + rationale + CLAUDE.md"}
+{"ts":"2026-08-02T11:45:50","event":"commit","turn":2,"task":"T2-B","detail":"7703330 docs(rules): conventions lede now covers the section it hosts"}
+{"ts":"2026-08-02T11:45:50","event":"review_done","turn":2,"agent":"coderev","detail":"3 new findings, none blocking; 4 Turn-1 findings verified fixed"}
+{"ts":"2026-08-02T11:45:50","event":"coherence_review","turn":2,"verdict":"ok","detail":"A-G: 4 findings closed, 3 new, none blocking | A-D: 2 commits close self-inflicted inaccuracies, Directive intact | G-D: no decision touched"}
+{"ts":"2026-08-02T11:45:50","event":"turn_end","turn":2,"detail":"4 issues resolved, 3 created, 2 commits"}
+{"ts":"2026-08-02T12:05:38","event":"turn_start","turn":3,"detail":"3 fix-pass findings"}
+{"ts":"2026-08-02T12:05:38","event":"task_start","turn":3,"task":"T3-A","agent":"coder","detail":"CLAUDE.md parenthetical + stale strings + engines floor"}
+{"ts":"2026-08-02T12:10:05","event":"task_done","turn":3,"task":"T3-A","agent":"coder","detail":"3 one-line fixes"}
+{"ts":"2026-08-02T12:10:05","event":"commit","turn":3,"task":"T3-A","detail":"b568ad9 fix: three follow-ups from the Turn 2 review"}
+{"ts":"2026-08-02T12:10:05","event":"review_skipped","turn":3,"detail":"deliberate: 3 one-line edits in twice-reviewed code; factual claim verified with line numbers by executor"}
+{"ts":"2026-08-02T12:10:05","event":"coherence_review","turn":3,"verdict":"ok","detail":"A-G: 3 findings closed, 0 new | A-D: 1 commit corrects a false claim, Directive intact | G-D: no decision touched"}
+{"ts":"2026-08-02T12:10:05","event":"turn_end","turn":3,"detail":"3 issues resolved, 0 created, 1 commit"}
+{"ts":"2026-08-02T12:10:05","event":"reconciliation","detail":"dispatching reconciler, domain=code"}
+{"ts":"2026-08-02T15:32:38","event":"gate_hit","detail":"Rebalance gate, reconciler verdict review-needed"}
+{"ts":"2026-08-02T15:32:38","event":"rebalance_directive","detail":"bounded: correct Directive text on the Circle record only; no re-shape, no re-plan, work unchanged"}
+{"ts":"2026-08-02T15:36:22","event":"plane_push","detail":"closure; 0 pushed, 12 deferred (PLANE_API_KEY absent)"}
+{"ts":"2026-08-02T15:36:22","event":"circle_closed","detail":"260801-1244-rule-provenance-header: _t_ -> _c_, pointer cleared"}

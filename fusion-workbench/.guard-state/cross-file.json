@@ -399,8 +399,63 @@
       "pingBackCount": 0,
       "totalEdits": 1,
       "lastEditTimestamp": "2026-08-01T11:39:18.014Z"
+    },
+    "history/260802-0848-orchestrator-session.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-02T06:49:36.700Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/orchestrator-live.md": {
+      "pingBackCount": 1,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-02T12:05:46.813Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/provenance-header-lint.test.ts": {
+      "pingBackCount": 1,
+      "totalEdits": 12,
+      "lastEditTimestamp": "2026-08-02T12:07:47.902Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-rule-provenance-header/history/260802-1332-coder-provenance-gate-review-fixes.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-02T11:33:07.201Z"
+    },
+    "260802-1343_o_claude-md-parenthetical-claims-provenance-is-the-only-subject-outside-the-workbench.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-02T11:43:42.130Z"
+    },
+    "260802-1344_o_corpus-test-name-and-vacuity-message-still-say-rules-star-md-after-the-set-became-recursive.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-02T11:43:51.502Z"
+    },
+    "260802-1345_o_the-recursion-fix-raises-the-node-floor-to-20-12-and-no-engines-field-declares-it.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-02T11:44:06.705Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-rule-provenance-header/reviews/260802-1345-coderev-turn2-rule-provenance-header.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-02T11:45:13.742Z"
+    },
+    "/Users/k1/Projects/productive/fusion/CLAUDE.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-02T12:07:45.106Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/package.json": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-02T12:07:52.290Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-rule-provenance-header/history/260802-1408-coder-turn3-review-followups.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-02T12:09:03.659Z"
     }
   },
-  "lastEditFile": "/Users/kai/Projects/productive/F04-FUSION/codebase/fusion/fusion-workbench/agentstate.yaml",
-  "lastEditTimestamp": "2026-08-01T11:39:18.014Z"
+  "lastEditFile": "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-rule-provenance-header/history/260802-1408-coder-turn3-review-followups.md",
+  "lastEditTimestamp": "2026-08-02T12:09:03.659Z"
 }

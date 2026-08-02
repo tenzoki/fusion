@@ -13,3 +13,6 @@ What is not affected. `hooks/tsconfig.json` excludes `lib/__tests__`, so no test
 A secondary observation, pre-existing and not filed separately: because `tsconfig.json` excludes `lib/__tests__` from the `tsc` step of `npm test`, and vitest transpiles without type-checking, no test file in this repository is type-checked. A `parentPath` typo would not be caught by the build even though `@types/node ^25.6.0` knows the property.
 
 Scope: `hooks/package.json`. Node 18 reached end of life in April 2025, so a `>=20.12` floor costs nothing.
+
+---
+Resolved: b568ad9 — hooks/package.json declares engines node >=20.12.0, the release that added dirent.parentPath. The prior binding floor was vitest 2.1.9 admitting Node 18, where the property does not exist.

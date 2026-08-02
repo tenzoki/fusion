@@ -67,3 +67,34 @@ Checked directly against the current prompts. **Five of the seven rows are still
 **On the overlap the reconciliation brief asked about:** the cadence skill is a *new consumer* of the derivation mechanism, not a fix to it. `skills/cadence/SKILL.md` names `$OUT_MEMO` and `$SCAN_HISTORY`, and `bin/fusion-paths cadence` correctly emits `WORKBENCH`, `OUT_MEMO`, `SCAN_HISTORY` and nothing else (verified against `./bin/fusion-paths`, exit 0). That is a positive datapoint for the derivation design — a prompt authored long after the change got its key set right with no resolver edit, which is the property the design was chosen for. But this issue is about **agent prompts missing a step they are documented to perform**, and the v5.7.0 diff (`git diff 47c4398..HEAD`, seven files) touches nothing under `agents/`. No row moved.
 
 Remaining work is smaller than filed: five rows, four of them one-line prompt additions, one (`planner` → `$OUT_ISSUE`) a real inconsistency between what the prompt promises and what it can resolve.
+
+---
+
+**Reconciliation 260802-1413 (reconciler, domain `code`) — stays `_o_`. Live corroboration for four of the five remaining rows, from a session that was not looking for it.**
+
+The planner reported during `circles/260801-1244-rule-provenance-header` that `bin/fusion-paths planner` emits no `OUT_DECISION` key. The reconciler re-ran the resolver against this repository rather than taking the report, and the output corroborates more rows than the one reported.
+
+```
+$ FUSION_PLUGIN_ROOT=$PWD ./bin/fusion-paths planner
+WORKBENCH=…  CIRCLE=…  OUT_PLAN=…  OUT_HISTORY=…
+SCAN_PLANS=…  SCAN_ISSUES=…  SCAN_DECISIONS=…
+
+$ FUSION_PLUGIN_ROOT=$PWD ./bin/fusion-paths shaper
+… OUT_PLAN=…  OUT_ISSUE=…  OUT_DECISION=…  OUT_CIRCLE=…
+SCAN_ISSUES=…  SCAN_DECISIONS=…  SCAN_CIRCLES=…
+```
+
+Four rows confirmed against the resolver's actual output, not against a grep of the prompt:
+
+| Row | Confirmed how |
+|---|---|
+| `planner` → `$OUT_ISSUE` | Absent from the emitted set. A planner that files an issue today has no resolved write target. Still the most consequential row. |
+| `planner` → `$OUT_DECISION` | Absent. This is the row the planner surfaced. |
+| `planner` → `$SCAN_ANALYSES` | Absent. |
+| `shaper` → `$SCAN_PLANS` | Absent, and the contrast is sharp in the same output: shaper gets `OUT_PLAN` and every other store it writes, and no read key for prior specs and plans. |
+
+**Why this is evidence and not just a restatement.** The 260731-2324 pass reached its verdicts by reading prompts for a named `$KEY`, which is the right test for distinguishing a gap from a decided absence but tells you nothing about what an agent actually receives at run time. Running the resolver closes that loop from the other end: these four keys are not merely unnamed in the prompt, they are not in the emitted environment, so the gap is live rather than probable. The distinction matters because the derivation design makes the prompt the *only* source of the key set — an unnamed key cannot be supplied by any other route.
+
+`analyst` → `$SCAN_ANALYSES`, the fifth row, was not exercised this session and is unchanged.
+
+The two rows the previous pass struck (`coderev`/`ontorev` → `$OUT_HISTORY` and `$OUT_DECISION`) stay struck. Nothing this session touched `agents/`; `git diff --name-only e8988d9..b568ad9 -- agents/` returns nothing.

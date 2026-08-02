@@ -1,7 +1,7 @@
 # Spec: Provenance header on rule files (C8)
 
 **Date:** 2026-08-02
-**Status:** Draft
+**Status:** Complete
 **Circle:** `circles/260801-1244-rule-provenance-header`
 **Source:** C8 of `shared/planning/260801-1122_o_spec-normative-consolidation.md`, refined by one user clarification round on 2026-08-02. This document supersedes C8's four open questions and is the input the planner works from. Everything C8 states that is not restated or corrected here still holds.
 
@@ -128,14 +128,14 @@ That section carries a `Binding decision:` line citing `shared/decisions/260801-
 
 The eight criteria from C8, restated with the count corrected and with the four settled questions written concretely.
 
-- [ ] `rules/fusion-workbench-conventions.md` documents the convention: the `Provenance:` keyword, the three accepted citation forms, the first-ten-lines position rule and why ten, and the exact admission wording for a file with no recoverable record.
-- [ ] All **ten** files in the plugin's `rules/` directory carry a `Provenance:` line within their first ten lines, each matching the citation named for it in the backfill table above.
-- [ ] The gate fails when a file in the plugin's `rules/` directory has no matching line in its first ten lines. The failure message names the offending file and states the fix, including the admission form for the case where no record is recoverable.
-- [ ] The gate passes on the backfilled corpus and `npm test` is green.
-- [ ] A rule file with no header fails the suite, demonstrated by a fixture rather than by adding a real file to `rules/`. A fixture whose only `Provenance:` line sits at line 11 or later also fails, and a fixture carrying a `Cross-references:` or `Binding decision:` line and no `Provenance:` line also fails.
-- [ ] The convention text states the curator's obligation to write a header whenever it creates a rule file and to preserve or update the existing header whenever it edits one. The curator does not exist yet. It is built in `circles/260801-1244-curator`, so this Circle owes the written obligation and the curator Circle owes the behaviour.
-- [ ] `bin/fusion-rules` is unchanged. It continues to emit paths without reading file content.
-- [ ] The conventions-file section documenting the convention cites `shared/decisions/260801-1020_a_provenance-header-on-rule-files.md` as its motivating record, in the existing section-scoped `Binding decision:` form.
+- [x] `rules/fusion-workbench-conventions.md` documents the convention: the `Provenance:` keyword, the three accepted citation forms, the first-ten-lines position rule and why ten, and the exact admission wording for a file with no recoverable record.
+- [x] All **ten** files in the plugin's `rules/` directory carry a `Provenance:` line within their first ten lines, each matching the citation named for it in the backfill table above.
+- [x] The gate fails when a file in the plugin's `rules/` directory has no matching line in its first ten lines. The failure message names the offending file and states the fix, including the admission form for the case where no record is recoverable.
+- [x] The gate passes on the backfilled corpus and `npm test` is green.
+- [x] A rule file with no header fails the suite, demonstrated by a fixture rather than by adding a real file to `rules/`. A fixture whose only `Provenance:` line sits at line 11 or later also fails, and a fixture carrying a `Cross-references:` or `Binding decision:` line and no `Provenance:` line also fails.
+- [x] The convention text states the curator's obligation to write a header whenever it creates a rule file and to preserve or update the existing header whenever it edits one. The curator does not exist yet. It is built in `circles/260801-1244-curator`, so this Circle owes the written obligation and the curator Circle owes the behaviour.
+- [x] `bin/fusion-rules` is unchanged. It continues to emit paths without reading file content.
+- [x] The conventions-file section documenting the convention cites `shared/decisions/260801-1020_a_provenance-header-on-rule-files.md` as its motivating record, in the existing section-scoped `Binding decision:` form.
 
 #### Decisions made
 
@@ -187,3 +187,34 @@ Four, each a consequence of a settled decision rather than an open question. The
 ## User Decisions Pending
 
 None. The four questions C8 left open were answered on 2026-08-02 and are recorded above. The fourth is closed at `circles/260801-1244-rule-provenance-header/decisions/260802-1018_a_what-a-rule-file-with-no-recoverable-record-cites.md`.
+
+---
+
+## Reconciliation Log
+
+**260802-1413 (reconciler, domain `code`) — Status Draft → Complete, marker `_o_` → `_c_`. All eight acceptance criteria ticked on verified evidence.**
+
+Each criterion was re-checked against the tree at `b568ad9`. The evidence, one line per criterion:
+
+1. **Convention documented.** `rules/fusion-workbench-conventions.md:562` `## Provenance headers on rule files`. Read in full: it states the keyword, all three citation forms, the ten-line rule with its reason, and the admission wording verbatim.
+2. **All ten files carry a header in the window.** Ten files in `rules/`, ten matches, every one at line `3`, every citation identical to the backfill table above.
+3. **The gate fails and states the fix.** `report()` at `hooks/lib/__tests__/provenance-header-lint.test.ts:122-133` emits the file, the defect, and the three-form fix including the admission wording. Asserted by the tests at `:348`, `:362`, `:383`, `:404`.
+4. **Suite green.** `npm test` from `hooks/`, re-run by the reconciler at 260802-1411: 17 files, 780 tests, 0 failures.
+5. **Three negative fixtures, no real headerless file.** Present, in-memory. Nothing was added to `rules/`; `ls -1 rules/` still returns exactly the ten backfilled files.
+6. **Curator obligation written down.** `rules/fusion-workbench-conventions.md` "Whoever writes a rule file writes its header."
+7. **`bin/fusion-rules` unchanged.** `git diff --name-only e8988d9..HEAD -- bin/` returns nothing across the whole Circle.
+8. **Section-scoped `Binding decision:`.** `rules/fusion-workbench-conventions.md:592`, citing `shared/decisions/260801-1020_a_provenance-header-on-rule-files.md`, which resolves.
+
+### The accepted limitations, re-checked rather than assumed
+
+Two of the four are now measurable, and one of them is the Circle's honest ceiling.
+
+**"No backfilled file uses the decision-record form, so the superseded check has no live instance."** Confirmed, and it is permanent for this corpus rather than a day-one gap that later closes. Four files cite a Circle directory (`circles/260718-1924-v5x-overhaul` ×3, `circles/260801-1244-guard-bash-inspection` ×1); a directory carries no marker. Six cite `git:<hash>`; a commit carries no marker. The spec's own paragraph at `#### The backfill set is ten files, not nine` already established that neither cited Circle holds a decision record that motivated any of those files, so no citation in the backfill can be *upgraded* to form 1 later. The mechanical retirement check therefore exists for rule files written from now on and for none of the ten that exist today.
+
+**"Dead citations go uncaught."** Now demonstrated inside the conventions file itself rather than argued in the abstract. Two of the three `Binding decision:` lines in that file resolve to nothing: `:328` uses a pre-v4 root type-folder path, and `:688` names a record (`260519-1100_a_circle-stash-pop-design.md`) that `find` locates nowhere in the workbench. Filed as issue `260802-1252`, left `_o_` by user decision, cross-referenced to `circles/260801-1244-curator`.
+
+**Verified as still latent:** the archive coupling. The archive store holds zero files, so no citation can be archived out of reach yet.
+
+### One spec claim the work overtook
+
+`#### The position rule` states the corpus's longest opening blockquote runs to line 8 in `context-manifest.md`, "with one line to spare". Step 1's insertion made that false in the same Circle — the blockquote now runs 5 to 10 and the margin is zero. Caught by review as issue `260802-1253` and corrected at both live sites (`cc004fc` for the test comment, `7703330` for the conventions prose). The spec text above is deliberately **not** retro-edited: it records what was true when it was written, per the plan's own risk table.

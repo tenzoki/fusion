@@ -237,3 +237,15 @@ Nothing here blocks the Circle from closing. No finding is a release blocker.
    the whole fix.
 2. **Findings 2 and 3**, any time. Two strings and one manifest field, no
    dependencies between them or on anything else.
+
+---
+
+**Reconciliation annotation, 260802-1413 (reconciler). All three findings confirmed fixed in `b568ad9`; no finding text altered.**
+
+| Issue | Verified |
+|---|---|
+| `260802-1343` `CLAUDE.md` exclusivity parenthetical | `_c_`. The parenthetical is gone from `CLAUDE.md:30`, which now ends "…the decision-record template, and the provenance headers on rule files." The row and the conventions lede agree. |
+| `260802-1344` stale `rules/*.md` strings | `_c_`. `provenance-header-lint.test.ts:160` and `:175` both read `rules/**/*.md`, matching the recursive set `cc004fc` introduced. |
+| `260802-1345` undeclared Node floor | `_c_`. `hooks/package.json:5-7` declares `"engines": { "node": ">=20.12.0" }`. |
+
+Worth recording about this review specifically: all three findings were regressions introduced by the Turn 1 fix pass, and the review caught them in the same session that created them. That is the review loop working as intended rather than a sign of a sloppy fix pass.

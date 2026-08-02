@@ -73,3 +73,11 @@ Both halves of what D2 answered — the exemption AND the project-level configur
 `_i_` is terminal by the conventions, so a promotion on a seam would be unrecoverable without filing a superseding decision. A seam is preparation, not realisation.
 
 **What did change for this decision, and it is the point of the Circle:** the objection recorded in `shared/issues/260801-1156` — that a flag on the `Edit` path is worth little while `mv` is unguarded — no longer holds. That issue is now `_c_`. This decision's answer is unblocked rather than undercut.
+
+---
+
+**Reconciliation 260802-1413 (reconciler, domain `code`) — re-checked, stays `_a_`.**
+
+`FUSION_ALLOW_RULES_WRITE` still matches nothing across `hooks/`, `bin/`, `agents/`, `rules/`, `skills/` and `README-hooks.md` at `b568ad9`. The project-level guard configuration is likewise unbuilt. Realisation still belongs to `circles/260801-1244-guard-rules-write` (`_a_`).
+
+This session edited ten files under `rules/` without the flag and without an exemption, which is not a counter-example: the write guard stands down entirely in the plugin's own tree (`hooks/lib/self-detect.ts:18-33`), so the decision's mechanism was never on this Circle's path. Both the spec and the plan record that explicitly.

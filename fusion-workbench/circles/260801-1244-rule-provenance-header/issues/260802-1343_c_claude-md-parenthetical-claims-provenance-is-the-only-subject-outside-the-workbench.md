@@ -16,3 +16,6 @@ Consequence: `CLAUDE.md` is auto-loaded into every Claude session in this reposi
 Scope: `CLAUDE.md` only. The plugin's shipped behaviour is unaffected — `CLAUDE.md` is dev-only and is not copied by `install.sh`.
 
 Cross-reference: `circles/260801-1244-curator` C9 rewrites `rules/fusion-workbench-conventions.md` wholesale and may restate its scope. If the lede's subject list is revisited there, the `CLAUDE.md` row has to move with it.
+
+---
+Resolved: b568ad9 — the parenthetical is deleted. Four other parts of the conventions file govern outside the workbench: the path-literal rule (:7), Path Resolution (:91), Project language (:220) and Security (:602). The CLAUDE.md row and the conventions lede now agree.

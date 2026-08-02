@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** answered
+**Status:** implemented
 **Filed by:** shaper (in-Circle clarification)
 **Cross-references:** `shared/planning/260801-1122_o_spec-normative-consolidation.md` `### C8: Provenance header on rule files` (the capability); `shared/decisions/260801-1020_a_provenance-header-on-rule-files.md` (D3, which anticipated the case in one sentence and left it open); `circles/260801-1244-rule-provenance-header/_t_circle.md` `## Grounding snapshot` (the file-by-file evidence)
 
@@ -62,6 +62,19 @@ Answered: 2026-08-02, by the user. **Option 2, the admission plus the introducin
 Two consequences the answer does not cancel, both recorded in the spec's `## Accepted limitations`. A commit carries no state marker, so the superseded-rule check does not work against a commit citation. And D3 rejected git as the *primary* provenance mechanism; this answer admits it as a secondary, admission-scoped citation only, which is a narrower use than D3 rejected rather than a reversal of it.
 
 The backfill set turned out to be six files rather than five. `fusion-workbench-conventions.md` joins the group with no recoverable record, because the separately chosen `Provenance:` keyword means its existing `Binding decision:` line at :326 is a section note rather than a file header.
-Implemented:
+Implemented: `929dbf5` — six rule files carry the chosen form verbatim. Verified at `b568ad9` by `head -10` plus the spec's regex: `critical-stance.md` `git:dac82b8`, `decision-record-examples.md` `git:b05b423`, `design-diagrams.md` `git:bd5f6e6`, `fusion-workbench-conventions.md` `git:b05b423`, `git-branch-discipline.md` `git:4950ffa`, `user-facing-output.md` `git:c18a946`. Every one sits at line 3, and every one reproduces the answer's wording character for character, including the semicolon, the backticks around `git:<hash>` and the closing full stop. The gate that keeps them there is `hooks/lib/__tests__/provenance-header-lint.test.ts` (`de9d5aa`), green in a 780-test suite re-run at 260802-1411.
+
 Deferred:
 Superseded by:
+
+---
+
+**Reconciliation 260802-1413 (reconciler, domain `code`) — promoted `_a_` → `_i_`.**
+
+The promotion is on realisation, not on a plan step being ticked. What the answer chose was a form of words; six files on disk now carry that form, and a test in the suite fails if any rule file loses it. That is code and data reflecting the decision, which is what `_i_` requires.
+
+Two things the promotion does not claim, both restated so a later reader does not read more into the marker than it carries.
+
+The answer's own recorded consequence stands: a commit carries no state marker, so the superseded-rule check does not work against any of these six citations. `_i_` records that the chosen form was written, not that it delivers the payoff the parent capability wanted. That gap is the Circle's honest ceiling and is stated in the Coherence verdict at `history/260802-0848-orchestrator-session.md`.
+
+The count moved once more than the record anticipated and landed where the record predicted. The body says five files, then corrects itself to six in the answer's closing paragraph. Six is right. The tenth rule file, `protected-path-discipline.md`, took form 2 (a Circle) rather than form 3, so the split is four Circle citations and six admissions.

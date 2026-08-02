@@ -198,3 +198,21 @@ Nothing here blocks the Circle from closing. No finding is a release blocker.
    dead examples is the worst state of the three.
 3. **Cleanup, any time** — findings 4, 5, 6, 7. Four small edits across two files, no
    dependencies between them.
+
+---
+
+**Reconciliation annotation, 260802-1413 (reconciler). Findings' disposition verified against the tree at `b568ad9`; no finding text altered.**
+
+Seven issues came out of this review. Four are closed on verified evidence, three remain `_o_` by explicit user decision rather than oversight.
+
+| Issue | State | Verified |
+|---|---|---|
+| `260802-1250` gate does not recurse | `_c_` | Confirmed fixed in `cc004fc`. `gatedFilesUnder` at `provenance-header-lint.test.ts:105-118` now uses `readdirSync(dir, { recursive: true, withFileTypes: true })`, filters `isFile()`, and builds `rel` via `relative()`. |
+| `260802-1251` conventions lede scope | `_c_` | Confirmed fixed in `7703330`. `rules/fusion-workbench-conventions.md:5` reads "and for the rule files those agents load" and lists provenance headers as a ninth subject. |
+| `260802-1253` line-8 rationale false | `_c_` | Confirmed fixed at both sites. Test comment `:59-69` and conventions prose both now state the measured bound (lede runs 5 to 10, after-lede header would land at 12, margin zero). |
+| `260802-1254` corpus-prose test | `_c_` | Confirmed. The corpus-reading assertion is gone; `:318` carries a comment recording what stood there and why it was removed. |
+| `260802-1252` dead `Binding decision:` links | `_o_` | Still live, re-verified. `:328` uses a pre-v4 root path; `find fusion-workbench -name '*260519-1100*'` returns nothing for `:688`. Cross-referenced to `circles/260801-1244-curator`. |
+| `260802-1255` interpolated assertions | `_o_` | Still live. All five sites still interpolate `HEADER_WINDOW` on both sides: `:267`, `:348`, `:362`, `:383`, `:404`. |
+| `260802-1256` template placeholder | `_o_` | Still live. `templates/investigator-capture-layout.md:3` carries the unbracketed placeholder and `:7` the "easy to read past" sentence. |
+
+The review's own accuracy holds up. Every finding it made was reproducible from its stated evidence, and the four closures each required a change the review had specified rather than a reinterpretation of it.

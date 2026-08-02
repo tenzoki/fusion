@@ -59,3 +59,9 @@ Answered: shared/history/260801-0936-orchestrator-session.md '## Design decision
 `agents/curator.md` does not exist at HEAD `9ab5a2a`; `agents/` holds the same sixteen prompts as at session start. Nothing in `circles/260801-1244-guard-bash-inspection` builds any part of the answer — the Circle removes a permission obstacle that stood in front of it, which is a different thing.
 
 Realisation belongs to `circles/260801-1244-curator` (`_a_`), which is the last of the four in dependency order.
+
+---
+
+**Reconciliation 260802-1413 (reconciler, domain `code`) — re-checked, stays `_a_`.**
+
+`agents/curator.md` still does not exist at `b568ad9`; `agents/` holds the same sixteen prompts. Realisation still belongs to `circles/260801-1244-curator` (`_a_`), whose one hard prerequisite — the provenance gate — is now built, so the Circle is activatable. What this session added toward the answer is an input rather than a part of it: every rule file the curator will read now states what caused it to exist, which is the evidence source this decision's chosen agent was specified to work from.

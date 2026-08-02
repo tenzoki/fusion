@@ -1,7 +1,7 @@
 # Implementation Plan: Provenance header on rule files (C8)
 
 **Date:** 2026-08-02
-**Status:** Draft
+**Status:** Complete
 **Circle:** `circles/260801-1244-rule-provenance-header`
 **Spec:** `circles/260801-1244-rule-provenance-header/planning/260802-1103_o_spec-rule-provenance-header.md` (user-approved 2026-08-02)
 **Executors:** `coder` for every step. All four steps touch Markdown prose that documents a code-enforced convention, plus one TypeScript test file. No step touches structured data, ontology, manifests, or schemas, so `ontocoder` has no work here.
@@ -425,3 +425,32 @@ Two checks the spec asked for, both done before this plan was written.
 **The backfill table is correct as printed.** All six admission hashes and all four Circle citations were re-derived at HEAD `e8988d9` with `git log --diff-filter=A` per file, and every one matches. No silent correction was needed and none was made. Details are in `## Current State`.
 
 **`bin/fusion-rules` cannot be affected by a header.** Its two emission functions test for a file's existence and glob filenames; neither opens a rule file. Its only content reads are `CLAUDE.md`, `.active-circle`, the active Circle record, and a consuming project's `context-manifest.yaml`. Line references are in `## Current State`.
+
+---
+
+## Reconciliation Log
+
+**260802-1413 (reconciler, domain `code`) — Status Draft → Complete, marker `_o_` → `_c_`.**
+
+All four steps verified against the tree at `b568ad9`, not against their `[DONE]` markers.
+
+| Step | Claimed | Verified |
+|---|---|---|
+| 1. Backfill ten headers | `[DONE]` | **Yes.** `ls -1 rules/` returns ten files; `head -10` plus the spec's regex reports `3:` on all ten, no `MISSING`. Every citation matches the plan's table character for character, including the six `git:<hash>` admissions. Landed in `929dbf5` (2 insertions, 0 deletions per rule file). |
+| 2. Conventions section | `[DONE]` | **Yes.** `## Provenance headers on rule files` at `rules/fusion-workbench-conventions.md:562`, before `## History Logging` at `:594`. The section-scoped `Binding decision: shared/decisions/260801-1020_a_provenance-header-on-rule-files.md` at `:592`. The two pre-existing section notes survive at `:328` and `:688`. Landed in `c2c2a04`, revised by `7703330`. |
+| 3. Lint gate | `[DONE]` | **Yes.** `hooks/lib/__tests__/provenance-header-lint.test.ts` exists, 438 lines. `npm test` from `hooks/`: **17 files, 780 tests, all passing** (re-run by the reconciler at 260802-1411, not taken from the coder's report). Landed in `de9d5aa`, corrected by `cc004fc` and `b568ad9`. |
+| 4. Acceptance sweep | `[DONE]` | **Yes, and its scope check is now stale.** All eight criteria re-verified independently (see the spec's own reconciliation log). The sweep's own bound — "exactly eleven changed paths" — no longer describes the Circle. See the drift note below. |
+
+**Criterion 7 holds by evidence, not by argument.** `git diff --name-only e8988d9..HEAD -- bin/ agents/ skills/ docs/` returns nothing. `bin/fusion-rules` is byte-identical across the whole Circle.
+
+### Drift: the delivered change set is fourteen non-workbench paths, not the plan's eleven
+
+`git diff --stat e8988d9..HEAD -- . ':!fusion-workbench'` returns fourteen paths. Step 4's scope check names eleven (ten `rules/*.md` plus the new test file). The three extra, each with its provenance:
+
+- `hooks/package.json` — `b568ad9`, the `engines` field closing issue `260802-1345`. A review-finding fix; legitimate and inside the Circle's subject.
+- `CLAUDE.md` — `7703330` and `b568ad9`, closing issues `260802-1251` and `260802-1343`. The plan's Open Question 2 asked whether `CLAUDE.md` gains a line and **recommended deferring it to session close**. It was done mid-Circle instead, as the second half of a review-finding fix. A departure from the plan's own recommendation, taken for a good reason and worth naming rather than absorbing.
+- `templates/investigator-capture-layout.md` — `482e9c3`. **Named in neither the spec nor the plan.** `grep -n 'templates/'` across both planning documents returns nothing. This commit is the one piece of the Circle with no step behind it. It is defensible on the merits (the template becomes a rule file in a consuming project, where the gate cannot reach) and it is small, four insertions. It also produced open issue `260802-1256`, which is a review finding against work the plan never scoped. Recorded as scope drift, not as a defect.
+
+### What the plan got right that is worth keeping
+
+The two verification decisions that survived contact. Step 1's `FUSION_PLUGIN_ROOT=$PWD` override is load-bearing and would have silently tested `~/.fusion` without it — confirmed by the reconciler, whose own environment has `FUSION_PLUGIN_ROOT=/Users/k1/.fusion`. And the order argument (backfill before gate, so no commit ships a red suite) held: `npm test` is green at every commit boundary in the range.

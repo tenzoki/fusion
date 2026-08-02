@@ -1,0 +1,57 @@
+# fusion-workbench session state — for resumption after restart
+# Updated: 260802-0940
+
+session:
+  directive: "Every rule file names the record that motivated it; convention documented in the conventions file, all plugin rule files backfilled, lint gate fails a rule file without a header."
+  mode: "custom"
+  domain: "code"
+  started: "260802-0848"
+  history_file: "circles/260801-1244-rule-provenance-header/history/260802-0848-orchestrator-session.md"
+  git_head_at_start: "e8988d9"
+
+progress:
+  turn: 1
+  max_turns: 5
+  tasks_total: 5
+  tasks_done: 0
+  tasks_skipped: 0
+  tasks_errored: 0
+  commits: 0
+  turn_start_head: "e8988d9"
+  paused_at_task: null
+  directive_revisions_this_session: 0
+
+current_task:
+  id: "P-1"
+  summary: "Backfill ten provenance headers into rules/*.md"
+  agent: "coder"
+  status: "queued"
+  source_file: "circles/260801-1244-rule-provenance-header/planning/260802-1131_o_plan-rule-provenance-header.md"
+
+work_queue:
+  - id: "P-1"
+    summary: "Backfill ten provenance headers into rules/*.md, one Edit per file"
+    agent: "coder"
+    status: "queued"
+  - id: "P-2"
+    summary: "Add the '## Provenance headers on rule files' section to the conventions file"
+    agent: "coder"
+    status: "queued"
+  - id: "P-3"
+    summary: "Add hooks/lib/__tests__/provenance-header-lint.test.ts"
+    agent: "coder"
+    status: "queued"
+  - id: "P-4"
+    summary: "Give templates/investigator-capture-layout.md a placeholder provenance header"
+    agent: "coder"
+    status: "queued"
+  - id: "P-5"
+    summary: "Acceptance sweep against the eight criteria plus the scope-boundary check"
+    agent: "coder"
+    status: "queued"
+
+plan_context:
+  plan_file: "circles/260801-1244-rule-provenance-header/planning/260802-1131_o_plan-rule-provenance-header.md"
+  spec_file: "circles/260801-1244-rule-provenance-header/planning/260802-1103_o_spec-rule-provenance-header.md"
+  user_directive: "go; plan approved at gate with a fifth step added"
+  key_findings: "P-4 is NOT in the plan document. It was added by the user at the plan gate on 260802 after asking whether consuming projects need a migration. Answer was no (bin/fusion-rules never reads rule content; the gate runs only in this repo), but the shipped template is a rule file projects copy into their own rules/, so it should conform. Version bump and CLAUDE.md line deferred to session close by user decision."

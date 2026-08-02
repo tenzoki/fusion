@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** answered
+**Status:** implemented
 **Filed by:** analyst
 **Cross-references:** `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md` (Question 4, first thin spot); `shared/decisions/260801-1020_o_where-does-normative-consistency-live.md` (the capability this would serve); `rules/fusion-workbench-conventions.md:326` (the one existing instance of the pattern)
 
@@ -68,3 +68,19 @@ Checked against every file in the plugin's `rules/` at HEAD `9ab5a2a`. Zero of t
 The one rule file this session produced, `rules/protected-path-discipline.md` (commit `3806a49`, 203 lines), was written without a provenance header — which is worth recording, because it is the first rule file authored *after* the decision was answered and it did not pick the convention up. That is not a fault of the Circle, whose plan step 7 never named the header, but it is the decay mode option 2 of this record predicted, arriving early.
 
 Realisation belongs to `circles/260801-1244-rule-provenance-header` (`_a_`), which carries full adoption, the backfill of the plugin's rule files, and the lint gate. That Circle's `## Dependencies` correctly states it depends on nothing and can run in parallel; nothing in this session invalidated it, though it now has ten rule files to backfill rather than nine.
+
+---
+
+**Reconciliation 260802-1413 (reconciler, domain `code`) — promoted `_a_` → `_i_`. This reverses the hold placed at 260801-2029, and the reason for the hold is exactly what has now been removed.**
+
+Implemented: `929dbf5`, `c2c2a04`, `de9d5aa` — the three commits that realise the answer's three parts, in the order the answer names them.
+
+The answer was full adoption: the convention, the backfill of the plugin's rule files, and a lint gate. All three are on disk at `b568ad9`, and each was verified against the tree rather than against a status marker.
+
+- **The convention.** `rules/fusion-workbench-conventions.md:562`, `## Provenance headers on rule files`, closing with `Binding decision:` citing this record at `:592`. Landed in `c2c2a04`.
+- **The backfill.** Ten of ten rule files carry a `Provenance:` line at line 3. Landed in `929dbf5`. Note the count: this record and the parent spec both say nine. Ten is right, and the correction is not a scope change — the tenth is `fusion-workbench-conventions.md` itself, which the earlier count treated as already provenanced on the strength of its `Binding decision:` line at `:326`. The separately chosen `Provenance:` keyword makes that line a section note, so the file needed a header like the rest and would otherwise have failed its own gate.
+- **The gate.** `hooks/lib/__tests__/provenance-header-lint.test.ts`, landed in `de9d5aa`, corrected by `cc004fc` (recursion) and `b568ad9`. `npm test` from `hooks/` re-run by the reconciler at 260802-1411: 17 files, 780 tests, 0 failures.
+
+**The decay this record predicted has stopped, and the stopping is measurable.** The 260801-2029 hold recorded that `rules/protected-path-discipline.md` was written *after* this decision was answered and shipped with no header — option 2's predicted decay, arriving early. That file now carries `**Provenance:** circles/260801-1244-guard-bash-inspection` at line 3, and the gate makes the same omission impossible to repeat: a new rule file without a header fails `npm test` and is named in the failure.
+
+**What `_i_` does not certify.** This record's own recommendation argued the payoff as "a rule whose motivating decision carries `_s_` is a prune candidate that any reader can spot without reconstructing anything". That reading is unavailable for all ten backfilled files. Four cite a Circle directory and six cite a commit; neither carries a state marker, and the realising spec established that no citation in the backfill can be upgraded to the decision-record form, because neither cited Circle holds a record that motivated any of those files. The mechanism is complete and the payoff applies forward only. Recorded here rather than only in the Circle, because this is the record whose recommendation made the claim.

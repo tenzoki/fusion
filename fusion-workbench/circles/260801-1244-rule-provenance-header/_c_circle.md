@@ -11,7 +11,7 @@
 
 ## Directive
 
-Every rule file names the decision record, Circle, or analysis that produced it. The convention is documented in `rules/fusion-workbench-conventions.md`: what the header names, where it sits in the file, and what to write when no motivating record is recoverable. All nine of the plugin's rule files carry a header, each naming a record or stating honestly that none is recoverable, because an invented rationale is the fiction this capability exists to prevent. A lint gate in the plugin's own test suite fails when a file in `rules/` lacks a header and names the offending file, so a new rule file without one cannot land. The header requires no change to `bin/fusion-rules`, which keeps emitting paths without reading file content. What the header buys is a mechanical check that a rule outlived its reason: a rule whose motivating decision record carries the superseded marker becomes a retirement candidate any reader can spot, which is what makes the curator's grounding-in-history requirement true by construction rather than dependent on its diligence.
+Every rule file names the decision record, Circle, or analysis that produced it. The convention is documented in `rules/fusion-workbench-conventions.md`: what the header names, where it sits in the file, and what to write when no motivating record is recoverable. All ten of the plugin's rule files carry a header, each naming a record or stating honestly that none is recoverable, because an invented rationale is the fiction this capability exists to prevent. A lint gate in the plugin's own test suite fails when a file in `rules/` lacks a header and names the offending file, so a new rule file without one cannot land. The header requires no change to `bin/fusion-rules`, which keeps emitting paths without reading file content. What the header buys is a mechanical check that a rule outlived its reason: a rule whose motivating decision record carries the superseded marker becomes a retirement candidate any reader can spot. The check is available forward only. It covers rule files written from the convention onward, whose authors have a decision record to cite, and none of the ten backfilled here: four of those cite a Circle directory and six cite the introducing commit, and neither form carries a state marker. No backfilled citation can be upgraded to the decision-record form later, because neither cited Circle holds a record that motivated any of those files. The curator's grounding-in-history requirement is therefore true by construction for the corpus as it grows, and for the ten files the curator reads today it still depends on the curator's own diligence.
 
 **Capabilities carried:** C8. The spec holds the header's form, the reach of the gate, the interaction with the archive, and the eight acceptance criteria under `### C8: Provenance header on rule files`. They are not restated here, so the spec stays the single source of detail.
 
@@ -19,7 +19,7 @@ Every rule file names the decision record, Circle, or analysis that produced it.
 
 D3 asked whether rule files should carry a provenance header. The spec's D-e answered it with full adoption now, over the earlier proposal to adopt the convention and defer both the backfill and the gate. The backfill is not optional because a convention applied to new files only leaves the oldest and largest rules, which carry most of the binding content, outside the check indefinitely.
 
-**The backfill set is ten files, not nine.** Verified by shaper on 2026-08-02 at HEAD `e8988d9`: `ls -1 rules/` returns ten entries. Exactly one of them carries a provenance line today. The nine without one are `agent-setup.md`, `context-lean-claude-md.md`, `context-manifest.md`, `critical-stance.md`, `decision-record-examples.md`, `design-diagrams.md`, `git-branch-discipline.md`, `protected-path-discipline.md` and `user-facing-output.md`. The Directive above still reads "all nine of the plugin's rule files" and refers to the same corpus at its earlier size; the count in this snapshot is the current one.
+**The backfill set is ten files, not nine.** Verified by shaper on 2026-08-02 at HEAD `e8988d9`: `ls -1 rules/` returns ten entries. Exactly one of them carries a provenance line today. The nine without one are `agent-setup.md`, `context-lean-claude-md.md`, `context-manifest.md`, `critical-stance.md`, `decision-record-examples.md`, `design-diagrams.md`, `git-branch-discipline.md`, `protected-path-discipline.md` and `user-facing-output.md`. The Directive above read "all nine of the plugin's rule files" at activation, referring to the same corpus at its earlier size; it was corrected to ten at the Rebalance gate on 2026-08-02, so record and snapshot now agree.
 
 The tenth file, `rules/protected-path-discipline.md`, is the sharpest available evidence for the capability. It was authored during the immediately preceding Circle (`circles/260801-1244-guard-bash-inspection`, commit `3806a49`, 2026-08-01), hours after D3 was answered, and it shipped with no header. The decay this Circle exists to stop was observed inside the session that decided to stop it.
 
@@ -35,7 +35,7 @@ The tenth file, `rules/protected-path-discipline.md`, is the sharpest available 
 
 **A citation-resolving check is mechanically possible here, which the earlier framing did not establish.** The plugin's own workbench is committed to git (237 tracked files under `fusion-workbench/`, because `.gitignore:50` is the commented-out `## fusion-workbench/`), so a test running in this repository can resolve a cited workbench-relative path against real bytes. Whether it should is a separate question from whether it can.
 
-The shape of the gate was open for the planner and is being settled with the user first, because each part of it binds the wording of all nine backfills. Four questions are in play: the accepted header wording and the regex that matches it, the required position in the file, whether the test validates that a cited record path resolves, and what the five files with no recoverable record are permitted to say.
+The shape of the gate was open for the planner and is being settled with the user first, because each part of it binds the wording of all ten backfills. Four questions are in play: the accepted header wording and the regex that matches it, the required position in the file, whether the test validates that a cited record path resolves, and what the five files with no recoverable record are permitted to say.
 
 **Spec and its prior decisions** (cited where they live, per the Origin Rule, not copied):
 
@@ -52,6 +52,10 @@ The shape of the gate was open for the planner and is being settled with the use
 Depended on by `260801-1244-curator`, and the direction is hard rather than advisory: the curator's closing work partitions `rules/fusion-workbench-conventions.md` into shards, every shard must carry a provenance header, and the lint gate is one of the checks that output has to pass. The gate has to exist before there are shards to check.
 
 ## Turn log
+
+- Turn 1 (session 260802-0848): commits `929dbf5`, `c2c2a04`, `de9d5aa`, `482e9c3`, `cac3726`; Coherence verdict ok; session history: `circles/260801-1244-rule-provenance-header/history/260802-0848-orchestrator-session.md`. Five tasks: the ten-file backfill, the conventions section documenting the convention, the lint gate, the placeholder header on `templates/investigator-capture-layout.md`, and the acceptance sweep. The reviewer filed seven findings, none critical.
+- Turn 2 (session 260802-0848): commits `cc004fc`, `7703330`; Coherence verdict ok; session history: `circles/260801-1244-rule-provenance-header/history/260802-0848-orchestrator-session.md`. Fixed four of Turn 1's seven findings: the gate did not recurse into subdirectories of `rules/`, one test asserted a fact about the corpus rather than about the gate, the ten-line rationale had been falsified by Turn 1's own insertions, and the conventions lede excluded the section Turn 1 had just added to it. The reviewer filed three new findings from the fix pass.
+- Turn 3 (session 260802-0848): commit `b568ad9`; Coherence verdict ok; session history: `circles/260801-1244-rule-provenance-header/history/260802-0848-orchestrator-session.md`. Fixed all three of Turn 2's findings: a false exclusivity claim in `CLAUDE.md`, two stale strings describing the gated set as flat after it became recursive, and an undeclared Node floor. No review pass ran; the orchestrator recorded that as a deliberate skip.
 
 ## Activation proposal
 
@@ -80,3 +84,45 @@ The urgency measurement was re-taken on 2026-08-02 and has not moved since the p
 **Activation notes, unchanged from the previous proposal.** Shaper should correct the rule-file count in the Grounding snapshot, which reads nine and is ten. The open scope handed to the planner is still the header regex, its required position in the file, and whether the lint test validates that a cited record path resolves.
 
 *No `mv` and no `.active-circle` write by playmaker. Proposal, not commitment.*
+
+## Closure note
+
+**Closed coherent (`_c_`) on 260802 by the orchestrator session at
+`circles/260801-1244-rule-provenance-header/history/260802-0848-orchestrator-session.md`.**
+
+Three Turns, eight commits (`e8988d9..b568ad9`), all eight acceptance criteria verified against
+the tree rather than against `[DONE]` markers. The suite went from 753 to 780 passing tests.
+
+**Phase 3 verdict was `review-needed`, not `coherent`,** and the record should say why it closes
+coherent anyway. The reconciler flagged one edge, Artifact↔Directive, and flagged it on the
+Directive's wording rather than on the work: the text claimed nine rule files where ten exist, and
+its payoff clause promised the curator a mechanical superseded-check that no backfilled citation
+can deliver. The user chose the bounded correction at the Rebalance gate over a full re-shape,
+because nothing about the Artifact needed redoing. The shaper corrected both sentences
+(`history/260802-1734-shaper-directive-correction.md`), which removed the flag's cause. The
+Directive as it now stands is met in full.
+
+**What the next Circle should know.** `260801-1244-curator` depends on this Circle hard, and two
+things here bear on it directly. The lint gate recurses (`cc004fc`), so the conventions-file shards
+C9 produces will be checked; that recursion was absent in the first implementation and was caught
+by review. And the header's superseded-check payoff is forward-only: none of the ten backfilled
+files cites a decision record, so for the corpus the curator reads today, grounding-in-history
+still depends on the curator's own diligence.
+
+**Three findings left open in this Circle's issue store, by explicit user decision rather than
+oversight:** `260802-1252` (both pre-existing `Binding decision:` instances are dead links),
+`260802-1255` (five message assertions interpolate `HEADER_WINDOW` on both sides), `260802-1256`
+(the template placeholder opts out of the template's own fill-in convention).
+
+**Scope drift, recorded rather than absorbed.** Fourteen non-workbench paths were delivered against
+a plan that bounded itself to eleven and declared anything else drift. Two extras are review-finding
+fixes. The third, `templates/investigator-capture-layout.md` (`482e9c3`), was added by the user at
+the plan gate and appears in neither the spec nor the plan.
+
+**Two header fields on this record are stale and were left that way deliberately.** `**Status:**`
+still reads `anticipated`, and `**Active session history:**` still reads `(none yet)` after three
+Turns. Both are instances of one defect: no prompt or skill step requires a record's header fields
+to be updated when its marker moves, so they are maintained by attention rather than by procedure.
+Filed at `shared/issues/260802-0920_o_next-skill-activates-a-circle-without-updating-its-status-field.md`,
+where the reconciler's survey found two of nine Circle records disagreeing with their own marker in
+opposite directions. The live instances are preserved so the defect is fixable at its source.

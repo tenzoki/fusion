@@ -470,16 +470,82 @@
     },
     "/Users/kai/Projects/productive/F04-FUSION/codebase/fusion/fusion-workbench/shared/history/260801-0936-orchestrator-session.md": {
       "totalChanges": 2,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-01T09:47:23.167Z",
       "thrashingScore": 0
     },
     "/Users/kai/Projects/productive/F04-FUSION/codebase/fusion/fusion-workbench/agentstate.yaml": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-01T11:39:18.013Z",
+      "thrashingScore": 0
+    },
+    "history/260802-0848-orchestrator-session.md": {
+      "totalChanges": 1,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-02T06:49:36.699Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/orchestrator-live.md": {
+      "totalChanges": 2,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-02T12:05:46.812Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/provenance-header-lint.test.ts": {
+      "totalChanges": 12,
+      "changesThisSession": 12,
+      "lastChange": "2026-08-02T12:07:47.900Z",
+      "thrashingScore": 24
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-rule-provenance-header/history/260802-1332-coder-provenance-gate-review-fixes.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-02T11:33:07.199Z",
+      "thrashingScore": 0
+    },
+    "260802-1343_o_claude-md-parenthetical-claims-provenance-is-the-only-subject-outside-the-workbench.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-02T11:43:42.128Z",
+      "thrashingScore": 0
+    },
+    "260802-1344_o_corpus-test-name-and-vacuity-message-still-say-rules-star-md-after-the-set-became-recursive.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-02T11:43:51.501Z",
+      "thrashingScore": 0
+    },
+    "260802-1345_o_the-recursion-fix-raises-the-node-floor-to-20-12-and-no-engines-field-declares-it.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-02T11:44:06.703Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-rule-provenance-header/reviews/260802-1345-coderev-turn2-rule-provenance-header.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-02T11:45:13.741Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/CLAUDE.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-02T12:07:45.104Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/package.json": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-02T12:07:52.288Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-rule-provenance-header/history/260802-1408-coder-turn3-review-followups.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-02T12:09:03.657Z",
       "thrashingScore": 0
     }
   },
-  "sessionStart": "2026-08-01T09:47:23.167Z"
+  "sessionStart": "2026-08-02T11:26:53.947Z"
 }
