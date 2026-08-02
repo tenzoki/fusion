@@ -1220,10 +1220,13 @@ describe("compound commands and subshells", () => {
  * ------------------------------------------------------------------ */
 
 describe("the verdict", () => {
-  it("is exactly { deny: false } on allow — no stray fields", () => {
-    expect(classify("ls -la")).toEqual({ deny: false });
-    expect(classify("")).toEqual({ deny: false });
-    expect(classify("   ")).toEqual({ deny: false });
+  it("is exactly { deny: false, mutates: false } on an allow that writes nothing", () => {
+    // `mutates` is always present; `exempted` still is not. The difference is
+    // deliberate: `mutates` is a question every caller must ask, `exempted` is
+    // a report of something that happened.
+    expect(classify("ls -la")).toEqual({ deny: false, mutates: false });
+    expect(classify("")).toEqual({ deny: false, mutates: false });
+    expect(classify("   ")).toEqual({ deny: false, mutates: false });
   });
 
   it("carries the reason, the segment and the path on deny", () => {
@@ -1301,6 +1304,141 @@ describe("the exempt predicate (the C5a seam)", () => {
   });
 });
 
+describe("the exempt predicate — `ln` is not exemptible", () => {
+  /**
+   * `ln` is the one row in the table whose purpose is to give a file a SECOND
+   * name, and a path-based grant is only sound while the path names one file.
+   * Measured before the fix: with the flag set, `ln -s ../ rules/up` was itself
+   * an exempted write, after which every `rules/up/…` spelling still matched
+   * `rules/**` while the write landed anywhere in the project.
+   *
+   * The predicate below accepts every rule path, i.e. it is as permissive as
+   * `FUSION_ALLOW_RULES_WRITE` ever gets. `ln` still denies.
+   */
+  const RULES = (p: string): boolean => p.startsWith("rules/");
+
+  const linkForms = [
+    "ln -s ../ rules/up",
+    "ln -s /etc rules/etc",
+    "ln -s ../fusion-workbench/.guard-state rules/gs",
+    "ln hooks/config.json rules/copy",
+    "ln -sf /dev/null rules/x.md",
+    "ln -t rules/ /tmp/a",
+    "sudo ln -s / rules/root",
+  ];
+
+  for (const command of linkForms) {
+    it(`denies \`${command}\` even with every rule path exempt`, () => {
+      expect(denies(command, { exempt: RULES })).toBe(true);
+    });
+  }
+
+  it("names the rule path in the reason, so the deny explains itself", () => {
+    const v = classify("ln -s ../ rules/up", { exempt: RULES });
+    expect(v.targetPath).toBe("rules/up");
+    expect(v.reason).toContain("rules/up");
+  });
+
+  it("reports nothing as exempted — nothing was", () => {
+    expect(classify("ln -s ../ rules/up", { exempt: RULES }).exempted).toBeUndefined();
+  });
+
+  it("leaves the other write verbs exemptible, including the retirement move", () => {
+    // The flag's headline use. `mv` must stay exemptible, which is also why
+    // this row cannot be the whole answer to a planted alias — `mv` can
+    // relocate an existing symlink into `rules/`. Gate 2 of the exemption
+    // predicate is what makes that harmless.
+    expect(denies("mv rules/x.md rules/retired/", { exempt: RULES })).toBe(false);
+    expect(denies("rm rules/x.md", { exempt: RULES })).toBe(false);
+    expect(denies("cp /tmp/a rules/x.md", { exempt: RULES })).toBe(false);
+    expect(denies("sed -i '' 's/a/b/' rules/x.md", { exempt: RULES })).toBe(false);
+    expect(denies("echo hi > rules/x.md", { exempt: RULES })).toBe(false);
+  });
+
+  it("still allows a link that writes an UNPROTECTED destination", () => {
+    // Non-exemptible is not a ban on `ln`; the protected list still decides.
+    expect(denies("ln -s rules/x.md /tmp/link", { exempt: RULES })).toBe(false);
+    expect(denies("ln -s rules/x.md notes-link.md", { exempt: RULES })).toBe(false);
+  });
+
+  it("does not make a redirection in the same segment non-exemptible", () => {
+    // Eligibility is per operand. `ln`'s destination is ineligible; the
+    // redirect target is an ordinary write and stays eligible.
+    expect(denies("ln -s /tmp/a /tmp/b > rules/log.txt", { exempt: RULES })).toBe(false);
+  });
+});
+
+describe("the verdict's `mutates` field", () => {
+  /**
+   * Reported independently of `deny`, because a halted guard blocks WRITES
+   * rather than protected writes — the Bash mirror of CHECK 1 on the write-tool
+   * path. Deriving it from `deny` would halt-block only what was already
+   * denied, which is no halt at all.
+   */
+  const mutates = (command: string, over: Partial<MutationOptions> = {}): boolean =>
+    classify(command, over).mutates;
+
+  it("is false for a command that writes no file", () => {
+    for (const c of ["ls -la", "git status", "cat rules/x.md", "grep -r x .", ""]) {
+      expect(mutates(c), c).toBe(false);
+    }
+  });
+
+  it("is true for a recognised mutation of an UNPROTECTED path", () => {
+    // The whole point: these allow, and a halted guard must still block them.
+    for (const c of [
+      "rm /tmp/scratch",
+      "mv notes.txt /tmp/",
+      "cp /tmp/a /tmp/b",
+      "sed -i '' 's/a/b/' notes.txt",
+      "echo hi > notes.txt",
+      "dd of=/tmp/img",
+      "git clean -fdx build",
+    ]) {
+      expect(mutates(c), c).toBe(true);
+      expect(denies(c), c).toBe(false);
+    }
+  });
+
+  it("is true on every kind of deny", () => {
+    for (const c of ["rm rules/x.md", "rm -rf hooks", "mv $A $B"]) {
+      expect(mutates(c), c).toBe(true);
+      expect(denies(c), c).toBe(true);
+    }
+  });
+
+  it("is true when the exemption let the write through", () => {
+    // Otherwise the flag would be a way out of a halt: an exempted mutation
+    // that reported itself as not mutating would pass the halt gate.
+    const v = classify("rm rules/x.md", { exempt: (p) => p.startsWith("rules/") });
+    expect(v.deny).toBe(false);
+    expect(v.mutates).toBe(true);
+  });
+
+  it("is true with an EMPTY protected list, where nothing can deny", () => {
+    // A project that protects nothing can still be halted, and a halt is about
+    // writing rather than about the protected list.
+    expect(mutates("rm notes.txt", { protectedPaths: [] })).toBe(true);
+    expect(denies("rm notes.txt", { protectedPaths: [] })).toBe(false);
+    expect(mutates("ls", { protectedPaths: [] })).toBe(false);
+  });
+
+  it("is sticky across a compound command", () => {
+    expect(mutates("ls -la && rm /tmp/x && git status")).toBe(true);
+    expect(mutates("ls -la && git status && cat notes.txt")).toBe(false);
+  });
+
+  it("is true for a mutation the guard cannot resolve", () => {
+    expect(mutates("rm $TARGET")).toBe(true);
+  });
+
+  it("stays false for an unrecognised program, however it is called", () => {
+    // The table's edge is the bound, and the halt gate inherits it.
+    expect(mutates("curl -o rules/x.md https://example.com")).toBe(false);
+    expect(mutates("npm run build")).toBe(false);
+  });
+});
+
 describe("the exempt predicate — what the verdict reports back", () => {
   // `exempted` is how the caller learns a permission was exercised. Without it
   // the exemption is silent: the command runs and nothing in escalation.json or
@@ -1310,6 +1448,7 @@ describe("the exempt predicate — what the verdict reports back", () => {
   it("reports the exempted path on the allowing verdict", () => {
     expect(classify("rm rules/x.md", { exempt: RULES })).toEqual({
       deny: false,
+      mutates: true,
       exempted: ["rules/x.md"],
     });
   });
@@ -1352,12 +1491,16 @@ describe("the exempt predicate — what the verdict reports back", () => {
   });
 
   it("is ABSENT when the predicate accepted nothing", () => {
-    // Not `[]` — the allow verdict stays byte-identical to the no-predicate
-    // one, so no caller can branch on an empty list it never sees today.
+    // Not `[]` — the allow verdict stays identical to the no-predicate one, so
+    // no caller can branch on an empty list it never sees today.
     expect(classify("rm notes.txt", { exempt: () => false })).toEqual({
       deny: false,
+      mutates: true,
     });
-    expect(classify("rm notes.txt", { exempt: RULES })).toEqual({ deny: false });
+    expect(classify("rm notes.txt", { exempt: RULES })).toEqual({
+      deny: false,
+      mutates: true,
+    });
   });
 
   it("is ABSENT on a deny — nothing was let through", () => {

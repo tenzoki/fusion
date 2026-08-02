@@ -1,7 +1,9 @@
 import { describe, it, expect } from "vitest";
+import type { FsLocator } from "../rules-write-exemption.js";
 import {
   RULES_WRITE_ENV,
   RULE_DIR_PATTERNS,
+  RULE_DIR_ROOTS,
   isProjectRulePath,
   rulesWriteExemptionActive,
   rulesWriteDetail,
@@ -13,12 +15,62 @@ import {
  * sees, which is why every protected entry is named individually here instead of
  * being sampled.
  *
- * Every case is in-process and passes its environment explicitly. Nothing here
- * reads or writes `process.env`.
+ * Every case is in-process and passes both its environment and its filesystem
+ * explicitly. Nothing here reads `process.env` or touches a real disk — the
+ * filesystem cases below are the whole reason `FsLocator` is a parameter, since
+ * "what does a symlink planted in `rules/` do to the grant" is otherwise a
+ * question only a subprocess against a real temporary tree can ask.
  */
 
 const NO_ENV: NodeJS.ProcessEnv = {};
 const FLAG_SET: NodeJS.ProcessEnv = { [RULES_WRITE_ENV]: "1" };
+
+const ROOT = "/proj";
+
+interface FakeFsOptions {
+  /**
+   * Symlinks, as project-relative name → the absolute location it resolves to.
+   * Resolution is top-down, outermost link first, the way `realpath` walks.
+   */
+  links?: Record<string, string>;
+  /** Project-relative paths that are existing regular files with nlink > 1. */
+  hardLinks?: string[];
+}
+
+/**
+ * An `FsLocator` over a described project rather than a real one.
+ *
+ * A path with no link on it resolves lexically under `ROOT`, which models both
+ * an ordinary existing file and a file about to be created — the real adapter
+ * cannot tell those apart either, and must not, or no new rule could be written.
+ */
+function fakeFs(opts: FakeFsOptions = {}): FsLocator {
+  const links = opts.links ?? {};
+  const hardLinks = new Set(opts.hardLinks ?? []);
+
+  return {
+    locate(path: string): string | null {
+      if (path.startsWith("/")) return path;
+      const parts = path.split("/");
+      for (let n = 1; n <= parts.length; n++) {
+        const target = links[parts.slice(0, n).join("/")];
+        if (target === undefined) continue;
+        const rest = parts.slice(n);
+        return rest.length === 0 ? target : `${target}/${rest.join("/")}`;
+      }
+      return `${ROOT}/${path}`;
+    },
+    hasHardLinks(path: string): boolean {
+      return hardLinks.has(path);
+    },
+  };
+}
+
+/** A project with plain rule directories, no links and no aliased files. */
+const PLAIN = fakeFs();
+
+/** The predicate against that plain project — the default for the text cases. */
+const isRulePath = (path: string): boolean => isProjectRulePath(path, PLAIN);
 
 describe("RULES_WRITE_ENV and RULE_DIR_PATTERNS", () => {
   it("names the environment variable the guard documents", () => {
@@ -43,7 +95,7 @@ describe("isProjectRulePath — the exempt set", () => {
 
   for (const [what, path] of exempt) {
     it(`exempts ${what}: ${path}`, () => {
-      expect(isProjectRulePath(path)).toBe(true);
+      expect(isRulePath(path)).toBe(true);
     });
   }
 });
@@ -72,32 +124,32 @@ describe("isProjectRulePath — the never-exempt set", () => {
 
   for (const [what, path] of neverExempt) {
     it(`never exempts ${what}: ${path}`, () => {
-      expect(isProjectRulePath(path)).toBe(false);
+      expect(isRulePath(path)).toBe(false);
     });
   }
 
   it("never exempts ordinary project files", () => {
-    expect(isProjectRulePath("notes.txt")).toBe(false);
-    expect(isProjectRulePath("hooks/lib/config.ts")).toBe(false);
-    expect(isProjectRulePath("README.md")).toBe(false);
+    expect(isRulePath("notes.txt")).toBe(false);
+    expect(isRulePath("hooks/lib/config.ts")).toBe(false);
+    expect(isRulePath("README.md")).toBe(false);
   });
 
   it("never exempts a sibling whose name merely starts with a rule root", () => {
-    expect(isProjectRulePath("rules-draft/x.md")).toBe(false);
-    expect(isProjectRulePath("rulesx.md")).toBe(false);
-    expect(isProjectRulePath(".claude/rulesets/x.md")).toBe(false);
+    expect(isRulePath("rules-draft/x.md")).toBe(false);
+    expect(isRulePath("rulesx.md")).toBe(false);
+    expect(isRulePath(".claude/rulesets/x.md")).toBe(false);
   });
 
   it("never exempts a rule path under some other project's tree", () => {
     // An absolute path is what `normalizeToRelative` hands back when the target
     // lies outside the project root. It matches no relative pattern, and must
     // not become exempt either.
-    expect(isProjectRulePath("/somewhere/else/rules/x.md")).toBe(false);
-    expect(isProjectRulePath("../other-project/rules/x.md")).toBe(false);
+    expect(isRulePath("/somewhere/else/rules/x.md")).toBe(false);
+    expect(isRulePath("../other-project/rules/x.md")).toBe(false);
   });
 
   it("never exempts the empty path", () => {
-    expect(isProjectRulePath("")).toBe(false);
+    expect(isRulePath("")).toBe(false);
   });
 });
 
@@ -125,7 +177,7 @@ describe("isProjectRulePath — the bare rule directory is outside the exempt se
 
   for (const path of bareDirs) {
     it(`does not exempt the bare directory spelled ${JSON.stringify(path)}`, () => {
-      expect(isProjectRulePath(path)).toBe(false);
+      expect(isRulePath(path)).toBe(false);
     });
   }
 });
@@ -135,22 +187,119 @@ describe("isProjectRulePath — canonicalisation closes the escape spellings", (
     // Textually matches `rules/**`, which is why it is PROTECTED today — but it
     // writes agents/coder.md, so exempting it would grant a permission the flag
     // does not name.
-    expect(isProjectRulePath("rules/../agents/coder.md")).toBe(false);
-    expect(isProjectRulePath("rules/a/../../settings.json")).toBe(false);
-    expect(isProjectRulePath(".claude/rules/../../hooks/config.json")).toBe(false);
+    expect(isRulePath("rules/../agents/coder.md")).toBe(false);
+    expect(isRulePath("rules/a/../../settings.json")).toBe(false);
+    expect(isRulePath(".claude/rules/../../hooks/config.json")).toBe(false);
   });
 
   it("still exempts a rule file reached through a traversal that stays inside", () => {
-    expect(isProjectRulePath("rules/a/../x.md")).toBe(true);
-    expect(isProjectRulePath("rules/./x.md")).toBe(true);
-    expect(isProjectRulePath("rules//x.md")).toBe(true);
+    expect(isRulePath("rules/a/../x.md")).toBe(true);
+    expect(isRulePath("rules/./x.md")).toBe(true);
+    expect(isRulePath("rules//x.md")).toBe(true);
   });
 
   it("does not exempt the project root however it is spelled", () => {
-    expect(isProjectRulePath(".")).toBe(false);
-    expect(isProjectRulePath("./")).toBe(false);
-    expect(isProjectRulePath("/")).toBe(false);
-    expect(isProjectRulePath("rules/..")).toBe(false);
+    expect(isRulePath(".")).toBe(false);
+    expect(isRulePath("./")).toBe(false);
+    expect(isRulePath("/")).toBe(false);
+    expect(isRulePath("rules/..")).toBe(false);
+  });
+});
+
+describe("isProjectRulePath — gate 2 resolves the path against the filesystem", () => {
+  /**
+   * The escalation this closes, measured before the fix: `ln -s ../ rules/up`
+   * is itself a write to a rule path, so gate 1 exempts it; afterwards every
+   * path spelled `rules/up/…` still matches `rules/**` while the write lands
+   * anywhere in the project. Two commands, and the flag became write-anywhere.
+   *
+   * The distinction that makes this a grant problem and not the guard's general
+   * symlink residual: elsewhere a symlink lets a write ESCAPE protection, which
+   * a text classifier cannot help. Here it let a write ACQUIRE a permission.
+   */
+  const planted = fakeFs({ links: { "rules/up": ROOT } });
+
+  const reachable = [
+    ["an agent prompt", "rules/up/agents/coder.md"],
+    ["the guard configuration", "rules/up/hooks/config.json"],
+    ["the hook wiring", "rules/up/hooks/hooks.json"],
+    ["the plugin manifest", "rules/up/.claude-plugin/plugin.json"],
+    ["the permission settings", "rules/up/settings.json"],
+    ["the monitor binary", "rules/up/bin/monitor"],
+    ["a skill body", "rules/up/skills/demo/SKILL.md"],
+    ["the halt record itself", "rules/up/fusion-workbench/.guard-state/escalation.json"],
+  ] as const;
+
+  for (const [what, path] of reachable) {
+    it(`refuses the grant for ${what} reached through a planted symlink`, () => {
+      // Gate 1 passes: the text is inside `rules/**`. Gate 2 is what says no.
+      expect(isRulePath(path)).toBe(true);
+      expect(isProjectRulePath(path, planted)).toBe(false);
+    });
+  }
+
+  it("refuses the grant for the symlink's own name once it points outside", () => {
+    expect(isProjectRulePath("rules/up", planted)).toBe(false);
+  });
+
+  it("still grants a genuine rule file in the same project", () => {
+    expect(isProjectRulePath("rules/x.md", planted)).toBe(true);
+    expect(isProjectRulePath("rules/retired/x.md", planted)).toBe(true);
+  });
+
+  it("still grants a path that traverses back INTO the rule directory", () => {
+    // Not an escape: it resolves to a rule file, so it is one.
+    expect(isProjectRulePath("rules/up/rules/x.md", planted)).toBe(true);
+  });
+
+  it("refuses a symlink that leaves the project entirely", () => {
+    const escaping = fakeFs({ links: { "rules/out": "/etc" } });
+    expect(isProjectRulePath("rules/out/passwd", escaping)).toBe(false);
+  });
+
+  it("grants a rule directory that is ITSELF a symlink to a shared tree", () => {
+    // A real setup, and the reason gate 2 compares against the RESOLVED rule
+    // directory rather than requiring the target to stay under the project.
+    const shared = fakeFs({ links: { rules: "/shared/team-rules" } });
+    expect(isProjectRulePath("rules/x.md", shared)).toBe(true);
+    expect(isProjectRulePath("rules/retired/x.md", shared)).toBe(true);
+  });
+
+  it("refuses the grant when nothing about the path can be resolved", () => {
+    const blind: FsLocator = { locate: () => null, hasHardLinks: () => false };
+    expect(isProjectRulePath("rules/x.md", blind)).toBe(false);
+  });
+
+  it("derives the rule roots from the patterns, so the two cannot drift", () => {
+    expect([...RULE_DIR_ROOTS]).toEqual(["rules", ".claude/rules"]);
+  });
+});
+
+describe("isProjectRulePath — gate 2 refuses a hard link", () => {
+  /**
+   * The case `realpath` cannot see. `cp -l hooks/config.json rules/copy` gives
+   * a protected inode a second name inside the rule directory; both names
+   * resolve to themselves, so resolution says "inside `rules/`" and is right —
+   * the path really is a rule path, it just is not ONLY a rule path.
+   *
+   * A grant read off a path is sound only while the path names one file, so an
+   * existing regular file with more than one link does not get one.
+   */
+  const aliased = fakeFs({ hardLinks: ["rules/copy"] });
+
+  it("refuses a rule path that is a hard link", () => {
+    expect(isRulePath("rules/copy")).toBe(true);
+    expect(isProjectRulePath("rules/copy", aliased)).toBe(false);
+  });
+
+  it("still grants its unaliased neighbours", () => {
+    expect(isProjectRulePath("rules/x.md", aliased)).toBe(true);
+  });
+
+  it("asks about the CANONICAL spelling, not the raw one", () => {
+    // Or `rules/a/../copy` would slip past the check that `rules/copy` fails.
+    expect(isProjectRulePath("rules/a/../copy", aliased)).toBe(false);
+    expect(isProjectRulePath("rules/./copy", aliased)).toBe(false);
   });
 });
 

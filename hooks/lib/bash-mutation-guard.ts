@@ -148,6 +148,27 @@ import {
 export interface MutationVerdict {
   /** false = allow, true = deny the whole Bash call. */
   deny: boolean;
+  /**
+   * Does this command WRITE A FILE at all, as far as the classifier can see —
+   * a table verb with written operands, or an output redirection? Reported
+   * INDEPENDENTLY of `deny`, and that independence is the point: `rm
+   * /tmp/scratch` mutates and does not deny, `ls -la` does neither.
+   *
+   * The caller needs the question answered separately because a HALTED guard
+   * blocks writes rather than protected writes. On the write-tool path the halt
+   * blocks every `Write`/`Edit`, wherever it points; the Bash path's mirror of
+   * that is "every recognised mutation", which is this field. Deriving it from
+   * `deny` would halt-block only the commands that were already denied, which
+   * is no halt at all.
+   *
+   * Always present. An allowing verdict used to be exactly `{ deny: false }`;
+   * it is now `{ deny: false, mutates: … }`, because a security field that is
+   * absent when false is a field a caller forgets to read.
+   *
+   * True on every deny, including a fail-closed one: the classifier only
+   * fail-closes on an operand of a recognised mutation.
+   */
+  mutates: boolean;
   /** Plain, actionable reason naming the segment and the path (deny only). */
   reason?: string;
   /** The offending segment (for events/diagnostics). Deny only. */
@@ -181,7 +202,13 @@ export interface MutationOptions {
   protectedPaths: string[];
   /** Project-root-relative normalisation, injected so the module stays pure. */
   normalize: (raw: string) => string;
-  /** C5a seam — a path this predicate accepts is exempt. Defaults to none. */
+  /**
+   * C5a seam — a path this predicate accepts is exempt. Defaults to none.
+   *
+   * It is consulted per WRITTEN OPERAND, and not at all for an operand of a
+   * verb the table marks `exemptible: false` (see `VerbSpec.exemptible`). So a
+   * caller cannot grant a permission the table refuses to make grantable.
+   */
   exempt?: (path: string) => boolean;
 }
 
@@ -220,6 +247,30 @@ export interface VerbSpec {
   mutatesOnlyWhen?: (flag: string) => boolean;
   /** `key=value` operands that name a written file (`dd of=…`). */
   keyOperands?: readonly string[];
+  /**
+   * May `opts.exempt` waive a deny on this verb's written operands? Defaults
+   * to true; `false` means the operands are checked against the protected list
+   * with NO exemption available, however the caller configured one.
+   *
+   * There is one row it is false on, and the reason is not about `ln`
+   * specifically. An exemption is a grant read off a PATH, and a path is only a
+   * safe thing to read a grant off while it names one file. `ln` is the one
+   * verb in this table whose whole purpose is to give a file a SECOND name — so
+   * exempting it lets a grant that says "you may write rule files" be spent on
+   * installing an alias inside the rule directory, which is the mechanism that
+   * makes every later path-based grant unsound. The flag's stated permission is
+   * writing rule files; creating an alias is not that, and no rule-curation
+   * workflow needs it.
+   *
+   * The bound, stated because it is easy to over-read: this closes the DIRECT
+   * spelling, not the class. `mv` and `cp -P` can relocate an existing symlink
+   * into the rule directory, and they must stay exemptible because
+   * `mv rules/x.md rules/retired/` is the flag's headline use. What makes the
+   * planted alias harmless is the exemption predicate resolving paths against
+   * the real filesystem (`rules-write-exemption.ts` gate 2); this row is the
+   * second layer, not the first.
+   */
+  exemptible?: boolean;
   /**
    * A SECOND DISPATCH HOP keyed on the verb's first operand, for a verb that
    * is really a family of commands with different operand roles. `git stash`
@@ -418,7 +469,8 @@ export const MUTATION_VERBS: Readonly<Record<string, VerbSpec>> = {
   mv: { written: "all", targetDir: "adds" },
   rm: { written: "all" },
   cp: { written: "last", targetDir: "replaces" },
-  ln: { written: "last", targetDir: "replaces" },
+  // NOT exemptible — the alias verb; see `VerbSpec.exemptible`.
+  ln: { written: "last", targetDir: "replaces", exemptible: false },
   install: {
     written: "last",
     targetDir: "replaces",
@@ -864,6 +916,15 @@ function writtenOperands(spec: VerbSpec, args: string[]): string[] {
   return written;
 }
 
+/** A verb's written operands, plus whether a caller's exemption may waive them. */
+interface VerbWrites {
+  written: string[];
+  exemptible: boolean;
+}
+
+/** Nothing recognised: no operands, and exemptibility is moot. */
+const WRITES_NOTHING: VerbWrites = { written: [], exemptible: true };
+
 /**
  * The written operands named by the segment's verb, if it recognises one.
  *
@@ -875,18 +936,26 @@ function writtenOperands(spec: VerbSpec, args: string[]): string[] {
 function verbOperands(
   words: string[],
   literals: Map<string, string>,
-): string[] {
+): VerbWrites {
   const invocation = resolveInvocation(words, literals);
-  if (invocation === null) return [];
+  if (invocation === null) return WRITES_NOTHING;
   const { name, args } = invocation;
 
   if (name === "git") {
     const git = resolveGit(args);
-    return git === null ? [] : writtenOperands(git.spec, git.args);
+    if (git === null) return WRITES_NOTHING;
+    return {
+      written: writtenOperands(git.spec, git.args),
+      exemptible: git.spec.exemptible !== false,
+    };
   }
 
   const spec = row(MUTATION_VERBS, name);
-  return spec === undefined ? [] : writtenOperands(spec, args);
+  if (spec === undefined) return WRITES_NOTHING;
+  return {
+    written: writtenOperands(spec, args),
+    exemptible: spec.exemptible !== false,
+  };
 }
 
 /* ------------------------------------------------------------------ *
@@ -1230,9 +1299,23 @@ function renderSegment(segment: string, literals: Map<string, string>): string {
     .join(" ");
 }
 
+/** What one segment's classification found. */
+interface SegmentVerdict {
+  /** The offending target, or null when the segment writes nothing protected. */
+  hit: SegmentHit | null;
+  /** Does the segment write a file at all? See `MutationVerdict.mutates`. */
+  mutates: boolean;
+}
+
+/** A written operand, with the exempt eligibility of the verb that named it. */
+interface WrittenToken {
+  token: string;
+  exemptible: boolean;
+  target: Target;
+}
+
 /**
- * Classify one already-segmented command's words. Returns the offending target,
- * or null when the segment writes nothing protected.
+ * Classify one already-segmented command's words.
  *
  * The three passes are ordered by how well the verdict explains itself: a
  * direct protected match first, then a directory containing one, then the
@@ -1243,6 +1326,11 @@ function renderSegment(segment: string, literals: Map<string, string>): string {
  * and 2 — every path `opts.exempt` accepted, across every segment of the
  * command. Pass 3 never touches it: an operand that does not resolve names no
  * path a predicate could accept.
+ *
+ * Exempt eligibility is per OPERAND, not per command, because one segment can
+ * carry both kinds: a redirection is an ordinary write and always eligible,
+ * while an operand of a non-exemptible verb is not, whatever else the segment
+ * does.
  */
 function classifyWords(
   words: string[],
@@ -1251,34 +1339,45 @@ function classifyWords(
   opts: MutationOptions,
   cwd: Cwd,
   exempted: string[],
-): SegmentHit | null {
-  const verbWritten = verbOperands(words, literals);
-  const written = [...verbWritten, ...redirectTargets];
-  if (written.length === 0) return null;
+): SegmentVerdict {
+  const verb = verbOperands(words, literals);
+  const tokens: { token: string; exemptible: boolean }[] = [
+    ...verb.written.map((token) => ({ token, exemptible: verb.exemptible })),
+    // A redirection is not the verb's operand — `>` makes any program a write,
+    // and that write is as ordinary as an `Edit`, so it stays eligible.
+    ...redirectTargets.map((token) => ({ token, exemptible: true })),
+  ];
+  if (tokens.length === 0) return { hit: null, mutates: false };
 
-  const targets = written.map((t) => resolveTarget(t, literals, opts, cwd));
+  const written: WrittenToken[] = tokens.map((t) => ({
+    ...t,
+    target: resolveTarget(t.token, literals, opts, cwd),
+  }));
 
   // Pass 1 — a target that resolves to a protected path.
-  for (const target of targets) {
+  for (const { target, exemptible } of written) {
     if (target.kind !== "path") continue;
     if (!isProtected(target.path, opts)) continue;
-    if (opts.exempt?.(target.path) === true) {
+    if (exemptible && opts.exempt?.(target.path) === true) {
       exempted.push(target.path);
       continue;
     }
-    return { kind: "protected", path: target.path };
+    return { hit: { kind: "protected", path: target.path }, mutates: true };
   }
 
   // Pass 2 — a target that is an ancestor directory of a protected path.
-  for (const target of targets) {
+  for (const { target, exemptible } of written) {
     if (target.kind !== "path") continue;
     const pattern = ancestorOfProtected(target.path, opts);
     if (pattern === null) continue;
-    if (opts.exempt?.(target.path) === true) {
+    if (exemptible && opts.exempt?.(target.path) === true) {
       exempted.push(target.path);
       continue;
     }
-    return { kind: "ancestor", path: target.path, pattern };
+    return {
+      hit: { kind: "ancestor", path: target.path, pattern },
+      mutates: true,
+    };
   }
 
   // Pass 3 — fail-closed: a recognised mutation writing somewhere unknowable,
@@ -1297,15 +1396,23 @@ function classifyWords(
   // `curl -o rules/x.md` outright — a LITERAL protected path with an
   // unrecognised program. A rule cannot be looser on the visible case than on
   // the invisible one.
-  if (verbWritten.length === 0) return null;
-  for (let i = 0; i < targets.length; i++) {
-    const target = targets[i];
-    if (target.kind === "unresolved") {
-      return { kind: "unresolved", token: written[i], viaCwd: target.viaCwd };
+  //
+  // A project with an EMPTY protected list has opted out, and an unresolvable
+  // operand there protects nothing — so this pass, the only one that can deny
+  // without a pattern to point at, is skipped. Passes 1 and 2 need no such
+  // guard: they match against the empty list and find nothing.
+  if (verb.written.length > 0 && opts.protectedPaths.length > 0) {
+    for (const { token, target } of written) {
+      if (target.kind === "unresolved") {
+        return {
+          hit: { kind: "unresolved", token, viaCwd: target.viaCwd },
+          mutates: true,
+        };
+      }
     }
   }
 
-  return null;
+  return { hit: null, mutates: true };
 }
 
 /** A directory state put aside while a nested scope runs, and what closes it. */
@@ -1343,10 +1450,9 @@ export function classifyBashMutation(
   command: string,
   opts: MutationOptions,
 ): MutationVerdict {
-  if (!command || command.trim().length === 0) return { deny: false };
-  // Nothing to protect: never deny, not even fail-closed. A project with an
-  // empty list has opted out, and an unresolvable operand protects nothing.
-  if (opts.protectedPaths.length === 0) return { deny: false };
+  if (!command || command.trim().length === 0) {
+    return { deny: false, mutates: false };
+  }
 
   const { segments, literals } = parseCommand(command, { quoted: "capture" });
 
@@ -1354,6 +1460,11 @@ export function classifyBashMutation(
   // allowing verdict so the caller can record that the permission was
   // exercised; dropped on a deny, where nothing was let through.
   const exempted: string[] = [];
+
+  // Sticky across segments: a command mutates if ANY of its segments does, and
+  // it is computed even when `protectedPaths` is empty, because a halted guard
+  // blocks writes whether or not the project protects anything.
+  let mutates = false;
 
   let state = freshState();
   const saved: SavedScope[] = [];
@@ -1389,7 +1500,7 @@ export function classifyBashMutation(
           : undefined;
 
       const { words, redirectTargets } = scanSegment(tokens, nextHead);
-      const hit = classifyWords(
+      const verdict = classifyWords(
         words,
         redirectTargets,
         literals,
@@ -1397,7 +1508,10 @@ export function classifyBashMutation(
         state.cwd,
         exempted,
       );
-      if (hit !== null) return denyVerdict(segment.text, literals, hit);
+      if (verdict.mutates) mutates = true;
+      if (verdict.hit !== null) {
+        return denyVerdict(segment.text, literals, verdict.hit);
+      }
       applyDirEffect(state, words, literals);
     }
 
@@ -1410,14 +1524,15 @@ export function classifyBashMutation(
     }
   }
 
-  // The allowing verdict stays EXACTLY `{ deny: false }` unless something was
-  // actually exempted, so an ordinary allow carries no field a caller could
-  // branch on by accident. `mv rules/x.md rules/retired/` meets the same
-  // directory twice (as `mv`'s source and as its destination), and two segments
-  // can name one path, so first-occurrence order with duplicates removed is
-  // what a reader of the advisory wants.
-  if (exempted.length === 0) return { deny: false };
-  return { deny: false, exempted: [...new Set(exempted)] };
+  // `exempted` is still present ONLY when something was actually exempted, so
+  // an ordinary allow carries no list a caller could branch on by accident.
+  // `mutates` is always present — it is a question every caller must ask, not a
+  // report of something that happened. `mv rules/x.md rules/retired/` meets the
+  // same directory twice (as `mv`'s source and as its destination), and two
+  // segments can name one path, so first-occurrence order with duplicates
+  // removed is what a reader of the advisory wants.
+  if (exempted.length === 0) return { deny: false, mutates };
+  return { deny: false, mutates, exempted: [...new Set(exempted)] };
 }
 
 /** Render a segment hit as the denying verdict it is. */
@@ -1427,10 +1542,14 @@ function denyVerdict(
   hit: SegmentHit,
 ): MutationVerdict {
   const offendingSegment = renderSegment(segmentText, literals);
+  // Every hit comes from a segment that writes something, so a deny always
+  // mutates. Stated once, here, rather than three times below.
+  const mutates = true;
 
   if (hit.kind === "protected") {
     return {
       deny: true,
+      mutates,
       reason: protectedReason(offendingSegment, hit.path),
       offendingSegment,
       targetPath: hit.path,
@@ -1440,6 +1559,7 @@ function denyVerdict(
   if (hit.kind === "ancestor") {
     return {
       deny: true,
+      mutates,
       reason: ancestorReason(offendingSegment, hit.path, hit.pattern),
       offendingSegment,
       targetPath: hit.path,
@@ -1449,6 +1569,7 @@ function denyVerdict(
   const token = renderWord(hit.token, literals);
   return {
     deny: true,
+    mutates,
     reason: hit.viaCwd
       ? unknownCwdReason(offendingSegment, token)
       : unresolvedReason(offendingSegment, token),

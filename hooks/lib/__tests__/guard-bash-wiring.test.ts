@@ -148,6 +148,86 @@ describe("guard.ts Bash path — mutation check wiring", () => {
   });
 });
 
+describe("guard.ts Bash path — the halt gate", () => {
+  // `isHalted` used to be consulted on the write-tool path only, so a halted
+  // guard blocked `Edit` and allowed every `mv`, `rm` and `sed -i`. The
+  // structural properties below are what a future edit would break, and each
+  // one is a way the halt could be turned back into a decoration.
+  const code = bashPathCode();
+
+  it("consults isHalted at all", () => {
+    expect(code).toContain("isHalted(");
+  });
+
+  it("gates on `mutation.mutates`, not on `mutation.deny`", () => {
+    // Halting only what was already denied is no halt. The write-tool halt
+    // blocks every write, wherever it points; this is that mirror.
+    expect(code).toContain("mutation.mutates");
+    const gate = code.indexOf("mutation.mutates");
+    const halt = code.indexOf("isHalted(");
+    expect(gate).toBeGreaterThan(-1);
+    expect(halt).toBeGreaterThan(gate);
+  });
+
+  it("sits ABOVE the protected-path deny", () => {
+    // Same order the write-tool path uses (CHECK 1 above CHECK 2): the halt is
+    // the condition the user has to clear, so it names the verdict.
+    expect(code.indexOf("isHalted(")).toBeLessThan(code.indexOf("if (mutation.deny)"));
+  });
+
+  it("sits INSIDE the self-detect stand-down, like the check below it", () => {
+    // In the plugin's own repo the write-tool path returns before CHECK 1, so
+    // the two surfaces must stand down together.
+    expect(code.indexOf("if (!isFusionPluginCwd())")).toBeLessThan(
+      code.indexOf("isHalted("),
+    );
+  });
+
+  it("does not record a block for the halt itself", () => {
+    // The halt is the standing consequence of earlier violations, not a fresh
+    // one. The write-tool halt does not count itself either.
+    const halt = code.indexOf("isHalted(");
+    const deny = code.indexOf("if (mutation.deny)");
+    expect(code.slice(halt, deny)).not.toContain("recordBlock(");
+  });
+
+  it("cannot be lifted by the rules-write exemption", () => {
+    // The exemption is applied INSIDE classification, so the ordering that
+    // makes this true is not "the halt check comes first" — it is that the
+    // halt reads a field the exemption does not influence.
+    expect(code).toContain("mutation.mutates");
+    const halt = code.indexOf("isHalted(");
+    const advisory = code.indexOf("rules_write_exemption");
+    expect(advisory, "exemption advisory not found").toBeGreaterThan(-1);
+    expect(halt).toBeLessThan(advisory);
+  });
+});
+
+describe("guard.ts write-tool path — one collapse, above both checks", () => {
+  const code = writePathCode();
+
+  it("collapses the spelling before either check reads it", () => {
+    // `normalizeToRelative` returns a relative path UNTOUCHED, so CHECK 2 used
+    // to compare the raw spelling against the protected list: `./agents/
+    // coder.md` allowed and wrote the file `agents/coder.md` denies.
+    expect(code).toContain("collapseSegments(normalizeToRelative(rawFilePath))");
+    const collapse = code.indexOf("collapseSegments(");
+    expect(collapse).toBeLessThan(code.indexOf("isHalted("));
+    expect(collapse).toBeLessThan(code.indexOf("matchesAny(filePath"));
+  });
+
+  it("does NOT strip the trailing separator here", () => {
+    // A trailing separator widens whatever set it is matched against, which is
+    // protection on the protected list and a bigger grant on the exempt one.
+    // Stripping it at this site turned `Edit agents/` from a deny into an allow.
+    expect(code).not.toContain("canonicalise(normalizeToRelative");
+  });
+
+  it("asks the exemption module, not a second copy of the rule", () => {
+    expect(code).toContain("isExemptRulePath(filePath)");
+  });
+});
+
 describe("guard.ts Bash path — the git override waives only the git op", () => {
   // The hole this closes: the override branch used to sit ABOVE the mutation
   // check and `return` after allow(), so FUSION_ALLOW_BRANCH_SWITCH=1 made

@@ -1,6 +1,14 @@
 import { describe, it, expect } from "vitest";
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import {
+  existsSync,
+  linkSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { resolve } from "node:path";
 import {
   CASE_TIMEOUT,
@@ -11,6 +19,7 @@ import {
   runBash,
   runGuard,
   runWrite,
+  withPluginProject,
   withProject,
 } from "./helpers/guard-harness.js";
 
@@ -692,6 +701,540 @@ describe("FUSION_ALLOW_RULES_WRITE on the Bash path", () => {
           ["git_branch_switch"],
         );
       });
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+// ---------------------------------------------------------------------------
+// Turn 2 — the exemption is a filesystem boundary, not a text boundary.
+//
+// Three findings closed together, because two of them are one input class seen
+// from opposite sides. Everything below runs against the REAL guard subprocess
+// in a throwaway project, and every attack carries its flag-UNSET control, so a
+// deny can never be read as "the flag simply did not apply".
+//
+// What was measured BEFORE the fix, and is what these cases exist to keep
+// closed: with the flag set, `ln -s ../ rules/up` was itself an exempted write,
+// after which `Write rules/up/agents/coder.md` and `rm rules/up/hooks/config
+// .json` both allowed. The flag was not "write the rule files"; it was "write
+// anywhere, in two commands", and the second command could delete the halt
+// record.
+// ---------------------------------------------------------------------------
+
+/**
+ * Assert that each subject is denied — each in its OWN fresh project, and each
+ * for a reason that is not the halt.
+ *
+ * Both halves are load-bearing and the first version of these cases had
+ * neither. Three denials halt the guard, so a loop of attacks against one root
+ * gets a real verdict for the first three and `[HALTED]` for every one after,
+ * and `decision === "block"` passes for all of them. That is the vacuous pass
+ * the harness was built to make impossible, reintroduced one level up.
+ */
+function denyEach(
+  subjects: string[],
+  call: (root: string, subject: string) => { decision?: string; reason?: string },
+  opts: { setup?: (root: string) => void; reasonContains?: string } = {},
+): void {
+  for (const subject of subjects) {
+    withProject(({ root }) => {
+      opts.setup?.(root);
+      const res = call(root, subject);
+      expect(res.decision, subject).toBe("block");
+      expect(res.reason ?? "", subject).not.toContain("[HALTED]");
+      if (opts.reasonContains !== undefined) {
+        expect(res.reason, subject).toContain(opts.reasonContains);
+      }
+    });
+  }
+}
+
+const editCall = (root: string, path: string) =>
+  runGuard(root, "Edit", { file_path: path }, FLAG_SET);
+const editCallNoFlag = (root: string, path: string) =>
+  runGuard(root, "Edit", { file_path: path });
+const bashCall = (root: string, command: string) => runBash(root, command, FLAG_SET);
+const bashCallNoFlag = (root: string, command: string) => runBash(root, command);
+
+/** Plant the aliases directly, so the TRAVERSE is tested on its own. */
+function plantAliases(root: string): void {
+  mkdirSync(resolve(root, "hooks"), { recursive: true });
+  writeFileSync(resolve(root, "hooks/config.json"), "{}\n", "utf-8");
+  // A link out of the rule directory, to the project root.
+  symlinkSync("../", resolve(root, "rules/up"));
+  // A DANGLING link: its target does not exist yet, so `realpath` refuses the
+  // whole path and a resolver that read that as "not created yet" would report
+  // the lexical location and grant. `.guard-state` is not created until the
+  // guard first writes it, which is exactly when an agent would plant this.
+  symlinkSync("../fusion-workbench/.guard-state", resolve(root, "rules/gs"));
+  // A hard link: a protected inode under a second name inside `rules/`. Both
+  // names resolve to themselves, so resolution alone says yes.
+  linkSync(resolve(root, "hooks/config.json"), resolve(root, "rules/copy"));
+}
+
+describe("the exemption resolves the path against the filesystem (finding 1)", () => {
+  const reachable = [
+    ["an agent prompt", "rules/up/agents/coder.md"],
+    ["the guard configuration", "rules/up/hooks/config.json"],
+    ["the permission settings", "rules/up/settings.json"],
+    ["the plugin manifest", "rules/up/.claude-plugin/plugin.json"],
+    ["the monitor binary", "rules/up/bin/monitor"],
+    ["a skill body", "rules/up/skills/demo/SKILL.md"],
+    ["the guard's own state", "rules/up/fusion-workbench/.guard-state/escalation.json"],
+    ["the halt record through a dangling link", "rules/gs/escalation.json"],
+    ["a protected inode under a second name", "rules/copy"],
+  ] as const;
+
+  for (const [what, path] of reachable) {
+    it(
+      `denies a write to ${what} spelled through an alias in rules/`,
+      () => {
+        denyEach([path], editCall, {
+          setup: plantAliases,
+          reasonContains: "Protected path",
+        });
+      },
+      CASE_TIMEOUT,
+    );
+  }
+
+  it(
+    "denies the same paths through the shell, on the same reasoning",
+    () => {
+      denyEach(
+        [
+          "rm rules/up/hooks/config.json",
+          "cp /dev/null rules/up/agents/coder.md",
+          "rm rules/gs/escalation.json",
+          "sed -i '' 's/a/b/' rules/copy",
+          "echo x > rules/copy",
+          "truncate -s 0 rules/up/settings.json",
+          "rm -rf rules/up/agents",
+        ],
+        bashCall,
+        { setup: plantAliases },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "leaves the halt standing, because the record is no longer reachable",
+    () => {
+      // The Directive's criterion, falsified in practice before this fix: two
+      // allowed Bash calls removed `escalation.json`, after which
+      // `loadEscalation()` returned the empty state and `haltActive` was false.
+      //
+      // In a HALTED project the block may come from either gate, and that is
+      // the claim here — nothing got through and the halt is intact. That the
+      // path itself is closed is proved separately, on an unhalted project, by
+      // the `rules/gs/escalation.json` row of the table above.
+      withProject(
+        ({ root }) => {
+          plantAliases(root);
+          expect(runBash(root, "rm rules/gs/escalation.json", FLAG_SET).decision).toBe(
+            "block",
+          );
+          expect(
+            runGuard(root, "Edit", { file_path: "rules/gs/escalation.json" }, FLAG_SET)
+              .decision,
+          ).toBe("block");
+          expect(readEscalation(root)?.haltActive).toBe(true);
+        },
+        { escalation: { haltActive: true } },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "refuses to CREATE an alias inside the rule directory",
+    () => {
+      // The second layer. `ln` is the one verb whose purpose is a second name,
+      // and the flag's permission is writing rule files. This closes the direct
+      // spelling; it does not close the class, because `mv` can relocate an
+      // existing link and must stay exemptible — which is why the traverse is
+      // what the cases above pin.
+      denyEach(
+        [
+          "ln -s ../ rules/up",
+          "ln -s ../fusion-workbench/.guard-state rules/gs",
+          "ln hooks/config.json rules/copy",
+          "sudo ln -s / rules/root",
+          "ln -sf /dev/null rules/x.md",
+          "cd rules && ln -s ../ up",
+        ],
+        bashCall,
+        { reasonContains: "rules/" },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies a dangling link, a link chain, an absolute link and a cycle",
+    () => {
+      // `realpath` answers none of these: it fails outright on the first three
+      // and loops on the last. Each one is a way to make the guard read a
+      // planted alias as an ordinary not-yet-created rule file.
+      const plantLinks = (root: string): void => {
+        symlinkSync("../agents/brand-new.md", resolve(root, "rules/new"));
+        symlinkSync("b", resolve(root, "rules/a"));
+        symlinkSync("../agents", resolve(root, "rules/b"));
+        symlinkSync(resolve(root, "agents"), resolve(root, "rules/abs"));
+        symlinkSync("loop", resolve(root, "rules/loop"));
+      };
+
+      denyEach(
+        [
+          "rules/new",
+          "rules/a/coder.md",
+          "rules/b/coder.md",
+          "rules/abs/coder.md",
+          "rules/loop",
+          "rules/loop/x.md",
+        ],
+        editCall,
+        { setup: plantLinks },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "still allows every legitimate rule write, which is what the flag is for",
+    () => {
+      // The false-positive side. A gate that closed the attack by refusing
+      // everything would pass every case above and be useless.
+      withProject(({ root }) => {
+        plantAliases(root);
+        for (const path of [
+          "rules/x.md",
+          "rules/brand-new.md",
+          "rules/retired/x.md",
+          "rules/a/b/deep-new.md",
+          ".claude/rules/local.md",
+          // Through the alias and back INTO the rule directory: it resolves to
+          // a rule file, so it is one.
+          "rules/up/rules/x.md",
+        ]) {
+          expect(
+            runGuard(root, "Edit", { file_path: path }, FLAG_SET).decision,
+            path,
+          ).toBeUndefined();
+        }
+        for (const command of [
+          "mv rules/x.md rules/retired/",
+          "rm rules/x.md",
+          "echo hi > rules/new.md",
+          "sed -i '' 's/a/b/' rules/x.md",
+          "cp /tmp/a rules/x.md",
+        ]) {
+          expect(runBash(root, command, FLAG_SET).decision, command).toBeUndefined();
+        }
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "grants a rule directory that is ITSELF a symlink to a shared tree",
+    () => {
+      // Gate 2 compares against the RESOLVED rule directory rather than
+      // requiring the target to stay under the project root, so a project that
+      // shares its rules across repositories still works.
+      withProject(({ root }) => {
+        const shared = resolve(root, "..", "shared-rules");
+        mkdirSync(shared, { recursive: true });
+        writeFileSync(resolve(shared, "x.md"), "# shared\n", "utf-8");
+        rmSync(resolve(root, "rules"), { recursive: true, force: true });
+        symlinkSync(shared, resolve(root, "rules"));
+
+        expect(
+          runGuard(root, "Edit", { file_path: "rules/x.md" }, FLAG_SET).decision,
+        ).toBeUndefined();
+        expect(
+          runGuard(root, "Edit", { file_path: "rules/x.md" }).decision,
+        ).toBe("block");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies all of it with the flag UNSET too, so no deny is the flag not applying",
+    () => {
+      denyEach(
+        ["rules/up/agents/coder.md", "rules/copy", "rules/x.md"],
+        editCallNoFlag,
+        { setup: plantAliases },
+      );
+      denyEach(["ln -s ../ rules/up", "rm rules/x.md"], bashCallNoFlag, {
+        setup: plantAliases,
+      });
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+// ---------------------------------------------------------------------------
+
+describe("the protected list is matched on a collapsed spelling (finding 2)", () => {
+  // Pre-existing at HEAD and needing no flag: `matchesAny` compiles a glob to a
+  // regex over the path's TEXT, and `normalizeToRelative` returns a relative
+  // path untouched. So `Edit agents/coder.md` denied while `Edit
+  // ./agents/coder.md` allowed and wrote the same file — the entire protected
+  // list bypassable with a two-character prefix.
+  //
+  // `runGuard` is used directly rather than `runWrite`, so nothing normalises
+  // on the way in.
+  const bypasses = [
+    "./agents/coder.md",
+    "x/../agents/coder.md",
+    ".//agents/coder.md",
+    "./x/./../agents/coder.md",
+    "a/b/../../agents/coder.md",
+    "./hooks/config.json",
+    "./hooks/hooks.json",
+    "./skills/demo/SKILL.md",
+    "./.claude-plugin/plugin.json",
+    "./settings.json",
+    "./bin/monitor",
+    "./fusion-workbench/.guard-state/escalation.json",
+    "rules/retired/../../agents/coder.md",
+  ];
+
+  for (const path of bypasses) {
+    it(
+      `denies the protected file spelled ${JSON.stringify(path)}`,
+      () => {
+        withProject(({ root }) => {
+          const res = runGuard(root, "Edit", { file_path: path });
+          expect(res.decision).toBe("block");
+          expect(res.reason).toContain("Protected path");
+          // The reason names the collapsed path, which is the file the write
+          // would actually have reached.
+          expect(res.reason).not.toContain("..");
+        });
+      },
+      CASE_TIMEOUT,
+    );
+  }
+
+  it(
+    "does not let the flag turn any of those spellings into a grant",
+    () => {
+      // The mirror. Collapsing widens the protected set and NARROWS the exempt
+      // set, and both directions have to hold at once.
+      denyEach(
+        [
+          "./agents/coder.md",
+          "x/../agents/coder.md",
+          "rules/../agents/coder.md",
+          "./rules/../agents/coder.md",
+          "rules/./../agents/coder.md",
+          "rules/a/b/../../../agents/coder.md",
+        ],
+        editCall,
+        { reasonContains: "Protected path" },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "still allows unprotected files under the same spellings",
+    () => {
+      // The collapse must not turn ordinary work into denials.
+      withProject(({ root }) => {
+        for (const path of [
+          "notes.txt",
+          "./notes.txt",
+          "./build/out.js",
+          "./docs/x.md",
+          "x/../notes.txt",
+          "rules-draft/x.md",
+        ]) {
+          expect(
+            runGuard(root, "Edit", { file_path: path }).decision,
+            path,
+          ).toBeUndefined();
+        }
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "keeps the trailing-separator denials the collapse could have lost",
+    () => {
+      // A trailing separator WIDENS whatever set it is matched against:
+      // `rules/**` compiles to `^rules/.*$`, whose `.*` matches the empty
+      // string, so `agents/` matches while `agents` does not. Stripping it here
+      // — as the exemption's own canonicalisation does, correctly, on the grant
+      // side — would have turned four denials into allows.
+      denyEach(["agents/", "rules/", "./rules/", "skills/", "rules//"], editCall, {
+        reasonContains: "Protected path",
+      });
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+// ---------------------------------------------------------------------------
+
+describe("a halted guard blocks shell mutations too (finding 3)", () => {
+  // `isHalted` used to be consulted on the write-tool path only, so a halted
+  // guard blocked `Edit` and allowed every `mv`, `rm` and `sed -i`. The surface
+  // where the halt was absent is the surface an agent that has already been
+  // denied three times would actually use.
+  //
+  // Every case sets the flag, so each also proves the flag is not the way out.
+
+  const mutations = [
+    "rm notes.txt",
+    "mv notes.txt /tmp/",
+    "sed -i '' 's/a/b/' notes.txt",
+    "echo hi > notes.txt",
+    "cp /tmp/a /tmp/b",
+    "rm /tmp/scratch",
+    "git clean -fdx build",
+    "rm rules/x.md",
+    "mv rules/x.md rules/retired/",
+    "ls && rm /tmp/x",
+  ];
+
+  it(
+    "blocks every recognised mutation, protected or not, flag or not",
+    () => {
+      withProject(
+        ({ root }) => {
+          for (const command of mutations) {
+            const res = runBash(root, command, FLAG_SET);
+            expect(res.decision, command).toBe("block");
+            expect(res.reason, command).toContain("[HALTED]");
+          }
+        },
+        { escalation: { haltActive: true } },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "still lets the agent read, so it can find out why it is halted",
+    () => {
+      // Blocking ALL Bash under a halt would stop an agent reading the
+      // clear-halt instruction it has just been given, which protects nothing
+      // extra and costs the way out.
+      withProject(
+        ({ root }) => {
+          for (const command of [
+            "ls -la",
+            "git status",
+            "cat notes.txt",
+            "grep -r x .",
+            "git log",
+            "cat fusion-workbench/.guard-state/escalation.json",
+          ]) {
+            expect(runBash(root, command, FLAG_SET).decision, command).toBeUndefined();
+          }
+        },
+        { escalation: { haltActive: true } },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "allows the same mutations when the guard is NOT halted",
+    () => {
+      // The control that makes the case above mean something.
+      withProject(({ root }) => {
+        for (const command of ["rm notes.txt", "echo hi > notes.txt", "cp /tmp/a /tmp/b"]) {
+          expect(runBash(root, command, FLAG_SET).decision, command).toBeUndefined();
+        }
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "does not count the halt as a fresh violation",
+    () => {
+      // Mirrors the write-tool halt, which emits and blocks without calling
+      // recordBlock. A halt that incremented its own counter would inflate the
+      // record of what the agent actually did.
+      withProject(
+        ({ root }) => {
+          runBash(root, "rm notes.txt", FLAG_SET);
+          const state = readEscalation(root);
+          expect(state?.haltActive).toBe(true);
+          expect(state?.consecutiveBlocks).toBe(0);
+          expect(readEvents(root).map((e) => e.event)).toEqual(["guard_halt"]);
+        },
+        { escalation: { haltActive: true, consecutiveBlocks: 0 } },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "writes no exemption advisory for a mutation it halted",
+    () => {
+      // The halt is above the exemption, so nothing was let through and
+      // nothing claims to have been.
+      withProject(
+        ({ root }) => {
+          runBash(root, "mv rules/x.md rules/retired/", FLAG_SET);
+          expect(
+            readEscalation(root)?.recentEvents.some(
+              (e) => e.trigger === "rules_write_exemption",
+            ),
+          ).toBe(false);
+          expect(readEvents(root).map((e) => e.event)).toEqual(["guard_halt"]);
+        },
+        { escalation: { haltActive: true } },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "leaves the git branch policy to name its own denials",
+    () => {
+      // The branch policy runs above the mutation check and is not a write
+      // concern, so a halted guard still reports a branch switch as one.
+      withProject(
+        ({ root }) => {
+          const res = runBash(root, "git switch main", FLAG_SET);
+          expect(res.decision).toBe("block");
+          expect(res.reason).toContain("never switch git branches");
+        },
+        { escalation: { haltActive: true } },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "stands down in the plugin's own repo, on BOTH surfaces together",
+    () => {
+      // The write-tool path returns on the self-detect check before it reaches
+      // CHECK 1, so the write halt already stood down here. The Bash halt sits
+      // inside the same gate, so the two stand down together rather than one
+      // surface halting while the other does not.
+      withPluginProject(
+        ({ root }) => {
+          expect(runGuard(root, "Edit", { file_path: "agents/coder.md" }).decision)
+            .toBeUndefined();
+          expect(runBash(root, "rm rules/x.md").decision).toBeUndefined();
+          // And the branch policy, which never stood down, still does not.
+          expect(runBash(root, "git switch main").decision).toBe("block");
+        },
+        { escalation: { haltActive: true } },
+      );
     },
     CASE_TIMEOUT,
   );

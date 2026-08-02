@@ -43,8 +43,9 @@
 import { resolve, relative, isAbsolute } from "node:path";
 import { existsSync } from "node:fs";
 import { execFileSync } from "node:child_process";
-import { matchesAny } from "./lib/paths.js";
+import { matchesAny, collapseSegments } from "./lib/paths.js";
 import { isFusionPluginCwd } from "./lib/self-detect.js";
+import { realFsLocator } from "./lib/fs-locator.js";
 import { loadConfig, findRelevantDecisions, sensitivityLevel } from "./lib/config.js";
 import type { Sensitivity } from "./lib/config.js";
 import {
@@ -104,6 +105,19 @@ const checkoutResolver: CheckoutResolver = {
     }
   },
 };
+
+/**
+ * The real filesystem the rules-write exemption's second gate consults —
+ * symlinks, path folding and hard links, rooted at the project. Built once per
+ * process, next to `checkoutResolver`, for the same reason: the modules that
+ * decide policy stay pure and this file owns the environment.
+ */
+const fsLocator = realFsLocator(process.cwd());
+
+/** Is this a rule path the FUSION_ALLOW_RULES_WRITE flag exempts? */
+function isExemptRulePath(path: string): boolean {
+  return isProjectRulePath(path, fsLocator);
+}
 
 /** Hook input from Claude Code (PreToolUse). */
 interface HookInput {
@@ -174,6 +188,14 @@ function block(reason: string): void {
  *      the branch: the sharper, better-established policy names the verdict, and
  *      one tool call records exactly ONE block. Recording two would double-count
  *      the consecutive-block counter that drives the halt.
+ *   2a. HALT DENY. When the guard is halted, DENY any command the classifier
+ *      recognises as a mutation — and allow everything else, so an agent can
+ *      still read its way to understanding why it is halted. This mirrors
+ *      CHECK 1 on the write-tool path, and it sits ABOVE the exemption for the
+ *      same reason CHECK 1 sits above CHECK 2: the flag grants one permission
+ *      and lifting a halt is not it. Until this existed the halt was a
+ *      write-TOOL control — a halted guard blocked Edit and allowed
+ *      `sed -i`, which is the surface an agent with a shell would have used.
  *   2. MUTATION DENY. DENY a file-mutating command whose written operands
  *      resolve onto config.guard.protectedPaths. Gated on the self-detect
  *      stand-down (see the comment at the check itself). It runs on BOTH routes
@@ -280,9 +302,54 @@ function guardBashCommand(
       // an agent that met the deny here after the Edit went through would
       // learn to route around the guard rather than respect it.
       exempt: rulesWriteExemptionActive(process.env)
-        ? isProjectRulePath
+        ? isExemptRulePath
         : undefined,
     });
+
+    // STEP 2a — HALT. A halted guard blocks every recognised mutation, and
+    // nothing else. Three things about the placement are load-bearing:
+    //
+    //   - ABOVE the exemption's effect. The exemption is applied INSIDE
+    //     classification, so this cannot be expressed by ordering two calls;
+    //     it is expressed by reading `mutation.mutates`, which the exemption
+    //     does not influence. `FUSION_ALLOW_RULES_WRITE` therefore cannot be
+    //     the way out of a halt, exactly as it cannot be on the write-tool
+    //     path where CHECK 1 returns above CHECK 2.
+    //   - ABOVE the protected-path deny, so a halted guard reports the halt
+    //     rather than the path. Same order the write-tool path uses, and the
+    //     same reason: the halt is the condition the user has to clear, and
+    //     naming the path would send an agent off rephrasing the command.
+    //   - MUTATIONS ONLY. Blocking all Bash under a halt would stop an agent
+    //     reading its way out of the situation — it could not even find the
+    //     clear-halt instruction — which is worse for everyone and protects
+    //     nothing extra. `ls`, `git status` and `cat` still run.
+    //
+    // Inside the self-detect gate, like the check below it: in the plugin's own
+    // repo the write-tool path returns before CHECK 1 too, so the halt stands
+    // down on both surfaces together rather than on one.
+    //
+    // No recordBlock: the halt is not a fresh violation, it is the standing
+    // consequence of earlier ones. The write-tool halt does not count itself
+    // either.
+    if (mutation.mutates) {
+      const escalation = loadEscalation();
+      if (isHalted(escalation)) {
+        const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT ?? "<plugin-dir>";
+        const reason =
+          "[HALTED] All file-mutating shell commands are blocked. " +
+          "The guard has been halted after repeated violations. " +
+          "Read-only commands still run. " +
+          `Run: node ${pluginRoot}/hooks/dist/clear-halt.js to reset.`;
+        emitEvent(
+          "guard_halt",
+          "Bash",
+          mutation.targetPath,
+          "Halt active — mutating Bash command blocked",
+        );
+        block(reason);
+        return;
+      }
+    }
 
     if (mutation.deny) {
       const reason =
@@ -475,8 +542,28 @@ async function main(): Promise<void> {
     return;
   }
 
-  // Normalize absolute paths to relative (so glob patterns in config match)
-  const filePath = normalizeToRelative(rawFilePath);
+  // Normalize absolute paths to relative (so glob patterns in config match),
+  // then COLLAPSE `.` and `..` before either check reads the path.
+  //
+  // The collapse is not cosmetic and it is not only the exemption's business.
+  // `normalizeToRelative` returns a relative input UNCHANGED, and `matchesAny`
+  // compiles a glob to a regex over the path's text, so CHECK 2 used to compare
+  // the raw spelling against the protected list: `agents/coder.md` denied while
+  // `./agents/coder.md` and `x/../agents/coder.md` allowed, writing the same
+  // file. That was the whole protected list bypassable with a two-character
+  // prefix, and it was the strictly worse half of the input class the exemption
+  // had already been taught to collapse — `rules/../agents/coder.md` denied
+  // only by accident, because `rules/**` happens to match its text.
+  //
+  // One collapse, one place, above both checks: the protected set and the
+  // exempt set are read off the same spelling, and neither can be argued into a
+  // different answer by rewriting the path. The exemption then applies its own
+  // narrowing (the trailing-separator strip) on top, which is a grant-side step
+  // and must not happen here — see `collapseSegments` in lib/paths.ts for why
+  // shrinking the protected spelling would lose a deny.
+  //
+  // This widens the DENY side. A spelling that silently allowed now blocks.
+  const filePath = collapseSegments(normalizeToRelative(rawFilePath));
 
   const escalation = loadEscalation();
 
@@ -496,12 +583,13 @@ async function main(): Promise<void> {
   if (matchesAny(filePath, config.guard.protectedPaths)) {
     // THE RULES-WRITE EXEMPTION. Both halves must hold: the user deliberately
     // set FUSION_ALLOW_RULES_WRITE, and the path is one of the rule paths that
-    // flag names. lib/rules-write-exemption.ts owns the boundary and also
-    // canonicalises the path before matching it, because the write-tool path
-    // hands it spellings (`rules/`, `rules/../agents/coder.md`) that
-    // normalizeToRelative leaves uncollapsed. The Bash mutation path asks the
-    // same module the same two questions, so a security-relevant rule is not
-    // written twice, once per surface, and cannot drift apart.
+    // flag names. lib/rules-write-exemption.ts owns the boundary — it
+    // canonicalises the path lexically AND resolves it against the real
+    // filesystem, because a grant read off text alone is spendable on a symlink
+    // planted inside the rule directory. The Bash mutation path asks the same
+    // module the same two questions through the same `isExemptRulePath`, so a
+    // security-relevant rule is not written twice, once per surface, and cannot
+    // drift apart.
     //
     // Three properties a later editor must not break:
     //
@@ -521,7 +609,7 @@ async function main(): Promise<void> {
     //      one exempted Edit produces guard_advisory FOLLOWED BY guard_allow,
     //      not guard_advisory alone.
     const exempted =
-      rulesWriteExemptionActive(process.env) && isProjectRulePath(filePath);
+      rulesWriteExemptionActive(process.env) && isExemptRulePath(filePath);
 
     if (!exempted) {
       const reason = `Protected path: ${filePath} cannot be modified directly. This path is under compliance guard protection.`;
