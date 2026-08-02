@@ -1,7 +1,8 @@
-import { describe, it, expect } from "vitest";
-import { readFileSync, readdirSync } from "node:fs";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { readFileSync, readdirSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
-import { dirname, resolve, join } from "node:path";
+import { dirname, resolve, join, relative, sep } from "node:path";
 
 // ---------------------------------------------------------------------------
 // Provenance-header lint gate (Circle 260801-1244-rule-provenance-header, step 3).
@@ -17,8 +18,20 @@ import { dirname, resolve, join } from "node:path";
 // This gate fails `npm test` when a rule file carries no `Provenance:` line in
 // its first HEADER_WINDOW lines. It names the offending file and states the fix.
 //
-// The file set is `rules/*.md`, derived by `readdirSync`, so a newly added rule
-// file is in the set automatically. There is NO exemption list, deliberately.
+// The file set is every `*.md` under `rules/` at ANY depth: `readdirSync`
+// recurses, so a newly added rule file is in the set automatically wherever it
+// lands. Depth is not a hypothetical — `circles/260801-1244-curator` plans to
+// partition `rules/fusion-workbench-conventions.md` into shards and names this
+// gate as the check they must pass, and whether they land as `rules/<name>.md`
+// or `rules/<subdir>/<name>.md` is not settled anywhere. A non-recursing gate
+// would report success on the second shape without having read a single shard.
+// Only regular files count (`isFile()`), so a directory whose name happens to
+// end in `.md` is skipped rather than handed to `readFileSync` for an EISDIR
+// throw. The real corpus is flat, so it cannot itself demonstrate recursion; a
+// dedicated describe block below asserts the traversal against a throwaway
+// nested tree in the OS temp directory.
+//
+// There is NO exemption list, deliberately.
 // Every file in `rules/` is in scope, and the correct response to a new file
 // failing this gate is to write that file a header — not to add it here. The two
 // sibling gates that do carry exemptions (`path-literal-lint`,
@@ -44,9 +57,16 @@ import { dirname, resolve, join } from "node:path";
 const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 
 // The position rule as a single named constant: a header counts only if it sits
-// within this many lines of the file's start. Ten clears the longest opening
-// blockquote in the corpus (line 8 in `context-manifest.md`) with one line to
-// spare. Widening it would let a header drift out of a reader's first glance.
+// within this many lines of the file's start. Ten was sized against the
+// pre-header corpus, where the longest opening blockquote ran to line 8 in
+// `context-manifest.md`, so a header placed after that lede would have landed on
+// line 10 and still counted. Every rule file now carries its header at line 3
+// instead, above the lede, which pushed that same blockquote down to lines 5-10.
+// So the current bound is: the window ends exactly where the corpus's longest
+// lede now ends, and the after-the-lede placement no longer fits inside it (in
+// that file a header below the lede would sit at line 12). Widening the window
+// would let a header drift out of a reader's first glance; the fix for a file
+// that cannot fit is to put the header above the lede, as all ten now do.
 const HEADER_WINDOW = 10;
 
 // The spec's regex, verbatim — not re-derived here. Anchored (so the keyword
@@ -73,12 +93,28 @@ function headerLine(text: string): number | null {
   return null;
 }
 
-/** Every Markdown file in the plugin's `rules/` — the gate's file set. */
+/**
+ * Every Markdown file under `dir` at any depth, each paired with its path
+ * relative to `relTo` (the form the failure message prints). Directories are
+ * dropped by `isFile()`, including one whose own name ends in `.md`. Sorted by
+ * that relative path, code-unit order, so a caller can assert the whole set.
+ *
+ * Parameterised by directory purely so the recursion can be tested: the real
+ * corpus is flat and would look identical either way.
+ */
+function gatedFilesUnder(dir: string, relTo: string): { rel: string; abs: string }[] {
+  return readdirSync(dir, { recursive: true, withFileTypes: true })
+    .filter((e) => e.isFile() && e.name.endsWith(".md"))
+    .map((e) => {
+      const abs = join(e.parentPath, e.name);
+      return { rel: relative(relTo, abs).split(sep).join("/"), abs };
+    })
+    .sort((a, b) => (a.rel < b.rel ? -1 : a.rel > b.rel ? 1 : 0));
+}
+
+/** The gate's file set: every Markdown file under the plugin's `rules/`. */
 function gatedFiles(): { rel: string; abs: string }[] {
-  const dir = join(pluginRoot, "rules");
-  return readdirSync(dir)
-    .filter((f) => f.endsWith(".md"))
-    .map((f) => ({ rel: `rules/${f}`, abs: join(dir, f) }));
+  return gatedFilesUnder(join(pluginRoot, "rules"), pluginRoot);
 }
 
 /** An actionable, HYG-NO-SILENT-FAIL message: the file, the defect, and the fix. */
@@ -97,7 +133,10 @@ function report(missing: string[]): string {
     .join("\n");
 }
 
-// --- fixtures: in-memory strings, never files on disk ----------------------
+// --- fixtures: in-memory strings, never files under rules/ -----------------
+// (the one exception is the traversal block below, which needs a real directory
+//  tree to have anything to recurse into — it builds one in the OS temp
+//  directory and removes it again, and never touches the plugin's own `rules/`.)
 
 const CANONICAL_HEADER =
   "**Provenance:** shared/decisions/260801-1020_a_provenance-header-on-rule-files.md";
@@ -135,6 +174,73 @@ describe("provenance-header lint: every rule file carries a header", () => {
       gatedFiles().length,
       `no rules/*.md files found under ${pluginRoot} — the corpus test above would pass vacuously`,
     ).toBeGreaterThan(0);
+  });
+});
+
+describe("provenance-header lint: the file set reaches nested rule files", () => {
+  // The real corpus is flat — ten files, no subdirectory — so it is exactly the
+  // wrong evidence for this property: `gatedFiles()` returns the same ten files
+  // whether or not the traversal recurses, so neither the corpus test nor a
+  // count assertion over it can tell the two apart. Only a tree that HAS a
+  // subdirectory distinguishes them, and building one under `rules/` would mean
+  // committing a fake rule file to make a test pass. So the traversal is
+  // asserted against a throwaway tree in the OS temp directory, through the same
+  // function the gate itself calls (`gatedFiles` is a one-line wrapper over it).
+  // Drop `recursive: true` and the first test here fails on the two nested
+  // files; drop `withFileTypes`/`isFile()` and the second fails on the directory
+  // named like a file. The corpus test would notice neither.
+  let root = "";
+
+  beforeAll(() => {
+    root = mkdtempSync(join(tmpdir(), "provenance-tree-"));
+    mkdirSync(join(root, "nested", "deeper"), { recursive: true });
+    mkdirSync(join(root, "looks-like-a-file.md"), { recursive: true });
+    writeFileSync(join(root, "top.md"), "# Top\n");
+    writeFileSync(join(root, "notes.txt"), "not markdown\n");
+    writeFileSync(join(root, "nested", "deep.md"), "# Deep\n");
+    writeFileSync(join(root, "nested", "notes.txt"), "not markdown either\n");
+    writeFileSync(join(root, "nested", "deeper", "deepest.md"), "# Deepest\n");
+  });
+
+  afterAll(() => {
+    rmSync(root, { recursive: true, force: true });
+  });
+
+  it("collects .md files at every depth, and only .md files", () => {
+    expect(gatedFilesUnder(root, root).map((f) => f.rel)).toEqual([
+      "nested/deep.md",
+      "nested/deeper/deepest.md",
+      "top.md",
+    ]);
+  });
+
+  it("skips a directory whose name ends in .md rather than crashing on it", () => {
+    // `readdirSync` without `withFileTypes` returns directory names too, and the
+    // corpus test would hand this one to `readFileSync` — an EISDIR throw
+    // instead of the gate's own actionable message (HYG-NO-SILENT-FAIL cuts both
+    // ways: a wrong-shaped failure is as unhelpful as a silent pass).
+    expect(gatedFilesUnder(root, root).map((f) => f.rel)).not.toContain("looks-like-a-file.md");
+  });
+
+  it("reports a nested file by its full relative path, subdirectory included", () => {
+    // Recursing is only half the fix: the message has to name the file a reader
+    // can open. `rel` used to be built as `rules/${basename}`, which for a shard
+    // at `rules/conventions/layout.md` would have printed `rules/layout.md`.
+    const nested = gatedFilesUnder(root, root).find((f) => f.rel.includes("/"))!;
+    expect(nested.rel).toBe("nested/deep.md");
+    expect(report([nested.rel])).toContain("nested/deep.md");
+  });
+
+  it("finds a headerless nested file that a non-recursing gate would pass over", () => {
+    // The property end-to-end, in the gate's own terms: the corpus check is
+    // `gatedFiles().filter(no header)`, run here over the temp tree. The nested
+    // files carry no `Provenance:` line, so a recursing gate reports all three
+    // and a non-recursing one reports only `top.md`.
+    const missing = gatedFilesUnder(root, root)
+      .filter(({ abs }) => headerLine(readFileSync(abs, "utf-8")) === null)
+      .map(({ rel }) => rel);
+    expect(missing).toContain("nested/deep.md");
+    expect(missing).toContain("nested/deeper/deepest.md");
   });
 });
 
@@ -187,8 +293,14 @@ describe("provenance-header lint: the pattern matches the keyword, not prose", (
     ["no colon", "**Provenance** shared/decisions/x.md"],
     ["no separator after the keyword", "**Provenance:**shared/decisions/x.md"],
     ["the keyword mid-sentence, not opening the line", "See **Provenance:** above for the record."],
+    // Long, realistic prose of the kind the corpus actually carries, mentioning
+    // provenance mid-sentence. It is rejected at the anchor and nowhere else:
+    // after the optional `> ` the pattern requires the keyword and finds `The`.
+    // Same rejection as the entry above, in a longer string — case and the
+    // missing colon have their own one-line fixtures further up, and neither is
+    // reached here.
     [
-      "the real corpus prose from rules/user-facing-output.md",
+      "long blockquoted prose mentioning provenance mid-sentence",
       "> The next orchestrator session will pick up the Turn loop against this Circle's " +
         "Directive — close the 7 Stefan-blocked open issues by source-querying " +
         "normative/extracts/, landing changes with pending-stefan provenance markers, " +
@@ -203,22 +315,19 @@ describe("provenance-header lint: the pattern matches the keyword, not prose", (
     });
   }
 
-  it("the corpus's own 'provenance' prose also fails on position, not only on form", () => {
-    // The line above is rejected on three independent grounds — case, the
-    // missing colon, and position. The first two are asserted by the fixture;
-    // this asserts the third against the real file, so the fixture cannot drift
-    // into testing a string the corpus no longer contains.
-    const rel = "rules/user-facing-output.md";
-    const lines = readFileSync(join(pluginRoot, rel), "utf-8").split("\n");
-    const at = lines.findIndex((l) => l.includes("pending-stefan provenance markers"));
-    expect(
-      at,
-      `${rel} no longer contains the 'pending-stefan provenance markers' prose the ` +
-        `rejection fixture above is copied from — refresh the fixture from the current corpus`,
-    ).toBeGreaterThanOrEqual(0);
-    expect(at + 1).toBeGreaterThan(HEADER_WINDOW);
-    expect(headerLine(readFileSync(join(pluginRoot, rel), "utf-8"))).toBe(3); // its real header
-  });
+  // A test reading `rules/user-facing-output.md` stood here. It asserted that
+  // the prose the long fixture above was copied from sits below line 10 of that
+  // real file. That is a fact about where a style rule keeps an illustrative
+  // example, not a fact about `headerLine`: move the example above line 10 and
+  // the test failed while the gate stayed exactly correct, because the anchor
+  // rejects that line at every position. Its comment also claimed the fixture
+  // proved rejection on case and on the colon, which it never did — the match
+  // dies at the anchor before either is reached. Removed rather than corrected,
+  // because what it was reaching for is already proved elsewhere and better:
+  // position by the window block above (a genuine header, moved one line past
+  // the boundary) and by the conventions-file block below (a real decoy that
+  // genuinely matches HEADER and is excluded by position alone, with its own
+  // non-vacuity guard); every real file's header by the corpus test at the top.
 });
 
 describe("provenance-header lint: the three negative fixtures fail, with an actionable message", () => {
