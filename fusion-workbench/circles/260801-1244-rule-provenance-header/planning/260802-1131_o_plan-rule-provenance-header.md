@@ -262,7 +262,7 @@ Read the inserted section and confirm by eye that it states the keyword, all thr
 
 ---
 
-### 3. Add the provenance-header lint gate
+### 3. [DONE] Add the provenance-header lint gate
 
 - **Executor:** `coder`
 - **Dependencies:** Steps 1 and 2 (the gate lands green on an already-conforming corpus, and its self-demonstration test needs the conventions section in place)
