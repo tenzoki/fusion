@@ -2,7 +2,7 @@
 
 **Provenance:** No motivating record recoverable; introduced in `git:b05b423`.
 
-Shared conventions for all agents operating on `fusion-workbench/`. This file is auto-loaded by the plugin system into every agent's context. Single source of truth for the workbench layout, the origin rule, path resolution, state markers, issue and decision filing, inline tracking, history logging, and timestamps.
+Shared conventions for all agents operating on `fusion-workbench/`, and for the rule files those agents load. This file is auto-loaded by the plugin system into every agent's context. Single source of truth for the workbench layout, the origin rule, path resolution, state markers, issue and decision filing, inline tracking, history logging, timestamps, and provenance headers on rule files.
 
 **This document is the definition.** Layout, origin rule, and path resolution are defined here completely. No agent prompt and no skill body may carry a competing or supplementary definition of where artifacts go — they resolve their paths at run time (see `## Path Resolution (Pfadauflösung)`) and cite this document for the rules. A path literal that names a store directory belongs in exactly two places: this file, and `bin/fusion-paths`.
 
@@ -569,7 +569,7 @@ Every file in the plugin's `rules/` directory opens with a line naming what caus
 **Provenance:** <citation>
 ```
 
-Canonical placement is directly under the file's H1 title, on line 3. The ten-line window is tolerance rather than licence: it is wide enough that a file whose lede is a blockquote can carry the header after the lede instead. Ten was chosen to clear the longest opening blockquote in the corpus, which runs to line 8 in `context-manifest.md`, with one line to spare. A future file whose opening blockquote runs past line 8 does not fit, and the answer then is to move the header above the blockquote, not to widen the window.
+Canonical placement is directly under the file's H1 title, on line 3. The ten-line window is tolerance rather than licence. Ten was sized against the pre-header corpus, where the longest opening blockquote ran to line 8 in `context-manifest.md`, so a header placed after that lede would have landed on line 10 and still counted. Every rule file now carries its header above the lede instead, at line 3, which pushed that same blockquote down to lines 5-10. The current bound is therefore tighter than the one the window was sized for: it ends exactly where the corpus's longest lede ends, and in that file a header below the lede would sit at line 12, outside it. The remaining margin is zero, and it costs nothing, because a header on line 3 needs no margin at all. That is also the answer for a future file whose opening blockquote runs long — move the header above the blockquote, not widen the window.
 
 **Three citation forms.** Which one a file uses is decided by what its history supports, not by the author's preference.
 
