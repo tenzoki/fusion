@@ -1,5 +1,7 @@
 # Decision Record — Worked Examples
 
+**Provenance:** No motivating record recoverable; introduced in `git:b05b423`.
+
 Companion to `fusion-workbench-conventions.md`. Three end-to-end examples showing how a decision file moves through the marker vocabulary `_o_ → _a_ → _i_ → _s_` (and one `_o_ → _d_`). Optional reading; the conventions file is normative.
 
 ---

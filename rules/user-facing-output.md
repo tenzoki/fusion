@@ -1,5 +1,7 @@
 # User-Facing Output
 
+**Provenance:** No motivating record recoverable; introduced in `git:c18a946`.
+
 Every piece of output the user reads — status reports, gate prompts, `AskUserQuestion` text, session summaries, error messages, skill confirmations, activation banners — must be **self-contained, plain-English, and action-first**. The user should never have to decode jargon, hunt for what they need to do, or scroll back to understand a question.
 
 This rule is loaded for every agent. If you find yourself writing output that violates it, rewrite before sending. The user reads everything you produce — make it worth reading.

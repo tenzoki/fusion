@@ -1,5 +1,7 @@
 # The lean-`CLAUDE.md` convention
 
+**Provenance:** circles/260718-1924-v5x-overhaul
+
 > The companion to [`context-manifest.md`](./context-manifest.md). The manifest
 > moves a consuming project's heavy rule bodies behind per-agent + per-topic
 > loading; this doc says what the project's own `CLAUDE.md` keeps always-on and

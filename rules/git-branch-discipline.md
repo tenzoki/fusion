@@ -1,5 +1,7 @@
 # Git Branch Discipline
 
+**Provenance:** No motivating record recoverable; introduced in `git:4950ffa`.
+
 This rule is loaded for every agent. It is enforced **deterministically** by the PreToolUse guard hook (`hooks/guard.ts`), not by your goodwill — every `Bash` call is classified before it runs, and branch/worktree-moving git operations are denied. The rule text here exists so you understand *why* the deny happens and *what to do instead*; it is not the enforcement surface.
 
 The guard runs a second, independent `Bash` policy: a shell command that **writes** a path in `guard.protectedPaths` is denied on the same call. That one has its own rule, `protected-path-discipline.md`, which every agent also loads. The two policies share a hook and nothing else — different verbs, different overrides, and different behaviour in the plugin's own repository.

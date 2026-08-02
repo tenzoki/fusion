@@ -1,5 +1,7 @@
 # Design Diagrams — formal, parseable representation of technical design
 
+**Provenance:** No motivating record recoverable; introduced in `git:bd5f6e6`.
+
 This rule is loaded for the planning and analysis agents (`planner`, `analyst`, `taskplanner`, `shaper`, `investigator`) and for the evaluator that judges their output (`conceptrev`). It governs **how technical design is represented** in the documents these agents produce.
 
 The core idea: **a diagram of a design is also a measurement of that design.** A clear graph — few crossing edges, visible layering, sensible fan-out, no unexplained cycles — reflects a clear architecture. A tangled hairball reflects a tangled one. So the diagram is not decoration; it is evidence. For that evidence to be usable, it must be in a **formal, parseable form** — Mermaid — that you, the `conceptrev` evaluator, and the human at the gate can all read and judge unambiguously.

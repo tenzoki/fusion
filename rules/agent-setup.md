@@ -1,5 +1,7 @@
 # Agent Setup Contract
 
+**Provenance:** circles/260718-1924-v5x-overhaul
+
 This rule is the single authoring home for what every agent's Setup step means. Your
 prompt's Setup runs three bootstrap commands in order — `fusion-workbench-root` (locate
 the workbench, halt if it exits non-zero), then `fusion-rules <self>`, then

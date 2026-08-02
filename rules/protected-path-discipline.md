@@ -1,5 +1,7 @@
 # Protected-Path Discipline (shell writes)
 
+**Provenance:** circles/260801-1244-guard-bash-inspection
+
 This rule is loaded for every agent. It is the shell half of the compliance guard's
 protected-path policy, and it is enforced by the PreToolUse guard hook
 (`hooks/guard.ts` → `hooks/lib/bash-mutation-guard.ts`), not by your goodwill. Every

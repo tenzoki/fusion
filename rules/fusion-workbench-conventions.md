@@ -1,5 +1,7 @@
 # fusion-workbench Conventions
 
+**Provenance:** No motivating record recoverable; introduced in `git:b05b423`.
+
 Shared conventions for all agents operating on `fusion-workbench/`. This file is auto-loaded by the plugin system into every agent's context. Single source of truth for the workbench layout, the origin rule, path resolution, state markers, issue and decision filing, inline tracking, history logging, and timestamps.
 
 **This document is the definition.** Layout, origin rule, and path resolution are defined here completely. No agent prompt and no skill body may carry a competing or supplementary definition of where artifacts go — they resolve their paths at run time (see `## Path Resolution (Pfadauflösung)`) and cite this document for the rules. A path literal that names a store directory belongs in exactly two places: this file, and `bin/fusion-paths`.
