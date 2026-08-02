@@ -180,7 +180,7 @@ Expect green. Nothing in the suite reads rule-file content yet, so this is a no-
 
 ---
 
-### 2. Document the convention in the conventions file
+### 2. [DONE] Document the convention in the conventions file
 
 - **Executor:** `coder`
 - **Dependencies:** Step 1 (the file already carries its own line-3 header, so the section and the header are visibly two separate mechanisms in one diff sequence rather than one edit)
