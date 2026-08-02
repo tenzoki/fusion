@@ -317,7 +317,7 @@ The Turn boundary sits between Step 5 and Step 6. See `## Sizing` for why.
 - **Acceptance criteria served:** `:325`, and the deliberately deferred C5c criterion at `:316` — with the flag set a shell move of a rule file into `retired/` is allowed and emits one `guard_advisory`, and with it unset the same move is blocked.
 - **Verification:** `cd hooks && npm test`, with new cases for: `mv rules/x.md rules/retired/` blocked with the flag unset and allowed with it set, producing exactly one `guard_advisory` naming the variable and both operands; `rm -rf rules` denied with the flag set; `mv agents/coder.md /tmp/` denied with the flag set; `printf '' > .claude/rules/local.md` allowed with the flag set; and pure classifier cases asserting `exempted` is reported and deduplicated.
 
-### Step 5 — The monitor renders advisories
+### Step 5 [DONE] — The monitor renders advisories
 
 - **Executor:** `coder`
 - **Files:** `bin/monitor`

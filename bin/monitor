@@ -74,13 +74,25 @@ EVENTS_JSONL = os.path.join(BASE_DIR, "orchestrator-events.jsonl")
 STATE_YAML = os.path.join(BASE_DIR, "agentstate.yaml")
 GUARD_EVENTS_JSONL = os.path.join(BASE_DIR, ".guard-state", "events.jsonl")
 
-# Guard events surfaced as sticky warnings on the dashboard. Other guard
-# events (guard_allow, tracker_record, clears) are bookkeeping and are
-# excluded from the warnings panel.
+# Guard events surfaced as sticky rows in the warnings panel. Two kinds
+# qualify, and the distinction is what the panel is for:
+#
+#   - Warnings and blocks (churn_*, cross_file_*, guard_block, guard_halt)
+#     report something the user did not ask for.
+#   - Advisories (guard_advisory) report something the user DID ask for: a
+#     write the guard would normally deny, let through because an override
+#     flag was set. The user turned the guard down, so the user is the one
+#     who has to see what that bought. Rendered at its own "Advisory" level,
+#     not as a warning — see the level mapping in renderWarnings().
+#
+# Everything else a guard hook writes (guard_allow, tracker_record, clears)
+# is bookkeeping: it records the ordinary path, nobody asked to be told
+# about it, and it stays out of the panel.
 WARNING_EVENT_TYPES = {
     "churn_warning", "churn_critical",
     "cross_file_warning", "cross_file_critical",
     "guard_block", "guard_halt",
+    "guard_advisory",
 }
 MAX_WARNINGS_RETURNED = 30
 
@@ -154,6 +166,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
   .warning-row.critical { border-left-color: var(--red); }
   .warning-row.block    { border-left-color: var(--orange); }
   .warning-row.halt     { border-left-color: var(--red); background: rgba(239,68,68,0.08); }
+  .warning-row.advisory { border-left-color: var(--cyan); }
   .warning-level {
     font-weight: 600; text-transform: uppercase; font-size: 11px;
     padding: 2px 8px; border-radius: 3px; background: var(--bg3); color: var(--yellow);
@@ -161,6 +174,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
   }
   .warning-row.critical .warning-level, .warning-row.halt .warning-level { color: var(--red); }
   .warning-row.block    .warning-level { color: var(--orange); }
+  .warning-row.advisory .warning-level { color: var(--cyan); }
   .warning-detail { flex: 1; color: var(--fg2); word-break: break-word; }
   .warning-ts { color: var(--fg3); font-size: 11px; white-space: nowrap; }
   .warning-dismiss {
@@ -425,6 +439,11 @@ HTML_PAGE = r"""<!DOCTYPE html>
         levelClass = 'warning'; levelLabel = 'Cross-file';
       } else if (w.event === 'guard_block') { levelClass = 'block'; levelLabel = 'Blocked'; }
       else if (w.event === 'guard_halt')  { levelClass = 'halt'; levelLabel = 'Halt'; }
+      // An advisory is not a warning: an override flag the user set let a
+      // normally-denied write through, and this row is the receipt. The
+      // default level would render it amber and label it "Warning", which
+      // says something went wrong. Nothing did.
+      else if (w.event === 'guard_advisory') { levelClass = 'advisory'; levelLabel = 'Advisory'; }
       var ts = formatLocalTime(w.ts || '', 'date');
       var key = warningKey(w);
       html += '<div class="warning-row ' + levelClass + '">' +
