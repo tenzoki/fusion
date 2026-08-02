@@ -1301,6 +1301,81 @@ describe("the exempt predicate (the C5a seam)", () => {
   });
 });
 
+describe("the exempt predicate — what the verdict reports back", () => {
+  // `exempted` is how the caller learns a permission was exercised. Without it
+  // the exemption is silent: the command runs and nothing in escalation.json or
+  // events.jsonl says which protected paths the flag let through.
+  const RULES = (p: string): boolean => p.startsWith("rules/");
+
+  it("reports the exempted path on the allowing verdict", () => {
+    expect(classify("rm rules/x.md", { exempt: RULES })).toEqual({
+      deny: false,
+      exempted: ["rules/x.md"],
+    });
+  });
+
+  it("reports every distinct path across the whole command, in order", () => {
+    const v = classify("rm rules/a.md && rm rules/b.md", { exempt: RULES });
+    expect(v.deny).toBe(false);
+    expect(v.exempted).toEqual(["rules/a.md", "rules/b.md"]);
+  });
+
+  it("deduplicates a path met twice in one segment", () => {
+    // `mv` writes every positional, so the destination directory is met as a
+    // written operand alongside the source — and `rm a a` names one path twice.
+    const v = classify("rm rules/x.md rules/x.md", { exempt: RULES });
+    expect(v.exempted).toEqual(["rules/x.md"]);
+  });
+
+  it("deduplicates a path met in two different segments", () => {
+    const v = classify("rm rules/x.md; rm rules/x.md", { exempt: RULES });
+    expect(v.exempted).toEqual(["rules/x.md"]);
+  });
+
+  it("reports the source and the destination of a move separately", () => {
+    // The shape the retirement flow actually runs. Both operands are protected
+    // and both are exempt, so both are named.
+    const v = classify("mv rules/x.md rules/retired/", { exempt: RULES });
+    expect(v.deny).toBe(false);
+    expect(v.exempted).toEqual(["rules/x.md", "rules/retired/"]);
+  });
+
+  it("reports the resolved path, not the spelling the command used", () => {
+    const v = classify("rm /project/rules/x.md", { exempt: RULES });
+    expect(v.exempted).toEqual(["rules/x.md"]);
+  });
+
+  it("also reports a path exempted out of the ancestor pass", () => {
+    const v = classify("rm -rf hooks", { exempt: (p) => p === "hooks" });
+    expect(v.deny).toBe(false);
+    expect(v.exempted).toEqual(["hooks"]);
+  });
+
+  it("is ABSENT when the predicate accepted nothing", () => {
+    // Not `[]` — the allow verdict stays byte-identical to the no-predicate
+    // one, so no caller can branch on an empty list it never sees today.
+    expect(classify("rm notes.txt", { exempt: () => false })).toEqual({
+      deny: false,
+    });
+    expect(classify("rm notes.txt", { exempt: RULES })).toEqual({ deny: false });
+  });
+
+  it("is ABSENT on a deny — nothing was let through", () => {
+    // The exemption happened, and then a later segment denied the whole call.
+    // A note written here would claim a write that never ran.
+    const v = classify("rm rules/x.md && rm agents/coder.md", { exempt: RULES });
+    expect(v.deny).toBe(true);
+    expect(v.targetPath).toBe("agents/coder.md");
+    expect(v.exempted).toBeUndefined();
+  });
+
+  it("is ABSENT on a fail-closed deny, which pass 3 cannot exempt", () => {
+    const v = classify("rm rules/x.md && mv $A $B", { exempt: RULES });
+    expect(v.deny).toBe(true);
+    expect(v.exempted).toBeUndefined();
+  });
+});
+
 describe("an empty protectedPaths list", () => {
   const NOTHING: Partial<MutationOptions> = { protectedPaths: [] };
 

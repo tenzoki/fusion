@@ -158,6 +158,22 @@ export interface MutationVerdict {
    * Deny only.
    */
   targetPath?: string;
+  /**
+   * The resolved, project-relative paths `opts.exempt` let through, in the
+   * order they were met, deduplicated. Present ONLY on an allowing verdict that
+   * actually exempted something — absent when the predicate was not supplied,
+   * when it accepted nothing, and on every deny.
+   *
+   * Absent on a deny because a deny means the whole call was blocked and
+   * NOTHING was let through: an exemption note written for a command that never
+   * ran would claim a write that did not happen. Same reason the git override
+   * note in `guard.ts` is recorded after the mutation check rather than before.
+   *
+   * The caller uses this to record that a permission was exercised. It is
+   * reporting, not a verdict: the exemption itself already happened inside
+   * classification.
+   */
+  exempted?: string[];
 }
 
 export interface MutationOptions {
@@ -1222,6 +1238,11 @@ function renderSegment(segment: string, literals: Map<string, string>): string {
  * direct protected match first, then a directory containing one, then the
  * fail-closed case. So `mv $SRC rules/` denies naming the visible protected
  * target rather than the variable, and `rm -rf hooks $X` names `hooks`.
+ *
+ * `exempted` is an accumulator owned by the caller and appended to in passes 1
+ * and 2 — every path `opts.exempt` accepted, across every segment of the
+ * command. Pass 3 never touches it: an operand that does not resolve names no
+ * path a predicate could accept.
  */
 function classifyWords(
   words: string[],
@@ -1229,6 +1250,7 @@ function classifyWords(
   literals: Map<string, string>,
   opts: MutationOptions,
   cwd: Cwd,
+  exempted: string[],
 ): SegmentHit | null {
   const verbWritten = verbOperands(words, literals);
   const written = [...verbWritten, ...redirectTargets];
@@ -1240,7 +1262,10 @@ function classifyWords(
   for (const target of targets) {
     if (target.kind !== "path") continue;
     if (!isProtected(target.path, opts)) continue;
-    if (opts.exempt?.(target.path) === true) continue;
+    if (opts.exempt?.(target.path) === true) {
+      exempted.push(target.path);
+      continue;
+    }
     return { kind: "protected", path: target.path };
   }
 
@@ -1249,7 +1274,10 @@ function classifyWords(
     if (target.kind !== "path") continue;
     const pattern = ancestorOfProtected(target.path, opts);
     if (pattern === null) continue;
-    if (opts.exempt?.(target.path) === true) continue;
+    if (opts.exempt?.(target.path) === true) {
+      exempted.push(target.path);
+      continue;
+    }
     return { kind: "ancestor", path: target.path, pattern };
   }
 
@@ -1322,6 +1350,11 @@ export function classifyBashMutation(
 
   const { segments, literals } = parseCommand(command, { quoted: "capture" });
 
+  // Every path `opts.exempt` accepts, across every segment. Reported on the
+  // allowing verdict so the caller can record that the permission was
+  // exercised; dropped on a deny, where nothing was let through.
+  const exempted: string[] = [];
+
   let state = freshState();
   const saved: SavedScope[] = [];
   let openDepth = 0;
@@ -1356,7 +1389,14 @@ export function classifyBashMutation(
           : undefined;
 
       const { words, redirectTargets } = scanSegment(tokens, nextHead);
-      const hit = classifyWords(words, redirectTargets, literals, opts, state.cwd);
+      const hit = classifyWords(
+        words,
+        redirectTargets,
+        literals,
+        opts,
+        state.cwd,
+        exempted,
+      );
       if (hit !== null) return denyVerdict(segment.text, literals, hit);
       applyDirEffect(state, words, literals);
     }
@@ -1370,7 +1410,14 @@ export function classifyBashMutation(
     }
   }
 
-  return { deny: false };
+  // The allowing verdict stays EXACTLY `{ deny: false }` unless something was
+  // actually exempted, so an ordinary allow carries no field a caller could
+  // branch on by accident. `mv rules/x.md rules/retired/` meets the same
+  // directory twice (as `mv`'s source and as its destination), and two segments
+  // can name one path, so first-occurrence order with duplicates removed is
+  // what a reader of the advisory wants.
+  if (exempted.length === 0) return { deny: false };
+  return { deny: false, exempted: [...new Set(exempted)] };
 }
 
 /** Render a segment hit as the denying verdict it is. */

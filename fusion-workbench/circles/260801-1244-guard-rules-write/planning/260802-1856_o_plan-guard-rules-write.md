@@ -305,7 +305,7 @@ The Turn boundary sits between Step 5 and Step 6. See `## Sizing` for why.
 - **Acceptance criteria served:** `:322`, `:323`, `:324`, `:326`.
 - **Verification:** `cd hooks && npx vitest run lib/__tests__/guard-rules-write-integration.test.ts` with cases for: flag unset, `Edit ./rules/anything.md` blocked and `consecutiveBlocks` at 1; flag set, same edit allowed, first event is `guard_advisory` naming the variable and the path, `recentEvents` carries one `clear`-level entry; flag set, `Edit agents/anything.md` and `Edit skills/anything/SKILL.md` still blocked; flag set against a project pre-seeded with `haltActive: true`, the edit is blocked with the `[HALTED]` reason and the state stays halted.
 
-### Step 4 — C5a on the Bash path
+### Step 4 [DONE] — C5a on the Bash path
 
 - **Executor:** `coder`
 - **Files:** `hooks/lib/bash-mutation-guard.ts`, `hooks/guard.ts`, `hooks/lib/__tests__/bash-mutation-guard.test.ts`, `hooks/lib/__tests__/guard-rules-write-integration.test.ts`, possibly `hooks/lib/__tests__/guard-bash-wiring.test.ts`

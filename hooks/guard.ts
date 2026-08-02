@@ -22,7 +22,10 @@
  *      guard.protectedPaths, the same list check 2 above applies to the write
  *      tools. See lib/bash-mutation-guard.ts. This IS a write-guard concern
  *      and therefore stands down in the plugin's own repo, exactly as the
- *      write tools do.
+ *      write tools do. It carries the SAME one exemption check 2 above does,
+ *      FUSION_ALLOW_RULES_WRITE, because mv/rm/sed -i/`>` reach the rule files
+ *      Edit reaches and a flag that lifted only one surface would control
+ *      neither.
  * The policies are INDEPENDENT in both directions: an env override that lifts
  * policy (a) for a git operation is not consent to policy (b), so a command
  * pairing an overridden branch switch with a protected-path write still denies
@@ -179,6 +182,11 @@ function block(reason: string): void {
  *      switch; it is not consent to rewrite the protected paths, so
  *      `git switch main && rm rules/x.md` denies on the rm and the reason the
  *      user reads names the file, not the branch.
+ *   2b. EXEMPTION NOTE. When FUSION_ALLOW_RULES_WRITE let a mutation of a rule
+ *      file through step 2, record it: one clear-level escalation entry and one
+ *      guard_advisory, the same note CHECK 2 writes on the write-tool path. It
+ *      sits after the deny so it can only ever describe a command that ran, and
+ *      before step 3 so a call carrying both permissions records both notes.
  *   3. OVERRIDE ALLOW. Only once both denies have passed is the override-used
  *      note recorded and the call allowed. Recording it later than step 2 keeps
  *      the note honest: it says a git op was let through, and after a step-2
@@ -261,6 +269,19 @@ function guardBashCommand(
       // match a tool_input.file_path. The classifier additionally runs
       // path.normalize() on the result, collapsing any `..` an operand carries.
       normalize: normalizeToRelative,
+      // THE RULES-WRITE EXEMPTION, same predicate CHECK 2 asks on the write
+      // tools (lib/rules-write-exemption.ts). Passed ONLY when the user set the
+      // flag, so with it unset the classifier is called exactly as it was
+      // before this existed and the deny side cannot drift.
+      //
+      // The flag has to reach BOTH surfaces or it controls neither. mv, rm,
+      // sed -i and `>` write the same rule files Edit writes, so a flag that
+      // only lifted CHECK 2 would be a polite route to a door left open, and
+      // an agent that met the deny here after the Edit went through would
+      // learn to route around the guard rather than respect it.
+      exempt: rulesWriteExemptionActive(process.env)
+        ? isProjectRulePath
+        : undefined,
     });
 
     if (mutation.deny) {
@@ -285,6 +306,42 @@ function guardBashCommand(
       );
       block(reason);
       return;
+    }
+
+    // STEP 2b — the rules-write exemption note. Reached only when the check
+    // above did NOT deny, so it records paths that genuinely went through.
+    //
+    // The same note CHECK 2 writes on the write-tool path: one clear-level
+    // entry naming the variable and what it let through, and one guard_advisory
+    // carrying the same string. Two deliberate differences from that site:
+    //
+    //   - It SAVES. CHECK 2 pushes into an escalation object a later branch
+    //     always persists; on this path there is no later save, so the note
+    //     would be lost. Loading, pushing, saving and emitting in one place is
+    //     also what lets this note and the git override note below both survive
+    //     one tool call: the second load reads what the first wrote.
+    //   - The event's file field carries the exempted path only when there is
+    //     exactly ONE. A shell command can write several, and a field typed as
+    //     one path must not carry a list; the detail names all of them either
+    //     way.
+    //
+    // Not a deny, and reachable only when the user set the flag AND a rule path
+    // was actually exempted, so an innocuous Bash call still writes nothing.
+    if (mutation.exempted !== undefined && mutation.exempted.length > 0) {
+      const detail = rulesWriteDetail(mutation.exempted);
+      const filePath =
+        mutation.exempted.length === 1 ? mutation.exempted[0] : undefined;
+      const escalation = loadEscalation();
+      escalation.recentEvents.push({
+        level: "clear",
+        trigger: "rules_write_exemption",
+        message: detail,
+        timestamp: new Date().toISOString(),
+        toolName: "Bash",
+        filePath,
+      });
+      saveEscalation(escalation);
+      emitEvent("guard_advisory", "Bash", filePath, detail);
     }
   }
 

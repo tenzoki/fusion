@@ -8,6 +8,7 @@ import {
   projectConfig,
   readEvents,
   readEscalation,
+  runBash,
   runGuard,
   runWrite,
   withProject,
@@ -415,6 +416,281 @@ describe("FUSION_ALLOW_RULES_WRITE on the write-tool path", () => {
         const dir = runGuard(root, "Edit", { file_path: "rules/" }, FLAG_SET);
         expect(dir.decision).toBe("block");
         expect(dir.reason).toContain("Protected path");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+// ---------------------------------------------------------------------------
+// The exemption on the Bash path — plan step 4.
+//
+// This is the step that makes the flag a control rather than a decoration. The
+// write tools are the polite route to a rule file; `mv`, `rm`, `sed -i` and `>`
+// reach the same file, and the predecessor Circle closed that route. A flag
+// lifting only CHECK 2 would leave the door it guards standing open.
+//
+// The cases run against the same throwaway project root, so the mutation check
+// actually runs (it stands down in a plugin root, exactly as the write tools
+// do). Operands are RELATIVE here, unlike the write-tool cases above: a shell
+// command names paths relative to the working directory, which is the project
+// root, and `normalizeToRelative` leaves them untouched.
+// ---------------------------------------------------------------------------
+
+describe("FUSION_ALLOW_RULES_WRITE on the Bash path", () => {
+  it(
+    "blocks a shell move of a rule file into retired/ when the flag is unset",
+    () => {
+      // The control for the case below, and the deferred criterion's own
+      // unset half (spec 260801-1122, line 316).
+      withProject(({ root }) => {
+        const res = runBash(root, "mv rules/x.md rules/retired/");
+
+        expect(res.decision).toBe("block");
+        expect(res.reason).toContain("rules/x.md");
+
+        const state = readEscalation(root);
+        expect(state?.consecutiveBlocks).toBe(1);
+        expect(state?.recentEvents.map((e) => e.trigger)).toEqual([
+          "protected_path",
+        ]);
+        expect(readEvents(root).map((e) => e.event)).toEqual(["guard_block"]);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "allows the same move with the flag set, and records exactly one advisory",
+    () => {
+      // The deferred criterion's set half. Both operands are protected rule
+      // paths and both are exempted, so the note names both — the source that
+      // was removed and the directory it landed in.
+      withProject(({ root }) => {
+        const res = runBash(root, "mv rules/x.md rules/retired/", FLAG_SET);
+
+        expect(res.decision).toBeUndefined();
+
+        // EXACTLY ONE event, unlike the write-tool path: the Bash allow path
+        // emits no guard_allow (260707-0751), so the advisory is the only line.
+        const events = readEvents(root);
+        expect(events.map((e) => e.event)).toEqual(["guard_advisory"]);
+        expect(events[0]?.tool).toBe("Bash");
+        expect(events[0]?.detail).toContain("FUSION_ALLOW_RULES_WRITE");
+        expect(events[0]?.detail).toContain("rules/x.md");
+        expect(events[0]?.detail).toContain("rules/retired/");
+        // Two paths, so no single one is claimed in the file field.
+        expect(events[0]?.file).toBeUndefined();
+
+        const state = readEscalation(root);
+        expect(state?.recentEvents).toHaveLength(1);
+        expect(state?.recentEvents[0]?.level).toBe("clear");
+        expect(state?.recentEvents[0]?.trigger).toBe("rules_write_exemption");
+        expect(state?.recentEvents[0]?.message).toContain(
+          "FUSION_ALLOW_RULES_WRITE",
+        );
+        expect(state?.recentEvents[0]?.toolName).toBe("Bash");
+        expect(state?.recentEvents[0]?.filePath).toBeUndefined();
+        // An exemption is not a block: the counter that drives the halt is
+        // untouched, and no halt is entered.
+        expect(state?.consecutiveBlocks).toBe(0);
+        expect(state?.haltActive).toBe(false);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "still denies `rm -rf rules` with the flag set, in either spelling",
+    () => {
+      // The boundary Step 2 drew, and the asymmetry that enforces it. The
+      // protected check RETRIES a directory operand with a trailing separator
+      // (isProtected, bash-mutation-guard.ts:902), so `rules` matches
+      // `rules/**` as `rules/` and denies in pass 1 — not, as the plan's line
+      // 222 says, through the ancestor pass. The exemption predicate does the
+      // opposite: it canonicalises the separator AWAY before matching, so
+      // neither spelling is a rule FILE and neither is exempt. The flag permits
+      // writing rule files; it does not permit destroying the rule directory.
+      withProject(({ root }) => {
+        const bare = runBash(root, "rm -rf rules", FLAG_SET);
+        expect(bare.decision).toBe("block");
+        expect(bare.reason).toContain("writes a protected path");
+        expect(bare.reason).toContain("`rules`");
+
+        const slash = runBash(root, "rm -rf rules/", FLAG_SET);
+        expect(slash.decision).toBe("block");
+
+        const state = readEscalation(root);
+        expect(state?.consecutiveBlocks).toBe(2);
+        expect(
+          (state?.recentEvents ?? []).some(
+            (e) => e.trigger === "rules_write_exemption",
+          ),
+        ).toBe(false);
+        expect(readEvents(root).map((e) => e.event)).toEqual([
+          "guard_block",
+          "guard_block",
+        ]);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "still denies a shell move of an agent file with the flag set",
+    () => {
+      withProject(({ root }) => {
+        const res = runBash(root, "mv agents/coder.md /tmp/", FLAG_SET);
+
+        expect(res.decision).toBe("block");
+        expect(res.reason).toContain("agents/coder.md");
+
+        const state = readEscalation(root);
+        expect(state?.consecutiveBlocks).toBe(1);
+        expect(state?.recentEvents.map((e) => e.trigger)).toEqual([
+          "protected_path",
+        ]);
+        expect(readEvents(root).map((e) => e.event)).toEqual(["guard_block"]);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "exempts a redirection into a rule file, and names it in the file field",
+    () => {
+      // Redirection is the third route to the same file, and it reaches the
+      // classifier through a different collector than a verb's operands. One
+      // exempted path this time, so the event carries it.
+      withProject(({ root }) => {
+        expect(runBash(root, "printf '' > rules/new.md").decision).toBe("block");
+
+        const res = runBash(root, "printf '' > rules/new.md", FLAG_SET);
+        expect(res.decision).toBeUndefined();
+
+        const events = readEvents(root);
+        expect(events.map((e) => e.event)).toEqual([
+          "guard_block",
+          "guard_advisory",
+        ]);
+        expect(events[1]?.file).toBe("rules/new.md");
+        expect(events[1]?.detail).toContain("rules/new.md");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "allows a redirection into .claude/rules/, but NOT because of the flag",
+    () => {
+      // The plan names `printf '' > .claude/rules/local.md` as a flag-set allow
+      // case. It does allow — and it allows with the flag UNSET too, because
+      // `.claude/rules/**` is not on the shipped protectedPaths at all
+      // (shared/issues/260801-1020_o_guard-protects-rules-but-not-claude-rules).
+      // The exemption is only ever consulted for a path the protected list
+      // already matched, so nothing is exempted and no advisory is written.
+      // Asserted at the truth rather than at the plan's expectation, so this
+      // case flips visibly when that issue closes.
+      withProject(({ root }) => {
+        expect(runBash(root, "printf '' > .claude/rules/local.md").decision)
+          .toBeUndefined();
+        expect(readEvents(root)).toEqual([]);
+
+        const res = runBash(
+          root,
+          "printf '' > .claude/rules/local.md",
+          FLAG_SET,
+        );
+        expect(res.decision).toBeUndefined();
+        expect(readEvents(root)).toEqual([]);
+        expect(readEscalation(root)).toBeNull();
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "writes no note when the call denies, even though a path was exempted",
+    () => {
+      // The move is exempt; the delete is not. The whole call is blocked, so
+      // NOTHING was let through and an advisory would claim a write that never
+      // happened — the same reasoning that puts the git override note after the
+      // mutation check rather than before it.
+      withProject(({ root }) => {
+        const res = runBash(
+          root,
+          "mv rules/x.md rules/retired/ && rm agents/coder.md",
+          FLAG_SET,
+        );
+
+        expect(res.decision).toBe("block");
+        expect(res.reason).toContain("agents/coder.md");
+        expect(readEvents(root).map((e) => e.event)).toEqual(["guard_block"]);
+        expect(readEscalation(root)?.recentEvents.map((e) => e.trigger)).toEqual(
+          ["protected_path"],
+        );
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "records both notes when one call uses both permissions",
+    () => {
+      // The reason the exemption note sits immediately before STEP 3 rather
+      // than inside it: each note loads, pushes and saves, so the second load
+      // reads what the first wrote and neither is lost.
+      withProject(({ root }) => {
+        const res = runBash(
+          root,
+          "git switch main && mv rules/x.md rules/retired/",
+          { ...FLAG_SET, FUSION_ALLOW_BRANCH_SWITCH: "1" },
+        );
+
+        expect(res.decision).toBeUndefined();
+
+        expect(readEvents(root).map((e) => e.event)).toEqual([
+          "guard_advisory",
+          "guard_advisory",
+        ]);
+        expect(readEscalation(root)?.recentEvents.map((e) => e.trigger)).toEqual(
+          ["rules_write_exemption", "git_branch_switch_override"],
+        );
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "leaves guard state untouched for an innocuous call with the flag set",
+    () => {
+      // The property the whole Bash path is built around (260707-0750/0751).
+      // The note is reachable only when something was actually exempted, so
+      // setting the flag does not turn ordinary shell work into log traffic.
+      withProject(({ root }) => {
+        expect(runBash(root, "ls -la", FLAG_SET).decision).toBeUndefined();
+        expect(runBash(root, "cat rules/x.md", FLAG_SET).decision).toBeUndefined();
+
+        expect(readEscalation(root)).toBeNull();
+        expect(readEvents(root)).toEqual([]);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "does not lift the branch policy, which the flag says nothing about",
+    () => {
+      // Each variable grants exactly one permission. This one is about writing
+      // rule files.
+      withProject(({ root }) => {
+        const res = runBash(root, "git switch main", FLAG_SET);
+
+        expect(res.decision).toBe("block");
+        expect(res.reason).toContain("never switch git branches");
+        expect(readEscalation(root)?.recentEvents.map((e) => e.trigger)).toEqual(
+          ["git_branch_switch"],
+        );
       });
     },
     CASE_TIMEOUT,
