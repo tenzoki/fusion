@@ -108,3 +108,6 @@ directory.
 
 ---
 Answered: this record, `## Answer` — user chose option 1 at the Turn 4 closing gate; a silent weakening of the guard for one class of user is worse than a visible denial.
+
+---
+Implemented: `b85f6a0` — a non-empty `CDPATH` in the guard's environment makes a bare-word `cd` yield the existing unknown-directory state; anchored operands (`./x`, `../x`, `.`, `..`, `/abs/x`) stay exactly modelled, verified as whole-verdict equality rather than by inspection. The deny names `CDPATH` and says that rewriting the operand will not help. Measured over a 32-command corpus against HEAD's classifier: zero drift with `CDPATH` unset, blank or whitespace; six commands flip with it set, all of the shape "bare-word `cd`, then a relative write". Tests 1155 → 1167. One correction to this record's `## Question`: the common `CDPATH=.:~/projects` shape does **not** reliably resolve where the classifier models, because a leading `.` shields only the names the current directory happens to hold. Both shipped documents now say so.
