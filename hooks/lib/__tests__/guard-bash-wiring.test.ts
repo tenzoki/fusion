@@ -224,7 +224,20 @@ describe("guard.ts write-tool path — one collapse, above both checks", () => {
   });
 
   it("asks the exemption module, not a second copy of the rule", () => {
-    expect(code).toContain("isExemptRulePath(filePath)");
+    expect(code).toContain("isExemptRulePath(filePath, rawFilePath)");
+  });
+
+  it("hands the exemption the RAW spelling as well as the collapsed path", () => {
+    // Gate 0 refuses a `..` segment, and `rawFilePath` is the last place one
+    // still exists: `normalizeToRelative` resolves an absolute path through
+    // `resolve` + `relative`, and `collapseSegments` finishes the job on a
+    // relative one. Passing `filePath` for both arguments type-checks and
+    // silently reopens the symlink escape, so the wiring is pinned here rather
+    // than left to a reviewer's eye.
+    expect(code).not.toContain("isExemptRulePath(filePath, filePath)");
+    const exemption = code.indexOf("isExemptRulePath(filePath");
+    expect(exemption, "exemption call not found").toBeGreaterThan(-1);
+    expect(code.slice(exemption)).toMatch(/^isExemptRulePath\(filePath, rawFilePath\)/);
   });
 });
 

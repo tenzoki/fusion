@@ -208,8 +208,19 @@ export interface MutationOptions {
    * It is consulted per WRITTEN OPERAND, and not at all for an operand of a
    * verb the table marks `exemptible: false` (see `VerbSpec.exemptible`). So a
    * caller cannot grant a permission the table refuses to make grantable.
+   *
+   * TWO arguments, because this module destroys one of them on the way to the
+   * other. `path` is the resolved, cwd-joined, normalised operand — the
+   * spelling the protected list is matched on, and the only one that can be.
+   * `spelled` is that operand BEFORE `normalize`, which collapses `..`
+   * lexically: `rules/link/../agents/coder.md` becomes `rules/agents/coder.md`,
+   * and the symlink whose target decides where the write lands is no longer in
+   * the string at all. A caller whose grant depends on the spelling (the
+   * rules-write exemption's gate 0) has to read the second argument; a caller
+   * that does not may ignore it, and an existing one-argument predicate stays
+   * assignable.
    */
-  exempt?: (path: string) => boolean;
+  exempt?: (path: string, spelled: string) => boolean;
 }
 
 /* ------------------------------------------------------------------ *
@@ -266,9 +277,16 @@ export interface VerbSpec {
    * spelling, not the class. `mv` and `cp -P` can relocate an existing symlink
    * into the rule directory, and they must stay exemptible because
    * `mv rules/x.md rules/retired/` is the flag's headline use. What makes the
-   * planted alias harmless is the exemption predicate resolving paths against
-   * the real filesystem (`rules-write-exemption.ts` gate 2); this row is the
-   * second layer, not the first.
+   * planted alias harmless is the exemption predicate, in two steps: gate 0
+   * refuses any operand SPELLED with a `..`, which is the only way to traverse
+   * a planted link without naming it, and gate 2 resolves what is left against
+   * the real filesystem (`rules-write-exemption.ts`). This row is the second
+   * layer, not the first. Stated in two steps because for one Turn it was
+   * stated in one — "gate 2 resolves paths against the real filesystem" — and
+   * that was measurably false on its own: `mv` and `cp -P` both planted, and
+   * `rules/<link>/../<anything>` reached the whole protected list through the
+   * plant, because the collapse deleted the link from the string before gate 2
+   * ever saw it.
    */
   exemptible?: boolean;
   /**
@@ -1095,7 +1113,13 @@ function resolveDir(base: Cwd, value: string): Cwd {
 
 /** A written operand, resolved as far as the guard can take it. */
 type Target =
-  | { kind: "path"; path: string }
+  /**
+   * `path` is normalised — the spelling the protected list is matched on.
+   * `spelled` is the same operand before that normalisation, kept because the
+   * normalisation collapses `..` lexically and a caller's exemption may have to
+   * refuse exactly the spellings it erases. See `MutationOptions.exempt`.
+   */
+  | { kind: "path"; path: string; spelled: string }
   | { kind: "unresolved"; viaCwd: boolean }
   | { kind: "outside" }
   | { kind: "empty" };
@@ -1125,8 +1149,14 @@ function resolveTarget(
   // Glob metacharacters are matched as LITERAL text rather than expanded, which
   // is fail-closed for the patterns that matter: `rules/**` compiles to
   // `^rules/.*$` and therefore matches the literal string `rules/*.md`.
+  // `joined` is kept as the SPELLING. `opts.normalize` is the project-relative
+  // normaliser, and it resolves an absolute operand through `resolve` +
+  // `relative` — which collapses `..` just as surely as `normalizePath` does. So
+  // the spelling has to be taken before it, or `rm /proj/rules/link/../x` would
+  // reach a caller's exemption with the escape already erased while
+  // `rm rules/link/../x` did not.
   const path = normalizePath(opts.normalize(joined));
-  return { kind: "path", path };
+  return { kind: "path", path, spelled: joined };
 }
 
 /**
@@ -1358,7 +1388,7 @@ function classifyWords(
   for (const { target, exemptible } of written) {
     if (target.kind !== "path") continue;
     if (!isProtected(target.path, opts)) continue;
-    if (exemptible && opts.exempt?.(target.path) === true) {
+    if (exemptible && opts.exempt?.(target.path, target.spelled) === true) {
       exempted.push(target.path);
       continue;
     }
@@ -1370,7 +1400,7 @@ function classifyWords(
     if (target.kind !== "path") continue;
     const pattern = ancestorOfProtected(target.path, opts);
     if (pattern === null) continue;
-    if (exemptible && opts.exempt?.(target.path) === true) {
+    if (exemptible && opts.exempt?.(target.path, target.spelled) === true) {
       exempted.push(target.path);
       continue;
     }

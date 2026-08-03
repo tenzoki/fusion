@@ -36,9 +36,42 @@
  * neighbouring case would then read. `guard.ts` supplies the real adapters, the
  * same way it supplies `CheckoutResolver` to the git classifier.
  *
+ * ## Gate 0 — a `..` anywhere in the SPELLING refuses the grant outright
+ *
+ * The two gates below both read a path that has already been collapsed, and a
+ * collapse is where a symlink goes to disappear. `posix.normalize` resolves
+ * `..` LEXICALLY: it deletes the preceding component from the string. The
+ * kernel does not. `open("rules/link/..")` resolves `rules/link` to its target
+ * first and then takes the parent OF THE TARGET. So for any path spelled
+ * `rules/<symlink>/../<anything>`, the string the gates below are handed no
+ * longer contains `<symlink>` at all — gate 2 is not outwitted by a cleverer
+ * link, it is never asked about the link, because the component naming it has
+ * already been deleted. Measured: with the flag set, the whole protected list
+ * was reachable that way on both write surfaces, and `hasHardLinks` was
+ * defeated by the same line, being asked about a path that does not exist
+ * rather than about the file being written.
+ *
+ * So `spelledAs` — the path as the TOOL CALL gave it, before any normalisation
+ * — is a required argument, and any `..` segment in it refuses the grant. The
+ * refusal costs nothing real: no rule-curation workflow needs `..`, gate 1
+ * already rejects the `..` spellings that leave the rule directory, and the
+ * narrowing is on the GRANT side, which is the direction that fails safe. It is
+ * also complete against the class BY INSPECTION, which resolving the spelling
+ * faithfully instead would not be — that answer would rest on a resolver being
+ * right, and the resolver has been wrong once already.
+ *
+ * The caller has to supply it because only the caller still has it. Both
+ * surfaces relativise a path against the project root before anything can match
+ * it against `rules/**`, and the relativiser resolves `..` on the way
+ * (`resolve` then `relative`); the Bash classifier normalises its operands for
+ * the same reason. By the time a path is matchable at all, the spelling is
+ * gone. Hence a REQUIRED third argument rather than a defaulted one: a call
+ * site handing over the collapsed path twice would type-check and lose gate 0
+ * in silence.
+ *
  * ## Two gates, and why the second one has to touch the disk
  *
- * A path is exempt only if it passes BOTH:
+ * A path that survived gate 0 is exempt only if it also passes BOTH:
  *
  *   1. LEXICAL. `canonicalise` (shared with the protected-path check, see
  *      `paths.ts`) collapses `.`, `..` and trailing separators, and the result
@@ -158,6 +191,20 @@ export interface FsLocator {
   hasHardLinks(path: string): boolean;
 }
 
+/**
+ * Gate 0 — does this spelling walk UP out of wherever it starts?
+ *
+ * Purely textual, and deliberately cruder than a resolver: ANY `..` segment
+ * counts, including one that would have collapsed back inside the rule
+ * directory (`rules/a/../x.md`). A grant is a permission, and a permission
+ * nobody can check by reading the path is not worth the two characters it
+ * saves. Exported because it is the rule, not an implementation detail — see
+ * the module docstring for why it is tested on the caller's spelling.
+ */
+export function spellingWalksUp(spelledAs: string): boolean {
+  return spelledAs.split("/").includes("..");
+}
+
 /** Is `child` strictly inside directory `parent`? Both absolute, both real. */
 function isStrictlyInside(child: string, parent: string): boolean {
   const base = parent.endsWith("/") ? parent : parent + "/";
@@ -189,9 +236,22 @@ function resolvesInsideRuleDir(canonical: string, fs: FsLocator): boolean {
  * Both gates must hold; see the module docstring. The bare rule directory
  * itself is NOT one, in any spelling: the flag permits writing rule files, it
  * does not permit deleting the rule directory.
+ *
+ * `spelledAs` is the path AS THE TOOL CALL GAVE IT, before any normalisation
+ * the caller applied to make `path` matchable. Gate 0 reads it and nothing
+ * else does. A caller with only one spelling passes it twice; a caller that
+ * collapsed the path first — which both real surfaces do — passes the
+ * uncollapsed original, or gate 0 has nothing left to see.
  */
-export function isProjectRulePath(path: string, fs: FsLocator): boolean {
+export function isProjectRulePath(
+  path: string,
+  fs: FsLocator,
+  spelledAs: string,
+): boolean {
   if (!path) return false;
+  // GATE 0, above `canonicalise` because `canonicalise` is where the `..` and
+  // the symlink component it hides both disappear. Module docstring, `## Gate 0`.
+  if (spellingWalksUp(spelledAs)) return false;
   const canonical = canonicalise(path);
   if (!matchesAny(canonical, [...RULE_DIR_PATTERNS])) return false;
   return resolvesInsideRuleDir(canonical, fs);

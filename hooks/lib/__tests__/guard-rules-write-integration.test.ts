@@ -3,8 +3,10 @@ import { spawnSync } from "node:child_process";
 import {
   existsSync,
   linkSync,
+  lstatSync,
   mkdirSync,
   readFileSync,
+  realpathSync,
   rmSync,
   symlinkSync,
   writeFileSync,
@@ -750,6 +752,29 @@ function denyEach(
   }
 }
 
+/**
+ * Where a project-relative path really lands — symlinks resolved the way the
+ * KERNEL resolves them, a missing tail appended literally.
+ *
+ * Deliberately NOT built on `resolve()`. `resolve` collapses `..` lexically,
+ * which is the defect these cases exist to pin, so a helper built on it would
+ * agree with the bug and every assertion using it would pass.
+ */
+function realLocation(root: string, rel: string): string {
+  let abs = `${root}/${rel}`;
+  const tail: string[] = [];
+  for (;;) {
+    try {
+      return [realpathSync.native(abs), ...[...tail].reverse()].join("/");
+    } catch {
+      const cut = abs.lastIndexOf("/");
+      if (cut <= 0) return [abs, ...[...tail].reverse()].join("/");
+      tail.push(abs.slice(cut + 1));
+      abs = abs.slice(0, cut);
+    }
+  }
+}
+
 const editCall = (root: string, path: string) =>
   runGuard(root, "Edit", { file_path: path }, FLAG_SET);
 const editCallNoFlag = (root: string, path: string) =>
@@ -784,6 +809,26 @@ describe("the exemption resolves the path against the filesystem (finding 1)", (
     ["the guard's own state", "rules/up/fusion-workbench/.guard-state/escalation.json"],
     ["the halt record through a dangling link", "rules/gs/escalation.json"],
     ["a protected inode under a second name", "rules/copy"],
+    // ---------------------------------------------------------------------
+    // The same aliases spelled with a `..` THROUGH the link, one character
+    // apart from the rows above and, for one Turn, the difference between a
+    // deny and the whole protected list. `posix.normalize` resolves `..`
+    // lexically — it deletes `up` from the string — while the kernel resolves
+    // `up` to its target first and then takes the parent OF THE TARGET. So the
+    // path handed to gate 2 no longer contained the link, gate 2 truthfully
+    // answered "inside `rules/`", and the write landed anywhere in the project.
+    // Measured, both surfaces, `FUSION_ALLOW_RULES_WRITE=1`.
+    // ---------------------------------------------------------------------
+    ["an agent prompt, through the link and back up", "rules/up/../agents/coder.md"],
+    ["the guard configuration, through the link and back up", "rules/up/../hooks/config.json"],
+    ["the hook wiring, through the link and back up", "rules/up/../hooks/hooks.json"],
+    ["the permission settings, through the link and back up", "rules/up/../settings.json"],
+    ["the plugin manifest, through the link and back up", "rules/up/../.claude-plugin/plugin.json"],
+    ["the monitor binary, through the link and back up", "rules/up/../bin/monitor"],
+    ["a skill body, through the link and back up", "rules/up/../skills/demo/SKILL.md"],
+    // `rules/gs` was planted to close the DANGLING-link route to the halt
+    // record. This is the same record through the same link, one `..` on.
+    ["the halt record, through the dangling link and back up", "rules/gs/../.guard-state/escalation.json"],
   ] as const;
 
   for (const [what, path] of reachable) {
@@ -811,6 +856,21 @@ describe("the exemption resolves the path against the filesystem (finding 1)", (
           "echo x > rules/copy",
           "truncate -s 0 rules/up/settings.json",
           "rm -rf rules/up/agents",
+          // The `..` spellings of the same links. `resolveTarget` runs
+          // `path.normalize` on every operand, so the escape reached the
+          // exemption predicate already collapsed here too — this surface was
+          // not a second bug, it was the same one arriving by a second road.
+          "rm rules/up/../hooks/config.json",
+          "cp /dev/null rules/up/../agents/coder.md",
+          "rm rules/gs/../.guard-state/escalation.json",
+          "echo x > rules/up/../agents/coder.md",
+          "truncate -s 0 rules/up/../settings.json",
+          "rm -rf rules/up/../agents",
+          "sed -i '' 's/a/b/' rules/up/../bin/monitor",
+          // Through the tracked virtual `cd`, so the escape cannot be smuggled
+          // in by moving the shell rather than the path.
+          "cd rules && rm up/../agents/coder.md",
+          "cd rules/retired && rm ../../agents/coder.md",
         ],
         bashCall,
         { setup: plantAliases },
@@ -894,10 +954,248 @@ describe("the exemption resolves the path against the filesystem (finding 1)", (
           "rules/abs/coder.md",
           "rules/loop",
           "rules/loop/x.md",
+          // And each of them spelled with a `..`, which is the spelling that
+          // erased the link from the string entirely. Every one of these was an
+          // ALLOW while the six above denied.
+          "rules/a/../agents/coder.md",
+          "rules/b/../agents/coder.md",
+          "rules/abs/../agents/coder.md",
+          "rules/new/../coder.md",
+          "rules/loop/../x.md",
         ],
         editCall,
         { setup: plantLinks },
       );
+
+      // The same set through the shell.
+      denyEach(
+        [
+          "rm rules/a/../agents/coder.md",
+          "rm rules/b/../agents/coder.md",
+          "rm rules/abs/../agents/coder.md",
+          "echo x > rules/new/../coder.md",
+          "rm rules/loop/../x.md",
+        ],
+        bashCall,
+        { setup: plantLinks },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "reads the spelling BEFORE it is relativised, so absolute is not a way in",
+    () => {
+      // Claude Code sends ABSOLUTE file paths, and `normalizeToRelative`
+      // resolves one through `resolve` + `relative` — which collapses `..` a
+      // step earlier than `collapseSegments` does. A check reading anything but
+      // the raw tool input would close the relative spelling and leave the one
+      // the tool actually sends wide open. The Bash classifier has the same
+      // shape: `opts.normalize` runs on an absolute operand before its own
+      // `path.normalize` does.
+      //
+      // The paths are built by CONCATENATION. `resolve()` here would collapse
+      // the very thing under test, and the case would pass for no reason.
+      withProject(({ root }) => {
+        plantAliases(root);
+        const res = runGuard(
+          root,
+          "Edit",
+          { file_path: `${root}/rules/up/../agents/coder.md` },
+          FLAG_SET,
+        );
+        expect(res.decision).toBe("block");
+        expect(res.reason ?? "").not.toContain("[HALTED]");
+      });
+
+      withProject(({ root }) => {
+        plantAliases(root);
+        const res = runBash(root, `rm ${root}/rules/up/../agents/coder.md`, FLAG_SET);
+        expect(res.decision).toBe("block");
+        expect(res.reason ?? "").not.toContain("[HALTED]");
+      });
+
+      // The control that keeps the case honest: an absolute spelling of a
+      // genuine rule file still gets the grant, on both surfaces.
+      withProject(({ root }) => {
+        expect(
+          runGuard(root, "Edit", { file_path: `${root}/rules/x.md` }, FLAG_SET)
+            .decision,
+        ).toBeUndefined();
+        expect(runBash(root, `rm ${root}/rules/x.md`, FLAG_SET).decision)
+          .toBeUndefined();
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "refuses a `..` even where it would have stayed inside the rule directory",
+    () => {
+      // The cost of the boundary, asserted rather than left to be discovered.
+      // `rules/a/../x.md` resolves to a rule file when `rules/a` is a
+      // DIRECTORY, and to something else entirely when it is a symlink — and
+      // the collapsed string cannot tell the two apart, because collapsing is
+      // what removed the component that decides. So the whole spelling class is
+      // refused. It costs nothing real: no rule-curation workflow needs `..`,
+      // and every one of these files is writable by its ordinary name.
+      denyEach(
+        [
+          "rules/retired/../x.md",
+          "rules/a/../x.md",
+          "rules/./a/../x.md",
+          "rules/retired/../retired/old.md",
+        ],
+        editCall,
+        { reasonContains: "Protected path" },
+      );
+      denyEach(
+        ["rm rules/retired/../x.md", "cd rules/retired && rm ../x.md"],
+        bashCall,
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  /**
+   * Relocate an existing symlink into `rules/` with the verb named, using the
+   * real command rather than a `symlinkSync` that only imitates its result.
+   *
+   * `ln` is the one row `VerbSpec.exemptible` marks false, and its docstring
+   * states the bound honestly: `mv` and `cp -P` can relocate an EXISTING link
+   * into the rule directory, and they must stay exemptible because
+   * `mv rules/x.md rules/retired/` is the flag's headline use. That bound was
+   * asserted in prose and never exercised — so the plant was allowed, the
+   * predicate was supposed to make it harmless, and it did not.
+   */
+  const plantVia = (plant: "mv" | "cp -P") => (root: string): void => {
+    mkdirSync(resolve(root, "stage"), { recursive: true });
+    symlinkSync("../agents", resolve(root, "stage/link"));
+    const [bin, ...flags] = plant.split(" ");
+    const run = spawnSync(bin, [...flags, "stage/link", "rules/link"], {
+      cwd: root,
+      encoding: "utf-8",
+    });
+    if (run.status !== 0) {
+      throw new Error(`${plant} plant failed: ${run.stderr}`);
+    }
+    if (!lstatSync(resolve(root, "rules/link")).isSymbolicLink()) {
+      throw new Error(`${plant} did not leave a symlink at rules/link`);
+    }
+  };
+
+  for (const plant of ["mv", "cp -P"] as const) {
+    it(
+      `allows \`${plant}\` to plant an alias, and denies every write through it`,
+      () => {
+        // The allow is not the bug and closing it would break the headline use;
+        // what has to hold is that the plant buys nothing.
+        withProject(({ root }) => {
+          mkdirSync(resolve(root, "stage"), { recursive: true });
+          symlinkSync("../agents", resolve(root, "stage/link"));
+          expect(
+            runBash(root, `${plant} stage/link rules/link`, FLAG_SET).decision,
+            plant,
+          ).toBeUndefined();
+        });
+
+        denyEach(
+          [
+            "rules/link/coder.md",
+            "rules/link/../agents/coder.md",
+            "rules/link/../hooks/config.json",
+            "rules/link/../fusion-workbench/.guard-state/escalation.json",
+          ],
+          editCall,
+          { setup: plantVia(plant), reasonContains: "Protected path" },
+        );
+
+        denyEach(
+          [
+            "rm rules/link/coder.md",
+            "rm rules/link/../agents/coder.md",
+            "echo x > rules/link/../settings.json",
+          ],
+          bashCall,
+          { setup: plantVia(plant) },
+        );
+      },
+      CASE_TIMEOUT,
+    );
+  }
+
+  it(
+    "never writes an advisory naming a file the write does not reach",
+    () => {
+      // The one audit trail the flag has. The advisory's `file` field carries
+      // the COLLAPSED path, and the collapse is exactly what made the grant
+      // wrong: before this fix `Edit rules/up/../agents/coder.md` was ALLOWED
+      // and recorded
+      //   {"event":"guard_advisory","file":"rules/agents/coder.md", …}
+      // — a file that does not exist and was never written — while the write it
+      // authorised removed `agents/coder.md`. A reader of events.jsonl, or of
+      // the monitor, saw a routine rule-file edit.
+      //
+      // Two halves, and both are needed. A refused grant must leave NO advisory
+      // at all, and a granted one must name a path that really does reach the
+      // file, which is asserted through the filesystem rather than by string
+      // equality — a grant through a link that stays inside the rule directory
+      // legitimately names a different string for the same file.
+      withProject(({ root }) => {
+        plantAliases(root);
+        const res = runGuard(
+          root,
+          "Edit",
+          { file_path: "rules/up/../agents/coder.md" },
+          FLAG_SET,
+        );
+        expect(res.decision).toBe("block");
+        const events = readEvents(root);
+        expect(events.map((e) => e.event)).toEqual(["guard_block"]);
+        // No advisory at all — the flag exercised no permission here.
+        //
+        // Scoped to the advisory deliberately. The guard_block event DOES carry
+        // `rules/agents/coder.md`, the collapsed spelling, which is also not the
+        // file the write would have reached (`agents/coder.md`). That is the
+        // protection side's long-standing lexical naming — a text classifier
+        // names the target the text names — and it is a diagnostic imprecision
+        // on a DENY, not a grant describing a write that happened.
+        expect(
+          events.filter((e) => e.event === "guard_advisory").map((e) => e.file),
+        ).toEqual([]);
+      });
+
+      withProject(({ root }) => {
+        plantAliases(root);
+        const res = runBash(root, "echo x > rules/up/../agents/coder.md", FLAG_SET);
+        expect(res.decision).toBe("block");
+        expect(readEvents(root).map((e) => e.event)).toEqual(["guard_block"]);
+      });
+
+      for (const spelled of [
+        "rules/x.md",
+        "rules/./x.md",
+        "rules/retired/old.md",
+        // Through an alias and back INTO the rule directory: granted, and the
+        // advisory names a different STRING for the same file. This is the row
+        // that makes the assertion filesystem-based rather than textual.
+        "rules/up/rules/x.md",
+      ]) {
+        withProject(({ root }) => {
+          plantAliases(root);
+          const res = runGuard(root, "Edit", { file_path: spelled }, FLAG_SET);
+          expect(res.decision, spelled).toBeUndefined();
+
+          const advisory = readEvents(root).find(
+            (e) => e.event === "guard_advisory",
+          );
+          expect(advisory?.file, spelled).toBeDefined();
+          expect(realLocation(root, advisory!.file!), spelled).toBe(
+            realLocation(root, spelled),
+          );
+          expect(advisory!.file!, spelled).not.toContain("..");
+        });
+      }
     },
     CASE_TIMEOUT,
   );

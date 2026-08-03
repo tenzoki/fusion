@@ -114,9 +114,18 @@ const checkoutResolver: CheckoutResolver = {
  */
 const fsLocator = realFsLocator(process.cwd());
 
-/** Is this a rule path the FUSION_ALLOW_RULES_WRITE flag exempts? */
-function isExemptRulePath(path: string): boolean {
-  return isProjectRulePath(path, fsLocator);
+/**
+ * Is this a rule path the FUSION_ALLOW_RULES_WRITE flag exempts?
+ *
+ * TWO spellings, and both are load-bearing. `path` is the collapsed,
+ * project-relative one the exempt set is computed on; `spelledAs` is what the
+ * tool call actually said, which is the only place a `..` still exists by the
+ * time either surface can match a path against `rules/**` at all. Gate 0 reads
+ * the second one — see `rules-write-exemption.ts` `## Gate 0`. Passing `path`
+ * for both would type-check and silently reopen the escape.
+ */
+function isExemptRulePath(path: string, spelledAs: string): boolean {
+  return isProjectRulePath(path, fsLocator, spelledAs);
 }
 
 /** Hook input from Claude Code (PreToolUse). */
@@ -301,6 +310,12 @@ function guardBashCommand(
       // only lifted CHECK 2 would be a polite route to a door left open, and
       // an agent that met the deny here after the Edit went through would
       // learn to route around the guard rather than respect it.
+      //
+      // The classifier hands the predicate TWO spellings — the resolved,
+      // normalised operand and the operand as the command wrote it — because
+      // its own `path.normalize` collapses `..` lexically and would otherwise
+      // hand gate 0 a path with the escape already erased from it. See
+      // `MutationOptions.exempt` and `rules-write-exemption.ts` `## Gate 0`.
       exempt: rulesWriteExemptionActive(process.env)
         ? isExemptRulePath
         : undefined,
@@ -608,8 +623,16 @@ async function main(): Promise<void> {
     //      which resets the consecutive-block counter and emits guard_allow. So
     //      one exempted Edit produces guard_advisory FOLLOWED BY guard_allow,
     //      not guard_advisory alone.
+    //   4. THE EXEMPTION IS ASKED ABOUT THE RAW SPELLING TOO. `filePath` above
+    //      is collapsed, and the collapse deletes the component that precedes a
+    //      `..` — including a symlink planted in the rule directory, whose
+    //      whole effect is to make the write land somewhere the collapsed
+    //      string does not name. Gate 0 therefore reads `rawFilePath`, the last
+    //      place the spelling still exists. Handing `filePath` twice would
+    //      compile and reopen the escape in silence.
     const exempted =
-      rulesWriteExemptionActive(process.env) && isExemptRulePath(filePath);
+      rulesWriteExemptionActive(process.env) &&
+      isExemptRulePath(filePath, rawFilePath);
 
     if (!exempted) {
       const reason = `Protected path: ${filePath} cannot be modified directly. This path is under compliance guard protection.`;

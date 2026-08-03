@@ -7,6 +7,7 @@ import {
   isProjectRulePath,
   rulesWriteExemptionActive,
   rulesWriteDetail,
+  spellingWalksUp,
 } from "../rules-write-exemption.js";
 
 /**
@@ -69,8 +70,17 @@ function fakeFs(opts: FakeFsOptions = {}): FsLocator {
 /** A project with plain rule directories, no links and no aliased files. */
 const PLAIN = fakeFs();
 
-/** The predicate against that plain project — the default for the text cases. */
-const isRulePath = (path: string): boolean => isProjectRulePath(path, PLAIN);
+/**
+ * The predicate against that plain project — the default for the text cases.
+ *
+ * The spelling is the path itself, which is the honest reading for a caller
+ * that has only one: gate 0 sees exactly what gate 1 will canonicalise. The
+ * cases where the two must DIFFER — the shape of both real surfaces, which
+ * collapse before they can match anything — call `isProjectRulePath` directly
+ * with both spellings.
+ */
+const isRulePath = (path: string): boolean =>
+  isProjectRulePath(path, PLAIN, path);
 
 describe("RULES_WRITE_ENV and RULE_DIR_PATTERNS", () => {
   it("names the environment variable the guard documents", () => {
@@ -192,8 +202,15 @@ describe("isProjectRulePath — canonicalisation closes the escape spellings", (
     expect(isRulePath(".claude/rules/../../hooks/config.json")).toBe(false);
   });
 
-  it("still exempts a rule file reached through a traversal that stays inside", () => {
-    expect(isRulePath("rules/a/../x.md")).toBe(true);
+  it("no longer exempts a traversal that would have stayed inside", () => {
+    // This case USED to assert `true`, and the change is the fix. `rules/a/..`
+    // stays inside the rule directory only if `rules/a` is a directory; if it
+    // is a symlink the kernel goes to the parent of its TARGET, and the
+    // collapse that made this look safe is the same collapse that deleted the
+    // link from the string. Gate 0 refuses the whole spelling class rather than
+    // trying to tell the two apart. `.` and `//` are untouched: they name no
+    // component, so lexical and kernel resolution cannot disagree about them.
+    expect(isRulePath("rules/a/../x.md")).toBe(false);
     expect(isRulePath("rules/./x.md")).toBe(true);
     expect(isRulePath("rules//x.md")).toBe(true);
   });
@@ -203,6 +220,106 @@ describe("isProjectRulePath — canonicalisation closes the escape spellings", (
     expect(isRulePath("./")).toBe(false);
     expect(isRulePath("/")).toBe(false);
     expect(isRulePath("rules/..")).toBe(false);
+  });
+});
+
+describe("spellingWalksUp — gate 0, the rule on its own", () => {
+  /**
+   * Textual and total: any `..` SEGMENT, anywhere, in any position. The cases
+   * that must NOT trip it are the ones a filename can legitimately contain — a
+   * name that merely starts with two dots is not a traversal, and neither is a
+   * single `.`.
+   */
+  const walksUp = [
+    "rules/../agents/coder.md",
+    "rules/a/../x.md",
+    "rules/up/../agents/coder.md",
+    "..",
+    "../rules/x.md",
+    "rules/..",
+    "/proj/rules/link/../agents/coder.md",
+    "rules/a/b/../../../settings.json",
+    "rules/x.md/..",
+  ];
+  const doesNot = [
+    "rules/x.md",
+    "rules/./x.md",
+    "rules//x.md",
+    "rules/..hidden.md",
+    "rules/...md",
+    "rules/a..b/x.md",
+    "rules/retired/",
+    "",
+  ];
+
+  for (const path of walksUp) {
+    it(`refuses ${JSON.stringify(path)}`, () => {
+      expect(spellingWalksUp(path)).toBe(true);
+    });
+  }
+  for (const path of doesNot) {
+    it(`leaves ${JSON.stringify(path)} alone`, () => {
+      expect(spellingWalksUp(path)).toBe(false);
+    });
+  }
+});
+
+describe("isProjectRulePath — gate 0 reads the SPELLING, not the collapsed path", () => {
+  /**
+   * The shape of both real surfaces, and the whole reason the spelling is a
+   * separate argument. `guard.ts` collapses before it can match anything
+   * against `rules/**`, and the Bash classifier normalises its operands for the
+   * same reason — so by the time either can ask this predicate, the `..` is
+   * already gone from the path it holds.
+   *
+   * Measured before the fix, with `FUSION_ALLOW_RULES_WRITE=1` and a symlink
+   * `rules/up -> ../` planted by an allowed `mv`: `Edit rules/up/../agents/
+   * coder.md` collapsed to `rules/agents/coder.md`, which resolves inside the
+   * real rule directory, granted, and wrote `agents/coder.md`. Every entry on
+   * the protected list was reachable that way, on both surfaces.
+   */
+  const collapsed = "rules/agents/coder.md";
+  const spelled = "rules/up/../agents/coder.md";
+
+  it("grants the collapsed path when that IS what the caller was given", () => {
+    // The control. `rules/agents/coder.md` really is a rule path, and refusing
+    // it would mean the fix worked by refusing everything.
+    expect(isProjectRulePath(collapsed, PLAIN, collapsed)).toBe(true);
+  });
+
+  it("refuses the same collapsed path once the spelling is handed over", () => {
+    expect(isProjectRulePath(collapsed, PLAIN, spelled)).toBe(false);
+  });
+
+  it("refuses it against a filesystem where the link genuinely exists", () => {
+    // Gate 2 cannot help here and that is the point: it is asked about
+    // `rules/agents/coder.md`, a path with no link in it, and answers
+    // truthfully that it lands inside `rules/`.
+    const planted = fakeFs({ links: { "rules/up": ROOT } });
+    expect(isProjectRulePath(collapsed, planted, collapsed)).toBe(true);
+    expect(isProjectRulePath(collapsed, planted, spelled)).toBe(false);
+  });
+
+  it("refuses every protected target reachable through the planted link", () => {
+    for (const target of [
+      "hooks/config.json",
+      "hooks/hooks.json",
+      "settings.json",
+      ".claude-plugin/plugin.json",
+      "bin/monitor",
+      "skills/demo/SKILL.md",
+      "fusion-workbench/.guard-state/escalation.json",
+    ]) {
+      expect(
+        isProjectRulePath(`rules/${target}`, PLAIN, `rules/up/../${target}`),
+        target,
+      ).toBe(false);
+    }
+  });
+
+  it("still refuses when the caller passes the spelling for both", () => {
+    // A caller with one spelling loses nothing: gate 0 sees the `..` directly.
+    expect(isProjectRulePath(spelled, PLAIN, spelled)).toBe(false);
   });
 });
 
@@ -234,40 +351,40 @@ describe("isProjectRulePath — gate 2 resolves the path against the filesystem"
     it(`refuses the grant for ${what} reached through a planted symlink`, () => {
       // Gate 1 passes: the text is inside `rules/**`. Gate 2 is what says no.
       expect(isRulePath(path)).toBe(true);
-      expect(isProjectRulePath(path, planted)).toBe(false);
+      expect(isProjectRulePath(path, planted, path)).toBe(false);
     });
   }
 
   it("refuses the grant for the symlink's own name once it points outside", () => {
-    expect(isProjectRulePath("rules/up", planted)).toBe(false);
+    expect(isProjectRulePath("rules/up", planted, "rules/up")).toBe(false);
   });
 
   it("still grants a genuine rule file in the same project", () => {
-    expect(isProjectRulePath("rules/x.md", planted)).toBe(true);
-    expect(isProjectRulePath("rules/retired/x.md", planted)).toBe(true);
+    expect(isProjectRulePath("rules/x.md", planted, "rules/x.md")).toBe(true);
+    expect(isProjectRulePath("rules/retired/x.md", planted, "rules/retired/x.md")).toBe(true);
   });
 
   it("still grants a path that traverses back INTO the rule directory", () => {
     // Not an escape: it resolves to a rule file, so it is one.
-    expect(isProjectRulePath("rules/up/rules/x.md", planted)).toBe(true);
+    expect(isProjectRulePath("rules/up/rules/x.md", planted, "rules/up/rules/x.md")).toBe(true);
   });
 
   it("refuses a symlink that leaves the project entirely", () => {
     const escaping = fakeFs({ links: { "rules/out": "/etc" } });
-    expect(isProjectRulePath("rules/out/passwd", escaping)).toBe(false);
+    expect(isProjectRulePath("rules/out/passwd", escaping, "rules/out/passwd")).toBe(false);
   });
 
   it("grants a rule directory that is ITSELF a symlink to a shared tree", () => {
     // A real setup, and the reason gate 2 compares against the RESOLVED rule
     // directory rather than requiring the target to stay under the project.
     const shared = fakeFs({ links: { rules: "/shared/team-rules" } });
-    expect(isProjectRulePath("rules/x.md", shared)).toBe(true);
-    expect(isProjectRulePath("rules/retired/x.md", shared)).toBe(true);
+    expect(isProjectRulePath("rules/x.md", shared, "rules/x.md")).toBe(true);
+    expect(isProjectRulePath("rules/retired/x.md", shared, "rules/retired/x.md")).toBe(true);
   });
 
   it("refuses the grant when nothing about the path can be resolved", () => {
     const blind: FsLocator = { locate: () => null, hasHardLinks: () => false };
-    expect(isProjectRulePath("rules/x.md", blind)).toBe(false);
+    expect(isProjectRulePath("rules/x.md", blind, "rules/x.md")).toBe(false);
   });
 
   it("derives the rule roots from the patterns, so the two cannot drift", () => {
@@ -289,17 +406,17 @@ describe("isProjectRulePath — gate 2 refuses a hard link", () => {
 
   it("refuses a rule path that is a hard link", () => {
     expect(isRulePath("rules/copy")).toBe(true);
-    expect(isProjectRulePath("rules/copy", aliased)).toBe(false);
+    expect(isProjectRulePath("rules/copy", aliased, "rules/copy")).toBe(false);
   });
 
   it("still grants its unaliased neighbours", () => {
-    expect(isProjectRulePath("rules/x.md", aliased)).toBe(true);
+    expect(isProjectRulePath("rules/x.md", aliased, "rules/x.md")).toBe(true);
   });
 
   it("asks about the CANONICAL spelling, not the raw one", () => {
     // Or `rules/a/../copy` would slip past the check that `rules/copy` fails.
-    expect(isProjectRulePath("rules/a/../copy", aliased)).toBe(false);
-    expect(isProjectRulePath("rules/./copy", aliased)).toBe(false);
+    expect(isProjectRulePath("rules/a/../copy", aliased, "rules/a/../copy")).toBe(false);
+    expect(isProjectRulePath("rules/./copy", aliased, "rules/./copy")).toBe(false);
   });
 });
 
