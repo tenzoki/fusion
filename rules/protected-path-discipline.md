@@ -162,7 +162,8 @@ guess, it stops claiming to know where the shell is standing:
 | `CDPATH=.. cd x`, `export CDPATH=..` | a bare-word operand may be found under a `CDPATH` entry instead |
 | `CDPATH` set in the **environment** | the same, with nothing in the command to show for it |
 | `pushd` with no operand, `pushd +2`, `pushd -2` | these **rotate** the directory stack; they do not push, and the guard does not model a rotation |
-| `sudo cd x`, `env cd x`, `xargs cd x` | that wrapper cannot run a shell builtin, so real bash goes nowhere and the guard declines to say where |
+| **any** wrapper before the builtin — `command cd x`, `builtin cd x`, `time cd x`, `sudo cd x`, `env cd x`, `xargs cd x` | whether a wrapper runs a *builtin* depends on the wrapper, on the spelling and on which shell you are in, and the guard can read none of that off the text |
+| a **path**-spelled builtin — `/usr/bin/cd x`, `/bin/pushd x`, `./cd x` | a path names an external program. `/usr/bin/cd` is a real binary; it changes its own process's directory and exits, and your shell stays put |
 | any other flag on `cd` / `chdir` / `pushd` / `popd` | it has not been taught what the flag does |
 
 After one of those, a relative operand of a table verb denies fail-closed and the reason
@@ -173,11 +174,32 @@ so is an operand that anchors itself: with a `CDPATH` in play, `cd ./x`, `cd ../
 The cost is real and small: `cd -P build && rm out.js` and `cd -P docs && rm ../notes.txt`
 denied nothing before and deny now. Write the path absolutely, or drop the `-P`.
 
-**A `cd` behind a wrapper is tracked, not ignored.** `command cd rules`, `builtin cd rules`
-and `time cd rules` all move the shell in real bash, and all three are now modelled exactly
-as a bare `cd rules` is — so `command cd build && rm out.js` allows and
-`command cd rules && rm x.md` denies, for the same reasons the unwrapped forms do. Reaching
-a directory builtin through a wrapper buys nothing; it is the same command.
+**A `cd` behind a wrapper is seen, and then given up on.** The wrapper is walked, so the
+guard knows a directory builtin is there — `command cd rules && rm x.md` does not slip past
+as an unrecognised program. What it will not do is say *where the shell went*, because that
+answer is not a property of the wrapper's name:
+
+- `command cd x` moves **bash** and is inert in **zsh**, whose `command` forces an external
+  lookup. Your `Bash` tool runs your login shell, which on this machine is zsh.
+- `time cd x` moves the shell only as the bare reserved word. `\time`, `'time'`, `"time"`
+  and `/usr/bin/time` all select the external program, which cannot run a builtin at all.
+- `sudo cd x`, `env cd x` and the rest are external programs and never move the shell.
+
+An earlier version of this guard modelled the first three as real moves, and that allowed
+eleven commands the shell then executed against a protected file. Asserting a move you
+cannot prove is **not** a safe over-deny: it relocates every later relative operand, which
+denies when it lands on the protected list and *allows* when it lands off it.
+
+So `command cd build && rm out.js`, `builtin cd build && rm out.js` and
+`time cd build && rm out.js` now deny fail-closed, naming the working directory. Nothing is
+lost — reaching a directory builtin through a wrapper does not make it do anything a bare
+`cd` does not. **Drop the wrapper**, or name the path absolutely.
+
+Two things are *not* affected, and both are the ordinary case. A wrapper in front of a
+**verb** is walked exactly as before (`sudo rm rules/x.md` denies, `time npm test` and
+`timeout 60 npm test` allow). And quoting or escaping the **builtin itself** is not the same
+as spelling it as a path: `\cd build` and `'cd' build` were measured moving the shell in
+both shells — `cd` is a builtin, not a reserved word — so they stay modelled exactly.
 
 **The `pushd` rows are the ones to read twice**, because they cost a shape that used to
 work. `pushd` with an operand pushes, and `pushd DIR … popd` is unaffected. `pushd` with
@@ -378,8 +400,22 @@ Known and accepted:
   hides the builtin inside a string bash re-parses, a shell function or an alias named `cd`
   puts an ordinary word in command position, and `source script.sh` runs a `cd` written in
   another file. None of the three is reachable by a textual classifier, and after any of
-  them the guard is modelling a directory the shell has left. The wrappers that can run a
-  builtin (`command`, `builtin`, `time`) *are* seen; these are what is left.
+  them the guard is modelling a directory the shell has left. A wrapper (`command cd`) and
+  a path spelling (`/usr/bin/cd`) *are* seen, and give up rather than guess; these are what
+  is left, and no enumeration closes them.
+- **A `cd` that FAILS leaves the shell where it was, and the guard follows it anyway.** The
+  classifier has no filesystem access, so it cannot know whether a `cd` succeeded, and it
+  assumes success across every separator. After `&&` the shell enforces the assumption — a
+  failed `cd` short-circuits and nothing else runs. After `;`, `||`, `&` or a newline it
+  does not: the shell runs the next segment from where it never left, and the guard runs it
+  from a directory that does not exist. Measured: `cd nonexistent; rm rules/x.md` is allowed
+  and real bash deletes the rule. `cd notes.txt; rm rules/x.md` too — the operand is an
+  existing *file*, which no name-based heuristic would catch either. This is live, needs no
+  flag and no wrapper, and it is **awaiting a decision** rather than a fix, because the
+  obvious repair degrades `mkdir -p build && cd build; …` as well
+  (`decisions/260803-2338_o_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`).
+  Until it is taken: `cd X && …` is the form the guard can follow, and it is the form to
+  write.
 - **Verbs deliberately not in the table**: `mkdir`, `chmod`, `chown`, `touch`, `tar`,
   `rsync`, `patch`, `gzip`. Each was left out because its operands are usually
   directories and a row would carry the ancestor rule with it.
@@ -393,6 +429,13 @@ Known and accepted:
   `pushd -n docs && echo pwned > agents/coder.md` allows and real bash overwrites the agent
   prompt, while the same command ending `rm agents/coder.md` denies. The operand is an
   ordinary relative path, only the directory is unknown, and `echo` is not a table verb.
+  **This is the residual every other give-up feeds into**, and it is worth knowing why: the
+  moment the guard stops claiming to know the working directory, a `>` target becomes
+  unresolvable-because-of-the-directory, and this bound lets it through. So each wrapper and
+  path spelling the guard has learned to give up on
+  (`command cd rules && echo pwned > x.md`, `builtin cd …`, `time cd …`) reaches the same
+  hole. Its *reach* does not grow — it was already the whole protected list with no flag —
+  but its entrances do. The verb spellings of all of them still deny.
 - **A `#` comment is not stripped**, so a redirect operator in a trailing comment is read
   as code: `ls -la # writes > rules/x.md` is denied on the write its comment only
   describes. This one errs toward deny; the way through is to drop the comment.

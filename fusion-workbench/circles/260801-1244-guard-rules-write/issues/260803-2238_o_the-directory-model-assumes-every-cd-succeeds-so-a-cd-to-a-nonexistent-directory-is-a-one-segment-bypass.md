@@ -98,3 +98,34 @@ build; rm rules/x.md` escapes for two independent reasons, and stripping the wra
 left the second one standing on its own.
 
 ---
+
+## Not implemented — decision filed instead (task T6-1)
+
+Deliberately left open. The decision record is
+`decisions/260803-2338_o_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`,
+with the four options costed by measurement rather than estimate. Three results are worth
+carrying back here because they change the shape of the question:
+
+1. **The shape the review worried about is not at risk.** Both occurrences of
+   `mkdir -p X && cd X && …` in the guard's own corpus are written with `&&` throughout, and
+   both measure `allow` before and after a simulated degrade. It is written with `&&` because
+   that is what makes it correct in the shell too. The at-risk variant
+   (`mkdir -p build && cd build; …`) occurs **0** times in this repository's scripts or in
+   the test corpus. Across 308 directory builtins in the corpus, 272 (88%) are `&&`-joined.
+2. **Direction 1's cost surface is larger than "a `;`-joined `cd`".** In
+   `cd hooks && npm run build; rm -rf dist` the `cd` is `&&`-joined to the next segment while
+   a later one is reached unconditionally, so the degrade must fire for it. Counting an
+   unconditional separator anywhere after the builtin gives 20 of 308 (6.5%); most move no
+   verdict because the unconditional segment writes nothing relative.
+3. **Direction 1 does not close all four measured escapes.** `cd nope || true; echo pwned >
+   rules/x.md` measures `allow` before and after: it is a redirection on a program outside
+   the verb table, which is `260803-1835`. This decision should be taken together with that
+   one.
+
+Direction 3 as filed ("degrade only where load-bearing") was costed and found to collapse
+into a filesystem probe: the guard cannot tell `cd build` from `cd nonexistent` without
+asking, so it is direction 4 with extra machinery.
+
+The residual is now stated in both shipped documents, marked as awaiting this decision —
+which is the current state and also exactly option 2, so no work is needed if option 2 is
+chosen. Marker unchanged (`_o_`).

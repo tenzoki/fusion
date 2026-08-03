@@ -200,31 +200,57 @@ describe("Bash fail-closed cases are denied end to end", () => {
 // ---------------------------------------------------------------------------
 
 /**
- * Deny the command, for a reason that is not the halt, and prove the command
- * was worth denying by running it through real bash and watching `watch`
- * disappear.
+ * WHICH SHELL EXECUTES WHAT THE GUARD ALLOWED.
+ *
+ * The classifier's stated model is bash, and for four Turns every effect check
+ * here ran `/bin/bash`. That is not the shell on the other side of the Bash
+ * tool: Claude Code starts the user's login shell, `SHELL=/bin/zsh` on this
+ * machine, and the two disagree about whole constructs — `command cd DIR` moves
+ * bash and is inert in zsh. A row measured in the shell that does not run it
+ * proves nothing about the shell that does, which is how eleven wrapper rows
+ * shipped allowing (`issues/260803-2236…`). So a case names its shell, and the
+ * rows where the two shells differ appear TWICE.
  */
+const SHELLS = { bash: "/bin/bash", zsh: "/bin/zsh" } as const;
+type ShellName = keyof typeof SHELLS;
+
+/**
+ * Deny the command, for a reason that is not the halt, and prove the command
+ * was worth denying by running it through the named real shell and watching
+ * `watch` disappear.
+ */
+function denyAndShellWouldHaveWritten(
+  command: string,
+  watch: string,
+  opts: { shell?: ShellName; env?: Record<string, string> } = {},
+): void {
+  const shell = opts.shell ?? "bash";
+  withProject(({ root }) => {
+    symlinkSync("../agents", resolve(root, "rules/L"));
+
+    const res = runBash(root, command, opts.env ?? {});
+    expect(res.decision, command).toBe("block");
+    expect(res.reason ?? "", command).not.toContain("[HALTED]");
+
+    // What the deny was worth: the same command, the same project, a real shell.
+    const target = resolve(root, watch);
+    const before = readFileSync(target, "utf-8");
+    spawnSync(SHELLS[shell], ["-c", command], { cwd: root, stdio: "ignore" });
+    const after = existsSync(target) ? readFileSync(target, "utf-8") : null;
+    expect(
+      after,
+      `${shell} left ${watch} alone, so ${command} proves nothing`,
+    ).not.toBe(before);
+  });
+}
+
+/** The bash-shell default, kept so the existing rows read as they did. */
 function denyAndBashWouldHaveWritten(
   command: string,
   watch: string,
   env: Record<string, string> = {},
 ): void {
-  withProject(({ root }) => {
-    symlinkSync("../agents", resolve(root, "rules/L"));
-
-    const res = runBash(root, command, env);
-    expect(res.decision, command).toBe("block");
-    expect(res.reason ?? "", command).not.toContain("[HALTED]");
-
-    // What the deny was worth: the same command, the same project, real bash.
-    const target = resolve(root, watch);
-    const before = readFileSync(target, "utf-8");
-    spawnSync("/bin/bash", ["-c", command], { cwd: root, stdio: "ignore" });
-    const after = existsSync(target) ? readFileSync(target, "utf-8") : null;
-    expect(after, `bash left ${watch} alone, so ${command} proves nothing`).not.toBe(
-      before,
-    );
-  });
+  denyAndShellWouldHaveWritten(command, watch, { shell: "bash", env });
 }
 
 describe("the working directory is modelled or admitted unknown, never guessed", () => {
@@ -370,6 +396,147 @@ describe("the working directory is modelled or admitted unknown, never guessed",
     CASE_TIMEOUT,
   );
 
+  // ---------------------------------------------------------------------
+  // THE ALLOW DIRECTION of the same wrapper walk (`issues/260803-2236…`).
+  //
+  // Every row above builds its operand under the cd's DESTINATION, so it can
+  // only catch a `cd` the model FAILED to follow. Marking three wrappers
+  // builtin-capable made the model follow a `cd` the shell does not make, which
+  // moves a later relative operand OFF the protected list — and no probe shaped
+  // like the ones above can see it. These rows are the mirror: the operand sits
+  // under the ORIGIN, so the deny is the one that survives only while the model
+  // refuses to assert a directory it cannot prove.
+  //
+  // Each is measured in the shell that actually performs the write.
+  // ---------------------------------------------------------------------
+
+  it(
+    "denies a cd behind `command`, which zsh does NOT run as a builtin",
+    () => {
+      // zsh's `command` forces an external lookup, so the shell never leaves the
+      // project root and `rm rules/x.md` deletes the real file. The model used
+      // to place the shell in `build/` and allow it.
+      denyAndShellWouldHaveWritten(
+        "command cd build && rm rules/x.md",
+        "rules/x.md",
+        { shell: "zsh" },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies a cd behind a chained `command`, which no hop count changes",
+    () => {
+      denyAndShellWouldHaveWritten(
+        "command command cd build && rm rules/x.md",
+        "rules/x.md",
+        { shell: "zsh" },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies a cd behind `\\time`, the spelling that selects /usr/bin/time",
+    () => {
+      // `resolveWord` erases the backslash because for a VERB `\rm` really is
+      // `rm`. For `time` the erasure is backwards: the escape is what demotes
+      // the reserved word to the external program, which cannot run `cd` at
+      // all. Both shells agree, so bash is enough to prove the write.
+      denyAndShellWouldHaveWritten(
+        "\\time cd build && rm rules/x.md",
+        "rules/x.md",
+        { shell: "bash" },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies a cd behind /usr/bin/time, the path spelling of the same word",
+    () => {
+      denyAndShellWouldHaveWritten(
+        "/usr/bin/time cd build && rm rules/x.md",
+        "rules/x.md",
+        { shell: "zsh" },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies a cd behind a quoted `time`, in the shell that runs the tool call",
+    () => {
+      denyAndShellWouldHaveWritten(
+        "'time' cd build && rm agents/coder.md",
+        "agents/coder.md",
+        { shell: "zsh" },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies a PATH-SPELLED cd, which is an external program and moves nothing",
+    () => {
+      // `/usr/bin/cd` is a real binary on macOS. It changes its own process's
+      // directory and exits; the shell stays put. `programName` maps it to `cd`
+      // — correct for a verb, backwards for a builtin — so the model followed
+      // it. Measured inert in bash AND zsh.
+      denyAndShellWouldHaveWritten(
+        "/usr/bin/cd build && rm rules/x.md",
+        "rules/x.md",
+        { shell: "bash" },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  // ---------------------------------------------------------------------
+  // The stack's DEPTH survives a give-up (`issues/260803-2237…`).
+  // ---------------------------------------------------------------------
+
+  it(
+    "denies a popd whose stack depth was given up on, after an absolute cd re-proved the cwd",
+    () => {
+      // `pushd -n ..` leaves bash one entry deeper than a model that zeroed the
+      // stack's VALUES and kept its length. The mismatch hides while the cwd is
+      // unknown and stops hiding the moment an ABSOLUTE `cd` re-proves it: the
+      // model's `popd` then finds an empty stack, reads it as bash's stay-put
+      // no-op, and leaves a PROVEN `build/` standing while bash pops to the
+      // root and deletes the protected file.
+      withProject(({ root }) => {
+        const cmd = `cd docs && pushd -n .. && cd ${root}/build && popd && rm rules/x.md`;
+        const res = runBash(root, cmd);
+        expect(res.decision, cmd).toBe("block");
+        expect(res.reason ?? "", cmd).not.toContain("[HALTED]");
+
+        const target = resolve(root, "rules/x.md");
+        const before = readFileSync(target, "utf-8");
+        spawnSync("/bin/bash", ["-c", cmd], { cwd: root, stdio: "ignore" });
+        expect(existsSync(target), `bash left rules/x.md alone`).toBe(false);
+        expect(before.length).toBeGreaterThan(0);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "keeps allowing the same five segments when the pushd is MODELLED",
+    () => {
+      // The discriminator. With `pushd ..` instead of `pushd -n ..` the model
+      // and bash agree — both end in `docs/` — and nothing protected is
+      // reachable. If this row ever denies, the fix above has stopped being a
+      // give-up and started being a blanket.
+      withProject(({ root }) => {
+        const cmd = `cd docs && pushd .. && cd ${root}/build && popd && rm rules/x.md`;
+        expect(runBash(root, cmd).decision, cmd).toBeUndefined();
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
   it(
     "leaves ordinary shell work alone, which is what bounds the cost",
     () => {
@@ -386,16 +553,53 @@ describe("the working directory is modelled or admitted unknown, never guessed",
           "cd docs && cd agents && rm coder.md",
           "set -euo pipefail; cd build && rm out.js",
           "pushd build > /dev/null && rm out.js; popd > /dev/null",
-          // The wrapper walk MODELS the three wrappers that run a builtin; it
-          // does not fail closed on them. So the same work behind `command`
-          // costs exactly what it costs in front of it.
-          "command cd build && rm out.js",
-          "builtin cd build && rm out.js",
+          "mkdir -p build && cd build && rm out.js",
+          // A wrapper in FRONT of a directory builtin now gives up, and the
+          // wrapper in front of a VERB is untouched by that — which is the
+          // whole of what the give-up costs. `time npm test` and
+          // `command -v jq` are the shapes an agent really writes.
+          "time npm test",
+          "command -v jq >/dev/null && rm -rf dist",
+          "timeout 60 npm test",
+          // Quoting and escaping the BUILTIN is not the same as spelling it as
+          // a path: `\\cd` and `'cd'` were measured moving the shell in bash and
+          // zsh, because `cd` is a builtin rather than a reserved word.
+          "\\cd build && rm out.js",
+          "'cd' build && rm out.js",
         ]) {
           expect(runBash(root, cmd).decision, cmd).toBeUndefined();
         }
         expect(guardStateWritten(root)).toBe(false);
       });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "states the cost of the wrapper give-up as denials, not as prose",
+    () => {
+      // These three ALLOWED at 9aacab5, where the model followed the wrapper's
+      // `cd`. They deny now, fail-closed, naming the working directory. Nothing
+      // is lost: reaching a directory builtin through a wrapper does not make it
+      // do anything a bare `cd` does not, and the bare form is right there.
+      //
+      // One project PER ROW: three denials halt the guard, and a halted deny
+      // carries the halt's reason instead of this one, so the assertion would
+      // pass for the wrong reason on the third.
+      for (const cmd of [
+        "command cd build && rm out.js",
+        "builtin cd build && rm out.js",
+        "time cd build && rm out.js",
+      ]) {
+        withProject(({ root }) => {
+          const res = runBash(root, cmd);
+          expect(res.decision, cmd).toBe("block");
+          expect(res.reason ?? "", cmd).not.toContain("[HALTED]");
+          expect(res.reason ?? "", cmd).toContain(
+            "working directory the guard cannot determine",
+          );
+        });
+      }
     },
     CASE_TIMEOUT,
   );

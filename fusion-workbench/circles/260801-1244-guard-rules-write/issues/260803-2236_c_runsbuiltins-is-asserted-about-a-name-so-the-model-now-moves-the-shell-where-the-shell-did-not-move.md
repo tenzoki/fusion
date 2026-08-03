@@ -177,3 +177,53 @@ measuring `<wrapper> cd sub` in it, and then building the operand in the directi
 Turn's own before/after table did not test.
 
 ---
+
+## Resolved — task T6-1, `history/260803-2340-turn6-t6-1-wrapper-give-up-and-stack-depth.md`
+
+**Direction taken: 2, the stricter one, plus a clause the issue did not name.**
+`runsBuiltins` is deleted from `WrapperSpec` and from all three rows. `reachesBuiltin` is
+now true only when the segment names the program **directly**: no wrapper hop at all, and
+no path separator in the command word. The second clause closes `/usr/bin/cd build && rm
+rules/x.md`, a twelfth row of the same class found while bounding this one — `/usr/bin/cd`
+is a real binary on macOS that changes its own process's directory and exits, measured
+inert in bash 3.2 and zsh 5.9, and `programName` had erased the path exactly as it erases
+`\time`. That row is PRE-EXISTING (it allowed at `cb2c8ad` too, where `programName(raw)`
+did the same erasure) rather than part of this regression.
+
+Direction 1 was rejected for one reason: it keeps `builtin` modelled, which keeps one
+shell-dependent assertion alive as precedent, and the review's own observation is that the
+same sentence "would be wrong for any future `runsBuiltins`-shaped fact". After the change
+`command-word.ts` carries no claim about any shell.
+
+**Measured, one fresh project per row, real guard subprocess, real-shell effect asserted,
+no deny reading `[HALTED]`:** ten of the eleven rows now DENY. Quoting and escaping the
+BUILTIN stay modelled (`\cd`, `'cd'` — measured moving the shell in both shells, because
+`cd` is a builtin and not a reserved word); it is the path that selects an external
+program, which is why the clause is worded over the slash.
+
+**The eleventh row is not closed here, and that is a real gap.**
+`command cd build && echo pwned > rules/x.md` still allows. After this fix it is held open
+by `260803-1835` alone — the working directory is admitted unknown and the fail-closed pass
+stops at the verb table's edge, so a `>` target is not reached. Its wrapper-free siblings
+(`pushd -n docs && echo pwned > agents/coder.md`) behave identically, which is what shows
+the cause is 1835 and not the wrapper walk.
+
+**Newly ALLOWING, measured in both trees rather than argued.** Six rows denied at `9aacab5`
+because the wrapper's `cd` was modelled ONTO the protected list, and allow now:
+
+```
+  9aacab5  T6-1   shell  effect              command
+  DENY     allow  bash   OVERWRITTEN         command cd rules && echo pwned > x.md
+  DENY     allow  bash   OVERWRITTEN         builtin cd rules && echo pwned > x.md
+  DENY     allow  zsh    OVERWRITTEN         builtin cd rules && echo pwned > x.md
+  DENY     allow  bash   OVERWRITTEN         time cd agents && echo pwned > coder.md
+  DENY     allow  zsh    OVERWRITTEN         time cd agents && echo pwned > coder.md
+  DENY     allow  bash   OVERWRITTEN         command cd skills/demo && printf '' > SKILL.md
+```
+
+All six are `260803-1835`, reached by one more route. Its REACH does not grow — it was
+already the whole protected list with no flag — but its entrances do, and closing it closes
+all six at once. Every verb spelling of the same rows still denies. This is recorded on
+`260803-1835` with the measured cost of closing it.
+
+Marker moved to `_c_`.

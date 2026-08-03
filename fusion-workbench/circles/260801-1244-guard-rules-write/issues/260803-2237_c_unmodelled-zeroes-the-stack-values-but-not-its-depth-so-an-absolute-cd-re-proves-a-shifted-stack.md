@@ -146,3 +146,56 @@ shape 4 at its word — "the property to check is DEPTH" — and asking whether 
 it names as the answer, actually delivers it.
 
 ---
+
+## Resolved — task T6-1, `history/260803-2340-turn6-t6-1-wrapper-give-up-and-stack-depth.md`
+
+**Neither candidate direction as written. A TYPE, so the invalid state cannot be
+constructed.** `ShellState.dirStack` is no longer `Cwd[]`; it is
+
+```ts
+type DirStack =
+  | { kind: "known"; entries: Cwd[] }   // depth exactly the shell's
+  | { kind: "unknown" };                // contents AND depth unknowable
+```
+
+`unmodelled()` assigns `STACK_UNKNOWN` — there is no length left to preserve, so the
+`.map()` shape is not writable back. `popd` on an `unknown` stack yields `CWD_UNKNOWN`
+instead of reading its own emptiness as bash's stay-put no-op, and `pushd` onto one leaves
+it unknown. Direction 1 (a `stackUnknown` boolean beside the array) was rejected because a
+flag beside the data it describes is a second fact that can disagree with the first, which
+is the shape of this defect rather than its cure. Direction 2 (sink the whole state) was
+rejected because it would stop an absolute `cd` re-proving the CWD, which is correct and
+costs real work; only the STACK needs to be permanently unknown.
+
+**Measured** — real guard subprocess, one fresh project per row, real-bash effect asserted,
+`{ROOT}` substituted identically into both runs, no deny reading `[HALTED]`:
+
+```
+  DENY  bash  rules/x.md GONE     cd docs && pushd -n .. && cd {ROOT}/build && popd && rm rules/x.md
+  DENY  bash  coder.md GONE       cd docs && pushd -n .. && cd {ROOT}/build && popd && rm agents/coder.md
+  DENY  bash                      cd docs && popd -n; cd {ROOT}/build && popd && rm rules/x.md   (the mirror)
+```
+
+The discriminating control still ALLOWS: `cd docs && pushd .. && cd {ROOT}/build && popd &&
+rm rules/x.md`, where the modelled `pushd` agrees with bash and both end in `docs/`. So the
+give-up did not become a blanket. `cd $D && cd /abs/build && rm out.js` and `pushd -n docs
+&& cd /abs/build && rm out.js` also still allow — an absolute `cd` still re-proves the
+working directory, and only the stack stays unknown.
+
+**Newly allowing: none.** The change replaces a known stack with an unknown one, and an
+unknown stack can only make a later `popd` less certain, which only denies. Verified against
+the full suite and against the eighteen earlier-commit verdicts, none of which moved.
+
+**The recipe question, answered as the task asked rather than by writing a third recipe.**
+The invariant's audit recipe has now been wrong twice, both times because it enumerated
+WRITES TO FIELDS while the invariant is a property of the STATE, and a recipe with a gap
+reads exactly like a recipe without one. It is replaced, not corrected: the `applyDirEffect`
+docstring now states the property the types carry — every field of `ShellState` has an
+"I don't know" value covering the WHOLE field rather than its contents (`Cwd` for
+`cwd`/`prev`, `DirStack` for the stack, monotone `true` for `physical`/`cdpath`) — and names
+the two things types cannot certify: that the function is REACHED, and that a proven
+directory is where the shell is standing. A reviewer checks four type declarations, and the
+compiler checks them on every build. The question to ask of a future field is stated: what is
+its whole-field unknown, and does `unmodelled` assign it?
+
+Marker moved to `_c_`.

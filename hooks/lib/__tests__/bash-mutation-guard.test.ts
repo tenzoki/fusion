@@ -614,11 +614,12 @@ describe("wrappers — the verb underneath is still classified", () => {
     // && rm x.md` allowed while real bash deleted the file
     // (`issues/260803-2038_…command-cd-and-builtin-cd…`).
     //
-    // The probe discriminates all three possible behaviours, which a `cd build
-    // && rm out.js` probe cannot: with the `cd` IGNORED the operand hangs off
-    // the project root, escapes it, and matches nothing — an ALLOW. Modelled, it
-    // is `rules/x.md`. Unmodelled, it is fail-closed. Only the first is wrong,
-    // and it is the only one that allows.
+    // The probe was built to discriminate three behaviours: with the `cd`
+    // IGNORED the operand hangs off the project root, escapes it, and matches
+    // nothing — an ALLOW; modelled, it is `rules/x.md`; unmodelled, it is
+    // fail-closed. THERE IS A FOURTH, and it hid inside the outcome this probe
+    // calls correct: MODELLED WRONGLY. See the next case, which is the only
+    // shape that can see it.
     for (const prefix of Object.values(WRAPPER_INVOCATIONS)) {
       expect(
         denies(`${prefix} cd build && rm ../rules/x.md`),
@@ -631,30 +632,75 @@ describe("wrappers — the verb underneath is still classified", () => {
     expect(denies("cd build && rm ../notes.txt")).toBe(false);
   });
 
-  it("models the three wrappers that really do run a builtin, and gives up on the rest", () => {
-    // Measured under bash 3.2 and zsh by running `<wrapper> cd sub` and reading
-    // `pwd`: `command` (bash only), `builtin` (both) and `time` (both, as the
-    // reserved word) move the shell; every other row is an external program and
-    // the shell stays put.
+  it("gives up on a directory builtin behind ANY wrapper, in either direction", () => {
+    // This case replaces one that asserted the opposite for three rows, and the
+    // assertion it replaces is the defect (`issues/260803-2236…`). `command`,
+    // `builtin` and `time` were marked builtin-capable from a measurement, and
+    // the mark is a claim about the SPELLING and about WHICH SHELL: `command cd`
+    // moves bash and is inert in zsh — the shell the Bash tool runs — and
+    // `\time`, `'time'` and `/usr/bin/time` all demote the reserved word to the
+    // external program that cannot run `cd` at all.
     //
-    // The three that move are MODELLED — the verdicts below are the ones a bare
-    // `cd` gets, not fail-closed denials — so ordinary work behind them costs
-    // nothing.
+    // Modelling a move the shell did not make is NOT a safe over-deny. It
+    // relocates every later relative operand: onto the protected list, which
+    // denies, or OFF it, which allows. Both rows below are asserted for every
+    // wrapper, and it is the second that the previous suite had no case for.
+    for (const prefix of Object.values(WRAPPER_INVOCATIONS)) {
+      // Operand under the DESTINATION — catches a `cd` the model did not follow.
+      expect(denies(`${prefix} cd rules && rm x.md`), `${prefix} destination`).toBe(
+        true,
+      );
+      // Operand under the ORIGIN — catches a `cd` the model followed and the
+      // shell did not. This is the direction that shipped allowing.
+      expect(denies(`${prefix} cd build && rm rules/x.md`), `${prefix} origin`).toBe(
+        true,
+      );
+    }
+    // The bare form is untouched: modelled exactly, both directions, because
+    // there is no wrapper and no shell to disagree about.
+    expect(denies("cd rules && rm x.md")).toBe(true);
+    expect(denies("cd build && rm rules/x.md")).toBe(false);
+  });
+
+  it("costs the three wrappers that used to be modelled, and says so as a verdict", () => {
+    // The disclosed cost, stated by a test rather than by prose. All three
+    // ALLOWED at 9aacab5. Reaching a directory builtin through a wrapper buys
+    // nothing a bare `cd` does not do, and the deny names the working directory,
+    // so the way through is to drop the wrapper.
     for (const prefix of ["command", "builtin", "time"]) {
-      expect(denies(`${prefix} cd rules && rm x.md`), prefix).toBe(true);
-      expect(denies(`${prefix} cd build && rm out.js`), prefix).toBe(false);
+      const v = classify(`${prefix} cd build && rm out.js`);
+      expect(v.deny, prefix).toBe(true);
+      expect(v.reason, prefix).toContain(
+        "working directory the guard cannot determine",
+      );
     }
-    // The rest cannot run `cd`, so real bash goes nowhere and modelling nothing
-    // would be faithful. Fail-closed is what is written instead: the faithful
-    // answer is right only while the wrapper table says what it says today, and
-    // the cost is a deny on a command that is already broken in the shell.
-    for (const prefix of ["sudo", "env", "xargs", "nice", "nohup"]) {
-      expect(denies(`${prefix} cd build && rm out.js`), prefix).toBe(true);
-    }
-    // A builtin-capable wrapper that consumed a FLAG is not running what
-    // follows as it stands: `time -o log cd build` is the external
-    // `/usr/bin/time`, which cannot run `cd` at all.
-    expectAllDeny(["time -o log cd build && rm out.js", "command -v cd build && rm out.js"]);
+    // And a wrapper in front of a VERB is untouched by any of it — that half of
+    // the walk is what the table is for.
+    expectAllAllow(["time npm test", "timeout 60 npm test", "command -v jq"]);
+    expectAllDeny(["command rm rules/x.md", "time rm rules/x.md"]);
+  });
+
+  it("reads the PATH spelling of the builtin, which programName throws away", () => {
+    // `/usr/bin/cd` is a real binary on macOS: it changes its own process's
+    // directory and exits, leaving the shell exactly where it was. Measured
+    // inert in bash 3.2 and zsh 5.9. `programName` maps it to `cd` because for a
+    // VERB `/bin/rm` really is `rm`; for a builtin that erasure is backwards, so
+    // `reachesBuiltin` is computed from the UNERASED word.
+    expectAllDeny([
+      "/usr/bin/cd build && rm rules/x.md",
+      "/usr/bin/cd rules && rm x.md",
+      "/bin/pushd build && rm rules/x.md",
+      "./cd build && rm rules/x.md",
+    ]);
+    // QUOTING AND BACKSLASH ARE NOT THE SAME QUESTION, and the asymmetry with
+    // `time` is the point. They suppress alias expansion and reserved-word
+    // recognition; `cd` is a builtin, not a reserved word, so it is still found.
+    // Measured moving the shell in both shells, so both stay modelled — in both
+    // directions.
+    expect(denies("\\cd rules && rm x.md")).toBe(true);
+    expect(denies("'cd' rules && rm x.md")).toBe(true);
+    expect(denies("\\cd build && rm out.js")).toBe(false);
+    expect(denies("'cd' build && rm rules/x.md")).toBe(false);
   });
 });
 
@@ -2267,6 +2313,14 @@ describe("virtual cwd — an unmodelled modifier is fail-closed, not modelled", 
  * needed one `popd` more than the bare `pushd` had consumed, and reached the
  * whole protected list.
  *
+ * THE LAST TWO ROWS ARE GIVE-UPS, and a give-up has to give up the depth as
+ * well. It did not: zeroing the stack's entries preserved its length, so after
+ * `pushd -n DIR` the model was one entry shallower than bash and an absolute
+ * `cd` afterwards re-proved the working directory and made the mismatch
+ * load-bearing again (`issues/260803-2237…`). The last describe below is that
+ * property, and it is now carried by the `DirStack` sum type rather than by a
+ * rule someone has to remember.
+ *
  * Depth is not directly observable from a verdict, so these cases observe it the
  * way a shell does: by spending the stack and asserting where the model says it
  * has landed.
@@ -2330,6 +2384,69 @@ describe("virtual cwd — the directory stack is as deep as bash's", () => {
       "cd build && pushd /tmp && popd && rm out.js",
       "pushd rules && popd && rm x.md",
     ]);
+  });
+
+  // --------------------------------------------------------------------
+  // A GIVE-UP HAS TO GIVE UP THE DEPTH (`issues/260803-2237…`).
+  //
+  // `unmodelled()` used to zero the stack with `.map(() => CWD_UNKNOWN)`, which
+  // is a statement about the entries and silent about how many there are —
+  // `.map()` preserves length. After `pushd -n DIR` bash is one entry deeper
+  // than the model. That hid for as long as the working directory was also
+  // unknown, because every `popd` then recovered an unknown and denied. It
+  // stopped hiding the moment the cwd was RE-PROVEN, and one construct re-proves
+  // it: an ABSOLUTE `cd`. The model was then confident again, with a stack one
+  // entry shallower than the shell's.
+  //
+  // The fix is the `DirStack` sum type: giving up REPLACES the stack, so there
+  // is no zeroed-but-still-N-deep value left to read a depth out of.
+  // --------------------------------------------------------------------
+  describe("a given-up stack stays given up, whatever the cwd does afterwards", () => {
+    it("denies a popd after an absolute cd re-proved the working directory", () => {
+      // The measured escape. Bash: `pushd -n ..` holds the root, `popd` returns
+      // to it, `rm rules/x.md` deletes the protected file. The model had a
+      // proven `build/` and an empty stack, read the emptiness as bash's
+      // stay-put no-op, and allowed.
+      expectAllDeny([
+        "cd docs && pushd -n .. && cd /abs/build && popd && rm rules/x.md",
+        "cd docs && pushd -n .. && cd /abs/build && popd && rm agents/coder.md",
+      ]);
+    });
+
+    it("denies the popd -n mirror, where the model is the DEEPER one", () => {
+      // `popd -n` removes an entry without moving, so the disagreement runs the
+      // other way. No exploiting sequence was constructed for it; the same
+      // change closes it, and asserting it here is what keeps that true.
+      expectAllDeny([
+        "cd docs && popd -n; cd /abs/build && popd && rm rules/x.md",
+        "cd docs && pushd ..; popd -n; cd /abs/build && popd && rm agents/coder.md",
+      ]);
+    });
+
+    it("does not re-arm through a pushd that lands on a known directory", () => {
+      // A push onto a stack whose depth is unknown leaves it unknown. Without
+      // this the escape returns with one more segment.
+      expectAllDeny([
+        "pushd -n docs && cd /abs/build && pushd /abs/x && popd && rm rules/x.md",
+        "pushd -n docs && pushd build && popd && rm rules/x.md",
+      ]);
+    });
+
+    it("keeps the MODELLED path exact, which is what makes it a give-up", () => {
+      // The discriminator. The same five segments with `pushd ..` instead of
+      // `pushd -n ..` agree with bash — both end in `docs/` — and must allow.
+      // If this row denies, the give-up has become a blanket.
+      expect(
+        denies("cd docs && pushd .. && cd /abs/build && popd && rm rules/x.md"),
+      ).toBe(false);
+      expect(
+        denies("cd docs && pushd .. && cd /abs/build && popd && rm x.md"),
+      ).toBe(false);
+      // And an absolute `cd` still re-proves the CWD after a give-up. Only the
+      // STACK is permanently unknown; conflating the two would cost real work.
+      expect(denies("cd $D && cd /abs/build && rm out.js")).toBe(false);
+      expect(denies("pushd -n docs && cd /abs/build && rm out.js")).toBe(false);
+    });
   });
 });
 

@@ -103,38 +103,39 @@ export const ENV_ASSIGNMENT_RE = /^[A-Za-z_][A-Za-z0-9_]*=/;
  * one, so they stay documented residuals instead. Adding a wrapper is a row,
  * not a code path.
  *
- * ## `runsBuiltins` — the fact the DIRECTORY model needs and the verb table
- * ## does not
+ * ## No row here says anything about a SHELL BUILTIN, and the empty space is
+ * ## deliberate
  *
- * Most rows here run an EXTERNAL program, so a shell builtin underneath one of
- * them does nothing at all: `sudo cd rules` and `env cd rules` are errors, and
- * the shell stays where it was. Three rows are different, and measured to be so
- * (bash 3.2 and zsh, `cd sub` under each wrapper, reading `pwd` afterwards):
+ * This table answers one question — which words are the wrapped command — and
+ * the answer is the same for every consumer. It briefly answered a second one,
+ * `runsBuiltins`: can this wrapper run a shell builtin in the CALLING shell, so
+ * that the directory model may follow a `cd` through it? Three rows were marked
+ * from a measurement, and the marking was a REGRESSION within the commit that
+ * wrote it (`issues/260803-2236_…runsbuiltins-is-asserted-about-a-name…`):
  *
- *   - `command cd sub` — moves the shell in bash; INERT in zsh, whose `command`
- *     forces an external lookup. Marked here because the guard's stated model is
- *     bash and the marking is in the denying direction for zsh.
- *   - `builtin cd sub` — moves the shell in BOTH.
- *   - `time cd sub` — moves the shell in BOTH: `time` is a reserved word timing
- *     a pipeline that runs in the current shell, not the external `/usr/bin/time`
- *     this row's `valueFlags` describe.
+ *   - `command cd sub` moves the shell in bash and is INERT in zsh, whose
+ *     `command` forces an external lookup — and zsh is what the Bash tool runs;
+ *   - `time cd sub` moves the shell only as the bare reserved word. `\time`,
+ *     `'time'`, `"time"` and `/usr/bin/time` all select the external program,
+ *     which moves nothing — and those are exactly the spellings `resolveWord`
+ *     and `programName` are built to erase, because for a VERB `\rm` really is
+ *     `rm`.
  *
- * `bash-mutation-guard.ts` consumes this through `Invocation.reachesBuiltin`. It
- * is a FIELD ON THE ROW rather than a second table on purpose: a parallel set of
- * three names beside this one is exactly the duplicate-at-reduced-fidelity that
- * put `command cd` past the directory model in the first place
- * (`issues/260803-2038_…command-cd-and-builtin-cd…`).
+ * The fact is therefore not a property of the NAME this table is keyed on. It
+ * is a property of the spelling and of which shell is running, and this module
+ * can prove neither. Marking it wrong is not a safe over-deny: a modelled move
+ * relocates every later relative operand, so it denies when it moves the operand
+ * ONTO the protected list and ALLOWS when it moves it off.
+ *
+ * So the fact is gone, and `Invocation.reachesBuiltin` is now computed from what
+ * this module CAN see — see that field. Adding a wrapper stays one row, and the
+ * row cannot carry a claim about a shell.
  */
 export interface WrapperSpec {
   /** Short flags that consume the FOLLOWING token as their value. */
   valueFlags?: readonly string[];
   /** The wrapper's own positional arguments, before the wrapped command word. */
   positionalArgs?: number;
-  /**
-   * Can this wrapper run a SHELL BUILTIN in the calling shell? Absent means no,
-   * which is the answer for every external wrapper.
-   */
-  runsBuiltins?: boolean;
 }
 
 export const WRAPPER_PROGRAMS: Readonly<Record<string, WrapperSpec>> = {
@@ -143,12 +144,11 @@ export const WRAPPER_PROGRAMS: Readonly<Record<string, WrapperSpec>> = {
   },
   doas: { valueFlags: ["-u", "-C"] },
   env: { valueFlags: ["-u", "-C", "-S"] },
-  command: { runsBuiltins: true },
-  // `builtin cd rules` is the one spelling whose whole purpose is running a
-  // builtin, and it was in no table at all — so nothing in either classifier saw
-  // through it, and `builtin cd rules && rm x.md` moved the shell past a
-  // directory model that never noticed. Its own flag grammar is empty.
-  builtin: { runsBuiltins: true },
+  command: {},
+  // `builtin cd rules` was in no table at all, so nothing in either classifier
+  // saw through it and `builtin rm rules/x.md` read as the unrecognised program
+  // `builtin`. Its own flag grammar is empty.
+  builtin: {},
   // `exec` REPLACES the shell with the command that follows, so its words are
   // that command's words exactly as `sudo`'s are. `-a NAME` is its one
   // value-taking flag (`-c` and `-l` take none). A bare `exec > file` runs no
@@ -161,7 +161,7 @@ export const WRAPPER_PROGRAMS: Readonly<Record<string, WrapperSpec>> = {
   xargs: {
     valueFlags: ["-n", "-P", "-I", "-L", "-l", "-s", "-E", "-d", "-a"],
   },
-  time: { valueFlags: ["-o", "-f"], runsBuiltins: true },
+  time: { valueFlags: ["-o", "-f"] },
   nohup: {},
   setsid: {},
   stdbuf: { valueFlags: ["-i", "-o", "-e"] },
@@ -230,21 +230,35 @@ export interface Invocation {
   /** Everything after the command word, wrapper words already consumed. */
   args: string[];
   /**
-   * Would `name` still run if it were a SHELL BUILTIN? True for a bare
-   * invocation, and true through a wrapper chain only when every hop both
-   * `runsBuiltins` and consumed NO words of its own.
+   * If `name` is a SHELL BUILTIN, can this module prove the calling shell ran
+   * it as one? True on exactly two conditions, both readable from the segment
+   * text alone:
    *
-   * The second half is not fussiness. `time -o log cd build` is the external
-   * `/usr/bin/time`, which cannot run `cd`; the reserved word that can takes no
-   * such flag. A wrapper that consumed a flag is being asked to do something
-   * other than "run what follows, as it stands", and this module does not model
-   * what — so it reports the chain as not reaching a builtin and the caller
-   * fails closed. `command -v cd` falls out the same way, correctly: it prints a
-   * name and moves nothing.
+   *   1. **No wrapper hop.** The segment names the program directly. A wrapper
+   *      in front of a builtin is a claim about the wrapper AND about the shell
+   *      — `command cd` moves bash and not zsh — and no such claim can be read
+   *      off the text (`issues/260803-2236_…`). So every hop answers false,
+   *      including `command` and `builtin`, whose whole purpose is to run one.
+   *   2. **No path separator in the command word.** `programName` maps
+   *      `/usr/bin/rm` to `rm` because for a VERB the two really are the same
+   *      program. For a builtin the erasure is backwards: a path names an
+   *      external file, and `/usr/bin/cd` is a real binary on macOS that changes
+   *      its own process's directory and exits, leaving the shell where it was.
+   *      Measured inert in bash 3.2 and zsh 5.9.
    *
-   * Only the directory model in `bash-mutation-guard.ts` reads this. The verb
-   * classifier does not care: every `MUTATION_VERBS` row is an external program,
-   * so a wrapper that cannot run a builtin runs it perfectly well.
+   * QUOTING AND BACKSLASH ARE NOT A THIRD CONDITION, and the asymmetry with
+   * `time` is the whole reason the second condition is worded over the SLASH.
+   * `\cd`, `'cd'` and `"cd"` were measured moving the shell in both shells:
+   * quoting suppresses alias expansion and reserved-word recognition, and `cd`
+   * is neither — it is a builtin, and a builtin is still found. `time` IS a
+   * reserved word, which is why quoting demotes it to `/usr/bin/time`; it needs
+   * no clause here because condition 1 already answers false for it.
+   *
+   * Only the directory model in `bash-mutation-guard.ts` reads this, and it
+   * treats false as "give up on the whole directory state", never as "the shell
+   * stayed put". The verb classifier does not read it at all: every
+   * `MUTATION_VERBS` row is an external program, which every wrapper here runs
+   * perfectly well.
    */
   reachesBuiltin: boolean;
 }
@@ -273,7 +287,10 @@ export function resolveInvocation(
   literals: Map<string, string>,
 ): Invocation | null {
   let rest = words;
-  let reachesBuiltin = true;
+  // Set by the first hop and never cleared: a wrapper stands between the shell
+  // and the command word, so the command word is not what the shell resolved.
+  // See `Invocation.reachesBuiltin`.
+  let viaWrapper = false;
 
   for (let hop = 0; hop <= words.length; hop++) {
     const cmdIdx = findCommandWord(rest);
@@ -285,16 +302,14 @@ export function resolveInvocation(
     const args = rest.slice(cmdIdx + 1);
 
     const wrapper = row(WRAPPER_PROGRAMS, name);
-    if (wrapper === undefined) return { name, args, reachesBuiltin };
-
-    const next = skipWrapper(wrapper, args);
-    // `args.length - next.length` is the words this hop consumed of its own —
-    // its flags, its assignments, its positionals. Zero means it is running what
-    // follows exactly as written. See `Invocation.reachesBuiltin`.
-    if (wrapper.runsBuiltins !== true || next.length !== args.length) {
-      reachesBuiltin = false;
+    if (wrapper === undefined) {
+      // `raw`, not `name`: `programName` has already thrown the path away, and
+      // the path is the whole question. See `Invocation.reachesBuiltin`.
+      return { name, args, reachesBuiltin: !viaWrapper && !raw.includes("/") };
     }
-    rest = next;
+
+    viaWrapper = true;
+    rest = skipWrapper(wrapper, args);
   }
 
   return null;

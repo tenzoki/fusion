@@ -96,12 +96,23 @@
  * `builtin cd rules` reached the builtin through a wrapper the directory model
  * did not walk, and bare `pushd` / `pushd +N` ROTATE bash's stack where the
  * model pushed onto it (`issues/260803-2038…`, `issues/260803-2039…`). Both are
- * closed by the same allow-list stance rather than beside it: the wrapper walk
- * is now the shared resolver's (`Invocation.reachesBuiltin`), and the two
- * rotation forms take the give-up the flag forms already had. What that does not
- * license is a fresh completeness claim — the honest statement is that the model
- * is closed against flags, against the two non-flag modes that were enumerated,
- * and against the wrapper and stack routes measured in Turn 5.
+ * closed by the same allow-list stance rather than beside it: the resolver now
+ * reports whether the segment named the builtin DIRECTLY
+ * (`Invocation.reachesBuiltin`) and anything else takes the give-up, and the two
+ * rotation forms take the give-up the flag forms already had.
+ *
+ * The wrapper half of that was first written as a MODEL — three wrappers marked
+ * as builtin-capable and followed through — and the marking allowed eleven
+ * commands the shell then executed against a protected file
+ * (`issues/260803-2236…`). The lesson is not about wrappers. Giving up can only
+ * deny; MODELLING is bidirectional, because an asserted move relocates every
+ * later relative operand and can move it OFF the protected list as easily as
+ * onto it. Any change here that adds modelling has to be costed in both
+ * directions, and a directory the classifier cannot prove is not a directory it
+ * may assert. What none of this licenses is a fresh completeness claim — the
+ * honest statement is that the model is closed against flags, against the two
+ * non-flag modes that were enumerated, and against the wrapper and stack routes
+ * measured in Turns 5 and 6.
  *
  * ONE of those modifiers need not be in the command at all. `CDPATH` exported
  * in the user's own shell profile changes where a bare-word `cd` lands with
@@ -1364,6 +1375,35 @@ function resolveTarget(
 const DIR_BUILTINS = new Set(["cd", "chdir", "pushd", "popd"]);
 
 /**
+ * The `pushd` / `popd` directory stack — either exactly as deep as the shell's,
+ * or absent.
+ *
+ * IT IS A SUM TYPE FOR ONE REASON: an array has a LENGTH, and a length is a
+ * second fact that can be wrong on its own. `unmodelled()` used to zero the
+ * stack by mapping every entry to `CWD_UNKNOWN`, which is honest about the
+ * entries and silent about the depth — and `.map()` preserves length. After
+ * `pushd -n DIR` the shell is one entry deeper than an array so zeroed, the
+ * disagreement hides for as long as the working directory is also unknown, and
+ * an absolute `cd` re-proves the directory and hands the surviving mismatch back
+ * to the next `popd` as a confidently-named directory the shell never went to.
+ * That was measured deleting `rules/x.md`
+ * (`issues/260803-2237_…unmodelled-zeroes-the-stack-values-but-not-its-depth…`).
+ *
+ * With the depth inside the `known` arm there is no zeroed-but-still-N-deep
+ * value to construct: giving up REPLACES the stack rather than rewriting its
+ * contents, and `popd` on an `unknown` stack cannot read "empty, so bash stayed
+ * put" out of an array that is not there. The compiler enforces what the
+ * previous wording could only ask a reader to check.
+ */
+type DirStack =
+  /** `entries` is exactly what the shell's `dirs` holds, innermost last. */
+  | { kind: "known"; entries: Cwd[] }
+  /** Contents AND depth unknowable. Never returns to `known`. */
+  | { kind: "unknown" };
+
+const STACK_UNKNOWN: DirStack = { kind: "unknown" };
+
+/**
  * As much of a shell's directory state as a static classifier can carry.
  *
  * Every field here is something the classifier ASSERTS, and each has been an
@@ -1373,13 +1413,23 @@ const DIR_BUILTINS = new Set(["cd", "chdir", "pushd", "popd"]);
  * first entrance found, `dirStack` and `prev` were measured through
  * `pushd -n` / `popd -n` while this was being fixed. So the rule below is
  * stated over the WHOLE record, not over `cwd`: see `unmodelled`.
+ *
+ * THE PROPERTY THAT MAKES THE RULE CHECKABLE is that every field has an
+ * "I don't know" value covering the WHOLE field rather than its contents.
+ * `cwd` and `prev` are `Cwd`, whose `unknown` arm carries no directory;
+ * `dirStack` is `DirStack`, whose `unknown` arm carries no entries and no
+ * depth; `physical` and `cdpath` are monotone booleans, set and never cleared,
+ * where `true` is itself the don't-know (it can only make a later `cwd` less
+ * certain). A future field must arrive with the same property, or `unmodelled`
+ * silently stops being a give-up for it — which is exactly how `dirStack` kept
+ * a depth through a give-up stated over values.
  */
 interface ShellState {
   cwd: Cwd;
   /** `$OLDPWD`, where `cd -` goes back to. Unknown until the first `cd`. */
   prev: Cwd;
-  /** The `pushd` / `popd` directory stack, innermost last. */
-  dirStack: Cwd[];
+  /** The `pushd` / `popd` directory stack. See `DirStack`. */
+  dirStack: DirStack;
   /**
    * Has bash been put into PHYSICAL directory resolution (`set -P`,
    * `set -o physical`)? Then every later `cd` resolves each component through
@@ -1418,7 +1468,7 @@ function freshState(): ShellState {
   return {
     cwd: CWD_ROOT,
     prev: CWD_UNKNOWN,
-    dirStack: [],
+    dirStack: { kind: "known", entries: [] },
     physical: false,
     cdpath: false,
   };
@@ -1428,7 +1478,12 @@ function cloneState(s: ShellState): ShellState {
   return {
     cwd: s.cwd,
     prev: s.prev,
-    dirStack: [...s.dirStack],
+    // The entries array is mutated in place by `pushd` / `popd`, so a shallow
+    // copy of the record would let a subshell's pushes escape into its parent.
+    dirStack:
+      s.dirStack.kind === "known"
+        ? { kind: "known", entries: [...s.dirStack.entries] }
+        : s.dirStack,
     physical: s.physical,
     cdpath: s.cdpath,
   };
@@ -1445,6 +1500,15 @@ function cloneState(s: ShellState): ShellState {
  * classifier had computed from an entry bash no longer had. Zeroing `cwd` alone
  * would have left both open.
  *
+ * And every field means every field, DEPTH INCLUDED. This function used to zero
+ * the stack with `state.dirStack.map(() => CWD_UNKNOWN)`, which is a statement
+ * about the entries and not about how many there are — `.map()` preserves
+ * length. `pushd -n DIR` leaves the shell one entry deeper than a stack so
+ * zeroed, and an absolute `cd` afterwards re-proves the working directory and
+ * makes the surviving off-by-one load-bearing again (`issues/260803-2237…`).
+ * Replacing the stack with `STACK_UNKNOWN` is what makes the give-up total; the
+ * `DirStack` sum type is what makes the old shape impossible to write back.
+ *
  * `CWD_UNKNOWN` is not a new state and this is not a new mechanism: a relative
  * operand of a recognised verb under an unknown directory is unresolved and
  * denies fail-closed, with a reason that names the working directory as the
@@ -1454,7 +1518,7 @@ function cloneState(s: ShellState): ShellState {
 function unmodelled(state: ShellState): void {
   state.cwd = CWD_UNKNOWN;
   state.prev = CWD_UNKNOWN;
-  state.dirStack = state.dirStack.map(() => CWD_UNKNOWN);
+  state.dirStack = STACK_UNKNOWN;
 }
 
 /** What the first non-flag argument of a directory builtin asks for. */
@@ -1696,53 +1760,62 @@ function ambientCdpathIsSet(env: NodeJS.ProcessEnv): boolean {
  * every other form the guard cannot model resolves to `unknown` rather than to
  * a guess.
  *
- * ## The invariant, and the audit that can actually check it
+ * ## The invariant, and why it is no longer a recipe
  *
  * **Every write to `state` here leaves the WHOLE RECORD either PROVEN or
- * UNKNOWN.** Not `cwd` — the record. That distinction is the correction the
- * previous wording needed: it was stated over `state` and then audited by
- * grepping for `state.cwd =`, which cannot see a `dirStack.push`, and a
- * `dirStack.push` bash does not make is precisely what put a later `popd` on a
- * directory the shell never went to (`issues/260803-2039…`). A recipe that
- * misses a field is a completeness claim wearing different clothes.
+ * UNKNOWN.** Not `cwd` — the record.
  *
- * ### Run it
+ * This has been written twice as an AUDIT RECIPE — first "grep for
+ * `state.cwd =` and check each right-hand side", then "grep for `state\.[a-z]`
+ * and sort the hits into five shapes" — and both were wrong within days, in the
+ * same way. A recipe enumerates WRITES TO FIELDS. The invariant is a property of
+ * the STATE. The first recipe could not see a `dirStack.push` and missed a push
+ * bash does not make (`issues/260803-2039…`); the second saw the push, said
+ * correctly that the property to check on it was DEPTH, and then named
+ * `unmodelled` as the answer for the forms that fail it — while `unmodelled`
+ * preserved depth (`issues/260803-2237…`). A recipe with a gap reads exactly
+ * like a recipe without one, which is what makes the third attempt worse than no
+ * attempt.
  *
- *     awk '/^function applyDirEffect/,/^}$/' hooks/lib/bash-mutation-guard.ts \
- *       | grep -nE 'state\.[a-z]|unmodelled\('
+ * So the invariant is carried by the TYPES instead, and there is nothing here to
+ * run. Each field of `ShellState` has an "I don't know" value that covers the
+ * whole field rather than its contents, so a give-up is a total assignment and
+ * cannot leave a residue:
  *
- * That is every mutation of the record and then some, `ShellState` having
- * exactly five fields (`cwd`, `prev`, `dirStack`, `physical`, `cdpath`) and no
- * method that hides one. It over-reports on purpose: the READS come out too
- * (`const here = state.cwd`, `if (state.physical)`), and they are inert — a read
- * cannot break an invariant about what is stored. Skip them. Each remaining hit
- * must be one of these five shapes, and nothing else:
+ *   - `cwd`, `prev` — `Cwd`, a sum type whose `unknown` arm carries no
+ *     directory. Every write is one of its three constructors, and the
+ *     `switch` below binds `never` in its `default`, so the compiler proves the
+ *     enumeration over `DirArg` is exhaustive and a new arm cannot be added
+ *     without landing in it.
+ *   - `dirStack` — `DirStack`, a sum type whose `unknown` arm carries no entries
+ *     AND NO DEPTH. This is the field the second recipe got wrong, and the
+ *     reason it is a sum type rather than an array. Pushes and pops live inside
+ *     the `known` arm and are therefore unreachable once the stack is given up.
+ *   - `physical`, `cdpath` — monotone booleans, set and never cleared, where
+ *     `true` IS the don't-know: it can only make a later `cwd` less certain.
  *
- *   1. `unmodelled(state)` — the whole record zeroed. Always honest, and the
- *      only answer to a form this classifier does not model.
- *   2. `state.cwd = X` — `X` is `CWD_UNKNOWN`, `CWD_UNKNOWN_AMBIENT_CDPATH`,
- *      `CWD_OUTSIDE`, or comes from `resolveDir` / `prev` / `dirStack`, which
- *      are subject to this same invariant. The `default` arm's `never` binding
- *      makes the compiler prove the `switch` is exhaustive over `DirArg`, so a
- *      new arm cannot be added without landing in it.
- *   3. `state.prev = state.cwd` — a copy of a value the invariant already
- *      holds for.
- *   4. `state.dirStack.push(state.cwd)` / `.pop()` — reachable ONLY on the arms
- *      where bash really pushes or pops. The property to check is not the value
- *      but the DEPTH: for every form, does the model's stack end as deep as
- *      bash's `dirs`? The rotation forms fail that and take shape 1 instead.
- *   5. `state.physical = true` / `state.cdpath = true` — monotone, never
- *      cleared, and both can only make a LATER `cwd` less certain.
+ * A reviewer checks this by reading four type declarations, not by running a
+ * command over a function that grows. A future field is checked the same way,
+ * and the question to ask of it is the one both recipes danced around: what is
+ * this field's whole-field unknown, and does `unmodelled` assign it?
  *
- * ### What the audit still does not certify
+ * ### What the types cannot certify — two things, and they are the live ones
  *
- * That the function is REACHED. A construct that moves the shell without
+ * **That the function is REACHED.** A construct that moves the shell without
  * running a recognised directory builtin writes nothing here and leaves a
  * previously-proven `cwd` standing — which is how `command cd rules` got past a
- * model whose every write was honest (`issues/260803-2038…`). The wrapper walk
- * now closes the measured route; `eval "cd rules"`, a shell function named `cd`
- * and an alias remain out of reach of a textual classifier, and are residuals
- * rather than checks this recipe performs.
+ * model whose every write was honest (`issues/260803-2038…`). A wrapper and a
+ * path spelling now reach the give-up above; `eval "cd rules"`, a shell function
+ * named `cd`, an alias and a `source`d script remain out of reach of a textual
+ * classifier and are residuals rather than checks.
+ *
+ * **That a PROVEN directory is where the shell is standing.** The types make a
+ * give-up total; they say nothing about whether `resolveDir`'s answer is right.
+ * Two live gaps sit here: a `cd` that FAILS leaves the shell where it was while
+ * the model follows it (`issues/260803-2238…`, awaiting a decision), and any
+ * future modelling of a construct measured in one shell can be wrong in the
+ * other. Modelling is the bidirectional half of this module and the only half
+ * that can newly ALLOW — see the give-up above.
  *
  * Two supports below the recipe, both checkable by reading: the only way to
  * reach the modelling code is `firstDirArg`, an ALLOW-LIST whose unrecognised
@@ -1787,13 +1860,26 @@ function applyDirEffect(
   // shell, so an unrecognised program leaves the state exactly as it was.
   if (name !== "set" && !DIR_BUILTINS.has(name)) return;
 
-  // A wrapper stands between the segment and the builtin, and only some
-  // wrappers can run one. `sudo cd rules` and `env cd rules` are errors — the
-  // shell goes nowhere — so modelling nothing would be faithful, and giving up
-  // is what is written instead: the faithful version is right only while the
-  // wrapper table says what it says today, and this Circle has now watched five
-  // assertions outlive the reason they were true. The cost is a deny on a
-  // command that is already broken in the shell.
+  // The segment did not name the builtin directly — a wrapper stands in front of
+  // it (`command cd`, `sudo cd`, `time cd`) or it is spelled as a path
+  // (`/usr/bin/cd`). In every such form, whether the CALLING shell ran a builtin
+  // depends on the shell and on the spelling, and this classifier can read
+  // neither off the text. `Invocation.reachesBuiltin` has the measurements.
+  //
+  // So it gives up rather than modelling either answer. Modelling "the shell
+  // moved" was tried, for the three wrappers a measurement said could run a
+  // builtin, and it ALLOWED eleven commands the shell executed against a
+  // protected file (`issues/260803-2236…`) — because an asserted move relocates
+  // every later relative operand and can move it off the protected list.
+  // Modelling "the shell stayed put" is the faithful answer for `sudo cd` and
+  // `env cd`, and it is right only while the wrapper table says what it says
+  // today. Giving up is the one answer that is wrong in no direction: it can
+  // only deny.
+  //
+  // The cost is a deny on `<wrapper> cd DIR && <relative write>`, a shape that
+  // buys nothing — reaching a directory builtin through a wrapper does not make
+  // it do anything a bare `cd` does not — and the way through is to drop the
+  // wrapper or name the path absolutely.
   if (!invocation.reachesBuiltin) {
     unmodelled(state);
     return;
@@ -1811,8 +1897,20 @@ function applyDirEffect(
       unmodelled(state);
       return;
     }
-    const back = state.dirStack.pop();
-    // An empty stack makes `popd` an error, and bash stays where it is.
+    // A stack whose DEPTH was given up on cannot answer "is it empty?", and
+    // reading the model's own emptiness as bash's was the escape: after
+    // `pushd -n ..` bash holds an entry the model does not, so `popd` moves the
+    // shell while the model stands still on a directory an absolute `cd` had
+    // just re-proven (`issues/260803-2237…`). Unknown depth means unknown
+    // destination, whatever the working directory currently is.
+    if (state.dirStack.kind !== "known") {
+      state.prev = state.cwd;
+      state.cwd = CWD_UNKNOWN;
+      return;
+    }
+    const back = state.dirStack.entries.pop();
+    // An empty stack makes `popd` an error, and bash stays where it is. Reached
+    // only when the depth is KNOWN to be zero.
     if (back === undefined) return;
     state.prev = state.cwd;
     state.cwd = state.physical ? CWD_UNKNOWN : back;
@@ -1851,7 +1949,11 @@ function applyDirEffect(
   // — a named operand, and `pushd -` (measured: it pushes and then goes to
   // `$OLDPWD`, exactly as the `previous` arm models) — which is what makes the
   // model's stack DEPTH track bash's.
-  if (name === "pushd") state.dirStack.push(state.cwd);
+  // A push onto a stack whose depth is unknown leaves the depth unknown, so the
+  // `known` guard is the whole handling of that arm rather than a special case.
+  if (name === "pushd" && state.dirStack.kind === "known") {
+    state.dirStack.entries.push(state.cwd);
+  }
 
   const here = state.cwd;
   const back = state.prev;

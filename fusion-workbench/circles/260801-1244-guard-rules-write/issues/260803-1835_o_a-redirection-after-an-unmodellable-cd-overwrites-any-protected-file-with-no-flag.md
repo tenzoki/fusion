@@ -103,3 +103,42 @@ would have written the file. The shape is already in
 `circles/260801-1244-guard-rules-write`, task T4-2, while measuring which of the two
 issues' reach tables the allow-list actually closed. It closes every `rm`/`cp` row and no
 `>` row, which is a bound worth writing down rather than a fix worth claiming.
+
+## Widened by T6-1, and its direction 1 costed (task T6-1, 2026-08-03)
+
+Closing `260803-2236` replaced a modelled wrapper `cd` with a give-up, and every give-up on
+a directory feeds this issue: the moment the guard stops claiming to know the working
+directory, a `>` target becomes unresolvable-because-of-the-directory and this bound lets it
+through. Six rows denied at `9aacab5` and allow now, all measured with the real-shell effect:
+
+```
+  command cd rules && echo pwned > x.md            bash  OVERWRITTEN
+  builtin cd rules && echo pwned > x.md            bash  OVERWRITTEN
+  builtin cd rules && echo pwned > x.md            zsh   OVERWRITTEN
+  time cd agents && echo pwned > coder.md          bash  OVERWRITTEN
+  time cd agents && echo pwned > coder.md          zsh   OVERWRITTEN
+  command cd skills/demo && printf '' > SKILL.md   bash  OVERWRITTEN
+```
+
+**The reach does not grow** — it was already the whole protected list with no flag, via
+`pushd -n docs && echo pwned > agents/coder.md` — but the entrances do, and every future
+give-up on a directory will add more. That makes this the single remaining consumer-visible
+cost of the module's give-up mechanism, and raises its priority accordingly.
+
+**Direction 1 costed by applying it and running the suite**, so the number is measured rather
+than argued. Making pass 3 reach a redirect target that is unresolvable **because of the
+working directory** (`viaCwd`) while still allowing one unresolvable because of the **token**
+(`> "$LOG"` — the idiom `260801-1859` protected) moves exactly **two** assertions in the
+whole 1197-case suite:
+
+```
+  bash-mutation-guard.test.ts  "does NOT carry fail-closed into a program outside the table"
+      cd $D && echo x > y.md          allow -> DENY
+      cd $D && echo x > out.log       allow -> DENY
+```
+
+and **zero** rows of the 119-command ordinary-agent corpus. Both moved rows are the pinned
+statement of the `260801-1859` decision, so the cost of direction 1 is not a false-positive
+budget — it is the decision itself, and reversing it is a decision to take in the open.
+
+Not taken in T6-1 for that reason. Marker unchanged (`_o_`).
