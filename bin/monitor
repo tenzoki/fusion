@@ -94,7 +94,37 @@ WARNING_EVENT_TYPES = {
     "guard_block", "guard_halt",
     "guard_advisory",
 }
+
+# The advisory subset of WARNING_EVENT_TYPES, carved out so it can be capped
+# separately. The set above decides what reaches the panel at all; this one
+# decides which budget a row is charged to.
+ADVISORY_EVENT_TYPES = {"guard_advisory"}
+
+# TWO INDEPENDENT CAPS, NOT ONE SHARED BUDGET.
+#
+# The two classes arrive at very different rates. A block or a churn warning is
+# rare and each one is individually worth reading. An advisory is emitted once
+# per exempted write, so a curation session with FUSION_ALLOW_RULES_WRITE set —
+# the session the flag exists for — emits one per file it rewrites. Under a
+# single shared budget, thirty rewritten rule files are thirty advisory rows and
+# every guard_block, guard_halt, churn_critical and cross_file_critical older
+# than them is off the panel. That is the failure guard.ts already refuses to
+# cause with guard_allow, arriving through a different door.
+#
+# So the warning class keeps its full 30 whatever the advisories do, and the
+# advisories get their own small allowance on top. A burst can no longer evict
+# anything; the worst case is a taller panel.
+#
+# 8 for advisories, deliberately a minority of the panel. What an advisory row
+# has to tell the user is "your override is live, and here is what it bought" —
+# one row establishes that, and a handful gives the shape of the burst. Eight
+# shows a small curation session in full and enough of a large one to recognise
+# the pattern, while leaving the panel still legible as a warnings panel at full
+# advisory load. The complete record is in events.jsonl, which is append-only
+# and where an exhaustive audit belongs; the panel is the 30-row window, and the
+# window is the scarce thing.
 MAX_WARNINGS_RETURNED = 30
+MAX_ADVISORIES_RETURNED = 8
 
 HTML_PAGE = r"""<!DOCTYPE html>
 <html lang="en">
@@ -941,13 +971,18 @@ class Handler(http.server.BaseHTTPRequestHandler):
         return self.LAST_EVENT_TO_MODE.get(last)
 
     def _read_warnings(self):
-        """Read .guard-state/events.jsonl and return the most recent
-        warning-class events. Filters out noise (guard_allow, tracker_record).
-        Returns up to MAX_WARNINGS_RETURNED events, newest last."""
+        """Read .guard-state/events.jsonl and return the most recent panel
+        events. Filters out noise (guard_allow, tracker_record).
+
+        The two classes are capped independently and then merged back into one
+        chronological list — up to MAX_WARNINGS_RETURNED warnings plus up to
+        MAX_ADVISORIES_RETURNED advisories, newest last. See the comment on
+        those constants for why the budgets are separate."""
         content, exists = self._read_file(GUARD_EVENTS_JSONL)
         if not exists or not content.strip():
             return []
         warnings = []
+        advisories = []
         for line in content.strip().split("\n"):
             line = line.strip()
             if not line:
@@ -956,9 +991,29 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 ev = json.loads(line)
             except json.JSONDecodeError:
                 continue
-            if ev.get("event") in WARNING_EVENT_TYPES:
+            event = ev.get("event")
+            if event not in WARNING_EVENT_TYPES:
+                continue
+            if event in ADVISORY_EVENT_TYPES:
+                advisories.append(ev)
+            else:
                 warnings.append(ev)
-        return warnings[-MAX_WARNINGS_RETURNED:]
+        # No advisories: return exactly what this function always returned,
+        # down to the ordering. The merge below cannot change the result in
+        # this case, but it could change it if the file's timestamps were ever
+        # out of order, and "unchanged when the flag was never used" is worth
+        # more than the uniformity.
+        if not advisories:
+            return warnings[-MAX_WARNINGS_RETURNED:]
+        merged = (warnings[-MAX_WARNINGS_RETURNED:]
+                  + advisories[-MAX_ADVISORIES_RETURNED:])
+        # Sort on the raw timestamp string. The guard writes ts as
+        # Date.toISOString() — fixed-width, UTC, Z-suffixed — so lexical order
+        # IS chronological order and no parsing (and no parsing failure) is
+        # involved. An event missing ts sorts oldest rather than raising, and
+        # the sort is stable, so events sharing a timestamp keep file order.
+        merged.sort(key=lambda e: e.get("ts") or "")
+        return merged
 
     def do_GET(self):
         if self.path == "/":
