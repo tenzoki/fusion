@@ -76,3 +76,21 @@ entries and appending `(+N more)` reads better than a mid-token ellipsis. That i
 Found in `circles/260801-1244-guard-rules-write` while closing T3-6 (the warnings-panel
 capacity fix). T3-6's scope was `bin/monitor`; this is `hooks/`, so it was reported rather
 than reached across into.
+
+---
+
+**Reconciliation 260803-1516 (reconciler, domain `code`) — stays `_o_`. Defect confirmed; three line citations corrected.**
+
+**The defect is real and present at HEAD `fa81589`.** Both sites bypass the clamp exactly as described, and the clamp itself is where the issue says: `EVENT_DETAIL_MAX = 200` at `hooks/guard.ts:214`, `forEvent()` at `:225-229`.
+
+**Three of this issue's citations are off and would send the fixer to the wrong lines.** `hooks/guard.ts` has not changed since `d77eda8`, which precedes the commit that filed this issue (`aff7486`), so the numbers were wrong when written rather than overtaken by later work. Corrected, read out of the file:
+
+| This issue says | Actually at | What is there |
+|---|---|---|
+| `guard.ts:532` | **`guard.ts:519`** | `const detail = rulesWriteDetail(mutation.exempted);` — the Bash rules-write advisory |
+| `guard.ts:560` | **`guard.ts:548`** | `` `Override ${envVar} allowed normally-denied git op: ${verdict.overrideSegment ?? command}` `` — the git override note |
+| `guard.ts:795` | **`guard.ts:786`** | `const detail = rulesWriteDetail([filePath]);` — the write-tool site, the one that is fine |
+
+`hooks/lib/rules-write-exemption.ts:503` (`rulesWriteDetail`) is correct as cited. `reviews/260803-1431-coderev-turn3-guard-boundary.md` independently reports the first two as `:519` and `:548`, which agrees with this correction.
+
+**The measurement is not affected.** The rendered-height table was produced through `bin/monitor`'s own stylesheet and does not depend on these line numbers.

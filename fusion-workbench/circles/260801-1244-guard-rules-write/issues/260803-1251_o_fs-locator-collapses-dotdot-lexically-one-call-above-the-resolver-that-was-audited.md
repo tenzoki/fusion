@@ -85,3 +85,20 @@ disagree in the ABSOLUTE column are `rules/dangle/../x.md` and `rules/loop/../x.
 the kernel refuses entirely (ENOENT through a dangling link, ELOOP through a cycle), where
 there is no kernel answer to be faithful to and the write the resolver's answer would
 authorise fails at the syscall anyway.
+
+---
+
+**Reconciliation 260803-1516 (reconciler, domain `code`) — stays `_o_`. Confirmed present and still unreachable at HEAD `fa81589`.**
+
+The cited defect is where the issue says it is. `hooks/lib/fs-locator.ts:129-130`:
+
+```ts
+const absolute = (path: string): string =>
+  isAbsolute(path) ? path : resolve(root, path);
+```
+
+Unchanged by any of this session's seven commits.
+
+**The reachability claim survives the Turn 3 review finding, which is not obvious and was checked.** `issues/260803-1431_o_gate-0-misses-the-dotdot-in-a-cd-p-operand-…` shows a `..` reaching past gate 0 through a `cd -P` operand, which reads like it would also deliver a `..` here. It does not. On that route the `..` is consumed by `resolveDir` (`hooks/lib/bash-mutation-guard.ts:1143`) before `Target.spelled` is built, so the path handed to `isProjectRulePath` — and from there to `locate` — carries no `..` at all. The `cd -P` gap makes the grant wrong; it does not make this resolver reachable. Both defects are the same class and they are not the same defect.
+
+**Severity confirmed Low.** Nothing behavioural depends on it today, and the cost of leaving it open is the one the issue already states: direction 2 of `260802-2330` is larger than that issue estimated.

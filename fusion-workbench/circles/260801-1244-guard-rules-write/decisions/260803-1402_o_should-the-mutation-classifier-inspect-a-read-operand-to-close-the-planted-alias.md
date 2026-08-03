@@ -121,3 +121,16 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+---
+
+**Reconciliation 260803-1516 (reconciler, domain `code`) — stays `_o_`. Content confirmed live; two cross-references corrected.**
+
+The measured table still reproduces the boundary it describes: `hooks/lib/paths.ts:37-38` decides protection on the text of a path and nothing else, and the classifier reads only written operands. The residual row this record would remove is live at `rules/protected-path-discipline.md` under "Where this check does not reach", shipped in `ce7a125`. So the record's urgency argument holds: the row calls the residual accepted, and it becomes wrong the day a deny lands.
+
+**Two cross-references do not resolve as written.**
+
+1. `issues/260802-2335_p_the-stated-residual-list-omits-the-alias-…` — the file is now `260802-2335_c_…`. It was closed by `ce7a125` in the same session that filed this record. This is the failure mode already filed at `shared/issues/260802-1740_o_a-citation-path-carrying-a-state-marker-dies-on-ordinary-progress.md`; the target moved one marker later, exactly as that issue predicts.
+2. `shared/issues/260802-2320` — that issue is not in the shared store. It is `circles/260801-1244-guard-rules-write/issues/260802-2320_o_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md`. The same wrong store appears in `## Options` option 3 and again in `## Constraints`.
+
+**Option 3's status has moved since this record was written, and it matters here.** This record defers option 3 to `260802-2320` on the grounds that deciding it here would pre-empt that question. `260802-2320` has since been decided: `decisions/260803-1419_a_how-should-the-protected-path-check-treat-the-case-of-a-path.md` chose **unconditional case folding**, not filesystem resolution. So option 3 was not taken there and remains genuinely open for this record — the deferral did not resolve it by proxy, and whoever answers this decision cannot treat it as answered elsewhere.

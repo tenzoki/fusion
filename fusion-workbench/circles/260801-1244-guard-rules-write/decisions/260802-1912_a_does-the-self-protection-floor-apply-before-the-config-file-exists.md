@@ -58,3 +58,13 @@ precisely the property decision D-c chose the project root to obtain
 proceeds on this answer: Step 6's floor condition and Step 8's seeding block both implement it, and
 the residual is to be stated in `rules/protected-path-discipline.md` at Step 9 rather than left in
 this record alone.
+
+---
+
+**Reconciliation 260803-1516 (reconciler, domain `code`) — stays `_a_`. The answer is recorded and correct; nothing has realised it.**
+
+The floor this record decides sits in plan Step 6, and Step 6 has not begun: `hooks/lib/config.ts` has no `PROJECT_CONFIG_FILENAME`, no `diagnostics` field, and still resolves one source at module load (`:34`). There is no `fusion-guard.json` anywhere in the tree and no seeding block in `skills/setup/SKILL.md`, so the collision this record resolves has not yet been reachable in practice.
+
+The `Answered:` footer cites "user decision at the plan gate, 260802-1912" rather than a `<path>:<line>`, which is what `rules/fusion-workbench-conventions.md` `## State Markers — decisions` asks for. The answer itself is unambiguous and is restated in full in the footer, so this is a citation-form note, not a doubt about the content. The resolvable citation is the plan's own `## Decision record to file` section and `## Open Questions` item 1, both of which now record the outcome.
+
+The residual this record accepts — an agent may create a narrowing `fusion-guard.json` in a project that has never run `/fusion:setup` since this version — is still owed a sentence in `rules/protected-path-discipline.md` at Step 9. It is not there yet.

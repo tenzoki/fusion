@@ -76,3 +76,11 @@ Two of nine disagree.
 So the defect is not "the transition points never update the field". It is that no prompt or skill step *requires* the update, so it happens whenever a writer happens to notice and is skipped whenever nobody does. That is a stronger case for option 2 (drop the field, let the marker be the only source) than the issue makes for itself: a field maintained by attention rather than by procedure will keep producing a mixture like this one, and a reader has no way to tell which of the two surfaces is the stale one on any given record.
 
 **The reconciler did not paper over the live instance.** The field on the active Circle was left reading `anticipated` deliberately, so the defect survives to be fixed at its source rather than being hand-corrected out of the one record that demonstrates it. Option 2 is a decision rather than a defect fix, so it wants a decision record if taken.
+
+---
+
+**Reconciliation 260803-1516 (reconciler, domain `code`) — stays `_o_`. The survey table above has drifted by one row, in the predicted direction.**
+
+`circles/260801-1244-guard-rules-write/_t_circle.md:5` now reads `**Status:** anticipated` at a `_t_` marker. In the 260802-1413 table that Circle was the last row that agreed (`_a_` / `anticipated`); it was activated afterwards, the record was renamed, and the field was not touched. Three of nine disagree now.
+
+This is the third distinct Circle to acquire the contradiction, and it arrived exactly the way the annotation above predicted: not through a transition that never updates the field, but through one where nobody happened to notice. Left uncorrected on purpose, same reasoning as before — hand-fixing the record removes the evidence and leaves the source untouched.

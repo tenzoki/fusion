@@ -139,3 +139,23 @@ because each of them is currently the reason a later reader would not look here.
 
 `circles/260801-1244-guard-rules-write`, Turn 3 incremental review, while checking whether
 gate 0 is complete against its class.
+
+---
+
+**Reconciliation 260803-1516 (reconciler, domain `code`) — stays `_o_`. Every code citation verified; the three false docstrings are still false at HEAD `fa81589`.**
+
+The mechanism is at the lines the issue names:
+
+- `hooks/lib/bash-mutation-guard.ts:1191-1192` — `const path = normalizePath(opts.normalize(joined)); return { kind: "path", path, spelled: joined };`
+- `hooks/lib/bash-mutation-guard.ts:1143` — `dir: canonicalDir(normalizePath(joinCwd(base.dir, value)))`, the collapse inside `resolveDir`
+- `hooks/lib/bash-mutation-guard.ts:1232` — `if (a.length > 1 && a.startsWith("-")) continue;` with `-P` named in the trailing comment
+
+The three docstrings that assert the closed form are unamended:
+
+- `hooks/lib/bash-mutation-guard.ts:296-300` — "gate 0 refuses any operand SPELLED with a `..`, which is the only way to traverse a planted link without naming it"
+- `hooks/lib/rules-write-exemption.ts:69-71` — gate 0 "is also complete against the class BY INSPECTION"
+- `hooks/lib/bash-mutation-guard.ts:215` — `spelled` described as "that operand BEFORE `normalize`", silent about the base
+
+**Reachability of the neighbouring open issue, checked so the two are not confused.** This route does not make `issues/260803-1251_o_fs-locator-collapses-dotdot-lexically-…` reachable. `resolveDir` consumes the `..` before `Target.spelled` exists, so `realFsLocator.absolute()` never receives one. Same class, different defect, and each needs its own fix.
+
+**Fourth instance of one class in this Circle.** `260802-2229` (planted symlink, closed by gate 2), `260802-2230` (un-collapsed protected match, closed by `collapseSegments`), `260802-2330` (lexical `..` collapse, closed by gate 0 in `3b0f9e7`), and now this one, entered through the `cd` rather than the operand. `260802-2320` (case folding) is the same shape on the protection side. Whoever picks this up should weigh the review's own framing — narrow the grant, do not widen the resolver — against the fact that the narrowing has now been done three times and the class keeps returning through a new entrance.

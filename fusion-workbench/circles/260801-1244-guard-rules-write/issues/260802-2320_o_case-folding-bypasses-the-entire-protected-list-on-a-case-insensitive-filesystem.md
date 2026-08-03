@@ -73,3 +73,15 @@ already qualifies for unrecognised programs and does not qualify for this.
 
 ---
 Direction decided, not yet implemented: `circles/260801-1244-guard-rules-write/decisions/260803-1419_a_how-should-the-protected-path-check-treat-the-case-of-a-path.md` — the user chose unconditional case folding (option 2 of this issue's candidate list) at the Turn 3 closing gate, 2026-08-03. The issue stays open because the bypass is still live: the decision records the direction, and the code change plus the correction of the three documents that state the "purely textual" premise belong to a later Circle.
+
+---
+
+**Reconciliation 260803-1516 (reconciler, domain `code`) — stays `_o_`, deliberately. The bypass is live at HEAD `fa81589`.**
+
+Verified in code rather than inferred from the decision: `hooks/lib/paths.ts:37-38` (`matchesAny`) and `:77-79` (`collapseSegments`) contain no case handling of any kind, and `hooks/guard.ts` CHECK 2 (`:712`) matches against that pair. Neither write surface folds case. The measurement in `## What was measured` therefore still reproduces.
+
+**The decision and this issue point at each other, checked both ways.** This issue's `Direction decided` footer names `decisions/260803-1419_a_how-should-the-protected-path-check-treat-the-case-of-a-path.md`, which exists. That record's `**Cross-references:**` names this issue back, by its full current path including the `_o_` marker, which is correct while the marker stands. The record's `## Answer` chooses option 2 of this issue's candidate list, and its `## Realisation` says "Not implemented. The change belongs to a later Circle." Nothing in the pair claims the code has moved.
+
+**Why the marker stays `_o_` and not `_c_`.** An issue closes when the defect is gone, not when the direction is chosen. `rules/fusion-workbench-conventions.md` `## Issues vs Decisions` draws exactly this line: the decision record's answer event and its implementation event are distinct, and the defect this file names is the implementation side. Closing it here would leave a live protected-list bypass with no open record anywhere.
+
+**What a later Circle inherits from this.** The code change is the smaller half. The larger half is that three shipped documents describe the protection check as purely textual — `rules/protected-path-discipline.md`, `README-hooks.md`, and the module docstrings — and one of them loads into every agent's context on every dispatch in every consuming project. `rules/protected-path-discipline.md` was rewritten this same Turn (`ce7a125`) on that premise, so the correction has to land with the code or the document is wrong from the commit that fixes it.

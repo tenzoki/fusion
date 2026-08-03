@@ -45,3 +45,13 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+---
+
+**Reconciliation 260803-1516 (reconciler, domain `code`) — stays `_o_`. Genuinely unanswered; the question's precondition still does not exist.**
+
+`RULE_DIR_PATTERNS` is still the hardcoded `["rules/**", ".claude/rules/**"]` in `hooks/lib/rules-write-exemption.ts`, and `protectedPaths` is still not project-configurable: `hooks/lib/config.ts:34` resolves a single plugin-side source at module load. Both consequences this record names are therefore still hypothetical, exactly as it says.
+
+Searched for an answer across `circles/260801-1244-guard-rules-write/analyses/` (empty), `shared/analyses/`, both planning stores, and both decision stores. Nothing addresses it. The record's own `## Recommendation` declines to recommend, deliberately, and defers to plan Step 6.
+
+**Cross-reference confirmed live.** Plan Step 6 of `planning/260802-1856_o_plan-guard-rules-write.md` is the step this record hands the question to, and it is unstarted. Whoever picks up Step 6 inherits this decision as an input, not as a note to read afterwards.

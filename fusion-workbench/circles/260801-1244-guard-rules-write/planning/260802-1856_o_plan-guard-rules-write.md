@@ -1,7 +1,7 @@
 # Implementation Plan: rules-write flag and project-level guard configuration (C5a, C5b)
 
 **Date:** 2026-08-02
-**Status:** Draft — awaiting user approval at the plan gate
+**Status:** In Progress — Steps 1 to 5 complete and committed (`768242c`, `6b3aa5c`, `0f341e0`, `45f53d4`, `bf75941`); Steps 6 to 10 open. Verified by reconciliation 260803-1516; see `## Reconciliation Log`.
 **Circle:** `circles/260801-1244-guard-rules-write`
 **Spec:** `shared/planning/260801-1122_o_spec-normative-consolidation.md`, `### C5: Guard changes` (C5a at `:275`, C5b at `:285`, criteria at `:305`). Status Final; nothing settled there is reopened here.
 **Executors:** `coder` for nine steps, `ontocoder` for one (Step 7, two JSON files). No strategic-domain step, so `analyst` is not in the active set.
@@ -287,7 +287,7 @@ The Turn boundary sits between Step 5 and Step 6. See `## Sizing` for why.
 - **Acceptance criterion served:** enabling criteria `:322` through `:332`. This step is the answer to the gap analysis's "most likely way this ships broken", budgeted first rather than as a final sweep.
 - **Verification:** `cd hooks && npm test` — the existing 753 cases still pass and the four new harness cases pass. Then `cd hooks && npx vitest run lib/__tests__/guard-bash-integration.test.ts` to confirm the predecessor suite is untouched.
 
-### Step 2 — [DONE] The rules-write exemption predicate
+### Step 2 [DONE] — The rules-write exemption predicate
 
 - **Executor:** `coder`
 - **Files:** new `hooks/lib/rules-write-exemption.ts`, new `hooks/lib/__tests__/rules-write-exemption.test.ts`
@@ -370,6 +370,11 @@ The Turn boundary sits between Step 5 and Step 6. See `## Sizing` for why.
   - `CLAUDE.md` gains a `templates/fusion-guard.json` mention in the layout table's `templates/` row, a line in the guard bullet about the two config sources, and one line in the release process: before tagging, confirm the guard's behaviour was verified against a project root that is not the plugin repo, because the stand-down makes local testing unrepresentative by construction. That line is criterion `:332`.
 - **Acceptance criterion served:** `:332`, and the honesty requirement that the residual is documented where agents read it.
 - **Verification:** `cd hooks && npm test` — `provenance-header-lint`, `path-literal-lint`, `marker-format-lint` and `glob-nomatch-lint` all run over `rules/` and must stay green. Then re-read the three edited passages against the behaviour the tests assert, and check that no sentence claims more than Step 3 and Step 4 deliver.
+- **[SCOPE CHANGED — reconciliation 260803-1516, evidence in `## Reconciliation Log`]** This step's scope was written before Turn 2 chose the both-surfaces halt, and Turn 3 has since moved the boundary in both directions. It is still unstarted (`FUSION_ALLOW_RULES_WRITE` appears in no shipped document at HEAD, verified by `grep -rn FUSION_ALLOW_RULES_WRITE README-hooks.md rules/ CLAUDE.md` returning nothing), but what is left to write is not what the step says.
+  - **Already done, do not redo.** `ce7a125` (task T3-7, closing `issues/260802-2331_c_` and `issues/260802-2335_c_`) rewrote both `README-hooks.md` and `rules/protected-path-discipline.md` for the halt now covering both surfaces, added the planted-alias residual row, and corrected the block-cause count. That was one of the two shipped documents this step names, edited under another task's name.
+  - **Newly added to this step.** `issues/260803-1402_o_step-9-must-also-document-that-a-hard-linked-rule-file-is-not-exempt.md` lists the three items that must land together: the `FUSION_ALLOW_RULES_WRITE` row in the `README-hooks.md` tuning table, the correction of the two "no override exists" sentences (still live at `rules/protected-path-discipline.md:171` and `README-hooks.md:187`), and the hard-linked-rule-file exception. T3-7 deliberately wrote none of them, because naming the flag in a document that denies the flag exists ships a self-contradiction.
+  - **Sequencing constraint from the Turn 3 review.** `reviews/260803-1431-coderev-turn3-guard-boundary.md` `## Verdict` recommends landing `issues/260803-1431_o_` (the `cd -P` gate-0 gap) and its three false docstrings *before* this step writes the flag into shipped documents, so the user-facing text is not authored against a boundary that is about to move.
+  - **A later pass is already owed on the same file.** `decisions/260803-1419_a_how-should-the-protected-path-check-treat-the-case-of-a-path.md` commits to unconditional case folding, which falsifies the "purely textual" premise this step's file states. That correction belongs to a later Circle, so this step should not claim to leave the document final.
 
 ### Step 10 — Rebuild `dist`, verify against the shipped artifact, bump the version
 
@@ -480,8 +485,47 @@ One genuine choice point should not be settled by the planner alone, because it 
 
 **Ask:** this needs a path. `bin/fusion-paths planner` emits no `OUT_DECISION` key, which is the known prompt gap filed at `shared/issues/260717-0107`. Per the Origin Rule the record belongs to this Circle, so `circles/260801-1244-guard-rules-write/decisions/` is the likely home, but the resolver should confirm it rather than the planner assuming it.
 
+**Filed, and the guess was right** (reconciliation 260803-1516): `circles/260801-1244-guard-rules-write/decisions/260802-1912_a_does-the-self-protection-floor-apply-before-the-config-file-exists.md`.
+
 ## Open Questions
 
-- [ ] The floor-versus-seeding question above, pending the decision record and the user's answer. The plan proceeds on the recommendation; if the user chooses the alternative, Step 6's floor condition and Step 8's seeding block both change, and nothing else does.
-- [ ] Whether Step 5, the monitor change, belongs in this Circle at all. It is not one of the spec's eleven criteria; it is the Circle Directive's own claim about where the user reads the exempted writes. It is one line, and leaving it out means shipping a Directive whose last clause is false.
+- [x] The floor-versus-seeding question above, pending the decision record and the user's answer. The plan proceeds on the recommendation; if the user chooses the alternative, Step 6's floor condition and Step 8's seeding block both change, and nothing else does.
+  **Answered** — `decisions/260802-1912_a_does-the-self-protection-floor-apply-before-the-config-file-exists.md`: option 1, the floor applies once the file exists. The plan's recommendation carried. Steps 6 and 8 are unchanged and both remain unstarted.
+- [x] Whether Step 5, the monitor change, belongs in this Circle at all. It is not one of the spec's eleven criteria; it is the Circle Directive's own claim about where the user reads the exempted writes. It is one line, and leaving it out means shipping a Directive whose last clause is false.
+  **Answered by doing it** — `bf75941` added `guard_advisory` to `WARNING_EVENT_TYPES` (`bin/monitor:91-95`), and `aff7486` then gave advisories their own budget (`bin/monitor:98-109`, `ADVISORY_EVENT_TYPES`) after `issues/260802-2232_c_` showed a shared 30-row panel could bury blocks. It grew from one line to two commits, which is worth knowing before the same "it is one line" argument is made again.
 - [ ] `.claude/rules/**` is in the exemption's pattern list but is not in `guard.protectedPaths`, so exempting it is currently a no-op. That gap is filed separately at `shared/issues/260801-1020_o_guard-protects-rules-but-not-claude-rules.md` and is deliberately not fixed here. Including the pattern now means the exemption is already correct when that issue closes.
+  **Still open** (reconciliation 260803-1516) — `shared/issues/260801-1020_o_guard-protects-rules-but-not-claude-rules.md` carries the `_o_` marker and `hooks/config.json` `guard.protectedPaths` still lists no `.claude/` pattern.
+
+---
+
+## Reconciliation Log
+
+### 260803-1516 — reconciler, domain `code`, session `history/260803-1038-orchestrator-session.md`
+
+**Header status corrected.** The file said `Draft — awaiting user approval at the plan gate` while five of its ten steps were done and committed and two sessions had run against it. Now `In Progress`.
+
+**Steps 1 to 5 — `[DONE]` confirmed against code, not against the marker.**
+
+| Step | Evidence at HEAD `fa81589` |
+|---|---|
+| 1 — harness | `hooks/lib/__tests__/helpers/guard-harness.ts` + `guard-rules-write-integration.test.ts` exist; commit `768242c` |
+| 2 — predicate | `hooks/lib/rules-write-exemption.ts` (511 lines) exports `RULES_WRITE_ENV`, `RULE_DIR_PATTERNS`, `isProjectRulePath`, `rulesWriteDetail` (`:503`); commit `6b3aa5c` |
+| 3 — write-tool path | `hooks/guard.ts:786` `rulesWriteDetail([filePath])` inside CHECK 2 (`:712`); commit `0f341e0` |
+| 4 — Bash path | `hooks/guard.ts:519` `rulesWriteDetail(mutation.exempted)`; `MutationOptions.exempt` takes `(path, spelled)` at `hooks/lib/bash-mutation-guard.ts:211-217`; commit `45f53d4` |
+| 5 — monitor | `bin/monitor:91-95` `WARNING_EVENT_TYPES` includes `guard_advisory`; `:98-109` `ADVISORY_EVENT_TYPES` and the two-budget comment; `:476` advisory level mapping; commits `bf75941`, `aff7486` |
+
+**Steps 6 to 10 — unstarted, and verified unstarted rather than assumed.**
+
+| Step | Evidence it has not begun |
+|---|---|
+| 6 — C5b loader | `hooks/lib/config.ts:34` still `const CONFIG_PATH = findConfigPath()` at module level; `:108` still `loadConfig(configPath?: string)`; no `diagnostics`, no `PROJECT_CONFIG_FILENAME` |
+| 7 — template | `templates/` holds `investigator-capture-layout.md` and `plane.config.yaml` only; no `fusion-guard.json` at the repository root |
+| 8 — setup seeding | `grep -n fusion-guard skills/setup/SKILL.md` returns nothing |
+| 9 — documentation | `FUSION_ALLOW_RULES_WRITE` appears in no shipped document; the two "no override" sentences are live at `rules/protected-path-discipline.md:171` and `README-hooks.md:187`. See the `[SCOPE CHANGED]` note on the step itself |
+| 10 — dist and version | `.claude-plugin/plugin.json` still `"version": "5.8.0"`; `hooks/dist/` is stale in the working tree, which `reviews/260803-1431-coderev-turn3-guard-boundary.md` confirmed by a fresh `tsc` diff |
+
+This is the state the user's scope choice intended. The session worked the eleven open issues instead of Steps 6 to 10, and nothing in the plan advanced by accident.
+
+**One divergence worth recording.** Step 9 is unstarted but its scope has genuinely changed under it, in both directions — see the `[SCOPE CHANGED]` note on the step. This is the only place where an issue closed this session reached into the plan's remaining work.
+
+**Suite verified independently, not read off the review.** `cd hooks && npx vitest run` at HEAD: **1080 passed, 23 files**, exit 0. `npm test` was deliberately not run, because it builds first and would rewrite the `hooks/dist/` that Step 10 owns.

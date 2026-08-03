@@ -70,3 +70,20 @@ Three things, together, in one pass:
 
 `circles/260801-1244-guard-rules-write`, Turn 3 task T3-7, while correcting the halt and
 residual claims in the same two documents.
+
+---
+
+**Reconciliation 260803-1516 (reconciler, domain `code`) — stays `_o_`. Every premise re-checked at HEAD `fa81589`; all hold.**
+
+The two sentences this issue says must be corrected are still live, at these lines:
+
+- `rules/protected-path-discipline.md:171` — "**There is no override for a protected-path shell write.** That is deliberate."
+- `README-hooks.md:187` — "There is no env override for a protected-path shell write; the answer is a human decision."
+
+And the flag they deny is still absent from every shipped document: `grep -rn FUSION_ALLOW_RULES_WRITE README-hooks.md rules/ CLAUDE.md` returns nothing. So the self-contradiction T3-7 refused to ship is still exactly the one it described.
+
+The wording the deny already uses is where the issue cites it: `hooks/lib/rules-write-exemption.ts:458-462`, `REFUSAL_NOTES["hard-link"]`, ending "Rewriting the command will not help — ask the user."
+
+**Recorded on the plan.** `planning/260802-1856_o_plan-guard-rules-write.md` Step 9 now carries a `[SCOPE CHANGED]` note naming this issue as work added to that step, alongside the halt and residual passages `ce7a125` already wrote. Step 9 remains unstarted; what it must write is no longer what its own body says.
+
+**One sequencing constraint arrived after this issue was filed.** `reviews/260803-1431-coderev-turn3-guard-boundary.md` `## Verdict` asks that `issues/260803-1431_o_` land before Step 9 writes the flag into shipped documents, so the user-facing text is not authored against a boundary that is about to move again.

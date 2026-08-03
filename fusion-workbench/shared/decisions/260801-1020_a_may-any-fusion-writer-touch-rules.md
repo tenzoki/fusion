@@ -81,3 +81,20 @@ Both halves of what D2 answered — the exemption AND the project-level configur
 `FUSION_ALLOW_RULES_WRITE` still matches nothing across `hooks/`, `bin/`, `agents/`, `rules/`, `skills/` and `README-hooks.md` at `b568ad9`. The project-level guard configuration is likewise unbuilt. Realisation still belongs to `circles/260801-1244-guard-rules-write` (`_a_`).
 
 This session edited ten files under `rules/` without the flag and without an exemption, which is not a counter-example: the write guard stands down entirely in the plugin's own tree (`hooks/lib/self-detect.ts:18-33`), so the decision's mechanism was never on this Circle's path. Both the spec and the plan record that explicitly.
+
+---
+
+**Reconciliation 260803-1516 (reconciler, domain `code`) — stays `_a_`. Half of the answer is now real, which is exactly why the marker cannot move.**
+
+The first change since this record was filed. `FUSION_ALLOW_RULES_WRITE` exists at HEAD `fa81589` and works on both guarded surfaces:
+
+- the predicate — `hooks/lib/rules-write-exemption.ts` (511 lines), `RULES_WRITE_ENV`, `RULE_DIR_PATTERNS`, `isProjectRulePath`, three refusal gates and their notes (`6b3aa5c`, hardened through `3b0f9e7` and `245b8b7`)
+- the write-tool path — `hooks/guard.ts:786`, inside CHECK 2 (`0f341e0`)
+- the Bash path — `hooks/guard.ts:519` via `MutationOptions.exempt` (`45f53d4`)
+- the advisory the answer promised — `guard_advisory` plus a `clear`-level escalation entry, rendered on the dashboard at `bin/monitor:91-95` and given its own row budget at `:98-109` (`bf75941`, `aff7486`)
+
+**The second half is untouched.** `hooks/lib/config.ts:34` still resolves `CONFIG_PATH` at module load by walking up from the compiled hook's own directory, and `:108` is still `loadConfig(configPath?: string)`. There is no `fusion-guard.json`, no template for one, and no seeding step in `/fusion:setup`. A consuming project still cannot declare its own `protectedPaths`. That is plan Steps 6 to 8 of `circles/260801-1244-guard-rules-write/planning/260802-1856_o_plan-guard-rules-write.md`, all unstarted.
+
+**And the flag is invisible to the people it is for.** `FUSION_ALLOW_RULES_WRITE` appears in no shipped document — `README-hooks.md` and `rules/protected-path-discipline.md` both still state that no override for a protected-path shell write exists (`:187` and `:171` respectively). Plan Step 9 owns that; `circles/260801-1244-guard-rules-write/issues/260803-1402_o_…` lists what it must say.
+
+`_i_` is terminal, and half a mechanism with a documentation surface that denies its own existence is not a realisation. Stays `_a_`.

@@ -40,3 +40,22 @@ Option 2 is the one that generalises; option 1 is the one that prevents.
 ## Provenance
 
 Found by the reconciler during the closing pass of `circles/260801-1244-guard-bash-inspection`, 260801-2038. Filed to the shared store rather than into that Circle per the Origin Rule: the drift is a property of how the orchestrator runs a session, not of the guard work that session happened to be doing.
+
+---
+
+**Reconciliation 260803-1516 (reconciler, domain `code`) — stays `_o_`. Second instance, one Circle later, and this time the divergence check this issue proposes was actually computed.**
+
+Session `circles/260801-1244-guard-rules-write/history/260803-1038-orchestrator-session.md`, one Turn, seven commits `c9bf59e..fa81589`. Three of the four surfaces froze again, in the same pattern:
+
+| Surface | Says | Reality |
+|---|---|---|
+| `fusion-workbench/agentstate.yaml` | `# Updated: 260803-1038`, `progress.turn: 0`, `commits: 0`, all eight tasks `queued`, `current_task: queue-confirmation` (a gate) | eight tasks resolved, seven commits, ten issues closed, one review filed |
+| `circles/260801-1244-guard-rules-write/_t_circle.md` | `**Status:** anticipated`, `**Active spec/plan:** shared/planning/260801-1122_o_spec-normative-consolidation.md`, `**Active session history:** (none yet)`, `## Turn log` empty | active since 260802, its own plan at `planning/260802-1856_o_plan-guard-rules-write.md`, fifteen files in its own `history/`, three Turns run |
+| the session history file above | `## Per-Turn Log` → "(No Turn started yet in this session.)" | written once at `3b0f9e7` (36 lines, the first commit of the Turn) and never touched again |
+| `fusion-workbench/orchestrator-events.jsonl` | current | the one surface that kept up, again |
+
+**Candidate resolution 2, computed.** This issue proposes comparing `agentstate.yaml`'s `progress.commits` against `git rev-list --count <git_head_at_start>..HEAD`. Run here: the file says `0`, `git rev-list --count c9bf59e..HEAD` says `7`. Divergence 7, against a stated threshold of "more than one". The check works, costs one command, and nothing in the toolchain runs it. That is now demonstrated on two sessions rather than argued from one.
+
+**The Circle-record half is the expensive one.** `## Turn log` is where a Circle's history lives after its session state is deleted, and this Circle is one gate away from closure with three Turns and twenty-three commits behind it and an empty log. `shared/issues/260801-1020_o_plane-mirror-circle-closed-with-empty-turn-log.md` records what that costs a Circle that has already closed.
+
+**Not repaired here, for the reason this issue's own candidate 3 gives.** The reconciler's scope excludes `agentstate.yaml` and Circle records, and widening it would put two writers on the session-state surfaces. Reported, not papered over.

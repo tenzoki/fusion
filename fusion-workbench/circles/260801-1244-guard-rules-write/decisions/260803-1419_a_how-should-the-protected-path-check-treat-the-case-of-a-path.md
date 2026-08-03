@@ -85,3 +85,19 @@ three documents that state the premise. This record moves to `_i_` when that lan
 
 ---
 Answered: `circles/260801-1244-guard-rules-write/history/260803-1038-orchestrator-session.md` — user chose unconditional case folding at the Turn 3 closing gate; over-blocking is the safe direction and a platform-dependent boundary is not.
+
+---
+
+**Reconciliation 260803-1516 (reconciler, domain `code`) — stays `_a_`. The answer is sound; its `Answered:` citation does not resolve to the answer.**
+
+`_a_` is the correct marker: the direction is chosen and nothing implements it. `hooks/lib/paths.ts:37-38` (`matchesAny`) and `:77-79` (`collapseSegments`) contain no case handling, so the bypass measured in `## Question` reproduces at HEAD `fa81589`. `## Realisation` says so plainly.
+
+**The citation problem.** The footer cites `circles/260801-1244-guard-rules-write/history/260803-1038-orchestrator-session.md`. That file exists, but it does not record the Turn 3 closing gate or this answer — it was written once at commit `3b0f9e7` and its `## Per-Turn Log` still reads "(No Turn started yet in this session.)". A reader following the citation finds nothing. The underlying cause is the session-bookkeeping freeze filed at `shared/issues/260801-2038_o_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`, annotated today with this session as its second instance.
+
+**Resolvable citations for the same answer**, so the record is not left pointing only at an empty section:
+
+- this record's own `## Answer` section — the full reasoning, written at the gate
+- commit `242b723` "chore(workbench): record the case-folding direction, leave the bypass open" — the commit that filed it
+- `circles/260801-1244-guard-rules-write/issues/260802-2320_o_…`, `Direction decided` footer — the issue side of the same pair, which names this record back
+
+**The pair is consistent, checked both ways.** This record's `**Cross-references:**` names the issue by its full current path with the `_o_` marker, which is correct while that marker stands. The issue's footer names this record. `## Answer` selects option 1 here, which is option 2 of the issue's candidate list — different numbering, same choice (unconditional folding), and neither document claims the code has moved.
