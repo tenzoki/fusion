@@ -2016,7 +2016,7 @@ describe("virtual cwd — the forms a cd target can take", () => {
       "cd rules/ && rm x.md",
       "cd 'rules' && rm x.md",
       'cd "rules" && rm x.md',
-      "cd -P rules && rm x.md", // -L / -P are flags, not the directory
+      "cd -L rules && rm x.md", // the modelled flag: -L IS bash's default
       "cd -- rules && rm x.md",
       "cd /project/rules && rm x.md", // absolute, back under the project root
       "cd /project && rm rules/x.md",
@@ -2095,6 +2095,170 @@ describe("virtual cwd — cd - and the directory stack", () => {
 
   it("gives up on the stack rotations it does not model", () => {
     expectAllDeny(["pushd && rm x.md", "popd +1 && rm x.md"]);
+  });
+});
+
+/* ------------------------------------------------------------------ *
+ * 13a-bis. The working-directory model is an ALLOW-LIST
+ * ------------------------------------------------------------------ */
+
+/**
+ * The fourth instance of one defect class in one Circle, and the first fix that
+ * is not a narrowing of the previous one
+ * (`issues/260803-1431_…cd-p…`, `issues/260803-1803_…cdpath-and-pushd-n…`,
+ * `analyses/260803-1803-guard-path-model-root-cause.md`).
+ *
+ * `firstDirArg` used to skip anything shaped like a flag and then model
+ * whatever followed with bash's DEFAULT logical semantics. That is correct for
+ * a default `cd` and wrong the moment a modifier changes the resolution rule.
+ * Five entrances were measured against the real guard, every one of them
+ * allowing a delete or an overwrite of a protected file that real bash then
+ * performed:
+ *
+ *     cd -P rules/L/.. && rm agents/coder.md          (grant side, flag set)
+ *     set -P; cd rules/L/.. && rm agents/coder.md     (grant side, flag set)
+ *     pushd -P rules/L/.. && rm agents/coder.md       (grant side, flag set)
+ *     cd docs && CDPATH=.. cd agents && rm coder.md   (protection side, NO flag)
+ *     pushd -n docs && rm agents/coder.md             (protection side, NO flag)
+ *
+ * The cases below are written against the STANCE rather than against those five
+ * spellings, because enumerating the spellings is what the three previous fixes
+ * did. What is asserted is that an unrecognised modifier reaches `CWD_UNKNOWN`
+ * — the state `cd $D && rm notes.txt` has always denied through — and that the
+ * modelled forms are untouched.
+ */
+describe("virtual cwd — an unmodelled modifier is fail-closed, not modelled", () => {
+  it("denies after a flag whose effect on the directory is not modelled", () => {
+    // Every one of these ALLOWED before the inversion, because the flag was
+    // skipped and the operand modelled as a plain logical `cd`.
+    expectAllDeny([
+      "cd -P build && rm out.js",
+      "cd -P docs && rm ../notes.txt",
+      "pushd -P build && rm out.js",
+      "pushd -n docs && rm agents/coder.md",
+      "cd -e build && rm out.js",
+      "cd -@ build && rm out.js",
+      "pushd -q build && rm out.js",
+    ]);
+  });
+
+  it("keeps modelling the flags it actually models", () => {
+    // `-L` IS bash's default resolution, so spelling it out changes nothing;
+    // `--` ends option processing. Both stay exact in BOTH directions.
+    expectAllAllow([
+      "cd -L build && rm out.js",
+      "cd -- build && rm out.js",
+      "pushd -L build && rm out.js",
+    ]);
+    expectAllDeny([
+      "cd -L rules && rm x.md",
+      "cd -- rules && rm x.md",
+      "pushd -L rules && rm x.md",
+    ]);
+  });
+
+  it("names the working directory as the cause, not the operand", () => {
+    // The deny has to be diagnosable, or an agent meeting it starts rephrasing.
+    // `protected-path-discipline.md` already tells it that an absolute path is
+    // the way through, and this is the reason that says so.
+    const v = classify("cd -P build && rm out.js");
+    expect(v.deny).toBe(true);
+    expect(v.reason).toContain("working directory the guard cannot determine");
+  });
+
+  it("gives up the whole state, not only the current directory", () => {
+    // `pushd -n DIR` pushes onto the stack and STAYS PUT; `popd -n` removes a
+    // stack entry and stays put. Both were measured allowing a protected delete
+    // through a LATER `popd` or `cd -` that landed on an entry bash no longer
+    // had. Zeroing the working directory alone leaves both open, which is why
+    // `unmodelled()` is stated over `cwd`, `prev` AND `dirStack`.
+    expectAllDeny([
+      "cd docs && pushd -n .. && popd && rm agents/coder.md",
+      "cd docs && pushd -n .. && cd - && rm agents/coder.md",
+      "cd docs && pushd ..; popd -n; popd; rm agents/coder.md",
+    ]);
+    // And the modelled stack still works, so the give-up is not a blanket one.
+    expect(denies("pushd rules && popd && rm x.md")).toBe(false);
+    expect(denies("cd build && pushd /tmp && popd && rm out.js")).toBe(false);
+  });
+});
+
+describe("virtual cwd — `set -P` puts bash somewhere the classifier cannot follow", () => {
+  it("denies a relative mutation after a cd made in physical mode", () => {
+    expectAllDeny([
+      "set -P; cd build && rm out.js",
+      "set -o physical; cd build && rm out.js",
+      "set -eP; cd build && rm out.js", // a short-flag cluster sets every letter
+      "set $FLAGS; cd build && rm out.js", // could expand to -P: fail closed
+    ]);
+  });
+
+  it("costs nothing for the `set` forms an agent actually writes", () => {
+    // `physical` is the ONLY `set -o` option that changes where a `cd` lands,
+    // so the enumeration is complete over bash's option set rather than over
+    // the flags this module happened to think of.
+    expectAllAllow([
+      "set -e; cd build && rm out.js",
+      "set -euo pipefail; cd build && rm out.js",
+      "set -o pipefail; cd build && rm out.js",
+      "set -x; cd build && rm out.js",
+      'set -- "$@"; cd build && rm out.js', // everything after `--` is positional
+    ]);
+  });
+
+  it("does not degrade a directory no cd has moved", () => {
+    // `set -P` changes how a LATER `cd` resolves; it moves nothing itself.
+    expect(denies("set -P; rm build/out.js")).toBe(false);
+    expect(denies("set -P; rm rules/x.md")).toBe(true);
+  });
+
+  it("keeps the mode inside the subshell that set it", () => {
+    // A `(…)` subshell's directory state is discarded when it closes, and the
+    // resolution mode is part of that state exactly as the cwd is.
+    expect(denies("(set -P; cd docs); cd build && rm out.js")).toBe(false);
+    expect(denies("set -P; (cd docs); cd build && rm out.js")).toBe(true);
+  });
+});
+
+describe("virtual cwd — a CDPATH assignment makes a bare-word cd unknowable", () => {
+  it("denies after every spelling of the assignment", () => {
+    // `findCommandWord` skips a leading `VAR=value` so `FOO=1 rm x` classifies
+    // as the `rm` it is — which is exactly what made the prefix form invisible.
+    expectAllDeny([
+      "cd docs && CDPATH=.. cd agents && rm coder.md",
+      "cd docs && export CDPATH=.. && cd agents && rm coder.md",
+      "cd docs && CDPATH=..; cd agents && rm coder.md",
+      'cd docs && CDPATH=".." cd agents && rm coder.md',
+      "cd docs && declare -x CDPATH=.. && cd agents && rm coder.md",
+      "CDPATH=/tmp cd build && rm out.js",
+    ]);
+  });
+
+  it("keeps the control an allow, so the deny is not for the wrong reason", () => {
+    // The same command WITHOUT the assignment allows, and real bash leaves the
+    // file alone because `docs/agents/coder.md` does not exist. The assignment
+    // is the whole of what makes the allow consequential.
+    expect(denies("cd docs && cd agents && rm coder.md")).toBe(false);
+    expect(denies("FOO=1 cd build && rm out.js")).toBe(false);
+    expect(denies("cd docs && export FOO=.. && cd agents && rm coder.md")).toBe(false);
+  });
+
+  it("leaves an explicitly-anchored operand modelled, in both directions", () => {
+    // Verified against real bash rather than inferred: with `CDPATH=..` set,
+    // `cd agents` lands outside the current directory while `cd ./agents`,
+    // `cd ../junk/agents`, `cd .` and `cd ..` all resolve locally.
+    expectAllAllow([
+      "CDPATH=.. cd ./build && rm out.js",
+      "CDPATH=.. cd /project/build && rm out.js",
+      "CDPATH=.. cd .. && rm -rf sibling",
+      "CDPATH=.. cd . && rm build/out.js",
+      "cd build && CDPATH=.. cd ../build && rm out.js",
+    ]);
+    expectAllDeny([
+      "CDPATH=.. cd ./rules && rm x.md",
+      "CDPATH=.. cd /project/rules && rm x.md",
+      "CDPATH=.. cd . && rm rules/x.md",
+    ]);
   });
 });
 

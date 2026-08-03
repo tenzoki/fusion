@@ -128,6 +128,27 @@ One consequence worth knowing: `rm -rf .` at the project root allows (the root i
 treated as an ancestor, and `rm` refuses it anyway), but `cd rules && rm -rf .` denies,
 because the `cd` gave `.` a name.
 
+**Only the plain forms are tracked, and the rest admit they are untracked.** The
+tracking is exact for bash's default `cd`, which resolves `..` against `$PWD` textually.
+Several bash modifiers change that rule, and the guard models none of them — it does not
+guess, it stops claiming to know where the shell is standing:
+
+| Written | Why it is not modelled |
+|---|---|
+| `cd -P x`, `pushd -P x` | physical resolution — the kernel resolves a symlink component before `..` is taken |
+| `set -P`, `set -o physical` | the same, for every later `cd` in the command |
+| `pushd -n x`, `popd -n` | edit the directory stack **without** changing directory |
+| `CDPATH=.. cd x`, `export CDPATH=..` | a bare-word operand may be found under a `CDPATH` entry instead |
+| any other flag on `cd` / `chdir` / `pushd` / `popd` | it has not been taught what the flag does |
+
+After one of those, a relative operand of a table verb denies fail-closed and the reason
+names the working directory. `cd -L`, `cd --` and every flagless form are unaffected, and
+so is an operand that anchors itself: with a `CDPATH` in play, `cd ./x`, `cd ../x`, `cd .`,
+`cd ..` and `cd /abs/x` still resolve exactly.
+
+The cost is real and small: `cd -P build && rm out.js` and `cd -P docs && rm ../notes.txt`
+denied nothing before and deny now. Write the path absolutely, or drop the `-P`.
+
 ### Fail-closed, and its bound
 
 **A recognised verb whose written operand cannot be resolved to a literal is denied.**
@@ -144,6 +165,8 @@ mv $A $B                        # nothing resolves
 mv $SRC rules/                  # the visible protected target names the deny
 cd $D && rm -rf out             # the directory `out` hangs off is unknowable
 rm -rf "$(pwd)/build"           # a command substitution is an unresolved operand
+cd -P build && rm out.js        # a `cd` modifier the guard does not model
+pushd -n docs && rm ../x.md     # `-n` pushes without moving, so the base is unknown
 ```
 
 The bound is exactly this: **an unrecognised program is allowed however unparseable its
@@ -291,12 +314,19 @@ Known and accepted:
   `rm -rf *` is: it names no directory the ancestor check can compare.
 - **An unresolvable redirect target on a program outside the table is not denied.**
   `echo x > "$F"` and `cd $D && echo x > y.md` are allowed. This is the fail-closed bound
-  above, seen from the residual side.
+  above, seen from the residual side. Measured at its sharpest:
+  `pushd -n docs && echo pwned > agents/coder.md` allows and real bash overwrites the agent
+  prompt, while the same command ending `rm agents/coder.md` denies. The operand is an
+  ordinary relative path, only the directory is unknown, and `echo` is not a table verb.
 - **A `#` comment is not stripped**, so a redirect operator in a trailing comment is read
   as code: `ls -la # writes > rules/x.md` is denied on the write its comment only
   describes. This one errs toward deny; the way through is to drop the comment.
 - **The classifier cannot walk out and back by name.** `cd .. && cd fusion && rm rules/x.md`
   is allowed: the guard is given a path normaliser, not the project directory's own name.
+- **An AMBIENT `CDPATH` is invisible.** A `CDPATH=` written into the command degrades the
+  working-directory model, but one exported in the user's own shell profile is nowhere in
+  the command text, and the guard reads no environment. Whether it should is an open
+  contract question rather than a bug, recorded as a decision for the user.
 - **Two sibling `$(…)` substitutions inside one outer segment share a directory**, so
   `$(cd /tmp) $(rm rules/x.md)` is allowed. The same pair in separate segments is
   correctly independent.

@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { realpathSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { existsSync, readFileSync, realpathSync, symlinkSync } from "node:fs";
 import { resolve } from "node:path";
 import {
   CASE_TIMEOUT,
@@ -175,6 +176,142 @@ describe("Bash fail-closed cases are denied end to end", () => {
         // The reason must point at the `cd`, not at the operand: rewriting the
         // path cannot help, dropping the `cd` can.
         expect(res.reason).toContain("cd");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+// ---------------------------------------------------------------------------
+// The working-directory model, inverted into an allow-list.
+//
+// Five entrances were measured against this harness, one throwaway project per
+// row, and every one of them ALLOWED a command that real bash then used to
+// delete or overwrite a protected file
+// (`analyses/260803-1803-guard-path-model-root-cause.md`). Two need no flag at
+// all. The classifier had asserted a working directory that a `-P`, an `-n` or
+// a `CDPATH=` invalidated.
+//
+// Each case runs the SAME command through real bash afterwards, in the same
+// project, so the assertion is "the guard denies the command that would have
+// destroyed this file" rather than "the guard denies a string". Each gets its
+// own project: three denials halt the guard, and every case after that would
+// then pass as `[HALTED]` — for the wrong reason.
+// ---------------------------------------------------------------------------
+
+/**
+ * Deny the command, for a reason that is not the halt, and prove the command
+ * was worth denying by running it through real bash and watching `watch`
+ * disappear.
+ */
+function denyAndBashWouldHaveWritten(
+  command: string,
+  watch: string,
+  env: Record<string, string> = {},
+): void {
+  withProject(({ root }) => {
+    symlinkSync("../agents", resolve(root, "rules/L"));
+
+    const res = runBash(root, command, env);
+    expect(res.decision, command).toBe("block");
+    expect(res.reason ?? "", command).not.toContain("[HALTED]");
+
+    // What the deny was worth: the same command, the same project, real bash.
+    const target = resolve(root, watch);
+    const before = readFileSync(target, "utf-8");
+    spawnSync("/bin/bash", ["-c", command], { cwd: root, stdio: "ignore" });
+    const after = existsSync(target) ? readFileSync(target, "utf-8") : null;
+    expect(after, `bash left ${watch} alone, so ${command} proves nothing`).not.toBe(
+      before,
+    );
+  });
+}
+
+describe("the working directory is modelled or admitted unknown, never guessed", () => {
+  // The grant side: the exploit needs `FUSION_ALLOW_RULES_WRITE` twice, once to
+  // plant the link inside `rules/` and once to spend the grant through it. The
+  // link is pre-planted here so the TRAVERSE is what is under test.
+  const FLAG = { FUSION_ALLOW_RULES_WRITE: "1" };
+
+  it(
+    "denies a physical cd that walks through a planted link (cd -P)",
+    () => {
+      denyAndBashWouldHaveWritten(
+        "cd -P rules/L/.. && rm agents/coder.md",
+        "agents/coder.md",
+        FLAG,
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies the same walk with the mode set by `set -P` instead of a flag",
+    () => {
+      denyAndBashWouldHaveWritten(
+        "set -P; cd rules/L/.. && rm agents/coder.md",
+        "agents/coder.md",
+        FLAG,
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies the same walk through pushd -P",
+    () => {
+      denyAndBashWouldHaveWritten(
+        "pushd -P rules/L/.. ; rm agents/coder.md",
+        "agents/coder.md",
+        FLAG,
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  // The protection side: NO flag, and the reach is the whole protected list.
+  it(
+    "denies a bare-word cd resolved through an in-command CDPATH",
+    () => {
+      denyAndBashWouldHaveWritten(
+        "cd docs && CDPATH=.. cd agents && rm coder.md",
+        "agents/coder.md",
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies a relative write after a pushd -n, which does not change directory",
+    () => {
+      denyAndBashWouldHaveWritten(
+        "pushd -n docs && rm agents/coder.md",
+        "agents/coder.md",
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "leaves ordinary shell work alone, which is what bounds the cost",
+    () => {
+      // One project, all allows — no denial, so nothing can halt and mask the
+      // rest. The CDPATH control is the load-bearing row: the same command
+      // WITHOUT the assignment still allows, so the denials above cannot be
+      // read as the guard having simply stopped tracking `cd`.
+      withProject(({ root }) => {
+        for (const cmd of [
+          "cd build && rm out.js",
+          "cd /tmp && rm -rf x",
+          "rm -rf node_modules",
+          "rm -rf dist",
+          "cd docs && cd agents && rm coder.md",
+          "set -euo pipefail; cd build && rm out.js",
+          "pushd build > /dev/null && rm out.js; popd > /dev/null",
+        ]) {
+          expect(runBash(root, cmd).decision, cmd).toBeUndefined();
+        }
+        expect(guardStateWritten(root)).toBe(false);
       });
     },
     CASE_TIMEOUT,

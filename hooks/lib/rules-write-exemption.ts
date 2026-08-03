@@ -66,9 +66,25 @@
  * refusal costs nothing real: no rule-curation workflow needs `..`, gate 1
  * already rejects the `..` spellings that leave the rule directory, and the
  * narrowing is on the GRANT side, which is the direction that fails safe. It is
- * also complete against the class BY INSPECTION, which resolving the spelling
- * faithfully instead would not be — that answer would rest on a resolver being
- * right, and the resolver has been wrong once already.
+ * cruder than resolving the spelling faithfully would be, and deliberately so:
+ * that answer would rest on a resolver being right, and the resolver has been
+ * wrong once already.
+ *
+ * ### The bound on gate 0, which is not the bound it was first written with
+ *
+ * Gate 0 is complete against a `..` IN THE OPERAND. It was described here as
+ * complete against the CLASS, by inspection, and that was false: the operand is
+ * one of two things joined to make the spelling, and the other is the shell's
+ * working directory. On the Bash surface `spelledAs` is `joinCwd(base, value)`,
+ * and `base` has been normalised on the way in — so `cd -P rules/link/.. && rm
+ * agents/coder.md` handed this gate `rules/agents/coder.md`, containing no `..`
+ * to refuse, and the whole protected list was reachable through it.
+ *
+ * That entrance is closed in the classifier rather than here: `applyDirEffect`
+ * now allow-lists the `cd` forms it models and yields `CWD_UNKNOWN` for the
+ * rest, so an operand under an unmodelled `cd` is unresolved and reaches no
+ * gate at all. Gate 0 was not widened, and no claim is made here that it covers
+ * the working directory — it covers the operand, which is what it reads.
  *
  * The caller has to supply it because only the caller still has it. Both
  * surfaces relativise a path against the project root before anything can match

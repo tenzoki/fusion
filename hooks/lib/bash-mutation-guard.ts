@@ -66,6 +66,18 @@
  * The tracking is scoped: a `cd` inside a `(…)` subshell or a `$(…)` body is
  * discarded when it closes, exactly as bash discards it.
  *
+ * WHAT IT MODELS IS AN ALLOW-LIST. The tracking is exact for bash's default
+ * logical `cd`, and bash has several modifiers that change the resolution rule
+ * — `-P` and `set -o physical` (ask the kernel, so a symlink component is
+ * resolved before `..` is taken), `pushd -n` and `popd -n` (edit the directory
+ * stack without moving), a `CDPATH` assignment (search elsewhere for a
+ * bare-word operand). Each of those is a token the classifier once discarded
+ * before modelling what followed, and each was measured walking into the whole
+ * protected list. So a modifier that is not on the short modelled list yields
+ * `CWD_UNKNOWN` rather than a guess, and the fail-closed deny below does the
+ * rest. `firstDirArg` and `applyDirEffect` state the invariant and how to check
+ * it by reading.
+ *
  * ## Fail-closed, and its bound
  *
  * A shell can build a path at run time. When an operand of a RECOGNISED verb
@@ -82,6 +94,16 @@
  * an unrecognised program. A redirect target that RESOLVES is still checked
  * whatever the program is (`sort /tmp/a > rules/x.md` denies); it is only the
  * fail-closed pass that stops at the table's edge.
+ *
+ * The sharpest form of what that gives up, measured rather than reasoned about:
+ * `pushd -n docs && echo pwned > agents/coder.md` ALLOWS and real bash
+ * overwrites the agent prompt. The working directory is unknown (the `-n` is
+ * not modelled), the operand is a perfectly ordinary relative path, and `echo`
+ * is not a table verb — so the fail-closed pass never runs on it. The
+ * recognised-verb neighbour, `… && rm agents/coder.md`, denies. Widening this
+ * would also deny `cd $D && echo x > y.md`, which
+ * `issues/260801-1859_c_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`
+ * deliberately allowed; it is a decision, not an oversight.
  *
  * ## The accepted residual (documented, not hidden)
  *
@@ -212,13 +234,25 @@ export interface MutationOptions {
    * TWO arguments, because this module destroys one of them on the way to the
    * other. `path` is the resolved, cwd-joined, normalised operand — the
    * spelling the protected list is matched on, and the only one that can be.
-   * `spelled` is that operand BEFORE `normalize`, which collapses `..`
-   * lexically: `rules/link/../agents/coder.md` becomes `rules/agents/coder.md`,
-   * and the symlink whose target decides where the write lands is no longer in
-   * the string at all. A caller whose grant depends on the spelling (the
-   * rules-write exemption's gate 0) has to read the second argument; a caller
-   * that does not may ignore it, and an existing one-argument predicate stays
-   * assignable.
+   * `spelled` is `joinCwd(base, operand)` BEFORE `normalize`, which collapses
+   * `..` lexically: `rules/link/../agents/coder.md` becomes
+   * `rules/agents/coder.md`, and the symlink whose target decides where the
+   * write lands is no longer in the string at all. A caller whose grant depends
+   * on the spelling (the rules-write exemption's gate 0) has to read the second
+   * argument; a caller that does not may ignore it, and an existing
+   * one-argument predicate stays assignable.
+   *
+   * WHAT `spelled` PRESERVES IS THE OPERAND, NOT THE BASE, and the difference
+   * has been consequential. `base` is the virtual working directory, which
+   * `resolveDir` normalises as it is built, so a `..` that arrived through a
+   * `cd` is already gone by the time an operand is joined to it: for one Turn
+   * `cd -P rules/link/.. && rm agents/coder.md` reached a gate that saw
+   * `rules/agents/coder.md` and no `..` anywhere. The base is no longer a way
+   * in, but not because `spelled` preserves it — because `applyDirEffect` now
+   * yields `CWD_UNKNOWN` for any `cd` form it does not model, so an operand
+   * hanging off such a base is unresolved and never becomes a `path` at all. A
+   * caller reading `spelled` is therefore reading a faithful spelling of the
+   * OPERAND against a base that is either exact or absent.
    */
   exempt?: (path: string, spelled: string) => boolean;
   /**
@@ -292,17 +326,29 @@ export interface VerbSpec {
    * The bound, stated because it is easy to over-read: this closes the DIRECT
    * spelling, not the class. `mv` and `cp -P` can relocate an existing symlink
    * into the rule directory, and they must stay exemptible because
-   * `mv rules/x.md rules/retired/` is the flag's headline use. What makes the
-   * planted alias harmless is the exemption predicate, in two steps: gate 0
-   * refuses any operand SPELLED with a `..`, which is the only way to traverse
-   * a planted link without naming it, and gate 2 resolves what is left against
-   * the real filesystem (`rules-write-exemption.ts`). This row is the second
-   * layer, not the first. Stated in two steps because for one Turn it was
-   * stated in one — "gate 2 resolves paths against the real filesystem" — and
-   * that was measurably false on its own: `mv` and `cp -P` both planted, and
-   * `rules/<link>/../<anything>` reached the whole protected list through the
-   * plant, because the collapse deleted the link from the string before gate 2
-   * ever saw it.
+   * `mv rules/x.md rules/retired/` is the flag's headline use. What keeps a
+   * planted alias from being traversed is three things, none of which is this
+   * row: gate 0 refuses an operand SPELLED with a `..`, gate 2 resolves what is
+   * left against the real filesystem (`rules-write-exemption.ts`), and the
+   * virtual working directory admits `CWD_UNKNOWN` rather than modelling a `cd`
+   * it cannot compute (`applyDirEffect`). This row is a layer, not the layer.
+   *
+   * IT IS WRITTEN AS A LIST BECAUSE EACH SHORTER VERSION OF IT WAS FALSE.
+   * For one Turn it said only "gate 2 resolves paths against the real
+   * filesystem": `mv` and `cp -P` both planted, and `rules/<link>/../<anything>`
+   * reached the whole protected list, because the lexical collapse deleted the
+   * link from the string before gate 2 saw it. For the next Turn it said gate 0
+   * "refuses any operand spelled with a `..`, which is the ONLY WAY to traverse
+   * a planted link without naming it": `cd -P rules/<link>/..` traversed it
+   * with no `..` in any operand, because the `cd`'s own `..` had been collapsed
+   * into the base before the operand was joined to it.
+   *
+   * So no completeness claim is made here at all. What can be said is narrower
+   * and checkable: each of the three refuses a class of spelling, and where the
+   * spelling cannot be trusted the classifier denies instead of granting. A
+   * symlink that a write follows outside any of those three is a residual of a
+   * TEXTUAL protection check and is documented as one, in this module's
+   * "accepted residual" section and in `rules/protected-path-discipline.md`.
    */
   exemptible?: boolean;
   /**
@@ -1198,23 +1244,95 @@ function resolveTarget(
  */
 const DIR_BUILTINS = new Set(["cd", "chdir", "pushd", "popd"]);
 
-/** As much of a shell's directory state as a static classifier can carry. */
+/**
+ * As much of a shell's directory state as a static classifier can carry.
+ *
+ * Every field here is something the classifier ASSERTS, and each has been an
+ * entrance for the same defect: a modifier in the command changes what bash
+ * does with one of them, the classifier discards the modifier, and the
+ * assertion is then wrong in the direction that allows a write. `cwd` was the
+ * first entrance found, `dirStack` and `prev` were measured through
+ * `pushd -n` / `popd -n` while this was being fixed. So the rule below is
+ * stated over the WHOLE record, not over `cwd`: see `unmodelled`.
+ */
 interface ShellState {
   cwd: Cwd;
   /** `$OLDPWD`, where `cd -` goes back to. Unknown until the first `cd`. */
   prev: Cwd;
   /** The `pushd` / `popd` directory stack, innermost last. */
   dirStack: Cwd[];
+  /**
+   * Has bash been put into PHYSICAL directory resolution (`set -P`,
+   * `set -o physical`)? Then every later `cd` resolves each component through
+   * the kernel — symlinks and all — which is a filesystem question this module
+   * does not ask. Sticky, and never cleared: `set +P` restores logical mode,
+   * but by then the shell is standing somewhere this classifier already lost
+   * track of, so clearing it would buy a known cwd it cannot actually name.
+   */
+  physical: boolean;
+  /**
+   * Has a `CDPATH` been assigned in the command? Then a later BARE-WORD `cd`
+   * operand may resolve against a `CDPATH` entry instead of against the current
+   * directory, and the lexical join below names the wrong place.
+   *
+   * Sticky, which over-denies the COMMAND-PREFIX form: `CDPATH=.. cd a; cd b`
+   * only puts `CDPATH` in `cd a`'s environment, and `cd b` is unaffected in
+   * real bash. Distinguishing the prefix form from `export CDPATH=..` would
+   * buy back a shape nothing writes, and the error is in the denying
+   * direction.
+   *
+   * An AMBIENT `CDPATH` — exported in the user's own shell profile rather than
+   * written into the command — is invisible here by construction: this module
+   * reads no environment. That is an open contract question, filed as
+   * `decisions/260803-1803_o_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md`,
+   * and it is NOT closed by this field.
+   */
+  cdpath: boolean;
 }
 
 function freshState(): ShellState {
-  // A Bash tool call starts at the project root with an empty directory stack
-  // and no `$OLDPWD` it can rely on.
-  return { cwd: CWD_ROOT, prev: CWD_UNKNOWN, dirStack: [] };
+  // A Bash tool call starts at the project root with an empty directory stack,
+  // no `$OLDPWD` it can rely on, and bash's default logical `cd`.
+  return {
+    cwd: CWD_ROOT,
+    prev: CWD_UNKNOWN,
+    dirStack: [],
+    physical: false,
+    cdpath: false,
+  };
 }
 
 function cloneState(s: ShellState): ShellState {
-  return { cwd: s.cwd, prev: s.prev, dirStack: [...s.dirStack] };
+  return {
+    cwd: s.cwd,
+    prev: s.prev,
+    dirStack: [...s.dirStack],
+    physical: s.physical,
+    cdpath: s.cdpath,
+  };
+}
+
+/**
+ * Give up on the whole directory model — the one honest answer to a form this
+ * classifier does not model.
+ *
+ * It is stated over EVERY field because the forms that reach it do not all move
+ * the working directory. `pushd -n DIR` pushes onto the stack and stays put;
+ * `popd -n` removes a stack entry and stays put. Both were measured allowing a
+ * protected write through a LATER `popd` or `cd -` that landed somewhere the
+ * classifier had computed from an entry bash no longer had. Zeroing `cwd` alone
+ * would have left both open.
+ *
+ * `CWD_UNKNOWN` is not a new state and this is not a new mechanism: a relative
+ * operand of a recognised verb under an unknown directory is unresolved and
+ * denies fail-closed, with a reason that names the working directory as the
+ * cause. `cd $D && rm notes.txt` has denied by exactly this route since the
+ * module was written.
+ */
+function unmodelled(state: ShellState): void {
+  state.cwd = CWD_UNKNOWN;
+  state.prev = CWD_UNKNOWN;
+  state.dirStack = state.dirStack.map(() => CWD_UNKNOWN);
 }
 
 /** What the first non-flag argument of a directory builtin asks for. */
@@ -1222,17 +1340,169 @@ type DirArg =
   | { kind: "none" }
   | { kind: "previous" }
   | { kind: "opaque" }
+  /** A flag whose effect on the directory model this classifier does not know. */
+  | { kind: "unmodelled" }
   | { kind: "word"; token: string };
 
+/**
+ * Flags on a directory builtin whose effect on the model is nothing.
+ *
+ * `-L` is bash's DEFAULT: resolve `..` against `$PWD` textually, which is
+ * exactly what `resolveDir` does. Spelling it out changes nothing, so it is
+ * skipped. `--` ends option processing.
+ *
+ * The list is deliberately this short. It is an ALLOW-LIST, and everything
+ * outside it is `unmodelled` — see `firstDirArg`.
+ */
+const MODELLED_DIR_FLAGS: ReadonlySet<string> = new Set(["-L", "--"]);
+
+/**
+ * The first operand of a directory builtin, or the reason there is not one.
+ *
+ * THIS IS AN ALLOW-LIST, and the inversion is the point. It used to skip any
+ * token that looked like a flag and then model whatever followed with bash's
+ * default logical semantics. That is right for a default `cd` and wrong the
+ * moment a modifier changes the resolution rule, and three such modifiers were
+ * measured walking through it into the whole protected list:
+ *
+ *   - `cd -P` / `pushd -P` — physical resolution, so `rules/link/..` is the
+ *     parent OF THE LINK'S TARGET rather than of `rules/`;
+ *   - `pushd -n DIR` — pushes onto the stack and does NOT change directory;
+ *   - `popd -n` — removes a stack entry and does NOT change directory.
+ *
+ * Enumerating those three would have been the fourth narrowing of one defect
+ * class in one Circle. What is written instead is the stance: a flag this
+ * classifier has not been taught yields `unmodelled`, and `unmodelled` denies
+ * fail-closed. A bash modifier nobody has thought of yet arrives as a flag, and
+ * so arrives here.
+ *
+ * The cost is stated rather than estimated, because it is real: `cd -P build
+ * && rm out.js` and `cd -P docs && rm ../notes.txt` allowed before and deny
+ * now. Neither shape is idiomatic in an agent-issued command, the deny names
+ * the working directory as the cause, and an absolute path is the way through.
+ */
 function firstDirArg(args: string[]): DirArg {
   for (const a of args) {
-    if (a === "--") continue;
     if (a === "-") return { kind: "previous" };
     if (a.startsWith("+")) return { kind: "opaque" }; // `pushd +2` rotates
-    if (a.length > 1 && a.startsWith("-")) continue; // `-L`, `-P`, `-e`, `-n`
+    if (a.length > 1 && a.startsWith("-")) {
+      if (MODELLED_DIR_FLAGS.has(a)) continue;
+      return { kind: "unmodelled" }; // `-P`, `-n`, `-e`, `-@`, anything later
+    }
     return { kind: "word", token: a };
   }
   return { kind: "none" };
+}
+
+/** `popd +1` / `popd -n` rotate or suppress rather than pop. */
+function isFlagToken(a: string): boolean {
+  return a.startsWith("+") || (a.length > 1 && a.startsWith("-"));
+}
+
+/**
+ * Does a `set` segment turn on bash's physical directory resolution?
+ *
+ * `set` is not a directory builtin and does not appear in `DIR_BUILTINS`, but
+ * `set -P` changes how every LATER `cd` resolves, and `set -P; cd rules/link/..`
+ * was measured reaching the whole protected list.
+ *
+ * The enumeration here is complete over bash's option set rather than over the
+ * flags this module happened to think of, which is why it is an enumeration at
+ * all: `physical` is the ONLY `set -o` option that changes where a `cd` lands.
+ * Every other one (`errexit`, `pipefail`, `noglob`, …) is invisible to the
+ * directory model, so `set -euo pipefail` costs nothing.
+ *
+ * An argument that does not resolve to a literal is read AS IF it were `-P`,
+ * because `set $FLAGS` can expand to one. The exception is everything after a
+ * `--`, which bash treats as positional parameters and never as options — that
+ * is what keeps the `set -- "$@"` idiom from degrading the model.
+ */
+function setsPhysicalMode(
+  args: string[],
+  literals: Map<string, string>,
+): boolean {
+  for (let i = 0; i < args.length; i++) {
+    const w = resolveWord(args[i], literals);
+    if (w.unresolved === true) return true;
+    const a = w.value;
+    if (a === "--") return false;
+    if (a === "-o" || a === "+o") {
+      const next = resolveWord(args[i + 1] ?? "", literals);
+      if (next.unresolved === true) return true;
+      if (a === "-o" && next.value === "physical") return true;
+      i++; // the option NAME is not a flag cluster
+      continue;
+    }
+    // A short-flag cluster sets every letter in it: `set -eP` is `set -e -P`.
+    // `+P` turns physical mode OFF and is not this question.
+    if (a.length > 1 && a.startsWith("-") && a.slice(1).includes("P")) return true;
+  }
+  return false;
+}
+
+/** `CDPATH=` as an assignment token, however its value is quoted. */
+const CDPATH_ASSIGNMENT_RE = /^CDPATH=/;
+
+/**
+ * Builtins that take `NAME=value` assignments as ordinary arguments, so a
+ * `CDPATH` assignment can stand after the command word instead of before it.
+ */
+const ASSIGNMENT_BUILTINS = new Set([
+  "export",
+  "declare",
+  "typeset",
+  "local",
+  "readonly",
+]);
+
+/**
+ * Does this segment assign `CDPATH`?
+ *
+ * Three spellings reach the same place, and `findCommandWord` hides the first
+ * two by design — it skips a leading `VAR=value` assignment so `FOO=1 rm x`
+ * classifies as the `rm` it is:
+ *
+ *   - a command PREFIX, `CDPATH=.. cd agents`;
+ *   - a bare assignment segment, `CDPATH=..` with no command at all
+ *     (`findCommandWord` returns -1, which is why this is asked before the
+ *     early return);
+ *   - `export CDPATH=..`, where the assignment is an argument.
+ *
+ * The token is matched RAW rather than through `resolveWord`, because the
+ * question is which variable is being assigned, and that half of the token is
+ * never inside the quotes: `CDPATH=".."` tokenizes with the value replaced by a
+ * placeholder and the name still spelled out.
+ */
+function assignsCdpath(
+  words: string[],
+  cmdIdx: number,
+  literals: Map<string, string>,
+): boolean {
+  const leading = cmdIdx === -1 ? words : words.slice(0, cmdIdx);
+  if (leading.some((w) => CDPATH_ASSIGNMENT_RE.test(w))) return true;
+  if (cmdIdx === -1) return false;
+
+  const resolved = resolveWord(words[cmdIdx], literals);
+  const raw = resolved.unresolved === true ? words[cmdIdx] : resolved.value;
+  if (!ASSIGNMENT_BUILTINS.has(programName(raw))) return false;
+  return words.slice(cmdIdx + 1).some((w) => CDPATH_ASSIGNMENT_RE.test(w));
+}
+
+/**
+ * Is `CDPATH` consulted for this `cd` operand?
+ *
+ * Bash searches `CDPATH` only for a BARE-WORD operand. Verified against real
+ * bash rather than inferred: with `CDPATH=..` set, `cd agents` lands outside
+ * the current directory while `cd ./agents`, `cd ../junk/agents`, `cd .` and
+ * `cd ..` all resolve locally. So the classifier's lexical join stays correct
+ * for an explicitly-anchored operand, and only the bare-word case degrades.
+ * (An absolute operand never reaches here — `resolveDir` takes it first.)
+ */
+function cdpathIsSearched(value: string): boolean {
+  if (value.startsWith("/") || value.startsWith("./") || value.startsWith("../")) {
+    return false;
+  }
+  return value !== "." && value !== "..";
 }
 
 /**
@@ -1241,6 +1511,30 @@ function firstDirArg(args: string[]): DirArg {
  * Only the first non-flag operand is read: `cd a b` is an error in bash, and
  * every other form the guard cannot model resolves to `unknown` rather than to
  * a guess.
+ *
+ * ## The invariant, and how to check it by reading
+ *
+ * **Every write to `state` here leaves it either PROVEN or UNKNOWN.** There is
+ * no third outcome, and no branch that models a form it has not recognised.
+ * Three things make that checkable without running anything:
+ *
+ *   1. Every path out of the `switch` assigns `state.cwd` exactly once, from a
+ *      value that is either derived from `resolveDir`/`prev`/`dirStack` (all
+ *      subject to this same invariant) or is `CWD_UNKNOWN`/`CWD_OUTSIDE`. The
+ *      `default` arm's `never` binding makes the compiler prove the switch is
+ *      exhaustive over `DirArg`, so a new arm cannot be added without landing
+ *      in it.
+ *   2. The only way to reach the modelling code is through `firstDirArg`, which
+ *      is an ALLOW-LIST: an unrecognised flag returns `unmodelled` and this
+ *      function calls `unmodelled(state)` and returns before any modelling
+ *      happens.
+ *   3. The two MODES that change bash's resolution rule without being flags on
+ *      the builtin — `set -P` and a `CDPATH` assignment — are read at the top,
+ *      before the builtin is applied, and each is consulted on the way out.
+ *
+ * So the audit is: grep this function for `state.cwd =` and check each right
+ * hand side. Four are unknown, one is `CWD_OUTSIDE`, and the rest come from
+ * `resolveDir` on an operand no modifier was allowed to reinterpret.
  */
 function applyDirEffect(
   state: ShellState,
@@ -1248,6 +1542,11 @@ function applyDirEffect(
   literals: Map<string, string>,
 ): void {
   const idx = findCommandWord(words);
+
+  // Read BEFORE the builtin: `CDPATH=.. cd agents` is one segment, and the
+  // assignment has to be in force by the time the `cd` in it is modelled.
+  if (assignsCdpath(words, idx, literals)) state.cdpath = true;
+
   if (idx === -1) return;
 
   const resolved = resolveWord(words[idx], literals);
@@ -1257,40 +1556,64 @@ function applyDirEffect(
   // directory builtins only, because subshell scoping was unreachable
   // otherwise and widening the verbs was a gate decision. The gate passed.)
   const name = programName(raw);
-  if (!DIR_BUILTINS.has(name)) return;
-
   const args = words.slice(idx + 1);
 
+  if (name === "set") {
+    if (setsPhysicalMode(args, literals)) state.physical = true;
+    return;
+  }
+
+  if (!DIR_BUILTINS.has(name)) return;
+
   if (name === "popd") {
-    // `popd +1` / `popd -n` rotate or suppress rather than pop.
-    if (args.some((a) => a.startsWith("+") || (a.length > 1 && a.startsWith("-")))) {
-      state.prev = state.cwd;
-      state.cwd = CWD_UNKNOWN;
+    // A flag makes `popd` edit the STACK without popping the way this model
+    // pops, so the stack stops describing anything.
+    if (args.some(isFlagToken)) {
+      unmodelled(state);
       return;
     }
     const back = state.dirStack.pop();
     // An empty stack makes `popd` an error, and bash stays where it is.
     if (back === undefined) return;
     state.prev = state.cwd;
-    state.cwd = back;
+    state.cwd = state.physical ? CWD_UNKNOWN : back;
     return;
   }
 
+  const target = firstDirArg(args);
+
+  // An unmodelled flag can edit the stack without changing directory
+  // (`pushd -n DIR`), so nothing the state asserts survives it.
+  if (target.kind === "unmodelled") {
+    unmodelled(state);
+    return;
+  }
+
+  // Ordered before the mode check on purpose: whatever mode bash is in, `pushd`
+  // pushes the directory it is LEAVING, and that one is still whatever this
+  // model already knew.
   if (name === "pushd") state.dirStack.push(state.cwd);
 
-  const target = firstDirArg(args);
   const here = state.cwd;
   const back = state.prev;
   state.prev = here;
 
+  // Physical mode asks the kernel where each component leads — including an
+  // absolute one, whose symlinks it also resolves — so no operand survives it.
+  if (state.physical) {
+    state.cwd = CWD_UNKNOWN;
+    return;
+  }
+
   switch (target.kind) {
     case "none":
       // `cd` alone goes `$HOME`; a bare `pushd` rotates the stack, which the
-      // guard does not model.
+      // guard does not model. Neither consults `CDPATH`.
       state.cwd = name === "pushd" ? CWD_UNKNOWN : CWD_OUTSIDE;
       return;
     case "previous":
-      // `cd -` is an exact swap of `$PWD` and `$OLDPWD`.
+      // `cd -` is an exact swap of `$PWD` and `$OLDPWD`, and consults no
+      // `CDPATH`.
       state.cwd = back;
       return;
     case "opaque":
@@ -1304,8 +1627,23 @@ function applyDirEffect(
         return;
       }
       const w = resolveWord(target.token, literals);
-      state.cwd = w.unresolved === true ? CWD_UNKNOWN : resolveDir(here, w.value);
+      if (w.unresolved === true) {
+        state.cwd = CWD_UNKNOWN;
+        return;
+      }
+      if (state.cdpath && cdpathIsSearched(w.value)) {
+        state.cwd = CWD_UNKNOWN;
+        return;
+      }
+      state.cwd = resolveDir(here, w.value);
       return;
+    }
+    default: {
+      // Exhaustiveness, checked by the compiler: a new `DirArg` kind that is
+      // not handled above fails to build rather than falling through to a
+      // modelled directory.
+      const never: never = target;
+      return never;
     }
   }
 }

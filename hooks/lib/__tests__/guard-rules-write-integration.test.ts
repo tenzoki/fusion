@@ -1261,6 +1261,48 @@ describe("the exemption resolves the path against the filesystem (finding 1)", (
   );
 
   it(
+    "refuses the grant to a link the WORKING DIRECTORY walked through",
+    () => {
+      // The fourth entrance into this class, and the one gate 0 could not see
+      // (`issues/260803-1431_…`). Gate 0 refuses a `..` in the SPELLING, and the
+      // spelling it is handed is `joinCwd(base, operand)` — but `base` came from
+      // `resolveDir`, which had already collapsed the `cd`'s own `..`
+      // lexically. So `cd -P rules/L/..` traversed the planted link without
+      // naming it and with no `..` left in any operand: gate 0 saw
+      // `rules/agents/coder.md`, gate 2 resolved that inside the real `rules/`,
+      // and the grant was spent on `agents/coder.md`.
+      //
+      // Nothing about the exemption changed to close it. The classifier stopped
+      // asserting a working directory it cannot compute, so the operand is now
+      // unresolved and never reaches a gate at all.
+      const plantRuleLink = (root: string) =>
+        symlinkSync("../agents", resolve(root, "rules/L"));
+
+      denyEach(
+        [
+          "cd -P rules/L/.. && rm agents/coder.md",
+          "set -P; cd rules/L/.. && rm agents/coder.md",
+          "pushd -P rules/L/.. ; rm agents/coder.md",
+        ],
+        bashCall,
+        { setup: plantRuleLink, reasonContains: "working directory" },
+      );
+
+      // The control that scopes it: bash's DEFAULT `cd` is logical, resolves
+      // `..` textually exactly as the classifier does, and leaves the file
+      // intact. That form still allows, so the fix is aimed at the modifier
+      // rather than at `..` in a `cd`.
+      withProject(({ root }) => {
+        plantRuleLink(root);
+        expect(
+          runBash(root, "cd rules/L/.. && rm agents/coder.md", FLAG_SET).decision,
+        ).toBeUndefined();
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
     "denies all of it with the flag UNSET too, so no deny is the flag not applying",
     () => {
       denyEach(
