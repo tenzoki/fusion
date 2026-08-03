@@ -101,3 +101,6 @@ Answered: `circles/260801-1244-guard-rules-write/history/260803-1038-orchestrato
 - `circles/260801-1244-guard-rules-write/issues/260802-2320_o_…`, `Direction decided` footer — the issue side of the same pair, which names this record back
 
 **The pair is consistent, checked both ways.** This record's `**Cross-references:**` names the issue by its full current path with the `_o_` marker, which is correct while that marker stands. The issue's footer names this record. `## Answer` selects option 1 here, which is option 2 of the issue's candidate list — different numbering, same choice (unconditional folding), and neither document claims the code has moved.
+
+---
+Implemented: `86a437a` — `foldCase` and `matchesAnyFolded` in `hooks/lib/paths.ts`, consumed by `guard.ts` CHECK 2 and by both passes of the classifier's `isProtected`, with `ancestorOfProtected` folding its literal prefix by hand because it is a `startsWith` rather than a glob match. The fold is on the match, not on either normaliser, which is what keeps the grant side and the trailing-separator asymmetry intact. Cost measured on a purpose-built case-sensitive APFS image: exactly four denials appear that are genuinely a second file. Tests 1098 → 1146; with `foldCase` stubbed to the identity, 36 of the 48 new cases fail.
