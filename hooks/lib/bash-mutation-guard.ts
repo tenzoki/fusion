@@ -51,6 +51,19 @@
  * The project root itself is NOT treated as an ancestor: `cp x .` writes into
  * the root without destroying it, and denying it would catch ordinary work.
  *
+ * ## The match folds case
+ *
+ * Both protected-path comparisons — the glob match in `isProtected` and the
+ * literal-prefix comparison in `ancestorOfProtected` — fold case. On a
+ * case-insensitive filesystem (APFS in its default configuration, so every
+ * stock macOS install) `rm AGENTS/coder.md` deletes `agents/coder.md` and
+ * `rm -rf RULES` takes `rules/**` with it; both allowed until this landed,
+ * needing no flag. The fold is UNCONDITIONAL rather than conditional on the
+ * filesystem, so the boundary does not differ by platform — on a case-sensitive
+ * one it over-blocks, which is the cost the user accepted. `matchesAnyFolded`
+ * in `paths.ts` carries the argument and cites the decision record. The
+ * EXEMPTION is deliberately NOT folded: folding a grant widens it.
+ *
  * ## Where a relative operand resolves from
  *
  * `cd fusion-workbench && rm -rf .guard-state` writes a protected path while
@@ -153,7 +166,7 @@
  */
 
 import { normalize as normalizePath } from "node:path";
-import { matchesAny } from "./paths.js";
+import { foldCase, matchesAnyFolded } from "./paths.js";
 import {
   findCommandWord,
   programName,
@@ -1059,13 +1072,22 @@ function verbOperands(
  * Path resolution and matching
  * ------------------------------------------------------------------ */
 
-/** Is `path` under compliance guard protection? */
+/**
+ * Is `path` under compliance guard protection?
+ *
+ * `matchesAnyFolded` — the match is case-insensitive, the same way the write
+ * tools' CHECK 2 is. `rm AGENTS/coder.md` deleted `agents/coder.md` on any
+ * case-insensitive filesystem while `rm agents/coder.md` denied. Both surfaces
+ * fold or neither does: a fold on the write tools alone would teach an agent
+ * that the way past a deny is to reach for Bash, which is the failure
+ * `rules/protected-path-discipline.md` exists to prevent.
+ */
 function isProtected(path: string, opts: MutationOptions): boolean {
-  if (matchesAny(path, opts.protectedPaths)) return true;
+  if (matchesAnyFolded(path, opts.protectedPaths)) return true;
   // The operand may name a DIRECTORY whose contents are protected:
   // `rm -rf fusion-workbench/.guard-state` must match
   // `fusion-workbench/.guard-state/**`, which needs the trailing separator.
-  if (!path.endsWith("/") && matchesAny(path + "/", opts.protectedPaths)) {
+  if (!path.endsWith("/") && matchesAnyFolded(path + "/", opts.protectedPaths)) {
     return true;
   }
   return false;
@@ -1102,6 +1124,12 @@ function withoutTrailingSlash(path: string): string {
  * Comparison is against each pattern's literal prefix and on a path-segment
  * boundary, so `rules-draft` is not read as an ancestor of `rules/**`.
  *
+ * CASE-INSENSITIVE, like `isProtected` above: this is a raw string comparison
+ * rather than a glob match, so it needs the fold applied by hand or `rm -rf
+ * RULES` walks past a check that `rm -rf rules` fails. The pattern is returned
+ * UNFOLDED, so the deny reason names the pattern as `hooks/config.json` writes
+ * it.
+ *
  * The project root is excluded deliberately. `.` is an ancestor of everything,
  * and `cp x .` writes INTO the root rather than destroying it — denying that
  * would catch ordinary work for no gain, since `rm -rf .` is refused by `rm`
@@ -1111,11 +1139,11 @@ function ancestorOfProtected(
   path: string,
   opts: MutationOptions,
 ): string | null {
-  const base = withoutTrailingSlash(path);
+  const base = foldCase(withoutTrailingSlash(path));
   if (base.length === 0 || base === "." || base === "/") return null;
 
   for (const pattern of opts.protectedPaths) {
-    const prefix = literalPrefix(pattern);
+    const prefix = foldCase(literalPrefix(pattern));
     if (prefix.length > 0 && prefix.startsWith(base + "/")) return pattern;
   }
   return null;

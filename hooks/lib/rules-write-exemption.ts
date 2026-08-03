@@ -124,6 +124,24 @@
  * unification has been proposed once already — a Turn 1 review offered it as a
  * one-liner — and it would have removed three denials.
  *
+ * ### The same asymmetry, in the second dimension: CASE
+ *
+ * The protection check matches through `matchesAnyFolded`; gate 1 matches
+ * through the plain, case-SENSITIVE `matchesAny`. Same reasoning, same
+ * direction. Folding on the protection side denies more, and it closes a
+ * measured bypass — on a case-insensitive filesystem `Edit AGENTS/coder.md`
+ * wrote `agents/coder.md` and allowed. Folding HERE would hand the grant to a
+ * spelling `RULE_DIR_PATTERNS` does not name.
+ *
+ * Case is not this gate's question anyway. Gate 2 resolves through
+ * `realpathSync.native`, which applies the platform's OWN folding, so where the
+ * filesystem is case-insensitive the kernel has already answered it — and where
+ * the filesystem is case-sensitive, `RULES/x.md` is a different file and the
+ * grant should not cover it. The visible consequence, stated rather than
+ * discovered: with the flag set, `Edit RULES/x.md` DENIES while
+ * `Edit rules/x.md` allows, on a filesystem where both name one file. The
+ * protected set widened and the exempt set did not.
+ *
  * A second reason `isProjectRulePath` canonicalises for itself rather than
  * trusting its caller to have done it: the Bash surface hands over operands
  * nobody collapsed. `guard.ts` collapses the write-tool path above both checks,

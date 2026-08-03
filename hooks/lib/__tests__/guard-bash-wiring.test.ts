@@ -236,7 +236,20 @@ describe("guard.ts write-tool path — one collapse, above both checks", () => {
     expect(code).toContain("collapseSegments(normalizeToRelative(rawFilePath))");
     const collapse = code.indexOf("collapseSegments(");
     expect(collapse).toBeLessThan(code.indexOf("isHalted("));
-    expect(collapse).toBeLessThan(code.indexOf("matchesAny(filePath"));
+    expect(collapse).toBeLessThan(code.indexOf("matchesAnyFolded(filePath"));
+  });
+
+  it("matches the protected list with case FOLDED", () => {
+    // A glob compiles to a case-SENSITIVE regex, so `AGENTS/coder.md` missed
+    // `agents/**` and wrote `agents/coder.md` on any case-insensitive
+    // filesystem — the whole protected list, one letter, no flag. Pinned at
+    // the call site because the plain `matchesAny` still exists in the module
+    // and is still correct for the grant: swapping this one identifier back
+    // reopens the bypass and changes nothing else.
+    expect(code).toContain(
+      "matchesAnyFolded(filePath, config.guard.protectedPaths)",
+    );
+    expect(code).not.toContain("matchesAny(filePath, config.guard");
   });
 
   it("does NOT strip the trailing separator here", () => {

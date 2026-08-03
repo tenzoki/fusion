@@ -30,6 +30,27 @@ which the guard finds by walking up from the hook module, so every project on th
 plugin gets the same list. The patterns are **project-relative**: in a consuming
 project `rules/**` means that project's own `rules/` directory, not the plugin's.
 
+### The match is textual, and case-insensitive
+
+The comparison is on the path's **text** — no symlink is resolved on this side, and the
+residual list at the end says what that costs — and it **folds case**. `rm AGENTS/coder.md`
+denies exactly as `rm agents/coder.md` does, and so do `Edit HOOKS/config.json`,
+`Edit Rules/x.md`, `echo x > Agents/coder.md` and `rm -rf RULES`. Until the fold landed,
+the whole list was bypassable by shifting one letter on any case-insensitive filesystem,
+which is every stock macOS install and a case-insensitive Windows volume.
+
+The fold is **unconditional**, not conditional on the filesystem, so the boundary reads
+the same on every platform rather than having to be looked up per machine. On a
+case-sensitive filesystem that over-blocks: `AGENTS/coder.md` really is a second file
+there, and it is denied anyway. Measured on a case-sensitive volume, with both files
+present and different: `Edit AGENTS/coder.md` denies. That is the accepted cost, and it is
+the direction the fail-closed rule below already chooses.
+
+The **exemption does not fold**. With `FUSION_ALLOW_RULES_WRITE` set, `Edit rules/x.md` is
+allowed while `Edit RULES/x.md` is denied — the protected set widened and the grant did
+not, which is the only direction a guard may move. Spell a rule path the way the rule
+directory spells it.
+
 ### The verb families
 
 Recognition is table-driven (`MUTATION_VERBS` in `hooks/lib/bash-mutation-guard.ts`).

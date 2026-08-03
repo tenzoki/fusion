@@ -5,7 +5,9 @@
  *   1. Halt state — if active, block ALL writes
  *   2. Protected paths — blocked, with one exemption: FUSION_ALLOW_RULES_WRITE
  *      lets a write to a project rule path through, recorded as an advisory.
- *      See lib/rules-write-exemption.ts.
+ *      See lib/rules-write-exemption.ts. The match is TEXTUAL and
+ *      CASE-INSENSITIVE — unconditionally, on every platform, so the boundary
+ *      does not differ by filesystem. See lib/paths.ts `matchesAnyFolded`.
  *   3. Decision-governed categories — escalated based on sensitivity
  *
  * Also intercepts Bash tool calls, for two independent policies:
@@ -43,7 +45,7 @@
 import { resolve, relative, isAbsolute } from "node:path";
 import { existsSync } from "node:fs";
 import { execFileSync } from "node:child_process";
-import { matchesAny, collapseSegments } from "./lib/paths.js";
+import { matchesAnyFolded, collapseSegments } from "./lib/paths.js";
 import { isFusionPluginCwd } from "./lib/self-detect.js";
 import { realFsLocator } from "./lib/fs-locator.js";
 import { loadConfig, findRelevantDecisions, sensitivityLevel } from "./lib/config.js";
@@ -710,7 +712,14 @@ async function main(): Promise<void> {
   }
 
   // CHECK 2: Protected paths — blocked, with exactly ONE exemption.
-  if (matchesAny(filePath, config.guard.protectedPaths)) {
+  //
+  // `matchesAnyFolded`, not `matchesAny`: the match folds case on both sides.
+  // A glob compiles to a case-SENSITIVE regex, so `AGENTS/coder.md` missed
+  // `agents/**` and wrote `agents/coder.md` on any case-insensitive filesystem
+  // — the whole protected list, one letter. The exemption below keeps the
+  // case-sensitive `matchesAny`, because folding a GRANT widens it. See
+  // `matchesAnyFolded` in lib/paths.ts.
+  if (matchesAnyFolded(filePath, config.guard.protectedPaths)) {
     // THE RULES-WRITE EXEMPTION. Both halves must hold: the user deliberately
     // set FUSION_ALLOW_RULES_WRITE, and the path is one of the rule paths that
     // flag names. lib/rules-write-exemption.ts owns the boundary — it
