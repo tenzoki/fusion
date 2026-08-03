@@ -141,3 +141,33 @@ since depth is the invariant that broke and no current test states it.
 Turn 4 incremental code review, answering the review brief's question 1. Found by asking
 which writes to `ShellState` the stated invariant does **not** enumerate, then constructing
 the sequence that collects one.
+
+---
+Resolved: the unconditional `state.dirStack.push(state.cwd)` now sits below a guard that
+routes the two rotation forms into `unmodelled(state)`, exactly as the candidate direction
+scoped it — the give-up mechanism that already existed, not a new one. `pushd` with no
+operand (`kind: "none"`) and `pushd +N` (`kind: "opaque"`) return before anything is
+modelled; `pushd -N` was already fail-closed through the flag allow-list. The push is then
+reachable only on the `word` and `previous` arms, which are the two forms bash really
+pushes on — `pushd -` measured as a push followed by a move to `$OLDPWD`, which is what the
+`previous` arm already modelled.
+
+Depth verified against real bash 3.2 and zsh by reading `dirs` after each step, rather than
+inferred: `pushd DIR` and `pushd -` are +1, `pushd` / `pushd +N` / `pushd -N` are 0, `popd`
+is -1, and a `popd` past the bottom is the no-op bash makes it.
+
+Measured after the change through the real guard, one fresh project per row, with the
+real-bash effect check: the issue's six-segment sequence denies and bash deletes
+`rules/x.md`; the `pushd +1` and `pushd -1` siblings deny with the same effect. The
+surviving idiom `pushd build >/dev/null && rm out.js; popd >/dev/null` still allows, as do
+`pushd rules && popd && rm x.md` and `cd build && pushd /tmp && popd && rm out.js`.
+
+Cost, stated: bare `pushd` followed by exactly one `popd` used to allow AND agree with bash
+— by cancelling two errors, not by modelling anything — and now denies fail-closed with the
+working directory named as the cause. Same for `pushd +1 … popd`. Neither appears in the
+ordinary-agent-command corpus, and both are covered by a named test that says so.
+
+The audit recipe is corrected in the `applyDirEffect` docstring: it now runs over every
+field of `ShellState` through a command a reader can paste, and it names what it does not
+certify (that the function is reached at all). T4-2's history carries a superseded banner
+pointing at the replacement.

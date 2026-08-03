@@ -113,9 +113,9 @@ underneath is classified:
   `elif`, `while`, `until`, `then`, `else`, `do`), `!`, `{`, `(` and `coproc`. Both
   `if rm -rf rules; then :; fi` and `while :; do rm rules/x.md; done` are the `rm` row;
 - a **wrapper program** that runs another program — `sudo`, `doas`, `env`, `command`,
-  `exec`, `nice`, `ionice`, `timeout`, `xargs`, `time`, `nohup`, `setsid`, `stdbuf`.
-  **`sudo` is not an escape**, and neither is chaining wrappers: `sudo env rm rules/x.md`
-  is the `rm` row;
+  `builtin`, `exec`, `nice`, `ionice`, `timeout`, `xargs`, `time`, `nohup`, `setsid`,
+  `stdbuf`. **`sudo` is not an escape**, and neither is chaining wrappers:
+  `sudo env rm rules/x.md` is the `rm` row;
 - a **path, quoting or a backslash escape** — `/bin/rm`, `'rm'`, `"rm"` and `\rm` all
   name `rm`. `\rm` is the idiom for suppressing an alias, and it runs the same program.
 
@@ -161,6 +161,8 @@ guess, it stops claiming to know where the shell is standing:
 | `pushd -n x`, `popd -n` | edit the directory stack **without** changing directory |
 | `CDPATH=.. cd x`, `export CDPATH=..` | a bare-word operand may be found under a `CDPATH` entry instead |
 | `CDPATH` set in the **environment** | the same, with nothing in the command to show for it |
+| `pushd` with no operand, `pushd +2`, `pushd -2` | these **rotate** the directory stack; they do not push, and the guard does not model a rotation |
+| `sudo cd x`, `env cd x`, `xargs cd x` | that wrapper cannot run a shell builtin, so real bash goes nowhere and the guard declines to say where |
 | any other flag on `cd` / `chdir` / `pushd` / `popd` | it has not been taught what the flag does |
 
 After one of those, a relative operand of a table verb denies fail-closed and the reason
@@ -170,6 +172,19 @@ so is an operand that anchors itself: with a `CDPATH` in play, `cd ./x`, `cd ../
 
 The cost is real and small: `cd -P build && rm out.js` and `cd -P docs && rm ../notes.txt`
 denied nothing before and deny now. Write the path absolutely, or drop the `-P`.
+
+**A `cd` behind a wrapper is tracked, not ignored.** `command cd rules`, `builtin cd rules`
+and `time cd rules` all move the shell in real bash, and all three are now modelled exactly
+as a bare `cd rules` is — so `command cd build && rm out.js` allows and
+`command cd rules && rm x.md` denies, for the same reasons the unwrapped forms do. Reaching
+a directory builtin through a wrapper buys nothing; it is the same command.
+
+**The `pushd` rows are the ones to read twice**, because they cost a shape that used to
+work. `pushd` with an operand pushes, and `pushd DIR … popd` is unaffected. `pushd` with
+**no** operand swaps the top two stack entries and `pushd +N` / `pushd -N` rotate — none of
+them changes the stack's depth, so the guard stops tracking rather than pushing an entry
+bash does not have. Everything after one of them denies fail-closed until the command names
+a directory again. Name the directory: `pushd ../build` instead of `pushd`.
 
 **The environment row is the one you cannot read off the command.** Your shell is
 initialised from the user's profile, so an `export CDPATH=…` there sends every bare-word
@@ -212,6 +227,8 @@ cd $D && rm -rf out             # the directory `out` hangs off is unknowable
 rm -rf "$(pwd)/build"           # a command substitution is an unresolved operand
 cd -P build && rm out.js        # a `cd` modifier the guard does not model
 pushd -n docs && rm ../x.md     # `-n` pushes without moving, so the base is unknown
+pushd ../build && pushd && popd && rm out.js   # a bare `pushd` rotates, it does not push
+sudo cd build && rm out.js      # `sudo` cannot run a builtin, so bash never moved
 cd build && rm out.js           # ONLY with CDPATH set in the environment
 ```
 
@@ -356,6 +373,13 @@ Known and accepted:
   A `case` arm (`build) rm rules/x.md;;`) and a function definition
   (`f() { rm rules/x.md; }`) both leave a word the classifier cannot tell apart from a
   program name, so the verb behind it is never reached.
+- **A `cd` the classifier cannot see as a `cd` still moves the shell.** Same mechanism as
+  the row above, aimed at the directory model rather than at a verb: `eval "cd rules"`
+  hides the builtin inside a string bash re-parses, a shell function or an alias named `cd`
+  puts an ordinary word in command position, and `source script.sh` runs a `cd` written in
+  another file. None of the three is reachable by a textual classifier, and after any of
+  them the guard is modelling a directory the shell has left. The wrappers that can run a
+  builtin (`command`, `builtin`, `time`) *are* seen; these are what is left.
 - **Verbs deliberately not in the table**: `mkdir`, `chmod`, `chown`, `touch`, `tar`,
   `rsync`, `patch`, `gzip`. Each was left out because its operands are usually
   directories and a row would carry the ancestor rule with it.
@@ -375,12 +399,24 @@ Known and accepted:
 - **The classifier cannot walk out and back by name.** `cd .. && cd fusion && rm rules/x.md`
   is allowed: the guard is given a path normaliser, not the project directory's own name.
 - **A `CDPATH` whose entries could not actually divert still degrades the model.** This is
-  the residual left by closing the ambient case above, and it errs toward DENY: the guard
-  asks whether the variable is set, not whether any entry on it holds the name being
+  one of two residuals left by closing the ambient case above, and it errs toward DENY: the
+  guard asks whether the variable is set, not whether any entry on it holds the name being
   looked for, because answering that means a filesystem probe per entry inside a classifier
   that is textual by design. So a user whose profile sets `CDPATH=.` gets denials for
   bare-word `cd`s that would have landed exactly where the guard modelled them. Anchoring
   the operand clears every one of them.
+- **The ambient `CDPATH` check reads the hook's environment, not your shell's.** The other
+  residual, and it errs toward ALLOW. The guard runs as a hook process that Claude Code
+  spawns directly, so what it inspects is a frozen snapshot of Claude Code's own launch
+  environment — nothing on that path ever sources a shell profile, while your `Bash` shell
+  sources one per command. The two agree whenever Claude Code was started from a shell that
+  had already sourced the profile, which is the ordinary case. They diverge when Claude Code
+  was launched some other way (a GUI launcher, an IDE extension host, a `launchd` unit) and
+  when the profile is edited mid-session: the `CDPATH` is then in force for your commands
+  and invisible to the check, and the degrade does not fire. The only faithful source is the
+  command's own shell, and asking it costs a subprocess per `Bash` call, so this is stated
+  rather than closed. If a bare-word `cd` lands somewhere you did not expect, `CDPATH` is
+  the first thing to check.
 - **Two sibling `$(…)` substitutions inside one outer segment share a directory**, so
   `$(cd /tmp) $(rm rules/x.md)` is allowed. The same pair in separate segments is
   correctly independent.

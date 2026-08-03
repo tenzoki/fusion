@@ -102,12 +102,39 @@ export const ENV_ASSIGNMENT_RE = /^[A-Za-z_][A-Za-z0-9_]*=/;
  * `eval 'rm x'` and meaningless for `eval "$cmd"`. Half a rule reads as a whole
  * one, so they stay documented residuals instead. Adding a wrapper is a row,
  * not a code path.
+ *
+ * ## `runsBuiltins` — the fact the DIRECTORY model needs and the verb table
+ * ## does not
+ *
+ * Most rows here run an EXTERNAL program, so a shell builtin underneath one of
+ * them does nothing at all: `sudo cd rules` and `env cd rules` are errors, and
+ * the shell stays where it was. Three rows are different, and measured to be so
+ * (bash 3.2 and zsh, `cd sub` under each wrapper, reading `pwd` afterwards):
+ *
+ *   - `command cd sub` — moves the shell in bash; INERT in zsh, whose `command`
+ *     forces an external lookup. Marked here because the guard's stated model is
+ *     bash and the marking is in the denying direction for zsh.
+ *   - `builtin cd sub` — moves the shell in BOTH.
+ *   - `time cd sub` — moves the shell in BOTH: `time` is a reserved word timing
+ *     a pipeline that runs in the current shell, not the external `/usr/bin/time`
+ *     this row's `valueFlags` describe.
+ *
+ * `bash-mutation-guard.ts` consumes this through `Invocation.reachesBuiltin`. It
+ * is a FIELD ON THE ROW rather than a second table on purpose: a parallel set of
+ * three names beside this one is exactly the duplicate-at-reduced-fidelity that
+ * put `command cd` past the directory model in the first place
+ * (`issues/260803-2038_…command-cd-and-builtin-cd…`).
  */
 export interface WrapperSpec {
   /** Short flags that consume the FOLLOWING token as their value. */
   valueFlags?: readonly string[];
   /** The wrapper's own positional arguments, before the wrapped command word. */
   positionalArgs?: number;
+  /**
+   * Can this wrapper run a SHELL BUILTIN in the calling shell? Absent means no,
+   * which is the answer for every external wrapper.
+   */
+  runsBuiltins?: boolean;
 }
 
 export const WRAPPER_PROGRAMS: Readonly<Record<string, WrapperSpec>> = {
@@ -116,7 +143,12 @@ export const WRAPPER_PROGRAMS: Readonly<Record<string, WrapperSpec>> = {
   },
   doas: { valueFlags: ["-u", "-C"] },
   env: { valueFlags: ["-u", "-C", "-S"] },
-  command: {},
+  command: { runsBuiltins: true },
+  // `builtin cd rules` is the one spelling whose whole purpose is running a
+  // builtin, and it was in no table at all — so nothing in either classifier saw
+  // through it, and `builtin cd rules && rm x.md` moved the shell past a
+  // directory model that never noticed. Its own flag grammar is empty.
+  builtin: { runsBuiltins: true },
   // `exec` REPLACES the shell with the command that follows, so its words are
   // that command's words exactly as `sudo`'s are. `-a NAME` is its one
   // value-taking flag (`-c` and `-l` take none). A bare `exec > file` runs no
@@ -129,7 +161,7 @@ export const WRAPPER_PROGRAMS: Readonly<Record<string, WrapperSpec>> = {
   xargs: {
     valueFlags: ["-n", "-P", "-I", "-L", "-l", "-s", "-E", "-d", "-a"],
   },
-  time: { valueFlags: ["-o", "-f"] },
+  time: { valueFlags: ["-o", "-f"], runsBuiltins: true },
   nohup: {},
   setsid: {},
   stdbuf: { valueFlags: ["-i", "-o", "-e"] },
@@ -197,6 +229,24 @@ export interface Invocation {
   name: string;
   /** Everything after the command word, wrapper words already consumed. */
   args: string[];
+  /**
+   * Would `name` still run if it were a SHELL BUILTIN? True for a bare
+   * invocation, and true through a wrapper chain only when every hop both
+   * `runsBuiltins` and consumed NO words of its own.
+   *
+   * The second half is not fussiness. `time -o log cd build` is the external
+   * `/usr/bin/time`, which cannot run `cd`; the reserved word that can takes no
+   * such flag. A wrapper that consumed a flag is being asked to do something
+   * other than "run what follows, as it stands", and this module does not model
+   * what — so it reports the chain as not reaching a builtin and the caller
+   * fails closed. `command -v cd` falls out the same way, correctly: it prints a
+   * name and moves nothing.
+   *
+   * Only the directory model in `bash-mutation-guard.ts` reads this. The verb
+   * classifier does not care: every `MUTATION_VERBS` row is an external program,
+   * so a wrapper that cannot run a builtin runs it perfectly well.
+   */
+  reachesBuiltin: boolean;
 }
 
 /**
@@ -223,6 +273,7 @@ export function resolveInvocation(
   literals: Map<string, string>,
 ): Invocation | null {
   let rest = words;
+  let reachesBuiltin = true;
 
   for (let hop = 0; hop <= words.length; hop++) {
     const cmdIdx = findCommandWord(rest);
@@ -234,8 +285,16 @@ export function resolveInvocation(
     const args = rest.slice(cmdIdx + 1);
 
     const wrapper = row(WRAPPER_PROGRAMS, name);
-    if (wrapper === undefined) return { name, args };
-    rest = skipWrapper(wrapper, args);
+    if (wrapper === undefined) return { name, args, reachesBuiltin };
+
+    const next = skipWrapper(wrapper, args);
+    // `args.length - next.length` is the words this hop consumed of its own —
+    // its flags, its assignments, its positionals. Zero means it is running what
+    // follows exactly as written. See `Invocation.reachesBuiltin`.
+    if (wrapper.runsBuiltins !== true || next.length !== args.length) {
+      reachesBuiltin = false;
+    }
+    rest = next;
   }
 
   return null;

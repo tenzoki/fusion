@@ -158,6 +158,14 @@ today. All three now deny, and all three are pinned in the unit suite.
 
 ## How a reader checks the `applyDirEffect` invariant by inspection
 
+> **Superseded in Turn 5 (T5-1).** Step 1 below greps for `state.cwd =`, and the write that
+> broke the invariant three days later was a `state.dirStack.push` — the one field this Turn
+> had just learned was load-bearing is the one the recipe does not enumerate
+> (`issues/260803-2039…`). The corrected recipe is in
+> `history/260803-2220-turn5-t5-1-wrapper-walk-and-pushd-rotation.md` and in the
+> `applyDirEffect` docstring: it runs over **every** field of `ShellState`, and it says what
+> it does not certify. Read this section as the history of a claim, not as an audit.
+
 The invariant is: **every write to `ShellState` in `applyDirEffect` leaves it either proven
 or unknown.** It is stated in the function's docstring, and it is checkable in four steps
 without running anything:
@@ -280,10 +288,26 @@ Two further prose changes in the same commit, both required for the change to be
 4. **`set +P` does not restore the logical model.** It restores logical mode in bash, but by
    then the shell is standing somewhere already lost, so clearing the flag would buy a
    "known" cwd the classifier cannot name. Over-denies, documented at the field.
-5. **`env CDPATH=.. cd x` is not seen.** `applyDirEffect` resolves the command word without
+5. ~~**`env CDPATH=.. cd x` is not seen.** `applyDirEffect` resolves the command word without
    walking wrappers, so a wrapper hides the builtin — but `cd` is a shell builtin and `env`
    cannot run it, so the command does nothing in real bash either. No behaviour change; noted
-   so a future reader does not read it as a hole.
+   so a future reader does not read it as a hole.~~
+
+   **FALSE, corrected in Turn 5 (T5-1).** The generalisation from `env` to every wrapper does
+   not hold. `command` and `builtin` are shell builtins whose whole purpose is running a
+   builtin, and `time` is a reserved word timing a pipeline that runs in the current shell.
+   All three move the shell — measured under bash 3.2 and zsh by running `<wrapper> cd sub`
+   and reading `pwd`; `command` is the one exception, inert in zsh because zsh's `command`
+   forces an external lookup. So `command cd rules && rm x.md` allowed at `b85f6a0` while real
+   bash deleted the file, and the reason recorded here is why nobody looked
+   (`issues/260803-2038…`, filed by coderev's Turn 4 review).
+
+   The claim that survives is the narrow one: `env`, `sudo`, `doas`, `nice`, `xargs` and the
+   rest of the external wrappers genuinely cannot run a builtin, and after `command cd` was
+   closed those became a fail-closed give-up rather than a modelled move — they cost nothing
+   because the commands are already broken in the shell. The lesson is the generalisation
+   itself: "a wrapper cannot run a builtin" was inferred from one wrapper and written as a
+   property of wrappers.
 
 ## Not done, deliberately
 

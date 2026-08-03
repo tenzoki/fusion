@@ -292,6 +292,84 @@ describe("the working directory is modelled or admitted unknown, never guessed",
     CASE_TIMEOUT,
   );
 
+  // The two no-flag entrances Turn 5 measured. Neither is a modifier on the
+  // builtin, which is why the allow-list inversion above could not reach them:
+  // one never arrives at `firstDirArg` (a wrapper hides the builtin), the other
+  // arrives, is correctly told there is no operand, and was then pushed onto
+  // the model's stack anyway.
+  it(
+    "denies a cd reached through `command`, which really does run the builtin",
+    () => {
+      denyAndBashWouldHaveWritten("command cd rules && rm x.md", "rules/x.md");
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies a cd reached through `builtin`, the wrapper that was in no table",
+    () => {
+      denyAndBashWouldHaveWritten("builtin cd rules && rm x.md", "rules/x.md");
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies a cd reached through `time`, which is a reserved word, not /usr/bin/time",
+    () => {
+      denyAndBashWouldHaveWritten("time cd agents && rm coder.md", "agents/coder.md");
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies the whole protected list through the wrapper, not one spelling of it",
+    () => {
+      denyAndBashWouldHaveWritten(
+        "command cd skills/demo && rm SKILL.md",
+        "skills/demo/SKILL.md",
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies a popd that collects a stack entry a bare pushd never pushed",
+    () => {
+      // Six segments, and the model was one entry deep and one shifted from the
+      // bare `pushd` onward: bash swaps, the model pushed. Each later `popd`
+      // then recovered a CONFIDENTLY-named directory bash does not go to, so the
+      // fail-closed pass never ran. Bash ends in `rules/`; the model said
+      // `build/`.
+      denyAndBashWouldHaveWritten(
+        "cd rules && pushd ../build && pushd ../docs && pushd && popd && popd && rm x.md",
+        "rules/x.md",
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies the same collection after a pushd +N rotation",
+    () => {
+      denyAndBashWouldHaveWritten(
+        "cd rules && pushd ../build && pushd ../docs && pushd +1 && popd && rm x.md",
+        "rules/x.md",
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies the same collection after a pushd -N rotation",
+    () => {
+      denyAndBashWouldHaveWritten(
+        "cd rules && pushd ../build && pushd ../docs && pushd -1 && popd && rm x.md",
+        "rules/x.md",
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
   it(
     "leaves ordinary shell work alone, which is what bounds the cost",
     () => {
@@ -308,6 +386,11 @@ describe("the working directory is modelled or admitted unknown, never guessed",
           "cd docs && cd agents && rm coder.md",
           "set -euo pipefail; cd build && rm out.js",
           "pushd build > /dev/null && rm out.js; popd > /dev/null",
+          // The wrapper walk MODELS the three wrappers that run a builtin; it
+          // does not fail closed on them. So the same work behind `command`
+          // costs exactly what it costs in front of it.
+          "command cd build && rm out.js",
+          "builtin cd build && rm out.js",
         ]) {
           expect(runBash(root, cmd).decision, cmd).toBeUndefined();
         }

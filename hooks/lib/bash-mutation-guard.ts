@@ -91,6 +91,18 @@
  * rest. `firstDirArg` and `applyDirEffect` state the invariant and how to check
  * it by reading.
  *
+ * A MODIFIER IS NOT THE ONLY SHAPE. Two constructs were measured moving the
+ * shell without being a flag on the builtin at all: `command cd rules` and
+ * `builtin cd rules` reached the builtin through a wrapper the directory model
+ * did not walk, and bare `pushd` / `pushd +N` ROTATE bash's stack where the
+ * model pushed onto it (`issues/260803-2038…`, `issues/260803-2039…`). Both are
+ * closed by the same allow-list stance rather than beside it: the wrapper walk
+ * is now the shared resolver's (`Invocation.reachesBuiltin`), and the two
+ * rotation forms take the give-up the flag forms already had. What that does not
+ * license is a fresh completeness claim — the honest statement is that the model
+ * is closed against flags, against the two non-flag modes that were enumerated,
+ * and against the wrapper and stack routes measured in Turn 5.
+ *
  * ONE of those modifiers need not be in the command at all. `CDPATH` exported
  * in the user's own shell profile changes where a bare-word `cd` lands with
  * nothing in the command text to give it away, so it arrives as
@@ -1483,8 +1495,14 @@ const MODELLED_DIR_FLAGS: ReadonlySet<string> = new Set(["-L", "--"]);
  * Enumerating those three would have been the fourth narrowing of one defect
  * class in one Circle. What is written instead is the stance: a flag this
  * classifier has not been taught yields `unmodelled`, and `unmodelled` denies
- * fail-closed. A bash modifier nobody has thought of yet arrives as a flag, and
- * so arrives here.
+ * fail-closed.
+ *
+ * WHAT THAT DOES NOT SAY is that every unmodelled bash construct arrives as a
+ * flag. It was said, and it was false twice over: `command cd rules` never
+ * reaches this function, and bare `pushd` reaches it, is correctly told there is
+ * no operand, and was then pushed onto the model's stack anyway. Both are closed
+ * at their own call sites in `applyDirEffect`. The claim this function supports
+ * is the one about FLAGS, and it stops there.
  *
  * The cost is stated rather than estimated, because it is real: `cd -P build
  * && rm out.js` and `cd -P docs && rm ../notes.txt` allowed before and deny
@@ -1616,13 +1634,38 @@ function cdpathIsSearched(value: string): boolean {
 }
 
 /**
- * Is a `CDPATH` in force in the environment the command will run in?
+ * Is a `CDPATH` set in the environment THIS PROCESS was given?
  *
- * The command-text spellings above (`assignsCdpath`) cannot see this one. The
- * Bash tool's shell is initialised from the user's profile, so `export CDPATH=…`
- * in a `.zshrc` puts every bare-word `cd` on a search list with nothing in the
- * command to give it away. Measured, from a directory holding no `only/`:
- * `CDPATH=/decoy` turns `cd only` into `/decoy/only` in both bash 3.2 and zsh.
+ * Read the question literally, because the answer is narrower than the feature
+ * it serves. `env` is `opts.env`, which `guard.ts` fills with `process.env` —
+ * the PreToolUse hook's own environment. Claude Code spawns the hook directly
+ * (node, non-interactive, non-login), so that is a frozen snapshot of Claude
+ * Code's launch environment and nothing on that path ever reads a shell profile.
+ *
+ * The environment the check is ABOUT is a different one: the Bash tool's shell,
+ * which is initialised from the user's profile per invocation, so `export
+ * CDPATH=…` in a `.zshrc` puts every bare-word `cd` on a search list with
+ * nothing in the command to give it away. Measured, from a directory holding no
+ * `only/`: `CDPATH=/decoy` turns `cd only` into `/decoy/only` in both bash 3.2
+ * and zsh. Measured too that the tool shell really does source the profile.
+ *
+ * THE TWO AGREE ONLY WHEN CLAUDE CODE WAS ITSELF STARTED FROM A SHELL THAT HAD
+ * SOURCED THE PROFILE, which is the common case and was verified in the session
+ * this was written in. They diverge in two configurations, and in both the
+ * degrade silently does not fire for a `CDPATH` that is genuinely in force
+ * (`issues/260803-2040_…the-ambient-cdpath-check-reads-the-hooks-environment…`):
+ *
+ *   - Claude Code launched other than from an interactive shell — a GUI
+ *     launcher, an IDE extension host, a `launchd`/systemd unit. The launch
+ *     environment carries no profile exports; the tool shell still sources them.
+ *   - The profile edited mid-session. The tool shell picks the new value up on
+ *     its next command; this process's environment was fixed at start.
+ *
+ * That bound is not fixable from here. The only faithful source is the
+ * command's own shell, and asking it costs a subprocess per Bash call inside a
+ * classifier that is textual by design — option 2 in the decision record, and
+ * rejected there on exactly that ground. So it is stated, here and in
+ * `rules/protected-path-discipline.md`, rather than closed.
  *
  * BLANK COUNTS AS UNSET. `export CDPATH=` in a profile has asked for nothing,
  * and neither has `CDPATH=" "`; measured, both leave `cd only` failing rather
@@ -1653,33 +1696,62 @@ function ambientCdpathIsSet(env: NodeJS.ProcessEnv): boolean {
  * every other form the guard cannot model resolves to `unknown` rather than to
  * a guess.
  *
- * ## The invariant, and how to check it by reading
+ * ## The invariant, and the audit that can actually check it
  *
- * **Every write to `state` here leaves it either PROVEN or UNKNOWN.** There is
- * no third outcome, and no branch that models a form it has not recognised.
- * Three things make that checkable without running anything:
+ * **Every write to `state` here leaves the WHOLE RECORD either PROVEN or
+ * UNKNOWN.** Not `cwd` — the record. That distinction is the correction the
+ * previous wording needed: it was stated over `state` and then audited by
+ * grepping for `state.cwd =`, which cannot see a `dirStack.push`, and a
+ * `dirStack.push` bash does not make is precisely what put a later `popd` on a
+ * directory the shell never went to (`issues/260803-2039…`). A recipe that
+ * misses a field is a completeness claim wearing different clothes.
  *
- *   1. Every path out of the `switch` assigns `state.cwd` exactly once, from a
- *      value that is either derived from `resolveDir`/`prev`/`dirStack` (all
- *      subject to this same invariant) or is `CWD_UNKNOWN`/`CWD_OUTSIDE`. The
- *      `default` arm's `never` binding makes the compiler prove the switch is
- *      exhaustive over `DirArg`, so a new arm cannot be added without landing
- *      in it.
- *   2. The only way to reach the modelling code is through `firstDirArg`, which
- *      is an ALLOW-LIST: an unrecognised flag returns `unmodelled` and this
- *      function calls `unmodelled(state)` and returns before any modelling
- *      happens.
- *   3. The three MODES that change bash's resolution rule without being flags
- *      on the builtin — `set -P`, a `CDPATH` assignment, and an AMBIENT
- *      `CDPATH` — are settled before the builtin is applied and consulted on
- *      the way out. The first two are read from the command at the top of this
- *      function; the third is not in the command at all and arrives as
- *      `ambientCdpath`, computed once per command from `opts.env`.
+ * ### Run it
  *
- * So the audit is: grep this function for `state.cwd =` and check each right
- * hand side. Five are unknown (one of them naming its cause), one is
- * `CWD_OUTSIDE`, and the rest come from `resolveDir` on an operand no modifier
- * was allowed to reinterpret.
+ *     awk '/^function applyDirEffect/,/^}$/' hooks/lib/bash-mutation-guard.ts \
+ *       | grep -nE 'state\.[a-z]|unmodelled\('
+ *
+ * That is every mutation of the record and then some, `ShellState` having
+ * exactly five fields (`cwd`, `prev`, `dirStack`, `physical`, `cdpath`) and no
+ * method that hides one. It over-reports on purpose: the READS come out too
+ * (`const here = state.cwd`, `if (state.physical)`), and they are inert — a read
+ * cannot break an invariant about what is stored. Skip them. Each remaining hit
+ * must be one of these five shapes, and nothing else:
+ *
+ *   1. `unmodelled(state)` — the whole record zeroed. Always honest, and the
+ *      only answer to a form this classifier does not model.
+ *   2. `state.cwd = X` — `X` is `CWD_UNKNOWN`, `CWD_UNKNOWN_AMBIENT_CDPATH`,
+ *      `CWD_OUTSIDE`, or comes from `resolveDir` / `prev` / `dirStack`, which
+ *      are subject to this same invariant. The `default` arm's `never` binding
+ *      makes the compiler prove the `switch` is exhaustive over `DirArg`, so a
+ *      new arm cannot be added without landing in it.
+ *   3. `state.prev = state.cwd` — a copy of a value the invariant already
+ *      holds for.
+ *   4. `state.dirStack.push(state.cwd)` / `.pop()` — reachable ONLY on the arms
+ *      where bash really pushes or pops. The property to check is not the value
+ *      but the DEPTH: for every form, does the model's stack end as deep as
+ *      bash's `dirs`? The rotation forms fail that and take shape 1 instead.
+ *   5. `state.physical = true` / `state.cdpath = true` — monotone, never
+ *      cleared, and both can only make a LATER `cwd` less certain.
+ *
+ * ### What the audit still does not certify
+ *
+ * That the function is REACHED. A construct that moves the shell without
+ * running a recognised directory builtin writes nothing here and leaves a
+ * previously-proven `cwd` standing — which is how `command cd rules` got past a
+ * model whose every write was honest (`issues/260803-2038…`). The wrapper walk
+ * now closes the measured route; `eval "cd rules"`, a shell function named `cd`
+ * and an alias remain out of reach of a textual classifier, and are residuals
+ * rather than checks this recipe performs.
+ *
+ * Two supports below the recipe, both checkable by reading: the only way to
+ * reach the modelling code is `firstDirArg`, an ALLOW-LIST whose unrecognised
+ * flag returns `unmodelled` before anything is modelled; and the three MODES
+ * that change bash's resolution rule without being flags on the builtin
+ * (`set -P`, a `CDPATH` assignment, an AMBIENT `CDPATH`) are settled before the
+ * builtin is applied and consulted on the way out. The first two are read from
+ * the command at the top of this function; the third is not in the command at
+ * all and arrives as `ambientCdpath`, computed once per command from `opts.env`.
  *
  * `ambientCdpath` is a PARAMETER rather than a `ShellState` field because it is
  * constant for the whole command: an exported variable is inherited by every
@@ -1692,29 +1764,45 @@ function applyDirEffect(
   literals: Map<string, string>,
   ambientCdpath: boolean,
 ): void {
-  const idx = findCommandWord(words);
-
   // Read BEFORE the builtin: `CDPATH=.. cd agents` is one segment, and the
-  // assignment has to be in force by the time the `cd` in it is modelled.
-  if (assignsCdpath(words, idx, literals)) state.cdpath = true;
+  // assignment has to be in force by the time the `cd` in it is modelled. This
+  // question is about the segment's RAW prefix — a leading assignment, with or
+  // without a command behind it — so it is the one place `findCommandWord` is
+  // still the right helper.
+  if (assignsCdpath(words, findCommandWord(words), literals)) state.cdpath = true;
 
-  if (idx === -1) return;
+  // The SHARED resolver, the same one the verb classifier uses. It walks
+  // `WRAPPER_PROGRAMS`, which this call site used to skip: `command cd rules &&
+  // rm x.md` and `builtin cd rules && rm x.md` were measured allowing while real
+  // bash deleted the file, because one module carried two command-word
+  // resolutions and the directory model had the weaker one
+  // (`issues/260803-2038_…command-cd-and-builtin-cd…`). It also resolves
+  // `(cd rules && ls)` — `tokenize` has already stripped the subshell opener —
+  // and `\cd` / `'cd'`, which is why nothing is peeled or unquoted here.
+  const invocation = resolveInvocation(words, literals);
+  if (invocation === null) return;
+  const { name, args } = invocation;
 
-  const resolved = resolveWord(words[idx], literals);
-  const raw = resolved.unresolved === true ? words[idx] : resolved.value;
-  // `(cd rules && ls)` glues the subshell opener to the builtin; `tokenize`
-  // strips it, so nothing is peeled here. (It used to be peeled HERE, for the
-  // directory builtins only, because subshell scoping was unreachable
-  // otherwise and widening the verbs was a gate decision. The gate passed.)
-  const name = programName(raw);
-  const args = words.slice(idx + 1);
+  // Everything below models a BUILTIN. Nothing else in a segment moves the
+  // shell, so an unrecognised program leaves the state exactly as it was.
+  if (name !== "set" && !DIR_BUILTINS.has(name)) return;
+
+  // A wrapper stands between the segment and the builtin, and only some
+  // wrappers can run one. `sudo cd rules` and `env cd rules` are errors — the
+  // shell goes nowhere — so modelling nothing would be faithful, and giving up
+  // is what is written instead: the faithful version is right only while the
+  // wrapper table says what it says today, and this Circle has now watched five
+  // assertions outlive the reason they were true. The cost is a deny on a
+  // command that is already broken in the shell.
+  if (!invocation.reachesBuiltin) {
+    unmodelled(state);
+    return;
+  }
 
   if (name === "set") {
     if (setsPhysicalMode(args, literals)) state.physical = true;
     return;
   }
-
-  if (!DIR_BUILTINS.has(name)) return;
 
   if (name === "popd") {
     // A flag makes `popd` edit the STACK without popping the way this model
@@ -1740,9 +1828,29 @@ function applyDirEffect(
     return;
   }
 
+  // A `pushd` that names no directory does not PUSH. Measured against bash 3.2
+  // and zsh, reading `dirs` after each step: bare `pushd` SWAPS the top two
+  // stack entries and `pushd +N` / `pushd -N` ROTATE, and all three leave the
+  // stack's DEPTH exactly where it was. Pushing anyway left the model one entry
+  // deep and one shifted, so the next `popd` recovered a confidently-named
+  // directory bash does not go to — measured deleting `rules/x.md` through a
+  // six-segment sequence (`issues/260803-2039_…bare-pushd…`).
+  //
+  // Rotation is a form this classifier does not model, so it says so, in the
+  // mechanism that already exists for exactly that. `cd` with no operand is
+  // untouched: it is a real move to `$HOME`, not a stack edit, and keeps its
+  // `CWD_OUTSIDE` on the `none` arm below.
+  if (name === "pushd" && (target.kind === "none" || target.kind === "opaque")) {
+    unmodelled(state);
+    return;
+  }
+
   // Ordered before the mode check on purpose: whatever mode bash is in, `pushd`
   // pushes the directory it is LEAVING, and that one is still whatever this
-  // model already knew.
+  // model already knew. Reachable only on the two arms where bash really pushes
+  // — a named operand, and `pushd -` (measured: it pushes and then goes to
+  // `$OLDPWD`, exactly as the `previous` arm models) — which is what makes the
+  // model's stack DEPTH track bash's.
   if (name === "pushd") state.dirStack.push(state.cwd);
 
   const here = state.cwd;
@@ -1758,16 +1866,22 @@ function applyDirEffect(
 
   switch (target.kind) {
     case "none":
-      // `cd` alone goes `$HOME`; a bare `pushd` rotates the stack, which the
-      // guard does not model. Neither consults `CDPATH`.
-      state.cwd = name === "pushd" ? CWD_UNKNOWN : CWD_OUTSIDE;
+      // `cd` alone goes `$HOME`, which is outside any relative pattern and
+      // consults no `CDPATH`. A bare `pushd` never reaches here — it took the
+      // rotation give-up above.
+      state.cwd = CWD_OUTSIDE;
       return;
     case "previous":
       // `cd -` is an exact swap of `$PWD` and `$OLDPWD`, and consults no
-      // `CDPATH`.
+      // `CDPATH`. `pushd -` does the same and pushes what it left, which the
+      // guarded push above has already recorded.
       state.cwd = back;
       return;
     case "opaque":
+      // Only `cd +2` / `chdir +2` reach here now — a directory whose name
+      // begins with `+`, which the operand reader will not distinguish from a
+      // rotation, so it is unknown rather than guessed. `pushd +2` took the
+      // give-up above.
       state.cwd = CWD_UNKNOWN;
       return;
     case "word": {

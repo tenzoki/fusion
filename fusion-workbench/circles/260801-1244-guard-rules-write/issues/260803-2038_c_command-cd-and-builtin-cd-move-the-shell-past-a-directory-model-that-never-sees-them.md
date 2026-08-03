@@ -130,3 +130,30 @@ resolver, so the two cannot drift apart again.
 Turn 4 incremental code review, answering the review brief's question 1 — "try to find a
 ninth entrance: a bash construct that moves or invalidates the working directory and
 reaches a modelling path anyway". This one does not reach a modelling path; it bypasses it.
+
+---
+Resolved: `applyDirEffect` now resolves its command word through `resolveInvocation`, the
+same wrapper-aware resolver the verb classifier uses, so one module carries one
+command-word resolution again (`hooks/lib/bash-mutation-guard.ts`). `builtin` was added as
+a `WRAPPER_PROGRAMS` row. The candidate direction's point 3 is implemented as a field on
+the row rather than as a second table: `WrapperSpec.runsBuiltins` marks the wrappers that
+can really run a shell builtin, and `Invocation.reachesBuiltin` reports whether the whole
+chain did so without consuming words of its own. `command`, `builtin` and `time` are
+modelled exactly as a bare `cd` (measured under bash 3.2 and zsh); every other wrapper in
+front of a directory builtin takes `unmodelled(state)` and denies fail-closed, which costs
+only commands that are already errors in the shell.
+
+Measured after the change through the real guard subprocess, one fresh project per row,
+with the real-bash effect check: `command cd rules && rm x.md`, `builtin cd rules && rm
+x.md`, `time cd agents && rm coder.md` and `command cd skills/demo && rm SKILL.md` all
+deny, none reading `[HALTED]`, and real bash deletes the watched file in every case.
+`command cd build && rm out.js` and `builtin cd build && rm out.js` still allow, so the
+wrapper walk models rather than gives up.
+
+Two extra findings, both from checking the general question rather than the two spellings.
+`time` is a THIRD builtin-capable wrapper — it is a reserved word timing a pipeline that
+runs in the current shell, not `/usr/bin/time` — and it was as open as `command`. And
+`command` is inert in zsh, whose `command` forces an external lookup, so only `builtin` and
+`time` reach the builtin in both shells; marking all three is the denying direction for zsh
+and correct for bash, which is the guard's stated model. Residual 5 of T4-2's history has
+been struck through and corrected in place.

@@ -96,3 +96,24 @@ itself, and its cost has already been rejected in kind.
 Turn 4 incremental code review, answering the review brief's question 5 — "does the ambient
 `CDPATH` change cost more than measured?". The measured cost is right. What is unstated is
 the reach.
+
+---
+Resolved: prose only, as the issue proposed. No behaviour changed — the user chose the
+degrade one Turn ago and it still fires on exactly the same condition.
+
+1. `ambientCdpathIsSet`'s docstring now opens with the question the code actually answers
+   ("is a `CDPATH` set in the environment THIS PROCESS was given?"), states that `opts.env`
+   is the hook's own environment and a frozen snapshot of Claude Code's launch environment,
+   names the one configuration in which it equals the command shell's, and names the two in
+   which it does not. It closes by saying why the bound is not fixable from there: the only
+   faithful source is the command's own shell, and querying it is option 2 of the decision
+   record, already rejected on cost.
+2. `rules/protected-path-discipline.md` gains a second ambient-`CDPATH` residual bullet
+   beside the existing one, and the two are labelled by direction — the existing one errs
+   toward DENY (the guard does not ask whether an entry could really divert), the new one
+   errs toward ALLOW (the guard may not see a `CDPATH` that is in force). `README-hooks.md`
+   gains the same statement in its `CDPATH` section.
+3. The decision record
+   (`decisions/260803-1803_i_should-the-guard-degrade-…-ambient-environment.md`) gains a
+   trailing `Bound recorded` note. Its marker does not move: the answer stands, option 1 is
+   still right, and what is added is how far it reaches.
