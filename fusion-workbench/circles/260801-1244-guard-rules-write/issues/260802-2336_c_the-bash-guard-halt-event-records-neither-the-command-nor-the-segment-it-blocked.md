@@ -61,3 +61,36 @@ surface halted.
 
 Found in `circles/260801-1244-guard-rules-write` while reading STEP 2a for the halt-above-
 exemption ordering, which is correct.
+
+---
+Resolved: The Bash halt event now renders the command into its detail —
+`mutation.offendingSegment` when the halted command was also protected (that verdict
+does carry a rendered segment), otherwise the raw command. Both go through a new
+`forEvent` helper in `hooks/guard.ts` that collapses whitespace to one line and
+truncates at 200 characters, so an 80-operand `rm` cannot turn `events.jsonl` into a
+transcript. `mutation.targetPath` is still passed as the event's file field; it is
+correct when set and the detail no longer depends on it.
+
+The closing observation confirmed and acted on, and it was as cheap as it looked. The
+three `guard_halt` sources now name themselves in the detail:
+
+  - `Halt active — write tool call blocked`                     (halted guard refusing a write)
+  - `Halt active — mutating Bash command blocked: <segment>`    (halted guard refusing a shell mutation)
+  - `Halt raised by this block — <cause>`                       (the block that tripped the threshold)
+
+The third prefix comes from one new `emitBlockEvent(halted, tool, file, detail)` helper
+rather than from four copies of an inline ternary at the four `recordBlock` sites (git
+deny, Bash protected path, write-tool protected path, decision-governed). Non-halt
+details pass through unchanged, so an ordinary `guard_block` row reads exactly as before.
+
+One correction to the issue text: the sibling Bash protected-path deny did NOT already
+name `mutation.offendingSegment` in its event detail — it passed the constant
+`"Protected path"`, and the segment reached only the escalation record via the block
+reason. That site now carries `Protected path: <segment>`, which is what the issue
+described as already true. The write-tool sibling keeps the bare `"Protected path"`,
+because on that surface the tool call IS the path and the file field already has it.
+
+Covered by `hooks/lib/__tests__/guard-halt-event.test.ts`, 10 cases asserted on the
+`events.jsonl` the guard wrote. `hooks/lib/__tests__/guard-bash-wiring.test.ts` keeps
+its structural gate, now split across the call site and the shared emitter so neither
+half can be deleted alone. Stubbing the detail changes back out fails 7 of the 10.

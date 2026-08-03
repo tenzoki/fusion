@@ -207,6 +207,67 @@ function block(reason: string): void {
 }
 
 /**
+ * Longest command or segment a detail string carries. Beyond this the reader
+ * has what they need to recognise the call, and `events.jsonl` stays a log
+ * rather than a transcript.
+ */
+const EVENT_DETAIL_MAX = 200;
+
+/**
+ * Fold a command or segment into one bounded line fit for an event detail.
+ *
+ * `emitEvent` serialises through `JSON.stringify`, so a newline could not break
+ * the JSONL framing — it would arrive as a literal `\n` inside the string. The
+ * collapse is for the reader and for the monitor's single-line row, not for the
+ * file format. Truncation is what keeps an unbounded operand list out of the
+ * log.
+ */
+function forEvent(text: string): string {
+  const oneLine = text.replace(/\s+/g, " ").trim();
+  return oneLine.length <= EVENT_DETAIL_MAX
+    ? oneLine
+    : `${oneLine.slice(0, EVENT_DETAIL_MAX - 1)}…`;
+}
+
+/**
+ * Emit the event for a `recordBlock` outcome: `guard_block`, or `guard_halt`
+ * when THIS block is the one that raised the halt.
+ *
+ * ## Why the four call sites share one function
+ *
+ * `guard_halt` reaches `events.jsonl` from three kinds of place — the write-tool
+ * halt (CHECK 1), the Bash halt (guardBashCommand STEP 2a), and a `recordBlock`
+ * that tripped the threshold, which is these four sites. The monitor renders all
+ * of them into one row type, so a reader reconstructing a stalled session sees a
+ * run of identical-looking rows and has to guess which surface produced each.
+ *
+ * The three now say which they are, in the detail:
+ *
+ *   - `Halt active — write tool call blocked`     (a halted guard refusing a write)
+ *   - `Halt active — mutating Bash command blocked: <segment>` (refusing a shell mutation)
+ *   - `Halt raised by this block — <cause>`       (the block that turned the halt on)
+ *
+ * The last prefix is what this function adds. Writing it inline at each of the
+ * four sites would mean four copies of one conditional, each free to drift; the
+ * distinction is a property of the block/halt pair, so it lives with the pair.
+ * The non-halt detail is passed through UNCHANGED, so an ordinary `guard_block`
+ * row reads exactly as it always has.
+ */
+function emitBlockEvent(
+  halted: boolean,
+  tool: string | undefined,
+  file: string | undefined,
+  detail: string,
+): void {
+  emitEvent(
+    halted ? "guard_halt" : "guard_block",
+    tool,
+    file,
+    halted ? `Halt raised by this block — ${detail}` : detail,
+  );
+}
+
+/**
  * Guard a Bash tool call against the two shell policies. Three outcomes are
  * sequenced, in this order:
  *
@@ -274,11 +335,11 @@ function guardBashCommand(
       verdict.offendingSegment,
     );
     saveEscalation(escalation);
-    emitEvent(
-      halted ? "guard_halt" : "guard_block",
+    emitBlockEvent(
+      halted,
       "Bash",
       undefined,
-      `Git branch-switch denied: ${verdict.offendingSegment ?? command}`,
+      `Git branch-switch denied: ${forEvent(verdict.offendingSegment ?? command)}`,
     );
     block(verdict.reason ?? "fusion policy: agents never switch git branches autonomously.");
     return;
@@ -383,11 +444,28 @@ function guardBashCommand(
           "The guard has been halted after repeated violations. " +
           "Read-only commands still run. " +
           `Run: node ${pluginRoot}/hooks/dist/clear-halt.js to reset.`;
+        // NAME THE COMMAND. `mutation.targetPath` is populated on a DENYING
+        // verdict only, and this branch fires whenever `mutation.mutates` is
+        // true — the common case being a command that mutates something
+        // unprotected (`rm notes.txt`, `echo hi > out.txt`). For all of those
+        // the file field is undefined, so a constant detail recorded that a
+        // mutating Bash command was halted and nothing about WHICH one. A halt
+        // is the state a user has to come and clear, and `events.jsonl` is
+        // where they reconstruct what the agent was trying to do; the run of
+        // identical rows after the halt is precisely the behaviour the halt
+        // exists to observe.
+        //
+        // `offendingSegment` when there is one — a halted guard meeting a
+        // PROTECTED path denies here first, above the deny below, and that
+        // verdict does carry the segment, already rendered with its quoted
+        // literals redacted back into place. Otherwise the raw command, which
+        // is what the agent typed and carries no classifier placeholders.
         emitEvent(
           "guard_halt",
           "Bash",
           mutation.targetPath,
-          "Halt active — mutating Bash command blocked",
+          "Halt active — mutating Bash command blocked: " +
+            forEvent(mutation.offendingSegment ?? command),
         );
         block(reason);
         return;
@@ -408,11 +486,11 @@ function guardBashCommand(
         mutation.targetPath,
       );
       saveEscalation(escalation);
-      emitEvent(
-        halted ? "guard_halt" : "guard_block",
+      emitBlockEvent(
+        halted,
         "Bash",
         mutation.targetPath,
-        "Protected path",
+        `Protected path: ${forEvent(mutation.offendingSegment ?? command)}`,
       );
       block(reason);
       return;
@@ -617,7 +695,16 @@ async function main(): Promise<void> {
       "[HALTED] All write operations blocked. " +
       "The guard has been halted after repeated violations. " +
       `Run: node ${pluginRoot}/hooks/dist/clear-halt.js to reset.`;
-    emitEvent("guard_halt", input.tool_name, filePath, "Halt active — blocked");
+    // Names its surface, so a reader scanning a run of guard_halt rows can tell
+    // this apart from the Bash halt and from a block that RAISED the halt. The
+    // path is already the event's file field; repeating it here would only make
+    // the row longer.
+    emitEvent(
+      "guard_halt",
+      input.tool_name,
+      filePath,
+      "Halt active — write tool call blocked",
+    );
     block(reason);
     return;
   }
@@ -686,12 +773,7 @@ async function main(): Promise<void> {
       );
       saveEscalation(escalation);
 
-      emitEvent(
-        halted ? "guard_halt" : "guard_block",
-        input.tool_name,
-        filePath,
-        "Protected path",
-      );
+      emitBlockEvent(halted, input.tool_name, filePath, "Protected path");
       block(reason);
       return;
     }
@@ -746,8 +828,8 @@ async function main(): Promise<void> {
       );
       saveEscalation(escalation);
 
-      emitEvent(
-        halted ? "guard_halt" : "guard_block",
+      emitBlockEvent(
+        halted,
         input.tool_name,
         filePath,
         `Decision: ${relevant.map((d) => d.id).join(", ")}`,

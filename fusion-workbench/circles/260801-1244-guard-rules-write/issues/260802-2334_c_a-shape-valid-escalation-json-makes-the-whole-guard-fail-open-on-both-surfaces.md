@@ -120,3 +120,34 @@ Found in `circles/260801-1244-guard-rules-write` while probing the new `FsLocato
 modes for a fail-open. The locator has none — every throw returns null or false and refuses
 the grant, which leaves the path protected. The fail-open is one layer up, in a module this
 diff did not touch but now calls on the Bash path as well as the write-tool path.
+
+---
+Resolved: Direction 1, as filed. `loadEscalation` now coerces rather than trusts
+(`hooks/lib/escalation.ts`, `coerceState`): it requires an object, defaults every
+field, and forces `recentEvents` to an array, so all four well-formed-but-wrong-shape
+rows read as the empty state instead of throwing into the fail-open catch. Two
+coercions lean restrictive on purpose — `haltActive` reads any truthy value as halted
+(a halt is the restrictive state and `clear-halt.js` can always clear it), and
+`consecutiveBlocks` is clamped to a non-negative integer so a hand-edited negative
+cannot push the halt threshold away.
+
+The fail-open policy in `guard.ts` is UNCHANGED, per the issue: whether an unreadable
+state file should deny rather than allow is a separate question for a decision record.
+
+Measured on the shipped guard, one seeded file per row, no flag set, attacking
+`agents/coder.md`:
+
+```
+  escalation.json content        Edit   before → after      Bash rm   before → after
+  {}                             ALLOW (fail-open) → deny   ALLOW (fail-open) → deny
+  {…} without recentEvents       ALLOW (fail-open) → deny   ALLOW (fail-open) → deny
+  {"recentEvents":{}}            ALLOW (fail-open) → deny   ALLOW (fail-open) → deny
+  null                           ALLOW (fail-open) → deny   ALLOW (fail-open) → deny
+  truncated JSON                 deny → deny                deny → deny
+  empty file                     deny → deny                deny → deny
+```
+
+Covered by `hooks/lib/__tests__/guard-escalation-shape.test.ts`, 19 cases: the six rows
+on both surfaces, an anti-vacuity control proving the seeded file is genuinely read, two
+well-formed-file cases proving no behaviour change, and the two restrictive coercions.
+Stubbing the coercion back out fails 10 of the 19.

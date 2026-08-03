@@ -56,6 +56,21 @@ function bashPathCode(): string {
   return stripComments(guardSource.slice(start, end));
 }
 
+/**
+ * The body of `emitBlockEvent`, comments stripped — the one place that turns a
+ * `recordBlock` outcome into a `guard_block` or a `guard_halt`. It sits ABOVE
+ * `guardBashCommand`, so `bashPathCode()` does not contain it.
+ */
+function blockEmitterCode(): string {
+  const start = guardSource.indexOf("function emitBlockEvent(");
+  expect(start, "emitBlockEvent not found in guard.ts").toBeGreaterThan(-1);
+  const end = guardSource.indexOf("function guardBashCommand(", start);
+  expect(end, "guardBashCommand not found after emitBlockEvent").toBeGreaterThan(
+    start,
+  );
+  return stripComments(guardSource.slice(start, end));
+}
+
 /** The body of `main()`, comments stripped — the write-tool path. */
 function writePathCode(): string {
   const start = guardSource.indexOf("async function main(");
@@ -137,7 +152,15 @@ describe("guard.ts Bash path — mutation check wiring", () => {
     expect(code).toContain('"protected_path"');
     expect(code).toContain("recordBlock(");
     expect(code).toContain("saveEscalation(escalation)");
-    expect(code).toContain('halted ? "guard_halt" : "guard_block"');
+    // The block/halt event pair used to be an inline ternary at each of the
+    // four recordBlock sites. It now goes through one shared emitter, so BOTH
+    // halves are asserted: the Bash path calls it, and the emitter is still the
+    // thing that turns a halting block into a guard_halt. Asserting only the
+    // call would let the ternary be deleted from the helper; asserting only the
+    // helper would let this path stop using it.
+    expect(code).toContain("emitBlockEvent(");
+    expect(blockEmitterCode()).toContain('halted ? "guard_halt" : "guard_block"');
+    expect(writePathCode()).toContain("emitBlockEvent(");
     expect(code).toContain("block(reason)");
   });
 

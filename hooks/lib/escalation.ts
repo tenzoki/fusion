@@ -45,25 +45,101 @@ export interface EscalationState {
   recentEvents: EscalationEvent[];
 }
 
-const EMPTY_STATE: EscalationState = {
-  haltActive: false,
-  consecutiveBlocks: 0,
-  lastBlockTimestamp: null,
-  recentEvents: [],
-};
+/** A fresh empty state. A function, so no caller can share the events array. */
+function emptyState(): EscalationState {
+  return {
+    haltActive: false,
+    consecutiveBlocks: 0,
+    lastBlockTimestamp: null,
+    recentEvents: [],
+  };
+}
 
 const MAX_RECENT_EVENTS = 10;
 
-/** Load escalation state from disk. Returns empty state if missing or no workbench. */
+/**
+ * Coerce an arbitrary parsed JSON value into an EscalationState.
+ *
+ * ## Why this is not an `as` cast
+ *
+ * `JSON.parse(...) as EscalationState` used to be the whole of the load, and
+ * the cast told the type checker not to care. The `try/catch` around it handles
+ * a MISSING file and UNPARSEABLE text; it does not handle text that parses to a
+ * perfectly valid JSON value of the wrong SHAPE. Every later access then threw
+ * — `state.recentEvents.push(…)` on `undefined`, `state.haltActive` on `null` —
+ * and `guard.ts`'s `main().catch` fails OPEN: it prints one stderr line and
+ * emits `{}`, which Claude Code reads as ALLOW. Measured on the shipped guard,
+ * one seeded file per row, attacking a plainly protected path:
+ *
+ *     {}                          Edit ALLOW   Bash rm ALLOW
+ *     {…} without recentEvents    Edit ALLOW   Bash rm ALLOW
+ *     {"recentEvents":{}}         Edit ALLOW   Bash rm ALLOW
+ *     null                        Edit ALLOW   Bash rm ALLOW
+ *     truncated JSON              deny         deny
+ *     empty file                  deny         deny
+ *
+ * The two rows that behaved were the two the `catch` was written for; every row
+ * that failed open was well-formed JSON. The failure was total — the whole
+ * protected list, both surfaces, and an active halt was not consulted either.
+ *
+ * ## What this does instead
+ *
+ * Coerce rather than trust: require an object, default every field, force
+ * `recentEvents` to an array. A well-formed file round-trips unchanged, so
+ * there is NO behaviour change for the ordinary case; every malformed row above
+ * reads as the empty state, which is the correct reading of "this file tells me
+ * nothing". This deliberately does NOT change the fail-open policy in
+ * `guard.ts` — whether an unreadable state file should deny rather than allow
+ * is a separate question that wants a decision record, not a patch.
+ *
+ * ## The two coercions that lean restrictive, on purpose
+ *
+ * `haltActive` reads any truthy value as halted rather than testing `=== true`.
+ * A halt is the RESTRICTIVE state and a user can always clear it with
+ * `clear-halt.js`; silently un-halting a project because someone hand-edited
+ * `"haltActive": "true"` is the worse of the two errors. `consecutiveBlocks` is
+ * clamped to a non-negative integer for the same reason: a negative or
+ * fractional count read verbatim would push the halt threshold further away.
+ *
+ * Elements of `recentEvents` are NOT validated. They are appended to, trimmed
+ * and re-serialised, and only `clear-halt.ts` ever reads their fields — where a
+ * garbage element prints `undefined` in a template string rather than throwing.
+ * Validating them would buy nothing this function exists to buy.
+ */
+function coerceState(value: unknown): EscalationState {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return emptyState();
+  }
+  const raw = value as Record<string, unknown>;
+  const blocks = raw.consecutiveBlocks;
+  return {
+    haltActive: Boolean(raw.haltActive),
+    consecutiveBlocks:
+      typeof blocks === "number" && Number.isFinite(blocks)
+        ? Math.max(0, Math.floor(blocks))
+        : 0,
+    lastBlockTimestamp:
+      typeof raw.lastBlockTimestamp === "string" ? raw.lastBlockTimestamp : null,
+    recentEvents: Array.isArray(raw.recentEvents)
+      ? (raw.recentEvents as EscalationEvent[])
+      : [],
+  };
+}
+
+/**
+ * Load escalation state from disk. Returns the empty state when the file is
+ * missing, when there is no workbench, when the text does not parse, AND when
+ * it parses to something that is not an escalation state — see `coerceState`
+ * for why that last case is the one worth spelling out.
+ */
 export function loadEscalation(): EscalationState {
-  const empty = { ...EMPTY_STATE, recentEvents: [] };
   const paths = getEscalationPaths();
-  if (!paths) return empty;
+  if (!paths) return emptyState();
   try {
     const content = readFileSync(paths.statePath, "utf-8");
-    return JSON.parse(content) as EscalationState;
+    return coerceState(JSON.parse(content));
   } catch {
-    return empty;
+    return emptyState();
   }
 }
 
