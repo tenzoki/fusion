@@ -70,3 +70,6 @@ wants a decision record rather than a patch.
 This does not block the current Circle's Directive: the flag's grant is closed against it. It does
 block any claim that `protectedPaths` is enforced, which `rules/protected-path-discipline.md`
 already qualifies for unrecognised programs and does not qualify for this.
+
+---
+Direction decided, not yet implemented: `circles/260801-1244-guard-rules-write/decisions/260803-1419_a_how-should-the-protected-path-check-treat-the-case-of-a-path.md` — the user chose unconditional case folding (option 2 of this issue's candidate list) at the Turn 3 closing gate, 2026-08-03. The issue stays open because the bypass is still live: the decision records the direction, and the code change plus the correction of the three documents that state the "purely textual" premise belong to a later Circle.
