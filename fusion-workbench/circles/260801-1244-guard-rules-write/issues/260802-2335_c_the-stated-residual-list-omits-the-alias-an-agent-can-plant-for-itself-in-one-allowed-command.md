@@ -105,3 +105,41 @@ this argument about `ln` for the grant side.
 Found in `circles/260801-1244-guard-rules-write` while checking the accuracy of the four
 residuals the implementer reported. Three of the four are accurate as stated; this one
 understates and `260802-2330` falsifies the fourth.
+
+---
+
+**Resolved:** Turn 3, task T3-7 (coder). Direction 1 taken; direction 2 filed as a
+decision; direction 3 left where it is.
+
+- `rules/protected-path-discipline.md` "Known and accepted" now carries the row, placed
+  third so it sits directly against the two residuals it contrasts with, and opening
+  "Unlike the two above, the guard sees the whole command and resolves every operand."
+  It states the measured commands, that writing through the alias is allowed on both
+  surfaces, that protection is textual by design, what closing it would cost, and that an
+  agent noticing the route must treat it as the same denial it would have got directly.
+- The section intro above the list gained one sentence naming the two SHAPES a gap can
+  have, because every previous entry shared the "cannot see the write" shape and the list
+  read as though that were the boundary.
+- `README-hooks.md` residual paragraph gained the same admission, first, so the two
+  documents do not disagree about what is known and accepted.
+- Also corrected, wrong for a reason this issue did not name: the rule file said "copying
+  *out of* a protected directory is never the problem", which the `cp -l` half of this
+  finding falsifies. It now separates copying a protected file's CONTENTS out (fine) from
+  giving it a second NAME (the residual), and points at the list.
+
+Re-measured at HEAD before writing, rather than trusting the Turn 2 numbers: real guard
+subprocess, throwaway consuming project, shipped `hooks/config.json`, `FUSION_ALLOW_*`
+explicitly unset via `env -u`. `ln -s ../agents/coder.md build/alias` allow, `cp -l
+agents/coder.md build/hardalias` allow, `echo pwned > build/alias` allow, `echo pwned2 >
+build/hardalias` allow, `Edit build/alias` allow; controls `rm agents/coder.md` and
+`echo x > agents/coder.md` both DENY. The links were then created for real and written
+through: `agents/coder.md` read `pwned`, then `pwned2`.
+
+**Direction 2** (deny `ln` / `cp -l` on a protected SOURCE) not implemented, per this
+issue's own instruction. Filed as
+`decisions/260803-1402_o_should-the-mutation-classifier-inspect-a-read-operand-to-close-the-planted-alias.md`,
+with the measured table, the three options, and a low-confidence recommendation for
+option 1. It has to be decided rather than dropped, because the row that just shipped
+calls the residual accepted and that row is wrong the day a deny lands.
+
+**Direction 3** left with `shared/issues/260802-2320`, untouched.

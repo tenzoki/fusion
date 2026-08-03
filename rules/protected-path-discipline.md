@@ -60,8 +60,9 @@ directory.
 | `git stash`, `git stash pop`, `git stash show "$REF"`, `git stash push -m "$MSG"` | `git stash push rules/x.md`, `git stash -- rules/x.md` |
 
 Only the operands a verb **writes** count. `cp rules/x.md /tmp/y` and
-`dd if=rules/x.md of=/tmp/y` read a protected path and stay allowed; copying *out of*
-a protected directory is never the problem.
+`dd if=rules/x.md of=/tmp/y` read a protected path and stay allowed; copying a protected
+file's CONTENTS out is not the problem. Giving it a second NAME is a different act, and
+the residual list below says what the guard does and does not do about it.
 
 ### Clustered short flags are read letter by letter
 
@@ -214,10 +215,34 @@ The shape of the alternative, concretely. Retiring a rule file with
 propose the retirement: name the file, say why it should go, say where it should land,
 and let the user move it. Then continue with the work that depended on it.
 
-Three consecutive guard denials put the guard into halt mode, which blocks every
-`Write`, `Edit`, `MultiEdit` and `NotebookEdit` call until a human clears it. So retrying
-a denied command twice more costs you the write tools for the rest of the session, not
-just the one call.
+### What a halt costs you
+
+Three consecutive guard denials put the guard into halt mode, and a halt blocks **both**
+surfaces until a human clears it: every `Write`, `Edit`, `MultiEdit` and `NotebookEdit`
+call, and every `Bash` command the classifier recognises as a mutation. On the shell it is
+broader than the protected-path check it sits above, because it asks only whether the
+command writes a file at all. `rm notes.txt` and `echo hi > out.txt` are denied under a
+halt although neither goes near a protected path.
+
+The deny you meet on the shell is not the protected-path message. It reads:
+
+```
+[HALTED] All file-mutating shell commands are blocked. The guard has been halted
+after repeated violations. Read-only commands still run.
+Run: node <plugin-root>/hooks/dist/clear-halt.js to reset.
+```
+
+That is not a new or unfamiliar policy, and there is nothing in the command to rephrase.
+A write tool under the same halt says `[HALTED] All write operations blocked.` instead —
+same halt, different surface. A protected-path shell write under a halt reports the halt
+rather than the path, because the halt is the condition that has to be cleared first.
+
+Reading still works, on purpose: `cat`, `ls`, `git status` and `git diff` all run under a
+halt, so you can find out what happened and tell the user how to clear it. Clearing it is
+a human act. Do not try to route around a halt; report it.
+
+So retrying a denied command twice more costs you the write tools **and** every mutating
+shell command for the rest of the session, not just the one call.
 
 ## Where this check does not reach
 
@@ -226,6 +251,10 @@ not make it impossible, and no claim that `protectedPaths` is enforced should be
 without that qualification.** A shell can construct a path at run time, and fail-closed
 covers the constructible cases the classifier can see, not every case. Completeness is
 not the target.
+
+The gaps come in two shapes, and the second is the one that surprises people: writes the
+classifier cannot SEE, and writes it sees in full and allows anyway, because the path the
+command names is not the file the write reaches.
 
 Known and accepted:
 
@@ -236,6 +265,19 @@ Known and accepted:
   project's own build script are all outside the table. `eval` and `bash -c` are outside
   it for a specific reason: they take a STRING that bash re-parses, so there is no
   argument list to walk the way there is for `sudo`.
+- **An alias to a protected file can be created, and written through.** Unlike the two
+  above, the guard sees the whole command and resolves every operand. Measured:
+  `ln -s ../agents/coder.md build/alias` and `cp -l agents/coder.md
+  build/hardalias` are both allowed, because `ln` and `cp` write only `build/alias` and
+  `build/hardalias` and neither of those is protected — the source is a read. Afterwards
+  `echo pwned > build/alias` is allowed too, on both surfaces, and `agents/coder.md` now
+  reads `pwned`. The protection side decides on the TEXT of a path (`lib/paths.ts`), so
+  any shell can manufacture a second, unprotected name for a protected file. Closing this
+  means resolving every guarded path through the filesystem, which is a different design
+  with a different cost. Until then it is the cheapest route around the guard there is,
+  and reaching a protected file this way is the same denial you would have got by naming
+  it: the guard raises the cost of a deliberate act, and routing around a deny is what
+  this rule forbids regardless of mechanism.
 - **Shell grammar that puts an ordinary-looking word in command position is not seen.**
   A `case` arm (`build) rm rules/x.md;;`) and a function definition
   (`f() { rm rules/x.md; }`) both leave a word the classifier cannot tell apart from a
@@ -271,7 +313,8 @@ Known and accepted:
   check can compare.
 - **The whole check stands down in the fusion plugin's own repository**, where the
   protected paths are exactly the files a fusion developer's agents legitimately edit.
-  The write tools stand down there for the same reason. The branch policy does not.
+  The write tools stand down there for the same reason, and the halt stands down with
+  them on both surfaces rather than on one. The branch policy does not.
 
 None of these is an invitation. An agent that reaches for one of them to get around a
 deny has done the thing this rule forbids, whatever the guard happened to allow.

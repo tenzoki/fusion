@@ -93,3 +93,38 @@ separate finding.
 
 Found in `circles/260801-1244-guard-rules-write` while checking that the halt change landed
 coherently across the two surfaces. It did, in code.
+
+---
+
+**Resolved:** Turn 3, task T3-7 (coder). Both sentences rewritten against measured
+behaviour, not against the diff.
+
+- `README-hooks.md:143` replaced. A halt now blocks both surfaces; it is broader on the
+  shell than the protected-path check it sits above, because it asks only whether the
+  command writes a file at all; read-only commands still run and the paragraph says why;
+  both halt reason strings are quoted verbatim; a halted protected-path shell write
+  reports the halt, not the path.
+- `rules/protected-path-discipline.md` halt paragraph replaced and given its own heading,
+  `### What a halt costs you`. Quotes the shell halt string in full, so an agent meeting
+  it does not read it as an unfamiliar policy, and states the write-tool string beside it.
+  The closing sentence now names both surfaces as the cost.
+- Also corrected in the same paragraph, wrong for a reason this issue did not name:
+  `README-hooks.md:141` said "**Four** things cause a block, and only these" and omitted
+  the git branch/worktree deny, which calls `recordBlock` like the others and counts
+  toward the halt (`hooks/guard.ts:327-346`; measured). Now five.
+- Also added: the three `guard_halt` event details `d77eda8` introduced, so the event log
+  and the documentation agree on how the three cases are told apart.
+
+Verified by measurement, not by reading the diff: real guard subprocess, throwaway
+consuming project with the shipped `hooks/config.json`, halt seeded on and off. Under a
+halt, `rm notes.txt` / `mv` / `echo hi > out.txt` / `rm rules/x.md` all return
+`[HALTED] All file-mutating shell commands are blocked…`; `ls -la`, `git status` and
+`cat rules/x.md` all return `{}`; `Edit notes.txt` and `Write agents/coder.md` return
+`[HALTED] All write operations blocked.`; `git switch main` returns the branch-policy
+reason, because that check runs above the halt. The three event details were read back out
+of `events.jsonl`.
+
+**Left for plan Step 9, deliberately:** the `FUSION_ALLOW_RULES_WRITE` gap this issue
+names under "Also missing". Both documents still say no override exists for a
+protected-path write. See `issues/260803-1402_o_step-9-must-also-document-that-a-hard-linked-rule-file-is-not-exempt.md`
+for the third sentence Step 9 must add alongside the two this issue lists.
