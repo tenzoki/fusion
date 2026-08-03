@@ -28,3 +28,20 @@ which Step 2 settled. The fix is one line — carry the article in the label
 (`"a protected rule path"` / `"protected rule paths"`) — plus the assertion in
 `hooks/lib/__tests__/rules-write-exemption.test.ts`, whose multi-path case asserts the paths
 are joined but not the sentence around them.
+
+---
+Resolved: the article now travels with the label in `rulesWriteDetail`
+(`hooks/lib/rules-write-exemption.ts`) — `"a protected rule path"` for one path,
+`"protected rule paths"` for several — so the sentence is grammatical in both branches:
+
+```
+… allowed a normally-denied write to a protected rule path: rules/x.md
+… allowed a normally-denied write to protected rule paths: rules/x.md, rules/retired/
+```
+
+The test gap the issue names is closed the way it describes. The two assertions in
+`hooks/lib/__tests__/rules-write-exemption.test.ts` that checked only that the paths were
+joined now compare the WHOLE string, plus a third asserting `"a protected rule paths"` never
+appears. Comparing substrings is how a grammatical category went unnoticed in the first place.
+
+Session: `history/260803-1314-turn3-t3-2-exemption-prose-and-refusal-diagnostics.md`

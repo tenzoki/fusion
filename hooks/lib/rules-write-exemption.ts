@@ -3,17 +3,27 @@
  *
  * A project's rule files are protected by `guard.protectedPaths` (`rules/**`),
  * which is right for ordinary work and wrong for the one job that exists to
- * edit them: curating, revising and retiring rules. This module answers the two
+ * edit them: curating, revising and retiring rules. This module answers the
  * questions that job needs answered, and nothing else:
  *
  *   1. Did the user deliberately set the flag? (`rulesWriteExemptionActive`)
  *   2. Is this path one of the rule paths the flag exempts? (`isProjectRulePath`)
+ *   3. When the answer to 2 is no, WHY — in a sentence the agent that met the
+ *      deny can act on. (`rulesWriteRefusal`, `rulesWriteRefusalNote`)
+ *   4. What gets recorded when a write does go through. (`rulesWriteDetail`)
  *
- * Both must hold. The write-tool path (`guard.ts` CHECK 2) and the Bash
+ * 1 and 2 must both hold. The write-tool path (`guard.ts` CHECK 2) and the Bash
  * mutation path (`MutationOptions.exempt`) ask the same two questions of the
  * same kind of value — a normalised, project-relative path — so they ask them
  * HERE. Writing the boundary twice, once per surface, is two places for a
  * security-relevant rule to drift apart.
+ *
+ * That argument is about the two SURFACES sharing one predicate, and it is the
+ * only thing it is about. It is NOT an argument that the grant side and the
+ * protection side should share one mechanism — they deliberately do not, and
+ * gate 1 below says where and why. One predicate for two callers asking the
+ * same question is a single source of truth; one function for two checks that
+ * are widening in opposite directions is a lost denial.
  *
  * ## What the flag does NOT do
  *
@@ -73,14 +83,37 @@
  *
  * A path that survived gate 0 is exempt only if it also passes BOTH:
  *
- *   1. LEXICAL. `canonicalise` (shared with the protected-path check, see
- *      `paths.ts`) collapses `.`, `..` and trailing separators, and the result
- *      must match `RULE_DIR_PATTERNS` under the same `matchesAny` the protected
- *      list uses. This is what makes `rules/` and `rules/../agents/coder.md`
- *      non-exempt, and it computes the exempt set by the same mechanism that
- *      computes the protected set.
+ *   1. LEXICAL. `canonicalise` (`paths.ts`) collapses `.`, `..` and repeated
+ *      separators AND strips a trailing separator, and the result must match
+ *      `RULE_DIR_PATTERNS` under the same `matchesAny` the protected list uses.
+ *      This is what makes `rules/` and `rules/../agents/coder.md` non-exempt.
  *   2. FILESYSTEM. The path, resolved through the real filesystem, must still
  *      land strictly inside a real rule directory — and must not be a hard link.
+ *
+ * ### Gate 1 runs `canonicalise`; the protection check runs `collapseSegments`
+ *
+ * TWO FUNCTIONS, deliberately, and the difference is one line wide.
+ * `canonicalise` IS `collapseSegments` plus a trailing-separator strip. The
+ * protection check calls `collapseSegments` (`guard.ts`, above both checks on
+ * the write-tool path); this grant calls `canonicalise`, and is its only
+ * caller.
+ *
+ * The reason they differ is that a trailing separator WIDENS whatever set the
+ * path is matched against, and the two sides want opposite things from a wider
+ * set: `rules/**` compiles to `^rules/.*$`, whose `.*` matches the empty
+ * string. Stripping on the PROTECTION side turns `Edit rules/` into an allow.
+ * Not stripping on the GRANT side makes `rm -rf rules/` exempt. The full
+ * argument, both directions and the consequence of each, is written at the two
+ * definitions in `paths.ts`; read it there rather than unifying them. That
+ * unification has been proposed once already — a Turn 1 review offered it as a
+ * one-liner — and it would have removed three denials.
+ *
+ * A second reason `isProjectRulePath` canonicalises for itself rather than
+ * trusting its caller to have done it: the Bash surface hands over operands
+ * nobody collapsed. `guard.ts` collapses the write-tool path above both checks,
+ * but the classifier's own `path.normalize` keeps a trailing separator, so
+ * `rm -rf rules/` arrives here spelled exactly that way. A predicate that
+ * trusted its caller would be right on one surface and wrong on the other.
  *
  * Gate 1 alone is not a boundary, and the reasoning that said it was is worth
  * naming because it is nearly right. Everywhere else in the guard a symlink
@@ -130,6 +163,44 @@
  * for a path the protected list already matched, so this predicate fails closed
  * for free: it can refuse a write the user meant to allow, and it cannot allow
  * one the guard would otherwise have blocked.
+ *
+ * ## Saying WHY it refused
+ *
+ * A refusal that fails safe can still fail the user. With the flag set, both a
+ * hard-linked rule file and a `..` spelling produced a deny BYTE-IDENTICAL to
+ * the one the same write gets with the flag unset — naming, in the gate-0 case,
+ * a file the flag does let the agent write. Nothing separated "the flag is not
+ * set" from "the flag is set and this path is refused for a reason about its
+ * inode that no message names", and the two documented responses to that are
+ * both bad: conclude the flag is broken, or rephrase until something goes
+ * through. `rules/protected-path-discipline.md` exists because of the second.
+ *
+ * So the gates report WHICH one refused, not just that one did.
+ * `rulesWriteRefusal` is the whole decision — null when the grant holds, a
+ * `RulesWriteRefusal` when it does not — and `isProjectRulePath` is that
+ * function read as a boolean. `rulesWriteRefusalNote` turns a refusal into the
+ * sentence a caller appends to its deny reason. No verdict changes; only what
+ * the user is told about one.
+ *
+ * Two properties of the reporting are deliberate:
+ *
+ *   - **A path that is not a rule path at all gets NO note.** The ordinary
+ *     protected-path deny is complete for `agents/coder.md`, and a note there
+ *     would advertise a grant that does not apply. This is also why the check
+ *     ORDER inside `rulesWriteRefusal` puts gate 1's membership test above gate
+ *     0's spelling test, where the numbering has it the other way round: for
+ *     `x/../agents/coder.md`, "the flag does not cover `..` spellings" is true
+ *     and useless, and reads as an invitation to try again without the `..` —
+ *     which would deny too, for the reason the plain deny already gave. Both
+ *     are pure-text gates and both refuse, so the boolean is untouched by the
+ *     order; gate 0 still runs strictly ABOVE the filesystem gate, which is the
+ *     property that matters.
+ *   - **The notes never read as a workaround.** Only the gate-0 note names an
+ *     action ("write it without the `..`"), because there the path really is a
+ *     rule file the agent may write and dropping the `..` is the correct
+ *     instruction rather than a rephrasing. The others say the rephrasing will
+ *     not help and send the reader to the user, which is what
+ *     `rules/protected-path-discipline.md` asks for.
  */
 
 import { matchesAny, canonicalise } from "./paths.js";
@@ -212,50 +283,194 @@ function isStrictlyInside(child: string, parent: string): boolean {
 }
 
 /**
+ * Why the grant was refused — one value per gate that can refuse it.
+ *
+ * `not-a-rule-path` is the ordinary case and the only one with nothing to
+ * explain: the flag names rule files, this is not one, and the protected-path
+ * deny already says everything true about it. The other four are the cases
+ * where the agent is holding a rule path, has the flag set, and is denied
+ * anyway — the ones that read as the flag being broken until something names
+ * the cause. See the module docstring, `## Saying WHY it refused`.
+ */
+export type RulesWriteRefusal =
+  /** Gate 1: the canonical path is not inside any rule directory. */
+  | "not-a-rule-path"
+  /** Gate 0: the spelling carries a `..` segment. */
+  | "spelled-with-dotdot"
+  /** Gate 2: the file already has a second name on this filesystem. */
+  | "hard-link"
+  /** Gate 2: nothing along the path could be resolved (dangling link, cycle). */
+  | "unresolvable"
+  /** Gate 2: it resolves to a location outside the rule directories. */
+  | "resolves-outside";
+
+/**
  * Gate 2 — does this canonical path RESOLVE to a location inside a real rule
  * directory, under a name that is the file's only name?
+ *
+ * Null means yes. The three refusals are reported separately rather than as one
+ * boolean because they are three different situations for the user: a link they
+ * did not know they had, a link that is broken, and a link that goes somewhere
+ * else.
  */
-function resolvesInsideRuleDir(canonical: string, fs: FsLocator): boolean {
-  if (fs.hasHardLinks(canonical)) return false;
+function resolvesInsideRuleDir(
+  canonical: string,
+  fs: FsLocator,
+): RulesWriteRefusal | null {
+  if (fs.hasHardLinks(canonical)) return "hard-link";
 
   const located = fs.locate(canonical);
-  if (located === null) return false;
+  if (located === null) return "unresolvable";
 
   for (const dir of RULE_DIR_ROOTS) {
     const realDir = fs.locate(dir);
     if (realDir === null) continue;
-    if (isStrictlyInside(located, realDir)) return true;
+    if (isStrictlyInside(located, realDir)) return null;
   }
-  return false;
+  return "resolves-outside";
+}
+
+/**
+ * Run every gate and report the FIRST refusal, or null when the path is exempt.
+ *
+ * `isProjectRulePath` is this function read as a boolean, and the deny reasons
+ * on both surfaces are this function read as a sentence. One decision, two
+ * readings — a second implementation of the boundary "for the message" is how a
+ * message ends up describing a check that no longer exists.
+ *
+ * `spelledAs` is the path AS THE TOOL CALL GAVE IT, before any normalisation
+ * the caller applied to make `path` matchable. Gate 0 reads it and nothing else
+ * does. A caller with only one spelling passes it twice; a caller that
+ * collapsed the path first — which both real surfaces do — passes the
+ * uncollapsed original, or gate 0 has nothing left to see.
+ *
+ * ORDER: gate 1's membership test runs first although it is numbered second.
+ * Both it and gate 0 are pure text and both refuse, so which one is asked first
+ * cannot change the verdict — only which refusal is reported, and reporting
+ * "the flag does not cover `..`" about a path the flag would not cover anyway
+ * points the reader at the wrong thing. Gate 0 still runs strictly above the
+ * FILESYSTEM gate, which is the ordering that is load-bearing: a `..` spelling
+ * must never reach a resolver that has already lost the component deciding
+ * where it lands.
+ */
+export function rulesWriteRefusal(
+  path: string,
+  fs: FsLocator,
+  spelledAs: string,
+): RulesWriteRefusal | null {
+  if (!path) return "not-a-rule-path";
+  const canonical = canonicalise(path);
+  if (!matchesAny(canonical, [...RULE_DIR_PATTERNS])) return "not-a-rule-path";
+  // GATE 0. Above the filesystem gate because `canonicalise` is where the `..`
+  // and the symlink component it hides both disappear, so everything below this
+  // line is already looking at a path that may not name the file being written.
+  // Module docstring, `## Gate 0`.
+  if (spellingWalksUp(spelledAs)) return "spelled-with-dotdot";
+  return resolvesInsideRuleDir(canonical, fs);
 }
 
 /**
  * Is this a project rule path — a file inside `rules/` or `.claude/rules/`,
  * including inside `retired/`?
  *
- * Both gates must hold; see the module docstring. The bare rule directory
- * itself is NOT one, in any spelling: the flag permits writing rule files, it
- * does not permit deleting the rule directory.
+ * Every gate must hold; see the module docstring.
  *
- * `spelledAs` is the path AS THE TOOL CALL GAVE IT, before any normalisation
- * the caller applied to make `path` matchable. Gate 0 reads it and nothing
- * else does. A caller with only one spelling passes it twice; a caller that
- * collapsed the path first — which both real surfaces do — passes the
- * uncollapsed original, or gate 0 has nothing left to see.
+ * ## What the flag reaches, measured
+ *
+ * Everything INSIDE a rule directory is exempt, whole subtrees included. With
+ * the flag set, `rm -rf rules/*`, `rm -rf rules/retired` and
+ * `mv rules/retired /tmp/gone` all go through — and the last two destroy the
+ * retirement archive the flag exists to POPULATE, which is the one outcome a
+ * curator would least expect it to allow. That reach is inside the flag's
+ * purpose (a curation job clears out and rewrites the rule set) and it is
+ * stated here so it is a known reach rather than a discovered one.
+ *
+ * Only the bare directory NODE is out of reach, in every spelling: `rules`,
+ * `rules/`, `./rules`, `rules//`, and the `.` a `cd rules` gives a name to.
+ * `canonicalise` strips the trailing separator, and the bare name matches no
+ * `rules/**` pattern, so the exemption never sees a rule path there and
+ * `rm -rf rules` and `rm -rf rules/` stay denied. (Denied by the mutation
+ * guard's FIRST pass, not its ancestor pass: `isProtected` retries a
+ * directory operand with a trailing separator, and `rules/` matches
+ * `^rules/.*$` because `.*` matches the empty string.)
+ *
+ * Gate 0 narrows the exempt set by one further class: any spelling carrying a
+ * `..` segment is refused, so `rm -rf rules/a/../retired` denies while
+ * `rm -rf rules/retired` allows. It removes a spelling, not a reach.
+ *
+ * (Measured on the real guard subprocess in a throwaway project with the
+ * shipped `hooks/config.json`; the table is in this Turn's T3-2 history file.
+ * `.claude/rules/**` is not on the protected list at HEAD, so nothing there is
+ * denied with or without the flag — see `RULE_DIR_PATTERNS`.)
  */
 export function isProjectRulePath(
   path: string,
   fs: FsLocator,
   spelledAs: string,
 ): boolean {
-  if (!path) return false;
-  // GATE 0, above `canonicalise` because `canonicalise` is where the `..` and
-  // the symlink component it hides both disappear. Module docstring, `## Gate 0`.
-  if (spellingWalksUp(spelledAs)) return false;
-  const canonical = canonicalise(path);
-  if (!matchesAny(canonical, [...RULE_DIR_PATTERNS])) return false;
-  return resolvesInsideRuleDir(canonical, fs);
+  return rulesWriteRefusal(path, fs, spelledAs) === null;
 }
+
+/**
+ * The sentence a caller appends to its deny reason when the exemption was
+ * active and refused this path — null when there is nothing useful to say.
+ *
+ * Null in exactly two cases: the path is exempt (no deny to explain), and the
+ * path is not a rule path at all (the protected-path deny already said
+ * everything true about it). Callers ask this ONLY when they are already
+ * denying, so the extra filesystem work it costs is off the allow path.
+ */
+export function rulesWriteRefusalNote(
+  path: string,
+  fs: FsLocator,
+  spelledAs: string,
+): string | null {
+  const refusal = rulesWriteRefusal(path, fs, spelledAs);
+  if (refusal === null || refusal === "not-a-rule-path") return null;
+  return REFUSAL_NOTES[refusal];
+}
+
+/** Every note opens by ruling out the reading the deny would otherwise get. */
+const REFUSAL_PREFIX =
+  `${RULES_WRITE_ENV} is set and this path is inside a rule directory, but ` +
+  `the exemption still refused it: `;
+
+/**
+ * One sentence per refusal, exported because the wording is the interface — it
+ * is what an agent reads instead of guessing, and it is asserted in the tests
+ * by meaning rather than by string equality.
+ *
+ * Only the gate-0 note tells the reader to change the path, because there the
+ * file really is one the flag covers and dropping the `..` is the correct
+ * instruction. The rest say plainly that rewriting the command will not help,
+ * so the note cannot be read as the workaround `protected-path-discipline.md`
+ * is written against.
+ */
+export const REFUSAL_NOTES: Readonly<
+  Record<Exclude<RulesWriteRefusal, "not-a-rule-path">, string>
+> = {
+  "spelled-with-dotdot":
+    REFUSAL_PREFIX +
+    "the spelling contains a `..` segment, which the exemption never covers. " +
+    "A `..` deletes the component before it, and that component can be a " +
+    "symlink that sends the write somewhere else entirely. Name the rule file " +
+    "without a `..`.",
+  "hard-link":
+    REFUSAL_PREFIX +
+    "the file already has a second name on this filesystem (a hard link), so " +
+    "the exemption cannot prove that writing this name writes only a rule " +
+    "file. Rewriting the command will not help — ask the user.",
+  unresolvable:
+    REFUSAL_PREFIX +
+    "the path cannot be resolved on this filesystem — a broken or looping " +
+    "symlink lies along it — so the exemption cannot prove where the write " +
+    "would land. Rewriting the command will not help — ask the user.",
+  "resolves-outside":
+    REFUSAL_PREFIX +
+    "it resolves through a symlink to a location outside the rule " +
+    "directories, so the write would not land on a rule file at all. " +
+    "Rewriting the command will not help — ask the user.",
+};
 
 /**
  * Did the user set `FUSION_ALLOW_RULES_WRITE`?
@@ -278,12 +493,19 @@ export function rulesWriteExemptionActive(env: NodeJS.ProcessEnv): boolean {
  * Shaped like the git override note (`guard.ts` STEP 3): it names the variable
  * that granted the permission and what the permission let through, so a reader
  * of `events.jsonl` sees the cause and not only the effect.
+ *
+ * The ARTICLE travels with the label. A plural label under a fixed "a
+ * protected …" read "a protected rule paths: rules/x.md, rules/retired/" for
+ * every multi-path write, which is the first sentence a user sees about the new
+ * flag: the Bash surface reaches the plural branch on the flag's headline use,
+ * `mv rules/x.md rules/retired/`, which exempts the source and the destination.
  */
 export function rulesWriteDetail(paths: string[]): string {
-  const label = paths.length === 1 ? "rule path" : "rule paths";
+  const label =
+    paths.length === 1 ? "a protected rule path" : "protected rule paths";
   // Empty is not a case any call site produces — the note is written only for
   // paths that were exempted — but a detail string that silently reads as
   // though nothing happened would be worse than one that says so.
   const list = paths.length === 0 ? "(none recorded)" : paths.join(", ");
-  return `Override ${RULES_WRITE_ENV} allowed a normally-denied write to a protected ${label}: ${list}`;
+  return `Override ${RULES_WRITE_ENV} allowed a normally-denied write to ${label}: ${list}`;
 }

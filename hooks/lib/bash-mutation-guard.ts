@@ -221,6 +221,22 @@ export interface MutationOptions {
    * assignable.
    */
   exempt?: (path: string, spelled: string) => boolean;
+  /**
+   * Why `exempt` said no — one sentence to carry into the deny reason, or null
+   * when the caller has nothing worth adding. Consulted ONLY for an operand
+   * that `exempt` was asked about and refused, and only on the deny path, so
+   * whatever it costs is off the allow path entirely.
+   *
+   * It exists because a grant that refuses silently is indistinguishable from a
+   * grant that was never given: with `FUSION_ALLOW_RULES_WRITE` set, a
+   * hard-linked rule file denied with the byte-identical message it gets with
+   * the flag unset, and the two documented responses to that were to conclude
+   * the flag is broken or to keep rephrasing the command. This module stays
+   * ignorant of what the caller's grant is about — it takes a string back and
+   * puts it in the reason, exactly as it takes a boolean back and skips the
+   * operand.
+   */
+  exemptRefusal?: (path: string, spelled: string) => string | null;
 }
 
 /* ------------------------------------------------------------------ *
@@ -646,11 +662,26 @@ const NO_WORKAROUND =
   "inspects subshells — and do not re-route through Edit or Write, which are " +
   "guarded on the same list. STOP and ask the user.";
 
-function protectedReason(segment: string, path: string): string {
+/**
+ * A caller's explanation of why its exemption refused this operand, placed
+ * BEFORE `NO_WORKAROUND` so the reader meets the cause before the instruction.
+ * Empty when there is no exemption in play, which is every deny in a project
+ * that sets no override.
+ */
+function refusal(note: string | null): string {
+  return note === null ? "" : ` ${note}`;
+}
+
+function protectedReason(
+  segment: string,
+  path: string,
+  refusalNote: string | null,
+): string {
   return (
     `fusion policy: this Bash command writes a protected path. The segment ` +
     `\`${segment}\` writes \`${path}\`, which is under compliance guard ` +
     `protection.` +
+    refusal(refusalNote) +
     NO_WORKAROUND
   );
 }
@@ -659,12 +690,14 @@ function ancestorReason(
   segment: string,
   path: string,
   pattern: string,
+  refusalNote: string | null,
 ): string {
   return (
     `fusion policy: this Bash command writes a directory that CONTAINS a ` +
     `protected path. The segment \`${segment}\` writes \`${path}\`, which ` +
     `contains \`${pattern}\` — under compliance guard protection. Removing or ` +
     `moving the directory would take the protected path with it.` +
+    refusal(refusalNote) +
     NO_WORKAROUND
   );
 }
@@ -1305,9 +1338,26 @@ function parenCounts(text: string): { opens: number; closes: number } {
  * ------------------------------------------------------------------ */
 
 type SegmentHit =
-  | { kind: "protected"; path: string }
-  | { kind: "ancestor"; path: string; pattern: string }
+  | { kind: "protected"; path: string; refusalNote: string | null }
+  | { kind: "ancestor"; path: string; pattern: string; refusalNote: string | null }
   | { kind: "unresolved"; token: string; viaCwd: boolean };
+
+/**
+ * `opts.exemptRefusal` for an operand the exemption was asked about and
+ * refused, or null when there is no exemption, no explanation, or nothing to
+ * ask (a non-exemptible verb was never offered the operand in the first place).
+ *
+ * Pass 3 has no equivalent: an operand that does not resolve names no path a
+ * predicate could have been asked about.
+ */
+function refusalNoteFor(
+  target: Extract<Target, { kind: "path" }>,
+  exemptible: boolean,
+  opts: MutationOptions,
+): string | null {
+  if (!exemptible || opts.exempt === undefined) return null;
+  return opts.exemptRefusal?.(target.path, target.spelled) ?? null;
+}
 
 /**
  * Render a parsed word back to something a human reads. Capture mode replaces
@@ -1392,7 +1442,14 @@ function classifyWords(
       exempted.push(target.path);
       continue;
     }
-    return { hit: { kind: "protected", path: target.path }, mutates: true };
+    return {
+      hit: {
+        kind: "protected",
+        path: target.path,
+        refusalNote: refusalNoteFor(target, exemptible, opts),
+      },
+      mutates: true,
+    };
   }
 
   // Pass 2 — a target that is an ancestor directory of a protected path.
@@ -1405,7 +1462,12 @@ function classifyWords(
       continue;
     }
     return {
-      hit: { kind: "ancestor", path: target.path, pattern },
+      hit: {
+        kind: "ancestor",
+        path: target.path,
+        pattern,
+        refusalNote: refusalNoteFor(target, exemptible, opts),
+      },
       mutates: true,
     };
   }
@@ -1580,7 +1642,7 @@ function denyVerdict(
     return {
       deny: true,
       mutates,
-      reason: protectedReason(offendingSegment, hit.path),
+      reason: protectedReason(offendingSegment, hit.path, hit.refusalNote),
       offendingSegment,
       targetPath: hit.path,
     };
@@ -1590,7 +1652,12 @@ function denyVerdict(
     return {
       deny: true,
       mutates,
-      reason: ancestorReason(offendingSegment, hit.path, hit.pattern),
+      reason: ancestorReason(
+        offendingSegment,
+        hit.path,
+        hit.pattern,
+        hit.refusalNote,
+      ),
       offendingSegment,
       targetPath: hit.path,
     };

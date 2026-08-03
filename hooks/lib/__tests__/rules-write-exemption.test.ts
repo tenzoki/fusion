@@ -1,12 +1,15 @@
 import { describe, it, expect } from "vitest";
-import type { FsLocator } from "../rules-write-exemption.js";
+import type { FsLocator, RulesWriteRefusal } from "../rules-write-exemption.js";
 import {
+  REFUSAL_NOTES,
   RULES_WRITE_ENV,
   RULE_DIR_PATTERNS,
   RULE_DIR_ROOTS,
   isProjectRulePath,
   rulesWriteExemptionActive,
   rulesWriteDetail,
+  rulesWriteRefusal,
+  rulesWriteRefusalNote,
   spellingWalksUp,
 } from "../rules-write-exemption.js";
 
@@ -108,6 +111,45 @@ describe("isProjectRulePath — the exempt set", () => {
       expect(isRulePath(path)).toBe(true);
     });
   }
+});
+
+describe("isProjectRulePath — the reach the docstring claims, pinned", () => {
+  /**
+   * Finding 2 (`260802-2231`): the module used to say the flag "does not permit
+   * deleting the rule directory", which reads as a statement about destructive
+   * reach and is not one. Everything INSIDE a rule directory is exempt, whole
+   * subtrees included — measured on the real guard subprocess, with
+   * `rm -rf rules/retired` and `mv rules/retired /tmp/gone` both going through
+   * and taking the retirement archive the flag exists to populate.
+   *
+   * The reach is inside the flag's purpose and is not being narrowed here. It
+   * is pinned so the docstring is falsifiable: if a later change contracts the
+   * exempt set, this block fails and the prose gets corrected with it.
+   *
+   * Glob metacharacters appear as LITERAL TEXT because the Bash classifier
+   * never expands them (`rm -rf rules/*` reaches the predicate spelled exactly
+   * that way), and the literal `rules/*` matches `^rules/.*$`.
+   */
+  const wholeSubtrees = [
+    ["every entry under the rule root", "rules/*"],
+    ["the same, globstarred", "rules/**"],
+    ["the retirement archive itself", "rules/retired"],
+    ["everything in the retirement archive", "rules/retired/*"],
+    ["a nested rule directory", "rules/a/b"],
+  ] as const;
+
+  for (const [what, path] of wholeSubtrees) {
+    it(`exempts ${what}: ${path}`, () => {
+      expect(isRulePath(path)).toBe(true);
+    });
+  }
+
+  it("refuses the `..` spelling of a subtree that is otherwise in reach", () => {
+    // Gate 0 narrows the exempt set by a SPELLING, not by a reach:
+    // `rm -rf rules/a/../retired` denies while `rm -rf rules/retired` allows.
+    expect(isRulePath("rules/a/../retired")).toBe(false);
+    expect(isRulePath("rules/retired")).toBe(true);
+  });
 });
 
 describe("isProjectRulePath — the never-exempt set", () => {
@@ -420,6 +462,141 @@ describe("isProjectRulePath — gate 2 refuses a hard link", () => {
   });
 });
 
+describe("rulesWriteRefusal — WHICH gate refused, not just that one did", () => {
+  /**
+   * Finding 4 (`260802-2332`) and its sibling (`260803-1252`): with the flag
+   * set, a hard-linked rule file and a `..` spelling both produced a deny
+   * byte-identical to the one the same write gets with the flag UNSET — and in
+   * the second case the deny named a file the flag DOES let the agent write.
+   * Nothing separated "the flag is not set" from "the flag is set and this
+   * path is refused for a reason no message names".
+   *
+   * The verdict is unchanged in every row below; only the report is new.
+   */
+  const planted = fakeFs({ links: { "rules/up": ROOT } });
+  const aliased = fakeFs({ hardLinks: ["rules/copy"] });
+  const blind: FsLocator = { locate: () => null, hasHardLinks: () => false };
+
+  const rows: [string, string, string, FsLocator, RulesWriteRefusal | null][] = [
+    ["a genuine rule file is not refused at all", "rules/x.md", "rules/x.md", PLAIN, null],
+    ["an agent prompt is simply not a rule path", "agents/coder.md", "agents/coder.md", PLAIN, "not-a-rule-path"],
+    ["neither is the bare rule directory", "rules/", "rules/", PLAIN, "not-a-rule-path"],
+    ["nor the empty path", "", "", PLAIN, "not-a-rule-path"],
+    ["a rule path spelled with a `..`", "rules/x.md", "rules/retired/../x.md", PLAIN, "spelled-with-dotdot"],
+    ["a rule path that is a hard link", "rules/copy", "rules/copy", aliased, "hard-link"],
+    ["a rule path nothing can resolve", "rules/x.md", "rules/x.md", blind, "unresolvable"],
+    ["a rule path that resolves out of the rule directory", "rules/up/agents/coder.md", "rules/up/agents/coder.md", planted, "resolves-outside"],
+  ];
+
+  for (const [what, path, spelled, fs, expected] of rows) {
+    it(`reports ${JSON.stringify(expected)} for ${what}`, () => {
+      expect(rulesWriteRefusal(path, fs, spelled)).toBe(expected);
+    });
+  }
+
+  it("says nothing about the spelling when the path is not a rule path anyway", () => {
+    // The ORDER property. Gate 0 is numbered first and asked second, because
+    // "the flag does not cover `..` spellings" is true and useless for
+    // `x/../agents/coder.md` — and reads as an invitation to try again without
+    // the `..`, which would deny too.
+    expect(rulesWriteRefusal("agents/coder.md", PLAIN, "x/../agents/coder.md")).toBe(
+      "not-a-rule-path",
+    );
+    expect(rulesWriteRefusalNote("agents/coder.md", PLAIN, "x/../agents/coder.md")).toBeNull();
+  });
+
+  it("keeps gate 0 above the FILESYSTEM gate, which is the ordering that matters", () => {
+    // A `..` spelling must never be decided by a resolver looking at a path the
+    // collapse already emptied of the component that decides where it lands. If
+    // gate 0 ever sank below gate 2, this row would report a gate-2 refusal (or
+    // worse, none) instead.
+    const wouldGrant: FsLocator = {
+      locate: (p) => `${ROOT}/${p}`,
+      hasHardLinks: () => false,
+    };
+    expect(rulesWriteRefusal("rules/x.md", wouldGrant, "rules/up/../x.md")).toBe(
+      "spelled-with-dotdot",
+    );
+  });
+
+  it("is the same decision isProjectRulePath reads as a boolean", () => {
+    // One boundary, two readings. A second implementation "for the message" is
+    // how a message ends up describing a check that no longer exists.
+    const subjects: [string, string, FsLocator][] = [
+      ["rules/x.md", "rules/x.md", PLAIN],
+      ["agents/coder.md", "agents/coder.md", PLAIN],
+      ["rules/x.md", "rules/a/../x.md", PLAIN],
+      ["rules/copy", "rules/copy", aliased],
+      ["rules/up/agents/coder.md", "rules/up/agents/coder.md", planted],
+      ["rules/x.md", "rules/x.md", blind],
+    ];
+    for (const [path, spelled, fs] of subjects) {
+      expect(isProjectRulePath(path, fs, spelled), `${path} as ${spelled}`).toBe(
+        rulesWriteRefusal(path, fs, spelled) === null,
+      );
+    }
+  });
+});
+
+describe("rulesWriteRefusalNote — what the refused agent actually reads", () => {
+  const planted = fakeFs({ links: { "rules/up": ROOT } });
+  const aliased = fakeFs({ hardLinks: ["rules/copy"] });
+  const blind: FsLocator = { locate: () => null, hasHardLinks: () => false };
+
+  it("says nothing when the path is exempt", () => {
+    expect(rulesWriteRefusalNote("rules/x.md", PLAIN, "rules/x.md")).toBeNull();
+  });
+
+  it("says nothing when the path is not a rule path", () => {
+    // The ordinary protected-path deny is already complete for these, and a
+    // note would advertise a grant that does not apply to them.
+    expect(rulesWriteRefusalNote("agents/coder.md", PLAIN, "agents/coder.md")).toBeNull();
+    expect(rulesWriteRefusalNote("rules/", PLAIN, "rules/")).toBeNull();
+  });
+
+  it("names the hard link, the one thing no earlier message mentioned", () => {
+    const note = rulesWriteRefusalNote("rules/copy", aliased, "rules/copy");
+    expect(note).toContain(RULES_WRITE_ENV);
+    expect(note).toContain("hard link");
+  });
+
+  it("names the spelling, and the file the write would really reach", () => {
+    const note = rulesWriteRefusalNote("rules/x.md", PLAIN, "rules/retired/../x.md");
+    expect(note).toContain("`..`");
+    expect(note).toContain("symlink");
+  });
+
+  it("distinguishes an unresolvable path from one that resolves elsewhere", () => {
+    expect(rulesWriteRefusalNote("rules/x.md", blind, "rules/x.md")).toContain(
+      "cannot be resolved",
+    );
+    expect(
+      rulesWriteRefusalNote("rules/up/agents/coder.md", planted, "rules/up/agents/coder.md"),
+    ).toContain("outside the rule directories");
+  });
+
+  it("tells the reader to change the path ONLY where changing it is correct", () => {
+    // The constraint from `260803-1252`: a diagnostic must not read as "spell
+    // it differently and it will go through". Gate 0 is the one refusal where
+    // the file really is one the flag covers, so it is the one note that names
+    // an action. Every other note says plainly that rewriting will not help.
+    expect(REFUSAL_NOTES["spelled-with-dotdot"]).toContain("without a `..`");
+    for (const kind of ["hard-link", "unresolvable", "resolves-outside"] as const) {
+      expect(REFUSAL_NOTES[kind], kind).toContain("will not help");
+      expect(REFUSAL_NOTES[kind], kind).toContain("ask the user");
+    }
+  });
+
+  it("keeps every note to one line and names the variable in each", () => {
+    // They are appended to a deny reason and land in `escalation.json`, so a
+    // newline would break the record as surely as it would the message.
+    for (const [kind, note] of Object.entries(REFUSAL_NOTES)) {
+      expect(note, kind).not.toContain("\n");
+      expect(note, kind).toContain(RULES_WRITE_ENV);
+    }
+  });
+});
+
 describe("rulesWriteExemptionActive — the accepted flag spellings", () => {
   /**
    * Exactly what the two git overrides accept, because they share
@@ -470,18 +647,35 @@ describe("rulesWriteExemptionActive — the accepted flag spellings", () => {
 });
 
 describe("rulesWriteDetail — the advisory message", () => {
+  /**
+   * Finding 1 (`260802-2213`): the label went plural while the article stayed
+   * singular, so every multi-path advisory read "to a protected rule paths:
+   * …". The earlier assertions checked that the paths were joined and never
+   * looked at the sentence around them, which is why a whole grammatical
+   * category went unnoticed — so these compare the WHOLE string.
+   */
   it("names the variable and the single path it let through", () => {
-    const detail = rulesWriteDetail(["rules/x.md"]);
-    expect(detail).toContain(RULES_WRITE_ENV);
-    expect(detail).toContain("rules/x.md");
-    expect(detail).toContain("rule path");
+    expect(rulesWriteDetail(["rules/x.md"])).toBe(
+      `Override ${RULES_WRITE_ENV} allowed a normally-denied write to a protected rule path: rules/x.md`,
+    );
   });
 
   it("names every path when several were exempted", () => {
-    const detail = rulesWriteDetail(["rules/x.md", "rules/retired/x.md"]);
-    expect(detail).toContain("rules/x.md");
-    expect(detail).toContain("rules/retired/x.md");
-    expect(detail).toContain("rule paths");
+    // The Bash surface reaches this branch on the flag's headline use:
+    // `mv rules/x.md rules/retired/` exempts the source and the destination.
+    expect(rulesWriteDetail(["rules/x.md", "rules/retired/"])).toBe(
+      `Override ${RULES_WRITE_ENV} allowed a normally-denied write to protected rule paths: rules/x.md, rules/retired/`,
+    );
+  });
+
+  it("carries the article with the label, in both directions", () => {
+    expect(rulesWriteDetail(["rules/x.md"])).toContain("a protected rule path:");
+    expect(rulesWriteDetail(["rules/x.md", "rules/y.md"])).not.toContain(
+      "a protected rule paths",
+    );
+    expect(rulesWriteDetail(["rules/x.md", "rules/y.md"])).toContain(
+      "to protected rule paths:",
+    );
   });
 
   it("says so rather than reading as though nothing happened", () => {

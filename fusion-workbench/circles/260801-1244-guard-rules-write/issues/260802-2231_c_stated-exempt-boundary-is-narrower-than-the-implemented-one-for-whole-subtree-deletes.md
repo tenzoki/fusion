@@ -66,3 +66,43 @@ project-configurable through `fusion-guard.json`. Two consequences to settle the
 ## Origin
 
 Found in `circles/260801-1244-guard-rules-write` while enumerating what the flag exempts.
+
+---
+Resolved: documentation, in `isProjectRulePath`'s docstring
+(`hooks/lib/rules-write-exemption.ts`), under `## What the flag reaches, measured`. The
+sentence that read as a statement about destructive reach is gone; what replaces it states
+the reach, names the outcome a curator would least expect (`rm -rf rules/retired` destroys
+the retirement archive), and says that only the bare directory node is out of reach.
+
+**Re-measured first, on the real guard subprocess after gate 0 landed.** The issue's four
+rows reproduce exactly; gate 0 changed the exempt set by one class, and the class it removed
+is a spelling rather than a reach:
+
+```
+                                 flag off        flag on
+  rm -rf rules                   DENY            DENY
+  rm -rf rules/                  DENY            DENY
+  rm -rf rules/*                 DENY            allow
+  rm -rf rules/**                DENY            allow
+  rm -rf rules/retired           DENY            allow
+  rm -rf rules/retired/          DENY            allow
+  rm -rf rules/retired/*         DENY            allow
+  mv rules/retired /tmp/gone     DENY            allow
+  cd rules && rm -rf retired     DENY            allow
+  cd rules && rm -rf .           DENY            DENY
+  rm -rf rules/a/../retired      DENY            DENY   <- gate 0, new since this issue
+```
+
+One correction to the issue's own text while confirming it: the bare-directory denial comes
+from the classifier's FIRST pass, not the ancestor pass. `isProtected` retries a directory
+operand with a trailing separator, and `rules/` matches `^rules/.*$` because `.*` matches the
+empty string. The docstring says so, and the reach is now pinned by unit cases rather than by
+prose alone (`rules/*`, `rules/**`, `rules/retired`, `rules/retired/*` exempt; the bare
+spellings not).
+
+The two adjacent questions — `RULE_DIR_PATTERNS` hardcoded while `protectedPaths` becomes
+project-configurable, and the exemption outranking a project's own protected entry — are Step
+6's and were not decided here. Filed as a decision record rather than answered in a docstring:
+`decisions/260803-1314_o_may-a-project-protect-a-path-inside-its-own-rule-directory-against-the-rules-write-flag.md`
+
+Session: `history/260803-1314-turn3-t3-2-exemption-prose-and-refusal-diagnostics.md`

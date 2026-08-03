@@ -1537,3 +1537,184 @@ describe("a halted guard blocks shell mutations too (finding 3)", () => {
     CASE_TIMEOUT,
   );
 });
+
+// ---------------------------------------------------------------------------
+// Turn 3 — a refusal that fails safe can still fail the user.
+//
+// Two findings, one mechanism. `260802-2332`: two ordinary rule files hard-
+// linked to each other are both refused, permanently, and the deny is
+// byte-identical to the deny with the flag UNSET — so the flag reads as broken.
+// `260803-1252`: a gate-0 deny names the COLLAPSED path, which for
+// `rules/retired/../x.md` is `rules/x.md`, a file the same flag does let the
+// agent write. Both leave an agent with a deny it cannot explain, and the
+// documented response to that is rephrasing, which is the failure
+// `rules/protected-path-discipline.md` exists to prevent.
+//
+// The verdict is unchanged in every case below. Only the message is new.
+// ---------------------------------------------------------------------------
+
+/** The write-tool deny, exactly as it read before any note was appended. */
+const PLAIN_DENY = (path: string): string =>
+  `Protected path: ${path} cannot be modified directly. This path is under compliance guard protection.`;
+
+/** Two ORDINARY rule files sharing one inode. Nothing protected is aliased. */
+function hardLinkTwoRuleFiles(root: string): void {
+  linkSync(resolve(root, "rules/x.md"), resolve(root, "rules/y.md"));
+}
+
+describe("a refused grant says which gate refused it (T3-2)", () => {
+  it(
+    "names the hard link that no earlier message mentioned",
+    () => {
+      withProject(({ root }) => {
+        hardLinkTwoRuleFiles(root);
+        const res = runWrite(root, "rules/x.md", "Edit", FLAG_SET);
+
+        expect(res.decision).toBe("block");
+        expect(res.reason).toContain("FUSION_ALLOW_RULES_WRITE");
+        expect(res.reason).toContain("hard link");
+        // Not a spelling problem, so the message must not read as one.
+        expect(res.reason).toContain("ask the user");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "leaves the flag-UNSET deny exactly as it was",
+    () => {
+      // The half that makes the note worth having: with the flag unset there is
+      // no grant to explain, and the message is the one it has always been.
+      withProject(({ root }) => {
+        hardLinkTwoRuleFiles(root);
+        const res = runWrite(root, "rules/x.md");
+
+        expect(res.decision).toBe("block");
+        expect(res.reason).toBe(PLAIN_DENY("rules/x.md"));
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "keeps the accepted cost visible: two hard-linked RULE files are both refused",
+    () => {
+      // The behaviour is deliberate — a grant read off a path is sound only
+      // while the path names one file — and it costs the flag's headline use on
+      // a project whose files arrived through `rsync --link-dest`, `cp -al` or
+      // `git clone --local`. Recorded here as a decision rather than left to be
+      // discovered, per the finding's "test coverage this needs".
+      denyEach(
+        ["rules/x.md", "rules/y.md"],
+        (root, path) => runWrite(root, path, "Edit", FLAG_SET),
+        { setup: hardLinkTwoRuleFiles, reasonContains: "hard link" },
+      );
+      denyEach(
+        ["mv rules/x.md rules/retired/", "sed -i '' 's/a/b/' rules/y.md"],
+        bashCall,
+        { setup: hardLinkTwoRuleFiles, reasonContains: "hard link" },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "names the `..` spelling instead of a file the flag would have allowed",
+    () => {
+      // `rules/retired/../x.md` collapses to `rules/x.md` — writable under that
+      // name with the same flag. The deny still names the collapsed path,
+      // because that is what the protection side matched, but it no longer
+      // stops there.
+      withProject(({ root }) => {
+        const res = runWrite(root, "rules/retired/../x.md", "Edit", FLAG_SET);
+
+        expect(res.decision).toBe("block");
+        expect(res.reason).toContain("FUSION_ALLOW_RULES_WRITE");
+        expect(res.reason).toContain("`..`");
+        expect(res.reason).toContain("without a `..`");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "explains the same gate on the shell surface, through the tracked cd",
+    () => {
+      denyEach(
+        [
+          "rm rules/retired/../x.md",
+          "cd rules/retired && rm ../x.md",
+          "echo x > rules/retired/../x.md",
+        ],
+        bashCall,
+        { reasonContains: "without a `..`" },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "explains a rule path that resolves out of the rule directory",
+    () => {
+      denyEach(["rules/up/agents/coder.md"], editCall, {
+        setup: plantAliases,
+        reasonContains: "outside the rule directories",
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "says nothing about the exemption for a path the flag was never about",
+    () => {
+      // The note must not advertise a grant that does not apply. `agents/coder
+      // .md` is not a rule path with the flag set or unset, and both spellings
+      // get the message they always got — including the `..` spelling, whose
+      // gate-0 refusal would be true here and useless.
+      withProject(({ root }) => {
+        expect(runWrite(root, "agents/coder.md", "Edit", FLAG_SET).reason).toBe(
+          PLAIN_DENY("agents/coder.md"),
+        );
+      });
+      withProject(({ root }) => {
+        expect(
+          runWrite(root, "x/../agents/coder.md", "Edit", FLAG_SET).reason,
+        ).toBe(PLAIN_DENY("agents/coder.md"));
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "puts the cause in the escalation record, not only in the reply",
+    () => {
+      // The reason string is what `recordBlock` stores, so a user reading
+      // `escalation.json` or the monitor's warnings sees the same cause the
+      // agent saw.
+      withProject(({ root }) => {
+        hardLinkTwoRuleFiles(root);
+        runWrite(root, "rules/x.md", "Edit", FLAG_SET);
+
+        const state = readEscalation(root);
+        expect(state?.recentEvents[0]?.trigger).toBe("protected_path");
+        expect(state?.recentEvents[0]?.message).toContain("hard link");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "still grants the unaliased neighbours, so the note is not a new refusal",
+    () => {
+      withProject(({ root }) => {
+        hardLinkTwoRuleFiles(root);
+        // `rules/retired/.keep` and `.claude/rules/local.md` share no inode.
+        expect(runWrite(root, ".claude/rules/local.md", "Edit", FLAG_SET).decision)
+          .toBeUndefined();
+        expect(runBash(root, "rm rules/retired/.keep", FLAG_SET).decision)
+          .toBeUndefined();
+      });
+    },
+    CASE_TIMEOUT,
+  );
+});

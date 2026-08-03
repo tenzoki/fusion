@@ -67,6 +67,7 @@ import {
   isProjectRulePath,
   rulesWriteDetail,
   rulesWriteExemptionActive,
+  rulesWriteRefusalNote,
 } from "./lib/rules-write-exemption.js";
 
 /**
@@ -126,6 +127,25 @@ const fsLocator = realFsLocator(process.cwd());
  */
 function isExemptRulePath(path: string, spelledAs: string): boolean {
   return isProjectRulePath(path, fsLocator, spelledAs);
+}
+
+/**
+ * Why the exemption refused this path, as a sentence to append to a deny
+ * reason — or null when there is nothing to add.
+ *
+ * Null whenever the flag is unset, so a project that never uses the exemption
+ * sees the deny it has always seen. Null too when the path is not a rule path
+ * at all: the protected-path message is already complete for `agents/coder.md`,
+ * and an exemption note there would advertise a grant that does not apply.
+ *
+ * Asked ONLY while a deny is being rendered, which is what makes it free: the
+ * gates run a second time, on the one call in a session that was going to stop
+ * anyway. The alternative — carrying the refusal out of the first evaluation —
+ * would put a diagnostic field on the exemption seam that every allow pays for.
+ */
+function exemptionRefusalNote(path: string, spelledAs: string): string | null {
+  if (!rulesWriteExemptionActive(process.env)) return null;
+  return rulesWriteRefusalNote(path, fsLocator, spelledAs);
 }
 
 /** Hook input from Claude Code (PreToolUse). */
@@ -318,6 +338,14 @@ function guardBashCommand(
       // `MutationOptions.exempt` and `rules-write-exemption.ts` `## Gate 0`.
       exempt: rulesWriteExemptionActive(process.env)
         ? isExemptRulePath
+        : undefined,
+      // And, for an operand it refuses, WHY — carried into the deny reason so a
+      // rule path denied under a set flag does not read exactly like the same
+      // path denied under an unset one. Paired with `exempt` on purpose: the
+      // classifier only asks this about an operand it already asked `exempt`
+      // about, so the two are configured together or not at all.
+      exemptRefusal: rulesWriteExemptionActive(process.env)
+        ? exemptionRefusalNote
         : undefined,
     });
 
@@ -635,7 +663,18 @@ async function main(): Promise<void> {
       isExemptRulePath(filePath, rawFilePath);
 
     if (!exempted) {
-      const reason = `Protected path: ${filePath} cannot be modified directly. This path is under compliance guard protection.`;
+      // The note is empty for every deny in a project that does not use the
+      // flag, and for every path the flag was never about — so this is the
+      // message it has always been, plus a cause when there is one to name.
+      // Measured before it existed: `Edit rules/retired/../x.md` with the flag
+      // SET reported `Protected path: rules/x.md`, naming a file the same flag
+      // does let the agent write, with nothing about the spelling that refused
+      // it. The reason string is also what `recordBlock` stores, so the
+      // escalation record carries the cause too.
+      const note = exemptionRefusalNote(filePath, rawFilePath);
+      const reason =
+        `Protected path: ${filePath} cannot be modified directly. This path is under compliance guard protection.` +
+        (note === null ? "" : ` ${note}`);
 
       const halted = recordBlock(
         escalation,

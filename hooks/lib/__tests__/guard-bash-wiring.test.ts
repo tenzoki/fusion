@@ -239,6 +239,51 @@ describe("guard.ts write-tool path — one collapse, above both checks", () => {
     expect(exemption, "exemption call not found").toBeGreaterThan(-1);
     expect(code.slice(exemption)).toMatch(/^isExemptRulePath\(filePath, rawFilePath\)/);
   });
+
+  it("asks the same two spellings when it explains the refusal", () => {
+    // The note comes from re-running the SAME gates on the SAME pair. Asking
+    // with `filePath` twice would report a gate-2 refusal for a path gate 0
+    // actually refused, which is a message describing a check that did not run.
+    expect(code).toContain("exemptionRefusalNote(filePath, rawFilePath)");
+  });
+});
+
+describe("guard.ts — the refusal note is a diagnostic, never a verdict", () => {
+  const whole = stripComments(guardSource);
+
+  it("is asked only while a deny is being rendered", () => {
+    // Off the allow path entirely: the extra filesystem work runs on the one
+    // call in a session that was going to stop anyway. A note computed above
+    // the deny would put gate 2's `lstat` on every exempted write.
+    const write = writePathCode();
+    expect(write.indexOf("if (!exempted) {")).toBeLessThan(
+      write.indexOf("exemptionRefusalNote("),
+    );
+  });
+
+  it("is gated on the same flag as the exemption itself", () => {
+    // Two halves. The helper refuses to answer when the flag is unset, so a
+    // project that never uses the exemption reads the deny it always read; and
+    // the Bash seam is configured in the same conditional as `exempt`, so the
+    // classifier can never be asked WHY a grant it was never offered said no.
+    expect(whole).toContain(
+      "if (!rulesWriteExemptionActive(process.env)) return null;",
+    );
+    const bash = bashPathCode();
+    const refusalOpt = bash.indexOf("exemptRefusal:");
+    expect(refusalOpt, "exemptRefusal not wired").toBeGreaterThan(-1);
+    expect(bash.slice(refusalOpt)).toMatch(
+      /^exemptRefusal: rulesWriteExemptionActive\(process\.env\)/,
+    );
+  });
+
+  it("changes no verdict on either surface", () => {
+    // The note is appended to a reason string and nothing else. If it ever
+    // appears in a condition, it has stopped being a diagnostic.
+    const write = writePathCode();
+    expect(write).not.toMatch(/if\s*\([^)]*exemptionRefusalNote/);
+    expect(bashPathCode()).not.toMatch(/if\s*\([^)]*exemptRefusal/);
+  });
 });
 
 describe("guard.ts Bash path — the git override waives only the git op", () => {

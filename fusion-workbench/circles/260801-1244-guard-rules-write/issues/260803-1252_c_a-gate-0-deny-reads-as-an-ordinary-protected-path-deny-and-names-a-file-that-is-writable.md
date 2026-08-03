@@ -82,3 +82,42 @@ Whatever is said must not describe the boundary in a way that reads as a workaro
 it without a `..`" is the correct instruction for a rule file the agent may write; it must
 not read as "spell it differently and it will go through", which is what the guard's whole
 protected-path discipline is written against.
+
+---
+Resolved: candidate direction 1, by the same mechanism that closed `260802-2332` — one
+diagnostic serving both gates, filed as T3-2 rather than split. The exemption now reports
+WHICH gate refused (`rulesWriteRefusal`), and each surface appends the matching sentence to
+its deny reason.
+
+Measured, with the flag set:
+
+```
+  Edit rules/retired/../x.md
+    Protected path: rules/x.md cannot be modified directly. This path is under compliance
+    guard protection. FUSION_ALLOW_RULES_WRITE is set and this path is inside a rule
+    directory, but the exemption still refused it: the spelling contains a `..` segment,
+    which the exemption never covers. A `..` deletes the component before it, and that
+    component can be a symlink that sends the write somewhere else entirely. Name the rule
+    file without a `..`.
+
+  cd rules/retired && rm ../x.md
+    fusion policy: … writes `rules/x.md`, which is under compliance guard protection.
+    <the same sentence> Do not rephrase the command — … STOP and ask the user.
+```
+
+The issue's constraint is met by construction rather than by wording alone. "Name the rule
+file without a `..`" is emitted ONLY when the collapsed path is inside a rule directory — the
+membership test is asked before the spelling test for exactly this reason. For
+`x/../agents/coder.md` the refusal is reported as `not-a-rule-path` and no note is written, so
+the message never suggests re-spelling a path that would deny either way. It is also the one
+note that names an action; the other refusals say rewriting will not help.
+
+The smaller inaccuracy in `## A second, smaller inaccuracy` is NOT closed and is left open
+deliberately. The deny still names the collapsed spelling (`rules/agents/coder.md` through a
+planted `rules/up`), because that is the path the protection side matched and renaming it
+would mean the deny reason and the protected-list match disagree. What changed is that the
+reader is no longer left with only that string: the refusal sentence tells them a `..` was
+the cause. Whether the deny should name the kernel-resolved target is a protection-side
+question, on the same ground as `260803-1251_o_fs-locator-collapses-dotdot-lexically-…`.
+
+Session: `history/260803-1314-turn3-t3-2-exemption-prose-and-refusal-diagnostics.md`
