@@ -91,6 +91,14 @@
  * rest. `firstDirArg` and `applyDirEffect` state the invariant and how to check
  * it by reading.
  *
+ * ONE of those modifiers need not be in the command at all. `CDPATH` exported
+ * in the user's own shell profile changes where a bare-word `cd` lands with
+ * nothing in the command text to give it away, so it arrives as
+ * `opts.env.CDPATH` instead — the only environment variable this classifier
+ * reads, and the reason the environment is a parameter. See
+ * `ambientCdpathIsSet`; the decision that chose degrading over documenting is
+ * `decisions/260803-1803_a_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md`.
+ *
  * ## Fail-closed, and its bound
  *
  * A shell can build a path at run time. When an operand of a RECOGNISED verb
@@ -160,9 +168,12 @@
  * where they are correctly independent.
  *
  * This module is PURE and EXPORTED so it is unit-testable without the hook
- * firing. It never touches the filesystem, the environment, or the process:
- * the protected list, the project-relative normaliser and the exemption
- * predicate all arrive through `MutationOptions`.
+ * firing. It never touches the filesystem or the process, and it never READS
+ * the environment: the protected list, the project-relative normaliser, the
+ * exemption predicate and the environment itself all arrive through
+ * `MutationOptions`. The environment is a parameter for the same reason it is
+ * one in `rules-write-exemption.ts` — a test sets a variable for one case
+ * without touching the process every other case runs in.
  */
 
 import { normalize as normalizePath } from "node:path";
@@ -237,6 +248,21 @@ export interface MutationOptions {
   protectedPaths: string[];
   /** Project-root-relative normalisation, injected so the module stays pure. */
   normalize: (raw: string) => string;
+  /**
+   * The environment the command will run in. Exactly ONE variable is read —
+   * `CDPATH` — because a `CDPATH` exported in the user's shell profile changes
+   * where a bare-word `cd` lands and appears nowhere in the command text (see
+   * `ambientCdpathIsSet`).
+   *
+   * REQUIRED, unlike `exempt`, and the asymmetry is the point: an absent
+   * `exempt` is the STRICTER answer (nothing is granted), while an absent
+   * environment would be the LOOSER one (no `CDPATH` anywhere). A caller that
+   * forgets a field whose omission weakens the guard is a caller that will
+   * forget it, so the compiler asks instead. Pass `{}` to mean "no relevant
+   * environment", which is what a unit test asserting the default usually
+   * wants.
+   */
+  env: NodeJS.ProcessEnv;
   /**
    * C5a seam — a path this predicate accepts is exempt. Defaults to none.
    *
@@ -790,6 +816,34 @@ function unknownCwdReason(segment: string, token: string): string {
   );
 }
 
+/**
+ * The same fail-closed deny, for the one cause that is NOWHERE IN THE COMMAND.
+ *
+ * `unknownCwdReason` tells the reader an earlier `cd` moved somewhere unknown,
+ * which is true here too and useless: with `CDPATH` set in the profile the
+ * `cd` looks entirely ordinary, every operand in the command is a literal, and
+ * a reader following that advice rewrites a command that was never the problem.
+ * So this one names the variable, and names the two things that actually clear
+ * it. Constraint from
+ * `decisions/260803-1803_a_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md`:
+ * the deny reason has to name `CDPATH` as the cause.
+ */
+function ambientCdpathReason(segment: string, token: string): string {
+  return (
+    `fusion policy: CDPATH is set in this shell's environment, so the guard ` +
+    `cannot determine the working directory. Bash searches CDPATH for a ` +
+    `BARE-WORD \`cd\` operand and lands on the first entry that has it, which ` +
+    `need not be the current directory — so an earlier \`cd\` in this command ` +
+    `may have moved anywhere on that list, and the segment \`${segment}\` ` +
+    `writes \`${token}\` at an unknowable location (fail-closed). Two things ` +
+    `clear it: anchor the \`cd\` operand (\`./x\`, \`../x\` or an absolute ` +
+    `path — CDPATH is not consulted for any of those), or unset CDPATH in the ` +
+    `environment. Rewriting the operand that is named here will not, because ` +
+    `it is the directory it hangs off that is unknown.` +
+    NO_WORKAROUND
+  );
+}
+
 /* ------------------------------------------------------------------ *
  * Redirection scanning
  * ------------------------------------------------------------------ */
@@ -1186,11 +1240,29 @@ function ancestorOfProtected(
 type Cwd =
   | { kind: "known"; dir: string }
   | { kind: "outside" }
-  | { kind: "unknown" };
+  | { kind: "unknown"; cause?: CwdUnknownCause };
+
+/**
+ * Why the working directory is unknown, when saying so changes what the reader
+ * should DO about it.
+ *
+ * There is one member, and it earns its place by being invisible: every other
+ * way to lose the directory is written somewhere in the command (`cd $D`,
+ * `cd -P x`, `pushd -n x`), so `unknownCwdReason` can tell the reader to drop
+ * the `cd` and they can see the `cd` it means. An AMBIENT `CDPATH` is in the
+ * user's shell profile, and a reason naming only the working directory would
+ * send them looking through a command that contains no cause.
+ */
+type CwdUnknownCause = "ambient-cdpath";
 
 const CWD_ROOT: Cwd = { kind: "known", dir: "" };
 const CWD_OUTSIDE: Cwd = { kind: "outside" };
 const CWD_UNKNOWN: Cwd = { kind: "unknown" };
+/** Unknown BECAUSE a bare-word `cd` was searched down an ambient `CDPATH`. */
+const CWD_UNKNOWN_AMBIENT_CDPATH: Cwd = {
+  kind: "unknown",
+  cause: "ambient-cdpath",
+};
 
 /** Append a relative path to a virtual directory (`""` = the project root). */
 function joinCwd(dir: string, value: string): string {
@@ -1227,7 +1299,12 @@ type Target =
    * refuse exactly the spellings it erases. See `MutationOptions.exempt`.
    */
   | { kind: "path"; path: string; spelled: string }
-  | { kind: "unresolved"; viaCwd: boolean }
+  /**
+   * `cause` is carried from the `Cwd` that could not be named, and only when
+   * `viaCwd` — the operand itself is fine, so the deny has to explain the
+   * directory. See `CwdUnknownCause`.
+   */
+  | { kind: "unresolved"; viaCwd: boolean; cause?: CwdUnknownCause }
   | { kind: "outside" }
   | { kind: "empty" };
 
@@ -1246,7 +1323,9 @@ function resolveTarget(
   if (!absolute) {
     // A relative operand says nothing on its own — it is a path only once the
     // guard knows where the shell is standing.
-    if (cwd.kind === "unknown") return { kind: "unresolved", viaCwd: true };
+    if (cwd.kind === "unknown") {
+      return { kind: "unresolved", viaCwd: true, cause: cwd.cause };
+    }
     if (cwd.kind === "outside") return { kind: "outside" };
   }
 
@@ -1309,11 +1388,14 @@ interface ShellState {
    * buy back a shape nothing writes, and the error is in the denying
    * direction.
    *
-   * An AMBIENT `CDPATH` — exported in the user's own shell profile rather than
-   * written into the command — is invisible here by construction: this module
-   * reads no environment. That is an open contract question, filed as
-   * `decisions/260803-1803_o_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md`,
-   * and it is NOT closed by this field.
+   * COMMAND-TEXT ONLY. An AMBIENT `CDPATH` — exported in the user's own shell
+   * profile — is not this field and never sets it: it is constant for the whole
+   * command, so it is a parameter to `applyDirEffect` rather than state, and it
+   * denies with its own reason (`ambientCdpathReason`) because it is the one
+   * cause a reader cannot find by re-reading the command. See
+   * `ambientCdpathIsSet` and
+   * `decisions/260803-1803_a_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md`,
+   * answered in favour of degrading.
    */
   cdpath: boolean;
 }
@@ -1534,6 +1616,37 @@ function cdpathIsSearched(value: string): boolean {
 }
 
 /**
+ * Is a `CDPATH` in force in the environment the command will run in?
+ *
+ * The command-text spellings above (`assignsCdpath`) cannot see this one. The
+ * Bash tool's shell is initialised from the user's profile, so `export CDPATH=…`
+ * in a `.zshrc` puts every bare-word `cd` on a search list with nothing in the
+ * command to give it away. Measured, from a directory holding no `only/`:
+ * `CDPATH=/decoy` turns `cd only` into `/decoy/only` in both bash 3.2 and zsh.
+ *
+ * BLANK COUNTS AS UNSET. `export CDPATH=` in a profile has asked for nothing,
+ * and neither has `CDPATH=" "`; measured, both leave `cd only` failing rather
+ * than diverting. So does `CDPATH=:` — a colon-separated list of empty entries,
+ * and an empty entry means the current directory — but that one is treated as
+ * SET here, because reading the entries is the beginning of deciding whether
+ * they could divert, which is the option the decision record rejected. It
+ * over-denies a spelling nobody writes.
+ *
+ * What is deliberately NOT asked is whether the `CDPATH` entries could really
+ * divert this operand: that means a filesystem probe per entry inside a
+ * classifier that is textual by design (option 2 in the decision record,
+ * rejected on that ground). The consequence is measured and worth stating:
+ * `CDPATH=.` and a leading `.` shield the operand only when the local
+ * subdirectory EXISTS — with `CDPATH=.:/decoy`, `cd rules` stays local when
+ * `./rules` is there and lands in `/decoy/rules` when it is not. So even the
+ * "safe" common profile diverts sometimes, and the classifier cannot tell which
+ * time it is looking at without asking the filesystem.
+ */
+function ambientCdpathIsSet(env: NodeJS.ProcessEnv): boolean {
+  return (env.CDPATH ?? "").trim().length > 0;
+}
+
+/**
  * Apply a segment's directory builtin, if it has one, to the running state.
  *
  * Only the first non-flag operand is read: `cd a b` is an error in bash, and
@@ -1556,18 +1669,28 @@ function cdpathIsSearched(value: string): boolean {
  *      is an ALLOW-LIST: an unrecognised flag returns `unmodelled` and this
  *      function calls `unmodelled(state)` and returns before any modelling
  *      happens.
- *   3. The two MODES that change bash's resolution rule without being flags on
- *      the builtin — `set -P` and a `CDPATH` assignment — are read at the top,
- *      before the builtin is applied, and each is consulted on the way out.
+ *   3. The three MODES that change bash's resolution rule without being flags
+ *      on the builtin — `set -P`, a `CDPATH` assignment, and an AMBIENT
+ *      `CDPATH` — are settled before the builtin is applied and consulted on
+ *      the way out. The first two are read from the command at the top of this
+ *      function; the third is not in the command at all and arrives as
+ *      `ambientCdpath`, computed once per command from `opts.env`.
  *
  * So the audit is: grep this function for `state.cwd =` and check each right
- * hand side. Four are unknown, one is `CWD_OUTSIDE`, and the rest come from
- * `resolveDir` on an operand no modifier was allowed to reinterpret.
+ * hand side. Five are unknown (one of them naming its cause), one is
+ * `CWD_OUTSIDE`, and the rest come from `resolveDir` on an operand no modifier
+ * was allowed to reinterpret.
+ *
+ * `ambientCdpath` is a PARAMETER rather than a `ShellState` field because it is
+ * constant for the whole command: an exported variable is inherited by every
+ * subshell, so unlike `physical` and `cdpath` there is no scope that could
+ * clear it and nothing for `cloneState` to carry.
  */
 function applyDirEffect(
   state: ShellState,
   words: string[],
   literals: Map<string, string>,
+  ambientCdpath: boolean,
 ): void {
   const idx = findCommandWord(words);
 
@@ -1659,9 +1782,19 @@ function applyDirEffect(
         state.cwd = CWD_UNKNOWN;
         return;
       }
-      if (state.cdpath && cdpathIsSearched(w.value)) {
-        state.cwd = CWD_UNKNOWN;
-        return;
+      // A `CDPATH` is in force, from the environment or from an assignment in
+      // this command, and the operand is a bare word bash would search for.
+      // The two are ordered so the INVISIBLE cause wins the reason: with both
+      // in play the user still has to be told about the one they cannot see.
+      if (cdpathIsSearched(w.value)) {
+        if (ambientCdpath) {
+          state.cwd = CWD_UNKNOWN_AMBIENT_CDPATH;
+          return;
+        }
+        if (state.cdpath) {
+          state.cwd = CWD_UNKNOWN;
+          return;
+        }
       }
       state.cwd = resolveDir(here, w.value);
       return;
@@ -1706,7 +1839,12 @@ function parenCounts(text: string): { opens: number; closes: number } {
 type SegmentHit =
   | { kind: "protected"; path: string; refusalNote: string | null }
   | { kind: "ancestor"; path: string; pattern: string; refusalNote: string | null }
-  | { kind: "unresolved"; token: string; viaCwd: boolean };
+  | {
+      kind: "unresolved";
+      token: string;
+      viaCwd: boolean;
+      cause?: CwdUnknownCause;
+    };
 
 /**
  * `opts.exemptRefusal` for an operand the exemption was asked about and
@@ -1863,7 +2001,12 @@ function classifyWords(
     for (const { token, target } of written) {
       if (target.kind === "unresolved") {
         return {
-          hit: { kind: "unresolved", token, viaCwd: target.viaCwd },
+          hit: {
+            kind: "unresolved",
+            token,
+            viaCwd: target.viaCwd,
+            cause: target.cause,
+          },
           mutates: true,
         };
       }
@@ -1913,6 +2056,11 @@ export function classifyBashMutation(
   }
 
   const { segments, literals } = parseCommand(command, { quoted: "capture" });
+
+  // Read ONCE, before the walk: an exported variable is the same for every
+  // segment and every subshell, so this is a property of the command's
+  // environment rather than of the state the walk carries.
+  const ambientCdpath = ambientCdpathIsSet(opts.env);
 
   // Every path `opts.exempt` accepts, across every segment. Reported on the
   // allowing verdict so the caller can record that the permission was
@@ -1970,7 +2118,7 @@ export function classifyBashMutation(
       if (verdict.hit !== null) {
         return denyVerdict(segment.text, literals, verdict.hit);
       }
-      applyDirEffect(state, words, literals);
+      applyDirEffect(state, words, literals, ambientCdpath);
     }
 
     for (let k = 0; k < closes; k++) {
@@ -2033,9 +2181,11 @@ function denyVerdict(
   return {
     deny: true,
     mutates,
-    reason: hit.viaCwd
-      ? unknownCwdReason(offendingSegment, token)
-      : unresolvedReason(offendingSegment, token),
+    reason: !hit.viaCwd
+      ? unresolvedReason(offendingSegment, token)
+      : hit.cause === "ambient-cdpath"
+        ? ambientCdpathReason(offendingSegment, token)
+        : unknownCwdReason(offendingSegment, token),
     offendingSegment,
     targetPath: token,
   };

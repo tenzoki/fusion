@@ -148,6 +148,15 @@ describe("guard.ts Bash path — mutation check wiring", () => {
     expect(writePathCode()).toContain("normalizeToRelative(rawFilePath)");
   });
 
+  it("hands the classifier the REAL environment, not a placeholder", () => {
+    // `MutationOptions.env` is required, so tsc already refuses a call that
+    // omits it — but `env: {}` would compile and would silently switch off the
+    // ambient-CDPATH degrade, which is a check nothing else would notice was
+    // gone. The classifier is pure by design and reads no environment itself,
+    // so this line is the only place the real one can enter.
+    expect(code).toContain("env: process.env");
+  });
+
   it("blocks through the same trigger, escalation and events as the write path", () => {
     expect(code).toContain('"protected_path"');
     expect(code).toContain("recordBlock(");
@@ -380,7 +389,7 @@ describe("guard.ts Bash path — the arguments it passes actually bite", () => {
         : p;
 
   const classify = (command: string) =>
-    classifyBashMutation(command, { protectedPaths, normalize });
+    classifyBashMutation(command, { protectedPaths, normalize, env: {} });
 
   it("denies a relative protected operand", () => {
     const v = classify("mv rules/x.md /tmp/");

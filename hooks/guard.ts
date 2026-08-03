@@ -383,6 +383,14 @@ function guardBashCommand(
       // match a tool_input.file_path. The classifier additionally runs
       // path.normalize() on the result, collapsing any `..` an operand carries.
       normalize: normalizeToRelative,
+      // THE ENVIRONMENT THE COMMAND WILL RUN IN. The classifier reads exactly
+      // one variable from it — CDPATH — because the Bash tool's shell is
+      // initialised from the user's profile, so an exported CDPATH sends a
+      // bare-word `cd` down a search list with nothing in the command text to
+      // show for it. Passed here rather than read there for the same reason
+      // the rules-write flag is: a pure classifier can be tested one case at a
+      // time without a test touching the process every other case runs in.
+      env: process.env,
       // THE RULES-WRITE EXEMPTION, same predicate CHECK 2 asks on the write
       // tools (lib/rules-write-exemption.ts). Passed ONLY when the user set the
       // flag, so with it unset the classifier is called exactly as it was

@@ -47,10 +47,19 @@ function normalize(raw: string): string {
   return raw;
 }
 
+/**
+ * `env: {}` is the DEFAULT, and it is a claim rather than a formality: every
+ * case below that does not name an environment is asserting the behaviour of a
+ * shell with no `CDPATH` set, which is the environment almost every user has.
+ * A case that wants one passes `{ env: { CDPATH: "…" } }` and gets it for that
+ * call only — nothing here touches `process.env`, so no case can leak into
+ * another or into the process running the suite.
+ */
 function classify(command: string, extra: Partial<MutationOptions> = {}) {
   return classifyBashMutation(command, {
     protectedPaths: PROTECTED,
     normalize,
+    env: {},
     ...extra,
   });
 }
@@ -2259,6 +2268,159 @@ describe("virtual cwd — a CDPATH assignment makes a bare-word cd unknowable", 
       "CDPATH=.. cd /project/rules && rm x.md",
       "CDPATH=.. cd . && rm rules/x.md",
     ]);
+  });
+});
+
+/* ------------------------------------------------------------------ *
+ * 13a-ter. An AMBIENT CDPATH — the half no command text can show
+ * ------------------------------------------------------------------ */
+
+/**
+ * `assignsCdpath` catches a `CDPATH` WRITTEN INTO the command. The Bash tool's
+ * shell is initialised from the user's profile, so `export CDPATH=…` in a
+ * `.zshrc` does the same thing with nothing in the command to give it away.
+ *
+ * Measured against real bash 3.2 and zsh before any of this was written, from a
+ * directory holding no `only/`:
+ *
+ *     CDPATH=/decoy    cd only   -> /decoy/only     (bash AND zsh)
+ *     CDPATH=/decoy    pushd only-> /decoy/only     (pushd searches it too)
+ *     CDPATH=/decoy    cd ./x    -> local, or fails (anchored operands immune)
+ *     CDPATH=          cd only   -> fails           (blank is not a search list)
+ *
+ * The user chose to degrade rather than to document the residual
+ * (`decisions/260803-1803_a_…-cdpath-in-the-ambient-environment.md`): a user
+ * with no `CDPATH` sees nothing change, and a user who has one gets a visible
+ * denial instead of a silently weaker guard they have no way to detect.
+ *
+ * The environment reaches the classifier as `opts.env`, so every case here sets
+ * it for ONE call. Nothing touches `process.env`.
+ */
+describe("virtual cwd — an ambient CDPATH makes a bare-word cd unknowable", () => {
+  /** A profile-set `CDPATH`, as `guard.ts` would hand it over. */
+  const AMBIENT = { env: { CDPATH: "/decoy" } };
+
+  it("degrades a bare-word cd that no command text marks as suspect", () => {
+    // Every one of these ALLOWS with no CDPATH set — the whole point is that
+    // the command looks identical either way.
+    expectAllAllow([
+      "cd build && rm out.js",
+      "cd docs && rm ../notes.txt",
+      "cd junk/rules && rm x.md", // multi-component bare words are searched too
+      "pushd build && rm out.js", // measured: pushd consults CDPATH as cd does
+    ]);
+    expectAllDeny(
+      [
+        "cd build && rm out.js",
+        "cd docs && rm ../notes.txt",
+        "cd junk/rules && rm x.md",
+        "pushd build && rm out.js",
+      ],
+      AMBIENT,
+    );
+  });
+
+  it("names CDPATH as the cause, because nothing in the command does", () => {
+    // The constraint the decision record put on this option. A reason naming
+    // only the working directory would send a user with CDPATH set reading a
+    // command that contains no cause, and `protected-path-discipline.md` exists
+    // to stop exactly that kind of blind rephrasing.
+    const v = classify("cd rules && rm x.md", AMBIENT);
+    expect(v.deny).toBe(true);
+    expect(v.reason).toContain("CDPATH is set in this shell's environment");
+    // And it says what to DO — both ways out, named.
+    expect(v.reason).toContain("anchor the `cd` operand");
+    expect(v.reason).toContain("unset CDPATH");
+
+    // The same deny WITHOUT the ambient variable is a different reason, so the
+    // two are told apart rather than merged into one vague message. Here it is
+    // the protected path itself; for an unmodelled flag it is the working
+    // directory.
+    expect(classify("cd rules && rm x.md").reason).not.toContain("CDPATH");
+    expect(classify("cd -P build && rm out.js").reason).not.toContain("CDPATH");
+    expect(classify("cd -P build && rm out.js", AMBIENT).reason).toContain(
+      "working directory the guard cannot determine",
+    );
+  });
+
+  it("leaves an anchored operand IDENTICAL, verdict for verdict", () => {
+    // The whole cost argument rests on this: a user who has CDPATH set can
+    // anchor the operand and get the old behaviour exactly. Asserted as
+    // equality of the entire verdict — deny, reason, offending segment and
+    // target path — rather than by comparing two booleans and hoping.
+    const anchored = [
+      "cd ./rules && rm x.md",
+      "cd ../rules && rm x.md",
+      "cd /project/rules && rm x.md",
+      "cd ./build && rm out.js",
+      "cd . && rm build/out.js",
+      "cd .. && rm -rf sibling",
+      "cd /tmp && rm -rf x",
+      "cd ./docs && rm ../notes.txt",
+      "pushd ./rules && rm x.md",
+    ];
+    for (const cmd of anchored) {
+      expect(classify(cmd, AMBIENT), `CDPATH changed: ${cmd}`).toEqual(
+        classify(cmd),
+      );
+    }
+  });
+
+  it("leaves a command with no cd at all IDENTICAL", () => {
+    // CDPATH changes where a `cd` LANDS. It cannot reach a command that never
+    // moves, and a degrade that leaked into one would be a cost nobody agreed
+    // to.
+    const noCd = [
+      "rm rules/x.md",
+      "rm -rf node_modules",
+      "mv build/out.js dist/",
+      "echo hi > notes.txt",
+      "npm test > /tmp/log",
+      "rm -rf dist",
+    ];
+    for (const cmd of noCd) {
+      expect(classify(cmd, AMBIENT), `CDPATH changed: ${cmd}`).toEqual(
+        classify(cmd),
+      );
+    }
+  });
+
+  it("counts a blank CDPATH as unset", () => {
+    // `export CDPATH=` in a profile has asked for nothing, and measured against
+    // real bash it diverts nothing. Neither does a whitespace-only value.
+    for (const blank of ["", " ", "\t", "\n  \t"]) {
+      expect(
+        classify("cd build && rm out.js", { env: { CDPATH: blank } }).deny,
+        `blank CDPATH ${JSON.stringify(blank)} should not degrade`,
+      ).toBe(false);
+    }
+    // And an environment carrying other variables is not an environment
+    // carrying CDPATH.
+    expect(
+      classify("cd build && rm out.js", {
+        env: { PATH: "/usr/bin", HOME: "/home/u", CDPATH_SUFFIX: "/decoy" },
+      }).deny,
+    ).toBe(false);
+  });
+
+  it("is not scoped by a subshell, and does not disturb the scoping", () => {
+    // An exported variable is inherited by every subshell, so unlike `set -P`
+    // there is no scope that could clear it. What the subshell still does is
+    // discard the `cd`: the outer command is back at the project root either
+    // way.
+    expect(denies("(cd rules && ls) && rm x.md", AMBIENT)).toBe(false);
+    expect(denies("(cd build && ls) && rm rules/x.md", AMBIENT)).toBe(true);
+    // Inside the scope the degrade still applies.
+    expect(denies("(cd build && rm out.js)", AMBIENT)).toBe(true);
+  });
+
+  it("reports the invisible cause first when both CDPATHs are in play", () => {
+    // With an assignment in the command AND one in the environment, the user
+    // can see the first and not the second, so the second is the one the reason
+    // has to name. Anchoring the operand — the remedy it gives — clears both.
+    const v = classify("cd docs && CDPATH=.. cd agents && rm coder.md", AMBIENT);
+    expect(v.deny).toBe(true);
+    expect(v.reason).toContain("CDPATH is set in this shell's environment");
   });
 });
 

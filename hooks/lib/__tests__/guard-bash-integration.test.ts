@@ -318,6 +318,118 @@ describe("the working directory is modelled or admitted unknown, never guessed",
   );
 });
 
+// ---------------------------------------------------------------------------
+// The ambient CDPATH — the same degrade, arriving through the environment.
+//
+// The in-command case above is visible in the command text. This one is not:
+// the Bash tool's shell is initialised from the user's profile, so
+// `export CDPATH=…` in a `.zshrc` sends every bare-word `cd` down a search list
+// with nothing in the command to show for it. The unit suite carries the
+// matrix; what these cases carry is that `process.env` reaches the classifier
+// through the real hook at all, and — the claim the user accepted the change on
+// — that a shell WITHOUT the variable behaves exactly as it did before.
+//
+// `runBash`'s third argument is an override on the child's environment, and the
+// harness strips `CDPATH` from every other child, so these cases cannot leak
+// into their neighbours and a developer's own profile cannot leak into any of
+// them.
+// ---------------------------------------------------------------------------
+
+describe("an ambient CDPATH degrades the working-directory model", () => {
+  it(
+    "denies a bare-word cd when CDPATH is set in the environment",
+    () => {
+      withProject(({ root }) => {
+        const cmd = "cd build && rm out.js";
+        const res = runBash(root, cmd, { CDPATH: "/decoy" });
+        expect(res.decision).toBe("block");
+        expect(res.reason ?? "").not.toContain("[HALTED]");
+        // The reason names the cause the command text cannot show, and both
+        // ways out of it.
+        expect(res.reason ?? "").toContain("CDPATH is set in this shell's environment");
+        expect(res.reason ?? "").toContain("anchor the `cd` operand");
+        expect(res.reason ?? "").toContain("unset CDPATH");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "changes NOTHING when CDPATH is unset, which is the common case",
+    () => {
+      // The claim the decision was accepted on, measured through the real
+      // guard rather than reasoned about. One project, all allows: no denial,
+      // so nothing can halt and mask a later row. Each of these would deny
+      // under a set CDPATH, and none of them denies here.
+      withProject(({ root }) => {
+        for (const cmd of [
+          "cd build && rm out.js",
+          "cd docs && rm ../notes.txt",
+          "pushd build > /dev/null && rm out.js; popd > /dev/null",
+          "cd build && cd .. && rm notes.txt",
+          "rm -rf node_modules",
+        ]) {
+          expect(runBash(root, cmd).decision, cmd).toBeUndefined();
+        }
+        // An explicitly BLANK CDPATH is not a CDPATH: `export CDPATH=` in a
+        // profile has asked for nothing, and real bash diverts nothing for it.
+        expect(
+          runBash(root, "cd build && rm out.js", { CDPATH: "" }).decision,
+        ).toBeUndefined();
+        expect(
+          runBash(root, "cd build && rm out.js", { CDPATH: "   " }).decision,
+        ).toBeUndefined();
+        expect(guardStateWritten(root)).toBe(false);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "leaves an anchored operand allowed even with CDPATH set",
+    () => {
+      // What keeps the cost near zero for the users who do have CDPATH set:
+      // bash consults it only for a BARE-WORD operand, so anchoring the `cd`
+      // buys back the exact old behaviour — which is what the deny reason
+      // tells them to do.
+      withProject(({ root }) => {
+        for (const cmd of [
+          "cd ./build && rm out.js",
+          "cd /tmp && rm -rf x",
+          "cd . && rm build/out.js",
+          "rm -rf node_modules",
+        ]) {
+          expect(
+            runBash(root, cmd, { CDPATH: "/decoy" }).decision,
+            cmd,
+          ).toBeUndefined();
+        }
+        expect(guardStateWritten(root)).toBe(false);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "stands down with the rest of the check in the plugin's own repo",
+    () => {
+      // The degrade is part of the protected-path policy, not a policy of its
+      // own, so it yields where that one yields. Otherwise a fusion developer
+      // with CDPATH set would meet denials the stand-down exists to prevent.
+      withPluginProject(({ root }) => {
+        expect(
+          runBash(root, "cd build && rm out.js", { CDPATH: "/decoy" }).decision,
+        ).toBeUndefined();
+        expect(
+          runBash(root, "cd docs && rm ../rules/x.md", { CDPATH: "/decoy" })
+            .decision,
+        ).toBeUndefined();
+      });
+    },
+    CASE_TIMEOUT,
+  );
+});
+
 describe("the residual, made visible", () => {
   it(
     "allows an unrecognised program that writes a protected path",

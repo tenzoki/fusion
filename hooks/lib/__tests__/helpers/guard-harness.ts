@@ -322,24 +322,33 @@ interface HookInput {
 }
 
 /**
- * Every environment variable the guard reads as a permission, stripped from the
+ * Every environment variable a guard verdict depends on, stripped from the
  * child unless a case asks for it by passing it in `overrides`.
  *
  * Without the strip, a developer who exports one of these in their own shell
- * gets different verdicts from everyone else, and the flag-UNSET half of every
- * case that depends on one silently stops testing anything: it asserts a deny
- * that the developer's environment has already lifted. The failure is invisible
- * — the suite is green on both machines, and only one of them is checking the
- * property.
+ * gets different verdicts from everyone else, and the half of every case that
+ * depends on the variable being absent silently stops testing anything. The
+ * failure is invisible — the suite is green on both machines, and only one of
+ * them is checking the property.
  *
- * `FUSION_ALLOW_RULES_WRITE` is here for exactly the reason the two branch
- * variables are. It gates the rules-write exemption, so an exported copy would
- * void the flag-unset half of the criteria that exemption is meant to prove.
+ * The first three are PERMISSIONS: `FUSION_ALLOW_RULES_WRITE` gates the
+ * rules-write exemption exactly as the two branch variables gate the branch
+ * policy, so an exported copy would void the flag-unset half of the criteria
+ * each exemption is meant to prove.
+ *
+ * `CDPATH` is not a permission and is stripped for a stronger reason. It moves
+ * the verdict in the DENYING direction (a bare-word `cd` becomes unknowable —
+ * `bash-mutation-guard.ts`, `ambientCdpathIsSet`), and it is a variable real
+ * people really do export from a shell profile. Left in place it would deny
+ * commands on a developer's machine that allow on everyone else's — including
+ * the allow-side rows that exist to bound the cost of every OTHER change to the
+ * directory model.
  */
 const STRIPPED_ENV_VARS = [
   "FUSION_ALLOW_BRANCH_SWITCH",
   "FUSION_ALLOW_WORKTREE",
   "FUSION_ALLOW_RULES_WRITE",
+  "CDPATH",
 ] as const;
 
 /**

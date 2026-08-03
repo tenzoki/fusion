@@ -87,3 +87,24 @@ users to remove an invisible weakness, and that trade is not the implementer's t
 ## Realisation
 
 Not implemented.
+
+## Answer
+
+**Option 1: read `process.env.CDPATH` and degrade.**
+
+Chosen by the user at the Turn 4 closing gate, 2026-08-03. A user with no `CDPATH` set sees no
+change at all, which is the common case; a user who has one gets the fail-closed stance rather
+than a silently weaker guard they have no way to detect. That asymmetry is what carried it:
+every other entry on the residual list is something an agent has to actively do, while this one
+is invisible to the person it affects.
+
+Option 2 was rejected on the analyst's reasoning, not on cost. Testing whether a `CDPATH` entry
+could really divert means filesystem work inside a classifier that is textual by design, and it
+reintroduces the predict-what-the-shell-will-do pattern this Circle has spent four Turns
+removing.
+
+Per the constraint above, the deny reason must name `CDPATH` rather than only the working
+directory.
+
+---
+Answered: this record, `## Answer` — user chose option 1 at the Turn 4 closing gate; a silent weakening of the guard for one class of user is worse than a visible denial.

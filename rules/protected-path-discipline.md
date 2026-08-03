@@ -160,6 +160,7 @@ guess, it stops claiming to know where the shell is standing:
 | `set -P`, `set -o physical` | the same, for every later `cd` in the command |
 | `pushd -n x`, `popd -n` | edit the directory stack **without** changing directory |
 | `CDPATH=.. cd x`, `export CDPATH=..` | a bare-word operand may be found under a `CDPATH` entry instead |
+| `CDPATH` set in the **environment** | the same, with nothing in the command to show for it |
 | any other flag on `cd` / `chdir` / `pushd` / `popd` | it has not been taught what the flag does |
 
 After one of those, a relative operand of a table verb denies fail-closed and the reason
@@ -169,6 +170,29 @@ so is an operand that anchors itself: with a `CDPATH` in play, `cd ./x`, `cd ../
 
 The cost is real and small: `cd -P build && rm out.js` and `cd -P docs && rm ../notes.txt`
 denied nothing before and deny now. Write the path absolutely, or drop the `-P`.
+
+**The environment row is the one you cannot read off the command.** Your shell is
+initialised from the user's profile, so an `export CDPATH=…` there sends every bare-word
+`cd` down a search list — bash and zsh both take the first entry that has the name, which
+need not be the current directory. When that variable is set, `cd build && rm out.js`
+denies although every word in it is a literal. That deny says so in its own words:
+
+```
+fusion policy: CDPATH is set in this shell's environment, so the guard cannot
+determine the working directory. […] Two things clear it: anchor the `cd` operand
+(`./x`, `../x` or an absolute path — CDPATH is not consulted for any of those), or
+unset CDPATH in the environment.
+```
+
+Do what it says and nothing else. Rewriting the operand cannot help — the operand was
+never the problem — and this is the deny most likely to look arbitrary, because the cause
+is in a file you did not write and cannot see from here. If neither remedy fits the task,
+that is a Human Gate: the user owns their profile.
+
+A `CDPATH` that is empty or all whitespace counts as unset, so `export CDPATH=` costs
+nothing. A `CDPATH` starting with `.` does **not** buy an exemption: bash falls through to
+the next entry whenever the current directory does not hold the name, which is exactly the
+case a relative `cd` is usually written for.
 
 ### Fail-closed, and its bound
 
@@ -188,7 +212,13 @@ cd $D && rm -rf out             # the directory `out` hangs off is unknowable
 rm -rf "$(pwd)/build"           # a command substitution is an unresolved operand
 cd -P build && rm out.js        # a `cd` modifier the guard does not model
 pushd -n docs && rm ../x.md     # `-n` pushes without moving, so the base is unknown
+cd build && rm out.js           # ONLY with CDPATH set in the environment
 ```
+
+The last one is the odd row out: with no `CDPATH` set — which is almost everyone, and the
+environment fusion itself runs in — it allows, and nothing about this rule has changed for
+you. It is listed because when it does deny, every word in it is a literal and there is
+nothing to rephrase.
 
 The bound is exactly this: **an unrecognised program is allowed however unparseable its
 arguments are.** `curl -o $OUT https://x`, `make $TARGET` and `npm run $SCRIPT` are
@@ -344,10 +374,13 @@ Known and accepted:
   describes. This one errs toward deny; the way through is to drop the comment.
 - **The classifier cannot walk out and back by name.** `cd .. && cd fusion && rm rules/x.md`
   is allowed: the guard is given a path normaliser, not the project directory's own name.
-- **An AMBIENT `CDPATH` is invisible.** A `CDPATH=` written into the command degrades the
-  working-directory model, but one exported in the user's own shell profile is nowhere in
-  the command text, and the guard reads no environment. Whether it should is an open
-  contract question rather than a bug, recorded as a decision for the user.
+- **A `CDPATH` whose entries could not actually divert still degrades the model.** This is
+  the residual left by closing the ambient case above, and it errs toward DENY: the guard
+  asks whether the variable is set, not whether any entry on it holds the name being
+  looked for, because answering that means a filesystem probe per entry inside a classifier
+  that is textual by design. So a user whose profile sets `CDPATH=.` gets denials for
+  bare-word `cd`s that would have landed exactly where the guard modelled them. Anchoring
+  the operand clears every one of them.
 - **Two sibling `$(…)` substitutions inside one outer segment share a directory**, so
   `$(cd /tmp) $(rm rules/x.md)` is allowed. The same pair in separate segments is
   correctly independent.
