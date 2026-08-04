@@ -5,11 +5,13 @@ import {
   RULES_WRITE_ENV,
   RULE_DIR_PATTERNS,
   RULE_DIR_ROOTS,
-  isProjectRulePath,
+  isProjectRulePath as isProjectRulePathWith,
+  projectProtectedMatch,
+  projectProtectedNote,
   rulesWriteExemptionActive,
   rulesWriteDetail,
-  rulesWriteRefusal,
-  rulesWriteRefusalNote,
+  rulesWriteRefusal as rulesWriteRefusalWith,
+  rulesWriteRefusalNote as rulesWriteRefusalNoteWith,
   spellingWalksUp,
 } from "../rules-write-exemption.js";
 
@@ -28,6 +30,45 @@ import {
 
 const NO_ENV: NodeJS.ProcessEnv = {};
 const FLAG_SET: NodeJS.ProcessEnv = { [RULES_WRITE_ENV]: "1" };
+
+/**
+ * A project that declared no protected entries of its own — the ordinary case,
+ * and every project on this plugin today.
+ *
+ * The three predicates take the project's DECLARED entries as a required fourth
+ * argument since decision `260803-1314` (gate 1b). It is defaulted to this here
+ * so that every case written before that decision keeps its exact meaning: those
+ * cases are now, collectively, the assertion that a project which declares
+ * nothing gets the exemption exactly as it did before. The cases that exercise
+ * the subtraction pass a list explicitly.
+ *
+ * The default lives HERE and not in the module. In production an omitted list
+ * would widen the grant, which is the unsafe direction, so the argument is
+ * required where it matters.
+ */
+const NO_PROJECT_ENTRIES: readonly string[] = [];
+
+const isProjectRulePath = (
+  path: string,
+  fs: FsLocator,
+  spelled: string,
+  declared: readonly string[] = NO_PROJECT_ENTRIES,
+): boolean => isProjectRulePathWith(path, fs, spelled, declared);
+
+const rulesWriteRefusal = (
+  path: string,
+  fs: FsLocator,
+  spelled: string,
+  declared: readonly string[] = NO_PROJECT_ENTRIES,
+): RulesWriteRefusal | null =>
+  rulesWriteRefusalWith(path, fs, spelled, declared);
+
+const rulesWriteRefusalNote = (
+  path: string,
+  fs: FsLocator,
+  spelled: string,
+  declared: readonly string[] = NO_PROJECT_ENTRIES,
+): string | null => rulesWriteRefusalNoteWith(path, fs, spelled, declared);
 
 const ROOT = "/proj";
 
@@ -594,6 +635,227 @@ describe("rulesWriteRefusalNote — what the refused agent actually reads", () =
       expect(note, kind).not.toContain("\n");
       expect(note, kind).toContain(RULES_WRITE_ENV);
     }
+    // The project-protected note is built rather than looked up, so it is held
+    // to the same two properties by hand.
+    const built = projectProtectedNote("rules/immutable/**");
+    expect(built).not.toContain("\n");
+    expect(built).toContain(RULES_WRITE_ENV);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Gate 1b — a project's own declared protected entry outranks the flag.
+//
+// Decision `260803-1314`, answered option 2 at the plan gate on 2026-08-04.
+// Plan Step 4 of the C5b remediation.
+//
+// Two halves, and the second is the one that can go wrong invisibly:
+//
+//   1. a project that DECLARED `rules/immutable/**` gets the subtraction;
+//   2. a project that declared NOTHING gets the exemption exactly as before.
+//
+// Half 2 is asserted by every case above this block — they all pass the empty
+// list — and again explicitly here, because a subtraction fed the EFFECTIVE
+// protected list rather than the declared one would end the exemption for every
+// project on earth while looking correct: an omitted `protectedPaths` inherits
+// the plugin's list, and the plugin's list contains `rules/**`.
+// ---------------------------------------------------------------------------
+
+describe("projectProtectedMatch — which declared entry names this path", () => {
+  it("returns the entry, so a refusal can quote it back", () => {
+    expect(
+      projectProtectedMatch("rules/immutable/x.md", ["rules/immutable/**"]),
+    ).toBe("rules/immutable/**");
+  });
+
+  it("returns null for a path no declared entry names", () => {
+    expect(
+      projectProtectedMatch("rules/x.md", ["rules/immutable/**"]),
+    ).toBeNull();
+  });
+
+  it("returns null for an empty list, which is the ordinary project", () => {
+    expect(projectProtectedMatch("rules/x.md", [])).toBeNull();
+  });
+
+  it("names the FIRST entry that matches, so the message is deterministic", () => {
+    expect(
+      projectProtectedMatch("rules/immutable/x.md", [
+        "rules/**",
+        "rules/immutable/**",
+      ]),
+    ).toBe("rules/**");
+  });
+
+  it("folds case, the way the PROTECTION side does", () => {
+    // A wider match here REFUSES more, which is the safe direction — the
+    // opposite of gate 1, where folding would widen a grant.
+    expect(
+      projectProtectedMatch("rules/IMMUTABLE/x.md", ["rules/immutable/**"]),
+    ).toBe("rules/immutable/**");
+    expect(
+      projectProtectedMatch("rules/immutable/x.md", ["rules/Immutable/**"]),
+    ).toBe("rules/Immutable/**");
+  });
+
+  it("retries the trailing separator, so the bare directory is covered", () => {
+    // Without this, `rm -rf rules/immutable` deletes the subtree the project
+    // declared immutable: the protection side matched it by retrying the
+    // separator, and this side would have handed the grant to the bare name.
+    expect(
+      projectProtectedMatch("rules/immutable", ["rules/immutable/**"]),
+    ).toBe("rules/immutable/**");
+  });
+
+  it("does not read a sibling directory as the declared one", () => {
+    expect(
+      projectProtectedMatch("rules/immutable-draft/x.md", [
+        "rules/immutable/**",
+      ]),
+    ).toBeNull();
+  });
+});
+
+describe("isProjectRulePath — the project's own entry wins", () => {
+  const IMMUTABLE = ["rules/immutable/**"];
+
+  it("refuses the grant for the path the project declared", () => {
+    expect(isProjectRulePath("rules/immutable/x.md", PLAIN, "rules/immutable/x.md", IMMUTABLE)).toBe(
+      false,
+    );
+  });
+
+  it("leaves the rest of the rule directory exempt", () => {
+    // The record's own words: "the two default rule patterns keep working
+    // exactly as they do now". A project carving out a subtree does not lose
+    // the flag.
+    expect(isProjectRulePath("rules/x.md", PLAIN, "rules/x.md", IMMUTABLE)).toBe(true);
+    expect(
+      isProjectRulePath("rules/retired/x.md", PLAIN, "rules/retired/x.md", IMMUTABLE),
+    ).toBe(true);
+    expect(
+      isProjectRulePath(".claude/rules/local.md", PLAIN, ".claude/rules/local.md", IMMUTABLE),
+    ).toBe(true);
+  });
+
+  it("HALF 2, stated: a project that declared nothing is unchanged", () => {
+    // The trap. If this ever fails the flag has stopped working everywhere.
+    for (const path of [
+      "rules/x.md",
+      "rules/immutable/x.md",
+      "rules/retired/x.md",
+      ".claude/rules/local.md",
+    ]) {
+      expect(isProjectRulePath(path, PLAIN, path, []), path).toBe(true);
+    }
+  });
+
+  it("a project that declares rules/** ITSELF loses the flag for rules/", () => {
+    // Stated rather than discovered, because it is the sharp edge of the rule:
+    // "an entry the project declared wins" has no exception for an entry that
+    // happens to equal one of fusion's own. A project that copies the plugin's
+    // list into its own file to add one path gets this, and Step 7 owes it a
+    // sentence.
+    const own = ["rules/**"];
+    expect(isProjectRulePath("rules/x.md", PLAIN, "rules/x.md", own)).toBe(false);
+    expect(isProjectRulePath("rules/retired/x.md", PLAIN, "rules/retired/x.md", own)).toBe(
+      false,
+    );
+    // …and `.claude/rules/**`, which it did NOT declare, is still exempt.
+    expect(
+      isProjectRulePath(".claude/rules/local.md", PLAIN, ".claude/rules/local.md", own),
+    ).toBe(true);
+  });
+
+  it("an entry naming nothing in the rule directories changes nothing", () => {
+    // The common case for a project that configures its own list: it names
+    // paths that have nothing to do with the rule directories.
+    const elsewhere = ["secret/**", "agents/**", "fusion-guard.json"];
+    expect(isProjectRulePath("rules/x.md", PLAIN, "rules/x.md", elsewhere)).toBe(true);
+  });
+});
+
+describe("rulesWriteRefusal — gate 1b reports itself, and in the right order", () => {
+  const IMMUTABLE = ["rules/immutable/**"];
+
+  it("reports project-protected", () => {
+    expect(
+      rulesWriteRefusal("rules/immutable/x.md", PLAIN, "rules/immutable/x.md", IMMUTABLE),
+    ).toBe("project-protected");
+  });
+
+  it("stays not-a-rule-path for a path outside the rule directories", () => {
+    // Gate 1 is still first. A project entry naming `agents/**` must not turn
+    // the ordinary protected-path deny into an exemption message, which would
+    // advertise a grant that does not apply.
+    expect(
+      rulesWriteRefusal("agents/coder.md", PLAIN, "agents/coder.md", ["agents/**"]),
+    ).toBe("not-a-rule-path");
+  });
+
+  it("outranks gate 0, whose note would send the reader the wrong way", () => {
+    // `Name the rule file without a `..`` is true and useless here: the path
+    // would deny either way, for a reason that does not go away.
+    expect(
+      rulesWriteRefusal(
+        "rules/immutable/x.md",
+        PLAIN,
+        "rules/immutable/../immutable/x.md",
+        IMMUTABLE,
+      ),
+    ).toBe("project-protected");
+  });
+
+  it("outranks the filesystem gate too", () => {
+    const aliased = fakeFs({ hardLinks: ["rules/immutable/copy"] });
+    expect(
+      rulesWriteRefusal("rules/immutable/copy", aliased, "rules/immutable/copy", IMMUTABLE),
+    ).toBe("project-protected");
+  });
+
+  it("leaves every other refusal reporting itself", () => {
+    // The bound: gate 1b refuses only what a declared entry names, so the four
+    // pre-existing refusals are untouched for a path it does not name.
+    const aliased = fakeFs({ hardLinks: ["rules/copy"] });
+    expect(rulesWriteRefusal("rules/copy", aliased, "rules/copy", IMMUTABLE)).toBe(
+      "hard-link",
+    );
+    expect(
+      rulesWriteRefusal("rules/x.md", PLAIN, "rules/a/../x.md", IMMUTABLE),
+    ).toBe("spelled-with-dotdot");
+  });
+});
+
+describe("the note a curator meets when their own project refused them", () => {
+  const IMMUTABLE = ["rules/immutable/**"];
+
+  it("quotes the entry that caused it, which is the decision's obligation", () => {
+    const note = rulesWriteRefusalNote(
+      "rules/immutable/x.md",
+      PLAIN,
+      "rules/immutable/x.md",
+      IMMUTABLE,
+    );
+    expect(note).toContain(RULES_WRITE_ENV);
+    expect(note).toContain("rules/immutable/**");
+    expect(note).toContain("fusion-guard.json");
+  });
+
+  it("does not read as a workaround", () => {
+    const note = rulesWriteRefusalNote(
+      "rules/immutable/x.md",
+      PLAIN,
+      "rules/immutable/x.md",
+      IMMUTABLE,
+    );
+    expect(note).toContain("will not help");
+    expect(note).toContain("ask the user");
+  });
+
+  it("says nothing for a rule path the project did not declare", () => {
+    expect(
+      rulesWriteRefusalNote("rules/x.md", PLAIN, "rules/x.md", IMMUTABLE),
+    ).toBeNull();
   });
 });
 

@@ -11,6 +11,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   loadConfig,
+  projectDeclaredProtectedPaths,
   resetConfigCache,
   PROJECT_CONFIG_FILENAME,
   type GuardConfig,
@@ -71,23 +72,42 @@ function pluginConfig(value: object | string): string {
 /**
  * The effective CONFIGURATION, without the load report.
  *
- * The load report is two fields now, and both describe what happened while
+ * The load report is three fields now, and each describes what happened while
  * reading the files rather than what the guard will do: `diagnostics` names the
- * layers and keys that were dropped, and `protectedPathsSource` names the layer
- * the protected list came from. Neither is a setting, and including either in a
- * comparison would make "did the effective configuration change?" unanswerable —
- * which matters most for the byte-identity case below, whose whole job is to
- * answer exactly that question with "no".
+ * layers and keys that were dropped, `protectedPathsSource` names the layer the
+ * protected list came from, and `floorPaths` names the entries the
+ * self-protection floor appended. None is a setting, and including any of them
+ * in a comparison would make "did the effective configuration change?"
+ * unanswerable — which matters most for the byte-identity case below, whose
+ * whole job is to answer exactly that question with "no".
+ *
+ * The list is spelled out rather than derived, so that a fourth report field
+ * fails this comparison until someone decides it is a report. That is the
+ * failure mode worth having: a new SETTING silently excluded from the
+ * byte-identity check would be the one kind of drift this file cannot see.
  */
 function effective(
   config: GuardConfig,
-): Omit<GuardConfig, "diagnostics" | "protectedPathsSource"> {
+): Omit<GuardConfig, "diagnostics" | "protectedPathsSource" | "floorPaths"> {
   const {
     diagnostics: _ignored,
     protectedPathsSource: _alsoIgnored,
+    floorPaths: _andThis,
     ...rest
   } = config;
   return rest;
+}
+
+/**
+ * The absolute spelling of a project root's `fusion-guard.json` — the second
+ * half of the self-protection floor since `260804-1604`.
+ *
+ * Floor assertions name it through this helper rather than writing `resolve()`
+ * inline, so that "the floor is two entries" is stated in one place and a case
+ * that means "the floor and nothing else" reads as one.
+ */
+function floorOf(root: string): string[] {
+  return [PROJECT_CONFIG_FILENAME, resolve(root, PROJECT_CONFIG_FILENAME)];
 }
 
 beforeEach(() => {
@@ -277,7 +297,7 @@ describe("merge — per leaf: project, then plugin, then DEFAULTS", () => {
     });
 
     // Only the floor, because the file exists.
-    expect(guard.protectedPaths).toEqual([PROJECT_CONFIG_FILENAME]);
+    expect(guard.protectedPaths).toEqual(floorOf(root));
     expect(protectedPathsSource).toBe("project");
   });
 
@@ -317,7 +337,7 @@ describe("merge — per leaf: project, then plugin, then DEFAULTS", () => {
     });
 
     // Declared by the project: taken as written, plus the floor.
-    expect(guard.protectedPaths).toEqual(["secret/**", PROJECT_CONFIG_FILENAME]);
+    expect(guard.protectedPaths).toEqual(["secret/**", ...floorOf(root)]);
     expect(guard.defaultSensitivity).toBe("high");
     // Omitted by the project: the PLUGIN's, where DEFAULTS would have said `{}`.
     expect(guard.categoryPaths).toEqual({ onto: ["ontology/**"] });
@@ -695,9 +715,12 @@ describe("a value that cannot be used is dropped, named, and inherited past", ()
     });
 
     // The floor is the one difference the first two are entitled to: their file
-    // exists and the third's does not.
+    // exists and the third's does not. Taken back out through the config's own
+    // report of what it appended, so the subtraction cannot go stale the way a
+    // hand-written `!== PROJECT_CONFIG_FILENAME` did when the floor grew a
+    // second spelling.
     const withoutFloor = (c: GuardConfig) =>
-      c.guard.protectedPaths.filter((p) => p !== PROJECT_CONFIG_FILENAME);
+      c.guard.protectedPaths.filter((p) => !c.floorPaths.includes(p));
 
     expect(withoutFloor(dropped)).toEqual(withoutFloor(never));
     expect(withoutFloor(omitted)).toEqual(withoutFloor(never));
@@ -777,6 +800,109 @@ describe("the returned config carries which layer declared protectedPaths", () =
   });
 });
 
+// ---------------------------------------------------------------------------
+// `projectDeclaredProtectedPaths` — decision 260803-1314, plan Step 4.
+//
+// The rules-write exemption subtracts these from the exempt set. "Declared, not
+// inherited" is the whole of the contract, and the case that matters most is the
+// boring one: a project that declared nothing returns nothing, because after
+// 260804-1630 its effective list is the plugin's, and the plugin's contains
+// `rules/**`. Returning the effective list here would end the exemption in every
+// project on earth.
+// ---------------------------------------------------------------------------
+
+describe("the entries a project declared for itself", () => {
+  it("returns them when the project declared a list", () => {
+    const config = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: projectWith({
+        guard: { protectedPaths: ["rules/immutable/**", "secret/**"] },
+      }),
+    });
+
+    expect(projectDeclaredProtectedPaths(config)).toEqual([
+      "rules/immutable/**",
+      "secret/**",
+    ]);
+  });
+
+  it("returns NOTHING for a project that declared no list — the trap", () => {
+    // The effective list here is the plugin's nine patterns, `rules/**` among
+    // them. If this ever returns those, `FUSION_ALLOW_RULES_WRITE` is dead
+    // everywhere and no case about the exemption itself would notice.
+    const config = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: tmp(),
+    });
+
+    expect(config.guard.protectedPaths).toContain("rules/**");
+    expect(projectDeclaredProtectedPaths(config)).toEqual([]);
+  });
+
+  it("returns nothing for a project that declared some OTHER key", () => {
+    // The commonest shape of a real `fusion-guard.json`, and the one that would
+    // fail if provenance were read off "did the project supply a guard object".
+    const config = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: projectWith({ guard: { defaultSensitivity: "high" } }),
+    });
+
+    expect(projectDeclaredProtectedPaths(config)).toEqual([]);
+  });
+
+  it("returns nothing for a list that was DROPPED as unusable", () => {
+    // A dropped key behaves exactly like an omitted one — decision 260804-1630.
+    // The subtraction has to inherit that equivalence rather than restate it.
+    const config = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: projectWith({ guard: { protectedPaths: "rules/**" } }),
+    });
+
+    expect(projectDeclaredProtectedPaths(config)).toEqual([]);
+  });
+
+  it("returns the empty list for a project that declared an empty list", () => {
+    // Declared and empty are the same answer here, and they mean the same
+    // thing: this project subtracts nothing from the exempt set.
+    const config = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: projectWith({ guard: { protectedPaths: [] } }),
+    });
+
+    expect(config.protectedPathsSource).toBe("project");
+    expect(projectDeclaredProtectedPaths(config)).toEqual([]);
+  });
+
+  it("takes the floor's own entries back out", () => {
+    // The floor is the loader's, not the project's. A project that never
+    // mentioned `fusion-guard.json` must not be treated as having declared it.
+    const root = projectWith({ guard: { protectedPaths: ["secret/**"] } });
+    const config = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: root,
+    });
+
+    expect(config.guard.protectedPaths).toEqual(["secret/**", ...floorOf(root)]);
+    expect(projectDeclaredProtectedPaths(config)).toEqual(["secret/**"]);
+  });
+
+  it("keeps an entry the project declared that the floor would also have added", () => {
+    // Here the project really did write `fusion-guard.json` down, so it is a
+    // declared entry and stays one. The floor only skipped it.
+    const root = projectWith({
+      guard: { protectedPaths: [PROJECT_CONFIG_FILENAME] },
+    });
+    const config = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: root,
+    });
+
+    expect(projectDeclaredProtectedPaths(config)).toEqual([
+      PROJECT_CONFIG_FILENAME,
+    ]);
+  });
+});
+
 describe("the self-protection floor", () => {
   it("adds fusion-guard.json to the effective list once the file exists", () => {
     const root = projectWith({ guard: { protectedPaths: ["secret/**"] } });
@@ -789,12 +915,71 @@ describe("the self-protection floor", () => {
     expect(guard.protectedPaths).toContain(PROJECT_CONFIG_FILENAME);
   });
 
+  // -------------------------------------------------------------------------
+  // Issue 260804-1604 — the floor was matched cwd-relative while the file it
+  // protects was read root-relative.
+  //
+  // The loader half. `projectRelative` in `project-relative.ts` carries the
+  // other half, and the four measured rows are asserted through a real guard
+  // subprocess in `guard-rules-write-integration.test.ts` — a loader returning a
+  // good list proves nothing about what the guard denies.
+  // -------------------------------------------------------------------------
+
+  it("also names the ABSOLUTE path of the file it actually read", () => {
+    const root = projectWith({ guard: { protectedPaths: ["secret/**"] } });
+
+    const { guard } = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: root,
+    });
+
+    expect(guard.protectedPaths).toContain(
+      resolve(root, PROJECT_CONFIG_FILENAME),
+    );
+    expect(guard.protectedPaths).toEqual(["secret/**", ...floorOf(root)]);
+  });
+
+  it("reports the entries it appended, and only those", () => {
+    // `floorPaths` is what lets a caller take the floor back out — see
+    // `projectDeclaredProtectedPaths`, which the rules-write exemption reads.
+    const root = projectWith({ guard: { protectedPaths: ["secret/**"] } });
+
+    const config = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: root,
+    });
+
+    expect(config.floorPaths).toEqual(floorOf(root));
+    expect(config.guard.protectedPaths).toEqual([
+      "secret/**",
+      ...config.floorPaths,
+    ]);
+  });
+
+  it("reports NO floor entries when the file does not exist", () => {
+    const config = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: tmp(),
+    });
+
+    expect(config.floorPaths).toEqual([]);
+  });
+
+  it("reports no floor entries for a null project root either", () => {
+    const config = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: null,
+    });
+
+    expect(config.floorPaths).toEqual([]);
+  });
+
   it("is idempotent when the file lists itself", () => {
     const root = projectWith({
       guard: { protectedPaths: ["secret/**", PROJECT_CONFIG_FILENAME] },
     });
 
-    const { guard } = loadConfig({
+    const { guard, floorPaths } = loadConfig({
       pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
       projectRoot: root,
     });
@@ -802,6 +987,28 @@ describe("the self-protection floor", () => {
     expect(
       guard.protectedPaths.filter((p) => p === PROJECT_CONFIG_FILENAME),
     ).toHaveLength(1);
+    // The bare name was already declared, so only the absolute one is the
+    // floor's — which is exactly what `projectDeclaredProtectedPaths` needs to
+    // be right about: the declared bare name stays a DECLARED entry.
+    expect(floorPaths).toEqual([resolve(root, PROJECT_CONFIG_FILENAME)]);
+  });
+
+  it("is idempotent when the file lists its own absolute path", () => {
+    const root = tmp();
+    const absolute = resolve(root, PROJECT_CONFIG_FILENAME);
+    writeFileSync(
+      absolute,
+      JSON.stringify({ guard: { protectedPaths: [absolute] } }),
+      "utf-8",
+    );
+
+    const { guard, floorPaths } = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: root,
+    });
+
+    expect(guard.protectedPaths.filter((p) => p === absolute)).toHaveLength(1);
+    expect(floorPaths).toEqual([PROJECT_CONFIG_FILENAME]);
   });
 
   it("applies even when the file is unparseable, because the file still exists", () => {
@@ -841,7 +1048,7 @@ describe("the self-protection floor", () => {
     resetConfigCache();
     const second = loadConfig(sources).guard.protectedPaths;
 
-    expect(first).toEqual(["secret/**", PROJECT_CONFIG_FILENAME]);
+    expect(first).toEqual(["secret/**", ...floorOf(root)]);
     expect(second).toEqual(first);
   });
 });
@@ -994,7 +1201,7 @@ describe("the cache is keyed on the resolved source pair", () => {
 
     expect(loadConfig(sources).guard.protectedPaths).toEqual([
       "late/**",
-      PROJECT_CONFIG_FILENAME,
+      ...floorOf(root),
     ]);
   });
 });
@@ -1028,9 +1235,10 @@ function projectSeededWithTemplate(): string {
 
 describe("the seeded template declares inheritance and lists nothing", () => {
   it("merges to the plugin's configuration, plus the floor and nothing else", () => {
+    const root = projectSeededWithTemplate();
     const seeded = loadConfig({
       pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
-      projectRoot: projectSeededWithTemplate(),
+      projectRoot: root,
     });
     resetConfigCache();
     const pluginOnly = loadConfig({
@@ -1048,7 +1256,7 @@ describe("the seeded template declares inheritance and lists nothing", () => {
     // so a template that reordered or dropped a plugin path fails here.
     expect(seeded.guard.protectedPaths).toEqual([
       ...pluginOnly.guard.protectedPaths,
-      PROJECT_CONFIG_FILENAME,
+      ...floorOf(root),
     ]);
 
     // Everything else identical, byte for byte, with the floor entry taken back
@@ -1088,10 +1296,8 @@ describe("the seeded template declares inheritance and lists nothing", () => {
       crossFile: { pingBackWarning: 95, pingBackCritical: 96 },
     });
 
-    const seeded = loadConfig({
-      pluginConfigPath,
-      projectRoot: projectSeededWithTemplate(),
-    });
+    const root = projectSeededWithTemplate();
+    const seeded = loadConfig({ pluginConfigPath, projectRoot: root });
     resetConfigCache();
     const pluginOnly = loadConfig({ pluginConfigPath, projectRoot: null });
 
@@ -1099,7 +1305,7 @@ describe("the seeded template declares inheritance and lists nothing", () => {
     // AFTER this project was set up protects it, with the seeded file untouched.
     expect(seeded.guard.protectedPaths).toEqual([
       "added-after-the-project-was-seeded/**",
-      PROJECT_CONFIG_FILENAME,
+      ...floorOf(root),
     ]);
 
     const withoutFloor = {

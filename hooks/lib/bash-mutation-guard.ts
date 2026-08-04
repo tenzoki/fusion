@@ -1711,9 +1711,17 @@ function withoutTrailingSlash(path: string): string {
  * `writesThrough` verb whose pathspec resolves to the project root denies, and
  * the way through is the literal file list.
  *
- * `/` stays excluded either way. A git pathspec is repository-relative and git
- * refuses an absolute one outright, and no protected pattern in the list is
- * absolute, so there is nothing for the comparison to find.
+ * `/` stays excluded either way, and the reason narrowed when `260804-1604`
+ * closed. It used to be that no protected pattern in the list is absolute, so
+ * there was nothing at `/` for the comparison to find. The self-protection floor
+ * is now absolute — it is the one pattern that names a location rather than a
+ * shape — so `/` IS an ancestor of a protected pattern and the exclusion is a
+ * choice rather than a vacuity. It stands: `rm -rf /` is refused by `rm` itself
+ * the same way `rm -rf .` is, a git pathspec is repository-relative and git
+ * refuses an absolute one outright, and a deny at `/` would name a pattern
+ * rather than a mistake. Every ancestor BELOW `/` is matched, so `rm -rf ..`
+ * from a subdirectory of the project denies on the configuration file it would
+ * take with it.
  */
 function ancestorOfProtected(
   path: string,

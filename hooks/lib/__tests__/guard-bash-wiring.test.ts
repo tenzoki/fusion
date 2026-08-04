@@ -269,7 +269,7 @@ describe("guard.ts write-tool path — one collapse, above both checks", () => {
   });
 
   it("asks the exemption module, not a second copy of the rule", () => {
-    expect(code).toContain("isExemptRulePath(filePath, rawFilePath)");
+    expect(code).toContain("isExemptRulePath(filePath, rawFilePath, declared)");
   });
 
   it("hands the exemption the RAW spelling as well as the collapsed path", () => {
@@ -279,17 +279,34 @@ describe("guard.ts write-tool path — one collapse, above both checks", () => {
     // relative one. Passing `filePath` for both arguments type-checks and
     // silently reopens the symlink escape, so the wiring is pinned here rather
     // than left to a reviewer's eye.
-    expect(code).not.toContain("isExemptRulePath(filePath, filePath)");
+    expect(code).not.toContain("isExemptRulePath(filePath, filePath");
     const exemption = code.indexOf("isExemptRulePath(filePath");
     expect(exemption, "exemption call not found").toBeGreaterThan(-1);
-    expect(code.slice(exemption)).toMatch(/^isExemptRulePath\(filePath, rawFilePath\)/);
+    expect(code.slice(exemption)).toMatch(
+      /^isExemptRulePath\(filePath, rawFilePath, declared\)/,
+    );
+  });
+
+  it("subtracts what the PROJECT declared, never the effective list", () => {
+    // Decision 260803-1314, gate 1b. The one substitution that would compile,
+    // read as correct, and end the exemption in every project on earth: after
+    // 260804-1630 an omitted `protectedPaths` inherits the plugin's list, and
+    // the plugin's list contains `rules/**`. Pinned at the call site because
+    // the type is `readonly string[]` either way — nothing but this assertion
+    // and the loader's own docstring stands between the two spellings.
+    expect(code).toContain("projectDeclaredProtectedPaths(config)");
+    expect(code).not.toMatch(
+      /isExemptRulePath\([^)]*config\.guard\.protectedPaths/,
+    );
   });
 
   it("asks the same two spellings when it explains the refusal", () => {
     // The note comes from re-running the SAME gates on the SAME pair. Asking
     // with `filePath` twice would report a gate-2 refusal for a path gate 0
     // actually refused, which is a message describing a check that did not run.
-    expect(code).toContain("exemptionRefusalNote(filePath, rawFilePath)");
+    expect(code).toContain(
+      "exemptionRefusalNote(filePath, rawFilePath, declared)",
+    );
   });
 });
 

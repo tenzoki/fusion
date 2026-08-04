@@ -84,6 +84,17 @@
  * WHEN THAT FILE EXISTS ON DISK. Without the floor an agent could unprotect its
  * own guard configuration in one edit.
  *
+ * TWO SPELLINGS, both of the one file: the bare project-relative name and the
+ * absolute path this loader read the layer from. Every other pattern is matched
+ * against a path relativised to the guard's WORKING directory, and the project
+ * root is wherever `findWorkbenchRoot` walked up to — so the bare name alone
+ * defended `<cwd>/fusion-guard.json`, a file that need not exist, while the file
+ * actually governing the guard sat out of reach (`260804-1604`). The floor is
+ * the only pattern entitled to an absolute form, because it is the only one
+ * whose subject has a location the loader already knows; `rules/**` from a
+ * subdirectory really does name a different directory. See `THE FLOOR` below
+ * for why the bare name stays alongside it.
+ *
  * The existence condition is not an optimisation, it is the answer to a
  * collision between two things the spec asks for: `/fusion:setup` seeds the
  * file, and an unconditional floor would make that seeding write a write to a
@@ -213,6 +224,44 @@ export interface GuardConfig extends GuardSettings {
    * `DEFAULTS`' empty one plus whatever the floor added.
    */
   protectedPathsSource: ConfigLayer;
+  /**
+   * The entries the SELF-PROTECTION FLOOR appended to `guard.protectedPaths` —
+   * empty when the floor did not apply, or when the declared list already named
+   * them.
+   *
+   * A report, like the two fields above. It exists because the floor stopped
+   * being one bare pattern when `260804-1604` was closed: it is now the bare
+   * name and the absolute path, and a caller that wants the entries the PROJECT
+   * declared has to be able to take the floor's back out again. That caller is
+   * `projectDeclaredProtectedPaths` below, and through it the rules-write
+   * exemption. Deriving the floor's entries a second time at the caller would be
+   * the same file described by two functions free to disagree.
+   */
+  floorPaths: string[];
+}
+
+/**
+ * The protected entries this project DECLARED for itself — empty for a project
+ * that declared none.
+ *
+ * "Declared, not inherited" is the whole of it, and it is a binding obligation
+ * of decision `260803-1314`, not a nicety. That decision has a project's own
+ * protected entries outrank `FUSION_ALLOW_RULES_WRITE`; after `260804-1630` an
+ * OMITTED `protectedPaths` inherits the plugin's list, and the plugin's list
+ * contains `rules/**`. A subtraction that read the effective list would
+ * therefore withdraw the exemption from every project on earth, silently, and
+ * would look correct while doing it. `protectedPathsSource === "project"` is the
+ * exact fact "this project supplied these entries", which is why the loader
+ * carries it rather than the exemption inferring it.
+ *
+ * The floor's entries are taken back out for the same reason: the loader
+ * appended them, no project did.
+ */
+export function projectDeclaredProtectedPaths(config: GuardConfig): string[] {
+  if (config.protectedPathsSource !== "project") return [];
+  return config.guard.protectedPaths.filter(
+    (p) => !config.floorPaths.includes(p),
+  );
 }
 
 /** Raw shape from JSON (may have missing fields). */
@@ -609,16 +658,38 @@ export function loadConfig(sources?: ConfigSources): GuardConfig {
         ? "plugin"
         : "default";
 
-  // THE FLOOR. A fresh array every time: the chosen list may be DEFAULTS' own
-  // or a raw parsed array, and appending in place would edit a value someone
-  // else is holding.
+  // THE FLOOR — TWO SPELLINGS OF ONE FILE. A fresh array every time: the chosen
+  // list may be DEFAULTS' own or a raw parsed array, and appending in place
+  // would edit a value someone else is holding.
+  //
+  // The absolute spelling is the one entry in the effective list that names a
+  // location rather than a project-relative shape, and it is here because the
+  // floor is the only pattern whose subject has a location this loader already
+  // knows. Every other pattern is matched relative to the guard's WORKING
+  // directory, which `findWorkbenchRoot` is built to walk up from — so from a
+  // subdirectory, `fusion-guard.json` alone named a file that does not exist
+  // while the file governing the guard sat somewhere no relative pattern could
+  // reach. For `rules/**` that degradation is arguably correct (`sub/rules/`
+  // genuinely is a different directory); for the floor it is the defect
+  // `260804-1604` measured, with all four writes to the loaded file allowed on
+  // both surfaces and no flag.
+  //
+  // The BARE name stays, and not only for the cwd-is-the-root case it already
+  // covered. `globToRegex` reads `*`, `?` and `[` as glob syntax with no escape,
+  // so a project root whose absolute path contains one of those three gets an
+  // absolute pattern that means something other than the literal path — wider
+  // for `*` and `?`, and unusable for an unbalanced `[`. The bare name is the
+  // spelling that still works there, which makes the pair a graceful
+  // degradation rather than a redundancy.
   const declaredPaths = pickGuard("protectedPaths");
   const floorApplies =
     projectConfigPath !== null && existsSync(projectConfigPath);
-  const protectedPaths =
-    floorApplies && !declaredPaths.includes(PROJECT_CONFIG_FILENAME)
-      ? [...declaredPaths, PROJECT_CONFIG_FILENAME]
-      : [...declaredPaths];
+  const floorPaths = !floorApplies
+    ? []
+    : [PROJECT_CONFIG_FILENAME, projectConfigPath as string].filter(
+        (p) => !declaredPaths.includes(p),
+      );
+  const protectedPaths = [...declaredPaths, ...floorPaths];
 
   const value: GuardConfig = {
     guard: {
@@ -645,6 +716,7 @@ export function loadConfig(sources?: ConfigSources): GuardConfig {
     },
     diagnostics,
     protectedPathsSource,
+    floorPaths,
   };
 
   cache = { key, value };

@@ -100,3 +100,52 @@ This activates the plan's Step 4, which existed only under options 2 or 3.
 
 ---
 Answered: this record, `## Answer` — user chose option 2 at the plan gate; a project's declared entry outranks the flag, an inherited one does not.
+
+---
+
+**Realised in code 260804-1940 (coder, plan Step 4) — marker stays `_a_` until the commit
+exists.** The convention wants `Implemented:` to cite the hash, and this work is deliberately
+uncommitted: the orchestrator commits after validation. The reconciler transitions `_a_` →
+`_i_` at Phase 3 against the commit, not against this note. Session:
+`history/260804-1940-coder-step1-floor-step4-exemption-precedence.md`.
+
+**Both binding obligations are met, and both are asserted rather than argued.**
+
+*"Explicitly declared" means declared, not inherited.* The subtraction reads
+`projectDeclaredProtectedPaths(config)` in `hooks/lib/config.ts`, which returns entries only
+when `protectedPathsSource === "project"` and takes the self-protection floor's own entries
+back out. A project that omits the key, declares some other key, has no file at all, or wrote
+a list that type validation dropped all return the empty list, so all four get the exemption
+byte-identically. The trap is pinned by mutation: substituting `config.guard.protectedPaths`
+— which compiles, has the same type, and reads as correct — breaks 26 cases, including every
+pre-existing exemption case in the suite. That is the flag dying in every project on earth,
+made visible.
+
+*The precedence rule is testable and stated once.* It lives in
+`hooks/lib/rules-write-exemption.ts` as gate 1b (`projectProtectedMatch`), at the seam where
+the exemption is consulted, which is where this record's third constraint requires it. Both
+write surfaces ask the same predicate. The refusal has its own kind (`project-protected`) and
+its own note, and the note **quotes the entry that caused it** — the record's own obligation
+that a curator meeting the deny must not read it as the flag being broken.
+
+The rule, in the words the loader implements: *a path the project's own `fusion-guard.json`
+declares protected is not exempt, matched with case folded and a directory operand retried
+with a trailing separator.* The two match conventions are the protection side's rather than
+the grant side's, deliberately: a wider match on this gate refuses more. Without the fold, a
+project declaring `rules/Immutable/**` loses its own entry to `RULES/…` where the filesystem
+folds; without the retry, `rm -rf rules/immutable` deletes the subtree the project declared
+immutable.
+
+**One consequence this record does not state, and it is the sharp edge.** A project that
+copies fusion's own `rules/**` into its file — to add one entry, say — loses the flag for the
+whole rule directory, `rules/retired/` included. There is no exception for a declared entry
+that happens to equal one of fusion's: the flag reaches a path only while the list protecting
+that path is fusion's. It follows from this answer rather than contradicting it, it is the
+narrowing direction, and it is pinned by a `STATED COST:` integration case. It needs a
+sentence where the user reads it (plan Step 7, obligation 13), or a project meets a deny that
+reads as the flag being broken — the failure this record's second constraint is about.
+
+The cost this record accepts is now real: what the flag reaches is no longer answerable from
+the plugin alone. Measured over a generated cross-product of 182,688 classifications, this
+step alone newly allows **0** and newly denies 4,056, all of them writes to paths a project
+declared protected with the flag set.

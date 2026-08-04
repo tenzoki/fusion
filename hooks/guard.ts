@@ -42,13 +42,19 @@
  *   Block: {"decision":"block","reason":"..."}
  */
 
-import { resolve, relative, isAbsolute } from "node:path";
+import { resolve } from "node:path";
 import { existsSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { matchesAnyFolded, collapseSegments } from "./lib/paths.js";
+import { projectRelative } from "./lib/project-relative.js";
 import { isFusionPluginCwd } from "./lib/self-detect.js";
 import { realFsLocator } from "./lib/fs-locator.js";
-import { loadConfig, findRelevantDecisions, sensitivityLevel } from "./lib/config.js";
+import {
+  loadConfig,
+  findRelevantDecisions,
+  projectDeclaredProtectedPaths,
+  sensitivityLevel,
+} from "./lib/config.js";
 import type { Sensitivity } from "./lib/config.js";
 import {
   loadEscalation,
@@ -126,9 +132,25 @@ const fsLocator = realFsLocator(process.cwd());
  * time either surface can match a path against `rules/**` at all. Gate 0 reads
  * the second one — see `rules-write-exemption.ts` `## Gate 0`. Passing `path`
  * for both would type-check and silently reopen the escape.
+ *
+ * `declared` is what THIS PROJECT wrote in its own `fusion-guard.json`, and it
+ * comes from `projectDeclaredProtectedPaths` and from nowhere else. Handing over
+ * `config.guard.protectedPaths` would compile and would end the exemption in
+ * every project on earth: an omitted list inherits the plugin's, and the
+ * plugin's contains `rules/**`. Decision `260803-1314` and gate 1b.
+ *
+ * The mutation classifier wants a TWO-argument predicate
+ * (`MutationOptions.exempt`), so the Bash seam closes over `declared` in one
+ * arrow at the call site rather than this function being curried: the write
+ * path's call is the one a reader checks against the rule, and it reads best
+ * with all three arguments named in a row.
  */
-function isExemptRulePath(path: string, spelledAs: string): boolean {
-  return isProjectRulePath(path, fsLocator, spelledAs);
+function isExemptRulePath(
+  path: string,
+  spelledAs: string,
+  declared: readonly string[],
+): boolean {
+  return isProjectRulePath(path, fsLocator, spelledAs, declared);
 }
 
 /**
@@ -145,9 +167,13 @@ function isExemptRulePath(path: string, spelledAs: string): boolean {
  * anyway. The alternative — carrying the refusal out of the first evaluation —
  * would put a diagnostic field on the exemption seam that every allow pays for.
  */
-function exemptionRefusalNote(path: string, spelledAs: string): string | null {
+function exemptionRefusalNote(
+  path: string,
+  spelledAs: string,
+  declared: readonly string[],
+): string | null {
   if (!rulesWriteExemptionActive(process.env)) return null;
-  return rulesWriteRefusalNote(path, fsLocator, spelledAs);
+  return rulesWriteRefusalNote(path, fsLocator, spelledAs, declared);
 }
 
 /** Hook input from Claude Code (PreToolUse). */
@@ -159,24 +185,17 @@ interface HookInput {
 }
 
 /**
- * Normalize a file path to be relative to the project root (CWD).
+ * Normalize a file path to the coordinate space `guard.protectedPaths` is
+ * written in — this process's working directory.
  *
- * Claude Code sends absolute paths in tool_input.file_path, but the
- * guard config uses relative glob patterns (e.g. ".claude/agents/**").
- * This function strips the CWD prefix so patterns match correctly.
+ * The arithmetic lives in `lib/project-relative.ts`, where it can be asked about
+ * a working directory other than this process's own; this wrapper supplies the
+ * one this process has. Claude Code sends absolute paths in
+ * `tool_input.file_path` and the mutation classifier sends operands the shell
+ * would resolve against the same directory, so both arrive here.
  */
 function normalizeToRelative(filePath: string): string {
-  if (!isAbsolute(filePath)) {
-    return filePath;
-  }
-  const cwd = process.cwd();
-  const resolved = resolve(filePath);
-  // Only relativize if the path is under CWD
-  if (resolved.startsWith(cwd + "/") || resolved === cwd) {
-    return relative(cwd, resolved);
-  }
-  // Path is outside project root — return as-is (won't match any relative pattern)
-  return filePath;
+  return projectRelative(filePath, process.cwd());
 }
 
 /** Extract the file path from tool input, if present. */
@@ -376,6 +395,10 @@ function guardBashCommand(
   // Deny-only: this check never allows, never resets the counter and never
   // emits guard_allow, so the allow path below keeps its stated property.
   if (!isFusionPluginCwd()) {
+    // What this project DECLARED for itself, which gate 1b subtracts from the
+    // exempt set — never the effective list. See `exemptRulePathPredicate`.
+    const declared = projectDeclaredProtectedPaths(config);
+
     const mutation = classifyBashMutation(command, {
       protectedPaths: config.guard.protectedPaths,
       // Same normalisation the write path applies before matchesAny, so the
@@ -408,7 +431,7 @@ function guardBashCommand(
       // hand gate 0 a path with the escape already erased from it. See
       // `MutationOptions.exempt` and `rules-write-exemption.ts` `## Gate 0`.
       exempt: rulesWriteExemptionActive(process.env)
-        ? isExemptRulePath
+        ? (path, spelled) => isExemptRulePath(path, spelled, declared)
         : undefined,
       // And, for an operand it refuses, WHY — carried into the deny reason so a
       // rule path denied under a set flag does not read exactly like the same
@@ -416,7 +439,7 @@ function guardBashCommand(
       // classifier only asks this about an operand it already asked `exempt`
       // about, so the two are configured together or not at all.
       exemptRefusal: rulesWriteExemptionActive(process.env)
-        ? exemptionRefusalNote
+        ? (path, spelled) => exemptionRefusalNote(path, spelled, declared)
         : undefined,
     });
 
@@ -703,14 +726,23 @@ async function main(): Promise<void> {
   // then COLLAPSE `.` and `..` before either check reads the path.
   //
   // The collapse is not cosmetic and it is not only the exemption's business.
-  // `normalizeToRelative` returns a relative input UNCHANGED, and `matchesAny`
-  // compiles a glob to a regex over the path's text, so CHECK 2 used to compare
-  // the raw spelling against the protected list: `agents/coder.md` denied while
-  // `./agents/coder.md` and `x/../agents/coder.md` allowed, writing the same
-  // file. That was the whole protected list bypassable with a two-character
-  // prefix, and it was the strictly worse half of the input class the exemption
-  // had already been taught to collapse — `rules/../agents/coder.md` denied
-  // only by accident, because `rules/**` happens to match its text.
+  // `normalizeToRelative` used to return a relative input UNCHANGED, and
+  // `matchesAny` compiles a glob to a regex over the path's text, so CHECK 2
+  // used to compare the raw spelling against the protected list:
+  // `agents/coder.md` denied while `./agents/coder.md` and
+  // `x/../agents/coder.md` allowed, writing the same file. That was the whole
+  // protected list bypassable with a two-character prefix, and it was the
+  // strictly worse half of the input class the exemption had already been taught
+  // to collapse — `rules/../agents/coder.md` denied only by accident, because
+  // `rules/**` happens to match its text.
+  //
+  // `normalizeToRelative` now resolves a relative input as well (`260804-1604`),
+  // which collapses the same class one step earlier. The line below STAYS, and
+  // not as belt and braces: the resolve answers a DIFFERENT question — which
+  // directory the path hangs off — and it hands back an absolute path whenever
+  // the answer is "not this one". Only this collapse guarantees that the
+  // spelling CHECK 2 and the exemption both read is the narrowest text naming
+  // the target, in the outside-the-tree case as well as the inside one.
   //
   // One collapse, one place, above both checks: the protected set and the
   // exempt set are read off the same spelling, and neither can be argued into a
@@ -788,9 +820,16 @@ async function main(): Promise<void> {
     //      string does not name. Gate 0 therefore reads `rawFilePath`, the last
     //      place the spelling still exists. Handing `filePath` twice would
     //      compile and reopen the escape in silence.
+    //   5. THE PROJECT'S OWN DECLARED ENTRIES OUTRANK THE FLAG. `declared` is
+    //      what this project wrote in its `fusion-guard.json`, and gate 1b in
+    //      the exemption module refuses the grant for anything it names
+    //      (decision 260803-1314). It must not be `config.guard.protectedPaths`:
+    //      an omitted list inherits the plugin's, which contains `rules/**`, so
+    //      that spelling would end the exemption everywhere and look right.
+    const declared = projectDeclaredProtectedPaths(config);
     const exempted =
       rulesWriteExemptionActive(process.env) &&
-      isExemptRulePath(filePath, rawFilePath);
+      isExemptRulePath(filePath, rawFilePath, declared);
 
     if (!exempted) {
       // The note is empty for every deny in a project that does not use the
@@ -801,7 +840,7 @@ async function main(): Promise<void> {
       // does let the agent write, with nothing about the spelling that refused
       // it. The reason string is also what `recordBlock` stores, so the
       // escalation record carries the cause too.
-      const note = exemptionRefusalNote(filePath, rawFilePath);
+      const note = exemptionRefusalNote(filePath, rawFilePath, declared);
       const reason =
         `Protected path: ${filePath} cannot be modified directly. This path is under compliance guard protection.` +
         (note === null ? "" : ` ${note}`);

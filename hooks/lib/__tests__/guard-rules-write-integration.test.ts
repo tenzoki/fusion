@@ -19,6 +19,7 @@ import {
   projectConfig,
   readEvents,
   readEscalation,
+  REPO_ROOT,
   runBash,
   runGuard,
   runWrite,
@@ -1883,6 +1884,266 @@ describe("the self-protection floor, through the guard", () => {
   );
 });
 
+// ---------------------------------------------------------------------------
+// The floor from a SUBDIRECTORY — issue 260804-1604, plan Step 1.
+//
+// `findWorkbenchRoot` walks UP from the working directory, so the file the
+// loader reads may sit above where the guard is running. Every protected pattern
+// is matched against a path relativised to the WORKING directory, so the bare
+// `fusion-guard.json` pattern defended `<cwd>/fusion-guard.json` — a file that
+// need not exist — while the file governing the guard sat out of reach. All four
+// writes to it were allowed, on both surfaces, with no flag.
+//
+// Every case below runs the guard with `cwd` one directory BELOW the project
+// root, which is the whole point: the same cases at the root passed before the
+// defect and pass after it. `CONTROL` is the row that proves the root file was
+// loaded at all — without it a deny here could mean the project layer was never
+// read, and the case would pass for the wrong reason.
+// ---------------------------------------------------------------------------
+
+describe("the self-protection floor reached from a subdirectory", () => {
+  /**
+   * A configured project plus a `sub/` the guard can be run from.
+   *
+   * `sub` is handed to the callback rather than derived at each call site, so a
+   * case cannot accidentally ask the question from the root — where every row
+   * below passed before this step and proves nothing.
+   */
+  const withSubdirectory = <T,>(
+    value: object,
+    fn: (p: { root: string; sub: string }) => T,
+  ): T =>
+    withProject(
+      ({ root }) => fn({ root, sub: resolve(root, "sub") }),
+      {
+        files: {
+          "fusion-guard.json": projectConfig(value),
+          "sub/.keep": "",
+          "secret/a": "a secret\n",
+        },
+      },
+    );
+
+  /** A project layer that protects something the plugin's list does not. */
+  const NARROWED = { guard: { protectedPaths: ["secret/**"] } };
+
+  it(
+    "CONTROL: the root's configuration really is in force down here",
+    () => {
+      // The row `260804-1604` calls the point of its own measurement. A deny in
+      // the four cases below means nothing unless this one denies too: it is the
+      // proof that `findWorkbenchRoot` walked up, found the file and applied it.
+      withSubdirectory(NARROWED, ({ sub }) => {
+        expect(runGuard(sub, "Edit", { file_path: "secret/a" }).decision).toBe(
+          "block",
+        );
+        // And the narrowing took effect, so the list in force is the project's.
+        expect(
+          runGuard(sub, "Edit", { file_path: "rules/x.md" }).decision,
+        ).toBeUndefined();
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies Edit ../fusion-guard.json",
+    () => {
+      withSubdirectory(NARROWED, ({ sub }) => {
+        const res = runGuard(sub, "Edit", {
+          file_path: "../fusion-guard.json",
+        });
+        expect(res.decision).toBe("block");
+        expect(res.reason).toContain("Protected path");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies Edit <abs>/fusion-guard.json",
+    () => {
+      withSubdirectory(NARROWED, ({ root, sub }) => {
+        const res = runGuard(sub, "Edit", {
+          file_path: resolve(root, "fusion-guard.json"),
+        });
+        expect(res.decision).toBe("block");
+        expect(res.reason).toContain("Protected path");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies rm ../fusion-guard.json",
+    () => {
+      withSubdirectory(NARROWED, ({ sub }) => {
+        expect(runBash(sub, "rm ../fusion-guard.json").decision).toBe("block");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies cd .. && rm fusion-guard.json",
+    () => {
+      // The tracked virtual `cd` and the floor have to agree, or the shell
+      // surface is a way around a control the write tools enforce.
+      withSubdirectory(NARROWED, ({ sub }) => {
+        expect(runBash(sub, "cd .. && rm fusion-guard.json").decision).toBe(
+          "block",
+        );
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies the absolute spelling on the shell surface too",
+    () => {
+      withSubdirectory(NARROWED, ({ root, sub }) => {
+        expect(
+          runBash(sub, `rm ${resolve(root, "fusion-guard.json")}`).decision,
+        ).toBe("block");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies deleting the project root from below it, on the file it would take",
+    () => {
+      // The ancestor pass, now that one pattern in the list is absolute. Stated
+      // because it is a NEW deny rather than a restored one: `rm -rf ..` from a
+      // subdirectory used to allow, its operand being a `..` string that no
+      // relative pattern could match.
+      withSubdirectory(NARROWED, ({ sub }) => {
+        expect(runBash(sub, "rm -rf ..").decision).toBe("block");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies a protected path reached by walking OUT of the root and back in",
+    () => {
+      // Not the floor, and a fix rather than a cost — so it is asserted from the
+      // ROOT, where the guard normally runs. `../<root>/secret/a` names a
+      // protected file and used to allow on both surfaces, because its TEXT
+      // began with `..` and no pattern in the list can. Resolving first is what
+      // closes it.
+      withSubdirectory(NARROWED, ({ root }) => {
+        const back = `../${root.split("/").pop()}`;
+        expect(
+          runGuard(root, "Edit", { file_path: `${back}/secret/a` }).decision,
+        ).toBe("block");
+        expect(runBash(root, `rm ${back}/secret/a`).decision).toBe("block");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "STATED COST: a protected path ABOVE the working directory still allows",
+    () => {
+      // The bound on what this step fixes, and it is deliberate. Only the floor
+      // gained an absolute spelling; `secret/**` and `rules/**` are
+      // project-relative patterns matched against a path relativised to the
+      // WORKING directory, so from `sub/` they name `sub/secret/` and
+      // `sub/rules/` — which is the reading `260804-1604` calls arguably correct
+      // for those patterns and wrong only for the floor. Changing it is the
+      // issue's suggested direction 2, which it says not to take in this Circle.
+      withSubdirectory(NARROWED, ({ sub }) => {
+        expect(
+          runGuard(sub, "Edit", { file_path: "../secret/a" }).decision,
+        ).toBeUndefined();
+        expect(runBash(sub, "rm ../secret/a").decision).toBeUndefined();
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "leaves an ordinary write in the subdirectory alone",
+    () => {
+      // The bound. Nothing about running from a subdirectory makes the guard
+      // stricter about paths that are not the configuration file.
+      withSubdirectory(NARROWED, ({ sub }) => {
+        expect(
+          runGuard(sub, "Edit", { file_path: "notes.txt" }).decision,
+        ).toBeUndefined();
+        expect(runBash(sub, "rm -rf out").decision).toBeUndefined();
+        expect(runBash(sub, "rm ../notes.txt").decision).toBeUndefined();
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "leaves the /fusion:setup Step 0f block working, run twice",
+    () => {
+      // The plan's own falsification test for this step: the seeding block was
+      // reshaped around the floor in the predecessor plan, and it is the fastest
+      // signal that the floor moved. Both commands are put through the real
+      // guard AND through a real shell, because a verdict that says "allow"
+      // about a command that does not do what the skill claims is worth nothing.
+      withProject(({ root }) => {
+        const probe =
+          '[ -f ./fusion-guard.json ] && echo "fusion-guard.json present" || echo "fusion-guard.json absent"';
+        const copy = `[ -f ./fusion-guard.json ] || { cp "${resolve(REPO_ROOT, "templates/fusion-guard.json")}" ./fusion-guard.json && echo copied; }`;
+        const sh = (cmd: string): string =>
+          spawnSync("bash", ["-c", cmd], {
+            cwd: root,
+            encoding: "utf-8",
+          }).stdout.trim();
+
+        // FIRST RUN — the file is absent, so the floor is not in force.
+        expect(runBash(root, probe).decision).toBeUndefined();
+        expect(sh(probe)).toBe("fusion-guard.json absent");
+        expect(runBash(root, copy).decision).toBeUndefined();
+        expect(sh(copy)).toBe("copied");
+        expect(existsSync(resolve(root, "fusion-guard.json"))).toBe(true);
+
+        // SECOND RUN — the probe still allows and now reports `present`, which
+        // is what stops the agent running the copy a second time.
+        expect(runBash(root, probe).decision).toBeUndefined();
+        expect(sh(probe)).toBe("fusion-guard.json present");
+
+        // …and the copy the skill tells the agent NOT to run is denied, which is
+        // the behaviour that prose is written around.
+        expect(runBash(root, copy).decision).toBe("block");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "does not invent a floor before the file exists, from a subdirectory either",
+    () => {
+      // Decision 260802-1912 in the shape this step could most easily have
+      // reversed by accident: an absolute floor computed from the project root
+      // regardless of whether the file is there would deny the seeding write
+      // that `/fusion:setup` Step 0f makes, once per session, forever.
+      withProject(
+        ({ root }) => {
+          const sub = resolve(root, "sub");
+          expect(
+            runGuard(sub, "Write", { file_path: "../fusion-guard.json" })
+              .decision,
+          ).toBeUndefined();
+          expect(
+            runGuard(sub, "Write", {
+              file_path: resolve(root, "fusion-guard.json"),
+            }).decision,
+          ).toBeUndefined();
+        },
+        { files: { "sub/.keep": "" } },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+});
+
 describe("a project's own protectedPaths replace the plugin's", () => {
   it(
     "protects what the project declared and stops protecting what it dropped",
@@ -2043,33 +2304,6 @@ describe("an unparseable project configuration is reported, not swallowed", () =
 // ---------------------------------------------------------------------------
 
 describe("what a project configuration can and cannot reach — measured", () => {
-  it(
-    "MEASURES: the flag still exempts a rule path the project protected explicitly",
-    () => {
-      // This is the live question in
-      // `decisions/260803-1314_o_may-a-project-protect-a-path-inside-its-own-rule-directory-against-the-rules-write-flag.md`,
-      // which step 6 turns from hypothetical into shipped: `RULE_DIR_PATTERNS`
-      // is a hardcoded constant and the exemption never consults the project's
-      // list, so an entry a project added BY HAND is outranked by a flag set in
-      // a shell.
-      //
-      // The case asserts what the code does TODAY. It is not an endorsement,
-      // and step 6 deliberately did not decide the question in code. When the
-      // decision lands, this case fails — which is the point: the behaviour
-      // changes deliberately rather than silently.
-      withConfiguredProject(
-        { guard: { protectedPaths: ["rules/immutable/**"] } },
-        ({ root }) => {
-          expect(runWrite(root, "rules/immutable/x.md").decision).toBe("block");
-          expect(
-            runWrite(root, "rules/immutable/x.md", "Edit", FLAG_SET).decision,
-          ).toBeUndefined();
-        },
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
   it(
     "MEASURES: in a project that has never been seeded, one write unprotects the guard's own state",
     () => {
@@ -2464,6 +2698,283 @@ describe("the project configuration in the plugin's own repo", () => {
         },
         { files: { "fusion-guard.json": projectConfig("not json at all") } },
       );
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+// ---------------------------------------------------------------------------
+// A project's own declared entry outranks FUSION_ALLOW_RULES_WRITE.
+//
+// Decision `260803-1314`, answered option 2 at the plan gate on 2026-08-04;
+// plan Step 4. The block this replaces was labelled `MEASURES:` and pinned the
+// opposite behaviour on purpose, citing the record and disclaiming endorsement,
+// so that it would fail the day the decision landed. It did.
+//
+// Every row here is a real guard subprocess against a throwaway project root.
+// The unit matrices in `rules-write-exemption.test.ts` cover the predicate; what
+// these cases add is that the predicate's answer reaches a verdict — on BOTH
+// write surfaces, which is where a boundary written once and consulted twice
+// earns its keep.
+// ---------------------------------------------------------------------------
+
+describe("a project's own protected entry outranks the rules-write flag", () => {
+  /** The record's own example: one immutable subtree inside `rules/`. */
+  const IMMUTABLE = { guard: { protectedPaths: ["rules/immutable/**"] } };
+
+  const withImmutable = <T,>(fn: (p: { root: string }) => T): T =>
+    withProject(fn, {
+      files: {
+        "fusion-guard.json": projectConfig(IMMUTABLE),
+        "rules/immutable/x.md": "# a rule the project froze\n",
+      },
+    });
+
+  it(
+    "denies the write the flag used to allow, on the write-tool path",
+    () => {
+      withImmutable(({ root }) => {
+        // Protected either way…
+        expect(runWrite(root, "rules/immutable/x.md").decision).toBe("block");
+        // …and the flag no longer lifts it. This is the row that flipped.
+        const res = runWrite(root, "rules/immutable/x.md", "Edit", FLAG_SET);
+        expect(res.decision).toBe("block");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies it on the Bash path too, in every shape a curator would reach for",
+    () => {
+      // A boundary honoured by Edit and not by `mv` teaches an agent to route
+      // around the guard, which is the failure the whole module is written
+      // against. `rm -rf` on the directory is the case the trailing-separator
+      // retry in `projectProtectedMatch` exists for.
+      withImmutable(({ root }) => {
+        for (const cmd of [
+          "rm rules/immutable/x.md",
+          "mv rules/immutable/x.md rules/retired/",
+          "rm -rf rules/immutable",
+          "rm -rf rules/immutable/",
+          "echo x > rules/immutable/x.md",
+        ]) {
+          expect(runBash(root, cmd, FLAG_SET).decision, cmd).toBe("block");
+        }
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "names the project's own entry in the deny, so it does not read as a broken flag",
+    () => {
+      // The obligation the decision record states in its own words: a curator
+      // meeting this deny needs a reason naming the project's own entry.
+      withImmutable(({ root }) => {
+        const res = runWrite(root, "rules/immutable/x.md", "Edit", FLAG_SET);
+
+        expect(res.reason).toContain("Protected path");
+        expect(res.reason).toContain("FUSION_ALLOW_RULES_WRITE");
+        expect(res.reason).toContain("rules/immutable/**");
+        expect(res.reason).toContain("fusion-guard.json");
+        // And it does not read as "spell it differently".
+        expect(res.reason).toContain("ask the user");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "names it on the Bash surface as well",
+    () => {
+      withImmutable(({ root }) => {
+        const res = runBash(root, "rm rules/immutable/x.md", FLAG_SET);
+        expect(res.reason).toContain("rules/immutable/**");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "leaves the flag's headline use working in the same project",
+    () => {
+      // "The two default rule patterns keep working exactly as they do now" —
+      // the record's own sentence. A project that carves out a subtree keeps
+      // the flag for everything else, or option 2 is option 3 by accident.
+      //
+      // NOTE the project declared ONLY `rules/immutable/**`, so `rules/x.md` is
+      // not protected at all here and the exemption is never consulted about it.
+      // The row that proves the grant still works is the one where the plugin's
+      // `rules/**` is also in force — the next case.
+      withImmutable(({ root }) => {
+        expect(
+          runBash(root, "mv rules/x.md rules/retired/", FLAG_SET).decision,
+        ).toBeUndefined();
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "STATED COST: a project that copies rules/** into its own file loses the flag",
+    () => {
+      // The sharp edge of the rule, and the shape a project would plausibly
+      // write: fusion's own list, plus one entry of its own. There is no
+      // exception for a declared entry that happens to equal one of fusion's, so
+      // the whole rule directory stops being exempt — including
+      // `rules/retired/`, which is where the flag's headline use writes.
+      //
+      // It follows from the decision rather than being a surprise on top of it:
+      // the flag reaches a path only while the list protecting that path is
+      // fusion's. Step 7 owes this a sentence, or a project meets a deny it
+      // reads as the flag being broken.
+      withProject(
+        ({ root }) => {
+          expect(runWrite(root, "rules/x.md", "Edit", FLAG_SET).decision).toBe(
+            "block",
+          );
+          expect(
+            runBash(root, "mv rules/x.md rules/retired/", FLAG_SET).decision,
+          ).toBe("block");
+          expect(
+            runWrite(root, "rules/immutable/x.md", "Edit", FLAG_SET).decision,
+          ).toBe("block");
+          // `agents/**` is on the same declared list and was never exempt, so
+          // nothing about it changed.
+          expect(runWrite(root, "agents/coder.md").decision).toBe("block");
+        },
+        {
+          files: {
+            "fusion-guard.json": projectConfig({
+              guard: {
+                protectedPaths: ["agents/**", "rules/**", "rules/immutable/**"],
+              },
+            }),
+            "rules/immutable/x.md": "# frozen\n",
+          },
+        },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "HALF 2: a project that declares NOTHING gets the exemption unchanged",
+    () => {
+      // The trap, measured rather than reasoned about. This project's effective
+      // `protectedPaths` is the plugin's nine patterns, `rules/**` among them,
+      // inherited because the file omits the key. If the subtraction ever read
+      // the effective list instead of the declared one, every row here flips to
+      // `block` and the flag is dead in every project on earth.
+      withConfiguredProject({ escalation: { blocksBeforeHalt: 3 } }, ({ root }) => {
+        expect(runWrite(root, "rules/x.md").decision).toBe("block");
+        expect(
+          runWrite(root, "rules/x.md", "Edit", FLAG_SET).decision,
+        ).toBeUndefined();
+        expect(
+          runBash(root, "mv rules/x.md rules/retired/", FLAG_SET).decision,
+        ).toBeUndefined();
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "HALF 2 again, for a project with no fusion-guard.json at all",
+    () => {
+      // The state of every project on this plugin today.
+      withProject(({ root }) => {
+        expect(runWrite(root, "rules/x.md").decision).toBe("block");
+        expect(
+          runWrite(root, "rules/x.md", "Edit", FLAG_SET).decision,
+        ).toBeUndefined();
+        expect(
+          runBash(root, "mv rules/x.md rules/retired/", FLAG_SET).decision,
+        ).toBeUndefined();
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "HALF 2 for a project that declared some OTHER key",
+    () => {
+      // The commonest real `fusion-guard.json`: it configures a threshold and
+      // says nothing about paths. Provenance read as "did the project supply a
+      // guard object" rather than "did it supply this leaf" would kill the flag
+      // here, and nothing else in the suite would say so.
+      withConfiguredProject(
+        { guard: { defaultSensitivity: "high" } },
+        ({ root }) => {
+          expect(
+            runWrite(root, "rules/x.md", "Edit", FLAG_SET).decision,
+          ).toBeUndefined();
+        },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "a declared entry outside the rule directories changes nothing about the flag",
+    () => {
+      withProject(
+        ({ root }) => {
+          expect(runWrite(root, "secret/a").decision).toBe("block");
+          // `rules/**` is not on this project's list at all, so nothing under
+          // `rules/` is protected and the exemption is never asked.
+          expect(runWrite(root, "rules/x.md").decision).toBeUndefined();
+        },
+        {
+          files: {
+            "fusion-guard.json": projectConfig({
+              guard: { protectedPaths: ["secret/**"] },
+            }),
+            "secret/a": "a secret\n",
+          },
+        },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "does not lift a HALT, any more than the flag itself does",
+    () => {
+      // Gate 1b narrows a grant; it cannot widen one. CHECK 1 is still above
+      // CHECK 2 and the Bash halt still fires on `mutation.mutates`.
+      withProject(
+        ({ root }) => {
+          expect(
+            runWrite(root, "rules/immutable/x.md", "Edit", FLAG_SET).decision,
+          ).toBe("block");
+          expect(
+            runWrite(root, "rules/immutable/x.md", "Edit", FLAG_SET).reason,
+          ).toContain("[HALTED]");
+        },
+        {
+          files: {
+            "fusion-guard.json": projectConfig(IMMUTABLE),
+            "rules/immutable/x.md": "# frozen\n",
+          },
+          escalation: { haltActive: true, consecutiveBlocks: 3 },
+        },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "does not change what a project WITHOUT the flag set sees",
+    () => {
+      // The deny is the same deny it has always been when the flag is unset:
+      // no exemption note, because there is no grant to explain.
+      withImmutable(({ root }) => {
+        const res = runWrite(root, "rules/immutable/x.md");
+        expect(res.decision).toBe("block");
+        expect(res.reason).not.toContain("FUSION_ALLOW_RULES_WRITE");
+      });
     },
     CASE_TIMEOUT,
   );
