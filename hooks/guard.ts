@@ -624,6 +624,32 @@ async function main(): Promise<void> {
 
   const config = loadConfig();
 
+  // A configuration source that exists but could not be read is reported, once
+  // per diagnostic, never dropped in silence. The loader stays pure and hands
+  // the problems back as data; this is the one place that turns them into
+  // events.
+  //
+  // ABOVE the `enabled` check on purpose. A diagnostic says one layer of the
+  // configuration was discarded, so the effective config — INCLUDING whether the
+  // guard is on at all — is not the one the user wrote. That is exactly when
+  // they need to hear about it.
+  //
+  // The cost, stated rather than discovered: a project left with a broken
+  // `fusion-guard.json` gets one advisory per guarded tool call, Bash included,
+  // which is a deliberate departure from the Bash allow path's zero-side-effect
+  // property (issues 260707-0750 / 260707-0751). Those protect ordinary work in
+  // a CORRECTLY configured project from flooding the log; this is not that, and
+  // silence here is the failure the spec rejects. The noise stops when the file
+  // is fixed. A VALID project config leaves the innocuous Bash path writing
+  // nothing at all, which is pinned by its own case in
+  // guard-rules-write-integration.test.ts.
+  //
+  // No escalation entry and no counter movement: a diagnostic is a diagnostic,
+  // not an exemption and not a violation.
+  for (const diagnostic of config.diagnostics) {
+    emitEvent("guard_advisory", input.tool_name, undefined, diagnostic);
+  }
+
   // Guard disabled
   if (!config.guard.enabled) {
     allow();

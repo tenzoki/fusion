@@ -61,3 +61,6 @@ Searched for an answer across `circles/260801-1244-guard-rules-write/analyses/` 
 **Reconciliation 260804-1021 (reconciler, domain `code`) — stays `_o_`, unchanged. The precondition still does not exist.**
 
 `RULE_DIR_PATTERNS` is still the hardcoded `["rules/**", ".claude/rules/**"]` in `hooks/lib/rules-write-exemption.ts`, and `protectedPaths` is still not project-configurable (`hooks/lib/config.ts:34`). Plan Step 6, which this record defers to, is unstarted at HEAD `cc012fc`. Searched both analysis stores, both planning stores and both decision stores for an answer; there is none, exactly as the previous reconciliation found.
+
+---
+**Status change without an answer, plan Step 6 (2026-08-04).** Before Step 6 this question was hypothetical: no project could declare a `protectedPaths` list at all, so nothing could conflict with `RULE_DIR_PATTERNS`. The loader makes it live. Not deciding is therefore no longer neutral — it ships option 1's behaviour, in which the exemption outranks a project's own protected entry. The current behaviour is pinned by a `MEASURES:`-labelled test case that explicitly disclaims endorsement and cites this record, so it fails the day this decision lands. Still open, and now consequential.

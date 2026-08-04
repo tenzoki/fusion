@@ -15,6 +15,7 @@ import { resolve } from "node:path";
 import {
   CASE_TIMEOUT,
   childEnv,
+  guardStateWritten,
   projectConfig,
   readEvents,
   readEscalation,
@@ -1756,6 +1757,408 @@ describe("a refused grant says which gate refused it (T3-2)", () => {
         expect(runBash(root, "rm rules/retired/.keep", FLAG_SET).decision)
           .toBeUndefined();
       });
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+// ---------------------------------------------------------------------------
+// The C5b project configuration — plan step 6.
+//
+// Every case below runs against a THROWAWAY project root, through a real guard
+// subprocess. That is not a stylistic choice inherited from the cases above: it
+// is the only way these can be checked at all. The write guard stands down in
+// this repository, so a `fusion-guard.json` placed here and edited by hand
+// would be honoured by nothing and would report a pass for a check that never
+// ran. The Circle's activation record named that as the most likely way this
+// work ships broken.
+//
+// `projectConfig()` writes the file into the fixture. Nothing here creates a
+// `fusion-guard.json` at the repository root, which belongs to step 7.
+// ---------------------------------------------------------------------------
+
+/** A project whose `fusion-guard.json` holds `value` (object or raw text). */
+const withConfiguredProject = <T,>(
+  value: object | string,
+  fn: (project: { root: string }) => T,
+): T =>
+  withProject(fn, { files: { "fusion-guard.json": projectConfig(value) } });
+
+describe("the self-protection floor, through the guard", () => {
+  it(
+    "blocks an Edit to fusion-guard.json in a project that has one",
+    () => {
+      // The file does NOT list itself here. That is the case the floor exists
+      // for: without it, one edit unprotects the guard's own configuration and
+      // every later edit is unguarded.
+      withConfiguredProject({ escalation: { blocksBeforeHalt: 3 } }, ({ root }) => {
+        const res = runWrite(root, "fusion-guard.json");
+
+        expect(res.decision).toBe("block");
+        expect(res.reason).toContain("Protected path");
+        expect(res.reason).toContain("fusion-guard.json");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "blocks it just the same when the file DOES list itself",
+    () => {
+      withConfiguredProject(
+        { guard: { protectedPaths: ["fusion-guard.json"] } },
+        ({ root }) => {
+          expect(runWrite(root, "fusion-guard.json").decision).toBe("block");
+        },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "blocks it even when the project's own list is empty",
+    () => {
+      // The floor is a floor: it does not depend on the project agreeing.
+      withConfiguredProject({ guard: { protectedPaths: [] } }, ({ root }) => {
+        expect(runWrite(root, "fusion-guard.json").decision).toBe("block");
+        // …and the empty list really did take effect, so the case above is
+        // not passing because the plugin's list was still in force.
+        expect(runWrite(root, "agents/coder.md").decision).toBeUndefined();
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "blocks a SHELL delete of it, which is what makes the floor non-evadable",
+    () => {
+      // The floor's whole argument for applying only once the file exists is
+      // that the absent state is not reachable again through a guarded surface.
+      // `rm` is how it would be reached, so this is the case that argument
+      // stands or falls on.
+      withConfiguredProject({ escalation: { blocksBeforeHalt: 3 } }, ({ root }) => {
+        expect(runBash(root, "rm fusion-guard.json").decision).toBe("block");
+        expect(runBash(root, "mv fusion-guard.json /tmp/x").decision).toBe(
+          "block",
+        );
+        expect(runBash(root, "echo '{}' > fusion-guard.json").decision).toBe(
+          "block",
+        );
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "does NOT block creating it when the project has none — the seeding case",
+    () => {
+      // `/fusion:setup` (step 8) copies the template in. An unconditional floor
+      // would deny that write and the file could never be created by the
+      // mechanism meant to create it. Decided at the plan gate, decision
+      // 260802-1912 option 1.
+      withProject(({ root }) => {
+        expect(runWrite(root, "fusion-guard.json", "Write").decision)
+          .toBeUndefined();
+        expect(runBash(root, "cp /tmp/template.json fusion-guard.json").decision)
+          .toBeUndefined();
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "is not reachable through FUSION_ALLOW_RULES_WRITE",
+    () => {
+      // The flag exempts the project's rule directories and nothing else.
+      // `fusion-guard.json` is not one of them, and a route from the flag to
+      // the guard's own configuration would be the flag turning the guard off.
+      withConfiguredProject({ escalation: { blocksBeforeHalt: 3 } }, ({ root }) => {
+        expect(runWrite(root, "fusion-guard.json", "Edit", FLAG_SET).decision)
+          .toBe("block");
+        expect(runBash(root, "rm fusion-guard.json", FLAG_SET).decision)
+          .toBe("block");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+describe("a project's own protectedPaths replace the plugin's", () => {
+  it(
+    "protects what the project declared and stops protecting what it dropped",
+    () => {
+      withConfiguredProject(
+        { guard: { protectedPaths: ["secret/**"] } },
+        ({ root }) => {
+          // Declared: denied.
+          expect(runWrite(root, "secret/a").decision).toBe("block");
+          // Dropped: allowed. This is the direction a union could not express,
+          // and the reason the merge is per top-level key.
+          expect(runWrite(root, "rules/x.md").decision).toBeUndefined();
+          expect(runWrite(root, "agents/coder.md").decision).toBeUndefined();
+        },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "reaches the shell surface too, not only the write tools",
+    () => {
+      // One list, both surfaces. A project list honoured by Edit but not by
+      // `rm` would teach an agent to route around the guard.
+      withConfiguredProject(
+        { guard: { protectedPaths: ["secret/**"] } },
+        ({ root }) => {
+          expect(runBash(root, "rm -rf secret/a").decision).toBe("block");
+          expect(runBash(root, "rm rules/x.md").decision).toBeUndefined();
+        },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "a project declaring only escalation keeps the plugin's protected list",
+    () => {
+      // Two properties in one project, because they are the same mechanism:
+      // the `escalation` key came from the project, and `guard` — untouched by
+      // the project — came from the plugin.
+      withConfiguredProject(
+        { escalation: { blocksBeforeHalt: 2 } },
+        ({ root }) => {
+          expect(runWrite(root, "rules/x.md").decision).toBe("block");
+          const second = runWrite(root, "agents/coder.md");
+
+          expect(second.decision).toBe("block");
+          // Halted on the SECOND block, not the plugin's third: the project's
+          // threshold is live.
+          const state = readEscalation(root);
+          expect(state?.haltActive).toBe(true);
+          expect(readEvents(root).map((e) => e.event)).toEqual([
+            "guard_block",
+            "guard_halt",
+          ]);
+        },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+describe("an unparseable project configuration is reported, not swallowed", () => {
+  it(
+    "emits one advisory and still enforces the plugin's list",
+    () => {
+      withConfiguredProject("{ this is not json ", ({ root }) => {
+        const res = runWrite(root, "rules/x.md");
+
+        // Fell back to the plugin's list rather than failing open.
+        expect(res.decision).toBe("block");
+
+        const events = readEvents(root);
+        const advisories = events.filter((e) => e.event === "guard_advisory");
+        expect(advisories).toHaveLength(1);
+        expect(advisories[0]?.detail).toContain("fusion-guard.json");
+        expect(advisories[0]?.detail).toContain("not valid JSON");
+        // A diagnostic is not a violation: it records no block and moves no
+        // counter of its own. The one block below is the protected-path deny.
+        const state = readEscalation(root);
+        expect(state?.consecutiveBlocks).toBe(1);
+        expect(
+          (state?.recentEvents ?? []).filter((e) => e.level === "clear"),
+        ).toHaveLength(0);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "reports it on the Bash surface too — the stated cost, pinned",
+    () => {
+      // A deliberate departure from the Bash allow path's zero-side-effect
+      // property, and the reason is that silence is the failure the spec
+      // rejects. Pinned here so it is a known cost rather than a discovery.
+      withConfiguredProject("nope", ({ root }) => {
+        expect(runBash(root, "ls -la").decision).toBeUndefined();
+
+        const events = readEvents(root);
+        expect(events.map((e) => e.event)).toEqual(["guard_advisory"]);
+        expect(events[0]?.detail).toContain("fusion-guard.json");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "leaves an innocuous Bash call in a VALID-config project writing nothing",
+    () => {
+      // The settled property (issues 260707-0750 and 260707-0751), pinned
+      // where it actually applies. The case above bounds the departure; this
+      // one bounds the bound.
+      withConfiguredProject(
+        { guard: { protectedPaths: ["secret/**"] } },
+        ({ root }) => {
+          expect(runBash(root, "ls -la").decision).toBeUndefined();
+          expect(guardStateWritten(root)).toBe(false);
+        },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "leaves an innocuous Bash call in a NO-config project writing nothing",
+    () => {
+      // The state of every project on this plugin today. If step 6 had made
+      // the loader emit anything on a clean load, this is where it would show.
+      withProject(({ root }) => {
+        expect(runBash(root, "ls -la").decision).toBeUndefined();
+        expect(guardStateWritten(root)).toBe(false);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+describe("what a project configuration can currently reach — measured, not endorsed", () => {
+  it(
+    "MEASURES: the flag still exempts a rule path the project protected explicitly",
+    () => {
+      // This is the live question in
+      // `decisions/260803-1314_o_may-a-project-protect-a-path-inside-its-own-rule-directory-against-the-rules-write-flag.md`,
+      // which step 6 turns from hypothetical into shipped: `RULE_DIR_PATTERNS`
+      // is a hardcoded constant and the exemption never consults the project's
+      // list, so an entry a project added BY HAND is outranked by a flag set in
+      // a shell.
+      //
+      // The case asserts what the code does TODAY. It is not an endorsement,
+      // and step 6 deliberately did not decide the question in code. When the
+      // decision lands, this case fails — which is the point: the behaviour
+      // changes deliberately rather than silently.
+      withConfiguredProject(
+        { guard: { protectedPaths: ["rules/immutable/**"] } },
+        ({ root }) => {
+          expect(runWrite(root, "rules/immutable/x.md").decision).toBe("block");
+          expect(
+            runWrite(root, "rules/immutable/x.md", "Edit", FLAG_SET).decision,
+          ).toBeUndefined();
+        },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "MEASURES: in a project that has never been seeded, one write unprotects the guard's own state",
+    () => {
+      // The residual decision 260802-1912 accepted, measured to its end rather
+      // than restated. The record bounds it as "an agent may create a
+      // fusion-guard.json that narrows protectedPaths". The narrowing also
+      // drops `fusion-workbench/.guard-state/**` — where `consecutiveBlocks`
+      // and `haltActive` live — so the reach is the escalation machinery, one
+      // step past what the record says. Filed as an issue by this step.
+      withProject(({ root }) => {
+        // Before: the plugin's list is in force on both the guard's state
+        // directory and everything else.
+        expect(
+          runWrite(root, "fusion-workbench/.guard-state/escalation.json")
+            .decision,
+        ).toBe("block");
+
+        // One allowed write, because the floor is not yet in force.
+        expect(runWrite(root, "fusion-guard.json", "Write").decision)
+          .toBeUndefined();
+        writeFileSync(
+          resolve(root, "fusion-guard.json"),
+          projectConfig({ guard: { protectedPaths: [] } }),
+          "utf-8",
+        );
+
+        // After: from the very next tool call.
+        expect(
+          runWrite(root, "fusion-workbench/.guard-state/escalation.json")
+            .decision,
+        ).toBeUndefined();
+        expect(runBash(root, "rm -rf fusion-workbench/.guard-state").decision)
+          .toBeUndefined();
+
+        // The floor did close behind it, which is the half of the decision
+        // that holds: the narrowing file cannot now be revised or removed.
+        expect(runWrite(root, "fusion-guard.json").decision).toBe("block");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "MEASURES: a HALT still holds — the residual above does not open that door",
+    () => {
+      // Worth pinning next to the case above so the residual is not read as
+      // wider than it is. CHECK 1 is above CHECK 2 on the write path, and the
+      // Bash halt fires on `mutation.mutates` before any protected-path
+      // question, so a halted guard blocks the narrowing write itself.
+      withProject(
+        ({ root }) => {
+          expect(runWrite(root, "fusion-guard.json", "Write").decision).toBe(
+            "block",
+          );
+          expect(runBash(root, "echo '{}' > fusion-guard.json").decision).toBe(
+            "block",
+          );
+        },
+        { escalation: { haltActive: true, consecutiveBlocks: 3 } },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+describe("the project configuration in the plugin's own repo", () => {
+  it(
+    "does not protect its own fusion-guard.json there — the write guard stands down",
+    () => {
+      // Criterion 12 asks for identical behaviour in both places OR a stated
+      // difference. This is the difference, and it is the pre-existing one:
+      // the whole write guard stands down in the plugin's source tree, so the
+      // floor stands down with it. Asserted from both sides in one case so the
+      // boundary is visible rather than inferred — the SAME configuration
+      // blocks in a consuming project and allows here.
+      const cfg = { escalation: { blocksBeforeHalt: 3 } };
+
+      withProject(
+        ({ root }) => expect(runWrite(root, "fusion-guard.json").decision).toBe("block"),
+        { files: { "fusion-guard.json": projectConfig(cfg) } },
+      );
+      withPluginProject(
+        ({ root }) =>
+          expect(runWrite(root, "fusion-guard.json").decision).toBeUndefined(),
+        { files: { "fusion-guard.json": projectConfig(cfg) } },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "still REPORTS a broken configuration there, because the load is not stood down",
+    () => {
+      // The config load sits above the self-detect gate, and deliberately: the
+      // file is not inert in this repository. `escalation.blocksBeforeHalt`
+      // reaches the git branch policy, which runs here unconditionally. A
+      // broken file that silently stopped configuring that would be exactly
+      // the silent fallback the spec rejects.
+      withPluginProject(
+        ({ root }) => {
+          expect(runWrite(root, "rules/x.md").decision).toBeUndefined();
+
+          const advisories = readEvents(root).filter(
+            (e) => e.event === "guard_advisory",
+          );
+          expect(advisories).toHaveLength(1);
+          expect(advisories[0]?.detail).toContain("fusion-guard.json");
+        },
+        { files: { "fusion-guard.json": projectConfig("not json at all") } },
+      );
     },
     CASE_TIMEOUT,
   );
