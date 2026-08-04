@@ -33,3 +33,50 @@ record rather than a patch, that outcome is available from the start.
 ## Per-Turn Log
 
 (Turn in progress.)
+
+## Per-Turn Log — Turn 1, `d2962f3..1187bfd`
+
+Two commits. `613d6fd` closed both git fail-open routes; `1187bfd` carries the review.
+
+The design call is the substance. The issue offered give-up or model; the coder built and
+measured both against HEAD over 811,210 commands and rejected both — modelling newly allows
+21,420 evaluations including the suite's own pinned row, giving up denies 173,610 commands of
+ordinary work. What shipped is a third answer: an operand is checked against every directory
+the guard can attribute to the invocation, so a directory fact may only ever add reach and
+never remove it. That makes the no-new-allow invariant structural rather than measured, and
+the review confirmed it: nothing in the module assumes a single resolution per operand.
+
+`git checkout` was closed without touching the promise that `git checkout HEAD -- <files>` is
+fusion's revert strategy and always allowed. The review judges the distinction real and the
+stated rationale false, and filed the correction.
+
+Three further defects surfaced in the same eight lines: `git --namespace` (closed),
+`GIT_WORK_TREE` in the environment (filed High, correctly deferred), and a residual entry
+about `git clean -fdx` that turned out to be wrong rather than incomplete.
+
+**The review also covered `048f3db` and `cc012fc`**, the two code commits of the previous
+session that had never had one. Both sound as designs. Three claims narrowed: the `DirStack`
+sum type makes the invalid state unrepresentable but does not make the depth invariant
+compiler-checked; the cost rule is a rule rather than an enumeration but is not predictive,
+because two of its four questions are false in cases documented in other sections; and
+"names it directly" is the same shape as the `runsBuiltins` mistake with its failure
+direction inverted, which is why it holds.
+
+Eight issues filed, two of them High and both fail-open. The review's cross-cutting sentence:
+every High is the same fact twice, a directory the classifier can compute and does not
+compare. The commit's cost statements all held under test; its closure statements all
+over-reached.
+
+## Reconciliation
+
+Not run. The Turn-10 review produced a nine-item ledger with severities, ordering and
+dependencies an hour before session close, and a reconciliation pass would have re-derived it.
+Stated here rather than left as a silent omission: the counts in this report are the review's
+and the orchestrator's, not a ground-truth pass over the filesystem, and the next session
+should treat them accordingly.
+
+## Status
+
+**Complete.** Items 1 and 2 of the corrected order are done. The ledger's first item —
+plan Steps 6 to 8, the whole of C5b, unstarted — is unchanged and is now the thing worth
+deciding before more Turns go into the shell classifier.
