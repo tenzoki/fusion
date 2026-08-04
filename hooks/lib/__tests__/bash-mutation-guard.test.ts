@@ -1081,22 +1081,33 @@ describe("redirection — every writing form denies a protected target", () => {
   });
 
   /**
-   * The fail-closed rule stops at the verb table's edge, and the redirection
-   * scanner does not carry it across
-   * (`issues/260801-1859_c_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`).
-   * `npm test > "$LOG"` used to deny while three documents stated that an
-   * unrecognised program is allowed however unparseable its arguments are.
+   * The fail-closed rule is bounded by the CAUSE the target failed to resolve
+   * for, not by whether the program is in the verb table.
    *
-   * What this gives up, precisely: a segment with NO recognised verb whose
-   * redirect target cannot be resolved. `echo x > "$F"`, `echo x > "rules/$F"`
-   * and `cd $D && echo x > y.md` all allow now. The trade is deliberate — the
-   * table's own baseline already allows `curl -o rules/x.md`, a LITERAL
-   * protected path with an unrecognised program, so denying the invisible case
-   * while allowing the visible one was the inconsistency. Both discriminating
-   * neighbours are pinned below: a resolvable target still denies whatever the
-   * program is, and a recognised verb still fails closed.
+   * THIS TEST REPLACED ONE THAT DREW THE BOUND AROUND THE PROGRAM. That earlier
+   * bound came from
+   * `issues/260801-1859_c_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`,
+   * which was right about the defect and imprecise about the repair: `npm test
+   * > "$LOG"` denied while three documents promised that an unrecognised
+   * program is allowed however unparseable its ARGUMENTS are, so the code was
+   * narrowed to match the documents — by program.
+   *
+   * `cd $D && echo x > y.md` and `cd "$(pwd)" && npm test > out.log` were the
+   * rows that narrowing gave up, and they were pinned here as allows. They are
+   * not the promised case: their argument is `y.md`, a perfectly ordinary
+   * literal relative path with nothing unparseable in it. What is unknown is
+   * the guard's own working directory. `pushd -n docs && echo pwned >
+   * agents/coder.md` overwrote an agent prompt through that gap with no flag,
+   * and every later give-up on a directory opened another entrance to it
+   * (`issues/260803-1835…`). Reversed in
+   * `decisions/260804-0106_i_should-the-fail-closed-bound-be-drawn-around-the-program-or-around-the-cause.md`.
+   *
+   * What survives, and is what the idiom actually needs: a target unresolvable
+   * because of the TOKEN — a `$`, a backtick, a leading `~` — on a program
+   * outside the table. Every row below is that. The three discriminating
+   * neighbours are pinned in the tests that follow.
    */
-  it("does NOT carry fail-closed into a program outside the table", () => {
+  it("allows an unresolvable TOKEN on a program outside the table", () => {
     expectAllAllow([
       'npm test > "$LOG"',
       'npm test > "$TMPDIR/test.log"',
@@ -1105,8 +1116,42 @@ describe("redirection — every writing form denies a protected target", () => {
       'echo x > "$F"',
       'echo x > "rules/$F"',
       "echo x > $(mktemp)",
-      "cd $D && echo x > y.md",
+      "curl -o $OUT https://x",
+      "make $TARGET",
+      'go build -o "$BIN" ./cmd/x',
     ]);
+    // Not `npm test 2>&1 | tee "$LOG"`, which denied before this change and
+    // denies after it: `tee` IS a table verb, so its operand fails closed as a
+    // verb operand and never reaches the redirection bound at all. Pinned as a
+    // deny in "still fails closed once the segment names a recognised verb".
+  });
+
+  /**
+   * The reversal itself, stated as its own case so it cannot be lost in an
+   * `expectAllAllow` list. Same programs, same redirection, same protected
+   * list — the only difference is WHY the target does not resolve.
+   */
+  it("denies an unresolvable WORKING DIRECTORY on the same programs", () => {
+    expectAllDeny([
+      "cd $D && echo x > y.md",
+      "cd $D && echo x > out.log",
+      'cd "$(pwd)" && npm test > out.log',
+      "pushd -n docs && echo pwned > agents/coder.md",
+      "cd nope || true; echo pwned > rules/x.md",
+    ]);
+    // And it says which of the two it is, because the remedies differ: one is
+    // "write the path out literally", the other is "drop the cd".
+    const v = classify("cd $D && echo x > y.md");
+    expect(v.reason).toContain("working directory the guard cannot determine");
+  });
+
+  it("keeps the two causes apart inside ONE command", () => {
+    // The working directory is known, so the `$F` is the token's own problem
+    // and the row stays allowed even though a `cd` is present.
+    expect(denies('cd build && echo x > "$F"')).toBe(false);
+    // …and unknown here, so the literal operand is the one that cannot be
+    // placed.
+    expect(denies("cd $D && echo x > log.txt")).toBe(true);
   });
 
   it("still denies a RESOLVABLE target on the same programs", () => {
@@ -2697,15 +2742,22 @@ describe("virtual cwd — an unknowable directory is fail-closed", () => {
     ]);
   });
 
-  it("does NOT reach a redirection whose program is outside the table", () => {
-    // The narrowing from
-    // `issues/260801-1859_c_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`:
-    // fail-closed applies once a table verb is recognised, and `echo` is not
-    // one. `cd $D && echo x > out.log` was the deny this costs — named here
-    // rather than dropped, because it is the sharpest form of the give-up: the
-    // operand is a perfectly ordinary relative path and only the directory is
-    // unknown. The recognised-verb neighbour above still denies.
-    expectAllAllow(["cd $D && echo x > out.log", 'cd "$(pwd)" && npm test > out.log']);
+  it("DOES reach a redirection whose program is outside the table", () => {
+    // THIS TEST IS THE INVERSION OF THE ONE THAT STOOD HERE. It used to assert
+    // both rows ALLOW, on the narrowing from
+    // `issues/260801-1859_c_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`
+    // — fail-closed applies once a table verb is recognised, and `echo` is not
+    // one. Its own comment called the give-up "the sharpest form": the operand
+    // is a perfectly ordinary relative path and only the directory is unknown.
+    //
+    // That sharpness is the argument for reversing it. An ordinary relative
+    // path under a directory the guard has ADMITTED it cannot name is not the
+    // "unparseable argument" the bound was written to protect; it is the whole
+    // protected list, reachable with no flag
+    // (`issues/260803-1835…`,
+    // `decisions/260804-0106_i_should-the-fail-closed-bound-be-drawn-around-the-program-or-around-the-cause.md`).
+    // The token-unresolvable idiom it was protecting is pinned intact above.
+    expectAllDeny(["cd $D && echo x > out.log", 'cd "$(pwd)" && npm test > out.log']);
   });
 
   it("allows an absolute mutation after an unresolvable cd", () => {
@@ -2760,6 +2812,145 @@ describe("virtual cwd — a cd inside a subshell does not leak out", () => {
     // `for … done` and `{ …; }` run in the current shell, so the cd persists.
     expect(denies("for d in a; do cd rules; done; rm x.md")).toBe(true);
     expect(denies("{ cd rules; }; rm x.md")).toBe(true);
+  });
+});
+
+/**
+ * The model may assume a `cd` succeeded only where the shell guarantees it.
+ *
+ * `decisions/260803-2338_i_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`,
+ * option 1. Before it, the classifier followed every `cd` unconditionally —
+ * `cd nonexistent; rm rules/x.md` allowed, and real bash deleted the rule,
+ * with no flag, no wrapper and one extra segment (`issues/260803-2238…`).
+ *
+ * The mechanism is `ParsedSegment.joiner` plus `ShellState.moved`: after `&&`
+ * bash will not run the next segment unless the `cd` returned zero, so the
+ * model stays exact; after anything else it gives the directory up.
+ */
+describe("virtual cwd — a cd the shell does not guarantee", () => {
+  it("denies the bypass it was written for", () => {
+    expectAllDeny([
+      "cd nonexistent; rm rules/x.md",
+      "cd nonexistent || true; rm rules/x.md",
+      "cd nonexistent | true; rm rules/x.md",
+      "cd nonexistent\nrm rules/x.md",
+      "cd nope || true; echo pwned > rules/x.md",
+    ]);
+  });
+
+  it("keeps `cd X && …` exact, which is the whole point of the model", () => {
+    // The dominant form, and the one the shell guarantees. 88% of the
+    // directory builtins in this suite are written this way; if these moved,
+    // the option would not have been worth taking.
+    expectAllAllow([
+      "cd build && rm out.js",
+      "mkdir -p build && cd build && rm out.js",
+      "cd /tmp && mkdir -p work && cd work && rm -rf out",
+      "cd hooks && npm run build && rm -rf dist",
+      "cd hooks && rm -rf dist && npm run build",
+      "cd hooks && npm test",
+    ]);
+    expectAllDeny(["cd rules && rm x.md", "cd hooks && rm config.json"]);
+  });
+
+  /**
+   * THE MEASURED COST, pinned so it cannot drift silently. Every row worked
+   * before and denies now; the decision record's `## Answer` shows this exact
+   * table to the user as the price of closing the bypass. Nothing else in a
+   * 4203-command corpus moved, in either direction.
+   */
+  it("costs exactly these five ordinary shapes", () => {
+    expectAllDeny([
+      "cd build; rm out.js",
+      "cd docs; rm ../notes.txt",
+      "mkdir -p build && cd build; rm out.js",
+      "cd hooks && npm run build; rm -rf dist",
+      "cd build || exit 1; rm out.js",
+    ]);
+  });
+
+  it("fires for a segment reached unconditionally, not just for a `;`-joined cd", () => {
+    // The sharp edge. In `cd hooks && npm run build; rm -rf dist` the `cd` is
+    // `&&`-joined to what follows it — and `rm -rf dist` is still reached
+    // however that chain ended, so the shell may be at the project root while
+    // the model stands in `hooks/`. Testing the joiner of the segment BEFORE
+    // the write, rather than the joiner right after the `cd`, is what covers
+    // this.
+    expect(denies("cd hooks && npm run build; rm -rf dist")).toBe(true);
+    expect(denies("cd hooks && npm run build && rm -rf dist")).toBe(false);
+    // Three segments deep, the doubt does not wear off.
+    expect(denies("cd docs; ls && ls && rm ../notes.txt")).toBe(true);
+  });
+
+  it("does not fire when nothing moved", () => {
+    // A command with no directory builtin asserts nothing that could have
+    // failed, so a `;` costs it nothing. `set -P` is excluded on purpose: it
+    // changes a mode, not a directory.
+    expectAllAllow([
+      "ls; rm out.js",
+      "npm test; rm build/out.js",
+      "set -P; rm out.js",
+      "echo hi; echo there > /tmp/log",
+    ]);
+    expect(denies("ls; rm rules/x.md")).toBe(true);
+  });
+
+  it("does not fire for a cd already discarded with its subshell", () => {
+    // The give-up sits AFTER the scope restore, so a `cd` bash itself threw
+    // away casts no doubt on what follows.
+    expectAllAllow([
+      "(cd nonexistent); rm x.md",
+      "$(cd nonexistent); rm x.md",
+      "(cd rules && ls); rm x.md",
+    ]);
+    // And the same commands against a protected target still resolve from the
+    // project root, which is where bash is standing.
+    expectAllDeny(["(cd nonexistent); rm rules/x.md", "$(cd build); rm rules/x.md"]);
+  });
+
+  it("re-proves nothing across the boundary — an absolute cd is still doubted", () => {
+    // `cd /abs` can fail too, so the doubt is about the SEPARATOR and not
+    // about whether the operand was resolvable.
+    expect(denies("cd /project/build; rm ../rules/x.md")).toBe(true);
+    expect(denies("cd /project/build && rm ../rules/x.md")).toBe(true);
+    expect(denies("cd /project/build && rm out.js")).toBe(false);
+  });
+
+  it("leaves the `pushd … ; popd` idioms alone", () => {
+    // They degrade — and write nothing relative afterwards, so no verdict
+    // moves. This is most of why the measured cost is five rows and not fifty.
+    expectAllAllow([
+      "pushd docs >/dev/null && ls; popd",
+      "pushd hooks && npm test; popd",
+      "pushd build >/dev/null && rm out.js; popd",
+      "pushd hooks > /dev/null && npm test; popd > /dev/null",
+      "cd hooks; npm test; cd ..",
+      "cd hooks && npm test; cd -",
+    ]);
+  });
+
+  it("names the separator in the reason, not the operand", () => {
+    // The remedy differs from every other unknown-directory deny: the `cd` is
+    // right there and its operand is a literal, so "write the path out
+    // literally" would be a wrong instruction. `&&` is the way through.
+    const v = classify("cd build; rm out.js");
+    expect(v.deny).toBe(true);
+    expect(v.reason).toContain("does not guarantee succeeded");
+    expect(v.reason).toContain("&&");
+    // And it is a DIFFERENT reason from the two neighbours it must not be
+    // confused with.
+    expect(v.reason).not.toBe(classify("cd $D && rm out.js").reason);
+    expect(v.reason).not.toBe(classify("rm $X").reason);
+  });
+
+  it("lets the invisible cause keep the reason when both apply", () => {
+    // An ambient `CDPATH` is the one cause a reader cannot find by re-reading
+    // the command, so a separator degrade must not displace it.
+    const v = classify("cd docs; rm ../notes.txt", {
+      env: { CDPATH: "/elsewhere" },
+    });
+    expect(v.deny).toBe(true);
+    expect(v.reason).toContain("CDPATH is set in this shell's environment");
   });
 });
 

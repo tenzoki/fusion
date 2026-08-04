@@ -72,3 +72,31 @@ compiled classifier rather than reading it.
 
 ---
 Resolved: the code was changed to match the documentation, not the other way round. `classifyWords` (`hooks/lib/bash-mutation-guard.ts`) now runs pass 3 only when the segment names a recognised verb, so a redirect target on an unrecognised program is still matched literally (`sort /tmp/a > rules/x.md` denies) but no longer fails closed. The deciding argument for narrowing rather than documenting: the table already allows `curl -o rules/x.md` — a LITERAL protected path with an unrecognised program — so denying the invisible case while allowing the visible one was an inconsistency, not a stricter rule. Given up: `echo x > "$F"`, `echo x > "rules/$F"` and `cd $D && echo x > y.md` now allow; all three are pinned as allows and their discriminating neighbours (`npm test > rules/x.md`, `cd rules && echo x > y.md`, `rm /tmp/a > "$F"`) as denies. Docs corrected in `rules/protected-path-discipline.md`, `README-hooks.md` and the module docstring; the residual list gained the unresolvable-redirect-target entry.
+
+---
+**Half of this resolution was superseded on 2026-08-04 (task T7-1 of
+`circles/260801-1244-guard-rules-write`).** The record that carries the argument
+is
+`circles/260801-1244-guard-rules-write/decisions/260804-0106_i_should-the-fail-closed-bound-be-drawn-around-the-program-or-around-the-cause.md`.
+
+What stands: the defect this issue found was real, and the documented sentence —
+*an unrecognised program is allowed however unparseable its ARGUMENTS are* — is
+now true. `npm test > "$LOG"`, `npm test > "$TMPDIR/test.log"`,
+`cat report.md > ~/backup.md`, `echo hi >> ~/notes.md`, `echo x > "$F"`,
+`echo x > "rules/$F"`, `curl -o $OUT https://x` and `make $TARGET` all allow, and
+are pinned as allows. So does the consistency argument that decided it: a rule
+must not be looser on the visible case (`curl -o rules/x.md`, which still denies
+on pass 1) than on the invisible one.
+
+What was superseded: the bound was drawn around the **program**, and it should
+have been drawn around the **cause**. The three rows this resolution gave up —
+`cd $D && echo x > y.md`, `cd $D && echo x > out.log` and
+`cd "$(pwd)" && npm test > out.log` — are not the promised case. Their argument
+is an ordinary literal relative path; what cannot be resolved is the guard's own
+working directory. That gap was measured overwriting `agents/coder.md` with no
+flag (`260803-1835`), and every later give-up on a directory added another
+entrance to it. Those three now deny; nothing else moved, in either direction.
+
+This note is here because the reversal must be findable from the record it
+overrides. The two tests that pinned this resolution were inverted, with a
+comment naming what they replaced, rather than deleted.

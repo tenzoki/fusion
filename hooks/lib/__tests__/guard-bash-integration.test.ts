@@ -992,3 +992,197 @@ describe("self-detect stand-down: the mutation check yields, the branch policy d
     CASE_TIMEOUT,
   );
 });
+
+// ---------------------------------------------------------------------------
+// A `cd` the shell does not guarantee, and a redirection that used to walk
+// through every directory give-up. Taken together, because each left the
+// other's last escape open
+// (`decisions/260803-2338_i_…after-a-cd-it-cannot-prove-succeeded.md` option 1,
+// `decisions/260804-0106_a_…around-the-program-or-around-the-cause…`).
+//
+// Every denial below is measured against the real guard subprocess in its own
+// throwaway project, asserts the deny is not `[HALTED]`, and then runs the same
+// command through the NAMED real shell and watches the file change. The two
+// halves are separable in the unit suite; here they are measured as shipped.
+// ---------------------------------------------------------------------------
+
+describe("a cd the shell never promised to have made", () => {
+  it(
+    "denies the one-segment bypass, in bash",
+    () => {
+      // The whole escape: no flag, no wrapper, one extra segment. `cd` fails,
+      // bash stays at the project root, and the model followed the `cd`.
+      denyAndShellWouldHaveWritten(
+        "cd nonexistent; rm rules/x.md",
+        "rules/x.md",
+        { shell: "bash" },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies the one-segment bypass, in zsh — the shell the tool call runs",
+    () => {
+      denyAndShellWouldHaveWritten(
+        "cd nonexistent; rm rules/x.md",
+        "rules/x.md",
+        { shell: "zsh" },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies its REDIRECT spelling, in bash",
+    () => {
+      // The spelling neither decision closes on its own: the working directory
+      // is unknown (option 1 put it there) and `echo` is outside the verb
+      // table, so only the cause-shaped fail-closed bound reaches it.
+      denyAndShellWouldHaveWritten(
+        "cd nope || true; echo pwned > rules/x.md",
+        "rules/x.md",
+        { shell: "bash" },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies its REDIRECT spelling, in zsh",
+    () => {
+      denyAndShellWouldHaveWritten(
+        "cd nope || true; echo pwned > rules/x.md",
+        "rules/x.md",
+        { shell: "zsh" },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "names the separator rather than the operand, so the remedy is findable",
+    () => {
+      withProject(({ root }) => {
+        const res = runBash(root, "cd nonexistent; rm rules/x.md");
+        expect(res.decision).toBe("block");
+        expect(res.reason ?? "").not.toContain("[HALTED]");
+        expect(res.reason ?? "").toContain("does not guarantee succeeded");
+        expect(res.reason ?? "").toContain("&&");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+describe("a redirect target the guard cannot place denies whatever the program is", () => {
+  // The six rows that newly ALLOWED at `048f3db`, plus the wrapper row T6-1
+  // named as not closed, plus the three original `260803-1835` rows. Each in
+  // the shell that performs the write, one project per row.
+  const ROWS: {
+    command: string;
+    watch: string;
+    shell: "bash" | "zsh";
+    env?: Record<string, string>;
+  }[] = [
+    { command: "command cd rules && echo pwned > x.md", watch: "rules/x.md", shell: "bash" },
+    { command: "builtin cd rules && echo pwned > x.md", watch: "rules/x.md", shell: "bash" },
+    { command: "builtin cd rules && echo pwned > x.md", watch: "rules/x.md", shell: "zsh" },
+    { command: "time cd agents && echo pwned > coder.md", watch: "agents/coder.md", shell: "bash" },
+    { command: "time cd agents && echo pwned > coder.md", watch: "agents/coder.md", shell: "zsh" },
+    {
+      // `printf ''` truncates rather than writes, which is still a change the
+      // effect check sees — and it is the row as it was measured at `048f3db`.
+      command: "command cd skills/demo && printf '' > SKILL.md",
+      watch: "skills/demo/SKILL.md",
+      shell: "bash",
+    },
+    // T6-1's eleventh row: zsh's `command` forces an external lookup, so the
+    // shell never leaves the root and the LITERAL protected path is written.
+    {
+      command: "command cd build && echo pwned > rules/x.md",
+      watch: "rules/x.md",
+      shell: "zsh",
+    },
+    // The three rows `260803-1835` was filed on. Two need no flag.
+    {
+      command: "pushd -n docs && echo pwned > agents/coder.md",
+      watch: "agents/coder.md",
+      shell: "bash",
+    },
+    {
+      command: "cd docs && CDPATH=.. cd agents && echo pwned > coder.md",
+      watch: "agents/coder.md",
+      shell: "bash",
+    },
+    {
+      command: "cd -P rules/L/.. && echo pwned > agents/coder.md",
+      watch: "agents/coder.md",
+      shell: "bash",
+      env: { FUSION_ALLOW_RULES_WRITE: "1" },
+    },
+  ];
+
+  for (const { command, watch, shell, env } of ROWS) {
+    it(
+      `denies (${shell}): ${command}`,
+      () => {
+        denyAndShellWouldHaveWritten(command, watch, { shell, env });
+      },
+      CASE_TIMEOUT,
+    );
+  }
+});
+
+describe("the fail-closed bound survives — an unparseable ARGUMENT is still allowed", () => {
+  it(
+    "leaves the redirect idiom and the flag-value forms alone",
+    () => {
+      // One project, all allows, so no denial can halt the guard and mask the
+      // rest. These are the rows `260801-1859` was filed to protect, and the
+      // reason the reversal above is drawn around the CAUSE rather than around
+      // the program: in every one of them it is the TOKEN that cannot be
+      // resolved, from a working directory the guard knows exactly.
+      withProject(({ root }) => {
+        for (const cmd of [
+          'npm test > "$LOG"',
+          'npm test > "$TMPDIR/test.log"',
+          "curl -o $OUT https://x",
+          "curl -sL https://x -o \"$OUT\"",
+          "make $TARGET",
+          "cat report.md > ~/backup.md",
+          "echo hi >> ~/notes.md",
+          'echo x > "$F"',
+          'echo x > "rules/$F"',
+          'go build -o "$BIN" ./cmd/x',
+          'cd build && echo x > "$F"',
+        ]) {
+          expect(runBash(root, cmd).decision, cmd).toBeUndefined();
+        }
+        expect(guardStateWritten(root)).toBe(false);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "keeps the ordinary `&&` shapes exact, which is what the cost table bought",
+    () => {
+      withProject(({ root }) => {
+        for (const cmd of [
+          "cd build && rm out.js",
+          "mkdir -p build && cd build && rm out.js",
+          "cd hooks && npm run build && rm -rf dist",
+          "cd hooks && npm test",
+          "pushd build > /dev/null && rm out.js; popd > /dev/null",
+          "cd hooks; npm test; cd ..",
+          "ls; rm build/out.js",
+        ]) {
+          expect(runBash(root, cmd).decision, cmd).toBeUndefined();
+        }
+        expect(guardStateWritten(root)).toBe(false);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+});

@@ -149,6 +149,42 @@ One consequence worth knowing: `rm -rf .` at the project root allows (the root i
 treated as an ancestor, and `rm` refuses it anyway), but `cd rules && rm -rf .` denies,
 because the `cd` gave `.` a name.
 
+**Write `&&`, not `;`.** The guard has no filesystem, so it cannot know whether a `cd`
+*succeeded*. After `&&` it does not need to: bash will not run what follows unless the `cd`
+returned zero. After `;`, `||`, `|`, `&` or a newline the shell runs the next segment from
+where it never left — so `cd nonexistent; rm rules/x.md` deletes the real rule while a
+guard that followed the `cd` would be looking at `nonexistent/rules/x.md`. It used to
+follow it. It now gives the directory up at any joiner that is not `&&`, once a `cd`,
+`chdir`, `pushd` or `popd` has run.
+
+Read the second half of that carefully, because it is wider than "a `;` right after the
+`cd`". The give-up fires for any segment reached **unconditionally**, however far down:
+
+```
+cd hooks && npm run build; rm -rf dist      # denies — `rm -rf dist` runs whatever happened
+cd hooks && npm run build && rm -rf dist    # allows — the whole chain is guaranteed
+```
+
+The cost is these five shapes, and nothing else measured moved:
+
+```
+cd build; rm out.js
+cd docs; rm ../notes.txt
+mkdir -p build && cd build; rm out.js
+cd hooks && npm run build; rm -rf dist
+cd build || exit 1; rm out.js
+```
+
+Each has two ways through, and the deny reason names both: join with `&&`, or name the
+target absolutely. `&&` is usually the better one, because it is also what makes the
+command correct in the shell — `mkdir -p build && cd build` is written that way for the
+same reason. A command with no directory builtin in it is untouched: `ls; rm out.js` and
+`npm test; rm build/out.js` allow, and always did. So do `pushd … ; popd` idioms, which
+give the directory up and then write nothing relative.
+
+The give-up respects scope. A `cd` bash itself discarded casts no doubt forward, so
+`(cd nonexistent); rm x.md` still resolves `x.md` from the project root.
+
 **Only the plain forms are tracked, and the rest admit they are untracked.** The
 tracking is exact for bash's default `cd`, which resolves `..` against `$PWD` textually.
 Several bash modifiers change that rule, and the guard models none of them — it does not
@@ -251,6 +287,7 @@ cd -P build && rm out.js        # a `cd` modifier the guard does not model
 pushd -n docs && rm ../x.md     # `-n` pushes without moving, so the base is unknown
 pushd ../build && pushd && popd && rm out.js   # a bare `pushd` rotates, it does not push
 sudo cd build && rm out.js      # `sudo` cannot run a builtin, so bash never moved
+cd build; rm out.js             # `;` does not guarantee the `cd` succeeded
 cd build && rm out.js           # ONLY with CDPATH set in the environment
 ```
 
@@ -261,17 +298,38 @@ nothing to rephrase.
 
 The bound is exactly this: **an unrecognised program is allowed however unparseable its
 arguments are.** `curl -o $OUT https://x`, `make $TARGET` and `npm run $SCRIPT` are
-untouched. The fail-closed rule never applies to ordinary shell work; it applies only
-once a table verb has been recognised.
+untouched. The fail-closed rule never applies to ordinary shell work.
 
-That includes a **redirection target**. `npm test > "$LOG"`, `npm test > "$TMPDIR/x.log"`
-and `cat report.md > ~/backup.md` are allowed, because none of those programs is a table
-row. What the bound does *not* cover is a target that resolves: `sort /tmp/a > rules/x.md`
+That includes a **redirection target**. `npm test > "$LOG"`, `npm test > "$TMPDIR/x.log"`,
+`cat report.md > ~/backup.md`, `echo x > "$F"` and `echo x > "rules/$F"` are all allowed:
+the program is outside the table and the *token* is what cannot be read.
+
+**The bound is the token, not the program.** That distinction is the whole of it, and it
+is the one thing to get right about this rule. A redirect target the guard cannot place
+because it does not know **where the shell is standing** is a different case, and it
+denies whatever the program is:
+
+```
+echo x > "$F"                    # allows — the TOKEN is unknowable, the directory is not
+cd $D && echo x > y.md           # denies — `y.md` is literal; the DIRECTORY is unknowable
+cd build && echo x > "$F"        # allows — same command, and here the directory IS known
+```
+
+The reason is that `y.md` has nothing unparseable in it. Nothing about the caller's text
+is in doubt; the guard's own model of the working directory is. Left allowed, that route
+overwrote `agents/coder.md` with no flag at all
+(`pushd -n docs && echo pwned > agents/coder.md`), and every directory the guard learns to
+give up on adds another entrance to it. It denies now — a reversal of half of an earlier
+decision, argued in
+`circles/260801-1244-guard-rules-write/decisions/260804-0106_i_should-the-fail-closed-bound-be-drawn-around-the-program-or-around-the-cause.md`.
+
+What the bound also does *not* cover is a target that resolves: `sort /tmp/a > rules/x.md`
 and `curl -s https://x > rules/x.md` are denied, and so is any redirection once the
-segment names a table verb (`rm /tmp/a > "$F"`).
+segment names a table verb (`rm /tmp/a > "$F"`, `tee "$LOG"`).
 
 When a fail-closed deny is wrong for your case, the way through is to write the path out
-literally, or to name it absolutely, or to drop the `cd`. The deny reason says which.
+literally, to name it absolutely, to join the `cd` with `&&`, or to drop the `cd`. The deny
+reason says which.
 
 ### The overrides waive only what they name
 
@@ -403,19 +461,14 @@ Known and accepted:
   them the guard is modelling a directory the shell has left. A wrapper (`command cd`) and
   a path spelling (`/usr/bin/cd`) *are* seen, and give up rather than guess; these are what
   is left, and no enumeration closes them.
-- **A `cd` that FAILS leaves the shell where it was, and the guard follows it anyway.** The
-  classifier has no filesystem access, so it cannot know whether a `cd` succeeded, and it
-  assumes success across every separator. After `&&` the shell enforces the assumption — a
-  failed `cd` short-circuits and nothing else runs. After `;`, `||`, `&` or a newline it
-  does not: the shell runs the next segment from where it never left, and the guard runs it
-  from a directory that does not exist. Measured: `cd nonexistent; rm rules/x.md` is allowed
-  and real bash deletes the rule. `cd notes.txt; rm rules/x.md` too — the operand is an
-  existing *file*, which no name-based heuristic would catch either. This is live, needs no
-  flag and no wrapper, and it is **awaiting a decision** rather than a fix, because the
-  obvious repair degrades `mkdir -p build && cd build; …` as well
-  (`decisions/260803-2338_o_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`).
-  Until it is taken: `cd X && …` is the form the guard can follow, and it is the form to
-  write.
+- **A `cd` that FAILS is no longer followed, and that is a cost rather than a gap.** The
+  classifier still has no filesystem access and still cannot know whether a `cd` succeeded;
+  what changed is that it stops claiming to know the directory instead of assuming success.
+  So `cd nonexistent; rm rules/x.md` denies, and so do the five ordinary shapes listed under
+  "A `cd` is tracked" above. What is left on the residual side is the ordinary give-up
+  behaviour: after a non-`&&` joiner the guard denies relative writes it cannot place, which
+  over-denies whenever the `cd` would in fact have succeeded. `&&` is the way through, and
+  it is also the correct shell.
 - **Verbs deliberately not in the table**: `mkdir`, `chmod`, `chown`, `touch`, `tar`,
   `rsync`, `patch`, `gzip`. Each was left out because its operands are usually
   directories and a row would carry the ancestor rule with it.
@@ -423,19 +476,14 @@ Known and accepted:
   targets inside the patch file rather than on the command line, so they sit here with
   `patch`. A `git clean -fdx` with **no path operand** is allowed for the same reason
   `rm -rf *` is: it names no directory the ancestor check can compare.
-- **An unresolvable redirect target on a program outside the table is not denied.**
-  `echo x > "$F"` and `cd $D && echo x > y.md` are allowed. This is the fail-closed bound
-  above, seen from the residual side. Measured at its sharpest:
-  `pushd -n docs && echo pwned > agents/coder.md` allows and real bash overwrites the agent
-  prompt, while the same command ending `rm agents/coder.md` denies. The operand is an
-  ordinary relative path, only the directory is unknown, and `echo` is not a table verb.
-  **This is the residual every other give-up feeds into**, and it is worth knowing why: the
-  moment the guard stops claiming to know the working directory, a `>` target becomes
-  unresolvable-because-of-the-directory, and this bound lets it through. So each wrapper and
-  path spelling the guard has learned to give up on
-  (`command cd rules && echo pwned > x.md`, `builtin cd …`, `time cd …`) reaches the same
-  hole. Its *reach* does not grow — it was already the whole protected list with no flag —
-  but its entrances do. The verb spellings of all of them still deny.
+- **A redirect target whose TOKEN cannot be read is still not denied**, on a program
+  outside the table. `echo x > "$F"`, `echo x > "rules/$F"` and `npm test > "$LOG"` are
+  allowed, and `$F` may of course be `rules/x.md`. This is the fail-closed bound above seen
+  from the residual side, and it is the deliberate half: an unrecognised program is allowed
+  however unparseable its arguments are, and that promise is worth more than the case it
+  gives up. What used to sit here alongside it — the same target unresolvable because the
+  *directory* was unknown — is closed, so a give-up on a directory no longer opens a
+  redirect route. `pushd -n docs && echo pwned > agents/coder.md` denies.
 - **A `#` comment is not stripped**, so a redirect operator in a trailing comment is read
   as code: `ls -la # writes > rules/x.md` is denied on the write its comment only
   describes. This one errs toward deny; the way through is to drop the comment.

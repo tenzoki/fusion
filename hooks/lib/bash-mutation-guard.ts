@@ -79,6 +79,20 @@
  * The tracking is scoped: a `cd` inside a `(…)` subshell or a `$(…)` body is
  * discarded when it closes, exactly as bash discards it.
  *
+ * AND IT IS CONDITIONAL ON THE SEPARATOR. The classifier has no filesystem, so
+ * it cannot know whether a `cd` SUCCEEDED. After `&&` it does not need to: bash
+ * will not run what follows unless the `cd` returned zero. After `;`, `||`,
+ * `|`, `&` or a newline it runs the next segment from where it never left — so
+ * `cd nonexistent; rm rules/x.md` deleted a protected rule with no flag, no
+ * wrapper and one extra segment. The model therefore gives the directory up at
+ * any joiner that is not `&&` once a directory builtin has run in the current
+ * scope (`ShellState.moved`, `degradeUnprovenCd`, and `SegmentJoiner` in
+ * `shell-parse.ts` — the field that widening added). The cost is `cd build;
+ * rm out.js` and `cd hooks && npm run build; rm -rf dist`, both of which now
+ * deny with a reason naming `&&` as the way through; the decision that took the
+ * trade is
+ * `decisions/260803-2338_i_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`.
+ *
  * WHAT IT MODELS IS AN ALLOW-LIST. The tracking is exact for bash's default
  * logical `cd`, and bash has several modifiers that change the resolution rule
  * — `-P` and `set -o physical` (ask the kernel, so a symlink component is
@@ -131,30 +145,37 @@
  * UNRECOGNISED program is allowed however unparseable its arguments are, so
  * ordinary shell work is untouched.
  *
- * The bound holds for a REDIRECTION TARGET too, which is the one place it used
- * to leak: `npm test > "$LOG"` and `cat report.md > ~/backup.md` are ordinary
- * per-session idioms, and denying them was stricter than the table's own
- * baseline, which allows `curl -o rules/x.md` — a literal protected path with
- * an unrecognised program. A redirect target that RESOLVES is still checked
- * whatever the program is (`sort /tmp/a > rules/x.md` denies); it is only the
- * fail-closed pass that stops at the table's edge.
+ * THE BOUND IS DRAWN AROUND THE CAUSE, not around the program. The sentence
+ * above is exactly true for an unresolvable TOKEN — one carrying `$`, a
+ * backtick or a leading `~` — which is what "unparseable arguments" means and
+ * what the idiom needs: `npm test > "$LOG"`, `cat report.md > ~/backup.md`,
+ * `curl -o $OUT https://x` and `make $TARGET` all allow, and `echo x >
+ * "rules/$F"` with them.
  *
- * The sharpest form of what that gives up, measured rather than reasoned about:
- * `pushd -n docs && echo pwned > agents/coder.md` ALLOWS and real bash
- * overwrites the agent prompt. The working directory is unknown (the `-n` is
- * not modelled), the operand is a perfectly ordinary relative path, and `echo`
- * is not a table verb — so the fail-closed pass never runs on it. The
- * recognised-verb neighbour, `… && rm agents/coder.md`, denies. Widening this
- * would also deny `cd $D && echo x > y.md`, which
- * `issues/260801-1859_c_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`
- * deliberately allowed; it is a decision, not an oversight.
+ * It does NOT hold for a target the guard cannot place because it does not know
+ * where the shell is standing. There the token is an ordinary literal relative
+ * path and nothing about the program's arguments is unparseable; what is
+ * unknown is the guard's own working-directory model, and a write it cannot
+ * place may land anywhere on the protected list. `pushd -n docs && echo pwned >
+ * agents/coder.md` overwrote an agent prompt through that gap with no flag, and
+ * every directory give-up added another entrance to it
+ * (`issues/260803-1835…`). Such a target now denies whatever the program is;
+ * the reversal of `260801-1859`'s program-shaped half is argued in
+ * `decisions/260804-0106_i_should-the-fail-closed-bound-be-drawn-around-the-program-or-around-the-cause.md`.
+ *
+ * A redirect target that RESOLVES was always checked whatever the program is
+ * (`sort /tmp/a > rules/x.md` denies), and `curl -o rules/x.md` still denies on
+ * pass 1 — so the rule is not looser on the visible case than on the invisible
+ * one, which is the inconsistency `260801-1859` was fixing.
  *
  * ## The accepted residual (documented, not hidden)
  *
  * An unrecognised program that writes a protected path still writes it
  * (`curl -o rules/x.md …`, a project's own build script). A path constructed at
- * run time is denied when it is an operand of a recognised verb and invisible
- * otherwise. This check raises the cost of the bypass from zero to deliberate;
+ * run time is denied when it is an operand of a recognised verb, and otherwise
+ * only when the guard has lost the working directory it hangs off — so
+ * `echo x > "$F"` from a known directory is still invisible. This check raises
+ * the cost of the bypass from zero to deliberate;
  * it does not eliminate it, and no claim that `protectedPaths` is enforced
  * should be made without that qualification.
  *
@@ -840,6 +861,36 @@ function unknownCwdReason(segment: string, token: string): string {
 }
 
 /**
+ * The same fail-closed deny, for the cause that is visible in the command and
+ * still unfindable: a `cd` the shell never promised to have made.
+ *
+ * `unknownCwdReason` would say "an earlier `cd` moved somewhere only known at
+ * run time", and in `cd build; rm out.js` that reads as a bug — the `cd`'s
+ * operand is a literal, and rewriting it changes nothing. The unknown is not
+ * WHERE the `cd` went but WHETHER the shell went there: after `;`, `||`, `|`,
+ * `&` or a newline bash runs the next segment from where it never left, so a
+ * `cd` to a directory that does not exist leaves the write at the project root
+ * — which is how `cd nonexistent; rm rules/x.md` deleted a protected rule.
+ *
+ * So this reason names the separator, and names `&&` as the way through, since
+ * that is the one form the guard can follow exactly and it is also the form
+ * that makes the command correct in the shell.
+ */
+function unprovenCdReason(segment: string, token: string): string {
+  return (
+    `fusion policy: this Bash command mutates a relative path after a \`cd\` ` +
+    `the shell does not guarantee succeeded. Only \`&&\` guarantees it — after ` +
+    `\`;\`, \`||\`, \`|\`, \`&\` or a newline bash runs the rest of the command ` +
+    `from wherever it never left, so the segment \`${segment}\` writes ` +
+    `\`${token}\` at one of two places and the guard cannot tell which ` +
+    `(fail-closed). Join the \`cd\` to what follows it with \`&&\` — which is ` +
+    `also what makes the command correct in the shell — or name the target as ` +
+    `an absolute path.` +
+    NO_WORKAROUND
+  );
+}
+
+/**
  * The same fail-closed deny, for the one cause that is NOWHERE IN THE COMMAND.
  *
  * `unknownCwdReason` tells the reader an earlier `cd` moved somewhere unknown,
@@ -1269,14 +1320,21 @@ type Cwd =
  * Why the working directory is unknown, when saying so changes what the reader
  * should DO about it.
  *
- * There is one member, and it earns its place by being invisible: every other
- * way to lose the directory is written somewhere in the command (`cd $D`,
+ * Both members earn their place by being invisible in the place a reader would
+ * look. Most ways to lose the directory are written in the command (`cd $D`,
  * `cd -P x`, `pushd -n x`), so `unknownCwdReason` can tell the reader to drop
  * the `cd` and they can see the `cd` it means. An AMBIENT `CDPATH` is in the
  * user's shell profile, and a reason naming only the working directory would
  * send them looking through a command that contains no cause.
+ *
+ * The second member is not invisible but it is INVISIBLE AS A CAUSE: in
+ * `cd build; rm out.js` the `cd` is right there and looks perfectly
+ * resolvable, and a reason saying "an earlier `cd` moved somewhere only known
+ * at run time" would be read as a bug. What is unknown is not the `cd`'s
+ * destination but whether the shell went there, and the fix is the separator
+ * rather than the path.
  */
-type CwdUnknownCause = "ambient-cdpath";
+type CwdUnknownCause = "ambient-cdpath" | "unproven-cd";
 
 const CWD_ROOT: Cwd = { kind: "known", dir: "" };
 const CWD_OUTSIDE: Cwd = { kind: "outside" };
@@ -1285,6 +1343,11 @@ const CWD_UNKNOWN: Cwd = { kind: "unknown" };
 const CWD_UNKNOWN_AMBIENT_CDPATH: Cwd = {
   kind: "unknown",
   cause: "ambient-cdpath",
+};
+/** Unknown BECAUSE a `cd` the shell never guaranteed was followed anyway. */
+const CWD_UNKNOWN_UNPROVEN_CD: Cwd = {
+  kind: "unknown",
+  cause: "unproven-cd",
 };
 
 /** Append a relative path to a virtual directory (`""` = the project root). */
@@ -1418,11 +1481,11 @@ const STACK_UNKNOWN: DirStack = { kind: "unknown" };
  * "I don't know" value covering the WHOLE field rather than its contents.
  * `cwd` and `prev` are `Cwd`, whose `unknown` arm carries no directory;
  * `dirStack` is `DirStack`, whose `unknown` arm carries no entries and no
- * depth; `physical` and `cdpath` are monotone booleans, set and never cleared,
- * where `true` is itself the don't-know (it can only make a later `cwd` less
- * certain). A future field must arrive with the same property, or `unmodelled`
- * silently stops being a give-up for it — which is exactly how `dirStack` kept
- * a depth through a give-up stated over values.
+ * depth; `physical`, `cdpath` and `moved` are monotone booleans, set and never
+ * cleared, where `true` is itself the don't-know (it can only make a later
+ * `cwd` less certain). A future field must arrive with the same property, or
+ * `unmodelled` silently stops being a give-up for it — which is exactly how
+ * `dirStack` kept a depth through a give-up stated over values.
  */
 interface ShellState {
   cwd: Cwd;
@@ -1460,6 +1523,30 @@ interface ShellState {
    * answered in favour of degrading.
    */
   cdpath: boolean;
+  /**
+   * Has a directory builtin run in this scope?
+   *
+   * The odd one out: every other field is something the model ASSERTS, and this
+   * one records where those assertions came FROM. The classifier has no
+   * filesystem, so it cannot know whether a `cd` succeeded — and until this
+   * field existed it assumed success across every separator. After `&&` the
+   * assumption is free, because a failed `cd` returns non-zero and the rest of
+   * the chain never runs. After `;`, `||`, `|`, `&` or a newline the shell runs
+   * the next segment FROM WHERE IT NEVER LEFT, and `cd nonexistent; rm
+   * rules/x.md` deleted a protected rule with no flag, no wrapper and one extra
+   * segment (`issues/260803-2238…`,
+   * `decisions/260803-2338_i_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`).
+   *
+   * Monotone, like `physical` and `cdpath`, and `true` is the don't-know for the
+   * same reason: it can only make a later `cwd` less certain, never more. It is
+   * per SCOPE rather than per command because a `cd` inside `(…)` or `$(…)` is
+   * discarded when the scope closes — `cloneState` carries it so the restore
+   * that discards the `cd` discards the doubt with it.
+   *
+   * `false` in a fresh state is a claim, not an absence: the shell really is at
+   * the project root, and nothing had to succeed for that to be true.
+   */
+  moved: boolean;
 }
 
 function freshState(): ShellState {
@@ -1471,6 +1558,7 @@ function freshState(): ShellState {
     dirStack: { kind: "known", entries: [] },
     physical: false,
     cdpath: false,
+    moved: false,
   };
 }
 
@@ -1486,6 +1574,7 @@ function cloneState(s: ShellState): ShellState {
         : s.dirStack,
     physical: s.physical,
     cdpath: s.cdpath,
+    moved: s.moved,
   };
 }
 
@@ -1519,6 +1608,35 @@ function unmodelled(state: ShellState): void {
   state.cwd = CWD_UNKNOWN;
   state.prev = CWD_UNKNOWN;
   state.dirStack = STACK_UNKNOWN;
+}
+
+/**
+ * The same give-up, for the one cause that is not in any single segment: a
+ * modelled `cd` the shell does not guarantee ran.
+ *
+ * Called at a segment boundary rather than from `applyDirEffect`, because what
+ * makes the assumption unsafe is the SEPARATOR and not the `cd`. `cd build &&
+ * rm out.js` is exact — bash will not reach the `rm` unless the `cd` succeeded.
+ * `cd build; rm out.js` is not, and neither is `cd hooks && npm run build;
+ * rm -rf dist`, where the `cd` is `&&`-joined and the `rm` is still reached
+ * however the chain in front of it ended.
+ *
+ * It differs from `unmodelled` in one respect: the CAUSE. `unproven-cd` gets
+ * its own deny reason because the advice `unknownCwdReason` gives — drop the
+ * `cd`, or name the target absolutely — is only half of it here, and the other
+ * half (write `&&` instead of `;`) is the one an agent will actually want. A
+ * directory that was ALREADY unknown keeps its own cause untouched: the
+ * separator took nothing from it, and its remedy is the one that works.
+ */
+function degradeUnprovenCd(state: ShellState): void {
+  const before = state.cwd;
+  unmodelled(state);
+  // Only a directory the model still CLAIMED is lost here. One that was already
+  // unknown is left exactly as it was, cause and all: whatever made it unknown
+  // is the stronger fact and its remedy is the right one. `pushd -P x; rm y`
+  // should still be told about the `-P`, and a bare-word `cd` under an ambient
+  // `CDPATH` about the variable — neither is fixed by writing `&&`.
+  state.cwd = before.kind === "unknown" ? before : CWD_UNKNOWN_UNPROVEN_CD;
 }
 
 /** What the first non-flag argument of a directory builtin asks for. */
@@ -1811,8 +1929,10 @@ function ambientCdpathIsSet(env: NodeJS.ProcessEnv): boolean {
  *
  * **That a PROVEN directory is where the shell is standing.** The types make a
  * give-up total; they say nothing about whether `resolveDir`'s answer is right.
- * Two live gaps sit here: a `cd` that FAILS leaves the shell where it was while
- * the model follows it (`issues/260803-2238…`, awaiting a decision), and any
+ * A `cd` that FAILS used to sit here — the model followed it while the shell
+ * stayed put (`issues/260803-2238…`) — and is now closed OUTSIDE this function,
+ * at the segment boundary, because the thing that makes the answer unsafe is the
+ * joiner rather than the `cd` (`degradeUnprovenCd`). What is left is that any
  * future modelling of a construct measured in one shell can be wrong in the
  * other. Modelling is the bidirectional half of this module and the only half
  * that can newly ALLOW — see the give-up above.
@@ -1859,6 +1979,15 @@ function applyDirEffect(
   // Everything below models a BUILTIN. Nothing else in a segment moves the
   // shell, so an unrecognised program leaves the state exactly as it was.
   if (name !== "set" && !DIR_BUILTINS.has(name)) return;
+
+  // A directory builtin can FAIL, and this classifier has no way to find out.
+  // Everything the model says about the directory from here on is conditional
+  // on it having succeeded, so the condition is recorded and the segment loop
+  // gives up the moment the shell stops guaranteeing it (`degradeUnprovenCd`).
+  // `set` is excluded: it changes a mode rather than a directory, there is
+  // nothing for it to fail at, and marking it would degrade `set -P; rm x`
+  // for no reason.
+  if (DIR_BUILTINS.has(name)) state.moved = true;
 
   // The segment did not name the builtin directly — a wrapper stands in front of
   // it (`command cd`, `sudo cd`, `time cd`) or it is spelled as a path
@@ -2192,40 +2321,57 @@ function classifyWords(
     };
   }
 
-  // Pass 3 — fail-closed: a recognised mutation writing somewhere unknowable,
-  // either because the operand does not resolve or because the directory it
-  // hangs off does not.
+  // Pass 3 — fail-closed: a write the guard cannot place, either because the
+  // OPERAND does not resolve or because the DIRECTORY it hangs off does not.
   //
-  // RECOGNISED is the whole bound, and it is the segment's PROGRAM that has to
-  // be recognised, not the target. A redirection makes any program a mutation
-  // for a target the guard can read — `curl -s … > rules/x.md` denies on pass 1
-  // — but it does not drag the fail-closed rule into programs outside the
-  // table. It used to: `npm test > "$LOG"` denied, while the three documents
-  // stating the bound all said an unrecognised program is allowed however
-  // unparseable its arguments are
-  // (`issues/260801-1859_c_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`).
-  // Denying it was also stricter than the table's own baseline, which allows
-  // `curl -o rules/x.md` outright — a LITERAL protected path with an
-  // unrecognised program. A rule cannot be looser on the visible case than on
-  // the invisible one.
+  // THE BOUND IS THE CAUSE, NOT THE PROGRAM. That is a reversal of half of
+  // `issues/260801-1859…`, argued and costed in
+  // `decisions/260804-0106_i_should-the-fail-closed-bound-be-drawn-around-the-program-or-around-the-cause.md`.
+  // What `260801-1859` protected is the idiom "run the thing, put the output
+  // somewhere I control": `npm test > "$LOG"`, `cat report.md > ~/backup.md`,
+  // `curl -o $OUT https://x`. In every one of those the token itself is
+  // unknowable — a `$`, a backtick, a leading `~` — and the guard's own
+  // documented sentence is that an unrecognised program is allowed HOWEVER
+  // UNPARSEABLE ITS ARGUMENTS ARE. Those rows are `viaCwd: false`, and they
+  // still allow.
+  //
+  // A redirect target that fails to resolve because the WORKING DIRECTORY is
+  // unknown is not that case and never was. The token is an ordinary literal
+  // relative path; nothing about the program's arguments is unparseable. What
+  // is unknown is where the shell is standing, which is the guard's own
+  // admission and not the caller's doing — and `pushd -n docs && echo pwned >
+  // agents/coder.md` overwrote an agent prompt through exactly that gap, with
+  // no flag (`issues/260803-1835…`). Every give-up on a directory fed it, so
+  // the entrance set grew with each one while the reach stayed the whole
+  // protected list.
+  //
+  // Passes 1 and 2 are unaffected either way: a redirect target that RESOLVES
+  // has always been checked whatever the program is (`sort /tmp/a >
+  // rules/x.md` denies), and `curl -o rules/x.md` — a literal protected path
+  // with an unrecognised program — still denies on pass 1, so the rule is not
+  // looser on the visible case than on the invisible one.
   //
   // A project with an EMPTY protected list has opted out, and an unresolvable
   // operand there protects nothing — so this pass, the only one that can deny
   // without a pattern to point at, is skipped. Passes 1 and 2 need no such
   // guard: they match against the empty list and find nothing.
-  if (verb.written.length > 0 && opts.protectedPaths.length > 0) {
+  if (opts.protectedPaths.length > 0) {
+    const recognisedVerb = verb.written.length > 0;
     for (const { token, target } of written) {
-      if (target.kind === "unresolved") {
-        return {
-          hit: {
-            kind: "unresolved",
-            token,
-            viaCwd: target.viaCwd,
-            cause: target.cause,
-          },
-          mutates: true,
-        };
-      }
+      if (target.kind !== "unresolved") continue;
+      // The surviving half of `260801-1859`: an unresolvable TOKEN outside the
+      // verb table is an ordinary argument of an ordinary program, and is
+      // allowed.
+      if (!recognisedVerb && !target.viaCwd) continue;
+      return {
+        hit: {
+          kind: "unresolved",
+          token,
+          viaCwd: target.viaCwd,
+          cause: target.cause,
+        },
+        mutates: true,
+      };
     }
   }
 
@@ -2305,6 +2451,20 @@ export function classifyBashMutation(
       saved.push({ depth, kind: "depth", state: cloneState(state) });
     }
     openDepth = depth;
+
+    // The model may assume a `cd` SUCCEEDED only where the shell guarantees it.
+    // `&&` guarantees it; every other joiner reaches this segment however the
+    // chain in front of it ended, so a directory the model followed may be one
+    // the shell never entered. Placed AFTER the scope restore above, so a `cd`
+    // that was already discarded with its subshell casts no doubt forward:
+    // `$(cd nope); rm rules/x.md` still resolves from the project root.
+    //
+    // The test is `!== "&&"` rather than an enumeration of the others, so a
+    // joiner added to `SegmentJoiner` later is unguaranteed until someone
+    // argues otherwise.
+    if (segment.joiner !== "&&" && segment.joiner !== "start" && state.moved) {
+      degradeUnprovenCd(state);
+    }
 
     const { opens, closes } = parenCounts(segment.text);
     for (let k = 0; k < opens; k++) {
@@ -2401,7 +2561,9 @@ function denyVerdict(
       ? unresolvedReason(offendingSegment, token)
       : hit.cause === "ambient-cdpath"
         ? ambientCdpathReason(offendingSegment, token)
-        : unknownCwdReason(offendingSegment, token),
+        : hit.cause === "unproven-cd"
+          ? unprovenCdReason(offendingSegment, token)
+          : unknownCwdReason(offendingSegment, token),
     offendingSegment,
     targetPath: token,
   };

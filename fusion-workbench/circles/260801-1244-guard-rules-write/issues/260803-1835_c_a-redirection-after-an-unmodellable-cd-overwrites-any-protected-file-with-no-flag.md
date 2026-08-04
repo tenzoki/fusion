@@ -142,3 +142,44 @@ statement of the `260801-1859` decision, so the cost of direction 1 is not a fal
 budget — it is the decision itself, and reversing it is a decision to take in the open.
 
 Not taken in T6-1 for that reason. Marker unchanged (`_o_`).
+
+---
+Resolved (task T7-1): direction 1, the CAUSE split. `classifyWords` pass 3 now
+reaches a target that is unresolved **because the working directory is unknown**
+(`Target.viaCwd`) whatever the program is, and still allows one unresolved
+because of the **token** — which is the idiom `260801-1859` protected
+(`npm test > "$LOG"`, `cat report.md > ~/backup.md`, `curl -o $OUT`,
+`make $TARGET`, `echo x > "rules/$F"`, all pinned as allows).
+
+Taken with `decisions/260803-2338_i_…after-a-cd-it-cannot-prove-succeeded.md`
+option 1, because neither closes the redirect spelling of the failing-`cd`
+bypass alone: `cd nope || true; echo pwned > rules/x.md` allows under either
+change by itself and denies under both.
+
+**Reversing a documented decision was the whole cost, so it was taken in the
+open.** `260801-1859` was an ISSUE whose `Resolved:` line carried the argument,
+with no decision record to supersede. The record that should have existed is now
+`decisions/260804-0106_i_should-the-fail-closed-bound-be-drawn-around-the-program-or-around-the-cause.md`;
+it states the original argument as it was, the reversal, and the measured cost,
+and `260801-1859` carries a pointer back to it. The two tests that pinned the
+old bound were INVERTED with a comment naming what they replaced, not deleted.
+
+Measured, HEAD's own 4203-command test corpus, both directions. The CAUSE split
+in isolation moves **11** verdicts: 8 escapes closed (every row of the table
+above, the six that newly allowed at `048f3db`, and T6-1's eleventh row
+`command cd build && echo pwned > rules/x.md`) and **3** costs —
+`cd $D && echo x > y.md`, `cd $D && echo x > out.log` and
+`cd "$(pwd)" && npm test > out.log`, all three pinned assertions of
+`260801-1859`. **Newly allowing: none.**
+
+The third cost row is a correction to the number this issue recorded. T6-1
+costed the direction at "exactly two assertions" by counting failing `it` blocks
+rather than moved rows; the third sits in the same `expectAllAllow` array as the
+second, so it never showed as a separate failure. Zero rows of the 119-command
+ordinary-agent corpus, which is unchanged.
+
+Every deny is measured against the real guard subprocess with the real-shell
+effect asserted, one fresh project per row, in the shell that performs the
+write — `guard-bash-integration.test.ts`, "a redirect target the guard cannot
+place denies whatever the program is" (10 rows) and "the fail-closed bound
+survives — an unparseable ARGUMENT is still allowed".

@@ -209,3 +209,42 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+## Answer
+
+**Option 1, taken together with `260803-1835`.**
+
+Chosen by the user at the Turn 6 closing gate, 2026-08-04, on the coder's reading that the two
+close together or not at all: option 1 leaves the redirection escape open, and `260803-1835`
+alone leaves the three verb escapes open.
+
+The trade accepted: five measured commands that work today begin to deny, none of them present
+in this repository's own scripts, against a bypass of the entire protected list that needs no
+flag, no symlink and one extra segment. The user was shown the cost table and the caveat that
+option 1 closes three of four escapes on its own.
+
+The `&&` asymmetry is the reason this is worth the cost rather than a blanket give-up: after
+`&&` the shell guarantees the `cd` succeeded, so the model stays exact for the form agents
+overwhelmingly write, and gives up only where the shell itself guarantees nothing.
+
+## Measured after implementation (task T7-1)
+
+The cost table above was produced by simulating the degrade. Re-measured against
+the real classifier with option 1 applied, over HEAD's own 4203-command test
+corpus, **the five rows are exactly right** — no sixth shape moved, and nothing
+newly allows. Option 1 in isolation moves six verdicts: the five costs above,
+plus `cd nonexistent; rm rules/x.md`, the bypass it was written to close.
+
+The fourth escape closed as predicted only once `260803-1835` was closed with
+it: `cd nope || true; echo pwned > rules/x.md` allows under either change alone
+and denies under both, which is the claim this record was answered on.
+
+The separator degrade gets its own deny reason (`unprovenCdReason`), because the
+advice the existing unknown-directory reason gives — rewrite the operand, drop
+the `cd` — is not the one that helps here. The `cd`'s operand is already a
+literal; `&&` is the way through. A directory that was ALREADY unknown for a
+stronger reason (`pushd -P`, an ambient `CDPATH`) keeps that reason.
+
+---
+Answered: this record, `## Answer` — user chose option 1 plus `260803-1835` at the Turn 6 closing gate; the model may assume a `cd` succeeded only where the shell guarantees it.
+Implemented: `hooks/lib/shell-parse.ts` (`SegmentJoiner`, `ParsedSegment.joiner`) + `hooks/lib/bash-mutation-guard.ts` (`ShellState.moved`, `degradeUnprovenCd`, the segment-boundary check in `classifyBashMutation`), task T7-1 — the directory model is given up at any joiner that is not `&&` once a directory builtin has run in the current scope.

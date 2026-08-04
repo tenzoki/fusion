@@ -99,11 +99,37 @@ export interface ParseOptions {
   quoted: QuotedMode;
 }
 
+/**
+ * The operator that joins a segment to the one before it AT ITS OWN NESTING
+ * LEVEL. `"start"` is the first segment of a level — nothing ran before it.
+ *
+ * The distinction a consumer buys with this is the one bash makes: after `&&`
+ * the previous segment is GUARANTEED to have succeeded, and after every other
+ * operator it is not. A classifier that models a `cd` may only carry the model
+ * across a `&&`; across `;`, `||`, `|`, `&` or a newline the shell runs the next
+ * segment from wherever it never left
+ * (`decisions/260803-2338_i_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`).
+ *
+ * Only `&&` is a guarantee, so a reader that wants one should test for `&&`
+ * rather than enumerate the others: a future operator added here is then
+ * unguaranteed by default, which is the fail-closed direction.
+ */
+export type SegmentJoiner =
+  | "start"
+  | "&&"
+  | "||"
+  | ";"
+  | "|"
+  | "&"
+  | "newline";
+
 export interface ParsedSegment {
   /** The segment's text, trimmed. Carries placeholders in capture mode. */
   text: string;
   /** 0 = outer command, >= 1 = body of a `$(…)` / backtick subshell. */
   depth: number;
+  /** How this segment is joined to the previous one. See `SegmentJoiner`. */
+  joiner: SegmentJoiner;
 }
 
 export interface ParsedCommand {
@@ -596,12 +622,19 @@ function findBalancedParen(text: string, openIdx: number): number {
  * `base`) so the caller can sort the whole tree back into source order.
  *
  * The operator set and the trim-and-drop-empties rule mirror
- * `extractCommandSegments` exactly; only the ORDER, the added depth and the
- * `filler` left in place of a lifted subshell differ. Passing `" "` as the
- * filler reproduces the flat segmenter exactly, which is what blank mode does.
- * One deliberate divergence: an unterminated backtick makes the remainder a
- * subshell body here (fail-closed, matching how an unbalanced `$(` is already
- * treated), where the flat segmenter leaves a lone backtick as literal text.
+ * `extractCommandSegments` exactly; only the ORDER, the added depth, the
+ * recorded JOINER and the `filler` left in place of a lifted subshell differ.
+ * Passing `" "` as the filler reproduces the flat segmenter exactly, which is
+ * what blank mode does. One deliberate divergence: an unterminated backtick
+ * makes the remainder a subshell body here (fail-closed, matching how an
+ * unbalanced `$(` is already treated), where the flat segmenter leaves a lone
+ * backtick as literal text.
+ *
+ * `&&` and `||` are now consumed as ONE operator rather than as two flushes of
+ * which the second finds an empty segment. That is the same segmentation — an
+ * empty flush pushes nothing — and it is what lets the pair be NAMED. The
+ * lookahead is on the repeated character only, so `|&` is still `|` then `&`
+ * and `;;` is still two `;`.
  */
 function scanSegments(
   text: string,
@@ -614,14 +647,27 @@ function scanSegments(
   let cur = "";
   let curStart = -1;
   let i = 0;
+  /** The joiner the NEXT segment this level emits will carry. */
+  let pending: SegmentJoiner = "start";
 
   const push = (s: string, at: number): void => {
     if (curStart === -1 && s.trim().length > 0) curStart = base + at;
     cur += s;
   };
-  const flush = (): void => {
+  const flush = (next: SegmentJoiner): void => {
     const trimmed = cur.trim();
-    if (trimmed.length > 0) out.push({ text: trimmed, depth, start: curStart });
+    if (trimmed.length > 0) {
+      out.push({ text: trimmed, depth, start: curStart, joiner: pending });
+      pending = next;
+    } else if (pending === "&&") {
+      // The operator flushed nothing, so TWO operators stand between the last
+      // emitted segment and the next one (`a && ; b`, or `a &&` at a line end).
+      // The weaker wins: `&&` is the only joiner that guarantees anything, and
+      // it stops guaranteeing the moment something else can reach past it.
+      // `pending === "start"` is deliberately left alone — nothing has been
+      // emitted at this level yet, so there is no earlier segment to guarantee.
+      pending = next;
+    }
     cur = "";
     curStart = -1;
   };
@@ -651,17 +697,24 @@ function scanSegments(
       continue;
     }
 
-    // Segment operators. `||` and `&&` need no special case: the second
-    // character simply flushes an already-empty segment, which is dropped.
-    if (ch === ";" || ch === "|" || ch === "&") {
-      flush();
+    // Segment operators. `&&` and `||` are taken as a PAIR so the joiner can
+    // name them; the segmentation is identical either way, because the old
+    // second flush found an empty segment and dropped it.
+    if (ch === "&" || ch === "|") {
+      const doubled = text[i + 1] === ch;
+      flush(doubled ? (ch === "&" ? "&&" : "||") : ch === "&" ? "&" : "|");
+      i += doubled ? 2 : 1;
+      continue;
+    }
+    if (ch === ";") {
+      flush(";");
       i++;
       continue;
     }
 
     // A newline terminates a command in shell too. Consume the whole run.
     if (ch === "\n" || ch === "\r") {
-      flush();
+      flush("newline");
       while (i < n && (text[i] === "\n" || text[i] === "\r")) i++;
       continue;
     }
@@ -670,17 +723,25 @@ function scanSegments(
     i++;
   }
 
-  flush();
+  // Nothing follows the last segment, so the joiner it would hand on is unused.
+  flush("start");
 }
 
 /**
  * Parse a Bash command string into ordered, depth-tagged segments.
  *
  * `quoted: "blank"` reproduces `extractCommandSegments(stripDataRegions(cmd))`
- * — the same segments, now in source order and carrying their subshell depth.
- * `quoted: "capture"` additionally hands back the single-quoted literals, so a
- * consumer can read a quoted path as a path, and leaves an unresolvable filler
- * where a lifted `$(…)` stood instead of a space (see the module docstring).
+ * — the same segments, now in source order and carrying their subshell depth
+ * and their JOINER. `quoted: "capture"` additionally hands back the
+ * single-quoted literals, so a consumer can read a quoted path as a path, and
+ * leaves an unresolvable filler where a lifted `$(…)` stood instead of a space
+ * (see the module docstring).
+ *
+ * The git classifier does not come through here — it consumes
+ * `extractCommandSegments(stripDataRegions(cmd))`, which is a separate function
+ * left byte-identical on purpose. So a field added to `ParsedSegment` reaches
+ * the mutation classifier and nothing else, and the equivalence test below the
+ * two still compares only what both produce: the segment TEXT.
  */
 export function parseCommand(
   command: string,
@@ -710,7 +771,11 @@ export function parseCommand(
   located.sort((a, b) => a.start - b.start);
 
   return {
-    segments: located.map(({ text, depth }) => ({ text, depth })),
+    segments: located.map(({ text, depth, joiner }) => ({
+      text,
+      depth,
+      joiner,
+    })),
     literals,
   };
 }

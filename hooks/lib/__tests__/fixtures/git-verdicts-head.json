@@ -1,0 +1,2864 @@
+{
+  "overrides": [
+    {
+      "allowBranchSwitch": false,
+      "allowWorktree": false
+    },
+    {
+      "allowBranchSwitch": true,
+      "allowWorktree": false
+    },
+    {
+      "allowBranchSwitch": false,
+      "allowWorktree": true
+    },
+    {
+      "allowBranchSwitch": true,
+      "allowWorktree": true
+    }
+  ],
+  "rows": [
+    {
+      "cmd": "\tmentions `git switch main` in indented prose\n",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "\"git\" switch main",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "\"git\" switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "\"git\" switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "\"git\" switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "\"git\" switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "$(git switch main)",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "( git switch main )",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "( git switch main )",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "( git switch main )"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "( git switch main )",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "( git switch main )"
+        }
+      ]
+    },
+    {
+      "cmd": "(git switch main)",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "(git switch main)",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "(git switch main)"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "(git switch main)",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "(git switch main)"
+        }
+      ]
+    },
+    {
+      "cmd": "(git worktree add ../wt f)",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "(git worktree add ../wt f)",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "(git worktree add ../wt f)",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "worktree-add",
+          "overrideSegment": "(git worktree add ../wt f)"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "worktree-add",
+          "overrideSegment": "(git worktree add ../wt f)"
+        }
+      ]
+    },
+    {
+      "cmd": "/usr/bin/git switch main",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "/usr/bin/git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "/usr/bin/git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "/usr/bin/git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "/usr/bin/git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "ALLOWS a quoted heredoc whose body has a backticked `git switch` (probe 3)",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch"
+        }
+      ]
+    },
+    {
+      "cmd": "ALLOWS a quoted heredoc with a backticked `git worktree add` (docs case)",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git worktree add",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git worktree add",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "worktree-add",
+          "overrideSegment": "git worktree add"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "worktree-add",
+          "overrideSegment": "git worktree add"
+        }
+      ]
+    },
+    {
+      "cmd": "Agents are blocked from `git switch` and `git worktree add ../wt x`.\n",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git worktree add ../wt x",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch"
+        }
+      ]
+    },
+    {
+      "cmd": "GIT_TRACE=1 git switch main",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "GIT_TRACE=1 git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "GIT_TRACE=1 git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "GIT_TRACE=1 git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "GIT_TRACE=1 git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "STILL DENIES $(git switch) inside a DOUBLE-quoted string",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch"
+        }
+      ]
+    },
+    {
+      "cmd": "STILL DENIES a real `git switch main` command (no regression)",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "STILL DENIES an UNQUOTED-delimiter heredoc with $(git switch) in the body",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch"
+        }
+      ]
+    },
+    {
+      "cmd": "\\git switch main",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "\\git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "\\git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "\\git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "\\git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "\\git worktree add ../wt f",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "\\git worktree add ../wt f",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "\\git worktree add ../wt f",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "worktree-add",
+          "overrideSegment": "\\git worktree add ../wt f"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "worktree-add",
+          "overrideSegment": "\\git worktree add ../wt f"
+        }
+      ]
+    },
+    {
+      "cmd": "`git switch main`",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "a && git switch main",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "a hook that denies `git switch` in backticks\n",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch"
+        }
+      ]
+    },
+    {
+      "cmd": "bare `git checkout <target>` — filesystem + ref-aware resolution",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout <target>",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout <target>"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout <target>",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout <target>"
+        }
+      ]
+    },
+    {
+      "cmd": "body mentioning `git checkout other`\n",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout other",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout other"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout other",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout other"
+        }
+      ]
+    },
+    {
+      "cmd": "cat <<'EOF'\ngit switch main\n",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "cd x && (git switch main)",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "(git switch main)",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "(git switch main)"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "(git switch main)",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "(git switch main)"
+        }
+      ]
+    },
+    {
+      "cmd": "cd x && git checkout other",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout other",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout other"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout other",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout other"
+        }
+      ]
+    },
+    {
+      "cmd": "coproc git switch main",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "coproc git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "coproc git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "coproc git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "coproc git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "denies compound: cd x && git checkout other",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout other",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout other"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout other",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout other"
+        }
+      ]
+    },
+    {
+      "cmd": "echo \"$(git switch main)\"",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "echo \"`git switch main`\"",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "echo \"run `git switch main` here\"",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "echo $(git switch main)",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "echo 'a \\\n b' && git switch \\\n main",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch  main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch  main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch  main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch  main"
+        }
+      ]
+    },
+    {
+      "cmd": "echo 'unterminated `git switch main`",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "echo `git switch main`",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "echo start && sudo git switch main && echo done",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "sudo git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "sudo git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "sudo git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "sudo git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "env git switch main",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "env git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "env git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "env git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "env git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "exec git switch main",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "exec git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "exec git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "exec git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "exec git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "expands $(git switch main) here\n",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "expands `git switch main` here\n",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "git --git-dir=/x/.git checkout file.md",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git --git-dir=/x/.git checkout file.md",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git --git-dir=/x/.git checkout file.md"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git --git-dir=/x/.git checkout file.md",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git --git-dir=/x/.git checkout file.md"
+        }
+      ]
+    },
+    {
+      "cmd": "git --work-tree=/x checkout file.md",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git --work-tree=/x checkout file.md",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git --work-tree=/x checkout file.md"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git --work-tree=/x checkout file.md",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git --work-tree=/x checkout file.md"
+        }
+      ]
+    },
+    {
+      "cmd": "git -C /repo checkout main",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git -C /repo checkout main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git -C /repo checkout main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git -C /repo checkout main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git -C /repo checkout main"
+        }
+      ]
+    },
+    {
+      "cmd": "git -C /repo checkout sub/file.md",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git -C /repo checkout sub/file.md",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git -C /repo checkout sub/file.md"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git -C /repo checkout sub/file.md",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git -C /repo checkout sub/file.md"
+        }
+      ]
+    },
+    {
+      "cmd": "git checkout -",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git checkout -",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout -"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git checkout -",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout -"
+        }
+      ]
+    },
+    {
+      "cmd": "git checkout --detach abc",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git checkout --detach abc",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout --detach abc"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git checkout --detach abc",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout --detach abc"
+        }
+      ]
+    },
+    {
+      "cmd": "git checkout --orphan newbranch",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git checkout --orphan newbranch",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout --orphan newbranch"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git checkout --orphan newbranch",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout --orphan newbranch"
+        }
+      ]
+    },
+    {
+      "cmd": "git checkout -B feature",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git checkout -B feature",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout -B feature"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git checkout -B feature",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout -B feature"
+        }
+      ]
+    },
+    {
+      "cmd": "git checkout -b feature",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git checkout -b feature",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout -b feature"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git checkout -b feature",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout -b feature"
+        }
+      ]
+    },
+    {
+      "cmd": "git checkout -b newbranch",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git checkout -b newbranch",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout -b newbranch"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git checkout -b newbranch",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout -b newbranch"
+        }
+      ]
+    },
+    {
+      "cmd": "git checkout a.go b.ts",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout a.go b.ts",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout a.go b.ts"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout a.go b.ts",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout a.go b.ts"
+        }
+      ]
+    },
+    {
+      "cmd": "git checkout a.go ghost.go",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout a.go ghost.go",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout a.go ghost.go"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout a.go ghost.go",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout a.go ghost.go"
+        }
+      ]
+    },
+    {
+      "cmd": "git checkout a.go main",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout a.go main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout a.go main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout a.go main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout a.go main"
+        }
+      ]
+    },
+    {
+      "cmd": "git checkout agents/coder.md",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout agents/coder.md",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout agents/coder.md"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout agents/coder.md",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout agents/coder.md"
+        }
+      ]
+    },
+    {
+      "cmd": "git checkout deploy",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout deploy",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout deploy"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout deploy",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout deploy"
+        }
+      ]
+    },
+    {
+      "cmd": "git checkout feature/plane",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout feature/plane",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout feature/plane"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout feature/plane",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout feature/plane"
+        }
+      ]
+    },
+    {
+      "cmd": "git checkout main",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout main"
+        }
+      ]
+    },
+    {
+      "cmd": "git checkout not-a-file",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout not-a-file",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout not-a-file"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout not-a-file",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout not-a-file"
+        }
+      ]
+    },
+    {
+      "cmd": "git checkout origin/main",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout origin/main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout origin/main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout origin/main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout origin/main"
+        }
+      ]
+    },
+    {
+      "cmd": "git checkout other",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout other",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout other"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout other",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout other"
+        }
+      ]
+    },
+    {
+      "cmd": "git checkout something",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout something",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout something"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout something",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout something"
+        }
+      ]
+    },
+    {
+      "cmd": "git checkout sub/file.md",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout sub/file.md",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout sub/file.md"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout sub/file.md",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout sub/file.md"
+        }
+      ]
+    },
+    {
+      "cmd": "git commit -m \"a && git switch main\"",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main\"",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main\""
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main\"",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main\""
+        }
+      ]
+    },
+    {
+      "cmd": "git status; git checkout other; git log",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout other",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout other"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "git checkout other",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git checkout other"
+        }
+      ]
+    },
+    {
+      "cmd": "git switch -",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch -",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch -"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch -",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch -"
+        }
+      ]
+    },
+    {
+      "cmd": "git switch --detach abc123",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch --detach abc123",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch --detach abc123"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch --detach abc123",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch --detach abc123"
+        }
+      ]
+    },
+    {
+      "cmd": "git switch -C feature",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch -C feature",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch -C feature"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch -C feature",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch -C feature"
+        }
+      ]
+    },
+    {
+      "cmd": "git switch -c feature",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch -c feature",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch -c feature"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch -c feature",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch -c feature"
+        }
+      ]
+    },
+    {
+      "cmd": "git switch \\\n main",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch  main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch  main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch  main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch  main"
+        }
+      ]
+    },
+    {
+      "cmd": "git switch feature",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch feature",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch feature"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch feature",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch feature"
+        }
+      ]
+    },
+    {
+      "cmd": "git switch main",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "git switch main && git worktree add ../wt f",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git worktree add ../wt f",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "git switch main && mv rules/x.md rules/retired/",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "git switch main && rm rules/x.md",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "git switch main <<'EOF'\n",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main <<",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main <<"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main <<",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main <<"
+        }
+      ]
+    },
+    {
+      "cmd": "git switch one",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch one",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch one"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch one",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch one"
+        }
+      ]
+    },
+    {
+      "cmd": "git switch one && git switch two",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch one",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch one"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch one",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch one"
+        }
+      ]
+    },
+    {
+      "cmd": "git worktree \\\n  add ../wt x",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git worktree   add ../wt x",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git worktree   add ../wt x",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "worktree-add",
+          "overrideSegment": "git worktree   add ../wt x"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "worktree-add",
+          "overrideSegment": "git worktree   add ../wt x"
+        }
+      ]
+    },
+    {
+      "cmd": "git worktree \\\n add ../wt x",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git worktree  add ../wt x",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git worktree  add ../wt x",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "worktree-add",
+          "overrideSegment": "git worktree  add ../wt x"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "worktree-add",
+          "overrideSegment": "git worktree  add ../wt x"
+        }
+      ]
+    },
+    {
+      "cmd": "git worktree add",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git worktree add",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git worktree add",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "worktree-add",
+          "overrideSegment": "git worktree add"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "worktree-add",
+          "overrideSegment": "git worktree add"
+        }
+      ]
+    },
+    {
+      "cmd": "git worktree add ../wt f && git switch main",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git worktree add ../wt f",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git worktree add ../wt f",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "worktree-add",
+          "overrideSegment": "git worktree add ../wt f"
+        }
+      ]
+    },
+    {
+      "cmd": "git worktree add ../wt feature",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git worktree add ../wt feature",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git worktree add ../wt feature",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "worktree-add",
+          "overrideSegment": "git worktree add ../wt feature"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "worktree-add",
+          "overrideSegment": "git worktree add ../wt feature"
+        }
+      ]
+    },
+    {
+      "cmd": "git worktree add ../wt feature && rm -f agents/coder.md",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git worktree add ../wt feature",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git worktree add ../wt feature",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "worktree-add",
+          "overrideSegment": "git worktree add ../wt feature"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "worktree-add",
+          "overrideSegment": "git worktree add ../wt feature"
+        }
+      ]
+    },
+    {
+      "cmd": "git worktree add ../wt x",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git worktree add ../wt x",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git worktree add ../wt x",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "worktree-add",
+          "overrideSegment": "git worktree add ../wt x"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "worktree-add",
+          "overrideSegment": "git worktree add ../wt x"
+        }
+      ]
+    },
+    {
+      "cmd": "if \\git switch main; then :; fi",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "if \\git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "if \\git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "if \\git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "if \\git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "if git checkout main; then :; fi",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "if git checkout main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "if git checkout main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env. If you meant to RESTORE a file (not switch branches), use `git restore <file>` or `git checkout -- <file>` — both are always allowed. The bare `git checkout <file>` form is allowed only when <file> exists on disk and is not also a branch/ref name.",
+          "offendingSegment": "if git checkout main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "if git checkout main"
+        }
+      ]
+    },
+    {
+      "cmd": "if git switch main; then :; fi",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "if git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "if git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "if git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "if git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "if git worktree add ../wt f; then :; fi",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "if git worktree add ../wt f",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "if git worktree add ../wt f",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "worktree-add",
+          "overrideSegment": "if git worktree add ../wt f"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "worktree-add",
+          "overrideSegment": "if git worktree add ../wt f"
+        }
+      ]
+    },
+    {
+      "cmd": "if true; then :; elif git switch main; then :; fi",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "elif git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "elif git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "elif git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "elif git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "nohup git switch main",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "nohup git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "nohup git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "nohup git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "nohup git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "run $(git switch main) here",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "run `git switch main` here",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "see `git switch main` for details\n",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "sudo -u root git switch main",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "sudo -u root git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "sudo -u root git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "sudo -u root git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "sudo -u root git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "sudo env git worktree add ../wt f",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "sudo env git worktree add ../wt f",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "sudo env git worktree add ../wt f",
+          "kind": "worktree-add"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "worktree-add",
+          "overrideSegment": "sudo env git worktree add ../wt f"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "worktree-add",
+          "overrideSegment": "sudo env git worktree add ../wt f"
+        }
+      ]
+    },
+    {
+      "cmd": "sudo git switch main",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "sudo git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "sudo git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "sudo git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "sudo git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "timeout 5 git switch main",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "timeout 5 git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "timeout 5 git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "timeout 5 git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "timeout 5 git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "until git switch main; do :; done",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "until git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "until git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "until git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "until git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "while :; do git switch main; done",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "do git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "do git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "do git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "do git switch main"
+        }
+      ]
+    },
+    {
+      "cmd": "while git switch main; do :; done",
+      "verdicts": [
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "while git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "while git switch main"
+        },
+        {
+          "deny": true,
+          "reason": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
+          "offendingSegment": "while git switch main",
+          "kind": "branch-switch"
+        },
+        {
+          "deny": false,
+          "overrideUsed": true,
+          "overrideKind": "branch-switch",
+          "overrideSegment": "while git switch main"
+        }
+      ]
+    }
+  ]
+}

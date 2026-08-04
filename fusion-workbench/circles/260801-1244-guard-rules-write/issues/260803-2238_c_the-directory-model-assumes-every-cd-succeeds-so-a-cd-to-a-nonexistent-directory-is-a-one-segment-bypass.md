@@ -129,3 +129,49 @@ asking, so it is direction 4 with extra machinery.
 The residual is now stated in both shipped documents, marked as awaiting this decision —
 which is the current state and also exactly option 2, so no work is needed if option 2 is
 chosen. Marker unchanged (`_o_`).
+
+---
+Resolved (task T7-1): option 1 of
+`decisions/260803-2338_i_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`
+— the model may assume a `cd` succeeded only where the shell guarantees it.
+
+`ParsedSegment` gained a `joiner` (`shell-parse.ts`, `SegmentJoiner`) and
+`ShellState` a monotone `moved` flag; `classifyBashMutation` calls
+`degradeUnprovenCd` at any segment boundary whose joiner is not `&&` once a
+directory builtin has run in the current scope. The check sits AFTER the
+subshell scope restore, so a `cd` bash itself discarded casts no doubt forward.
+
+The joiner is per NESTING LEVEL and the degrade tests `!== "&&"` rather than
+enumerating the others, so a joiner added later is unguaranteed by default.
+`ParsedSegment` is consumed by both Bash classifiers, but the GIT classifier
+segments through `extractCommandSegments(stripDataRegions(cmd))` — a separate
+function, retained verbatim — so it cannot see the field. That is asserted
+rather than assumed: `git-branch-guard.test.ts` pins 98 commands × 4 override
+combinations of the PREVIOUS classifier's verdicts as a gold fixture and
+reproduces them byte for byte, plus a source check that the module never names
+`parseCommand`.
+
+Measured, HEAD's own 4203-command test corpus, both directions. The degrade in
+isolation moves **6** verdicts: this bypass, plus the five costs the decision
+record's `## Answer` showed the user —
+
+```
+  cd build; rm out.js
+  cd docs; rm ../notes.txt
+  mkdir -p build && cd build; rm out.js
+  cd hooks && npm run build; rm -rf dist
+  cd build || exit 1; rm out.js
+```
+
+— exactly the predicted table, no sixth shape, and **no newly-allowing
+command**. The `pushd … ; popd` idioms degrade and write nothing relative
+afterwards, which is most of why the cost is five rows.
+
+Denies are measured against the real guard subprocess with the real-shell effect
+asserted, in bash AND zsh, one fresh project per row, no deny reading
+`[HALTED]` — `guard-bash-integration.test.ts`, "a cd the shell never promised to
+have made".
+
+The deny names the separator rather than the operand (`unprovenCdReason`),
+because the `cd`'s operand is already a literal and `&&` is the way through — and
+because `&&` is also what makes the command correct in the shell.
