@@ -93,3 +93,38 @@ Two edits, no code change required for the documentation half:
 Both rows allow at `613d6fd` and both delete the watched file in both shells. A
 documentation-only fix cannot be pinned by a test; the two verdict rows above are what stops
 the prose and the behaviour drifting again.
+
+---
+
+**In progress:** 2026-08-04, `coder`, plan Step 3. The **code half is done; the
+documentation half is Step 7's and is not touched here.** The record stays open
+until both land, because closing it on the code alone would repeat the mistake it
+was filed about — a residual entry removed rather than narrowed.
+
+Edit 2 of the recommendation, taken: `clean` carries the same `writesThrough`
+field `260804-1345` asked for, so the root exclusion does not apply to it either.
+Both measured rows now deny with their real-shell effect asserted in bash and
+zsh, and BOTH SPELLINGS are pinned — the explicit `git clean -fdx .` and the
+implicit `git clean -fdx`, which took different code paths to the same allow.
+Both allow-side controls this record names hold: `git clean -fdx build` and
+`git -C build clean -fdx`, the second of which is what forced the design to
+consult `writesThrough` only at the directory git actually runs in rather than at
+every candidate base (see `260804-1345`'s resolution note).
+
+Two things the residual list now has to say, and Step 7 owns both:
+
+1. The residual is **closed for `git clean` at the project root**, not narrowed —
+   `git clean -fdx` and `git clean -fdx .` deny there now. Edit 1's suggested
+   wording is therefore wrong as written, and the entry has to be **deleted for
+   the right reason**, with that reason stated rather than left to be inferred
+   (plan Step 7, obligation 9, which anticipates exactly this branch).
+2. What survives and must NOT be dropped: `git clean -fdx` **from a directory the
+   guard cannot place** still fails closed rather than allowing, and
+   `GIT_WORK_TREE=rules git clean -fdx` in the ENVIRONMENT remains a live
+   residual (`260804-1332`, deferred to
+   `circles/260804-1205-shell-reachability-model`). Deleting one residual entry
+   while a sibling of the same shape is still open is how this record came to be
+   filed.
+
+The two verdict rows this record asked for are in the suite either way, so the
+prose and the behaviour cannot drift again without a test moving.

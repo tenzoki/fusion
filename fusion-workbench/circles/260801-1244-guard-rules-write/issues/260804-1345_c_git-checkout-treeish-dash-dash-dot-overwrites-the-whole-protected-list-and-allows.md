@@ -100,3 +100,45 @@ Every row above allows at `613d6fd` and every one changes the file in both shell
 can pass vacuously. A mutation that drops `writesThrough` from the `checkout` row must fail
 the `checkout HEAD~1 -- .` row and no other; one that removes the root exclusion outright
 must fail the `cp x .` allow row.
+
+---
+
+**Resolved:** 2026-08-04, `coder`, plan Step 3. Taken as recommended: a
+`writesThrough` field on `VerbSpec`, set on `git checkout`, `git restore` and
+`git clean` and on nothing else, consulted by pass 2 to lift the project-root
+exclusion for those rows. The exclusion itself is untouched, so `cp x .` and
+`mv build/out.js .` still allow — both pinned with their real-shell effect.
+
+Three `ALLOW` rows now deny with the effect asserted in bash and zsh
+(`git checkout HEAD~1 -- .`, `-- ./`, `git restore --source=HEAD~1 .`). The `'*'`
+row stays allowed and is re-asserted as the documented glob residual, so the
+change cannot be read as having closed it. `git checkout HEAD -- .` stays allowed
+and is pinned with the effect that it really does revert a dirtied file, in both
+shells — not merely "unchanged in a clean tree", which would pass against a guard
+that had broken the command some other way.
+
+**One thing the recommendation did not anticipate, and it decides the design.**
+A git invocation is checked against a UNION of directories — the shell's own plus
+whatever `-C`/`--work-tree` name — so that a directory flag cannot argue away a
+protected path spelled in the command. Lifting the root exclusion for every
+candidate would have denied `git -C build clean -fdx`, whose modelled `.`
+resolves to the root at the shell's base although git cleans `build` and nothing
+else. That row is pinned as an allow in both suites and is named as a control in
+`260804-1346`. So `writesThrough` is consulted only at `gitEffectiveBase` — the
+directory the invocation actually runs in. The union is unweakened: a protected
+path spelled in the command still denies however the flags point.
+
+The deny also earned its own reason. `ancestorReason` says removing or moving the
+directory would take the protected path with it, which is what `rm -rf hooks`
+does and is not what `checkout` does — it leaves every directory in place and
+replaces the contents. `writesThroughReason` names the real mechanism and the
+real way through (the literal file list). Same class as `260804-1347`.
+
+Measured against a generated cross-product of 181,115 commands, baseline
+`f82ac02`: **0 newly allowed**; 1,174 newly denied, every one a `writesThrough`
+verb whose pathspec resolves to the project root.
+
+Anti-vacuity, run, exactly as this record specifies: dropping `writesThrough`
+from the `checkout` row fails the `checkout HEAD~1 -- .` rows and the table-shape
+assertion and NOTHING else — no `restore` row, no `clean` row, no allow row.
+Removing the root exclusion outright fails the `cp x .` row, along with 17 others.

@@ -112,3 +112,44 @@ Two documentation edits and one optional code edit.
 Every row above already returns a verdict, so verdict-only assertions prove nothing. The
 assertions have to be on the reason string and on the pair, exactly as
 `decisions/260804-1323` says the `checkout` test does.
+
+---
+
+**In progress:** 2026-08-04, `coder`, plan Step 3. **The plan assigned this record to
+Step 3 as a code pass, and Step 3 cannot close it.** What Step 3 could take, it took;
+what it could not, it routed. Stated in full so the routing is not read as an oversight.
+
+**Taken — the test coverage this record asks for, both items.**
+`MEASURES: checkout and restore still disagree at HEAD (260804-1348, open)` pins the
+whole pair with the current verdicts and a comment naming this record, so the asymmetry
+is visible in the suite rather than only in prose. And
+`leaves \`git checkout <file> <file>\` to the branch policy, which answers first` pins
+part 2 through a real guard subprocess: the block's reason must name the branch policy
+and must NOT be the protected-path reason, so the two policies cannot start reporting
+each other's permission unnoticed.
+
+**Not taken — recommendation 3, the code edit, and this is the substantive finding.**
+The plan's Step 3 says `checkout` and `restore` are "one operation with two flag
+grammars, and the pass that adds a field to both rows is the pass that can make them
+agree". There is no reconciliation available to a coder step. Making them agree by
+teaching `restore` the `HEAD` exception NEWLY ALLOWS
+`git restore --source=HEAD <protected>` — which this record itself flags as "a first for
+this Circle" and calls worth a decision rather than a patch — and every Turn of this
+Circle has held that no command newly allows. Making them agree the other way denies
+`git checkout HEAD -- <path>`, which is fusion's own revert strategy and is promised to
+every agent in every consuming project. So the code half is a Human-Gate question, filed
+as
+`circles/260801-1244-guard-rules-write/decisions/260804-1815_o_should-git-restore-source-head-become-inert-the-way-git-checkout-head-already-is.md`,
+with the architectural cause (`mutatesOnlyWhen` never sees a separated flag's value)
+written down rather than papered over.
+
+**Not taken — recommendations 1 and 2, the documentation edits.** Both are in
+`rules/protected-path-discipline.md`, which is Step 7's file and out of Step 3's scope.
+`rules/protected-path-discipline.md:89` still says "Now they agree" and the `checkout`
+row still states a second cost that the branch policy reaches first.
+
+**What has to happen for this record to close, and where the plan is short.** Step 7's
+`Closes` line does not name `260804-1348`, so as the plan stands nothing owns the two
+documentation edits. Either Step 7 adopts them — the natural home, since they are two
+sentences in a file it is already rewriting — or a ninth step does. Flagged rather than
+silently absorbed.

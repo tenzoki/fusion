@@ -96,3 +96,34 @@ Both rows already deny, so a test asserting `decision === "block"` would pass va
 assertion has to be on the **reason string**, and the mutation that proves it is: delete the
 new cause and let the rows fall back to `unknownCwdReason` — the two reason assertions must
 fail and nothing else.
+
+---
+
+**Resolved:** 2026-08-04, `coder`, plan Step 3. Taken as recommended: a third
+`CwdUnknownCause` member, `git-directory`, set by `stepDir` when the `-C` or
+`--work-tree` token does not resolve, with its own reason function and its own
+dispatch arm — one function, one constructor, one arm, exactly the precedent
+`unprovenCdReason` and `ambientCdpathReason` set.
+
+Both details this record asked for in the same edit are taken. `stepDir`'s
+`CWD_OUTSIDE` return for a leading `~` is untouched and still allows. And the
+reason names NEITHER the token NOR a `cd`: for `git clean` the token is the
+model's implicit `.`, which the command does not contain either, so the reason
+speaks of "the paths the segment writes" and names the two flags that cause it
+and the two things that clear it.
+
+Assertions are on the reason string, per this record's anti-vacuity note — a
+verdict assertion would pass vacuously since both rows already denied. The suite
+asserts the ABSENCE of the substring `` `cd` `` as well as the presence of `-C`
+and `--work-tree`, in the unit suite over four commands and through a real guard
+subprocess for the two measured rows. The three pre-existing causes are asserted
+to keep their own reasons (`drop the cd`, `&&`, `CDPATH`) and to contain no
+`--work-tree`, so the new arm cannot swallow them. `git -C $D rm /tmp/junk` stays
+an allow.
+
+Verdicts are unchanged by this edit — only the explanation moves — which the
+cross-product confirms: no command changed its verdict for this cause.
+
+Anti-vacuity, run, exactly as this record specifies: deleting the new cause and
+letting the rows fall back to `unknownCwdReason` fails the two reason assertions
+(three cases: one unit, two integration) and nothing else — 3 of 1448.

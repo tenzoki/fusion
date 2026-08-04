@@ -1497,3 +1497,223 @@ describe("the cost of the git directory rows, measured rather than asserted", ()
     }
   }
 });
+
+// ---------------------------------------------------------------------------
+// The two git routes the Turn 10 review measured failing open.
+//
+// `260804-1344` (High) — `git --namespace foo -C rules rm x.md` deleted a rule
+// file and allowed, because the option walk stopped at the unknown option's
+// VALUE and never read the `-C` behind it.
+//
+// `260804-1345` (High) — `git checkout HEAD~1 -- .` overwrote every tracked file
+// in the project from an arbitrary commit and allowed, because the ancestor
+// check excludes the project root deliberately and `checkout` writes THROUGH its
+// pathspec.
+//
+// `260804-1346` (Medium) — the same root-pathspec hole on `git clean`, reaching
+// untracked files only, which is exactly the rule file an agent has just written
+// under `FUSION_ALLOW_RULES_WRITE` and not yet committed.
+//
+// Every row below ALLOWED at `f82ac02` and every one was measured performing its
+// write in a real repository, in both shells. Verdict and effect are measured in
+// SEPARATE fresh projects, so no deny can pass as `[HALTED]`.
+// ---------------------------------------------------------------------------
+
+describe("a git option walk that stops early hides the directory behind it", () => {
+  const rows: { command: string; watch: string }[] = [
+    { command: "git --namespace foo -C rules rm x.md", watch: "rules/x.md" },
+    { command: "git --namespace foo -C agents rm coder.md", watch: "agents/coder.md" },
+    {
+      command: "git --namespace foo --work-tree=rules clean -fdx",
+      watch: "rules/untracked.md",
+    },
+  ];
+
+  for (const { command, watch } of rows) {
+    for (const shell of ["bash", "zsh"] as const) {
+      it(
+        `denies (${shell}): ${command}`,
+        () => {
+          gitDenyAndShellWouldHaveWritten(command, watch, shell);
+        },
+        CASE_TIMEOUT,
+      );
+    }
+  }
+
+  // The cost side. A fix that gave up on every invocation carrying an
+  // unrecognised option would pass every row above and deny all of these.
+  const allowed: {
+    command: string;
+    watch: string;
+    expectation: "changes" | "survives";
+  }[] = [
+    {
+      command: "git --namespace foo -C build rm out.js",
+      watch: "build/out.js",
+      expectation: "changes",
+    },
+    {
+      command: "git --namespace foo -C rules status",
+      watch: "rules/x.md",
+      expectation: "survives",
+    },
+  ];
+
+  for (const { command, watch, expectation } of allowed) {
+    for (const shell of ["bash", "zsh"] as const) {
+      it(
+        `allows (${shell}): ${command} [${watch} ${expectation}]`,
+        () => {
+          gitAllowAndShellPerforms(command, watch, shell, expectation);
+        },
+        CASE_TIMEOUT,
+      );
+    }
+  }
+});
+
+describe("a git verb that writes THROUGH the project root is denied", () => {
+  const rows: { command: string; watch: string }[] = [
+    { command: "git checkout HEAD~1 -- .", watch: "rules/x.md" },
+    { command: "git checkout HEAD~1 -- ./", watch: "rules/x.md" },
+    { command: "git restore --source=HEAD~1 .", watch: "rules/x.md" },
+    // The explicit and the implicit spelling of the same command, which took
+    // different code paths to the same allow (`260804-1346`).
+    { command: "git clean -fdx .", watch: "rules/untracked.md" },
+    { command: "git clean -fdx", watch: "rules/untracked.md" },
+  ];
+
+  for (const { command, watch } of rows) {
+    for (const shell of ["bash", "zsh"] as const) {
+      it(
+        `denies (${shell}): ${command}`,
+        () => {
+          gitDenyAndShellWouldHaveWritten(command, watch, shell);
+        },
+        CASE_TIMEOUT,
+      );
+    }
+  }
+
+  // The cost side, and the promise. `git checkout HEAD -- .` is the revert
+  // strategy over the whole tree: it writes nothing an agent could not have
+  // obtained by leaving the files alone, so it stays allowed and it really does
+  // revert. Asserting only "unchanged in a clean tree" would pass against a
+  // guard that had broken the command some other way, so the file is dirtied
+  // first and the command has to put it back.
+  for (const shell of ["bash", "zsh"] as const) {
+    it(
+      `allows the whole-tree revert, and it reverts (${shell})`,
+      () => {
+        withProject(({ root }) => {
+          initRepo(root);
+          const res = runBash(root, "git checkout HEAD -- .");
+          expect(res.decision ?? "allow").not.toBe("block");
+        });
+
+        withProject(({ root }) => {
+          initRepo(root);
+          const target = resolve(root, "rules/x.md");
+          const committed = readFileSync(target, "utf-8");
+          writeFileSync(target, "# an agent's out-of-scope edit\n", "utf-8");
+          spawnSync(SHELLS[shell], ["-c", "git checkout HEAD -- ."], {
+            cwd: root,
+            stdio: "ignore",
+          });
+          expect(readFileSync(target, "utf-8"), shell).toBe(committed);
+        });
+      },
+      CASE_TIMEOUT,
+    );
+  }
+
+  const allowed: {
+    command: string;
+    watch: string;
+    expectation: "changes" | "survives";
+  }[] = [
+    // An unprotected subtree is still an ordinary operand.
+    {
+      command: "git checkout HEAD~1 -- build",
+      watch: "build/out.js",
+      expectation: "changes",
+    },
+    {
+      command: "git restore --source=HEAD~1 build",
+      watch: "build/out.js",
+      expectation: "changes",
+    },
+    {
+      command: "git clean -fdx build",
+      watch: "build/untracked.js",
+      expectation: "changes",
+    },
+    {
+      command: "git clean -fdx build",
+      watch: "rules/untracked.md",
+      expectation: "survives",
+    },
+    // The root exclusion itself is NOT removed: these write the entry they
+    // name, and `260804-1345` warns explicitly against taking it out wholesale.
+    { command: "cp build/out.js .", watch: "out.js", expectation: "changes" },
+    { command: "mv build/out.js .", watch: "out.js", expectation: "changes" },
+  ];
+
+  for (const { command, watch, expectation } of allowed) {
+    for (const shell of ["bash", "zsh"] as const) {
+      it(
+        `allows (${shell}): ${command} [${watch} ${expectation}]`,
+        () => {
+          gitAllowAndShellPerforms(command, watch, shell, expectation);
+        },
+        CASE_TIMEOUT,
+      );
+    }
+  }
+});
+
+describe("the deny reasons around the git rows name their own cause", () => {
+  // `260804-1347`: both rows already denied, so a verdict assertion would pass
+  // vacuously. The assertion is on the reason string — the deny told the agent
+  // to drop a `cd` the command does not contain, and for the `clean` row named
+  // `.`, the model's implicit pathspec, as the thing being written.
+  for (const command of [
+    "git -C $D rm build/out.js",
+    "git --work-tree=$W clean -fdx",
+  ]) {
+    it(
+      `names the git directory flag, not a cd: ${command}`,
+      () => {
+        withProject(({ root }) => {
+          const res = runBash(root, command);
+          expect(res.decision, command).toBe("block");
+          const reason = res.reason ?? "";
+          expect(reason, command).not.toContain("[HALTED]");
+          expect(reason, command).not.toContain("`cd`");
+          expect(reason, command).toContain("-C");
+          expect(reason, command).toContain("--work-tree");
+        });
+      },
+      CASE_TIMEOUT,
+    );
+  }
+
+  // `260804-1348` part 2: the mutation row's second stated cost is unreachable
+  // through the hook, because the BRANCH policy reaches this command first and
+  // gives a different reason with a different way through. Pinned so the two
+  // policies cannot start reporting each other's permission unnoticed.
+  it(
+    "leaves `git checkout <file> <file>` to the branch policy, which answers first",
+    () => {
+      withProject(({ root }) => {
+        const res = runBash(root, "git checkout rules/a.md rules/b.md");
+        expect(res.decision).toBe("block");
+        const reason = res.reason ?? "";
+        expect(reason).toContain("branch");
+        expect(reason).not.toContain("writes a protected path");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+});

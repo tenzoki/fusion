@@ -98,3 +98,40 @@ being taken, not assumed cheaper.
 All three rows ALLOW at `613d6fd` and all three delete the file in both shells, so none can
 pass vacuously. A mutation that reverts the walk-resumption must fail at least the
 `--namespace foo -C rules` row and must NOT fail the `-C build` allow row.
+
+---
+
+**Resolved:** 2026-08-04, `coder`, plan Step 3. `resolveGit` now RESUMES the option
+walk instead of widening the candidate list. A bare word is tested against the
+subcommand table; if it matches no row and an unrecognised option stands in front
+of it, it is that option's value and the walk continues from the next index,
+recording `-C` and `--work-tree` as it goes. If it matches no row and no
+unrecognised option stands in front of it, it is git's real subcommand and the
+walk stops there — which keeps the walk out of the subcommand's own arguments,
+where `-C` means something else (`git commit -C HEAD~1` reuses a message).
+
+All three measured rows deny, with the real-shell effect asserted in bash and zsh
+(`guard-bash-integration.test.ts`, "a git option walk that stops early hides the
+directory behind it"). Both allow-side controls (`-C build rm out.js`,
+`-C rules status`) hold, plus four more.
+
+**The class, and its bound.** Closed: every well-formed invocation whose
+unrecognised global options each take at most ONE separated value. Not closed and
+not claimed: an option taking two separated values, and a second bare word
+standing between the value and the subcommand (`git --namespace foo bar -C rules
+rm x.md`), which resolves to nothing. Neither is a fail-open in practice — git
+reads that second bare word as the subcommand and refuses the command — but
+neither is proven, and the bound is asserted in the suite ("states the BOUND of
+the resumed walk rather than claiming the class closed") rather than left in
+prose.
+
+**The no-new-allow property survives structurally,** not by luck: the new
+candidate set is a superset of the old one (a flag word can never match a row
+name, so the old `i+1` candidate could never have matched one the new walk
+skips), and a resumed walk can only record more directories, which can only add a
+base and therefore only add a deny. Measured against a generated cross-product of
+181,115 commands, baseline `f82ac02`: **0 newly allowed**.
+
+Anti-vacuity, run: reverting the resumption to the two-adjacent-candidate fix
+fails exactly the three measured rows in both shells plus the two unit
+assertions — 8 cases — and does NOT fail `git --namespace foo -C build rm out.js`.

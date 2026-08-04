@@ -436,6 +436,56 @@ describe("git carries its own directory, and the model no longer ignores it", ()
     ]);
   });
 
+  /**
+   * `260804-1347`: the deny above is right and its EXPLANATION was not. A `-C`
+   * that does not resolve fell through to `unknownCwdReason`, which tells the
+   * agent to "drop the `cd`" — in a command that contains no `cd`. For the
+   * `clean` row it also named `.` as the thing being written, which is the
+   * model's implicit pathspec and appears nowhere in the command either.
+   *
+   * The Circle's stated failure mode is an agent that meets an unexplained deny
+   * and works around it, and three denials put the guard into halt mode. A
+   * remedy that cannot be applied is the worst case of it, so the assertion is
+   * on the reason string rather than on the verdict — a verdict assertion here
+   * would pass vacuously, since both rows already denied.
+   */
+  it("explains a fail-closed git directory by naming the flag, not a cd", () => {
+    for (const cmd of [
+      "git -C $D rm build/out.js",
+      "git --work-tree=$W clean -fdx",
+      'git -C "$(pwd)" rm build/out.js',
+      "git -C rules -C $D rm x.md",
+    ]) {
+      const reason = classify(cmd).reason ?? "";
+      expect(reason, cmd).toContain("-C");
+      expect(reason, cmd).toContain("--work-tree");
+      expect(reason, cmd).not.toContain("`cd`");
+      expect(reason, cmd).toContain("fail-closed");
+    }
+  });
+
+  it("does not swallow the three causes that were already explained", () => {
+    // The new arm must be reachable ONLY from a git directory flag. Each of
+    // these loses the directory a different way and keeps its own remedy.
+    const unknownCd = classify("cd $D && rm x.md").reason ?? "";
+    expect(unknownCd).toContain("drop the `cd`");
+    const unproven = classify("cd build; rm out.js").reason ?? "";
+    expect(unproven).toContain("`&&`");
+    const cdpath =
+      classify("cd docs && rm out.js", { env: { CDPATH: "/elsewhere" } })
+        .reason ?? "";
+    expect(cdpath).toContain("CDPATH");
+    for (const reason of [unknownCd, unproven, cdpath]) {
+      expect(reason).not.toContain("--work-tree");
+    }
+  });
+
+  it("leaves an absolute operand alone, whatever the directory flag says", () => {
+    // The control `260804-1347` names: an absolute operand needs no directory,
+    // so an unresolvable one costs nothing.
+    expectAllAllow(["git -C $D rm /tmp/junk", "git --work-tree=$W rm /tmp/junk"]);
+  });
+
   it("leaves ordinary git alone", () => {
     expectAllAllow([
       // THE COST CONTROL. Direction 1 of `260804-1024` — give up on any -C —
@@ -473,6 +523,76 @@ describe("git carries its own directory, and the model no longer ignores it", ()
       "git --config-env foo=BAR rm rules/x.md",
       "git --some-future-option value rm rules/x.md",
     ]);
+  });
+
+  /**
+   * `260804-1344` (High): the first fix widened the candidate list to two
+   * adjacent words and stopped there, so it closed the spelling it had measured
+   * and not the class. The walk still TERMINATED at the unknown option's value,
+   * and every global option standing behind that value — including the `-C` that
+   * makes the write land on the protected list — was never read.
+   *
+   * All three rows below ALLOWED at `613d6fd` and all three were measured
+   * deleting the file, in bash and zsh.
+   */
+  it("RESUMES the walk past an unknown option's value, so a -C behind it is read", () => {
+    expectAllDeny([
+      // The three measured rows.
+      "git --namespace foo -C rules rm x.md",
+      "git --namespace foo -C agents rm coder.md",
+      "git --namespace foo --work-tree=rules clean -fdx",
+      // The class, not the spelling: any unrecognised option taking a separated
+      // value, any directory flag behind it, any mutating row behind that.
+      "git --some-future-option value -C rules rm x.md",
+      "git --config-env foo=BAR -C skills rm setup/SKILL.md",
+      "git --namespace foo --work-tree rules rm x.md",
+      "git --namespace foo -C rules checkout HEAD~1 -- x.md",
+      "git --namespace foo -C rules restore --source=HEAD~1 x.md",
+      // Two unrecognised options with values in a row.
+      "git --namespace foo --config-env A=B -C rules rm x.md",
+      // An unrecognised option AFTER the directory flag, and one before it.
+      "git -C rules --namespace foo rm x.md",
+      // The valueless control, which the previous fix already handled and which
+      // would hide a regression in the walk itself.
+      "git --literal-pathspecs -C rules rm x.md",
+    ]);
+  });
+
+  it("does not become a blanket give-up on invocations carrying an unknown option", () => {
+    // The falsifier `260804-1344` names: an allow-side control flipping to deny
+    // would mean the fix gave the whole invocation up rather than resuming.
+    expectAllAllow([
+      "git --namespace foo -C build rm out.js",
+      "git --namespace foo -C rules status",
+      "git --namespace foo -C rules log --oneline",
+      "git --namespace foo -C build clean -fdx",
+      "git --literal-pathspecs -C build rm out.js",
+      "git --namespace foo status",
+    ]);
+  });
+
+  it("stops at the real subcommand, so the subcommand's own -C is not git's", () => {
+    // The resumed walk must not stray into the subcommand's arguments, where
+    // `-C` means something else entirely: `git commit -C <commit>` reuses that
+    // commit's message and moves no path. A walk that read it as a chdir would
+    // resolve every later operand somewhere the command never writes.
+    expectAllAllow([
+      "git --namespace foo commit -C HEAD~1",
+      "git --namespace foo commit -C rules -m x",
+      "git commit -C rules -m x",
+    ]);
+  });
+
+  it("states the BOUND of the resumed walk rather than claiming the class closed", () => {
+    // What is closed: every well-formed invocation whose unrecognised global
+    // options each take at most ONE separated value. What is not: a second bare
+    // word standing between that value and the subcommand. git itself reads that
+    // word as the subcommand and refuses the command, so nothing is written —
+    // but it is a bound, not a proof, and it is asserted so it stays visible.
+    expect(denies("git --namespace foo bar -C rules rm x.md")).toBe(false);
+    // The same shape one word shorter still resolves, which is what tells the
+    // bound apart from a broken walk.
+    expect(denies("git --namespace foo -C rules rm x.md")).toBe(true);
   });
 
   it("states the cost of reading an option both ways as a rule, not a list", () => {
@@ -584,6 +704,198 @@ describe("git checkout — the revert strategy is kept and the overwrite is not"
       "git checkout --orphan fresh",
       "git checkout -t origin/feature",
     ]);
+  });
+
+  /**
+   * `260804-1348`: the two spellings of the revert strategy do NOT agree at
+   * `HEAD`, and the claim that they do was made in a decision record and in the
+   * rule file. Pinned here rather than only argued in prose, so the asymmetry is
+   * visible to the next reader of the suite.
+   *
+   * The cause is architectural and is why this step did not close it.
+   * `checkout` takes its source as a POSITIONAL, which `positionalModel` sees;
+   * `restore` takes it as `--source`, which `mutatesOnlyWhen` sees only in the
+   * glued spelling — `writtenOperands` consumes the separated form's value as a
+   * `valueFlags` value before any predicate is offered it. Teaching `restore`
+   * the same `HEAD` inertness would NEWLY ALLOW
+   * `git restore --source=HEAD <protected>`, which would be the first newly
+   * allowed command in this Circle, so it is a decision rather than a patch.
+   */
+  it("MEASURES: checkout and restore still disagree at HEAD (260804-1348, open)", () => {
+    // The same operation, opposite verdicts.
+    expect(denies("git checkout HEAD -- rules/x.md")).toBe(false);
+    expect(denies("git restore --source=HEAD rules/x.md")).toBe(true);
+    expect(denies("git restore --source HEAD rules/x.md")).toBe(true);
+    // And they agree everywhere else, which is what makes `HEAD` the exception
+    // rather than the rule.
+    expect(denies("git checkout HEAD~1 -- rules/x.md")).toBe(true);
+    expect(denies("git restore --source=HEAD~1 rules/x.md")).toBe(true);
+    // `git restore <path>` restores from the INDEX and is a different operation
+    // again, so the allowed `restore` form is not a substitute for the denied
+    // one.
+    expect(denies("git restore rules/x.md")).toBe(false);
+  });
+});
+
+/**
+ * WRITE-THE-DIRECTORY versus WRITE-THROUGH-IT.
+ *
+ * `git checkout HEAD~1 -- .` rewrote every tracked file in the project from an
+ * arbitrary commit, protected ones included, and ALLOWED (`260804-1345`, High,
+ * measured changing the file in bash and zsh). `git clean -fdx` deleted every
+ * untracked file the same way (`260804-1346`) — including a rule file an agent
+ * had just written under `FUSION_ALLOW_RULES_WRITE` and not yet committed,
+ * which is the workflow this Circle exists to enable.
+ *
+ * Both are the project-root exclusion in `ancestorOfProtected`, which is correct
+ * for the verbs it was written for (`cp x .` writes INTO the root) and wrong for
+ * a verb that walks into it. So the exclusion stays and the three rows that walk
+ * carry `writesThrough` — a property of the verb, checkable by reading the
+ * table. See `VerbSpec.writesThrough`.
+ */
+describe("git verbs that write THROUGH a directory reach the project root", () => {
+  it("denies a writesThrough verb whose pathspec resolves to the root", () => {
+    expectAllDeny([
+      // 260804-1345's four measured ALLOW rows, minus the glob one below.
+      "git checkout HEAD~1 -- .",
+      "git checkout HEAD~1 -- ./",
+      "git restore --source=HEAD~1 .",
+      "git restore --source HEAD~1 .",
+      // 260804-1346's two, in both spellings: the explicit `.` and the implicit
+      // one the model supplies. They took different code paths to the same allow.
+      "git clean -fdx",
+      "git clean -fd",
+      "git clean -fdx .",
+      "git clean -fdx ./",
+      // Every tree-ish that is not the literal HEAD, at the root.
+      "git checkout otherbranch -- .",
+      "git checkout HEAD~5 -- ./",
+    ]);
+  });
+
+  it("keeps the root exclusion for every verb that writes the entry it names", () => {
+    // The exclusion exists for these, and removing it wholesale — the direction
+    // `260804-1345` explicitly warns against — would deny all of them.
+    expectAllAllow([
+      "cp /tmp/x .",
+      "cp -R /tmp/x/ .",
+      "mv build/out.js .",
+      "mv /tmp/a /tmp/b .",
+      "install -m 644 /tmp/x .",
+      "cp /tmp/x ./",
+    ]);
+  });
+
+  it("keeps THE PROMISE: the revert strategy still reaches the whole tree", () => {
+    // `git checkout HEAD -- .` writes nothing an agent could not have obtained
+    // by leaving the files alone, and the orchestrator's own revert uses this
+    // family. `gitCheckoutWrites` names no operand for it, so it never reaches
+    // the ancestor pass at all.
+    expectAllAllow([
+      "git checkout HEAD -- .",
+      "git checkout HEAD -- ./",
+      "git checkout HEAD -- . rules/x.md",
+      "git checkout -- .",
+    ]);
+  });
+
+  it("does not widen beyond the root — an unprotected subtree still allows", () => {
+    expectAllAllow([
+      "git checkout HEAD~1 -- build",
+      "git checkout HEAD~1 -- build/out.js",
+      "git restore --source=HEAD~1 build",
+      "git clean -fdx build",
+      "git clean -fdx hooks/dist",
+      // Not a mutation at all without the force flag, so the model never runs.
+      "git clean -n",
+      "git clean -n .",
+      // Restoring from the INDEX is the revert strategy under another name.
+      "git restore .",
+      "git restore --staged .",
+    ]);
+  });
+
+  it("reads the root at the directory git RUNS IN, not at every candidate", () => {
+    // THE COST CONTROL, and the one this design turns on. A git invocation is
+    // checked against a UNION of directories — the shell's own plus whatever
+    // `-C`/`--work-tree` name — so that a directory flag cannot argue away a
+    // protected path spelled out in the command. Reading the modelled `.` at the
+    // shell's root as well would deny `git -C build clean -fdx`, which cleans
+    // `build` and nothing else, and which both suites pin as an allow.
+    expectAllAllow([
+      "git -C build clean -fdx",
+      "git --work-tree=build clean -fdx",
+      "git -C hooks/dist clean -fdx",
+      "cd build && git clean -fdx",
+      "git -C build checkout HEAD~1 -- .",
+      "git -C build restore --source=HEAD~1 .",
+    ]);
+    // And the union is not weakened: a protected path spelled in the command
+    // still denies however the flags point, and a `-C` INTO a protected
+    // directory still denies on the directory itself.
+    expectAllDeny([
+      "git -C /repo checkout HEAD~1 -- rules/x.md",
+      "git -C rules clean -fdx",
+      "git --work-tree=rules clean -fdx",
+      "cd rules && git clean -fdx",
+      "cd rules && git -C build clean -fdx",
+    ]);
+  });
+
+  it("names the mechanism the agent has to work around, not the wrong one", () => {
+    // `ancestorReason` says removing or moving the directory would take the
+    // protected path with it. `git checkout HEAD~1 -- .` moves no directory —
+    // it replaces contents — and an agent told the wrong mechanism reaches for
+    // the wrong way through. `260804-1347` is the same failure on the other
+    // reason.
+    const through = classify("git checkout HEAD~1 -- .").reason ?? "";
+    const ancestor = classify("rm -rf hooks").reason ?? "";
+    expect(through).toContain("writes THROUGH a directory");
+    expect(through).toContain("name the files themselves");
+    expect(through).not.toContain("Removing or moving the directory");
+    expect(ancestor).toContain("CONTAINS a protected path");
+    expect(through).not.toBe(ancestor);
+  });
+
+  it("states the cost as a rule, with the examples an OPEN set", () => {
+    // THE RULE: a `writesThrough` verb whose pathspec resolves to the project
+    // root denies. The way through is the literal file list, or the Human Gate.
+    // These are examples of the rule; five enumerations have been falsified in
+    // this Circle and a closed list is a defect the day it ships.
+    expectAllDeny([
+      "git checkout HEAD~1 -- .",
+      "git checkout HEAD~1 -- ./",
+      "git restore --source=HEAD~1 .",
+      "git clean -fdx",
+      "git clean -fdx .",
+    ]);
+    // The documented way through, for each.
+    expectAllAllow([
+      "git checkout HEAD~1 -- build/out.js src/app.ts",
+      "git restore --source=HEAD~1 build/out.js",
+      "git clean -fdx build hooks/dist",
+    ]);
+  });
+
+  it("leaves the glob residual exactly where it was", () => {
+    // `git checkout HEAD~1 -- '*'` is the documented residual: a glob is matched
+    // as literal text and names no directory the check can compare. It is NOT
+    // closed by this change and must not be claimed as closed.
+    expect(denies("git checkout HEAD~1 -- '*'")).toBe(false);
+    expect(denies("git clean -fdx *")).toBe(false);
+    expect(denies("rm -rf *")).toBe(false);
+  });
+
+  it("marks exactly the three rows that walk, and no others", () => {
+    // The table is the documentation, so the claim "these rows and only these"
+    // is asserted rather than left to a reader's grep.
+    const through = Object.entries(MUTATION_GIT_SUBCOMMANDS)
+      .filter(([, spec]) => spec.writesThrough === true)
+      .map(([name]) => name);
+    expect(new Set(through)).toEqual(new Set(["checkout", "restore", "clean"]));
+    for (const spec of Object.values(MUTATION_VERBS)) {
+      expect(spec.writesThrough).toBeUndefined();
+    }
   });
 });
 
@@ -2327,14 +2639,14 @@ describe("the accepted residual (allowed by design, asserted so it stays visible
   it("allows the git subcommands that name their targets elsewhere", () => {
     // `git apply` / `git am` read their targets out of the patch file, which is
     // out of scope for a text classifier — the same residual `patch` sits in.
-    // A `git clean` with no path operand names no directory to compare, exactly
-    // as `rm -rf *` does not.
-    expectAllAllow([
-      "git apply /tmp/x.patch",
-      "git am /tmp/x.mbox",
-      "git clean -fdx",
-      "git clean -fd",
-    ]);
+    //
+    // `git clean -fdx` USED TO SIT HERE, on the reading that a `clean` with no
+    // path operand names no directory to compare. It does name one — the model
+    // supplies the `.` git itself runs in — and at the project root that `.` was
+    // then thrown away by the ancestor check's root exclusion, so the command
+    // deleted every untracked file in the tree and allowed
+    // (`issues/260804-1346_…`). It is a deny now; see the `writesThrough` block.
+    expectAllAllow(["git apply /tmp/x.patch", "git am /tmp/x.mbox"]);
   });
 
   it("denies a redirect operator in a TRAILING COMMENT (the residual errs to deny)", () => {
