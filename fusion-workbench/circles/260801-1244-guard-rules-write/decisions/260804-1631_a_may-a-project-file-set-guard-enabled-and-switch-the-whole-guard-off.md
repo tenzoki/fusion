@@ -84,3 +84,25 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+## Answer
+
+**Option 1: the project layer may not set `guard.enabled`.**
+
+Chosen by the user at the plan gate, 2026-08-04. `enabled` is read from the plugin layer and
+`DEFAULTS` only; a project file that declares it is ignored for that key and gets one
+diagnostic naming it.
+
+This preserves by construction the property fusion documents in three places — that the git
+branch policy runs unconditionally, including where the write guard stands down — and it keeps
+`README-hooks.md:141` true as written.
+
+The cost this record names is real and binds the implementation: the project layer stops being
+"the same shape as `hooks/config.json`", which was Q2's argument for one schema and one parser.
+**The diagnostic is the only thing standing between this option and a silently inert key**, so
+it is not optional, and the exception is documented in the template, in `README-hooks.md` and
+in the rule file in the same change. This record's constraint that the total stand-down must
+stop being silent is satisfied by the key never taking effect at all.
+
+---
+Answered: this record, `## Answer` — user chose option 1 at the plan gate; a project may not switch off a guard it is governed by, and the ignored key is reported rather than dropped in silence.

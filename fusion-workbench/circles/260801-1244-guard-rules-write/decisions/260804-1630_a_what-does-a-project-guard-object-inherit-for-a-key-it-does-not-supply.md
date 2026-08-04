@@ -94,3 +94,28 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+## Answer
+
+**Option 1: a key the project does not supply falls back to the plugin layer, then to `DEFAULTS`.**
+
+Chosen by the user at the plan gate, 2026-08-04. The fallback becomes per-leaf across all
+three layers. A project that *declares* `protectedPaths: []` still gets the empty list, so the
+deliberate narrowing D2 asked for is untouched; only *omission* changes meaning, from "protect
+nothing" to "inherit".
+
+It carries two obligations named in this record's own `## Constraints`, and both bind the
+implementation rather than being optional:
+
+- **The replace-whole sentence stops being literally true**, so the template's `_override`
+  note and the loader's documentation are rewritten around the leaf rule in the same change,
+  not after it. A template sentence that is false propagates verbatim into every project
+  `/fusion:setup` touches.
+- **Type validation must drop a bad key the same way an omission behaves**, so one rule covers
+  both mechanisms.
+
+The four latent instances (`escalation`, `churn`, `crossFile`, `decisions`, filed at
+`issues/260804-1633`) close with the same three lines rather than with four per-key rules.
+
+---
+Answered: this record, `## Answer` — user chose option 1 at the plan gate; omission means inherit, declaration means exactly what is declared.
