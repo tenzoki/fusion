@@ -146,6 +146,29 @@ If `$FUSION_PLUGIN_ROOT` is not set or the copy fails, note it in the history fi
 
 The Plane bridge is optional: an unfilled template simply means no mirror runs (`fusion-plane doctor` reports it plainly). If `$FUSION_PLUGIN_ROOT` is not set or the copy fails, note it in the history file later but do not block Setup.
 
+## Step 0f — Ensure the guard configuration file is present locally
+
+The compliance guard hooks read `./fusion-guard.json` on every guarded tool call and merge it over the plugin's own `hooks/config.json`, so this file is where a project narrows or widens what the guard protects (`hooks/lib/config.ts`; the seeded template declares nothing and therefore inherits everything). It belongs in version control: it decides what the guard protects, so every change to it has to show up in a diff.
+
+It lands at the project root, beside `fusion-workbench/` rather than inside it, in the directory `pwd` reported in Step 0. The "never prepend `cd`" rule at the top of this skill is what keeps it there.
+
+First check whether the project already has one. This is read-only and always allowed:
+
+```bash
+[ -f ./fusion-guard.json ] && echo "fusion-guard.json present" || echo "fusion-guard.json absent"
+```
+
+- **`present`** — nothing to do; continue to Step 1. Do not run the copy anyway: once the file exists the guard protects it, and a `cp` naming it as a destination is denied on the spot, whatever the shell would have made of it.
+- **`absent`** — seed the template. The copy is idempotent and never overwrites:
+
+  ```bash
+  [ -f ./fusion-guard.json ] || { cp "$FUSION_PLUGIN_ROOT/templates/fusion-guard.json" ./fusion-guard.json && echo "fusion-guard.json template copied — inherits the plugin's guard defaults until you edit it"; }
+  ```
+
+The probe is why this step runs two commands where Steps 0b, 0d and 0e run one. `fusion-guard.json` is the only file Setup seeds that the guard protects once it exists, so the plain one-command form is denied on every later Setup run in a project that already has one. That was measured against the guard, not reasoned about. The `[ -f ]` guard inside the copy stays regardless, so the block is still safe on its own for anyone who runs it without the probe.
+
+If `$FUSION_PLUGIN_ROOT` is not set or the copy fails, note it in the history file later but do not block Setup. An absent `fusion-guard.json` costs the project nothing: the guard falls back to the plugin's configuration, which is exactly what the template inherits.
+
 ## Step 1 — Interrupted-session check (CRITICAL — do not skip)
 
 Read `./fusion-workbench/agentstate.yaml`.

@@ -355,7 +355,7 @@ The Turn boundary sits between Step 5 and Step 6. See `## Sizing` for why.
 - **Acceptance criterion served:** `:328` — a project whose seeded configuration is untouched gets the plugin's `protectedPaths`, including paths added to the plugin default later.
 - **Verification:** `node -e "JSON.parse(require('fs').readFileSync('templates/fusion-guard.json','utf8'))"` parses; `git check-ignore -v fusion-guard.json templates/fusion-guard.json` reports no match, so both are trackable; `grep -n "for item in" -A 2 install.sh` confirms `templates` ships and `fusion-guard.json` at the root does not; and one unit case asserting the template merges to a config identical to the plugin's, which is what "inherits and lists nothing" means operationally.
 
-### Step 8 — `/fusion:setup` seeds the file
+### Step 8 [DONE] — `/fusion:setup` seeds the file
 
 - **Executor:** `coder`
 - **Files:** `skills/setup/SKILL.md`
@@ -363,6 +363,7 @@ The Turn boundary sits between Step 5 and Step 6. See `## Sizing` for why.
 - **Changes:** A new step immediately after Step 0e, following that step's shape exactly: a single guarded `cp` from `$FUSION_PLUGIN_ROOT/templates/fusion-guard.json` to `./fusion-guard.json`, idempotent, never overwriting, echoing what it did, and not blocking Setup on failure. Two sentences of surrounding prose: what reads the file, and that it belongs in version control.
 - **Acceptance criterion served:** `:331`.
 - **Verification:** Extract the block and run it twice against a scratch directory with `FUSION_PLUGIN_ROOT` pointed at this repository: the first run creates the file, the second leaves an edited copy byte-identical. Confirm with `diff`.
+- **[SHAPE CHANGED — implementation 260804-1511, measured. Shipped as Step 0f, and it is not the single command this step describes.]** The `cp` block is exactly as specified and passes the verification as written, but it is preceded by a read-only presence probe and is run only in the absent branch. Reason: the self-protection floor from Step 6 appends `fusion-guard.json` to `protectedPaths` the moment the file exists, so in a project that already has one the guard **denies the whole Bash call** rather than letting the shell's `[ -f ]` decline it. Measured against `tsx guard.ts` in a throwaway project: absent → allow, present → `block` naming `fusion-guard.json`. Since `/fusion:setup` runs at the start of every orchestrator session, the one-command form would have denied once per session forever, in every consuming project, with a reason that instructs the agent to stop and ask the user about a no-op — plus a `guard_block` event and a `consecutiveBlocks` increment each time. The probe follows Step 0c's existing probe-then-branch shape; the `[ -f ]` guard stays inside the copy so the block remains self-idempotent when extracted. Evidence: `history/260804-1511-coder-step8-setup-seeds-guard-config.md`.
 
 ### Step 9 [PARTLY DONE — UNINTENDED] — Documentation and the release-checklist line
 
