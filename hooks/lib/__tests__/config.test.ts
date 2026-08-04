@@ -1,5 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  copyFileSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -502,6 +508,132 @@ describe("the cache is keyed on the resolved source pair", () => {
       "late/**",
       PROJECT_CONFIG_FILENAME,
     ]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// The seeded template — plan step 7.
+//
+// `templates/fusion-guard.json` is what `/fusion:setup` copies into a consuming
+// project. It declares inheritance and lists NO paths: it carries only
+// underscore-prefixed documentation keys, which this loader never reads because
+// `RawConfig` names five top-level keys and nothing else looks at the rest.
+//
+// "Inherits and lists nothing" is a claim about the MERGE, not about the file's
+// text, so it is measured through `loadConfig` rather than by grepping the file.
+// The second half of the case is the anti-vacuity half: a plugin layer whose
+// every top-level key differs from DEFAULTS, so that a template which grew ANY
+// top-level key — `protectedPaths` first among them — replaces that key whole,
+// falls back to DEFAULTS for it, and fails here.
+// ---------------------------------------------------------------------------
+
+const REPO_ROOT = resolve(HERE, "../../..");
+const TEMPLATE = resolve(REPO_ROOT, "templates", PROJECT_CONFIG_FILENAME);
+const REPO_COPY = resolve(REPO_ROOT, PROJECT_CONFIG_FILENAME);
+
+/** A project root seeded with the shipped template, as `/fusion:setup` leaves it. */
+function projectSeededWithTemplate(): string {
+  const root = tmp();
+  copyFileSync(TEMPLATE, resolve(root, PROJECT_CONFIG_FILENAME));
+  return root;
+}
+
+describe("the seeded template declares inheritance and lists nothing", () => {
+  it("merges to the plugin's configuration, plus the floor and nothing else", () => {
+    const seeded = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: projectSeededWithTemplate(),
+    });
+    resetConfigCache();
+    const pluginOnly = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: null,
+    });
+
+    // It parses, and its documentation keys are IGNORED rather than reported:
+    // an unrecognised key produces no diagnostic, which is the whole convention
+    // the file's own notes rely on.
+    expect(seeded.diagnostics).toEqual([]);
+
+    // The floor is the only difference the seeded file is allowed to make, and
+    // it appends. Stated as an equality over the whole list, not a `toContain`,
+    // so a template that reordered or dropped a plugin path fails here.
+    expect(seeded.guard.protectedPaths).toEqual([
+      ...pluginOnly.guard.protectedPaths,
+      PROJECT_CONFIG_FILENAME,
+    ]);
+
+    // Everything else identical, byte for byte, with the floor entry taken back
+    // out so the comparison is of the CONFIGURATION rather than of the two
+    // things the loader is meant to differ on.
+    const withoutFloor = {
+      ...seeded,
+      guard: { ...seeded.guard, protectedPaths: pluginOnly.guard.protectedPaths },
+    };
+    expect(JSON.stringify(effective(withoutFloor))).toBe(
+      JSON.stringify(effective(pluginOnly)),
+    );
+  });
+
+  it("inherits every top-level key, including paths added to the plugin later", () => {
+    // Each key below is deliberately DISTINCT from DEFAULTS, so "the template
+    // declared this key" and "the template stayed silent" have different
+    // answers for all five. Against the shipped config alone they would not:
+    // its escalation, churn and crossFile all equal DEFAULTS, so a template
+    // that restated them would pass the case above unnoticed.
+    const pluginConfigPath = pluginConfig({
+      guard: {
+        enabled: false,
+        defaultSensitivity: "high",
+        protectedPaths: ["added-after-the-project-was-seeded/**"],
+        categoryPaths: { onto: ["ontology/**"] },
+        categorySensitivity: { onto: "high" },
+      },
+      decisions: [{ id: "D-1", category: "onto", statement: "…" }],
+      escalation: { blocksBeforeHalt: 9 },
+      churn: {
+        changesPerSessionWarning: 91,
+        changesPerSessionCritical: 92,
+        totalChangesWarning: 93,
+        totalChangesCritical: 94,
+      },
+      crossFile: { pingBackWarning: 95, pingBackCritical: 96 },
+    });
+
+    const seeded = loadConfig({
+      pluginConfigPath,
+      projectRoot: projectSeededWithTemplate(),
+    });
+    resetConfigCache();
+    const pluginOnly = loadConfig({ pluginConfigPath, projectRoot: null });
+
+    // The acceptance criterion in one line: a path added to the plugin default
+    // AFTER this project was set up protects it, with the seeded file untouched.
+    expect(seeded.guard.protectedPaths).toEqual([
+      "added-after-the-project-was-seeded/**",
+      PROJECT_CONFIG_FILENAME,
+    ]);
+
+    const withoutFloor = {
+      ...seeded,
+      guard: { ...seeded.guard, protectedPaths: pluginOnly.guard.protectedPaths },
+    };
+    expect(JSON.stringify(effective(withoutFloor))).toBe(
+      JSON.stringify(effective(pluginOnly)),
+    );
+  });
+
+  it("is what this repository's own fusion-guard.json is, byte for byte", () => {
+    // Per plan Q4 the repository root carries the template verbatim. Asserted
+    // rather than eyeballed, because the two files drift the first time someone
+    // edits the one they happen to have open.
+    const template = readFileSync(TEMPLATE);
+    const copy = readFileSync(REPO_COPY);
+
+    // Text first, so a failure shows the difference; bytes second, so the case
+    // says what it claims to say.
+    expect(copy.toString("utf-8")).toBe(template.toString("utf-8"));
+    expect(copy.equals(template)).toBe(true);
   });
 });
 
