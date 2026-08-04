@@ -1,0 +1,99 @@
+# A `cd` skipped by an earlier `||` is still modelled as made, so the `&&` guarantee leaks
+
+---
+
+**Severity:** High
+**Domain:** code (security control)
+**Filed by:** coderev, Turn 7 review of `circles/260801-1244-guard-rules-write` (`048f3db..c9c44a3`)
+**Affects:** `hooks/lib/bash-mutation-guard.ts` (Bash surface only); `rules/protected-path-discipline.md` and `README-hooks.md`, which now state the leaking premise as a guarantee
+**Kind:** PRE-EXISTING — identical verdicts at `048f3db` and at HEAD. It is not a regression of this Turn. It is the class this Turn was written to close, surviving in a shape the new condition does not reach.
+**Cross-references:**
+`hooks/lib/bash-mutation-guard.ts:2465` (the degrade condition), `:1990` (`state.moved`),
+`decisions/260803-2338_i_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`,
+`issues/260803-2238_c_…` (the closed sibling: a `cd` that FAILS),
+`260804-0837_o_…pipeline…` (the same root cause through `|`).
+
+---
+
+## What is wrong
+
+The degrade asks whether the segment **that writes** is `&&`-joined. It never asks
+whether the segment **that carried the `cd`** was guaranteed to run.
+
+```ts
+// bash-mutation-guard.ts:2465
+if (segment.joiner !== "&&" && segment.joiner !== "start" && state.moved) {
+  degradeUnprovenCd(state);
+}
+```
+
+`state.moved` is set the moment a directory builtin is *seen* (`:1990`), whatever
+joiner brought its segment into reach. In a flat and-or list bash evaluates left to
+right, and `&&` guarantees that the **preceding and-or list** returned zero — not that
+the immediately preceding command ran. When the `cd` sits on a `||`-joined segment and
+the left operand succeeded, the `cd` never runs, the shell stays where it was, and the
+`&&`-joined write that follows is reached anyway.
+
+## Measured
+
+Real guard subprocess, one fresh throwaway project per row, then the same command run
+in each shell against the seeded protected file. No deny read `[HALTED]`.
+
+```
+  guard   bash          zsh           command
+  allow   GONE          GONE          true || cd build && rm rules/x.md
+  allow   OVERWRITTEN   OVERWRITTEN   true || cd build && echo pwned > rules/x.md
+  allow   GONE          GONE          true || cd build && rm -rf rules
+  allow   GONE          GONE          true || cd build && mv rules/x.md /tmp/
+  allow   OVERWRITTEN   OVERWRITTEN   true || cd build && sed -i '' s/a/b/ rules/x.md
+  allow   GONE          GONE          true || cd build && rm agents/coder.md
+  allow   OVERWRITTEN   OVERWRITTEN   true || cd build && echo pwned > skills/demo/SKILL.md
+  allow   GONE          GONE          mkdir -p build || cd build && rm rules/x.md
+```
+
+Three of the four protected roots (`rules/**`, `agents/**`, `skills/**`) reached, by
+`rm`, `mv`, `sed -i` and by redirection. No flag, no wrapper, no env variable.
+
+**The discriminating control**, which shows the mechanism rather than a coincidence:
+
+```
+  allow   intact        intact        [ -d nope ] || cd build && rm rules/x.md
+```
+
+Identical shape; the left operand *fails*, so the `cd` really does run and the model
+is right. The verdict is the same in both rows — the guard cannot tell them apart,
+because the difference is a run-time exit status.
+
+**Before/after, pure classifier, `048f3db` vs HEAD:** every row above is `allow → allow`.
+This Turn did not open it and did not close it.
+
+## Why it matters here specifically
+
+`rules/protected-path-discipline.md:152-158` now tells every agent in every consuming
+project:
+
+> After `&&` it does not need to: bash will not run what follows unless the `cd`
+> returned zero.
+
+That sentence is false as written. Bash will not run what follows unless the **and-or
+list to the left** returned zero, which is a weaker fact, and the gap between the two
+is exactly this issue. The same claim is in `README-hooks.md`, in the module docstring
+(`bash-mutation-guard.ts:82-92`) and in `ShellState.moved`'s own doc comment.
+
+## Recommended fix
+
+Do not trust a `cd` whose own segment was not guaranteed to run. The cheapest correct
+form is a second monotone bit alongside `moved`: a segment is *reached-unconditionally-
+from-a-proven-prefix* only when its joiner is `start`, `;` or `newline`, or when it is
+`&&` and the previous segment was itself proven. A `cd` on a segment that is not proven
+must call `unmodelled` rather than set a directory.
+
+That over-denies `false || cd build && rm out.js` (where the `cd` does run). Over-deny
+is the direction this module has chosen everywhere else.
+
+## Anti-vacuity
+
+The eight rows deny nothing today, so they cannot pass vacuously. When they are closed,
+the discriminating control `[ -d nope ] || cd build && rm rules/x.md` must be pinned as
+a deny too — under the recommended fix it denies, and a test that only pinned the
+succeeding-left-operand rows would not distinguish a fix from a coincidence.

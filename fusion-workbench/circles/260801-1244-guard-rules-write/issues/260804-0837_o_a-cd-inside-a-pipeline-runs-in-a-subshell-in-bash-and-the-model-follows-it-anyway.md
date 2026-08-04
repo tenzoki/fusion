@@ -1,0 +1,68 @@
+# A `cd` inside a pipeline runs in a subshell in bash, and the model follows it anyway
+
+---
+
+**Severity:** High
+**Domain:** code (security control)
+**Filed by:** coderev, Turn 7 review of `circles/260801-1244-guard-rules-write` (`048f3db..c9c44a3`)
+**Affects:** `hooks/lib/bash-mutation-guard.ts` (Bash surface only)
+**Kind:** PRE-EXISTING — identical at `048f3db` and HEAD. Sibling of `260804-0836`; same root cause, different shell mechanic, different fix.
+**Cross-references:**
+`hooks/lib/bash-mutation-guard.ts:2465`, `:1990`;
+`hooks/lib/shell-parse.ts` (`SegmentJoiner`, which treats `|` as an ordinary separator);
+`260804-0836_o_…` (the `||` half), `260804-0839_o_…precedence…` (the over-deny half of
+the same precedence gap).
+
+---
+
+## What is wrong
+
+The lexer segments on `|` exactly as it segments on `;`, and the classifier carries the
+directory model across the boundary. But a pipeline element is not an ordinary segment:
+bash runs **every** element of a pipeline in a subshell, so a `cd` in one of them does
+not move the calling shell at all. The guard models the move, relocates every later
+relative operand into a directory the shell never entered, and a write that lands on the
+protected list is allowed because the model has moved it off.
+
+This is the same defect shape as `260803-2236` (a modelled move the shell did not make),
+and it is bidirectional for the same reason: an asserted move denies when it lands *on*
+the list and allows when it lands *off* it.
+
+## Measured
+
+Real guard subprocess, one fresh project per row, then the same command in each shell.
+
+```
+  guard   bash          zsh        command
+  allow   GONE          intact     echo hi | cd build && rm rules/x.md
+  allow   GONE          intact     true | cd build && rm rules/x.md
+  allow   OVERWRITTEN   intact     ls | cd build && echo pwned > rules/x.md
+  allow   GONE          intact     ls | cd build && rm -rf agents
+```
+
+`zsh: intact` is not a reprieve — it is the two shells disagreeing. zsh runs the **last**
+element of a pipeline in the current shell, so there the `cd` really does move and the
+model happens to be right. bash subshells it, and bash is where the write lands on the
+protected file. The model asserts one answer for both.
+
+**Before/after:** every row is `allow → allow` at `048f3db` and HEAD.
+
+## Recommended fix
+
+A `cd` on a segment whose joiner is `|`, or on a segment followed by a `|`-joined
+segment at the same depth, must not set a directory — it must call `unmodelled`. That is
+faithful to bash and over-denies for zsh, which is the direction the module has taken
+everywhere a shell disagreement was found (`260803-2236`'s resolution is the precedent:
+give up rather than model a fact that is a property of the running shell).
+
+Note the interaction with `260804-0839`: `|` must stop being read as "reached
+unconditionally" for the WRITE at the same time as it starts being read as "does not
+move the shell" for the `cd`. `cd hooks && npx tsc | tee log` needs both halves to come
+out right — the `cd` is proven, and `tee`'s operand is in `hooks/`.
+
+## Anti-vacuity
+
+All four rows allow today. When closed, pin the zsh row separately (`echo hi | cd build
+&& rm rules/x.md` must deny even though zsh's own behaviour makes the model correct
+there) — otherwise a future edit that special-cases the last pipeline element would pass
+the suite and re-open bash.
