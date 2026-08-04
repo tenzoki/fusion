@@ -59,7 +59,7 @@ Three families:
 | Family | Commands |
 |---|---|
 | Relocate or destroy | `mv`, `rm`, `cp`, `ln`, `install`, `git mv`, `git rm`, `git clean -f`, `git stash push` |
-| In-place rewrite | `sed -i`, `perl -i`, `truncate`, `tee`, `dd of=…`, `git restore --source=…` |
+| In-place rewrite | `sed -i`, `perl -i`, `truncate`, `tee`, `dd of=…`, `git restore --source=…`, `git checkout <treeish> --` |
 | Redirection | `>`, `>>`, `>|`, `N>`, glued (`>file`) or separated (`> file`) |
 
 Redirection is scanned position-independently, because a redirection binds to the whole
@@ -68,17 +68,73 @@ simple command wherever it appears. `>` makes any program a mutation, including
 string is not one — bash redirects nothing there — so
 `git commit -m "docs: rules/a.md -> rules/b.md"` is prose and is allowed.
 
-Three of the git rows are conditional, which is what keeps their read and revert forms
+Four of the git rows are conditional, which is what keeps their read and revert forms
 allowed. `clean` and `restore` mutate only under a flag. `stash` is discriminated by its
 **sub-subcommand** instead: only `git stash push` names working-tree paths, so a stash
 ref, a `-m` message and the sub-subcommand word itself are never read as paths — from any
-directory.
+directory. `checkout` is discriminated by its **tree-ish**, which is where `restore`
+carries a flag: restoring from `HEAD` is the revert strategy, restoring from anywhere
+else is an overwrite.
 
 | Allowed | Denied on a protected path |
 |---|---|
 | `git clean -n rules` (dry run) | `git clean -fdx rules` |
 | `git restore rules/x.md`, `git restore --staged rules/x.md` | `git restore --source=HEAD~1 rules/x.md` |
 | `git stash`, `git stash pop`, `git stash show "$REF"`, `git stash push -m "$MSG"` | `git stash push rules/x.md`, `git stash -- rules/x.md` |
+| `git checkout HEAD -- rules/x.md`, `git checkout -- rules/x.md`, `git checkout main` | `git checkout HEAD~5 -- rules/x.md`, `git checkout otherbranch -- rules/x.md` |
+
+The `checkout` row and the `restore` row are the same operation in two spellings, and
+until 2026-08-04 they returned opposite verdicts: `checkout` was in no table, so
+`git checkout HEAD~5 -- rules/x.md` overwrote a protected rule while
+`git restore --source=HEAD~1 rules/x.md` denied. Now they agree. **The revert strategy is
+untouched** — `git checkout HEAD -- <paths>` restores a file to what is already committed,
+which is the one thing an agent could have obtained by not touching the file, and fusion's
+own recovery path depends on it.
+
+Two costs come with the row, and both are rules rather than lists:
+
+- **Only the literal `HEAD` is proven inert.** The set of spellings that denote the same
+  commit is open — `@`, `HEAD~0`, `HEAD^0` and the current branch's own name are examples
+  of it, and all deny.
+- **Without `--`, the first positional is read as the tree-ish**, the way git reads it, so
+  `git checkout rules/a.md rules/b.md` denies on the second path.
+
+Both have the same way through, and it is the documented spelling:
+`git checkout HEAD -- <paths>`.
+
+### git carries its own working directory
+
+`git -C <dir>` and `git --work-tree=<dir>` say where git runs, and an operand after one of
+them is not the path it looks like: `git -C rules rm x.md` deletes `rules/x.md`. Each `-C`
+composes onto the last, and `--work-tree` composes onto the result.
+
+An operand is checked **against every directory the guard can attribute to the
+invocation** — the shell's own, and each directory a global option redirects git to. Both
+readings have to be clear before the write runs, so:
+
+| Allowed | Denied |
+|---|---|
+| `git -C build rm out.js`, `git -C /tmp rm junk` | `git -C rules rm x.md`, `git -C agents rm coder.md` |
+| `git -C build clean -fdx`, `git -C rules status` | `git -C rules clean -fdx`, `git --work-tree=rules clean -fdx` |
+| `git -C $D rm /tmp/junk` (absolute operand) | `git -C $D rm x.md` (relative, unknown directory) |
+
+`git -C /repo mv rules/x.md docs/` **denies**, although `-C` says the operand belongs to
+another repository. That is deliberate: the guard does not use a flag to argue a
+spelled-out protected path away, the same way `mv $SRC rules/` denies on the visible
+target. `--git-dir` names where the repository metadata lives, moves no pathspec, and
+changes nothing.
+
+`git clean` with no pathspec deletes **from the current directory down**, not from the
+repository root — so `cd rules && git clean -fdx` and `git -C rules clean -fdx` both deny
+on the directory they do not spell, while a plain `git clean -fdx` at the project root
+still allows.
+
+One more shape of the same rule: **a git global option the guard cannot name is read both
+ways**, because an option that takes a value can otherwise hide the subcommand behind it
+(`git --namespace foo rm rules/x.md` reached `rules/**` that way). The cost is a false
+deny of the shape `git <unknown-option> <non-subcommand> <mutation-verb> <protected>`;
+`git --no-pager diff rm rules/x.md`, where `rm` is a file, is an example rather than the
+case.
 
 Only the operands a verb **writes** count. `cp rules/x.md /tmp/y` and
 `dd if=rules/x.md of=/tmp/y` read a protected path and stay allowed; copying a protected
@@ -459,7 +515,10 @@ answer is the Human Gate below.
 - Reading anything: `cat`, `grep`, `jq`, `sed -n`, `wc`, `git diff`, `git log`.
 - Copying *out of* a protected path: `cp rules/x.md /tmp/backup`,
   `cp -R rules /tmp/backup`.
-- `git checkout HEAD -- rules/x.md` — fusion's own revert strategy, always allowed.
+- `git checkout HEAD -- rules/x.md` — fusion's own revert strategy, always allowed. It is
+  the **literal `HEAD`** form that is allowed, not `git checkout` as such: any other
+  tree-ish writes content from elsewhere over the path and denies. Restoring from the
+  index (`git checkout -- rules/x.md`) is allowed too.
 - Every mutation whose targets are outside the protected list: `rm -rf node_modules`,
   `sed -i '' 's/a/b/' notes.txt`, `mv build/out.js dist/`.
 - Everything the guard does not recognise as a mutation, whatever its arguments.
@@ -596,8 +655,16 @@ Known and accepted:
   directories and a row would carry the ancestor rule with it.
 - **The git subcommands the check does not reach.** `git apply` and `git am` name their
   targets inside the patch file rather than on the command line, so they sit here with
-  `patch`. A `git clean -fdx` with **no path operand** is allowed for the same reason
-  `rm -rf *` is: it names no directory the ancestor check can compare.
+  `patch`, and so does any `--pathspec-from-file` list. A bare `git clean -fdx` used to sit
+  here too — that entry was wrong about git rather than about the check, since `clean`
+  with no pathspec deletes from the *current directory* down, and the model now supplies
+  the `.` it does not spell.
+- **git's directory ENVIRONMENT variables are not read.**
+  `GIT_WORK_TREE=rules git clean -fdx` deletes `rules/x.md` and is allowed, as is the same
+  assignment behind a wrapper (`env GIT_WORK_TREE=rules git …`). The command-line
+  spellings of the same fact (`-C`, `--work-tree`) *are* read; the classifier resolves no
+  variable, which is the boundary this sits on rather than an oversight
+  (`issues/260804-1332…`).
 - **A redirect target whose TOKEN cannot be read is still not denied**, on a program
   outside the table. `echo x > "$F"`, `echo x > "rules/$F"` and `npm test > "$LOG"` are
   allowed, and `$F` may of course be `rules/x.md`. This is the fail-closed bound above seen

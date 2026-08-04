@@ -79,3 +79,15 @@ Direction 1 is the one that matches what `:429` says it wants, and it is the one
 ## Origin
 
 Found by the reconciler's documentation audit during the closing pass of session `history/260803-1737-orchestrator-session.md`, while verifying that each row of the document's "what stays allowed" section is true as a general claim and not only for the spelling it prints.
+
+---
+
+Resolved: Turn 10, task T10-1 — direction 1, **with the promise at `:429` intact**. `checkout` is in `MUTATION_GIT_SUBCOMMANDS` with a positional-role model (`gitCheckoutWrites`): it writes its paths when it names a tree-ish that is not `HEAD`, and writes nothing when it names none or names `HEAD`. That is not a carve-out invented to save the promise — it is the discrimination `git restore` has always made (`--source=` present or absent), restated for the spelling that carries its source as a positional. The asymmetry this issue is about is now closed in the direction that makes the two spellings agree, and the test asserts the **pair** rather than either half: `git restore --source=HEAD~1 rules/x.md` denies, `git checkout HEAD~1 -- rules/x.md` denies, `git restore rules/x.md` allows, `git checkout HEAD -- rules/x.md` allows.
+
+The revert strategy is pinned twice over. In the unit suite as a named case ("keeps the promise the rule file makes to every agent", seven spellings including `git -C rules checkout HEAD -- x.md`), and end to end in `guard-bash-integration.test.ts`, where the working file is dirtied first and the command has to put it back — in bash and in zsh. A blanket `checkout` row passes every deny case in this issue while breaking exactly that, which is what the second half of `## Anti-vacuity` asked for.
+
+Two costs, both stated as rules with open example sets in `rules/protected-path-discipline.md` and `README-hooks.md`: only the literal `HEAD` is proven inert (`@`, `HEAD~0`, `HEAD^0` and the current branch's own name deny), and without `--` the first positional is read as the tree-ish (`git checkout rules/a.md rules/b.md` denies on the second path). Both have the same way through and it is the documented spelling.
+
+**The branch classifier did not move.** `git-branch-guard.ts` and `shell-parse.ts` are untouched and the gold fixture reproduces byte for byte. `git checkout main`, `git checkout -b feature`, `git checkout --detach HEAD~3` and `git checkout -t origin/feature` are pinned as allows in the MUTATION suite, so if the two policies ever start reporting each other's permission a test says so — the pattern this issue's `## Test coverage` asked for.
+
+Full reasoning and the measurements: `decisions/260804-1323_i_…`, `## The second question`.

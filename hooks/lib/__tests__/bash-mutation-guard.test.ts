@@ -196,6 +196,12 @@ const GIT_VERB_CASES: VerbCase[] = [
     deny: [
       "git mv rules/x.md docs/",
       "git mv /tmp/y rules/x.md",
+      // KEPT, and it now pins something it did not before. `-C /repo` says the
+      // operand is `/repo/rules/x.md` and nothing of this project's; modelling
+      // `-C` alone would therefore turn this long-standing deny into an allow.
+      // It stays a deny because a redirected base is ADDED to the shell's
+      // directory rather than substituted for it, so a protected path spelled
+      // out in the command still names the deny (`gitRedirectedBases`).
       "git -C /repo mv rules/x.md docs/",
     ],
     allow: ["git mv src/a.ts src/b.ts", "git mv build/a.js build/b.js"],
@@ -231,6 +237,53 @@ const GIT_VERB_CASES: VerbCase[] = [
       "git restore rules/x.md",
       "git restore --staged agents/coder.md",
       "git restore --source=HEAD~1 build/out.js",
+    ],
+  },
+  {
+    // The same operation as `restore --source=`, in the spelling that predates
+    // it — and the one row whose ALLOW list is a promise made to every agent in
+    // every consuming project (`rules/protected-path-discipline.md`: "`git
+    // checkout HEAD -- rules/x.md` — fusion's own revert strategy, always
+    // allowed"). Only the literal `HEAD` is inert; every other tree-ish writes
+    // content from elsewhere over the path.
+    verb: "checkout",
+    deny: [
+      "git checkout HEAD~1 -- rules/x.md",
+      "git checkout HEAD~5 -- agents/coder.md",
+      "git checkout otherbranch -- rules/x.md",
+      "git checkout main -- skills/setup/SKILL.md",
+      // Without `--` the first positional is read as the tree-ish, which is how
+      // git reads it whenever it resolves as a rev.
+      "git checkout HEAD~1 rules/x.md",
+      // An unresolvable tree-ish may be any commit, so it is not the one
+      // spelling that is proven inert.
+      "git checkout $REF -- rules/x.md",
+      // The spellings that denote HEAD without being spelled `HEAD`. This is an
+      // over-deny and a deliberate one — the set of such spellings is open.
+      "git checkout @ -- rules/x.md",
+      "git checkout HEAD~0 -- rules/x.md",
+    ],
+    allow: [
+      // THE PROMISE. If this row ever denies, the orchestrator's own revert of
+      // an out-of-scope agent edit denies with it.
+      "git checkout HEAD -- rules/x.md",
+      "git checkout HEAD -- rules/a.md rules/b.md",
+      "git checkout HEAD -- agents/coder.md",
+      "git checkout HEAD -- src/app.ts",
+      // No tree-ish at all: the index is the source, which is
+      // `git restore rules/x.md` under its older name and has always allowed.
+      "git checkout -- rules/x.md",
+      "git checkout -- rules/a.md rules/b.md",
+      "git checkout rules/x.md",
+      // Moving HEAD is the BRANCH policy's business, not this one, and it names
+      // no path for this classifier to write.
+      "git checkout main",
+      "git checkout -b feature",
+      "git checkout -B feature main",
+      "git checkout --orphan fresh",
+      // An ordinary non-HEAD checkout of an unprotected path.
+      "git checkout HEAD~1 -- build/out.js",
+      "git checkout otherbranch -- src/app.ts",
     ],
   },
   {
@@ -315,6 +368,221 @@ describe("git stash — a run-time sub-subcommand is fail-closed, a typo is not"
       "git stash poop",
       "cd hooks && git stash poop",
       "cd rules && git stash typo",
+    ]);
+  });
+});
+
+/**
+ * `git` carries its own working directory on the command line, and until
+ * `260804-1024` closed, the model stepped over it and kept nothing: every one
+ * of these rows ALLOWED at `cc012fc`, and the first four were measured deleting
+ * the file in both bash and zsh (git 2.49.0).
+ *
+ * The rule the block pins: a git invocation's operands are checked against
+ * every directory the guard can attribute to the invocation — the shell's, and
+ * each directory git's own global options redirect it to. A candidate is added,
+ * never substituted, which is what makes the change structurally incapable of
+ * turning a deny into an allow.
+ */
+describe("git carries its own directory, and the model no longer ignores it", () => {
+  it("denies a relative operand that -C lands on the protected list", () => {
+    expectAllDeny([
+      "git -C rules rm x.md",
+      "git -C agents rm coder.md",
+      "git -C skills rm setup/SKILL.md",
+      "git -C rules mv x.md y.md",
+      "git -C rules restore --source=HEAD~1 x.md",
+      "git -C rules checkout HEAD~1 -- x.md",
+      "git -C rules stash push x.md",
+      // Cumulative and each relative to the last, measured at git 2.49.0.
+      "git -C . -C rules rm x.md",
+      "git -C rules -C ../agents rm coder.md",
+      "git -C build -C ../rules rm x.md",
+      // An absolute -C that lands back inside the project.
+      "git -C /project/rules rm x.md",
+    ]);
+  });
+
+  it("denies a relative operand that --work-tree lands on the protected list", () => {
+    expectAllDeny([
+      "git --work-tree=rules rm x.md",
+      "git --work-tree rules rm x.md",
+      "git --git-dir=.git --work-tree=rules rm x.md",
+      // --work-tree composes onto the -C directory, not onto the shell's.
+      "git -C sub --work-tree=../rules clean -fdx",
+    ]);
+  });
+
+  it("denies the directory -C names, when the verb writes it without naming it", () => {
+    // `git clean -fdx` deletes from the CURRENT directory down (measured), so
+    // `-C rules` supplies the operand the command does not spell.
+    expectAllDeny([
+      "git -C rules clean -fdx",
+      "git --work-tree=rules clean -fdx",
+      "git -C agents clean -fd",
+      "cd rules && git clean -fdx",
+      // An ancestor of a protected path, the same way `rm -rf hooks` is.
+      "git -C hooks clean -fdx",
+    ]);
+  });
+
+  it("fails closed when the directory is built at run time", () => {
+    expectAllDeny([
+      "git -C $D rm x.md",
+      'git -C "$(pwd)" rm x.md',
+      "git --work-tree=$D rm x.md",
+      "git -C rules -C $D rm x.md",
+      "cd $D && git -C build rm x.md",
+    ]);
+  });
+
+  it("leaves ordinary git alone", () => {
+    expectAllAllow([
+      // THE COST CONTROL. Direction 1 of `260804-1024` — give up on any -C —
+      // would deny every row here, and a suite that pinned only the protected
+      // rows could not tell that apart from a fix.
+      "git -C build rm out.js",
+      "git -C build clean -fdx",
+      "git -C /tmp rm junk",
+      "git -C ~ rm junk",
+      "git -C build mv a.js b.js",
+      "git -C hooks/dist rm out.js",
+      "git --work-tree=build clean -fdx",
+      "git status",
+      "git log",
+      "git diff",
+      "git -C rules status",
+      "git -C rules log",
+      "git -C rules diff",
+      // An absolute operand is unaffected by any directory, known or not.
+      "git -C $D rm /tmp/junk",
+      // --git-dir names where the METADATA lives and moves no pathspec.
+      "git --git-dir=rules rm build/out.js",
+    ]);
+  });
+
+  it("reads an option it cannot name BOTH ways, so it cannot hide the subcommand", () => {
+    // `git --namespace foo rm rules/x.md` deleted a protected rule at
+    // `cc012fc`: `foo` landed in subcommand position, matched no row, and the
+    // whole invocation read as an unrecognised program. The class is open —
+    // `--namespace` is one instance of "a global option the table does not
+    // carry", not the defect.
+    expectAllDeny([
+      "git --namespace foo rm rules/x.md",
+      "git --namespace=foo rm rules/x.md",
+      "git --config-env foo=BAR rm rules/x.md",
+      "git --some-future-option value rm rules/x.md",
+    ]);
+  });
+
+  it("states the cost of reading an option both ways as a rule, not a list", () => {
+    // The rule: a command whose subcommand-position word matches no row and
+    // whose NEXT word is a mutation verb denies on that verb's operands. The
+    // shape is `git <unknown-option> <non-subcommand> <verb> <protected>`; the
+    // example is a file literally named `rm`, and it is an example rather than
+    // the case.
+    expect(denies("git --no-pager diff rm rules/x.md")).toBe(true);
+    // The bound: with no unrecognised option in front, the walk stops at the
+    // first non-flag word exactly as it did.
+    expectAllAllow([
+      "git diff rm rules/x.md",
+      "git commit -m rm rules/x.md",
+      "git --no-pager diff rm build/out.js",
+    ]);
+  });
+
+  it("keeps the shell's own directory in the candidate set", () => {
+    // Anti-vacuity for the union. Each of these names a protected path in the
+    // command while a flag points git somewhere else; modelling the flag alone
+    // would resolve them outside the project and ALLOW, which is the one way
+    // this change could have loosened the guard.
+    expectAllDeny([
+      "git -C /repo mv rules/x.md docs/",
+      "git -C /repo rm rules/x.md",
+      "git -C /tmp rm agents/coder.md",
+      "git --work-tree=/tmp rm rules/x.md",
+    ]);
+  });
+
+  it("does not let a git directory follow the shell's own redirection", () => {
+    // The redirection is performed by the SHELL, so `-C` says nothing about it.
+    expect(denies("git -C build rm out.js > rules/log.md")).toBe(true);
+    expect(denies("git -C rules rm out.js > /tmp/log")).toBe(true);
+    expectAllAllow(["git -C rules status > /tmp/log", "git -C build rm out.js > /tmp/log"]);
+  });
+});
+
+/**
+ * `git checkout <treeish> -- <path>` overwrote a protected file and was in
+ * neither the verb table nor the residual list (`260804-1026`), while its
+ * modern spelling `git restore --source=<commit>` denied. Same operation,
+ * opposite verdict, and the document gave a reader no way to see the pair.
+ *
+ * What closes it without touching the promise: `checkout`'s tree-ish is a
+ * POSITIONAL where `restore`'s is `--source=`, so the discrimination `restore`
+ * has always made — the default source is the revert strategy, a named one is
+ * an overwrite — is restated for checkout's spelling rather than invented for
+ * it.
+ */
+describe("git checkout — the revert strategy is kept and the overwrite is not", () => {
+  it("agrees with git restore, spelling for spelling", () => {
+    // The asymmetry the finding is about, now closed in both directions.
+    expect(denies("git restore --source=HEAD~1 rules/x.md")).toBe(true);
+    expect(denies("git checkout HEAD~1 -- rules/x.md")).toBe(true);
+    expect(denies("git restore rules/x.md")).toBe(false);
+    expect(denies("git checkout HEAD -- rules/x.md")).toBe(false);
+    expect(denies("git checkout -- rules/x.md")).toBe(false);
+  });
+
+  it("keeps the promise the rule file makes to every agent", () => {
+    // `rules/protected-path-discipline.md` states this in a list loaded into
+    // every agent's context in every consuming project, and the orchestrator
+    // reverts an agent's out-of-scope edit with it. A blanket `checkout` row
+    // would pass every deny case above while breaking exactly this.
+    for (const cmd of [
+      "git checkout HEAD -- rules/x.md",
+      "git checkout HEAD -- agents/coder.md",
+      "git checkout HEAD -- skills/setup/SKILL.md",
+      "git checkout HEAD -- hooks/config.json",
+      "git checkout HEAD -- rules/a.md rules/b.md agents/coder.md",
+      "git -C rules checkout HEAD -- x.md",
+      "cd rules && git checkout HEAD -- x.md",
+    ]) {
+      expect(denies(cmd), `THE REVERT STRATEGY MUST STAY ALLOWED: ${cmd}`).toBe(false);
+    }
+  });
+
+  it("states the cost of `HEAD` being the only proven spelling", () => {
+    // The rule: only the literal `HEAD` is inert, and the set of spellings that
+    // denote the same commit is OPEN. These are examples of it, not the list.
+    expectAllDeny([
+      "git checkout @ -- rules/x.md",
+      "git checkout HEAD~0 -- rules/x.md",
+      "git checkout HEAD^0 -- rules/x.md",
+      "git checkout refs/heads/main -- rules/x.md",
+      // And the second cost: without `--`, the first positional is the
+      // tree-ish, so a multi-path checkout that omits `--` denies on the rest.
+      "git checkout rules/a.md rules/b.md",
+    ]);
+    // Both costs have the same way through, and it is the documented spelling.
+    expectAllAllow([
+      "git checkout HEAD -- rules/a.md rules/b.md",
+      "git checkout -- rules/a.md rules/b.md",
+    ]);
+  });
+
+  it("leaves the branch policy's commands to the branch policy", () => {
+    // `git checkout <branch>` moves HEAD and names no path this classifier
+    // writes. It is denied — by `git-branch-guard.ts`, on its own reason, with
+    // its own override. If it ever denies HERE, the two policies have started
+    // reporting each other's permission.
+    expectAllAllow([
+      "git checkout main",
+      "git checkout -b feature",
+      "git checkout -B feature origin/main",
+      "git checkout --detach HEAD~3",
+      "git checkout --orphan fresh",
+      "git checkout -t origin/feature",
     ]);
   });
 });

@@ -413,8 +413,37 @@ export type WrittenPositionals =
   /** None; the verb names its target another way (see `keyOperands`). */
   | "none";
 
+/**
+ * The positionals of one invocation, with the one fact a positional ROLE model
+ * needs that `written: "all" | "last"` cannot express: where `--` fell.
+ *
+ * `endOfFlagsAt` is the index in `values` that the first `--` preceded, or
+ * null when the invocation carried none. `git checkout -- rules/x.md` and
+ * `git checkout rules/x.md` are the same operation, and
+ * `git checkout HEAD -- rules/x.md` is a different one, so a model that cannot
+ * see the separator cannot tell a tree-ish from a path.
+ */
+export interface Positionals {
+  values: string[];
+  endOfFlagsAt: number | null;
+}
+
 export interface VerbSpec {
   written: WrittenPositionals;
+  /**
+   * A verb whose operand ROLES are positional rather than flag-borne: given the
+   * positionals (flags and their values already consumed) it returns the ones
+   * the verb WRITES. Present it and `written` is not consulted.
+   *
+   * One row needs it. `git checkout` takes its source as a POSITIONAL tree-ish
+   * where `git restore` takes it as `--source=`, so the discrimination that
+   * `mutatesOnlyWhen` performs for `restore` — the default source is the revert
+   * strategy, a named one is an overwrite — has nothing to hook onto here.
+   */
+  positionalModel?: (
+    positionals: Positionals,
+    literals: Map<string, string>,
+  ) => string[];
   /** Flags that consume the FOLLOWING token as their value (never a positional). */
   valueFlags?: readonly string[];
   /**
@@ -751,9 +780,17 @@ function isGitRestoreSourceFlag(flag: string): boolean {
  * What is deliberately NOT here: `git apply` and `git am`, whose targets are
  * named inside the patch file rather than on the command line. Reading a patch
  * is out of scope for a text classifier, so they sit in the residual list next
- * to `patch`. A bare `git clean -fdx` with no path operand is the same kind of
- * residual — it names no directory the ancestor check can compare, exactly as
- * `rm -rf *` does not.
+ * to `patch`.
+ *
+ * A bare `git clean -fdx` used to sit there too, on the reading that it "names
+ * no directory the ancestor check can compare, exactly as `rm -rf *` does not".
+ * That reading was wrong about git rather than about the check: with no
+ * pathspec, `clean` deletes from the CURRENT DIRECTORY down, not from the
+ * repository root. Measured at git 2.49.0 — `cd rules && git clean -fdx`
+ * removed `rules/junk.txt` and left the root's and `build`'s alone. So the
+ * operand it does not spell is `.`, which the ancestor check compares perfectly
+ * well once the model supplies it (`gitCleanWrites`). `rm -rf *` stays a
+ * residual: a glob is matched as literal text and names no directory at all.
  */
 /**
  * `git stash push [-m <msg>] [--] [<pathspec>…]` — the only stash form that
@@ -810,11 +847,100 @@ const GIT_STASH: SubcommandDispatch = {
   },
 };
 
+/**
+ * `git clean`'s written paths — its pathspecs, or the directory it is standing
+ * in when it has none.
+ *
+ * The implicit `.` is the whole reason this row has a model. `git -C rules
+ * clean -fdx` and `cd rules && git clean -fdx` both delete every untracked file
+ * under a protected directory while naming no operand at all, and until the
+ * `.` is supplied there is nothing for the ancestor check to compare. At the
+ * project root the `.` resolves to the root, which `ancestorOfProtected`
+ * excludes on purpose, so the everyday `git clean -fdx` is unaffected.
+ *
+ * `mutatesOnlyWhen` has already answered before this runs, so a dry run never
+ * reaches it and `git clean -n` still names nothing.
+ */
+function gitCleanWrites(positionals: Positionals): string[] {
+  return positionals.values.length > 0 ? positionals.values : ["."];
+}
+
+/**
+ * The one tree-ish `git checkout` may name and still write nothing an agent
+ * could not have obtained by leaving the file alone.
+ *
+ * `git checkout HEAD -- rules/x.md` restores the file to its COMMITTED state.
+ * That is fusion's own revert strategy — the orchestrator undoes an agent's
+ * out-of-scope edit with it, and `rules/protected-path-discipline.md` promises
+ * in every consuming project's agent context that it is allowed. Any OTHER
+ * tree-ish writes content from somewhere else over the same path:
+ * `git checkout HEAD~5 -- rules/x.md` and `git checkout otherbranch --
+ * rules/x.md` are content writes, and their modern spelling
+ * (`git restore --source=HEAD~1 rules/x.md`) has always denied.
+ *
+ * ONLY THE LITERAL SPELLING IS PROVEN INERT, and the set of spellings that
+ * denote the same commit is open: `@`, `HEAD~0`, `HEAD^0`, `refs/heads/<the
+ * current branch>` and the branch's own name all deny. That is the safe
+ * direction — a spelling this test does not recognise is treated as a named
+ * source — and the way through a wrong deny is the documented form.
+ */
+const GIT_CHECKOUT_INERT_TREEISH = "HEAD";
+
+/**
+ * `git checkout`'s written paths.
+ *
+ * The grammar this reads, measured against git 2.49.0 rather than assumed:
+ *
+ *   git checkout <treeish> -- <paths>   writes <paths> from <treeish>
+ *   git checkout -- <paths>             writes <paths> from the INDEX
+ *   git checkout <paths>                the same, when no <paths> is a rev
+ *   git checkout <treeish> <paths>      writes <paths>, when the first IS a rev
+ *   git checkout <branch>               moves HEAD — the branch policy's
+ *                                       business (`git-branch-guard.ts`), and
+ *                                       it writes no named path
+ *
+ * Restoring from the index is `git restore rules/x.md` under another name and
+ * has always been allowed, so a form that names NO tree-ish writes nothing
+ * here. A form that names one writes its paths — unless the tree-ish is the
+ * literal `HEAD`, which is the revert strategy above.
+ *
+ * WITHOUT `--` THE FIRST POSITIONAL IS READ AS THE TREE-ISH, because git reads
+ * it that way whenever it resolves as a rev and this classifier cannot ask.
+ * The cost is a false deny rather than a false allow:
+ * `git checkout rules/a.md rules/b.md` denies on the second path although both
+ * are paths. The way through is the documented spelling,
+ * `git checkout HEAD -- rules/a.md rules/b.md`, which allows.
+ */
+function gitCheckoutWrites(
+  positionals: Positionals,
+  literals: Map<string, string>,
+): string[] {
+  const { values, endOfFlagsAt } = positionals;
+
+  // With `--`, the tree-ish is whatever stands before it: `git checkout --
+  // <paths>` names none, and `git checkout <treeish> -- <paths>` names one.
+  // Without it, a lone positional is a branch or a path and either way writes
+  // nothing this classifier should name.
+  const treeishCount = endOfFlagsAt ?? Math.min(values.length, 1);
+  if (treeishCount === 0) return [];
+  if (values.length <= treeishCount) return [];
+
+  const treeish = values[treeishCount - 1];
+  const resolved = resolveWord(treeish, literals);
+  // An unresolvable tree-ish (`git checkout $REF -- rules/x.md`) may be any
+  // commit, so it is not the one spelling that is inert.
+  if (resolved.unresolved !== true && resolved.value === GIT_CHECKOUT_INERT_TREEISH) {
+    return [];
+  }
+  return values.slice(treeishCount);
+}
+
 export const MUTATION_GIT_SUBCOMMANDS: Readonly<Record<string, VerbSpec>> = {
   mv: { written: "all" },
   rm: { written: "all" },
   clean: {
     written: "all",
+    positionalModel: gitCleanWrites,
     valueFlags: ["-e", "--exclude"],
     mutatesOnlyWhen: isGitCleanForceFlag,
   },
@@ -822,6 +948,18 @@ export const MUTATION_GIT_SUBCOMMANDS: Readonly<Record<string, VerbSpec>> = {
     written: "all",
     valueFlags: ["-s", "--source"],
     mutatesOnlyWhen: isGitRestoreSourceFlag,
+  },
+  // The same operation as `restore --source=`, in the spelling that predates
+  // it. `-b`/`-B`/`--orphan` name a NEW BRANCH and `--conflict`/
+  // `--pathspec-from-file` take values, so none of their arguments may be read
+  // as a positional — `git checkout -b feature rules/x.md` would otherwise read
+  // `feature` as the tree-ish and deny on a command that creates a branch.
+  // A `--pathspec-from-file` list is a residual for the same reason `git
+  // apply`'s patch is: the paths are in the file, not on the command line.
+  checkout: {
+    written: "all",
+    positionalModel: gitCheckoutWrites,
+    valueFlags: ["-b", "-B", "--orphan", "--conflict", "--pathspec-from-file"],
   },
   stash: { written: "none", subcommands: GIT_STASH },
 };
@@ -1079,48 +1217,130 @@ function isTargetDirFlag(token: string): boolean {
   );
 }
 
+/** A `git` invocation, resolved past git's own global options. */
+interface GitInvocation {
+  spec: VerbSpec;
+  /** The subcommand's own arguments. */
+  args: string[];
+  /**
+   * The `-C <dir>` values in source order. Cumulative and each relative to the
+   * last, measured against git 2.49.0: `git -C rules -C ../agents rm coder.md`
+   * deleted `agents/coder.md`.
+   */
+  chdirs: string[];
+  /**
+   * The last `--work-tree` value, relative to the `-C` directory. Also measured:
+   * `git -C sub --work-tree=../rules clean -fdx` deleted `rules/x.md`.
+   */
+  workTree?: string;
+}
+
 /**
- * Locate a mutating `git` subcommand, skipping the global options that can
- * precede it (`-C <dir>`, `-c k=v`, `--git-dir[=…]`, `--work-tree[=…]`, any
- * other flag). Returns the spec plus the subcommand's own arguments.
+ * Locate a mutating `git` subcommand past the global options that can precede
+ * it, and RECORD the ones that say where git runs.
+ *
+ * The recording is the whole point. This walk used to step over `-C <dir>` and
+ * `--work-tree=<dir>` and keep neither, so the subcommand's relative operands
+ * were then resolved against the shell's directory instead of git's:
+ * `git -C rules rm x.md` deleted a protected rule and allowed, and
+ * `git --work-tree=rules clean -fdx` deleted it too
+ * (`issues/260804-1024_…`). Both were measured deleting, in bash and zsh.
+ *
+ * `--git-dir` is skipped and NOT recorded, and the asymmetry is the measured
+ * one: it names where the repository METADATA lives and moves no pathspec.
+ * With `--work-tree` absent, `git --git-dir=.git rm rules/x.md` resolves
+ * `rules/x.md` from the shell's directory exactly as a bare `git rm` does.
+ *
+ * ## An unrecognised option is read BOTH ways
+ *
+ * A global option this walk does not know consumes a value used to hide the
+ * subcommand behind it: `git --namespace foo rm rules/x.md` deleted a protected
+ * rule, because `foo` landed in subcommand position, matched no row, and the
+ * invocation read as an unrecognised program. That is not a `--namespace` bug —
+ * it is the shape of every option the table does not carry, including ones git
+ * has not shipped yet, so it is answered structurally: when the word in
+ * subcommand position matches no row AND an unrecognised option stands in front
+ * of it, the NEXT word is tried as well.
+ *
+ * That can only add denies (a second candidate never withdraws a first), and
+ * its cost is a false deny of the shape `git <unknown-opt> <non-subcommand>
+ * <mutation-verb> <protected>` — `git --no-pager diff rm rules/x.md`, where
+ * `rm` is a file. The class is open; the shape is not special to `diff`.
  */
-function resolveGit(args: string[]): { spec: VerbSpec; args: string[] } | null {
+function resolveGit(args: string[]): GitInvocation | null {
+  const chdirs: string[] = [];
+  let workTree: string | undefined;
+  /** Did an option this walk could not name stand immediately before `i`? */
+  let unknownOption = false;
   let i = 0;
+
   while (i < args.length) {
     const t = args[i];
-    if (t === "-C" || t === "-c") {
+    // Cleared by every option the walk CAN name, and never by the non-flag word
+    // the loop breaks on — that word is the one the flag before it may have
+    // swallowed, so the flag has to still be remembered when the loop ends.
+    if (t.startsWith("-")) unknownOption = false;
+    if (t === "-C") {
+      if (i + 1 < args.length) chdirs.push(args[i + 1]);
       i += 2;
       continue;
     }
-    if (t.startsWith("--git-dir") || t.startsWith("--work-tree")) {
+    if (t === "-c") {
+      i += 2;
+      continue;
+    }
+    if (t.startsWith("--git-dir")) {
       i += t.includes("=") ? 1 : 2;
       continue;
     }
+    if (t.startsWith("--work-tree")) {
+      const eq = t.indexOf("=");
+      if (eq !== -1) {
+        workTree = t.slice(eq + 1);
+        i += 1;
+      } else {
+        if (i + 1 < args.length) workTree = args[i + 1];
+        i += 2;
+      }
+      continue;
+    }
     if (t.startsWith("-")) {
+      unknownOption = true;
       i += 1;
       continue;
     }
     break;
   }
-  const sub = args[i];
-  if (sub === undefined) return null;
-  const spec = row(MUTATION_GIT_SUBCOMMANDS, sub);
-  if (spec === undefined) return null;
-  return { spec, args: args.slice(i + 1) };
+
+  // The word in subcommand position, then — only behind an option that might
+  // have eaten it — the word after that.
+  const candidates = unknownOption ? [i, i + 1] : [i];
+  for (const at of candidates) {
+    const sub = args[at];
+    if (sub === undefined) continue;
+    const spec = row(MUTATION_GIT_SUBCOMMANDS, sub);
+    if (spec === undefined) continue;
+    return { spec, args: args.slice(at + 1), chdirs, workTree };
+  }
+  return null;
 }
 
 /** Apply a verb's operand roles to its arguments, returning the WRITTEN tokens. */
-function writtenOperands(spec: VerbSpec, args: string[]): string[] {
+function writtenOperands(
+  spec: VerbSpec,
+  args: string[],
+  literals: Map<string, string>,
+): string[] {
   if (spec.subcommands !== undefined) {
     const first = args[0];
     // No sub-subcommand WORD: `git stash`, `git stash -u`, `git stash -- <p>`.
     // A flag cannot select a row, and `--` introduces the implicit form's
     // pathspecs, so both fall through to `implicit` with their args intact.
     if (first === undefined || first.startsWith("-")) {
-      return writtenOperands(spec.subcommands.implicit, args);
+      return writtenOperands(spec.subcommands.implicit, args, literals);
     }
     const nested = row(spec.subcommands.table, first);
-    if (nested !== undefined) return writtenOperands(nested, args.slice(1));
+    if (nested !== undefined) return writtenOperands(nested, args.slice(1), literals);
     // An unrecognised BARE WORD is not a sub-subcommand, and git will not read
     // it as a pathspec either — it refuses the whole command ("'push' can't be
     // assumed due to unexpected token"). Nothing is written, so treating the
@@ -1131,7 +1351,7 @@ function writtenOperands(spec: VerbSpec, args: string[]): string[] {
     // guessing in the direction that loses the deny. Fail closed on the word,
     // and read the rest as the implicit form so a visible protected pathspec
     // still names the deny rather than the variable.
-    return [first, ...writtenOperands(spec.subcommands.implicit, args.slice(1))];
+    return [first, ...writtenOperands(spec.subcommands.implicit, args.slice(1), literals)];
   }
 
   if (spec.keyOperands !== undefined) {
@@ -1148,6 +1368,8 @@ function writtenOperands(spec: VerbSpec, args: string[]): string[] {
   let targetDir: string | undefined;
   let mutates = false;
   let endOfFlags = false;
+  /** How many positionals the first `--` preceded; null while none was seen. */
+  let endOfFlagsAt: number | null = null;
 
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
@@ -1158,6 +1380,7 @@ function writtenOperands(spec: VerbSpec, args: string[]): string[] {
     }
     if (a === "--") {
       endOfFlags = true;
+      endOfFlagsAt = positionals.length;
       continue;
     }
     // Asked FIRST, and of every flag token, because the flag that turns a verb
@@ -1184,6 +1407,14 @@ function writtenOperands(spec: VerbSpec, args: string[]): string[] {
   // A verb that only mutates under a flag is not a mutation without it.
   if (spec.mutatesOnlyWhen !== undefined && !mutates) return [];
 
+  // A positional ROLE model answers instead of `written`. It runs after the
+  // flag walk so it sees the same positionals every other row does, and after
+  // `mutatesOnlyWhen` so the two are composable rather than exclusive.
+  if (spec.positionalModel !== undefined) {
+    const modelled = spec.positionalModel({ values: positionals, endOfFlagsAt }, literals);
+    return targetDir === undefined ? modelled : [...modelled, targetDir];
+  }
+
   let written: string[];
   if (spec.written === "all") written = positionals;
   else if (spec.written === "last")
@@ -1202,10 +1433,23 @@ function writtenOperands(spec: VerbSpec, args: string[]): string[] {
 interface VerbWrites {
   written: string[];
   exemptible: boolean;
+  /**
+   * Directories the INVOCATION redirects its own operands to, as raw tokens —
+   * `git -C rules rm x.md` writes `rules/x.md` and not `x.md`. Empty for every
+   * verb but `git`, and composed into candidate working directories by
+   * `gitRedirectedBases` at the point where the segment's own directory is
+   * known. See `GitInvocation`.
+   */
+  chdirs: string[];
+  workTree?: string;
 }
 
 /** Nothing recognised: no operands, and exemptibility is moot. */
-const WRITES_NOTHING: VerbWrites = { written: [], exemptible: true };
+const WRITES_NOTHING: VerbWrites = {
+  written: [],
+  exemptible: true,
+  chdirs: [],
+};
 
 /**
  * The written operands named by the segment's verb, if it recognises one.
@@ -1227,16 +1471,19 @@ function verbOperands(
     const git = resolveGit(args);
     if (git === null) return WRITES_NOTHING;
     return {
-      written: writtenOperands(git.spec, git.args),
+      written: writtenOperands(git.spec, git.args, literals),
       exemptible: git.spec.exemptible !== false,
+      chdirs: git.chdirs,
+      workTree: git.workTree,
     };
   }
 
   const spec = row(MUTATION_VERBS, name);
   if (spec === undefined) return WRITES_NOTHING;
   return {
-    written: writtenOperands(spec, args),
+    written: writtenOperands(spec, args, literals),
     exemptible: spec.exemptible !== false,
+    chdirs: [],
   };
 }
 
@@ -1403,6 +1650,69 @@ function joinCwd(dir: string, value: string): string {
 /** `.` and `""` both mean the project root; keep one spelling. */
 function canonicalDir(dir: string): string {
   return dir === "." ? "" : dir;
+}
+
+/**
+ * Where one directory-valued OPTION token lands, given where its invocation
+ * currently stands. The `cd` reading of the same token, minus the two things
+ * that are properties of the builtin rather than of the path: `CDPATH`, which
+ * only `cd` searches, and `cd -P`, which git has no equivalent of.
+ */
+function stepDir(base: Cwd, token: string, literals: Map<string, string>): Cwd {
+  // A leading `~` in CODE position is home expansion, and home is outside any
+  // relative protected pattern — the same reading `applyDirEffect` gives it.
+  if (token.startsWith("~")) return CWD_OUTSIDE;
+  const w = resolveWord(token, literals);
+  if (w.unresolved === true) return CWD_UNKNOWN;
+  return resolveDir(base, w.value);
+}
+
+/**
+ * The directories a `git` invocation redirects its OWN operands to, beyond the
+ * one the shell is standing in.
+ *
+ * `-C` values compose left to right and `--work-tree` composes onto the result,
+ * which is git's documented order and the measured one
+ * (`git -C sub --work-tree=../rules clean -fdx` deleted `rules/x.md`).
+ *
+ * ## Why the shell's own directory stays in the candidate set
+ *
+ * A returned base is ADDED to the segment's working directory, never
+ * substituted for it, and that is a deliberate refusal to use a flag to argue a
+ * spelled-out protected path away. `git -C /repo mv rules/x.md docs/` names
+ * `rules/x.md` in the command; modelling `-C` alone would resolve it to
+ * `/repo/rules/x.md`, find it outside the project, and allow — turning a deny
+ * this guard has always had into an allow, on the strength of a directory the
+ * guard cannot see the contents of. The union is the same stance the module
+ * takes on `mv $SRC rules/`: a visible protected operand names the deny.
+ *
+ * The structural consequence is the property the whole change rests on. A
+ * candidate can only ADD a resolution, so it can only add a deny; no command
+ * that was allowed before is allowed less, and none that was denied becomes
+ * allowed.
+ */
+function gitRedirectedBases(
+  cwd: Cwd,
+  writes: VerbWrites,
+  literals: Map<string, string>,
+): Cwd[] {
+  if (writes.chdirs.length === 0 && writes.workTree === undefined) return [];
+
+  let base = cwd;
+  for (const token of writes.chdirs) base = stepDir(base, token, literals);
+
+  const bases: Cwd[] = [base];
+  if (writes.workTree !== undefined) {
+    bases.push(stepDir(base, writes.workTree, literals));
+  }
+  return bases.filter((b) => !sameCwd(b, cwd));
+}
+
+/** Do two directory states name the same place, for de-duplication only? */
+function sameCwd(a: Cwd, b: Cwd): boolean {
+  if (a.kind !== b.kind) return false;
+  if (a.kind === "known" && b.kind === "known") return a.dir === b.dir;
+  return a.kind !== "unknown" || a.cause === (b as { cause?: CwdUnknownCause }).cause;
 }
 
 /** Where `cd <value>` lands, given where the shell currently stands. */
@@ -2383,11 +2693,20 @@ interface SegmentVerdict {
   mutates: boolean;
 }
 
-/** A written operand, with the exempt eligibility of the verb that named it. */
+/**
+ * A written operand, with the exempt eligibility of the verb that named it.
+ *
+ * `targets` is a LIST because one operand can hang off more than one directory
+ * the guard has to answer for: `git -C rules rm x.md` writes `rules/x.md` from
+ * git's directory, and the same command spelled `git -C /repo rm rules/x.md`
+ * names a protected path from the shell's. Every candidate is checked and any
+ * one of them denies — see `gitRedirectedBases`. For every operand of every
+ * other verb, and for every redirection, the list holds exactly one entry.
+ */
 interface WrittenToken {
   token: string;
   exemptible: boolean;
-  target: Target;
+  targets: Target[];
 }
 
 /**
@@ -2417,55 +2736,72 @@ function classifyWords(
   exempted: string[],
 ): SegmentVerdict {
   const verb = verbOperands(words, literals);
-  const tokens: { token: string; exemptible: boolean }[] = [
-    ...verb.written.map((token) => ({ token, exemptible: verb.exemptible })),
+  // A redirection is performed by the SHELL, so it hangs off the shell's
+  // directory whatever `-C` told git: in `git -C rules rm out.js > x.md` the
+  // `x.md` is written where the shell stands.
+  const verbBases = [cwd, ...gitRedirectedBases(cwd, verb, literals)];
+  const tokens: { token: string; exemptible: boolean; bases: Cwd[] }[] = [
+    ...verb.written.map((token) => ({
+      token,
+      exemptible: verb.exemptible,
+      bases: verbBases,
+    })),
     // A redirection is not the verb's operand — `>` makes any program a write,
     // and that write is as ordinary as an `Edit`, so it stays eligible.
-    ...redirectTargets.map((token) => ({ token, exemptible: true })),
+    ...redirectTargets.map((token) => ({
+      token,
+      exemptible: true,
+      bases: [cwd],
+    })),
   ];
   if (tokens.length === 0) return { hit: null, mutates: false };
 
-  const written: WrittenToken[] = tokens.map((t) => ({
-    ...t,
-    target: resolveTarget(t.token, literals, opts, cwd),
+  const written: WrittenToken[] = tokens.map(({ token, exemptible, bases }) => ({
+    token,
+    exemptible,
+    targets: bases.map((base) => resolveTarget(token, literals, opts, base)),
   }));
 
   // Pass 1 — a target that resolves to a protected path.
-  for (const { target, exemptible } of written) {
-    if (target.kind !== "path") continue;
-    if (!isProtected(target.path, opts)) continue;
-    if (exemptible && opts.exempt?.(target.path, target.spelled) === true) {
-      exempted.push(target.path);
-      continue;
+  for (const { targets, exemptible } of written) {
+    for (const target of targets) {
+      if (target.kind !== "path") continue;
+      if (!isProtected(target.path, opts)) continue;
+      if (exemptible && opts.exempt?.(target.path, target.spelled) === true) {
+        exempted.push(target.path);
+        continue;
+      }
+      return {
+        hit: {
+          kind: "protected",
+          path: target.path,
+          refusalNote: refusalNoteFor(target, exemptible, opts),
+        },
+        mutates: true,
+      };
     }
-    return {
-      hit: {
-        kind: "protected",
-        path: target.path,
-        refusalNote: refusalNoteFor(target, exemptible, opts),
-      },
-      mutates: true,
-    };
   }
 
   // Pass 2 — a target that is an ancestor directory of a protected path.
-  for (const { target, exemptible } of written) {
-    if (target.kind !== "path") continue;
-    const pattern = ancestorOfProtected(target.path, opts);
-    if (pattern === null) continue;
-    if (exemptible && opts.exempt?.(target.path, target.spelled) === true) {
-      exempted.push(target.path);
-      continue;
+  for (const { targets, exemptible } of written) {
+    for (const target of targets) {
+      if (target.kind !== "path") continue;
+      const pattern = ancestorOfProtected(target.path, opts);
+      if (pattern === null) continue;
+      if (exemptible && opts.exempt?.(target.path, target.spelled) === true) {
+        exempted.push(target.path);
+        continue;
+      }
+      return {
+        hit: {
+          kind: "ancestor",
+          path: target.path,
+          pattern,
+          refusalNote: refusalNoteFor(target, exemptible, opts),
+        },
+        mutates: true,
+      };
     }
-    return {
-      hit: {
-        kind: "ancestor",
-        path: target.path,
-        pattern,
-        refusalNote: refusalNoteFor(target, exemptible, opts),
-      },
-      mutates: true,
-    };
   }
 
   // Pass 3 — fail-closed: a write the guard cannot place, either because the
@@ -2512,21 +2848,23 @@ function classifyWords(
   // guard: they match against the empty list and find nothing.
   if (opts.protectedPaths.length > 0) {
     const recognisedVerb = verb.written.length > 0;
-    for (const { token, target } of written) {
-      if (target.kind !== "unresolved") continue;
-      // The surviving half of `260801-1859`: an unresolvable TOKEN outside the
-      // verb table is an ordinary argument of an ordinary program, and is
-      // allowed.
-      if (!recognisedVerb && !target.viaCwd) continue;
-      return {
-        hit: {
-          kind: "unresolved",
-          token,
-          viaCwd: target.viaCwd,
-          cause: target.cause,
-        },
-        mutates: true,
-      };
+    for (const { token, targets } of written) {
+      for (const target of targets) {
+        if (target.kind !== "unresolved") continue;
+        // The surviving half of `260801-1859`: an unresolvable TOKEN outside the
+        // verb table is an ordinary argument of an ordinary program, and is
+        // allowed.
+        if (!recognisedVerb && !target.viaCwd) continue;
+        return {
+          hit: {
+            kind: "unresolved",
+            token,
+            viaCwd: target.viaCwd,
+            cause: target.cause,
+          },
+          mutates: true,
+        };
+      }
     }
   }
 

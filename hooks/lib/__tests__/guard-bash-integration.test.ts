@@ -1260,3 +1260,240 @@ describe("the fail-closed bound survives — an unparseable ARGUMENT is still al
     CASE_TIMEOUT,
   );
 });
+
+// ---------------------------------------------------------------------------
+// git carries its own working directory, and its own revert strategy.
+//
+// `260804-1024` (High) and `260804-1026` (Medium), both PRE-EXISTING and older
+// than the Circle that closed them. Every row below ALLOWED at `cc012fc`, and
+// each was measured performing its write in a real repository before the fix
+// (git 2.49.0, bash 3.2 and zsh 5.9).
+//
+// The unit suite carries the matrix; what this block carries is the half a
+// verdict cannot prove — that the command the guard now blocks really would
+// have destroyed the file, in the shell that would have run it. Verdict and
+// effect are measured in SEPARATE fresh projects per row, so no two assertions
+// share a tree and no deny can pass as `[HALTED]`.
+// ---------------------------------------------------------------------------
+
+/**
+ * Turn a harness project into a git repository with two commits, so `HEAD~1`
+ * exists, differs from `HEAD`, and a checkout of either is a real write.
+ */
+function initRepo(root: string): void {
+  const git = (...args: string[]): void => {
+    const res = spawnSync("git", args, {
+      cwd: root,
+      stdio: "ignore",
+      env: {
+        ...process.env,
+        GIT_AUTHOR_NAME: "harness",
+        GIT_AUTHOR_EMAIL: "harness@example.invalid",
+        GIT_COMMITTER_NAME: "harness",
+        GIT_COMMITTER_EMAIL: "harness@example.invalid",
+        GIT_CONFIG_GLOBAL: "/dev/null",
+        GIT_CONFIG_SYSTEM: "/dev/null",
+      },
+    });
+    if (res.status !== 0) {
+      throw new Error(`harness git ${args.join(" ")} failed (${String(res.status)})`);
+    }
+  };
+  git("init", "-q", ".");
+  git("add", "-A");
+  git("commit", "-qm", "one");
+  // Every tracked file differs between the two commits, so a checkout of
+  // `HEAD~1` is a real write for the UNPROTECTED cost rows as well as for the
+  // protected ones. A file identical across both commits would make its row
+  // pass vacuously in the "survives" direction and fail in the "changes" one.
+  writeFileSync(resolve(root, "rules/x.md"), "# a rule, revised\n", "utf-8");
+  writeFileSync(resolve(root, "agents/coder.md"), "# an agent, revised\n", "utf-8");
+  writeFileSync(resolve(root, "build/out.js"), "// built, revised\n", "utf-8");
+  git("commit", "-qam", "two");
+  // Untracked files, so `git clean -f` has something to destroy.
+  writeFileSync(resolve(root, "rules/untracked.md"), "untracked\n", "utf-8");
+  writeFileSync(resolve(root, "build/untracked.js"), "untracked\n", "utf-8");
+}
+
+/** The state of a file as one string, so "changed" needs no case analysis. */
+function stateOf(path: string): string {
+  return existsSync(path) ? readFileSync(path, "utf-8") : " GONE";
+}
+
+/**
+ * Deny the command — not as `[HALTED]` — and prove the deny was worth having by
+ * running the same command through the named real shell, in a SECOND fresh
+ * repository, and watching `watch` change.
+ */
+function gitDenyAndShellWouldHaveWritten(
+  command: string,
+  watch: string,
+  shell: ShellName,
+): void {
+  withProject(({ root }) => {
+    initRepo(root);
+    const res = runBash(root, command);
+    expect(res.decision, command).toBe("block");
+    expect(res.reason ?? "", command).not.toContain("[HALTED]");
+  });
+
+  withProject(({ root }) => {
+    initRepo(root);
+    const target = resolve(root, watch);
+    const before = stateOf(target);
+    spawnSync(SHELLS[shell], ["-c", command], { cwd: root, stdio: "ignore" });
+    expect(
+      stateOf(target),
+      `${shell} left ${watch} alone, so ${command} proves nothing`,
+    ).not.toBe(before);
+  });
+}
+
+/**
+ * The other direction, and the one a fix is easiest to get wrong in: the guard
+ * ALLOWS the command, and the real shell performs the write it was allowed for.
+ * An allow asserted without the effect would pass just as well against a guard
+ * that had broken the command some other way.
+ */
+function gitAllowAndShellPerforms(
+  command: string,
+  watch: string,
+  shell: ShellName,
+  expectation: "changes" | "survives",
+): void {
+  withProject(({ root }) => {
+    initRepo(root);
+    const res = runBash(root, command);
+    expect(res.decision ?? "allow", command).not.toBe("block");
+  });
+
+  withProject(({ root }) => {
+    initRepo(root);
+    const target = resolve(root, watch);
+    const before = stateOf(target);
+    spawnSync(SHELLS[shell], ["-c", command], { cwd: root, stdio: "ignore" });
+    const after = stateOf(target);
+    if (expectation === "changes") {
+      expect(after, `${shell}: ${command} wrote nothing`).not.toBe(before);
+    } else {
+      expect(after, `${shell}: ${command} disturbed ${watch}`).toBe(before);
+    }
+  });
+}
+
+describe("a git directory flag reaches the protected list, and is denied", () => {
+  const rows: { command: string; watch: string }[] = [
+    { command: "git -C rules rm x.md", watch: "rules/x.md" },
+    { command: "git -C agents rm coder.md", watch: "agents/coder.md" },
+    { command: "git --work-tree=rules clean -fdx", watch: "rules/x.md" },
+    { command: "git -C rules clean -fdx", watch: "rules/untracked.md" },
+    { command: "git -C rules restore --source=HEAD~1 x.md", watch: "rules/x.md" },
+    { command: "git -C rules -C ../agents rm coder.md", watch: "agents/coder.md" },
+    { command: "git --namespace foo rm rules/x.md", watch: "rules/x.md" },
+  ];
+
+  for (const { command, watch } of rows) {
+    for (const shell of ["bash", "zsh"] as const) {
+      it(
+        `denies (${shell}): ${command}`,
+        () => {
+          gitDenyAndShellWouldHaveWritten(command, watch, shell);
+        },
+        CASE_TIMEOUT,
+      );
+    }
+  }
+});
+
+describe("a git checkout from a non-HEAD tree-ish is denied; from HEAD it is not", () => {
+  const denied: { command: string; watch: string }[] = [
+    { command: "git checkout HEAD~1 -- rules/x.md", watch: "rules/x.md" },
+    { command: "git checkout HEAD~1 rules/x.md", watch: "rules/x.md" },
+    { command: "git -C rules checkout HEAD~1 -- x.md", watch: "rules/x.md" },
+  ];
+
+  for (const { command, watch } of denied) {
+    for (const shell of ["bash", "zsh"] as const) {
+      it(
+        `denies (${shell}): ${command}`,
+        () => {
+          gitDenyAndShellWouldHaveWritten(command, watch, shell);
+        },
+        CASE_TIMEOUT,
+      );
+    }
+  }
+
+  // THE PROMISE, end to end. `rules/protected-path-discipline.md` tells every
+  // agent in every consuming project that this form is always allowed, and the
+  // orchestrator reverts an agent's out-of-scope edit with it. The effect side
+  // asserts it really does revert: the working file is dirtied first, and the
+  // command has to put it back.
+  for (const shell of ["bash", "zsh"] as const) {
+    it(
+      `allows the revert strategy, and it reverts (${shell})`,
+      () => {
+        withProject(({ root }) => {
+          initRepo(root);
+          const res = runBash(root, "git checkout HEAD -- rules/x.md");
+          expect(res.decision ?? "allow").not.toBe("block");
+        });
+
+        withProject(({ root }) => {
+          initRepo(root);
+          const target = resolve(root, "rules/x.md");
+          const committed = readFileSync(target, "utf-8");
+          writeFileSync(target, "# an agent's out-of-scope edit\n", "utf-8");
+          spawnSync(SHELLS[shell], ["-c", "git checkout HEAD -- rules/x.md"], {
+            cwd: root,
+            stdio: "ignore",
+          });
+          expect(readFileSync(target, "utf-8"), shell).toBe(committed);
+        });
+      },
+      CASE_TIMEOUT,
+    );
+  }
+});
+
+describe("the cost of the git directory rows, measured rather than asserted", () => {
+  // Direction 1 of `260804-1024` — give up on any `-C` — would have denied
+  // every row here. They are why the union was built instead, and a suite
+  // without them cannot tell a fix from a blanket give-up on git.
+  const rows: {
+    command: string;
+    watch: string;
+    expectation: "changes" | "survives";
+  }[] = [
+    { command: "git -C build rm out.js", watch: "build/out.js", expectation: "changes" },
+    {
+      command: "git -C build clean -fdx",
+      watch: "build/untracked.js",
+      expectation: "changes",
+    },
+    {
+      command: "git checkout HEAD~1 -- build/out.js",
+      watch: "build/out.js",
+      expectation: "changes",
+    },
+    // And the neighbours the same commands must NOT have touched.
+    {
+      command: "git -C build clean -fdx",
+      watch: "rules/untracked.md",
+      expectation: "survives",
+    },
+    { command: "git status", watch: "rules/x.md", expectation: "survives" },
+  ];
+
+  for (const { command, watch, expectation } of rows) {
+    for (const shell of ["bash", "zsh"] as const) {
+      it(
+        `allows (${shell}): ${command} [${watch} ${expectation}]`,
+        () => {
+          gitAllowAndShellPerforms(command, watch, shell, expectation);
+        },
+        CASE_TIMEOUT,
+      );
+    }
+  }
+});

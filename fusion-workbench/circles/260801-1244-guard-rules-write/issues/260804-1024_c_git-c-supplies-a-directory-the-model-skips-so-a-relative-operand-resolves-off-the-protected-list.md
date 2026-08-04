@@ -92,3 +92,11 @@ All seven rows allow today, so they cannot pass vacuously. When they close, `git
 ## Origin
 
 Found by the reconciler's documentation audit during the closing pass of session `history/260803-1737-orchestrator-session.md`, while checking `rules/protected-path-discipline.md`'s residual list for residuals that are real at HEAD and not listed. It is not in that list, not in `README-hooks.md`'s, and not in the tracker.
+
+---
+
+Resolved: Turn 10, task T10-1 — `hooks/lib/bash-mutation-guard.ts` (`resolveGit`, `gitRedirectedBases`, `classifyWords`). **Neither direction 1 nor direction 2 as filed**: both were built and measured against `HEAD` over one generated cross-product of 811,210 commands × 2 environments, and direction 2 **newly allowed 21,420 evaluations** — `git -C /repo mv rules/x.md docs/` and its family, including this suite's own row at `bash-mutation-guard.test.ts:196`. Direction 1 held constraint 1 but denied 173,610 commands that ordinary work needs (`git -C build rm out.js`, `git -C build clean -fdx`, `git -C /tmp rm junk`). What shipped is a fourth option argued and costed in `decisions/260804-1323_i_…`: a **union** — an operand is checked against every directory the guard can attribute to the invocation, so a directory fact may only ever add reach, never remove it. Measured: 138,860 newly deny, **0 newly allow**.
+
+All seven rows this issue lists now deny. Each was measured through the real guard subprocess and separately in a real shell, one fresh repository per assertion, bash and zsh, git 2.49.0 (`guard-bash-integration.test.ts`, "a git directory flag reaches the protected list, and is denied"). The cost control this issue asked for is pinned in both suites: `git -C build clean -fdx` allows AND is asserted to delete `build/untracked.js` while leaving `rules/untracked.md` alone.
+
+Two facts the issue did not name were found in the same eight lines and are recorded rather than folded in silently: `--work-tree` relocates pathspec resolution where `--git-dir` does not (measured — `git --work-tree=rules clean -fdx` deleted `rules/x.md`), and an unrecognised global option swallowed the subcommand entirely (`git --namespace foo rm rules/x.md`, closed with this and filed as `260804-1333_c_…`). The environment spelling of the same relocation stays open and is now on both residual lists: `260804-1332_o_…`.
