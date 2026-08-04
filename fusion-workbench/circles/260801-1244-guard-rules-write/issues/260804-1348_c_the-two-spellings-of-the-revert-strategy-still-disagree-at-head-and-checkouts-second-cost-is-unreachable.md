@@ -153,3 +153,58 @@ row still states a second cost that the branch policy reaches first.
 documentation edits. Either Step 7 adopts them — the natural home, since they are two
 sentences in a file it is already rewriting — or a ninth step does. Flagged rather than
 silently absorbed.
+
+---
+
+**Recommendations 1 and 2 taken: 2026-08-04, `coder`, out-of-band from plan Step 7, at the
+user's explicit request.** The ownership gap flagged above is closed at the plan as well —
+Step 7's `Closes` line now names this record, annotated as already discharged. Recommendation
+3 remains not taken and is not this record's to take: it is `decisions/260804-1815`, answered
+option 1 by the user on 2026-08-04. The record is complete on both documentation edits as far
+as this coder can tell; the orchestrator owns the marker move.
+
+**Recommendation 1, taken.** `rules/protected-path-discipline.md`'s "Now they agree" is gone.
+It now says the two spellings agree for every source **except the literal `HEAD`**, states
+the asymmetry as a fact with its three denied spellings, gives the architectural cause
+(`mutatesOnlyWhen` never sees a separated flag's value; `checkout` takes a positional), and —
+the obligation `260804-1815`'s answer adds on top of this record's — **names the allowed
+form** rather than describing it: write `git checkout HEAD -- <paths>`. `README-hooks.md`
+carries the same paragraph. The `restore` table row's denied column now shows
+`--source=HEAD` beside `--source=HEAD~1`, so the pair is visible where a reader looks it up.
+
+Re-measured at HEAD, real guard subprocess, one fresh project per case:
+
+```
+allow  git checkout HEAD -- rules/x.md
+BLOCK  git restore --source=HEAD rules/x.md
+BLOCK  git restore --source HEAD rules/x.md
+BLOCK  git restore -s HEAD rules/x.md
+allow  git restore rules/x.md          (the index, a third operation)
+```
+
+**Recommendation 2, taken — and the record's framing of it needs one correction.** The cost
+is **not unreachable**; the record's *example* is what the branch policy answers first. With
+both operands present on disk the mutation classifier gets the turn and gives its own reason:
+
+```
+BLOCK  git checkout rules/x.md agents/coder.md   protected-path reason, names agents/coder.md
+BLOCK  git checkout docs rules/x.md              protected-path reason, names rules/x.md
+allow  git checkout notes.txt build/out.js
+BLOCK  git checkout rules/a.md rules/b.md        BRANCH reason — rules/a.md is not on disk
+BLOCK  git checkout HEAD rules/x.md              BRANCH reason — HEAD is a ref
+```
+
+The discriminator is the branch guard's own documented escape (`git-branch-guard.ts`: the
+bare form is allowed only when the first operand names a file that exists on disk and is not
+also a ref). So both files now state the cost with a **reachable** example and then state the
+rule for which policy answers, rather than dropping the example as this record's option
+allowed. Stating the rule is what recommendation 2 was really asking for; dropping the
+example would have left the next reader to rediscover the same thing.
+
+**One further sentence of the same defect class, corrected while in the row.** The rule
+file's allowed column listed `git checkout main` — which **denies**, under the branch policy.
+That is the same wrong shape the record names: the protected-path rule claiming an outcome
+the other policy owns. It is removed from the column, and the table is now explicitly the
+mutation classifier's verdicts, with moving HEAD sent to `git-branch-discipline.md`.
+
+No code was changed and none was needed for either edit.

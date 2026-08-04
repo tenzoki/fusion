@@ -78,29 +78,54 @@ else is an overwrite.
 
 | Allowed | Denied on a protected path |
 |---|---|
-| `git clean -n rules` (dry run) | `git clean -fdx rules` |
-| `git restore rules/x.md`, `git restore --staged rules/x.md` | `git restore --source=HEAD~1 rules/x.md` |
+| `git clean -n rules` (dry run) | `git clean -fdx rules`, and `git clean -fdx` at the project root |
+| `git restore rules/x.md`, `git restore --staged rules/x.md` | `git restore --source=HEAD rules/x.md`, `git restore --source=HEAD~1 rules/x.md` |
 | `git stash`, `git stash pop`, `git stash show "$REF"`, `git stash push -m "$MSG"` | `git stash push rules/x.md`, `git stash -- rules/x.md` |
-| `git checkout HEAD -- rules/x.md`, `git checkout -- rules/x.md`, `git checkout main` | `git checkout HEAD~5 -- rules/x.md`, `git checkout otherbranch -- rules/x.md` |
+| `git checkout HEAD -- rules/x.md`, `git checkout -- rules/x.md` | `git checkout HEAD~5 -- rules/x.md`, `git checkout otherbranch -- rules/x.md` |
 
 The `checkout` row and the `restore` row are the same operation in two spellings, and
-until 2026-08-04 they returned opposite verdicts: `checkout` was in no table, so
+until 2026-08-04 they returned opposite verdicts everywhere: `checkout` was in no table, so
 `git checkout HEAD~5 -- rules/x.md` overwrote a protected rule while
-`git restore --source=HEAD~1 rules/x.md` denied. Now they agree. **The revert strategy is
-untouched** — `git checkout HEAD -- <paths>` restores a file to what is already committed,
-which is the one thing an agent could have obtained by not touching the file, and fusion's
-own recovery path depends on it.
+`git restore --source=HEAD~1 rules/x.md` denied. They now agree for every source **except
+the literal `HEAD`**. **The revert strategy is untouched** — `git checkout HEAD -- <paths>`
+restores a file to what is already committed, which is the one thing an agent could have
+obtained by not touching the file, and fusion's own recovery path depends on it.
 
-Two costs come with the row, and both are rules rather than lists:
+**The one source that still disagrees, and the spelling to write instead.**
+`git checkout HEAD -- rules/x.md` allows. `git restore --source=HEAD rules/x.md` denies,
+and so do `--source HEAD` and `-s HEAD`. Same operation, opposite verdicts, on purpose.
+**Write `git checkout HEAD -- <paths>`.** That is the sanctioned spelling of the revert, it
+is allowed everywhere this rule is loaded, and it is what a `restore` deny expects you to
+reach for — reaching for anything else is rephrasing past a deny, which is the one thing
+this file forbids. The cause is architectural rather than a judgement about the two
+commands: `restore` is discriminated by the flag TOKEN, which never carries the value of a
+separated `--source HEAD` at all, while `checkout` takes its source as a positional the
+model sees in every spelling. Closing the gap by teaching `restore` the exception would make
+a command **newly allow**, which nothing in this guard's history has done, so it is a
+decision at the Human Gate rather than a patch
+(`decisions/260804-1815_a_should-git-restore-source-head-become-inert-…`).
+
+Two costs come with the `checkout` row, and both are rules rather than lists:
 
 - **Only the literal `HEAD` is proven inert.** The set of spellings that denote the same
   commit is open — `@`, `HEAD~0`, `HEAD^0` and the current branch's own name are examples
   of it, and all deny.
 - **Without `--`, the first positional is read as the tree-ish**, the way git reads it, so
-  `git checkout rules/a.md rules/b.md` denies on the second path.
+  every later path is a written operand: `git checkout rules/x.md agents/coder.md` denies
+  on `agents/coder.md`, and `git checkout docs rules/x.md` denies on `rules/x.md`.
 
 Both have the same way through, and it is the documented spelling:
 `git checkout HEAD -- <paths>`.
+
+**Which of the two policies answers a bare `git checkout` is not this rule's choice**, and
+the table above is only this classifier's verdicts. `git-branch-discipline.md` sees the
+command first and lets the `--`-less form through only when the first operand names a file
+that exists on disk and is not also a ref. So `git checkout rules/a.md rules/b.md` (no such
+file) and `git checkout HEAD rules/x.md` (a ref) are **branch-policy** denies carrying a
+branch-policy reason, and never reach the paragraph above; `git checkout main` and
+`git checkout -b feature` move HEAD, name no path here, and belong to that rule entirely. A
+command allowed by one of the two policies can be denied by the other, and each deny reports
+the permission you actually lack.
 
 ### git carries its own working directory
 
@@ -126,8 +151,15 @@ changes nothing.
 
 `git clean` with no pathspec deletes **from the current directory down**, not from the
 repository root — so `cd rules && git clean -fdx` and `git -C rules clean -fdx` both deny
-on the directory they do not spell, while a plain `git clean -fdx` at the project root
-still allows.
+on the directory they do not spell. **A plain `git clean -fdx` at the project root denies
+too**, which is the other half of the same rule: `clean` writes *through* the directory it
+is given rather than to it, so the project-root exclusion that lets `cp x .` past does not
+apply to it. `git clean -fdx`, `git clean -fdx .`, `git clean -fd` and `git clean -f` all
+deny at the root, on a reason that says the command "writes THROUGH a directory that holds
+protected paths". Naming an unprotected directory is what stays allowed:
+`git clean -fdx build`, `git -C build clean -fdx`, `cd build && git clean -fdx`. A `clean`
+the guard cannot place at all — `cd $D && git clean -fdx`, or `cd build; git clean -fdx` —
+fails closed rather than allowing, exactly as any other relative operand does.
 
 One more shape of the same rule: **a git global option the guard cannot name is read both
 ways**, because an option that takes a value can otherwise hide the subcommand behind it
@@ -607,19 +639,36 @@ Known and accepted:
   project's own build script are all outside the table. `eval` and `bash -c` are outside
   it for a specific reason: they take a STRING that bash re-parses, so there is no
   argument list to walk the way there is for `sudo`.
-- **An alias to a protected file can be created, and written through.** Unlike the two
-  above, the guard sees the whole command and resolves every operand. Measured:
-  `ln -s ../agents/coder.md build/alias` and `cp -l agents/coder.md
-  build/hardalias` are both allowed, because `ln` and `cp` write only `build/alias` and
-  `build/hardalias` and neither of those is protected — the source is a read. Afterwards
-  `echo pwned > build/alias` is allowed too, on both surfaces, and `agents/coder.md` now
-  reads `pwned`. The protection side decides on the TEXT of a path (`lib/paths.ts`), so
-  any shell can manufacture a second, unprotected name for a protected file. Closing this
-  means resolving every guarded path through the filesystem, which is a different design
-  with a different cost. Until then it is the cheapest route around the guard there is,
-  and reaching a protected file this way is the same denial you would have got by naming
-  it: the guard raises the cost of a deliberate act, and routing around a deny is what
-  this rule forbids regardless of mechanism.
+- **An alias to a protected file can be created BY YOU, in one allowed command, and
+  written through.** This is not the pre-existing-symlink case and it is not a gap in what
+  the classifier can see: unlike the two above, the guard sees the whole command and
+  resolves every operand. It allows them anyway, because only the operands a verb
+  **writes** count and `ln`, `ln -s` and `cp -l` write the alias, not the file it aliases.
+  No flag is involved, and both surfaces are open at every step. Measured:
+
+  ```
+  ln -s ../agents/coder.md build/alias      allow
+  ln agents/coder.md build/hardalias        allow
+  cp -l agents/coder.md build/hardalias     allow
+  echo pwned > build/alias                  allow   → agents/coder.md reads "pwned"
+  Edit build/alias                          allow   (the write-tool surface too)
+  ```
+
+  The protection side decides on the TEXT of a path (`lib/paths.ts`), so any shell can
+  manufacture a second, unprotected name for a protected file. **The invariant is kept on
+  purpose, and the residual is its stated price** — the user chose this in
+  `decisions/260803-1402_a_should-the-mutation-classifier-inspect-a-read-operand-…`.
+  "Only written operands count" is what keeps every legitimate read of a protected file
+  allowed (`cp rules/x.md /tmp/backup`, `cp -R rules /tmp/backup`, `dd if=… of=/tmp/y`), it
+  is one sentence you can hold in your head, and denying a read operand would close one
+  spelling of the class at the price of that regularity: an agent that has learned reads
+  are always fine, and then meets a denied `cp -l`, is in exactly the position this file
+  exists to prevent — an unexplained deny, followed by a rephrasing that works. Closing it
+  properly means resolving every guarded path through the filesystem, which is a different
+  design with a different cost. Until then it is the cheapest route around the guard there
+  is, and reaching a protected file this way is the same denial you would have got by
+  naming it: the guard raises the cost of a deliberate act, and routing around a deny is
+  what this rule forbids regardless of mechanism.
 - **Shell grammar that puts an ordinary-looking word in command position is not seen.**
   A `case` arm (`build) rm rules/x.md;;`) and a function definition
   (`f() { rm rules/x.md; }`) both leave a word the classifier cannot tell apart from a
@@ -656,15 +705,37 @@ Known and accepted:
 - **The git subcommands the check does not reach.** `git apply` and `git am` name their
   targets inside the patch file rather than on the command line, so they sit here with
   `patch`, and so does any `--pathspec-from-file` list. A bare `git clean -fdx` used to sit
-  here too — that entry was wrong about git rather than about the check, since `clean`
-  with no pathspec deletes from the *current directory* down, and the model now supplies
-  the `.` it does not spell.
-- **git's directory ENVIRONMENT variables are not read.**
-  `GIT_WORK_TREE=rules git clean -fdx` deletes `rules/x.md` and is allowed, as is the same
-  assignment behind a wrapper (`env GIT_WORK_TREE=rules git …`). The command-line
-  spellings of the same fact (`-C`, `--work-tree`) *are* read; the classifier resolves no
-  variable, which is the boundary this sits on rather than an oversight
-  (`issues/260804-1332…`).
+  here too, and its entry is **deleted rather than narrowed, because the case closed** —
+  stated so it is not read as an entry that was quietly dropped. It closed in two steps.
+  First the reading was wrong about git rather than about the check: `clean` with no
+  pathspec deletes from the *current directory* down, so the model supplies the `.` it does
+  not spell. Then the root itself stopped being a way out, because `clean` writes *through*
+  its pathspec and the project-root exclusion does not apply to a verb that does. Both
+  spellings deny at the root now, the explicit `git clean -fdx .` and the implicit
+  `git clean -fdx`, which reached the same allow by different code paths. What is NOT
+  closed is the environment route in the next entry, and a `clean` from a directory the
+  guard cannot place denies fail-closed rather than allowing.
+- **git's directory ENVIRONMENT variables are not read**, and this is the live half of the
+  `clean` story above. `GIT_WORK_TREE=` and `GIT_DIR=` move git exactly as `-C` and
+  `--work-tree` do, and the classifier resolves no variable, so it reads only the directory
+  the *command text* names. Measured allowed, and measured deleting every file under
+  `rules/` in a real repository — tracked files included, because with the work tree moved
+  git considers them untracked:
+
+  ```
+  cd build && GIT_WORK_TREE=../rules git clean -fdx     allow  → rules/ emptied
+  ```
+
+  The rule, not the row: **any git invocation whose real working directory was set by the
+  environment is checked against the wrong directory**, so an assignment behind a wrapper
+  (`env GIT_WORK_TREE=… git …`) or in front of any other subcommand is the same case. What
+  narrows it is that the guard still checks the directory it *can* see, which is why
+  `GIT_WORK_TREE=rules git clean -fdx` denies at the project root — on the root's own
+  write-through, not because the variable was read. Do not read that deny as coverage. The
+  command-line spellings of the same fact are read exactly (`git -C rules clean -fdx`,
+  `git --work-tree=rules clean -fdx` both deny), which is the boundary this sits on rather
+  than an oversight (`issues/260804-1332…`, deferred to
+  `circles/260804-1205-shell-reachability-model`).
 - **A redirect target whose TOKEN cannot be read is still not denied**, on a program
   outside the table. `echo x > "$F"`, `echo x > "rules/$F"` and `npm test > "$LOG"` are
   allowed, and `$F` may of course be `rules/x.md`. This is the fail-closed bound above seen

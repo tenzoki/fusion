@@ -128,3 +128,53 @@ Two things the residual list now has to say, and Step 7 owns both:
 
 The two verdict rows this record asked for are in the suite either way, so the
 prose and the behaviour cannot drift again without a test moving.
+
+---
+
+**Documentation half taken: 2026-08-04, `coder`, out-of-band from plan Step 7, at the
+user's explicit request.** Both edits this record's "In progress" note left for Step 7
+are written. The record is complete on both halves as far as this coder can tell; the
+orchestrator owns the marker move.
+
+Measured at HEAD before writing anything, real guard subprocess, one fresh throwaway
+project per case (`hooks/lib/__tests__/helpers/guard-harness.ts`, `tsx guard.ts`):
+
+```
+BLOCK  git clean -fdx          "writes THROUGH a directory that holds protected paths"
+BLOCK  git clean -fdx .        same reason
+BLOCK  git clean -fd           same reason
+BLOCK  git clean -f            same reason
+allow  git clean -fdx build
+allow  git -C build clean -fdx
+allow  cd build && git clean -fdx
+allow  git clean -n rules      (still a read)
+BLOCK  cd $D && git clean -fdx        fail-closed, directory unknowable
+BLOCK  cd build; git clean -fdx       fail-closed, `;` does not guarantee the `cd`
+```
+
+So the branch this record's note point 1 anticipated is the one that obtains: the entry
+is **deleted because the case closed**, not narrowed, and the deletion reason is now
+written into both files instead of being left to be inferred
+(`rules/protected-path-discipline.md`, "The git subcommands the check does not reach";
+`README-hooks.md`, "`git clean` with no pathspec is no longer a residual"). Edit 1's
+suggested wording is not used, exactly as the note says it should not be. The affirmative
+sections that claimed the root "still allows" are corrected in both files.
+
+Point 2 is taken, with one correction the note could not have known. The fail-closed
+survivor is stated. The `GIT_WORK_TREE=` sibling is stated — but its shipped example has
+stopped reproducing: **`GIT_WORK_TREE=rules git clean -fdx` now denies**, on the root's own
+write-through rather than on the variable, so quoting it as evidence of the residual would
+have shipped a fifth falsified sentence. Measured replacement, allowed by the guard and
+verified against a real repository (git 2.49.0, zsh 5.9), where it deleted every file under
+`rules/` including the tracked one:
+
+```
+allow  cd build && GIT_WORK_TREE=../rules git clean -fdx      → rules/ emptied
+```
+
+Both files now state that residual as a rule — any git invocation whose real working
+directory came from the environment is checked against the wrong directory — with that row
+as an example, and both warn that the root deny is not coverage of it.
+
+No code was changed and none was needed. Plan Step 7's obligation list records this as
+discharged early rather than dropped.
