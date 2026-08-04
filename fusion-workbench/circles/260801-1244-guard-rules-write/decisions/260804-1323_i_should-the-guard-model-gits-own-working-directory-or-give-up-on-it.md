@@ -187,3 +187,6 @@ Answered: 2026-08-04, Turn 10 (T10-1) — option 4, the union, with the `checkou
 rule as its sibling answer.
 Implemented: Turn 10 (T10-1), `hooks/lib/bash-mutation-guard.ts` — commit hash pending;
 the orchestrator commits this Turn and owns filling it in here.
+
+---
+Implemented: `613d6fd` — the union rule shipped as described above; measured 0 newly allowing out of 1,622,420 evaluations, and structurally so, because a directory fact only ever adds a candidate resolution.
