@@ -282,3 +282,12 @@ Answering this record in any of its three options leaves that route open. So the
 That is not an argument against answering this first. Option 1's cost is measured at zero on every corpus of real work, which makes it the cheapest thing on the board, and the two defects it closes are the two the Circle's own review rates highest. It is an argument against calling the boundary closed when it lands.
 
 **One thing worth deciding alongside, since the record already raises it.** Option 2 (model the and-or list) is the only option that also closes `issues/260804-0839_o_`, the over-deny this session introduced and did not close, which an agent meets on ordinary work (`if cd hooks; then rm -rf dist; fi`). The record recommends option 4 — take the ten-line give-up now and give the reachability model its own Circle. On the evidence that recommendation is sound: `260804-0839` is a cost with a documented mitigation, while `260804-0836` and `260804-0837` are live writes.
+
+## Answer
+
+**Option 4, this record's own recommendation, chosen by the user 2026-08-04:** take option 1
+now, and give option 2 its own Circle.
+
+---
+Answered: this record, `## Recommendation` — the user instructed "follow the recommendation" after the session report listed answering this decision as the first of four conditions for a clean Coherence verdict.
+Implemented: `4f1007f` — `JOINER_FACTS`, one row per joiner and two fields, read at two call sites in the segment walk. The lookup is a safe-list, so an unenumerated joiner answers `false` to both fields. All five constraints met and measured: nothing newly allows on any of the four corpora (0 on the suite harvest, 0 on the thirty ordinary rows, 0 on a 41,656-row generated cross-product), `until` still denies as its own pinned case, both shells measured in the shell that performs each write, and the cost is stated as a rule with the examples labelled an open set. One departure from the record, measured: the condition is stated over `state.moved` rather than over a builtin new in the segment, because the weaker form left `cd rules && true || cd /tmp && rm x.md` open. The one-fact-not-two property the option's own con warned about is checkable — `grep -c '\.joiner'` returns 1, and a source assertion fails if a third comparison appears. Tests 1241 → 1252.
