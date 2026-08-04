@@ -1998,6 +1998,43 @@ describe("the accepted residual (allowed by design, asserted so it stays visible
     ]);
   });
 
+  /**
+   * The pair that four documents got backwards.
+   *
+   * A decision record's constraint, a supersession note, two code comments and
+   * `README-hooks.md` all asserted that `curl -o rules/x.md` DENIES, and used
+   * it to claim the check is "no looser on the visible case than on the
+   * invisible one". It allows, and the check is looser there
+   * (`issues/260804-0841…`). The claim was one command away from being
+   * checked; this is that command, so the next reader inherits a measurement
+   * instead of a recollection.
+   *
+   * The line the fail-closed bound actually draws is INSIDE the mechanism vs
+   * OUTSIDE it, not visible vs invisible: `curl` puts no operand in the
+   * written set at all, while a `>` does and then loses only its directory.
+   */
+  it("is LOOSER on the visible curl case than on the invisible redirect one", () => {
+    // Visible, literal, a protected target, no flag — and allowed, because
+    // nothing recognises it as a write.
+    expectAllAllow([
+      "curl -o rules/x.md https://example.com/x",
+      "curl -o rules/x.md",
+      "curl --output rules/x.md https://example.com/x",
+      "wget -O rules/x.md https://example.com/x",
+    ]);
+    // Invisible, and the target is harmless — and denied, because the guard
+    // recognised the write and then admitted it could not place it.
+    expectAllDeny([
+      "pushd -n docs && echo hi > notes.txt",
+      "pushd -n docs && echo pwned > agents/coder.md",
+    ]);
+    // The redirection sibling of the curl row, which IS in the mechanism.
+    expectAllDeny([
+      "curl -s https://example.com/x > rules/x.md",
+      "sort /tmp/a > rules/x.md",
+    ]);
+  });
+
   it("allows verbs deliberately left out of the table", () => {
     expectAllAllow([
       "chmod 000 rules/x.md",
@@ -2855,18 +2892,70 @@ describe("virtual cwd — a cd the shell does not guarantee", () => {
 
   /**
    * THE MEASURED COST, pinned so it cannot drift silently. Every row worked
-   * before and denies now; the decision record's `## Answer` shows this exact
-   * table to the user as the price of closing the bypass. Nothing else in a
-   * 4203-command corpus moved, in either direction.
+   * before and denies now; the decision record's `## Answer` shows this table
+   * to the user as the price of closing the bypass.
+   *
+   * These are EXAMPLES of one rule, not a closed list. The rule is: an
+   * unproven `cd`, then any segment reached unconditionally after it. The
+   * Circle stated the cost as "these five shapes and nothing else measured
+   * moved", which was a property of a corpus harvested from this suite rather
+   * than of the change — a cross-product generator found ten of thirty
+   * ordinary shapes moving (`issues/260804-0840…`). Adding a row here is
+   * expected; the rule is what must not drift.
    */
-  it("costs exactly these five ordinary shapes", () => {
+  it("costs these ordinary shapes, which are examples of the rule", () => {
     expectAllDeny([
       "cd build; rm out.js",
       "cd docs; rm ../notes.txt",
       "mkdir -p build && cd build; rm out.js",
       "cd hooks && npm run build; rm -rf dist",
       "cd build || exit 1; rm out.js",
+      // Not in the five, and the shape most likely to be met: a redirection to
+      // a literal relative target. The degrade table had no redirection row
+      // and the cause-split table's rows all carried a `$`, so this fell
+      // between them.
+      "cd hooks; npm test > out.log",
+      "cd hooks; npm ci > install.log 2>&1",
+      // A conditional or a pipeline inside the chain degrades although the
+      // shell guarantees the `cd`. Filed as `260804-0839`, over-denying.
+      "if cd hooks; then rm -rf dist; fi",
+      "while cd build; do rm out.js; break; done",
+      "cd hooks && npx tsc | tee typecheck.log",
     ]);
+  });
+
+  /**
+   * A multi-line `&&` chain is the single-line form, and must behave as it.
+   *
+   * The lexer downgraded a pending `&&` to `newline`, so an ordinary
+   * three-line build chain denied with the reason *"Join the `cd` to what
+   * follows it with `&&`"* — an instruction to do what the command already
+   * did. That is the unfollowable deny `rules/protected-path-discipline.md`
+   * exists to prevent, on one of the commonest shapes an agent writes
+   * (`issues/260804-0838…`).
+   *
+   * Bash's grammar puts the `newline_list` INSIDE the operator, and both
+   * shells agree: `cd build &&\nrm out.js` deletes `build/out.js` when the
+   * `cd` succeeds and nothing at all when it fails.
+   */
+  it("treats a multi-line && chain exactly as its single-line form", () => {
+    expectAllAllow([
+      "cd hooks &&\n  npm run build &&\n  rm -rf dist",
+      "cd hooks &&\n\n  npm run build &&\n\n  rm -rf dist",
+      "cd build &&\n  rm out.js",
+      "mkdir -p build &&\n  cd build &&\n  rm out.js",
+    ]);
+    // The discriminating neighbours. A newline that is NOT preceded by `&&`
+    // still gives the directory up, and a protected target still denies —
+    // with its own reason rather than the unproven-`cd` one.
+    expectAllDeny([
+      "cd hooks &&\n  npm run build;\n  rm -rf dist",
+      "cd build\n  rm out.js",
+      "cd rules &&\n  rm x.md",
+    ]);
+    expect(classify("cd rules &&\n  rm x.md").reason ?? "").toMatch(
+      /writes a protected path/,
+    );
   });
 
   it("fires for a segment reached unconditionally, not just for a `;`-joined cd", () => {

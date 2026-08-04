@@ -93,3 +93,43 @@ fact that is false and checkable in one command.
    residual lists in `rules/protected-path-discipline.md:435` and `README-hooks.md`
    already do), or file the widening separately. Do not leave two answers in one comment
    block.
+
+---
+Resolved (T8-1, 2026-08-04): the fact is corrected everywhere it appears, and the argument
+is rebuilt on what is true rather than restated with the false premise removed.
+
+**Verified first, not taken from the review.** Real classifier, shipped protected list, at
+the pre-Turn tree and at HEAD: `curl -o rules/x.md https://x`, `curl -o rules/x.md`,
+`curl --output rules/x.md https://x` and `wget -O rules/x.md https://x` all **allow**;
+`curl -s https://x > rules/x.md` and `sort /tmp/a > rules/x.md` deny.
+`pushd -n docs && echo hi > notes.txt` — invisible, harmless target — denies.
+
+Found by grep rather than by fixing the three the review named. Six occurrences, all
+corrected:
+
+1. `hooks/lib/bash-mutation-guard.ts` module docstring — the "still denies on pass 1"
+   sentence is replaced by what the bound actually draws.
+2. `hooks/lib/bash-mutation-guard.ts` pass-3 comment — same, and it now says explicitly
+   that an earlier comment asserted the opposite seven lines from its own correction.
+3. `README-hooks.md` — the fail-closed redirection paragraph.
+4. `decisions/260804-0106` — the Pro under option 2 and constraint 3 are **struck** rather
+   than edited, with the strike dated, and a new `## The argument, corrected` section
+   carries the measurement and the rebuilt argument.
+5. `circles/260801-1244-guard-bash-inspection/issues/260801-1859_c_…` — the supersession
+   note quotes its own false sentence, says it inverted the `Resolved:` line three
+   paragraphs above it, and states that the consistency argument survives *against* the
+   reversal rather than for it.
+6. `history/260804-0140-turn7-…` — the sentence is struck in place with a dated correction
+   block, so a reader of the history inherits the correction with the claim.
+
+**The argument, rebuilt.** The decision's answer does not move — `260803-1835`, a measured
+no-flag overwrite of `agents/coder.md`, carries it alone — but it now stands on one leg
+instead of two, and the record says so. The consistency argument, stated correctly, favours
+option 1. What replaces it is not visible-vs-invisible but inside-the-mechanism-vs-outside:
+`curl -o` puts no operand in the written set at all, while a `>` does and then loses only
+its directory. Declining to model a program you never recognised is a bound; recognising a
+write and allowing it because your own model failed is that model failing open.
+
+Pinned so it cannot come back: `bash-mutation-guard.test.ts` "is LOOSER on the visible curl
+case than on the invisible redirect one" asserts both sides of the pair in one test, with
+the four `curl`/`wget` spellings as allows and the two `pushd -n` rows as denies.

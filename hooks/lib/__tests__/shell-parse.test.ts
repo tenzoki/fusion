@@ -243,6 +243,69 @@ describe("each segment records the operator that joined it", () => {
     ]);
   });
 
+  it("keeps the && when the newlines are INSIDE the operator", () => {
+    // Bash's grammar is `and_or : and_or AND_AND newline_list pipeline`, so
+    // the newlines after `&&` are part of the operator and the operator is
+    // still `&&`. Downgrading them to `newline` made an ordinary multi-line
+    // chain deny with the reason "join the `cd` to what follows it with `&&`",
+    // which the caller had already done (`issues/260804-0838…`).
+    //
+    // Measured in bash 3.2.57 and zsh 5.9, one throwaway project per row:
+    // `cd build &&\nrm out.js` deletes `build/out.js` when the `cd` succeeds
+    // and deletes NOTHING when it fails — exactly the single-line form.
+    expect(joiners("cd build &&\nrm out.js")).toEqual([
+      ["cd build", "start"],
+      ["rm out.js", "&&"],
+    ]);
+    expect(joiners("cd build &&\n\n  rm out.js")).toEqual([
+      ["cd build", "start"],
+      ["rm out.js", "&&"],
+    ]);
+    expect(joiners("cd build &&\r\n  rm out.js")).toEqual([
+      ["cd build", "start"],
+      ["rm out.js", "&&"],
+    ]);
+    // The shape an agent actually writes, and the one the deny was met on.
+    expect(joiners("cd hooks &&\n  npm run build &&\n  rm -rf dist")).toEqual([
+      ["cd hooks", "start"],
+      ["npm run build", "&&"],
+      ["rm -rf dist", "&&"],
+    ]);
+    // `||` was never downgraded on this path; that asymmetry was the tell.
+    // It stays `||` with and without the newline, so the two operators are now
+    // treated the same way with respect to a newline that follows them.
+    expect(joiners("cd build ||\n  rm out.js")).toEqual([
+      ["cd build", "start"],
+      ["rm out.js", "||"],
+    ]);
+    expect(joiners("cd build || rm out.js")).toEqual([
+      ["cd build", "start"],
+      ["rm out.js", "||"],
+    ]);
+  });
+
+  it("still gives the && up when a REAL second operator follows the newlines", () => {
+    // The exemption above is only for a newline reached with `&&` pending. An
+    // operator after the newlines takes the give-up branch as before, so the
+    // newline exemption cannot be used to smuggle a guarantee past a `;`.
+    // (`a &&\n; b` is a bash syntax error; the lexer over-segments rather than
+    // parses, and this is the direction to err in.)
+    expect(joiners("a &&\n; b")).toEqual([
+      ["a", "start"],
+      ["b", ";"],
+    ]);
+    expect(joiners("a &&\n| b")).toEqual([
+      ["a", "start"],
+      ["b", "|"],
+    ]);
+    // A newline BEFORE the `&&` is untouched: nothing is pending as `&&` when
+    // the newline flushes, so `b` carries the weaker `newline`.
+    expect(joiners("a\n&& b")).toEqual([
+      ["a", "start"],
+      ["b", "newline"],
+    ]);
+  });
+
   it("starts each nesting level at `start`", () => {
     // A subshell body's first segment had nothing before it INSIDE the body,
     // and the doubt about the enclosing segment is carried by that segment's

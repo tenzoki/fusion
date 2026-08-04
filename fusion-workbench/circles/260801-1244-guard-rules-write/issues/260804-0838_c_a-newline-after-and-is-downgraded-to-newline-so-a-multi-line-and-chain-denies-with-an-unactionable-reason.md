@@ -104,3 +104,36 @@ a marker the `else if` can ignore, or test `next !== "newline"` in the downgrade
 Add `cd build &&\nrm out.js` and the three-line build chain to the allow side, and keep
 `a && ; b` on the downgrade side. Mutating the fix (restoring the unconditional
 downgrade) must fail the new allow rows and nothing else.
+
+---
+Resolved (T8-1, 2026-08-04): `flush` in `hooks/lib/shell-parse.ts` no longer downgrades a
+pending `&&` when the flush was caused by a newline. Bash's grammar is
+`and_or : and_or AND_AND newline_list pipeline`, so the newlines sit inside the operator;
+a real second operator after them still downgrades (`a &&\n; b` joins on `;`).
+
+Measured, both directions, `old` = the working tree at the start of the Turn:
+
+- 8,600 multi-line `&&` rows of a generated cross-product compared against their flattened
+  single-line form — **0 mismatches** in verdict *and* in reason string.
+- 41,400-row generated cross-product: **2,162 verdicts moved, all newly ALLOWING, every one
+  containing an `&&` followed by a newline. 0 newly denying.** 414 rows kept their verdict
+  and gained a better reason (the protected-path reason instead of the unproven-`cd` one);
+  every one of those also contains an `&&`+newline.
+- 4,335-row test-suite harvest and the 30-row ordinary-agent corpus: 0 moved either way,
+  except the review's own `cd hooks &&\n npm run build &&\n rm -rf dist`, which now allows.
+- Segmentation text identical in both quoting modes across all corpora (0 differences), and
+  the git classifier identical across 4 override combinations (0 differences).
+
+Real shells, one throwaway project per row: `cd build &&\nrm out.js` deletes `build/out.js`
+in bash 3.2.57 and zsh 5.9 when the `cd` succeeds, and deletes nothing when it fails —
+exactly the single-line form.
+
+`||` was never downgraded on this path and is unchanged, so the two operators are now
+treated the same way with respect to a following newline.
+
+Pinned: `shell-parse.test.ts` "keeps the && when the newlines are INSIDE the operator" and
+"still gives the && up when a REAL second operator follows the newlines";
+`bash-mutation-guard.test.ts` "treats a multi-line && chain exactly as its single-line
+form"; `guard-bash-integration.test.ts` "allows a multi-line && chain, and both shells
+agree it is one and-or list" (asserts the real-shell effect in bash and zsh) and "still
+denies when the newline is the joiner rather than part of the operator".

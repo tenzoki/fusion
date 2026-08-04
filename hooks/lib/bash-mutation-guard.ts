@@ -87,11 +87,33 @@
  * wrapper and one extra segment. The model therefore gives the directory up at
  * any joiner that is not `&&` once a directory builtin has run in the current
  * scope (`ShellState.moved`, `degradeUnprovenCd`, and `SegmentJoiner` in
- * `shell-parse.ts` — the field that widening added). The cost is `cd build;
- * rm out.js` and `cd hooks && npm run build; rm -rf dist`, both of which now
- * deny with a reason naming `&&` as the way through; the decision that took the
- * trade is
+ * `shell-parse.ts` — the field that widening added). The rule to state is
+ * "every segment reachable without an `&&` from the builtin", not a list of
+ * shapes: the Circle first costed it as five, which was a property of a corpus
+ * harvested from this suite rather than of the change, and a cross-product
+ * generator moved ten of thirty ordinary shapes
+ * (`issues/260804-0840…`). The decision that took the trade is
  * `decisions/260803-2338_i_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`.
+ *
+ * TWO PRECISIONS ON THE WORD `&&`, both learned after that decision shipped:
+ *
+ * 1. A NEWLINE AFTER `&&` IS PART OF THE OPERATOR. Bash's grammar is
+ *    `and_or : and_or AND_AND newline_list pipeline`, so a multi-line chain is
+ *    its single-line form. The lexer downgraded it for one commit and an
+ *    ordinary `cd hooks &&\n npm run build &&\n rm -rf dist` denied, with a
+ *    reason telling the caller to join with `&&` — which they had
+ *    (`issues/260804-0838…`, fixed in `shell-parse.ts` `flush`).
+ * 2. `&&` GUARANTEES THE AND-OR LIST TO ITS LEFT, NOT THE PREVIOUS SEGMENT,
+ *    and does not reach into a pipeline. `A || B && C` is `(A || B) && C`, so
+ *    reaching `C` says nothing about whether `B` ran; and a pipeline stage runs
+ *    in a bash subshell that never moves the calling shell. The joiner is
+ *    consulted for the segment that WRITES and never for the segment that
+ *    MOVES, so `true || cd build && rm rules/x.md` and
+ *    `echo hi | cd build && rm rules/x.md` are allowed and do delete the rule
+ *    (`issues/260804-0836…`, `260804-0837…`). Both pre-existing, both OPEN;
+ *    one design question closes both,
+ *    `decisions/260804-0947_o_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`.
+ *    Until it is answered, no claim that this model is exact should be made.
  *
  * WHAT IT MODELS IS AN ALLOW-LIST. The tracking is exact for bash's default
  * logical `cd`, and bash has several modifiers that change the resolution rule
@@ -164,9 +186,24 @@
  * `decisions/260804-0106_i_should-the-fail-closed-bound-be-drawn-around-the-program-or-around-the-cause.md`.
  *
  * A redirect target that RESOLVES was always checked whatever the program is
- * (`sort /tmp/a > rules/x.md` denies), and `curl -o rules/x.md` still denies on
- * pass 1 — so the rule is not looser on the visible case than on the invisible
- * one, which is the inconsistency `260801-1859` was fixing.
+ * (`sort /tmp/a > rules/x.md` and `curl -s https://x > rules/x.md` deny).
+ *
+ * What this bound does NOT buy is consistency with the unrecognised-program
+ * residual, and an earlier version of this comment claimed it did.
+ * `curl -o rules/x.md` — a literal protected path, no `$`, no flag — is
+ * ALLOWED, at this commit and at every commit before it, because `curl` is not
+ * in `MUTATION_VERBS` and `-o` is not a redirection operator. The rule is
+ * therefore looser on that visible case than on `pushd -n docs && echo hi >
+ * notes.txt`, whose target is harmless. That is not the line this bound draws.
+ *
+ * The line it draws is whether the write is INSIDE the mechanism at all. A
+ * `>` puts its target in the written set whatever the program is, so the guard
+ * has already recognised the write and is holding the operand; the only thing
+ * missing is a working directory it has itself admitted it lost. Declining to
+ * model a program it never recognised is a bound. Recognising a write, losing
+ * its directory, and then allowing it anyway is not a bound — it is the model
+ * failing open on its own admission. See
+ * `decisions/260804-0106…` `## The argument, corrected`.
  *
  * ## The accepted residual (documented, not hidden)
  *
@@ -1537,6 +1574,16 @@ interface ShellState {
    * segment (`issues/260803-2238…`,
    * `decisions/260803-2338_i_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`).
    *
+   * THE ASSUMPTION IS NOT ACTUALLY FREE, and this comment overstated it. `&&`
+   * guarantees the and-or list to its LEFT returned zero, not that the segment
+   * before it ran, and it does not reach into a pipeline. This field is set the
+   * moment a directory builtin is SEEN, whatever brought its segment into
+   * reach, and nothing asks whether that segment was itself guaranteed — so
+   * `true || cd build && rm rules/x.md` and `echo hi | cd build &&
+   * rm rules/x.md` allow and do delete the rule (`issues/260804-0836…`,
+   * `260804-0837…`, both open;
+   * `decisions/260804-0947_o_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`).
+   *
    * Monotone, like `physical` and `cdpath`, and `true` is the don't-know for the
    * same reason: it can only make a later `cwd` less certain, never more. It is
    * per SCOPE rather than per command because a `cd` inside `(…)` or `$(…)` is
@@ -2347,9 +2394,17 @@ function classifyWords(
   //
   // Passes 1 and 2 are unaffected either way: a redirect target that RESOLVES
   // has always been checked whatever the program is (`sort /tmp/a >
-  // rules/x.md` denies), and `curl -o rules/x.md` — a literal protected path
-  // with an unrecognised program — still denies on pass 1, so the rule is not
-  // looser on the visible case than on the invisible one.
+  // rules/x.md` denies).
+  //
+  // `curl -o rules/x.md` does NOT deny on pass 1 — `curl` is not a table verb
+  // and `-o` is not a redirection operator, so nothing puts that operand in
+  // the written set. An earlier comment here asserted the opposite and used it
+  // to claim the rule is no looser on the visible case than on the invisible
+  // one; it is looser, and the claim was checkable in one command
+  // (`issues/260804-0841…`). What separates the two is not visibility but
+  // whether the guard already holds the operand: a `>` target it recognised
+  // and then could not place is the model failing open on its own admission,
+  // where an unrecognised program is a write the mechanism never saw.
   //
   // A project with an EMPTY protected list has opted out, and an unresolvable
   // operand there protects nothing — so this pass, the only one that can deny

@@ -113,6 +113,22 @@ export interface ParseOptions {
  * Only `&&` is a guarantee, so a reader that wants one should test for `&&`
  * rather than enumerate the others: a future operator added here is then
  * unguaranteed by default, which is the fail-closed direction.
+ *
+ * Two precisions, both learned the hard way:
+ *
+ * 1. **A newline AFTER `&&` does not make the joiner `newline`.** Bash's
+ *    grammar is `and_or : and_or AND_AND newline_list pipeline`, so the
+ *    newlines sit inside the operator. An ordinary multi-line chain
+ *    (`cd hooks &&\n  npm run build &&\n  rm -rf dist`) carries `&&` on every
+ *    segment, exactly as its single-line form does. See the `flush` comment.
+ * 2. **`&&` guarantees the AND-OR LIST to its left, not the previous
+ *    SEGMENT.** A flat list evaluates left to right, so `A || B && C` is
+ *    `(A || B) && C` — reaching `C` proves the list returned zero and says
+ *    nothing about whether `B` ran. `|` does not reach past `&&` either, and a
+ *    pipeline element runs in a bash subshell. A consumer that reads this field
+ *    as "the previous segment ran" is wrong in both shapes; both are open and
+ *    argued in
+ *    `circles/260801-1244-guard-rules-write/decisions/260804-0947_o_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`.
  */
 export type SegmentJoiner =
   | "start"
@@ -659,13 +675,30 @@ function scanSegments(
     if (trimmed.length > 0) {
       out.push({ text: trimmed, depth, start: curStart, joiner: pending });
       pending = next;
-    } else if (pending === "&&") {
+    } else if (pending === "&&" && next !== "newline") {
       // The operator flushed nothing, so TWO operators stand between the last
-      // emitted segment and the next one (`a && ; b`, or `a &&` at a line end).
+      // emitted segment and the next one (`a && ; b`, or `a && | b`).
       // The weaker wins: `&&` is the only joiner that guarantees anything, and
       // it stops guaranteeing the moment something else can reach past it.
       // `pending === "start"` is deliberately left alone — nothing has been
       // emitted at this level yet, so there is no earlier segment to guarantee.
+      //
+      // A NEWLINE is the one thing that is not a second operator. Bash's
+      // grammar is `and_or : and_or AND_AND newline_list pipeline`, so the
+      // newlines after `&&` sit INSIDE the operator; the operator is still
+      // `&&`. Measured in bash 3.2 and zsh 5.9: `cd build &&\nrm out.js`
+      // deletes `build/out.js` when the `cd` succeeds and runs nothing when it
+      // fails — exactly the single-line form. Downgrading here made an ordinary
+      // multi-line chain deny with the reason "join the `cd` to what follows it
+      // with `&&`", which the caller had already done — an unfollowable deny,
+      // the failure `rules/protected-path-discipline.md` exists to prevent
+      // (`issues/260804-0838…`). `||` was never downgraded on this path, and
+      // that asymmetry was the tell that the downgrade was accidental.
+      //
+      // The exemption is only for a newline reached with `&&` still pending. A
+      // real second operator after the newlines still wins, because the flush
+      // it causes finds `pending === "&&"` again and takes this branch:
+      // `a &&\n; b` joins on `;`.
       pending = next;
     }
     cur = "";

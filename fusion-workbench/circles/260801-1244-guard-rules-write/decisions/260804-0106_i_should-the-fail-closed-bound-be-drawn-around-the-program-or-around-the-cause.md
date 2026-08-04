@@ -95,10 +95,13 @@ unknown, whatever the program is.
 - **Pros.** It is what the promised sentence says. "However unparseable its
   ARGUMENTS are" is a claim about the caller's text, and `y.md` is not
   unparseable text — the guard's own model is what failed. Closes the fourth
-  escape of `260803-2338` and every entrance `260803-1835` accumulated. And it
-  keeps the property `260801-1859` was really fixing: the rule is not looser on
-  the visible case than on the invisible one, because `curl -o rules/x.md`
-  denies on pass 1 either way.
+  escape of `260803-2338` and every entrance `260803-1835` accumulated.
+
+  ~~And it keeps the property `260801-1859` was really fixing: the rule is not
+  looser on the visible case than on the invisible one, because
+  `curl -o rules/x.md` denies on pass 1 either way.~~ **Struck 2026-08-04
+  (T8-1). This Pro was false.** `curl -o rules/x.md` **allows**, before and
+  after, in one command's worth of checking. See `## The argument, corrected`.
 - **Cons, measured** (real classifier, shipped protected list, HEAD's own
   4203-command test corpus, both directions):
 
@@ -113,6 +116,14 @@ unknown, whatever the program is.
   the 119-command ordinary-agent corpus, and **zero** newly-allowing commands.
   The third row is a correction: T6-1 costed this direction at two assertions
   and missed it, because both live in one `expectAllAllow` array.
+
+  **Annotation, 2026-08-04 (T8-1).** Read "zero rows of the 119-command
+  ordinary-agent corpus" as a statement about that corpus, not about the
+  change. It was assembled by the same author as the change and contained no
+  `cd X; prog > log`, no `if cd`, and no `&&`-newline chain. A 30-row corpus
+  written for the review without seeing either cost table moved 10 rows
+  (`issues/260804-0840…`). The three rows above still reproduce; what does not
+  survive is the implication that they are all there is.
 
 ### 3. Add `echo` / `printf` / `cat` to the verb table
 
@@ -133,9 +144,16 @@ the one the last three Turns have been adding to.
 1. **The idiom `260801-1859` protected must survive.** `npm test > "$LOG"`,
    `cat report.md > ~/backup.md`, `curl -o $OUT https://x`, `make $TARGET`.
 2. **No fail-open.** No command may newly allow.
-3. **The visible/invisible consistency must hold.** `curl -o rules/x.md` denies,
-   so a rule that allowed its invisible sibling would be the inconsistency
-   `260801-1859` named.
+3. ~~**The visible/invisible consistency must hold.** `curl -o rules/x.md`
+   denies, so a rule that allowed its invisible sibling would be the
+   inconsistency `260801-1859` named.~~ **Struck 2026-08-04 (T8-1): this
+   constraint rested on a false premise and was never met.** `curl -o
+   rules/x.md` allows. Stated correctly, the consistency argument runs the
+   other way and mildly favours option 1. It is replaced by constraint 3′
+   below.
+3′. **A write the guard has already recognised may not be allowed because the
+   guard's own model failed.** That is the line option 2 draws, and it is the
+   one the evidence supports. See `## The argument, corrected`.
 4. **The supersession is stated on the superseded record**, not only here.
 
 ## Answer
@@ -164,7 +182,95 @@ that: an overwrite of any file on the protected list needing no flag, whose
 entrance set grows with every future improvement to the directory model.
 
 ---
-Answered: this record, `## Answer` — the fail-closed bound is drawn around the CAUSE a target failed to resolve for, not around whether the program is in the verb table.
+
+## The argument, corrected
+
+**Appended 2026-08-04, task T8-1, after `reviews/260804-0845-coderev-turn7-…`
+found the central fact inverted (`issues/260804-0841`).**
+
+### The fact
+
+`curl -o rules/x.md` **allows**. It always has. Measured again here, real
+classifier, shipped protected list, at the pre-T8-1 tree and at HEAD:
+
+```
+  pre    now    command
+  allow  allow  curl -o rules/x.md https://x
+  allow  allow  curl -o rules/x.md
+  allow  allow  curl --output rules/x.md https://x
+  allow  allow  wget -O rules/x.md https://x
+  DENY   DENY   curl -s https://x > rules/x.md      # the redirection sibling
+  DENY   DENY   sort /tmp/a > rules/x.md
+```
+
+`curl` is not in `MUTATION_VERBS` and `-o` is not a redirection operator, so
+nothing puts that operand in the written set and no pass ever sees it.
+`260801-1859`'s own `Resolved:` line said this correctly — *"the table already
+**allows** `curl -o rules/x.md`"* — and T7-1's supersession note, three
+paragraphs below it on the same file, said the opposite.
+
+### What the fact costs this record
+
+The Pro under option 2 and constraint 3 both asserted that option 2 *keeps* a
+visible/invisible consistency. It does not, and neither did option 1. Stated
+correctly:
+
+```
+  allow   curl -o rules/x.md https://x            # visible, literal, PROTECTED target
+  DENY    pushd -n docs && echo hi > notes.txt    # invisible, and the target is harmless
+```
+
+After option 2 the guard is looser on that visible case than on the invisible
+one **by a wider margin than before**, because option 2 added denials on the
+invisible side and nothing on the visible one. The consistency argument, read
+honestly, is a point **for option 1** — the direction T7-1 reported it in was
+backwards.
+
+### Is the answer still option 2?
+
+**Yes, and it now stands on one leg instead of two.** That is a real weakening
+and it is stated rather than papered over.
+
+What is left is the measured defect. `260803-1835` — `pushd -n docs && echo
+pwned > agents/coder.md`, no flag, no wrapper, real bash, agent prompt
+overwritten — is real, was reproduced, and is closed by option 2 and by nothing
+else in the option set. Option 1's cost is that defect plus one new entrance
+per future give-up on a directory; option 2's cost is three commands, all with
+a named remedy in the deny reason. That comparison decides it without the
+consistency argument, which is why the answer does not move.
+
+### The line the bound actually draws
+
+The distinction is not **visible vs invisible**. It is **inside the mechanism
+vs outside it**:
+
+- `curl -o rules/x.md` — the classifier never recognised a write. No verb row,
+  no redirection operator, no operand in the written set. It is the standing
+  unrecognised-program residual, shared with `python3 -c`, `eval` and
+  `bash -c`, and the module has always documented it.
+- `cd $D && echo x > y.md` — the classifier **did** recognise the write. The
+  `>` put `y.md` in the written set; the operand is a literal; the only thing
+  missing is a working directory the guard has itself admitted it lost.
+
+Declining to model a program you never recognised is a bound on a mechanism.
+Recognising a write, losing your own model of where it lands, and allowing it
+anyway is that mechanism failing open on its own admission. That asymmetry is
+what carries option 2, and unlike the consistency claim it is checkable against
+the code (`classifyWords` pass 3, `Target.viaCwd`) rather than against a verdict
+someone remembered.
+
+### Method note
+
+The claim was false and one command away from being checked. It was written
+into a decision record, a supersession note, two code comments and
+`README-hooks.md` without ever being run. Every other number in T7-1 reproduced
+under review; this one was not a measurement at all, it was a recollection in
+the shape of one. Both fixed here, and the corpus that would have caught it —
+a cross-product generator rather than a harvest of the suite's own strings —
+is now the method (see `history/260804-0940-turn8-…`).
+
+---
+Answered: this record, `## Answer` — the fail-closed bound is drawn around the CAUSE a target failed to resolve for, not around whether the program is in the verb table. The answer survives the correction in `## The argument, corrected`; one of its two supporting arguments does not.
 Implemented: `hooks/lib/bash-mutation-guard.ts` `classifyWords` pass 3 (task T7-1) — an unresolved target denies when `viaCwd`, whatever the program; a token-unresolvable target outside the verb table still allows.
 Deferred:
 Superseded by:

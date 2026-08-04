@@ -1,6 +1,12 @@
 import { describe, it, expect } from "vitest";
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync, realpathSync, symlinkSync } from "node:fs";
+import {
+  existsSync,
+  readFileSync,
+  realpathSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { resolve } from "node:path";
 import {
   CASE_TIMEOUT,
@@ -1181,6 +1187,74 @@ describe("the fail-closed bound survives — an unparseable ARGUMENT is still al
           expect(runBash(root, cmd).decision, cmd).toBeUndefined();
         }
         expect(guardStateWritten(root)).toBe(false);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  /**
+   * A multi-line `&&` chain is the single-line form, and the guard has to see
+   * it as one. The lexer downgraded the pending `&&` on the newline, so this
+   * shape denied with the reason *"Join the `cd` to what follows it with
+   * `&&`"* — the one remedy the caller had already applied
+   * (`issues/260804-0838…`). An unfollowable deny is what
+   * `rules/protected-path-discipline.md` exists to prevent, and this shape is
+   * among the commonest an agent writes.
+   *
+   * The allow is asserted against the real shells rather than against the
+   * classifier's own reading: both bash and zsh run the chain as one and-or
+   * list, so `build/out.js` goes and the project root's copy stays.
+   */
+  it(
+    "allows a multi-line && chain, and both shells agree it is one and-or list",
+    () => {
+      for (const shell of ["bash", "zsh"] as const) {
+        withProject(({ root }) => {
+          for (const cmd of [
+            "cd hooks &&\n  npm run build &&\n  rm -rf dist",
+            "cd build &&\n  rm out.js",
+            "mkdir -p build &&\n  cd build &&\n  rm out.js",
+          ]) {
+            expect(runBash(root, cmd).decision, `${shell}: ${cmd}`).toBeUndefined();
+          }
+          expect(guardStateWritten(root)).toBe(false);
+
+          // What the allow claims, checked in the shell that would run it.
+          writeFileSync(resolve(root, "build/out.js"), "inner\n");
+          writeFileSync(resolve(root, "out.js"), "outer\n");
+          spawnSync(SHELLS[shell], ["-c", "cd build &&\n  rm out.js"], {
+            cwd: root,
+            stdio: "ignore",
+          });
+          expect(existsSync(resolve(root, "build/out.js")), shell).toBe(false);
+          expect(existsSync(resolve(root, "out.js")), shell).toBe(true);
+
+          // And the other half of the guarantee: a failing `cd` runs nothing,
+          // which is why following it across the newline is sound.
+          writeFileSync(resolve(root, "out.js"), "outer\n");
+          spawnSync(SHELLS[shell], ["-c", "cd nonexistent &&\n  rm out.js"], {
+            cwd: root,
+            stdio: "ignore",
+          });
+          expect(existsSync(resolve(root, "out.js")), shell).toBe(true);
+        });
+      }
+    },
+    CASE_TIMEOUT,
+  );
+
+  /**
+   * The discriminating neighbour: a newline that is NOT part of a `&&`
+   * operator still gives the directory up, so the fix cannot be read as
+   * "newlines are ignored".
+   */
+  it(
+    "still denies when the newline is the joiner rather than part of the operator",
+    () => {
+      withProject(({ root }) => {
+        const res = runBash(root, "cd hooks &&\n  npm run build;\n  rm -rf dist");
+        expect(res.decision).toBe("block");
+        expect(res.reason ?? "").not.toContain("[HALTED]");
       });
     },
     CASE_TIMEOUT,

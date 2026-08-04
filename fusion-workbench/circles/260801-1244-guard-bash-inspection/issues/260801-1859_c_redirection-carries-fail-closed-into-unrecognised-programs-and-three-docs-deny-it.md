@@ -84,9 +84,29 @@ What stands: the defect this issue found was real, and the documented sentence �
 now true. `npm test > "$LOG"`, `npm test > "$TMPDIR/test.log"`,
 `cat report.md > ~/backup.md`, `echo hi >> ~/notes.md`, `echo x > "$F"`,
 `echo x > "rules/$F"`, `curl -o $OUT https://x` and `make $TARGET` all allow, and
-are pinned as allows. So does the consistency argument that decided it: a rule
-must not be looser on the visible case (`curl -o rules/x.md`, which still denies
-on pass 1) than on the invisible one.
+are pinned as allows.
+
+**Correction, 2026-08-04 (task T8-1).** The paragraph above originally continued
+*"So does the consistency argument that decided it: a rule must not be looser on
+the visible case (`curl -o rules/x.md`, which still denies on pass 1) than on the
+invisible one."* **That sentence was false, and it inverted the `Resolved:` line
+directly above it on this same file** — which says, correctly, that *the table
+already allows `curl -o rules/x.md`*. This issue was right; the note was wrong.
+Measured again: `curl -o rules/x.md https://x`, `curl -o rules/x.md`,
+`curl --output rules/x.md https://x` and `wget -O rules/x.md https://x` all
+**allow**, at the commit this note was written and at every commit before it.
+`curl` is not a table verb and `-o` is not a redirection operator, so no pass
+ever sees that operand.
+
+What follows from the correction: the consistency argument does **not** survive
+the reversal. Read honestly it favours *this* issue's program-shaped bound,
+because after the reversal the guard is looser on `curl -o rules/x.md` than on
+`pushd -n docs && echo hi > notes.txt`, whose target is harmless. The reversal
+stands on the measured defect alone (`260803-1835` — an agent prompt overwritten
+with no flag), which is enough on its own, and the superseding record now says so
+in `## The argument, corrected` rather than restating the conclusion with the
+false premise quietly removed. Filed as `260804-0841`, found by coderev on the
+Turn 7 review.
 
 What was superseded: the bound was drawn around the **program**, and it should
 have been drawn around the **cause**. The three rows this resolution gave up —

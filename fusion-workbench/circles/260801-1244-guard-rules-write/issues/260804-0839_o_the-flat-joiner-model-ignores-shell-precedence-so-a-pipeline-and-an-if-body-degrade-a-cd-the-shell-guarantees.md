@@ -80,3 +80,15 @@ Two separable steps; the first is small and closes most of the cost.
 Pin `cd hooks && npx tsc | tee typecheck.log` as an allow and `cd hooks; npx tsc | tee
 typecheck.log` as a deny in the same test, so the fix cannot be a blanket exemption for
 `|`. Keep `until cd build; do rm out.js; done` pinned as a deny.
+
+---
+**Costed in a design record (T8-1, 2026-08-04), not implemented.** Measured: 84 of 84
+generated `if cd X; then W; fi` / `while cd X; do W; done` / `{ cd X; } && W` /
+`cd X && Y | tee log` rows deny today. `until cd X; do W; done` is the counter-example that
+keeps an implementation honest — its body runs when the `cd` FAILED, so its 12 generated
+rows must keep denying. Only option 2 of
+`decisions/260804-0947_o_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`
+(model the and-or list) closes this; the cheap option 1 does not, measured identically
+before and after. Three of these shapes are now named in the cost illustrations of
+`rules/protected-path-discipline.md` as over-denies, so an agent meeting one knows it is a
+cost rather than a hazard.

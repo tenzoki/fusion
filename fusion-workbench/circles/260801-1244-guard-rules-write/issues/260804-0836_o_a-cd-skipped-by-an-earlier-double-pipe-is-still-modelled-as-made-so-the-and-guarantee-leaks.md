@@ -97,3 +97,15 @@ The eight rows deny nothing today, so they cannot pass vacuously. When they are 
 the discriminating control `[ -d nope ] || cd build && rm rules/x.md` must be pinned as
 a deny too — under the recommended fix it denies, and a test that only pinned the
 succeeding-left-operand rows would not distinguish a fix from a coincidence.
+
+---
+**Design record filed (T8-1, 2026-08-04), not implemented.** This finding and its sibling
+are one fact — the joiner is consulted for the segment that writes and never for the one
+that moves — and one decision closes both:
+`decisions/260804-0947_o_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`.
+It costs three options by measurement (option 1: 0 rows on the suite corpus, 0 on the
+30-row ordinary corpus, 940 on a 25,200-row generated cross-product, all carrying the `||`
+or `|` it targets, 0 newly allowing; option 2 also closes `260804-0839`), reproduces the
+leak in both shells, and recommends taking the ten-line give-up now and the reachability
+model as its own Circle. Both leaks are also stated as live residuals in
+`rules/protected-path-discipline.md` so nothing ships claiming the model is exact.

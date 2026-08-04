@@ -87,3 +87,43 @@ gate".
 The `decisions/260804-0106` claim "zero rows of the 119-command ordinary-agent corpus"
 should be annotated with what that corpus did and did not contain — a 30-row corpus
 built without looking at it moves 10 rows.
+
+---
+Resolved (T8-1, 2026-08-04): the enumeration is gone from every shipped surface and is
+replaced by the rule that produces the denials, with the examples labelled as examples.
+
+`rules/protected-path-discipline.md` — "A `cd` is tracked" now opens with the rule in a
+block quote ("once a `cd`, `chdir`, `pushd` or `popd` has run, the working directory is
+unknown in every segment reachable without an `&&`, and a mutation with a relative operand
+there is denied fail-closed"), followed by three ordered questions that decide any command,
+then a deny/allow illustration block headed **"Illustrations, not a list"** which says in
+so many words that the set is open. The three families the review found missing are in it:
+the redirection-to-a-literal-relative-target rows (`cd hooks; npm test > out.log`), the
+`260804-0839` over-denies, and the bare-newline joiner. The section also states plainly why
+the old claim was false — a corpus harvested from the suite can only reproduce what the
+suite contains — and records that a generated cross-product moved 10 of 30 ordinary shapes.
+
+`README-hooks.md` — the `cd`-is-tracked bullet carries the same rule and the same
+correction, with three of the missing shapes named.
+
+`hooks/lib/bash-mutation-guard.ts` module docstring — "the rule to state is every segment
+reachable without an `&&` from the builtin, not a list of shapes", with the reason.
+
+`bash-mutation-guard.test.ts` — the test formerly titled "costs exactly these five ordinary
+shapes" is now "costs these ordinary shapes, which are examples of the rule", its docstring
+says adding a row is expected and the rule is what must not drift, and five of the review's
+rows were added to it (`cd hooks; npm test > out.log`, `cd hooks; npm ci > install.log
+2>&1`, `if cd hooks; then rm -rf dist; fi`, `while cd build; do rm out.js; break; done`,
+`cd hooks && npx tsc | tee typecheck.log`). Its "nothing else in a 4203-command corpus
+moved" comment is gone.
+
+`decisions/260804-0106` — the "zero rows of the 119-command ordinary-agent corpus" claim
+now carries an annotation saying what that corpus did and did not contain.
+
+Every row above was measured through the real classifier before being written down.
+
+Method change, which is the part that matters: cost is now measured with a **generated
+cross-product** (heads × joiners × directory builtins × joiners × writes, plus the
+multi-line and compound shapes a flat product cannot reach) rather than with a harvest of
+the suite's own string literals. The generator is ~40 lines and found all three missing
+families in one run.

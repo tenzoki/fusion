@@ -150,40 +150,119 @@ treated as an ancestor, and `rm` refuses it anyway), but `cd rules && rm -rf .` 
 because the `cd` gave `.` a name.
 
 **Write `&&`, not `;`.** The guard has no filesystem, so it cannot know whether a `cd`
-*succeeded*. After `&&` it does not need to: bash will not run what follows unless the `cd`
-returned zero. After `;`, `||`, `|`, `&` or a newline the shell runs the next segment from
-where it never left — so `cd nonexistent; rm rules/x.md` deletes the real rule while a
-guard that followed the `cd` would be looking at `nonexistent/rules/x.md`. It used to
-follow it. It now gives the directory up at any joiner that is not `&&`, once a `cd`,
-`chdir`, `pushd` or `popd` has run.
+*succeeded*. `&&` is the only joiner it accepts as an answer: bash will not run the
+right-hand side unless the left-hand side returned zero. After `;`, `||`, `|`, `&` or a
+bare newline the shell runs the next segment from where it never left — so
+`cd nonexistent; rm rules/x.md` deletes the real rule while a guard that followed the `cd`
+would be looking at `nonexistent/rules/x.md`. It used to follow it. It now gives the
+directory up instead.
 
-Read the second half of that carefully, because it is wider than "a `;` right after the
-`cd`". The give-up fires for any segment reached **unconditionally**, however far down:
+### The rule, so you can predict a case this file does not list
+
+> Once a `cd`, `chdir`, `pushd` or `popd` has run, **the working directory is unknown in
+> every segment that is reachable without an `&&` from that point on** — and a mutation
+> with a **relative** operand in such a segment is denied fail-closed, naming the joiner
+> that caused it.
+
+Three questions decide any command, in order:
+
+1. **Does it contain a directory builtin at all?** No → this rule cannot touch it, whatever
+   its joiners are. `ls; rm out.js` and `npm test; rm build/out.js` allow, and always did.
+2. **Is every joiner between that builtin and the write an `&&`?** Yes → the model stays
+   exact and this rule denies nothing.
+3. **Does the writing segment name a relative path** — an operand *or* a redirection
+   target? No → nothing to place, nothing to deny.
+
+Two words in the rule carry most of the surprises.
+
+**"Reachable", not "next".** The give-up is not "a `;` right after the `cd`". It fires for
+any segment reached **unconditionally**, however far down, and the `;` may be nowhere near
+the `cd`:
 
 ```
 cd hooks && npm run build; rm -rf dist      # denies — `rm -rf dist` runs whatever happened
-cd hooks && npm run build && rm -rf dist    # allows — the whole chain is guaranteed
+cd hooks && npm run build && rm -rf dist    # allows — nothing reaches it unconditionally
 ```
 
-The cost is these five shapes, and nothing else measured moved:
+**"Unknown", not "denied".** Losing the directory costs nothing by itself. A `pushd … ; popd`
+idiom degrades and then writes nothing relative, so it allows; so does `cd hooks; npm test`,
+and so does `cd hooks; rm /tmp/x`, whose target names itself.
+
+### Illustrations, not a list
+
+Every row below is measured. They are **examples of the rule above**, and the set is open —
+if you can answer the three questions for a command you have not seen here, you have the
+rule; if you cannot, re-read it rather than looking for your command in the table.
 
 ```
-cd build; rm out.js
-cd docs; rm ../notes.txt
-mkdir -p build && cd build; rm out.js
-cd hooks && npm run build; rm -rf dist
-cd build || exit 1; rm out.js
+DENY   cd build; rm out.js
+DENY   cd docs; rm ../notes.txt
+DENY   mkdir -p build && cd build; rm out.js
+DENY   cd hooks && npm run build; rm -rf dist
+DENY   cd build || exit 1; rm out.js
+DENY   cd hooks; npm test > out.log              # a redirection target is an operand
+DENY   cd hooks; npm ci > install.log 2>&1
+DENY   cd build<newline>rm out.js                # a bare newline is a joiner like `;`
+DENY   if cd hooks; then rm -rf dist; fi         # over-deny, see below
+DENY   while cd build; do rm out.js; break; done # over-deny, see below
+DENY   cd hooks && npx tsc | tee typecheck.log   # over-deny, see below
+
+allow  cd build && rm out.js
+allow  cd hooks && npm run build && rm -rf dist
+allow  cd hooks &&<newline>  npm run build &&<newline>  rm -rf dist
+allow  ls; rm out.js
+allow  npm test; rm build/out.js
+allow  pushd hooks && npm test; popd
+allow  cd hooks; npm test
+allow  cd hooks; rm /tmp/x
+allow  cd hooks; npm test > /tmp/out.log
 ```
 
-Each has two ways through, and the deny reason names both: join with `&&`, or name the
-target absolutely. `&&` is usually the better one, because it is also what makes the
+An earlier version of this section said "the cost is these five shapes, and nothing else
+measured moved". That was false in the context you read it in, and the way it was false is
+worth knowing: the five came from a corpus harvested out of the guard's own test suite,
+which can only ever reproduce what the suite already contains. A generated cross-product
+moved **ten of thirty** ordinary shapes (`issues/260804-0840…`). The fix is not a longer
+list — it is the rule above.
+
+Each denial has two ways through, and the deny reason names both: join with `&&`, or name
+the target absolutely. `&&` is usually the better one, because it is also what makes the
 command correct in the shell — `mkdir -p build && cd build` is written that way for the
-same reason. A command with no directory builtin in it is untouched: `ls; rm out.js` and
-`npm test; rm build/out.js` allow, and always did. So do `pushd … ; popd` idioms, which
-give the directory up and then write nothing relative.
+same reason.
+
+**A newline after `&&` is part of the `&&`.** Bash's grammar puts the newlines inside the
+operator, so a multi-line chain is its single-line form and the guard reads it that way:
+
+```
+cd hooks &&
+  npm run build &&
+  rm -rf dist            # allows, exactly as the one-line version does
+```
+
+For one commit this denied, with the reason *"Join the `cd` to what follows it with `&&`"* —
+an instruction to do what the command already did (`issues/260804-0838…`, fixed). If you
+ever meet a deny whose remedy you have already applied, that is a bug in the guard and not
+a puzzle to solve by rewriting: report it.
 
 The give-up respects scope. A `cd` bash itself discarded casts no doubt forward, so
 `(cd nonexistent); rm x.md` still resolves `x.md` from the project root.
+
+**Two honest edges, both open.** The rule above is what the guard implements; the shell is
+slightly different in two places, and neither is fixed yet.
+
+- **The guard over-denies a `cd` the shell does in fact guarantee.** A conditional body, a
+  loop body, a brace group and a pipeline stage all reach their write on a condition the
+  shell has already tested, so `if cd hooks; then rm -rf dist; fi`,
+  `while cd build; do rm out.js; break; done` and `cd hooks && npx tsc | tee typecheck.log`
+  are safe and denied anyway (`issues/260804-0839…`). Cost, not hazard. `&&` or an absolute
+  path clears them.
+- **`&&` guarantees slightly less than the guard reads into it.** It guarantees that the
+  and-or list to its *left* returned zero, not that the segment immediately before it ran,
+  and it does not reach into a pipeline. So `true || cd build && rm rules/x.md` and
+  `echo hi | cd build && rm rules/x.md` are **allowed** and do delete the rule in a real
+  shell (`issues/260804-0836…`, `260804-0837…`; the design question is
+  `decisions/260804-0947…`). Hazard, not cost — and it is on the list of things this rule
+  forbids you from reaching for.
 
 **Only the plain forms are tracked, and the rest admit they are untracked.** The
 tracking is exact for bash's default `cd`, which resolves `..` against `$PWD` textually.
@@ -464,11 +543,29 @@ Known and accepted:
 - **A `cd` that FAILS is no longer followed, and that is a cost rather than a gap.** The
   classifier still has no filesystem access and still cannot know whether a `cd` succeeded;
   what changed is that it stops claiming to know the directory instead of assuming success.
-  So `cd nonexistent; rm rules/x.md` denies, and so do the five ordinary shapes listed under
-  "A `cd` is tracked" above. What is left on the residual side is the ordinary give-up
+  So `cd nonexistent; rm rules/x.md` denies, and so does every shape the rule under "A `cd`
+  is tracked" describes. What is left on the residual side is the ordinary give-up
   behaviour: after a non-`&&` joiner the guard denies relative writes it cannot place, which
   over-denies whenever the `cd` would in fact have succeeded. `&&` is the way through, and
   it is also the correct shell.
+- **`&&` is read as a stronger guarantee than bash gives, and that one errs toward ALLOW.**
+  This is the live hole in the directory model, and it needs no flag, no wrapper and no
+  environment variable. `&&` guarantees that the and-or list to its **left** returned zero,
+  not that the segment immediately before it ran, and `|` binds tighter than `&&` so a
+  pipeline stage runs in a bash subshell that never moves the calling shell. The guard
+  consults the joiner for the segment that **writes** and never for the segment that
+  **moves**, so both of these are allowed and both delete a protected rule in a real shell:
+
+  ```
+  true || cd build && rm rules/x.md       # the `cd` never ran; the model followed it anyway
+  echo hi | cd build && rm rules/x.md     # bash subshelled the `cd`; zsh did not
+  ```
+
+  Filed `issues/260804-0836…` and `260804-0837…`, both pre-existing, both open; the design
+  question that closes both at once is `decisions/260804-0947…`. Until it is answered, the
+  sentence "the guard's model of where the shell is standing is exact for every `cd` written
+  in the command text and reached by a path the shell guarantees" is **not** true, and
+  nothing in this file should be read as claiming it.
 - **Verbs deliberately not in the table**: `mkdir`, `chmod`, `chown`, `touch`, `tar`,
   `rsync`, `patch`, `gzip`. Each was left out because its operands are usually
   directories and a row would carry the ancestor rule with it.

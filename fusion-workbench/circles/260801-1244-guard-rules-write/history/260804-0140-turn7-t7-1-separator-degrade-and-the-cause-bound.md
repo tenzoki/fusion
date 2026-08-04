@@ -189,9 +189,16 @@ newly allowed at `048f3db` (one of which overlaps), and T6-1's eleventh row
 ```
 
 The last two rows are the whole change, and they are pinned together in one test so the
-distinction cannot be read as an accident. `curl -o rules/x.md` still denies on pass 1, so
+distinction cannot be read as an accident. ~~`curl -o rules/x.md` still denies on pass 1, so
 the rule is not looser on the visible case than on the invisible one — the property
-`260801-1859` was really protecting.
+`260801-1859` was really protecting.~~
+
+> **Correction, 2026-08-04, task T8-1.** The struck sentence is false and was never
+> measured. `curl -o rules/x.md` **allows** — `curl` is not a table verb and `-o` is not a
+> redirection operator — and this history inherited the error from the supersession note it
+> was describing. The corrected argument is in
+> `decisions/260804-0106…` `## The argument, corrected`; the decision itself stands.
+> Filed `issues/260804-0841`.
 
 Not `npm test 2>&1 | tee "$LOG"`, which I briefly asserted as an allow and which denies
 both before and after: `tee` is a table verb, so its operand fails closed as a verb operand
