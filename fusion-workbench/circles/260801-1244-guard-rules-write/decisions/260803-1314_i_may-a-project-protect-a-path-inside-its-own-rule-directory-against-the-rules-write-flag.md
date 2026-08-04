@@ -149,3 +149,6 @@ The cost this record accepts is now real: what the flag reaches is no longer ans
 the plugin alone. Measured over a generated cross-product of 182,688 classifications, this
 step alone newly allows **0** and newly denies 4,056, all of them writes to paths a project
 declared protected with the flag set.
+
+---
+Implemented: `ac20f7d` — the subtraction applies only to entries whose provenance is the project layer, which is what `protectedPathsSource === "project"` means and why Step 4 waited on Step 2. A project that declares nothing keeps the exemption byte-identically: the whole 145-case exemption unit suite passes an empty declared list, three integration cases assert it through a real guard subprocess, and the mutation substituting the effective list for the declared one breaks 26 cases. The subtraction adopts the protection side's match conventions, case folded with the trailing-separator retry, or `rm -rf rules/immutable` would delete the subtree a project declared immutable.

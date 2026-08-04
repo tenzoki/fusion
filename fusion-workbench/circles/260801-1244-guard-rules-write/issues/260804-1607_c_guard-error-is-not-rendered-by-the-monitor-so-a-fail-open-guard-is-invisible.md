@@ -54,3 +54,25 @@ individually worth reading, which is exactly what the warning budget is for.
 
 Worth confirming the level mapping in `renderWarnings()` gives it at least the weight of a
 block.
+
+---
+Resolved: `guard_error` now reaches the warnings panel and renders at the halt level, labelled
+"Fail-open" — red border, red badge, background tint, distinct from the amber default and from
+the cyan advisory. Implemented in `bin/monitor` (Step 5 of
+`planning/260804-1633_o_plan-c5b-remediation-and-ship.md`), coder session
+`history/260804-2100-coder-step5-guard-error-on-the-dashboard.md`. Five cases added to
+`hooks/lib/__tests__/monitor-warnings-panel.test.ts`, every one driving the real binary over
+HTTP; `npx vitest run` 1537 passed, 26 files.
+
+**One correction to this record's own suggested direction.** "Add `guard_error` to
+`WARNING_EVENT_TYPES`" is necessary and not sufficient, and the reasoning offered for it —
+"an error is rare and each one is individually worth reading, which is exactly what the warning
+budget is for" — is true of the *fault* and false of the *event*. Both hooks fail open per
+invocation, so a fault that sits on disk emits one row per guarded tool call for as long as it
+sits there. Charged to the warning class and measured: forty fail-opens evicted every
+`guard_block`, `guard_halt`, `churn_critical` and `cross_file_critical` from the panel (the
+assertion read `expected [] to deeply equal [ 'churn_critical', …(3) ]`), and one fail-open
+followed by fifty churn warnings evicted the fail-open. That is the advisory-burst failure
+arriving through a third door, in both directions. `guard_error` therefore carries its own
+budget (`MAX_ERRORS_RETURNED = 8`) alongside the advisory one, which is the same carve-out this
+panel already uses rather than a new mechanism.
