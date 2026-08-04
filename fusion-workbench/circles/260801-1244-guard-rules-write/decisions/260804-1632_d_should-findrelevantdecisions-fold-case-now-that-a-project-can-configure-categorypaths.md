@@ -56,3 +56,6 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+---
+Deferred: not this Circle — user's call, 2026-08-04. The half of `260804-1432` that was a false claim on disk is already corrected: `hooks/lib/paths.ts` no longer says the state is unreachable, because the C5b loader made it reachable. What remains is a behaviour choice that does not gate the ship and that would be the sixth question competing for attention in a Circle already carrying five security boundaries. Revisit when a project reports a category that misses its own file, or alongside `circles/260804-1205-shell-reachability-model` if path matching is unified there. The current behaviour is case-sensitive and the docstring now says so plainly rather than claiming the question cannot arise.

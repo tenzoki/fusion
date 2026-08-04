@@ -113,3 +113,30 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+## Answer
+
+**Option 1: `restore` does not learn the exception. The asymmetry stays and is documented.**
+
+Chosen by the user, 2026-08-04, as this record recommended.
+
+`git checkout HEAD -- <path>` allows and `git restore --source=HEAD <path>` denies, for the
+same operation. The way through the deny is a command the rule file already tells every agent
+is always allowed, so the cost is one documented sentence rather than a blocked workflow.
+
+Option 2 would have made a command **newly allow**. No Turn in this Circle has done that, and
+it is the property every boundary claim here rests on. Spending it on an ergonomic gain, in a
+Circle whose ship was gated on five security-boundary questions, is the wrong trade at the
+wrong time.
+
+**The obligation:** the asymmetry must be stated where a reader meets it, not only here. An
+agent that hits the `restore` deny and does not know `checkout HEAD` is the sanctioned
+spelling will rephrase, and rephrasing past a deny is the behaviour the rule file forbids.
+Step 7 owns the sentence, and it names the allowed form explicitly rather than describing it.
+
+If option 2 is ever wanted it is a clean first step for a later Circle, where the inertness
+argument can be made at the length it needs. The unit suite pins the current divergence with
+a `MEASURES:` case, so it fails the day that Circle lands.
+
+---
+Answered: this record, `## Answer` — user chose option 1; the asymmetry costs a sentence, closing it would cost the no-new-allow property.

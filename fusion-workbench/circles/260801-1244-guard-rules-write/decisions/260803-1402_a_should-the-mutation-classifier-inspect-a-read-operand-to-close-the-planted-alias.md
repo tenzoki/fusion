@@ -144,3 +144,32 @@ The measured table still reproduces at HEAD `cc012fc`: `ln -s ../agents/coder.md
 The residual row this record would remove is live at `rules/protected-path-discipline.md:519-530`, and the same file now carries a second, larger honesty problem in the section an agent reasons from (`issues/260804-1025_o_`). That does not change this record's answer; it changes the weight of the record's own argument that a residual row calling the gap "accepted" becomes wrong the day a deny lands.
 
 The two cross-reference corrections from reconciliation 260803-1516 were not applied and are repeated here so they are not lost: `issues/260802-2335_p_…` is now `_c_`, and `shared/issues/260802-2320` is not in the shared store — it is `circles/260801-1244-guard-rules-write/issues/260802-2320_c_…`, and its marker has since moved from `_o_` to `_c_` as well, so the citation is now wrong in two ways.
+
+## Answer
+
+**Option 1: the classifier keeps reading only the operands a verb writes.**
+
+Chosen by the user, 2026-08-04. `ln`, `ln -s` and `cp -l` stay allowed whatever their source
+operand is, and the planted alias stays on the accepted-residual list.
+
+The reasoning that carried it is the one this record recommended with low confidence, and it
+is about the invariant rather than about the case. "Only the operands a verb writes count" is
+stated four times across the two shipped documents, it is what keeps every legitimate read of
+a protected file allowed, and an agent can state it from memory. Denying a read operand would
+close one spelling of the class at the price of that regularity, and an agent that has learned
+"reads are always fine" and then meets a denied `cp -l` is in exactly the position
+`rules/protected-path-discipline.md` exists to prevent: an unexplained deny, followed by a
+rephrasing that works.
+
+The residual is not new and is already on both residual lists, added when `260802-2335`
+closed. **The obligation this answer creates is that the lists say the whole of it**: not only
+that a pre-existing alias escapes protection, but that an agent may create one itself, in one
+allowed command, with no flag, and write through it on either surface. Step 7 of the
+remediation plan owns that sentence.
+
+The larger fix remains available and is where it belongs: resolving every guarded path through
+the filesystem drops this case out as a by-product rather than as a special case, and that is
+`circles/260804-1205-shell-reachability-model`'s neighbourhood rather than this Circle's.
+
+---
+Answered: this record, `## Answer` — user chose option 1; the write-only rule is worth more than the spelling it leaves open, and the residual must be stated in full rather than in part.
