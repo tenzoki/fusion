@@ -1,7 +1,7 @@
 # Implementation Plan: rules-write flag and project-level guard configuration (C5a, C5b)
 
 **Date:** 2026-08-02
-**Status:** In Progress — Steps 1 to 5 complete and committed (`768242c`, `6b3aa5c`, `0f341e0`, `45f53d4`, `bf75941`). Steps 6, 7, 8 and 10 unstarted. **Step 9 is no longer unstarted: part of it landed unintentionally under another task**, and the `[SCOPE CHANGED]` note on that step is now partly false. Verified by reconciliations 260803-1516 and 260804-1021; see `## Reconciliation Log`.
+**Status:** In Progress — **Steps 1 to 8 complete and committed** (`768242c`, `6b3aa5c`, `0f341e0`, `45f53d4`, `bf75941`, `46d8333`, `557340d`, `7f3d789`). **Steps 9 and 10 are superseded** by `planning/260804-1633_o_plan-c5b-remediation-and-ship.md`, whose Steps 7 and 8 carry the same obligations plus everything the independent assessment `analyses/260804-1600-c5b-independent-assessment.md` added. Do not execute Steps 9 or 10 from this file. **Step 9 was also partly written unintentionally under another task**, and the `[SCOPE CHANGED]` note on that step is partly false; the successor plan's Step 7 obligation list is the current statement of what is owed. Corrected by the planner on 260804-1633, closing `issues/260804-1608_o_`. Earlier state verified by reconciliations 260803-1516 and 260804-1021; see `## Reconciliation Log`.
 **Circle:** `circles/260801-1244-guard-rules-write`
 **Spec:** `shared/planning/260801-1122_o_spec-normative-consolidation.md`, `### C5: Guard changes` (C5a at `:275`, C5b at `:285`, criteria at `:305`). Status Final; nothing settled there is reopened here.
 **Executors:** `coder` for nine steps, `ontocoder` for one (Step 7, two JSON files). No strategic-domain step, so `analyst` is not in the active set.
@@ -346,7 +346,7 @@ The Turn boundary sits between Step 5 and Step 6. See `## Sizing` for why.
   - **Two issues filed.** `issues/260804-1427_o_` (the floor residual reaches `fusion-workbench/.guard-state/**`, one step past what decision `260802-1912` states — measured, with the halt bound measured alongside it) and `issues/260804-1432_o_` (`hooks/lib/paths.ts` states that two case-sensitive matches are unreachable "until the per-project loader lands"; this step is that loader).
   - `hooks/dist/` tracked files restored to HEAD. No `fusion-guard.json` created outside a harness fixture — Step 7 still owns both files.
 
-### Step 7 — The template and this repository's own configuration file
+### Step 7 [DONE] — The template and this repository's own configuration file
 
 - **Executor:** `ontocoder`
 - **Files:** new `templates/fusion-guard.json`, new `fusion-guard.json` at the repository root
@@ -354,6 +354,9 @@ The Turn boundary sits between Step 5 and Step 6. See `## Sizing` for why.
 - **Changes:** The template declares inheritance and lists no paths, per D-k. It carries only underscore-prefixed documentation keys, which the parser ignores: what the file is, that it inherits the plugin's `hooks/config.json` and that the effective list lives there rather than being restated here, how to override a top-level key, that the file is git-tracked on purpose so a change to it appears in a diff, that the file protects itself once it exists, and one sentence stating that in fusion's own source tree the protected-path half has no effect because the write guard stands down. No commented-out copy of the default list, which D-k rejected. The repository-root copy is the template, copied verbatim, per Q4.
 - **Acceptance criterion served:** `:328` — a project whose seeded configuration is untouched gets the plugin's `protectedPaths`, including paths added to the plugin default later.
 - **Verification:** `node -e "JSON.parse(require('fs').readFileSync('templates/fusion-guard.json','utf8'))"` parses; `git check-ignore -v fusion-guard.json templates/fusion-guard.json` reports no match, so both are trackable; `grep -n "for item in" -A 2 install.sh` confirms `templates` ships and `fusion-guard.json` at the root does not; and one unit case asserting the template merges to a config identical to the plugin's, which is what "inherits and lists nothing" means operationally.
+- **[DONE — ontocoder, 260804-1502. Commit `557340d`. Session: `history/260804-1502-ontocoder-step7-guard-config-template.md`.]** Both files landed, byte-identical to each other, with six underscore-prefixed documentation keys and no declared configuration. Three unit cases in `hooks/lib/__tests__/config.test.ts`, including a mutation that makes case 1 insufficient on its own. The independent assessment `analyses/260804-1600-c5b-independent-assessment.md` confirmed the keys are genuinely inert and that the seeded template produces `diagnostics: []` with an effective configuration equal to the plugin's plus the floor.
+  - **Marked retroactively by the planner on 260804-1633**, closing `issues/260804-1608_o_`. The step was left unmarked because the ontocoder's history ends "No commit made — the orchestrator commits after validation", and the orchestrator did not mark it.
+  - **Two of the six keys are now known false**, filed as `issues/260804-1605_o_`. The author's verification was sound against the code that existed; nothing in the spec, the plan or this step named `guard.enabled`. The correction is Step 6 of `planning/260804-1633_o_plan-c5b-remediation-and-ship.md` and is sequenced after the code decisions deliberately.
 
 ### Step 8 [DONE] — `/fusion:setup` seeds the file
 

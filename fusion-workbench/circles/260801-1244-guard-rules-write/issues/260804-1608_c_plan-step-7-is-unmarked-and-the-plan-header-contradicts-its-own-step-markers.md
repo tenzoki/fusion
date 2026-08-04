@@ -44,3 +44,6 @@ Mark Step 7 `[DONE]` with a completion block in the shape Steps 6 and 8 use, cit
 `557340d` and `history/260804-1502-ontocoder-step7-guard-config-template.md`. Rewrite the `**Status:**` line
 to name Steps 9 and 10 as the remaining work, plus whatever the three High issues from
 analysis `260804-1600` add. Reconciler work, not coder work.
+
+---
+Resolved: planner, 260804-1633. Step 7 of `planning/260802-1856_o_plan-guard-rules-write.md` now carries a `[DONE]` heading and a completion block in the shape Steps 6 and 8 use, citing commit `557340d` and `history/260804-1502-ontocoder-step7-guard-config-template.md`, and noting that two of the template's six keys have since been found false (`260804-1605_o_`). The `**Status:**` line now reads Steps 1 to 8 complete and marks Steps 9 and 10 as superseded by `planning/260804-1633_o_plan-c5b-remediation-and-ship.md`, so a third reconciliation pass no longer starts from a header that is wrong about three of ten steps.
