@@ -330,3 +330,27 @@ for every `cd` written in the command text, and blind to every `cd` that is not"
 checkable, and worth putting in front of the user.
 
 It is not true yet.
+
+---
+
+**Reconciliation 260804-1021 (reconciler, domain `code`) — the regression this review found is closed at HEAD `cc012fc`. Verified independently, not read off the fix log.**
+
+The review's central finding was that `9aacab5` made eleven measured rows allow that previously denied. Those eleven rows are nine distinct command texts (rows 6/7 and 8/9 are one text each, measured in bash and in zsh; the classifier is shell-agnostic). Each was run through `classifyBashMutation` at four commits, with `hooks/lib` materialised out of git read-only at each:
+
+| `cb2c8ad` | `9aacab5` | `048f3db` | HEAD | Command |
+|---|---|---|---|---|
+| DENY | allow | DENY | DENY | `command cd build && rm rules/x.md` |
+| DENY | allow | DENY | DENY | `command cd docs && rm agents/coder.md` |
+| DENY | allow | allow | DENY | `command cd build && echo pwned > rules/x.md` |
+| DENY | allow | DENY | DENY | `command command cd build && rm rules/x.md` |
+| DENY | allow | DENY | DENY | `command cd build; rm rules/x.md` |
+| DENY | allow | DENY | DENY | `/usr/bin/time cd build && rm rules/x.md` |
+| DENY | allow | DENY | DENY | `\time cd build && rm rules/x.md` |
+| DENY | allow | DENY | DENY | `'time' cd build && rm rules/x.md` |
+| DENY | allow | DENY | DENY | `"time" cd build && rm agents/coder.md` |
+
+The review's measurement reproduces exactly. `048f3db` closed eight of the nine; the ninth, the redirect spelling, closed in `c9c44a3` with `issues/260803-1835`.
+
+**The closure did not restore the defect `9aacab5` was written to fix.** All eight rows of `issues/260803-2038`'s own measurement table deny at HEAD, including the redirect spelling `command cd rules && echo pwned > x.md` that briefly re-allowed at `048f3db`. The mechanism changed — the rows now deny by give-up (`unknownCwdReason`) rather than by modelling — and the discriminating controls confirm the give-up did not become a blanket: `cd rules && rm x.md` denies with the *protected-path* reason, `cd build && rm out.js` still allows, and `rm -rf node_modules`, `rm -rf dist`, `pushd build && rm out.js` are all untouched.
+
+**One thing this review could not have known and which the record should carry.** `048f3db`, the commit that closed the regression this review found, was itself never reviewed. Turn 7's review used it as the *baseline* (`048f3db..c9c44a3`), which measures what came after it, not what it did. Turn 8's commit `cc012fc` was never reviewed either, because the session hit its max-Turns circuit breaker in the same commit. Two of the session's five code commits carry no independent review.

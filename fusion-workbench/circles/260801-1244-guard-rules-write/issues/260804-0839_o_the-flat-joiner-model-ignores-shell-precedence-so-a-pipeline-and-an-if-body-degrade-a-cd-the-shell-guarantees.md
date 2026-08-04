@@ -92,3 +92,20 @@ rows must keep denying. Only option 2 of
 before and after. Three of these shapes are now named in the cost illustrations of
 `rules/protected-path-discipline.md` as over-denies, so an agent meeting one knows it is a
 cost rather than a hazard.
+
+---
+
+**Reconciliation 260804-1021 (reconciler, domain `code`) — stays `_o_`. Confirmed live at HEAD, and it is the one regression this session caused and did not close.**
+
+The four shapes still deny at HEAD `cc012fc`: `if cd hooks; then rm -rf dist; fi`, `while cd build; do rm out.js; break; done`, `{ cd build; } && rm out.js`, and a pipeline stage after a `cd`. All allowed at `048f3db`. `c9c44a3` introduced it.
+
+**Regression accounting for this session, recorded here because this file is the survivor.** Two of the five code commits in `6c447eb..cc012fc` introduced regressions:
+
+| Commit | Introduced | State at HEAD |
+|---|---|---|
+| `9aacab5` (Turn 5) | `260803-2236` — eleven measured rows flipped deny to allow | closed by `048f3db` and `cc012fc` |
+| `c9c44a3` (Turn 7) | `260804-0838` (behaviour), **this issue** (behaviour), `260804-0840` (accuracy), `260804-0841` (accuracy), `260804-0842` (new coverage gap) | 0838, 0840, 0841 closed by `cc012fc`; **this one and 0842 open** |
+
+Five regressions plus one new coverage gap, four closed within the session, two open. The Turn 7 review's headline — zero commands allow at HEAD that denied at `048f3db`, across 222,319 generated commands — is true and is about the **security** direction only. Turn 7 opened no hole; it cost accuracy and over-denied. Both statements are true and the second is easy to lose behind the first.
+
+**Why this one matters more than its Medium severity suggests.** It is not a hazard, it is a cost, and it is a cost an agent meets on ordinary work: `cd hooks && npx tsc | tee typecheck.log` is a command a coder writes without thinking. `rules/protected-path-discipline.md:254-258` and its illustration block now name three of these shapes as over-denies, so an agent meeting one can tell it is a cost rather than a hazard — which is the mitigation, and it is the right one while the fix waits on `decisions/260804-0947_o_`. Only option 2 of that decision closes this; option 1, the cheap one, measures identically before and after.

@@ -1,7 +1,7 @@
 # Implementation Plan: rules-write flag and project-level guard configuration (C5a, C5b)
 
 **Date:** 2026-08-02
-**Status:** In Progress — Steps 1 to 5 complete and committed (`768242c`, `6b3aa5c`, `0f341e0`, `45f53d4`, `bf75941`); Steps 6 to 10 open. Verified by reconciliation 260803-1516; see `## Reconciliation Log`.
+**Status:** In Progress — Steps 1 to 5 complete and committed (`768242c`, `6b3aa5c`, `0f341e0`, `45f53d4`, `bf75941`). Steps 6, 7, 8 and 10 unstarted. **Step 9 is no longer unstarted: part of it landed unintentionally under another task**, and the `[SCOPE CHANGED]` note on that step is now partly false. Verified by reconciliations 260803-1516 and 260804-1021; see `## Reconciliation Log`.
 **Circle:** `circles/260801-1244-guard-rules-write`
 **Spec:** `shared/planning/260801-1122_o_spec-normative-consolidation.md`, `### C5: Guard changes` (C5a at `:275`, C5b at `:285`, criteria at `:305`). Status Final; nothing settled there is reopened here.
 **Executors:** `coder` for nine steps, `ontocoder` for one (Step 7, two JSON files). No strategic-domain step, so `analyst` is not in the active set.
@@ -359,7 +359,7 @@ The Turn boundary sits between Step 5 and Step 6. See `## Sizing` for why.
 - **Acceptance criterion served:** `:331`.
 - **Verification:** Extract the block and run it twice against a scratch directory with `FUSION_PLUGIN_ROOT` pointed at this repository: the first run creates the file, the second leaves an edited copy byte-identical. Confirm with `diff`.
 
-### Step 9 — Documentation and the release-checklist line
+### Step 9 [PARTLY DONE — UNINTENDED] — Documentation and the release-checklist line
 
 - **Executor:** `coder`
 - **Files:** `rules/protected-path-discipline.md`, `README-hooks.md`, `CLAUDE.md`
@@ -375,6 +375,13 @@ The Turn boundary sits between Step 5 and Step 6. See `## Sizing` for why.
   - **Newly added to this step.** `issues/260803-1402_o_step-9-must-also-document-that-a-hard-linked-rule-file-is-not-exempt.md` lists the three items that must land together: the `FUSION_ALLOW_RULES_WRITE` row in the `README-hooks.md` tuning table, the correction of the two "no override exists" sentences (still live at `rules/protected-path-discipline.md:171` and `README-hooks.md:187`), and the hard-linked-rule-file exception. T3-7 deliberately wrote none of them, because naming the flag in a document that denies the flag exists ships a self-contradiction.
   - **Sequencing constraint from the Turn 3 review.** `reviews/260803-1431-coderev-turn3-guard-boundary.md` `## Verdict` recommends landing `issues/260803-1431_o_` (the `cd -P` gate-0 gap) and its three false docstrings *before* this step writes the flag into shipped documents, so the user-facing text is not authored against a boundary that is about to move.
   - **A later pass is already owed on the same file.** `decisions/260803-1419_a_how-should-the-protected-path-check-treat-the-case-of-a-path.md` commits to unconditional case folding, which falsifies the "purely textual" premise this step's file states. That correction belongs to a later Circle, so this step should not claim to leave the document final.
+- **[SCOPE CHANGED AGAIN — reconciliation 260804-1021. The note directly above is now partly false; read this before acting on it.]** Ten checkable assertions were re-verified at HEAD `cc012fc`. Three still hold as written, two hold in substance but cite stale line numbers or markers, one names a constraint that has since been satisfied, one remains correctly open, and **three are now false**. Detail and evidence in `## Reconciliation Log` under the 260804-1021 entry; the four consequential corrections are:
+  - **Step 9 is not unstarted.** Its own basis for saying so — that `grep -rn FUSION_ALLOW_RULES_WRITE README-hooks.md rules/ CLAUDE.md` returns nothing — now returns two hits, `rules/protected-path-discipline.md:49` and `README-hooks.md:145`. Both arrived with the case-folding work (`86a437a`), not with a Step 9 task.
+  - **So the self-contradiction T3-7 refused to ship has shipped anyway.** The same file names the flag at `:49` and denies any override exists at `:421`, and the flag does reach the Bash surface (`hooks/guard.ts:410-412`). Correcting that is now the first thing this step does, not the last.
+  - **The two "no override" sentences moved.** They are at `rules/protected-path-discipline.md:421` and `README-hooks.md:199`, not `:171` and `:187`. A third file carries the same false sentence: `CLAUDE.md:113`.
+  - **The case-folding correction is done, in this Circle, not a later one.** `86a437a` landed it in code and in both shipped documents. The last bullet above is false; this step no longer owes it.
+  - **Newly added to this step, filed 260804-1021:** `issues/260804-1025_o_` (the decision procedure at `rules/protected-path-discipline.md:172` tells an agent "the model stays exact" for the two commands that delete a rule file), and the residual-list omissions on `issues/260804-1024_o_` and `issues/260804-1026_o_`.
+  - **The sequencing constraint is satisfied.** `issues/260803-1431` closed in `a79ff1a`. Step 9 is no longer blocked by it.
 
 ### Step 10 — Rebuild `dist`, verify against the shipped artifact, bump the version
 
@@ -529,3 +536,36 @@ This is the state the user's scope choice intended. The session worked the eleve
 **One divergence worth recording.** Step 9 is unstarted but its scope has genuinely changed under it, in both directions — see the `[SCOPE CHANGED]` note on the step. This is the only place where an issue closed this session reached into the plan's remaining work.
 
 **Suite verified independently, not read off the review.** `cd hooks && npx vitest run` at HEAD: **1080 passed, 23 files**, exit 0. `npm test` was deliberately not run, because it builds first and would rewrite the `hooks/dist/` that Step 10 owns.
+
+### 260804-1021 — reconciler, domain `code`, session `history/260803-1737-orchestrator-session.md`
+
+Five Turns ran (the Circle's fourth through eighth), `6c447eb..cc012fc`, ending on the max-Turns circuit breaker rather than on convergence. The session worked issues, by the user's scope choice, and the plan advanced by exactly one step — the wrong one, unintentionally.
+
+**Steps 6, 7, 8 and 10 — unstarted, re-verified at HEAD rather than carried over.**
+
+| Step | Evidence it has not begun |
+|---|---|
+| 6 — C5b loader | `hooks/lib/config.ts:34` still `const CONFIG_PATH = findConfigPath()` at module level; `:108` still `loadConfig(configPath?: string)`; `:113` still `configPath ?? CONFIG_PATH`. No `diagnostics`, no `PROJECT_CONFIG_FILENAME` |
+| 7 — template | `templates/` holds `investigator-capture-layout.md` and `plane.config.yaml` only; `find . -name fusion-guard.json` returns nothing anywhere in the tree |
+| 8 — setup seeding | `grep -n fusion-guard skills/setup/SKILL.md` returns nothing |
+| 10 — dist and version | `.claude-plugin/plugin.json:3` still `"version": "5.8.0"`; `hooks/dist/` unchanged since `9ab5a2a`, thirteen commits before this Circle's first |
+
+**Step 9 — no longer unstarted, and that is a problem rather than progress.**
+
+`grep -rn FUSION_ALLOW_RULES_WRITE README-hooks.md rules/ CLAUDE.md` now returns two hits: `rules/protected-path-discipline.md:49` and `README-hooks.md:145`. Both landed with `86a437a`, the case-folding commit, which needed to say that the exemption does not fold and therefore had to name the exemption. Neither was written as a Step 9 task and neither touched the sentences that deny the flag exists.
+
+The result is the exact outcome task T3-7 declined to ship. From its own note: *"naming the flag in a document that denies the flag exists ships a self-contradiction."* At HEAD, `rules/protected-path-discipline.md` names `FUSION_ALLOW_RULES_WRITE` at `:49` and states at `:421` that "**There is no override for a protected-path shell write.** That is deliberate."
+
+The second sentence is false, verified in code and by measurement rather than inferred. `hooks/guard.ts:410-412` passes `exempt: rulesWriteExemptionActive(process.env) ? isExemptRulePath : undefined` into `classifyBashMutation`, and `guard.ts:399-403` states the intent: *"The flag has to reach BOTH surfaces or it controls neither."* With the predicate supplied, `rm rules/x.md`, `mv rules/x.md rules/retired/x.md`, `sed -i '' 's/a/b/' rules/x.md`, `echo x > rules/x.md` and `rm -rf rules/retired` all flip deny to allow, while `rm agents/coder.md`, `rm hooks/config.json`, `rm -rf rules` and `ln -s /tmp/a rules/x.md` stay denied. The sentence has been false since `45f53d4`, which is Step 4 of this plan, landed in the Circle's first Turn.
+
+`README-hooks.md:199` and `CLAUDE.md:113` carry the same false sentence. Three files, and the plan already named all three; the issue tracking the work (`issues/260803-1402_o_`) names only two.
+
+**Two things reach into Step 9 that were not there before**, both filed today: `issues/260804-1025_o_` (the decision procedure at `rules/protected-path-discipline.md:172` returns "the model stays exact" for the two commands that delete a protected rule file) and the residual-list omissions on `issues/260804-1024_o_` and `issues/260804-1026_o_`.
+
+**The `[SCOPE CHANGED]` note from 260803-1516, assertion by assertion.** Three of ten still accurate (`ce7a125` rewrote both documents; it closed `260802-2331` and `260802-2335`; the `README-hooks.md` tuning-table row is still owed). Two hold in substance with drifted citations (the "no override" line numbers; `decisions/260803-1419` now carries `_i_`, not `_a_`). One constraint has been satisfied (`issues/260803-1431` closed in `a79ff1a`, so Step 9 is unblocked). One remains correctly open (the hard-linked-rule-file exception). Three are false: Step 9 is not unstarted, the case-folding correction did not go to a later Circle, and it did not leave the "purely textual" premise standing — `rules/protected-path-discipline.md:33` is now the heading "### The match is textual, **and case-insensitive**".
+
+**What the plan's own dependency graph says about this.** Step 9 depends on Steps 3, 6 and 8. Two of those three are unstarted. A step whose prerequisites have not run has nonetheless had a third of its text written, by a commit belonging to a different step, in a direction that contradicts its own subject. That is what "the plan did not advance" hides.
+
+**Open Questions, re-checked.** Item 3 (`.claude/rules/**` is in the exemption's pattern list but not in `guard.protectedPaths`, so exempting it is a no-op) is **still open**: `shared/issues/260801-1020_o_guard-protects-rules-but-not-claude-rules.md` carries `_o_`, and `hooks/config.json` still lists no `.claude/` pattern. Items 1 and 2 are unchanged since 260803-1516.
+
+**Suite verified independently.** `cd hooks && npx vitest run` at HEAD: **1241 passed, 24 files**, 0 failed, exit 0. `npm test` was deliberately not run — it builds first and would rewrite the `hooks/dist/` that Step 10 owns, and this session already shows one uncommitted build-and-revert cycle in the working tree.

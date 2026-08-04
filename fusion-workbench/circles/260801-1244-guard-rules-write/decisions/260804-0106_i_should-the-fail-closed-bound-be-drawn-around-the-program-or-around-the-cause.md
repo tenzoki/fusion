@@ -274,3 +274,19 @@ Answered: this record, `## Answer` — the fail-closed bound is drawn around the
 Implemented: `hooks/lib/bash-mutation-guard.ts` `classifyWords` pass 3 (task T7-1) — an unresolved target denies when `viaCwd`, whatever the program; a token-unresolvable target outside the verb table still allows.
 Deferred:
 Superseded by:
+
+---
+
+**Reconciliation 260804-1021 (reconciler, domain `code`) — `_i_` confirmed. This is the best-formed record in the store, and the one worth copying.**
+
+**The realisation is real and the bound is where the record says.** Verified at HEAD `cc012fc`: `sort /tmp/a > rules/x.md`, `curl -s https://x > rules/x.md`, `rm /tmp/a > "$F"` and `tee "$LOG"` all deny, while `curl -o $OUT …`, `make $TARGET` and `npm run $SCRIPT` all allow. An unresolved target denies when `viaCwd` whatever the program is; a token-unresolvable target outside the verb table still allows. Exactly as stated.
+
+**Three properties this record has that the others in this store do not**, recorded because the Circle's recurring failure has been record integrity rather than code:
+
+1. It exists *because* the behaviour it reverses was recorded only as the `Resolved:` line of a closed issue, and it says so in a section called `## Why this record exists at all`. That is the right instinct and it should become the rule: a reversal needs a record to supersede, and if there is none, write the one that should have existed.
+2. Its supersession is stated in both directions, here and on `260801-1859`.
+3. Its `## Method note` names its own false claim, says the claim was "a recollection in the shape of" a measurement, and states the method change that follows from it. A record that documents its author's error is worth more than one that reads clean.
+
+**One convention note.** The `Implemented:` line names task T7-1 rather than a commit hash; `rules/fusion-workbench-conventions.md` asks for `Implemented: <short-hash>`. T7-1 is **`c9c44a3`**. Recorded here rather than edited into the line, so the original wording stands. Same note on `260803-2338_i_`.
+
+**The `## Answer` survived the correction, and the record says so correctly.** One of its two supporting arguments (the consistency claim about `curl -o rules/x.md`) was inverted and is now struck; the measured defect `260803-1835` carries the conclusion alone. Re-checked: `curl -o rules/x.md https://x` does allow at HEAD, so the correction is right and the conclusion still stands on the remaining leg.

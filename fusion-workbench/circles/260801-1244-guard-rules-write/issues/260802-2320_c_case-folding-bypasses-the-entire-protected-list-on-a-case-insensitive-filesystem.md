@@ -85,3 +85,20 @@ Verified in code rather than inferred from the decision: `hooks/lib/paths.ts:37-
 **Why the marker stays `_o_` and not `_c_`.** An issue closes when the defect is gone, not when the direction is chosen. `rules/fusion-workbench-conventions.md` `## Issues vs Decisions` draws exactly this line: the decision record's answer event and its implementation event are distinct, and the defect this file names is the implementation side. Closing it here would leave a live protected-list bypass with no open record anywhere.
 
 **What a later Circle inherits from this.** The code change is the smaller half. The larger half is that three shipped documents describe the protection check as purely textual — `rules/protected-path-discipline.md`, `README-hooks.md`, and the module docstrings — and one of them loads into every agent's context on every dispatch in every consuming project. `rules/protected-path-discipline.md` was rewritten this same Turn (`ce7a125`) on that premise, so the correction has to land with the code or the document is wrong from the commit that fixes it.
+
+---
+
+## Resolved — reconstructed by reconciliation 260804-1021, because the closing commit left no note
+
+This issue was renamed `_o_` → `_c_` in `86a437a` with **zero content change** (`git log -M --find-renames=50% 6c447eb..HEAD` reports it as `R100`). The closure is substantively correct, but nothing in the file said so, and the file's own trailing sections still argued the opposite. The evidence is recorded here rather than left to the filename.
+
+**The fix, verified at HEAD `cc012fc` rather than read off the commit message.** `hooks/lib/paths.ts:89-90` defines `foldCase(path) => path.toLowerCase()`, and `:148-149` applies it to both sides of the match inside `matchesAnyFolded`. The classifier consumes it at `hooks/lib/bash-mutation-guard.ts:261` (import), `:1307` and `:1311` (`ancestorOfProtected`, which folds its literal prefix by hand because it is a `startsWith` rather than a glob). Both write surfaces therefore fold. The measurement in `## What was measured` no longer reproduces.
+
+**Two statements above this line are now false and are struck by this note rather than deleted, so the audit trail survives.**
+
+1. The `Direction decided, not yet implemented` footer says the code change "belong[s] to a later Circle". It landed in this Circle, at `86a437a`.
+2. The `Reconciliation 260803-1516` block says "stays `_o_`, deliberately. The bypass is live at HEAD `fa81589`." That was true at `fa81589` and is false at `cc012fc`.
+
+**The documentation half this issue insisted on, checked separately, because it is the half that was easy to lose.** The issue's closing paragraph argued that the correction must land *with* the code or the shipped documents are wrong from the commit that fixes them. It did land: `rules/protected-path-discipline.md:33` is now the heading "### The match is textual, **and case-insensitive**" with the fold and its cost at `:36-49`, and `README-hooks.md:142` carries the same. That half is genuinely done.
+
+**One thing the correction brought with it that nobody asked for.** `rules/protected-path-discipline.md:49` now names `FUSION_ALLOW_RULES_WRITE` in order to say the exemption does not fold. The same file still asserts at `:421` that "There is no override for a protected-path shell write." The flag is wired on the Bash surface at `hooks/guard.ts:410-412`, so the second sentence is false and the file now contradicts itself. That is not this issue's defect; it is tracked on `260803-1402_o_`, annotated by the same reconciliation.

@@ -442,3 +442,25 @@ worth putting in front of the user:
 
 It is one decision away. It is not true yet, and the six previous hedges are the reason to
 say that plainly rather than to round up.
+
+---
+
+**Reconciliation 260804-1021 (reconciler, domain `code`) — every finding re-checked at HEAD `cc012fc`. The review holds; three of its seven findings closed in `cc012fc` and four are open. One thing it missed.**
+
+| Finding | State at HEAD | Evidence |
+|---|---|---|
+| `260804-0836` `\|\|` skips the `cd` | **open, live** | `true \|\| cd build && rm rules/x.md` allows |
+| `260804-0837` pipeline subshells the `cd` | **open, live** | `echo hi \| cd build && rm rules/x.md` allows |
+| `260804-0838` newline after `&&` | closed `cc012fc` | pinned in `shell-parse.test.ts` and both integration suites |
+| `260804-0839` flat joiner over-denies | **open** | `if cd hooks; then rm -rf dist; fi` still denies |
+| `260804-0840` the false cost statement | closed `cc012fc` | replaced by a rule, not a list |
+| `260804-0841` the inverted fact | closed `cc012fc` | `curl -o rules/x.md` re-measured, allows; the correction is right |
+| `260804-0842` git gold fixture | **open** | fixture unchanged |
+
+**The review's headline measurement is confirmed and is worth restating precisely, because it has been repeated in a stronger form than it supports.** Zero commands allow at HEAD that denied at `048f3db`, across 222,319 generated commands: true, and it is a statement about the **security** direction only. In the cost and accuracy directions `c9c44a3` introduced four regressions (`260804-0838`, `260804-0839`, `260804-0840`, `260804-0841`) plus one new coverage gap (`260804-0842`). Turn 7 opened no hole and did cost accuracy. Both halves are true; the second is the one that gets dropped.
+
+**What this review did not reach, found in the reconciler's own pass.** The review answered five questions about the joiner and the fail-closed bound, thoroughly. It did not sweep the `git` verb's own directory handling, and there is a live no-flag route there in the same family: `git -C rules rm x.md` allows and deletes the file, because `resolveGit` (`hooks/lib/bash-mutation-guard.ts:1084-1087`) skips `-C` **and its value** to find the subcommand and never applies the directory. It has no joiner in it, so no option of `decisions/260804-0947_o_` touches it. Filed as `issues/260804-1024_o_`; `git checkout <treeish> --` as `issues/260804-1026_o_`.
+
+That matters for this review's `### The boundary, by coverage` section, which is otherwise the most useful thing written in this Circle. Its "Not closed, live, and reachable with no flag" list has two entries and should have three, and the sentence it offers as the prize — *"The guard's model of where the shell is standing is exact for every `cd` written in the command text and reached by a path the shell guarantees"* — is still not reachable by closing `260804-0836` and `260804-0837` alone.
+
+**And one finding inside the review's own subject that it read past.** `rules/protected-path-discipline.md:172`, in the section this Turn added, tells an agent that when every joiner between the builtin and the write is `&&`, "the model stays exact". Run that on `true || cd build && rm rules/x.md`: question 2 answers yes. The document's decision procedure returns the safe answer for the two commands this review rates as the release blocker. Filed as `issues/260804-1025_o_`.

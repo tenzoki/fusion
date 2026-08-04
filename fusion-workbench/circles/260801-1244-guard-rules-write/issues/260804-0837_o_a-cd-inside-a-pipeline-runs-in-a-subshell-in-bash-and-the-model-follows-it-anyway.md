@@ -78,3 +78,11 @@ or `|` it targets, 0 newly allowing; option 2 also closes `260804-0839`), reprod
 leak in both shells, and recommends taking the ten-line give-up now and the reachability
 model as its own Circle. Both leaks are also stated as live residuals in
 `rules/protected-path-discipline.md` so nothing ships claiming the model is exact.
+
+---
+
+**Reconciliation 260804-1021 (reconciler, domain `code`) — stays `_o_`. Reproduced independently at HEAD.**
+
+`echo hi | cd build && rm rules/x.md` **allows** at HEAD `cc012fc`, measured through `classifyBashMutation` with the shipped protected list rather than taken from the review.
+
+**The duplicate question the session raised about this pair, checked and answered: these two are not duplicates.** `260804-0836` is a short-circuit defect — the `cd` is on a `||`-joined segment whose left operand succeeded, so bash skips it. This one is a scoping defect — bash runs every pipeline element in a subshell, so the `cd` runs and does not move the calling shell. They share a root cause in the tracker's sense (the joiner is consulted for the segment that writes and never for the one that moves) and one decision closes both, but the shells behave differently: zsh runs the last pipeline element in the current shell, so this defect's rows are bash-only while `260804-0836`'s reproduce in both. A fix that special-cased the last pipeline element would close this one in zsh's terms and leave bash open, which is exactly why the issue's own `## Anti-vacuity` asks for the zsh row to be pinned separately. The distinction survives; keep both files.

@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** answered
+**Status:** implemented (corrected from `answered` by reconciliation 260804-1021; the filename marker `_i_` was already right)
 **Filed by:** orchestrator, at the user gate closing Turn 3 of `circles/260801-1244-guard-rules-write`
 **Cross-references:** `circles/260801-1244-guard-rules-write/issues/260802-2320_o_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md` (the measurement that raised this), `hooks/guard.ts` CHECK 2, `hooks/lib/paths.ts` (`collapseSegments`, `matchesAny`), `hooks/lib/bash-mutation-guard.ts`, `rules/protected-path-discipline.md`, `README-hooks.md`
 
@@ -104,3 +104,17 @@ Answered: `circles/260801-1244-guard-rules-write/history/260803-1038-orchestrato
 
 ---
 Implemented: `86a437a` — `foldCase` and `matchesAnyFolded` in `hooks/lib/paths.ts`, consumed by `guard.ts` CHECK 2 and by both passes of the classifier's `isProtected`, with `ancestorOfProtected` folding its literal prefix by hand because it is a `startsWith` rather than a glob match. The fold is on the match, not on either normaliser, which is what keeps the grant side and the trailing-separator asymmetry intact. Cost measured on a purpose-built case-sensitive APFS image: exactly four denials appear that are genuinely a second file. Tests 1098 → 1146; with `foldCase` stubbed to the identity, 36 of the 48 new cases fail.
+
+---
+
+**Reconciliation 260804-1021 (reconciler, domain `code`) — `_i_` confirmed by measurement. Two record-integrity notes, one of them a repeat.**
+
+**The `_i_` transition is real.** `hooks/lib/paths.ts:89-90` defines `foldCase`; `:148-149` folds both sides inside `matchesAnyFolded`; the classifier consumes it at `hooks/lib/bash-mutation-guard.ts:261`, `:1307` and `:1311`. Both write surfaces fold. The bypass measured in `## Question` does not reproduce at HEAD `cc012fc`. `86a437a` is correctly cited.
+
+**The `Answered:` citation flagged by reconciliation 260803-1516 was not corrected, and now sits above an `Implemented:` line that is correct.** Line 87 still cites `circles/260801-1244-guard-rules-write/history/260803-1038-orchestrator-session.md` for the user's choice. Re-checked today: that file's `## Per-Turn Log` still reads "(No Turn started yet in this session.)" and records no gate. A reader following the citation still finds nothing. The three resolvable citations listed by the previous reconciliation still stand and are the ones to use — this record's own `## Answer`, commit `242b723`, and the `Direction decided` footer on `issues/260802-2320`.
+
+That a citation flagged by one reconciliation survives the next session untouched is itself the finding. The reconciler annotates; nothing in the loop acts on the annotation. Recorded on `shared/issues/260801-2038_o_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`, which is the nearest existing home for it.
+
+**The `**Cross-references:**` line points at `issues/260802-2320_o_…`; that file now carries `_c_`.** Third instance of `shared/issues/260802-1740_o_a-citation-path-carrying-a-state-marker-dies-on-ordinary-progress.md` inside this Circle alone. Not repaired here, for the same reason the sibling instances were not: hand-fixing one path leaves the mechanism untouched.
+
+**Header field corrected.** `**Status:**` read `answered` while the marker read `_i_` and the `Implemented:` line was filled. Set to `implemented`. Two other records in this store had the same disagreement — see the note on `260803-2338_i_`.

@@ -109,3 +109,13 @@ or `|` it targets, 0 newly allowing; option 2 also closes `260804-0839`), reprod
 leak in both shells, and recommends taking the ten-line give-up now and the reachability
 model as its own Circle. Both leaks are also stated as live residuals in
 `rules/protected-path-discipline.md` so nothing ships claiming the model is exact.
+
+---
+
+**Reconciliation 260804-1021 (reconciler, domain `code`) — stays `_o_`. Reproduced independently at HEAD; the decision it waits on is filed and unanswered.**
+
+Re-measured through `classifyBashMutation` at HEAD `cc012fc` with the shipped protected list, rather than read off the review: `true || cd build && rm rules/x.md` **allows**. So does `echo hi | cd build && rm rules/x.md` (the sibling, `260804-0837`). The discriminating control the review names, `false && cd build && rm rules/x.md`, also allows — correctly, because bash short-circuits the whole and-or list and the `rm` never runs, so it is not an escape and must not be pinned as one.
+
+`decisions/260804-0947_o_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md` is filed, carries three costed options, and is **unanswered**. Nothing in the workbench answers it: searched both planning stores, both decision stores, both analysis stores and the Circle's `history/`.
+
+**One correction to the release-blocker framing, which matters for what the next session scopes.** The Turn 7 review calls this pair "the release blocker for any claim about the boundary", and the Turn 8 handover repeats it. Answering `260804-0947` in any of its three options leaves `260804-1024_o_` (`git -C rules rm x.md` allows and deletes the file) open, because that defect has no joiner in it — the directory is in the command text and the model never reads it. This pair is necessary for that claim and is not sufficient for it.

@@ -266,3 +266,19 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+---
+
+**Reconciliation 260804-1021 (reconciler, domain `code`) — stays `_o_`. Genuinely unanswered, and it is the right next question. One correction to how it has been framed.**
+
+**Unanswered, verified rather than assumed.** Searched both planning stores, both decision stores, both analysis stores, the Circle's `history/` and the shared `history/`. Nothing answers it. The record was filed at the end of Turn 8 and the session hit its max-Turns circuit breaker in the same commit (`orchestrator-events.jsonl`, `{"event":"circuit_breaker","turn":5,"detail":"max Turns reached (5/5); normal exit"}`), so no gate was reached at which the user could answer it.
+
+**The two defects it closes are live at HEAD `cc012fc`**, re-measured through `classifyBashMutation` with the shipped protected list: `true || cd build && rm rules/x.md` allows, `echo hi | cd build && rm rules/x.md` allows. Both delete a file on the protected list in the real shell with no flag and no wrapper.
+
+**The correction, and it changes what the next session should scope.** This record has been described — in the Turn 7 review's `## Recommended sequencing`, in the Turn 8 handover's item 1, and in the two issues it answers — as *the* release blocker for any claim about the boundary. It is a blocker and it is not the only one. The reconciler's own pass found a third live no-flag route into `agents/**` and `rules/**` that has no joiner in it at all: `git -C rules rm x.md` allows and deletes the file, because `resolveGit` (`hooks/lib/bash-mutation-guard.ts:1084-1087`) skips `-C` **and its value** to find the subcommand and never applies the directory. Filed as `issues/260804-1024_o_`.
+
+Answering this record in any of its three options leaves that route open. So the sentence this Circle wants to be able to put in front of the user — that the model is exact for every `cd` written in the command text and reached by a path the shell guarantees — needs both this decision **and** `260804-1024` before it is true.
+
+That is not an argument against answering this first. Option 1's cost is measured at zero on every corpus of real work, which makes it the cheapest thing on the board, and the two defects it closes are the two the Circle's own review rates highest. It is an argument against calling the boundary closed when it lands.
+
+**One thing worth deciding alongside, since the record already raises it.** Option 2 (model the and-or list) is the only option that also closes `issues/260804-0839_o_`, the over-deny this session introduced and did not close, which an agent meets on ordinary work (`if cd hooks; then rm -rf dist; fi`). The record recommends option 4 — take the ten-line give-up now and give the reachability model its own Circle. On the evidence that recommendation is sound: `260804-0839` is a cost with a documented mitigation, while `260804-0836` and `260804-0837` are live writes.

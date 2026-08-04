@@ -62,3 +62,11 @@ with a small joiner sweep appended (`ls || git switch main`, `ls | git switch ma
 say what the corpus is. The regeneration must still run against a classifier materialised
 out of git at the reference commit, or the fixture loses the property that makes it worth
 having.
+
+---
+
+**Reconciliation 260804-1021 (reconciler, domain `code`) — stays `_o_`. Confirmed, and one adjacent gap found in the same verb.**
+
+`hooks/lib/__tests__/fixtures/git-verdicts-head.json` was added by `c9c44a3` this session (2,864 lines). The coverage gap this issue describes is real and unaddressed.
+
+**An adjacent gap in the same suite, filed separately.** `bash-mutation-guard.test.ts:196` holds the only `git -C` row in the whole suite, and it pins the direction where the protected path is the *operand* (`git -C /repo mv rules/x.md docs/` denies). The direction where `-C` *supplies* the protected directory — `git -C rules rm x.md`, which allows and deletes the file — has no row anywhere. Filed as `260804-1024_o_`. Whoever regenerates this fixture should take that issue's test list at the same time; both are "the git surface is under-covered in the families this Circle has been widening", and doing them together is one pass over the same fixture generator.

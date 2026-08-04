@@ -161,3 +161,18 @@ fresh project per row: three denials halt the guard and mask everything after.
 
 `circles/260801-1244-guard-rules-write`, task T4-1, while testing whether `cd -P` is the last
 entrance into the class that has now been found four times in this Circle. It is not.
+
+---
+
+## Resolved — reconstructed by reconciliation 260804-1021, because the file was created already closed
+
+This file was added to the tracker in `a79ff1a` **already carrying the `_c_` marker**, so it has no open-to-closed transition and no `Resolved` section. That is not wrong — the analyst measured it and the same commit fixed it — but a reader arriving at a closed issue with no closure evidence cannot tell a real fix from a marker set by hand. The evidence is recorded here.
+
+**Both halves are closed at HEAD `cc012fc`, by two different commits.**
+
+- The `pushd -n` half, and the whole unmodelled-flag family, closed in `a79ff1a`: `applyDirEffect` allow-lists the `cd` / `pushd` forms it models and yields the unknown-directory state for everything else. Verified by measurement, not by reading: `pushd -n docs && echo hi > notes.txt` denies at HEAD with the unknown-working-directory reason.
+- The ambient-`CDPATH` half closed in `b85f6a0`: a non-empty `CDPATH` in the guard's environment makes a bare-word `cd` yield the unknown-directory state, while anchored operands (`./x`, `../x`, `.`, `..`, `/abs/x`) stay exactly modelled.
+
+**The bound the fix does not reach is recorded and is not a gap in this closure.** `b85f6a0` reads the *hook process's* environment, a frozen snapshot of Claude Code's launch environment, not the shell the `Bash` tool spawns. The two agree when Claude Code was started from a shell that sourced the user's profile and diverge on a GUI, IDE-host or service-manager launch. That was found and closed as its own issue (`260803-2040_c_`), is stated at `ambientCdpathIsSet`, and is written into both shipped documents and into the trailing `Bound recorded` note of `decisions/260803-1803_i_`.
+
+**What this issue set in motion is larger than what it closed.** Its `## Origin` says it was found "while testing whether `cd -P` is the last entrance into the class that has now been found four times in this Circle. It is not." The class was met three more times after this file was written (Turns 5, 6 and 7) and two entrances are still open at HEAD (`260804-0836_o_`, `260804-0837_o_`). The finding was right; the count in its own last sentence is now seven, not four.

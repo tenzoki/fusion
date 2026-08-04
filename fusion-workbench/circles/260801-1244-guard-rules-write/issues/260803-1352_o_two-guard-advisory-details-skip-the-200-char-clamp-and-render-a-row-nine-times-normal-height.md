@@ -94,3 +94,16 @@ than reached across into.
 `hooks/lib/rules-write-exemption.ts:503` (`rulesWriteDetail`) is correct as cited. `reviews/260803-1431-coderev-turn3-guard-boundary.md` independently reports the first two as `:519` and `:548`, which agrees with this correction.
 
 **The measurement is not affected.** The rendered-height table was produced through `bin/monitor`'s own stylesheet and does not depend on these line numbers.
+
+---
+
+**Reconciliation 260804-1021 (reconciler, domain `code`) — stays `_o_`. Verified live at HEAD; the two cited line numbers have drifted.**
+
+Both unclamped sites are still unclamped at HEAD `cc012fc`, verified in code rather than inferred:
+
+- `hooks/guard.ts:529` — `const detail = rulesWriteDetail(mutation.exempted);` joins every exempted path, no `forEvent`. Cited in this issue as `:532`.
+- `hooks/guard.ts:558` — `` `Override ${envVar} allowed normally-denied git op: ${verdict.overrideSegment ?? command}` ``, no `forEvent`. Cited as `:560`.
+
+The clamp itself is unchanged at `hooks/guard.ts:216` (`EVENT_DETAIL_MAX = 200`) and `:227-231` (`forEvent`), and the three block sites that do use it are at `:344`, `:478` and `:503`. The third advisory site, `guard.ts:803` (`rulesWriteDetail([filePath])`, write-tool surface, exactly one path), is still the bounded one this issue correctly excluded.
+
+Nothing in this session touched `bin/monitor` or the advisory emit sites, so the drift is line numbers only. Untouched for two sessions running; not blocking anything.

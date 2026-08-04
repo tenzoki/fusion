@@ -134,3 +134,13 @@ The measured table still reproduces the boundary it describes: `hooks/lib/paths.
 2. `shared/issues/260802-2320` — that issue is not in the shared store. It is `circles/260801-1244-guard-rules-write/issues/260802-2320_o_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md`. The same wrong store appears in `## Options` option 3 and again in `## Constraints`.
 
 **Option 3's status has moved since this record was written, and it matters here.** This record defers option 3 to `260802-2320` on the grounds that deciding it here would pre-empt that question. `260802-2320` has since been decided: `decisions/260803-1419_a_how-should-the-protected-path-check-treat-the-case-of-a-path.md` chose **unconditional case folding**, not filesystem resolution. So option 3 was not taken there and remains genuinely open for this record — the deferral did not resolve it by proxy, and whoever answers this decision cannot treat it as answered elsewhere.
+
+---
+
+**Reconciliation 260804-1021 (reconciler, domain `code`) — stays `_o_`. Content re-verified live; the urgency argument has strengthened.**
+
+The measured table still reproduces at HEAD `cc012fc`: `ln -s ../agents/coder.md build/alias`, `cp -l agents/coder.md build/hardalias` and the follow-up `echo pwned > build/alias` all allow. `hooks/lib/paths.ts` still decides protection on the text of a path, and the classifier still reads only written operands.
+
+The residual row this record would remove is live at `rules/protected-path-discipline.md:519-530`, and the same file now carries a second, larger honesty problem in the section an agent reasons from (`issues/260804-1025_o_`). That does not change this record's answer; it changes the weight of the record's own argument that a residual row calling the gap "accepted" becomes wrong the day a deny lands.
+
+The two cross-reference corrections from reconciliation 260803-1516 were not applied and are repeated here so they are not lost: `issues/260802-2335_p_…` is now `_c_`, and `shared/issues/260802-2320` is not in the shared store — it is `circles/260801-1244-guard-rules-write/issues/260802-2320_c_…`, and its marker has since moved from `_o_` to `_c_` as well, so the citation is now wrong in two ways.

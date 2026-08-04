@@ -1,32 +1,32 @@
 # Orchestrator — Live
 
-**Turn:** 1/5 | **Tasks:** 8/8 | **Commits:** 7 | **Errors:** 0
-**Started:** 10:38 | **Domain:** code | **Elapsed Turns:** 1 | **Session:** Complete | **Guard:** OK (0 blocks)
+**Turn:** 5/5 | **Tasks:** 8/8 | **Commits:** 11 | **Errors:** 0
+**Started:** 17:37 | **Domain:** code | **Elapsed Turns:** 5 | **Session:** Circuit breaker: max Turns reached | **Guard:** OK (0 blocks)
 
 ## Current
   [DONE] orchestrator -> Session complete. Circle stays active.
 
-## This Turn
-  [DONE]    coder -> T3-1 gate 0 refuses any `..` spelling ............ 3b0f9e7
-  [DONE]    coder -> T3-2 a refused grant says which gate refused it .. 245b8b7
-  [DONE]    coder -> T3-4 state file can no longer switch the guard off  d77eda8
-  [DONE]    coder -> T3-6 advisories get their own panel budget ....... aff7486
-  [DONE]    coder -> T3-7 halt docs + the plantable alias residual ..... ce7a125
-  [DONE]    user  -> T3-8 case folding decided, bypass left open ....... 242b723
-  [DONE]    coderev -> 13 files reviewed, 1 High filed ................ fa81589
+## Turns
+  [DONE] Turn 1 -> analyst pass + 4 fixes .... a79ff1a 86a437a 7cf9693 b85f6a0
+  [DONE] Turn 2 -> one command-word resolver ................... 9aacab5
+  [DONE] Turn 3 -> closed the regression Turn 2 caused ......... 048f3db
+  [DONE] Turn 4 -> the cd guarantee + the cause bound .......... c9c44a3
+  [DONE] Turn 5 -> newline downgrade, cost rule, inverted fact . cc012fc
 
 ## Outcome
-  Issues closed:   10 of the 11 in scope
-  Issues filed:    5 (4 by executors, 1 by the review)
-  Decisions filed: 3 (2 open, 1 answered)
-  Tests:           973 -> 1080, 20 -> 23 files
-  Coherence:       review-needed — the boundary moved a fourth time
-  Circle:          260801-1244-guard-rules-write, still active, not closed
+  Issues closed:   14        Filed: 16
+  Decisions:       4 filed, 4 implemented, 1 drafted open
+  Tests:           1080 -> 1241, 23 -> 24 files
+  Regressions:     5 introduced, 4 closed in-session
+  Coherence:       review-needed. Bounded Closure judged not warranted.
+  Circle:          260801-1244-guard-rules-write, still active
 
-## Open at session end
-  260803-1431  High  gate 0 misses a `..` arriving through `cd -P`
-  260802-2320  High  case folding bypasses the protected list (direction decided)
-  260803-1251        fs-locator collapses `..` above the audited resolver
-  260803-1352        two advisory details skip the 200-char clamp
-  260803-1402        Step 9 must document the hard-link non-exemption
-  Plan steps 6-10 unstarted; hooks/dist stale (Step 10 owns it)
+## Four conditions for a clean verdict, in order
+  1  answer decision 260804-0947 (closes 260804-0836 + 260804-0837)
+  2  close 260804-1024 -- `git -C rules rm x.md` allows and deletes
+  3  delete the false clause at rules/protected-path-discipline.md:172
+  4  review 048f3db and cc012fc, the two code commits without one
+  Then plan Step 10: rebuild hooks/dist and bump the version.
+
+## Not live anywhere
+  Committed hooks/dist predates this Circle by 13 commits. Nothing shipped yet.

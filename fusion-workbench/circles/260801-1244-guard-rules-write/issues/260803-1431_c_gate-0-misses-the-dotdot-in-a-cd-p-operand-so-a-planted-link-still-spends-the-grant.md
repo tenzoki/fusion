@@ -159,3 +159,23 @@ The three docstrings that assert the closed form are unamended:
 **Reachability of the neighbouring open issue, checked so the two are not confused.** This route does not make `issues/260803-1251_o_fs-locator-collapses-dotdot-lexically-…` reachable. `resolveDir` consumes the `..` before `Target.spelled` exists, so `realFsLocator.absolute()` never receives one. Same class, different defect, and each needs its own fix.
 
 **Fourth instance of one class in this Circle.** `260802-2229` (planted symlink, closed by gate 2), `260802-2230` (un-collapsed protected match, closed by `collapseSegments`), `260802-2330` (lexical `..` collapse, closed by gate 0 in `3b0f9e7`), and now this one, entered through the `cd` rather than the operand. `260802-2320` (case folding) is the same shape on the protection side. Whoever picks this up should weigh the review's own framing — narrow the grant, do not widen the resolver — against the fact that the narrowing has now been done three times and the class keeps returning through a new entrance.
+
+---
+
+## Resolved — reconstructed by reconciliation 260804-1021, because the closing commit left no note
+
+Renamed `_o_` → `_c_` in `a79ff1a` with **zero content change** (`R100`). The closure holds, but the file carried no evidence of it and its `## What is wrong` section still reads as live. Recorded here.
+
+**The entrance is closed, and closed where the analyst's root-cause pass said it should be** — in the classifier, not by widening gate 0. `hooks/lib/rules-write-exemption.ts:83-87` now states the bound explicitly: "That entrance is closed in the classifier rather than here: `applyDirEffect` now allow-lists the `cd` forms it models and yields `CWD_UNKNOWN` for the rest, so an operand under an unmodelled `cd` is unresolved and reaches no gate at all. Gate 0 was not widened, and no claim is made here that it covers the working directory."
+
+**All three docstrings this issue named as unamended are amended at HEAD `cc012fc`**, which was the substantive half of the finding:
+
+| Named at | State at HEAD |
+|---|---|
+| `bash-mutation-guard.ts:296-300` — "gate 0 refuses any operand SPELLED with a `..`, which is the only way to traverse a planted link without naming it" | Rewritten at `:446-470`. It now names three layers, calls itself "a layer, not the layer", and carries the line `IT IS WRITTEN AS A LIST BECAUSE EACH SHORTER VERSION OF IT WAS FALSE` followed by both earlier false versions verbatim, this issue's included. It ends "So no completeness claim is made here at all." |
+| `rules-write-exemption.ts:69-71` — gate 0 "is also complete against the class BY INSPECTION" | Rewritten at `:73-87` under the heading "### The bound on gate 0, which is not the bound it was first written with", which quotes the false claim and states why it was false. |
+| `bash-mutation-guard.ts:215` — `spelled` "that operand BEFORE `normalize`", silent about the base | The base is now named in the surrounding prose; `:361` states that the spelling check "has to read the second" operand component. |
+
+**Note on how these were amended, because it is the useful part.** Each correction keeps the false version in place and marks it, rather than replacing it. That is the practice which makes this class auditable at all, and it is the reason the reconciliation could verify the closure without the issue file's help.
+
+**The neighbouring-issue distinction this file drew has survived and was re-checked.** `## Reachability of the neighbouring open issue` argued that this defect and `260803-1251` are the same class but different defects, each needing its own fix. Both are closed at HEAD by different commits — this one by `a79ff1a` in the classifier, `260803-1251` by `7cf9693` in `fs-locator.absolute()` (`joinUncollapsed`). Two fixes, two files, no overlap. The distinction was correct.

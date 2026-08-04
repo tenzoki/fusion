@@ -55,3 +55,9 @@ Superseded by:
 Searched for an answer across `circles/260801-1244-guard-rules-write/analyses/` (empty), `shared/analyses/`, both planning stores, and both decision stores. Nothing addresses it. The record's own `## Recommendation` declines to recommend, deliberately, and defers to plan Step 6.
 
 **Cross-reference confirmed live.** Plan Step 6 of `planning/260802-1856_o_plan-guard-rules-write.md` is the step this record hands the question to, and it is unstarted. Whoever picks up Step 6 inherits this decision as an input, not as a note to read afterwards.
+
+---
+
+**Reconciliation 260804-1021 (reconciler, domain `code`) — stays `_o_`, unchanged. The precondition still does not exist.**
+
+`RULE_DIR_PATTERNS` is still the hardcoded `["rules/**", ".claude/rules/**"]` in `hooks/lib/rules-write-exemption.ts`, and `protectedPaths` is still not project-configurable (`hooks/lib/config.ts:34`). Plan Step 6, which this record defers to, is unstarted at HEAD `cc012fc`. Searched both analysis stores, both planning stores and both decision stores for an answer; there is none, exactly as the previous reconciliation found.
