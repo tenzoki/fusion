@@ -86,3 +86,15 @@ model as its own Circle. Both leaks are also stated as live residuals in
 `echo hi | cd build && rm rules/x.md` **allows** at HEAD `cc012fc`, measured through `classifyBashMutation` with the shipped protected list rather than taken from the review.
 
 **The duplicate question the session raised about this pair, checked and answered: these two are not duplicates.** `260804-0836` is a short-circuit defect — the `cd` is on a `||`-joined segment whose left operand succeeded, so bash skips it. This one is a scoping defect — bash runs every pipeline element in a subshell, so the `cd` runs and does not move the calling shell. They share a root cause in the tracker's sense (the joiner is consulted for the segment that writes and never for the one that moves) and one decision closes both, but the shells behave differently: zsh runs the last pipeline element in the current shell, so this defect's rows are bash-only while `260804-0836`'s reproduce in both. A fix that special-cased the last pipeline element would close this one in zsh's terms and leave bash open, which is exactly why the issue's own `## Anti-vacuity` asks for the zsh row to be pinned separately. The distinction survives; keep both files.
+
+---
+
+**Resolved (T9-1, Turn 9, 2026-08-04) — closed together with `260804-0836`, which is the same fact met through `||`.**
+
+`decisions/260804-0947…` was answered option 4. A `|`-joined segment is now recorded as one that does not move the calling shell, so a `cd` on it makes the directory unknown instead of relocating every later relative operand. All four rows of the table above deny through the real guard subprocess, one fresh project per row.
+
+**The `## Anti-vacuity` requirement is met literally.** The zsh rows are pinned in their own test case (`denies the '|' family — bash subshells a pipeline stage, so the cd never lands`), with a comment recording that zsh runs the LAST pipeline element in the calling shell and that a future edit special-casing it would pass a zsh-shaped test and re-open bash. Re-measured this Turn: all four rows are `bash: GONE/OVERWRITTEN, zsh: intact`, and the classifier takes bash's answer for both. The mutation that marks `|` as moving the calling shell — zsh's answer — fails three tests including that one.
+
+The issue's note about the interaction with `260804-0839` is **not** discharged. `cd hooks && npx tsc | tee log` still degrades although the shell guarantees the `cd`; only the "does not move the shell" half landed, and the "reached unconditionally" half needs the reachability model that `260804-0947` option 2 describes. `260804-0839` stays open by design, was measured identically before and after, and is filed for its own Circle.
+
+Not committed by the implementing agent. See `history/260804-1200-turn9-t9-1-the-joiner-for-the-segment-that-moves.md`.

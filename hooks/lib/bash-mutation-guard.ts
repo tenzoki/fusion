@@ -106,14 +106,20 @@
  * 2. `&&` GUARANTEES THE AND-OR LIST TO ITS LEFT, NOT THE PREVIOUS SEGMENT,
  *    and does not reach into a pipeline. `A || B && C` is `(A || B) && C`, so
  *    reaching `C` says nothing about whether `B` ran; and a pipeline stage runs
- *    in a bash subshell that never moves the calling shell. The joiner is
+ *    in a bash subshell that never moves the calling shell. The joiner was
  *    consulted for the segment that WRITES and never for the segment that
  *    MOVES, so `true || cd build && rm rules/x.md` and
- *    `echo hi | cd build && rm rules/x.md` are allowed and do delete the rule
- *    (`issues/260804-0836…`, `260804-0837…`). Both pre-existing, both OPEN;
- *    one design question closes both,
- *    `decisions/260804-0947_o_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`.
- *    Until it is answered, no claim that this model is exact should be made.
+ *    `echo hi | cd build && rm rules/x.md` were allowed and did delete the rule
+ *    (`issues/260804-0836…`, `260804-0837…`, both pre-existing). The same
+ *    question is now asked of the moving segment, from the same one-row-per-
+ *    joiner table (`JoinerFacts`), and both deny
+ *    (`decisions/260804-0947_…_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`,
+ *    option 4). WHAT IS STILL OPEN is the over-deny in the other direction: a
+ *    conditional body, a loop body, a brace group and a pipeline stage degrade
+ *    although the shell guarantees the `cd` (`issues/260804-0839…`), which
+ *    needs the reachability model that record's option 2 describes and its own
+ *    Circle. The family is not uniform — `until cd X; do W; done` runs its body
+ *    when the `cd` FAILED, so that degrade is correct and has to survive.
  *
  * WHAT IT MODELS IS AN ALLOW-LIST. The tracking is exact for bash's default
  * logical `cd`, and bash has several modifiers that change the resolution rule
@@ -271,6 +277,7 @@ import {
   resolveWord,
   tokenize,
 } from "./shell-parse.js";
+import type { SegmentJoiner } from "./shell-parse.js";
 
 export interface MutationVerdict {
   /** false = allow, true = deny the whole Bash call. */
@@ -1576,13 +1583,20 @@ interface ShellState {
    *
    * THE ASSUMPTION IS NOT ACTUALLY FREE, and this comment overstated it. `&&`
    * guarantees the and-or list to its LEFT returned zero, not that the segment
-   * before it ran, and it does not reach into a pipeline. This field is set the
-   * moment a directory builtin is SEEN, whatever brought its segment into
-   * reach, and nothing asks whether that segment was itself guaranteed — so
-   * `true || cd build && rm rules/x.md` and `echo hi | cd build &&
-   * rm rules/x.md` allow and do delete the rule (`issues/260804-0836…`,
-   * `260804-0837…`, both open;
-   * `decisions/260804-0947_o_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`).
+   * before it ran, and it does not reach into a pipeline. This field is still
+   * set the moment a directory builtin is SEEN, whatever brought its segment
+   * into reach — so `true || cd build && rm rules/x.md` and `echo hi | cd build
+   * && rm rules/x.md` allowed and did delete the rule (`issues/260804-0836…`,
+   * `260804-0837…`).
+   *
+   * WHAT ANSWERS THAT IS NOT THIS FIELD but the SECOND give-up in the segment
+   * walk, which asks the joiner about the segment that moved rather than about
+   * the one that writes. Both give-ups read the same `JoinerFacts` row, so the
+   * two questions are one table and not two models
+   * (`decisions/260804-0947_…_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`,
+   * option 4). Setting the field on sight stays correct: it records that the
+   * model's directory now RESTS on a `cd`, and both give-ups key off exactly
+   * that.
    *
    * Monotone, like `physical` and `cdpath`, and `true` is the don't-know for the
    * same reason: it can only make a later `cwd` less certain, never more. It is
@@ -1684,6 +1698,92 @@ function degradeUnprovenCd(state: ShellState): void {
   // should still be told about the `-P`, and a bare-word `cd` under an ambient
   // `CDPATH` about the variable — neither is fixed by writing `&&`.
   state.cwd = before.kind === "unknown" ? before : CWD_UNKNOWN_UNPROVEN_CD;
+}
+
+/**
+ * Everything this module believes about a segment's LEADING joiner.
+ *
+ * THE POINT OF THE TABLE IS THAT THERE IS ONLY ONE OF IT. The directory model
+ * asks two different questions about the same operator — may a `cd` taken
+ * earlier be carried ACROSS this joiner, and does a `cd` written IN this
+ * segment move the calling shell — and each was, or would have been, a separate
+ * comparison against a joiner literal at its own call site. Two places holding
+ * one fact about a joiner is the shape that produced `issues/260803-2237…` and
+ * `260803-2039…`: a give-up stated in one place while another place quietly
+ * kept believing something. So both answers live here, in one record per
+ * joiner, and `joinerFacts` is the only reader.
+ *
+ * A READER CHECKS THAT BY GREPPING, and the check is one line:
+ *
+ *     grep -c '\.joiner' hooks/lib/bash-mutation-guard.ts   # => 1 (in code)
+ *
+ * The single occurrence is `joinerFacts(segment.joiner)` in
+ * `classifyBashMutation`. Both give-ups below it read a FIELD off the record it
+ * returns and neither compares a joiner to anything, so there is no second
+ * place where a joiner means something. The suite pins it ("keeps one fact
+ * about a joiner in one place"), so a third comparison cannot be added quietly
+ * — which is the whole mitigation `decisions/260804-0947…` option 4 depends on.
+ *
+ * THE LOOKUP IS A SAFE-LIST, not an enumeration of the dangerous joiners. A
+ * joiner absent from this table answers `false` to both questions, so a joiner
+ * added to `SegmentJoiner` later is unguaranteed and non-moving until someone
+ * argues otherwise and adds a row. That is the same inversion `firstDirArg`
+ * made for flags, and the direction `260803-2338` chose for the write side.
+ */
+export interface JoinerFacts {
+  /**
+   * May the model carry a `cd` taken EARLIER in this scope across this joiner?
+   *
+   * Only `&&` guarantees the and-or list to its left returned zero, so only
+   * after `&&` is a `cd` behind it known to have succeeded. `start` is the
+   * other true row and it is not a guarantee about anything: nothing ran before
+   * the first segment of a scope, so there is no `cd` in this scope for the
+   * joiner to cast doubt on.
+   */
+  carriesCdForward: boolean;
+  /**
+   * Does a directory builtin written IN this segment move the CALLING shell?
+   *
+   * Two ways to answer no, and they are different shell mechanics with the same
+   * consequence. `||` may skip the segment entirely — `A || B && C` is
+   * `(A || B) && C`, so reaching `C` proves the list returned zero and says
+   * nothing about whether `B` ran. `|` runs the segment in a bash subshell,
+   * which cannot move its caller. (zsh runs the LAST pipeline element in the
+   * calling shell, so there the move is real; the classifier serves both shells
+   * and takes the pessimistic answer, as it does everywhere the two disagree.)
+   *
+   * `;`, a newline and `start` are true: the segment runs unconditionally, and
+   * whether the `cd` SUCCEEDED is `carriesCdForward`'s question, not this one.
+   * `&` is true as a LEADING joiner, because `A & cd B` backgrounds `A` and runs
+   * the `cd` in the foreground shell.
+   */
+  movesCallingShell: boolean;
+}
+
+export const JOINER_FACTS: ReadonlyMap<SegmentJoiner, JoinerFacts> = new Map([
+  ["start", { carriesCdForward: true, movesCallingShell: true }],
+  ["&&", { carriesCdForward: true, movesCallingShell: true }],
+  [";", { carriesCdForward: false, movesCallingShell: true }],
+  ["newline", { carriesCdForward: false, movesCallingShell: true }],
+  ["&", { carriesCdForward: false, movesCallingShell: true }],
+  ["||", { carriesCdForward: false, movesCallingShell: false }],
+  ["|", { carriesCdForward: false, movesCallingShell: false }],
+] as const);
+
+/** The unknown joiner, and the reason the lookup is a safe-list. */
+const JOINER_UNKNOWN: JoinerFacts = {
+  carriesCdForward: false,
+  movesCallingShell: false,
+};
+
+/**
+ * The only reader of `JOINER_FACTS`, exported with it as the review surface —
+ * the same reason `MUTATION_VERBS` and `WRAPPER_PROGRAMS` are exported. Passing
+ * it a joiner the table does not carry is the checkable form of the safe-list
+ * claim, and the suite does exactly that.
+ */
+export function joinerFacts(j: SegmentJoiner): JoinerFacts {
+  return JOINER_FACTS.get(j) ?? JOINER_UNKNOWN;
 }
 
 /** What the first non-flag argument of a directory builtin asks for. */
@@ -2507,17 +2607,17 @@ export function classifyBashMutation(
     }
     openDepth = depth;
 
+    // Both directory give-ups this loop makes read the SAME record, so the
+    // module holds one fact about a joiner rather than two. See `JoinerFacts`.
+    const joiner = joinerFacts(segment.joiner);
+
     // The model may assume a `cd` SUCCEEDED only where the shell guarantees it.
     // `&&` guarantees it; every other joiner reaches this segment however the
     // chain in front of it ended, so a directory the model followed may be one
     // the shell never entered. Placed AFTER the scope restore above, so a `cd`
     // that was already discarded with its subshell casts no doubt forward:
     // `$(cd nope); rm rules/x.md` still resolves from the project root.
-    //
-    // The test is `!== "&&"` rather than an enumeration of the others, so a
-    // joiner added to `SegmentJoiner` later is unguaranteed until someone
-    // argues otherwise.
-    if (segment.joiner !== "&&" && segment.joiner !== "start" && state.moved) {
+    if (!joiner.carriesCdForward && state.moved) {
       degradeUnprovenCd(state);
     }
 
@@ -2550,6 +2650,29 @@ export function classifyBashMutation(
         return denyVerdict(segment.text, literals, verdict.hit);
       }
       applyDirEffect(state, words, literals, ambientCdpath);
+
+      // …and the same question asked of the segment that MOVES. A `cd` here
+      // moves the model; it moves the CALLING SHELL only if this segment ran
+      // there, which `||` and `|` do not promise. Without this, `true || cd
+      // build && rm rules/x.md` and `echo hi | cd build && rm rules/x.md`
+      // relocated every later relative operand into a directory bash never
+      // entered, and deleted a protected rule with no flag and no wrapper
+      // (`issues/260804-0836…`, `260804-0837…`, one fact seen twice;
+      // `decisions/260804-0947…` option 4).
+      //
+      // It is stated over `state.moved` rather than over "a builtin new in this
+      // segment", so it also catches the model RE-PROVING a directory it had
+      // just given up: in `cd rules && true || cd /tmp && rm x.md` bash skips
+      // the second `cd` and deletes `rules/x.md`, while an absolute `cd /tmp`
+      // put the model back on solid ground it had no right to.
+      //
+      // Placed after `applyDirEffect` (the move has to have happened before it
+      // can be doubted) and before the paren restore below (a `cd` bash itself
+      // discards takes this doubt with it), for the same reason the write-side
+      // give-up sits after the scope restore.
+      if (!joiner.movesCallingShell && state.moved) {
+        degradeUnprovenCd(state);
+      }
     }
 
     for (let k = 0; k < closes; k++) {

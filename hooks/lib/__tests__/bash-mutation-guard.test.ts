@@ -4,12 +4,15 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import {
   classifyBashMutation,
+  JOINER_FACTS,
+  joinerFacts,
   MUTATION_VERBS,
   MUTATION_GIT_SUBCOMMANDS,
 } from "../bash-mutation-guard.js";
 import type { MutationOptions } from "../bash-mutation-guard.js";
 import { GRAMMAR_PREFIXES, WRAPPER_PROGRAMS } from "../command-word.js";
 import { parseCommand, tokenize } from "../shell-parse.js";
+import type { SegmentJoiner } from "../shell-parse.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
@@ -3040,6 +3043,197 @@ describe("virtual cwd — a cd the shell does not guarantee", () => {
     });
     expect(v.deny).toBe(true);
     expect(v.reason).toContain("CDPATH is set in this shell's environment");
+  });
+});
+
+/**
+ * …and the same question asked of the segment that MOVES.
+ *
+ * `decisions/260804-0947_…_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`,
+ * option 4 (take option 1 now; the reachability model gets its own Circle).
+ *
+ * `260803-2338` gave every segment its leading joiner and consulted it for the
+ * segment that WRITES. It never asked whether the segment carrying the `cd` was
+ * itself guaranteed to run, so `state.moved` was set the moment a directory
+ * builtin was SEEN. Two shapes fell through, and both deleted a protected file
+ * in a real shell with no flag, no wrapper and no environment variable:
+ * `||` may skip the segment entirely (`issues/260804-0836…`), and `|` runs it
+ * in a bash subshell that cannot move the caller (`issues/260804-0837…`). One
+ * fact seen twice; one condition closes both.
+ *
+ * Every row below was measured through the REAL guard subprocess, one fresh
+ * throwaway project per row, with the same command then run in the shell that
+ * performs its write. No deny read `[HALTED]`.
+ */
+describe("virtual cwd — a cd the shell may never have made", () => {
+  it("denies the `||` family — the cd is skipped when the left operand succeeds", () => {
+    // Measured GONE / OVERWRITTEN in BOTH bash and zsh before this closed.
+    // Three of the four protected roots, reached by `rm`, `mv`, `sed -i` and by
+    // redirection.
+    expectAllDeny([
+      "true || cd build && rm rules/x.md",
+      "true || cd build && echo pwned > rules/x.md",
+      "true || cd build && rm -rf rules",
+      "true || cd build && mv rules/x.md /tmp/",
+      "true || cd build && sed -i '' s/a/b/ rules/x.md",
+      "true || cd build && rm agents/coder.md",
+      "true || cd build && echo pwned > skills/demo/SKILL.md",
+      "mkdir -p build || cd build && rm rules/x.md",
+    ]);
+  });
+
+  it("denies the `|` family — bash subshells a pipeline stage, so the cd never lands", () => {
+    // The zsh row is pinned HERE rather than folded into the block above,
+    // because zsh runs the LAST pipeline element in the calling shell: there
+    // the model's move is real and the file survives. bash subshells it and the
+    // file goes. The classifier serves both shells and takes bash's answer, so
+    // a future edit that special-cased the last pipeline element would pass a
+    // zsh-shaped test and re-open bash (`260804-0837` § Anti-vacuity).
+    expectAllDeny([
+      "echo hi | cd build && rm rules/x.md", // bash: GONE, zsh: intact
+      "true | cd build && rm rules/x.md", // bash: GONE, zsh: intact
+      "ls | cd build && echo pwned > rules/x.md", // bash: OVERWRITTEN, zsh: intact
+      "ls | cd build && rm -rf agents", // bash: GONE, zsh: intact
+    ]);
+  });
+
+  it("denies a cd that RE-PROVES the directory after the model gave it up", () => {
+    // Why the condition is stated over `state.moved` and not over "a directory
+    // builtin new in this segment". In `cd rules && true || cd /tmp && rm x.md`
+    // bash skips the second `cd` and deletes `rules/x.md` (measured GONE in
+    // both shells) — while an absolute `cd /tmp` put the model back on ground
+    // it had no right to, one segment after the write-side give-up had
+    // correctly taken the directory away.
+    expect(denies("cd rules && true || cd /tmp && rm x.md")).toBe(true);
+    expect(denies("cd hooks && ls | cd /tmp && rm config.json")).toBe(true);
+  });
+
+  it("costs the control row, which is the shape it cannot tell apart", () => {
+    // `[ -d nope ] || cd build && rm rules/x.md` is the same text with a
+    // FAILING left operand: the `cd` really does run, the shell really is in
+    // `build/`, and the file survives (measured intact in both shells). What
+    // separates it from the leak row is an exit status no static classifier
+    // will ever have, so it denies. Over-deny is the direction; `0` rows of
+    // this shape appeared in either non-generated corpus.
+    expect(denies("[ -d nope ] || cd build && rm rules/x.md")).toBe(true);
+    // And the neighbour that is NOT an escape and must not be pinned as one:
+    // `false && …` short-circuits the whole and-or list, so nothing runs.
+    expect(denies("false && cd build && rm rules/x.md")).toBe(false);
+  });
+
+  it("keeps `until cd X; do W; done` denying, and it is not the `if` row", () => {
+    // The cheapest check that an implementation modelled REACHABILITY rather
+    // than pattern-matching `if`. `until`'s body runs when the `cd` FAILED, so
+    // its degrade is correct and must survive any later reachability work
+    // (`260804-0947` constraint 5). Measured in both shells: the body runs and
+    // the file goes when the `cd` cannot be made.
+    expectAllDeny([
+      "until cd build; do rm rules/x.md; break; done",
+      "until cd hooks; do rm -rf dist; break; done",
+      "until cd nonexistent; do rm out.js; break; done",
+    ]);
+  });
+
+  it("costs nothing on a joiner that DOES reach the calling shell", () => {
+    // `;`, a newline, `&` and `start` all run the segment, so a `cd` on one of
+    // them moves the shell. Whether it SUCCEEDED is the write-side give-up's
+    // question, which is why these still allow only when the write itself is
+    // `&&`-joined to the `cd`.
+    expectAllAllow([
+      "true; cd build && rm out.js",
+      "ls & cd build && rm out.js",
+      "true\ncd build && rm out.js",
+      "cd build && rm out.js",
+      "mkdir -p build && cd build && rm out.js",
+    ]);
+    // The same shapes against a protected target still deny, so the row above
+    // is not passing because everything allows.
+    expectAllDeny([
+      "true; cd rules && rm x.md",
+      "ls & cd rules && rm x.md",
+      "true\ncd rules && rm x.md",
+    ]);
+  });
+
+  it("does not fire for a cd bash itself discarded with its subshell", () => {
+    // The give-up sits inside the scope, before the paren restore, exactly
+    // where the write-side one sits after it — so a `||`-joined `cd` inside a
+    // subshell casts no doubt on what follows the subshell.
+    expectAllAllow(["(true || cd rules); rm x.md", "$(true || cd rules); rm x.md"]);
+    expectAllDeny(["(true || cd rules); rm rules/x.md"]);
+  });
+
+  it("leaves ordinary agent work alone", () => {
+    // The 30-row ordinary corpus moved 0 rows, and the suite's own 4,424-string
+    // harvest moved 0. These are the shapes that matter.
+    expectAllAllow([
+      "cd hooks && npm test",
+      "cd hooks && npm run build && rm -rf dist",
+      "cd hooks &&\n  npm run build &&\n  rm -rf dist",
+      "pushd hooks && npm test; popd",
+      "rm -rf node_modules",
+      "mkdir -p build && cd build && rm out.js",
+    ]);
+  });
+});
+
+/**
+ * ONE FACT ABOUT A JOINER, IN ONE PLACE.
+ *
+ * The structural risk `260804-0947` option 4 accepted: until the reachability
+ * model is built, the module holds two beliefs about a joiner — may a `cd`
+ * behind it be carried forward, and does a `cd` on it move the calling shell.
+ * Two places holding one fact is the shape that produced `issues/260803-2237…`
+ * (a give-up that zeroed values and kept a depth) and `260803-2039…`. The
+ * mitigation is that both beliefs are rows in ONE table and neither give-up
+ * compares a joiner to anything.
+ */
+describe("the joiner table", () => {
+  it("keeps one fact about a joiner in one place", () => {
+    const src = readFileSync(join(HERE, "..", "bash-mutation-guard.ts"), "utf8");
+    // Strip block comments: the docstrings talk ABOUT joiners, and this
+    // assertion is about the code.
+    const code = src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+    // Exactly one read of the field, and it is the table lookup.
+    expect(code.match(/\.joiner\b/g) ?? []).toHaveLength(1);
+    expect(code).toContain("joinerFacts(segment.joiner)");
+    // And no comparison against a joiner literal anywhere in the code — that is
+    // what a third place would look like.
+    expect(code).not.toMatch(/[!=]==\s*"(&&|\|\||\||;|&|newline|start)"/);
+  });
+
+  it("answers a joiner it has never heard of with 'neither'", () => {
+    // The safe-list inversion, checkable. A joiner added to `SegmentJoiner`
+    // later gets no row here, and an absent row must mean "cannot carry a `cd`
+    // forward, does not move the calling shell" — the fail-closed direction —
+    // rather than falling through as safe. This is the same stance
+    // `firstDirArg` takes for flags.
+    const unknown = joinerFacts("|&" as SegmentJoiner);
+    expect(unknown.carriesCdForward).toBe(false);
+    expect(unknown.movesCallingShell).toBe(false);
+  });
+
+  it("says what bash says about each joiner it does carry", () => {
+    // Read as a table so a future edit that flips a cell fails here with the
+    // joiner named, rather than in whichever behavioural case happened to
+    // depend on it.
+    const expected: Record<string, [boolean, boolean]> = {
+      // joiner: [carriesCdForward, movesCallingShell]
+      start: [true, true],
+      "&&": [true, true],
+      ";": [false, true],
+      newline: [false, true],
+      "&": [false, true],
+      "||": [false, false],
+      "|": [false, false],
+    };
+    for (const [j, [carry, moves]] of Object.entries(expected)) {
+      const f = joinerFacts(j as SegmentJoiner);
+      expect(f.carriesCdForward, `carriesCdForward for ${j}`).toBe(carry);
+      expect(f.movesCallingShell, `movesCallingShell for ${j}`).toBe(moves);
+    }
+    // Every joiner the lexer can emit has a row; nothing relies on the default.
+    expect(JOINER_FACTS.size).toBe(Object.keys(expected).length);
   });
 });
 

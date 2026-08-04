@@ -159,21 +159,38 @@ directory up instead.
 
 ### The rule, so you can predict a case this file does not list
 
-> Once a `cd`, `chdir`, `pushd` or `popd` has run, **the working directory is unknown in
-> every segment that is reachable without an `&&` from that point on** — and a mutation
-> with a **relative** operand in such a segment is denied fail-closed, naming the joiner
-> that caused it.
+> Once a `cd`, `chdir`, `pushd` or `popd` is **written**, the working directory is unknown
+> in every segment that is reachable without an `&&` from that point on — **and from the
+> builtin itself, if the builtin's own segment is not one the shell both reaches and runs
+> in the calling shell.** A mutation with a **relative** operand in such a segment is
+> denied fail-closed, naming the joiner that caused it.
 
-Three questions decide any command, in order:
+The rule asks the same question about the segment that **moves** as about the segment that
+**writes**, because a joiner tells you two different things and both matter. Written out:
+
+| The joiner in front of a segment | May a `cd` behind it be carried forward? | Does a `cd` **in** it move your shell? |
+|---|---|---|
+| start of the command, `&&` | yes | yes |
+| `;`, a newline, `&` | no | yes |
+| `\|\|`, `\|` | no | **no** |
+
+`;`, a newline and `&` reach the segment, so a `cd` there really is attempted — whether it
+*succeeded* is the first column's question. `||` may skip the segment entirely (`A || B && C`
+is `(A || B) && C`, so reaching `C` proves nothing about `B`), and `|` runs it in a bash
+subshell that cannot move its caller. Anything not in this table counts as **no** to both.
+
+Four questions decide any command, in order:
 
 1. **Does it contain a directory builtin at all?** No → this rule cannot touch it, whatever
    its joiners are. `ls; rm out.js` and `npm test; rm build/out.js` allow, and always did.
-2. **Is every joiner between that builtin and the write an `&&`?** Yes → the model stays
+2. **Is the joiner in front of the builtin's own segment one that moves your shell?** No —
+   it is a `||` or a `|` → the directory is unknown from there on, whatever follows.
+3. **Is every joiner between that builtin and the write an `&&`?** Yes → the model stays
    exact and this rule denies nothing.
-3. **Does the writing segment name a relative path** — an operand *or* a redirection
+4. **Does the writing segment name a relative path** — an operand *or* a redirection
    target? No → nothing to place, nothing to deny.
 
-Two words in the rule carry most of the surprises.
+Three words in the rule carry most of the surprises.
 
 **"Reachable", not "next".** The give-up is not "a `;` right after the `cd`". It fires for
 any segment reached **unconditionally**, however far down, and the `;` may be nowhere near
@@ -187,6 +204,13 @@ cd hooks && npm run build && rm -rf dist    # allows — nothing reaches it unco
 **"Unknown", not "denied".** Losing the directory costs nothing by itself. A `pushd … ; popd`
 idiom degrades and then writes nothing relative, so it allows; so does `cd hooks; npm test`,
 and so does `cd hooks; rm /tmp/x`, whose target names itself.
+
+**"Written", not "run".** The guard reads a `cd` that may never execute exactly as it reads
+one that does. `true || cd build && rm out.js` and `echo hi | cd build && rm out.js` deny,
+and so does `[ -d nope ] || cd build && rm out.js` — where the `cd` genuinely *does* run,
+because its left operand failed. What separates that last row from the first is an exit
+status, and no static classifier will ever have one. The over-deny is the price of not
+allowing the first two, which delete a protected file in a real shell.
 
 ### Illustrations, not a list
 
@@ -206,8 +230,16 @@ DENY   cd build<newline>rm out.js                # a bare newline is a joiner li
 DENY   if cd hooks; then rm -rf dist; fi         # over-deny, see below
 DENY   while cd build; do rm out.js; break; done # over-deny, see below
 DENY   cd hooks && npx tsc | tee typecheck.log   # over-deny, see below
+DENY   true || cd build; rm out.js               # the `cd` may never have run
+DENY   true || cd build && rm out.js             # …and `&&` does not rescue it
+DENY   echo hi | cd build && rm out.js           # bash runs a pipeline stage in a subshell
+DENY   [ -d nope ] || cd build && rm out.js      # here the `cd` DOES run — over-deny, see below
+DENY   cd rules && true || cd /tmp && rm x.md    # an absolute `cd` cannot re-prove it either
+DENY   until cd build; do rm out.js; break; done # `until` runs its body when the `cd` FAILED
 
 allow  cd build && rm out.js
+allow  true; cd build && rm out.js               # `;` reaches the `cd`, `&&` carries it on
+allow  ls & cd build && rm out.js                # `A & cd B` runs the `cd` in the foreground
 allow  cd hooks && npm run build && rm -rf dist
 allow  cd hooks &&<newline>  npm run build &&<newline>  rm -rf dist
 allow  ls; rm out.js
@@ -247,22 +279,23 @@ a puzzle to solve by rewriting: report it.
 The give-up respects scope. A `cd` bash itself discarded casts no doubt forward, so
 `(cd nonexistent); rm x.md` still resolves `x.md` from the project root.
 
-**Two honest edges, both open.** The rule above is what the guard implements; the shell is
-slightly different in two places, and neither is fixed yet.
+**One honest edge, still open, and it costs rather than leaks.** The rule above is what the
+guard implements; the shell is slightly different in one place.
 
 - **The guard over-denies a `cd` the shell does in fact guarantee.** A conditional body, a
   loop body, a brace group and a pipeline stage all reach their write on a condition the
   shell has already tested, so `if cd hooks; then rm -rf dist; fi`,
   `while cd build; do rm out.js; break; done` and `cd hooks && npx tsc | tee typecheck.log`
   are safe and denied anyway (`issues/260804-0839…`). Cost, not hazard. `&&` or an absolute
-  path clears them.
-- **`&&` guarantees slightly less than the guard reads into it.** It guarantees that the
-  and-or list to its *left* returned zero, not that the segment immediately before it ran,
-  and it does not reach into a pipeline. So `true || cd build && rm rules/x.md` and
-  `echo hi | cd build && rm rules/x.md` are **allowed** and do delete the rule in a real
-  shell (`issues/260804-0836…`, `260804-0837…`; the design question is
-  `decisions/260804-0947…`). Hazard, not cost — and it is on the list of things this rule
-  forbids you from reaching for.
+  path clears them. The compound-command family is **not** uniform, which is why this is a
+  model to be built rather than a list to be exempted: `until cd X; do W; done` runs its
+  body when the `cd` *failed*, so its deny is correct and has to survive the fix.
+
+The edge that used to sit beside it — `&&` read as a stronger guarantee than bash gives —
+is **closed**. `true || cd build && rm rules/x.md` and `echo hi | cd build && rm rules/x.md`
+used to be allowed and did delete the rule in a real shell; the joiner is now consulted for
+the segment that moves as well as for the one that writes, and both deny
+(`issues/260804-0836…`, `260804-0837…`, closed by `decisions/260804-0947…`).
 
 **Only the plain forms are tracked, and the rest admit they are untracked.** The
 tracking is exact for bash's default `cd`, which resolves `..` against `$PWD` textually.
@@ -548,24 +581,16 @@ Known and accepted:
   behaviour: after a non-`&&` joiner the guard denies relative writes it cannot place, which
   over-denies whenever the `cd` would in fact have succeeded. `&&` is the way through, and
   it is also the correct shell.
-- **`&&` is read as a stronger guarantee than bash gives, and that one errs toward ALLOW.**
-  This is the live hole in the directory model, and it needs no flag, no wrapper and no
-  environment variable. `&&` guarantees that the and-or list to its **left** returned zero,
-  not that the segment immediately before it ran, and `|` binds tighter than `&&` so a
-  pipeline stage runs in a bash subshell that never moves the calling shell. The guard
-  consults the joiner for the segment that **writes** and never for the segment that
-  **moves**, so both of these are allowed and both delete a protected rule in a real shell:
-
-  ```
-  true || cd build && rm rules/x.md       # the `cd` never ran; the model followed it anyway
-  echo hi | cd build && rm rules/x.md     # bash subshelled the `cd`; zsh did not
-  ```
-
-  Filed `issues/260804-0836…` and `260804-0837…`, both pre-existing, both open; the design
-  question that closes both at once is `decisions/260804-0947…`. Until it is answered, the
-  sentence "the guard's model of where the shell is standing is exact for every `cd` written
-  in the command text and reached by a path the shell guarantees" is **not** true, and
-  nothing in this file should be read as claiming it.
+- **A `cd` the shell may never have made is no longer followed, and that is a cost too.**
+  This used to be the live hole in the directory model — `&&` guarantees that the and-or
+  list to its **left** returned zero rather than that the segment before it ran, and `|`
+  binds tighter than `&&`, so `true || cd build && rm rules/x.md` and
+  `echo hi | cd build && rm rules/x.md` were allowed and deleted a protected rule with no
+  flag, no wrapper and no environment variable. Both deny now. What is left is the ordinary
+  give-up behaviour in a second place: a `cd` on a `||`- or `|`-joined segment makes the
+  directory unknown even where the shell would in fact have made the move, so
+  `[ -d nope ] || cd build && rm out.js` denies although its `cd` runs. Naming the target
+  absolutely, or moving the `cd` off the `||`, is the way through.
 - **Verbs deliberately not in the table**: `mkdir`, `chmod`, `chown`, `touch`, `tar`,
   `rsync`, `patch`, `gzip`. Each was left out because its operands are usually
   directories and a row would carry the ancestor rule with it.
