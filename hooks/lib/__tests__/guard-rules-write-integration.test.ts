@@ -2021,7 +2021,28 @@ describe("an unparseable project configuration is reported, not swallowed", () =
   );
 });
 
-describe("what a project configuration can currently reach — measured, not endorsed", () => {
+// ---------------------------------------------------------------------------
+// The boundary of the project layer — plan Step 2 of the C5b remediation.
+//
+// The block's title used to be "what a project configuration can CURRENTLY
+// reach — measured, not endorsed", and every case in it pinned a reach nobody
+// had chosen. Three of those reaches are now closed by decisions 260804-1630
+// and 260804-1631, so the block holds both halves and the title says so. The
+// cases that still only MEASURE keep the `MEASURES:` prefix and their citation
+// of the record that owns the question.
+//
+// Every row below is a verdict from a real guard subprocess against a throwaway
+// project root. A loader that returns a good list proves nothing about what the
+// guard denies — that is the vacuity trap this whole file exists to close, and
+// the reason the plan requires a mutation to break at least one of these.
+//
+// One thing the harness asserts on this block's behalf: `runGuard` throws when
+// the guard prints `[guard] Error:`, so the two wrong-type rows that used to
+// crash the guard into its fail-open branch cannot pass here quietly. They
+// would fail the case, not allow the write.
+// ---------------------------------------------------------------------------
+
+describe("what a project configuration can and cannot reach — measured", () => {
   it(
     "MEASURES: the flag still exempts a rule path the project protected explicitly",
     () => {
@@ -2109,6 +2130,290 @@ describe("what a project configuration can currently reach — measured, not end
         },
         { escalation: { haltActive: true, consecutiveBlocks: 3 } },
       );
+    },
+    CASE_TIMEOUT,
+  );
+
+  // -------------------------------------------------------------------------
+  // Issue 260804-1601 — a partial `guard` object used to empty the list.
+  //
+  // Three ordinary intentions, each of which removed all nine protected
+  // patterns on both surfaces and emitted `guard_allow`, the event meaning
+  // nothing unusual happened. The set is open: the rule is "a key the project
+  // omits inherits", and these are three of the infinitely many objects that
+  // omit `protectedPaths`.
+  // -------------------------------------------------------------------------
+
+  const partialGuardObjects: [string, object][] = [
+    ["writing down that the guard is on", { guard: { enabled: true } }],
+    [
+      "raising the sensitivity",
+      { guard: { defaultSensitivity: "high" } },
+    ],
+    [
+      "adding one category",
+      { guard: { categoryPaths: { api: ["src/api/**"] } } },
+    ],
+  ];
+
+  for (const [intention, config] of partialGuardObjects) {
+    it(
+      `keeps every protected pattern when a project is ${intention}`,
+      () => {
+        withConfiguredProject(config, ({ root }) => {
+          const first = runWrite(root, "agents/coder.md");
+          expect(first.decision).toBe("block");
+          expect(first.reason).toContain("Protected path");
+
+          // The other five rows of the measurement table. Only the verdict is
+          // asserted from here on: the third block trips the halt, after which
+          // the REASON is the halt's rather than the protected path's, and a
+          // case that asserted otherwise would be asserting the escalation
+          // threshold instead of the merge.
+          expect(runWrite(root, "rules/x.md").decision).toBe("block");
+          expect(runWrite(root, "skills/demo/SKILL.md").decision).toBe("block");
+          expect(runBash(root, "rm -rf agents").decision).toBe("block");
+          expect(
+            runBash(root, "rm -rf fusion-workbench/.guard-state").decision,
+          ).toBe("block");
+          expect(runWrite(root, "fusion-guard.json").decision).toBe("block");
+        });
+      },
+      CASE_TIMEOUT,
+    );
+  }
+
+  it(
+    "still lets a project narrow its list on purpose — the half a union could not express",
+    () => {
+      // The falsifier for the case above: if the leaf walk swallowed a DECLARED
+      // value, this would deny and deliberate narrowing would be gone with it.
+      withConfiguredProject({ guard: { protectedPaths: ["secret/**"] } }, ({ root }) => {
+        expect(runWrite(root, "secret/a").decision).toBe("block");
+        expect(runWrite(root, "agents/coder.md").decision).toBeUndefined();
+        expect(runBash(root, "rm -rf rules").decision).toBeUndefined();
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "an EMPTY list declared on purpose really is empty",
+    () => {
+      withConfiguredProject({ guard: { protectedPaths: [] } }, ({ root }) => {
+        expect(runWrite(root, "agents/coder.md").decision).toBeUndefined();
+        expect(runWrite(root, "rules/x.md").decision).toBeUndefined();
+        // The floor is not part of the declaration and does not go with it.
+        expect(runWrite(root, "fusion-guard.json").decision).toBe("block");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  // -------------------------------------------------------------------------
+  // Issue 260804-1602 — `guard.enabled` from a project.
+  //
+  // The key sits above every check in guard.ts. Each surface it used to
+  // disable gets its own assertion, and the two git rows get their own PROJECT
+  // so no earlier block has tripped the halt: a `git switch` denied by an
+  // active halt would pass this case while proving nothing about the branch
+  // policy.
+  // -------------------------------------------------------------------------
+
+  const GUARD_OFF = { guard: { enabled: false } };
+
+  it(
+    "ignores guard.enabled: false and keeps denying on both write surfaces",
+    () => {
+      withConfiguredProject(GUARD_OFF, ({ root }) => {
+        expect(runWrite(root, "agents/coder.md").decision).toBe("block");
+        expect(runWrite(root, "hooks/config.json").decision).toBe("block");
+        expect(runWrite(root, "fusion-guard.json").decision).toBe("block");
+        expect(runBash(root, "rm -rf rules").decision).toBe("block");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "ignores it for the git branch policy, which is the one that runs everywhere",
+    () => {
+      withConfiguredProject(GUARD_OFF, ({ root }) => {
+        const sw = runBash(root, "git switch main");
+        expect(sw.decision).toBe("block");
+        // The BRANCH policy's reason, not a halt's and not a protected path's.
+        expect(sw.reason).toContain("agents never switch git branches");
+        expect(runBash(root, "git worktree add /tmp/w").decision).toBe("block");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "ignores it in the plugin's own repo too, where the write guard stands down",
+    () => {
+      // Measured before the fix: in a root carrying `.claude-plugin/plugin.json`
+      // the seeded template still denied `git switch main`, and
+      // `{"guard":{"enabled":false}}` allowed it. The branch policy's documented
+      // survival of the stand-down did not survive one project file.
+      withPluginProject(
+        ({ root }) => {
+          expect(runBash(root, "git switch main").decision).toBe("block");
+        },
+        { files: { "fusion-guard.json": projectConfig(GUARD_OFF) } },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "ignores it against an ALREADY ACTIVE halt",
+    () => {
+      // The accurate statement of the old residual was narrow: an agent that
+      // wrote the off-switch BEFORE it earned a halt was immune to halts from
+      // then on, and the write cost it one allowed tool call in any project
+      // whose `fusion-guard.json` did not yet exist.
+      withProject(
+        ({ root }) => {
+          expect(runWrite(root, "agents/coder.md").decision).toBe("block");
+          expect(runBash(root, "rm -rf rules").decision).toBe("block");
+        },
+        {
+          files: { "fusion-guard.json": projectConfig(GUARD_OFF) },
+          escalation: { haltActive: true, consecutiveBlocks: 3 },
+        },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "reports the ignored key, once, naming it — decision 260804-1631",
+    () => {
+      // Not optional, and not cosmetic. The record calls the diagnostic the only
+      // thing standing between this answer and a silently inert key: a project
+      // owner who writes `"enabled": false`, sees nothing change and hears
+      // nothing concludes the file is not being read at all.
+      withConfiguredProject(GUARD_OFF, ({ root }) => {
+        expect(runWrite(root, "notes.txt").decision).toBeUndefined();
+
+        const advisories = readEvents(root).filter(
+          (e) => e.event === "guard_advisory",
+        );
+        expect(advisories).toHaveLength(1);
+        expect(advisories[0]?.detail).toContain("guard.enabled");
+        expect(advisories[0]?.detail).toContain("cannot be set by a project");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "STATED COST: that advisory repeats on every guarded call until the line is removed",
+    () => {
+      // The surviving failure mode, pinned rather than discovered. `diagnostics`
+      // emits one `guard_advisory` per entry per guarded tool call, so a project
+      // that leaves the key in its file meets this on every call. An advisory
+      // that repeats forever trains its reader to dismiss advisories.
+      withConfiguredProject(GUARD_OFF, ({ root }) => {
+        runWrite(root, "notes.txt");
+        runBash(root, "ls -la");
+        runWrite(root, "notes.txt");
+
+        expect(
+          readEvents(root).filter((e) => e.event === "guard_advisory"),
+        ).toHaveLength(3);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  // -------------------------------------------------------------------------
+  // Issue 260804-1603 — a wrong-typed value.
+  //
+  // Two failures in one table. The first three rows crashed the guard and it
+  // ALLOWED, on every tool call, for as long as the file stayed that way. The
+  // fourth never crashed: `"rules/**"` spread into eight single characters, the
+  // effective list matched nothing, and the guard emitted `guard_allow`. That
+  // is the most likely typo of the four and the one with no signal at all.
+  // -------------------------------------------------------------------------
+
+  const wrongTypes: [string, object][] = [
+    ["a number", { guard: { protectedPaths: 123 } }],
+    ["an object", { guard: { protectedPaths: { a: "rules/**" } } }],
+    ["an array of numbers", { guard: { protectedPaths: [42] } }],
+    ["a bare string", { guard: { protectedPaths: "rules/**" } }],
+  ];
+
+  for (const [label, config] of wrongTypes) {
+    it(
+      `drops protectedPaths given ${label}, inherits, and says which key`,
+      () => {
+        withConfiguredProject(config, ({ root }) => {
+          expect(runWrite(root, "agents/coder.md").decision).toBe("block");
+          expect(runBash(root, "rm agents/coder.md").decision).toBe("block");
+          expect(runWrite(root, "fusion-guard.json").decision).toBe("block");
+
+          const advisories = readEvents(root).filter(
+            (e) => e.event === "guard_advisory",
+          );
+          expect(advisories.length).toBeGreaterThan(0);
+          expect(advisories[0]?.detail).toContain("guard.protectedPaths");
+          // No `guard_error`: the crash rows are dropped before anything
+          // spreads or folds them. The harness would have thrown anyway.
+          expect(readEvents(root).some((e) => e.event === "guard_error")).toBe(
+            false,
+          );
+        });
+      },
+      CASE_TIMEOUT,
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  // Issue 260804-1606 — `blocksBeforeHalt: 0`.
+  // -------------------------------------------------------------------------
+
+  it(
+    "drops blocksBeforeHalt: 0 and halts on the plugin's third block instead of the first",
+    () => {
+      withConfiguredProject({ escalation: { blocksBeforeHalt: 0 } }, ({ root }) => {
+        expect(runWrite(root, "rules/x.md").decision).toBe("block");
+
+        // Before: one block halted the session, and the halt message said
+        // "after repeated violations" when there had been one.
+        const afterOne = readEscalation(root);
+        expect(afterOne?.consecutiveBlocks).toBe(1);
+        expect(afterOne?.haltActive).toBe(false);
+
+        expect(runWrite(root, "agents/coder.md").decision).toBe("block");
+        expect(readEscalation(root)?.haltActive).toBe(false);
+        expect(runWrite(root, "skills/demo/SKILL.md").decision).toBe("block");
+        expect(readEscalation(root)?.haltActive).toBe(true);
+
+        const advisories = readEvents(root).filter(
+          (e) => e.event === "guard_advisory",
+        );
+        expect(advisories[0]?.detail).toContain("escalation.blocksBeforeHalt");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "leaves a project's own VALID threshold alone",
+    () => {
+      // The bound on the case above: validation drops what it cannot use and
+      // nothing else. A project that means 2 gets 2.
+      withConfiguredProject({ escalation: { blocksBeforeHalt: 2 } }, ({ root }) => {
+        expect(runWrite(root, "rules/x.md").decision).toBe("block");
+        expect(runWrite(root, "agents/coder.md").decision).toBe("block");
+
+        expect(readEscalation(root)?.haltActive).toBe(true);
+        expect(
+          readEvents(root).some((e) => e.event === "guard_advisory"),
+        ).toBe(false);
+      });
     },
     CASE_TIMEOUT,
   );

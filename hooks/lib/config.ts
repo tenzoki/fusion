@@ -1,7 +1,7 @@
 /**
  * Configuration loader for the Compliance Guard.
  *
- * ## Two sources, in order
+ * ## Three layers, in order
  *
  *   1. the PROJECT's `fusion-guard.json`, at the project root
  *   2. the PLUGIN's `hooks/config.json`, inside the fusion install
@@ -12,19 +12,71 @@
  * so it can never reach a consuming project. Every project on one install
  * therefore shared one `protectedPaths` list, which is the gap C5b closes.
  *
- * ## Merge: PER TOP-LEVEL KEY, not per leaf
+ * ## Merge: PER LEAF, across all three layers
  *
- * A project's `guard` object replaces the plugin's `guard` object WHOLE; only
- * then does the per-leaf `?? DEFAULTS` normalisation run. So a project that
- * writes `guard: { protectedPaths: [...] }` and omits `defaultSensitivity` gets
- * `defaultSensitivity` from DEFAULTS, not from the plugin's file.
+ * One rule, and it is meant to be statable from memory by an agent and by a
+ * project owner alike: *a key the project layer does not supply, or supplies
+ * unusably, is treated as absent, and absent means the plugin layer, then
+ * `DEFAULTS`.* A key the project DOES supply is taken exactly as written.
  *
- * That is deliberate and it is the whole point. A leaf-level merge across three
- * sources cannot express "narrow the list" — a union of `protectedPaths` can
- * only ever grow — and narrowing is half of what the project-level
- * configuration was asked for. A project that declares only `escalation`
- * therefore keeps the plugin's `protectedPaths` entirely, which is the
- * inheritance property the seeded template relies on.
+ * So `{"guard":{"defaultSensitivity":"high"}}` raises the sensitivity and keeps
+ * the plugin's nine protected patterns, and `{"guard":{"protectedPaths":[]}}`
+ * really does protect nothing. Only OMISSION changed meaning — from "protect
+ * nothing" to "inherit". Decision `260804-1630`, answered option 1 at the plan
+ * gate on 2026-08-04.
+ *
+ * Declaration still wins outright, and that half is not a detail: a union of
+ * `protectedPaths` can only ever grow, so narrowing — half of what the
+ * project-level configuration was asked for — is expressible only if a declared
+ * list replaces rather than merges. What the leaf walk changes is the
+ * granularity at which "declared" is read, from the whole top-level object down
+ * to the leaf. Nothing about a declared value moved.
+ *
+ * The rule is deliberately not scoped to `protectedPaths`. `escalation`,
+ * `churn`, `crossFile` and `decisions` carried the identical defect, invisible
+ * only because the plugin file and `DEFAULTS` happen to agree on every leaf they
+ * share and nothing keeps them agreeing (`260804-1633`). One walk closes all
+ * five rather than five per-key rules.
+ *
+ * ## The one key a project may not set
+ *
+ * `guard.enabled` is read from the plugin layer and `DEFAULTS` only. It sits
+ * above every check in `guard.ts` — above the Bash dispatch, above the halt,
+ * above the git branch policy that fusion documents in three places as running
+ * unconditionally — so a project that could write it could switch off a guard it
+ * is governed by, silently and unrecoverably. Decision `260804-1631`, answered
+ * option 1 at the same gate.
+ *
+ * A project that declares the key gets ONE DIAGNOSTIC naming it. That is not a
+ * courtesy: it is the only thing standing between this rule and a silently inert
+ * key, and the decision record says so in those words. Do not make it
+ * conditional and do not fold it into the type validation below — a project may
+ * write a perfectly well-typed `false` and must still hear that nothing
+ * happened.
+ *
+ * ## Type validation: an unusable value costs exactly what an absence costs
+ *
+ * `readLayer` used to cast the parsed JSON to `RawConfig` and check nothing
+ * inside it, so `{"guard":{"protectedPaths":123}}` crashed the guard into its
+ * fail-open branch on every call, and the subtler `"rules/**"` spread into eight
+ * single characters and protected nothing, silently (`260804-1603`).
+ *
+ * `validateLayer` gives every leaf this loader reads a declared type. A leaf
+ * whose value does not have that type is DROPPED and NAMED, and the leaf walk
+ * then finds it absent and inherits — so a dropped key, an omitted key and a key
+ * the project never wrote are three spellings of one behaviour. That equivalence
+ * is an obligation of `260804-1630`, not an implementation convenience: it is
+ * what keeps the whole seam expressible as one sentence.
+ *
+ * Two things the validator deliberately does NOT do. It does not reject unknown
+ * keys — the seeded template is mostly underscore-prefixed documentation keys,
+ * and rejecting them would turn the shipped template into a broken file. And it
+ * does not diagnose `null`, which has always meant "nothing configured" here and
+ * still does; `null` is absent, not wrong.
+ *
+ * Both layers run through it. The plugin layer is protected, so the risk there
+ * is smaller — but `260802-2334` is this Circle's standing proof that "the file
+ * is protected" was not enough once already.
  *
  * ## The self-protection floor
  *
@@ -101,8 +153,15 @@ export interface Decision {
   ruleFile?: string;
 }
 
-/** Guard configuration as loaded from config.json. */
-export interface GuardConfig {
+/**
+ * The effective SETTINGS — everything the guard reads to decide a verdict.
+ *
+ * Split out from `GuardConfig` so the load report below can be added to what
+ * `loadConfig` returns without becoming a setting. "Did the effective
+ * configuration change?" has to stay an answerable question, and it is
+ * answerable only if the settings are a nameable subset.
+ */
+export interface GuardSettings {
   guard: {
     enabled: boolean;
     defaultSensitivity: Sensitivity;
@@ -124,25 +183,48 @@ export interface GuardConfig {
     pingBackWarning: number;
     pingBackCritical: number;
   };
+}
+
+/** Which of the three layers a value came from. */
+export type ConfigLayer = "project" | "plugin" | "default";
+
+/** Guard configuration as loaded: the settings, plus a report about the load. */
+export interface GuardConfig extends GuardSettings {
   /**
-   * Non-fatal problems met while resolving the two sources. Empty on a clean
+   * Non-fatal problems met while resolving the three layers. Empty on a clean
    * load. NOT configuration — it is a report about the load, which is why it is
    * excluded from every comparison that asks whether the effective
    * configuration changed.
    */
   diagnostics: string[];
+  /**
+   * Which layer supplied `guard.protectedPaths`, BEFORE the self-protection
+   * floor was appended.
+   *
+   * Also a report rather than a setting, and it is here for one caller that does
+   * not exist yet. Decision `260803-1314` option 2 would have the rules-write
+   * exemption stand down for a path the PROJECT ITSELF declared protected, and
+   * "the project itself declared it" is a fact the leaf walk below computes and
+   * then used to throw away. The alternative was for that caller to re-read a
+   * file this loader has already read, which is a second source of truth for the
+   * same bytes. Settled here, in the loader, per the remediation plan's Step 2.
+   *
+   * `"default"` means neither file declared a list, so the effective list is
+   * `DEFAULTS`' empty one plus whatever the floor added.
+   */
+  protectedPathsSource: ConfigLayer;
 }
 
 /** Raw shape from JSON (may have missing fields). */
 interface RawConfig {
-  guard?: Partial<GuardConfig["guard"]>;
+  guard?: Partial<GuardSettings["guard"]>;
   decisions?: Decision[];
-  escalation?: Partial<GuardConfig["escalation"]>;
-  churn?: Partial<GuardConfig["churn"]>;
-  crossFile?: Partial<GuardConfig["crossFile"]>;
+  escalation?: Partial<GuardSettings["escalation"]>;
+  churn?: Partial<GuardSettings["churn"]>;
+  crossFile?: Partial<GuardSettings["crossFile"]>;
 }
 
-const DEFAULTS: GuardConfig = {
+const DEFAULTS: GuardSettings = {
   guard: {
     enabled: true,
     defaultSensitivity: "medium",
@@ -164,7 +246,6 @@ const DEFAULTS: GuardConfig = {
     pingBackWarning: 3,
     pingBackCritical: 5,
   },
-  diagnostics: [],
 };
 
 /**
@@ -198,10 +279,10 @@ let cache: { key: string; value: GuardConfig } | null = null;
 /** One layer of raw configuration, plus whatever went wrong reading it. */
 interface Layer {
   raw: RawConfig;
-  diagnostic: string | null;
+  diagnostics: string[];
 }
 
-const EMPTY_LAYER: Layer = { raw: {}, diagnostic: null };
+const EMPTY_LAYER: Layer = { raw: {}, diagnostics: [] };
 
 /**
  * Read one configuration file into a layer.
@@ -211,9 +292,10 @@ const EMPTY_LAYER: Layer = { raw: {}, diagnostic: null };
  * anything, and for the plugin layer it is the silence this loader has always
  * kept. A file that EXISTS but cannot be read as a JSON object is dropped and
  * named, because the alternative is a mistyped configuration hiding behind
- * apparently-normal operation.
+ * apparently-normal operation. The same holds one level down, per key, in
+ * `validateLayer` — which is where `kind` goes.
  */
-function readLayer(path: string): Layer {
+function readLayer(path: string, kind: ConfigLayer): Layer {
   if (!existsSync(path)) return EMPTY_LAYER;
 
   let parsed: unknown;
@@ -222,7 +304,9 @@ function readLayer(path: string): Layer {
   } catch (err) {
     return {
       raw: {},
-      diagnostic: `Guard configuration at ${path} is not valid JSON and was ignored; falling back to the next source. ${String(err)}`,
+      diagnostics: [
+        `Guard configuration at ${path} is not valid JSON and was ignored; falling back to the next source. ${String(err)}`,
+      ],
     };
   }
 
@@ -233,11 +317,220 @@ function readLayer(path: string): Layer {
   if (typeof parsed !== "object" || Array.isArray(parsed)) {
     return {
       raw: {},
-      diagnostic: `Guard configuration at ${path} is not a JSON object and was ignored; falling back to the next source.`,
+      diagnostics: [
+        `Guard configuration at ${path} is not a JSON object and was ignored; falling back to the next source.`,
+      ],
     };
   }
 
-  return { raw: parsed as RawConfig, diagnostic: null };
+  return validateLayer(parsed as Record<string, unknown>, path, kind);
+}
+
+/* ------------------------------------------------------------------ *
+ * Type validation
+ * ------------------------------------------------------------------ */
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isBoolean(value: unknown): boolean {
+  return typeof value === "boolean";
+}
+
+function isStringArray(value: unknown): boolean {
+  return Array.isArray(value) && value.every((e) => typeof e === "string");
+}
+
+const SENSITIVITIES: readonly string[] = ["none", "low", "medium", "high"];
+
+function isSensitivity(value: unknown): boolean {
+  return typeof value === "string" && SENSITIVITIES.includes(value);
+}
+
+function isRecordOf(check: (v: unknown) => boolean): (v: unknown) => boolean {
+  return (value) => isPlainObject(value) && Object.values(value).every(check);
+}
+
+/**
+ * A halt threshold of `0` halts on the FIRST denied call, before the agent has
+ * had the second and third chances the three-block design exists to give it
+ * (`260804-1606`). It is almost certainly a project meaning "no threshold" and
+ * getting the strictest one there is. There is no upper bound, deliberately: a
+ * large value is a defensible project choice, and inventing a ceiling here would
+ * be a policy nobody asked for.
+ */
+function isPositiveInteger(value: unknown): boolean {
+  return typeof value === "number" && Number.isInteger(value) && value >= 1;
+}
+
+function isThreshold(value: unknown): boolean {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0;
+}
+
+function isDecisionArray(value: unknown): boolean {
+  return (
+    Array.isArray(value) &&
+    value.every(
+      (d) =>
+        isPlainObject(d) &&
+        typeof d.id === "string" &&
+        typeof d.category === "string" &&
+        typeof d.statement === "string" &&
+        (d.ruleFile === undefined || typeof d.ruleFile === "string"),
+    )
+  );
+}
+
+interface LeafRule {
+  check: (value: unknown) => boolean;
+  /** Completes the sentence "… must be ___". */
+  expected: string;
+}
+
+/**
+ * Every leaf this loader reads, with the type it must have.
+ *
+ * The table IS the rule, which is why it is a table: a leaf that is not named
+ * here is not validated, and a leaf that is named here behaves identically to an
+ * omission when it fails. Adding a leaf to `GuardSettings` without adding it
+ * here leaves that leaf unchecked, which is the state every leaf was in before
+ * this table existed.
+ */
+const CONTAINER_LEAF_RULES: Record<string, Record<string, LeafRule>> = {
+  guard: {
+    enabled: { check: isBoolean, expected: "a boolean" },
+    defaultSensitivity: {
+      check: isSensitivity,
+      expected: 'one of "none", "low", "medium", "high"',
+    },
+    protectedPaths: {
+      check: isStringArray,
+      expected: "an array of glob strings",
+    },
+    categoryPaths: {
+      check: isRecordOf(isStringArray),
+      expected: "an object mapping each category to an array of glob strings",
+    },
+    categorySensitivity: {
+      check: isRecordOf(isSensitivity),
+      expected: "an object mapping each category to a sensitivity",
+    },
+  },
+  escalation: {
+    blocksBeforeHalt: {
+      check: isPositiveInteger,
+      expected: "a whole number of 1 or more",
+    },
+  },
+  churn: {
+    changesPerSessionWarning: { check: isThreshold, expected: "a number" },
+    changesPerSessionCritical: { check: isThreshold, expected: "a number" },
+    totalChangesWarning: { check: isThreshold, expected: "a number" },
+    totalChangesCritical: { check: isThreshold, expected: "a number" },
+  },
+  crossFile: {
+    pingBackWarning: { check: isThreshold, expected: "a number" },
+    pingBackCritical: { check: isThreshold, expected: "a number" },
+  },
+};
+
+/** Top-level keys whose value is itself a leaf rather than a container. */
+const TOP_LEVEL_LEAF_RULES: Record<string, LeafRule> = {
+  decisions: {
+    check: isDecisionArray,
+    expected: "an array of {id, category, statement} objects",
+  },
+};
+
+/** A type name for a diagnostic, short enough to read in a dashboard row. */
+function describeValue(value: unknown): string {
+  if (Array.isArray(value)) return "an array";
+  if (typeof value === "object") return "an object";
+  if (typeof value === "string") return "a string";
+  return typeof value;
+}
+
+/**
+ * Drop every key that cannot be used, and NAME each one.
+ *
+ * A dropped key behaves exactly like an omitted one — the leaf walk in
+ * `loadConfig` then finds it absent and inherits from the next layer. Decision
+ * `260804-1630` requires that equivalence rather than merely permitting it: two
+ * ways of arriving at "absent" that behave differently would be two rules where
+ * the answer is one.
+ *
+ * Applied to BOTH layers. `kind` distinguishes them for exactly one key:
+ * `guard.enabled`, which the project layer may not set at all (decision
+ * `260804-1631`). That key is dropped from the project layer whatever its type,
+ * and the diagnostic says WHY rather than complaining about a type — a project
+ * that writes a perfectly well-formed `false` needs to hear that the key does
+ * not apply to it, not that it should have written a boolean.
+ */
+function validateLayer(
+  parsed: Record<string, unknown>,
+  source: string,
+  kind: ConfigLayer,
+): Layer {
+  const raw: Record<string, unknown> = {};
+  const diagnostics: string[] = [];
+
+  const drop = (key: string, rule: LeafRule, value: unknown): void => {
+    diagnostics.push(
+      `Guard configuration at ${source}: "${key}" must be ${rule.expected}, got ${describeValue(value)}. The key was ignored and inherits as if it were absent.`,
+    );
+  };
+
+  for (const [key, value] of Object.entries(parsed)) {
+    // `null` means "nothing configured" and is not a problem — see `readLayer`.
+    // Dropping it here is what makes the leaf walk see it as absent.
+    if (value === null || value === undefined) continue;
+
+    const topLevelRule = TOP_LEVEL_LEAF_RULES[key];
+    if (topLevelRule !== undefined) {
+      if (topLevelRule.check(value)) raw[key] = value;
+      else drop(key, topLevelRule, value);
+      continue;
+    }
+
+    const leafRules = CONTAINER_LEAF_RULES[key];
+    if (leafRules === undefined) {
+      // An unknown key, carried through untouched and undiagnosed. The seeded
+      // template is mostly six underscore-prefixed documentation keys; rejecting
+      // them would make the file fusion itself ships a broken one.
+      raw[key] = value;
+      continue;
+    }
+
+    if (!isPlainObject(value)) {
+      drop(key, { check: isPlainObject, expected: "a JSON object" }, value);
+      continue;
+    }
+
+    const kept: Record<string, unknown> = {};
+    for (const [leafKey, leafValue] of Object.entries(value)) {
+      if (leafValue === null || leafValue === undefined) continue;
+
+      if (kind === "project" && key === "guard" && leafKey === "enabled") {
+        diagnostics.push(
+          `Guard configuration at ${source}: "guard.enabled" cannot be set by a project — a project does not switch off the guard that governs it, and the git branch policy runs even where the write guard stands down. The key was ignored.`,
+        );
+        continue;
+      }
+
+      const rule = leafRules[leafKey];
+      if (rule === undefined) {
+        kept[leafKey] = leafValue;
+      } else if (rule.check(leafValue)) {
+        kept[leafKey] = leafValue;
+      } else {
+        drop(`${key}.${leafKey}`, rule, leafValue);
+      }
+    }
+    raw[key] = kept;
+  }
+
+  return { raw: raw as RawConfig, diagnostics };
 }
 
 /**
@@ -264,26 +557,62 @@ export function loadConfig(sources?: ConfigSources): GuardConfig {
   const projectConfigPath =
     projectRoot === null ? null : resolve(projectRoot, PROJECT_CONFIG_FILENAME);
 
-  const plugin = readLayer(pluginConfigPath);
+  const plugin = readLayer(pluginConfigPath, "plugin");
   const project =
-    projectConfigPath === null ? EMPTY_LAYER : readLayer(projectConfigPath);
+    projectConfigPath === null
+      ? EMPTY_LAYER
+      : readLayer(projectConfigPath, "project");
 
-  const diagnostics = [project.diagnostic, plugin.diagnostic].filter(
-    (d): d is string => d !== null,
-  );
+  // Project first: it is the layer a reader can edit, so it is the layer they
+  // need named first when both are wrong.
+  const diagnostics = [...project.diagnostics, ...plugin.diagnostics];
 
-  // THE MERGE. Per top-level key, the project's value replaces the plugin's;
-  // a key the project omits falls back to the plugin's, then to DEFAULTS below.
-  const guard = project.raw.guard ?? plugin.raw.guard;
-  const decisions = project.raw.decisions ?? plugin.raw.decisions;
-  const escalation = project.raw.escalation ?? plugin.raw.escalation;
-  const churn = project.raw.churn ?? plugin.raw.churn;
-  const crossFile = project.raw.crossFile ?? plugin.raw.crossFile;
+  // THE MERGE, per leaf across all three layers: project, then plugin, then
+  // DEFAULTS. `??` and not `||`, because a leaf may legitimately be `false`,
+  // `0` or `[]` — and `[]` in particular is the deliberate narrowing that a
+  // project declares on purpose and that must survive as itself.
+  //
+  // `guard.enabled` is the one leaf the project layer is not consulted for, and
+  // it cannot be: `validateLayer` removed it from that layer and said so. It is
+  // resolved below from the plugin layer alone, so this helper is never asked
+  // about it.
+  const pickGuard = <K extends keyof GuardSettings["guard"]>(
+    key: K,
+  ): GuardSettings["guard"][K] =>
+    project.raw.guard?.[key] ?? plugin.raw.guard?.[key] ?? DEFAULTS.guard[key];
+
+  const pickEscalation = <K extends keyof GuardSettings["escalation"]>(
+    key: K,
+  ): GuardSettings["escalation"][K] =>
+    project.raw.escalation?.[key] ??
+    plugin.raw.escalation?.[key] ??
+    DEFAULTS.escalation[key];
+
+  const pickChurn = <K extends keyof GuardSettings["churn"]>(
+    key: K,
+  ): GuardSettings["churn"][K] =>
+    project.raw.churn?.[key] ?? plugin.raw.churn?.[key] ?? DEFAULTS.churn[key];
+
+  const pickCrossFile = <K extends keyof GuardSettings["crossFile"]>(
+    key: K,
+  ): GuardSettings["crossFile"][K] =>
+    project.raw.crossFile?.[key] ??
+    plugin.raw.crossFile?.[key] ??
+    DEFAULTS.crossFile[key];
+
+  // Which layer the protected list came from, recorded before the floor makes
+  // the answer unreadable off the list itself. See `GuardConfig`.
+  const protectedPathsSource: ConfigLayer =
+    project.raw.guard?.protectedPaths !== undefined
+      ? "project"
+      : plugin.raw.guard?.protectedPaths !== undefined
+        ? "plugin"
+        : "default";
 
   // THE FLOOR. A fresh array every time: the chosen list may be DEFAULTS' own
   // or a raw parsed array, and appending in place would edit a value someone
   // else is holding.
-  const declaredPaths = guard?.protectedPaths ?? DEFAULTS.guard.protectedPaths;
+  const declaredPaths = pickGuard("protectedPaths");
   const floorApplies =
     projectConfigPath !== null && existsSync(projectConfigPath);
   const protectedPaths =
@@ -293,38 +622,29 @@ export function loadConfig(sources?: ConfigSources): GuardConfig {
 
   const value: GuardConfig = {
     guard: {
-      enabled: guard?.enabled ?? DEFAULTS.guard.enabled,
-      defaultSensitivity:
-        guard?.defaultSensitivity ?? DEFAULTS.guard.defaultSensitivity,
+      // The project layer is not consulted. Decision 260804-1631.
+      enabled: plugin.raw.guard?.enabled ?? DEFAULTS.guard.enabled,
+      defaultSensitivity: pickGuard("defaultSensitivity"),
       protectedPaths,
-      categoryPaths: guard?.categoryPaths ?? DEFAULTS.guard.categoryPaths,
-      categorySensitivity:
-        guard?.categorySensitivity ?? DEFAULTS.guard.categorySensitivity,
+      categoryPaths: pickGuard("categoryPaths"),
+      categorySensitivity: pickGuard("categorySensitivity"),
     },
-    decisions: decisions ?? DEFAULTS.decisions,
+    decisions: project.raw.decisions ?? plugin.raw.decisions ?? DEFAULTS.decisions,
     escalation: {
-      blocksBeforeHalt:
-        escalation?.blocksBeforeHalt ?? DEFAULTS.escalation.blocksBeforeHalt,
+      blocksBeforeHalt: pickEscalation("blocksBeforeHalt"),
     },
     churn: {
-      changesPerSessionWarning:
-        churn?.changesPerSessionWarning ??
-        DEFAULTS.churn.changesPerSessionWarning,
-      changesPerSessionCritical:
-        churn?.changesPerSessionCritical ??
-        DEFAULTS.churn.changesPerSessionCritical,
-      totalChangesWarning:
-        churn?.totalChangesWarning ?? DEFAULTS.churn.totalChangesWarning,
-      totalChangesCritical:
-        churn?.totalChangesCritical ?? DEFAULTS.churn.totalChangesCritical,
+      changesPerSessionWarning: pickChurn("changesPerSessionWarning"),
+      changesPerSessionCritical: pickChurn("changesPerSessionCritical"),
+      totalChangesWarning: pickChurn("totalChangesWarning"),
+      totalChangesCritical: pickChurn("totalChangesCritical"),
     },
     crossFile: {
-      pingBackWarning:
-        crossFile?.pingBackWarning ?? DEFAULTS.crossFile.pingBackWarning,
-      pingBackCritical:
-        crossFile?.pingBackCritical ?? DEFAULTS.crossFile.pingBackCritical,
+      pingBackWarning: pickCrossFile("pingBackWarning"),
+      pingBackCritical: pickCrossFile("pingBackCritical"),
     },
     diagnostics,
+    protectedPathsSource,
   };
 
   cache = { key, value };

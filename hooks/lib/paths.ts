@@ -64,12 +64,16 @@ export function matchesPattern(filePath: string, pattern: string): boolean {
  *     `tracker.ts` (noise filtering). Both are outside `guard.protectedPaths`
  *     and were left as they were, so a differently-cased path escapes a
  *     decision-governed escalation the way it used to escape protection.
- *     Unreachable at HEAD rather than fixed: the shipped `config.json` has
- *     `categoryPaths: {}` and no per-project config loader exists yet, so no
- *     consuming project can populate it. When that loader lands, this is a
- *     decision to take rather than a line to copy — the two sides of a
- *     `categoryPaths` match are both authored by the same project, which is
- *     not the situation `protectedPaths` is in.
+ *     `findRelevantDecisions` is REACHABLE: a consuming project's
+ *     `fusion-guard.json` can declare `guard.categoryPaths` and `decisions`
+ *     since the C5b loader shipped, which falsified the "no per-project config
+ *     loader exists yet" this paragraph used to claim (`260804-1432`). Whether
+ *     it should therefore fold is an open decision, deliberately not taken
+ *     here: `decisions/260804-1632_o_should-findrelevantdecisions-fold-case-now-that-a-project-can-configure-categorypaths.md`.
+ *     The argument the decision starts from is that the two sides of a
+ *     `categoryPaths` match are both authored by the same project, which is not
+ *     the situation `protectedPaths` is in. `tracker.ts`'s noise filter reads a
+ *     hardcoded constant and stays exactly as unreachable as it was.
  *
  * The PROTECTION side calls `matchesAnyFolded`.
  */

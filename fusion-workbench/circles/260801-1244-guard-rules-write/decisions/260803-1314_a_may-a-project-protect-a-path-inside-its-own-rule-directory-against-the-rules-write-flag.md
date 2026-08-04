@@ -64,3 +64,39 @@ Searched for an answer across `circles/260801-1244-guard-rules-write/analyses/` 
 
 ---
 **Status change without an answer, plan Step 6 (2026-08-04).** Before Step 6 this question was hypothetical: no project could declare a `protectedPaths` list at all, so nothing could conflict with `RULE_DIR_PATTERNS`. The loader makes it live. Not deciding is therefore no longer neutral — it ships option 1's behaviour, in which the exemption outranks a project's own protected entry. The current behaviour is pinned by a `MEASURES:`-labelled test case that explicitly disclaims endorsement and cites this record, so it fails the day this decision lands. Still open, and now consequential.
+
+## Answer
+
+**Option 2: subtract the project's own explicitly declared protected entries from the exempt set.**
+
+Chosen by the user at the plan gate, 2026-08-04, after the C5b loader made the question live.
+An entry a project adds explicitly wins over the exemption; the two default rule patterns keep
+working exactly as they do now, so the flag's headline use — `mv rules/x.md rules/retired/` —
+is untouched.
+
+The reasoning that carried it: a list a project wrote by hand outranks a flag an agent set in
+a shell, and this is the natural neighbour of the self-protection floor decided in
+`260802-1912`. Option 3 was rejected for the reason that produced that floor in the first
+place: it lets a project *widen* its own grant, which is the direction a guard may not move
+without the user knowing.
+
+The cost this record names is accepted: the exempt set becomes a function of the project's
+configuration, so "what does the flag reach" stops being answerable from the plugin alone.
+That is what the constraint about a precise precedence rule is for.
+
+**Two obligations follow, both binding on the implementation.**
+
+- **"Explicitly declared" must mean declared, not inherited.** After `260804-1630_a`, an
+  omitted `protectedPaths` inherits the plugin's list — and subtracting an *inherited* entry
+  would silently end the exemption for every project, since the plugin's own list contains
+  `rules/**`. The subtraction applies only to entries the project layer actually supplied,
+  which is why the plan's Step 2 carries the leaf-provenance obligation and why Step 4
+  depends on Step 2 rather than on the decision alone.
+- **The precedence rule has to be testable and stated once.** Five enumerations have been
+  falsified in this Circle; this is a rule, and it belongs in the template and the shipped
+  documents in the words the loader actually implements.
+
+This activates the plan's Step 4, which existed only under options 2 or 3.
+
+---
+Answered: this record, `## Answer` — user chose option 2 at the plan gate; a project's declared entry outranks the flag, an inherited one does not.

@@ -71,12 +71,22 @@ function pluginConfig(value: object | string): string {
 /**
  * The effective CONFIGURATION, without the load report.
  *
- * `diagnostics` describes what happened while reading the files; it is not a
- * setting, and including it in a comparison would make "did the effective
- * configuration change?" unanswerable.
+ * The load report is two fields now, and both describe what happened while
+ * reading the files rather than what the guard will do: `diagnostics` names the
+ * layers and keys that were dropped, and `protectedPathsSource` names the layer
+ * the protected list came from. Neither is a setting, and including either in a
+ * comparison would make "did the effective configuration change?" unanswerable —
+ * which matters most for the byte-identity case below, whose whole job is to
+ * answer exactly that question with "no".
  */
-function effective(config: GuardConfig): Omit<GuardConfig, "diagnostics"> {
-  const { diagnostics: _ignored, ...rest } = config;
+function effective(
+  config: GuardConfig,
+): Omit<GuardConfig, "diagnostics" | "protectedPathsSource"> {
+  const {
+    diagnostics: _ignored,
+    protectedPathsSource: _alsoIgnored,
+    ...rest
+  } = config;
   return rest;
 }
 
@@ -222,7 +232,22 @@ describe("a project with no fusion-guard.json is byte-identical to before step 6
   });
 });
 
-describe("merge — per top-level key, the project's value replaces the plugin's", () => {
+// ---------------------------------------------------------------------------
+// The merge — decision 260804-1630, answered option 1.
+//
+// One rule: a key the project layer does not supply, or supplies unusably, is
+// treated as absent, and absent means the plugin layer, then DEFAULTS. A key it
+// DOES supply is taken exactly as written, including an empty list.
+//
+// The block this replaces asserted the opposite for one case ("replaces the
+// guard object WHOLE — an omitted leaf comes from DEFAULTS, not from the
+// plugin"). That case was a correct description of the shipped code and the
+// reason it shipped: `DEFAULTS.guard.protectedPaths` is the empty list, so
+// `{"guard":{"enabled":true}}` removed all nine protected patterns. It is
+// deleted rather than adapted, because the behaviour it pinned is the defect.
+// ---------------------------------------------------------------------------
+
+describe("merge — per leaf: project, then plugin, then DEFAULTS", () => {
   it("a project declaring protectedPaths gets that list, not a union", () => {
     const root = projectWith({ guard: { protectedPaths: ["secret/**"] } });
 
@@ -239,24 +264,135 @@ describe("merge — per top-level key, the project's value replaces the plugin's
     expect(guard.protectedPaths).not.toContain("rules/**");
   });
 
-  it("replaces the guard object WHOLE — an omitted leaf comes from DEFAULTS, not from the plugin", () => {
+  it("a DECLARED empty list is the empty list, not an inheritance", () => {
+    // The half of the answer a union could never express, and the half the leaf
+    // walk must not swallow. If this case ever passes by inheriting the
+    // plugin's nine patterns, deliberate narrowing is gone and spec criterion
+    // :327 with it.
+    const root = projectWith({ guard: { protectedPaths: [] } });
+
+    const { guard, protectedPathsSource } = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: root,
+    });
+
+    // Only the floor, because the file exists.
+    expect(guard.protectedPaths).toEqual([PROJECT_CONFIG_FILENAME]);
+    expect(protectedPathsSource).toBe("project");
+  });
+
+  it("an OMITTED leaf comes from the plugin layer, not from DEFAULTS", () => {
+    // `{"guard":{"defaultSensitivity":"high"}}` — an ordinary edit, and the one
+    // that used to empty the protected list (issue 260804-1601).
+    const root = projectWith({ guard: { defaultSensitivity: "high" } });
+
+    const { guard, protectedPathsSource } = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: root,
+    });
+
+    expect(guard.defaultSensitivity).toBe("high");
+    expect(guard.protectedPaths).toContain("agents/**");
+    expect(guard.protectedPaths).toContain("rules/**");
+    expect(protectedPathsSource).toBe("plugin");
+  });
+
+  it("mixes the two layers inside one object, leaf by leaf", () => {
+    // The distinguishing case: a plugin layer whose `guard` differs from
+    // DEFAULTS in every leaf the project omits, so "inherited from the plugin"
+    // and "fell through to DEFAULTS" have different answers.
     const root = projectWith({
       guard: { protectedPaths: ["secret/**"], defaultSensitivity: "high" },
     });
 
     const { guard } = loadConfig({
-      // A plugin layer whose `guard` differs from DEFAULTS in a leaf the
-      // project omits, so the two candidate answers are distinguishable.
       pluginConfigPath: pluginConfig({
-        guard: { enabled: false, protectedPaths: ["agents/**"] },
+        guard: {
+          protectedPaths: ["agents/**"],
+          categoryPaths: { onto: ["ontology/**"] },
+          categorySensitivity: { onto: "high" },
+        },
       }),
       projectRoot: root,
     });
 
+    // Declared by the project: taken as written, plus the floor.
+    expect(guard.protectedPaths).toEqual(["secret/**", PROJECT_CONFIG_FILENAME]);
     expect(guard.defaultSensitivity).toBe("high");
-    // The plugin said `enabled: false`; the project's guard object replaced it
-    // whole, so the answer is DEFAULTS' `true`.
-    expect(guard.enabled).toBe(true);
+    // Omitted by the project: the PLUGIN's, where DEFAULTS would have said `{}`.
+    expect(guard.categoryPaths).toEqual({ onto: ["ontology/**"] });
+    expect(guard.categorySensitivity).toEqual({ onto: "high" });
+  });
+
+  it("walks the same way through escalation, churn, crossFile and decisions", () => {
+    // Issue 260804-1633: the same omission defect, latent in four more keys and
+    // invisible only because `hooks/config.json` and DEFAULTS happen to agree
+    // on every leaf they share. The plugin layer below deliberately disagrees
+    // with DEFAULTS everywhere, which is what arms it.
+    const root = projectWith({
+      escalation: { blocksBeforeHalt: 7 },
+      churn: { changesPerSessionWarning: 1 },
+      crossFile: { pingBackWarning: 1 },
+    });
+
+    const config = loadConfig({
+      pluginConfigPath: pluginConfig({
+        decisions: [{ id: "D-1", category: "onto", statement: "…" }],
+        escalation: { blocksBeforeHalt: 9 },
+        churn: {
+          changesPerSessionWarning: 91,
+          changesPerSessionCritical: 92,
+          totalChangesWarning: 93,
+          totalChangesCritical: 94,
+        },
+        crossFile: { pingBackWarning: 95, pingBackCritical: 96 },
+      }),
+      projectRoot: root,
+    });
+
+    // Declared: the project's.
+    expect(config.escalation.blocksBeforeHalt).toBe(7);
+    expect(config.churn.changesPerSessionWarning).toBe(1);
+    expect(config.crossFile.pingBackWarning).toBe(1);
+    // Omitted, inside an object the project DID declare: the plugin's, not
+    // DEFAULTS' 10 / 8 / 15 / 5.
+    expect(config.churn.changesPerSessionCritical).toBe(92);
+    expect(config.churn.totalChangesWarning).toBe(93);
+    expect(config.churn.totalChangesCritical).toBe(94);
+    expect(config.crossFile.pingBackCritical).toBe(96);
+    // A whole top-level key the project never mentioned.
+    expect(config.decisions).toEqual([
+      { id: "D-1", category: "onto", statement: "…" },
+    ]);
+  });
+
+  it("falls through to DEFAULTS when neither layer says anything", () => {
+    const config = loadConfig({
+      pluginConfigPath: pluginConfig({ guard: { defaultSensitivity: "high" } }),
+      projectRoot: projectWith({ guard: { protectedPaths: ["secret/**"] } }),
+    });
+
+    expect(config.escalation.blocksBeforeHalt).toBe(3);
+    expect(config.churn.totalChangesCritical).toBe(15);
+    expect(config.crossFile.pingBackCritical).toBe(5);
+    expect(config.decisions).toEqual([]);
+  });
+
+  it("treats null as nothing configured, at every level and silently", () => {
+    // `null` has always meant "nothing configured" here, and it keeps meaning
+    // it — it is absent, not wrong, so it inherits and it is diagnosed nowhere.
+    const config = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: projectWith({
+        guard: { protectedPaths: null, defaultSensitivity: null },
+        escalation: null,
+      }),
+    });
+
+    expect(config.guard.protectedPaths).toContain("agents/**");
+    expect(config.guard.defaultSensitivity).toBe("medium");
+    expect(config.escalation.blocksBeforeHalt).toBe(3);
+    expect(config.diagnostics).toEqual([]);
   });
 
   it("a project declaring only escalation keeps the plugin's protectedPaths", () => {
@@ -286,6 +422,358 @@ describe("merge — per top-level key, the project's value replaces the plugin's
     });
 
     expect(guard.protectedPaths).toContain("brand-new/**");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// `guard.enabled` — decision 260804-1631, answered option 1.
+//
+// The key sits above every check in guard.ts: above the Bash dispatch, above an
+// active halt, above the git branch policy that runs even where the write guard
+// stands down. A project that could set it could switch off a guard it is
+// governed by, and the shipped code emitted nothing at all when it did.
+//
+// The diagnostic is asserted in every case below rather than in one. It is what
+// the decision record calls "the only thing standing between this option and a
+// silently inert key", and a key that is inert AND silent is the state this
+// whole answer exists to avoid.
+// ---------------------------------------------------------------------------
+
+describe("the project layer may not set guard.enabled", () => {
+  it("ignores a project's false and says so", () => {
+    const config = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: projectWith({ guard: { enabled: false } }),
+    });
+
+    expect(config.guard.enabled).toBe(true);
+    expect(config.diagnostics).toHaveLength(1);
+    expect(config.diagnostics[0]).toContain("guard.enabled");
+    expect(config.diagnostics[0]).toContain("cannot be set by a project");
+  });
+
+  it("ignores a project's true as well, and still says so", () => {
+    // Same key, same treatment. A project that writes down what it believes to
+    // be the status quo has still written a key that does not apply to it, and
+    // hearing that is how it learns the file was read at all.
+    const config = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: projectWith({ guard: { enabled: true } }),
+    });
+
+    expect(config.guard.enabled).toBe(true);
+    expect(config.diagnostics).toHaveLength(1);
+    expect(config.diagnostics[0]).toContain("guard.enabled");
+  });
+
+  it("does not empty the protected list on the way past — issue 260804-1601", () => {
+    // The measured defect in one line: `{"guard":{"enabled":true}}` is the most
+    // ordinary edit there is, and it used to remove all nine patterns.
+    const { guard } = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: projectWith({ guard: { enabled: true } }),
+    });
+
+    for (const p of ["agents/**", "rules/**", "fusion-workbench/.guard-state/**"]) {
+      expect(guard.protectedPaths).toContain(p);
+    }
+  });
+
+  it("reports the key ONCE per load, not once per leaf in the object", () => {
+    const config = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: projectWith({
+        guard: { enabled: false, protectedPaths: ["secret/**"] },
+      }),
+    });
+
+    expect(
+      config.diagnostics.filter((d) => d.includes("guard.enabled")),
+    ).toHaveLength(1);
+    // …and the rest of the object still took effect, so the exception is one
+    // key rather than a rejection of the file.
+    expect(config.guard.protectedPaths).toContain("secret/**");
+  });
+
+  it("says nothing when the project omits the key, which is the normal case", () => {
+    expect(
+      loadConfig({
+        pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+        projectRoot: projectWith({ guard: { protectedPaths: ["secret/**"] } }),
+      }).diagnostics,
+    ).toEqual([]);
+  });
+
+  it("still reads the key from the PLUGIN layer, where it has always lived", () => {
+    // The exception is about who may write the key, not about the key. Fusion's
+    // own protected `hooks/config.json` still turns its guard off.
+    const config = loadConfig({
+      pluginConfigPath: pluginConfig({ guard: { enabled: false } }),
+      projectRoot: projectWith({ guard: { protectedPaths: ["secret/**"] } }),
+    });
+
+    expect(config.guard.enabled).toBe(false);
+    expect(config.diagnostics).toEqual([]);
+  });
+
+  it("a project cannot re-enable a guard the plugin turned off, either", () => {
+    // The direction nobody asked about. "The project layer is not consulted"
+    // has to mean both directions or it is a permission rule wearing a
+    // precedence rule's clothes.
+    const config = loadConfig({
+      pluginConfigPath: pluginConfig({ guard: { enabled: false } }),
+      projectRoot: projectWith({ guard: { enabled: true } }),
+    });
+
+    expect(config.guard.enabled).toBe(false);
+    expect(config.diagnostics[0]).toContain("guard.enabled");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Type validation — issues 260804-1603 and 260804-1606.
+//
+// One rule for both mechanisms, which is the obligation decision 260804-1630
+// carries: a key that fails validation is DROPPED and NAMED, and the leaf walk
+// then finds it absent and inherits. So a dropped key, an omitted key and a key
+// the project never wrote are three spellings of one behaviour — asserted as
+// such in the last case of this block rather than left to be inferred from the
+// rows above it.
+// ---------------------------------------------------------------------------
+
+describe("a value that cannot be used is dropped, named, and inherited past", () => {
+  /** Load a project whose file holds `value`, against the shipped plugin layer. */
+  function withValue(value: object): GuardConfig {
+    return loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: projectWith(value),
+    });
+  }
+
+  // Every row measured in issue 260804-1603, plus the container and the
+  // element-type cases the same rule covers. Labelled an OPEN set: the rule is
+  // "a leaf must have its declared type", and these are the spellings that had
+  // been met at the time of writing, not the spellings that exist.
+  const rows: [string, object, string][] = [
+    ["a number", { guard: { protectedPaths: 123 } }, "guard.protectedPaths"],
+    [
+      "an object",
+      { guard: { protectedPaths: { a: "rules/**" } } },
+      "guard.protectedPaths",
+    ],
+    ["an array of numbers", { guard: { protectedPaths: [42] } }, "guard.protectedPaths"],
+    [
+      "a bare string — the quiet one that never crashed",
+      { guard: { protectedPaths: "rules/**" } },
+      "guard.protectedPaths",
+    ],
+    ["a non-object guard", { guard: "on" }, "guard"],
+    ["an array guard", { guard: ["rules/**"] }, "guard"],
+  ];
+
+  for (const [label, value, key] of rows) {
+    it(`drops guard.protectedPaths given ${label}, and inherits the plugin's list`, () => {
+      const config = withValue(value);
+
+      expect(config.guard.protectedPaths).toContain("agents/**");
+      expect(config.guard.protectedPaths).toContain("rules/**");
+      expect(config.protectedPathsSource).toBe("plugin");
+      expect(config.diagnostics).toHaveLength(1);
+      expect(config.diagnostics[0]).toContain(key);
+    });
+  }
+
+  it("drops a bad categoryPaths value without touching the rest of guard", () => {
+    const config = withValue({
+      guard: {
+        protectedPaths: ["secret/**"],
+        categoryPaths: { api: "src/api/**" },
+      },
+    });
+
+    expect(config.guard.categoryPaths).toEqual({});
+    expect(config.guard.protectedPaths).toContain("secret/**");
+    expect(config.diagnostics[0]).toContain("guard.categoryPaths");
+  });
+
+  it("drops a defaultSensitivity that is not one of the four levels", () => {
+    const config = withValue({ guard: { defaultSensitivity: "extreme" } });
+
+    expect(config.guard.defaultSensitivity).toBe("medium");
+    expect(config.diagnostics[0]).toContain("guard.defaultSensitivity");
+  });
+
+  it("drops decisions that are not decisions", () => {
+    // `"nope"` iterates as characters and matches no category — harmless by
+    // luck, which is not a property to rely on.
+    const config = withValue({ decisions: "nope" });
+
+    expect(config.decisions).toEqual([]);
+    expect(config.diagnostics[0]).toContain("decisions");
+  });
+
+  it("keeps a well-formed decisions array", () => {
+    const config = withValue({
+      decisions: [{ id: "D-1", category: "onto", statement: "…" }],
+    });
+
+    expect(config.decisions).toHaveLength(1);
+    expect(config.diagnostics).toEqual([]);
+  });
+
+  it("drops blocksBeforeHalt: 0 — issue 260804-1606", () => {
+    // `0` halts on the first denied call, before the agent has had the second
+    // and third chances the three-block design exists to give it. Almost
+    // certainly a project meaning "no threshold" and getting the strictest one.
+    const config = withValue({ escalation: { blocksBeforeHalt: 0 } });
+
+    expect(config.escalation.blocksBeforeHalt).toBe(3);
+    expect(config.diagnostics[0]).toContain("escalation.blocksBeforeHalt");
+  });
+
+  it("drops a negative, fractional or stringly-typed halt threshold", () => {
+    for (const bad of [-1, 2.5, "3"]) {
+      resetConfigCache();
+      const config = withValue({ escalation: { blocksBeforeHalt: bad } });
+      expect(config.escalation.blocksBeforeHalt).toBe(3);
+      expect(config.diagnostics).toHaveLength(1);
+    }
+  });
+
+  it("keeps a large halt threshold — no upper bound, deliberately", () => {
+    // A big number is a defensible project choice; inventing a ceiling would be
+    // a policy nobody asked for. Recorded so the absence reads as a decision.
+    const config = withValue({ escalation: { blocksBeforeHalt: 999999 } });
+
+    expect(config.escalation.blocksBeforeHalt).toBe(999999);
+    expect(config.diagnostics).toEqual([]);
+  });
+
+  it("validates the PLUGIN layer through the same function", () => {
+    // Smaller risk, because the file is protected — and `260802-2334` is this
+    // Circle's standing proof that "the file is protected" was not enough once
+    // already.
+    const config = loadConfig({
+      pluginConfigPath: pluginConfig({ guard: { protectedPaths: "rules/**" } }),
+      projectRoot: null,
+    });
+
+    expect(config.guard.protectedPaths).toEqual([]);
+    expect(config.protectedPathsSource).toBe("default");
+    expect(config.diagnostics).toHaveLength(1);
+  });
+
+  it("accepts unknown keys, including the template's documentation keys", () => {
+    // The seeded template is mostly six underscore-prefixed notes. A validator
+    // that rejected unknown keys would make the file fusion itself ships a
+    // broken one, and the seeding in `7f3d789` a no-op.
+    const config = withValue({
+      _comment: "why this file exists",
+      _override: "how the merge works",
+      guard: { protectedPaths: ["secret/**"], _note: "and here too" },
+    });
+
+    expect(config.guard.protectedPaths).toContain("secret/**");
+    expect(config.diagnostics).toEqual([]);
+  });
+
+  it("makes a dropped key, an omitted key and an unwritten file identical", () => {
+    // The step is finished when these three are demonstrably the same thing.
+    const dropped = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: projectWith({ guard: { protectedPaths: 123 } }),
+    });
+    resetConfigCache();
+    const omitted = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: projectWith({ guard: { defaultSensitivity: "medium" } }),
+    });
+    resetConfigCache();
+    const never = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: tmp(),
+    });
+
+    // The floor is the one difference the first two are entitled to: their file
+    // exists and the third's does not.
+    const withoutFloor = (c: GuardConfig) =>
+      c.guard.protectedPaths.filter((p) => p !== PROJECT_CONFIG_FILENAME);
+
+    expect(withoutFloor(dropped)).toEqual(withoutFloor(never));
+    expect(withoutFloor(omitted)).toEqual(withoutFloor(never));
+    expect(dropped.protectedPathsSource).toBe("plugin");
+    expect(omitted.protectedPathsSource).toBe("plugin");
+    expect(never.protectedPathsSource).toBe("plugin");
+    // The one thing that differs, and it is the point: the dropped key was
+    // named. Silence is what made this defect a defect.
+    expect(dropped.diagnostics).toHaveLength(1);
+    expect(omitted.diagnostics).toEqual([]);
+    expect(never.diagnostics).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// The provenance of `protectedPaths`.
+//
+// Settled here rather than in the plan's Step 4, which is where it is needed:
+// under decision 260803-1314 option 2 the rules-write exemption stands down for
+// a path the PROJECT ITSELF declared protected, and "the project itself
+// declared it" is a fact this walk computes and used to throw away. The
+// alternative was for that step to re-read a file the loader has already read,
+// which is a second source of truth for the same bytes.
+//
+// It is a load REPORT, not a setting — see `effective()` above.
+// ---------------------------------------------------------------------------
+
+describe("the returned config carries which layer declared protectedPaths", () => {
+  it("says project when the project declared one", () => {
+    expect(
+      loadConfig({
+        pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+        projectRoot: projectWith({ guard: { protectedPaths: ["secret/**"] } }),
+      }).protectedPathsSource,
+    ).toBe("project");
+  });
+
+  it("says project for a declared EMPTY list, which is a declaration", () => {
+    expect(
+      loadConfig({
+        pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+        projectRoot: projectWith({ guard: { protectedPaths: [] } }),
+      }).protectedPathsSource,
+    ).toBe("project");
+  });
+
+  it("says plugin when the project declared something else", () => {
+    expect(
+      loadConfig({
+        pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+        projectRoot: projectWith({ escalation: { blocksBeforeHalt: 2 } }),
+      }).protectedPathsSource,
+    ).toBe("plugin");
+  });
+
+  it("says default when neither layer declared one", () => {
+    expect(
+      loadConfig({
+        pluginConfigPath: pluginConfig({ escalation: { blocksBeforeHalt: 2 } }),
+        projectRoot: null,
+      }).protectedPathsSource,
+    ).toBe("default");
+  });
+
+  it("describes the DECLARED list, not the one the floor appended to", () => {
+    // The floor adds an entry no layer declared. If provenance were read off
+    // the effective list it would have to answer for that entry too, and the
+    // question Step 4 asks — "did the project declare this?" — would get the
+    // wrong answer for exactly one path.
+    const config = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: projectWith({ escalation: { blocksBeforeHalt: 2 } }),
+    });
+
+    expect(config.guard.protectedPaths).toContain(PROJECT_CONFIG_FILENAME);
+    expect(config.protectedPathsSource).toBe("plugin");
   });
 });
 
