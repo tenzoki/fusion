@@ -26,9 +26,9 @@
       "lastEditTimestamp": "2026-07-19T21:37:26.475Z"
     },
     "orchestrator-live.md": {
-      "pingBackCount": 10,
-      "totalEdits": 13,
-      "lastEditTimestamp": "2026-07-19T22:59:16.218Z"
+      "pingBackCount": 19,
+      "totalEdits": 22,
+      "lastEditTimestamp": "2026-08-04T08:38:29.259Z"
     },
     "circles/260719-1536-brest-unite-co-creator-conversion/_a_circle.md": {
       "pingBackCount": 0,
@@ -406,9 +406,9 @@
       "lastEditTimestamp": "2026-08-02T06:49:36.700Z"
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/orchestrator-live.md": {
-      "pingBackCount": 2,
-      "totalEdits": 3,
-      "lastEditTimestamp": "2026-08-02T20:39:45.757Z"
+      "pingBackCount": 6,
+      "totalEdits": 7,
+      "lastEditTimestamp": "2026-08-03T17:06:19.622Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/provenance-header-lint.test.ts": {
       "pingBackCount": 1,
@@ -456,39 +456,39 @@
       "lastEditTimestamp": "2026-08-02T12:09:03.659Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/paths.ts": {
-      "pingBackCount": 1,
-      "totalEdits": 3,
-      "lastEditTimestamp": "2026-08-02T20:54:42.454Z"
+      "pingBackCount": 4,
+      "totalEdits": 9,
+      "lastEditTimestamp": "2026-08-04T15:13:42.116Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/rules-write-exemption.ts": {
-      "pingBackCount": 0,
-      "totalEdits": 2,
-      "lastEditTimestamp": "2026-08-02T20:49:20.739Z"
+      "pingBackCount": 8,
+      "totalEdits": 28,
+      "lastEditTimestamp": "2026-08-04T17:49:16.121Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/fs-locator.ts": {
-      "pingBackCount": 1,
-      "totalEdits": 4,
-      "lastEditTimestamp": "2026-08-02T21:03:19.561Z"
+      "pingBackCount": 4,
+      "totalEdits": 11,
+      "lastEditTimestamp": "2026-08-03T17:19:08.038Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/bash-mutation-guard.ts": {
-      "pingBackCount": 0,
-      "totalEdits": 12,
-      "lastEditTimestamp": "2026-08-02T20:51:42.955Z"
+      "pingBackCount": 25,
+      "totalEdits": 147,
+      "lastEditTimestamp": "2026-08-04T17:35:53.986Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/guard.ts": {
-      "pingBackCount": 1,
-      "totalEdits": 9,
-      "lastEditTimestamp": "2026-08-02T20:55:00.218Z"
+      "pingBackCount": 11,
+      "totalEdits": 47,
+      "lastEditTimestamp": "2026-08-04T17:57:00.089Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/rules-write-exemption.test.ts": {
-      "pingBackCount": 0,
-      "totalEdits": 3,
-      "lastEditTimestamp": "2026-08-02T20:56:02.721Z"
+      "pingBackCount": 3,
+      "totalEdits": 14,
+      "lastEditTimestamp": "2026-08-04T17:51:50.802Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/bash-mutation-guard.test.ts": {
-      "pingBackCount": 0,
-      "totalEdits": 4,
-      "lastEditTimestamp": "2026-08-02T20:57:06.587Z"
+      "pingBackCount": 12,
+      "totalEdits": 30,
+      "lastEditTimestamp": "2026-08-04T15:46:11.703Z"
     },
     "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/da740e4d-bd1f-44ee-84d3-16276a11ff7f/scratchpad/probe.ts": {
       "pingBackCount": 1,
@@ -496,26 +496,1246 @@
       "lastEditTimestamp": "2026-08-02T21:03:43.097Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/guard-rules-write-integration.test.ts": {
-      "pingBackCount": 0,
-      "totalEdits": 9,
-      "lastEditTimestamp": "2026-08-02T21:08:38.716Z"
+      "pingBackCount": 9,
+      "totalEdits": 29,
+      "lastEditTimestamp": "2026-08-04T17:54:09.227Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fs-locator.test.ts": {
-      "pingBackCount": 0,
-      "totalEdits": 2,
-      "lastEditTimestamp": "2026-08-02T21:10:21.831Z"
+      "pingBackCount": 2,
+      "totalEdits": 5,
+      "lastEditTimestamp": "2026-08-03T17:16:42.702Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/guard-bash-wiring.test.ts": {
-      "pingBackCount": 0,
-      "totalEdits": 1,
-      "lastEditTimestamp": "2026-08-02T21:10:42.495Z"
+      "pingBackCount": 7,
+      "totalEdits": 9,
+      "lastEditTimestamp": "2026-08-04T17:57:21.694Z"
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260802-2315-turn2-guard-boundary-hardening.md": {
       "pingBackCount": 0,
       "totalEdits": 1,
       "lastEditTimestamp": "2026-08-02T21:15:10.175Z"
+    },
+    "circles/260801-1244-guard-rules-write/history/260803-1038-orchestrator-session.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T08:39:01.132Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/agentstate.yaml": {
+      "pingBackCount": 1,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-03T15:56:03.825Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe-before.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-03T10:32:43.400Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe-resolver.ts": {
+      "pingBackCount": 1,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-03T10:50:44.650Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260803-1251_o_fs-locator-collapses-dotdot-lexically-one-call-above-the-resolver-that-was-audited.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T10:51:59.520Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260803-1252_o_a-gate-0-deny-reads-as-an-ordinary-protected-path-deny-and-names-a-file-that-is-writable.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T10:52:26.478Z"
+    },
+    "circles/260801-1244-guard-rules-write/history/260803-1251-turn3-t3-1-gate-0-dotdot-spelling-refusal.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T10:53:48.095Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe-exempt-set.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-03T11:01:46.495Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe-diagnostic.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T11:07:08.642Z"
+    },
+    "circles/260801-1244-guard-rules-write/decisions/260803-1314_o_may-a-project-protect-a-path-inside-its-own-rule-directory-against-the-rules-write-flag.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T11:15:08.851Z"
+    },
+    "circles/260801-1244-guard-rules-write/history/260803-1314-turn3-t3-2-exemption-prose-and-refusal-diagnostics.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T11:20:05.121Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/measure-rows.mjs": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T11:27:53.943Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/escalation.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T11:28:24.310Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/guard-escalation-shape.test.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T11:29:14.489Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/guard-halt-event.test.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 4,
+      "lastEditTimestamp": "2026-08-03T11:32:01.054Z"
+    },
+    "circles/260801-1244-guard-rules-write/history/260803-1337-turn3-t3-4-fail-open-state-and-the-uninformative-halt-event.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T11:38:22.268Z"
+    },
+    "/Users/k1/Projects/productive/fusion/bin/monitor": {
+      "pingBackCount": 2,
+      "totalEdits": 13,
+      "lastEditTimestamp": "2026-08-04T18:58:04.342Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/seed.py": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T11:44:48.857Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe.sh": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T11:45:09.778Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/render.py": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T11:45:51.835Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/monitor-warnings-panel.test.ts": {
+      "pingBackCount": 1,
+      "totalEdits": 4,
+      "lastEditTimestamp": "2026-08-04T18:53:47.451Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260803-1352_o_two-guard-advisory-details-skip-the-200-char-clamp-and-render-a-row-nine-times-normal-height.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T11:52:32.440Z"
+    },
+    "circles/260801-1244-guard-rules-write/history/260803-1352-turn3-t3-6-warnings-panel-capacity.md": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-03T11:53:40.525Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/proj/fusion-workbench/.fusion-setup": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T11:58:43.669Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/proj/agents/coder.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T11:58:44.637Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/proj/rules/x.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T11:58:45.763Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/proj/notes.txt": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T11:58:46.889Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/measure.sh": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T11:58:53.604Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/alias-residual.sh": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T11:59:52.731Z"
+    },
+    "/Users/k1/Projects/productive/fusion/README-hooks.md": {
+      "pingBackCount": 10,
+      "totalEdits": 27,
+      "lastEditTimestamp": "2026-08-04T17:15:11.959Z"
+    },
+    "/Users/k1/Projects/productive/fusion/rules/protected-path-discipline.md": {
+      "pingBackCount": 12,
+      "totalEdits": 46,
+      "lastEditTimestamp": "2026-08-04T17:14:12.260Z"
+    },
+    "circles/260801-1244-guard-rules-write/decisions/260803-1402_o_should-the-mutation-classifier-inspect-a-read-operand-to-close-the-planted-alias.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T12:05:31.001Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260803-1402_o_step-9-must-also-document-that-a-hard-linked-rule-file-is-not-exempt.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T12:05:54.009Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260802-2331_p_readme-hooks-states-bash-has-no-halt-check-which-this-turn-made-false.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T12:07:46.455Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260802-2335_p_the-stated-residual-list-omits-the-alias-an-agent-can-plant-for-itself-in-one-allowed-command.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T12:08:04.461Z"
+    },
+    "circles/260801-1244-guard-rules-write/history/260803-1408-turn3-t3-7-halt-and-residual-documentation.md": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-03T12:10:02.705Z"
+    },
+    "circles/260801-1244-guard-rules-write/decisions/260803-1419_a_how-should-the-protected-path-check-treat-the-case-of-a-path.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T12:19:44.712Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260803-1431_o_gate-0-misses-the-dotdot-in-a-cd-p-operand-so-a-planted-link-still-spends-the-grant.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T12:32:35.873Z"
+    },
+    "circles/260801-1244-guard-rules-write/reviews/260803-1431-coderev-turn3-guard-boundary.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T12:33:37.412Z"
+    },
+    "circles/260801-1244-guard-rules-write/planning/260802-1856_o_plan-guard-rules-write.md": {
+      "pingBackCount": 4,
+      "totalEdits": 13,
+      "lastEditTimestamp": "2026-08-04T14:37:41.052Z"
+    },
+    "circles/260801-1244-guard-rules-write/history/260803-1525-reconciliation.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T13:26:57.894Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260803-1737-orchestrator-session.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T15:55:49.434Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe-cwd.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-03T16:00:55.865Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe-cwd2.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T16:01:49.481Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe-cwd3.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T16:02:16.689Z"
+    },
+    "circles/260801-1244-guard-rules-write/analyses/260803-1803-guard-path-model-root-cause.md": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-03T16:06:13.410Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260803-1803_o_the-classifier-asserts-a-working-directory-that-cdpath-and-pushd-n-invalidate.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T16:06:56.266Z"
+    },
+    "circles/260801-1244-guard-rules-write/decisions/260803-1803_o_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T16:07:27.001Z"
+    },
+    "circles/260801-1244-guard-rules-write/history/260803-1803-analyst-t4-1-guard-path-model.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T16:07:53.899Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe-t42.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 9,
+      "lastEditTimestamp": "2026-08-03T16:14:54.786Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/guard-bash-integration.test.ts": {
+      "pingBackCount": 7,
+      "totalEdits": 14,
+      "lastEditTimestamp": "2026-08-04T15:47:23.254Z"
+    },
+    "260803-1835_o_a-redirection-after-an-unmodellable-cd-overwrites-any-protected-file-with-no-flag.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T16:35:50.278Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260803-1835-turn4-t4-2-working-directory-allow-list.md": {
+      "pingBackCount": 1,
+      "totalEdits": 3,
+      "lastEditTimestamp": "2026-08-03T20:15:43.548Z"
+    },
+    "shared/issues/260803-1837_o_no-route-turns-existing-pre-circle-work-into-a-circle.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T16:38:36.941Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe-case.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-03T16:44:33.536Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe-case-sensitive.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-03T16:48:43.624Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/paths.test.ts": {
+      "pingBackCount": 1,
+      "totalEdits": 3,
+      "lastEditTimestamp": "2026-08-03T16:52:50.713Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/guard-case-folding.test.ts": {
+      "pingBackCount": 1,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-03T16:53:07.850Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260803-1902-coder-case-folding.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T17:03:20.815Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T17:08:30.665Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/containment.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T17:10:52.503Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe3.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T17:15:23.651Z"
+    },
+    "260803-1251_p_fs-locator-collapses-dotdot-lexically-one-call-above-the-resolver-that-was-audited.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T17:21:13.741Z"
+    },
+    "260803-1251_c_fs-locator-collapses-dotdot-lexically-one-call-above-the-resolver-that-was-audited.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T17:21:38.894Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260803-1925-coder-t4-4-fs-locator-dotdot.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T17:22:25.090Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/helpers/guard-harness.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T18:14:17.663Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe-t45.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T18:20:44.502Z"
+    },
+    "circles/260801-1244-guard-rules-write/history/260803-2023-turn4-t4-5-ambient-cdpath.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T18:24:26.745Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/command-word.ts": {
+      "pingBackCount": 2,
+      "totalEdits": 11,
+      "lastEditTimestamp": "2026-08-03T21:01:50.785Z"
+    },
+    "260803-2040_c_the-ambient-cdpath-check-reads-the-hooks-environment-not-the-shell-the-command-runs-in.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T20:16:56.439Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260803-2220-turn5-t5-1-wrapper-walk-and-pushd-rotation.md": {
+      "pingBackCount": 1,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-03T20:18:42.717Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/rev5-probe.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 3,
+      "lastEditTimestamp": "2026-08-03T20:30:27.089Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260803-2236_o_runsbuiltins-is-asserted-about-a-name-so-the-model-now-moves-the-shell-where-the-shell-did-not-move.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T20:37:07.439Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260803-2237_o_unmodelled-zeroes-the-stack-values-but-not-its-depth-so-an-absolute-cd-re-proves-a-shifted-stack.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T20:37:48.545Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260803-2238_o_the-directory-model-assumes-every-cd-succeeds-so-a-cd-to-a-nonexistent-directory-is-a-one-segment-bypass.md": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-03T20:38:47.256Z"
+    },
+    "circles/260801-1244-guard-rules-write/reviews/260803-2240-coderev-turn5-wrapper-walk-and-pushd-rotation.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T20:40:48.432Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/measure-shell.sh": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T20:57:43.739Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/measure.ts": {
+      "pingBackCount": 1,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-03T20:58:46.742Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/rows-f1.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T20:58:32.004Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/rows-f2.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T21:05:42.183Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/rows-f3.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T21:07:21.700Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/rows-newallow.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T21:08:04.912Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/antivac.sh": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T21:17:12.164Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/count-cd.py": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T21:25:16.012Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/count-shapes.py": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T21:26:14.609Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/sim-2238.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T21:26:51.029Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/decisions/260803-2338_o_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T21:28:49.139Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260803-2340-turn6-t6-1-wrapper-give-up-and-stack-depth.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-03T21:34:15.524Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/shell-parse.ts": {
+      "pingBackCount": 1,
+      "totalEdits": 9,
+      "lastEditTimestamp": "2026-08-04T07:33:27.622Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/t7-measure.ts": {
+      "pingBackCount": 1,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-04T05:47:06.406Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/p1lib/bash-mutation-guard.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T05:45:38.731Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/p2lib/bash-mutation-guard.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T05:45:42.765Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/t7-history.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T05:46:23.088Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/shell-parse.test.ts": {
+      "pingBackCount": 1,
+      "totalEdits": 3,
+      "lastEditTimestamp": "2026-08-04T07:36:02.754Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/t7-gitgold.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T05:48:53.859Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/git-branch-guard.test.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-04T05:49:33.028Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/decisions/260804-0106_i_should-the-fail-closed-bound-be-drawn-around-the-program-or-around-the-cause.md": {
+      "pingBackCount": 2,
+      "totalEdits": 5,
+      "lastEditTimestamp": "2026-08-04T07:49:33.326Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/decisions/260803-2338_i_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T06:08:34.784Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260804-0140-turn7-t7-1-separator-degrade-and-the-cause-bound.md": {
+      "pingBackCount": 1,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-04T07:40:50.697Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/rev7-probe.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T06:24:22.715Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/rev7-cmp.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T06:25:17.891Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/rev7-fuzz.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T06:29:27.315Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/rev7-gold.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T06:30:06.226Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-0836_o_a-cd-skipped-by-an-earlier-double-pipe-is-still-modelled-as-made-so-the-and-guarantee-leaks.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T06:35:57.538Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-0837_o_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T06:36:18.138Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-0838_o_a-newline-after-and-is-downgraded-to-newline-so-a-multi-line-and-chain-denies-with-an-unactionable-reason.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T06:36:45.077Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-0839_o_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T06:37:06.510Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-0840_o_the-shipped-cost-statement-five-shapes-and-nothing-else-measured-moved-is-false-in-every-agents-context.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T06:37:32.391Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-0841_o_the-supersession-inverts-the-fact-the-original-argument-rested-on-curl-o-rules-x-md-allows.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T06:37:57.963Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-0842_o_the-git-gold-fixture-carries-no-double-pipe-pipe-or-ampersand-joiner-and-no-allow-only-row.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T06:38:16.555Z"
+    },
+    "circles/260801-1244-guard-rules-write/reviews/260804-0845-coderev-turn7-separator-degrade-and-the-cause-bound.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T06:40:33.640Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/t8-measure.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T07:34:11.928Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/t8-verify.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T07:35:30.758Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/t8-curl.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T07:38:59.582Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-bash-inspection/issues/260801-1859_c_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T07:40:36.704Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/t8-illus.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T07:41:48.294Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/t8-optA-report.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T07:46:22.666Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/t8-839.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T07:47:12.778Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/decisions/260804-0947_o_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T07:49:11.816Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260804-1004-turn8-t8-1-the-newline-downgrade-the-cost-rule-and-the-inverted-fact.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T08:05:43.858Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/verify-head-probe.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T08:14:07.265Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/verify-across-commits.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T08:16:33.346Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/claim-check.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T08:17:44.572Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/live-residuals.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T08:18:14.751Z"
+    },
+    "circles/260801-1244-guard-rules-write/decisions/260803-1419_i_how-should-the-protected-path-check-treat-the-case-of-a-path.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T08:22:31.528Z"
+    },
+    "circles/260801-1244-guard-rules-write/decisions/260803-1803_i_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T08:22:33.777Z"
+    },
+    "circles/260801-1244-guard-rules-write/decisions/260803-2338_i_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-04T08:22:41.710Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/recon-probe.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T08:23:48.055Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1024_o_git-c-supplies-a-directory-the-model-skips-so-a-relative-operand-resolves-off-the-protected-list.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T08:24:37.738Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1025_o_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T08:25:14.229Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1026_o_git-checkout-treeish-overwrites-a-protected-path-and-is-in-neither-the-verb-table-nor-the-residual-list.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T08:25:44.537Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1027_o_the-replacement-audit-recipe-went-stale-in-the-turn-after-it-was-written-and-omits-moved.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T08:26:13.238Z"
+    },
+    "circles/260801-1244-guard-rules-write/history/260804-1021-reconciliation.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T08:32:42.032Z"
+    },
+    "260803-1737-orchestrator-session.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T08:35:47.856Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/t9-measure.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T09:45:31.917Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/t9-shape.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-04T09:46:49.431Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/t9-shell.sh": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-04T09:48:15.244Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/t9-antivac.sh": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T09:52:07.931Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/t9-doccheck.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T09:54:51.236Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260804-1200-turn9-t9-1-the-joiner-for-the-segment-that-moves.md": {
+      "pingBackCount": 0,
+      "totalEdits": 3,
+      "lastEditTimestamp": "2026-08-04T09:59:58.401Z"
+    },
+    "circles/260804-1205-shell-reachability-model/_a_circle.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:06:41.379Z"
+    },
+    "circles/260801-1244-guard-rules-write/history/260804-1205-shaper-shell-reachability-model.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:07:10.511Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/rev/diff.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:11:39.874Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/rev/shape.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:12:04.511Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/rev/shape2.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:12:31.095Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/rev/corpus.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:12:48.504Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/rev/shell.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:13:36.115Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/mut/mutate.mjs": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:14:56.268Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/rev/probe.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:17:10.872Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/rev/adv.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:18:41.919Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1220_o_the-illustration-block-still-points-at-three-questions-in-a-procedure-that-now-has-four.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:20:29.792Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1221_o_the-one-fact-about-a-joiner-guarantee-is-asserted-over-one-file-and-a-second-file-already-holds-the-same-fact.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:21:04.571Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1222_o_the-segmentjoiner-docstring-says-both-shapes-are-open-and-cites-the-decision-by-a-filename-that-no-longer-exists.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:21:27.120Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1223_o_260804-1025s-reproduction-is-stale-but-its-clause-still-overclaims-here-are-the-commands-that-replace-it.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:21:54.777Z"
+    },
+    "circles/260801-1244-guard-rules-write/reviews/260804-1224-coderev-turn9-joiner-for-the-moving-segment.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:23:27.141Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/mk.sh": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:46:45.997Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/effect.sh": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:46:50.612Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/run-effects.sh": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:46:54.811Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/cmds-git.txt": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:46:58.428Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/errs.sh": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:47:26.293Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/errs2.sh": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:47:41.669Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/corpus.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:51:11.842Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/verdicts.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:51:22.170Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/corpus.mts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:51:54.752Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/verdicts.mts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:52:00.457Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/errs3.sh": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T10:54:55.412Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/diff.sh": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T11:02:11.470Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/check.mts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T11:03:23.767Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/errs4.sh": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T11:04:09.316Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/mutants.sh": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T11:13:58.723Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/variants.sh": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T11:18:44.770Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/decisions/260804-1323_i_should-the-guard-model-gits-own-working-directory-or-give-up-on-it.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T11:24:09.735Z"
+    },
+    "260804-1332_o_git-work-tree-in-the-environment-relocates-the-write-and-the-classifier-reads-no-variable.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T11:24:39.994Z"
+    },
+    "260804-1333_c_an-unrecognised-git-global-option-swallows-the-subcommand-and-the-invocation-reads-as-an-unrecognised-program.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T11:24:58.509Z"
+    },
+    "260804-1024_p_git-c-supplies-a-directory-the-model-skips-so-a-relative-operand-resolves-off-the-protected-list.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T11:25:24.612Z"
+    },
+    "260804-1026_p_git-checkout-treeish-overwrites-a-protected-path-and-is-in-neither-the-verb-table-nor-the-residual-list.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T11:25:41.248Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260804-1340-turn10-t10-1-two-git-routes-into-the-protected-list.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T11:27:55.496Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/zz-coderev-scratch.test.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 3,
+      "lastEditTimestamp": "2026-08-04T11:40:37.359Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1344_o_the-git-option-walk-stops-at-an-unknown-options-value-so-a-c-behind-it-is-invisible.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T11:45:04.315Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1345_o_git-checkout-treeish-dash-dash-dot-overwrites-the-whole-protected-list-and-allows.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T11:45:37.145Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1346_o_git-clean-fdx-at-the-project-root-is-still-a-residual-and-its-residual-entry-was-deleted.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T11:46:05.259Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1347_o_the-git-directory-fail-closed-deny-tells-the-agent-to-drop-a-cd-that-is-not-in-the-command.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T11:46:34.920Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1348_o_the-two-spellings-of-the-revert-strategy-still-disagree-at-head-and-checkouts-second-cost-is-unreachable.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T11:47:15.791Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1349_o_the-cost-rules-first-question-says-no-builtin-means-untouched-and-a-git-directory-flag-falsifies-it.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T11:47:46.842Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1350_o_the-dirstack-docstring-claims-the-compiler-enforces-a-depth-invariant-it-does-not-enforce.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T11:48:16.627Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1351_o_dir-builtins-carries-a-shell-dependent-fact-about-chdir-justified-by-the-wrong-reason.md": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-04T11:49:17.120Z"
+    },
+    "circles/260801-1244-guard-rules-write/reviews/260804-1349-coderev-turn10-git-directory-union-and-the-two-unreviewed-commits.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T11:50:46.512Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/config.ts": {
+      "pingBackCount": 3,
+      "totalEdits": 20,
+      "lastEditTimestamp": "2026-08-04T17:35:45.053Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/tracker.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T12:15:09.883Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/config.test.ts": {
+      "pingBackCount": 4,
+      "totalEdits": 20,
+      "lastEditTimestamp": "2026-08-04T17:52:25.379Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1427_o_the-accepted-floor-residual-reaches-the-guards-own-state-directory-not-only-protectedpaths.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T12:22:33.352Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1432_o_two-case-sensitive-matches-lib-paths-calls-unreachable-become-project-reachable-with-the-c5b-loader.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T12:22:59.692Z"
+    },
+    "circles/260801-1244-guard-rules-write/history/260804-1435-coder-step6-c5b-config-loader.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T12:28:46.127Z"
+    },
+    "/tmp/fusion-s6-msg.txt": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T12:32:34.691Z"
+    },
+    "/Users/k1/Projects/productive/fusion/templates/fusion-guard.json": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T12:57:24.232Z"
+    },
+    "circles/260801-1244-guard-rules-write/history/260804-1502-ontocoder-step7-guard-config-template.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T13:03:31.067Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/measure-guard.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-04T13:06:18.010Z"
+    },
+    "/Users/k1/Projects/productive/fusion/skills/setup/SKILL.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T13:08:26.755Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/twice-run.sh": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T13:09:02.203Z"
+    },
+    "circles/260801-1244-guard-rules-write/history/260804-1511-coder-step8-setup-seeds-guard-config.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T13:12:37.021Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/A1-analyst/probe.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T13:55:09.465Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/A1-analyst/probe2.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T13:58:12.146Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/A1-analyst/probe3.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-04T13:59:16.159Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/A1-analyst/probe4.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T14:00:32.869Z"
+    },
+    "circles/260801-1244-guard-rules-write/analyses/260804-1600-c5b-independent-assessment.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T14:02:59.729Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1601_o_a-partial-guard-object-silently-removes-every-protected-path.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T14:03:26.819Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1602_o_guard-enabled-false-from-the-project-layer-turns-off-the-branch-policy-and-an-active-halt.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T14:03:51.085Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1603_o_the-project-config-layer-is-not-type-validated-so-a-wrong-type-fails-the-guard-open.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T14:04:19.458Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1604_o_the-self-protection-floor-is-matched-cwd-relative-while-the-file-is-read-root-relative.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T14:04:38.753Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1605_o_the-seeded-template-states-two-properties-the-loader-does-not-have.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T14:05:01.543Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1606_o_blocksbeforehalt-zero-halts-on-the-first-block-and-has-no-lower-bound.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T14:05:14.044Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1607_o_guard-error-is-not-rendered-by-the-monitor-so-a-fail-open-guard-is-invisible.md": {
+      "pingBackCount": 1,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-04T19:01:45.033Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1608_o_plan-step-7-is-unmarked-and-the-plan-header-contradicts-its-own-step-markers.md": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-04T14:05:54.653Z"
+    },
+    "circles/260801-1244-guard-rules-write/history/260804-1600-analyst-a1-c5b-independent-assessment.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T14:06:22.674Z"
+    },
+    "circles/260801-1244-guard-rules-write/decisions/260804-1630_o_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T14:30:13.984Z"
+    },
+    "circles/260801-1244-guard-rules-write/decisions/260804-1631_o_may-a-project-file-set-guard-enabled-and-switch-the-whole-guard-off.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T14:30:41.514Z"
+    },
+    "circles/260801-1244-guard-rules-write/decisions/260804-1632_o_should-findrelevantdecisions-fold-case-now-that-a-project-can-configure-categorypaths.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T14:30:59.301Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1633_o_the-omission-defect-is-latent-in-four-more-top-level-keys.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T14:31:25.664Z"
+    },
+    "circles/260801-1244-guard-rules-write/planning/260804-1633_o_plan-c5b-remediation-and-ship.md": {
+      "pingBackCount": 8,
+      "totalEdits": 38,
+      "lastEditTimestamp": "2026-08-04T19:02:11.769Z"
+    },
+    "circles/260801-1244-guard-rules-write/history/260804-1633-planner-c5b-remediation-and-ship.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T14:38:30.248Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/measure.py": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T14:41:36.465Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/reviews/260804-1644-conceptrev-plan-c5b-remediation-and-ship.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T14:45:57.622Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/d2b.mmd": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T15:01:28.677Z"
+    },
+    "shared/issues/260804-1702_o_the-diagram-self-check-tests-shape-and-never-tests-agreement-with-the-prose.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T15:03:07.728Z"
+    },
+    "circles/260801-1244-guard-rules-write/history/260804-1702-planner-c5b-plan-revision-decisions-and-diagrams.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T15:04:50.971Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260804-1725-coder-step2-project-layer-boundary.md": {
+      "pingBackCount": 1,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-04T15:27:05.277Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/planning/260804-1633_o_plan-c5b-remediation-and-ship.md": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-04T15:26:41.837Z"
+    },
+    "/tmp/fusion-s2-msg.txt": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T15:29:57.957Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/crossproduct.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T15:49:44.187Z"
+    },
+    "circles/260801-1244-guard-rules-write/decisions/260804-1815_o_should-git-restore-source-head-become-inert-the-way-git-checkout-head-already-is.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T16:09:03.635Z"
+    },
+    "circles/260801-1244-guard-rules-write/history/260804-1815-coder-step3-two-git-routes.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T16:10:52.627Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/measure-t7.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-04T17:08:36.662Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/measure-t7b.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T17:09:40.115Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/measure-t7c.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T17:10:07.973Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/measure-t7d.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T17:11:52.710Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1346_p_git-clean-fdx-at-the-project-root-is-still-a-residual-and-its-residual-entry-was-deleted.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T17:16:20.636Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-1348_p_the-two-spellings-of-the-revert-strategy-still-disagree-at-head-and-checkouts-second-cost-is-unreachable.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T17:16:43.725Z"
+    },
+    "circles/260801-1244-guard-rules-write/history/260804-1920-coder-four-unowned-documentation-obligations.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T17:19:48.792Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/project-relative.ts": {
+      "pingBackCount": 1,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-04T17:43:17.541Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/project-relative.test.ts": {
+      "pingBackCount": 1,
+      "totalEdits": 3,
+      "lastEditTimestamp": "2026-08-04T17:43:39.028Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/s14-crossproduct.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T18:01:28.578Z"
+    },
+    "circles/260801-1244-guard-rules-write/history/260804-1940-coder-step1-floor-step4-exemption-precedence.md": {
+      "pingBackCount": 1,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-04T18:43:20.479Z"
+    },
+    "circles/260801-1244-guard-rules-write/issues/260804-2100_o_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T19:01:24.604Z"
+    },
+    "circles/260801-1244-guard-rules-write/history/260804-2100-coder-step5-guard-error-on-the-dashboard.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-04T19:04:00.854Z"
     }
   },
-  "lastEditFile": "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260802-2315-turn2-guard-boundary-hardening.md",
-  "lastEditTimestamp": "2026-08-02T21:15:10.175Z"
+  "lastEditFile": "circles/260801-1244-guard-rules-write/history/260804-2100-coder-step5-guard-error-on-the-dashboard.md",
+  "lastEditTimestamp": "2026-08-04T19:04:00.854Z"
 }

@@ -606,3 +606,137 @@
 {"ts":"2026-08-02T20:39:34","event":"turn_end","turn":1,"detail":"5 tasks resolved, 6 issues created, 5 commits"}
 {"ts":"2026-08-02T20:39:34","event":"turn_start","turn":2,"detail":"2 High boundary findings + the halt gap; config loader deferred to Turn 3"}
 {"ts":"2026-08-02T20:39:34","event":"task_start","turn":2,"task":"T2-A","agent":"coder","detail":"canonicalise before the protected check; close the symlink route; halt above the exemption"}
+{"ts":"2026-08-02T21:17:17","event":"task_done","turn":2,"task":"T2-A","agent":"coder","detail":"3 findings closed; 973 tests"}
+{"ts":"2026-08-02T21:17:17","event":"commit","turn":2,"task":"T2-A","detail":"49bb4da"}
+{"ts":"2026-08-02T21:17:29","event":"review_start","turn":2,"agent":"coderev","detail":"boundary hardening, 10 paths"}
+{"ts":"2026-08-02T21:33:53","event":"review_done","turn":2,"agent":"coderev","detail":"7 issues, 1 Critical: the lexical .. collapse erases the symlink before the fs gate sees it"}
+{"ts":"2026-08-02T21:33:53","event":"circuit_breaker","turn":2,"detail":"net-negative progress two consecutive Turns: T1 5 resolved / 6 created, T2 3 resolved / 7 created"}
+{"ts":"2026-08-03T08:39:05","event":"session_start","detail":"resumed guard-rules-write Circle; mode=plan; domain=code"}
+{"ts":"2026-08-03T09:56:16","event":"scope_resolved","detail":"mode=issues, target=11 open issues in circles/260801-1244-guard-rules-write, executors=[coder], 1 human gate expected"}
+{"ts":"2026-08-03T09:56:16","event":"queue_built","detail":"8 tasks from 11 issues; 3 blocked on dependencies; 1 gate task"}
+{"ts":"2026-08-03T10:29:46","event":"turn_start","turn":1,"detail":"session Turn 1 (Circle Turn 3); 8 tasks, 5 ready"}
+{"ts":"2026-08-03T10:29:46","event":"task_start","turn":1,"task":"T3-1","agent":"coder","detail":"hooks/lib/rules-write-exemption.ts — refuse the grant for any .. segment"}
+{"ts":"2026-08-03T10:56:50","event":"commit","turn":1,"task":"T3-1","detail":"3b0f9e7 gate 0 refuses a grant for any spelling carrying a .."}
+{"ts":"2026-08-03T10:56:50","event":"task_done","turn":1,"task":"T3-1","agent":"coder","detail":"3b0f9e7; tests 973->1009; 2 new issues filed"}
+{"ts":"2026-08-03T10:56:50","event":"task_start","turn":1,"task":"T3-2","agent":"coder","detail":"rules-write-exemption.ts cluster: issues 2213, 2231, 2332, 2333 (T3-2 and T3-3 merged, same file)"}
+{"ts":"2026-08-03T11:22:40","event":"commit","turn":1,"task":"T3-2","detail":"245b8b7 a refused grant now says which gate refused it"}
+{"ts":"2026-08-03T11:22:40","event":"task_done","turn":1,"task":"T3-2","agent":"coder","detail":"245b8b7; tests 1009->1047; 5 issues closed, 1 decision filed"}
+{"ts":"2026-08-03T11:22:40","event":"task_start","turn":1,"task":"T3-4","agent":"coder","detail":"escalation.json shape validation + Bash halt event detail (issues 2334, 2336)"}
+{"ts":"2026-08-03T11:40:36","event":"commit","turn":1,"task":"T3-4","detail":"d77eda8 escalation shape coercion + halt event detail"}
+{"ts":"2026-08-03T11:40:36","event":"task_done","turn":1,"task":"T3-4","agent":"coder","detail":"d77eda8; tests 1047->1076; 2 issues closed"}
+{"ts":"2026-08-03T11:40:36","event":"task_start","turn":1,"task":"T3-6","agent":"coder","detail":"bin/monitor warnings panel capacity (issue 2232)"}
+{"ts":"2026-08-03T11:55:57","event":"commit","turn":1,"task":"T3-6","detail":"aff7486 advisories get their own budget in the warnings panel"}
+{"ts":"2026-08-03T11:55:57","event":"task_done","turn":1,"task":"T3-6","agent":"coder","detail":"aff7486; tests 1076->1080; 1 issue closed, 1 filed"}
+{"ts":"2026-08-03T11:55:57","event":"task_start","turn":1,"task":"T3-7","agent":"coder","detail":"documentation: README-hooks.md halt claim, protected-path-discipline residual list (issues 2331, 2335)"}
+{"ts":"2026-08-03T12:12:34","event":"commit","turn":1,"task":"T3-7","detail":"ce7a125 halt covers both surfaces, residual list admits the alias"}
+{"ts":"2026-08-03T12:12:34","event":"task_done","turn":1,"task":"T3-7","agent":"coder","detail":"ce7a125; docs only; 2 issues closed, 1 issue + 1 decision filed"}
+{"ts":"2026-08-03T12:12:34","event":"gate_hit","turn":1,"task":"T3-8","detail":"case folding bypasses the protected list; contract change to a security control needs a recorded decision"}
+{"ts":"2026-08-03T12:20:05","event":"gate_response","turn":1,"task":"T3-8","detail":"user chose unconditional case folding; decision recorded _a_, implementation deferred to a later Circle"}
+{"ts":"2026-08-03T12:20:05","event":"task_done","turn":1,"task":"T3-8","agent":"user","detail":"decision 260803-1419_a filed; issue 2320 stays open with the direction cited"}
+{"ts":"2026-08-03T12:20:22","event":"review_start","turn":1,"agent":"coderev","detail":"13 files, c9bf59e..242b723, 5 code commits"}
+{"ts":"2026-08-03T12:34:15","event":"review_done","turn":1,"agent":"coderev","detail":"1 issue filed (High); verdict: sound enough to build on"}
+{"ts":"2026-08-03T13:15:44","event":"coherence_review","turn":1,"verdict":"ok","detail":"Artifact<->Grounding: 1 High filed, reviewer verdict sound-enough-to-build-on. Artifact<->Directive: 7 commits, 10 of 11 in-scope issues closed, the 11th answered by decision; moves toward. Grounding<->Directive: 4 Circle decisions, 3 created this Turn, none conflicting."}
+{"ts":"2026-08-03T13:15:44","event":"turn_end","turn":1,"detail":"10 issues resolved, 5 filed, 7 commits, 0 errors; queue converged"}
+{"ts":"2026-08-03T13:28:14","event":"reconciliation","turn":1,"detail":"8 drift items corrected, 0 new issues; verdict review-needed, recommendation revise Artifact"}
+{"ts":"2026-08-03T13:28:14","event":"gate_hit","turn":1,"detail":"Rebalance gate, per-Circle verdict review-needed"}
+{"ts":"2026-08-03T15:21:56","event":"gate_response","turn":1,"detail":"Rebalance: user confirmed wrap-up; Circle stays active, no closure marker, portfolio sync skipped"}
+{"ts":"2026-08-03T15:21:56","event":"session_end","detail":"1 Turn, 8 tasks, 10 issues closed, 5 filed, 7 commits, 0 errors, tests 973->1080; verdict review-needed, Circle remains _t_"}
+{"ts":"2026-08-03T15:56:23","event":"session_start","detail":"new session on the active Circle; mode=issues; the two High findings first"}
+{"ts":"2026-08-03T15:56:23","event":"scope_resolved","detail":"260803-1431 + 260802-2320 + 260803-1251 + three false docstrings; plan steps 6-10 out of scope"}
+{"ts":"2026-08-03T15:56:23","event":"queue_built","turn":1,"detail":"4 tasks, 3 blocked on the analyst gate"}
+{"ts":"2026-08-03T15:56:23","event":"turn_start","turn":1,"detail":"Circle Turn 4; head 6c447eb"}
+{"ts":"2026-08-03T15:56:23","event":"task_start","turn":1,"task":"T4-1","agent":"analyst","detail":"root-cause the four recurrences before a fourth narrowing"}
+{"ts":"2026-08-03T16:08:56","event":"task_done","turn":1,"task":"T4-1","agent":"analyst","detail":"root cause is two causes not one; recommendation: invert firstDirArg to an allow-list, yield CWD_UNKNOWN otherwise; 2 new entrances found (CDPATH, pushd -n), protection side, no flag needed"}
+{"ts":"2026-08-03T16:08:56","event":"task_start","turn":1,"task":"T4-2","agent":"coder","detail":"allow-list inversion closing 260803-1431 + 260803-1803 + three false docstrings"}
+{"ts":"2026-08-03T16:41:53","event":"commit","turn":1,"task":"T4-2","detail":"a79ff1a working-directory allow-list; 8 entrances closed"}
+{"ts":"2026-08-03T16:41:53","event":"task_done","turn":1,"task":"T4-2","agent":"coder","detail":"a79ff1a; tests 1080->1098; 2 issues closed, 1 filed"}
+{"ts":"2026-08-03T16:41:53","event":"task_start","turn":1,"task":"T4-3","agent":"coder","detail":"case folding per decision 260803-1419_a (issue 260802-2320)"}
+{"ts":"2026-08-03T17:06:05","event":"commit","turn":1,"task":"T4-3","detail":"86a437a unconditional case folding on the protected match"}
+{"ts":"2026-08-03T17:06:05","event":"task_done","turn":1,"task":"T4-3","agent":"coder","detail":"86a437a; tests 1098->1146; 1 issue closed, decision 260803-1419 _a_->_i_"}
+{"ts":"2026-08-03T17:06:05","event":"task_start","turn":1,"task":"T4-4","agent":"coder","detail":"fs-locator absolute() lexical collapse (issue 260803-1251)"}
+{"ts":"2026-08-03T17:24:38","event":"commit","turn":1,"task":"T4-4","detail":"fs-locator: a .. from readlink no longer resolves inside the rule dir"}
+{"ts":"2026-08-03T17:24:38","event":"task_done","turn":1,"task":"T4-4","agent":"coder","detail":"tests 1146->1155; issue closed, severity corrected Low->Medium, live escape found"}
+{"ts":"2026-08-03T18:05:14","event":"gate_response","turn":1,"detail":"ambient CDPATH: user chose option 1, read the env and degrade"}
+{"ts":"2026-08-03T18:05:14","event":"task_start","turn":1,"task":"T4-5","agent":"coder","detail":"implement the ambient CDPATH degrade per decision 260803-1803_a"}
+{"ts":"2026-08-03T18:27:18","event":"commit","turn":1,"task":"T4-5","detail":"b85f6a0 ambient CDPATH degrades the working-directory model"}
+{"ts":"2026-08-03T18:27:18","event":"task_done","turn":1,"task":"T4-5","agent":"coder","detail":"b85f6a0; tests 1155->1167; decision 260803-1803 _a_->_i_"}
+{"ts":"2026-08-03T18:27:18","event":"review_start","turn":1,"agent":"coderev","detail":"6c447eb..b85f6a0, 4 code commits"}
+{"ts":"2026-08-03T18:42:35","event":"review_done","turn":1,"agent":"coderev","detail":"3 issues filed (2 High, 1 Low); verdict: the boundary moved a fifth time; both High fixes cheap"}
+{"ts":"2026-08-03T19:53:00","event":"coherence_review","turn":1,"verdict":"review-needed","detail":"Artifact<->Grounding: 3 filed (2 High), 11 prior claims re-verified and reproduced. Artifact<->Directive: half met, flag surface closed, stance claim false. Grounding<->Directive: both answered decisions implemented, 2 open awaiting plan steps."}
+{"ts":"2026-08-03T19:53:00","event":"turn_end","turn":1,"detail":"4 issues resolved, 2 decisions implemented, 6 commits, 4 issues filed, 0 errors"}
+{"ts":"2026-08-03T19:53:00","event":"turn_start","turn":2,"detail":"Circle Turn 5; head cb2c8ad; 3 review findings"}
+{"ts":"2026-08-03T19:53:00","event":"task_start","turn":2,"task":"T5-1","agent":"coder","detail":"command cd / builtin cd, bare pushd rotation, CDPATH docstring (issues 2038, 2039, 2040)"}
+{"ts":"2026-08-03T20:22:23","event":"commit","turn":2,"task":"T5-1","detail":"one command-word resolver; pushd pushes only where bash pushes"}
+{"ts":"2026-08-03T20:22:23","event":"task_done","turn":2,"task":"T5-1","agent":"coder","detail":"tests 1167->1182; 3 issues closed; time found as a third builtin-capable wrapper"}
+{"ts":"2026-08-03T20:41:44","event":"review_done","turn":2,"agent":"coderev","detail":"3 issues filed, all High; one is a regression introduced by 9aacab5"}
+{"ts":"2026-08-03T20:54:32","event":"coherence_review","turn":2,"verdict":"review-needed","detail":"Artifact<->Grounding: 3 High filed, one a regression this Turn introduced. Artifact<->Directive: away from, in one direction: the guard is weaker at 9aacab5 than at cb2c8ad for eleven measured commands. Grounding<->Directive: no decision changed this Turn."}
+{"ts":"2026-08-03T20:54:32","event":"turn_end","turn":2,"detail":"3 issues resolved, 3 filed (1 a regression), 2 commits"}
+{"ts":"2026-08-03T20:54:32","event":"turn_start","turn":3,"detail":"Circle Turn 6; head d58d78f; regression + 2 pre-existing"}
+{"ts":"2026-08-03T20:54:32","event":"task_start","turn":3,"task":"T6-1","agent":"coder","detail":"close the runsBuiltins regression and the stack-depth finding; prepare 2238 as a decision"}
+{"ts":"2026-08-03T21:36:49","event":"commit","turn":3,"task":"T6-1","detail":"runsBuiltins deleted; DirStack sum type; regression closed"}
+{"ts":"2026-08-03T21:36:49","event":"task_done","turn":3,"task":"T6-1","agent":"coder","detail":"tests 1182->1197; 2 issues closed, 1 decision filed; 6 commands newly allow, all feeding 260803-1835"}
+{"ts":"2026-08-04T05:33:27","event":"gate_response","turn":3,"detail":"failing-cd: option 1 plus 260803-1835, taken together"}
+{"ts":"2026-08-04T05:33:27","event":"turn_end","turn":3,"detail":"2 issues resolved, 1 decision filed and answered, 1 commit"}
+{"ts":"2026-08-04T05:33:27","event":"turn_start","turn":4,"detail":"Circle Turn 7; head 048f3db"}
+{"ts":"2026-08-04T05:33:27","event":"task_start","turn":4,"task":"T7-1","agent":"coder","detail":"separator-conditioned degrade + redirection targets (decision 260803-2338_a, issue 260803-1835)"}
+{"ts":"2026-08-04T06:19:25","event":"commit","turn":4,"task":"T7-1","detail":"separator-conditioned degrade + cause-shaped fail-closed bound"}
+{"ts":"2026-08-04T06:19:25","event":"task_done","turn":4,"task":"T7-1","agent":"coder","detail":"tests 1197->1235; 2 issues closed, 2 decisions implemented; 18 newly denying, 0 newly allowing"}
+{"ts":"2026-08-04T06:41:20","event":"review_done","turn":4,"agent":"coderev","detail":"7 filed (2 High pre-existing, 2 High from this Turn, 3 lower); 0 commands newly allow"}
+{"ts":"2026-08-04T07:29:24","event":"coherence_review","turn":4,"verdict":"ok","detail":"Artifact<->Grounding: 7 filed, 0 commands newly allow, first Turn to open nothing. Artifact<->Directive: toward; the two targeted bypasses are closed in both shells. Grounding<->Directive: 2 decisions implemented this Turn, none conflicting."}
+{"ts":"2026-08-04T07:29:24","event":"turn_end","turn":4,"detail":"2 issues resolved, 2 decisions implemented, 2 commits, 7 filed"}
+{"ts":"2026-08-04T07:29:24","event":"turn_start","turn":5,"detail":"Circle Turn 8, final Turn of the session; head 148375e"}
+{"ts":"2026-08-04T07:29:24","event":"task_start","turn":5,"task":"T8-1","agent":"coder","detail":"two regressions + the false cost claim; draft a decision for the two && leaks"}
+{"ts":"2026-08-04T08:09:31","event":"commit","turn":5,"task":"T8-1","detail":"newline downgrade, cost rule, inverted fact"}
+{"ts":"2026-08-04T08:09:31","event":"task_done","turn":5,"task":"T8-1","agent":"coder","detail":"tests 1235->1241; 3 issues closed, 1 decision drafted"}
+{"ts":"2026-08-04T08:09:31","event":"circuit_breaker","turn":5,"detail":"max Turns reached (5/5); normal exit"}
+{"ts":"2026-08-04T08:09:31","event":"turn_end","turn":5,"detail":"3 issues resolved, 0 filed, 1 commit, 1 decision drafted"}
+{"ts":"2026-08-04T08:38:15","event":"reconciliation","turn":5,"detail":"14 closed / 16 filed corrected from live counters; 4 new issues filed, 2 High; verdict review-needed; Bounded Closure not warranted"}
+{"ts":"2026-08-04T08:38:15","event":"gate_response","detail":"Rebalance: user leaves the Circle active; no closure marker, portfolio sync skipped"}
+{"ts":"2026-08-04T08:38:15","event":"session_end","detail":"5 Turns, 8 tasks, 14 issues closed, 16 filed, 11 commits, 0 errors, tests 1080->1241; Circle remains _t_"}
+{"ts":"2026-08-04T09:38:47","event":"session_start","detail":"answer 260804-0947 by its recommendation, option 4"}
+{"ts":"2026-08-04T09:38:47","event":"scope_resolved","detail":"option 1 now + anticipated Circle for the reachability model; 2 tasks"}
+{"ts":"2026-08-04T09:38:47","event":"turn_start","turn":1,"detail":"head c43a6a2"}
+{"ts":"2026-08-04T09:38:47","event":"task_start","turn":1,"task":"T9-1","agent":"coder","detail":"option 1: consult the joiner for the moving segment"}
+{"ts":"2026-08-04T10:03:09","event":"commit","turn":1,"task":"T9-1","detail":"4f1007f the joiner is consulted for the segment that moves"}
+{"ts":"2026-08-04T10:03:09","event":"task_done","turn":1,"task":"T9-1","agent":"coder","detail":"4f1007f; tests 1241->1252; 2 issues closed, decision 260804-0947 _o_->_i_"}
+{"ts":"2026-08-04T10:03:09","event":"task_start","turn":1,"task":"T9-2","agent":"shaper","detail":"anticipated Circle for the shell reachability model"}
+{"ts":"2026-08-04T10:07:46","event":"task_done","turn":1,"task":"T9-2","agent":"shaper","detail":"circles/260804-1205-shell-reachability-model filed anticipated"}
+{"ts":"2026-08-04T10:07:46","event":"turn_end","turn":1,"detail":"2 tasks, 2 issues closed, 1 decision implemented, 1 anticipated Circle filed, 2 commits"}
+{"ts":"2026-08-04T10:24:46","event":"review_done","turn":1,"agent":"coderev","detail":"commit sound; 4 issues filed; ledger corrected: plan Steps 6-8 unstarted are half the Directive"}
+{"ts":"2026-08-04T10:24:46","event":"session_end","detail":"1 Turn, 2 tasks, 2 issues closed, 1 decision implemented, 1 anticipated Circle filed, 3 commits"}
+{"ts":"2026-08-04T10:43:41","event":"session_start","detail":"close the two git fail-open routes"}
+{"ts":"2026-08-04T10:43:41","event":"turn_start","turn":1,"detail":"head d2962f3"}
+{"ts":"2026-08-04T10:43:41","event":"task_start","turn":1,"task":"T10-1","agent":"coder","detail":"260804-1024 + 260804-1026, one pass"}
+{"ts":"2026-08-04T11:31:50","event":"commit","turn":1,"task":"T10-1","detail":"613d6fd a directory fact may add reach, never remove it"}
+{"ts":"2026-08-04T11:31:50","event":"task_done","turn":1,"task":"T10-1","agent":"coder","detail":"tests 1252->1299; 3 issues closed, 1 filed High, 1 decision implemented"}
+{"ts":"2026-08-04T11:51:47","event":"review_done","turn":1,"agent":"coderev","detail":"8 filed (2 High fail-open); job 2 backlog review done, both designs sound"}
+{"ts":"2026-08-04T11:51:47","event":"turn_end","turn":1,"detail":"3 issues closed, 9 filed, 1 decision implemented, 2 commits"}
+{"ts":"2026-08-04T11:52:19","event":"session_end","detail":"1 Turn, 3 issues closed, 9 filed, 1 decision implemented, 3 commits; reconciler deliberately skipped"}
+{"ts":"2026-08-04T12:08:05","event":"session_start","detail":"build C5b, plan steps 6-8"}
+{"ts":"2026-08-04T12:08:05","event":"scope_resolved","detail":"mode=plan, 3 steps, 1 human gate expected (Step 7 routes to ontocoder)"}
+{"ts":"2026-08-04T12:08:05","event":"turn_start","turn":1,"detail":"head 95a325d"}
+{"ts":"2026-08-04T12:08:05","event":"task_start","turn":1,"task":"S6","agent":"coder","detail":"the C5b loader"}
+{"ts":"2026-08-04T12:32:47","event":"task_done","turn":1,"task":"S6","agent":"coder","detail":"tests 1299->1341; decision 260802-1912 _a_->_i_; 2 issues filed"}
+{"ts":"2026-08-04T12:32:47","event":"gate_hit","turn":1,"task":"S7","detail":"Step 7 routes to ontocoder; data/config files require user awareness"}
+{"ts":"2026-08-04T12:54:50","event":"gate_response","turn":1,"task":"S7","detail":"proceed with template and root copy"}
+{"ts":"2026-08-04T12:54:50","event":"task_start","turn":1,"task":"S7","agent":"ontocoder","detail":"templates/fusion-guard.json + root copy"}
+{"ts":"2026-08-04T13:04:26","event":"task_done","turn":1,"task":"S7","agent":"ontocoder","detail":"tests 1341->1344; template + root copy byte-identical"}
+{"ts":"2026-08-04T13:04:26","event":"task_start","turn":1,"task":"S8","agent":"coder","detail":"/fusion:setup seeds fusion-guard.json"}
+{"ts":"2026-08-04T13:13:47","event":"task_done","turn":1,"task":"S8","agent":"coder","detail":"shape changed from the plan, with measurement; C5b complete"}
+{"ts":"2026-08-04T13:13:47","event":"turn_end","turn":1,"detail":"3 plan steps done, 3 commits, 1 decision implemented, 2 issues filed"}
+{"ts":"2026-08-04T13:13:47","event":"session_end","detail":"C5b built; no review run over the three commits"}
+{"ts":"2026-08-04T13:50:14","event":"session_start","detail":"independent analysis of the three C5b commits"}
+{"ts":"2026-08-04T13:50:14","event":"task_start","turn":1,"task":"A1","agent":"analyst","detail":"46d8333, 557340d, 7f3d789 — independent assessment, read-only"}
+{"ts":"2026-08-04T14:07:13","event":"task_done","turn":1,"task":"A1","agent":"analyst","detail":"8 issues filed, 3 High; verdict: do not ship at Step 10"}
+{"ts":"2026-08-04T14:23:23","event":"planner_start","detail":"plan the path to shippable: 8 analyst issues + 2 High fail-opens + Steps 9/10"}
+{"ts":"2026-08-04T14:49:19","event":"conceptrev_done","detail":"verdict tangled; missing S2->S4 edge would have misled at the gate"}
+{"ts":"2026-08-04T14:49:19","event":"gate_response","detail":"plan approved with diagram fix first; 260804-1630 option 1; 260804-1631 option 1"}
+{"ts":"2026-08-04T15:13:06","event":"gate_response","detail":"260803-1314 option 2: a project's declared entry outranks the flag; Step 4 activated"}
+{"ts":"2026-08-04T15:30:11","event":"task_done","turn":1,"task":"Step2","agent":"coder","detail":"tests 1344->1394; 5 issues closed, 2 decisions realised"}
+{"ts":"2026-08-04T15:30:11","event":"task_start","turn":1,"task":"Step3","agent":"coder","detail":"the two git routes into the protected list"}
+{"ts":"2026-08-04T16:15:49","event":"task_done","turn":1,"task":"Step3","agent":"coder","detail":"tests 1394->1448; all 5 High defects now closed; 1 decision filed"}
+{"ts":"2026-08-04T16:35:53","event":"gate_response","detail":"260803-1402 option 1; 260804-1815 option 1; 260804-1632 deferred; no open decisions remain"}
+{"ts":"2026-08-04T17:20:53","event":"task_done","turn":1,"task":"obligations","agent":"coder","detail":"4 obligations discharged; 3 briefing claims falsified by measurement; 2 issues closed"}
+{"ts":"2026-08-04T18:47:02","event":"task_done","turn":1,"task":"Steps1+4","agent":"coder","detail":"ac20f7d; tests 1448->1532; decision 260803-1314 _a_->_i_"}
+{"ts":"2026-08-04T18:47:02","event":"task_start","turn":1,"task":"Step5","agent":"coder","detail":"guard_error reaches the dashboard"}
+{"ts":"2026-08-04T19:07:13","event":"task_done","turn":1,"task":"Step5","agent":"coder","detail":"tests 1532->1537; 1 issue closed; 1 High-shaped finding filed (260804-2100)"}

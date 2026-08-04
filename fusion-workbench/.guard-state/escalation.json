@@ -1,23 +1,87 @@
 {
   "haltActive": false,
   "consecutiveBlocks": 0,
-  "lastBlockTimestamp": "2026-08-01T15:45:24.956Z",
+  "lastBlockTimestamp": "2026-08-04T18:54:04.643Z",
   "recentEvents": [
     {
       "level": "block",
-      "trigger": "git_branch_switch",
-      "message": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
-      "timestamp": "2026-08-01T11:41:21.945Z",
+      "trigger": "protected_path",
+      "message": "fusion policy: this Bash command mutates a file whose target cannot be resolved before it runs. The segment `cp hooks/lib/bash-mutation-guard.ts \"$S/rev/new-bmg.ts\"` writes `\"$S/rev/new-bmg.ts\"`, which the guard cannot prove is outside the protected paths, so it is denied (fail-closed). If the target is genuinely unprotected, write the path out literally instead of building it at run time. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
+      "timestamp": "2026-08-04T10:10:56.942Z",
       "toolName": "Bash",
-      "filePath": "git switch main"
+      "filePath": "\"$S/rev/new-bmg.ts\""
     },
     {
       "level": "block",
-      "trigger": "git_branch_switch",
-      "message": "fusion policy: agents never switch git branches autonomously (prevents branch-drift chaos). If this task genuinely needs a different branch, STOP and ask the user. The user can deliberately allow it by setting FUSION_ALLOW_BRANCH_SWITCH=1 (or FUSION_ALLOW_WORKTREE=1 for worktrees) in the session env.",
-      "timestamp": "2026-08-01T15:45:24.956Z",
+      "trigger": "protected_path",
+      "message": "fusion policy: this Bash command mutates a relative path from a working directory the guard cannot determine. An earlier `cd` in this command moved somewhere only known at run time, so the segment `rm -rf p` writes `p` at an unknowable location and it is denied (fail-closed). Name the target as an absolute path, or drop the `cd` and write the path from the project root. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
+      "timestamp": "2026-08-04T10:46:38.423Z",
       "toolName": "Bash",
-      "filePath": "git switch main\""
+      "filePath": "p"
+    },
+    {
+      "level": "block",
+      "trigger": "protected_path",
+      "message": "fusion policy: this Bash command mutates a file whose target cannot be resolved before it runs. The segment `cp \"$SP/verdicts.ts\" \"$SP/verdicts.mts\"` writes `\"$SP/verdicts.mts\"`, which the guard cannot prove is outside the protected paths, so it is denied (fail-closed). If the target is genuinely unprotected, write the path out literally instead of building it at run time. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
+      "timestamp": "2026-08-04T10:51:39.903Z",
+      "toolName": "Bash",
+      "filePath": "\"$SP/verdicts.mts\""
+    },
+    {
+      "level": "block",
+      "trigger": "protected_path",
+      "message": "fusion policy: this Bash command mutates a file whose target cannot be resolved before it runs. The segment `cp templates/fusion-guard.json $S/template.orig` writes `$S/template.orig`, which the guard cannot prove is outside the protected paths, so it is denied (fail-closed). If the target is genuinely unprotected, write the path out literally instead of building it at run time. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
+      "timestamp": "2026-08-04T13:00:03.502Z",
+      "toolName": "Bash",
+      "filePath": "$S/template.orig"
+    },
+    {
+      "level": "block",
+      "trigger": "protected_path",
+      "message": "fusion policy: this Bash command mutates a file whose target cannot be resolved before it runs. The segment `rm -rf \"$D\"` writes `\"$D\"`, which the guard cannot prove is outside the protected paths, so it is denied (fail-closed). If the target is genuinely unprotected, write the path out literally instead of building it at run time. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
+      "timestamp": "2026-08-04T13:57:19.820Z",
+      "toolName": "Bash",
+      "filePath": "\"$D\""
+    },
+    {
+      "level": "block",
+      "trigger": "protected_path",
+      "message": "fusion policy: this Bash command mutates a file whose target cannot be resolved before it runs. The segment `cp lib/config.ts \"$SP/config.ts.pristine\"` writes `\"$SP/config.ts.pristine\"`, which the guard cannot prove is outside the protected paths, so it is denied (fail-closed). If the target is genuinely unprotected, write the path out literally instead of building it at run time. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
+      "timestamp": "2026-08-04T15:21:27.015Z",
+      "toolName": "Bash",
+      "filePath": "\"$SP/config.ts.pristine\""
+    },
+    {
+      "level": "block",
+      "trigger": "protected_path",
+      "message": "fusion policy: this Bash command mutates a file whose target cannot be resolved before it runs. The segment `ln -s ../agents/coder.md \"$D/build/alias\"` writes `\"$D/build/alias\"`, which the guard cannot prove is outside the protected paths, so it is denied (fail-closed). If the target is genuinely unprotected, write the path out literally instead of building it at run time. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
+      "timestamp": "2026-08-04T17:10:26.639Z",
+      "toolName": "Bash",
+      "filePath": "\"$D/build/alias\""
+    },
+    {
+      "level": "block",
+      "trigger": "protected_path",
+      "message": "fusion policy: this Bash command mutates a file whose target cannot be resolved before it runs. The segment `cp -R lib \"$SP/baseline/lib\"` writes `\"$SP/baseline/lib\"`, which the guard cannot prove is outside the protected paths, so it is denied (fail-closed). If the target is genuinely unprotected, write the path out literally instead of building it at run time. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
+      "timestamp": "2026-08-04T17:31:14.946Z",
+      "toolName": "Bash",
+      "filePath": "\"$SP/baseline/lib\""
+    },
+    {
+      "level": "block",
+      "trigger": "protected_path",
+      "message": "fusion policy: this Bash command mutates a file whose target cannot be resolved before it runs. The segment `cp guard.ts \"$SP/s14-pristine/guard.ts\"` writes `\"$SP/s14-pristine/guard.ts\"`, which the guard cannot prove is outside the protected paths, so it is denied (fail-closed). If the target is genuinely unprotected, write the path out literally instead of building it at run time. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
+      "timestamp": "2026-08-04T18:06:29.904Z",
+      "toolName": "Bash",
+      "filePath": "\"$SP/s14-pristine/guard.ts\""
+    },
+    {
+      "level": "block",
+      "trigger": "protected_path",
+      "message": "fusion policy: this Bash command mutates a file whose target cannot be resolved before it runs. The segment `cp bin/monitor \"$SP/monitor.orig\"` writes `\"$SP/monitor.orig\"`, which the guard cannot prove is outside the protected paths, so it is denied (fail-closed). If the target is genuinely unprotected, write the path out literally instead of building it at run time. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
+      "timestamp": "2026-08-04T18:54:04.643Z",
+      "toolName": "Bash",
+      "filePath": "\"$SP/monitor.orig\""
     }
   ]
 }
