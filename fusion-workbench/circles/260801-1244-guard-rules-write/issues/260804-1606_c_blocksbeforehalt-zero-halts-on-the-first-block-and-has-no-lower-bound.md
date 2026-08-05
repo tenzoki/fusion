@@ -74,3 +74,18 @@ and named. That is the "one validation function, one set of rules, one place to 
 shape this record hoped for, and it now exists — so the fix is a row in that table
 (`blocksBeforeHalt` must be a positive integer) rather than a clamp bolted onto the merge.
 Executor `coder`.
+
+---
+
+**Resolved:** 2026-08-05, coder (task T3). The fix already landed with Plan-B Step 2
+(`planning/260804-1633_p_plan-c5b-remediation-and-ship.md`) — this record's marker was the
+only stale part. `hooks/lib/config.ts:470-473` gives `escalation.blocksBeforeHalt` a
+`CONTAINER_LEAF_RULES` row with check `isPositiveInteger` (`config.ts:412-414`: integer,
+`>= 1`) and diagnostic text "a whole number of 1 or more" — exactly the table-row shape the
+Step-3 disposition above asked for. An invalid value is dropped and named in diagnostics,
+then behaves like an omitted key (decision `260804-1630` equivalence), so `0` falls back to
+the default `3` instead of halting on the first block. Asserted by
+`hooks/lib/__tests__/config.test.ts:644` ("drops blocksBeforeHalt: 0 — issue 260804-1606"),
+`:654` (negative, fractional, stringly-typed all dropped with a diagnostic) and `:663` (no
+upper bound, deliberately — the 999999 direction stays a project choice, as this record
+argued). Suite green: 72/72 (`npx vitest run lib/__tests__/config.test.ts`). No code change.
