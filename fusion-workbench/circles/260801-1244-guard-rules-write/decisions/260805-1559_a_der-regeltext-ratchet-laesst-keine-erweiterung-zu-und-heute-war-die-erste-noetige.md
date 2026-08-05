@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** answered
 **Filed by:** coder
 **Cross-references:** `hooks/lib/__tests__/rules-emission-golden.test.ts` (`ROLE_CAPS`, `RELEASE_CAP`, die vier Cap-Tests). Die beiden Fixes, die daran gescheitert sind: `circles/260801-1244-guard-rules-write/issues/260805-1548_c_beim-filen-prueft-niemand-ob-der-store-denselben-defekt-schon-traegt.md` und `…_c_playmaker-liest-den-eingefrorenen-archiv-store-und-mischt-ihn-in-die-lebende-bestandsaufnahme.md`.
 
@@ -95,8 +95,39 @@ Bytes an jedem der sechzehn Agenten. Auf das Nötige gekürzt wären es rund 490
 davon 430 für die Filing-Regel allein. Die Grössenordnung, um die es geht, ist damit
 klein — aber sie ist nicht null, und null ist, was heute erlaubt war.
 
+## Answer
+
+**Keine der drei Optionen — der Block kommt weg, die Messung bleibt.** Wachstum ganz zu
+unterdrücken trägt nicht; stattdessen wird von Zeit zu Zeit bereinigt, und der Test sagt,
+wann das fällig ist. Messung und Sperre waren im Ratchet zusammengebaut, und das war der
+Fehler: ohne Messung driftet der Bestand in vier Tagen wieder auf 145 kB, ohne dass es
+jemandem auffällt.
+
+Umgesetzt am 05.08. um 17:53 in `hooks/lib/__tests__/rules-emission-golden.test.ts`:
+
+- `ROLE_CAPS` (sechs Handdeckel, Ratchet) → `RULE_BASELINE` (elf Dateigrößen nach dem
+  letzten Schnitt) plus `GROWTH_BUDGET = 12 000`. Der Rollenboden ist daraus abgeleitet,
+  kein zweiter Speicher.
+- Bei Überschreitung **druckt** der Lauf die gewachsenen Dateien mit Deltas und fällt nicht.
+- Die Schwelle ist aus vier Tagen nachgespielter `git log`-Historie hergeleitet, nicht
+  geraten.
+- Hart bleiben: Emissionsmenge (Golden), Rollendeckung, Begründungspflicht, und **ein**
+  Deckel bei `DRIFT_CEILING = 145 144` — dem Stand vom 04.08.
+- `RELEASE_CAP = 105 354` bleibt unverändert und gattert nichts mehr; es ist die Grundlinie,
+  an der sich die Begründungspflicht entzündet.
+
+Suite grün: 1551 Tests in 27 Dateien. Die Änderung liegt **uncommittet** im Arbeitsbaum;
+der Commit gehört dem Orchestrator, und mit ihm der Übergang `_a_` → `_i_`.
+
+**Offener Folgeschritt:** die beiden Ergänzungen, an denen der Ratchet sich zeigte — vor
+allem der Absatz zur Filing-Konvention (rund 430 Byte) — sind jetzt landbar, wurden hier
+aber bewusst **nicht** mitgeliefert. Eine Konventionsänderung gehört nicht in einen
+Testumbau; sie braucht einen eigenen Durchgang.
+
+Belege: `history/260805-1753-coder-ratchet-wird-budget-mit-meldung.md`.
+
 ---
-Answered: <set when status moves to _a_>
+Answered: 2026-08-05 — Nutzerentscheid über den Orchestrator; umgesetzt im selben Turn.
 Implemented: <set when status moves to _i_>
 Deferred: <set when status moves to _d_>
 Superseded by: <set when status moves to _s_>

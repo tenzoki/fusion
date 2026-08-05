@@ -114,3 +114,38 @@ Answered: <set when status moves to _a_>
 Implemented: <set when status moves to _i_>
 Deferred: <set when status moves to _d_>
 Superseded by: <set when status moves to _s_>
+
+## Antwort
+
+**Ein absichtlich gelöschter Circle verschwindet vollständig aus der workbench. Es gibt keinen
+Marker dafür.**
+
+Vom Nutzer entschieden am 2026-08-05, auf die Rückfrage, ob gelöscht oder archiviert gemeint
+sei. Die beiden sind verschiedene Vorgänge und bleiben es:
+
+- **Archiviert** heißt, der Circle zieht nach `archive/` um. Er behält seinen terminalen
+  Marker, bleibt zitierbar, und `/fusion:archive` ist der Weg dorthin. Eingefrorener Inhalt,
+  der von keiner lebenden Enumeration mehr gelesen wird — das war der Defekt in
+  `260805-1548` (Playmaker) und in `ec0561a` (Setup).
+- **Gelöscht** heißt weg. Kein Verzeichnis, kein Record, kein Marker. Ein Zustand „absichtlich
+  entfernt" im Marker-Vokabular wäre ohnehin nicht darstellbar, weil der Marker am Record
+  sitzt und der Record mitgelöscht wird. Dieser Weg blieb dem Circle-Autor schon vorher offen
+  und ist jetzt als gewollt bestätigt.
+
+**Die Verpflichtung liegt bei den Referenzen, nicht beim Gelöschten.** Wer einen Circle löscht,
+versieht vorhandene Verweise auf ihn mit einem Zusatz — falls es welche gibt. Der Zusatz sagt,
+dass das Ziel absichtlich entfernt wurde, und wann. Damit unterscheidet ein späterer Leser
+Löschung von Verlust an der Stelle, an der die Frage tatsächlich auftaucht: beim toten Verweis.
+Am verschwundenen Objekt selbst ist sie nicht zu beantworten.
+
+Der auslösende Fall zeigt die Grenze der Alternative. Der Shaper hatte die Anweisung, sein
+Fehlen nicht als Orphan zu lesen, in den Record geschrieben, der gelöscht wird. Eine Anweisung
+im Objekt kann dessen Verschwinden nicht überleben; nur der Verweis kann es.
+
+Offen und nicht Teil dieser Antwort: ob ein Skill diesen Vorgang unterstützen sollte, statt ihn
+von Hand zu verlangen. Ein `/fusion:circle-delete`, das die Verweise sucht und den Zusatz
+anbringt, wäre die naheliegende Form. Ohne ein solches Werkzeug hängt die Verpflichtung an der
+Sorgfalt dessen, der löscht.
+
+---
+Answered: dieser Record, `## Antwort` — Nutzerentscheidung; gelöscht heißt weg, und die Zusatzpflicht liegt bei den Verweisen.

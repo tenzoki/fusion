@@ -55,47 +55,84 @@ import { dirname, resolve, join, relative } from "node:path";
 // test that inherited it would measure the install, not the source tree, and
 // would report whatever the developer last installed.
 //
-// THE THREE ASSERTIONS, AND WHY EACH IS NEEDED.
+// WHAT IS ASSERTED, AND WHAT IS ONLY REPORTED.
 //
-//   1. The GOLDEN (`fixtures/rules-emission.golden`) pins path set, per-file
-//      size and per-agent total. It fails on any change in either direction —
-//      including a cut that removes more than intended. It is meant to be
-//      regenerated when a cut is deliberate; see `## Updating the golden`.
+//   HARD — the GOLDEN (`fixtures/rules-emission.golden`) pins the path set, the
+//      emission order, each file's size and each agent's total. It fails on any
+//      change in either direction, including a cut that removes more than
+//      intended. It is meant to be regenerated whenever a change is deliberate;
+//      see `## Updating the golden`. Regenerating is one command and blocks
+//      nothing — the golden's job is to put every movement into a diff somebody
+//      reads, not to stop the movement.
 //
-//   2. The ROLE CAPS are literals in THIS file and are the safety net against
-//      growth. They exist precisely because the golden is regenerable: an added
-//      always-on rule file appears in no golden line, and a regenerated golden
-//      would absorb it without complaint. A cap does not absorb it — it has to
-//      be edited by hand, in the test source, in the same commit, which is the
-//      moment the question "am I raising the tax, and for whom?" gets asked out
-//      loud.
+//   HARD — the ROLE COVERAGE. A role is derived from measurement (see below). A
+//      role with no entry in `ROLES`, or an entry no agent matches any more,
+//      fails. An audience change in `bin/fusion-rules` is a decision, and it may
+//      not happen silently.
 //
-//      One cap per role rather than one number for all sixteen agents, because
-//      after the cut the agents no longer carry the same load: they range from
-//      89 896 to 111 766 bytes. A single ceiling has to sit at the maximum, so
-//      it would have granted the five leanest agents 21 870 bytes of silent
-//      head-room and called that compliance.
+//   HARD — the JUSTIFICATION DUTY. A role whose floor stands above RELEASE_CAP
+//      has to say in `overRelease` which file carries the overage and why that
+//      role applies it. It is a prose obligation about an AUDIENCE decision — it
+//      never asks anyone to cut text.
 //
-//   3. The RELEASE CAP is the BASELINE `origin/main` already ships, undiffer-
-//      entiated, to all sixteen agents. It stopped being a ceiling every agent
-//      has to fit under on 2026-08-05, when the cap became per-role; what it is
-//      now is the threshold at which a role cap has to justify itself in this
-//      source, naming the file that causes the overage and the reason that role
-//      applies it. A cap without that is a number the next growth quietly
-//      raises, which is the whole thing the ratchet is for.
+//   HARD — the DRIFT CEILING. The one number that still blocks; see below.
 //
-//      The release gate therefore reads ROLE_CAPS, not one number: a role
-//      within the baseline ships, a role above it ships only with its reason
-//      recorded here. It reads the same source the two role assertions read, so
-//      a later cut that moves a role moves the gate with it.
+//   REPORTED, NEVER FAILING — the BUDGET. Every role gets GROWTH_BUDGET bytes of
+//      head-room above its floor (`RULE_BASELINE`, summed over the files that
+//      role loads). Past that, the run PRINTS which files grew and by how much
+//      and says a cleanup is due. It does not fail.
+//
+// WHY THE BUDGET REPORTS INSTEAD OF BLOCKING. Until 2026-08-05 this file carried
+// a ratchet: one cap per role, pinned to that role's measured high-water mark and
+// allowed to move in one direction only. It held the line, and it also made the
+// first finding-driven addition unlandable — the only way past it was to cut
+// somebody else's reasoned prose by the same number of bytes, which is the damage
+// the ratchet existed to prevent (decision 260805-1559). The user's answer was to
+// keep the MEASUREMENT and drop the BLOCK: growth is allowed, and from time to
+// time the text gets cleaned up. This file's job is to say when a cleanup is due,
+// in a form somebody can act on — which file grew, and by how much. Without the
+// per-file breakdown the report is a number nobody can do anything with.
+//
+// WHERE THE THRESHOLD COMES FROM. It was measured, not guessed: `git log` over
+// `rules/` was replayed commit by commit from 2026-05-04 to 2026-08-05, re-running
+// `bin/fusion-rules` against each snapshot.
+//
+//   calm work, 2026-06-02 -> 2026-07-31: 38 776 -> 87 387 bytes. About 800 bytes
+//     a day, arriving in steps of 1 000 to 5 000 per commit.
+//   the worst run, 2026-08-01 -> 2026-08-04: 87 387 -> 145 144 in four days, about
+//     14 400 a day. The worst single day was +19 484.
+//   a finding-driven addition, measured: 430 bytes (decision 260805-1559).
+//
+// GROWTH_BUDGET = 12 000 sits INSIDE the worst measured day, so a run like
+// 2026-08-01 trips the report on the day it begins rather than after it. It is
+// about twenty-four finding-sized additions, so honest work is never what trips
+// it. At the calm rate it comes due every two to three weeks. And the leanest role
+// can spend it whole and still sit under RELEASE_CAP (89 896 + 12 000 = 101 896),
+// so no consuming project pays more than origin/main already charged before the
+// budget is even a question.
+//
+// WHY THERE IS STILL A GATE. A gate that never blocks is not a gate, and a gate
+// that blocks on every byte is the ratchet this file just gave up. The one that
+// remains is DRIFT_CEILING = 145 144 — the level the fleet actually reached on
+// 2026-08-04, before the cut. No finding-driven addition can reach it; it stands
+// 33 378 bytes above today's worst-off agent, which is weeks at the calm rate; and
+// long before it is in reach the budget report will have been asking for a
+// cleanup. It makes "back to 145 kB in four days without anyone noticing"
+// impossible by construction rather than by attention, which is the failure this
+// file exists to stop.
+//
+// ONE FLOOR PER ROLE rather than one number for all sixteen agents, because after
+// the cut the agents no longer carry the same load: they range from 89 896 to
+// 111 766 bytes. A single figure has to sit at the maximum, so it would grant the
+// five leanest agents 21 870 bytes of silent head-room and call that compliance.
 //
 // HOW A ROLE IS DERIVED, AND WHY IT IS NOT A LIST OF NAMES. The universal core
 // is computed as the INTERSECTION of all sixteen emissions. An agent's role is
 // what is left over: the sorted set of rule files it loads that not every agent
-// loads. `ROLE_CAPS` is keyed by that set. Nothing here names an agent, so the
+// loads. `ROLES` is keyed by that set. Nothing here names an agent, so the
 // day `bin/fusion-rules` moves an agent between audiences, the agent changes
 // role by itself; and a role with no entry fails loudly instead of being
-// measured against some other role's number. A hand-written name list would
+// measured against some other role's budget. A hand-written name list would
 // have drifted at the first audience change, which is the failure mode this
 // Circle demonstrated repeatedly.
 //
@@ -108,9 +145,17 @@ import { dirname, resolve, join, relative } from "node:path";
 // That run rewrites the fixture from live measurement and then FAILS on
 // purpose. The failure is the point: it forces a second run without the flag,
 // and it means no CI or habitual `vitest run` can ever be green while the flag
-// is set. Review the fixture diff, then bring the affected role's cap in
-// `ROLE_CAPS` to its new high-water mark — `pins every role cap to that role's
-// high-water mark` below fails until you do.
+// is set. Review the fixture diff — that is the whole obligation. Nothing else
+// has to move: a size change costs a regeneration, never a cut.
+//
+// ## Re-baselining after a cleanup
+//
+// `RULE_BASELINE` is the reference the budget measures growth FROM. It moves at
+// exactly one moment: after somebody has done the cleanup the report asked for.
+// Then, and only then, copy the per-file sizes out of the regenerated golden into
+// `RULE_BASELINE` and say in a comment which cut produced them, the way the entries
+// there already do. Between cleanups it stays where it is — a reference that
+// followed the measurement would measure nothing.
 //
 // Use `npx vitest run`, not `npm test`: the latter is `tsc && vitest run` and
 // rebuilds `hooks/dist`, which is owned by step 5 of the plan.
@@ -128,31 +173,70 @@ const goldenPath = join(here, "fixtures", "rules-emission.golden");
  * agents. It is the tax a consuming project pays today, and a release that
  * raises it is a regression however much else the release fixes.
  *
- * It is NO LONGER the ceiling a release is measured against. On 2026-08-05 the
- * user's gate decided the cap applies per ROLE rather than as one number for
- * all sixteen, because after the cut the agents stopped carrying the same load;
- * ROLE_CAPS below is what the release gate reads. This number stayed, in the
- * one job it can still do honestly: the BASELINE. A role cap at or below it
- * costs a consuming project nothing it was not already paying. A role cap above
- * it is a decision to charge that project more, and has to say so in
- * `overRelease` — see `justifies …` and the release gate, which both read it.
+ * It has never been a ceiling since 2026-08-05, and since the ratchet came out
+ * it gates nothing at all. The one job it still does honestly is the BASELINE
+ * for the JUSTIFICATION DUTY: a role floor at or below it costs a consuming
+ * project nothing it was not already paying, and a role floor above it is a
+ * decision to charge that project more, which has to name the file it bought
+ * and say why that role applies it. See `justifies …`.
  *
- * NEVER RAISE THIS. The line is older than the role caps and its meaning moved
- * with them: it no longer reads "the target every role cap ratchets down to" —
- * that ratchet is in ROLE_CAPS now, pinned to each role's measured high-water
- * mark. It reads: raising this number would retire, silently and in one edit,
- * every justification that exists only because a role stands above it. The
- * number is a historical fact about what `origin/main` ships, and a fact is not
- * raised. Lowering it is meaningless for the same reason.
+ * That duty is about the role's AUDIENCE, not about the size of anybody's prose:
+ * it is discharged by writing a reason, never by cutting text, and it can only
+ * change when `RULE_BASELINE` is re-cut after a cleanup. That is exactly when the
+ * question "what does this fleet cost, and who pays the extra?" is worth asking
+ * again, so the duty survived the ratchet on its own merits.
+ *
+ * NEVER RAISE THIS. Raising it would retire, silently and in one edit, every
+ * justification that exists only because a role stands above it. The number is a
+ * historical fact about what `origin/main` ships, and a fact is not raised.
+ * Lowering it is meaningless for the same reason.
  */
 const RELEASE_CAP = 105_354;
 
 /**
- * How the whole-fleet number moved, cut by cut. Kept because each line names
- * which cut produced which figure; the fleet-wide ceiling it used to annotate
- * became six role caps below on 2026-08-05, once the agents stopped carrying
- * the same load and a single number stopped being an honest measure of any of
- * them.
+ * The head-room every role gets above its floor before the run says a cleanup is
+ * due. Derived from four days of replayed history rather than chosen — see
+ * `WHERE THE THRESHOLD COMES FROM` in the header for the measurement and the four
+ * properties this figure was picked for.
+ *
+ * Exceeding it fails NOTHING. It prints a report naming the files that grew.
+ */
+const GROWTH_BUDGET = 12_000;
+
+/**
+ * The one number that still blocks: the per-agent load the fleet actually stood
+ * at on 2026-08-04, before the cut brought it down. An agent at or above it fails
+ * the suite.
+ *
+ * It is not a budget and must never be treated as one — the budget is 12 000
+ * bytes above a role's floor, and by the time an agent is anywhere near this
+ * ceiling the report has been asking for a cleanup for weeks. This is the
+ * backstop for the failure mode that produced this file in the first place: a
+ * fleet that drifted from 87 387 to 145 144 in four days with nothing asserting
+ * the number. Like RELEASE_CAP it is a historical fact and is not raised.
+ */
+const DRIFT_CEILING = 145_144;
+
+/**
+ * THE REFERENCE the budget measures growth from: every rule file the sixteen
+ * agents load, at the size it had after the last cleanup. A role's FLOOR is these
+ * numbers summed over the files that role actually loads, so the floor and the
+ * per-file breakdown in the report are one fact rather than two that can disagree.
+ *
+ * Hand-edited, and only at a cleanup — see `## Re-baselining after a cleanup`. A
+ * file the emission carries but this map does not (a newly added always-on rule)
+ * counts as growth in full, which is correct: nobody granted it a budget. A file
+ * this map carries that the emission dropped is simply not measured.
+ *
+ * Note what a role's floor does NOT track: an audience change. When an agent
+ * gains a rule file, that role's floor rises by the file's baseline size and the
+ * role keeps its full head-room. That is deliberate — the budget measures TEXT
+ * GROWTH, while an audience change is governed by the golden (hard) and by the
+ * justification duty (hard).
+ *
+ * The figures below are the 2026-08-05 post-cut sizes, at v5.9.1. How the
+ * whole-fleet number moved to get here, cut by cut — kept because each line names
+ * which cut produced which figure:
  *
  *   150 817 — 2026-08-05, at plan step 1. Introduced. The six design-diagram
  *             agents (analyst, conceptrev, investigator, planner, shaper,
@@ -233,35 +317,44 @@ const RELEASE_CAP = 105_354;
  *             21 897 -> 21 870 (three agents). Every role drops 17; the
  *             guard-internals role drops 44.
  */
-interface RoleCap {
+const RULE_BASELINE: Record<string, number> = {
+  // The universal core — text all sixteen agents apply. 89 896 bytes.
+  "agent-setup.md": 2_792,
+  "fusion-workbench-conventions.md": 34_671,
+  "decision-record-examples.md": 4_191,
+  "user-facing-output.md": 16_683,
+  "critical-stance.md": 5_317,
+  "git-branch-discipline.md": 6_299,
+  "protected-path-discipline.md": 19_943,
+  // Role-specific, each loaded by a derived audience rather than a named list.
+  "design-diagrams.md": 5_673,
+  "circle-records.md": 9_302,
+  "workbench-stash-and-lock.md": 9_250,
+  "protected-path-internals.md": 21_870,
+};
+
+interface Role {
   /**
-   * The role's high-water mark, in bytes — a ratchet. It may only ever be
-   * LOWERED. A cap above RELEASE_CAP does not block the release by itself; it
-   * blocks it unless `overRelease` says why, which is what lets a role ship
-   * above the baseline as a recorded decision instead of as an accident.
-   *
-   * Deliberately a literal here and NOT derived from the golden: deriving it
-   * would let a regenerated golden raise a cap silently, which is the one thing
-   * the caps exist to prevent.
-   */
-  cap: number;
-  /**
-   * Why this role stands above RELEASE_CAP: which file causes the overage, and
-   * why this role applies that file. REQUIRED for every cap above the release
-   * cap, and asserted to name each of the role's extra files by filename, so a
-   * later cut cannot leave the reason pointing at a file the role no longer
-   * loads. Omitted below the release cap, where a cap costs a consuming project
-   * nothing and has nothing to justify.
+   * Why this role's floor stands above RELEASE_CAP: which file carries the
+   * overage, and why this role applies that file. REQUIRED for every floor above
+   * the release cap, and asserted to name each of the role's extra files by
+   * filename, so a later cut cannot leave the reason pointing at a file the role
+   * no longer loads. Omitted below the release cap, where the role costs a
+   * consuming project nothing and has nothing to justify.
    */
   overRelease?: string;
 }
 
 /**
- * One cap per ROLE, where a role is the sorted set of rule files an agent loads
+ * One entry per ROLE, where a role is the sorted set of rule files an agent loads
  * that not all sixteen agents load — see `HOW A ROLE IS DERIVED` in the header.
  * The key is that set, rendered by `roleKey()`. No agent is named as a key, and
- * membership is never written down: it is measured, and the failure messages
- * print it.
+ * membership is never written down: it is measured, and the messages print it.
+ *
+ * The entries carry no number. A role's floor is `RULE_BASELINE` summed over the
+ * files that role loads, so a role can neither be granted head-room by hand nor
+ * left pointing at a figure the emission moved away from. The comments below say
+ * what each role buys and why; the arithmetic is the map's.
  *
  * Six roles as of 2026-08-05, the first four of them below RELEASE_CAP:
  *
@@ -272,20 +365,20 @@ interface RoleCap {
  *  108 448  circle-records.md + workbench-stash-and-lock.md 1 agent
  *  111 766  protected-path-internals.md                    3 agents
  */
-const ROLE_CAPS: Record<string, RoleCap> = {
+const ROLES: Record<string, Role> = {
   /**
    * The plain agents: everything the framework asks of everyone, and nothing
    * else. This is the floor the other five roles are measured against, and the
    * only number that says what the always-on set actually costs.
    */
-  "(core only)": { cap: 89_896 },
+  "(core only)": {},
 
   /**
    * The design-diagram producers and the evaluator that judges their output.
    * They pay 5 673 for the shared Mermaid rubric so that producer and reviewer
    * hold one definition of "coherent".
    */
-  "design-diagrams.md": { cap: 95_569 },
+  "design-diagrams.md": {},
 
   /**
    * Ranks Circles without producing design diagrams. Pays 9 302 for the Circle
@@ -299,15 +392,15 @@ const ROLE_CAPS: Record<string, RoleCap> = {
    * naming a Circle-scoped `fusion-paths` key, and a proposal has to be written
    * in the same vocabulary as the transition it proposes.
    */
-  "circle-records.md": { cap: 99_198 },
+  "circle-records.md": {},
 
   /**
    * Turns a Directive into a Circle record and draws the design diagram that
-   * goes in it, so it pays for both files. 483 bytes under the release cap:
-   * this role has no head-room to spend and the next always-on byte pushes it
-   * over.
+   * goes in it, so it pays for both files. 483 bytes under the release cap, so
+   * it is the role that will cross the baseline first and owe a reason for it at
+   * the next re-baseline.
    */
-  "circle-records.md + design-diagrams.md": { cap: 104_871 },
+  "circle-records.md + design-diagrams.md": {},
 
   /**
    * OVER THE RELEASE CAP by 3 094 bytes.
@@ -330,7 +423,6 @@ const ROLE_CAPS: Record<string, RoleCap> = {
    * the core, where every remaining byte is text all sixteen agents apply.
    */
   "circle-records.md + workbench-stash-and-lock.md": {
-    cap: 108_448,
     overRelease:
       "circle-records.md (9 302) carries the Circle state vocabulary and the record " +
       "template, and this role is the one that writes the `_a_ -> _t_` and `_t_ -> _c_` " +
@@ -352,11 +444,10 @@ const ROLE_CAPS: Record<string, RoleCap> = {
    * line.
    *
    * The overage belongs to the step-2 split, not to any later cut: bringing
-   * this role under the cap means revisiting a file that split produced, not
-   * shaving the core the other roles share.
+   * this role under the baseline means revisiting a file that split produced,
+   * not shaving the core the other roles share.
    */
   "protected-path-internals.md": {
-    cap: 111_766,
     overRelease:
       "protected-path-internals.md (21 870) is the classifier reference — verb tables, " +
       "command-word resolution, clustered short flags, git's own working directory, the " +
@@ -372,6 +463,20 @@ const ROLE_CAPS: Record<string, RoleCap> = {
  */
 function roleKey(extras: string[]): string {
   return extras.length === 0 ? "(core only)" : [...extras].sort().join(" + ");
+}
+
+/**
+ * What this emission weighed at the last cleanup: the baseline sizes of exactly
+ * the files it carries. A file with no baseline entry contributes 0, so its whole
+ * current size shows up as growth.
+ */
+function floorOf(e: Emission): number {
+  return e.files.reduce((n, f) => n + (RULE_BASELINE[f.rel] ?? 0), 0);
+}
+
+/** Digit grouping with a space, so the report reads like the byte counts above. */
+function fmt(n: number): string {
+  return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
 /** The files every one of the sixteen agents loads — the intersection. */
@@ -454,8 +559,8 @@ const GOLDEN_HEADER = [
   "#   cd hooks && UPDATE_RULES_GOLDEN=1 npx vitest run lib/__tests__/rules-emission-golden.test.ts",
   "#",
   "# That run rewrites this file and then fails on purpose, so the flag can",
-  "# never be left on in a green run. Review the diff, then bring the affected",
-  "# role's cap in ROLE_CAPS (rules-emission-golden.test.ts) to its new figure.",
+  "# never be left on in a green run. Reviewing the diff is the whole obligation:",
+  "# growth is allowed here, and the budget report says when a cleanup is due.",
   "#",
   "# One block per agent: the files bin/fusion-rules emits under <plugin>/rules,",
   "# in emission order, each with its byte size, then the agent's total. Paths",
@@ -520,8 +625,8 @@ describe("rules emission golden", () => {
       `The golden at ${relative(pluginRoot, goldenPath)} has been REWRITTEN from live ` +
         `measurement. This failure is deliberate — it stops a regeneration run from ` +
         `ever being green. Now: (1) read the fixture diff and confirm every change is ` +
-        `one your cut intended, (2) bring the affected role's cap in ROLE_CAPS to its ` +
-        `new figure, (3) re-run without UPDATE_RULES_GOLDEN.`,
+        `one you intended, (2) re-run without UPDATE_RULES_GOLDEN. Nothing else has ` +
+        `to move: RULE_BASELINE is re-cut only after a cleanup, not after a change.`,
     ).toBe(false);
   });
 
@@ -573,132 +678,156 @@ describe("rules emission golden", () => {
         "emitting an always-on set, or a run failed and returned nothing.",
     ).toBeGreaterThan(0);
 
-    const unknown = [...roles.keys()].filter((k) => !(k in ROLE_CAPS));
+    const unknown = [...roles.keys()].filter((k) => !(k in ROLES));
     expect(
       unknown.map((k) => `${k} <- ${roles.get(k)!.join(", ")}`),
-      "A role appeared that ROLE_CAPS has no entry for. A role is the set of rule " +
-        "files an agent loads that not all sixteen load, so this means an audience in " +
-        "bin/fusion-rules changed. Add an entry keyed by that file set, with the cap " +
-        "set to the role's measured total — and if that total is above " +
-        `${RELEASE_CAP}, with the reason it is.`,
+      "A role appeared that ROLES has no entry for. A role is the set of rule files " +
+        "an agent loads that not all sixteen load, so this means an audience in " +
+        "bin/fusion-rules changed. Add an entry keyed by that file set, saying what " +
+        "the role buys and why — and if its floor is above " +
+        `${RELEASE_CAP}, an \`overRelease\` naming the file that carries the overage.`,
     ).toEqual([]);
 
-    const stale = Object.keys(ROLE_CAPS).filter((k) => !roles.has(k));
+    const stale = Object.keys(ROLES).filter((k) => !roles.has(k));
     expect(
       stale,
-      "ROLE_CAPS carries an entry no agent matches any more. The cut that removed the " +
-        "role should have removed its cap in the same commit; a cap nothing is " +
-        "measured against is a number that looks like a guarantee and is not one.",
+      "ROLES carries an entry no agent matches any more. The cut that removed the " +
+        "role should have removed its entry in the same commit; an entry nothing is " +
+        "measured against is a claim about the fleet that nothing checks.",
     ).toEqual([]);
   });
 
-  it("keeps every agent under its role's cap", () => {
-    const over: string[] = [];
-    for (const [key, members] of roles) {
-      const entry = ROLE_CAPS[key];
-      if (!entry) continue; // reported by the role-coverage test above
-      for (const a of members) {
-        const total = measured.get(a)!.total;
-        if (total > entry.cap) over.push(`${a}=${total} (role '${key}', cap ${entry.cap})`);
-      }
+  it("reports, without failing, when a role's rule text is due for a cleanup", () => {
+    // The instrument this file exists for, and the one thing here that does NOT
+    // fail. Growth is allowed; the report says when it has accumulated enough to
+    // be worth a pass, and names the files, because a total on its own is a
+    // number nobody can act on.
+    const lines: string[] = [];
+
+    // Worst overage first: when the growth is in the shared core every role is
+    // over at once, and the one furthest past its budget is the one to act on.
+    const byOverage = [...roles].sort(
+      ([, a], [, b]) =>
+        measured.get(b[0])!.total -
+        floorOf(measured.get(b[0])!) -
+        (measured.get(a[0])!.total - floorOf(measured.get(a[0])!)),
+    );
+
+    for (const [key, members] of byOverage) {
+      // Every member of a role loads the same files, so one is enough.
+      const e = measured.get(members[0])!;
+      const floor = floorOf(e);
+      const budget = floor + GROWTH_BUDGET;
+      if (e.total <= budget) continue;
+
+      const grown = e.files
+        .map((f) => ({ rel: f.rel, delta: f.bytes - (RULE_BASELINE[f.rel] ?? 0) }))
+        .filter((g) => g.delta > 0)
+        .sort((a, b) => b.delta - a.delta);
+      const width = Math.max(...grown.map((g) => g.rel.length));
+
+      lines.push(
+        `role '${key}' — ${members.join(", ")}`,
+        `  ${fmt(e.total)} bytes, budget ${fmt(budget)} ` +
+          `(floor ${fmt(floor)} + ${fmt(GROWTH_BUDGET)})`,
+        "grown since the last cut:",
+        ...grown.map((g) => `  ${g.rel.padEnd(width)}  +${fmt(g.delta)}`),
+        "",
+      );
     }
-    expect(
-      over,
-      "Rule text grew past a role's cap. This is the net that catches an always-on " +
-        "rule file appearing in no golden line at all. Regenerating the golden will " +
-        "NOT clear it: raising a cap is a hand edit in " +
-        "hooks/lib/__tests__/rules-emission-golden.test.ts, and the plan's answer is " +
-        "that a cap may only ever be lowered.",
-    ).toEqual([]);
-  });
 
-  it("pins every role cap to that role's high-water mark", () => {
-    const drifted: string[] = [];
-    for (const [key, members] of roles) {
-      const entry = ROLE_CAPS[key];
-      if (!entry) continue;
-      const highWater = Math.max(...members.map((a) => measured.get(a)!.total));
-      if (entry.cap !== highWater) {
-        drifted.push(`'${key}': cap ${entry.cap}, measured ${highWater} (${members.join(", ")})`);
-      }
+    if (lines.length > 0) {
+      console.warn(
+        [
+          "",
+          "─".repeat(78),
+          "RULE-TEXT BUDGET — a cleanup is due. This does not fail the suite.",
+          "",
+          ...lines,
+          "-> cut where the growth is, then re-baseline RULE_BASELINE in",
+          "   hooks/lib/__tests__/rules-emission-golden.test.ts from the regenerated",
+          "   golden. Until then this report stands; it is not a blocker.",
+          "─".repeat(78),
+          "",
+        ].join("\n"),
+      );
     }
-    expect(
-      drifted,
-      "A role cap no longer equals that role's highest measured total. This is the " +
-        "hand edit the ratchet is designed to force: a regenerated golden cannot move " +
-        "a cap on its own. Set the cap to the measured figure and say in the comment " +
-        "beside it which cut did it.",
-    ).toEqual([]);
+
+    // Asserted so the test is not a no-op that could silently stop running: it
+    // proves the report was COMPUTED, never that it was empty.
+    expect(roles.size).toBeGreaterThan(0);
   });
 
-  it("justifies in this source every role cap that stands above the release cap", () => {
+  it("justifies in this source every role whose floor stands above the release cap", () => {
     const unjustified: string[] = [];
     const unanchored: string[] = [];
 
-    for (const [key, entry] of Object.entries(ROLE_CAPS)) {
-      if (entry.cap <= RELEASE_CAP) continue;
+    for (const [key, members] of roles) {
+      const entry = ROLES[key];
+      if (!entry) continue; // reported by the role-coverage test above
+      const floor = floorOf(measured.get(members[0])!);
+      if (floor <= RELEASE_CAP) continue;
+
       const reason = entry.overRelease?.trim() ?? "";
       if (reason.length === 0) {
-        unjustified.push(`'${key}' (cap ${entry.cap}, ${entry.cap - RELEASE_CAP} over)`);
+        unjustified.push(`'${key}' (floor ${floor}, ${floor - RELEASE_CAP} over)`);
         continue;
       }
-      // The reason has to name the files that cause the overage, or it is prose
-      // that survives the cut that made it wrong.
-      const missing = key.split(" + ").filter((f) => !reason.includes(f));
+      // The reason has to name the files that carry the overage, or it is prose
+      // that survives the cut which made it wrong. A role with no extra files has
+      // none to name — its overage is the shared core, which is the fleet's to
+      // answer for and not this role's.
+      const extras = key === "(core only)" ? [] : key.split(" + ");
+      const missing = extras.filter((f) => !reason.includes(f));
       if (missing.length > 0) unanchored.push(`'${key}' does not mention ${missing.join(", ")}`);
     }
 
     expect(
       unjustified,
-      `A role cap stands above the release cap of ${RELEASE_CAP} bytes with no reason ` +
-        "recorded next to it. Every consuming project pays that overage on every " +
-        "dispatch. Give the entry an `overRelease` naming the file that causes it and " +
-        "why that role applies it — a cap without a reason is a number the next growth " +
-        "raises quietly, which is what the ratchet exists to stop.",
+      `A role's floor stands above the release baseline of ${RELEASE_CAP} bytes with no ` +
+        "reason recorded next to it. Every consuming project pays that overage on every " +
+        "dispatch. Give the entry an `overRelease` naming the file that carries it and " +
+        "why that role applies it. This asks for PROSE, never for a cut: the floor only " +
+        "moves when RULE_BASELINE is re-cut, which is exactly the moment to say again " +
+        "what this fleet costs and who pays the extra.",
     ).toEqual([]);
 
     expect(
       unanchored,
-      "A role's over-the-cap reason does not name the rule files the role loads. The " +
-        "reason has to name them, so that a cut which moves a file leaves the reason " +
+      "A role's over-the-baseline reason does not name the rule files the role loads. " +
+        "The reason has to name them, so that a cut which moves a file leaves the reason " +
         "visibly wrong instead of quietly stale.",
     ).toEqual([]);
   });
 
-  it("gates the release on the role caps, each read against the release baseline", () => {
+  it("gates the release on the drift ceiling the fleet once reached", () => {
     const manifest = JSON.parse(
       readFileSync(join(pluginRoot, ".claude-plugin", "plugin.json"), "utf-8"),
     ) as { version: string };
 
-    // The gate reads ROLE_CAPS — the same source the two assertions above read —
-    // rather than one number for all sixteen. That is what makes it survive a
-    // cut: a role that moves moves the gate with it, and a role that appears
-    // fails the coverage test rather than slipping past a fleet-wide ceiling.
+    // The last blocking number, and deliberately a distant one. Until 2026-08-05
+    // this gate read the role caps, so it failed a release for a single byte of
+    // growth — which is the ratchet the user took out, not a release policy. A
+    // gate that never blocks is not a gate either, so what stayed is the level
+    // the fleet ACTUALLY reached on 2026-08-04 before the cut: 145 144 bytes per
+    // agent, arrived at in four days with nothing asserting the number.
     //
-    // An agent ships when BOTH hold: its measured load is within its role's cap,
-    // and that cap is either inside the RELEASE_CAP baseline (so a consuming
-    // project pays no more than it already does) or above it with the reason
-    // recorded in `overRelease`. The second half is the one the version bump
-    // used to gate on with a single figure — the earlier design failed a release
-    // for standing above 105 354 at all, which after the per-role decision of
-    // 2026-08-05 states a rule the project no longer holds.
+    // Between the budget report and this ceiling there is a wide advisory zone,
+    // and that is the point. The report asks for a cleanup early and often; the
+    // ceiling only catches the case where every one of those reports was ignored
+    // all the way back to the worst state this project has been in.
     //
     // It binds at every version, not only past some literal: every run is a
     // potential release, and a version literal maintained by hand is exactly the
     // kind of second source this gate was rewritten to stop having.
     const blocking: string[] = [];
     for (const [key, members] of roles) {
-      const entry = ROLE_CAPS[key];
-      if (!entry) continue; // reported by the role-coverage test above
-      const justified = (entry.overRelease?.trim().length ?? 0) > 0;
       for (const a of members) {
         const total = measured.get(a)!.total;
-        if (total > entry.cap) {
-          blocking.push(`${a}=${total} exceeds its role cap ${entry.cap} (role '${key}')`);
-        } else if (total > RELEASE_CAP && !justified) {
+        if (total >= DRIFT_CEILING) {
           blocking.push(
-            `${a}=${total} is ${total - RELEASE_CAP} over the ${RELEASE_CAP} baseline ` +
-              `and role '${key}' records no reason`,
+            `${a} loads ${fmt(total)}, at or past the ${fmt(DRIFT_CEILING)} drift ` +
+              `ceiling (role '${key}', ${fmt(total - DRIFT_CEILING)} over)`,
           );
         }
       }
@@ -706,13 +835,12 @@ describe("rules emission golden", () => {
 
     expect(
       blocking,
-      `Version ${manifest.version} may not be released. A release may not hand a ` +
-        `consuming project more rule text than the ${RELEASE_CAP} bytes origin/main ` +
-        `already ships, UNLESS the role that carries the overage says in ROLE_CAPS ` +
-        `which file causes it and why that role applies it. The entries listed are ` +
-        `either past their own role's cap or above the baseline with nothing recorded. ` +
-        `Cut the rule text, or record the reason — raising RELEASE_CAP is not the ` +
-        `third option: it would retire every existing justification in one edit.`,
+      `Version ${manifest.version} may not be released. The rule text has drifted back ` +
+        `to ${fmt(DRIFT_CEILING)} bytes an agent — the level of 2026-08-04, before the cut. ` +
+        "The budget report will have been asking for a cleanup for weeks by now; this " +
+        "is the backstop for having ignored it. Cut the rule text and re-baseline " +
+        "RULE_BASELINE. Raising DRIFT_CEILING is not the third option: it is a " +
+        "historical fact about a state this project decided to leave.",
     ).toEqual([]);
   });
 });

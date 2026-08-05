@@ -5,8 +5,8 @@
 #   cd hooks && UPDATE_RULES_GOLDEN=1 npx vitest run lib/__tests__/rules-emission-golden.test.ts
 #
 # That run rewrites this file and then fails on purpose, so the flag can
-# never be left on in a green run. Review the diff, then bring the affected
-# role's cap in ROLE_CAPS (rules-emission-golden.test.ts) to its new figure.
+# never be left on in a green run. Reviewing the diff is the whole obligation:
+# growth is allowed here, and the budget report says when a cleanup is due.
 #
 # One block per agent: the files bin/fusion-rules emits under <plugin>/rules,
 # in emission order, each with its byte size, then the agent's total. Paths
