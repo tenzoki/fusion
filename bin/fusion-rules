@@ -338,6 +338,21 @@ if [ "$IS_GUARD_INTERNALS_AGENT" -eq 1 ]; then
   emit_if_exists "$PLUGIN_RULES_DIR/protected-path-internals.md"
 fi
 
+# 1e. The orchestrator additionally receives the two workbench protocols whose
+#     audience a mechanism bounds rather than a guess: the commit lock is taken
+#     by the orchestrator, and a stash is created and consumed by
+#     /fusion:circle-stash and /fusion:circle-pop — skills, which reach rule text
+#     by direct citation and which this helper never serves at all (it exits 2 on
+#     any non-agent name). The other fifteen agents keep pointer lines at both
+#     sites in fusion-workbench-conventions.md; the three that may commit
+#     directly carry the lock instruction inline in their own prompts.
+#
+#     A literal name test, not a flag: the audience is one agent, so a `case`
+#     block would state the same thing in five lines instead of one.
+if [ "$AGENT" = "orchestrator" ]; then
+  emit_if_exists "$PLUGIN_RULES_DIR/workbench-stash-and-lock.md"
+fi
+
 # 2. Domain patterns — plugin first, then fusion-agent-specific project rules,
 #    then project-wide rules in .claude/rules/. Order is read-order, not
 #    precedence: agents read every emitted path. Layered intentionally so a

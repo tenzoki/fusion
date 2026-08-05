@@ -243,7 +243,28 @@ Abgeleitete Erwartung, nicht geschätzt: nach Schritt 2 stehen 104 600 Byte, nac
 - **Falsifikat:** Ein Befund passt in keinen der drei Zweige. Dann ist die Regel unvollständig, und der Schnitt wäre willkürlich statt begründet. Zweites Falsifikat: nach Schritt 3 behauptet ein Satz in einer der beiden Dateien eine Deckung, die `260804-1332` widerlegt. Dann ist Zweig B nicht ausgeführt, sondern nur behauptet.
 - **Wirkung in unite cocreator:** Die dortigen Agenten lesen nach dem Release einen Regeltext, dessen Aussagen zum Verhalten des Hooks stimmen. Ohne Zweig B lesen sie eine Zusage, die `GIT_WORK_TREE` bricht, und die Folge ist genau die, gegen die die Datei geschrieben wurde: ein Agent, der dem Guard vertraut, wo er nicht trägt, oder einer, der ein Deny umgeht, weil der Text es nicht erklärt.
 
-### 4. `## Stashes` und `## Commit lock` aus der Konventionsdatei lösen
+### 4. `## Stashes` und `## Commit lock` aus der Konventionsdatei lösen [DONE]
+
+> **Ausgeführt 2026-08-05.** Beleg: `history/260805-0905-coder-step4-stash-and-lock-shard.md`.
+> **Erstes Falsifikat: nicht eingetreten.** Die Verkettung geht Byte für Byte auf.
+> **Zweites Falsifikat: eingetreten, in fünffacher Form.** Der Plan kannte eine Zitatstelle und
+> hielt ausdrücklich fest, `## Commit lock` werde nirgends genannt. Beides war falsch: fünf Zeilen
+> zeigten auf die Konventionsdatei — `agents/orchestrator.md:356` (Commit lock),
+> `skills/circle-stash/SKILL.md:14/220/365` und `skills/circle-pop/SKILL.md:146`. Alle fünf
+> umgelenkt; `circle-pop` und `orchestrator.md` standen nicht auf der Dateiliste dieses Schritts.
+> **Drittes Falsifikat: eingetreten.** Kein Nicht-Orchestrator-Agent liegt unter 96 500; der beste
+> steht bei 106 658, also 1 304 Byte über dem Release-Deckel.
+>
+> Byte pro Gruppe: 6 einfache 106 658, 6 Diagramm 112 331, `coder`/`coderev`/`bugfixer` 128 555,
+> Orchestrator 115 908. **Der Orchestrator steigt um 1 363** — er zahlt 9 250 für den Shard und
+> spart 7 887. Die hier projizierten 98 855 setzten voraus, dass er nur `## Commit lock` behält;
+> die Anweisung dieses Schritts gibt ihm eine Datei mit beiden Abschnitten. Alle anderen sparen
+> 7 887 statt 8 484: die Differenz ist der 597-Byte-Zeigerblock, den der Schritt selbst verlangt.
+> `CEILING` auf 128 555 **gesenkt**. Suite wieder grün: 1 543 Tests, 27 Dateien.
+>
+> Schritt 6 bleibt gesperrt. Was den Deckel noch trägt, sind die verbleibenden 51 416 Byte der
+> Konventionsdatei, und deren Partitionierung ist C9 Schritt 3 und steht ausdrücklich nicht in
+> diesem Plan.
 
 - **Executor:** coder
 - **Dateien:** `rules/fusion-workbench-conventions.md`, `rules/workbench-stash-and-lock.md` (neu), `bin/fusion-rules`, `skills/circle-stash/SKILL.md`

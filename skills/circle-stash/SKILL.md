@@ -11,7 +11,7 @@ The user invoked `/fusion:circle-stash [reason]`. This skill freezes the complet
 
 **A Circle is a directory, and capturing it captures its contents.** Its spec, plan, issues, decisions, history, reviews and analyses all live inside it (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`), so the capture is one move of one directory. There is no hunt through type directories for files the Circle happens to reference, and nothing the Circle owns is left behind where the urgent work could edit it.
 
-The shared store is the deliberate exception: it belongs to no Circle and is never captured (`rules/fusion-workbench-conventions.md` `## Stashes` → What stash does NOT touch). Step 4 surfaces this when the Circle's record cites a spec or plan that lives there.
+The shared store is the deliberate exception: it belongs to no Circle and is never captured (`rules/workbench-stash-and-lock.md` `## Stashes` → What stash does NOT touch). Step 4 surfaces this when the Circle's record cites a spec or plan that lives there.
 
 The skill writes nothing outside the stash directory, the workbench root files it relocates, and a single `circle_stashed` event line. Every mutation is gated by an explicit user confirmation in Step 6.
 
@@ -217,7 +217,7 @@ Nothing else is collected. Everything the Circle owns is inside the Circle direc
 
 ### 7.3 — Append `## Stashed Circle` to the session history file (best-effort)
 
-This runs **before** the Circle moves, because the session's history file lives inside the Circle and travels with it (`rules/fusion-workbench-conventions.md` `## Stashes` → What stash does NOT touch). Appending after the move would either miss the file or write into the stash.
+This runs **before** the Circle moves, because the session's history file lives inside the Circle and travels with it (`rules/workbench-stash-and-lock.md` `## Stashes` → What stash does NOT touch). Appending after the move would either miss the file or write into the stash.
 
 The path is recorded in `agentstate.yaml.session.history_file`; if that is absent or does not resolve, fall back to the newest orchestrator-session log across the stores `$SCAN_HISTORY` names. If neither is found, skip silently — the manifest's `has_agentstate: false` already records the no-session case.
 
@@ -362,7 +362,7 @@ if [ "$HAS_AGENTSTATE" = true ]; then AGENTSTATE_FIELD="true"; else AGENTSTATE_F
 } > "$STASH_DIR/manifest.yaml"
 ```
 
-The schema is defined in `rules/fusion-workbench-conventions.md` `## Stashes` → Manifest schema; the fields above are that list, in that order. Field semantics:
+The schema is defined in `rules/workbench-stash-and-lock.md` `## Stashes` → Manifest schema; the fields above are that list, in that order. Field semantics:
 
 | Field | Type | When | Notes |
 |---|---|---|---|

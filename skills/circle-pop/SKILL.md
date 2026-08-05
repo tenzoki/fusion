@@ -143,7 +143,7 @@ HAS_AGENTSTATE="$(grep -E '^has_agentstate:' "$STASH_DIR/manifest.yaml" | head -
 STASH_HEAD="$(grep -E '^head_short_hash:' "$STASH_DIR/manifest.yaml" | head -1 | sed -E 's/^head_short_hash:[[:space:]]*"?([^"[:space:]]*)"?.*/\1/')"
 ```
 
-Any other field in the manifest is ignored, `has_spec_plan` included. Stashes written before the container layout carry it; reading a field this skill has no use for is not an error, and pop must not choke on its presence. The schema is defined in `rules/fusion-workbench-conventions.md` `## Stashes` → Manifest schema.
+Any other field in the manifest is ignored, `has_spec_plan` included. Stashes written before the container layout carry it; reading a field this skill has no use for is not an error, and pop must not choke on its presence. The schema is defined in `rules/workbench-stash-and-lock.md` `## Stashes` → Manifest schema.
 
 **Shape check.** A stash written before the container layout holds a flat `circle.md` and no `circle/` directory. Its Circle was a loose file, its spec and plan were copies of files that still live in the shared store after migration, and reconstructing a Circle directory out of that would mean guessing which of those copies belong inside it. Pop does not guess:
 

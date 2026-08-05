@@ -135,8 +135,27 @@ const RELEASE_CAP = 105_354;
  *             removes a further 8 484 from every agent, which clears the cap for
  *             the seven plain agents alone. The other nine need a fourth cut that
  *             does not exist in the plan.
+ *   128 555 — 2026-08-05, at plan step 4. `## Stashes` and `## Commit lock` left
+ *             `fusion-workbench-conventions.md` (59 303 -> 51 416) for
+ *             `workbench-stash-and-lock.md`, emitted to `orchestrator` alone
+ *             because a mechanism bounds that audience: skills are never served
+ *             by `bin/fusion-rules`, and the lock is the orchestrator's to take.
+ *             Every agent drops 7 887 — the 8 484 the sections weighed, less the
+ *             597-byte pointer block the plan requires at both sites. The
+ *             orchestrator alone RISES, 114 545 -> 115 908: it pays the 9 250 of
+ *             the new file (the sections plus a 766-byte provenance header) to
+ *             save 7 887. The high-water mark stays the three guard-internals
+ *             agents at 128 555; the six plain agents stand at 106 658 and the
+ *             six diagram agents at 112 331.
+ *
+ *             STILL OVER THE CAP, and the shortfall is now the whole story: the
+ *             best-off agent is 1 304 bytes above RELEASE_CAP and the worst is
+ *             23 201 above. The plan's step-4 target (96 500) was unreachable
+ *             from the step-3 position before this step began. What is left is
+ *             the cut the plan explicitly excludes — partitioning the remaining
+ *             51 416 bytes of `fusion-workbench-conventions.md` (C9 step 3).
  */
-const CEILING = 131_685;
+const CEILING = 128_555;
 
 /**
  * The plugin version at which the release cap is not yet due. The plan bumps
