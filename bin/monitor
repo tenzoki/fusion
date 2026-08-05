@@ -1145,9 +1145,25 @@ class ReuseServer(http.server.ThreadingHTTPServer):
             pass
         super().server_bind()
 
-server = ReuseServer(("127.0.0.1", PORT), Handler)
+server = ReuseServer(("0.0.0.0", PORT), Handler)
+
+# Best-effort LAN address for the printed URL only — the server answers on all
+# interfaces either way, and failure to detect an address must never be fatal.
+lan_host = None
+try:
+    lan_host = subprocess.check_output(["ipconfig", "getifaddr", "en0"], stderr=subprocess.DEVNULL).decode().strip()
+except Exception:
+    pass
+if not lan_host:
+    try:
+        lan_host = socket.gethostname()
+    except Exception:
+        lan_host = None
+
 print(f"\n  {MONITOR_NAME} — Orchestrator Monitor")
-print(f"  http://localhost:{PORT}")
+print(f"  Local: http://localhost:{PORT}")
+if lan_host:
+    print(f"  LAN:   http://{lan_host}:{PORT}")
 print(f"  Watching: {BASE_DIR}")
 print(f"  Polling every {INTERVAL}s | Showing last {MAX_EVENTS} events")
 print(f"  Press Ctrl+C to stop\n")
