@@ -75,6 +75,10 @@ export const WRAPPER_PROGRAMS = {
     doas: { valueFlags: ["-u", "-C"] },
     env: { valueFlags: ["-u", "-C", "-S"] },
     command: {},
+    // `builtin cd rules` was in no table at all, so nothing in either classifier
+    // saw through it and `builtin rm rules/x.md` read as the unrecognised program
+    // `builtin`. Its own flag grammar is empty.
+    builtin: {},
     // `exec` REPLACES the shell with the command that follows, so its words are
     // that command's words exactly as `sudo`'s are. `-a NAME` is its one
     // value-taking flag (`-c` and `-l` take none). A bare `exec > file` runs no
@@ -164,6 +168,10 @@ function skipWrapper(spec, args) {
  */
 export function resolveInvocation(words, literals) {
     let rest = words;
+    // Set by the first hop and never cleared: a wrapper stands between the shell
+    // and the command word, so the command word is not what the shell resolved.
+    // See `Invocation.reachesBuiltin`.
+    let viaWrapper = false;
     for (let hop = 0; hop <= words.length; hop++) {
         const cmdIdx = findCommandWord(rest);
         if (cmdIdx === -1)
@@ -173,8 +181,12 @@ export function resolveInvocation(words, literals) {
         const name = programName(raw);
         const args = rest.slice(cmdIdx + 1);
         const wrapper = row(WRAPPER_PROGRAMS, name);
-        if (wrapper === undefined)
-            return { name, args };
+        if (wrapper === undefined) {
+            // `raw`, not `name`: `programName` has already thrown the path away, and
+            // the path is the whole question. See `Invocation.reachesBuiltin`.
+            return { name, args, reachesBuiltin: !viaWrapper && !raw.includes("/") };
+        }
+        viaWrapper = true;
         rest = skipWrapper(wrapper, args);
     }
     return null;

@@ -39,12 +39,13 @@
  *
  * ## PURE, and the environment is a parameter
  *
- * Nothing here reads `process.env`, touches the filesystem, or caches. Both the
- * environment and the filesystem arrive as arguments — the environment as a
- * `ProcessEnv`, the filesystem as an `FsLocator` — so every case is testable
- * in-process, without a subprocess and without mutating ambient state that a
- * neighbouring case would then read. `guard.ts` supplies the real adapters, the
- * same way it supplies `CheckoutResolver` to the git classifier.
+ * Nothing here reads `process.env`, touches the filesystem, loads a
+ * configuration, or caches. The environment arrives as a `ProcessEnv`, the
+ * filesystem as an `FsLocator`, and the project's own declared protected entries
+ * as a plain list of globs — so every case is testable in-process, without a
+ * subprocess and without mutating ambient state that a neighbouring case would
+ * then read. `guard.ts` supplies all three, the same way it supplies
+ * `CheckoutResolver` to the git classifier.
  *
  * ## Gate 0 — a `..` anywhere in the SPELLING refuses the grant outright
  *
@@ -105,6 +106,25 @@
  *      This is what makes `rules/` and `rules/../agents/coder.md` non-exempt.
  *   2. FILESYSTEM. The path, resolved through the real filesystem, must still
  *      land strictly inside a real rule directory — and must not be a hard link.
+ *
+ * ## Gate 1b — the project's own declared entry outranks the flag
+ *
+ * `RULE_DIR_PATTERNS` says what the flag reaches in fusion's words. Since the
+ * C5b loader shipped, a project can also say what it wants protected, and
+ * decision `260803-1314` settled whose word wins: the project's. An entry a
+ * project added by hand to its own `fusion-guard.json` — `rules/immutable/**`
+ * is the record's example — refuses the grant for the paths it names, and the
+ * two default rule patterns keep working exactly as they did.
+ *
+ * Two consequences follow, and both are the reason the rule is a rule rather
+ * than a special case. A project that declares `rules/**` FOR ITSELF has the
+ * flag stop reaching `rules/` entirely, because it declared exactly that; and
+ * "declared" means supplied, never inherited — `projectProtectedMatch` carries
+ * that argument, and getting it wrong ends the exemption everywhere at once.
+ *
+ * The cost the decision record names and accepts: what the flag reaches is no
+ * longer answerable from the plugin alone. `rulesWriteRefusalNote` is what pays
+ * it back — a refusal here quotes the project entry that caused it.
  *
  * ### Gate 1 runs `canonicalise`; the protection check runs `collapseSegments`
  *
@@ -294,6 +314,42 @@ export interface FsLocator {
  */
 export declare function spellingWalksUp(spelledAs: string): boolean;
 /**
+ * Gate 1b — did this project DECLARE this path protected in its own
+ * `fusion-guard.json`? Returns the entry that names it, so the refusal can quote
+ * it back.
+ *
+ * Decision `260803-1314`, answered option 2 at the plan gate on 2026-08-04: an
+ * entry a project added by hand outranks a flag an agent set in a shell. The
+ * exempt set is therefore no longer answerable from the plugin alone, which is
+ * the cost the record names and accepts.
+ *
+ * ## `projectProtected` is what the project DECLARED, never what it inherited
+ *
+ * The caller supplies it, and the only correct source is
+ * `projectDeclaredProtectedPaths` in `config.ts`, which returns the entries only
+ * when `protectedPathsSource === "project"`. This is the trap in the whole
+ * change and it is worth stating where the subtraction happens rather than only
+ * where the list is built: after `260804-1630` an OMITTED `protectedPaths`
+ * inherits the plugin's list, and the plugin's list contains `rules/**`. A
+ * caller that handed over the EFFECTIVE list would end the exemption for every
+ * project on earth, silently, while every case in this file that does not name a
+ * project entry went on passing.
+ *
+ * ## Matched the way the PROTECTION side matches, not the way the grant does
+ *
+ * Case is folded, and a directory operand is retried with a trailing separator —
+ * both of them the conventions of `isProtected` in `bash-mutation-guard.ts` and
+ * of `matchesAnyFolded`, and neither of them gate 1's. The asymmetry that runs
+ * through this module decides it: a wider match here REFUSES more, so it is the
+ * safe direction, and the two spellings it buys are both real. Without the fold,
+ * a project declaring `rules/Immutable/**` loses its own entry to `RULES/…` on
+ * the case-insensitive filesystem where they are one file. Without the retry,
+ * `rm -rf rules/immutable` deletes the subtree a project declared immutable: the
+ * protection side matched it by retrying the trailing separator, and this side
+ * would have handed the grant to the bare directory name.
+ */
+export declare function projectProtectedMatch(canonical: string, projectProtected: readonly string[]): string | null;
+/**
  * Why the grant was refused — one value per gate that can refuse it.
  *
  * `not-a-rule-path` is the ordinary case and the only one with nothing to
@@ -306,6 +362,8 @@ export declare function spellingWalksUp(spelledAs: string): boolean;
 export type RulesWriteRefusal = 
 /** Gate 1: the canonical path is not inside any rule directory. */
 "not-a-rule-path"
+/** Gate 1b: the project's own configuration declares this path protected. */
+ | "project-protected"
 /** Gate 0: the spelling carries a `..` segment. */
  | "spelled-with-dotdot"
 /** Gate 2: the file already has a second name on this filesystem. */
@@ -328,16 +386,30 @@ export type RulesWriteRefusal =
  * collapsed the path first — which both real surfaces do — passes the
  * uncollapsed original, or gate 0 has nothing left to see.
  *
- * ORDER: gate 1's membership test runs first although it is numbered second.
- * Both it and gate 0 are pure text and both refuse, so which one is asked first
- * cannot change the verdict — only which refusal is reported, and reporting
- * "the flag does not cover `..`" about a path the flag would not cover anyway
- * points the reader at the wrong thing. Gate 0 still runs strictly above the
- * FILESYSTEM gate, which is the ordering that is load-bearing: a `..` spelling
- * must never reach a resolver that has already lost the component deciding
- * where it lands.
+ * `projectProtected` is the entries THIS PROJECT declared in its own
+ * `fusion-guard.json` — never the effective list, which after `260804-1630`
+ * inherits the plugin's `rules/**` for a project that declared nothing. See
+ * `projectProtectedMatch`. A project that declared none passes an empty list and
+ * gets the exemption exactly as it did before decision `260803-1314`.
+ *
+ * ORDER: gate 1's membership test runs first although it is numbered second, and
+ * gate 1b runs second although it is the newest. All three of gates 0, 1 and 1b
+ * are pure text and all three refuse, so which is asked first cannot change the
+ * verdict — only which refusal is reported, and each ordering choice is about
+ * pointing the reader at the cause they can act on:
+ *
+ *   - gate 1 above gate 0, because "the flag does not cover `..`" about a path
+ *     the flag would not cover anyway reads as an invitation to try again
+ *     without the `..`, which would deny too.
+ *   - gate 1b above gate 0, for the same reason one step further. A project
+ *     entry is the cause that does not go away, and gate 0's note is the one
+ *     note in this module that tells the reader to change the path.
+ *
+ * Gate 0 still runs strictly above the FILESYSTEM gate, which is the ordering
+ * that is load-bearing: a `..` spelling must never reach a resolver that has
+ * already lost the component deciding where it lands.
  */
-export declare function rulesWriteRefusal(path: string, fs: FsLocator, spelledAs: string): RulesWriteRefusal | null;
+export declare function rulesWriteRefusal(path: string, fs: FsLocator, spelledAs: string, projectProtected: readonly string[]): RulesWriteRefusal | null;
 /**
  * Is this a project rule path — a file inside `rules/` or `.claude/rules/`,
  * including inside `retired/`?
@@ -372,7 +444,7 @@ export declare function rulesWriteRefusal(path: string, fs: FsLocator, spelledAs
  * `.claude/rules/**` is not on the protected list at HEAD, so nothing there is
  * denied with or without the flag — see `RULE_DIR_PATTERNS`.)
  */
-export declare function isProjectRulePath(path: string, fs: FsLocator, spelledAs: string): boolean;
+export declare function isProjectRulePath(path: string, fs: FsLocator, spelledAs: string, projectProtected: readonly string[]): boolean;
 /**
  * The sentence a caller appends to its deny reason when the exemption was
  * active and refused this path — null when there is nothing useful to say.
@@ -382,7 +454,7 @@ export declare function isProjectRulePath(path: string, fs: FsLocator, spelledAs
  * everything true about it). Callers ask this ONLY when they are already
  * denying, so the extra filesystem work it costs is off the allow path.
  */
-export declare function rulesWriteRefusalNote(path: string, fs: FsLocator, spelledAs: string): string | null;
+export declare function rulesWriteRefusalNote(path: string, fs: FsLocator, spelledAs: string, projectProtected: readonly string[]): string | null;
 /**
  * One sentence per refusal, exported because the wording is the interface — it
  * is what an agent reads instead of guessing, and it is asserted in the tests
@@ -394,7 +466,22 @@ export declare function rulesWriteRefusalNote(path: string, fs: FsLocator, spell
  * so the note cannot be read as the workaround `protected-path-discipline.md`
  * is written against.
  */
-export declare const REFUSAL_NOTES: Readonly<Record<Exclude<RulesWriteRefusal, "not-a-rule-path">, string>>;
+export declare const REFUSAL_NOTES: Readonly<Record<Exclude<RulesWriteRefusal, "not-a-rule-path" | "project-protected">, string>>;
+/**
+ * The sentence for the one refusal whose cause is the project's own file.
+ *
+ * A function rather than a table entry because it QUOTES THE ENTRY. That is the
+ * whole obligation decision `260803-1314` puts on this message: a curator who
+ * meets the deny has to be able to see that a human decision is refusing them,
+ * and which line of which file made it. Without the entry the deny is
+ * indistinguishable from the flag being broken, which is the failure this Turn
+ * has already spent two findings on.
+ *
+ * It ends the way the hard-link and symlink notes end, because the situation is
+ * the same one: rewriting the path cannot help, and the person who can change
+ * the answer is the user.
+ */
+export declare function projectProtectedNote(pattern: string): string;
 /**
  * Did the user set `FUSION_ALLOW_RULES_WRITE`?
  *

@@ -85,6 +85,34 @@ export declare const ENV_ASSIGNMENT_RE: RegExp;
  * `eval 'rm x'` and meaningless for `eval "$cmd"`. Half a rule reads as a whole
  * one, so they stay documented residuals instead. Adding a wrapper is a row,
  * not a code path.
+ *
+ * ## No row here says anything about a SHELL BUILTIN, and the empty space is
+ * ## deliberate
+ *
+ * This table answers one question — which words are the wrapped command — and
+ * the answer is the same for every consumer. It briefly answered a second one,
+ * `runsBuiltins`: can this wrapper run a shell builtin in the CALLING shell, so
+ * that the directory model may follow a `cd` through it? Three rows were marked
+ * from a measurement, and the marking was a REGRESSION within the commit that
+ * wrote it (`issues/260803-2236_…runsbuiltins-is-asserted-about-a-name…`):
+ *
+ *   - `command cd sub` moves the shell in bash and is INERT in zsh, whose
+ *     `command` forces an external lookup — and zsh is what the Bash tool runs;
+ *   - `time cd sub` moves the shell only as the bare reserved word. `\time`,
+ *     `'time'`, `"time"` and `/usr/bin/time` all select the external program,
+ *     which moves nothing — and those are exactly the spellings `resolveWord`
+ *     and `programName` are built to erase, because for a VERB `\rm` really is
+ *     `rm`.
+ *
+ * The fact is therefore not a property of the NAME this table is keyed on. It
+ * is a property of the spelling and of which shell is running, and this module
+ * can prove neither. Marking it wrong is not a safe over-deny: a modelled move
+ * relocates every later relative operand, so it denies when it moves the operand
+ * ONTO the protected list and ALLOWS when it moves it off.
+ *
+ * So the fact is gone, and `Invocation.reachesBuiltin` is now computed from what
+ * this module CAN see — see that field. Adding a wrapper stays one row, and the
+ * row cannot carry a claim about a shell.
  */
 export interface WrapperSpec {
     /** Short flags that consume the FOLLOWING token as their value. */
@@ -109,6 +137,38 @@ export interface Invocation {
     name: string;
     /** Everything after the command word, wrapper words already consumed. */
     args: string[];
+    /**
+     * If `name` is a SHELL BUILTIN, can this module prove the calling shell ran
+     * it as one? True on exactly two conditions, both readable from the segment
+     * text alone:
+     *
+     *   1. **No wrapper hop.** The segment names the program directly. A wrapper
+     *      in front of a builtin is a claim about the wrapper AND about the shell
+     *      — `command cd` moves bash and not zsh — and no such claim can be read
+     *      off the text (`issues/260803-2236_…`). So every hop answers false,
+     *      including `command` and `builtin`, whose whole purpose is to run one.
+     *   2. **No path separator in the command word.** `programName` maps
+     *      `/usr/bin/rm` to `rm` because for a VERB the two really are the same
+     *      program. For a builtin the erasure is backwards: a path names an
+     *      external file, and `/usr/bin/cd` is a real binary on macOS that changes
+     *      its own process's directory and exits, leaving the shell where it was.
+     *      Measured inert in bash 3.2 and zsh 5.9.
+     *
+     * QUOTING AND BACKSLASH ARE NOT A THIRD CONDITION, and the asymmetry with
+     * `time` is the whole reason the second condition is worded over the SLASH.
+     * `\cd`, `'cd'` and `"cd"` were measured moving the shell in both shells:
+     * quoting suppresses alias expansion and reserved-word recognition, and `cd`
+     * is neither — it is a builtin, and a builtin is still found. `time` IS a
+     * reserved word, which is why quoting demotes it to `/usr/bin/time`; it needs
+     * no clause here because condition 1 already answers false for it.
+     *
+     * Only the directory model in `bash-mutation-guard.ts` reads this, and it
+     * treats false as "give up on the whole directory state", never as "the shell
+     * stayed put". The verb classifier does not read it at all: every
+     * `MUTATION_VERBS` row is an external program, which every wrapper here runs
+     * perfectly well.
+     */
+    reachesBuiltin: boolean;
 }
 /**
  * Resolve a segment's words to the program they run, or null when they run

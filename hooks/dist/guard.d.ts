@@ -3,7 +3,11 @@
  *
  * Intercepts Write/Edit/MultiEdit tool calls and checks them against:
  *   1. Halt state — if active, block ALL writes
- *   2. Protected paths — unconditionally blocked
+ *   2. Protected paths — blocked, with one exemption: FUSION_ALLOW_RULES_WRITE
+ *      lets a write to a project rule path through, recorded as an advisory.
+ *      See lib/rules-write-exemption.ts. The match is TEXTUAL and
+ *      CASE-INSENSITIVE — unconditionally, on every platform, so the boundary
+ *      does not differ by filesystem. See lib/paths.ts `matchesAnyFolded`.
  *   3. Decision-governed categories — escalated based on sensitivity
  *
  * Also intercepts Bash tool calls, for two independent policies:
@@ -20,7 +24,10 @@
  *      guard.protectedPaths, the same list check 2 above applies to the write
  *      tools. See lib/bash-mutation-guard.ts. This IS a write-guard concern
  *      and therefore stands down in the plugin's own repo, exactly as the
- *      write tools do.
+ *      write tools do. It carries the SAME one exemption check 2 above does,
+ *      FUSION_ALLOW_RULES_WRITE, because mv/rm/sed -i/`>` reach the rule files
+ *      Edit reaches and a flag that lifted only one surface would control
+ *      neither.
  * The policies are INDEPENDENT in both directions: an env override that lifts
  * policy (a) for a git operation is not consent to policy (b), so a command
  * pairing an overridden branch switch with a protected-path write still denies

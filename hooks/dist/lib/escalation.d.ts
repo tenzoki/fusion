@@ -25,7 +25,12 @@ export interface EscalationState {
     lastBlockTimestamp: string | null;
     recentEvents: EscalationEvent[];
 }
-/** Load escalation state from disk. Returns empty state if missing or no workbench. */
+/**
+ * Load escalation state from disk. Returns the empty state when the file is
+ * missing, when there is no workbench, when the text does not parse, AND when
+ * it parses to something that is not an escalation state — see `coerceState`
+ * for why that last case is the one worth spelling out.
+ */
 export declare function loadEscalation(): EscalationState;
 /** Save escalation state to disk atomically. No-op if no workbench is set up. */
 export declare function saveEscalation(state: EscalationState): void;

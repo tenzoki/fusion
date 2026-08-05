@@ -79,11 +79,45 @@ export type QuotedMode = "blank" | "capture";
 export interface ParseOptions {
     quoted: QuotedMode;
 }
+/**
+ * The operator that joins a segment to the one before it AT ITS OWN NESTING
+ * LEVEL. `"start"` is the first segment of a level — nothing ran before it.
+ *
+ * The distinction a consumer buys with this is the one bash makes: after `&&`
+ * the previous segment is GUARANTEED to have succeeded, and after every other
+ * operator it is not. A classifier that models a `cd` may only carry the model
+ * across a `&&`; across `;`, `||`, `|`, `&` or a newline the shell runs the next
+ * segment from wherever it never left
+ * (`decisions/260803-2338_i_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`).
+ *
+ * Only `&&` is a guarantee, so a reader that wants one should test for `&&`
+ * rather than enumerate the others: a future operator added here is then
+ * unguaranteed by default, which is the fail-closed direction.
+ *
+ * Two precisions, both learned the hard way:
+ *
+ * 1. **A newline AFTER `&&` does not make the joiner `newline`.** Bash's
+ *    grammar is `and_or : and_or AND_AND newline_list pipeline`, so the
+ *    newlines sit inside the operator. An ordinary multi-line chain
+ *    (`cd hooks &&\n  npm run build &&\n  rm -rf dist`) carries `&&` on every
+ *    segment, exactly as its single-line form does. See the `flush` comment.
+ * 2. **`&&` guarantees the AND-OR LIST to its left, not the previous
+ *    SEGMENT.** A flat list evaluates left to right, so `A || B && C` is
+ *    `(A || B) && C` — reaching `C` proves the list returned zero and says
+ *    nothing about whether `B` ran. `|` does not reach past `&&` either, and a
+ *    pipeline element runs in a bash subshell. A consumer that reads this field
+ *    as "the previous segment ran" is wrong in both shapes; both are open and
+ *    argued in
+ *    `circles/260801-1244-guard-rules-write/decisions/260804-0947_o_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`.
+ */
+export type SegmentJoiner = "start" | "&&" | "||" | ";" | "|" | "&" | "newline";
 export interface ParsedSegment {
     /** The segment's text, trimmed. Carries placeholders in capture mode. */
     text: string;
     /** 0 = outer command, >= 1 = body of a `$(…)` / backtick subshell. */
     depth: number;
+    /** How this segment is joined to the previous one. See `SegmentJoiner`. */
+    joiner: SegmentJoiner;
 }
 export interface ParsedCommand {
     /** Segments in SOURCE ORDER (by their start offset in the command). */
@@ -153,10 +187,17 @@ export declare function tokenize(segment: string): string[];
  * Parse a Bash command string into ordered, depth-tagged segments.
  *
  * `quoted: "blank"` reproduces `extractCommandSegments(stripDataRegions(cmd))`
- * — the same segments, now in source order and carrying their subshell depth.
- * `quoted: "capture"` additionally hands back the single-quoted literals, so a
- * consumer can read a quoted path as a path, and leaves an unresolvable filler
- * where a lifted `$(…)` stood instead of a space (see the module docstring).
+ * — the same segments, now in source order and carrying their subshell depth
+ * and their JOINER. `quoted: "capture"` additionally hands back the
+ * single-quoted literals, so a consumer can read a quoted path as a path, and
+ * leaves an unresolvable filler where a lifted `$(…)` stood instead of a space
+ * (see the module docstring).
+ *
+ * The git classifier does not come through here — it consumes
+ * `extractCommandSegments(stripDataRegions(cmd))`, which is a separate function
+ * left byte-identical on purpose. So a field added to `ParsedSegment` reaches
+ * the mutation classifier and nothing else, and the equivalence test below the
+ * two still compares only what both produce: the segment TEXT.
  */
 export declare function parseCommand(command: string, options: ParseOptions): ParsedCommand;
 /**

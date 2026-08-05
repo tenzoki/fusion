@@ -98,7 +98,16 @@ async function main() {
         respond();
         return;
     }
-    // Load config for thresholds
+    // Load config for thresholds — the same two-source resolution the guard hook
+    // does, so a project's `fusion-guard.json` sets ITS churn and cross-file
+    // thresholds and not just the plugin's.
+    //
+    // `config.diagnostics` is deliberately ignored here. This is PostToolUse, and
+    // every tool call that reaches this line (a write tool, past the plugin-repo
+    // stand-down above) was inspected by the PreToolUse guard on the same call
+    // with the same two sources — so it already emitted one advisory per
+    // diagnostic. Emitting again would report one broken configuration file
+    // twice per tool call.
     const config = loadConfig();
     // Record the change in churn state
     const churn = loadChurn();
