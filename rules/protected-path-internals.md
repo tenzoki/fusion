@@ -10,7 +10,8 @@ write a command that does not trip the guard.
 
 The measured residual catalogue and the measured illustration set are the third layer,
 outside `rules/` entirely because they are evidence for a review rather than instruction
-for a behaviour: `fusion-workbench/circles/260801-1244-guard-rules-write/analyses/260805-0717-protected-path-forensics.md`.
+for a behaviour. They live in fusion's own development repository; no installation
+carries them.
 
 ## How the classifier reads a command
 

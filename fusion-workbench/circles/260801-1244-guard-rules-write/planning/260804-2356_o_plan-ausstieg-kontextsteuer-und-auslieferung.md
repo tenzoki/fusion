@@ -359,7 +359,40 @@ Abgeleitete Erwartung, nicht geschätzt: nach Schritt 2 stehen 104 600 Byte, nac
 - **Falsifikat:** Ein Build aus leerem `dist` erzeugt Dateien, die von den eingecheckten abweichen. Dann ist der Index weiterhin nicht reproduzierbar. Zweites Falsifikat: `hooks/dist` enthält nach dem Build ein `require` auf ein externes Modul. Der Installer setzt voraus, dass `dist` ohne `node_modules` lauffähig ist (CLAUDE.md, Abschnitt HTTPS-Installer).
 - **Wirkung in unite cocreator:** Ohne diesen Schritt erhält das Projekt einen Hook ohne Fallfaltung, ohne die Projektkonfiguration `fusion-guard.json` und ohne das `rules-write`-Exemption-Modul, zusammen mit Regeltext, der alles drei beschreibt. Die Auslieferung wäre dann keine Verbesserung, sondern eine ausgelieferte Falschaussage über das Schutzniveau.
 
-### 6. Version anheben, veröffentlichen, taggen
+### 6. Version anheben, veröffentlichen, taggen [VORBEREITET — NICHT AUSGEFÜHRT]
+
+> **Vorbereitet 2026-08-05.** Beleg: `history/260805-1200-coder-step6-release-vorbereitet.md`.
+> Push, Tag und Marketplace sind ausdrücklich beim Nutzer geblieben; nichts ist committet.
+>
+> **Die beiden Vor-Push-Zusicherungen halten.** `claude plugin validate .` besteht (eine
+> bekannte Warnung zu `CLAUDE.md` im Plugin-Root). Der Smoke-Test antwortet `SMOKE-OK`.
+>
+> **Die Hälfte des zweiten Falsifikats, die vor dem Push prüfbar ist, ist grün.** Gegen einen
+> simulierten Installationspfad — dieselbe Kopierliste wie `install.sh`, in ein
+> Wegwerfverzeichnis, `FUSION_PLUGIN_ROOT` darauf gerichtet — ergeben alle **sechzehn**
+> Emissionsmessungen exakt die Zahlen des Goldens: 89 913 (5) / 95 586 (5) / 99 215 / 104 888 /
+> 108 465 / 111 810 (3). `rules/` erreicht den Installationspfad mit 15 von 15 Dateien,
+> `hooks/dist` mit 36 von 36, das `+x`-Bit auf `bin/` bleibt, und kein Importspezifizierer in
+> `dist` ist etwas anderes als relativ oder `node:`. Der Zuschnitt kommt also an. Was offen
+> bleibt, ist der Lauf auf der konsumierenden Maschine nach `fusion --update`.
+>
+> **Der Schritt bleibt gesperrt, und zwar durch das Gate, das Schritt 1 dafür gebaut hat.**
+> Der Versionssprung auf `5.9.0` stellt `gates the version bump on the release cap` scharf
+> (`PRE_CUT_VERSION = "5.8.0"`): bei `5.8.0` verlangt der Test nur eine hinterlegte Begründung,
+> ab der ersten höheren Version blockiert er. Vier Agenten liegen über `RELEASE_CAP = 105 354` —
+> `orchestrator` 108 465, `coder`/`coderev`/`bugfixer` je 111 810. **Suite: 1 546 von 1 547
+> grün, genau diese eine Zusicherung rot.** Das Gate wurde nicht angehoben und nicht umgangen;
+> `RELEASE_CAP` trägt im Quelltext „NEVER RAISE THIS".
+>
+> Damit steht dieselbe Entscheidung an, die Schritt 4a schon dem Nutzer zugewiesen hat: den
+> Deckel für alle sechzehn erreichen (das heißt an `protected-path-internals.md` oder an die
+> immer-an-Dateien heran), oder die Schwelle bewusst als Rollendeckel neu fassen und das im
+> Quelltext begründen, oder mit rotem Gate ausliefern. Der Executor entscheidet das nicht.
+>
+> **Zwei Befunde nebenbei**, beide als Issue abgelegt, keiner behoben:
+> `260805-1145` (der Forensik-Zeiger in fünf ausgelieferten Stellen zeigt auf eine Datei,
+> die `install.sh` nie mitnimmt) und `260805-1150` (`README.md:26` nennt als Pin-Beispiel
+> `v5.3.0`, ein Tag, das nie existiert hat — es sind vier Versionsflächen, nicht drei).
 
 - **Executor:** coder
 - **Dateien:** `.claude-plugin/plugin.json`, `install.sh` (Kopfkommentar), das Marketplace-Repo `.claude-plugin/marketplace.json`

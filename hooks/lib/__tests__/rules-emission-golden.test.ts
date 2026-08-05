@@ -72,16 +72,22 @@ import { dirname, resolve, join, relative } from "node:path";
 //
 //      One cap per role rather than one number for all sixteen agents, because
 //      after the cut the agents no longer carry the same load: they range from
-//      89 913 to 111 810 bytes. A single ceiling has to sit at the maximum, so
-//      it would have granted the five leanest agents 21 897 bytes of silent
+//      89 896 to 111 766 bytes. A single ceiling has to sit at the maximum, so
+//      it would have granted the five leanest agents 21 870 bytes of silent
 //      head-room and called that compliance.
 //
-//   3. The RELEASE CAP is not a ratchet but a promise to consuming projects —
-//      an update may not hand them more rule text than `origin/main` already
-//      does — and it gates the version bump. Every role cap that stands above
-//      it must carry, in this source, the file that causes the overage and the
-//      reason that role applies it. A cap without that is a number the next
-//      growth quietly raises, which is the whole thing the ratchet is for.
+//   3. The RELEASE CAP is the BASELINE `origin/main` already ships, undiffer-
+//      entiated, to all sixteen agents. It stopped being a ceiling every agent
+//      has to fit under on 2026-08-05, when the cap became per-role; what it is
+//      now is the threshold at which a role cap has to justify itself in this
+//      source, naming the file that causes the overage and the reason that role
+//      applies it. A cap without that is a number the next growth quietly
+//      raises, which is the whole thing the ratchet is for.
+//
+//      The release gate therefore reads ROLE_CAPS, not one number: a role
+//      within the baseline ships, a role above it ships only with its reason
+//      recorded here. It reads the same source the two role assertions read, so
+//      a later cut that moves a role moves the gate with it.
 //
 // HOW A ROLE IS DERIVED, AND WHY IT IS NOT A LIST OF NAMES. The universal core
 // is computed as the INTERSECTION of all sixteen emissions. An agent's role is
@@ -118,12 +124,26 @@ const goldenPath = join(here, "fixtures", "rules-emission.golden");
 
 /**
  * The release cap from the plan's Erfolgsmaß: the rule-text total that
- * `origin/main` already ships, and therefore the most a consuming project may
- * be asked to load by an update. A release that raises the tax of a project
- * that installs it is a regression however much else it fixes.
+ * `origin/main` already ships, undifferentiated, to every one of the sixteen
+ * agents. It is the tax a consuming project pays today, and a release that
+ * raises it is a regression however much else the release fixes.
  *
- * NEVER RAISE THIS. It is the target every role cap ratchets down to, and the
- * threshold above which a role cap has to justify itself in this source.
+ * It is NO LONGER the ceiling a release is measured against. On 2026-08-05 the
+ * user's gate decided the cap applies per ROLE rather than as one number for
+ * all sixteen, because after the cut the agents stopped carrying the same load;
+ * ROLE_CAPS below is what the release gate reads. This number stayed, in the
+ * one job it can still do honestly: the BASELINE. A role cap at or below it
+ * costs a consuming project nothing it was not already paying. A role cap above
+ * it is a decision to charge that project more, and has to say so in
+ * `overRelease` — see `justifies …` and the release gate, which both read it.
+ *
+ * NEVER RAISE THIS. The line is older than the role caps and its meaning moved
+ * with them: it no longer reads "the target every role cap ratchets down to" —
+ * that ratchet is in ROLE_CAPS now, pinned to each role's measured high-water
+ * mark. It reads: raising this number would retire, silently and in one edit,
+ * every justification that exists only because a role stands above it. The
+ * number is a historical fact about what `origin/main` ships, and a fact is not
+ * raised. Lowering it is meaningless for the same reason.
  */
 const RELEASE_CAP = 105_354;
 
@@ -203,12 +223,22 @@ const RELEASE_CAP = 105_354;
  *             the most distinct jobs. Every remaining byte in the core is text
  *             all sixteen agents apply; getting these three under the cap means
  *             revisiting a file this step did not own, not shaving this one.
+ *   111 766 — 2026-08-05, at release preparation. Not a cut: the five shipped
+ *             sentences that named the measured forensics by full workbench path
+ *             now name where it lives instead, because the installer never
+ *             copies `fusion-workbench/` and the path carried this Circle's own
+ *             directory name, so it resolved for no consumer under any
+ *             circumstance (issue 260805-1145). `protected-path-discipline.md`
+ *             19 960 -> 19 943 (all sixteen agents), `protected-path-internals.md`
+ *             21 897 -> 21 870 (three agents). Every role drops 17; the
+ *             guard-internals role drops 44.
  */
 interface RoleCap {
   /**
    * The role's high-water mark, in bytes — a ratchet. It may only ever be
-   * LOWERED, and every cap must reach RELEASE_CAP before step 6 of the plan
-   * (bump the version, push, tag) may run.
+   * LOWERED. A cap above RELEASE_CAP does not block the release by itself; it
+   * blocks it unless `overRelease` says why, which is what lets a role ship
+   * above the baseline as a recorded decision instead of as an accident.
    *
    * Deliberately a literal here and NOT derived from the golden: deriving it
    * would let a regenerated golden raise a cap silently, which is the one thing
@@ -235,12 +265,12 @@ interface RoleCap {
  *
  * Six roles as of 2026-08-05, the first four of them below RELEASE_CAP:
  *
- *   89 913  core only                                      5 agents
- *   95 586  design-diagrams.md                             5 agents
- *   99 215  circle-records.md                              1 agent
- *  104 888  circle-records.md + design-diagrams.md         1 agent
- *  108 465  circle-records.md + workbench-stash-and-lock   1 agent
- *  111 810  protected-path-internals.md                    3 agents
+ *   89 896  core only                                      5 agents
+ *   95 569  design-diagrams.md                             5 agents
+ *   99 198  circle-records.md                              1 agent
+ *  104 871  circle-records.md + design-diagrams.md         1 agent
+ *  108 448  circle-records.md + workbench-stash-and-lock.md 1 agent
+ *  111 766  protected-path-internals.md                    3 agents
  */
 const ROLE_CAPS: Record<string, RoleCap> = {
   /**
@@ -248,32 +278,39 @@ const ROLE_CAPS: Record<string, RoleCap> = {
    * else. This is the floor the other five roles are measured against, and the
    * only number that says what the always-on set actually costs.
    */
-  "(core only)": { cap: 89_913 },
+  "(core only)": { cap: 89_896 },
 
   /**
    * The design-diagram producers and the evaluator that judges their output.
    * They pay 5 673 for the shared Mermaid rubric so that producer and reviewer
    * hold one definition of "coherent".
    */
-  "design-diagrams.md": { cap: 95_586 },
+  "design-diagrams.md": { cap: 95_569 },
 
   /**
    * Ranks Circles without producing design diagrams. Pays 9 302 for the Circle
-   * state vocabulary, which it needs because it transitions nothing but reads
-   * and orders every Circle record there is.
+   * state vocabulary, which it needs because it reads and orders every Circle
+   * record there is and proposes which one should activate next.
+   *
+   * It is the one role in the Circle-key audience that does not itself rename a
+   * marker — `agents/playmaker.md` forbids it, and the rename stays with the
+   * orchestrator at Phase 4 or with the user via /fusion:next. That does not
+   * take it out of the audience: `bin/fusion-rules` derives membership from
+   * naming a Circle-scoped `fusion-paths` key, and a proposal has to be written
+   * in the same vocabulary as the transition it proposes.
    */
-  "circle-records.md": { cap: 99_215 },
+  "circle-records.md": { cap: 99_198 },
 
   /**
    * Turns a Directive into a Circle record and draws the design diagram that
-   * goes in it, so it pays for both files. 466 bytes under the release cap:
+   * goes in it, so it pays for both files. 483 bytes under the release cap:
    * this role has no head-room to spend and the next always-on byte pushes it
    * over.
    */
-  "circle-records.md + design-diagrams.md": { cap: 104_888 },
+  "circle-records.md + design-diagrams.md": { cap: 104_871 },
 
   /**
-   * OVER THE RELEASE CAP by 3 111 bytes.
+   * OVER THE RELEASE CAP by 3 094 bytes.
    *
    * `circle-records.md` (9 302) is the Circle state vocabulary and the record
    * and portfolio templates. This role writes those transitions — it activates
@@ -293,7 +330,7 @@ const ROLE_CAPS: Record<string, RoleCap> = {
    * the core, where every remaining byte is text all sixteen agents apply.
    */
   "circle-records.md + workbench-stash-and-lock.md": {
-    cap: 108_465,
+    cap: 108_448,
     overRelease:
       "circle-records.md (9 302) carries the Circle state vocabulary and the record " +
       "template, and this role is the one that writes the `_a_ -> _t_` and `_t_ -> _c_` " +
@@ -303,9 +340,9 @@ const ROLE_CAPS: Record<string, RoleCap> = {
   },
 
   /**
-   * OVER THE RELEASE CAP by 6 456 bytes, and the fleet's high-water mark.
+   * OVER THE RELEASE CAP by 6 412 bytes, and the fleet's high-water mark.
    *
-   * `protected-path-internals.md` (21 897) is the reference half of the
+   * `protected-path-internals.md` (21 870) is the reference half of the
    * protected-path rule: the verb tables, command-word resolution, the
    * clustered-flag grammar, git's own working directory, the directory-builtin
    * forms that are not modelled, and the fail-closed bound. It is how the
@@ -319,9 +356,9 @@ const ROLE_CAPS: Record<string, RoleCap> = {
    * shaving the core the other roles share.
    */
   "protected-path-internals.md": {
-    cap: 111_810,
+    cap: 111_766,
     overRelease:
-      "protected-path-internals.md (21 897) is the classifier reference — verb tables, " +
+      "protected-path-internals.md (21 870) is the classifier reference — verb tables, " +
       "command-word resolution, clustered short flags, git's own working directory, the " +
       "fail-closed bound. This role is the three agents that change or review " +
       "hooks/lib/bash-mutation-guard.ts, the only agents for which how the classifier " +
@@ -344,16 +381,6 @@ function universalCore(measured: Map<string, Emission>): Set<string> {
   if (!first) return new Set();
   return new Set([...first].filter((rel) => rest.every((s) => s.has(rel))));
 }
-
-/**
- * The plugin version at which the release cap is not yet due. The plan bumps
- * 5.8.0 -> 5.9.0 in step 6, and step 6 is gated on the cap. Encoding that here
- * makes the cap a live assertion rather than a comment: today it is satisfied
- * trivially, and the moment someone bumps the version without having done the
- * cut, `gates the version bump on the release cap` turns red and names the
- * agents that are over. Until then the role caps above are what hold the line.
- */
-const PRE_CUT_VERSION = "5.8.0";
 
 interface Emission {
   /** Path relative to `<plugin>/rules`, in emission order. */
@@ -638,55 +665,54 @@ describe("rules emission golden", () => {
     ).toEqual([]);
   });
 
-  it("gates the version bump on the release cap", () => {
+  it("gates the release on the role caps, each read against the release baseline", () => {
     const manifest = JSON.parse(
       readFileSync(join(pluginRoot, ".claude-plugin", "plugin.json"), "utf-8"),
     ) as { version: string };
 
-    if (!isAfter(manifest.version, PRE_CUT_VERSION)) {
-      // Pre-cut: standing above the cap is expected here and is not a failure —
-      // the role caps hold the line until the version moves. What IS checked is
-      // that every agent already over the cap sits in a role whose entry says
-      // why, so the reason is on record before the release makes it binding.
-      const undocumented: string[] = [];
-      for (const [key, members] of roles) {
-        if (ROLE_CAPS[key]?.overRelease) continue;
-        for (const a of members) {
-          const total = measured.get(a)!.total;
-          if (total > RELEASE_CAP) undocumented.push(`${a}=${total} (role '${key}')`);
+    // The gate reads ROLE_CAPS — the same source the two assertions above read —
+    // rather than one number for all sixteen. That is what makes it survive a
+    // cut: a role that moves moves the gate with it, and a role that appears
+    // fails the coverage test rather than slipping past a fleet-wide ceiling.
+    //
+    // An agent ships when BOTH hold: its measured load is within its role's cap,
+    // and that cap is either inside the RELEASE_CAP baseline (so a consuming
+    // project pays no more than it already does) or above it with the reason
+    // recorded in `overRelease`. The second half is the one the version bump
+    // used to gate on with a single figure — the earlier design failed a release
+    // for standing above 105 354 at all, which after the per-role decision of
+    // 2026-08-05 states a rule the project no longer holds.
+    //
+    // It binds at every version, not only past some literal: every run is a
+    // potential release, and a version literal maintained by hand is exactly the
+    // kind of second source this gate was rewritten to stop having.
+    const blocking: string[] = [];
+    for (const [key, members] of roles) {
+      const entry = ROLE_CAPS[key];
+      if (!entry) continue; // reported by the role-coverage test above
+      const justified = (entry.overRelease?.trim().length ?? 0) > 0;
+      for (const a of members) {
+        const total = measured.get(a)!.total;
+        if (total > entry.cap) {
+          blocking.push(`${a}=${total} exceeds its role cap ${entry.cap} (role '${key}')`);
+        } else if (total > RELEASE_CAP && !justified) {
+          blocking.push(
+            `${a}=${total} is ${total - RELEASE_CAP} over the ${RELEASE_CAP} baseline ` +
+              `and role '${key}' records no reason`,
+          );
         }
       }
-      expect(
-        undocumented,
-        `An agent already loads more than the ${RELEASE_CAP} bytes origin/main ships, ` +
-          `and its role carries no reason for it. Record the reason now: at the version ` +
-          `bump this stops being a note and starts blocking the release.`,
-      ).toEqual([]);
-      return;
     }
 
-    const over = agents
-      .filter((a) => measured.get(a)!.total > RELEASE_CAP)
-      .map((a) => `${a}=${measured.get(a)!.total}`);
     expect(
-      over,
-      `Version ${manifest.version} is past ${PRE_CUT_VERSION}, so this is a release, ` +
-        `and a release may not raise a consuming project's context tax above the ` +
-        `${RELEASE_CAP} bytes origin/main already ships. The agents listed are over. ` +
-        `Do the cut (plan steps 2 and 4) before bumping the version, or the update ` +
-        `hands every consumer more rule text than it had.`,
+      blocking,
+      `Version ${manifest.version} may not be released. A release may not hand a ` +
+        `consuming project more rule text than the ${RELEASE_CAP} bytes origin/main ` +
+        `already ships, UNLESS the role that carries the overage says in ROLE_CAPS ` +
+        `which file causes it and why that role applies it. The entries listed are ` +
+        `either past their own role's cap or above the baseline with nothing recorded. ` +
+        `Cut the rule text, or record the reason — raising RELEASE_CAP is not the ` +
+        `third option: it would retire every existing justification in one edit.`,
     ).toEqual([]);
   });
 });
-
-/** True when semver `a` is strictly greater than `b`. Numeric parts only. */
-function isAfter(a: string, b: string): boolean {
-  const pa = a.split(".").map((n) => parseInt(n, 10) || 0);
-  const pb = b.split(".").map((n) => parseInt(n, 10) || 0);
-  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
-    const x = pa[i] ?? 0;
-    const y = pb[i] ?? 0;
-    if (x !== y) return x > y;
-  }
-  return false;
-}

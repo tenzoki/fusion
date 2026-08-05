@@ -19,9 +19,10 @@ denied command.
 Two companion files carry the detail, and you need neither in order to write a command
 that does not trip the guard: `rules/protected-path-internals.md` says how the
 classifier reads a command, and is loaded by `coder`, `coderev` and `bugfixer` —
-the agents that change or review it. `fusion-workbench/circles/260801-1244-guard-rules-write/analyses/260805-0717-protected-path-forensics.md`
-holds the measured residual catalogue and the measured illustration set; it is evidence
-for a review of the guard rather than instruction for a behaviour, so nothing loads it.
+the agents that change or review it. The measured residual catalogue and the measured
+illustration set are the third layer; they are evidence for a review of the guard rather
+than instruction for a behaviour, so they live in fusion's own development repository
+and no installation carries them.
 
 ## The rule
 
@@ -321,9 +322,8 @@ covers the constructible cases the classifier can see, not every case. Completen
 not the target.
 
 Twenty-one residuals are catalogued, each with the command that measured it and the
-record that argued it, in
-`fusion-workbench/circles/260801-1244-guard-rules-write/analyses/260805-0717-protected-path-forensics.md`.
-Two are the ones stated above. Two more you can meet on ordinary work: `GIT_WORK_TREE=`
+record that argued it, in the measured forensics — which lives in fusion's own
+development repository and is not part of an installation. Two are the ones stated above. Two more you can meet on ordinary work: `GIT_WORK_TREE=`
 and `GIT_DIR=` in the environment move git where the guard is not looking, while the
 `-C` and `--work-tree` spellings are read exactly; and a conditional body, a loop body,
 a brace group or a pipeline stage gives the directory up although the shell guarantees
