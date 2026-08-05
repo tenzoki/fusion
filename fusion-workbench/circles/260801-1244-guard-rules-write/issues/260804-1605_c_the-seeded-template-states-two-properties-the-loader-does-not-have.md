@@ -120,3 +120,19 @@ because a *declared* empty list is still empty — is now stated by an argument 
 **This raises the priority rather than adding an item.** The whole `_override` key needs
 rewriting, not a clause appending, and it should be done before the release ships the
 template. Executor `ontocoder`.
+
+---
+Resolved: All underscore keys of `templates/fusion-guard.json` re-read and rewritten against
+the behaviour the tests assert, root copy `fusion-guard.json` kept byte-identical in the same
+change (ontocoder, plan Step 6, 2026-08-05). The three sentences this issue names: (1)
+`_protectsItself` is true again and now test-backed — the `guard.enabled` bypass is closed
+(`config.test.ts` "the project layer may not set guard.enabled";
+`guard-rules-write-integration.test.ts` "ignores guard.enabled: false and keeps denying on
+both write surfaces") and the subdirectory hole is closed by the absolute floor spelling
+("the self-protection floor reached from a subdirectory"). (2) `_inFusionsOwnSourceTree`'s
+incompleteness is closed the other way round: a project file cannot set `guard.enabled` at
+all ("ignores it in the plugin's own repo too"), and the key now says so. (3) `_override` is
+rewritten around the per-leaf rule of decision `260804-1630` and states explicitly that
+fusion's built-in default for the protected list is the empty list. A new `_guardEnabled` key
+carries the one-key exception of decision `260804-1631`. Session:
+`history/260805-2222-ontocoder-step6-guard-template-rewrite.md`.
