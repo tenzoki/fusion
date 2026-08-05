@@ -8,6 +8,20 @@
 # What reads this file: bin/fusion-plane (push | seed | states | doctor | plan).
 #   The helper reads IDs from this file and the API key from the environment.
 #
+# ── Whether the bridge is wired is a question for `doctor`, not for this file ─
+#   Run `bin/fusion-plane doctor`. It prints the three IDs it resolved, whether
+#   $PLANE_API_KEY is present, and whether the project's states/ endpoint is
+#   reachable. That is the only answer worth reporting to anyone.
+#   Do NOT infer "not configured" from reading the comments here. Each of the
+#   three fields below names the value it SHIPS with, so an unfilled field is
+#   recognisable from the value itself; no comment claims anything about the
+#   current state, because such a claim would be wrong from the moment someone
+#   fills the field in. And a value that looks like a placeholder often is not:
+#   `http://localhost:9999` and a short workspace slug are the real, working
+#   configuration of a locally hosted instance. Reading a stale marker instead
+#   of running `doctor` has twice produced a false "bridge not wired" verdict —
+#   once costing a real story its manual walk through Plane's states.
+#
 # ── SECURITY: the API key is NEVER stored here ──────────────────────────────
 #   The key lives ONLY in your shell profile as an environment variable:
 #       export PLANE_API_KEY="plane_api_..."     # in ~/.zshrc
@@ -29,17 +43,26 @@
 #   so ONLY the work queue mirrors (Circles, fusion issues, decisions). Prose
 #   (history, reviews, analyses) stays in files and is never pushed. This is a
 #   scoped, deliberate limitation, not a bug.
-base_url: "https://plane.example.com"          # ← REPLACE
+#
+#   Ships as `https://plane.example.com` — a reserved example domain that is no
+#   instance anywhere. Anything else here is somebody's real root.
+base_url: "https://plane.example.com"
 
 # Workspace slug — the human-readable identifier that appears in Plane URLs
 #   (e.g. the "unite-the-results-engine" in .../workspaces/unite-the-results-engine/...).
 #   This is the slug used in the REST path, NOT the workspace UUID.
-workspace_slug: "your-workspace-slug"          # ← REPLACE
+#
+#   Ships as `your-workspace-slug`. A real slug is often just as short and just
+#   as plain — shortness is no evidence that a field went unfilled.
+workspace_slug: "your-workspace-slug"
 
 # Project UUID — the target Plane project that mirrors this fusion workbench.
 #   This is a UUID (e.g. a935e1f0-fc7c-4392-8b93-2f4551e0254f), not the project
 #   name or identifier prefix. Find it in the project settings or via the API.
-project_id: "00000000-0000-0000-0000-000000000000"   # ← REPLACE
+#
+#   Ships as the all-zero UUID below, which resolves to no project on any
+#   instance. Any other UUID here was put there deliberately.
+project_id: "00000000-0000-0000-0000-000000000000"
 
 # ── State name mapping ──────────────────────────────────────────────────────
 #   fusion derives a canonical Plane state from each artifact's marker
