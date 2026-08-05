@@ -1,0 +1,180 @@
+# rules-emission.golden — the per-dispatch rule-context tax, per agent.
+#
+# Generated. Do not hand-edit. To update after a deliberate cut:
+#
+#   cd hooks && UPDATE_RULES_GOLDEN=1 npx vitest run lib/__tests__/rules-emission-golden.test.ts
+#
+# That run rewrites this file and then fails on purpose, so the flag can
+# never be left on in a green run. Review the diff, then lower the CEILING
+# constant in rules-emission-golden.test.ts if the high-water mark moved.
+#
+# One block per agent: the files bin/fusion-rules emits under <plugin>/rules,
+# in emission order, each with its byte size, then the agent's total. Paths
+# are relative to <plugin>/rules. Project-side rules and stilwerk voice
+# profiles are out of scope — they vary per consuming project.
+
+[analyst]
+  agent-setup.md 2792
+  fusion-workbench-conventions.md 59303
+  decision-record-examples.md 4191
+  user-facing-output.md 16683
+  critical-stance.md 5317
+  git-branch-discipline.md 6299
+  protected-path-discipline.md 50559
+  design-diagrams.md 5673
+  total 150817
+
+[bugfixer]
+  agent-setup.md 2792
+  fusion-workbench-conventions.md 59303
+  decision-record-examples.md 4191
+  user-facing-output.md 16683
+  critical-stance.md 5317
+  git-branch-discipline.md 6299
+  protected-path-discipline.md 50559
+  total 145144
+
+[coder]
+  agent-setup.md 2792
+  fusion-workbench-conventions.md 59303
+  decision-record-examples.md 4191
+  user-facing-output.md 16683
+  critical-stance.md 5317
+  git-branch-discipline.md 6299
+  protected-path-discipline.md 50559
+  total 145144
+
+[coderev]
+  agent-setup.md 2792
+  fusion-workbench-conventions.md 59303
+  decision-record-examples.md 4191
+  user-facing-output.md 16683
+  critical-stance.md 5317
+  git-branch-discipline.md 6299
+  protected-path-discipline.md 50559
+  total 145144
+
+[conceptrev]
+  agent-setup.md 2792
+  fusion-workbench-conventions.md 59303
+  decision-record-examples.md 4191
+  user-facing-output.md 16683
+  critical-stance.md 5317
+  git-branch-discipline.md 6299
+  protected-path-discipline.md 50559
+  design-diagrams.md 5673
+  total 150817
+
+[consultant]
+  agent-setup.md 2792
+  fusion-workbench-conventions.md 59303
+  decision-record-examples.md 4191
+  user-facing-output.md 16683
+  critical-stance.md 5317
+  git-branch-discipline.md 6299
+  protected-path-discipline.md 50559
+  total 145144
+
+[editor]
+  agent-setup.md 2792
+  fusion-workbench-conventions.md 59303
+  decision-record-examples.md 4191
+  user-facing-output.md 16683
+  critical-stance.md 5317
+  git-branch-discipline.md 6299
+  protected-path-discipline.md 50559
+  total 145144
+
+[investigator]
+  agent-setup.md 2792
+  fusion-workbench-conventions.md 59303
+  decision-record-examples.md 4191
+  user-facing-output.md 16683
+  critical-stance.md 5317
+  git-branch-discipline.md 6299
+  protected-path-discipline.md 50559
+  design-diagrams.md 5673
+  total 150817
+
+[ontocoder]
+  agent-setup.md 2792
+  fusion-workbench-conventions.md 59303
+  decision-record-examples.md 4191
+  user-facing-output.md 16683
+  critical-stance.md 5317
+  git-branch-discipline.md 6299
+  protected-path-discipline.md 50559
+  total 145144
+
+[ontorev]
+  agent-setup.md 2792
+  fusion-workbench-conventions.md 59303
+  decision-record-examples.md 4191
+  user-facing-output.md 16683
+  critical-stance.md 5317
+  git-branch-discipline.md 6299
+  protected-path-discipline.md 50559
+  total 145144
+
+[orchestrator]
+  agent-setup.md 2792
+  fusion-workbench-conventions.md 59303
+  decision-record-examples.md 4191
+  user-facing-output.md 16683
+  critical-stance.md 5317
+  git-branch-discipline.md 6299
+  protected-path-discipline.md 50559
+  total 145144
+
+[planner]
+  agent-setup.md 2792
+  fusion-workbench-conventions.md 59303
+  decision-record-examples.md 4191
+  user-facing-output.md 16683
+  critical-stance.md 5317
+  git-branch-discipline.md 6299
+  protected-path-discipline.md 50559
+  design-diagrams.md 5673
+  total 150817
+
+[playmaker]
+  agent-setup.md 2792
+  fusion-workbench-conventions.md 59303
+  decision-record-examples.md 4191
+  user-facing-output.md 16683
+  critical-stance.md 5317
+  git-branch-discipline.md 6299
+  protected-path-discipline.md 50559
+  total 145144
+
+[reconciler]
+  agent-setup.md 2792
+  fusion-workbench-conventions.md 59303
+  decision-record-examples.md 4191
+  user-facing-output.md 16683
+  critical-stance.md 5317
+  git-branch-discipline.md 6299
+  protected-path-discipline.md 50559
+  total 145144
+
+[shaper]
+  agent-setup.md 2792
+  fusion-workbench-conventions.md 59303
+  decision-record-examples.md 4191
+  user-facing-output.md 16683
+  critical-stance.md 5317
+  git-branch-discipline.md 6299
+  protected-path-discipline.md 50559
+  design-diagrams.md 5673
+  total 150817
+
+[taskplanner]
+  agent-setup.md 2792
+  fusion-workbench-conventions.md 59303
+  decision-record-examples.md 4191
+  user-facing-output.md 16683
+  critical-stance.md 5317
+  git-branch-discipline.md 6299
+  protected-path-discipline.md 50559
+  design-diagrams.md 5673
+  total 150817

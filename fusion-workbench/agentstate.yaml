@@ -1,0 +1,42 @@
+# fusion-workbench session state — for resumption after restart
+# Updated: 260805-0638
+
+session:
+  directive: "Ausstieg: die Kontextsteuer pro Dispatch senken und ausliefern, statt den Shell-Klassifizierer weiter zu haerten. Sechs Schritte nach dem Ausstiegsplan, Erfolgsmass ist Byte pro Dispatch pro Agent."
+  mode: "plan"
+  domain: "code"
+  started: "260805-0638"
+  history_file: "circles/260801-1244-guard-rules-write/history/260805-0638-orchestrator-session.md"
+  git_head_at_start: "49a1c48"
+
+progress:
+  turn: 1
+  max_turns: 5
+  tasks_total: 6
+  tasks_done: 0
+  tasks_skipped: 0
+  tasks_errored: 0
+  commits: 0
+  turn_start_head: "49a1c48"
+  paused_at_task: null
+  directive_revisions_this_session: 0
+
+current_task:
+  id: "A1"
+  summary: "Emissions-Golden als Test festschreiben, bevor irgendetwas geschnitten wird"
+  agent: "coder"
+  status: "running"
+  source_file: "circles/260801-1244-guard-rules-write/planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md"
+
+work_queue:
+  - { id: "A1", summary: "Emissions-Golden festschreiben", agent: "coder", status: "running" }
+  - { id: "A2", summary: "protected-path-discipline.md in Kern und Referenz teilen", agent: "coder", status: "queued" }
+  - { id: "A3", summary: "die 18 offenen Befunde nach einer Regel abschliessen", agent: "coder", status: "queued" }
+  - { id: "A4", summary: "Stashes und Commit lock aus der Konventionsdatei loesen", agent: "coder", status: "queued" }
+  - { id: "A5", summary: "hooks/dist bauen und einchecken", agent: "coder", status: "queued" }
+  - { id: "A6", summary: "Version anheben, veroeffentlichen, taggen", agent: "coder", status: "queued" }
+
+plan_context:
+  plan_file: "circles/260801-1244-guard-rules-write/planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md"
+  user_directive: "Kurswechsel: kein weiteres Haerten des Shell-Klassifizierers. Der Curator bleibt gewollt, aber die Ersparnis kommt aus dem Zuschnitt. protected-path-discipline.md kann so nicht bleiben."
+  key_findings: "Der Manifest-Mechanismus kann den Zuschnitt NICHT leisten: rein additiv, und seine Pfadaufloesung erreicht keine Plugin-Datei. Hebel ist die case-AGENT-Mustertabelle in bin/fusion-rules. Die 34 kB Wachstum von protected-path-discipline.md sind nie ausgeliefert worden, das Zurueckschneiden verhindert eine Regression und senkt fuer unite cocreator nichts; der echte Posten dort ist die Konventionsdatei mit 59 303 Byte und braucht C9 Schritt 3. hooks/dist war im Index um 3874 Einfuegungen veraltet."
