@@ -50,9 +50,21 @@
 #     the sibling Bash policy: a shell command that WRITES a path in
 #     guard.protectedPaths (mv/rm/cp/sed -i/redirection, wrappers seen through,
 #     ancestor directories, cd tracked, fail-closed on an unresolvable operand)
-#     is denied by hooks/guard.ts the same way Edit/Write are. The doc states
-#     what is denied, what stays allowed, what to do instead (STOP → Human
-#     Gate; there is no override for this one), and the residuals honestly.
+#     is denied by hooks/guard.ts the same way Edit/Write are. Since the
+#     three-layer cut it carries the CORE half only: the rule, the prediction
+#     rule for a case it does not list, what stays allowed, what to do instead
+#     (STOP → Human Gate; there is no override for this one), and a pointer to
+#     each of the other two layers.
+#   - Guard-internals agents (coder, coderev, bugfixer) additionally read
+#     protected-path-internals.md (shipped by plugin) — the REFERENCE half:
+#     verb tables, command-word resolution, clustered short flags, git's own
+#     working directory, the unmodelled directory-builtin forms, fail-closed
+#     and its bound. The split is by ADDRESSEE: the core tells an agent how to
+#     behave, the reference tells whoever changes or reviews the classifier how
+#     it works. The third layer — the measured residual catalogue and the
+#     measured illustration set — is evidence for a review rather than
+#     instruction for a behaviour and lives outside rules/ entirely, in the
+#     Circle's analysis store, reachable only by the pointer in the core.
 #   - Design-diagram agents additionally read design-diagrams.md (shipped by
 #     plugin) — the doctrine for expressing technical design as formal,
 #     parseable Mermaid (when / which type, validity, coherence self-check).
@@ -151,6 +163,25 @@ case "$AGENT" in
   planner|analyst|taskplanner|shaper|investigator|conceptrev)
                                   IS_DIAGRAM_AGENT=1 ;;
   *)                              IS_DIAGRAM_AGENT=0 ;;
+esac
+
+# Guard-internals-agent flag — independent of PATTERNS. The three agents that
+# change the shell classifier (hooks/lib/bash-mutation-guard.ts) or review a
+# change to it additionally read rules/protected-path-internals.md, the
+# reference half of the protected-path rule. The other thirteen read the core
+# half only and reach the reference by the pointer line in it.
+#
+# Named agents, NOT the `coding` filename pattern. Naming the file
+# `*-coding.md` would have needed no code at all, and it was measured picking up
+# a fourth agent: `planner` also carries PATTERNS="coding ontology", so the
+# pattern route emits the reference to planner as well, which the decision
+# record's audience does not include
+# (decisions/260805-0709_i_wohin-gehoert-die-forensik-aus-protected-path-discipline.md).
+# An audience that depends on a filename is also an audience nobody can read off
+# this file.
+case "$AGENT" in
+  coder|coderev|bugfixer)         IS_GUARD_INTERNALS_AGENT=1 ;;
+  *)                              IS_GUARD_INTERNALS_AGENT=0 ;;
 esac
 
 emit_if_exists() {
@@ -294,6 +325,17 @@ fi
 #     Shared rubric so producer and evaluator judge by one definition.
 if [ "$IS_DIAGRAM_AGENT" -eq 1 ]; then
   emit_if_exists "$PLUGIN_RULES_DIR/design-diagrams.md"
+fi
+
+# 1d. Guard-internals agents (coder, coderev, bugfixer) additionally receive the
+#     reference half of the protected-path rule: the verb tables, the command-word
+#     resolution, the clustered-flag grammar, git's own working directory, the
+#     directory-builtin forms that are not modelled, and the fail-closed bound.
+#     The core half (always-on above) states the rule and the way through; this
+#     half states how the classifier reads a command, which only an agent that
+#     changes or reviews the classifier needs.
+if [ "$IS_GUARD_INTERNALS_AGENT" -eq 1 ]; then
+  emit_if_exists "$PLUGIN_RULES_DIR/protected-path-internals.md"
 fi
 
 # 2. Domain patterns — plugin first, then fusion-agent-specific project rules,

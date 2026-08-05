@@ -187,7 +187,17 @@ Abgeleitete Erwartung, nicht geschätzt: nach Schritt 2 stehen 104 600 Byte, nac
 - **Falsifikat:** Die vom Test an HEAD gemessene Summe weicht für irgendeinen Agenten von 145 144 ab. Dann misst der Test etwas anderes als der Auftrag, und jede Zahl in diesem Plan steht auf Sand. Zweites Falsifikat: der Test ist grün, obwohl eine Datei aus `emit_if_exists` entfernt wurde, ohne dass die Golden-Datei sich ändert. Dann prüft er die Emission nicht, sondern nur sich selbst.
 - **Wirkung in unite cocreator:** keine. Der Test läuft in der Plugin-Suite und erreicht kein konsumierendes Projekt. Genau das ist seine Grenze: er schützt vor einer Regression im Plugin, nicht vor einer projektseitigen Regeldatei, die dort wächst.
 
-### 2. `protected-path-discipline.md` in Kern und Referenz teilen
+### 2. `protected-path-discipline.md` in Kern und Referenz teilen [DONE]
+
+> **Ausgeführt 2026-08-05**, aber in **drei** Schichten statt zwei, nach der Nutzerentscheidung
+> `decisions/260805-0709_i_wohin-gehoert-die-forensik-aus-protected-path-discipline.md`. Die
+> Forensik (Residuenkatalog + Illustrationsliste) liegt jetzt in
+> `analyses/260805-0717-protected-path-forensics.md` und wird von keinem Emissionspfad
+> erreicht. Belege und die Abweichung von den Zahlen dieses Schritts:
+> `history/260805-0717-coder-step2-drei-schichten.md`. Die hier projizierten 104 600 Byte
+> werden **nicht** erreicht: nach dem Schnitt stehen 110 931 / 116 604 / 131 685 Byte, und der
+> Release-Deckel wird von keinem Agenten unterschritten. Die Projektion hat die sechs
+> Diagramm-Agenten nie mitgerechnet.
 
 - **Executor:** coder
 - **Dateien:** `rules/protected-path-discipline.md`, `rules/protected-path-internals-coding.md` (neu), `bin/fusion-rules`

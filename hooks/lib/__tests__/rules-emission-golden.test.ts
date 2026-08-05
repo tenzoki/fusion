@@ -117,8 +117,26 @@ const RELEASE_CAP = 105_354;
  *             agents (analyst, conceptrev, investigator, planner, shaper,
  *             taskplanner) carry `design-diagrams.md` (5 673) on top of the
  *             145 144 always-on set the other ten load.
+ *   131 685 — 2026-08-05, at plan step 2. `protected-path-discipline.md` was cut
+ *             into three layers by ADDRESSEE (decision 260805-0709): the core
+ *             rule (16 346, all sixteen agents), the classifier reference
+ *             `protected-path-internals.md` (20 754, `coder`/`coderev`/
+ *             `bugfixer` only), and the measured forensics, which left `rules/`
+ *             for the Circle's analysis store and is loaded by nothing.
+ *             The high-water mark is now the three guard-internals agents, which
+ *             carry both rule layers; the seven plain agents stand at 110 931 and
+ *             the six diagram agents at 116 604.
+ *
+ *             NOTE, and it is the finding of the step rather than an aside: NO
+ *             agent is under RELEASE_CAP after this cut, and the plan's own
+ *             projection (104 600) never covered the six diagram agents either —
+ *             at the plan's projected core size they would have stood at 110 273,
+ *             over the cap before a single byte of this step was written. Step 4
+ *             removes a further 8 484 from every agent, which clears the cap for
+ *             the seven plain agents alone. The other nine need a fourth cut that
+ *             does not exist in the plan.
  */
-const CEILING = 150_817;
+const CEILING = 131_685;
 
 /**
  * The plugin version at which the release cap is not yet due. The plan bumps
