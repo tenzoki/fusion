@@ -98,3 +98,35 @@ and a distinct reason string. That test fails today for the git-directory route
 Both rows deny at `613d6fd`, so the verdict alone proves nothing. What is being asserted here
 is a mismatch between prose and behaviour, and the check is the three control rows: if
 `ls; rm out.js` ever denies, the finding is something else entirely.
+
+---
+
+**Step 3 disposition (coder, 2026-08-05) — branch A, text corrected. CLOSING.**
+
+Question 1 is restated over the **effect**, which is what this issue recommended in
+preference to a fifth question. It now asks whether anything in the command moves, or claims
+to move, the directory a relative operand hangs off, and names the module's causes: a
+directory builtin, a `cd` modifier the guard does not model, a wrapper in front of one, an
+ambient `CDPATH`, and a `git -C` / `--work-tree`. The paragraph states why the question is
+asked over the effect, so the next person to add a cause can see what the wording is
+protecting: the earlier version named only the builtin, and a git directory flag falsified
+it.
+
+Measured against the TypeScript source built fresh (`hooks/dist` is stale at this commit),
+shipped protected list:
+
+```
+DENY   git -C $D rm build/out.js
+DENY   git --work-tree=$W clean -fdx
+allow  ls; rm out.js                     # this question's own control, still right
+allow  npm test; rm build/out.js         # ditto
+```
+
+**One recommendation is declined, with a reason.** Adding the two DENY rows to the
+illustration block would put the correction where the misled reader is not: after step 2's
+split that block is the forensics analysis, which no agent loads. The causes are named
+inside question 1 instead, in the core file every agent carries.
+
+**Taken in one pass with `260804-1025`, `260804-1223` and `260804-1220`**, as this issue
+asked. All four are one paragraph, and three separate edits to one paragraph is how the
+count in `260804-1220` went stale in the first place.

@@ -111,3 +111,27 @@ fail. It does not fail today, which is the finding.
 
 Found by running the docstring's own `grep` recipe during the incremental review of
 `4f1007f`, then grepping the rest of `hooks/lib/` for readers of `joiner`.
+
+---
+
+**Step 3 disposition (coder, 2026-08-05) — A-shaped, foreign file. STAYS `_o_`.**
+
+Both halves are branch A in kind — a docstring claim narrower than it reads, and an audit
+recipe that returns the wrong number — and both live in files step 3 does not own
+(`hooks/lib/bash-mutation-guard.ts`, `hooks/lib/shell-parse.ts`, and the source test that
+pins the claim). This step changes no code and no test.
+
+One of the six findings whose shape the plan's rule has no branch for; reported to the
+orchestrator as such.
+
+**Where it is answered, and why waiting is the worse of two costs.** This issue's own
+§ "Why now rather than later" is the argument: `circles/260804-1205-shell-reachability-model`
+restructures `hooks/lib/shell-parse.ts` from a segmenter into a parser, which is the file
+holding the second copy of the fact. A guarantee scoped to the other file is at its least
+useful precisely then. That is a reason to route this finding **into** that Circle's opening
+context rather than to leave it as a background record, and it is recorded here so the
+routing is not lost. Its direction 1 — widen the source assertion to read both files — is
+cheap and does not wait on the restructure.
+
+Nothing is wrong in behaviour today, as this issue states and measured across 48,537
+commands. It stays open on the shape, not on a verdict.

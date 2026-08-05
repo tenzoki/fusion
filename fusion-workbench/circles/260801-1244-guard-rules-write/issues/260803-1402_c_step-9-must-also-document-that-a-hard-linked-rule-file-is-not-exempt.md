@@ -111,3 +111,36 @@ Measured with the predicate supplied, `rm rules/x.md`, `mv rules/x.md rules/reti
 **Two more items belong to Step 9 than this issue lists**, both found in the same audit and filed separately rather than folded in here, because each is a distinct defect with its own fix: `260804-1025_o_` (the decision procedure at `rules/protected-path-discipline.md:172` tells an agent the model stays exact for the two commands that delete a rule file) and the residual-list omissions named on `260804-1024_o_` and `260804-1026_o_`.
 
 **The sequencing constraint recorded at the foot of this issue is now satisfied.** `issues/260803-1431` closed in `a79ff1a`. The Turn 3 review asked that it land before Step 9 writes the flag into shipped documents; it has. Step 9 is no longer blocked by it.
+
+---
+
+**Step 3 disposition (coder, 2026-08-05) — branch A, text corrected. CLOSING.**
+
+All three items this issue asks for have landed, in the two files it names.
+
+1. **The flag's row.** `README-hooks.md` `### Tuning or disabling the guard` now carries a
+   `FUSION_ALLOW_RULES_WRITE` row alongside `FUSION_ALLOW_BRANCH_SWITCH`, stating the
+   boundary: the project's rule directories and the `retired/` destination inside them and
+   nothing else, the guard is not turned off, an active halt is not cleared, and each
+   exempted write emits a `guard_advisory` event.
+2. **The two "no override" sentences**, corrected rather than deleted. The false ones were
+   `rules/protected-path-discipline.md` — "**There is no override for a protected-path
+   shell write.** That is deliberate." — and `README-hooks.md` — "There is no env override
+   for a protected-path shell write; the answer is a human decision." Both now name the one
+   override, scope it, and keep the no-override clause for every path the flag does not
+   name. The self-contradiction T3-7 refused to ship is gone in both directions: the file
+   that names the flag no longer denies it exists.
+3. **The hard-link item**, in both files. In the rule file under
+   `### The overrides waive only what they name`, as the second of two ways the grant is
+   narrower than it looks — the first being the case fold, which was already there and is
+   now stated beside it rather than 370 lines away. In `README-hooks.md` beside the
+   case-fold paragraph, naming `rsync --link-dest`, `cp -al` and `git clone --local` so a
+   user who did not choose the state can recognise it, and pointing at
+   `REFUSAL_NOTES["hard-link"]` as the wording the deny already uses.
+
+**The third file the 260804-1021 reconciliation added is NOT fixed, and is not this step's
+to fix.** `CLAUDE.md` carries the same false sentence ("There is **no** env override for
+this policy: it is a human decision"). Step 3's scope is the two rule layers, the forensics
+analysis, `README-hooks.md` and the issue files. Reported to the orchestrator rather than
+left silent — the correction is now incomplete in exactly one file, and that is a fact
+about the scope, not an oversight.

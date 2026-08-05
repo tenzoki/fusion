@@ -20,9 +20,9 @@
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
-  protected-path-discipline.md 16346
+  protected-path-discipline.md 19960
   design-diagrams.md 5673
-  total 116604
+  total 120218
 
 [bugfixer]
   agent-setup.md 2792
@@ -31,9 +31,9 @@
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
-  protected-path-discipline.md 16346
-  protected-path-internals.md 20754
-  total 131685
+  protected-path-discipline.md 19960
+  protected-path-internals.md 21897
+  total 136442
 
 [coder]
   agent-setup.md 2792
@@ -42,9 +42,9 @@
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
-  protected-path-discipline.md 16346
-  protected-path-internals.md 20754
-  total 131685
+  protected-path-discipline.md 19960
+  protected-path-internals.md 21897
+  total 136442
 
 [coderev]
   agent-setup.md 2792
@@ -53,9 +53,9 @@
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
-  protected-path-discipline.md 16346
-  protected-path-internals.md 20754
-  total 131685
+  protected-path-discipline.md 19960
+  protected-path-internals.md 21897
+  total 136442
 
 [conceptrev]
   agent-setup.md 2792
@@ -64,9 +64,9 @@
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
-  protected-path-discipline.md 16346
+  protected-path-discipline.md 19960
   design-diagrams.md 5673
-  total 116604
+  total 120218
 
 [consultant]
   agent-setup.md 2792
@@ -75,8 +75,8 @@
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
-  protected-path-discipline.md 16346
-  total 110931
+  protected-path-discipline.md 19960
+  total 114545
 
 [editor]
   agent-setup.md 2792
@@ -85,8 +85,8 @@
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
-  protected-path-discipline.md 16346
-  total 110931
+  protected-path-discipline.md 19960
+  total 114545
 
 [investigator]
   agent-setup.md 2792
@@ -95,9 +95,9 @@
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
-  protected-path-discipline.md 16346
+  protected-path-discipline.md 19960
   design-diagrams.md 5673
-  total 116604
+  total 120218
 
 [ontocoder]
   agent-setup.md 2792
@@ -106,8 +106,8 @@
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
-  protected-path-discipline.md 16346
-  total 110931
+  protected-path-discipline.md 19960
+  total 114545
 
 [ontorev]
   agent-setup.md 2792
@@ -116,8 +116,8 @@
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
-  protected-path-discipline.md 16346
-  total 110931
+  protected-path-discipline.md 19960
+  total 114545
 
 [orchestrator]
   agent-setup.md 2792
@@ -126,8 +126,8 @@
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
-  protected-path-discipline.md 16346
-  total 110931
+  protected-path-discipline.md 19960
+  total 114545
 
 [planner]
   agent-setup.md 2792
@@ -136,9 +136,9 @@
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
-  protected-path-discipline.md 16346
+  protected-path-discipline.md 19960
   design-diagrams.md 5673
-  total 116604
+  total 120218
 
 [playmaker]
   agent-setup.md 2792
@@ -147,8 +147,8 @@
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
-  protected-path-discipline.md 16346
-  total 110931
+  protected-path-discipline.md 19960
+  total 114545
 
 [reconciler]
   agent-setup.md 2792
@@ -157,8 +157,8 @@
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
-  protected-path-discipline.md 16346
-  total 110931
+  protected-path-discipline.md 19960
+  total 114545
 
 [shaper]
   agent-setup.md 2792
@@ -167,9 +167,9 @@
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
-  protected-path-discipline.md 16346
+  protected-path-discipline.md 19960
   design-diagrams.md 5673
-  total 116604
+  total 120218
 
 [taskplanner]
   agent-setup.md 2792
@@ -178,6 +178,6 @@
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
-  protected-path-discipline.md 16346
+  protected-path-discipline.md 19960
   design-diagrams.md 5673
-  total 116604
+  total 120218

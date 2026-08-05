@@ -89,3 +89,25 @@ the shell-effect machinery for it.
 There is nothing to mutate here — this is a wording change. The anti-vacuity for the
 suggested fixture is that it must fail against a build with the `state.dirStack.kind ===
 "known"` guard at `:2540` removed.
+
+---
+
+**Step 3 disposition (coder, 2026-08-05) — A-shaped, foreign file. STAYS `_o_`.**
+
+Branch A in kind: a sentence claims more than it earns. It is a docstring in
+`hooks/lib/bash-mutation-guard.ts` (`DirStack`, and the parallel claim in
+`applyDirEffect`), which step 3 does not own. This step changes no source comment.
+
+One of the six findings whose shape the plan's rule has no branch for; reported to the
+orchestrator as such.
+
+**Where it is answered.** `circles/260804-1205-shell-reachability-model` restructures the
+directory model, and both docstrings are that model's. This issue's § Recommendation gives
+the replacement wording verbatim, so the fix is a paste rather than a re-derivation, and its
+§ "Test coverage this needs" proposes a depth-parity fixture against the real shell that the
+follow-on Circle is the right owner of.
+
+Recorded because the issue itself says so: **there is no defect in behaviour.** Every push
+and pop site was re-read against bash 3.2 and zsh 5.9 semantics for that review and none is
+wrong. What is open is a confident sentence about a checked property, which is this module's
+documented failure mode.

@@ -51,3 +51,52 @@ Not "widen the matching to the project root" — that is a security-policy chang
 2. **Say it in the deny reason and in the residual list.** Cheapest, and it discharges the agent-facing half on its own: the rule file's `## Where this check does not reach` gains an entry stating that the patterns are matched against the session's working directory, so a session started below the project root protects only what the floor names, and that fail-closed still applies there.
 
 Option 2 is the one to take if only one is taken. The defect that costs is an agent working around an unexplained deny, not the deny itself.
+
+---
+
+**Step 3 disposition (coder, 2026-08-05) — branches A and B TOGETHER. STAYS `_o_`.**
+
+This is the finding the plan's first falsification test was written for, and it does not
+fit one branch. It is A and B at once: a delivered sentence is false **because** the
+classifier's coordinate space is not the one the sentence claims, so correcting the
+sentence and writing the residual are one act. Reported as a gap in the rule rather than
+pressed into either branch.
+
+**Verified independently before being classified**, as the dispatch required. This record's
+measurement was taken through the live hook in one session; I re-measured through the
+classifier itself, with the shipped protected list and two working directories, and hit one
+trap worth recording: **`hooks/dist` is stale at this commit**, and against it every row
+below allows, including the controls. Measured against the TypeScript source built fresh
+into a scratch directory, cwd `<project>/fusion-workbench`:
+
+```
+rm <project>/rules/x.md                  allow    (DENY from the project root)
+mv <project>/rules/x.md /tmp/            allow    (DENY from the project root)
+cd <project> && mv /tmp/y rules/         allow    (DENY from the project root)
+cd <project> && cp bin/monitor "$SP/x"   DENY     fail-closed, from BOTH directories
+rm rules/x.md                            DENY     → a `rules/` under the SESSION's cwd
+```
+
+`projectRelative("<project>/rules/x.md", "<project>/fusion-workbench")` returns the
+absolute path, and no relative pattern can match one. The last row is the shape of the
+whole finding: the guard protects a `rules/` that need not exist and does not protect the
+one that does. Confirmed as filed, including the asymmetry.
+
+**Branch A, done.** `rules/protected-path-discipline.md` said "The patterns are
+**project-relative**: in a consuming project `rules/**` means that project's own `rules/`
+directory, not the plugin's." That is false whenever the session did not start at the root.
+The paragraph now says the patterns are matched against the session's working directory,
+describes both configurations, carries the measured pair, and closes with the sentence that
+discharges the agent-facing half: an allow in that configuration is not a permission, and
+writing a protected path because the guard happened to let you is the thing this rule
+forbids.
+
+**Branch B, done.** The forensics catalogue gains an entry — one of the two new ones that
+open it — carrying the measurement, the `260804-1604` argument this record explicitly does
+not reopen, and why that argument does not cover fail-closed.
+
+**Why it stays `_o_`.** Both directions in § Suggested direction are behaviour: scoping
+fail-closed to the coordinate space the list can reach, and saying it in the deny reason.
+Neither is this step's, and the second is the one this record calls cheapest and most
+valuable. What is discharged is the documentation half, in the file every agent loads. The
+deny an agent actually meets still does not explain itself.

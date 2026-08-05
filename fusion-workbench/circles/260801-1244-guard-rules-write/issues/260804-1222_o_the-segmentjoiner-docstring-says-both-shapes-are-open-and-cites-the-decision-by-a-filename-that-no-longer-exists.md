@@ -70,3 +70,24 @@ before it is written, and re-run when the thing it names closes.
 Reported in `history/260804-1200-turn9-t9-1-the-joiner-for-the-segment-that-moves.md`
 § "Findings to report, none of them fixed here"; confirmed here by reading the file at HEAD
 and by resolving the cited path.
+
+---
+
+**Step 3 disposition (coder, 2026-08-05) — A-shaped, foreign file. STAYS `_o_`.**
+
+Branch A in kind, twice over — a docstring says two closed shapes are open, and cites a
+record by a path that does not resolve — and both sentences are in
+`hooks/lib/shell-parse.ts`, which step 3 does not own. This step changes no source comment.
+
+One of the six findings whose shape the plan's rule has no branch for; reported to the
+orchestrator as such.
+
+**Where it is answered.** `circles/260804-1205-shell-reachability-model` restructures this
+exact file by its own Directive, and this issue's own § Recommended fix asks that it be
+taken together with `260804-1221`, which is a second thing wrong in the same docstring
+region. Both are now routed to the same place for the same reason, so the "two passes over
+one docstring region" this issue warns about does not happen.
+
+The marker-in-a-citation half is the class
+`shared/issues/260802-1740_o_a-citation-path-carrying-a-state-marker-dies-on-ordinary-progress.md`
+describes, and it stays that record's to generalise.

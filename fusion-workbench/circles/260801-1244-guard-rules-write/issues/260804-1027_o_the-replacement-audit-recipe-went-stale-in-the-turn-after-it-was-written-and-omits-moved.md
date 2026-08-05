@@ -59,3 +59,27 @@ None that is worth having. A lint asserting that the docstring names every field
 ## Origin
 
 Found during the reconciler's verification of the Turn 5 regression closure, while checking whether any docstring at HEAD asserts more than the measurements support. It was the only overclaim found in fifteen assertions spot-checked across `bash-mutation-guard.ts`, `README-hooks.md` and `rules/protected-path-discipline.md`.
+
+---
+
+**Step 3 disposition (coder, 2026-08-05) — A-shaped, foreign file. STAYS `_o_`.**
+
+The defect is real and is branch A in kind: a delivered sentence is false. Branch A's
+remedy is unavailable, because the sentence is a docstring in
+`hooks/lib/bash-mutation-guard.ts` and step 3's scope is the two rule layers, the forensics
+analysis, `README-hooks.md` and the issue files. **This step changes no code and no source
+comment**, on the standing instruction that the classifier is not reopened.
+
+Reported to the orchestrator as a gap in the plan's three-branch rule rather than as a
+special case for this issue: **six of the eighteen findings have this shape**, and the rule
+as written has no branch whose remedy reaches them.
+
+**Where it is answered.** `circles/260804-1205-shell-reachability-model` restructures the
+directory model by its own Directive, and this enumeration is that model's. This issue's
+§ Recommended fix already names the option that removes the defect class rather than its
+third instance — delete the enumeration and point at `:1516-1525`, which carries the
+property correctly and sits on the declaration it describes. Cited there, not moved: the
+finding arose from this Circle's Directive and its record stays in this Circle's store.
+
+The open question at § "Is there a live escape behind it?" is untouched and still
+unverified.

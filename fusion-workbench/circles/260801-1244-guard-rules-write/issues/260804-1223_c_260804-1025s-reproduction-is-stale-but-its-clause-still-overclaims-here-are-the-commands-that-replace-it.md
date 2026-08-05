@@ -90,3 +90,21 @@ and `260804-1025 § Anti-vacuity` already asks for its narrower form.
 Found by running the four-question procedure against the module's give-up families during
 the incremental review of `4f1007f`, after the Turn 9 implementer reported that
 `260804-1025` was "no longer reproducible by its own steps".
+
+---
+
+**Step 3 disposition (coder, 2026-08-05) — branch A, text corrected. CLOSING with `260804-1025`, as this record asks.**
+
+One clause, one edit, as this record predicted. `rules/protected-path-discipline.md`
+question 3 now says "Yes → **this rule** denies nothing. That is the whole of what a 'yes'
+here buys", and carries the pointer.
+
+This record's job was to attach corrected evidence to a live file, and that is what the fix
+was checked against: three of its six rows — `cd -P build && rm out.js`,
+`command cd build && rm out.js` and `pushd -n build && rm out.js` — are re-measured and are
+the rows now standing in the question's own text, so the next reader meets the counterexample
+inside the procedure rather than in an issue.
+
+One correction to how the re-measurement was done, for anyone repeating it: `hooks/dist` is
+stale at this commit and all three rows *allow* against it. The measurement was taken against
+the TypeScript source built fresh.

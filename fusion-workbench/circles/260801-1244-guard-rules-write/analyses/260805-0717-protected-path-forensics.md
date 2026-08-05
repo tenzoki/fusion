@@ -51,9 +51,12 @@ too; they are not repeated here.
 
 Every row below is measured. They are **examples of the rule** stated in
 `rules/protected-path-discipline.md` under `### The rule, so you can predict a case
-this file does not list`, and the set is open — if you can answer the three questions
-there for a command you have not seen here, you have the rule; if you cannot, re-read
-it rather than looking for your command in the table.
+this file does not list`, and the set is open — if you can answer that section's
+numbered questions for a command you have not seen here, you have the rule; if you
+cannot, re-read it rather than looking for your command in the table. The count is
+deliberately not repeated here: it has been three and then four, and a back-reference
+that names a length goes stale one commit after the list it names
+(`issues/260804-1220…`).
 
 ```
 DENY   cd build; rm out.js
@@ -105,6 +108,10 @@ is what the guard implements; the shell is slightly different in one place.
   path clears them. The compound-command family is **not** uniform, which is why this is a
   model to be built rather than a list to be exempted: `until cd X; do W; done` runs its
   body when the `cd` *failed*, so its deny is correct and has to survive the fix.
+  Only option 2 of `decisions/260804-0947_i…` — model the and-or list — closes it; the
+  cheap option measured identically before and after. **The model that closes it is
+  `circles/260804-1205-shell-reachability-model`**, whose Directive is exactly this, so
+  the issue stays open here and is answered there.
 
 The edge that used to sit beside it — `&&` read as a stronger guarantee than bash gives —
 is **closed**. `true || cd build && rm rules/x.md` and `echo hi | cd build && rm rules/x.md`
@@ -121,12 +128,64 @@ guard raises the cost from zero to deliberate; it does not make it impossible*) 
 closing sentence (*none of these is an invitation*) are the two behavioural paragraphs of
 that section and stayed in the core file; everything between them is here.
 
-The gaps come in two shapes, and the second is the one that surprises people: writes the
-classifier cannot SEE, and writes it sees in full and allows anyway, because the path the
-command names is not the file the write reaches.
+The gaps come in three shapes, and the last two are the ones that surprise people:
+writes the classifier cannot SEE; writes it sees in full and allows anyway, because the
+path the command names is not the file the write reaches; and writes it sees in full and
+allows because the LIST it matches them against is not the list the reader assumed. The
+third shape was added on 2026-08-05 with the two entries that open the catalogue —
+before that, every entry here was about a command, and the two ways the effective list
+itself narrows had no home.
 
 Known and accepted:
 
+- **The effective protected list is the project's to narrow, and the narrowing reaches
+  the guard's own state directory.** `fusion-guard.json` at a project root overrides the
+  plugin's `hooks/config.json` per **leaf** — `pickGuard` in `hooks/lib/config.ts` is
+  `project.raw.guard?.[key] ?? plugin.raw.guard?.[key] ?? DEFAULTS.guard[key]`, so a
+  declared key wins, an omitted one falls through to the plugin's file, and only what
+  neither declares reaches the built-in default. A declared
+  `{"guard":{"protectedPaths":[]}}` therefore drops every entry — including
+  `fusion-workbench/.guard-state/**`, where
+  `escalation.json` holds `consecutiveBlocks` and `haltActive`. The residual therefore
+  reaches the escalation machinery, one step past what
+  `decisions/260802-1912_a_does-the-self-protection-floor-apply-before-the-config-file-exists.md`
+  states it reaches. Measured, four tool calls, no flag, both surfaces: `Edit
+  fusion-workbench/.guard-state/escalation.json` denies; `Write fusion-guard.json`
+  allows, because the floor is not yet in force; the same `Edit` then allows, and
+  `rm -rf fusion-workbench/.guard-state` allows with it; `Edit fusion-guard.json` denies,
+  the floor having closed behind it. What bounds it, measured too: an *active halt*
+  blocks the narrowing write itself, on both surfaces, so an agent can narrow its way out
+  of halts it has not yet earned and not out of one it is already in. The wider bound is
+  the one the decision record rests on — the file is git-tracked, so its creation is a
+  diff. Whether the floor should grow a second entry is open at `issues/260804-1427…`;
+  the spec authorises exactly one (`shared/planning/260801-1122…:301`).
+- **The patterns are matched against the session's working directory, not the project
+  root, and the two halves of the policy then disagree.** From a session started one
+  level below the root, every relative pattern is anchored there, so the project's real
+  `rules/`, `agents/` and `bin/monitor` are outside it and match nothing — while
+  fail-closed, which fires on the SHAPE of an operand before any question of which
+  directory it names, still denies. Measured through the classifier with the shipped
+  list, cwd `<project>/fusion-workbench`:
+
+  ```
+  rm <project>/rules/x.md                  allow      → the real rule file
+  mv <project>/rules/x.md /tmp/            allow
+  cd <project> && mv /tmp/y rules/         allow      → a protected-ancestor destination
+  cd <project> && cp bin/monitor "$SP/x"   DENY       fail-closed, unresolvable operand
+  rm rules/x.md                            DENY       → a `rules/` under the SESSION's cwd
+  ```
+
+  The last row is the shape of it: the guard protects a `rules/` that need not exist and
+  does not protect the one that does. Observed live as well as measured — the session
+  that split this rule file into three layers ran from `fusion-workbench/` and copied
+  into `rules/` unremarked. `260804-1604` closed the self-protection floor's half of this
+  and argued the rest away on the ground that the list is documented as project-relative;
+  that argument does not cover fail-closed, which is not project-relative at all. So in
+  exactly the configuration where the list protects nothing, the policy is at its most
+  obstructive, and an agent meeting that deny has no account of it. The two candidate
+  fixes — scope fail-closed to the coordinate space the list can reach, or say it in the
+  deny reason — are open at `issues/260804-2100…`; the documentation half is discharged
+  by the core rule's own statement of it and by this entry.
 - **Operands that arrive on stdin are invisible.** `find rules -name '*.md' | xargs rm -rf`
   is allowed, because `xargs` receives its operands on the pipe rather than as words.
 - **An unrecognised program that writes a protected path still writes it.**
@@ -218,8 +277,14 @@ Known and accepted:
   git considers them untracked:
 
   ```
-  cd build && GIT_WORK_TREE=../rules git clean -fdx     allow  → rules/ emptied
+  cd build && GIT_WORK_TREE=../rules git clean -fdx      allow  → rules/ emptied
+  cd build && env GIT_WORK_TREE=../rules git clean -fdx  allow  (the wrapper-hopped form)
+  cd build && git --work-tree=../rules clean -fdx        DENY   (the control)
   ```
+
+  The wrapper-hopped row was asserted from the mechanism when this entry was written and
+  is measured as of 2026-08-05; the control is what proves the classifier discriminates
+  rather than giving up on every `git clean` behind a `cd`.
 
   The rule, not the row: **any git invocation whose real working directory was set by the
   environment is checked against the wrong directory**, so an assignment behind a wrapper

@@ -70,3 +70,27 @@ having.
 `hooks/lib/__tests__/fixtures/git-verdicts-head.json` was added by `c9c44a3` this session (2,864 lines). The coverage gap this issue describes is real and unaddressed.
 
 **An adjacent gap in the same suite, filed separately.** `bash-mutation-guard.test.ts:196` holds the only `git -C` row in the whole suite, and it pins the direction where the protected path is the *operand* (`git -C /repo mv rules/x.md docs/` denies). The direction where `-C` *supplies* the protected directory — `git -C rules rm x.md`, which allows and deletes the file — has no row anywhere. Filed as `260804-1024_o_`. Whoever regenerates this fixture should take that issue's test list at the same time; both are "the git surface is under-covered in the families this Circle has been widening", and doing them together is one pass over the same fixture generator.
+
+---
+
+**Step 3 disposition (coder, 2026-08-05) — neither A nor B. STAYS `_o_`, and STAYS IN THIS CIRCLE.**
+
+No delivered rule text is false and the classifier needs no new capability. Item 3 — the
+test docstring overstating the corpus — is A in kind, but the sentence is in
+`hooks/lib/__tests__/git-branch-guard.test.ts`, and step 3 changes no code and no test.
+
+**It does not move to the shared store.** The fixture was added by `c9c44a3`, a commit of
+this Circle's own Turns; under the Origin Rule the record stays here. The reference to
+`circles/260804-1205-shell-reachability-model` below is a citation, not a move.
+
+**Where the work belongs.** The regeneration is one pass over the same generator as
+`260804-1024`'s test list, which that issue's reconciliation already pairs it with, and the
+property that makes the fixture worth having — regenerate against a classifier materialised
+out of git at the reference commit — has to survive it. The obvious moment is when
+`circles/260804-1205-shell-reachability-model` restructures `hooks/lib/shell-parse.ts`,
+because that is the change the fixture exists to insulate the git classifier from, and a
+fixture with no `||`, no `|` and no `&` row would not catch a joiner-shaped regression in
+exactly that work.
+
+Not load-bearing today, as this issue's own § "What is right first" establishes with two
+independent reproductions.

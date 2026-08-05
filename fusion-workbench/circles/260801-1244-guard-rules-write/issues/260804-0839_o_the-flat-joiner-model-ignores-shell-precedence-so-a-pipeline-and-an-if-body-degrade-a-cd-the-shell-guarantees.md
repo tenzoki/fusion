@@ -109,3 +109,31 @@ The four shapes still deny at HEAD `cc012fc`: `if cd hooks; then rm -rf dist; fi
 Five regressions plus one new coverage gap, four closed within the session, two open. The Turn 7 review's headline — zero commands allow at HEAD that denied at `048f3db`, across 222,319 generated commands — is true and is about the **security** direction only. Turn 7 opened no hole; it cost accuracy and over-denied. Both statements are true and the second is easy to lose behind the first.
 
 **Why this one matters more than its Medium severity suggests.** It is not a hazard, it is a cost, and it is a cost an agent meets on ordinary work: `cd hooks && npx tsc | tee typecheck.log` is a command a coder writes without thinking. `rules/protected-path-discipline.md:254-258` and its illustration block now name three of these shapes as over-denies, so an agent meeting one can tell it is a cost rather than a hazard — which is the mitigation, and it is the right one while the fix waits on `decisions/260804-0947_o_`. Only option 2 of that decision closes this; option 1, the cheap one, measures identically before and after.
+
+---
+
+**Step 3 disposition (coder, 2026-08-05) — branch B, the gap written down. STAYS `_o_`, and is answered in another Circle.**
+
+Not fixed here, and this Circle is not where it gets fixed. `decisions/260804-0947_i_…`
+already established that only its option 2 — model the and-or list — closes this, and that
+model is the Directive of `circles/260804-1205-shell-reachability-model`.
+
+**The residual entry was already standing** and needed no new prose: it travelled with its
+section in step 2 and is now in
+`analyses/260805-0717-protected-path-forensics.md` § 1, under "One honest edge, still open,
+and it costs rather than leaks", with the `until cd X; do W; done` counter-example that
+keeps any implementation honest. What was added is the routing — the entry now names the
+Circle that answers it, so a reader arriving at the residual does not have to reconstruct
+that from a decision record.
+
+**What changed for the better is the reach.** Before this step the mitigation this issue's
+reconciliation identified as the right one lived only in the illustration block, which after
+step 2 no agent loads. The core rule now names the shape in its closing pointer: a
+conditional body, a loop body, a brace group and a pipeline stage give the directory up
+although the shell guarantees the `cd`, and this costs a deny rather than leaking one. So
+an agent meeting `cd hooks && npx tsc | tee typecheck.log` still learns from the file it
+actually carries that it has met a cost and not a hazard.
+
+**Counted once.** This finding stays in this Circle's issue store; the reference to
+`260804-1205` is a citation, not a move — the Origin Rule's second corollary, reach is
+cited, never placed.

@@ -79,3 +79,38 @@ A lint that greps for "exact" in this file would be theatre. What would actually
 ## Origin
 
 Found by the reconciler's documentation audit during the closing pass of session `history/260803-1737-orchestrator-session.md`, by running the document's own three-question procedure against the two issues the same session left open.
+
+---
+
+**Step 3 disposition (coder, 2026-08-05) — branch A, text corrected. CLOSING, together with `260804-1223`.**
+
+The clause is gone. `rules/protected-path-discipline.md` question 3 now reads "Yes →
+**this rule** denies nothing. That is the whole of what a 'yes' here buys", followed by the
+pointer this issue's § Recommended fix asks for: it is not a statement that the directory
+model is exact and not a statement that the command is safe, and the modifier, wrapper,
+`CDPATH` and fail-closed rules each have their own section and can each deny a command that
+answers all four questions the reassuring way.
+
+The three rows the question now names are measured rather than carried over. One trap on
+the way, worth recording because it would have produced a false green: **`hooks/dist` is
+stale at this commit** (step 5 owns the rebuild), and measured against it all three rows
+*allow*. Measured against the TypeScript source built fresh into a scratch directory,
+shipped protected list, `env: {}`:
+
+```
+DENY   cd -P build && rm out.js
+DENY   command cd build && rm out.js
+DENY   pushd -n build && rm out.js
+```
+
+**The milder second instance is untouched, and that is a decision rather than an
+oversight.** This issue also names `### A cd is tracked`'s "**Write `&&`, not `;`** … `&&`
+is the only joiner it accepts as an answer", stated strongly and corrected a hundred lines
+later. After step 2's split the correction sits in `rules/protected-path-internals.md`,
+which is loaded by three agents rather than sixteen — but the paragraph's own next
+sentences are the joiner table and the rule read from it, and the table answers the
+question the strong sentence overstates. The premise is no longer softened downstream; it
+is qualified in place. No edit was needed and none was made.
+
+**Optional item declined.** The suggestion to move the `&&` correction up is superseded by
+the same split.

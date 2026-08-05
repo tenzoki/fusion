@@ -75,3 +75,29 @@ control, and it belongs in the Step 9 documentation task with the instruction
 
 Found by reading `rules/protected-path-discipline.md` end to end during the incremental
 review of `4f1007f`.
+
+---
+
+**Step 3 disposition (coder, 2026-08-05) — branch A, text corrected. CLOSING.**
+
+**This issue's `**Affects:**` line no longer holds, and that is the first thing to record.**
+Step 2 split `rules/protected-path-discipline.md` into three layers and the illustration
+block travelled to
+`circles/260801-1244-guard-rules-write/analyses/260805-0717-protected-path-forensics.md`.
+So the sentence is not at `rules/protected-path-discipline.md:218` and the correction
+landed in the analysis instead. The four questions themselves stayed in the core file, so
+the two halves of this issue are now in two files.
+
+**It is not corrected to "the four questions". The count is removed.** The sentence now
+reads "that section's numbered questions", with one line saying why: the count has been
+three and then four, and a back-reference that names a length goes stale one commit after
+the list it names. That is this issue's own `## Anti-vacuity` argument taken at its word
+rather than its literal `## Recommended fix`, which would have shipped the fourth
+enumeration this Circle falsified inside a day.
+
+**The second half is also done, and it is in the core file where the reader is.** Question
+2's parenthetical restated a safe-list as the closed pair "it is a `||` or a `|`", three
+paragraphs after the table's own footnote says anything not in the table counts as no. It
+now says to read the answer out of the table's third column, and that anything the table
+does not carry is a "no" as well — so a joiner added to `SegmentJoiner` later cannot make
+the question's gloss false on its own.

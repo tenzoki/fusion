@@ -206,10 +206,35 @@ Abgeleitete Erwartung, nicht geschätzt: nach Schritt 2 stehen 104 600 Byte, nac
 - **Falsifikat:** Die Verkettung von Kern und Referenz, um Header und Zeigerzeile bereinigt, reproduziert das Original an `cac3726` nicht Byte für Byte. Dann wurde gelöscht, und die Nutzerentscheidung "weniger laden, nichts löschen" ist verletzt. Zweites Falsifikat: `bin/fusion-rules coderev` emittiert die Referenzdatei nicht, oder `bin/fusion-rules shaper` emittiert sie doch. Drittes: der Emissionsdeckel aus Schritt 1 misst nach dem Schnitt mehr als 104 600 Byte.
 - **Wirkung in unite cocreator:** Jeder der 16 Agenten dort lädt 40 544 Byte weniger, sobald das Release installiert ist. `coder`, `coderev` und `bugfixer` erhalten inhaltlich unverändert alles, was sie heute erhalten, verteilt auf zwei Dateien. Die 13 übrigen Agenten verlieren den Zugriff auf den Residuenkatalog und sehen ihn nur noch über die Zeigerzeile. Das ist der Verlust, den der Schritt eingeht, und er ist die S4-Diskoverierbarkeit aus der Spec (Zeile 544) in ihrer kleinsten Form.
 
-### 3. Die 18 offenen Befunde nach einer Regel abschließen
+### 3. Die 18 offenen Befunde nach einer Regel abschließen [DONE]
+
+> **Ausgeführt 2026-08-05.** Beleg: `history/260805-0821-coder-step3-eighteen-findings-one-rule.md`.
+> **Beide Falsifikate sind eingetreten, das erste in stärkerer Form als erwartet.**
+>
+> **Erstes Falsifikat.** Sechs der 18 passen in keinen Zweig. Die Regel schneidet A und B nach der
+> *Art* des Mangels, C nach dem *Gegenstand*, und jeder Zweig schreibt zusätzlich eine *Abhilfe*
+> und einen *Marker* vor — die stillschweigend voraussetzen, dass der falsche Satz in einer Datei
+> dieses Schritts steht. Fehlende Unterscheidung: **wem gehört der Text.** Sechs Befunde sind
+> A-förmig, aber ihr Satz steht in einem Quellkommentar, einem Test-Docstring oder der gesäten
+> JSON-Vorlage. Zwei weitere (`260804-2100`, `260804-1427`) brauchen A **und** B zugleich und
+> bekommen von den beiden Zweigen widersprüchliche Marker.
+>
+> **Zweig C ist leer, und sein Kriterium ist für alle drei hier genannten Beispiele falsch.**
+> `260803-1352` (Advisory aus der Exemption), `260804-1605` (die gesäte Vorlage) und
+> `260804-1606` (`blocksBeforeHalt` aus C5b) entstammen sämtlich der Directive dieses Circles;
+> die Herkunftsregel behält sie hier. Keiner wurde verschoben.
+>
+> **Zweites Falsifikat: erfüllt.** Ein Satz behauptete eine Deckung, die `GIT_WORK_TREE`
+> widerlegt — `rules/protected-path-internals.md`, "against **every** directory the guard can
+> attribute to the invocation". Korrigiert und mit gemessener Kontrollgruppe belegt.
+>
+> **Bilanz:** 5 geschlossen, 13 offen. Byte pro Agentengruppe: 114 545 / 120 218 / 136 442.
+> **Der CEILING-Ratschen-Test ist rot und wurde nicht angehoben** — sein Vertrag lautet
+> "may only ever be LOWERED", und Schritt 4 senkt den Höchststand auf 127 958, also unter den
+> heute stehenden Deckel. Suite: 1 541 von 1 543 grün, nur die zwei Deckel-Zusicherungen rot.
 
 - **Executor:** coder
-- **Dateien:** `rules/protected-path-discipline.md`, `rules/protected-path-internals-coding.md`, `README-hooks.md`, die 18 Issue-Dateien unter `$OUT_ISSUE`
+- **Dateien:** `rules/protected-path-discipline.md`, `rules/protected-path-internals.md` (der Plan schrieb `-coding`; Schritt 2 hat sie ohne Musterwort benannt), die Forensik-Analyse `analyses/260805-0717-protected-path-forensics.md` (dritte Ablage, die der Plan nicht kannte), `README-hooks.md`, die 18 Issue-Dateien unter `$OUT_ISSUE`
 - **Änderung:** Jeder Befund wird genau einem Zweig zugeordnet.
   - **Zweig A, Text korrigieren.** Der Befund macht einen ausgelieferten Satz falsch. Die Korrektur landet in der Hälfte, in die der Satz nach Schritt 2 gehört. Der Issue-Marker geht auf `_c_`. Erwartet trifft das die Dokumentationsbefunde, darunter `260804-1025` und sein Beleg `260804-1223`, `260804-1220`, `260804-1222`, `260804-1027`, `260804-1349`, `260804-1350`, `260804-1351`, `260803-1402` (**Schluss:** die Zuordnung folgt den Titeln und ist bis zur Ausführung eine Ableitung, keine Prüfung).
   - **Zweig B, Lücke schreiben.** Der Befund verlangt, dass der Klassifizierer mehr kann. Er wird nicht behoben. Der Residuenabschnitt der Referenzdatei bekommt einen Eintrag, der die Lücke benennt, und der Issue-Marker bleibt `_o_` mit einer Zeile, die den Zielort nennt. `260804-1332` (`GIT_WORK_TREE`) gehört hierher, obwohl er High ist: er ist eine echte Umgehung, und die ehrliche Behandlung ist, sie zu dokumentieren, statt den Klassifizierer erneut zu öffnen. `260804-0839` wandert per Zitat zu `circles/260804-1205-shell-reachability-model`, wo die Entscheidung `260804-0947` ihn bereits verortet hat.

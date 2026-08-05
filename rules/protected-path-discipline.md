@@ -32,10 +32,19 @@ file with no tool the guard inspected. It no longer does.
 
 The list is `agents/**`, `rules/**`, `skills/**`, `hooks/config.json`,
 `hooks/hooks.json`, `settings.json`, `bin/monitor`, `.claude-plugin/plugin.json` and
-`fusion-workbench/.guard-state/**`. It lives in the plugin's own `hooks/config.json`,
-which the guard finds by walking up from the hook module, so every project on this
-plugin gets the same list. The patterns are **project-relative**: in a consuming
-project `rules/**` means that project's own `rules/` directory, not the plugin's.
+`fusion-workbench/.guard-state/**` — the plugin's **default**, not the answer. A project
+may ship `fusion-guard.json` at its root, and a `guard.protectedPaths` declared there
+wins; a declared empty list really is empty, which is how a project narrows, and it
+stands this whole check down, fail-closed included. The guard's own state directory is
+an ordinary entry and goes with the rest.
+
+The patterns are relative and are matched against **the session's working directory**,
+not the project root. Started at the root — the ordinary case — `rules/**` is that
+project's own `rules/`. Started one level down it names a `rules/` under *that*
+directory, and the project's real one matches nothing: from `<project>/fusion-workbench`,
+`rm <project>/rules/x.md` allows while an unresolvable operand still denies fail-closed.
+So an allow is not a permission. Writing a protected path because the guard happened to
+let you is the thing this rule forbids, whatever the guard allowed.
 
 One clause of the rule is the deny most likely to surprise you, so it belongs here
 rather than in the reference: **a recognised verb whose written operand cannot be
@@ -62,10 +71,11 @@ there, and it is denied anyway. Measured on a case-sensitive volume, with both f
 present and different: `Edit AGENTS/coder.md` denies. That is the accepted cost, and it is
 the direction the fail-closed clause above already chooses.
 
-The **exemption does not fold**. With `FUSION_ALLOW_RULES_WRITE` set, `Edit rules/x.md` is
-allowed while `Edit RULES/x.md` is denied — the protected set widened and the grant did
-not, which is the only direction a guard may move. Spell a rule path the way the rule
-directory spells it.
+The **exemption does not fold**. With `FUSION_ALLOW_RULES_WRITE` set (see
+`### The overrides waive only what they name`), `Edit rules/x.md` is allowed while
+`Edit RULES/x.md` is denied — the protected set widened and the grant did not, which is
+the only direction a guard may move. Spell a rule path the way the rule directory
+spells it.
 
 ### An ancestor directory is covered, in both directions
 
@@ -143,12 +153,28 @@ subshell that cannot move its caller. Anything not in this table counts as **no*
 
 Four questions decide any command, in order:
 
-1. **Does it contain a directory builtin at all?** No → this rule cannot touch it, whatever
-   its joiners are. `ls; rm out.js` and `npm test; rm build/out.js` allow, and always did.
-2. **Is the joiner in front of the builtin's own segment one that moves your shell?** No —
-   it is a `||` or a `|` → the directory is unknown from there on, whatever follows.
-3. **Is every joiner between that builtin and the write an `&&`?** Yes → the model stays
-   exact and this rule denies nothing.
+1. **Does anything in it move, or claim to move, the directory a relative operand hangs
+   off?** That is a directory builtin, a `cd` modifier the guard does not model, a wrapper
+   in front of one, an ambient `CDPATH`, or a `git -C` / `--work-tree`. No → this rule
+   cannot touch it, whatever its joiners are. `ls; rm out.js` and
+   `npm test; rm build/out.js` allow, and always did. The question is asked over the
+   **effect** rather than over the word `cd` because the earlier wording named only the
+   builtin and a git directory flag falsified it: `git -C $D rm build/out.js` and
+   `git --work-tree=$W clean -fdx` contain no builtin and no joiner, and deny on this
+   rule's own reason.
+2. **If the mover is a directory builtin: is the joiner in front of ITS OWN segment one
+   that moves your shell?** Read the answer out of the table's third column rather than
+   off a pair of joiners — `||` and `|` are today's "no", and anything the table does not
+   carry is a "no" as well. No → the directory is unknown from there on, whatever follows.
+   (A `git -C` or an ambient `CDPATH` has no segment of its own to ask this about; it goes
+   straight to question 4.)
+3. **Is every joiner between the mover and the write an `&&`?** Yes → **this rule** denies
+   nothing. That is the whole of what a "yes" here buys. It is not a statement that the
+   directory model is exact, and not a statement that the command is safe: the modifier,
+   wrapper, `CDPATH` and fail-closed rules each have their own section and each can deny
+   a command that answers all four questions the reassuring way. `cd -P build && rm out.js`,
+   `command cd build && rm out.js` and `pushd -n build && rm out.js` reach the end of this
+   procedure and deny.
 4. **Does the writing segment name a relative path** — an operand *or* a redirection
    target? No → nothing to place, nothing to deny.
 
@@ -190,8 +216,22 @@ With `FUSION_ALLOW_BRANCH_SWITCH=1`, `git switch main && rm rules/x.md` still de
 and the reason names `rules/x.md` rather than the branch policy: each case reports the
 permission you actually lack.
 
-**There is no override for a protected-path shell write.** That is deliberate. The
-answer is the Human Gate below.
+**One override touches this policy, and it is narrow.** `FUSION_ALLOW_RULES_WRITE`, set
+by the user for a session, exempts the project's rule directories and the `retired/`
+destination inside them — and nothing else on the list above. The flag does not turn the
+guard off and does not clear a halt, and every write it lets through emits a
+`guard_advisory` event, so the user reads afterwards what the permission bought.
+
+Two things still deny **with the flag set**. It does not fold case (`rules/x.md` allowed,
+`RULES/x.md` denied). And **a hard-linked rule file is not exempt**: the exemption
+resolves the path through the filesystem to prove this name writes only a rule file, and
+`realpath` can follow a symlink but can prove nothing about a second name on the same
+inode. `rsync --link-dest`, `cp -al` and `git clone --local` all produce hard-linked
+trees, so nobody has to have chosen that state. Rewriting the command does not help; ask
+the user.
+
+**For every protected path the flag does not name, there is no override.** That is
+deliberate. The answer is the Human Gate below.
 
 ## What stays allowed
 
@@ -225,8 +265,11 @@ If a task genuinely requires writing a protected path from a shell:
 1. **STOP.** Do not rephrase the command. The guard segments on `;`, `&&`, `||`, `|`,
    `&` and newlines, splices backslash line continuations, inspects `$(…)` and backtick
    subshells, reads single- and double-quoted operands as the paths they are, removes
-   backslash escapes, and sees through grammar words and wrappers. A differently-worded
-   command is the same command.
+   backslash escapes, and sees through grammar words and wrappers. Every rephrasing of
+   that kind is the same command. Where one does escape — an environment assignment that
+   moves git, a program outside the verb table, an alias you make yourself — reaching for
+   it *because* you met a deny is the act this rule forbids. The catalogue at the end
+   audits the guard; it is not a list of ways through.
 2. **Do not re-route through `Edit` or `Write`.** They are guarded on the same list.
    Routing around one surface to reach the other is the failure this rule exists to
    prevent.
@@ -277,8 +320,14 @@ without that qualification.** A shell can construct a path at run time, and fail
 covers the constructible cases the classifier can see, not every case. Completeness is
 not the target.
 
-Twenty residuals are catalogued, each with the command that measured it and the record
-that argued it, in `fusion-workbench/circles/260801-1244-guard-rules-write/analyses/260805-0717-protected-path-forensics.md`.
+Twenty-one residuals are catalogued, each with the command that measured it and the
+record that argued it, in
+`fusion-workbench/circles/260801-1244-guard-rules-write/analyses/260805-0717-protected-path-forensics.md`.
+Two are the ones stated above. Two more you can meet on ordinary work: `GIT_WORK_TREE=`
+and `GIT_DIR=` in the environment move git where the guard is not looking, while the
+`-C` and `--work-tree` spellings are read exactly; and a conditional body, a loop body,
+a brace group or a pipeline stage gives the directory up although the shell guarantees
+the `cd` — a deny you pay, not a hole you found.
 
 None of these is an invitation. An agent that reaches for one of them to get around a
 deny has done the thing this rule forbids, whatever the guard happened to allow. That

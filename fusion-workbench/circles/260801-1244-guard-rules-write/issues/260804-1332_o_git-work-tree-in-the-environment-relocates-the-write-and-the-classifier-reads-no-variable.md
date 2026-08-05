@@ -101,3 +101,47 @@ Both rows allow at HEAD, so neither can pass vacuously. When they close,
 `GIT_WORK_TREE=build git clean -fdx` must be pinned as an allow — a test that only pinned
 the protected rows could not tell a fix from a blanket give-up on every git invocation
 carrying an assignment.
+
+---
+
+**Step 3 disposition (coder, 2026-08-05) — branch B, the gap written down. STAYS `_o_`.**
+
+Not fixed, deliberately. Reading a second environment variable reopens the boundary
+question this issue's own § "Why it was not closed with its command-line sibling" names,
+and that is the course the user stopped. The honest treatment of a real bypass is the
+residual plus an open marker, which is what the plan
+(`planning/260804-2356_o_…ausstieg…`, step 3, branch B) prescribes for exactly this
+finding, High severity included.
+
+**What landed instead, and the check that makes it more than a claim.** The plan's second
+falsification test for this step is whether any sentence in either rule layer still asserts
+a coverage this issue refutes. **One did.**
+`rules/protected-path-internals.md` `### git carries its own working directory` said an
+operand is checked "**against every directory the guard can attribute to the
+invocation**" — a sentence an agent can only read as coverage. It now says "each directory
+a global option **on the command line** redirects git to, plus the shell's own", and the
+paragraph that follows draws the boundary explicitly with the control that separates the
+two spellings:
+
+```
+cd build && GIT_WORK_TREE=../rules git clean -fdx        allow   → rules/ emptied
+cd build && env GIT_WORK_TREE=../rules git clean -fdx    allow
+cd build && git --work-tree=../rules clean -fdx          DENY    → rules
+```
+
+The wrapper-hopped row was argued from the mechanism when this issue was filed and is now
+**measured**; the forensics catalogue carries the same three rows. Both files also carry
+the warning this issue's § "Measured inert" asks for in a different shape:
+`GIT_WORK_TREE=rules git clean -fdx` **does** deny at the project root, on the root's own
+write-through rule and not because the variable was read, so that deny must not be read as
+coverage.
+
+**The core rule names the residual too**, in its closing pointer, so an agent knows the
+route exists without opening a catalogue nothing loads.
+
+**Where it goes is not decided here.** The plan's own open question asks whether this
+belongs in `circles/260804-1205-shell-reachability-model` or in a Circle of its own and
+answers *probably its own* — it is an environment-variable problem, not a reachability
+problem. That is a user decision. Meanwhile the residual is citable from both rule layers
+and from the forensics analysis, which is the bound the plan's risk table relies on: a
+residual in a document is findable, a closed issue is not.

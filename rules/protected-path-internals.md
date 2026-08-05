@@ -96,9 +96,9 @@ the permission you actually lack.
 them is not the path it looks like: `git -C rules rm x.md` deletes `rules/x.md`. Each `-C`
 composes onto the last, and `--work-tree` composes onto the result.
 
-An operand is checked **against every directory the guard can attribute to the
-invocation** — the shell's own, and each directory a global option redirects git to. Both
-readings have to be clear before the write runs, so:
+An operand is checked against **each directory a global option on the command line
+redirects git to, plus the shell's own**. Both readings have to be clear before the
+write runs, so:
 
 | Allowed | Denied |
 |---|---|
@@ -109,8 +109,27 @@ readings have to be clear before the write runs, so:
 `git -C /repo mv rules/x.md docs/` **denies**, although `-C` says the operand belongs to
 another repository. That is deliberate: the guard does not use a flag to argue a
 spelled-out protected path away, the same way `mv $SRC rules/` denies on the visible
-target. `--git-dir` names where the repository metadata lives, moves no pathspec, and
-changes nothing.
+target. The `--git-dir` flag names where the repository metadata lives, moves no
+pathspec, and changes nothing.
+
+**"On the command line" is the boundary, and it is a real one.** The classifier resolves
+no environment variable except `CDPATH`, so `GIT_WORK_TREE=` and `GIT_DIR=` — which move
+git exactly as `-C` and `--work-tree` do — reach nothing here, in front of the verb and
+behind a wrapper alike. Measured, with the control that separates the two spellings:
+
+```
+cd build && GIT_WORK_TREE=../rules git clean -fdx        allow   → rules/ emptied
+cd build && env GIT_WORK_TREE=../rules git clean -fdx    allow
+cd build && git --work-tree=../rules clean -fdx          DENY    → rules
+```
+
+The first row was measured in a real repository at git 2.49.0 and removed every file
+under `rules/`, tracked files included — with the work tree moved, git considers them
+untracked. **Nothing in this section is coverage of that route**, and one deny in
+particular must not be read as coverage: `GIT_WORK_TREE=rules git clean -fdx` at the
+project root does deny, on the root's own write-through rule, not because the variable
+was read. The residual is catalogued in the forensics analysis and open at
+`issues/260804-1332…`, deferred to `circles/260804-1205-shell-reachability-model`.
 
 `git clean` with no pathspec deletes **from the current directory down**, not from the
 repository root — so `cd rules && git clean -fdx` and `git -C rules clean -fdx` both deny

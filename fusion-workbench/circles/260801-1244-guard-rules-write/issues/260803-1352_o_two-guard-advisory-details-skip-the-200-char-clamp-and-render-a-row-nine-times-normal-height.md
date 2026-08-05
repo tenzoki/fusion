@@ -107,3 +107,26 @@ Both unclamped sites are still unclamped at HEAD `cc012fc`, verified in code rat
 The clamp itself is unchanged at `hooks/guard.ts:216` (`EVENT_DETAIL_MAX = 200`) and `:227-231` (`forEvent`), and the three block sites that do use it are at `:344`, `:478` and `:503`. The third advisory site, `guard.ts:803` (`rulesWriteDetail([filePath])`, write-tool surface, exactly one path), is still the bounded one this issue correctly excluded.
 
 Nothing in this session touched `bin/monitor` or the advisory emit sites, so the drift is line numbers only. Untouched for two sessions running; not blocking anything.
+
+---
+
+**Step 3 disposition (coder, 2026-08-05) — neither A nor B. STAYS `_o_`, and STAYS IN THIS CIRCLE.**
+
+No delivered sentence is false and the classifier needs no new capability. It is a two-line
+code defect in `hooks/guard.ts`, and step 3 changes no code.
+
+**It does not move to the shared store, and the plan's reason for moving it does not
+hold.** Step 3 of `planning/260804-2356_o_…ausstieg…` names this issue as an example of a
+finding that "does not belong to this Circle's Directive". Both unclamped sites are C5a's:
+`rulesWriteDetail(mutation.exempted)` is the rules-write exemption's own advisory, and the
+Directive says in so many words that each exempted write "emits a `guard_advisory` event …
+so the user reads the exempted writes in `.guard-state/events.jsonl` and on the monitor
+dashboard". The finding is that this reading surface degrades under the exemption's own
+worst case, `sed -i 's/x/y/' rules/*.md`. Under the Origin Rule it belongs here. Reported
+to the orchestrator as a correction to the plan.
+
+**Executor and shape, unchanged from the record.** `coder`, two `forEvent()` calls at
+`hooks/guard.ts` (`:529` and `:558` as of the last reconciliation), plus the one decision
+the record flags: for a path list, dropping whole entries and appending `(+N more)` reads
+better than a mid-token ellipsis, and that is a `rulesWriteDetail` change rather than a
+`forEvent` change.

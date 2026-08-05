@@ -99,3 +99,27 @@ already reached for wrappers; `DIR_BUILTINS` never got it.
 The deny row already denies through the `rm ../rules/x.md` operand, so it would pass with
 `chdir` removed from the set — the assertion has to be paired with the zsh effect, or with a
 variant whose protected reach exists only through the `chdir` (`chdir rules && rm x.md`).
+
+---
+
+**Step 3 disposition (coder, 2026-08-05) — A-shaped, foreign file. STAYS `_o_`.**
+
+Branch A in kind: a recorded reason is false. The comment on `DIR_BUILTINS` says "no program
+by that name does anything else", and `chdir` is a builtin in zsh, which is the shell the
+`Bash` tool runs. It is a source comment in `hooks/lib/bash-mutation-guard.ts`, which step 3
+does not own, and this step changes no source comment.
+
+One of the six findings whose shape the plan's rule has no branch for; reported to the
+orchestrator as such.
+
+**Where it is answered.** `circles/260804-1205-shell-reachability-model` owns the tables the
+directory model is keyed on, and this is the same shape as `runsBuiltins` one table up. This
+issue's § Recommendation supplies both the replacement comment and the generalisation that
+keeps the class from reappearing — state next to the set that every entry is a claim about a
+shell, that including a name only some shells implement over-denies, and that omitting one a
+shell does implement is the unsafe direction.
+
+Recorded because it bounds the urgency: **the verdict is right in both shells today.** The
+row is load-bearing and correct; what is wrong is the reason written beside it, and this
+Circle has learned repeatedly that a row justified by the wrong reason is a row the next
+editor removes.

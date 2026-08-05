@@ -58,3 +58,37 @@ Three reasons, in order of weight.
 ## Suggested direction
 
 Either add `fusion-workbench/.guard-state/**` to the floor alongside `PROJECT_CONFIG_FILENAME` — one line in `hooks/lib/config.ts`, and the two integration cases that measure the reach today become the cases that pin it closed — or leave it and correct the residual's stated bound in the decision record and in Step 9's documentation. Not both, and not neither.
+
+---
+
+**Step 3 disposition (coder, 2026-08-05) — branches A and B TOGETHER. STAYS `_o_`.**
+
+The second of the two findings that do not fit one branch, and it fails to fit for the same
+reason as `260804-2100`: a delivered sentence was false, and the reason it was false is a
+reach the guard has and no record stated.
+
+**Branch A, done — and it found a sentence this issue does not name.**
+`rules/protected-path-discipline.md` said the protected list "lives in the plugin's own
+`hooks/config.json`, which the guard finds by walking up from the hook module, **so every
+project on this plugin gets the same list**." C5b falsified that in this Circle's own step
+6, and no rule text followed. The paragraph now says the plugin's list is the default, that
+a project's `fusion-guard.json` overrides per top-level key, that the effective list is
+whatever that file leaves standing — down to nothing, which stands the whole check down
+including fail-closed — and, in the clause this issue is named for, that the guard's own
+state directory is an ordinary entry and goes with the rest.
+
+**Branch B, done.** The forensics catalogue gains the entry § "Step 9 already owes a
+sentence here" asks for, and it states the **measured** reach rather than the narrower one
+`decisions/260802-1912_a_…` records: the four-call sequence with no flag on both surfaces;
+the bound that an active halt blocks the narrowing write itself, so an agent can narrow its
+way out of halts it has not yet earned and not out of one it is in; and the git-diff bound
+the decision record rests on, undisputed and named as the main one.
+
+**Why it stays `_o_`.** The choice this issue puts — a second floor entry, or leave it and
+correct the stated bound — is a decision about what a project may configure, and the spec
+authorises exactly one floor entry
+(`shared/planning/260801-1122_o_spec-normative-consolidation.md:301`). The documentation
+half of the "leave it" arm is now done in the two places an agent and an auditor read. The
+other half is the **decision record's own** stated bound, and a decision record is not this
+step's file. "Not both, and not neither" still stands as this issue's own condition, and it
+is not yet satisfied.
