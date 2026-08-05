@@ -2,7 +2,7 @@
 
 **Directive:** Get the monitor LAN-bind fix actually deployed — diagnose why the dashboard still bound localhost after update, then release v5.9.2
 **Mode:** custom
-**Status:** Release complete
+**Status:** Complete
 
 ## Snapshot (Setup Step 3)
 
@@ -52,3 +52,92 @@ Rules walked: decisions ≥ issues? no. analyses>0 ∧ commits=0? no. analyses>0
 - Grounding↔Directive: 0 open decision records across both stores; 5 answered records walked to implemented this pass against the commits (`260803-1402`, `260804-1630`, `260804-1631`, `260804-1815`, shared D2 `260801-1020_i_may-any-fusion-writer-touch-rules`); the remaining answered records (`260805-1548` circle-deletion policy, shared D1 and the concurrency record) are consistent with closing this Circle — 0 conflicting.
 
 **Rebalance recommendation:** revise Artifact — one mechanical coder task: regenerate `hooks/lib/__tests__/fixtures/rules-emission.golden` deliberately per the test header's procedure, verify, commit. It is the only flagged item; once it lands, all three edges are clean and nothing stands between the Circle and closure (`_t_` → `_c_`) and the activation of `260805-2005-textschicht-gegen-code-nachziehen`.
+
+## Budget
+
+| Metric | Count |
+|--------|-------|
+| Turns | 3 |
+| Tasks resolved | 5 (T1–T5) |
+| Tasks skipped/deferred | 0 |
+| Issues created (by reviewers) | 2 (260805-2248, 260805-2323 — both resolved in-session) |
+| Issues resolved | 7 (260804-1605, -1606, -1427, 260805-1830, -1840 template, -2248, -2323) |
+| Decisions answered (`_o_`→`_a_`) | 0 |
+| Decisions implemented (`_a_`→`_i_`) | 5 (260803-1402, 260804-1630, -1631, -1815, shared 260801-1020) |
+| Commits | 9 (2 release + 4 task + 1 review-fix + 1 fixture + 1 reconciliation; closure batch follows) |
+| Agent errors | 0 |
+| Human gates hit | 4 (queue approval, Turn-1 coherence, closure approval, Rebalance) |
+
+## Per-Turn Log
+
+### Turn 1
+- Tasks: T1 (ontocoder, `21a72b7`), T2 (coder, `373f5ed`), T3 (coder, `b9b350f`)
+- Review: coderev filed 1 issue (README advisory row vs floor)
+- Coherence: ok
+
+### Turn 2
+- Tasks: T4 (coder, `def351e`) — review finding fixed
+- Review: formal re-dispatch skipped (fix implements the reviewer's own prescription, verified against config.ts:687-692)
+- Coherence: ok → user approved closure
+
+### Turn 3 (Rebalance: Revise Artifact)
+- Task: T5 (coder, `24186a4`) — emission golden regenerated per documented procedure; suite 1551/1551
+- Reconciliation batch committed as `89f2c58`
+- Coherence: ok — all three edges clean
+
+## Session Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant O as Orchestrator
+    participant OC as Ontocoder
+    participant C as Coder
+    participant CR as Coderev
+    participant R as Reconciler
+    participant PM as Playmaker
+
+    Note over O: Pre-loop: monitor diagnosis + release v5.9.2 (4a8fea0, tag)
+    U->>O: /fusion:next Briefing, dann Circle abschliessen
+    O->>PM: portfolio ranking (domain code)
+    PM-->>O: Empfehlung Textschicht-Circle; 1 aktiv, 3 geplant
+    Note over O: Turn 1
+    O->>U: GATE Queue + ontocoder T1
+    U-->>O: proceed
+    O->>OC: T1 fusion-guard Vorlage: Leaf-Merge
+    OC-->>O: done (21a72b7)
+    O->>C: T2 Step-7 Doku-Passage + Obligation 5
+    C-->>O: done (373f5ed)
+    O->>C: T3 Issue 260804-1606 pruefen
+    C-->>O: Fix lag vor, Tracking geschlossen (b9b350f)
+    O->>CR: Review 5 geaenderte Dateien
+    CR-->>O: 1 neues Issue (README advisory row)
+    O->>U: Coherence-Gate Turn 1
+    U-->>O: weiter, Fix in Turn 2
+    Note over O: Turn 2
+    O->>C: T4 README advisory row vs floor
+    C-->>O: done (def351e)
+    O->>U: Coherence + Abschluss-Gate
+    U-->>O: Abschluss fahren
+    Note over O: Phase 3
+    O->>R: final reconciliation (domain code)
+    R-->>O: review-needed: 1 Blocker (Golden veraltet); 3 Plaene zu, 12 Kriterien belegt
+    O->>U: Rebalance-Gate
+    U-->>O: Revise Artifact
+    Note over O: Turn 3
+    O->>C: T5 Emissions-Golden erneuern
+    C-->>O: done (24186a4), Suite 1551/1551
+    Note over O: Phase 4: _t_->_c_, Textschicht _a_->_t_
+    O->>PM: portfolio refresh
+    PM-->>O: portfolio.md regeneriert; naechste Empfehlung shell-reachability
+```
+
+## Portfolio update
+
+Circle `260801-1244-guard-rules-write` closed coherent; Circle
+`260805-2005-textschicht-gegen-code-nachziehen` activated (`.active-circle` re-pointed).
+Playmaker log: `circles/260805-2005-textschicht-gegen-code-nachziehen/history/260805-2342-playmaker-orchestrator-phase4.md`.
+Known lag flagged in portfolio Warnings: the activated record's body Status field still reads
+"anticipated" (shared issue `260802-0920`).
+
+Plane mirror: config present but still the unfilled template — no pushes this session.

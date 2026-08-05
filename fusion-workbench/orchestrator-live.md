@@ -1,32 +1,16 @@
 # Orchestrator — Live
 
-**Turn:** 5/5 | **Tasks:** 8/8 | **Commits:** 11 | **Errors:** 0
-**Started:** 17:37 | **Domain:** code | **Elapsed Turns:** 5 | **Session:** Circuit breaker: max Turns reached | **Guard:** OK (0 blocks)
+**Turn:** 3/5 | **Tasks:** 5/5 | **Commits:** 7 | **Errors:** 0
+**Started:** 21:16 | **Domain:** code | **Elapsed Turns:** 3 | **Guard:** OK (0 blocks)
+**Session:** Complete — Circle guard-rules-write geschlossen (kohaerent), Textschicht-Circle aktiv
 
 ## Current
-  [DONE] orchestrator -> Session complete. Circle stays active.
+  [DONE] orchestrator -> Circle geschlossen, Portfolio aktualisiert, Textschicht-Circle aktiviert
 
-## Turns
-  [DONE] Turn 1 -> analyst pass + 4 fixes .... a79ff1a 86a437a 7cf9693 b85f6a0
-  [DONE] Turn 2 -> one command-word resolver ................... 9aacab5
-  [DONE] Turn 3 -> closed the regression Turn 2 caused ......... 048f3db
-  [DONE] Turn 4 -> the cd guarantee + the cause bound .......... c9c44a3
-  [DONE] Turn 5 -> newline downgrade, cost rule, inverted fact . cc012fc
+## This Turn
+  [DONE] coder -> Emissions-Golden absichtlich erneuert (T5) ............ 24186a4
+  [DONE] orchestrator -> Reconciliation-Buchfuehrung .................... 89f2c58
+  [DONE] orchestrator -> Circle _t_->_c_, Textschicht _a_->_t_, Pointer umgesetzt
 
-## Outcome
-  Issues closed:   14        Filed: 16
-  Decisions:       4 filed, 4 implemented, 1 drafted open
-  Tests:           1080 -> 1241, 23 -> 24 files
-  Regressions:     5 introduced, 4 closed in-session
-  Coherence:       review-needed. Bounded Closure judged not warranted.
-  Circle:          260801-1244-guard-rules-write, still active
-
-## Four conditions for a clean verdict, in order
-  1  answer decision 260804-0947 (closes 260804-0836 + 260804-0837)
-  2  close 260804-1024 -- `git -C rules rm x.md` allows and deletes
-  3  delete the false clause at rules/protected-path-discipline.md:172
-  4  review 048f3db and cc012fc, the two code commits without one
-  Then plan Step 10: rebuild hooks/dist and bump the version.
-
-## Not live anywhere
-  Committed hooks/dist predates this Circle by 13 commits. Nothing shipped yet.
+## Active Circle
+  260805-2005-textschicht-gegen-code-nachziehen — noch kein Turn gelaufen

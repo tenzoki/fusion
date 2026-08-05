@@ -487,10 +487,10 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/orchestrator-live.md": {
-      "totalChanges": 7,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-03T17:06:19.618Z",
-      "thrashingScore": 4
+      "totalChanges": 10,
+      "changesThisSession": 3,
+      "lastChange": "2026-08-05T21:18:29.404Z",
+      "thrashingScore": 5
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/provenance-header-lint.test.ts": {
       "totalChanges": 12,
@@ -625,10 +625,10 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/agentstate.yaml": {
-      "totalChanges": 2,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-03T15:56:03.824Z",
-      "thrashingScore": 0
+      "totalChanges": 3,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-05T20:55:56.409Z",
+      "thrashingScore": 1
     },
     "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe-before.ts": {
       "totalChanges": 2,
@@ -793,10 +793,10 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/README-hooks.md": {
-      "totalChanges": 36,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-05T09:58:01.144Z",
-      "thrashingScore": 14
+      "totalChanges": 37,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-05T20:57:12.775Z",
+      "thrashingScore": 12
     },
     "/Users/k1/Projects/productive/fusion/rules/protected-path-discipline.md": {
       "totalChanges": 60,
@@ -2084,7 +2084,7 @@
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/rules-emission-golden.test.ts": {
       "totalChanges": 51,
-      "changesThisSession": 19,
+      "changesThisSession": 0,
       "lastChange": "2026-08-05T15:50:24.307Z",
       "thrashingScore": 51
     },
@@ -2329,10 +2329,10 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md": {
-      "totalChanges": 1,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-05T09:48:25.420Z",
-      "thrashingScore": 0
+      "totalChanges": 6,
+      "changesThisSession": 5,
+      "lastChange": "2026-08-05T21:29:12.155Z",
+      "thrashingScore": 8
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260805-1200-coder-step6-release-vorbereitet.md": {
       "totalChanges": 1,
@@ -2348,46 +2348,118 @@
     },
     "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/growth.sh": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-05T15:34:10.373Z",
       "thrashingScore": 0
     },
     "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/build-probe.sh": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-05T15:43:30.709Z",
       "thrashingScore": 0
     },
     "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe-case.sh": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-05T15:44:01.886Z",
       "thrashingScore": 0
     },
     "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe-remove.sh": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-05T15:45:58.075Z",
       "thrashingScore": 0
     },
     "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe-add-file.sh": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-05T15:46:28.269Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260805-1753-coder-ratchet-wird-budget-mit-meldung.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-05T15:55:04.846Z",
       "thrashingScore": 0
     },
     "260805-1559_o_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md": {
       "totalChanges": 2,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-05T15:55:27.873Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/issues/260804-1606_o_blocksbeforehalt-zero-halts-on-the-first-block-and-has-no-lower-bound.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-05T20:38:56.685Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260805-2238-coder-t3-close-blocksbeforehalt-issue.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-05T20:39:15.677Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/issues/260805-2248_o_readme-advisory-zeile-behauptet-fail-closed-steht-ab-obwohl-der-floor-ihn-am-leben-haelt.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-05T20:48:27.095Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/reviews/260805-01-coderev-inkrementalreview-step7-doku-durchgang.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-05T20:49:00.127Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260805-2310-coder-t4-readme-advisory-row.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-05T20:57:51.489Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/_t_circle.md": {
+      "totalChanges": 4,
+      "changesThisSession": 4,
+      "lastChange": "2026-08-05T21:25:59.472Z",
+      "thrashingScore": 5
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/issues/260805-2323_o_emissions-golden-veraltet-nach-dem-step-7-doku-commit-die-suite-ist-um-einen-test-rot.md": {
+      "totalChanges": 2,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-05T21:40:29.472Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/issues/260805-2323_o_die-emissionsmessung-auf-der-unite-cocreator-maschine-steht-noch-aus.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-05T21:27:12.613Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/planning/260802-1856_o_plan-guard-rules-write.md": {
+      "totalChanges": 3,
+      "changesThisSession": 3,
+      "lastChange": "2026-08-05T21:27:37.739Z",
+      "thrashingScore": 3
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/shared/planning/260801-1122_o_spec-normative-consolidation.md": {
+      "totalChanges": 2,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-05T21:31:43.042Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/planning/260804-1633_p_plan-c5b-remediation-and-ship.md": {
+      "totalChanges": 2,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-05T21:32:11.648Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260805-2334-reconciliation.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-05T21:35:08.713Z",
       "thrashingScore": 0
     }
   },
-  "sessionStart": "2026-08-05T15:34:10.373Z"
+  "sessionStart": "2026-08-05T20:37:42.061Z"
 }

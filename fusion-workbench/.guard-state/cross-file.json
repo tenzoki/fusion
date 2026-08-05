@@ -406,9 +406,9 @@
       "lastEditTimestamp": "2026-08-02T06:49:36.700Z"
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/orchestrator-live.md": {
-      "pingBackCount": 6,
-      "totalEdits": 7,
-      "lastEditTimestamp": "2026-08-03T17:06:19.622Z"
+      "pingBackCount": 9,
+      "totalEdits": 10,
+      "lastEditTimestamp": "2026-08-05T21:18:29.407Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/provenance-header-lint.test.ts": {
       "pingBackCount": 1,
@@ -521,9 +521,9 @@
       "lastEditTimestamp": "2026-08-03T08:39:01.132Z"
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/agentstate.yaml": {
-      "pingBackCount": 1,
-      "totalEdits": 2,
-      "lastEditTimestamp": "2026-08-03T15:56:03.825Z"
+      "pingBackCount": 2,
+      "totalEdits": 3,
+      "lastEditTimestamp": "2026-08-05T20:55:56.412Z"
     },
     "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe-before.ts": {
       "pingBackCount": 0,
@@ -661,9 +661,9 @@
       "lastEditTimestamp": "2026-08-03T11:59:52.731Z"
     },
     "/Users/k1/Projects/productive/fusion/README-hooks.md": {
-      "pingBackCount": 12,
-      "totalEdits": 36,
-      "lastEditTimestamp": "2026-08-05T09:58:01.147Z"
+      "pingBackCount": 13,
+      "totalEdits": 37,
+      "lastEditTimestamp": "2026-08-05T20:57:12.776Z"
     },
     "/Users/k1/Projects/productive/fusion/rules/protected-path-discipline.md": {
       "pingBackCount": 17,
@@ -1941,9 +1941,9 @@
       "lastEditTimestamp": "2026-08-05T09:47:42.402Z"
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md": {
-      "pingBackCount": 0,
-      "totalEdits": 1,
-      "lastEditTimestamp": "2026-08-05T09:48:25.422Z"
+      "pingBackCount": 1,
+      "totalEdits": 6,
+      "lastEditTimestamp": "2026-08-05T21:29:12.158Z"
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260805-1200-coder-step6-release-vorbereitet.md": {
       "pingBackCount": 0,
@@ -1989,8 +1989,68 @@
       "pingBackCount": 0,
       "totalEdits": 2,
       "lastEditTimestamp": "2026-08-05T15:55:27.875Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/issues/260804-1606_o_blocksbeforehalt-zero-halts-on-the-first-block-and-has-no-lower-bound.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T20:38:56.687Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260805-2238-coder-t3-close-blocksbeforehalt-issue.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T20:39:15.679Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/issues/260805-2248_o_readme-advisory-zeile-behauptet-fail-closed-steht-ab-obwohl-der-floor-ihn-am-leben-haelt.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T20:48:27.098Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/reviews/260805-01-coderev-inkrementalreview-step7-doku-durchgang.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T20:49:00.130Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260805-2310-coder-t4-readme-advisory-row.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T20:57:51.491Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/_t_circle.md": {
+      "pingBackCount": 0,
+      "totalEdits": 4,
+      "lastEditTimestamp": "2026-08-05T21:25:59.474Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/issues/260805-2323_o_emissions-golden-veraltet-nach-dem-step-7-doku-commit-die-suite-ist-um-einen-test-rot.md": {
+      "pingBackCount": 1,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-05T21:40:29.476Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/issues/260805-2323_o_die-emissionsmessung-auf-der-unite-cocreator-maschine-steht-noch-aus.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T21:27:12.616Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/planning/260802-1856_o_plan-guard-rules-write.md": {
+      "pingBackCount": 0,
+      "totalEdits": 3,
+      "lastEditTimestamp": "2026-08-05T21:27:37.741Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/shared/planning/260801-1122_o_spec-normative-consolidation.md": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-05T21:31:43.044Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/planning/260804-1633_p_plan-c5b-remediation-and-ship.md": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-05T21:32:11.650Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260805-2334-reconciliation.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T21:35:08.716Z"
     }
   },
-  "lastEditFile": "260805-1559_o_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md",
-  "lastEditTimestamp": "2026-08-05T15:55:27.875Z"
+  "lastEditFile": "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/issues/260805-2323_o_emissions-golden-veraltet-nach-dem-step-7-doku-commit-die-suite-ist-um-einen-test-rot.md",
+  "lastEditTimestamp": "2026-08-05T21:40:29.476Z"
 }

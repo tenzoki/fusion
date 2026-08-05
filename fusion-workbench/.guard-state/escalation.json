@@ -1,46 +1,8 @@
 {
   "haltActive": false,
   "consecutiveBlocks": 0,
-  "lastBlockTimestamp": "2026-08-05T15:43:19.119Z",
+  "lastBlockTimestamp": "2026-08-05T21:34:01.135Z",
   "recentEvents": [
-    {
-      "level": "block",
-      "trigger": "protected_path",
-      "message": "fusion policy: this Bash command mutates a file whose target cannot be resolved before it runs. The segment `cp rules/fusion-workbench-conventions.md \"$S/conventions.orig.md\"` writes `\"$S/conventions.orig.md\"`, which the guard cannot prove is outside the protected paths, so it is denied (fail-closed). If the target is genuinely unprotected, write the path out literally instead of building it at run time. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
-      "timestamp": "2026-08-05T06:58:53.188Z",
-      "toolName": "Bash",
-      "filePath": "\"$S/conventions.orig.md\""
-    },
-    {
-      "level": "block",
-      "trigger": "protected_path",
-      "message": "fusion policy: this Bash command mutates a file whose target cannot be resolved before it runs. The segment `cp lib/__tests__/rules-emission-golden.test.ts $T` writes `$T`, which the guard cannot prove is outside the protected paths, so it is denied (fail-closed). If the target is genuinely unprotected, write the path out literally instead of building it at run time. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
-      "timestamp": "2026-08-05T08:36:40.025Z",
-      "toolName": "Bash",
-      "filePath": "$T"
-    },
-    {
-      "level": "block",
-      "trigger": "protected_path",
-      "message": "fusion policy: this Bash command mutates a file whose target cannot be resolved before it runs. The segment `rm -rf \"$SCR/olddist\" \"$SCR/proj\"` writes `\"$SCR/olddist\"`, which the guard cannot prove is outside the protected paths, so it is denied (fail-closed). If the target is genuinely unprotected, write the path out literally instead of building it at run time. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
-      "timestamp": "2026-08-05T08:42:27.516Z",
-      "toolName": "Bash",
-      "filePath": "\"$SCR/olddist\""
-    },
-    {
-      "level": "block",
-      "trigger": "protected_path",
-      "message": "fusion policy: this Bash command mutates a file whose target cannot be resolved before it runs. The segment `rm -rf \"$2\"` writes `\"$2\"`, which the guard cannot prove is outside the protected paths, so it is denied (fail-closed). If the target is genuinely unprotected, write the path out literally instead of building it at run time. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
-      "timestamp": "2026-08-05T08:43:25.235Z",
-      "toolName": "Bash",
-      "filePath": "\"$2\""
-    },
-    {
-      "level": "halt",
-      "trigger": "consecutive_blocks",
-      "message": "3 consecutive tool calls blocked — halt activated",
-      "timestamp": "2026-08-05T08:43:25.235Z"
-    },
     {
       "level": "clear",
       "trigger": "halt_cleared",
@@ -78,6 +40,46 @@
       "timestamp": "2026-08-05T15:43:19.119Z",
       "toolName": "Bash",
       "filePath": "\"$SC/probe/rules\""
+    },
+    {
+      "level": "block",
+      "trigger": "protected_path",
+      "message": "fusion policy: this Bash command mutates a relative path after a `cd` the shell does not guarantee succeeded. Only `&&` guarantees it — after `;`, `||`, `|`, `&` or a newline bash runs the rest of the command from wherever it never left, so the segment `} >> fusion-workbench/orchestrator-events.jsonl` writes `fusion-workbench/orchestrator-events.jsonl` at one of two places and the guard cannot tell which (fail-closed). Join the `cd` to what follows it with `&&` — which is also what makes the command correct in the shell — or name the target as an absolute path. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
+      "timestamp": "2026-08-05T20:37:52.116Z",
+      "toolName": "Bash",
+      "filePath": "fusion-workbench/orchestrator-events.jsonl"
+    },
+    {
+      "level": "block",
+      "trigger": "protected_path",
+      "message": "fusion policy: this Bash command mutates a relative path after a `cd` the shell does not guarantee succeeded. Only `&&` guarantees it — after `;`, `||`, `|`, `&` or a newline bash runs the rest of the command from wherever it never left, so the segment `length > 0\\` writes `0\\` at one of two places and the guard cannot tell which (fail-closed). Join the `cd` to what follows it with `&&` — which is also what makes the command correct in the shell — or name the target as an absolute path. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
+      "timestamp": "2026-08-05T20:44:08.513Z",
+      "toolName": "Bash",
+      "filePath": "0\\"
+    },
+    {
+      "level": "block",
+      "trigger": "protected_path",
+      "message": "fusion policy: this Bash command mutates a relative path after a `cd` the shell does not guarantee succeeded. Only `&&` guarantees it — after `;`, `||`, `|`, `&` or a newline bash runs the rest of the command from wherever it never left, so the segment `mv 260802-1856_o_plan-guard-rules-write.md 260802-1856_c_plan-guard-rules-write.md` writes `260802-1856_o_plan-guard-rules-write.md` at one of two places and the guard cannot tell which (fail-closed). Join the `cd` to what follows it with `&&` — which is also what makes the command correct in the shell — or name the target as an absolute path. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
+      "timestamp": "2026-08-05T21:27:51.303Z",
+      "toolName": "Bash",
+      "filePath": "260802-1856_o_plan-guard-rules-write.md"
+    },
+    {
+      "level": "block",
+      "trigger": "protected_path",
+      "message": "fusion policy: this Bash command mutates a file whose target cannot be resolved before it runs. The segment `mv \"$D/260804-1630_a_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md\" \"$D/260804-1630_i_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md\"` writes `\"$D/260804-1630_a_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md\"`, which the guard cannot prove is outside the protected paths, so it is denied (fail-closed). If the target is genuinely unprotected, write the path out literally instead of building it at run time. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
+      "timestamp": "2026-08-05T21:33:41.021Z",
+      "toolName": "Bash",
+      "filePath": "\"$D/260804-1630_a_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md\""
+    },
+    {
+      "level": "block",
+      "trigger": "protected_path",
+      "message": "fusion policy: this Bash command mutates a relative path after a `cd` the shell does not guarantee succeeded. Only `&&` guarantees it — after `;`, `||`, `|`, `&` or a newline bash runs the rest of the command from wherever it never left, so the segment `mv 260801-1020_a_may-any-fusion-writer-touch-rules.md 260801-1020_i_may-any-fusion-writer-touch-rules.md` writes `260801-1020_a_may-any-fusion-writer-touch-rules.md` at one of two places and the guard cannot tell which (fail-closed). Join the `cd` to what follows it with `&&` — which is also what makes the command correct in the shell — or name the target as an absolute path. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
+      "timestamp": "2026-08-05T21:34:01.135Z",
+      "toolName": "Bash",
+      "filePath": "260801-1020_a_may-any-fusion-writer-touch-rules.md"
     }
   ]
 }

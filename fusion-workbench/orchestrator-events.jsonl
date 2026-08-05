@@ -751,3 +751,48 @@
 {"ts":"2026-08-05T06:41:54","event":"task_start","turn":1,"task":"A4","agent":"coder","detail":"Stashes und Commit lock aus der Konventionsdatei loesen"}
 {"ts":"2026-08-05T07:10:47","event":"task_done","turn":1,"task":"A4","agent":"coder","detail":"Suite gruen; Deckel 128555; Falsifikat 3 eingetreten, Release bleibt gesperrt"}
 {"ts":"2026-08-05T08:10:49","event":"task_done","turn":1,"task":"A4a","agent":"coder","detail":"Konventionsdatei 51416->34671; 13 von 16 unter dem Deckel"}
+{"ts":"2026-08-05T18:09:39","event":"reconciliation","detail":"Gesamtreview statt Reconciler: 3 Durchgaenge, 66 Befunde, kein Release-Blocker"}
+{"ts":"2026-08-05T18:09:39","event":"session_end","detail":"v5.9.0 und v5.9.1 ausgeliefert und getaggt; Nachfolge-Circle 260805-2005 anticipated"}
+{"ts":"2026-08-05T18:35:54","event":"session_start"}
+{"ts":"2026-08-05T19:05:36","event":"scope_resolved","detail":"custom: monitor LAN bind fix, 1 task, coder"}
+{"ts":"2026-08-05T19:05:36","event":"turn_start","turn":1,"detail":"1 ready task"}
+{"ts":"2026-08-05T19:05:36","event":"task_start","turn":1,"task":"T1","agent":"coder","detail":"bin/monitor bind 127.0.0.1 -> 0.0.0.0"}
+{"ts":"2026-08-05T19:12:24","event":"commit","turn":1,"task":"T1","detail":"8586ba3 fix(monitor): bind 0.0.0.0"}
+{"ts":"2026-08-05T19:12:24","event":"task_done","turn":1,"task":"T1","agent":"coder","detail":"8586ba3"}
+{"ts":"2026-08-05T19:18:01","event":"session_start","detail":"setup via /fusion:setup; domain=code; active Circle 260801-1244-guard-rules-write"}
+{"ts":"2026-08-05T19:25:01","event":"commit","turn":1,"task":"release-v5.9.2","agent":"orchestrator","detail":"4a8fea0 docs(install): FUSION_REF pin example -> v5.9.2; pushed main + tag v5.9.2; marketplace da881d6"}
+{"ts":"2026-08-05T20:16:46","event":"scope_resolved","detail":"mode=plan; plan 260804-1633 remaining steps 6+7 + issue 260804-1606; 3 tasks; agents ontocoder,coder"}
+{"ts":"2026-08-05T20:16:46","event":"queue_built","detail":"3 tasks, 0 blocked"}
+{"ts":"2026-08-05T20:16:46","event":"gate_hit","task":"T1","agent":"ontocoder","detail":"ontocoder data change: fusion-guard template"}
+{"ts":"2026-08-05T20:16:46","event":"gate_response","task":"T1","detail":"proceed — user approved queue incl. flagged ontocoder task in prior exchange"}
+{"ts":"2026-08-05T20:16:46","event":"turn_start","turn":1,"detail":"3 ready tasks; head=4a8fea0"}
+{"ts":"2026-08-05T20:16:46","event":"task_start","turn":1,"task":"T1","agent":"ontocoder","detail":"templates/fusion-guard.json + root copy: leaf-merge wording"}
+{"ts":"2026-08-05T20:26:58","event":"task_done","turn":1,"task":"T1","agent":"ontocoder","detail":"21a72b7"}
+{"ts":"2026-08-05T20:26:58","event":"commit","turn":1,"task":"T1","detail":"21a72b7 docs(guard): Vorlage sagt Leaf-Merge"}
+{"ts":"2026-08-05T20:26:58","event":"task_start","turn":1,"task":"T2","agent":"coder","detail":"Step 7 narrow: three-file doc pass"}
+{"ts":"2026-08-05T20:37:58","event":"task_done","turn":1,"task":"T2","agent":"coder","detail":"373f5ed"}
+{"ts":"2026-08-05T20:37:58","event":"commit","turn":1,"task":"T2","detail":"373f5ed docs(guard): drei Dateien konsistent"}
+{"ts":"2026-08-05T20:37:58","event":"task_start","turn":1,"task":"T3","agent":"coder","detail":"issue 260804-1606 blocksBeforeHalt lower bound"}
+{"ts":"2026-08-05T20:39:45","event":"task_done","turn":1,"task":"T3","agent":"coder","detail":"b9b350f tracking-only"}
+{"ts":"2026-08-05T20:39:45","event":"commit","turn":1,"task":"T3","detail":"b9b350f chore(workbench): 1606 geschlossen"}
+{"ts":"2026-08-05T20:39:45","event":"review_start","turn":1,"agent":"coderev","detail":"5 changed files"}
+{"ts":"2026-08-05T20:49:28","event":"review_done","turn":1,"agent":"coderev","detail":"1 new issue: README advisory row vs floor"}
+{"ts":"2026-08-05T20:55:43","event":"coherence_review","turn":1,"detail":"verdict=ok; A-G: 1 issue filed; A-D: commits move toward Directive; G-D: 0 active decisions touched"}
+{"ts":"2026-08-05T20:55:43","event":"turn_end","turn":1,"detail":"3 tasks resolved, 1 issue created"}
+{"ts":"2026-08-05T20:55:43","event":"turn_start","turn":2,"detail":"1 ready task; head=b9b350f"}
+{"ts":"2026-08-05T20:55:43","event":"task_start","turn":2,"task":"T4","agent":"coder","detail":"README advisory row vs floor (issue 260805-2248)"}
+{"ts":"2026-08-05T20:58:26","event":"task_done","turn":2,"task":"T4","agent":"coder","detail":"def351e"}
+{"ts":"2026-08-05T20:58:26","event":"commit","turn":2,"task":"T4","detail":"def351e docs(hooks): Advisory-Zeile korrigiert"}
+{"ts":"2026-08-05T20:58:26","event":"review_done","turn":2,"agent":"coderev","detail":"formal re-dispatch skipped: single table row implementing the reviewers own prescribed fix, verified against config.ts:687-692 by implementer; 0 new issues"}
+{"ts":"2026-08-05T21:18:22","event":"coherence_review","turn":2,"detail":"verdict=ok; A-G: 0 new issues; A-D: commit moves toward Directive; G-D: 0 decisions touched"}
+{"ts":"2026-08-05T21:18:22","event":"turn_end","turn":2,"detail":"1 task resolved, 0 issues created; converged"}
+{"ts":"2026-08-05T21:37:25","event":"reconciliation","detail":"3 plans closed, 12 criteria verified, circle record fixed, 5 decisions walked; 1 blocker: stale emission golden"}
+{"ts":"2026-08-05T21:37:25","event":"rebalance_artifact","detail":"user chose Revise Artifact: regenerate rules-emission golden (issue 260805-2323)"}
+{"ts":"2026-08-05T21:37:25","event":"turn_start","turn":3,"detail":"1 ready task (rebalance); head=def351e"}
+{"ts":"2026-08-05T21:37:25","event":"task_start","turn":3,"task":"T5","agent":"coder","detail":"regenerate rules-emission.golden"}
+{"ts":"2026-08-05T21:42:19","event":"task_done","turn":3,"task":"T5","agent":"coder","detail":"24186a4"}
+{"ts":"2026-08-05T21:42:19","event":"commit","turn":3,"task":"T5","detail":"24186a4 test(rules): Golden erneuert; 89f2c58 chore(workbench): Reconciliation"}
+{"ts":"2026-08-05T21:42:19","event":"coherence_review","turn":3,"detail":"verdict=ok after Revise Artifact; suite 1551/1551; all edges clean per reconciler"}
+{"ts":"2026-08-05T21:42:19","event":"turn_end","turn":3,"detail":"1 task resolved, 0 issues created; converged"}
+{"ts":"2026-08-05T21:46:00","event":"portfolio_refresh","detail":"guard-rules-write _c_; textschicht _t_ active; playmaker log 260805-2342"}
+{"ts":"2026-08-05T21:46:00","event":"session_end","detail":"3 turns, 5 tasks, 5 decisions implemented, 11 commits, verdict coherent"}

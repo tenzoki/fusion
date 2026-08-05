@@ -112,3 +112,20 @@ seed `fusion-guard.json` in this repository at all.
 
 *No `mv` and no `.active-circle` write by playmaker — the user confirms via `/fusion:next`, or the
 orchestrator activates. Proposal, not commitment.*
+
+## Closure note
+
+Closed coherent (`_t_` → `_c_`) on 260805-2359. Phase-3 verdict: **coherent** — the reconciler's
+review-needed flag (stale emission golden after the Step-7 documentation commit) was resolved via
+Rebalance/Revise-Artifact in Turn 3 (commit `24186a4`); with it, all three Coherence edges are
+clean. All twelve spec acceptance criteria verified with per-criterion test citations
+(`shared/planning/260801-1122_o_spec-normative-consolidation.md:309-332`), suite 1551/1551 green
+against source and against the shipped `dist` artifact. All three plans closed; shipped as
+v5.9.0–v5.9.2 (tags pushed).
+
+Session history: `history/260805-2117-orchestrator-session.md` (Turns 1–3, commits
+`21a72b7`, `373f5ed`, `b9b350f`, `def351e`, `24186a4`, `89f2c58`).
+Reconciliation: `history/260805-2334-reconciliation.md`.
+Open issues remaining in this Circle at closure: 79, all claimed by other Circles' scope
+(64 Textschicht, 8 shell-reachability, 2 plane/framework, 1 priced deferral) plus the
+user-side unite-cocreator emission measurement (`issues/260805-2323_o_die-emissionsmessung…`).
