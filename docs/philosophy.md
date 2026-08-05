@@ -47,6 +47,6 @@ A unit of work is a **Circle**. Most sessions run one Circle implicitly. When yo
 - `README-agents.md` — the full agent reference (scope, inputs, outputs, when to invoke).
 - `README-hooks.md` — the compliance guard in detail.
 - `CLAUDE.md` — layout, release process, troubleshooting (for plugin developers).
-- `rules/fusion-workbench-conventions.md` — workbench layout, marker vocabularies, the Circle record template.
+- `rules/fusion-workbench-conventions.md` — workbench layout, issue/planning and decision marker vocabularies; `rules/circle-records.md` — the Circle state vocabulary and the Circle record template.
 - Run `/fusion:help` inside Claude Code for an interactive explainer.
 </content>

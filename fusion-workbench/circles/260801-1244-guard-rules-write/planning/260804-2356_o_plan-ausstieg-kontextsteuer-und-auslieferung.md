@@ -273,6 +273,83 @@ Abgeleitete Erwartung, nicht geschätzt: nach Schritt 2 stehen 104 600 Byte, nac
 - **Falsifikat:** Die Verkettungsprüfung über die beiden herausgelösten Abschnitte zeigt Rest auf einer der beiden Seiten. Zweites Falsifikat: `grep -rn 'Stashes\|Commit lock' agents/ skills/ bin/ docs/ README*.md` findet nach dem Umschreiben noch eine Zeile, die auf die Konventionsdatei zeigt. Drittes: der Emissionsdeckel misst für irgendeinen Nicht-Orchestrator-Agenten mehr als 96 500 Byte.
 - **Wirkung in unite cocreator:** 15 der 16 Agenten dort laden 8 484 Byte weniger. Die Skills `/fusion:circle-stash` und `/fusion:circle-pop` erreichen den Inhalt unverändert per Direktzitat, weil `bin/fusion-rules` Skills ohnehin nie bedient. Der Schritt ist nicht optional, obwohl er so aussieht: nach Schritt 2 und 3 liegt der Abstand zum Release-Deckel bei 754 Byte, und Schritt 3 fügt Text hinzu. Schritt 4 macht aus 754 Byte Luft 9 232.
 
+### 4a. Die Konventionsdatei partitionieren [DONE] — nachgezogen, stand nicht in diesem Plan
+
+> **Herkunft.** Dies ist C9 Schritt 3 der Spec. Der Plan schließt ihn unter *Was der Plan nicht
+> anfasst* ausdrücklich aus. Der Nutzer hat ihn am 2026-08-05 trotzdem angeordnet, nachdem
+> Schritt 4 gemeldet hatte, dass kein einziger Agent unter dem Release-Deckel liegt und die
+> Konventionsdatei mit 51 416 Byte 48 % der Last des schlanksten Agenten trägt. Er steht hier
+> als nachgezogener Schritt und nicht als stille Erweiterung von Schritt 4, weil der Plan sonst
+> behauptet, ein Ergebnis erreicht zu haben, das aus einem Schritt stammt, den er nicht kennt.
+>
+> **Ausgeführt 2026-08-05.** Beleg: `history/260805-0958-coder-step4a-konventionsdatei-partitionieren.md`.
+>
+> **Der Schnitt.** Nach Adressat, wie in Schritt 2. Die Konventionsdatei geht 51 416 → 34 671.
+> Drei Shards:
+>
+> | Shard | Byte | Emittiert an | Adressat |
+> |---|---|---|---|
+> | `rules/workbench-path-resolution.md` | 8 962 | keinen Agenten | wer einen Prompt oder `bin/fusion-paths` schreibt |
+> | `rules/circle-records.md` | 9 302 | `orchestrator`, `playmaker`, `shaper` | wer einen Circle anlegt, überführt oder rankt |
+> | `rules/rule-file-provenance.md` | 5 745 | keinen Agenten | wer eine Regeldatei schreibt |
+>
+> Die Zielgruppe von `circle-records.md` ist **abgeleitet, nicht geraten**: `bin/fusion-paths`
+> baut jeden Schlüsselsatz durch Grep über den Prompt des Konsumenten, und genau diese drei
+> nennen einen Circle-Schlüssel (`$OUT_CIRCLE`, `$SCAN_CIRCLES`, `$PORTFOLIO`). Ein Agent, der
+> keinen nennt, kann keinen Circle überführen — für ihn ist das Vokabular Text ohne Handlung.
+>
+> **Was bewusst im Kern blieb.** Die Glob-Disziplin (Unterstrich statt Klammern, die zwei
+> korrekten Formen, `find` braucht nichts) lag historisch im Circles-Abschnitt, gilt aber laut
+> ihrem eigenen Satz für jedes Marker-Vokabular. Sie steht jetzt als `## Marker globs` im Kern.
+> Der Nachweis, dass das richtig ist: **acht der zehn Zitate**, die auf
+> `## State Markers — circles` zeigten, griffen nach der Glob-Regel und nicht nach dem
+> Circle-Vokabular. Ebenfalls im Kern geblieben: `## State Markers — decisions` und
+> `## Decision Record Template`. Der Auftrag verlangte eine Prüfung, ob wirklich alle Agenten
+> Decisions filen — die abgeleitete Antwort ist **nein, sechs von sechzehn** nennen
+> `$OUT_DECISION` (analyst, consultant, investigator, orchestrator, reconciler, shaper). Der
+> Schnitt wurde trotzdem nicht gemacht: das Template wiegt 1 127 Byte, ein vierter Shard kostet
+> einen ~700-Byte-Kopf, und das Ergebnis wären drei Dateien, die das Decision-Thema zu je einem
+> Drittel definieren. Genau die Aufsplitterung, die die zweite Randbedingung verbietet.
+>
+> **Verkettung geht auf.** 408 nicht-leere Zeilen vorher, jede genau einmal nachher wiederzufinden,
+> keine doppelt. Vier Zeilen fehlen und alle vier sind erklärt: zwei Überschriften
+> (`### The name namespace`, `### Emission is per-consumer…`) wurden zu `##` angehoben, weil sie
+> im Shard oberste Abschnitte sind, und zwei Sätze — Lede und „This document is the definition" —
+> zählten die Themen der Datei auf und mussten es weiter tun, nachdem vier davon ausgezogen sind.
+> 88 Zeilen sind hinzugekommen: Zeigerblöcke, Provenance-Header, Ledes.
+>
+> **Zitate: 21 Stellen umgelenkt** — nicht 12, wie die Zählung nach Ankertext ergab. Die neun
+> zusätzlichen nannten die Datei ohne Backtick-Anker (`agents/shaper.md:28/64`,
+> `agents/playmaker.md:21/136`, `skills/direct/SKILL.md:81`, `skills/migrate/SKILL.md:94`,
+> `docs/working-model.md:112`, `docs/philosophy.md:50`, `README.md:148`). Dazu zwei
+> Zeigerstellen in `hooks/lib/__tests__/provenance-header-lint.test.ts` (Kopfkommentar und die
+> Fehlermeldung, die dem Leser sagt, wo die Konvention steht).
+>
+> **Der Path-Literal-Lint, bewusst geregelt.** Er liest weiterhin nur `agents/` und `skills/`.
+> Die Shards kommen also durch, weil das Gate nicht hinsieht. Das steht jetzt als
+> `DEFINITION_SITES` in `path-literal-lint.test.ts` — fünf Einträge, inklusive
+> `workbench-stash-and-lock.md`, das Schritt 4 unbemerkt als drittes Definitionsverzeichnis
+> geschaffen hat. Zwei Tests halten die Liste ehrlich (jeder Eintrag existiert und nennt
+> wirklich einen Store; keiner liegt im Dateisatz des Gates). Was die Liste **nicht** kann: eine
+> neue Definitionsstelle erkennen — eine Datei, die einen Beispielpfad zitiert, ist formgleich
+> mit einer, die einen Store definiert. Die Liste macht die Menge abzählbar, nicht selbstprüfend.
+> `CLAUDE.md` und der Kopf der Konventionsdatei nennen dieselben fünf.
+>
+> **Ergebnis, gemessen: 13 der 16 Agenten unter dem Release-Deckel.** 5 einfache bei 89 913,
+> 5 Diagramm bei 95 586, `playmaker` bei 99 215, `shaper` bei 104 888. Drei bleiben darüber, und
+> das ist der Befund, nicht ein Restbetrag zum Wegschneiden: `coder`/`coderev`/`bugfixer` bei
+> 111 810 (6 456 darüber) tragen als einzige `protected-path-internals.md` mit 21 897 Byte — ihre
+> Überschreitung stammt aus Schritt 2, nicht aus diesem Schritt. Der `orchestrator` bei 108 465
+> (3 111 darüber) trägt `workbench-stash-and-lock.md` **und** `circle-records.md`, zusammen
+> 18 552 Byte, weil er der Agent mit den meisten verschiedenen Aufgaben ist. Jedes Byte, das im
+> Kern verblieben ist, wenden alle sechzehn an. `CEILING` auf 111 810 **gesenkt**. Suite grün:
+> 1 545 Tests in 27 Dateien (1 543 plus die zwei neuen `DEFINITION_SITES`-Tests).
+>
+> **Schritt 6 bleibt gesperrt** — der Deckel ist eine harte Schwelle für *jeden* Agenten. Wer ihn
+> für alle sechzehn will, muss an `protected-path-internals.md` oder an die immer-an-Dateien
+> heran, die dieser Plan unter *Die Regeln, die klein sind* ausklammert. Das ist eine Entscheidung
+> für den Nutzer, keine Fortsetzung dieses Schritts.
+
 ### 5. `hooks/dist` bauen und einchecken
 
 - **Executor:** coder
@@ -296,7 +373,7 @@ Abgeleitete Erwartung, nicht geschätzt: nach Schritt 2 stehen 104 600 Byte, nac
 ## Was der Plan nicht anfasst
 
 - **Den Shell-Klassifizierer.** `hooks/lib/shell-parse.ts` und `hooks/lib/bash-mutation-guard.ts` bleiben unverändert. `circles/260804-1205-shell-reachability-model` trägt die Fortsetzung und hat ihre eigene Grounding-Messung.
-- **Die Konventionsdatei jenseits der zwei Abschnitte.** Ihre Partitionierung ist C9 Schritt 3 mit dem Nullentfernungsstandard, den die Spec in den Zeilen 485 bis 502 setzt. 59 303 Byte, 18 Dokumentabschnitte hinter 32 Überschriften, drei Templates, die ein Schnitt an `^## ` zerreißen würde, und 131 zitierende Zeilen in 42 Dateien.
+- ~~**Die Konventionsdatei jenseits der zwei Abschnitte.**~~ **Überholt am 2026-08-05:** der Nutzer hat die Partitionierung angeordnet, nachdem Schritt 4 gemeldet hatte, dass kein Agent unter dem Release-Deckel liegt. Ausgeführt als **Schritt 4a**, dort dokumentiert. Der ursprüngliche Text lautete: „Ihre Partitionierung ist C9 Schritt 3 mit dem Nullentfernungsstandard, den die Spec in den Zeilen 485 bis 502 setzt. 59 303 Byte, 18 Dokumentabschnitte hinter 32 Überschriften, drei Templates, die ein Schnitt an `^## ` zerreißen würde, und 131 zitierende Zeilen in 42 Dateien." Die Sorge um die Templates war begründet und wurde durch Blockextraktion nach Zeilenbereichen statt durch einen Schnitt an `^## ` umgangen — die drei `##`-Überschriften innerhalb der Template-Codeblöcke sind unversehrt mitgewandert.
 - **Die Regeln, die klein sind.** `user-facing-output.md`, `git-branch-discipline.md`, `critical-stance.md`, `decision-record-examples.md` und `agent-setup.md` summieren sich auf 35 282 Byte und bleiben bei allen 16 Agenten. Sie zu zerlegen brächte pro Datei weniger, als der Zuschnitt an Zitatpflege kostet.
 
 ---

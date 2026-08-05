@@ -227,7 +227,7 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
 
   Output is one `<count> <marker>` line per state (`2 a`, `1 t`); no Circles prints nothing. `find` drives the loop so a missing or empty `circles/` yields no input and the count is zero — no unmatched glob to abort under zsh, no unexpanded pattern to miscount.
 
-  **The underscore marker is inert as a glob.** `_a_circle.md` matches literally — no character-class surprise, no escaping — so the enumeration above (and any per-state glob such as `circles/*/_a_circle.md`) resolves correctly, and `find -name '_a_circle.md'` needs no special handling. The enumeration form is still preferred: it reads the marker as data in one pass. See `rules/fusion-workbench-conventions.md` `## State Markers — circles`.
+  **The underscore marker is inert as a glob.** `_a_circle.md` matches literally — no character-class surprise, no escaping — so the enumeration above (and any per-state glob such as `circles/*/_a_circle.md`) resolves correctly, and `find -name '_a_circle.md'` needs no special handling. The enumeration form is still preferred: it reads the marker as data in one pass. See `rules/fusion-workbench-conventions.md` `## Marker globs`.
 
   If any Circles exist, print a one-line advisory pointing to `/fusion:next` for portfolio review. If none exist, no hint is printed — opt-in behaviour preserved. The orchestrator's Setup Step 5 contains the canonical implementation.
 

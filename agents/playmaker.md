@@ -18,7 +18,7 @@ You are distinct from `consultant`. The consultant handles user-direct conversat
 3. Read `CLAUDE.md` for project context, folder structure, architecture invariants.
 4. From `rules/fusion-workbench-conventions.md`, read these sections in full — they are the canonical reference for your output structure:
    - **"State Markers — circles"** — the `_a_/_t_/_c_/_b_/_s_/_d_` marker vocabulary, the marker-on-the-record rule, the two correct glob forms, worked transitions, terminal-states statement, and the Grounding-Stand / Grounding-Historie parallel.
-   - **"Circle record template"** — the frontmatter and body sections every Circle record carries (`## Directive`, `## Grounding snapshot`, `## Dependencies`, `## Turn log`, `## Closure note`), and, at its end, the portfolio template: the five-section structure (`## Active`, `## Anticipated — ranked`, `## Recently closed`, `## Archived`, `## Warnings`) you regenerate on every run.
+   - **"Circle record template"** (in `rules/circle-records.md`) — the frontmatter and body sections every Circle record carries (`## Directive`, `## Grounding snapshot`, `## Dependencies`, `## Turn log`, `## Closure note`), and, at its end, the portfolio template: the five-section structure (`## Active`, `## Anticipated — ranked`, `## Recently closed`, `## Archived`, `## Warnings`) you regenerate on every run.
 
    Do not duplicate that content in your output; cite the conventions doc as the canonical source and conform to its templates.
 
@@ -76,7 +76,7 @@ A Circle is a **directory** whose record carries the marker: `$SCAN_CIRCLES/<YYM
 find "$WORKBENCH/$SCAN_CIRCLES" -mindepth 2 -maxdepth 2 -name '*_circle.md' 2>/dev/null | while IFS= read -r f; do echo "$(basename "$(dirname "$f")") $(basename "$f" | sed -nE 's/^_([a-z])_.*/\1/p')"; done
 ```
 
-**Enumerate the records; do not glob one marker at a time.** The underscore marker is inert as a glob — `_a_circle.md` matches literally, no escaping — so the enumeration above (which reads the marker as data in one pass) is the form to use; a per-state glob such as `$SCAN_CIRCLES/*/_a_circle.md` also resolves correctly, and `find -name '_a_circle.md'` needs no special handling. See `rules/fusion-workbench-conventions.md` `## State Markers — circles`.
+**Enumerate the records; do not glob one marker at a time.** The underscore marker is inert as a glob — `_a_circle.md` matches literally, no escaping — so the enumeration above (which reads the marker as data in one pass) is the form to use; a per-state glob such as `$SCAN_CIRCLES/*/_a_circle.md` also resolves correctly, and `find -name '_a_circle.md'` needs no special handling. See `rules/fusion-workbench-conventions.md` `## Marker globs`.
 
 For each Circle, classify by the marker on its record (`_a_`, `_t_`, `_c_`, `_b_`, `_s_`, `_d_`) and extract:
 - Circle directory name (stable across the lifecycle, no marker) and the record's filename
@@ -133,7 +133,7 @@ Do NOT auto-trigger Rebalance. Per decision `260511-1031_a_bounded-closure-propa
 
 ## Output — the portfolio
 
-Regenerate `$PORTFOLIO` in full on every run (overwrite). Conform to the portfolio template at the end of the **"Circle record template"** section in `rules/fusion-workbench-conventions.md`. The structure is five sections in this order:
+Regenerate `$PORTFOLIO` in full on every run (overwrite). Conform to the portfolio template at the end of the **"Circle record template"** section in `rules/circle-records.md`. The structure is five sections in this order:
 
 1. `## Active (_t_)` — 0 or 1 entry. If more than one Circle record carries `_t_`, list each and surface a `MULTIPLE-ACTIVE` warning in `## Warnings`.
 2. `## Anticipated (_a_) — ranked` — ordered by Step-3 ranking. Top entry includes the full one-paragraph rationale; lower entries get one-sentence rationale. The first line of this section is `Recommended next: <circle-dir> — <rationale>`, where `<circle-dir>` is the top-ranked Circle's directory name and `<rationale>` is a brief one-sentence reason. If there are no `_a_` Circles, the section reads `(none)`.

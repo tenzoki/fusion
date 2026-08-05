@@ -231,7 +231,7 @@ fusion-workbench/
 └── tasklist.md                 # taskplanner output (dependency-ordered work queue)
 ```
 
-The layout, the Origin Rule, the `bin/fusion-paths` resolution contract, the state markers, and inline progress tracking are all defined once in `fusion-workbench-conventions.md` (auto-loaded from the plugin's `rules/` directory). Every agent confirms the rule is in context during Setup so the conventions are uniform.
+The layout, the Origin Rule, the operative half of the `bin/fusion-paths` resolution contract, the issue/planning and decision state markers, marker globs, and inline progress tracking are all defined once in `fusion-workbench-conventions.md` (auto-loaded from the plugin's `rules/` directory). Its header table names the four topics that have their own authoring homes next door — the resolver's key table (`workbench-path-resolution.md`), the Circle state vocabulary and record templates (`circle-records.md`), rule-file provenance (`rule-file-provenance.md`), and stashes plus the commit lock (`workbench-stash-and-lock.md`) — each emitted only to the agents that apply it. Every agent confirms the rule is in context during Setup so the conventions are uniform.
 
 ## Invariants
 

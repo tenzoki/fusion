@@ -65,6 +65,15 @@
 #     measured illustration set — is evidence for a review rather than
 #     instruction for a behaviour and lives outside rules/ entirely, in the
 #     Circle's analysis store, reachable only by the pointer in the core.
+#   - Circle-transitioning agents (orchestrator, playmaker, shaper) additionally
+#     read circle-records.md (shipped by plugin) — the Circle state vocabulary,
+#     its worked transitions, the Circle record template and the portfolio
+#     template. The audience is DERIVED rather than asserted: these are exactly
+#     the agents whose prompts name a Circle-scoped fusion-paths key. Two sibling
+#     files from the same partition — workbench-path-resolution.md and
+#     rule-file-provenance.md — are emitted to no agent at all; they are the
+#     authoring homes for prompt/resolver authoring and for rule-file writing,
+#     reached by pointer from fusion-workbench-conventions.md.
 #   - Design-diagram agents additionally read design-diagrams.md (shipped by
 #     plugin) — the doctrine for expressing technical design as formal,
 #     parseable Mermaid (when / which type, validity, coherence self-check).
@@ -182,6 +191,25 @@ esac
 case "$AGENT" in
   coder|coderev|bugfixer)         IS_GUARD_INTERNALS_AGENT=1 ;;
   *)                              IS_GUARD_INTERNALS_AGENT=0 ;;
+esac
+
+# Circle-transitioning-agent flag — independent of PATTERNS. The three agents
+# that create, activate, close or rank a Circle additionally read
+# rules/circle-records.md: the Circle state vocabulary, its worked transitions,
+# the Circle record template and the portfolio template.
+#
+# The audience is DERIVED, not guessed: `bin/fusion-paths` builds each consumer's
+# key set by grepping that consumer's own prompt, and exactly these three name a
+# Circle-scoped key — orchestrator ($SCAN_CIRCLES, $PORTFOLIO), playmaker
+# ($OUT_CIRCLE, $SCAN_CIRCLES, $PORTFOLIO), shaper ($OUT_CIRCLE, $SCAN_CIRCLES).
+# An agent that names no Circle key cannot transition a Circle, so the vocabulary
+# is text it can never act on. The other thirteen reach the file through the
+# pointer at `## Circle records` in fusion-workbench-conventions.md; the skills
+# that transition Circles cite it directly, as skills always must (this helper
+# serves agents only and exits 2 on any other name).
+case "$AGENT" in
+  orchestrator|playmaker|shaper)  IS_CIRCLE_AGENT=1 ;;
+  *)                              IS_CIRCLE_AGENT=0 ;;
 esac
 
 emit_if_exists() {
@@ -336,6 +364,24 @@ fi
 #     changes or reviews the classifier needs.
 if [ "$IS_GUARD_INTERNALS_AGENT" -eq 1 ]; then
   emit_if_exists "$PLUGIN_RULES_DIR/protected-path-internals.md"
+fi
+
+# 1da. Circle-transitioning agents (orchestrator, playmaker, shaper) additionally
+#      receive the Circle record rules: the state vocabulary, the worked
+#      transitions, the record template and the portfolio template. Derived
+#      audience — see the IS_CIRCLE_AGENT block above.
+#
+#      Two files that came out of the same partition are emitted to NOBODY and so
+#      appear nowhere below: rules/workbench-path-resolution.md (the resolver's
+#      name namespace, key table and key-set derivation — read when authoring a
+#      prompt or changing bin/fusion-paths) and rules/rule-file-provenance.md
+#      (read when creating or editing a rule file). Neither is instruction for a
+#      dispatched agent's routine work, and both are reached by the pointers left
+#      at their sites in fusion-workbench-conventions.md. They live in rules/
+#      rather than outside it because they remain the authoring home of their
+#      topic — the emission decision is about audience, not about status.
+if [ "$IS_CIRCLE_AGENT" -eq 1 ]; then
+  emit_if_exists "$PLUGIN_RULES_DIR/circle-records.md"
 fi
 
 # 1e. The orchestrator additionally receives the two workbench protocols whose

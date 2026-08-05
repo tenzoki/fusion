@@ -18,10 +18,15 @@ import { dirname, resolve, join } from "node:path";
 // This is a guard, not a fixer (rules/critical-stance.md §2): it reads and
 // asserts, it never rewrites a prompt.
 //
-// The gate reads only `agents/` and `skills/`. It does NOT read
-// `rules/fusion-workbench-conventions.md` or `bin/fusion-paths` — the two
-// definition sites — because they are not in its file set. If the file set is
-// ever widened to include them, they must become explicit exemptions.
+// The gate reads only `agents/` and `skills/`. It does NOT read the files that
+// DEFINE the stores, because those are not in its file set. That used to be
+// stated as a two-item aside; it is now the `DEFINITION_SITES` constant below,
+// and the change is deliberate. When `rules/fusion-workbench-conventions.md` was
+// partitioned, each shard that inherited a definition also inherited the right
+// to name store directories — and it inherited it by passing a gate that never
+// looked, not by anyone deciding. An enumeration somebody has to edit is the
+// difference between the two. If the file set is ever widened to include these
+// paths, they must become explicit exemptions.
 // ---------------------------------------------------------------------------
 
 const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
@@ -60,6 +65,20 @@ const TYPE_FOLDERS = [
 // mkdir), and `migrate`'s entire purpose is to move those folders. Every other
 // skill and every agent must go through `fusion-paths`.
 const EXEMPT_SKILLS = new Set(["setup", "migrate"]);
+
+// The files allowed to name a store directory because they DEFINE where a kind
+// goes. They are outside the gate's file set by construction — it reads
+// `agents/` and `skills/` only — so this list grants nothing. Its job is to make
+// the set countable: a fifth definition site is added here in the same commit
+// that creates it, or the tree carries one nobody chose. Ordered as the
+// conventions file's own header table orders them.
+const DEFINITION_SITES = [
+  "rules/fusion-workbench-conventions.md", // layout, Origin Rule, operative path resolution
+  "bin/fusion-paths", // the executable definition
+  "rules/workbench-path-resolution.md", // name namespace, key table, key-set derivation
+  "rules/circle-records.md", // Circle markers, record and portfolio templates
+  "rules/workbench-stash-and-lock.md", // the stash snapshot layout
+];
 
 const alt = TYPE_FOLDERS.join("|");
 
@@ -241,6 +260,50 @@ describe("path-literal lint: a re-introduced literal fails, with an actionable m
     expect(msg).toContain("agents/coder.md:5");
     expect(msg).toContain("fusion-workbench/planning/");
     expect(msg).toContain("bin/fusion-paths");
+  });
+});
+
+describe("path-literal lint: the definition sites are enumerated, not assumed", () => {
+  // What this block does and does not claim. It does NOT detect a new definition
+  // site: a file that merely CITES an example path (`decision-record-examples.md`
+  // walking a record through its markers, `user-facing-output.md` showing a
+  // reference block) is shape-identical to one that DEFINES where a kind goes, so
+  // no regex separates them and an exact-set assertion over `rules/` would be
+  // noise. What it does is keep the declared list honest: every entry exists,
+  // every entry really names a store, and no entry has quietly wandered into the
+  // gate's own file set. The decision that a file may define a store is a human
+  // one, recorded by editing DEFINITION_SITES and the header table of
+  // `rules/fusion-workbench-conventions.md` together.
+  it("every declared definition site exists and names at least one store", () => {
+    const broken: string[] = [];
+    for (const rel of DEFINITION_SITES) {
+      const abs = join(pluginRoot, rel);
+      if (!existsSync(abs)) {
+        broken.push(`${rel} — declared a definition site but does not exist`);
+        continue;
+      }
+      const text = readFileSync(abs, "utf-8");
+      suffixForm.lastIndex = 0;
+      prefixForm.lastIndex = 0;
+      if (!suffixForm.test(text) && !prefixForm.test(text)) {
+        broken.push(`${rel} — names no store directory; the entry is stale, remove it`);
+      }
+    }
+    expect(
+      broken,
+      `DEFINITION_SITES has drifted from the tree:\n  ${broken.join("\n  ")}`,
+    ).toEqual([]);
+  });
+
+  it("no definition site is inside the gate's own file set", () => {
+    const gated = new Set(gatedFiles().map((f) => f.rel));
+    const overlap = DEFINITION_SITES.filter((rel) => gated.has(rel));
+    expect(
+      overlap,
+      `${overlap.join(", ")} is both scanned by this gate and declared allowed to name ` +
+        `stores. The two cannot both hold: widening the file set means turning these into ` +
+        `real exemptions in scan(), not leaving them on a list the gate never consults.`,
+    ).toEqual([]);
   });
 });
 

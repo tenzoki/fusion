@@ -12,8 +12,9 @@ import { dirname, resolve, join, relative, sep } from "node:path";
 // admission plus the introducing commit. A reader who opens a rule then learns,
 // within the first ten lines, which record put it there, and so has a way to ask
 // whether the reason still holds. The convention is defined in
-// `rules/fusion-workbench-conventions.md`, section
-// '## Provenance headers on rule files'.
+// `rules/rule-file-provenance.md`, section '## Provenance headers on rule files'
+// — it left `rules/fusion-workbench-conventions.md` in the partition this gate's
+// own comment anticipated below, which now leaves a pointer at that site.
 //
 // This gate fails `npm test` when a rule file carries no `Provenance:` line in
 // its first HEADER_WINDOW lines. It names the offending file and states the fix.
@@ -127,7 +128,7 @@ function report(missing: string[]): string {
         `       or '**Provenance:** circles/<circle-directory>'. If no motivating record is\n` +
         `       recoverable, write exactly:\n` +
         "       '**Provenance:** No motivating record recoverable; introduced in `git:<short-hash>`.'\n" +
-        `       The convention is defined in rules/fusion-workbench-conventions.md,\n` +
+        `       The convention is defined in rules/rule-file-provenance.md,\n` +
         `       section '## Provenance headers on rule files'.`,
     )
     .join("\n");

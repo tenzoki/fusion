@@ -154,8 +154,36 @@ const RELEASE_CAP = 105_354;
  *             from the step-3 position before this step began. What is left is
  *             the cut the plan explicitly excludes — partitioning the remaining
  *             51 416 bytes of `fusion-workbench-conventions.md` (C9 step 3).
+ *   111 810 — 2026-08-05, at the pulled-forward C9 step 3: the conventions file
+ *             itself was partitioned by ADDRESSEE, 51 416 -> 34 671. Three shards
+ *             left it. `workbench-path-resolution.md` (8 962: the `<name>`
+ *             namespace, the key table, the key-set derivation) and
+ *             `rule-file-provenance.md` (5 745) are emitted to NO agent — their
+ *             addressee is whoever authors a prompt, the resolver, or a rule
+ *             file, which is nobody's routine dispatch work. `circle-records.md`
+ *             (9 302: the Circle state vocabulary, its transitions, the record
+ *             and portfolio templates) goes to `orchestrator`, `playmaker` and
+ *             `shaper` — a DERIVED audience, being exactly the agents whose
+ *             prompts name a Circle-scoped `fusion-paths` key and therefore the
+ *             only ones that can transition a Circle. The marker-glob discipline
+ *             stayed behind in the core under `## Marker globs`: it was filed
+ *             inside the circles section for historical reasons, but it governs
+ *             every marker in every vocabulary, and eight of the ten citations
+ *             that pointed at the circles section were reaching for it.
+ *
+ *             THIRTEEN of sixteen agents are now under RELEASE_CAP, and the
+ *             three that are not are the finding rather than a shortfall to be
+ *             closed by cutting further. `coder`/`coderev`/`bugfixer` stand at
+ *             111 810, 6 456 over: they alone carry `protected-path-internals.md`
+ *             (21 897), so their overage is step 2's split, not this one's. The
+ *             `orchestrator` stands at 108 465, 3 111 over, carrying both
+ *             `workbench-stash-and-lock.md` (9 250) and `circle-records.md` —
+ *             18 552 bytes of agent-specific text, because it is the agent with
+ *             the most distinct jobs. Every remaining byte in the core is text
+ *             all sixteen agents apply; getting these three under the cap means
+ *             revisiting a file this step did not own, not shaving this one.
  */
-const CEILING = 128_555;
+const CEILING = 111_810;
 
 /**
  * The plugin version at which the release cap is not yet due. The plan bumps

@@ -10,7 +10,7 @@ The user invoked `/fusion:next`. This skill is the user-facing surface for the C
 
 The skill writes nothing on the briefing path. The only writes it performs are part of the activation branch (Step 6): the `_a_→_t_` record rename, the `.active-circle` write, and a dashboard placeholder write. All writes are gated by an explicit user confirmation.
 
-**A Circle is a directory, and the state marker sits on the record inside it** — `circles/<dirname>/_a_circle.md` → `_t_circle.md`. The directory name never changes. See `rules/fusion-workbench-conventions.md` `## State Markers — circles`.
+**A Circle is a directory, and the state marker sits on the record inside it** — `circles/<dirname>/_a_circle.md` → `_t_circle.md`. The directory name never changes. See `rules/circle-records.md` `## State Markers — circles`.
 
 **Invocation forms:**
 
@@ -126,7 +126,7 @@ On **Aktivieren** (or after a selection) carry out the following in order.
 
 ### 6.1 — Verify the target
 
-Read the target Circle's record and confirm it carries the `_a_` marker. Enumerate the record rather than globbing per state — the underscore marker is inert, so `circles/*/_a_circle.md` matches literally (no escaping) and `find -name '_a_circle.md'` needs no special handling, but the enumeration below reads the marker as data in one pass. See `rules/fusion-workbench-conventions.md` `## State Markers — circles`.
+Read the target Circle's record and confirm it carries the `_a_` marker. Enumerate the record rather than globbing per state — the underscore marker is inert, so `circles/*/_a_circle.md` matches literally (no escaping) and `find -name '_a_circle.md'` needs no special handling, but the enumeration below reads the marker as data in one pass. See `rules/fusion-workbench-conventions.md` `## Marker globs`.
 
 ```bash
 CDIR="$WORKBENCH/$SCAN_CIRCLES/<candidate-dirname>"
@@ -138,7 +138,7 @@ If `$CDIR` is not a directory, `$REC` is empty, or `$MARKER` is not `a`, halt an
 
 ### 6.2 — Rename the record
 
-Only the record is renamed. The directory name never changes; that stability is the whole point of the marker-on-the-record design (`rules/fusion-workbench-conventions.md` `## State Markers — circles`).
+Only the record is renamed. The directory name never changes; that stability is the whole point of the marker-on-the-record design (`rules/circle-records.md` `## State Markers — circles`).
 
 ```bash
 mv "$CDIR/_a_circle.md" "$CDIR/_t_circle.md"

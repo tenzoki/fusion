@@ -64,7 +64,7 @@ REC=""; REC_COUNT=0; while IFS= read -r f; do REC="$f"; REC_COUNT=$((REC_COUNT+1
 CIRCLE_RECORD="$(basename "${REC:-}")"
 ```
 
-Enumerate the record rather than globbing per state. The underscore marker is inert, so `*/_t_circle.md` matches literally (no escaping) and `find -name '_t_circle.md'` needs no special handling; the enumeration above reads the marker as data in one pass. See `rules/fusion-workbench-conventions.md` `## State Markers — circles`.
+Enumerate the record rather than globbing per state. The underscore marker is inert, so `*/_t_circle.md` matches literally (no escaping) and `find -name '_t_circle.md'` needs no special handling; the enumeration above reads the marker as data in one pass. See `rules/fusion-workbench-conventions.md` `## Marker globs`.
 
 If `REC_COUNT` is 0 or greater than 1, halt and say which it is — a Circle directory holding no record, or more than one, is a workbench-state fault the user must resolve:
 

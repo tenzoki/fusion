@@ -2,9 +2,20 @@
 
 **Provenance:** No motivating record recoverable; introduced in `git:b05b423`.
 
-Shared conventions for all agents operating on `fusion-workbench/`, and for the rule files those agents load. This file is auto-loaded by the plugin system into every agent's context. Single source of truth for the workbench layout, the origin rule, path resolution, state markers, issue and decision filing, inline tracking, history logging, timestamps, and provenance headers on rule files.
+Shared conventions for all agents operating on `fusion-workbench/`, and for the rule files those agents load. This file is auto-loaded by the plugin system into every agent's context. Single source of truth for the workbench layout, the origin rule, the operative half of path resolution, the issue/planning and decision marker vocabularies, marker globs, filename patterns, issue and decision filing, inline tracking, history logging, timestamps, and the project language declaration.
 
-**This document is the definition.** Layout, origin rule, and path resolution are defined here completely. No agent prompt and no skill body may carry a competing or supplementary definition of where artifacts go — they resolve their paths at run time (see `## Path Resolution (Pfadauflösung)`) and cite this document for the rules. A path literal that names a store directory belongs in exactly two places: this file, and `bin/fusion-paths`.
+**This document is the definition** of everything it still states in full. Four topics that were once defined here now have their own authoring homes, each cited at the point where it left, and each emitted to the audience that actually applies it rather than to all sixteen agents:
+
+| Topic | Authoring home | Emitted to |
+|---|---|---|
+| The resolver's name namespace, key table, and key-set derivation | `rules/workbench-path-resolution.md` | no agent — read when authoring a prompt or the resolver |
+| Circle state markers, transitions, the record and portfolio templates | `rules/circle-records.md` | `orchestrator`, `playmaker`, `shaper` |
+| Provenance headers on rule files | `rules/rule-file-provenance.md` | no agent — read when writing a rule file |
+| Stashes and the commit lock | `rules/workbench-stash-and-lock.md` | `orchestrator` |
+
+No agent prompt and no skill body may carry a competing or supplementary definition of where artifacts go — they resolve their paths at run time (see `## Path Resolution (Pfadauflösung)`) and cite whichever of these five files owns the rule.
+
+**Store-directory path literals.** `hooks/lib/__tests__/path-literal-lint.test.ts` forbids one in any `agents/*.md` or `skills/*/SKILL.md` outside `/fusion:setup` and `/fusion:migrate`; every other consumer resolves through `bin/fusion-paths`. The gate reads neither `rules/` nor `bin/`, so the files that *define* the stores are outside its reach rather than exempted by it. They are enumerated there as `DEFINITION_SITES` all the same — an enumeration somebody has to edit is the difference between a fourth definition site being decided and one merely slipping past a gate that never looked.
 
 ## fusion-workbench Layout
 
@@ -90,17 +101,15 @@ Should the rule prove too tight in practice, the answer is a promotion step — 
 
 **`bin/fusion-paths <name>` is the single resolution point.** No agent and no skill hard-codes a store path. The prompt says "write your plan to `$OUT_PLAN`"; the resolver says what `$OUT_PLAN` is.
 
-### The name namespace
+### The name namespace, the key table, and how a key set is derived
 
-`<name>` is an **agent** (`agents/<name>.md`) or a **skill** (`skills/<name>/SKILL.md`). The two share one flat namespace, and **every consumer asks under its own name**: `fusion-paths coder`, `fusion-paths memo`, `fusion-paths log-activity`.
-
-A skill is its own consumer, not a guest in an agent's key set. The alternative — a skill resolving under whichever agent hosts its session — does not work, and not marginally: `/fusion:log-activity` reads consultations and investigations, `SCAN_CONSULT` is named by `playmaker` alone and `SCAN_INVESTIGATIONS` by `conceptrev` alone, and no agent names both. There is no argument that resolves that skill's reads. Making one work would mean adding both keys to an agent whose prompt performs neither read, which breaks the rule under *Emission is per-consumer* below and turns a key set into "whatever some skill in this session might want".
-
-A name is a lowercase slug. It resolves to exactly one prompt file; a name that is both an agent and a skill is an authoring error and exits 4, because there is no basis to prefer one prompt's key set over the other's. No collision exists today.
-
-**One exception, and it is not a hedge:** `/fusion:setup` passes `orchestrator`. It is the orchestrator's Setup procedure factored into a skill, and the values it resolves are held by the orchestrator for the whole session — including steps that live in `agents/orchestrator.md`. The consumer there really is the orchestrator.
-
-**One consumer names the layout literally, and only one:** `/fusion:migrate`. Every other consumer names one layout — the container one — and asks the resolver which store a kind maps to. Migrate is the transition *between* two layouts, so it must name both, and the resolver cannot help it with either side. The old side (`planning/`, `codereview/`, `memos/` at the workbench root) has no keys — the resolver knows only the container layout. The new side would resolve, but to the wrong values: a pre-v4 workbench with a Circle active makes `OUT_PLAN` point into the Circle, whereas the migration must send every unattributed pre-v4 artifact to `shared/` (Origin Rule, corollary 1). Worse, the resolver *refuses* migrate's own input: a pre-v4 `.active-circle` holds the old filename-with-marker form, which `bin/fusion-paths` rejects with exit 3 (`bin/fusion-paths:220-225`). So the one skill that exists to serve pre-v4 workbenches is the one the resolver cannot run against. It still gets its workbench anchor from `bin/fusion-workbench-root` — the same primitive the resolver delegates to — but the store paths it names are literal, and that is correct.
+Three questions this section used to answer in full are now authored in
+`rules/workbench-path-resolution.md`: which name a consumer passes (`<name>` is an agent OR
+a skill, one flat namespace, every consumer asks under its own name), what each emitted key
+means, and why the key set is derived from the prompt rather than declared. None of it is
+needed to *use* the resolver — an agent's keys are the ones its own prompt already names,
+and it reads their values off stdout. Read that file when you write or edit a consumer
+prompt, or change `bin/fusion-paths` itself. `bin/fusion-rules` emits it to no agent.
 
 ### Where the call belongs
 
@@ -126,34 +135,6 @@ The 0/1/2 shape is `bin/fusion-rules`'; 3 and 4 are this resolver's own, and the
 
 **3 and 4 must never be merged.** They address different people. Exit 3 is the user's to fix: their pointer is stale, and the advice "fix `.active-circle` before continuing" is right. Exit 4 is not fixable from the workbench at all, and a caller that keys on the code would hand the user that same advice about a pointer that is perfectly fine. Distinguishing them only in the stderr text is not enough — prompts key on the code.
 
-In the Value column, `A → B` means: `A` when a Circle is active, `B` when none is.
-
-| Key | Value | Notes |
-|---|---|---|
-| `WORKBENCH` | Absolute path to `fusion-workbench/` | Always emitted. Resolved via `bin/fusion-workbench-root`. |
-| `CIRCLE` | `circles/<stamp>-<slug>` | The active Circle directory. Absent when no Circle is active. |
-| `OUT_PLAN` | `<circle>/planning` → `shared/planning` | Spec and plan writes. |
-| `OUT_HISTORY` | `<circle>/history` → `shared/history` | Session history writes. |
-| `OUT_ISSUE` | `<circle>/issues` → `shared/issues` | Defect filing. |
-| `OUT_DECISION` | `<circle>/decisions` → `shared/decisions` | Decision-record filing. |
-| `OUT_REVIEW` | `<circle>/reviews` → `shared/reviews` | codereview / ontoreview / conceptrev writes. |
-| `OUT_ANALYSIS` | `<circle>/analyses` → `shared/analyses` | Analysis writes. |
-| `OUT_INVESTIGATION` | `shared/investigations` | Always shared — never Circle-bound. |
-| `OUT_CONSULT` | `shared/consult` | Always shared — never Circle-bound. |
-| `OUT_MEMO` | `shared/memos` | Always shared — never Circle-bound. |
-| `OUT_CIRCLE` | `circles` | Where new Circle directories are created (shaper, playmaker). |
-| `SCAN_PLANS` | `<circle>/planning shared/planning` | Read/search targets. |
-| `SCAN_ISSUES` | `<circle>/issues shared/issues` | |
-| `SCAN_DECISIONS` | `<circle>/decisions shared/decisions` | |
-| `SCAN_HISTORY` | `<circle>/history shared/history` | |
-| `SCAN_REVIEWS` | `<circle>/reviews shared/reviews` | |
-| `SCAN_ANALYSES` | `<circle>/analyses shared/analyses` | |
-| `SCAN_INVESTIGATIONS` | `shared/investigations` | Read counterpart of `OUT_INVESTIGATION`. Shared-only — see invariant 2. |
-| `SCAN_CONSULT` | `shared/consult` | Read counterpart of `OUT_CONSULT`. Shared-only — see invariant 2. |
-| `SCAN_CIRCLES` | `circles` | Portfolio-wide scans (playmaker, `/fusion:next`). |
-| `PORTFOLIO` | `portfolio.md` | |
-| `TASKLIST` | `tasklist.md` | |
-
 ### Two invariants
 
 1. **With no active Circle, every `OUT_*` points into `shared/`.** There is no error state and no refusal for "no Circle active" — work happens outside Circles routinely, and it has a defined home. This is the Origin Rule's "unknown origin means `shared/`" expressed executably.
@@ -162,29 +143,6 @@ In the Value column, `A → B` means: `A` when a Circle is active, `B` when none
    `SCAN_INVESTIGATIONS` and `SCAN_CONSULT` look like exceptions and are not. Their kinds exist only in `shared/` (an investigation and a consultation cannot originate in a Circle — see `## fusion-workbench Layout`), so "both stores" has nothing to range over and collapses to one. The invariant is not weakened for them; it is satisfied vacuously. The asymmetry is intentional, and it follows from the layout rather than sitting beside it.
 
    There is deliberately no `SCAN_MEMOS`. `memos/` is shared like the other two, but no agent reads it — a memo is written for the user, not for an agent. A key is emitted when a prompt reads the kind, not because the symmetry of the table would look better with it.
-
-### Emission is per-consumer, and derived from the prompt
-
-The resolver emits only the keys a consumer needs — a coder gets no `OUT_PLAN`, a playmaker gets no `OUT_ISSUE`. This table defines what each key *means*; **the prompt defines which keys a consumer gets.**
-
-**The key set is not declared anywhere. It is read out of the prompt.** `bin/fusion-paths <name>` greps `agents/<name>.md` or `skills/<name>/SKILL.md` for its own `$OUT_*`, `$SCAN_*`, `$PORTFOLIO` and `$TASKLIST` references, and those references *are* the set. `WORKBENCH` is emitted unconditionally; `CIRCLE` whenever a Circle is active; neither belongs to a set. A prompt that names no key gets `WORKBENCH` alone — a true answer, not a failure.
-
-This is what makes the rule below hold **by construction** rather than by audit:
-
-> Every directory a consumer's prompt *reads* has a `SCAN_*` key in its set; every kind it *writes* has an `OUT_*`. `OUT_*` is a write key, `SCAN_*` is a read key.
-
-Under-emission — a prompt naming a key the resolver withholds — is now impossible: the prompt naming it is what creates it. That was the defect that mattered, and it was live. The sets were once declared by hand, built by a deliberate line-by-line audit of all 15 prompts; the audit went 14/15, missing that the reconciler files decision records. `$OUT_DECISION` expanded to the empty string and every record it filed landed at the workbench root — silently, because the write succeeded. A declared set is a second copy of what the prompt already says, and every prompt edit re-rolls the dice on the copy (`HYG-SOT`).
-
-Over-emission — a key emitted that no prompt names — is likewise impossible now, and the signal it used to carry has moved. When a declared set held a key its prompt never used, the finding was usually *"this prompt is missing a step"*, not *"this key is spare"*. That is a prompt-completeness question, found by reading the prompt. It was visible here only by accident, as the diff between a human's belief about a prompt and the prompt's text.
-
-Two consequences for authors:
-
-- **A missing path in a prompt is now a prompt bug, and only a prompt bug.** It cannot be patched by adding a key to the resolver, because the resolver has no key list to add to. Write `$SCAN_ISSUES` where the prompt performs the read.
-- **A key mistyped in a prompt stops the run.** `$SCAN_ISUES` is not in the resolver's key table, so it exits 4 naming the prompt and the key, rather than silently expanding to nothing (`HYG-NO-SILENT-FAIL`).
-
-Derivation happens at run time and costs one grep over one file: the set is built for the requested name only. There is no generated table, because a generated table would go stale exactly the way the declared sets did — whenever someone edits a prompt and does not re-run the generator.
-
-`bin/fusion-rules` still hand-maintains its own agent → rule-pattern mapping, and that divergence is deliberate: an agent's prompt does not name the rule files that apply to it, so that mapping is an authored fact with no source to derive from. A key set is not a fact; it is a restatement of the prompt.
 
 ### Failure behaviour
 
@@ -300,11 +258,7 @@ The marker vocabulary mirrors foundation_V3 §1.2's two-layer Grounding model:
 
 Each decision store holds both layers; the marker carries the layer information. Reconciliation passes that "list active Grounding" filter on `_o_` + `_a_`; passes that "show project history" include all five. A scan for active Grounding must cover every path in `$SCAN_DECISIONS`, not just the Circle's.
 
-## State Markers — circles
-
-**The marker sits on the Circle record, not on the directory.** A Circle is `circles/<YYMMDD-HHMM>-<directive-slug>/`, and the directory name never changes across the Circle's lifecycle. The state lives in the record inside it: `_a_circle.md` → `_t_circle.md` → `_c_circle.md`. A state change is a `mv` of that one file.
-
-Two reasons this is worth the small oddity. First, **path stability**: every reference into a Circle — from a session history, from `portfolio.md`, from another Circle's decision, from a stash manifest — stays valid for the Circle's whole life. Were the marker on the directory, every state change would break every one of them. Second, **an immutable natural key**: the later Plane mirror needs a per-Circle identifier that does not mutate, or the guarantee "transferring twice creates no duplicates" cannot hold.
+## Marker globs
 
 The delimiter is an underscore, not brackets, and that choice is what keeps the marker cheap to read as a glob. `[` and `]` are shell-glob metacharacters: a marker written in bracket form inside a glob is silently a *character class* matching the single marker letter, so a glob of the shape `circles/*/…-circle.md` with a bracketed `t` resolves to `circles/*/t-circle.md`, matches the empty set, and under `bash` fails *silently* — the unmatched pattern expands to itself, the customary `[ -e "$f" ] || continue` guard drops it, and the count comes back `0` on a workbench full of Circles (`HYG-NO-SILENT-FAIL`). That trap was hit five times in a single session. The underscore is inert in both glob and regex: `_t_circle.md` matches literally, with no escaping and no character-class surprise.
 
@@ -321,111 +275,18 @@ The second form is preferred wherever the task is counting or enumerating: it re
 
 This applies to every marker in every vocabulary — `_o_`, `_a_`, `_t_`, `_c_`, `_i_`, `_p_`, `_b_`, `_s_`, `_d_` — anywhere a filename carrying one is matched by a glob, in any agent prompt or skill body.
 
-The price of the marker-on-the-record design is that `ls circles/` no longer shows state at a glance; `portfolio.md` and `/fusion:next` are the built answers for that. The marker convention is not actually broken — the marker still names the state of the *record*, and the record is `circle.md`; the directory merely encloses it and its artifacts.
+## Circle records
 
-The vocabulary is parallel to but distinct from issues/planning and decisions. It is unchanged by the container layout.
+The Circle state vocabulary (`_a_` anticipated, `_t_` active, `_c_` closed-coherent, `_b_`
+bounded, `_s_` superseded, `_d_` deferred), its worked transitions, the Circle record
+template and the `portfolio.md` template are authored in `rules/circle-records.md`. The
+marker sits on the record inside the Circle directory, never on the directory itself, so
+every path into a Circle stays valid for its whole life.
 
-Binding decision: `decisions/260716-1910_i_circle-marker-am-verzeichnis-oder-an-der-circle-datei.md`.
-
-| Marker | Meaning |
-|--------|---------|
-| `_a_` | **Anticipated** — provisional Directive, no Grounding yet (foundation V3 §2.1). Initial state on creation. |
-| `_t_` | **Active / in-Turn** — Directive refined, Grounding crystallising, orchestrator running it. |
-| `_c_` | **Closed-coherent** — three-edge Coherence verdict passed. |
-| `_b_` | **Bounded Closure** — Directive judged not reachable; what was learned is the Artifact. |
-| `_s_` | **Superseded** — replaced by another Circle (scope split, redirected). |
-| `_d_` | **Deferred** — anticipated → indefinitely postponed. |
-
-### Worked transitions
-
-Every transition renames only `<circle-dir>/_S_circle.md`. The directory is never renamed.
-
-- `_a_ → _t_` — playmaker proposes activation; user confirms; orchestrator renames the record and writes `.active-circle` with the directory name.
-- `_t_ → _c_` — Coherence verdict `coherent` at Phase 3; orchestrator renames the record at Phase 4 and deletes `.active-circle`.
-- `_t_ → _b_` — user chose **Accept Bounded Closure** at the Rebalance gate; orchestrator renames the record at Phase 4 and deletes `.active-circle`.
-- `_t_ → _s_` — user supersedes mid-run; orchestrator renames the record and deletes `.active-circle`; a new `_a_` Circle directory is created, citing the superseded one via `## Dependencies`.
-- `_a_ → _d_` — user defers an anticipated Circle indefinitely; manual rename of the record. `.active-circle` is not involved — an `_a_` Circle was never active.
-- `_a_ → _s_` — rare; the anticipated Circle is replaced before activation by a new Circle that captures the revised intent.
-
-**Terminal-states statement:** `_c_`, `_b_`, `_s_`, `_d_` are terminal — `mv` back to `_a_` or `_t_` is disallowed. If continuation is needed, create a new Circle that cites the terminal one via its `## Dependencies` section. A terminal Circle keeps its directory and all its artifacts in place; closure is not a move.
-
-**Grounding-Stand vs Grounding-Historie parallel:** as with `decisions/`, the marker carries the layer information. `_a_` and `_t_` are Grounding-Stand (current working state); `_c_`, `_b_`, `_s_`, `_d_` are Grounding-Historie (preserved record).
-
-## Circle record template
-
-The Circle record is `<circle-dir>/_S_circle.md`. Creating a Circle means creating the directory, the record, and the six artifact subdirectories (`planning/`, `issues/`, `decisions/`, `history/`, `reviews/`, `analyses/`) — a Circle without its subdirectories forces the next agent to invent them. Template:
-
-```markdown
-# <One-line Directive title>
-
----
-**Domain:** <code|data|strategic|knowledge>
-**Status:** <anticipated | active | closed | bounded | superseded | deferred>
-**Filed by:** <agent name or "user">
-**Active spec/plan:** <workbench-relative path to the spec or plan, or "(none yet)">
-**Active session history:** <workbench-relative path to the session history file, or "(none yet)">
-
----
-
-## Directive
-
-<What this Circle aims for. The post-completion state of the Artifact, prognosticated. Revisable via Rebalance.>
-
-## Grounding snapshot
-
-<What we know going in. Filled at `_a_ → _t_` activation by shaper portfolio-activation mode. Updates on Rebalance.>
-
-## Dependencies
-
-<List of other Circle directory names this Circle depends on. Playmaker flags cycles here. Also the place to cite artifacts from other Circles that bind this one — per the Origin Rule, reach is cited, not copied.>
-
-## Turn log
-
-<Append-only list of Turn outcomes for this Circle. Format per bullet:
-- Turn N (session YYMMDD-HHMM): commits <hash>..<hash>; Coherence verdict <coherent|review-needed|skipped-...>; session history: <path>>
-
-## Closure note
-
-<Filled when marker becomes _c_, _b_, _s_, or _d_. Cites the orchestrator session history file. For _b_, also cites the Bounded-Closure Artifact (what was learned that the Directive could not reach).>
-```
-
-The directory is `YYMMDD-HHMM-<directive-slug>/` and the record inside it is `_S_circle.md`, per the State Markers section above.
-
-**`Active spec/plan:` and `Active session history:` hold workbench-relative paths, not bare filenames.** In the ordinary case the path points inside the Circle (`circles/260716-1847-umbau/planning/260716-1910_p_plan-foo.md`) and looks redundant. It is not, because the cross-store case is real and routine:
-
-- A spec written before the Circle existed lands in `shared/planning/` — every `/fusion:direct` run and every shaper run in anticipated-circle mode produces one, since with no Circle active every `OUT_*` points at `shared/` (invariant 1).
-- A migrated pre-v4 Circle names a plan that the migration moved to `shared/planning/`, correctly: unknown origin means `shared/` (Origin Rule, corollary 1). The file genuinely is not in the Circle, and rewriting the field to claim otherwise would point it at nothing.
-
-A path resolves in both cases; a bare filename resolves only in the first, and fails silently in the second — the consumers (`/fusion:circle-stash`'s best-effort lookup, playmaker's `portfolio.md` rendering, the orchestrator's resume) all degrade without announcing it. This does not weaken the container premise: a Circle still *holds* its artifacts, and the Origin Rule still decides which. The field merely reports where the file is rather than assuming it.
-
-`$PORTFOLIO` is regenerated by playmaker on every run. Template:
-
-```markdown
-# Portfolio
-
-**Generated:** YYMMDD-HHMM (by playmaker session <id>)
-**Domain bias:** <code|data|strategic|knowledge>
-
-## Active (_t_)
-
-<One entry expected, or 0. If >1, flag MULTIPLE-ACTIVE warning. Each entry: Circle directory name, Directive line, active session history path.>
-
-## Anticipated (_a_) — ranked
-
-<Ordered list by playmaker rank. Top entry includes a one-paragraph rationale for the recommendation. Each entry: Circle directory name, Directive line, rank, dependencies summary.>
-
-## Recently closed (_c_ / _b_)
-
-<Last 5 closed Circles. Each entry: Circle directory name, marker, Closure note one-liner.>
-
-## Archived (_s_ / _d_)
-
-<Superseded and deferred Circles, for reference.>
-
-## Warnings
-
-<Dependency-cycle warnings, parent-grounding-stale notes (cross-references), MULTIPLE-ACTIVE conditions, etc.>
-```
+`bin/fusion-rules` emits that file to `orchestrator`, `playmaker` and `shaper` — the three
+agents whose prompts name a Circle-scoped resolver key, and therefore the three that
+transition or rank a Circle. If you are not one of them you work inside a Circle without
+ever changing its state, and `## fusion-workbench Layout` above is the part you need.
 
 ## Inline State Tracking
 
@@ -559,37 +420,15 @@ Deferred: <set when status moves to _d_>
 Superseded by: <set when status moves to _s_>
 ```
 
-## Provenance headers on rule files
+## Rule-file provenance
 
-Every file in the plugin's `rules/` directory opens with a line naming what caused it to exist. A reader who opens a rule learns, within the first ten lines, which record, Circle, or commit put it there, and therefore has a way to ask whether the reason still holds.
-
-**The header.** One line, anywhere in the first ten lines of the file. The canonical written form is:
-
-```
-**Provenance:** <citation>
-```
-
-Canonical placement is directly under the file's H1 title, on line 3. The ten-line window is tolerance rather than licence. Ten was sized against the pre-header corpus, where the longest opening blockquote ran to line 8 in `context-manifest.md`, so a header placed after that lede would have landed on line 10 and still counted. Every rule file now carries its header above the lede instead, at line 3, which pushed that same blockquote down to lines 5-10. The current bound is therefore tighter than the one the window was sized for: it ends exactly where the corpus's longest lede ends, and in that file a header below the lede would sit at line 12, outside it. The remaining margin is zero, and it costs nothing, because a header on line 3 needs no margin at all. That is also the answer for a future file whose opening blockquote runs long — move the header above the blockquote, not widen the window.
-
-**Three citation forms.** Which one a file uses is decided by what its history supports, not by the author's preference.
-
-1. **A decision record.** A workbench-relative path to a record under a decisions store, for example `shared/decisions/260801-1020_a_provenance-header-on-rule-files.md`. Prefer this form whenever a record exists. It is the only form that carries the header's real payoff: the record's marker changes to `_s_` when the decision is superseded, so the rule citing it becomes a retirement candidate any reader can spot.
-2. **A Circle.** A Circle **directory** name, for example `circles/260718-1924-v5x-overhaul`. The directory name is used rather than the record filename, because the directory is stable across the Circle's whole lifecycle while the record filename carries a marker that changes. A reader follows the citation, reads whichever `*_circle.md` is present, and takes the state from its name.
-3. **The admission plus the introducing commit.** For a file with no recoverable motivating record, written exactly like this:
-
-```
-**Provenance:** No motivating record recoverable; introduced in `git:<short-hash>`.
-```
-
-The commit is admission-scoped and nothing more. Git is not the provenance mechanism; it is what an honest header falls back to when the alternative is a citation the reader cannot follow anywhere. Do not reconstruct a plausible record for a file that has none. An invented rationale is exactly the fiction this header exists to prevent.
-
-**What the gate checks, and what it does not.** `hooks/lib/__tests__/provenance-header-lint.test.ts` fails `npm test` when a file in the plugin's `rules/` directory carries no `Provenance:` line in its first ten lines, and it names the offending file. It reads the plugin's own `rules/` only. A consuming project's `./rules/` and `.claude/rules/` are in no test set fusion controls, so there the header is documented convention backed by the curator's discipline, and a project gains header-based evidence only for rules written or edited after it adopts the convention. The gate checks that a header is present. It does not read the value and it resolves no cited path, so a header citing something useless still passes, and a header citing a record that was later moved or archived also still passes. What stops a hollow header is review, not the gate.
-
-**`Provenance:` is file-scoped; `Binding decision:` is section-scoped.** The two coexist and mean different things. A `Provenance:` line at the top of a file states why the *file* exists. A `Binding decision:` line inside a section states which record binds *that section*. Neither replaces the other, and a section note never satisfies the gate: the gate reads only the first ten lines, and only for `Provenance:`.
-
-**Whoever writes a rule file writes its header.** An agent that creates a rule file gives it a header in the same edit, choosing the form its history supports. An agent that edits an existing rule file preserves the header, and updates it when the edit is substantial enough that a different record has become the file's reason for existing. This obligation falls first on the curator, whose work is writing and consolidating normative text; in the plugin's own repository the lint gate backs it, and everywhere else the discipline stands alone.
-
-Binding decision: `shared/decisions/260801-1020_a_provenance-header-on-rule-files.md`.
+Every file in a `rules/` directory opens with a `**Provenance:** <citation>` line in its
+first ten lines, naming the record, Circle, or commit that caused it to exist. The three
+legitimate citation forms, the placement rule, what
+`hooks/lib/__tests__/provenance-header-lint.test.ts` checks and what it cannot, and who
+carries the obligation are authored in `rules/rule-file-provenance.md`. Read it before you
+create or edit any file under `rules/`. `bin/fusion-rules` emits it to no agent, because no
+agent's routine work is writing normative rule text.
 
 ## History Logging
 

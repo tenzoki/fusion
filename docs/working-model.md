@@ -109,5 +109,5 @@ Had step 8 shown the work drifting — say the coder had started refactoring an 
 - [`docs/philosophy.md`](philosophy.md) — *why* fusion is built this way (the design ideas behind Circles, file-based coordination, and the guard).
 - [`README.md`](../README.md) — install, setup, your first session, best practices, configuration.
 - [`README-hooks.md`](../README-hooks.md) — the compliance guard in full: config fields, sensitivities, thresholds, halt clearing.
-- [`rules/fusion-workbench-conventions.md`](../rules/fusion-workbench-conventions.md) — the exact workbench layout, marker vocabularies, and the Circle-record template.
+- [`rules/fusion-workbench-conventions.md`](../rules/fusion-workbench-conventions.md) — the exact workbench layout and the issue, planning and decision marker vocabularies. The Circle state vocabulary and the Circle-record template are next door in [`rules/circle-records.md`](../rules/circle-records.md).
 - Run `/fusion:help` inside Claude Code for an interactive explainer.

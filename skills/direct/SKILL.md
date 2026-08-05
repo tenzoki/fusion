@@ -8,7 +8,7 @@ allowed-tools: [Bash, Read, Write, Edit, Agent(fusion:shaper)]
 
 The user invoked `/fusion:direct <draft>`. This skill is the user-facing surface for **capturing a Directive as an anticipated Circle** without entering an orchestrator Turn loop. It dispatches the `shaper` agent in `anticipated-circle` mode; shaper runs its normal clarification flow with the user and creates the Circle.
 
-A Circle is a directory, not a file: shaper creates `<dirname>/` with its record `_a_circle.md` and the six artifact subdirectories. See `rules/fusion-workbench-conventions.md` `## Circle record template`.
+A Circle is a directory, not a file: shaper creates `<dirname>/` with its record `_a_circle.md` and the six artifact subdirectories. See `rules/circle-records.md` `## Circle record template`.
 
 The skill itself does not write Circle content — shaper does. Its only writes are (a) a `mkdir -p` of the Circle store if absent (Step 2 — the one deviation from `/fusion:next`'s stricter "run setup" rule, and a deliberate choice for this skill), and (b) the follow-up text printed to the user.
 
@@ -78,14 +78,14 @@ Do **not** pass shaper a path. It resolves its own write targets at its Setup, t
 
 Shaper will then:
 
-- Read the conventions and load the Circle record template
+- Read the conventions and load the Circle record template from `rules/circle-records.md`
 - Run its normal 1-4-questions-per-round clarification flow with the user via `AskUserQuestion`
 - Derive a `<directive-slug>` from the refined Directive (kebab-case, ≤6 words, lowercased, articles dropped)
 - Create the Circle directory `YYMMDD-HHMM-<directive-slug>/`, its record `_a_circle.md`, and the six artifact subdirectories
 - Write its own history file
 - Return with the Circle directory name
 
-Note where the spec lands, if shaper writes one: with no Circle active, every `OUT_*` points into the shared store, so a spec written *before* the Circle exists is a shared artifact and the record's `**Active spec/plan:**` field cites it there. That is correct and expected, not a migration defect — see `rules/fusion-workbench-conventions.md` `## Circle record template`.
+Note where the spec lands, if shaper writes one: with no Circle active, every `OUT_*` points into the shared store, so a spec written *before* the Circle exists is a shared artifact and the record's `**Active spec/plan:**` field cites it there. That is correct and expected, not a migration defect — see `rules/circle-records.md` `## Circle record template`.
 
 Wait for shaper to complete. The clarification flow may take several rounds — that's the whole point of using shaper instead of stashing the draft verbatim.
 

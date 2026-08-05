@@ -145,7 +145,7 @@ fusion-workbench/
 - **decisions:** `_o_` open question · `_a_` answered · `_i_` implemented · `_d_` deferred · `_s_` superseded
 - **circles:** `_a_` anticipated · `_t_` active · `_c_` closed-coherent · `_b_` bounded closure · `_s_` superseded · `_d_` deferred
 
-Rule of thumb: file in `issues/` when the resolution is "go fix it," in `decisions/` when it's "decide and record." The full layout, marker transitions, and the Circle-record template live in [`rules/fusion-workbench-conventions.md`](rules/fusion-workbench-conventions.md).
+Rule of thumb: file in `issues/` when the resolution is "go fix it," in `decisions/` when it's "decide and record." The full layout and the issue, planning and decision marker transitions live in [`rules/fusion-workbench-conventions.md`](rules/fusion-workbench-conventions.md); the Circle state vocabulary and the Circle-record template live in [`rules/circle-records.md`](rules/circle-records.md).
 
 Three skills surface the workbench for you directly: `/fusion:memo` appends personal notes to `shared/memos/`, `/fusion:log-activity` scans commits and the workbench into a per-day activity log at the project root, and `/fusion:cadence` reads that log together with the session histories and git to write a digest of what you have actually been working on — topics since yesterday, topics of the last seven days, and the themes that keep recurring ranked by how many sessions they show up in. The digest lands next to the memos as `cadence-<username>.md` and is overwritten on each run; it summarizes the activity log rather than replacing it, so run `/fusion:log-activity` first when you want the underlying record fresh.
 </content>
