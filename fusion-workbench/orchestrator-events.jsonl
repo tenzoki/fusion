@@ -740,3 +740,14 @@
 {"ts":"2026-08-04T18:47:02","event":"task_done","turn":1,"task":"Steps1+4","agent":"coder","detail":"ac20f7d; tests 1448->1532; decision 260803-1314 _a_->_i_"}
 {"ts":"2026-08-04T18:47:02","event":"task_start","turn":1,"task":"Step5","agent":"coder","detail":"guard_error reaches the dashboard"}
 {"ts":"2026-08-04T19:07:13","event":"task_done","turn":1,"task":"Step5","agent":"coder","detail":"tests 1532->1537; 1 issue closed; 1 High-shaped finding filed (260804-2100)"}
+{"ts":"2026-08-05T04:38:57","event":"session_start","detail":"Ausstiegsplan, 6 Schritte, Erfolgsmass Byte pro Dispatch"}
+{"ts":"2026-08-05T04:38:57","event":"turn_start","turn":1,"detail":"head 49a1c48"}
+{"ts":"2026-08-05T04:38:57","event":"task_start","turn":1,"task":"A1","agent":"coder","detail":"Emissions-Golden festschreiben"}
+{"ts":"2026-08-05T04:53:18","event":"task_done","turn":1,"task":"A1","agent":"coder","detail":"Golden steht; 3 Planbefunde, davon einer blockierend fuer Schritt 2"}
+{"ts":"2026-08-05T05:09:19","event":"gate_response","turn":1,"detail":"Forensik raus aus rules/, drei Schichten statt zwei"}
+{"ts":"2026-08-05T05:09:19","event":"task_start","turn":1,"task":"A2","agent":"coder","detail":"protected-path-discipline.md in Kern, Referenz und Forensik teilen"}
+{"ts":"2026-08-05T05:35:34","event":"task_done","turn":1,"task":"A2","agent":"coder","detail":"-34213 Byte fuer 13 Agenten, -13459 fuer die drei Coding-Agenten; niemand unter dem Deckel"}
+{"ts":"2026-08-05T06:41:54","event":"task_done","turn":1,"task":"A3","agent":"coder","detail":"5 geschlossen; Falsifikat 1 eingetreten, Regel unvollstaendig; Deckel-Test bewusst rot"}
+{"ts":"2026-08-05T06:41:54","event":"task_start","turn":1,"task":"A4","agent":"coder","detail":"Stashes und Commit lock aus der Konventionsdatei loesen"}
+{"ts":"2026-08-05T07:10:47","event":"task_done","turn":1,"task":"A4","agent":"coder","detail":"Suite gruen; Deckel 128555; Falsifikat 3 eingetreten, Release bleibt gesperrt"}
+{"ts":"2026-08-05T08:10:49","event":"task_done","turn":1,"task":"A4a","agent":"coder","detail":"Konventionsdatei 51416->34671; 13 von 16 unter dem Deckel"}

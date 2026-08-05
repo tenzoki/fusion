@@ -1,0 +1,5 @@
+workbench-stash-and-lock.md nennt das Stash-Manifest dreimal "nine fields" — das eigene Schema im selben Dokument listet zehn
+---
+Schweregrad: hoch (Wiederholung des bereits einmal korrigierten Fehlertyps "neun bei zehn"). rules/workbench-stash-and-lock.md:33 ("nine-field index"), :53 ("Nine fields, in this order:"), :70 ("the schema went from ten fields to nine"). Der Schema-Block Zeilen 55-66 listet zehn Felder (stash_id, timestamp, reason, original_circle_dirname, original_circle_record, active_circle_content, head_short_hash, git_stash_ref, git_stash_sha, has_agentstate); skills/circle-stash/SKILL.md:351-361 schreibt exakt diese zehn.
+---
+Rekonstruierbar: 10 → 9 (has_spec_plan entfernt) → 10 (git_stash_sha ergänzt); die Prosa blieb bei "nine". Emittiert an den Orchestrator, ausgeliefert; von /fusion:circle-stash und /fusion:circle-pop als Schema-Definition zitiert. Klasse 3 + interner Widerspruch, verifiziert. Analyse: circles/260801-1244-guard-rules-write/analyses/260805-1840-doku-gesamtpruefung-gegen-code.md

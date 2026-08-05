@@ -1,0 +1,7 @@
+Der Tracker steht im Plugin-Repo nur dann still, wenn cwd exakt die Repo-Wurzel ist
+---
+`hooks/tracker.ts:89` steigt per `isFusionPluginCwd()` aus, bevor irgendetwas geloggt wird — trotzdem trägt `fusion-workbench/.guard-state/events.jsonl` frische `{"event":"tracker_record","tool":"Bash","detail":"Bash command observed"}`-Zeilen (gemessen: Einträge von 2026-08-05T15:58/15:59Z, insgesamt 2420 solcher Zeilen seit 07-07).
+
+Erklärung (abgeleitet, Prämissen verifiziert): `isFusionPluginCwd()` prüft `process.cwd()/.claude-plugin/plugin.json` (`hooks/lib/self-detect.ts:21`). Läuft der Hook mit einem UNTERVERZEICHNIS des Repos als cwd (z.B. `hooks/`), existiert dort kein Manifest → Self-Detect false → der Tracker läuft; `events.jsonl` wird trotzdem gefunden, weil `findWorkbenchRoot()` aufwärts läuft (`hooks/lib/events.ts:16`). Beide dist-Varianten (Repo und installiertes 5.8.0) haben die Prüfung in derselben Reihenfolge — die Events können also nur aus einem Nicht-Wurzel-cwd stammen.
+---
+Schweregrad: Low. Geschwister des offenen Guard-Issues `260804-2100_o_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md` — gleiche Wurzel (cwd-Abhängigkeit von Self-Detect/Pfadauflösung bei aufwärtslaufender Workbench-Suche), andere Fläche (PostToolUse-Tracker statt PreToolUse-Guard). Hier nur Log-Rauschen und Churn-Zählung im Dev-Repo; gefixt werden sollte es mit demselben Schnitt wie 260804-2100 (Self-Detect/Pfad-Anker von cwd auf die per Walk-up gefundene Wurzel beziehen), sonst heilt der Guard und der Tracker bleibt schief.

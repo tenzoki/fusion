@@ -1,0 +1,5 @@
+workbench-stash-and-lock.md zitiert drei Records "now under shared/" — keiner der drei existiert im heutigen Workbench; commit-lock-Header zitiert denselben Issue noch älter
+---
+Schweregrad: mittel. rules/workbench-stash-and-lock.md:97 (analyses/260519-0438-circle-stash-pop-concept.md), :79/:98 (decisions/260519-1100_a_circle-stash-pop-design.md), :142 (Issue 260516-0534_c_cross-agent-staging-race...): find über das gesamte fusion-workbench (inkl. shared/ und archive/) → 0 Treffer für alle drei. bin/fusion-commit-lock:4-5 zitiert dasselbe Issue unter dem noch älteren Prä-v4-Pfad fusion-workbench/issues/260516-0534-....
+---
+Kaveat: das Workbench ist gitignoriertes Laufzeitartefakt; die Zitate können einmal gestimmt haben. Heute sind sie tot, und "now under shared/" ist als Ortsangabe falsch. Klasse 2, verifiziert (gegen den heutigen Bestand). Emittiert an den Orchestrator, ausgeliefert. Analyse: circles/260801-1244-guard-rules-write/analyses/260805-1840-doku-gesamtpruefung-gegen-code.md

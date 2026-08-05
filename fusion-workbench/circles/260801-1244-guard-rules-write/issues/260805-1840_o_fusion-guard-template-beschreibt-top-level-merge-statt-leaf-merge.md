@@ -1,0 +1,5 @@
+templates/fusion-guard.json beschreibt den Merge als "per top-level key, REPLACES whole, fällt auf built-in default zurück" — der Code merged per Leaf mit Plugin-Zwischenschicht
+---
+Schweregrad: hoch (das Template wird von /fusion:setup an jede Konsumenten-Projektwurzel kopiert und ist die Anleitung für die Guard-Konfiguration). templates/fusion-guard.json:6 (_override): das geschriebene Objekt ersetze das Plugin-Objekt als Ganzes, ausgelassene Felder fielen auf fusions eingebauten Default zurück. Tatsächlich seit Entscheidung 260804-1630: Merge per Leaf (hooks/lib/config.ts:15-33, pickGuard: project ?? plugin ?? DEFAULTS) — ein ausgelassenes Feld fällt zuerst auf die Plugin-Datei zurück, und Narrowing funktioniert im Leaf-Merge ausdrücklich weiter.
+---
+Wer der Template-Beschreibung folgt, versteht das Sicherheitsverhalten falsch (praktische Folge mild: Vererbung großzügiger als beschrieben). Klasse 1/5, verifiziert-falsch (Code gelesen; Merge-Verhalten nicht dynamisch ausgeführt). Analyse: circles/260801-1244-guard-rules-write/analyses/260805-1840-doku-gesamtpruefung-gegen-code.md

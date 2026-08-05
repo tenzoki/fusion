@@ -1,0 +1,13 @@
+Die Domänenheuristik von Setup Schritt 5 meldet `strategic` trotz Cargo-Workspace mit laufenden Tests
+
+---
+
+Im Konsumprojekt krk lieferte die Domänenerkennung des Orchestrator-Setups `strategic`, weil die Zahl offener Entscheidungen (5) die der offenen Defekte (3) erreichte, ohne zu prüfen, ob Quellcode vorliegt. Vorgefunden: ein Cargo-Workspace mit vier Crates, 16 Rust-Quelldateien und laufenden Tests. Die Sitzung hat von Hand auf `code` korrigiert.
+
+---
+
+Beleg: `/Users/k1/Projects/productive/krk/fusion-workbench/circles/260802-0842-krk-mac-dateimanager-editor-git/history/260803-1038-orchestrator-session.md`, Abschnitt "Domänenerkennung", mit den Eingangswerten der Heuristik und der Begründung der Korrektur. Der erste Zweig der Heuristik greift auf das Verhältnis Entscheidungen zu Defekten, bevor ein Quellcode-Kriterium gesehen wird; ein aktives Bauprojekt mit lebhafter Entscheidungsdisziplin kippt damit systematisch nach `strategic`.
+
+Vorschlag: vor dem Entscheidungs-Defekt-Verhältnis einen Quellcode-Bestandscheck (vorhandene Build-Manifeste wie `Cargo.toml`, `go.mod`, `package.json`, `pyproject.toml` plus Quelldateien) als dominantes Signal für `code` werten. Die Heuristik lebt im Setup-Ablauf des Orchestrators (`agents/orchestrator.md` bzw. `skills/setup/SKILL.md`, Schritt 5).
+
+Quelle: Analyse `analyses/260805-1830-zweck-nutzung-und-stand-des-plugins.md`, Befund 1.

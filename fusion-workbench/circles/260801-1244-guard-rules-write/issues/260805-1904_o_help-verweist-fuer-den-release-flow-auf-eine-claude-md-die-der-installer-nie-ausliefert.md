@@ -1,0 +1,5 @@
+/fusion:help verweist für den Release-Flow auf eine CLAUDE.md, die der Installer nie ausliefert
+---
+`skills/help/SKILL.md:78` schickt den Nutzer für den Release-Ablauf an `$FUSION_PLUGIN_ROOT/CLAUDE.md`. `install.sh:79-82` kopiert `CLAUDE.md` ausdrücklich nie („Never dev cruft (no node_modules, CLAUDE.md, .gitignore)"). Auf dem empfohlenen HTTPS-Installationsweg zeigt `$FUSION_PLUGIN_ROOT` auf `~/.fusion`, wo die Datei nicht existiert — der Verweis läuft ins Leere.
+---
+Schweregrad: Low. Verifiziert. Gleiche Fehlerklasse wie das geschlossene 260805-1145 (Zeiger auf eine Datei, die der Installer nicht mitnimmt), aber eine dort nicht erfasste Stelle: die Affects-Liste von 260805-1145 nennt nur die rules-/README-Dateien und install.sh. Befund des Skill-Workstreams (Analyst), von coderev gegen die Kopierliste nachgemessen. Fix nach derselben Regel wie 260805-1145 (Entscheidung 260805-0709): die Substanz in den Text ziehen oder auf die öffentliche Repo-URL zeigen statt auf einen lokalen Pfad, den es beim Leser nicht gibt.

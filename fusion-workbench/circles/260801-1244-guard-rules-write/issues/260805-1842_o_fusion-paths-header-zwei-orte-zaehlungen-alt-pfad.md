@@ -1,0 +1,5 @@
+fusion-paths-Header und migrate-Skill behaupten "nur zwei Orte für Store-Literale" — der Lint-Test kennt fünf; dazu stale Zählungen und ein Prä-v4-Issue-Pfad
+---
+Schweregrad: niedrig-mittel. (1) bin/fusion-paths:18-19: "the only two places a store-directory path literal may appear"; skills/migrate/SKILL.md:14 schreibt die Zwei-Orte-Aussage sogar der Konventionsdatei zu ("is emphatic that a store path belongs in exactly two places"), die das seit der Partition nicht mehr sagt. hooks/lib/__tests__/path-literal-lint.test.ts:75-81 DEFINITION_SITES nennt fünf Orte (conventions, fusion-paths, workbench-path-resolution.md, circle-records.md, workbench-stash-and-lock.md); CLAUDE.md:118 beschreibt die fünf korrekt. (2) bin/fusion-paths:169: "checked over all 15 agents and all 13 skills, 2026-07-17" — heute 16/16 (Kollisionfreiheit selbst weiterhin wahr). (3) bin/fusion-paths:114 zitiert einen Issue in Klammer-Marker-Schreibweise unter Prä-v4-Wurzelpfad; real liegt er unter shared/issues/260717-0031_o_....
+---
+Klasse 4/3/5, verifiziert. Analyse: circles/260801-1244-guard-rules-write/analyses/260805-1840-doku-gesamtpruefung-gegen-code.md

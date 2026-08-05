@@ -661,14 +661,14 @@
       "lastEditTimestamp": "2026-08-03T11:59:52.731Z"
     },
     "/Users/k1/Projects/productive/fusion/README-hooks.md": {
-      "pingBackCount": 10,
-      "totalEdits": 27,
-      "lastEditTimestamp": "2026-08-04T17:15:11.959Z"
+      "pingBackCount": 12,
+      "totalEdits": 36,
+      "lastEditTimestamp": "2026-08-05T09:58:01.147Z"
     },
     "/Users/k1/Projects/productive/fusion/rules/protected-path-discipline.md": {
-      "pingBackCount": 12,
-      "totalEdits": 46,
-      "lastEditTimestamp": "2026-08-04T17:14:12.260Z"
+      "pingBackCount": 17,
+      "totalEdits": 60,
+      "lastEditTimestamp": "2026-08-05T09:57:30.653Z"
     },
     "circles/260801-1244-guard-rules-write/decisions/260803-1402_o_should-the-mutation-classifier-inspect-a-read-operand-to-close-the-planted-alias.md": {
       "pingBackCount": 0,
@@ -1734,8 +1734,263 @@
       "pingBackCount": 0,
       "totalEdits": 1,
       "lastEditTimestamp": "2026-08-04T19:04:00.854Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/rules-emission-golden.test.ts": {
+      "pingBackCount": 7,
+      "totalEdits": 51,
+      "lastEditTimestamp": "2026-08-05T15:50:24.310Z"
+    },
+    "/Users/k1/Projects/productive/fusion/bin/fusion-rules": {
+      "pingBackCount": 2,
+      "totalEdits": 6,
+      "lastEditTimestamp": "2026-08-05T07:00:21.936Z"
+    },
+    "/Users/k1/Projects/productive/fusion/.claude-plugin/plugin.json": {
+      "pingBackCount": 1,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-05T09:38:32.955Z"
+    },
+    "circles/260801-1244-guard-rules-write/history/260805-0645-coder-step1-emission-golden.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T04:50:04.822Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/split.py": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T05:14:45.909Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/assemble.py": {
+      "pingBackCount": 0,
+      "totalEdits": 11,
+      "lastEditTimestamp": "2026-08-05T05:21:56.504Z"
+    },
+    "circles/260801-1244-guard-rules-write/planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T05:27:36.799Z"
+    },
+    "circles/260801-1244-guard-rules-write/history/260805-0717-coder-step2-drei-schichten.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T05:29:10.514Z"
+    },
+    "circles/260801-1244-guard-rules-write/decisions/260805-0709_a_wohin-gehoert-die-forensik-aus-protected-path-discipline.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T05:29:21.304Z"
+    },
+    "/Users/k1/Projects/productive/fusion/rules/protected-path-internals.md": {
+      "pingBackCount": 2,
+      "totalEdits": 4,
+      "lastEditTimestamp": "2026-08-05T09:57:37.615Z"
+    },
+    "analyses/260805-0717-protected-path-forensics.md": {
+      "pingBackCount": 2,
+      "totalEdits": 5,
+      "lastEditTimestamp": "2026-08-05T06:17:13.253Z"
+    },
+    "issues/260803-1402_o_step-9-must-also-document-that-a-hard-linked-rule-file-is-not-exempt.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T06:12:23.181Z"
+    },
+    "issues/260804-1025_o_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T06:12:39.597Z"
+    },
+    "issues/260804-1223_o_260804-1025s-reproduction-is-stale-but-its-clause-still-overclaims-here-are-the-commands-that-replace-it.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T06:12:48.207Z"
+    },
+    "issues/260804-1220_o_the-illustration-block-still-points-at-three-questions-in-a-procedure-that-now-has-four.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T06:12:59.953Z"
+    },
+    "issues/260804-1349_o_the-cost-rules-first-question-says-no-builtin-means-untouched-and-a-git-directory-flag-falsifies-it.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T06:13:12.904Z"
+    },
+    "issues/260804-1332_o_git-work-tree-in-the-environment-relocates-the-write-and-the-classifier-reads-no-variable.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T06:13:29.642Z"
+    },
+    "issues/260804-0839_o_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T06:13:43.005Z"
+    },
+    "issues/260804-2100_o_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T06:14:01.109Z"
+    },
+    "issues/260804-1427_o_the-accepted-floor-residual-reaches-the-guards-own-state-directory-not-only-protectedpaths.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T06:14:14.984Z"
+    },
+    "issues/260804-1027_o_the-replacement-audit-recipe-went-stale-in-the-turn-after-it-was-written-and-omits-moved.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T06:14:29.410Z"
+    },
+    "issues/260804-1221_o_the-one-fact-about-a-joiner-guarantee-is-asserted-over-one-file-and-a-second-file-already-holds-the-same-fact.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T06:14:41.079Z"
+    },
+    "issues/260804-1222_o_the-segmentjoiner-docstring-says-both-shapes-are-open-and-cites-the-decision-by-a-filename-that-no-longer-exists.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T06:14:52.065Z"
+    },
+    "issues/260804-1350_o_the-dirstack-docstring-claims-the-compiler-enforces-a-depth-invariant-it-does-not-enforce.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T06:15:12.908Z"
+    },
+    "issues/260804-1351_o_dir-builtins-carries-a-shell-dependent-fact-about-chdir-justified-by-the-wrong-reason.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T06:15:37.849Z"
+    },
+    "issues/260804-1605_o_the-seeded-template-states-two-properties-the-loader-does-not-have.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T06:17:33.978Z"
+    },
+    "issues/260803-1352_o_two-guard-advisory-details-skip-the-200-char-clamp-and-render-a-row-nine-times-normal-height.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T06:17:47.913Z"
+    },
+    "issues/260804-0842_o_the-git-gold-fixture-carries-no-double-pipe-pipe-or-ampersand-joiner-and-no-allow-only-row.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T06:20:30.642Z"
+    },
+    "issues/260804-1606_o_blocksbeforehalt-zero-halts-on-the-first-block-and-has-no-lower-bound.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T06:20:59.111Z"
+    },
+    "history/260805-0821-coder-step3-eighteen-findings-one-rule.md": {
+      "pingBackCount": 1,
+      "totalEdits": 5,
+      "lastEditTimestamp": "2026-08-05T06:36:59.607Z"
+    },
+    "planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md": {
+      "pingBackCount": 1,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-05T07:06:41.969Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/header.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T06:59:16.336Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/pointers.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T06:59:41.708Z"
+    },
+    "/Users/k1/Projects/productive/fusion/agents/orchestrator.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T07:00:37.218Z"
+    },
+    "/Users/k1/Projects/productive/fusion/skills/circle-stash/SKILL.md": {
+      "pingBackCount": 0,
+      "totalEdits": 3,
+      "lastEditTimestamp": "2026-08-05T07:00:43.357Z"
+    },
+    "/Users/k1/Projects/productive/fusion/skills/circle-pop/SKILL.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T07:00:44.659Z"
+    },
+    "history/260805-0905-coder-step4-stash-and-lock-shard.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T07:06:24.411Z"
+    },
+    "/Users/k1/Projects/productive/fusion/install.sh": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T09:38:32.236Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260805-1054-coder-rollendeckel-und-dist-build.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T09:46:23.597Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/issues/260805-1145_o_der-forensik-zeiger-im-ausgelieferten-regeltext-zeigt-auf-eine-datei-die-der-installer-nie-mitnimmt.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T09:47:21.488Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/issues/260805-1150_o_readme-nennt-als-pin-beispiel-eine-version-die-nie-getaggt-wurde.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T09:47:42.402Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T09:48:25.422Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260805-1200-coder-step6-release-vorbereitet.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T09:49:43.566Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260805-1215-coder-tor-liest-rollendeckel-und-toter-zeiger-raus.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T10:08:42.811Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/growth.sh": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T15:34:10.375Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/build-probe.sh": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T15:43:30.711Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe-case.sh": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T15:44:01.888Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe-remove.sh": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T15:45:58.077Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe-add-file.sh": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T15:46:28.271Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260805-1753-coder-ratchet-wird-budget-mit-meldung.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-05T15:55:04.888Z"
+    },
+    "260805-1559_o_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-05T15:55:27.875Z"
     }
   },
-  "lastEditFile": "circles/260801-1244-guard-rules-write/history/260804-2100-coder-step5-guard-error-on-the-dashboard.md",
-  "lastEditTimestamp": "2026-08-04T19:04:00.854Z"
+  "lastEditFile": "260805-1559_o_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md",
+  "lastEditTimestamp": "2026-08-05T15:55:27.875Z"
 }
