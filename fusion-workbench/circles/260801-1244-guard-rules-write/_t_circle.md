@@ -2,10 +2,12 @@
 
 ---
 **Domain:** code
-**Status:** anticipated
+**Status:** active
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** shared/planning/260801-1122_o_spec-normative-consolidation.md (the spec covers all four Circles of this body of work; the per-Circle implementation plan is produced by the planner at activation)
-**Active session history:** (none yet)
+**Active spec/plan:** shared/planning/260801-1122_o_spec-normative-consolidation.md (spec, covers all four Circles of this body of work) · planning/260804-1633_p_plan-c5b-remediation-and-ship.md (C5b remediation and ship) · planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md (Ausstiegsplan) · predecessor planning/260802-1856_o_plan-guard-rules-write.md (steps 1–8 complete, 9/10 superseded)
+**Active session history:** history/260805-2117-orchestrator-session.md (latest; 11 orchestrator sessions total under history/)
+
+*Status, plan and history fields corrected retroactively by the reconciler on 260805-2323 — the record had never been updated after activation (issue `issues/260805-1830_o_der-circle-datensatz-dieses-circles-widerspricht-seinem-eigenen-marker-und-fuehrt-keinen-turn-log.md`, closed by this correction). The Turn log below is likewise reconstructed from the orchestrator session histories rather than appended live.*
 
 ---
 
@@ -42,6 +44,20 @@ Two filed issues sit adjacent and are not part of this Circle: `shared/issues/26
 Depended on by `260801-1244-curator`, but weakly: the curator is buildable and testable in this repository without the exemption, and needs it only for its rule-file writes to be exercisable in a consuming project.
 
 ## Turn log
+
+*Reconstructed by the reconciler on 260805-2323 from the orchestrator session histories in `history/`; commit ranges cited where recoverable. The record was not maintained live — see the correction note in the header.*
+
+| Session | Turns | Commits (range or key) | Outcome |
+|---|---|---|---|
+| `history/260802-1827-orchestrator-session.md` | 1–2 | from `c7f117b`: `768242c`, `6b3aa5c`, `0f341e0`, `45f53d4`, `bf75941` (plan steps 1–5), Turn-2 boundary hardening incl. `aff7486` | Plan A steps 1–5 built; flag live on both surfaces |
+| `history/260803-1038-orchestrator-session.md` | 3 | from `c9bf59e`, incl. `ce7a125`, reconciliation 260803-1516 | Turn-2 review findings worked; Coherence `review-needed`, user stopped, Circle stayed active |
+| `history/260803-1737-orchestrator-session.md` | 4–8 | `6c447eb`..`cc012fc` incl. `86a437a` (case folding), `a79ff1a` (gate-0 `cd -P`) | Max-Turns circuit breaker (5/5); Coherence `review-needed`, Directive judged still reachable |
+| `history/260804-1138-orchestrator-session.md` | — | from `c43a6a2`, incl. `b93dda4` | Decision `260804-0947` answered option 4; shell reachability model spun out as `circles/260804-1205-shell-reachability-model` |
+| `history/260804-1243-orchestrator-session.md` | 9–10 | from `d2962f3`: `4f1007f`, `613d6fd`, `1187bfd` | The two git routes into the protected list closed |
+| `history/260804-1407-orchestrator-session.md` | — | `46d8333`, `557340d`, `7f3d789` (plan A steps 6–8); `53b3765` (assessment: do not ship); `eae2cb7`, `70e769e` (C5b remediation plan); `f82ac02`, `64e0837`, `9c01f34`, `98c9363`, `ac20f7d`, `f0c3d65`, `49a1c48` (remediation steps 1–5) | C5b built, independently assessed, remediated |
+| `history/260805-0638-orchestrator-session.md` | — | `658653a` (emission golden), `b67a386`, `c920463`, `96ad1db`, `0fead5e` (Ausstiegsplan steps 2–4a), `f41c1f6`+`2eaee31` (role-cap gate + release v5.9.0), `199ef22` (dist), `ec0561a` (v5.9.1), `1babb48`, `3163281`, `a1002cc` (Gesamtreview, 66 findings), `b5a9039` (Textschicht Circle filed) | Context-tax cut shipped as v5.9.0/v5.9.1; plugin-wide review filed |
+| `history/260805-2035-orchestrator-session.md` | — | `8586ba3` | Monitor LAN bind fix |
+| `history/260805-2117-orchestrator-session.md` | 1–2 (close-out) | `4a8fea0` + tag `v5.9.2` (release); `21a72b7` (C5b plan step 6, template), `373f5ed` (step 7 remainder + release-checklist line), `b9b350f`, `def351e` (issue closures) | v5.9.2 released; C5b plan steps 6+7 landed; Circle reconciled for closure |
 
 ## Activation proposal
 

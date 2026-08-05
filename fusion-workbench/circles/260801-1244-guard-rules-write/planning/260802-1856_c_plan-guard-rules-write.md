@@ -1,7 +1,7 @@
 # Implementation Plan: rules-write flag and project-level guard configuration (C5a, C5b)
 
 **Date:** 2026-08-02
-**Status:** In Progress — **Steps 1 to 8 complete and committed** (`768242c`, `6b3aa5c`, `0f341e0`, `45f53d4`, `bf75941`, `46d8333`, `557340d`, `7f3d789`). **Steps 9 and 10 are superseded** by `planning/260804-1633_o_plan-c5b-remediation-and-ship.md`, whose Steps 7 and 8 carry the same obligations plus everything the independent assessment `analyses/260804-1600-c5b-independent-assessment.md` added. Do not execute Steps 9 or 10 from this file. **Step 9 was also partly written unintentionally under another task**, and the `[SCOPE CHANGED]` note on that step is partly false; the successor plan's Step 7 obligation list is the current statement of what is owed. Corrected by the planner on 260804-1633, closing `issues/260804-1608_o_`. Earlier state verified by reconciliations 260803-1516 and 260804-1021; see `## Reconciliation Log`.
+**Status:** Complete — **Steps 1 to 8 complete and committed** (`768242c`, `6b3aa5c`, `0f341e0`, `45f53d4`, `bf75941`, `46d8333`, `557340d`, `7f3d789`). **Steps 9 and 10 are superseded** by `planning/260804-1633_o_plan-c5b-remediation-and-ship.md`, whose Steps 7 and 8 carry the same obligations plus everything the independent assessment `analyses/260804-1600-c5b-independent-assessment.md` added. Do not execute Steps 9 or 10 from this file. **Step 9 was also partly written unintentionally under another task**, and the `[SCOPE CHANGED]` note on that step is partly false; the successor plan's Step 7 obligation list is the current statement of what is owed. Corrected by the planner on 260804-1633, closing `issues/260804-1608_o_`. Earlier state verified by reconciliations 260803-1516 and 260804-1021; see `## Reconciliation Log`.
 **Circle:** `circles/260801-1244-guard-rules-write`
 **Spec:** `shared/planning/260801-1122_o_spec-normative-consolidation.md`, `### C5: Guard changes` (C5a at `:275`, C5b at `:285`, criteria at `:305`). Status Final; nothing settled there is reopened here.
 **Executors:** `coder` for nine steps, `ontocoder` for one (Step 7, two JSON files). No strategic-domain step, so `analyst` is not in the active set.
@@ -368,7 +368,7 @@ The Turn boundary sits between Step 5 and Step 6. See `## Sizing` for why.
 - **Verification:** Extract the block and run it twice against a scratch directory with `FUSION_PLUGIN_ROOT` pointed at this repository: the first run creates the file, the second leaves an edited copy byte-identical. Confirm with `diff`.
 - **[SHAPE CHANGED — implementation 260804-1511, measured. Shipped as Step 0f, and it is not the single command this step describes.]** The `cp` block is exactly as specified and passes the verification as written, but it is preceded by a read-only presence probe and is run only in the absent branch. Reason: the self-protection floor from Step 6 appends `fusion-guard.json` to `protectedPaths` the moment the file exists, so in a project that already has one the guard **denies the whole Bash call** rather than letting the shell's `[ -f ]` decline it. Measured against `tsx guard.ts` in a throwaway project: absent → allow, present → `block` naming `fusion-guard.json`. Since `/fusion:setup` runs at the start of every orchestrator session, the one-command form would have denied once per session forever, in every consuming project, with a reason that instructs the agent to stop and ask the user about a no-op — plus a `guard_block` event and a `consecutiveBlocks` increment each time. The probe follows Step 0c's existing probe-then-branch shape; the `[ -f ]` guard stays inside the copy so the block remains self-idempotent when extracted. Evidence: `history/260804-1511-coder-step8-setup-seeds-guard-config.md`.
 
-### Step 9 [PARTLY DONE — UNINTENDED] — Documentation and the release-checklist line
+### Step 9 [SUPERSEDED — do not execute; successor plan Step 7 carried the obligations and is done] — Documentation and the release-checklist line
 
 - **Executor:** `coder`
 - **Files:** `rules/protected-path-discipline.md`, `README-hooks.md`, `CLAUDE.md`
@@ -392,7 +392,7 @@ The Turn boundary sits between Step 5 and Step 6. See `## Sizing` for why.
   - **Newly added to this step, filed 260804-1021:** `issues/260804-1025_o_` (the decision procedure at `rules/protected-path-discipline.md:172` tells an agent "the model stays exact" for the two commands that delete a rule file), and the residual-list omissions on `issues/260804-1024_o_` and `issues/260804-1026_o_`.
   - **The sequencing constraint is satisfied.** `issues/260803-1431` closed in `a79ff1a`. Step 9 is no longer blocked by it.
 
-### Step 10 — Rebuild `dist`, verify against the shipped artifact, bump the version
+### Step 10 [SUPERSEDED — do not execute; successor plan Step 8 and the Ausstiegsplan's Steps 5–6 carried the obligations and are done] — Rebuild `dist`, verify against the shipped artifact, bump the version
 
 - **Executor:** `coder`
 - **Files:** `hooks/dist/**`, `.claude-plugin/plugin.json`
@@ -578,3 +578,12 @@ The second sentence is false, verified in code and by measurement rather than in
 **Open Questions, re-checked.** Item 3 (`.claude/rules/**` is in the exemption's pattern list but not in `guard.protectedPaths`, so exempting it is a no-op) is **still open**: `shared/issues/260801-1020_o_guard-protects-rules-but-not-claude-rules.md` carries `_o_`, and `hooks/config.json` still lists no `.claude/` pattern. Items 1 and 2 are unchanged since 260803-1516.
 
 **Suite verified independently.** `cd hooks && npx vitest run` at HEAD: **1241 passed, 24 files**, 0 failed, exit 0. `npm test` was deliberately not run — it builds first and would rewrite the `hooks/dist/` that Step 10 owns, and this session already shows one uncommitted build-and-revert cycle in the working tree.
+
+### 260805-2323 — reconciler, domain `code`, final Circle reconciliation, session `history/260805-2117-orchestrator-session.md`
+
+**Plan closed.** Steps 1 to 8 were verified complete by the two earlier reconciliations and re-confirmed unchanged at HEAD `def351e`. Steps 9 and 10 are superseded by `planning/260804-1633_p_plan-c5b-remediation-and-ship.md` Steps 7 and 8, and both successor steps are now done:
+
+- Step 9's obligations landed through the successor plan's Step 7 (thirteen obligations, final commits `373f5ed` and the earlier passes it cites; all five verification greps met — evidence `history/260805-2233-coder-step7-remainder-documentation.md`, `history/260805-2236-coder-step7-obligation5-release-checklist.md`).
+- Step 10's obligations landed through the Ausstiegsplan's Steps 5–6 and the successor plan's Step 8: `hooks/dist` rebuilt from empty and committed (`199ef22`), version bumped and released as v5.9.0 (`2eaee31`), v5.9.1 (`ec0561a`), v5.9.2 (`8586ba3` + tag, pin example `4a8fea0`). Tags `v5.9.0`/`v5.9.1`/`v5.9.2` verified present.
+
+Nothing executable remains in this file. Header set to Complete, filename marker `_o_` → `_c_`.

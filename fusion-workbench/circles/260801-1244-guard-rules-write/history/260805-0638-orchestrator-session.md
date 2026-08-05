@@ -38,3 +38,40 @@ Der echte Posten dort bleibt die Konventionsdatei mit 59 303 Byte und braucht C9
 ## Per-Turn Log
 
 (läuft)
+
+## Abschluss — Gesamtreview und Kurswechsel
+
+Die Sitzung endet nicht am Ausstiegsplan, sondern an einem Gesamtreview, den der Nutzer nach
+dessen Abschluss angeordnet hat. Drei unabhängige Durchgänge, 66 Befunde, alle als
+Issue-Records im Circle.
+
+**Ausgeliefert wurde v5.9.0 und v5.9.1**, beide getaggt, der Marketplace-Eintrag von 5.7.0 auf
+5.9.1 gezogen. Zum ersten Mal seit vier Tagen ist der Stand benutzbar.
+
+**Der Zuschnitt bringt weniger, als die Rollen-Tabelle suggeriert.** Gewichtet mit dem echten
+Dispatch-Mix in krk sind es rund drei Prozent, weil `coder`, `coderev` und `bugfixer` als
+einzige die Referenzdatei tragen und dabei um sechs Prozent steigen — und `coder` ist der mit
+Abstand meistgenutzte Agent. Der Fix dafür steht im Folge-Circle.
+
+**Der wichtigste Befund war ein Missverständnis, und seine Aufklärung ist der eigentliche
+Befund.** `FUSION_PLUGIN_ROOT` zeigte auf `~/.fusion` mit v5.8.0. Kein Plugin-Defekt: die
+Variable wird beim Session-Start aus dem installierten Plugin gesetzt, und diese Sitzung lief
+vier Tage ohne Neustart. Die Folge bleibt: **vier Tage Selbstprüfung liefen gegen eine
+veraltete Kopie.** Die fünf Shards dieses Circles haben keinen Agenten erreicht, auch nicht
+der eigens für `coder` geschnittene. Jede Regelkorrektur der letzten Tage ist bei den Agenten,
+die sie befolgen sollten, nie angekommen.
+
+**Was der Review entlastet:** der Guard hält. `hooks/dist` ist byte-identisch zu einem frischen
+Build, 1551 Tests grün, und 226 von 229 dokumentierten Erlaubt/Verboten-Fällen stimmen exakt,
+als echte Subprozesse gefahren statt gelesen. Die Schicht mit den meisten Änderungen ist die
+gesündeste.
+
+**Was er belastet:** in krk gab es in vier Tagen 17 Bash-Blockierungen, davon null echte
+Treffer. Alle Fail-closed-Fehlalarme, häufigster Fall fusions eigene Marker-Umbenennung in
+Schleifenform. Diese Bilanz gehört als Grounding in `circles/260804-1205-shell-reachability-model`,
+bevor dort eine Zeile entsteht.
+
+**Nachfolger:** `circles/260805-2005-textschicht-gegen-code-nachziehen`, anticipated, fünf
+Gruppen. Der Nutzer setzt nach einem `fusion --update` mit `/fusion:next` dort an.
+
+**Status:** Complete.

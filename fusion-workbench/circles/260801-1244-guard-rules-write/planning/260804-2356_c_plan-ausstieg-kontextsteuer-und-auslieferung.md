@@ -1,7 +1,7 @@
 # Ausstiegsplan: Kontextsteuer senken, ausliefern, den Guard abschließen
 
 **Datum:** 2026-08-04
-**Status:** Entwurf
+**Status:** Complete — alle sechs Schritte (plus 4a) ausgeführt; Release v5.9.0 (`2eaee31`), v5.9.1 (`ec0561a`), v5.9.2 (`8586ba3`, Tag gepusht). Abschluss-Reconciliation 260805-2323, siehe `## Reconciliation Log`.
 **Circle:** `circles/260801-1244-guard-rules-write`
 **Spec:** `shared/planning/260801-1122_o_spec-normative-consolidation.md`, C9 Schritt 3 und 4
 **Executors:** coder, ontocoder (Default; `analyst` nicht gesetzt)
@@ -178,7 +178,16 @@ Abgeleitete Erwartung, nicht geschätzt: nach Schritt 2 stehen 104 600 Byte, nac
 
 ## Implementierungsschritte
 
-### 1. Das Emissions-Golden als Test festschreiben
+### 1. Das Emissions-Golden als Test festschreiben [DONE]
+
+> **Ausgeführt 2026-08-05, nachgetragen vom Reconciler 260805-2323** (der Schritt war
+> faktisch erledigt, aber nie markiert). Commits: `658653a` (das Messinstrument vor dem
+> Schnitt — `rules-emission-golden.test.ts` + `fixtures/rules-emission.golden`, Beleg
+> `history/260805-0645-coder-step1-emission-golden.md`) und `3163281` (aus dem Ratchet
+> wird ein Budget mit Meldung). Das erste Falsifikat trat nicht ein; der Test trug den
+> ganzen Plan und blockierte Schritt 6 zweimal wie vorgesehen (siehe Schritt-4/4a/6-Blöcke).
+> Der Deckel wurde am Ende als Rollendeckel mit Begründungspflicht gefasst (`f41c1f6`,
+> Nutzerentscheidung `decisions/260805-1559_i_...`).
 
 - **Executor:** coder
 - **Dateien:** `hooks/lib/__tests__/rules-emission-golden.test.ts` (neu), `hooks/lib/__tests__/fixtures/rules-emission.golden` (neu)
@@ -350,7 +359,12 @@ Abgeleitete Erwartung, nicht geschätzt: nach Schritt 2 stehen 104 600 Byte, nac
 > heran, die dieser Plan unter *Die Regeln, die klein sind* ausklammert. Das ist eine Entscheidung
 > für den Nutzer, keine Fortsetzung dieses Schritts.
 
-### 5. `hooks/dist` bauen und einchecken
+### 5. `hooks/dist` bauen und einchecken [DONE]
+
+> **Ausgeführt 2026-08-05, nachgetragen vom Reconciler 260805-2323.** Commit `199ef22`
+> („dist aus leerem Verzeichnis neu gebaut"), als eigener Commit getrennt von
+> Quelländerungen, wie der Schritt es verlangt. Beleg:
+> `history/260805-1054-coder-rollendeckel-und-dist-build.md`.
 
 - **Executor:** coder
 - **Dateien:** `hooks/dist/**`
@@ -359,7 +373,19 @@ Abgeleitete Erwartung, nicht geschätzt: nach Schritt 2 stehen 104 600 Byte, nac
 - **Falsifikat:** Ein Build aus leerem `dist` erzeugt Dateien, die von den eingecheckten abweichen. Dann ist der Index weiterhin nicht reproduzierbar. Zweites Falsifikat: `hooks/dist` enthält nach dem Build ein `require` auf ein externes Modul. Der Installer setzt voraus, dass `dist` ohne `node_modules` lauffähig ist (CLAUDE.md, Abschnitt HTTPS-Installer).
 - **Wirkung in unite cocreator:** Ohne diesen Schritt erhält das Projekt einen Hook ohne Fallfaltung, ohne die Projektkonfiguration `fusion-guard.json` und ohne das `rules-write`-Exemption-Modul, zusammen mit Regeltext, der alles drei beschreibt. Die Auslieferung wäre dann keine Verbesserung, sondern eine ausgelieferte Falschaussage über das Schutzniveau.
 
-### 6. Version anheben, veröffentlichen, taggen [VORBEREITET — NICHT AUSGEFÜHRT]
+### 6. Version anheben, veröffentlichen, taggen [DONE]
+
+> **Ausgeführt 2026-08-05, nachgetragen vom Reconciler 260805-2323.** Die Sperre des
+> Schritts wurde nicht umgangen, sondern durch eine Nutzerentscheidung aufgelöst: der
+> Deckel wurde als **Rollendeckel mit Begründungspflicht** neu gefasst
+> (`decisions/260805-1559_i_der-regeltext-ratchet-laesst-keine-erweiterung-zu...`,
+> Commits `f41c1f6` und `2eaee31` — „das Tor liest Rollendeckel statt einer Zahl").
+> Release **v5.9.0** in `2eaee31` (plugin.json 5.8.0→5.9.0), danach **v5.9.1** (`ec0561a`,
+> Setup-Lockout-Fix) und **v5.9.2** (Bump in `8586ba3`, Pin-Beispiel `4a8fea0`, Tag
+> gepusht, Marketplace-Eintrag 5.9.2 laut `history/260805-2117-orchestrator-session.md`).
+> Alle drei Tags `v5.9.0`/`v5.9.1`/`v5.9.2` existieren, geprüft mit `git tag -l`.
+> Die beiden Nebenbefunde `260805-1145` (behoben und geschlossen, `_c_`) und
+> `260805-1150` (offen, Textschicht-Scope: `README.md:26` nennt weiterhin `v5.3.0`).
 
 > **Vorbereitet 2026-08-05.** Beleg: `history/260805-1200-coder-step6-release-vorbereitet.md`.
 > Push, Tag und Marketplace sind ausdrücklich beim Nutzer geblieben; nichts ist committet.
@@ -446,7 +472,21 @@ Was bleibt, ist ein zusammenhängender Rest: C1, C2, C3, C6 und C7 bilden den Ag
 
 ## Offene Fragen
 
-- [ ] Trägt die Referenzdatei den Mustertreffer über ihren Namen (`protected-path-internals-coding.md`) oder über ein neues Musterwort in der `case`-Tabelle? Der Name ist eine Zeile weniger Code, das Musterwort ist ehrlicher benannt. Der Executor entscheidet und begründet.
-- [ ] Bekommt `260804-1332` (`GIT_WORK_TREE`) außer dem Residuen-Eintrag auch einen eigenen anticipated Circle, oder gehört er in `260804-1205-shell-reachability-model`? Er ist kein Reachability-Problem, sondern ein Problem der Umgebungsvariablen, also vermutlich ein eigener.
-- [ ] Bleibt die Versionsnummer bei `5.9.0`, oder rechtfertigt die Projektkonfiguration `fusion-guard.json` als neue Nutzerfläche einen Sprung auf `6.0.0`?
+- [x] Trägt die Referenzdatei den Mustertreffer über ihren Namen (`protected-path-internals-coding.md`) oder über ein neues Musterwort in der `case`-Tabelle? Der Name ist eine Zeile weniger Code, das Musterwort ist ehrlicher benannt. Der Executor entscheidet und begründet.
+  **Beantwortet durch Ausführung** (Reconciler 260805-2323): die Datei heißt `rules/protected-path-internals.md` ohne Musterwort im Namen; die Zuordnung an `coder`/`coderev`/`bugfixer` läuft über die Emissionstabelle in `bin/fusion-rules`. Begründung und Belege: `history/260805-0717-coder-step2-drei-schichten.md`.
+- [x] Bekommt `260804-1332` (`GIT_WORK_TREE`) außer dem Residuen-Eintrag auch einen eigenen anticipated Circle, oder gehört er in `260804-1205-shell-reachability-model`? Er ist kein Reachability-Problem, sondern ein Problem der Umgebungsvariablen, also vermutlich ein eigener.
+  **Beantwortet auf der Platte** (Reconciler 260805-2323): der Nachfolgeplan routet ihn nach `circles/260804-1205-shell-reachability-model` — `planning/260804-1633_p_plan-c5b-remediation-and-ship.md` `## What this plan does not close`, erste Zeile, mit Kostenbegründung. Das Issue bleibt `_o_` mit benanntem Zielort, wie Zweig B es verlangt.
+- [x] Bleibt die Versionsnummer bei `5.9.0`, oder rechtfertigt die Projektkonfiguration `fusion-guard.json` als neue Nutzerfläche einen Sprung auf `6.0.0`?
+  **Beantwortet durch Ausführung** (Reconciler 260805-2323): die Nummer blieb in der 5.9.x-Linie — v5.9.0 (`2eaee31`), v5.9.1 (`ec0561a`), v5.9.2 (`8586ba3` + Tag). Kein 6.0.0-Sprung.
 - [ ] Wer misst die Zahl auf der unite-cocreator-Seite nach? Von dieser Maschine aus ist `/Users/kai/Dropbox/qboot/projects/F03_digital-leadership/unite-co-creator` nicht erreichbar, das Falsifikat von Schritt 6 braucht also einen Lauf dort.
+  **Bleibt offen — Nutzer-Aktion, jetzt als Issue getrackt** (Reconciler 260805-2323): `issues/260805-2323_o_die-emissionsmessung-auf-der-unite-cocreator-maschine-steht-noch-aus.md`. Die plugin-seitige Hälfte (simulierter Installationspfad, alle 16 Agenten auf den Golden-Zahlen) ist grün, Beleg `history/260805-1200-coder-step6-release-vorbereitet.md`.
+
+---
+
+## Reconciliation Log
+
+### 260805-2323 — Reconciler, Domäne `code`, Abschluss-Reconciliation, Session `history/260805-2117-orchestrator-session.md`
+
+**Plan geschlossen.** Die Schritte 2, 3, 4 und 4a trugen ihre `[DONE]`-Blöcke bereits; die Schritte 1, 5 und 6 waren faktisch ausgeführt, aber unmarkiert — nachgetragen mit Commit-Belegen (`658653a`/`3163281`, `199ef22`, `f41c1f6`/`2eaee31`/`ec0561a`/`8586ba3`+`4a8fea0`). Drei der vier offenen Fragen sind auf der Platte beantwortet und abgehakt; die vierte (unite-cocreator-Messung) bleibt offen und ist als eigenes Issue getrackt, damit sie die Schließung überlebt. Nichts Ausführbares verbleibt. Header auf Complete, Marker `_o_` → `_c_`.
+
+**Ein Befund aus der Verifikation:** `npx vitest run` an HEAD `def351e` ist um **einen** Test rot — das Emissions-Golden aus Schritt 1 pinnt `protected-path-discipline.md` auf 19 943 Byte, der Step-7-Doku-Commit `373f5ed` des Nachfolgeplans hat sie auf 20 925 wachsen lassen, ohne das Golden absichtlich zu regenerieren. Budget- und Deckel-Zusicherungen bestehen weiter; der Test tut also genau, wofür Schritt 1 ihn gebaut hat. Gefiled als `issues/260805-2323_o_emissions-golden-veraltet-nach-dem-step-7-doku-commit-die-suite-ist-um-einen-test-rot.md` (coder, mechanisch).

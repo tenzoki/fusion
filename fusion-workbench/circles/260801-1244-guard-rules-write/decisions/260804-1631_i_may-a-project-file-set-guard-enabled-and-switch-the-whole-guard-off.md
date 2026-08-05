@@ -106,3 +106,6 @@ stop being silent is satisfied by the key never taking effect at all.
 
 ---
 Answered: this record, `## Answer` — user chose option 1 at the plan gate; a project may not switch off a guard it is governed by, and the ignored key is reported rather than dropped in silence.
+
+---
+Implemented: f82ac02 — `guard.enabled` is resolved from the plugin layer and DEFAULTS only; a project layer declaring it earns exactly one diagnostic naming the key, surfaced as a `guard_advisory` on both surfaces (C5b remediation plan Step 2, integration cases in `hooks/lib/__tests__/guard-rules-write-integration.test.ts`). The exception is documented in the template (`_guardEnabled`, commit `21a72b7`) and in `README-hooks.md` + `rules/protected-path-discipline.md` (commit `373f5ed`). Walked `_a_` → `_i_` by the reconciler at the final Circle reconciliation 260805-2323.

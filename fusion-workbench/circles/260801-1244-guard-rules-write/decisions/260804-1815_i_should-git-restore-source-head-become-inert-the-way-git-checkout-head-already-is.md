@@ -140,3 +140,6 @@ a `MEASURES:` case, so it fails the day that Circle lands.
 
 ---
 Answered: this record, `## Answer` — user chose option 1; the asymmetry costs a sentence, closing it would cost the no-new-allow property.
+
+---
+Implemented: 98c9363 — option 1 is documentation-only, and the sentence landed: the `restore`/`checkout` asymmetry is stated where a reader meets it, with the allowed spelling named in as many words (`git checkout HEAD -- <paths>`) in `rules/protected-path-discipline.md`'s git-row section and `README-hooks.md:180`; the unit suite pins the divergence with a `MEASURES:` case. Walked `_a_` → `_i_` by the reconciler at the final Circle reconciliation 260805-2323.

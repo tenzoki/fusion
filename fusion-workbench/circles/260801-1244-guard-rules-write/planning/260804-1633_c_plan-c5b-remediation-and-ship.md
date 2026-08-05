@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-04
 **Revised:** 260804-1650 — see `## Revision 260804-1650`
-**Status:** Approved at the plan gate on 2026-08-04, conditional on the diagram repair this revision carries out. The two blocking decisions are answered; Step 2 is unblocked.
+**Status:** Complete — all eight steps `[DONE]`, the ship landed as v5.9.0–v5.9.2, the twelve acceptance criteria verified and recorded in the spec (reconciler, final reconciliation 260805-2323; see the Step 8 block for evidence). Was: Approved at the plan gate on 2026-08-04, conditional on the diagram repair this revision carries out.
 **Circle:** `circles/260801-1244-guard-rules-write`
 **Spec:** `shared/planning/260801-1122_o_spec-normative-consolidation.md`, `### C5: Guard changes`, criteria at `:322-332`. Status Final; nothing settled there is reopened here.
 **Predecessor plan:** `circles/260801-1244-guard-rules-write/planning/260802-1856_o_plan-guard-rules-write.md`. Its Steps 1 to 8 are complete and are the record of what shipped. Its Steps 9 and 10 are superseded by this plan's Steps 7 and 8, which carry the same obligations plus everything the independent assessment added.
@@ -351,7 +351,29 @@ Decision `260803-1402` gates Step 7 alone and is cheaper: Step 7 documents which
 - **What would falsify it:** any sentence in the three files that contradicts another sentence in the same three files. The mechanical form of that check is to read the three files' claims about overrides, about the floor, and about what a `git` invocation can reach, side by side rather than one file at a time.
 - **[Remainder executed — coder, 260805-2233. Not yet committed; the orchestrator commits after validation. Session: `history/260805-2233-coder-step7-remainder-documentation.md`.]** Obligation 10 done and `260804-1427` closed (`_o_`→`_c_`, Resolved footer): the floor residual is stated at its measured reach — `fusion-workbench/.guard-state/**` and the escalation machinery included, with the git-diff and active-halt bounds — in `README-hooks.md` § "Per-project configuration: `fusion-guard.json`" (new section, obligation 4's README half) and in the rule file's project-layer paragraph. Obligations 12 and 13 landed in the same pass: the `guard.enabled` exception is stated in `README-hooks.md` and `rules/protected-path-discipline.md` (obligation 12's two files; `README-hooks.md`'s plugin-`config.json` rows untouched, per the obligation's own constraint), and the `260803-1314` option-2 boundary (a declared protected entry outranks `FUSION_ALLOW_RULES_WRITE`, `rules/**` declared withdraws the flag wholly, `retired/` included) is stated in both shipped documents. `CLAUDE.md`'s two surviving "no env override" sentences corrected and `fusion-guard.json` added to its layout table. All five verification greps meet their stated expectations; the four lint suites pass (69 tests). **One obligation found not present and not taken here: obligation 5**, the release-checklist line in `CLAUDE.md` (verify guard behaviour against a non-plugin project root before tagging) — it exists nowhere in `CLAUDE.md` at this pass's HEAD, was not in the early-discharged four, and was outside this dispatch's stated scope; it was the one item standing between this step and `[DONE]`. **[Obligation 5 discharged — coder, 260805-2236. Not yet committed; the orchestrator commits after validation.]** The release-checklist line landed in `CLAUDE.md:70`, inside release step 0's validation: if the release touches the guard, confirm before tagging that its behaviour was verified against a project root that is not the plugin repository (the guard-harness integration tests spawn such roots; a scratch consuming project works too), because the write guard's self-detect stand-down makes local testing here unrepresentative by construction. That is the second half of spec criterion `shared/planning/260801-1122_o_spec-normative-consolidation.md:332`. All thirteen obligations are now discharged; the step heading is marked `[DONE]`. Also flagged for the orchestrator: decision record `260802-1912_a_` still states the residual at its original narrower bound; the issue's own "not both, and not neither" is satisfied by the shipped documents carrying the measured bound, and whether the record gets a correcting appendix is left to the Circle's owner.
 
-### Step 8 — The ship
+### Step 8 [DONE] — The ship
+
+> **Executed across the Ausstiegsplan and the 260805 sessions; verified and marked by the
+> reconciler at the final reconciliation 260805-2323.** The ship did not run as one step of
+> this plan — the user interposed `planning/260804-2356_c_plan-ausstieg-kontextsteuer-und-auslieferung.md`
+> (context-tax cut first, release after), and this step's three obligations landed through it:
+>
+> - **`hooks/dist` rebuilt and committed:** `199ef22`, built from an emptied `dist/`, all
+>   import specifiers relative or `node:`; the previously committed state was measured four
+>   days stale (it still allowed `git --work-tree=rules clean -fdx` and lacked the loader,
+>   the exemption module and the Bash halt check) — evidence
+>   `history/260805-1054-coder-rollendeckel-und-dist-build.md`.
+> - **Version bumped and shipped:** v5.9.0 (`2eaee31`), v5.9.1 (`ec0561a`), v5.9.2 (bump
+>   `8586ba3`, pin example `4a8fea0`, tag pushed) — all three tags verified with `git tag -l`.
+> - **The artifact run:** no history recorded a `FUSION_GUARD_ENTRY=dist` suite run, so the
+>   reconciler ran it at HEAD `def351e`: `FUSION_GUARD_ENTRY=dist npx vitest run` — **1550 of
+>   1551 passed**, identical to the source run; the sole failure is the `rules-emission-golden`
+>   fixture (stale byte count from `373f5ed`, a `bin/fusion-rules` concern, no guard behaviour
+>   involved; filed as `issues/260805-2323_o_emissions-golden-veraltet-nach-dem-step-7-doku-commit-die-suite-ist-um-einen-test-rot.md`).
+>   The falsification condition — dist and source disagreeing on any row — did not occur.
+> - **The twelve criteria walked** and recorded with per-criterion evidence in the spec's
+>   checkbox block, `shared/planning/260801-1122_o_spec-normative-consolidation.md:309-332`
+>   (the deferred C5c criterion and all eleven C5a/C5b criteria now carry `[x]` with citations).
 
 - **Executor:** `coder`
 - **Files:** `hooks/dist/**`, `.claude-plugin/plugin.json`
@@ -495,3 +517,18 @@ One further decision is filed and deliberately deferred: `decisions/260804-1632_
 
 - [x] **Closed in this revision.** Does Step 5, the `guard_error` dashboard row, belong before the ship or after it, and does it gate anything? Settled: before the ship, gating nothing. The argument against gating was that Step 2 removes the only project-triggerable route to a fail-open guard, and Step 2's shape is now fixed by the two answers, so that argument holds rather than being contingent. Step 7's dependency line, which was the one statement in this plan that implied otherwise, is struck. The four statements about Step 5 — its own heading, Step 7's dependencies, the work-order graph and this question — now agree.
 - [ ] Should the eight deferred defects be re-checked at the plan gate against a fresh reading, or accepted as this plan assesses them? Six of the eight sit in a Circle that has not started, so their cost is a forecast about work not yet scheduled.
+
+---
+
+## Reconciliation Log
+
+### 260805-2323 — reconciler, domain `code`, final Circle reconciliation, session `history/260805-2117-orchestrator-session.md`
+
+**Plan closed, `_p_` → `_c_`.** Steps 1–5 carried their `[DONE]` blocks from the build sessions; Step 6 landed in commit `21a72b7` (template + root copy, byte-identical, closing `260804-1605` and `260805-1840_o_fusion-guard-template…`), Step 7 in `373f5ed` (all thirteen obligations; the five verification greps met; closing `260804-1427` among others), and Step 8's obligations landed via the Ausstiegsplan (see the Step 8 block for the commit and artifact-run evidence). The twelve acceptance criteria are walked and recorded in the spec's checkbox block with per-criterion citations.
+
+**Two findings from this pass:**
+
+1. The emission golden is stale against `373f5ed`'s own +982 bytes on `rules/protected-path-discipline.md` — suite red by exactly one test, budget and caps still green. Filed: `issues/260805-2323_o_emissions-golden-veraltet-nach-dem-step-7-doku-commit-die-suite-ist-um-einen-test-rot.md`.
+2. Decision `260802-1912_i_` and the shipped documents are reconciled on the floor residual's measured reach by an appended note on the record (no marker change; `_i_` terminal) — the flag this plan's Step 7 session raised for the Circle's owner is discharged.
+
+Of the eight deliberately deferred defects, all eight remain `_o_` with their routing intact (six to `circles/260804-1205-shell-reachability-model`, `260803-1352` deferred past the ship, `260804-0842` to the reachability Circle). `260804-2100` (filed after this plan) remains `_o_` and is reported to the orchestrator as needing routing — its subject is the path model, which points at the reachability Circle.

@@ -119,3 +119,6 @@ The four latent instances (`escalation`, `churn`, `crossFile`, `decisions`, file
 
 ---
 Answered: this record, `## Answer` — user chose option 1 at the plan gate; omission means inherit, declaration means exactly what is declared.
+
+---
+Implemented: f82ac02 — the per-leaf walk across project layer, plugin layer and DEFAULTS landed in `hooks/lib/config.ts` (C5b remediation plan Step 2; a declared value, including a declared empty list, is taken as declared; a dropped key behaves as omitted). The bound documentation obligations landed with it: the template's `_override` rewritten around the leaf rule in `21a72b7`, `README-hooks.md` and `rules/protected-path-discipline.md` in `373f5ed`. Walked `_a_` → `_i_` by the reconciler at the final Circle reconciliation 260805-2323.

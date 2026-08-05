@@ -173,3 +173,6 @@ the filesystem drops this case out as a by-product rather than as a special case
 
 ---
 Answered: this record, `## Answer` — user chose option 1; the write-only rule is worth more than the spelling it leaves open, and the residual must be stated in full rather than in part.
+
+---
+Implemented: 98c9363 — option 1 is documentation-only, and the obligation landed: the planted-alias residual is stated in full in `rules/protected-path-discipline.md` (rewritten around the measured block) and `README-hooks.md:215`, and the hard-linked-rule-file exception on the exemption side landed with C5b plan Step 7 obligation 3 (`373f5ed`). Walked `_a_` → `_i_` by the reconciler at the final Circle reconciliation 260805-2323.

@@ -11,3 +11,6 @@ Der Kontrast macht den Befund scharf: krk hat dieselbe Defektklasse in seinem ei
 Behebung vor der Schließung des Circles: Status nachziehen, Active spec/plan auf den Ausstiegsplan zeigen lassen, Turn log aus den Orchestrator-Histories rekonstruieren (mindestens die Turn-Grenzen mit Commit-Spannen und Coherence-Verdikten).
 
 Quelle: Analyse `analyses/260805-1830-zweck-nutzung-und-stand-des-plugins.md`, Befund 7.
+
+---
+Resolved: der Reconciler hat den Record am 260805-2323 auf den Ist-Stand gebracht — `**Status:** active`, die drei Plan-Pfade und der History-Zeiger korrigiert, und der Turn log aus den elf Orchestrator-Histories rekonstruiert (Commit-Spannen pro Session, soweit rekonstruierbar). Beleg: `_t_circle.md` Kopfzeilen und `## Turn log`.

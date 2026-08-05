@@ -79,3 +79,14 @@ The two notes from reconciliation 260803-1516 both still stand: the `Answered:` 
 
 ---
 Implemented: plan Step 6 — `floorApplies = projectConfigPath !== null && existsSync(projectConfigPath)` in `hooks/lib/config.ts`. The floor is keyed on the file's **existence**, not on its parseability, which the plan did not specify: the alternative would let a project unprotect its own configuration by breaking it. Six unit cases cover both halves, and a mutation applying the floor unconditionally fails five of them, including both byte-identity cases. Residual re-measured and found wider than this record bounded it, filed separately at `issues/260804-1427_o_the-accepted-floor-residual-reaches-the-guards-own-state-directory-not-only-protectedpaths.md`.
+
+---
+
+**Reconciliation 260805-2323 (reconciler, domain `code`) — stays `_i_`, terminal. Record and shipped documents reconciled on the residual's reach.**
+
+This record bounds the accepted residual at "an agent may create a narrowing `fusion-guard.json` … and the guard will honour it" without stating how far the narrowing reaches. Issue `issues/260804-1427_c_` measured the reach one step wider than the record's framing: a narrowing file removes **everything** on the effective list, `fusion-workbench/.guard-state/**` and therefore the escalation machinery included. The issue's own instruction was to state the residual at its measured reach in the shipped documents *or* widen the floor, not both and not neither. The documentation leg was taken, in commit `373f5ed` (C5b remediation plan Step 7, obligation 10):
+
+- `README-hooks.md:179` states the residual at its measured reach — "across **everything** on the effective list, `fusion-workbench/.guard-state/**` and therefore the escalation machinery included" — with the two measured bounds (git diff on a tracked file; an active halt blocks the narrowing write itself).
+- `rules/protected-path-discipline.md:36-46` states the same in the project-layer paragraph ("The guard's own state directory is an ordinary entry and goes with the rest").
+
+The record's own text keeps its original, narrower framing; this note is the bridge, so a reader of the record finds the measured bound where it now lives. No marker change — `_i_` is terminal and the implementation this record cites is unchanged.
