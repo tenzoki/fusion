@@ -58,6 +58,7 @@ If the dispatch prompt's first non-empty content line is `**Domain:** <value>`, 
 - `$OUT_HISTORY/YYMMDD-HHMM-playmaker-<trigger>.md` — your session log
 
 **You may NOT:**
+- Read the frozen stores — `archive/` (`/fusion:archive` target), `stashes/` (`/fusion:circle-stash` target), `.migration-v2-backup/` (the retired v2 migration's rollback copy). Content lands in them by an explicit user act, and nothing in them is a portfolio item: not a Circle to rank, not a closure to report, not a dependency to resolve. No `SCAN_*` key resolves into one, so staying inside your resolved targets is already correct — this line binds the case where you walk the tree yourself. A run that listed twelve archived Circles in `portfolio.md` "for reference" is exactly what it forbids. (`/fusion:setup` Step 0 and `/fusion:log-activity` Step 3 carry the same exclusions in their `find` invocations, for the same reason.)
 - Edit plans (`$SCAN_PLANS`), the task queue (`$TASKLIST`), decisions (`$SCAN_DECISIONS`), issues (`$SCAN_ISSUES`), code, data files, or any agent prompt
 - Rename a Circle record's marker (`_a_→_t_`, `_t_→_c_`, etc.) — that is the orchestrator's job at Phase 4, or the user's via `/fusion:next` (interactive confirm on the recommended Circle) or `/fusion:next <circle-id>` (explicit form). `--write-activation <circle-id>` is retained as a back-compat alias.
 - Write or modify `fusion-workbench/.active-circle` — the orchestrator owns that pointer
@@ -138,7 +139,7 @@ Regenerate `$PORTFOLIO` in full on every run (overwrite). Conform to the portfol
 1. `## Active (_t_)` — 0 or 1 entry. If more than one Circle record carries `_t_`, list each and surface a `MULTIPLE-ACTIVE` warning in `## Warnings`.
 2. `## Anticipated (_a_) — ranked` — ordered by Step-3 ranking. Top entry includes the full one-paragraph rationale; lower entries get one-sentence rationale. The first line of this section is `Recommended next: <circle-dir> — <rationale>`, where `<circle-dir>` is the top-ranked Circle's directory name and `<rationale>` is a brief one-sentence reason. If there are no `_a_` Circles, the section reads `(none)`.
 3. `## Recently closed (_c_ / _b_)` — last 5 closed Circles, newest first. Each entry: directory name, marker, Closure-note one-liner.
-4. `## Archived (_s_ / _d_)` — superseded and deferred Circles for reference. Compact format.
+4. `## Archived (_s_ / _d_)` — superseded and deferred Circles for reference. Compact format. The section is named for the two **markers** in its heading: it lists live Circle records under `$SCAN_CIRCLES` carrying `_s_` or `_d_`. It has nothing to do with the `archive/` store, whose contents never appear in the portfolio at all.
 5. `## Warnings` — all warnings from Steps 1, 4, and 5: pointer mismatches (`STALE-POINTER`, `POINTER-MISMATCH`, `MISSING-POINTER`), `MULTIPLE-ACTIVE`, every `dependency-cycle-detected` line, every parent-grounding-stale cross-reference. If no warnings, the section reads `(none)`.
 
 The header carries `**Generated:** YYMMDD-HHMM (by playmaker session <id>)` and `**Domain bias:** <domain>`. Do not duplicate the conventions-doc template content here — your job is to fill it out per project state.

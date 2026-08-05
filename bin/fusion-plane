@@ -199,12 +199,34 @@ build_base() {
   BASE="${BASE_URL%/}/api/v1/workspaces/${WORKSPACE_SLUG}/projects/${PROJECT_ID}"
 }
 
+# The exact values templates/plane.config.yaml ships its three scalars with. A
+# field still carrying its shipped value was never filled in: `plane.example.com`
+# is a reserved example domain, and the all-zero UUID resolves to no project on
+# any instance. This is an equality test against three known strings, not a
+# guess at what "looks like a placeholder" — a real config may well be short and
+# plain (`http://localhost:9999`, a four-letter slug), and mistaking such a value
+# for a placeholder is the error this file already cost a real story once.
+# Keep in step with templates/plane.config.yaml; the lint test in
+# hooks/lib/__tests__/fusion-plane.test.ts fails if the two drift apart.
+TEMPLATE_BASE_URL="https://plane.example.com"
+TEMPLATE_WORKSPACE_SLUG="your-workspace-slug"
+TEMPLATE_PROJECT_ID="00000000-0000-0000-0000-000000000000"
+
 config_valid() {
-  # Returns 0 if the required scalars are present and non-placeholder-ish.
+  # Returns 0 if the required scalars are present AND are not still the values
+  # the template ships with. An unfilled template that reports "valid" sends the
+  # caller on to a request that cannot succeed, and the failure it then reports
+  # ("unreachable", "HTTP 404") names the wrong cause.
   local ok=0
   [ -n "$BASE_URL" ]        || { err "config: base_url is empty"; ok=1; }
   [ -n "$WORKSPACE_SLUG" ]  || { err "config: workspace_slug is empty"; ok=1; }
   [ -n "$PROJECT_ID" ]      || { err "config: project_id is empty"; ok=1; }
+  [ "$BASE_URL" != "$TEMPLATE_BASE_URL" ] || {
+    err "config: base_url is still the template value '$TEMPLATE_BASE_URL' — set it to your Plane instance root"; ok=1; }
+  [ "$WORKSPACE_SLUG" != "$TEMPLATE_WORKSPACE_SLUG" ] || {
+    err "config: workspace_slug is still the template value '$TEMPLATE_WORKSPACE_SLUG' — set it to your workspace slug"; ok=1; }
+  [ "$PROJECT_ID" != "$TEMPLATE_PROJECT_ID" ] || {
+    err "config: project_id is still the template's all-zero UUID — set it to the target project's UUID"; ok=1; }
   return $ok
 }
 
@@ -1288,7 +1310,7 @@ cmd_doctor() {
       if config_valid; then
         printf 'config valid:     yes (base=%s ws=%s project=%s)\n' "$BASE_URL" "$WORKSPACE_SLUG" "$PROJECT_ID"
       else
-        printf 'config valid:     NO — required fields missing\n'
+        printf 'config valid:     NO — see the config: lines above\n'
         rc="$EXIT_CONFIG"
       fi
     else

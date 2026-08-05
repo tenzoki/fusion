@@ -72,11 +72,32 @@ function run(workbench: string, ...args: string[]): RunResult {
 // --- Throwaway fixture-workbench copies, cleaned up after each test ----------
 const scratch: string[] = [];
 
-/** Fresh tmp copy of the committed fixture workbench. Runtime writes go here. */
+/**
+ * Fresh tmp copy of the committed fixture workbench. Runtime writes go here.
+ *
+ * The copy's `project_id` is rewritten to a filled value. The committed fixture
+ * still ships the template's all-zero UUID, which `config_valid` now (correctly)
+ * rejects as an unfilled field — so without this the LIVE-path tests below would
+ * fail on "config unfilled" and never reach the network-outage behaviour they
+ * exist to assert. The dry-run tests are unaffected either way: `--plan` never
+ * calls `config_valid` and no assertion reads this value.
+ *
+ * Filed for ontocoder to fix at the fixture itself (the fixture is a .yaml):
+ * issues/…_o_der-plane-testfixture-traegt-den-platzhalter-den-config-valid-jetzt-ablehnt.md.
+ * When that lands, delete this rewrite.
+ */
 function freshWorkbench(): string {
   const root = mkdtempSync(join(tmpdir(), "fusion-plane-"));
   const wb = join(root, "workbench");
   cpSync(fixtureWorkbench, wb, { recursive: true });
+  const cfgPath = join(wb, "plane.config.yaml");
+  writeFileSync(
+    cfgPath,
+    readFileSync(cfgPath, "utf-8").replace(
+      /^project_id:.*$/m,
+      'project_id: "11111111-2222-3333-4444-555555555555"',
+    ),
+  );
   scratch.push(root);
   return wb;
 }
@@ -645,14 +666,25 @@ describe("fusion-plane lint guards: no hardcoded state UUID in the helper", () =
   // UUID literal — state or otherwise — may appear in the source. This one guard
   // covers plan §Testing (a) "no hardcoded state UUID" and (c) "no state ID
   // literal in the helper".
+  //
+  // ONE exemption, and it is narrow by construction: the all-zero UUID. It is
+  // the value templates/plane.config.yaml ships `project_id` with, and
+  // `config_valid` compares against it to catch an unfilled config. It resolves
+  // to no project on any instance, so it can never be the hardcoded live
+  // identifier this guard exists to forbid. Do not widen the exemption to any
+  // other literal — every other UUID names something real somewhere.
   const UUID = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/g;
+  const ZERO_UUID = "00000000-0000-0000-0000-000000000000";
 
   function uuidHits(text: string): { line: number; literal: string }[] {
     const hits: { line: number; literal: string }[] = [];
     text.split("\n").forEach((line, i) => {
       UUID.lastIndex = 0;
       let m: RegExpExecArray | null;
-      while ((m = UUID.exec(line)) !== null) hits.push({ line: i + 1, literal: m[0] });
+      while ((m = UUID.exec(line)) !== null) {
+        if (m[0] === ZERO_UUID) continue;
+        hits.push({ line: i + 1, literal: m[0] });
+      }
     });
     return hits;
   }
@@ -750,6 +782,108 @@ describe("fusion-plane lint guards: the config template stores no secret", () =>
     for (const field of ["token", "secret", "password", "access_token", "auth-token"]) {
       expect(secretFieldHits(`${field}: "x"`).length, `${field} must be caught`).toBeGreaterThan(0);
     }
+  });
+});
+
+// ===========================================================================
+// 5b. An unfilled config must not report itself valid.
+//
+//     `config_valid` promised "non-placeholder-ish" in its comment and tested
+//     only for non-emptiness, so a workbench holding the untouched template
+//     reported `config valid: yes` and every live command marched on to a
+//     request that could not succeed. The failure it then reported named the
+//     network, not the unfilled field.
+//
+//     The check is an equality test against the three values the template
+//     ships, NOT a guess at what looks like a placeholder. That distinction is
+//     the point: `http://localhost:9999` and a four-letter workspace slug are a
+//     real, working configuration, and reading them as placeholders is the
+//     error that once cost a real story its manual walk through Plane's states.
+// ===========================================================================
+describe("fusion-plane config_valid: the shipped template is not a valid config", () => {
+  const templatePath = join(pluginRoot, "templates", "plane.config.yaml");
+
+  /** Value of a top-level scalar in a plane.config.yaml, comments stripped. */
+  function scalar(text: string, key: string): string {
+    const line = text.split("\n").find((l) => l.startsWith(`${key}:`));
+    if (!line) throw new Error(`no top-level '${key}:' in config`);
+    const raw = line.slice(key.length + 1).trim();
+    const quoted = raw.match(/^"([^"]*)"/);
+    return quoted ? quoted[1] : raw.replace(/\s+#.*$/, "").trim();
+  }
+
+  /** A workbench whose plane.config.yaml is the pristine shipped template. */
+  function pristineWorkbench(): string {
+    const root = mkdtempSync(join(tmpdir(), "fusion-plane-pristine-"));
+    const wb = join(root, "workbench");
+    cpSync(fixtureWorkbench, wb, { recursive: true });
+    cpSync(templatePath, join(wb, "plane.config.yaml"));
+    scratch.push(root);
+    return wb;
+  }
+
+  it("the helper's three template constants match what the template actually ships", () => {
+    // The one coupling the fix introduces. bin/fusion-plane names the three
+    // shipped values as literals; if the template changes one and the helper
+    // does not, the check silently stops catching an unfilled field.
+    const tpl = readFileSync(templatePath, "utf-8");
+    const src = readFileSync(fusionPlane, "utf-8");
+    for (const [key, constant] of [
+      ["base_url", "TEMPLATE_BASE_URL"],
+      ["workspace_slug", "TEMPLATE_WORKSPACE_SLUG"],
+      ["project_id", "TEMPLATE_PROJECT_ID"],
+    ] as const) {
+      const shipped = scalar(tpl, key);
+      expect(
+        src,
+        `bin/fusion-plane's ${constant} must equal what templates/plane.config.yaml ships for ${key} ('${shipped}')`,
+      ).toContain(`${constant}="${shipped}"`);
+    }
+  });
+
+  it("a live command on the untouched template exits EXIT_CONFIG, naming every unfilled field", () => {
+    const r = run(pristineWorkbench(), "push", "--all");
+    expect(r.status, "an unfilled config is a config error, not a network deferral").toBe(1);
+    expect(r.stderr).toContain("base_url is still the template value");
+    expect(r.stderr).toContain("workspace_slug is still the template value");
+    expect(r.stderr).toContain("project_id is still the template's all-zero UUID");
+  });
+
+  it("`doctor` on the untouched template answers NO, not yes", () => {
+    // The surface an agent is told to consult instead of reading the file.
+    const r = run(pristineWorkbench(), "doctor");
+    expect(r.stdout).toContain("config valid:     NO");
+    expect(r.stdout).not.toContain("config valid:     yes");
+  });
+
+  it("a short, plain, REAL config is not mistaken for a placeholder", () => {
+    // The false positive that must never come back: localhost and a short slug
+    // are a locally hosted instance, not an unfilled template.
+    const wb = freshWorkbench();
+    const cfgPath = join(wb, "plane.config.yaml");
+    writeFileSync(
+      cfgPath,
+      readFileSync(cfgPath, "utf-8")
+        .replace(/^base_url:.*$/m, 'base_url: "http://localhost:9999"')
+        .replace(/^workspace_slug:.*$/m, 'workspace_slug: "fusion-local"'),
+    );
+    const r = run(wb, "doctor");
+    expect(r.stdout).toContain("config valid:     yes");
+    expect(r.stdout).toContain("base=http://localhost:9999");
+    expect(r.stderr).not.toContain("template value");
+  });
+
+  it("one unfilled field among two filled ones is still caught", () => {
+    const wb = freshWorkbench();
+    const cfgPath = join(wb, "plane.config.yaml");
+    writeFileSync(
+      cfgPath,
+      readFileSync(cfgPath, "utf-8").replace(/^workspace_slug:.*$/m, 'workspace_slug: "your-workspace-slug"'),
+    );
+    const r = run(wb, "doctor");
+    expect(r.stdout).toContain("config valid:     NO");
+    expect(r.stderr).toContain("workspace_slug is still the template value");
+    expect(r.stderr, "the two filled fields must not be reported").not.toContain("base_url is still");
   });
 });
 
