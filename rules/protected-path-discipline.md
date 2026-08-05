@@ -34,10 +34,16 @@ file with no tool the guard inspected. It no longer does.
 The list is `agents/**`, `rules/**`, `skills/**`, `hooks/config.json`,
 `hooks/hooks.json`, `settings.json`, `bin/monitor`, `.claude-plugin/plugin.json` and
 `fusion-workbench/.guard-state/**` — the plugin's **default**, not the answer. A project
-may ship `fusion-guard.json` at its root, and a `guard.protectedPaths` declared there
-wins; a declared empty list really is empty, which is how a project narrows, and it
-stands this whole check down, fail-closed included. The guard's own state directory is
-an ordinary entry and goes with the rest.
+may ship `fusion-guard.json` at its root, merged per **leaf** key: a key it declares is
+taken exactly as written, a key it omits inherits the plugin's value. So a declared
+`guard.protectedPaths` wins; a declared empty list really is empty, which is how a
+project narrows, and it stands this whole check down, fail-closed included. The guard's
+own state directory is an ordinary entry and goes with the rest. Two things sit outside
+that reach. `guard.enabled` is the one key the project file may not set — a declared
+value is ignored and the loader reports the ignored key in a `guard_advisory` naming
+it. And the file's own name is the floor: once `fusion-guard.json` exists, the guard
+protects it, in its bare and absolute spellings, whatever the effective list says — an
+agent cannot unprotect the configuration that governs it.
 
 The patterns are relative and are matched against **the session's working directory**,
 not the project root. Started at the root — the ordinary case — `rules/**` is that
@@ -223,8 +229,13 @@ destination inside them — and nothing else on the list above. The flag does no
 guard off and does not clear a halt, and every write it lets through emits a
 `guard_advisory` event, so the user reads afterwards what the permission bought.
 
-Two things still deny **with the flag set**. It does not fold case (`rules/x.md` allowed,
-`RULES/x.md` denied). And **a hard-linked rule file is not exempt**: the exemption
+Three things still deny **with the flag set**. It does not fold case (`rules/x.md`
+allowed, `RULES/x.md` denied). **A protected entry the project itself declares outranks
+the flag**: a path named in the project's own `fusion-guard.json` under
+`guard.protectedPaths` is subtracted from the exempt set, and the deny quotes the
+project's own entry — a project that declares `rules/**` itself has withdrawn the flag
+from its whole rule directory, `retired/` included. And **a hard-linked rule file is not
+exempt**: the exemption
 resolves the path through the filesystem to prove this name writes only a rule file, and
 `realpath` can follow a symlink but can prove nothing about a second name on the same
 inode. `rsync --link-dest`, `cp -al` and `git clone --local` all produce hard-linked
@@ -276,8 +287,9 @@ If a task genuinely requires writing a protected path from a shell:
    prevent.
 3. **Human Gate.** Surface the situation to the user and ask. The hook only ever sees
    an agent's tool calls, so the user can perform the move in their own terminal, or
-   adjust `guard.protectedPaths` in the plugin's `hooks/config.json`, or tell you to do
-   something else entirely.
+   adjust `guard.protectedPaths` in the project's own `fusion-guard.json` (the
+   per-project layer; the plugin's `hooks/config.json` is the default underneath), or
+   tell you to do something else entirely.
 
 The shape of the alternative, concretely. Retiring a rule file with
 `mv rules/old.md rules/retired/old.md` denies on both operands. What you do instead is

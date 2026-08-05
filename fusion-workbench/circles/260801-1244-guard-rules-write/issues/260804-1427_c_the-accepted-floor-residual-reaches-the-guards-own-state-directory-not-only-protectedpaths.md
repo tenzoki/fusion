@@ -92,3 +92,21 @@ half of the "leave it" arm is now done in the two places an agent and an auditor
 other half is the **decision record's own** stated bound, and a decision record is not this
 step's file. "Not both, and not neither" still stands as this issue's own condition, and it
 is not yet satisfied.
+
+---
+Resolved: The "leave it" arm, completed per plan `260804-1633` Step 7 obligation 10 — the
+floor stays one entry (the spec authorises exactly one), and the shipped documentation
+now states the residual at its measured reach rather than the narrower reach decision
+`260802-1912` records. `rules/protected-path-discipline.md` carries it where every agent
+reads it (the project-layer paragraph under `## The rule`: a narrowing list stands the
+check down and the guard's own state directory goes with the rest; the floor and the
+`guard.enabled` exception sit outside that reach). `README-hooks.md` § "Per-project
+configuration: `fusion-guard.json`" carries the full user-facing statement: the reach
+across everything on the effective list, `fusion-workbench/.guard-state/**` and therefore
+the escalation machinery included; the git-diff bound; and the halt bound (an agent can
+narrow its way out of halts it has not yet earned, not out of one it is already in). The
+seeded template's `_gitTracked` / `_protectsItself` keys state the same bound inside the
+file itself (Step 6, 260805-2222). Decision record `260802-1912_a_` keeps its original
+narrower wording as Grounding-Historie; the shipped documents, which are what agents and
+users read, carry the measured bound — flagged in the closing session report so the
+orchestrator can decide whether the record itself gets a correcting appendix.
