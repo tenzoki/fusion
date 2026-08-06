@@ -1,8 +1,8 @@
 # agents/ — Claude Code sub-agents
 
-This folder holds the plugin's Claude Code sub-agent definitions. Each `*.md` file (except this README) is one role: YAML frontmatter declares the agent's name and description, the body is the operating prompt.
+The `agents/` folder holds the plugin's Claude Code sub-agent definitions. Each `agents/*.md` file is one role: YAML frontmatter declares the agent's name and description, the body is the operating prompt. (This README lives at the repo root, outside the scanned folder.)
 
-Claude Code scans `agents/*.md` at session start, reads each frontmatter block, and makes the agents available as specialized sub-agents for the parent session. This README file is ignored by the scanner — only files with a valid `name`/`description` frontmatter count.
+Claude Code scans `agents/*.md` at session start, reads each frontmatter block, and makes the agents available as specialized sub-agents for the parent session — only files with a valid `name`/`description` frontmatter count.
 
 The agents are deliberately small and single-purpose. They divide labor across planning, implementation, review, reconciliation, and forensic investigation, and they share the same workbench layout (`fusion-workbench/`) and the same rule set (auto-loaded from the plugin's `rules/` directory).
 
@@ -54,7 +54,7 @@ Sub-agents run in their own context window with the role prompt loaded. They do 
 
 ### Inheritance model
 
-Each agent in this folder declares only `name` and `description` in its frontmatter. The `tools:` and `model:` fields are deliberately omitted:
+With one exception, each agent declares only `name` and `description` in its frontmatter; the `tools:` and `model:` fields are deliberately omitted. The exception is the `orchestrator`, which declares a `tools:` allowlist (the namespaced sub-agent dispatches plus its permitted tools) — it is the only agent that dispatches, so it is the only agent whose tool set is pinned. For the other 15:
 
 - **Tools** — inherited from the parent session. Every sub-agent gets the same tool set the parent Claude Code invocation has. Per-path write restrictions (e.g. "reviewer never writes source") are enforced by the prose rules inside each agent prompt.
 - **Model** — inherited from the parent session. Whichever model is driving the Claude Code session drives the sub-agent too.
@@ -139,7 +139,7 @@ When the orchestrator runs, it produces three artifacts so the human can follow 
 | **Event log** | `fusion-workbench/orchestrator-events.jsonl` | Append-only JSONL with timestamped events (task start/done/error, gate hits, commits, reviews, circuit breakers) | `tail -f fusion-workbench/orchestrator-events.jsonl` for streaming, or `jq` for queries |
 | **Sequence diagram** | Appended to the session's history file | Mermaid diagram of all agent dispatches, gate interactions, commits, and reviews | Open the history file in any Markdown viewer with Mermaid support |
 
-**Combined view:** Run `./fusion-workbench/monitor "<session-name>" <port>` (e.g. `./fusion-workbench/monitor "My Session" 8099`) in a second terminal to see the live dashboard and recent events together in a browser. Use `-n 25` for more event lines or `-i 1` for faster refresh.
+**Combined view:** Run `./fusion-workbench/monitor "<session-name>" <port>` (e.g. `./fusion-workbench/monitor "My Session" 8099`) in a second terminal to see the live dashboard and recent events together in a browser. Use `-n 200` for more event lines (default 100) or `-i 1` for faster refresh.
 
 The sequence diagram is the retrospective summary, appended to the history file at session end.
 
@@ -152,8 +152,8 @@ Two side loops feed into the chain at any point (outside the orchestrator's scop
 
 The plugin ships a set of framework rule files under `rules/`, split into an always-on core and conditionally-emitted extras:
 
-- **Always-on core** (every agent, in this order): `agent-setup.md` — emitted **first**, the factored Setup contract every one of the 16 prompts points at (read-every-emitted-path, the `bin/fusion-paths` `OUT_*`/`SCAN_*` semantics, exit-code handling) — then `fusion-workbench-conventions.md` (layout, state markers, filename patterns, issue filing, history logging), `decision-record-examples.md`, `user-facing-output.md`, `critical-stance.md`, and `git-branch-discipline.md`, plus the project's short-form `chat-voice-<lang>.yaml` stylometric profile.
-- **Conditional:** `design-diagrams.md` for the design-diagram agents (the five producers + `conceptrev`); the long-form `default-voice-<lang>.yaml` for the prose agents; and per-agent domain patterns (below).
+- **Always-on core** (every agent, in this order): `agent-setup.md` — emitted **first**, the factored Setup contract every one of the 16 prompts points at (read-every-emitted-path, the `bin/fusion-paths` `OUT_*`/`SCAN_*` semantics, exit-code handling) — then `fusion-workbench-conventions.md` (layout, state markers, filename patterns, issue filing, history logging), `decision-record-examples.md`, `user-facing-output.md`, `critical-stance.md`, `git-branch-discipline.md`, and `protected-path-discipline.md`, plus the project's short-form `chat-voice-<lang>.yaml` stylometric profile. The authoritative list is the `emit_if_exists` block in `bin/fusion-rules`.
+- **Conditional:** `design-diagrams.md` for the design-diagram agents (the five producers + `conceptrev`); the long-form `default-voice-<lang>.yaml` for the prose agents; `protected-path-internals.md` for the guard-internals agents (`coder`, `coderev`, `bugfixer`) — in the fusion plugin's own repo only, where the classifier sources are editable; `circle-records.md` for the Circle-transitioning agents (`orchestrator`, `playmaker`, `shaper`); `workbench-stash-and-lock.md` for the `orchestrator`; and per-agent domain patterns (below).
 - **Mechanism docs:** `context-manifest.md` and `context-lean-claude-md.md` author the optional topic-scoped loading convention (below); they are shipped, not auto-emitted.
 
 Domain-specific rules (coding standards, ontology constraints, etc.) are **supplied by the consuming project** in its own `./rules/` (fusion-agent-specific) or `.claude/rules/` (project-wide) directory.
@@ -175,7 +175,7 @@ Agents discover their applicable rules via the helper `bin/fusion-rules <agent-n
 | `ontocoder`, `ontorev` | `*ontology*`, `*normative*`, `*verb*` | `rules/ontology-rules.md`, `rules/verb-ontology.md`, `rules/normative.md` |
 | `planner` | `*coding*`, `*ontology*` | both groups above |
 | `investigator` | `*investigator*` | `rules/investigator-capture-layout.md` |
-| `orchestrator`, `shaper`, `taskplanner`, `reconciler`, `analyst`, `consultant`, `playmaker`, `conceptrev`, `editor` | (workbench conventions only) | — |
+| `orchestrator`, `shaper`, `taskplanner`, `reconciler`, `analyst`, `consultant`, `playmaker`, `conceptrev`, `editor` | (no domain patterns — always-on core plus any conditional emissions listed above) | — |
 
 If a pattern has no match in either directory, the agent operates on workbench conventions alone — agents skip missing rules silently rather than failing. Consuming projects can add their own rule files at any time and the next session picks them up automatically.
 
@@ -208,6 +208,7 @@ In a consuming project, drop a markdown file into `./rules/` whose name contains
 | `/fusion:direct` | `skills/direct/SKILL.md` | Drafts a Directive as an anticipated (`_a_`) Circle — `shaper` refines a one-line draft via clarifying questions and writes the Circle record without starting a Turn loop |
 | `/fusion:circle-stash` | `skills/circle-stash/SKILL.md` | Freezes the complete state of the active Circle (its directory, the pointer, agent state, dashboard, queue, working tree) into a self-contained stash for later restoration |
 | `/fusion:circle-pop` | `skills/circle-pop/SKILL.md` | Restores a stashed Circle into the workbench, with HEAD-hash drift detection. Pairs with `/fusion:circle-stash` |
+| `/fusion:seed-from-plane` | `skills/seed-from-plane/SKILL.md` | Seeds a new anticipated Circle from a Plane issue — one bounded read of the story's title + description, then the standard `/fusion:direct` → `shaper` Circle-creation path |
 
 Slash commands are independent of sub-agent routing — invoke them from the parent session when you need to commit, set up, or revise project-level rules.
 
@@ -252,7 +253,7 @@ The layout, the Origin Rule, the operative half of the `bin/fusion-paths` resolu
    ---
    ```
 2. Write the prompt body following the structure of the existing agents (Setup, Scope, Process, Output Style).
-3. Setup must confirm that `fusion-workbench-conventions.md` and any other relevant rule files from the plugin's `rules/` directory are present in context (they are auto-loaded by the plugin system).
+3. Setup must confirm that `fusion-workbench-conventions.md` and any other relevant rule files from the plugin's `rules/` directory are present in context (discovered by running `bin/fusion-rules <agent-name>` at Setup — nothing is auto-loaded).
 4. Declare what the agent may read and what it may write — be explicit and exclusive.
 5. Register the agent in:
    - `CLAUDE.md` folder structure block (if it introduces a new `fusion-workbench/` subfolder)

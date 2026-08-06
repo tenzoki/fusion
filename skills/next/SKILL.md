@@ -144,7 +144,7 @@ Only the record is renamed. The directory name never changes; that stability is 
 mv "$CDIR/_a_circle.md" "$CDIR/_t_circle.md"
 ```
 
-The brackets are safe here: this is a literal argument to `mv`, not a glob. It is only *pattern matching* that must avoid the bracket form.
+Both names are literal arguments to `mv`, not globs — the underscore marker needs no escaping and no special handling here. It is only *pattern matching* against marker names that needs care (see `rules/circle-records.md` `## Marker globs`).
 
 ### 6.3 — Write `.active-circle`
 

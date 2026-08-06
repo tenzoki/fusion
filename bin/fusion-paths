@@ -15,8 +15,11 @@
 # The layout, the Origin Rule and the meaning of every key are defined in
 # rules/fusion-workbench-conventions.md (sections "## fusion-workbench Layout",
 # "## Origin Rule (Herkunftsregel)", "## Path Resolution (Pfadauflösung)").
-# That document and this script are the only two places a store-directory path
-# literal may appear.
+# That document and this script are two of the definition sites where a
+# store-directory path literal may appear; the full set (including the three
+# rule files that inherited a definition when the conventions file was
+# partitioned) is enumerated as DEFINITION_SITES in
+# hooks/lib/__tests__/path-literal-lint.test.ts, which enforces it.
 #
 # Called from Setup step 2, alongside `fusion-rules <agent>` — the step every
 # agent demonstrably runs. Resolve once, use the values for the session.
@@ -111,7 +114,7 @@
 # between a human's belief about a prompt and the prompt's text — and it cost
 # the under-emission defect above to keep. The eleven known cases are recorded
 # as prompt-gap findings in
-# fusion-workbench/issues/260717-0031[o]-p8-lint-gate-scope-open-questions-from-conversions.md
+# fusion-workbench/shared/issues/260717-0031_*_p8-lint-gate-scope-open-questions-from-conversions.md
 # so they survive this change rather than dissolving into it.
 #
 # Consequence for P-8's lint gate: under- and over-emission both leave its
@@ -181,7 +184,7 @@ if [ -f "$AGENT_PROMPT" ] && [ -f "$SKILL_PROMPT" ]; then
   # Agents and skills share one flat namespace, so a name that is both has two
   # prompts and two key sets, and no basis to prefer either. Silently picking
   # one would hand a consumer another consumer's paths. No collision exists
-  # today (checked over all 15 agents and all 13 skills, 2026-07-17); this
+  # today (checked over all 16 agents and all 16 skills, 2026-08-06); this
   # fires the moment someone creates one, at which point the fix is a rename.
   echo "fusion-paths: internal error — '$NAME' is both an agent (agents/$NAME.md) and a skill (skills/$NAME/SKILL.md). The namespace is flat, so the key set is ambiguous. Rename one of them. This is a bug in fusion, not a fault in your workbench." >&2
   exit 4

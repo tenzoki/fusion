@@ -98,7 +98,7 @@ This commits the user's actual changes (code, data, docs) **plus** the issues fi
 
    <optional body — why, not what>
 
-   Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+   Co-Authored-By: Claude <noreply@anthropic.com>
    ```
    `<type>` ∈ `fix|feat|refactor|docs|chore|test`. Never amend; always new commits.
 4. When the working tree is clean, **push** (unless `--no-push`): plain `git push`. If the branch has no upstream, set it (`git push -u origin <branch>`). If push is rejected, stop and report — do not force.

@@ -155,7 +155,7 @@ If `SHAPE=legacy`, halt — before any mutation, and without touching the stash:
 
 > **Dieser Stash stammt aus der Zeit vor der Circle-Verzeichnis-Struktur und lässt sich nicht automatisch zurückholen.** Er enthält `circle.md` als lose Datei statt eines `circle/`-Verzeichnisses; seine Spec- und Plan-Kopien gehören zu Dateien, die heute in der gemeinsamen Ablage liegen. Welche davon in den Circle gehören, kann pop nicht erraten — und rät auch nicht.
 >
-> *So holst du ihn von Hand zurück:* Leg unter dem Circle-Speicher ein Verzeichnis mit dem Namen aus `original_circle_filename` (Zeitstempel und Slug, ohne Marker und ohne `.md`) an, leg `circle.md` als `_t_circle.md` hinein, erzeuge daneben die Unterverzeichnisse aus der Vorlage in `rules/fusion-workbench-conventions.md`, schreib den Verzeichnisnamen in `.active-circle` und wende den Arbeitsbaum mit `git stash apply <git_stash_sha aus dem Manifest>` an. Nichts im Stash wird dabei angefasst; er bleibt dein Sicherheitsnetz.
+> *So holst du ihn von Hand zurück:* Leg unter dem Circle-Speicher ein Verzeichnis mit dem Circle-Namen aus dem Manifest an — Feld `original_circle_dirname`; trägt ein Alt-Manifest stattdessen den vollen Dateinamen, nimm Zeitstempel und Slug daraus, ohne Marker und ohne `.md` —, leg `circle.md` als `_t_circle.md` hinein, erzeuge daneben die Unterverzeichnisse aus der Vorlage in `rules/fusion-workbench-conventions.md`, schreib den Verzeichnisnamen in `.active-circle` und wende den Arbeitsbaum mit `git stash apply <git_stash_sha aus dem Manifest>` an. Nichts im Stash wird dabei angefasst; er bleibt dein Sicherheitsnetz.
 >
 > *Fürs nächste Mal:* Stashes vor einem Versionssprung zurückholen, nicht danach.
 

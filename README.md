@@ -23,7 +23,7 @@ fusion --uninstall  # remove ~/.fusion and the launcher
 fusion --where      # print the install dir
 ```
 
-Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v5.3.0` to pin a release), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN` (launcher dir, default `~/.local/bin`).
+Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v5.9.2` to pin a release — every release since v5.5.0 is tagged), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN` (launcher dir, default `~/.local/bin`).
 
 ### Alternative — Claude Code marketplace
 
@@ -60,7 +60,7 @@ Run once at the project root:
 /fusion:setup
 ```
 
-This creates `fusion-workbench/` (the shared workspace, including `.guard-state/`), copies in the monitor binary and the stylometric voice profiles, and writes a `.fusion-setup` marker. Every agent and hook locates the workbench by walking **up** from its working directory until it finds that marker — so agents run correctly from any subdirectory of the project.
+This creates `fusion-workbench/` (the shared workspace, including `.guard-state/`), copies in the monitor binary, the stylometric voice profiles, and the Plane bridge config template (`plane.config.yaml`, inert until filled in), seeds `fusion-guard.json` at the **project root** (the per-project guard configuration — git-tracked, so commit it), and writes a `.fusion-setup` marker. Every agent and hook locates the workbench by walking **up** from its working directory until it finds that marker — so agents run correctly from any subdirectory of the project.
 
 Setup is the only thing that creates a workbench. Without it, agents halt with "no fusion workbench found" and hooks no-op silently — intentional, so a session whose working directory happens to land elsewhere never spawns a stray workbench.
 
@@ -97,7 +97,7 @@ This serves a live HTML dashboard at `http://localhost:8099` (reading `orchestra
 
 ## Configuration
 
-- **Compliance guard** — `hooks/config.json` defines protected paths, decision-to-path mappings and sensitivity levels, escalation thresholds (block → halt), churn thresholds, and cross-file ping-back detection. Copy [`hooks/config.example.json`](hooks/config.example.json) for a project-specific starting point. Runtime state lives per-project in `fusion-workbench/.guard-state/` (gitignored). See [`README-hooks.md`](README-hooks.md) for the full guard model.
+- **Compliance guard** — the plugin's `hooks/config.json` defines the defaults: protected paths, decision-to-path mappings and sensitivity levels, escalation thresholds (block → halt), churn thresholds, and cross-file ping-back detection. The per-project way to change any of it is `fusion-guard.json` at the project root — `/fusion:setup` seeds it (declaring nothing, inheriting everything), and every key you declare in it wins over the plugin's value, merged per leaf. It is git-tracked on purpose: changes to what the guard protects should show in a diff. ([`hooks/config.example.json`](hooks/config.example.json) documents the full key shape.) Runtime state lives per-project in `fusion-workbench/.guard-state/` (gitignored). See [`README-hooks.md`](README-hooks.md) for the full guard model.
 
 ### Tuning or disabling the compliance guard
 

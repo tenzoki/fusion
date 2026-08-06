@@ -76,14 +76,16 @@ a) **Git commits** (`g`):
 b) **Workbench files** — one scan of the tree, not a walk of an enumerated list of stores:
 
    ```bash
-   find "$WORKBENCH" -type f -name '*.md' -not -path '*/archive/*' -not -path '*/stashes/*' -not -path '*/stilwerk/*' -exec ls -l -T {} +
+   # macOS/BSD find+ls; on GNU coreutils replace `ls -l -T` with `ls -l --full-time`
+   # (BSD `-T` prints full timestamps; GNU `-T` expects a tabsize argument and errors)
+   find "$WORKBENCH" -type f -name '*.md' -not -path '*/archive/*' -not -path '*/stashes/*' -not -path '*/stilwerk/*' -not -path '*/.migration-v2-backup/*' -exec ls -l -T {} +
    ```
 
    - **Derive the code from the containing directory's basename**, per the legend above. A file directly in the workbench root is `w`; a `*_circle.md` inside a Circle directory is `k`.
    - Parse filenames for embedded timestamps (`260408-1523-topic.md` means April 8, 15:23). Fall back to the modification time when the filename carries no stamp.
    - Read file headers for date metadata if available.
 
-   **Scan the tree; do not enumerate the stores.** This skill's job is *all* activity, and the tree is what "all" means. An enumeration would have to list every store the layout defines and would silently under-report the day someone adds one, or the day a Circle holds a kind the list forgot — and a missing source here looks exactly like a quiet day. `archive/`, `stashes/` and `stilwerk/` are excluded because they hold moved, frozen, or configured content rather than activity: archived and stashed files would otherwise re-report their original days at their move date.
+   **Scan the tree; do not enumerate the stores.** This skill's job is *all* activity, and the tree is what "all" means. An enumeration would have to list every store the layout defines and would silently under-report the day someone adds one, or the day a Circle holds a kind the list forgot — and a missing source here looks exactly like a quiet day. `archive/`, `stashes/`, `stilwerk/` and `.migration-v2-backup/` are excluded because they hold moved, frozen, or configured content rather than activity: archived and stashed files would otherwise re-report their original days at their move date, and a v2-migration backup carries copies with the originals' timestamps — old working days would appear in the log a second time.
 
 ### 4. Group by date
 

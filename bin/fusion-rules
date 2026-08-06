@@ -34,7 +34,7 @@
 #     reads "how Setup works" before the detailed conventions.
 #   - Every agent reads fusion-workbench-conventions.md (shipped by plugin).
 #   - Every agent also reads decision-record-examples.md (shipped by plugin) —
-#     the worked examples of [o]→[a]→[i], [a]→[s], [o]→[d] transitions are
+#     the worked examples of _o_→_a_→_i_, _a_→_s_, _o_→_d_ transitions are
 #     small and useful for any agent that touches decision records.
 #   - Every agent also reads user-facing-output.md (shipped by plugin) —
 #     mandates action-first ordering, plain-English option labels, no

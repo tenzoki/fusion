@@ -75,7 +75,7 @@ Read `$FUSION_PLUGIN_ROOT/README.md`. Two paths:
 
 **One caveat for the marketplace path:** the local *marketplace clone* at `~/.claude/plugins/marketplaces/<name>/` is what `/plugin install` reads, not the GitHub remote. If a version bump hasn't reached it, run `git -C ~/.claude/plugins/marketplaces/tenzoki-plugins pull origin main` first, then the three commands. (The HTTPS installer has none of this friction — prefer it.)
 
-For the maintainer-side release flow (bumping `plugin.json` + `marketplace.json`, dual git push), read `$FUSION_PLUGIN_ROOT/CLAUDE.md` "Release process".
+For the maintainer-side release flow (bumping `plugin.json` + `marketplace.json`, dual git push), read the "Release process" section of `CLAUDE.md` in the fusion **source repo** (https://github.com/tenzoki/fusion/blob/main/CLAUDE.md) — that file is dev-only and deliberately not shipped, so `$FUSION_PLUGIN_ROOT/CLAUDE.md` does not exist on an installed copy.
 
 ### 5. Configure — *customizing fusion for a project*
 

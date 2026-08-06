@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# monitor.sh — HTML-based orchestrator monitor
-# Serves a live dashboard for orchestrator-live.md and agentstate.yaml
+# monitor — HTML-based orchestrator monitor
+# Serves a live dashboard for orchestrator-live.md, agentstate.yaml,
+# orchestrator-events.jsonl and .guard-state/events.jsonl
 # Usage: ./monitor <name> <port> [-d workbench_dir] [-n events] [-i interval_sec]
 
 set -euo pipefail

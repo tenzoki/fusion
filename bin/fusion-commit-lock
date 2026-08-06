@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 # fusion-commit-lock — POSIX mutex around git add + git commit operations.
 #
-# Defends against the cross-agent staging race documented in
-# fusion-workbench/issues/260516-0534-cross-agent-staging-race-on-unlocked-working-tree.md:
-# parallel agents sharing one working tree race on the shared git index,
-# leading to commit absorption, orphan commits, and WT-left-dirty outcomes.
+# Defends against the cross-agent staging race (observed 2026-05-16, on an
+# unlocked working tree; the original issue record has since left the
+# workbench): parallel agents sharing one working tree race on the shared git
+# index, leading to commit absorption, orphan commits, and WT-left-dirty
+# outcomes.
 #
 # The mutex is workbench-anchored: the lock directory lives at
 # fusion-workbench/.commit-lock/. Distinct projects have independent locks;
@@ -27,8 +28,10 @@
 #
 #   fusion-commit-lock release
 #       Release the lock. Exits non-zero if the lock is not held, or held
-#       by a different PID (defensive: prevents one agent releasing
-#       another's lock).
+#       by a different PID whose process is still ALIVE (defensive:
+#       prevents one agent releasing a running agent's lock; a lock whose
+#       holder process is dead may be released by anyone — that is the
+#       stale-recovery path).
 #
 #   fusion-commit-lock with <tag> -- <command...>
 #       Canonical pattern. Acquire, run the command preserving its exit
@@ -41,7 +44,7 @@
 #       <acquired_at>" to stdout. No state mutation.
 #
 # Dependencies: mkdir, rmdir, rm, kill, date, printf, sleep, cat, head,
-# grep. POSIX-portable; tested on macOS Bash 3.2 and Linux Bash 4+.
+# grep, sed, awk. POSIX-portable; tested on macOS Bash 3.2 and Linux Bash 4+.
 
 set -eu
 

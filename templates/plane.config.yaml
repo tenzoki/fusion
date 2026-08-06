@@ -5,7 +5,7 @@
 #   overwrites a filled-in copy. Fill in the placeholders below for YOUR Plane
 #   instance. Every value here is your project's; the *shape* is fusion's.
 #
-# What reads this file: bin/fusion-plane (push | seed | states | doctor | plan).
+# What reads this file: bin/fusion-plane (push | seed | map | states | doctor | plan).
 #   The helper reads IDs from this file and the API key from the environment.
 #
 # ── Whether the bridge is wired is a question for `doctor`, not for this file ─
@@ -84,7 +84,7 @@ states:
   "Todo": "Todo"                 # issue/decision _o_ (open)
   "In Progress": "In Progress"   # Circle _t_ (active); issue _p_; decision _a_
   "Done": "Done"                 # Circle _c_/_b_; issue _c_; decision _i_
-  "Cancelled": "Cancelled"       # Circle/issue/decision _s_/_d_ (superseded/deferred/dropped)
+  "Cancelled": "Cancelled"       # Circle _s_/_d_; issue _d_; decision _s_/_d_ (superseded/deferred)
 
 # ── Kind label mapping ──────────────────────────────────────────────────────
 #   Every artifact fusion creates in Plane carries ONE label naming its kind, so

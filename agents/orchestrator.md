@@ -162,7 +162,7 @@ Remaining setup (after step 1 is resolved):
 
 You may:
 - Read any file except `.secret`
-- Invoke sub-agents: `shaper`, `planner`, `taskplanner`, `coder`, `ontocoder`, `bugfixer`, `coderev`, `ontorev`, `reconciler`, `analyst`, `playmaker`
+- Invoke sub-agents: `shaper`, `planner`, `taskplanner`, `coder`, `ontocoder`, `bugfixer`, `coderev`, `ontorev`, `conceptrev`, `reconciler`, `analyst`, `playmaker`, `editor`
 - Run build/test commands to validate agent output (as documented in CLAUDE.md)
 - Stage files and create git commits after successful validation
 - Write to `$OUT_HISTORY` (your session log)
@@ -528,7 +528,7 @@ After reconciler returns and any Rebalance gate is resolved, run this step if a 
 
 4. **Push closure to Plane, then clear `.active-circle`.** If Plane is configured (`fusion-workbench/plane.config.yaml` present), first run `"$FUSION_PLUGIN_ROOT/bin/fusion-plane" push --circle <dir> --closure` with `<dir>` the Circle directory name from step 1 — this drives the Circle to Done and attaches the closing artifacts. It **must** run while the pointer still exists, so it precedes the clear; a `deferred` result (exit 10) is surfaced in the session report, never blocking (see **Plane mirror**). Then clear the pointer — `rm -f fusion-workbench/.active-circle`. (Use `rm -f`; absence after this point is the canonical "no active Circle" state.)
 
-5. **Dispatch playmaker.** Use `Agent(fusion:playmaker)` with the prompt prefix `**Domain:** <detected-domain-from-Setup-Step-5>`. Playmaker regenerates `$PORTFOLIO` to reflect the closure and (per its Bundle B process step 5) writes any `## Parent grounding stale` notes for `_b_` propagation.
+5. **Dispatch playmaker.** Use `Agent(fusion:playmaker)` with the prompt prefix `**Domain:** <detected-domain-from-Setup-Step-5>`. Playmaker regenerates `$PORTFOLIO` to reflect the closure and (per its process Step 5, "Detect Bounded-Closure propagation") writes any `## Parent grounding stale` notes for `_b_` propagation.
 
 6. **Append `## Portfolio update` section** to the orchestrator's session history file citing the playmaker's history file path.
 
@@ -930,6 +930,8 @@ sequenceDiagram
 | `bugfixer` | Phase 2 step 3b, when validation fails after a task | One self-healing attempt before reverting |
 | `reconciler` | Phase 3, once after the loop exits | Ground-truth pass over all tracking files. **Pass `domain` parameter** (from Setup Step 5 detection). For `strategic`/`knowledge` expect Open-decision-surface output. |
 | `analyst` | Phase 0b or Phase 2, when a task needs analysis before implementation | Document study, comparative, gap, risk, feasibility, or impact analysis |
+| `editor` | Phase 2, when a task produces a customer-facing deliverable | Write, revise, translate (en↔de), or render a polished document or branded deck (produce-only) |
+| `playmaker` | Phase 4 step 5, after a `_t_→_c_/_b_` Circle transition | Regenerate `portfolio.md` and write any `## Parent grounding stale` notes. **Pass `domain` parameter** (from Setup Step 5 detection). |
 
 **Never invokes:**
 - `consultant` — user-initiated only, not part of the execution loop. The consultant advises the user directly and is never dispatched by the orchestrator.

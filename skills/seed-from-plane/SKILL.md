@@ -60,7 +60,7 @@ Parse `bin/fusion-plane seed`'s **stdout JSON** and branch on `status`:
 
   Wait for the user's pasted text. Use the pasted title + description as the draft Directive. There is **no** `origin_plane_id` in this path, so the round-trip binding (Step 6) is skipped — note that to the user in Step 7. This never blocks: the Circle is still created.
 
-- **Any other non-zero exit** (e.g. exit 2 — non-numeric `<seq>`, or no issue with that sequence_id) — relay the helper's stderr message verbatim and halt. This is a bad story number, not an outage.
+- **Any other non-zero exit** — relay the helper's stderr message verbatim and halt. Exit 2 is a bad argument (non-numeric `<seq>`, or no issue with that sequence_id); exit 1 is a missing or invalid `plane.config.yaml`. Neither is an outage — the deferred path above covers those.
 
 ## Step 3 — Ensure the Circle store exists
 

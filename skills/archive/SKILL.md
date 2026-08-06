@@ -155,9 +155,10 @@ Adds `$SHARED_HISTORY/*.md` whose filename date prefix is older than the thresho
 
 4. **CLAUDE.md citation check.**
    ```bash
-   for f in <candidates>; do bn="$(basename "$f")"; rel="${f#$WORKBENCH/}"; if grep -q -F -e "$bn" -e "$rel" CLAUDE.md 2>/dev/null; then : ; fi; done
+   KEEP=""; for f in <candidates>; do bn="$(basename "$f")"; rel="${f#"$WORKBENCH"/}"; if grep -q -F -e "$bn" -e "$rel" CLAUDE.md 2>/dev/null; then echo "  kept (cited in CLAUDE.md): $rel"; else KEEP="$KEEP$f
+   "; fi; done
    ```
-   Cited files are dropped from the proposal automatically.
+   `$KEEP` is the surviving candidate list; a cited file is dropped from the proposal and reported as kept, never silently.
 
 5. **Propose.** Print to the user:
    - Mode (tier-N + threshold, or the natural-language description verbatim).

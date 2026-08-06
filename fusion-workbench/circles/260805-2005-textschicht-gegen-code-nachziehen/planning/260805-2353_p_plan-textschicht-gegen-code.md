@@ -179,7 +179,7 @@ The graph is a layered DAG: decisions gate the text layer, code fixes gate nothi
    - Verification: grep the tree for every `.active-circle` writer (`printf`, `rm`, `mv` targets) and check each against the rewritten sentence; suite green; golden regenerated if `fusion-workbench-conventions.md` or `workbench-stash-and-lock.md` change size.
    - Falsifier: a writer the findings missed (e.g. a hook) would falsify the "complete writer set" claim — the grep in verification is the check.
 
-10. **Batch A: mechanical corrections in `rules/` (all 15 files as needed)**
+10. [DONE] **Batch A: mechanical corrections in `rules/` (all 15 files as needed)** *(eight rule files corrected; `agent-setup.md` needed no text change — step 5's code fix made its sentence true; the `konventionen-active-circle` finding was already resolved by step 9; golden deliberately regenerated, floors unchanged)*
     - Executor: coder
     - Files: `rules/agent-setup.md` (skip-silently sentence stays, now true after step 5), `rules/protected-path-discipline.md` (empty-list claim, `260805-1840_o_ppd-leere-liste-…`), `rules/fusion-workbench-conventions.md` (0/1/2-shape vs `fusion-rules` exit 3, `…konventionen-012-shape-…`; "auto-loaded by the plugin system", `260805-1841_o_konventionen-auto-loaded-…`), `rules/decision-record-examples.md` (heading `_a_→_s_` over an `_i_→_s_` body; `_i_→_s_` normed only in examples — align with the conventions' vocabulary), `rules/circle-records.md` (four of six citing skills do not cite; binding-decision path), `rules/workbench-path-resolution.md` ("cited directly by fusion-paths"; pre-v4 pointer-rejection mechanism; stale log-activity example), `rules/workbench-stash-and-lock.md` ("nine fields" vs ten, three dead record citations), pre-v4 example paths in the two always-on files (`260805-1840_o_beispielpfade-…`). Citation rewrites follow D1's decided form.
     - Dependencies: D1 answered; step 9 (avoid double-touching the conventions file)
@@ -187,7 +187,7 @@ The graph is a layered DAG: decisions gate the text layer, code fixes gate nothi
     - Verification: suite green after golden regeneration; each covered issue record's claim re-tested against the fixed text.
     - Falsifier: a finding whose "wrong" text turns out correct against HEAD (code moved since 2026-08-05) is closed as no-change-needed with the evidence, not "fixed".
 
-11. **Batch B: `CLAUDE.md` and the README family**
+11. [DONE] **Batch B: `CLAUDE.md` and the README family**
     - Executor: coder
     - Files: `CLAUDE.md` (the seven findings: two-rule-files symptom line, templates/ line, docs/ line without plane-setup, `WRAPPER_PROGRAMS` misattribution, two dead workbench references, four stale entries from the recent rebuilds, skill list without `seed-from-plane`), `README.md` (`FUSION_REF=tags/v5.3.0` → an existing tag; setup copy list without `fusion-guard.json`/`plane.config.yaml`; `fusion-guard.json` mechanism mentioned), `README-agents.md` ("no agent declares tools:", always-on list without `protected-path-discipline.md`, three missing conditional emissions, relocation artifacts, skill list), `README-hooks.md` (walk-out-and-back residual is closed — coverage is better than documented; files table missing three `lib/` modules; effective-hook-configuration section)
     - Dependencies: D1 answered (dead references follow the decided form); step 8 (README-agents' emission lists must describe the new scoping)
@@ -195,7 +195,7 @@ The graph is a layered DAG: decisions gate the text layer, code fixes gate nothi
     - Verification: each enumerated list re-derived from the tree at edit time (`ls skills/`, the `emit_if_exists` lines, `ls hooks/lib/`), then written.
     - Falsifier: same as Batch A.
 
-12. **Batch C: skill bodies, bin headers, `install.sh`, templates**
+12. [DONE] **Batch C: skill bodies, bin headers, `install.sh`, templates** *(the `plane.config.yaml` item was executed by coder rather than ontocoder — the two corrections are comment lines only, no data value touched; `install.sh`'s LICENSE entry deliberately left for the user decision step 17 records; `rules/context-manifest.md`'s "stops" nuance left to the rules batch, whose files this step must not touch)*
     - Executor: coder, except the YAML template item → ontocoder
     - Files (coder): `skills/*/SKILL.md` mechanical findings (`260805-1904_o_sechs-kleinbefunde-…` — text-level items only, including `/fusion:commit`'s missing `AskUserQuestion` in `allowed-tools`; `…help-verweist-…` — help pointing at a `CLAUDE.md` the installer never ships; `…log-activity-scannt-…` — backup-folder scan and setup's untenable store-equality claim; `260805-1842_o_circle-pop-nennt-manifest-feld-…`; `260805-1839_o_cleanup-hardcodet-einen-modellnamen-…`), bin header comments (`260805-1842_o_fusion-paths-header-…`, `…commit-lock-header-…`, `…header-kleinbefunde-…`, `260805-1839_o_kommentar-drift-…` — the bracket-notation relics the conventions themselves outlaw), `bin/fusion-rules`/`bin/fusion-paths` comment drift, `install.sh` header, `…context-manifest-stops-…` nuance. Files (ontocoder): `templates/plane.config.yaml` header (`260805-1842_o_plane-config-header-…`).
     - Dependencies: D1 answered (any record citations in these files); steps 4–7 (don't correct a comment a code fix is about to rewrite)
@@ -203,7 +203,7 @@ The graph is a layered DAG: decisions gate the text layer, code fixes gate nothi
     - Verification: each snippet edited is re-run standalone in a scratch dir under zsh.
     - Falsifier: same as Batch A.
 
-13. **Content corrections: the two citations that became false claims, and the High finding's text**
+13. [DONE] **Content corrections: the two citations that became false claims, and the High finding's text** *(falsifier checked: the fold-case record is `_d_`, not `_o_` — `paths.ts` comment now states the deferral and cites wildcard-form; `hooks/dist` rebuilt; provenance form 1 rewritten to the wildcard form with marker-transition rationale; finding 260805-1859 amended per the Circle record and closed `_o_`→`_c_` citing c45fb44)*
     - Executor: coder
     - Files: `hooks/lib/paths.ts:72` (comment claims the fold-case decision is "deliberately not taken"; it has since been taken — rewrite to state the decision's actual outcome and cite it in D1's form), `rules/rule-file-provenance.md:48` (the `Binding decision:` line of the very file defining citation forms; rewrite to D1's form and amend the rationale so it covers marker transitions), and the issue record `circles/260801-1244-guard-rules-write/issues/260805-1859_o_im-eigenen-repo-laden-alle-agenten-…` (append the correction the Circle record mandates: the finding's defect claim is wrong — `FUSION_PLUGIN_ROOT` pins to the installed copy at session start by design, and `fusion --update` plus restart resolves it; the four-day stale-rules consequence is real and is carried as D3's grounding).
     - Dependencies: D1 answered; kept separate from the mechanical batches by explicit instruction of the Circle record.
