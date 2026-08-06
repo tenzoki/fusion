@@ -411,7 +411,7 @@ describe("bin/fusion-paths", () => {
   function stage(): string {
     const bin = join(project, "bin");
     mkdirSync(bin, { recursive: true });
-    for (const helper of ["fusion-paths", "fusion-workbench-root"]) {
+    for (const helper of ["fusion-paths", "fusion-workbench-root", "fusion-plugin-cwd"]) {
       const dst = join(bin, helper);
       writeFileSync(dst, readFileSync(join(pluginRoot, "bin", helper), "utf-8"));
       chmodSync(dst, 0o755);
@@ -570,6 +570,50 @@ describe("bin/fusion-paths", () => {
         expect(r.status, `${bad} must not resolve`).toBe(2);
         expect(r.stdout).toBe("");
       }
+    });
+  });
+
+  describe("plugin-repo preference (decision 260806-0015, option c)", () => {
+    // Inside the fusion plugin's own source repo (bin/fusion-plugin-cwd: a
+    // .claude-plugin/plugin.json at cwd naming "fusion"), prompts resolve
+    // from the WORK TREE, not from the script's install location — the
+    // installed copy's prompts can be sessions stale against the ones being
+    // edited. The prompt files are the only plugin-root-relative resources
+    // this script reads, so the preference is one assignment; these tests pin
+    // both its presence and its bound.
+
+    function makePluginRepo(pluginName: string): void {
+      mkdirSync(join(project, ".claude-plugin"), { recursive: true });
+      writeFileSync(
+        join(project, ".claude-plugin", "plugin.json"),
+        `{ "name": "${pluginName}" }\n`,
+      );
+      mkdirSync(join(project, "agents"), { recursive: true });
+      // A prompt that exists ONLY in this fake repo. The real script (its
+      // install location is THIS repository's bin/) can resolve it only by
+      // reading the work tree — which is the assertion.
+      writeFileSync(join(project, "agents", "fakeagent.md"), "File to $OUT_ISSUE.\n");
+    }
+
+    it("derives the key set from the work tree's prompt when cwd is the plugin repo", () => {
+      makePluginRepo("fusion");
+      const r = run(project, "fakeagent");
+      expect(
+        r.status,
+        "fakeagent.md exists only in the fake repo's work tree; exit 2 means the " +
+          "script resolved prompts from its install location instead",
+      ).toBe(0);
+      expect(parse(r.stdout).OUT_ISSUE).toBe("shared/issues");
+    });
+
+    it("does not prefer the work tree when the manifest names another plugin", () => {
+      makePluginRepo("not-fusion");
+      const r = run(project, "fakeagent");
+      // The criterion is the plugin NAME, not the manifest's existence —
+      // matching hooks/lib/self-detect.ts. Another plugin's repo is an
+      // ordinary consuming project.
+      expect(r.status).toBe(2);
+      expect(r.stderr).toContain("unknown name");
     });
   });
 });

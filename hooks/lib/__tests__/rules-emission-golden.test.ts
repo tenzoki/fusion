@@ -316,6 +316,17 @@ const DRIFT_CEILING = 145_144;
  *             19 960 -> 19 943 (all sixteen agents), `protected-path-internals.md`
  *             21 897 -> 21 870 (three agents). Every role drops 17; the
  *             guard-internals role drops 44.
+ *    90 878 — 2026-08-06, at step 8 of the textschicht plan. Not a text cut but
+ *             an audience made precise: the guard-internals emission is now
+ *             gated on cwd being the fusion plugin's own repo
+ *             (`bin/fusion-plugin-cwd`), because in a consuming project the
+ *             audience "whoever changes or reviews the classifier" is empty by
+ *             construction — the classifier's sources sit in the installed
+ *             plugin, outside the project tree. In the CONSUMING context this
+ *             file measures, coder/coderev/bugfixer therefore drop
+ *             `protected-path-internals.md` (21 870) and join the core-only
+ *             role; the measured high-water mark is now the orchestrator at
+ *             109 430. In the plugin repo itself the three still load it.
  */
 const RULE_BASELINE: Record<string, number> = {
   // The universal core — text all sixteen agents apply. 89 896 bytes.
@@ -330,6 +341,10 @@ const RULE_BASELINE: Record<string, number> = {
   "design-diagrams.md": 5_673,
   "circle-records.md": 9_302,
   "workbench-stash-and-lock.md": 9_250,
+  // Emitted only in the plugin's own repo since 2026-08-06 (textschicht step
+  // 8), so no consuming-context emission carries it and it is not measured
+  // here. Kept — "a file this map carries that the emission dropped is simply
+  // not measured" — so a future in-repo measurement has its baseline.
   "protected-path-internals.md": 21_870,
 };
 
@@ -356,20 +371,25 @@ interface Role {
  * left pointing at a figure the emission moved away from. The comments below say
  * what each role buys and why; the arithmetic is the map's.
  *
- * Six roles as of 2026-08-05, the first four of them below RELEASE_CAP:
+ * Five roles as of 2026-08-06, the first four of them below RELEASE_CAP:
  *
- *   89 896  core only                                      5 agents
+ *   89 896  core only                                      8 agents
  *   95 569  design-diagrams.md                             5 agents
  *   99 198  circle-records.md                              1 agent
  *  104 871  circle-records.md + design-diagrams.md         1 agent
  *  108 448  circle-records.md + workbench-stash-and-lock.md 1 agent
- *  111 766  protected-path-internals.md                    3 agents
  */
 const ROLES: Record<string, Role> = {
   /**
    * The plain agents: everything the framework asks of everyone, and nothing
-   * else. This is the floor the other five roles are measured against, and the
+   * else. This is the floor the other four roles are measured against, and the
    * only number that says what the always-on set actually costs.
+   *
+   * Since 2026-08-06 this includes coder, coderev and bugfixer: their
+   * classifier reference (`protected-path-internals.md`) emits only when cwd
+   * is the fusion plugin's own repo (`bin/fusion-plugin-cwd`), and this golden
+   * measures the CONSUMING context, which never satisfies that criterion —
+   * asserted below in `measures the consuming-project context`.
    */
   "(core only)": {},
 
@@ -431,30 +451,6 @@ const ROLES: Record<string, Role> = {
       "that bin/fusion-rules cannot deliver to a skill directly.",
   },
 
-  /**
-   * OVER THE RELEASE CAP by 6 412 bytes, and the fleet's high-water mark.
-   *
-   * `protected-path-internals.md` (21 870) is the reference half of the
-   * protected-path rule: the verb tables, command-word resolution, the
-   * clustered-flag grammar, git's own working directory, the directory-builtin
-   * forms that are not modelled, and the fail-closed bound. It is how the
-   * classifier READS a command, which is only actionable for an agent that
-   * changes `hooks/lib/bash-mutation-guard.ts` or reviews a change to it. The
-   * other thirteen agents read the core half and reach this one by its pointer
-   * line.
-   *
-   * The overage belongs to the step-2 split, not to any later cut: bringing
-   * this role under the baseline means revisiting a file that split produced,
-   * not shaving the core the other roles share.
-   */
-  "protected-path-internals.md": {
-    overRelease:
-      "protected-path-internals.md (21 870) is the classifier reference — verb tables, " +
-      "command-word resolution, clustered short flags, git's own working directory, the " +
-      "fail-closed bound. This role is the three agents that change or review " +
-      "hooks/lib/bash-mutation-guard.ts, the only agents for which how the classifier " +
-      "reads a command is actionable rather than background.",
-  },
 };
 
 /**
@@ -628,6 +624,66 @@ describe("rules emission golden", () => {
         `one you intended, (2) re-run without UPDATE_RULES_GOLDEN. Nothing else has ` +
         `to move: RULE_BASELINE is re-cut only after a cleanup, not after a change.`,
     ).toBe(false);
+  });
+
+  it("measures the consuming-project context — the plugin-repo gate is provably off", () => {
+    // Two emissions are gated on cwd being the fusion plugin's own repo
+    // (`bin/fusion-plugin-cwd`: a .claude-plugin/plugin.json at cwd naming
+    // "fusion"): the guard-internals reference for coder/coderev/bugfixer, and
+    // the work-tree rules preference of decision 260806-0015 (option c). This
+    // golden claims to measure the CONSUMING context, so the neutral cwd must
+    // not satisfy the criterion — the plan's falsifier for step 8 was a temp
+    // cwd that accidentally measures the plugin-repo branch.
+    expect(
+      existsSync(join(neutralCwd, ".claude-plugin", "plugin.json")),
+      "The neutral cwd carries a plugin manifest, so every byte total below " +
+        "measures the plugin-repo emission, not the consuming-project one.",
+    ).toBe(false);
+
+    // And the gate has to be REAL, not dead code: from the plugin repo itself,
+    // coder gains the classifier reference the neutral run must not carry. If
+    // both contexts emitted the same set, the golden's "consuming context"
+    // claim would be untested.
+    const inRepo = execFileSync(fusionRules, ["coder"], {
+      cwd: pluginRoot,
+      encoding: "utf-8",
+      env: { ...process.env, FUSION_PLUGIN_ROOT: pluginRoot },
+      stdio: ["ignore", "pipe", "pipe"],
+    })
+      .split("\n")
+      .filter((l) => l.trim().length > 0);
+    expect(
+      inRepo.some((l) => l.endsWith("/protected-path-internals.md")),
+      "From the plugin repo, coder no longer receives protected-path-internals.md — " +
+        "either bin/fusion-plugin-cwd stopped recognising the repo or the 1d gate broke.",
+    ).toBe(true);
+    expect(
+      runRules("coder").some((l) => l.endsWith("/protected-path-internals.md")),
+      "From a consuming project, coder receives protected-path-internals.md — the " +
+        "1d gate in bin/fusion-rules is not holding.",
+    ).toBe(false);
+  });
+
+  it("prefers the work tree's rules over $FUSION_PLUGIN_ROOT inside the plugin repo", () => {
+    // Decision 260806-0015 (option c): in the plugin's own repo the source is
+    // the meant rule state. FUSION_PLUGIN_ROOT is pointed at the neutral cwd —
+    // which ships no rules at all — so every rule path emitted can only have
+    // come from the work tree. Consuming-context behaviour is untouched, which
+    // the golden above pins byte for byte.
+    const emitted = execFileSync(fusionRules, ["orchestrator"], {
+      cwd: pluginRoot,
+      encoding: "utf-8",
+      env: { ...process.env, FUSION_PLUGIN_ROOT: neutralCwd },
+      stdio: ["ignore", "pipe", "pipe"],
+    })
+      .split("\n")
+      .filter((l) => l.trim().length > 0);
+    expect(
+      emitted,
+      "Inside the plugin repo, with FUSION_PLUGIN_ROOT pointing at an empty " +
+        "directory, the rule emission should come from the work tree's ./rules.",
+    ).toContain(join(rulesDir, "agent-setup.md"));
+    expect(emitted.filter((l) => l.startsWith(neutralCwd))).toEqual([]);
   });
 
   it("emits nothing but plugin rule files when no project rules are in reach", () => {

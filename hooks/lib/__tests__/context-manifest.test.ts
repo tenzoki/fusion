@@ -363,6 +363,13 @@ describe("emit_if_exists: a missing always-on rule file is skipped silently (set
     mkdirSync(join(strippedPlugin, "bin"), { recursive: true });
     copyFileSync(fusionRules, join(strippedPlugin, "bin", "fusion-rules"));
     chmodSync(join(strippedPlugin, "bin", "fusion-rules"), 0o755);
+    // The repo-context sibling the script probes at startup (bin/fusion-plugin-cwd).
+    // Staged so the probe is the real one rather than a noisy command-not-found.
+    copyFileSync(
+      join(pluginRoot, "bin", "fusion-plugin-cwd"),
+      join(strippedPlugin, "bin", "fusion-plugin-cwd"),
+    );
+    chmodSync(join(strippedPlugin, "bin", "fusion-plugin-cwd"), 0o755);
     cpSync(join(pluginRoot, "rules"), join(strippedPlugin, "rules"), { recursive: true });
     // Remove one always-on file from the middle of the emit_if_exists block.
     rmSync(join(strippedPlugin, "rules", "decision-record-examples.md"));

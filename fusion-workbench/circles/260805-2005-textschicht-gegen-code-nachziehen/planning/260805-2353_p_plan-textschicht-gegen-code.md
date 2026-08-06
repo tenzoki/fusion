@@ -161,7 +161,7 @@ The graph is a layered DAG: decisions gate the text layer, code fixes gate nothi
 
 ### Independent scoping change
 
-8. **Stop emitting `protected-path-internals.md` to coder/coderev/bugfixer outside the plugin repo**
+8. [DONE] **Stop emitting `protected-path-internals.md` to coder/coderev/bugfixer outside the plugin repo**
    - Executor: coder
    - Files: `bin/fusion-rules` (the `IS_GUARD_INTERNALS_AGENT` block, lines 365–367); `hooks/lib/__tests__/rules-emission-golden.test.ts` + `fixtures/rules-emission.golden`
    - Changes: gate the emission on the repo-context criterion that already exists: a small shell equivalent of `isFusionPluginCwd()` (cwd contains `.claude-plugin/plugin.json` with `"name": "fusion"` — a `grep`-level check is enough; keep it consistent with the TS heuristic and note the pairing in a comment). In a consuming project the file's audience ("whoever changes or reviews the classifier") is empty by construction: the guard sources sit outside the project tree and are protected. In the plugin repo the emission stays. Then regenerate the golden **deliberately** per the procedure in the test's own header: the golden runs with a temp cwd (consuming context), so the trio's path set shrinks by 21 870 bytes, which brings three of the four over-cap roles under `RELEASE_CAP` (the Circle record's stated relief). Update the per-role floor justifications the test requires for any floor above the cap.
@@ -226,7 +226,7 @@ The graph is a layered DAG: decisions gate the text layer, code fixes gate nothi
     - Verification: suite green; mutation check — add a scratch skill directory locally and watch the two skill-list assertions fail.
     - Falsifier: an enumeration that legitimately diverges from the tree (deliberate subset) belongs on the documented exemption list, not silently skipped; if the first run finds a divergence no finding covered, file it as a new issue rather than absorbing it.
 
-16. **Realise D3 per its answer**
+16. [DONE] **Realise D3 per its answer**
     - Executor: coder
     - Files: per answer — (a) doc text only (release procedure in `CLAUDE.md`, a line in the relevant rule); (b) `hooks/` SessionStart path + `hooks/dist` rebuild + a test; (c) `bin/fusion-rules`/`bin/fusion-paths` root-preference + golden considerations + tests
     - Changes: exactly the chosen option, small by construction. If (b) or (c): compiled hooks are committed (installer invariant), and the plugin-repo behaviour must not alter consuming-project emission (golden guards this).

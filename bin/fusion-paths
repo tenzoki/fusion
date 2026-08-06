@@ -143,6 +143,21 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd -P)"
 PLUGIN_ROOT="$(dirname "$SCRIPT_DIR")"
 
+# Repo-preference: when cwd is the fusion plugin's own source repo, resolve
+# prompts from the WORK TREE rather than from this script's install location.
+# This script is normally invoked as $FUSION_PLUGIN_ROOT/bin/fusion-paths —
+# the installed copy — whose agents/ and skills/ can be sessions stale against
+# the prompts being edited in the repo, and the key set would then be derived
+# from an outdated prompt. The prompt files are the ONLY plugin-root-relative
+# resources this script reads, so this line is the whole of the preference.
+# Criterion shared with bin/fusion-rules via the sibling helper
+# bin/fusion-plugin-cwd (the shell half of hooks/lib/self-detect.ts
+# `isFusionPluginCwd()`). Decision
+# 260806-0015_*_veraltete-regeln-im-eigenen-repo-melden-oder-umgehen, option c.
+if "$SCRIPT_DIR/fusion-plugin-cwd"; then
+  PLUGIN_ROOT="$PWD"
+fi
+
 # Names are flat lowercase slugs. The guard is a safety property, not a style
 # rule: the name is interpolated into a path below, so anything with a slash or
 # a dot segment could read a file outside agents/ and skills/.

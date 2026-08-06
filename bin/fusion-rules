@@ -4,7 +4,10 @@
 # Usage: fusion-rules <agent-name> [<topic>]
 #
 # Prints one path per line. Searches three locations in order:
-#   1. The plugin's rules/        (via $FUSION_PLUGIN_ROOT, set by SessionStart)
+#   1. The plugin's rules/        (via $FUSION_PLUGIN_ROOT, set by SessionStart;
+#                                  in the fusion plugin's OWN source repo the
+#                                  work tree's ./rules is read instead — see
+#                                  the repo-context block below)
 #   2. The project's ./rules/     (fusion-agent-specific rules)
 #   3. The project's .claude/rules/ (project-wide rules every Claude session
 #                                    should respect — coding guidelines,
@@ -56,7 +59,9 @@
 #     (STOP → Human Gate; there is no override for this one), and a pointer to
 #     each of the other two layers.
 #   - Guard-internals agents (coder, coderev, bugfixer) additionally read
-#     protected-path-internals.md (shipped by plugin) — the REFERENCE half:
+#     protected-path-internals.md — in the fusion plugin's own repo only,
+#     because that is the only place the classifier's sources are in reach
+#     (see block 1d) — the REFERENCE half:
 #     verb tables, command-word resolution, clustered short flags, git's own
 #     working directory, the unmodelled directory-builtin forms, fail-closed
 #     and its bound. The split is by ADDRESSEE: the core tells an agent how to
@@ -138,8 +143,29 @@ if [ -z "$AGENT" ]; then
 fi
 
 # Resolve the script's own directory so we can reach sibling helpers
-# (fusion-workbench-root, used only when a manifest is present).
+# (fusion-plugin-cwd always; fusion-workbench-root only when a manifest is
+# present).
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd -P)"
+
+# Repo-context criterion: is cwd the fusion plugin's own source repo? Decided
+# by the sibling helper bin/fusion-plugin-cwd — the shell half of
+# hooks/lib/self-detect.ts `isFusionPluginCwd()` (one criterion, two
+# implementations; the pairing is documented in the helper). Two consequences
+# below, neither of which touches a consuming project:
+#   - the plugin rule set is read from the WORK TREE's ./rules instead of
+#     $FUSION_PLUGIN_ROOT/rules (see PLUGIN_RULES_DIR): in the plugin's own
+#     repo the source is the meant state, while $FUSION_PLUGIN_ROOT pins to
+#     the installed copy for the whole session and can be days stale against
+#     the rules being edited. Decision
+#     260806-0015_*_veraltete-regeln-im-eigenen-repo-melden-oder-umgehen,
+#     option c.
+#   - protected-path-internals.md is emitted to the guard-internals agents
+#     here and ONLY here (see block 1d).
+if "$SCRIPT_DIR/fusion-plugin-cwd"; then
+  IN_PLUGIN_REPO=1
+else
+  IN_PLUGIN_REPO=0
+fi
 
 case "$AGENT" in
   coder|coderev|bugfixer)        PATTERNS="coding" ;;
@@ -177,8 +203,9 @@ esac
 # Guard-internals-agent flag — independent of PATTERNS. The three agents that
 # change the shell classifier (hooks/lib/bash-mutation-guard.ts) or review a
 # change to it additionally read rules/protected-path-internals.md, the
-# reference half of the protected-path rule. The other thirteen read the core
-# half only and reach the reference by the pointer line in it.
+# reference half of the protected-path rule — in the plugin's own repo only;
+# the emission is gated at block 1d. The other thirteen read the core half
+# only and reach the reference by the pointer line in it.
 #
 # Named agents, NOT the `coding` filename pattern. Naming the file
 # `*-coding.md` would have needed no code at all, and it was measured picking up
@@ -324,7 +351,15 @@ resolve_topics() {
   printf '%s' "$cname" | sed -E 's/^[0-9]{6}-[0-9]{4}-//' | tr '-' ' '
 }
 
-PLUGIN_RULES_DIR="${FUSION_PLUGIN_ROOT:-}/rules"
+if [ "$IN_PLUGIN_REPO" -eq 1 ]; then
+  # In the plugin's own repo, prefer the work tree's rule set over the
+  # installed copy (see the repo-context block above). $PWD rather than ".":
+  # the emitted paths are read later by agents whose shell cwd resets between
+  # calls, so they must survive a cwd change.
+  PLUGIN_RULES_DIR="$PWD/rules"
+else
+  PLUGIN_RULES_DIR="${FUSION_PLUGIN_ROOT:-}/rules"
+fi
 PROJECT_RULES_DIR="./rules"
 PROJECT_CLAUDE_RULES_DIR=".claude/rules"
 
@@ -367,7 +402,15 @@ fi
 #     The core half (always-on above) states the rule and the way through; this
 #     half states how the classifier reads a command, which only an agent that
 #     changes or reviews the classifier needs.
-if [ "$IS_GUARD_INTERNALS_AGENT" -eq 1 ]; then
+#
+#     Emitted in the fusion plugin's own repo ONLY. The audience is "whoever
+#     changes or reviews the classifier", and in a consuming project that
+#     audience is empty by construction: the classifier's sources live in the
+#     installed plugin, outside the project tree, and are not that project's
+#     to change. A consuming project's coder/coderev/bugfixer read the core
+#     half and reach the reference by the pointer line in it, like every other
+#     agent.
+if [ "$IS_GUARD_INTERNALS_AGENT" -eq 1 ] && [ "$IN_PLUGIN_REPO" -eq 1 ]; then
   emit_if_exists "$PLUGIN_RULES_DIR/protected-path-internals.md"
 fi
 
@@ -410,7 +453,12 @@ fi
 #    consuming project can extend the plugin's defaults without overriding.
 for pat in $PATTERNS; do
   emit_pattern_in_dir "$PLUGIN_RULES_DIR" "$pat"
-  emit_pattern_in_dir "$PROJECT_RULES_DIR" "$pat"
+  # In the plugin's own repo, PLUGIN_RULES_DIR and PROJECT_RULES_DIR are the
+  # same directory by construction ($PWD/rules vs ./rules) — skip the second
+  # pass so a matching file is never emitted twice.
+  if [ "$IN_PLUGIN_REPO" -eq 0 ]; then
+    emit_pattern_in_dir "$PROJECT_RULES_DIR" "$pat"
+  fi
   emit_pattern_in_dir "$PROJECT_CLAUDE_RULES_DIR" "$pat"
 done
 

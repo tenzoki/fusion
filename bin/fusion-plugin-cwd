@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# fusion-plugin-cwd — is the current working directory the fusion plugin's
+# own source repo?
+#
+# Usage: fusion-plugin-cwd
+#
+# Exit 0 when ./.claude-plugin/plugin.json exists at cwd and names the plugin
+# "fusion"; exit 1 otherwise. Prints nothing.
+#
+# This is the shell half of hooks/lib/self-detect.ts `isFusionPluginCwd()` —
+# ONE criterion, TWO implementations (TS for the hooks, bash for the bin/
+# helpers; there is no runtime the two could share). Keep them consistent:
+# the TS parses the manifest and checks `name === "fusion"`; the grep below
+# accepts the same manifests at grep-level precision (a `"name"` key valued
+# exactly "fusion"). Change one, change the other.
+#
+# Consumers: bin/fusion-rules (work-tree rules preference + the guard-internals
+# emission gate) and bin/fusion-paths (work-tree prompt preference), per
+# decision 260806-0015_*_veraltete-regeln-im-eigenen-repo-melden-oder-umgehen
+# (option c) in the textschicht Circle.
+set -eu
+manifest=".claude-plugin/plugin.json"
+[ -f "$manifest" ] || exit 1
+grep -q '"name"[[:space:]]*:[[:space:]]*"fusion"' "$manifest"

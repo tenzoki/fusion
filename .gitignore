@@ -26,6 +26,7 @@ bin/*
 !bin/fusion-commit-lock
 !bin/fusion-paths
 !bin/fusion-plane
+!bin/fusion-plugin-cwd
 *.exe
 # Generated protobuf (rebuild from .proto)
 *.pb.go
