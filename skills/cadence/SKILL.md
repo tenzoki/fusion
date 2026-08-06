@@ -84,8 +84,11 @@ Collect every available source. For each source record, per entry: a **date**, t
 ```bash
 # session histories — $SCAN_HISTORY is SPACE-SEPARATED and may name TWO stores.
 # `find` tolerates missing dirs and is glob-safe under zsh (a plain `ls a/*.md b/*.md`
-# aborts when one glob misses).
-for d in $SCAN_HISTORY; do find "$WORKBENCH/$d" -maxdepth 1 -name '*.md' 2>/dev/null; done
+# aborts when one glob misses). Split via command substitution, not a bare
+# `for d in $SCAN_HISTORY`: zsh does not word-split an unquoted parameter expansion,
+# but both bash and zsh field-split an unquoted command substitution. Store paths
+# never contain whitespace, so the split is safe.
+for d in $(printf '%s\n' "$SCAN_HISTORY"); do find "$WORKBENCH/$d" -maxdepth 1 -name '*.md' 2>/dev/null; done
 
 # activity log — TWO possible locations (project root, and the workbench)
 for f in "activity-log-$USER.md" "$WORKBENCH/activity-log-$USER.md"; do [ -f "$f" ] && echo "$f"; done

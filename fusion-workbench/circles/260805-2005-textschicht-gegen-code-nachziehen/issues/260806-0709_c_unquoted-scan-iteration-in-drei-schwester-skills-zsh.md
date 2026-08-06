@@ -32,3 +32,6 @@ If the agent instead substitutes the resolved values **textually** into the bloc
 ## Recommended fix
 
 Apply the archive fix's construct verbatim at all three sites: `for d in $(printf '%s\n' "$SCAN_PLANS")` (respectively `$SCAN_HISTORY`) — both bash and zsh field-split an unquoted command substitution, and store paths carry no whitespace or glob characters. One-line change per site; no behavior change in textual-substitution mode.
+
+---
+Resolved: 2026-08-06 — coder applied the archive fix's construct (`for d in $(printf '%s\n' "$SCAN_*")`, with the same explanatory comment) at all three sites: `skills/cleanup/SKILL.md` Step 1.2, `skills/cadence/SKILL.md` Step 3, `skills/circle-stash/SKILL.md` 7.3. Each snippet verified standalone under both `zsh -c` and `bash -c` with a two-path SCAN value (Circle store + shared store): both paths enumerated in both shells at all three sites. Commit follows via the orchestrator (Phase 2 Step 3b).

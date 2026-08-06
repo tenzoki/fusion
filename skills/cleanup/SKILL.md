@@ -64,7 +64,10 @@ The goal is that no unfinished work is lost when the session ends.
    Match the marker (the underscore is inert — no escaping needed):
 
    ```bash
-   for d in $SCAN_PLANS; do find "$WORKBENCH/$d" -mindepth 1 -maxdepth 1 \( -name '*_o_*.md' -o -name '*_p_*.md' \) 2>/dev/null | sort; done
+   # Split via command substitution, not `for d in $SCAN_PLANS`: zsh does not word-split
+   # an unquoted parameter expansion, but both bash and zsh field-split an unquoted
+   # command substitution. Store paths never contain whitespace, so the split is safe.
+   for d in $(printf '%s\n' "$SCAN_PLANS"); do find "$WORKBENCH/$d" -mindepth 1 -maxdepth 1 \( -name '*_o_*.md' -o -name '*_p_*.md' \) 2>/dev/null | sort; done
    ```
 
    The underscore marker is inert as a glob: `-name '*_o_*.md'` matches the open plans literally and never collides with `_p_`, `_c_` or `_d_` plans, because slugs are hyphen-separated and never contain an underscore. `find` drives the enumeration so a missing or empty plans dir yields no output and never aborts the shell under zsh (an unmatched `ls` glob does). See `rules/fusion-workbench-conventions.md` `## Marker globs`; the convention applies to every marker in every vocabulary.
@@ -85,7 +88,11 @@ This commits the user's actual changes (code, data, docs) **plus** the issues fi
 
 1. `git status --short` and `git diff --stat` to see everything unstaged/untracked.
 2. **Group changes into logical commits.** Split by concern, not by file count. Heuristics: separate code (`coder` domain) from data/ontology (`ontocoder` domain) from docs from workbench-tracking. Separate unrelated features/fixes. A good split lets each commit's message be a single honest sentence.
-3. For each group: stage explicit paths (`git add <path> <path>`), then commit with a Conventional Commits message:
+3. For each group: write the commit message to a scratch file first (HEREDOC), then run stage and commit as one pair under the project's commit lock — it serialises access to the shared git index against any parallel session's agents (`rules/workbench-stash-and-lock.md` `## Commit lock`; the `with` form acquires, runs, and releases on any exit):
+   ```bash
+   "$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with cleanup -- bash -c 'git add <path> <path> && git commit -F <msg-file>'
+   ```
+   Message format (Conventional Commits):
    ```
    <type>(<scope>): <summary>
 
@@ -93,7 +100,7 @@ This commits the user's actual changes (code, data, docs) **plus** the issues fi
 
    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
    ```
-   Use a HEREDOC for the message. `<type>` ∈ `fix|feat|refactor|docs|chore|test`. Never amend; always new commits.
+   `<type>` ∈ `fix|feat|refactor|docs|chore|test`. Never amend; always new commits.
 4. When the working tree is clean, **push** (unless `--no-push`): plain `git push`. If the branch has no upstream, set it (`git push -u origin <branch>`). If push is rejected, stop and report — do not force.
 
 For the commit-message craft and staging discipline, the procedure in `$FUSION_PLUGIN_ROOT/skills/commit/SKILL.md` is the reference; apply it per split.

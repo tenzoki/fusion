@@ -61,8 +61,17 @@ When the user invokes `/fusion:commit`, help them commit their changes with a we
    - Ask user to confirm, edit, or cancel
 
 6. **Execute commit**
+
+   Commit under the project's commit lock — it serialises access to the shared git index against any parallel session's agents (`rules/workbench-stash-and-lock.md` `## Commit lock`; the `with` form acquires, runs, and releases on any exit):
+
    ```bash
-   git commit -m "<message>"
+   "$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with commit -- git commit -m "<message>"
+   ```
+
+   If staging is still pending at this point (the user picked files in step 2 but nothing was staged yet), run stage and commit as one held pair:
+
+   ```bash
+   "$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with commit -- bash -c 'git add <path> <path> && git commit -m "<message>"'
    ```
 
 7. **Show result**

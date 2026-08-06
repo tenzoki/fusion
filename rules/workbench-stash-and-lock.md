@@ -8,8 +8,9 @@ need: the commit lock is taken by the orchestrator, and a stash is created and c
 `/fusion:circle-stash` and `/fusion:circle-pop` — skills, which reach rule text by direct
 citation and are never served by `bin/fusion-rules` at all. So this file is emitted to
 `orchestrator` only. The other fifteen agents reach it through the pointer lines left at
-both sites in the conventions file, and the three that may commit directly carry the
-lock instruction inline in their own prompts.
+both sites in the conventions file, the three agents that may commit directly carry the
+lock instruction inline in their own prompts, and the two committing skills
+(`/fusion:commit`, `/fusion:cleanup`) carry it in their own bodies.
 
 ## Stashes
 
@@ -125,11 +126,12 @@ The `with` form is canonical; explicit `acquire`/`release` is for special cases 
 
 - **Orchestrator** at Phase 2 Step 3b — before staging and committing.
 - **Coder / ontocoder / bugfixer** ONLY if they commit directly (rare; default is the orchestrator commits on their behalf).
+- **`/fusion:commit` and `/fusion:cleanup`** — the two skills that commit; each wraps every stage+commit pair in `with <skillname> --` (tags `commit`, `cleanup`). Skills are never served by `bin/fusion-rules`; their bodies carry the instruction and cite this section directly.
 - **Other agents** — never commit, never need the lock.
 
 ### Tag conventions
 
-Mandatory. Used in stale-lock messages. Format: the agent name (`orchestrator`, `coder`, `ontocoder`, `bugfixer`).
+Mandatory. Used in stale-lock messages. Format: the agent name (`orchestrator`, `coder`, `ontocoder`, `bugfixer`) or the committing skill's name (`commit`, `cleanup`).
 
 ### Failure modes
 

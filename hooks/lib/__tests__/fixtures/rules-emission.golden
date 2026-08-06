@@ -15,154 +15,154 @@
 
 [analyst]
   agent-setup.md 2792
-  fusion-workbench-conventions.md 34671
+  fusion-workbench-conventions.md 35364
   decision-record-examples.md 4191
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
   protected-path-discipline.md 20925
   design-diagrams.md 5673
-  total 96551
+  total 97244
 
 [bugfixer]
   agent-setup.md 2792
-  fusion-workbench-conventions.md 34671
+  fusion-workbench-conventions.md 35364
   decision-record-examples.md 4191
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
   protected-path-discipline.md 20925
-  total 90878
+  total 91571
 
 [coder]
   agent-setup.md 2792
-  fusion-workbench-conventions.md 34671
+  fusion-workbench-conventions.md 35364
   decision-record-examples.md 4191
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
   protected-path-discipline.md 20925
-  total 90878
+  total 91571
 
 [coderev]
   agent-setup.md 2792
-  fusion-workbench-conventions.md 34671
+  fusion-workbench-conventions.md 35364
   decision-record-examples.md 4191
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
   protected-path-discipline.md 20925
-  total 90878
+  total 91571
 
 [conceptrev]
   agent-setup.md 2792
-  fusion-workbench-conventions.md 34671
+  fusion-workbench-conventions.md 35364
   decision-record-examples.md 4191
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
   protected-path-discipline.md 20925
   design-diagrams.md 5673
-  total 96551
+  total 97244
 
 [consultant]
   agent-setup.md 2792
-  fusion-workbench-conventions.md 34671
+  fusion-workbench-conventions.md 35364
   decision-record-examples.md 4191
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
   protected-path-discipline.md 20925
-  total 90878
+  total 91571
 
 [editor]
   agent-setup.md 2792
-  fusion-workbench-conventions.md 34671
+  fusion-workbench-conventions.md 35364
   decision-record-examples.md 4191
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
   protected-path-discipline.md 20925
-  total 90878
+  total 91571
 
 [investigator]
   agent-setup.md 2792
-  fusion-workbench-conventions.md 34671
+  fusion-workbench-conventions.md 35364
   decision-record-examples.md 4191
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
   protected-path-discipline.md 20925
   design-diagrams.md 5673
-  total 96551
+  total 97244
 
 [ontocoder]
   agent-setup.md 2792
-  fusion-workbench-conventions.md 34671
+  fusion-workbench-conventions.md 35364
   decision-record-examples.md 4191
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
   protected-path-discipline.md 20925
-  total 90878
+  total 91571
 
 [ontorev]
   agent-setup.md 2792
-  fusion-workbench-conventions.md 34671
+  fusion-workbench-conventions.md 35364
   decision-record-examples.md 4191
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
   protected-path-discipline.md 20925
-  total 90878
+  total 91571
 
 [orchestrator]
   agent-setup.md 2792
-  fusion-workbench-conventions.md 34671
+  fusion-workbench-conventions.md 35364
   decision-record-examples.md 4191
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
   protected-path-discipline.md 20925
   circle-records.md 9302
-  workbench-stash-and-lock.md 9250
-  total 109430
+  workbench-stash-and-lock.md 9683
+  total 110556
 
 [planner]
   agent-setup.md 2792
-  fusion-workbench-conventions.md 34671
+  fusion-workbench-conventions.md 35364
   decision-record-examples.md 4191
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
   protected-path-discipline.md 20925
   design-diagrams.md 5673
-  total 96551
+  total 97244
 
 [playmaker]
   agent-setup.md 2792
-  fusion-workbench-conventions.md 34671
+  fusion-workbench-conventions.md 35364
   decision-record-examples.md 4191
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
   protected-path-discipline.md 20925
   circle-records.md 9302
-  total 100180
+  total 100873
 
 [reconciler]
   agent-setup.md 2792
-  fusion-workbench-conventions.md 34671
+  fusion-workbench-conventions.md 35364
   decision-record-examples.md 4191
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
   protected-path-discipline.md 20925
-  total 90878
+  total 91571
 
 [shaper]
   agent-setup.md 2792
-  fusion-workbench-conventions.md 34671
+  fusion-workbench-conventions.md 35364
   decision-record-examples.md 4191
   user-facing-output.md 16683
   critical-stance.md 5317
@@ -170,15 +170,15 @@
   protected-path-discipline.md 20925
   design-diagrams.md 5673
   circle-records.md 9302
-  total 105853
+  total 106546
 
 [taskplanner]
   agent-setup.md 2792
-  fusion-workbench-conventions.md 34671
+  fusion-workbench-conventions.md 35364
   decision-record-examples.md 4191
   user-facing-output.md 16683
   critical-stance.md 5317
   git-branch-discipline.md 6299
   protected-path-discipline.md 20925
   design-diagrams.md 5673
-  total 96551
+  total 97244

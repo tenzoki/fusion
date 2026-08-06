@@ -225,7 +225,10 @@ The path is recorded in `agentstate.yaml.session.history_file`; if that is absen
 HIST_FILE=""
 if [ "$HAS_AGENTSTATE" = true ]; then HIST_FILE="$(grep -E '^[[:space:]]+history_file:' "$WORKBENCH/agentstate.yaml" | head -1 | sed -E 's/.*history_file:[[:space:]]*"?([^"]+)"?.*/\1/')"; fi
 if [ -n "$HIST_FILE" ] && [ -f "$WORKBENCH/$HIST_FILE" ]; then HIST_FILE="$WORKBENCH/$HIST_FILE"; else HIST_FILE=""; fi
-if [ -z "$HIST_FILE" ]; then for d in $SCAN_HISTORY; do while IFS= read -r f; do [ -z "$HIST_FILE" ] && HIST_FILE="$f"; [ "$f" -nt "$HIST_FILE" ] && HIST_FILE="$f"; done < <(find "$WORKBENCH/$d" -mindepth 1 -maxdepth 1 -name '*-orchestrator-session.md' 2>/dev/null); done; fi
+# Split via command substitution, not `for d in $SCAN_HISTORY`: zsh does not word-split an
+# unquoted parameter expansion, but both bash and zsh field-split an unquoted command
+# substitution. Store paths never contain whitespace, so the split is safe.
+if [ -z "$HIST_FILE" ]; then for d in $(printf '%s\n' "$SCAN_HISTORY"); do while IFS= read -r f; do [ -z "$HIST_FILE" ] && HIST_FILE="$f"; [ "$f" -nt "$HIST_FILE" ] && HIST_FILE="$f"; done < <(find "$WORKBENCH/$d" -mindepth 1 -maxdepth 1 -name '*-orchestrator-session.md' 2>/dev/null); done; fi
 ```
 
 If `$HIST_FILE` resolves to an existing file, append via the `Edit` tool:

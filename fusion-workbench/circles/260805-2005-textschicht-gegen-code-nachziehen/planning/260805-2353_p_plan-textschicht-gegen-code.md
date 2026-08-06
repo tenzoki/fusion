@@ -171,7 +171,7 @@ The graph is a layered DAG: decisions gate the text layer, code fixes gate nothi
 
 ### Track 3 — text layer, after the decisions
 
-9. **Realise D2: one coherent activation story across the four files, plus the lock rule**
+9. [DONE] **Realise D2: one coherent activation story across the four files, plus the lock rule** *(option (b) + lock (i): conventions writer-set sentence rewritten, shaper mode honestly user-invoked-only, commit+cleanup skills lock-wrapped, lock rule's acquirer list and tags extended; `skills/next/SKILL.md` and `agents/orchestrator.md` needed no change — their current state is the (b) target state)*
    - Executor: coder
    - Files (per D2's answer, the expected set): `rules/fusion-workbench-conventions.md` (the `.active-circle` writer sentence, line 75 area), `skills/next/SKILL.md` (steps 6.2/6.3), `agents/shaper.md` (portfolio-activation mode: give it its real dispatcher or remove the claim), `agents/orchestrator.md` (phase model gains or disclaims the activation step), `rules/workbench-stash-and-lock.md` (lock-rule scope), `skills/commit/SKILL.md` and `skills/cleanup/SKILL.md` (acquire the lock, or be named as the honest exception)
    - Changes: exactly what the answered decision says, no more; the invariant sentence in the conventions must end up true against every writer that exists. Closes findings `260805-1839_o_die-circle-aktivierung-gehoert-drei-parteien-…`, `…der-shaper-portfolio-activation-modus-…`, `…die-lock-regel-sagt-always-…`, `260805-1840_o_konventionen-active-circle-nothing-else-touches-it.md`.
