@@ -122,3 +122,16 @@ Der Vollständigkeit halber, damit der Zuschnitt nicht wie ein Scherbenhaufen au
 **Recommended as the next Circle — playmaker run 260805-2128 (trigger: direct-dispatch, domain bias `code`).**
 
 All three anticipated Circles wait on the closure of the active Circle `260801-1244-guard-rules-write`, so none passes the dependencies-closed check yet; this proposal names the first activation after that closure. Under the code-domain heuristic this Circle and `260804-1205-shell-reachability-model` tie at zero open decision records cited in their Grounding snapshots (the workbench holds zero open decision records anywhere, per the orchestrator session `circles/260801-1244-guard-rules-write/history/260805-2117-orchestrator-session.md`). The tie breaks three ways in this Circle's favour. First, its evidence is complete and on disk: three review reports and all 66 finding records are filed under the active Circle, so the work starts with no analysis phase. Second, it carries the only finding with silent-data-loss character (the archive skill's `shared_of` losing every shared store under zsh, inherited ungated by `/fusion:cleanup` step 4). Third, both rival Circles benefit from this one running first: `260801-1244-curator` needs re-shaping before activation because its closing work C9 was already done by hand (recorded in this Circle's `## Dependencies`), and `260804-1205-shell-reachability-model` must absorb the 17-false-alarm balance this Circle's source reports measured. Proposed activation: after `260801-1244-guard-rules-write` reaches closure, via `/fusion:next`.
+
+## Closure note
+
+Closed coherent (`_t_` → `_c_`) on 260806-1105. Phase-3 verdict: **coherent** — all Directive
+clauses reached with evidence: four code fixes (`7ef2715`), citation-form decision D1 before the
+mechanical batches, two new lints landed green (`a1b7872`, hardened `fbd8c4d`), internals scoping
+measured at 0 emissions from a consuming cwd (`c45fb44`), activation ownership decided once via
+D2 across five files (`81d4154`). 60 of 66 corpus findings closed with commit-citing footers; the
+6 open ones each carry a route outside this Circle. Suite 1611 tests / 30 files green.
+
+Session history: `history/260805-2350-orchestrator-session.md` (Turns 1–5, 13 commits
+`7ef2715..9ee21c0`). Reconciliation: `history/260806-1057-reconciliation.md`.
+Open residual in this Circle: `issues/260806-0022_*_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md` (unowned, candidate for a follow-up batch).

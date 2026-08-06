@@ -796,3 +796,57 @@
 {"ts":"2026-08-05T21:42:19","event":"turn_end","turn":3,"detail":"1 task resolved, 0 issues created; converged"}
 {"ts":"2026-08-05T21:46:00","event":"portfolio_refresh","detail":"guard-rules-write _c_; textschicht _t_ active; playmaker log 260805-2342"}
 {"ts":"2026-08-05T21:46:00","event":"session_end","detail":"3 turns, 5 tasks, 5 decisions implemented, 11 commits, verdict coherent"}
+{"ts":"2026-08-05T21:50:17","event":"session_start","detail":"Circle 260805-2005-textschicht activated run; domain=code; no plan yet -> Phase 0b"}
+{"ts":"2026-08-05T22:00:45","event":"planner_done","detail":"planning/260805-2353_o_plan-textschicht-gegen-code.md, 17 steps"}
+{"ts":"2026-08-05T22:00:45","event":"conceptrev_done","detail":"verdict acceptable; 5 missing edges fixed by planner follow-up; DAG now matches prose"}
+{"ts":"2026-08-05T22:13:34","event":"queue_built","detail":"17 plan steps; Turn 1 = S1-S7"}
+{"ts":"2026-08-05T22:13:34","event":"turn_start","turn":1,"detail":"7 ready tasks; head=66e4a69"}
+{"ts":"2026-08-05T22:13:34","event":"task_start","turn":1,"task":"S4-S7","agent":"coder","detail":"4 code fixes, background"}
+{"ts":"2026-08-05T22:13:34","event":"task_start","turn":1,"task":"S1-S3","agent":"coder","detail":"file D1-D3 decision records"}
+{"ts":"2026-08-06T05:03:05","event":"task_done","turn":1,"task":"S4-S7","agent":"coder","detail":"7ef2715; suite 1555/1555"}
+{"ts":"2026-08-06T05:03:05","event":"task_done","turn":1,"task":"S1-S3","agent":"coder","detail":"d3222a5; D1-D3 filed+answered at gate"}
+{"ts":"2026-08-06T05:03:05","event":"gate_hit","turn":1,"detail":"D1-D3 decision gate"}
+{"ts":"2026-08-06T05:03:05","event":"gate_response","turn":1,"detail":"D1=wildcard form; D2=real writer set + lock retrofit; D3=helpers prefer repo rules"}
+{"ts":"2026-08-06T05:03:05","event":"review_start","turn":1,"agent":"coderev","detail":"5 changed files"}
+{"ts":"2026-08-06T05:53:39","event":"review_done","turn":1,"agent":"coderev","detail":"1 new issue: unquoted SCAN iteration in 3 sibling skills"}
+{"ts":"2026-08-06T05:53:39","event":"coherence_review","turn":1,"detail":"verdict=ok; A-G: 1 issue filed; A-D: toward Directive; G-D: 3 decisions answered, consistent"}
+{"ts":"2026-08-06T05:53:39","event":"turn_end","turn":1,"detail":"7 tasks resolved, 1 issue created"}
+{"ts":"2026-08-06T05:53:39","event":"turn_start","turn":2,"detail":"4 ready tasks: zsh-fix, S8, S9, S16; head=d3222a5"}
+{"ts":"2026-08-06T06:25:51","event":"task_done","turn":2,"task":"S8+S16","agent":"coder","detail":"c45fb44; 3 roles under cap; D3 implemented"}
+{"ts":"2026-08-06T06:25:51","event":"commit","turn":2,"task":"S8+S16","detail":"c45fb44 feat(rules): Scoping + Repo-Vorrang"}
+{"ts":"2026-08-06T06:25:51","event":"task_error","turn":2,"task":"monitor-tests","detail":"9 monitor tests red: 0.0.0.0 loopback timeout, environmental, pre-existing at HEAD"}
+{"ts":"2026-08-06T06:25:51","event":"bugfix_start","turn":2,"task":"monitor-bind","agent":"bugfixer","detail":"issue 260806-0820"}
+{"ts":"2026-08-06T06:35:07","event":"bugfix_success","turn":2,"task":"monitor-bind","detail":"MONITOR_BIND env; macOS Local-Network permission is root cause; suite 1559/1559"}
+{"ts":"2026-08-06T06:43:39","event":"task_done","turn":2,"task":"S9+zsh","agent":"coder","detail":"81d4154; D2 implemented"}
+{"ts":"2026-08-06T06:43:39","event":"commit","turn":2,"task":"S9+zsh","detail":"81d4154"}
+{"ts":"2026-08-06T06:43:39","event":"review_start","turn":2,"agent":"coderev","detail":"Turn-2 diff d3222a5..HEAD"}
+{"ts":"2026-08-06T06:55:08","event":"review_done","turn":2,"agent":"coderev","detail":"4 issues: 1 medium (commit-skill stage window), 3 low"}
+{"ts":"2026-08-06T06:55:08","event":"coherence_review","turn":2,"detail":"verdict=ok; A-G: 4 issues filed; A-D: toward Directive; G-D: D2+D3 implemented, consistent"}
+{"ts":"2026-08-06T06:55:08","event":"turn_end","turn":2,"detail":"4 tasks resolved (S8,S16,S9,zsh + bugfix), 4 issues created"}
+{"ts":"2026-08-06T06:55:08","event":"turn_start","turn":3,"detail":"review fixes + S10-S13; head=81d4154"}
+{"ts":"2026-08-06T07:02:13","event":"task_done","turn":3,"task":"review-fixes","agent":"coder","detail":"36d9a30; suite 1560"}
+{"ts":"2026-08-06T07:16:10","event":"task_done","turn":3,"task":"S11+S12","agent":"coder","detail":"9a96466; ~30 findings corrected"}
+{"ts":"2026-08-06T07:16:10","event":"commit","turn":3,"task":"S11+S12","detail":"9a96466 docs: Batch B+C"}
+{"ts":"2026-08-06T07:16:51","event":"task_done","turn":3,"task":"S10+S13","agent":"coder","detail":"fae818b; 8 rule files + paths.ts; golden regenerated; suite 1560"}
+{"ts":"2026-08-06T07:16:51","event":"commit","turn":3,"task":"S10+S13","detail":"fae818b docs(rules): Batch A"}
+{"ts":"2026-08-06T07:16:51","event":"task_start","turn":3,"task":"S14+S15","agent":"coder","detail":"reference lint + enumeration lint"}
+{"ts":"2026-08-06T07:44:16","event":"task_done","turn":3,"task":"S14+S15","agent":"coder","detail":"a1b7872; 39 new tests; suite 1599"}
+{"ts":"2026-08-06T07:44:16","event":"commit","turn":3,"task":"S14+S15","detail":"a1b7872 test(rules): zwei neue Lints"}
+{"ts":"2026-08-06T07:44:16","event":"task_start","turn":3,"task":"S17","agent":"coder","detail":"bookkeeping: close resolved findings in neighbour circle"}
+{"ts":"2026-08-06T08:00:33","event":"task_done","turn":3,"task":"S17","agent":"coder","detail":"843239c; 51 closed, plan complete"}
+{"ts":"2026-08-06T08:00:33","event":"turn_end","turn":3,"detail":"6 tasks resolved (review-fixes,S10-S15,S17); 0 new issues this turn"}
+{"ts":"2026-08-06T08:05:19","event":"coherence_review","turn":3,"detail":"verdict=ok; A-G: 0 new issues, 51 closed; A-D: toward Directive; G-D: D1 implemented"}
+{"ts":"2026-08-06T08:05:19","event":"turn_start","turn":4,"detail":"6 leftovers; head=843239c"}
+{"ts":"2026-08-06T08:05:19","event":"task_start","turn":4,"task":"leftovers","agent":"coder","detail":"3 half-resolved + 3 unfixed incl. lock-holder defect"}
+{"ts":"2026-08-06T08:19:48","event":"task_done","turn":4,"task":"leftovers","agent":"coder","detail":"b37f13e; suite 1608"}
+{"ts":"2026-08-06T08:19:48","event":"review_start","turn":4,"agent":"coderev","detail":"final pass turns 3+4"}
+{"ts":"2026-08-06T08:38:16","event":"review_done","turn":4,"agent":"coderev","detail":"4 issues, all low"}
+{"ts":"2026-08-06T08:38:16","event":"coherence_review","turn":4,"detail":"verdict=ok; A-G: 4 low issues; A-D: toward Directive; G-D: consistent"}
+{"ts":"2026-08-06T08:38:16","event":"turn_end","turn":4,"detail":"7 tasks resolved (incl. 6 residuals), 4 issues created"}
+{"ts":"2026-08-06T08:38:16","event":"turn_start","turn":5,"detail":"4 low fixes; head=b37f13e"}
+{"ts":"2026-08-06T08:38:16","event":"task_start","turn":5,"task":"low-fixes","agent":"coder","detail":"lock race, lock doc, 2 lint holes"}
+{"ts":"2026-08-06T08:52:30","event":"task_done","turn":5,"task":"low-fixes","agent":"coder","detail":"fbd8c4d; suite 1611"}
+{"ts":"2026-08-06T08:52:30","event":"turn_end","turn":5,"detail":"4 tasks resolved, 0 issues created; converged"}
+{"ts":"2026-08-06T09:02:21","event":"reconciliation","detail":"3 bookkeeping fixes; verdict coherent; 0 blockers"}
+{"ts":"2026-08-06T09:06:49","event":"portfolio_refresh","detail":"textschicht _c_; no active circle; next recommendation shell-reachability-model"}
+{"ts":"2026-08-06T09:06:49","event":"session_end","detail":"5 turns, 21 tasks, 14 commits, verdict coherent"}
