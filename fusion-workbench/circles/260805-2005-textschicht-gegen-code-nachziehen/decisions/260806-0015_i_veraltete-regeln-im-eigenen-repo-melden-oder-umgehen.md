@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** open
 **Filed by:** coder
-**Cross-references:** circles/260805-2005-textschicht-gegen-code-nachziehen/planning/260805-2353_p_plan-textschicht-gegen-code.md (Track 2, Schritt 3; Schritt 16 realisiert die Antwort); circles/260801-1244-guard-rules-write/issues/260805-1859_o_im-eigenen-repo-laden-alle-agenten-die-regeln-der-installierten-vorversion-nicht-die-quelle.md (das High-Finding; erhält in Plan-Schritt 13 die Korrektur „kein Defekt, aber realer Rückstand"); hooks/lib/self-detect.ts (`isFusionPluginCwd()` — das existierende Repo-Kriterium)
+**Cross-references:** circles/260805-2005-textschicht-gegen-code-nachziehen/planning/260805-2353_*_plan-textschicht-gegen-code.md (Track 2, Schritt 3; Schritt 16 realisiert die Antwort); circles/260801-1244-guard-rules-write/issues/260805-1859_*_im-eigenen-repo-laden-alle-agenten-die-regeln-der-installierten-vorversion-nicht-die-quelle.md (das High-Finding; erhält in Plan-Schritt 13 die Korrektur „kein Defekt, aber realer Rückstand"); hooks/lib/self-detect.ts (`isFusionPluginCwd()` — das existierende Repo-Kriterium)
 
 ---
 

@@ -58,3 +58,6 @@ Der Dispatch benennt `plugin.json` und `install.sh` als die anzufassenden Dateie
 schließt mit „committe nichts". `README.md` und `CLAUDE.md` stehen nicht darauf; sie
 unangekündigt in den Diff zu legen, den der Nutzer vor dem Push liest, wäre die falsche
 Reihenfolge. Der Befund ist gemeldet, die Änderung ist eine Zeile plus ein Halbsatz.
+
+---
+Resolved: 2026-08-06 (reconciler, workbench-wide pass) — beide geforderten Änderungen liegen an HEAD `cde5319` vor. (1) `README.md:26` nennt `FUSION_REF=tags/v5.9.2`; der Tag existiert (`git tag -l`), Commits `4a8fea0` (install.sh + Tag) und `9a96466` (README, Textschicht Batch B; Duplikat-Befund `260805-1840_*_readme-fusion-ref-beispiel-zeigt-auf-ungetaggte-version.md` dort geschlossen). (2) `CLAUDE.md:94` zählt jetzt **vier** Versionsflächen, README.md eingeschlossen (ebenfalls `9a96466`).

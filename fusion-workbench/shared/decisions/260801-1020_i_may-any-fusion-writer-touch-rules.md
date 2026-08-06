@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** analyst
-**Cross-references:** `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md` (Question 3); `shared/decisions/260801-1020_o_where-does-normative-consistency-live.md` (the capability question that raised this); `shared/issues/260801-1020_o_guard-protects-rules-but-not-claude-rules.md` (a defect in the current protection, orthogonal to this choice)
+**Cross-references:** `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md` (Question 3); `shared/decisions/260801-1020_*_where-does-normative-consistency-live.md` (the capability question that raised this); `shared/issues/260801-1020_o_guard-protects-rules-but-not-claude-rules.md` (a defect in the current protection, orthogonal to this choice)
 
 ---
 
@@ -93,7 +93,7 @@ The first change since this record was filed. `FUSION_ALLOW_RULES_WRITE` exists 
 - the Bash path — `hooks/guard.ts:519` via `MutationOptions.exempt` (`45f53d4`)
 - the advisory the answer promised — `guard_advisory` plus a `clear`-level escalation entry, rendered on the dashboard at `bin/monitor:91-95` and given its own row budget at `:98-109` (`bf75941`, `aff7486`)
 
-**The second half is untouched.** `hooks/lib/config.ts:34` still resolves `CONFIG_PATH` at module load by walking up from the compiled hook's own directory, and `:108` is still `loadConfig(configPath?: string)`. There is no `fusion-guard.json`, no template for one, and no seeding step in `/fusion:setup`. A consuming project still cannot declare its own `protectedPaths`. That is plan Steps 6 to 8 of `circles/260801-1244-guard-rules-write/planning/260802-1856_o_plan-guard-rules-write.md`, all unstarted.
+**The second half is untouched.** `hooks/lib/config.ts:34` still resolves `CONFIG_PATH` at module load by walking up from the compiled hook's own directory, and `:108` is still `loadConfig(configPath?: string)`. There is no `fusion-guard.json`, no template for one, and no seeding step in `/fusion:setup`. A consuming project still cannot declare its own `protectedPaths`. That is plan Steps 6 to 8 of `circles/260801-1244-guard-rules-write/planning/260802-1856_*_plan-guard-rules-write.md`, all unstarted.
 
 **And the flag is invisible to the people it is for.** `FUSION_ALLOW_RULES_WRITE` appears in no shipped document — `README-hooks.md` and `rules/protected-path-discipline.md` both still state that no override for a protected-path shell write exists (`:187` and `:171` respectively). Plan Step 9 owns that; `circles/260801-1244-guard-rules-write/issues/260803-1402_o_…` lists what it must say.
 

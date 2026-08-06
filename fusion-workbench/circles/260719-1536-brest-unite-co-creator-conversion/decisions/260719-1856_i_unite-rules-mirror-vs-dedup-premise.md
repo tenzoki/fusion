@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** orchestrator
-**Cross-references:** circles/260718-1924-v5x-overhaul/planning/260718-1001_o_master-plan-fusion-v5x-overhaul.md (Circle B steps 5–8); circles/260719-1536-brest-unite-co-creator-conversion/_t_circle.md
+**Cross-references:** circles/260718-1924-v5x-overhaul/planning/260718-1001_*_master-plan-fusion-v5x-overhaul.md (Circle B steps 5–8); circles/260719-1536-brest-unite-co-creator-conversion/_c_circle.md
 
 ---
 

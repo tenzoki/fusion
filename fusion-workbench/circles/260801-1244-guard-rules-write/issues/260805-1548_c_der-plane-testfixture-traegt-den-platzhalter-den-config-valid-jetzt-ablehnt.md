@@ -50,3 +50,6 @@ Randbedingungen, geprüft:
 **Herkunft.** Entstanden bei der Behebung von
 `260805-1548_c_config-valid-verspricht-non-placeholder-ish-und-prueft-nur-auf-nicht-leere.md`
 in dieser Charge, nicht extern gemeldet.
+
+---
+Resolved: 2026-08-06 (reconciler, workbench-wide pass) — der Test-Harness kopiert das Fixture und schreibt `project_id` auf einen ausgefüllten Wert um (`hooks/lib/__tests__/fusion-plane.test.ts:78-98`, Commit `1babb48`); das committete Fixture behält absichtlich den Auslieferungswert. Die vier Live-Pfad-Tests erreichen wieder den Deferred-Vertrag (Exit 10); Suite 1611/1611 grün an HEAD `cde5319`.

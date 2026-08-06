@@ -1,7 +1,7 @@
 # Spec: Plane-Anbindung und Umstrukturierung der workbench
 
 **Date:** 2026-07-16
-**Status:** Draft — vier Entscheidungen offen, siehe `## Offene Entscheidungen`
+**Status:** Complete — beide Vorhaben realisiert (C1+C2 als v4.0.0, C3+C4 in neu zugeschnittener Form als Plane-Bridge); rückwirkend geschlossen durch den Reconciler, siehe Reconciliation Log.
 **Source:** "Ich möchte fusion anpassen, so dass es perfekt mit plane (https://plane.so) zusammen arbeitet. Der Eingriff ist weitreichend. Gegenwärtig erzeugen die Agenten Output in typspezifischen Foldern. Dadurch entsteht eine Vielzahl semantisch verbundener und in der workbench verteilter Dateien. Das ist nicht besonders übersichtlich. Die Kernfeatures und hooks, die Fusion ausmachen sollen unbedingt erhalten bleiben."
 
 ## Zusammenfassung für den Review
@@ -178,3 +178,7 @@ D2: Circle Verzeichnis
 D3: Weiterarbeiten, Plane ist sekundäre View
 
 D4: 2 Circles.
+
+## Reconciliation Log
+
+**260806-1152 (reconciler, workbench-wide pass)** — Marker `_o_` → `_c_`, rückwirkend. Alle vier offenen Entscheidungen sind seit langem entschieden: D1 Plane-Rolle (`decisions/260716-1847_*_plane-rolle-source-of-truth.md`, `_i_`), der Zuschnitt (`decisions/260716-1847_*_zuschnitt-umbau-und-plane-ein-oder-zwei-circles.md`, Option 1 „zwei Circles", mit diesem Durchgang auf `_i_` gewandert), Offline-Verhalten (`decisions/260716-1847_*_offline-verhalten-bei-plane-ausfall.md`, `_i_`); die verbleibenden Plane-Detailfragen wurden im Plane-Circle selbst entschieden (`circles/260719-1536-plane-mirror-integration/decisions/`, drei `_i_`-Records). Realisierung: C1+C2 durch `planning/260716-1910_c_plan-workbench-umbau-circle-container.md` (v4.0.0, Reconciliation `history/260717-1945-reconciliation.md`); C3+C4 in bewusst neu zugeschnittener, begrenzter Form durch `circles/260719-1536-plane-mirror-integration` (`_c_`, Plan `260719-2223_c_plan-plane-bounded-bridge.md`, plus Nachfolger `shared/planning/260722-2021_c_plan-plane-spec-comment.md`). Der Neuzuschnitt ist im Bridge-Plan begründet und ersetzt die hier skizzierte breitere Integration; kein offener Rest verbleibt in dieser Spec.

@@ -31,15 +31,15 @@ The integration is shaped and now **reshaped from the pure mirror to the bounded
 
 - **Feasibility + convergence analysis** (primary input for this reshape): `shared/analyses/260719-2141-plane-mirror-martin-convergence-feasibility.md`. It compares fusion's planned push-only mirror with Martin's verified two-way, story-driven Plane workflow, shows that "push-only" and "files = source of truth" are separable invariants, and recommends variant b (bounded bridge). Its §5 holds the Variant B Directive this record now carries; its §4 holds the reuse list.
 - **Martin's verified integration** (the reuse source, and live proof the same self-hosted Plane is reachable for issues/states/links/comments): `/Users/kai/Dropbox/qboot/projects/F03_digital-leadership/unite-co-creator/MARTIN.md`. Convergence with his `/new-fe-feature` seed-from-story habit is why the bounded read path exists; adopting his primitives is why the Circle does not reinvent them.
-- **D1-refinement — answered (b), bounded bridge.** The user chose the bounded read path over the pure mirror. `shared/decisions/260719-2141_a_plane-rolle-push-only-vs-bounded-readback-martin.md` (now marked answered `_a_`). This refines, does not supersede, D1.
+- **D1-refinement — answered (b), bounded bridge.** The user chose the bounded read path over the pure mirror. `shared/decisions/260719-2141_*_plane-rolle-push-only-vs-bounded-readback-martin.md` (now marked answered `_a_`). This refines, does not supersede, D1.
 
 **The framing decisions that still stand:**
 
-- **D1 — Plane's role → mirror, refined to bounded bridge.** Files + git stay the source of truth; the one seeding read is materialised into a file and then inert. `shared/decisions/260716-1847_a_plane-rolle-source-of-truth.md` (refined by the D1-refinement above).
-- **D3 — offline behaviour → keep working.** fusion works without Plane; the mirror is rebuilt/re-synced later; a failure is never silent. The seeding read reuses this doctrine as its own fallback. `shared/decisions/260716-1847_a_offline-verhalten-bei-plane-ausfall.md`.
-- **D2 — Circle-container layout** (done, Circle 1). **D4 — two Circles, restructure first** (this is the second). `circles/260716-1847-workbench-umbau/decisions/260716-1847_a_zuschnitt-umbau-und-plane-ein-oder-zwei-circles.md`.
+- **D1 — Plane's role → mirror, refined to bounded bridge.** Files + git stay the source of truth; the one seeding read is materialised into a file and then inert. `shared/decisions/260716-1847_*_plane-rolle-source-of-truth.md` (refined by the D1-refinement above).
+- **D3 — offline behaviour → keep working.** fusion works without Plane; the mirror is rebuilt/re-synced later; a failure is never silent. The seeding read reuses this doctrine as its own fallback. `shared/decisions/260716-1847_*_offline-verhalten-bei-plane-ausfall.md`.
+- **D2 — Circle-container layout** (done, Circle 1). **D4 — two Circles, restructure first** (this is the second). `circles/260716-1847-workbench-umbau/decisions/260716-1847_*_zuschnitt-umbau-und-plane-ein-oder-zwei-circles.md`.
 
-Spec (cite where it lives, per the Origin Rule — do not copy): `circles/260716-1847-workbench-umbau/planning/260716-1847_o_spec-plane-integration-und-workbench-struktur.md`. Its conceptrev: `circles/260716-1847-workbench-umbau/reviews/260716-1853-conceptrev-spec-plane-integration-...md`. The spec's C3/C4 backbone and its "Open for Planner" list are unchanged and remain the plan's opening agenda; the reshape adds the seeding-read command and the MARTIN.md reuse list as first-class plan items.
+Spec (cite where it lives, per the Origin Rule — do not copy): `circles/260716-1847-workbench-umbau/planning/260716-1847_*_spec-plane-integration-und-workbench-struktur.md`. Its conceptrev: `circles/260716-1847-workbench-umbau/reviews/260716-1853-conceptrev-spec-plane-integration-...md`. The spec's C3/C4 backbone and its "Open for Planner" list are unchanged and remain the plan's opening agenda; the reshape adds the seeding-read command and the MARTIN.md reuse list as first-class plan items.
 
 **Concurrency — resolved: NOT supported (Option 3).** Per the user's decision of 2026-07-19, fusion does not support concurrency; it stays single-active-Circle with no concurrency lock. The Plane bridge is delivered; parallelism is explicitly out of scope. Martin's N parallel worktree slots remain his own mechanism outside fusion's guarantees (the advisory single-orchestrator warning applies). No worktree-isolation verification is needed — Option 1 is not relied upon. `shared/decisions/260719-2141_a_concurrency-worktree-slots-vs-single-active-circle.md` (answered `_a_`). This was the last activation blocker; it is cleared.
 
@@ -51,7 +51,7 @@ Spec (cite where it lives, per the Origin Rule — do not copy): `circles/260716
 
 - Circle 1 (workbench-container restructure) — DONE (`circles/260716-1847-workbench-umbau/`, closed `_c_`). The stable Circle directory name is the immutable natural key the mirror's idempotency relies on.
 - **Concurrency — resolved (not a blocker).** Per the user's decision of 2026-07-19, fusion does NOT support concurrency (single-active-Circle, no concurrency lock); parallelism is out of scope for this Circle. `shared/decisions/260719-2141_a_concurrency-worktree-slots-vs-single-active-circle.md` (answered `_a_`, Option 3). Martin's parallel worktree slots stay his own mechanism outside fusion's guarantees. No worktree-isolation verification remains for the planner.
-- D1 + D3 answered; the D1-refinement (bounded bridge, variant b) is answered `_a_` (`shared/decisions/260719-2141_a_plane-rolle-push-only-vs-bounded-readback-martin.md`); D2 + D4 realised.
+- D1 + D3 answered; the D1-refinement (bounded bridge, variant b) is answered `_a_` (`shared/decisions/260719-2141_*_plane-rolle-push-only-vs-bounded-readback-martin.md`); D2 + D4 realised.
 
 ## Turn log
 

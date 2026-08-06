@@ -61,3 +61,6 @@ It arose inside `circles/260801-1244-rule-provenance-header`, but it is not that
 the citation form predates it, the sibling issue for the two older dead links is already in the
 shared store, and the problem reaches every artifact kind that cites a decision. Filing it beside
 its sibling is what makes both findable together.
+
+---
+Resolved: 2026-08-06 (reconciler, workbench-wide pass) — the decision this issue asked for was taken and implemented. Candidate direction 1 became D1 `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_i_zitierform-fuer-workbench-records.md` (wildcard form `YYMMDD-HHMM_*_<slug>`, user gate 260806-0027); direction 3's link checker landed as `hooks/lib/__tests__/reference-resolution-lint.test.ts` (`a1b7872`), which resolves citations across all shipped text surfaces; existing shipped citations were converted (`9a96466`, `fae818b`). Workbench-internal records follow the same form by reconciliation practice — this pass converted the remaining marker-decayed citations in the Circle records. Stated bound: the lint reaches only the plugin repo's shipped surfaces; consuming projects rely on the convention.

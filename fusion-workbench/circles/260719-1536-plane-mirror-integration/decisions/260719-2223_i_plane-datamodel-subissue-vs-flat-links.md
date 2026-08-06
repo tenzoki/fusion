@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** planner
-**Cross-references:** circles/260719-1536-plane-mirror-integration/_t_circle.md (the Directive this serves), circles/260719-1536-plane-mirror-integration/planning/260719-2223_o_plan-plane-bounded-bridge.md (the plan — Step 3 depends on this answer), shared/analyses/260719-2141-plane-mirror-martin-convergence-feasibility.md §2 (unit-granularity mapping, "no 1:1"), /Users/kai/Dropbox/qboot/projects/F03_digital-leadership/unite-co-creator/MARTIN.md (issue-links endpoint, verified reachable)
+**Cross-references:** circles/260719-1536-plane-mirror-integration/_c_circle.md (the Directive this serves), circles/260719-1536-plane-mirror-integration/planning/260719-2223_*_plan-plane-bounded-bridge.md (the plan — Step 3 depends on this answer), shared/analyses/260719-2141-plane-mirror-martin-convergence-feasibility.md §2 (unit-granularity mapping, "no 1:1"), /Users/kai/Dropbox/qboot/projects/F03_digital-leadership/unite-co-creator/MARTIN.md (issue-links endpoint, verified reachable)
 
 ---
 

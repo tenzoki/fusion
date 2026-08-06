@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** open
 **Filed by:** coder, closing `260802-2231` (T3-2) in `circles/260801-1244-guard-rules-write`
-**Cross-references:** `circles/260801-1244-guard-rules-write/issues/260802-2231_c_stated-exempt-boundary-is-narrower-than-the-implemented-one-for-whole-subtree-deletes.md` `## Adjacent, for Turn 2` (where the question was raised); `hooks/lib/rules-write-exemption.ts` `RULE_DIR_PATTERNS`; `circles/260801-1244-guard-rules-write/decisions/260802-1912_a_does-the-self-protection-floor-apply-before-the-config-file-exists.md` (the floor this would sit next to); plan Step 6 (project-configurable `protectedPaths`)
+**Cross-references:** `circles/260801-1244-guard-rules-write/issues/260802-2231_c_stated-exempt-boundary-is-narrower-than-the-implemented-one-for-whole-subtree-deletes.md` `## Adjacent, for Turn 2` (where the question was raised); `hooks/lib/rules-write-exemption.ts` `RULE_DIR_PATTERNS`; `circles/260801-1244-guard-rules-write/decisions/260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md` (the floor this would sit next to); plan Step 6 (project-configurable `protectedPaths`)
 
 ---
 

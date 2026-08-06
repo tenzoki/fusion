@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** analyst
-**Cross-references:** `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md` (the gap analysis that raised this); `shared/decisions/260801-1020_o_may-any-fusion-writer-touch-rules.md` (the permission question this one depends on); `shared/decisions/260801-1020_o_provenance-header-on-rule-files.md` (the evidence question, independent); `shared/issues/260801-1020_o_scan-keys-never-reach-the-archive-store.md` (constrains any history-grounded option)
+**Cross-references:** `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md` (the gap analysis that raised this); `shared/decisions/260801-1020_*_may-any-fusion-writer-touch-rules.md` (the permission question this one depends on); `shared/decisions/260801-1020_*_provenance-header-on-rule-files.md` (the evidence question, independent); `shared/issues/260801-1020_o_scan-keys-never-reach-the-archive-store.md` (constrains any history-grounded option)
 
 ---
 

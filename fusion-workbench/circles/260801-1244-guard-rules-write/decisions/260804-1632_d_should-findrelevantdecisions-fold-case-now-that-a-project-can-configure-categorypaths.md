@@ -5,7 +5,7 @@
 **Status:** open
 **Filed by:** planner, planning the C5b remediation
 **Cross-references:**
-`circles/260801-1244-guard-rules-write/issues/260804-1432_o_two-case-sensitive-matches-lib-paths-calls-unreachable-become-project-reachable-with-the-c5b-loader.md` (item 2, the half this record carries so the issue can close on item 1),
+`circles/260801-1244-guard-rules-write/issues/260804-1432_*_two-case-sensitive-matches-lib-paths-calls-unreachable-become-project-reachable-with-the-c5b-loader.md` (item 2, the half this record carries so the issue can close on item 1),
 `circles/260801-1244-guard-rules-write/decisions/260803-1419_i_how-should-the-protected-path-check-treat-the-case-of-a-path.md` (where the protection side chose unconditional folding, deliberately leaving these two callers alone),
 `hooks/lib/paths.ts` `matchesAny` (case-sensitive) and `matchesAnyFolded` (the protection side)
 

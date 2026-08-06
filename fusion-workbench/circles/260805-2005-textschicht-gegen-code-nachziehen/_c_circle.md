@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** active
+**Status:** closed (coherent)
 **Filed by:** shaper (anticipated-circle mode)
 **Active spec/plan:** planning/260805-2353_*_plan-textschicht-gegen-code.md (the record's own `## Directive` and `## Grounding snapshot` are the spec; no separate spec file exists)
 **Active session history:** history/260805-2350-orchestrator-session.md (sole orchestrator session; 5 Turns)
@@ -33,7 +33,7 @@ Die drei widersprechen sich nicht, sie gewichten unterschiedlich. Der Doku-Durch
 
 ### Die Korrektur am High-Befund, und was von ihm bleibt
 
-Der einzige High-Befund des Reviews (`circles/260801-1244-guard-rules-write/issues/260805-1859_o_im-eigenen-repo-laden-alle-agenten-die-regeln-der-installierten-vorversion-nicht-die-quelle.md`) sagt, `FUSION_PLUGIN_ROOT` zeige im Plugin-Repo auf `~/.fusion` statt auf die Quelle, und nennt das einen Defekt.
+Der einzige High-Befund des Reviews (`circles/260801-1244-guard-rules-write/issues/260805-1859_*_im-eigenen-repo-laden-alle-agenten-die-regeln-der-installierten-vorversion-nicht-die-quelle.md`) sagt, `FUSION_PLUGIN_ROOT` zeige im Plugin-Repo auf `~/.fusion` statt auf die Quelle, und nennt das einen Defekt.
 
 **Es ist keiner.** Die Ursache ist inzwischen geklärt: die Variable wird beim Session-Start aus dem installierten Plugin gesetzt. Die prüfende Sitzung lief vier Tage ohne Neustart, also stand sie auf dem Stand, der bei ihrem Start installiert war (v5.8.0). Ein `fusion --update` plus Neustart der Sitzung löst es vollständig. **Der Issue-Record braucht eine Korrektur seines Befundtexts** — die gehört zur Arbeit dieses Circles und ist hier vermerkt, nicht ausgeführt.
 
@@ -93,13 +93,13 @@ Der Vollständigkeit halber, damit der Zuschnitt nicht wie ein Scherbenhaufen au
 ### Zitiert, nicht kopiert (nach der Herkunftsregel)
 
 - Die drei Berichte: siehe Tabelle oben.
-- Der zu korrigierende Befund: `circles/260801-1244-guard-rules-write/issues/260805-1859_o_im-eigenen-repo-laden-alle-agenten-die-regeln-der-installierten-vorversion-nicht-die-quelle.md`
+- Der zu korrigierende Befund: `circles/260801-1244-guard-rules-write/issues/260805-1859_*_im-eigenen-repo-laden-alle-agenten-die-regeln-der-installierten-vorversion-nicht-die-quelle.md`
 - Alle 66 Issue-Records: `circles/260801-1244-guard-rules-write/issues/`, Zeitstempel `260805-18*` und `260805-19*`.
 - Die Spec, aus der die Konsolidierungs-Kapazitäten stammen: `shared/planning/260801-1122_o_spec-normative-consolidation.md`
 
 ## Dependencies
 
-**`260801-1244-guard-rules-write` — muss schließen, bevor dieser Circle aktiviert wird.** Er trägt aktuell den `_t_`-Marker, und fusion führt einen aktiven Circle zur Zeit. Alle 66 Befunde liegen in seinem Issue-Store und bleiben dort; dieser Circle arbeitet sie ab, ohne sie zu verschieben. Sein eigener Circle-Datensatz ist außerdem einer der Befunde (`260805-1830_o_der-circle-datensatz-dieses-circles-widerspricht-seinem-eigenen-marker-und-fuehrt-keinen-turn-log.md`) und gehört zu seiner Schließung, nicht hierher.
+**`260801-1244-guard-rules-write` — muss schließen, bevor dieser Circle aktiviert wird.** Er trägt aktuell den `_t_`-Marker, und fusion führt einen aktiven Circle zur Zeit. Alle 66 Befunde liegen in seinem Issue-Store und bleiben dort; dieser Circle arbeitet sie ab, ohne sie zu verschieben. Sein eigener Circle-Datensatz ist außerdem einer der Befunde (`260805-1830_*_der-circle-datensatz-dieses-circles-widerspricht-seinem-eigenen-marker-und-fuehrt-keinen-turn-log.md`) und gehört zu seiner Schließung, nicht hierher.
 
 **`260804-1205-shell-reachability-model` — trägt die Fortsetzung am Shell-Klassifizierer, und ein Befund gehört als Grounding dorthin statt hierher.** Der Klassifizierer ist in diesem Circle ausdrücklich außen vor. Die zugehörige Empirie aus dem Zweck-Durchgang gehört aber in die Grounding jenes Circles, weil sie seine Beweislast verschiebt: **in krk gab es in vier Tagen 17 Bash-Blockierungen und null echte Treffer.** Alle 17 tragen als Operand eine Variable, eine Tilde oder einen Glob; kein einziger Block nennt einen tatsächlich geschützten Pfad. Es sind durchweg Fail-closed-Fehlalarme auf harmlosen Zielen. Der häufigste Fall ist fusions eigene Marker-Umbenennung in Schleifenform (`mv "260803-1536_o_$f.md" "260803-1536_c_$f.md"`) — der Guard verweigert die eigene Konvention des Rahmens, wenn ein Agent sie idiomatisch ausführt. Einordnend: kein Block führte zu einem Halt, und die Deny-Botschaft hat funktioniert (Grund genannt, Ausweg genannt, kein Herumrouten). Die Reibung ist begrenzt, ihr Nutzen war im Beobachtungszeitraum null. Der Reachability-Circle adressiert die Joiner-Fälle, aber nicht diese Klasse: `mv "$f"` bleibt auch unter einem Reachability-Modell unauflösbar. Quelle: `circles/260801-1244-guard-rules-write/analyses/260805-1830-zweck-nutzung-und-stand-des-plugins.md` §3, Befund `circles/260801-1244-guard-rules-write/issues/260805-1830_o_alle-17-guard-blocks-im-beobachteten-konsumprojekt-waren-fail-closed-fehlalarme.md`. **Wer den Reachability-Circle aktiviert, nimmt diese Bilanz in seine Grounding auf.**
 

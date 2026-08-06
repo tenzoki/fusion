@@ -5,9 +5,9 @@
 **Status:** open
 **Filed by:** coder, implementing plan Step 3
 **Cross-references:**
-`circles/260801-1244-guard-rules-write/issues/260804-1348_p_the-two-spellings-of-the-revert-strategy-still-disagree-at-head-and-checkouts-second-cost-is-unreachable.md` (recommendation 3, which this record carries so the issue's other two halves can be taken by Step 7),
+`circles/260801-1244-guard-rules-write/issues/260804-1348_*_the-two-spellings-of-the-revert-strategy-still-disagree-at-head-and-checkouts-second-cost-is-unreachable.md` (recommendation 3, which this record carries so the issue's other two halves can be taken by Step 7),
 `circles/260801-1244-guard-rules-write/decisions/260804-1323_i_should-the-guard-model-gits-own-working-directory-or-give-up-on-it.md` (`## The second question` — where the `checkout HEAD` inertness argument was made and where the claim that the two spellings now agree was recorded),
-`circles/260801-1244-guard-rules-write/planning/260804-1633_o_plan-c5b-remediation-and-ship.md` (Step 3, which assigns `260804-1348` to a code pass that cannot take it without breaching the Circle's own no-new-allow constraint),
+`circles/260801-1244-guard-rules-write/planning/260804-1633_*_plan-c5b-remediation-and-ship.md` (Step 3, which assigns `260804-1348` to a code pass that cannot take it without breaching the Circle's own no-new-allow constraint),
 `hooks/lib/bash-mutation-guard.ts` — `isGitRestoreSourceFlag`, the `restore` row, `GIT_CHECKOUT_INERT_TREEISH`, `gitCheckoutWrites`
 
 ---

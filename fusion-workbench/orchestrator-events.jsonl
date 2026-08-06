@@ -850,3 +850,4 @@
 {"ts":"2026-08-06T09:02:21","event":"reconciliation","detail":"3 bookkeeping fixes; verdict coherent; 0 blockers"}
 {"ts":"2026-08-06T09:06:49","event":"portfolio_refresh","detail":"textschicht _c_; no active circle; next recommendation shell-reachability-model"}
 {"ts":"2026-08-06T09:06:49","event":"session_end","detail":"5 turns, 21 tasks, 14 commits, verdict coherent"}
+{"ts":"2026-08-06T09:39:27","event":"session_start","detail":"review-only pass: deep reconciliation + technical review of 4a8fea0..HEAD"}

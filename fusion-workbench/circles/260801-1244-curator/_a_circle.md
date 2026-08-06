@@ -33,7 +33,7 @@ Three answered decisions frame the work, and none is reopened. D1 settled that f
 - `bin/fusion-rules` never reads a rule file's content, which is why retirement works by relocation rather than by a marker or a status header, and why six plugin rules emitted by explicit path cannot be retired by relocation alone.
 - The workbench is neither tracked nor gitignored here, so decision-record edits have no git undo. That forces the requirement that the agent write every modified record's pre-edit content into its own history file, and it is what ruled the archive out as the retirement destination.
 
-**One live defect the closing work would otherwise cover** is already filed separately, because it is real whether or not this Circle runs: `shared/issues/260801-1215_o_conventions-file-cites-three-records-that-do-not-resolve.md`. Two cited records exist nowhere in the workbench or the archive, and one is cited at a pre-v4 root-relative path while the file lives inside a Circle. That these survive in the document defining the v4 layout is the strongest available argument that the reconcile step is worth doing.
+**One live defect the closing work would otherwise cover** is already filed separately, because it is real whether or not this Circle runs: `shared/issues/260801-1215_*_conventions-file-cites-three-records-that-do-not-resolve.md`. Two cited records exist nowhere in the workbench or the archive, and one is cited at a pre-v4 root-relative path while the file lives inside a Circle. That these survive in the document defining the v4 layout is the strongest available argument that the reconcile step is worth doing.
 
 **What the closing work does not buy, stated so it is not expected.** The compaction step will not shrink the file much. The evidence tiers remove what history falsified or superseded, and a large share of the file is rationale prose that is still true. The context saving comes from the scoping step and from nothing else. Widening the tiers to reach "this reads long" is the exact failure the tiers exist to prevent.
 
@@ -44,8 +44,8 @@ Three answered decisions frame the work, and none is reopened. D1 settled that f
 - Spec: `shared/planning/260801-1122_o_spec-normative-consolidation.md`. C1 through C4, C6, C7, C9, the constraints block, `## Out of Scope`, and `## Open for Planner`.
 - Gap analysis: `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md`. The measured drift this whole body of work responds to.
 - **D1** — `shared/decisions/260801-1020_a_where-does-normative-consistency-live.md`. The direct input: a writing agent, not a report-only detector.
-- **D2** — `shared/decisions/260801-1020_a_may-any-fusion-writer-touch-rules.md`. What lets the agent touch rule files at all, realised in Circle `260801-1244-guard-rules-write`.
-- **D3** — `shared/decisions/260801-1020_a_provenance-header-on-rule-files.md`. The eighth evidence source, realised in Circle `260801-1244-rule-provenance-header`.
+- **D2** — `shared/decisions/260801-1020_*_may-any-fusion-writer-touch-rules.md`. What lets the agent touch rule files at all, realised in Circle `260801-1244-guard-rules-write`.
+- **D3** — `shared/decisions/260801-1020_*_provenance-header-on-rule-files.md`. The eighth evidence source, realised in Circle `260801-1244-rule-provenance-header`.
 
 Four issues the gap analysis filed constrain this work without being part of it, and are cited rather than absorbed: `shared/issues/260801-1020_o_workbench-untracked-breaks-archive-durability-premise.md`, `shared/issues/260801-1020_o_guard-protects-rules-but-not-claude-rules.md`, `shared/issues/260801-1020_o_scan-keys-never-reach-the-archive-store.md`, and `shared/issues/260801-1020_o_plane-mirror-circle-closed-with-empty-turn-log.md`.
 

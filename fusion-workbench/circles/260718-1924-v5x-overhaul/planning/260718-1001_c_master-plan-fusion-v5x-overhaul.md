@@ -1,7 +1,7 @@
 # Master Implementation Plan: fusion v5.x overhaul
 
 **Date:** 2026-07-18
-**Status:** Draft — for the plan gate
+**Status:** Complete — all five work packages (A–E) delivered and verified; closed retroactively by the reconciler, see Reconciliation Log.
 **Spec:** `fusion-workbench/shared/planning/260718-0437_o_spec-fusion-v5x-overhaul.md` (Final; conceptrev verdict clean)
 **Executors:** coder, analyst
 
@@ -333,3 +333,7 @@ All five umbrella-level open questions are user-confirmed and folded into the ci
 3. **Manifest home → `./rules/`.** The context-manifest lives at `./rules/context-manifest.yaml`, consistent with `bin/fusion-rules` already reading `./rules/`. (Locked in Circle B mechanism §1.)
 4. **Test harness → the TS/vitest suite.** Circle B's tests live in the existing `hooks/` vitest suite and invoke `bin/fusion-rules` as a subprocess, asserting on its output (the `path-literal-lint.test.ts` pattern); one `npm test` gate. (Locked in Circle B step 3 and Testing Strategy.)
 5. **Editor `fusion-rules` registration → standard prose-agent config.** `bin/fusion-rules` gets an `editor)` case with `IS_PROSE_AGENT=1` and no special rule-file pattern (standard set only). (Locked in Circle C registration table and step 4.)
+
+## Reconciliation Log
+
+**260806-1152 (reconciler, workbench-wide pass)** — marker `_o_` → `_c_`, Status → Complete, both retroactive: the Circle `260718-1924-v5x-overhaul` closed coherent on 2026-07-19 with all five packages delivered (A analysis, B context mechanism v5.1.0 `4620837`, C editor v5.2.0 `fdc0310`, D prompt revision v5.3.0 `046453e..1cc6d5f`, E docs v5.4.0 `43ee3b5` + working-model explainer), attested by the closure note in `circles/260718-1924-v5x-overhaul/_c_circle.md` and reconciliation `history/260719-1455-reconciliation.md` (verdict coherent). B-rest and E-rest were delivered by the severed Circles `260719-1536-brest-unite-co-creator-conversion` (`_c_`) and the E-rest plan `planning/260719-1416_c_plan-circle-e-rest-docs-cleanup-v5-close.md`. This file stayed `_o_` only because no closure step renamed it — the same record-lag class as `shared/issues/260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`.

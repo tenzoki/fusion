@@ -2,10 +2,10 @@
 
 ---
 **Domain:** code
-**Status:** active
+**Status:** closed (coherent)
 **Filed by:** orchestrator (Nutzer-Auftrag „Ausführung starten", 2026-07-18)
 **Aktiviert:** 2026-07-18
-**Active spec/plan:** circles/260718-1924-v5x-overhaul/planning/260718-1001_o_master-plan-fusion-v5x-overhaul.md
+**Active spec/plan:** circles/260718-1924-v5x-overhaul/planning/260718-1001_*_master-plan-fusion-v5x-overhaul.md
 **Active session history:** shared/history/260717-1832-orchestrator-session.md
 
 ---
@@ -41,10 +41,6 @@ Spec und Master-Plan liegen im Circle (`planning/`), beide conceptrev-clean. Zeh
 - **E-Teil** (coder) ✅: `docs/philosophy.md` auf praktische Einführung gestrafft (Gadamer/hermeneutischer-Zirkel raus), `README.md` auf schlanken Hands-on-Guide umgestellt (Install → Setup → erste Session → Best Practices → Konfiguration). Stale Facts gegen v5.3.0 korrigiert. Commit `43ee3b5` (99+/382−). Session-Log `history/<siehe docs-Eintrag>`.
 
 **Offen im Circle:** B-Rest (unite-co-creator-Referenz-Umbau) · E-Rest (Docs-Konsistenz-Sweep über README-agents/README-hooks/plugin-CLAUDE.md, Hooks+Gates-Erklärer, v5.0-Abschlussgate). A/B/C/D fertig; E teilweise (2 Docs).
-
-## Closure note
-
-(offen — Circle bleibt aktiv bis alle fünf Arbeitspakete abgenommen sind)
 
 ## Closure note
 

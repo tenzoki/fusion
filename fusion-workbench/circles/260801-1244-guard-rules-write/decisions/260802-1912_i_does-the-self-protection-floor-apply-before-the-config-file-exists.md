@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** orchestrator, from a planner finding at the plan gate
-**Cross-references:** `shared/planning/260801-1122_o_spec-normative-consolidation.md:293` (seeding) and `:301` (the floor); `circles/260801-1244-guard-rules-write/planning/260802-1856_o_plan-guard-rules-write.md` `## User Decisions Pending`; `circles/260801-1244-guard-rules-write/_t_circle.md` `## Directive`
+**Cross-references:** `shared/planning/260801-1122_o_spec-normative-consolidation.md:293` (seeding) and `:301` (the floor); `circles/260801-1244-guard-rules-write/planning/260802-1856_*_plan-guard-rules-write.md` `## User Decisions Pending`; `circles/260801-1244-guard-rules-write/_c_circle.md` `## Directive`
 
 ---
 
@@ -54,7 +54,7 @@ planner escalated rather than choosing.
 Answered: user decision at the plan gate, 260802-1912 — **option 1, the floor applies once the file
 exists**. The residual is accepted on the grounds that a creation appears in a git diff, which is
 precisely the property decision D-c chose the project root to obtain
-(`shared/decisions/260801-1020_a_may-any-fusion-writer-touch-rules.md`; spec `:291`). The plan
+(`shared/decisions/260801-1020_*_may-any-fusion-writer-touch-rules.md`; spec `:291`). The plan
 proceeds on this answer: Step 6's floor condition and Step 8's seeding block both implement it, and
 the residual is to be stated in `rules/protected-path-discipline.md` at Step 9 rather than left in
 this record alone.

@@ -2,12 +2,12 @@
 
 ---
 **Domain:** code
-**Status:** active
+**Status:** closed (coherent)
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** shared/planning/260801-1122_o_spec-normative-consolidation.md (spec, covers all four Circles of this body of work) · planning/260804-1633_p_plan-c5b-remediation-and-ship.md (C5b remediation and ship) · planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md (Ausstiegsplan) · predecessor planning/260802-1856_o_plan-guard-rules-write.md (steps 1–8 complete, 9/10 superseded)
+**Active spec/plan:** shared/planning/260801-1122_o_spec-normative-consolidation.md (spec, covers all four Circles of this body of work) · planning/260804-1633_*_plan-c5b-remediation-and-ship.md (C5b remediation and ship) · planning/260804-2356_*_plan-ausstieg-kontextsteuer-und-auslieferung.md (Ausstiegsplan) · predecessor planning/260802-1856_*_plan-guard-rules-write.md (steps 1–8 complete, 9/10 superseded)
 **Active session history:** history/260805-2117-orchestrator-session.md (latest; 11 orchestrator sessions total under history/)
 
-*Status, plan and history fields corrected retroactively by the reconciler on 260805-2323 — the record had never been updated after activation (issue `issues/260805-1830_o_der-circle-datensatz-dieses-circles-widerspricht-seinem-eigenen-marker-und-fuehrt-keinen-turn-log.md`, closed by this correction). The Turn log below is likewise reconstructed from the orchestrator session histories rather than appended live.*
+*Status, plan and history fields corrected retroactively by the reconciler on 260805-2323 — the record had never been updated after activation (issue `issues/260805-1830_*_der-circle-datensatz-dieses-circles-widerspricht-seinem-eigenen-marker-und-fuehrt-keinen-turn-log.md`, closed by this correction). The Turn log below is likewise reconstructed from the orchestrator session histories rather than appended live.*
 
 ---
 
@@ -32,10 +32,10 @@ Two settled decisions are inputs rather than options. D2 asked for both halves: 
 - Spec: `shared/planning/260801-1122_o_spec-normative-consolidation.md`. C5a, C5b, the constraints block, and `## Circle structure`.
 - Gap analysis: `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md`.
 - **D1** — `shared/decisions/260801-1020_a_where-does-normative-consistency-live.md`. A writing consolidation agent rather than a report-only detector. The reason a fusion agent needs to touch rule files at all.
-- **D2** — `shared/decisions/260801-1020_a_may-any-fusion-writer-touch-rules.md`. The direct input to this Circle: both the exemption and the project-level configuration come from it.
-- **D3** — `shared/decisions/260801-1020_a_provenance-header-on-rule-files.md`. Answered by the spec's D-e and realised in Circle `260801-1244-rule-provenance-header`. Unrelated to this Circle's work; cited so the three open normative decisions are visible from every record in the set.
+- **D2** — `shared/decisions/260801-1020_*_may-any-fusion-writer-touch-rules.md`. The direct input to this Circle: both the exemption and the project-level configuration come from it.
+- **D3** — `shared/decisions/260801-1020_*_provenance-header-on-rule-files.md`. Answered by the spec's D-e and realised in Circle `260801-1244-rule-provenance-header`. Unrelated to this Circle's work; cited so the three open normative decisions are visible from every record in the set.
 
-Two filed issues sit adjacent and are not part of this Circle: `shared/issues/260801-1020_o_guard-protects-rules-but-not-claude-rules.md` and `shared/issues/260801-1156_o_bash-bypasses-the-protected-path-check-entirely.md`. The second is closed by the Circle this one depends on.
+Two filed issues sit adjacent and are not part of this Circle: `shared/issues/260801-1020_o_guard-protects-rules-but-not-claude-rules.md` and `shared/issues/260801-1156_*_bash-bypasses-the-protected-path-check-entirely.md`. The second is closed by the Circle this one depends on.
 
 ## Dependencies
 
@@ -71,7 +71,7 @@ code-domain criteria without argument. This Circle's one dependency,
 closed this run, and neither Circle's `## Grounding snapshot` cites an open decision record: the
 shared decision store holds no open record at all, and the three this Circle cites are two
 answered (`shared/decisions/260801-1020_a_where-does-normative-consistency-live.md`,
-`shared/decisions/260801-1020_a_may-any-fusion-writer-touch-rules.md`) and one now implemented
+`shared/decisions/260801-1020_*_may-any-fusion-writer-touch-rules.md`) and one now implemented
 (`shared/decisions/260801-1020_i_provenance-header-on-rule-files.md`, which moved from answered
 to implemented at the closure). Zero open decisions and zero unmet dependencies on both sides, so
 the ranking turns on unblock value, and there the position reversed.
@@ -129,3 +129,5 @@ Reconciliation: `history/260805-2334-reconciliation.md`.
 Open issues remaining in this Circle at closure: 79, all claimed by other Circles' scope
 (64 Textschicht, 8 shell-reachability, 2 plane/framework, 1 priced deferral) plus the
 user-side unite-cocreator emission measurement (`issues/260805-2323_o_die-emissionsmessung…`).
+
+*Reconciliation 260806-1152 (reconciler, workbench-wide pass): the closure note's count of 79 open issues was right, but its breakdown enumerates only 76 — it omitted `issues/260804-2100_*` (a ninth shell-classifier record) and `issues/260805-1150_*` (README pin, then still open) and counted the corpus one low. Current state at HEAD `cde5319`: **18 open** in this Circle — 6 routed corpus findings (3× `260805-1830_*`, 2× `260805-1839_*`, `260805-1859_*_das-guard-event-log…`), 9 shell-classifier records routed to `circles/260804-1205-shell-reachability-model` (8× `260804-*` plus `260804-2100_*`), the unowned advisory-clamp deferral `260803-1352_*`, the framework observation `260805-1548_*_beim-filen…`, and the user-side unite measurement `260805-2323_*`. Closed since the Circle closed: 60 corpus findings (Textschicht Circle), plus `260805-1150_*` and `260805-1548_*_der-plane-testfixture…` (this pass, fixes verified at HEAD).*

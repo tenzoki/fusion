@@ -47,3 +47,6 @@ Answered: history/260716-1800-orchestrator-session.md — Option 1 (Zwei Circles
 Implemented:
 Deferred:
 Superseded by:
+
+---
+Implemented: circles/260716-1847-workbench-umbau/_c_circle.md + circles/260719-1536-plane-mirror-integration/_c_circle.md — beide Circles der gewählten Option 1 existieren als Verzeichnisse und sind kohärent geschlossen (Umbau als v4.0.0 am 260717, Plane-Bridge am 260720); der akzeptierte Preis (Prompts zweimal anfassen) ist in beiden Plänen belegt. (Reconciler, 260806-1152.)

@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** planner
-**Cross-references:** circles/260719-1536-brest-unite-co-creator-conversion/planning/260719-1917_o_unite-context-loading-conversion.md; bin/fusion-rules (lines 116-127, 295-299)
+**Cross-references:** circles/260719-1536-brest-unite-co-creator-conversion/planning/260719-1917_*_unite-context-loading-conversion.md; bin/fusion-rules (lines 116-127, 295-299)
 
 ---
 

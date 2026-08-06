@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** shaper (in-Circle clarification)
-**Cross-references:** `shared/planning/260801-1122_o_spec-normative-consolidation.md` `### C8: Provenance header on rule files` (the capability); `shared/decisions/260801-1020_a_provenance-header-on-rule-files.md` (D3, which anticipated the case in one sentence and left it open); `circles/260801-1244-rule-provenance-header/_t_circle.md` `## Grounding snapshot` (the file-by-file evidence)
+**Cross-references:** `shared/planning/260801-1122_o_spec-normative-consolidation.md` `### C8: Provenance header on rule files` (the capability); `shared/decisions/260801-1020_*_provenance-header-on-rule-files.md` (D3, which anticipated the case in one sentence and left it open); `circles/260801-1244-rule-provenance-header/_c_circle.md` `## Grounding snapshot` (the file-by-file evidence)
 
 ---
 
@@ -57,7 +57,7 @@ Every one of the nine has a recoverable introducing commit whose subject names i
 Deferred to the user, who asked for the header's form to be settled before planning. Put alongside the spec's three open questions in the same round.
 
 ---
-Answered: 2026-08-02, by the user. **Option 2, the admission plus the introducing commit.** A header for a file with no recoverable record reads `**Provenance:** No motivating record recoverable; introduced in `git:<short-hash>`.` The form is specified at `circles/260801-1244-rule-provenance-header/planning/260802-1103_o_spec-rule-provenance-header.md` `#### The header`, form 3, and the per-file commit hashes are in that spec's backfill table.
+Answered: 2026-08-02, by the user. **Option 2, the admission plus the introducing commit.** A header for a file with no recoverable record reads `**Provenance:** No motivating record recoverable; introduced in `git:<short-hash>`.` The form is specified at `circles/260801-1244-rule-provenance-header/planning/260802-1103_*_spec-rule-provenance-header.md` `#### The header`, form 3, and the per-file commit hashes are in that spec's backfill table.
 
 Two consequences the answer does not cancel, both recorded in the spec's `## Accepted limitations`. A commit carries no state marker, so the superseded-rule check does not work against a commit citation. And D3 rejected git as the *primary* provenance mechanism; this answer admits it as a secondary, admission-scoped citation only, which is a narrower use than D3 rejected rather than a reversal of it.
 

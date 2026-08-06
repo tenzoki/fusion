@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** open
 **Filed by:** coder
-**Cross-references:** circles/260805-2005-textschicht-gegen-code-nachziehen/planning/260805-2353_p_plan-textschicht-gegen-code.md (Track 2, Schritt 1; Schritte 10–14 hängen an der Antwort); circles/260801-1244-guard-rules-write/issues/260805-1839_o_ausgelieferte-texte-zitieren-acht-workbench-records-die-nirgends-existieren.md; circles/260801-1244-guard-rules-write/issues/260805-1839_o_acht-zitate-tragen-verfallene-decision-marker-und-zwei-davon-sind-inhaltlich-falsch-geworden.md; rules/rule-file-provenance.md (Z. 48 — die `Binding decision:`-Zeile der Datei, die die Zitierformen selbst definiert, zitiert ihre eigene bindende Entscheidung unter einem Namen, den es nicht mehr gibt)
+**Cross-references:** circles/260805-2005-textschicht-gegen-code-nachziehen/planning/260805-2353_*_plan-textschicht-gegen-code.md (Track 2, Schritt 1; Schritte 10–14 hängen an der Antwort); circles/260801-1244-guard-rules-write/issues/260805-1839_*_ausgelieferte-texte-zitieren-acht-workbench-records-die-nirgends-existieren.md; circles/260801-1244-guard-rules-write/issues/260805-1839_*_acht-zitate-tragen-verfallene-decision-marker-und-zwei-davon-sind-inhaltlich-falsch-geworden.md; rules/rule-file-provenance.md (Z. 48 — die `Binding decision:`-Zeile der Datei, die die Zitierformen selbst definiert, zitiert ihre eigene bindende Entscheidung unter einem Namen, den es nicht mehr gibt)
 
 ---
 

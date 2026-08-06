@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented (corrected from `answered` by reconciliation 260804-1021; the filename marker `_i_` was already right)
 **Filed by:** orchestrator, at the user gate closing Turn 3 of `circles/260801-1244-guard-rules-write`
-**Cross-references:** `circles/260801-1244-guard-rules-write/issues/260802-2320_o_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md` (the measurement that raised this), `hooks/guard.ts` CHECK 2, `hooks/lib/paths.ts` (`collapseSegments`, `matchesAny`), `hooks/lib/bash-mutation-guard.ts`, `rules/protected-path-discipline.md`, `README-hooks.md`
+**Cross-references:** `circles/260801-1244-guard-rules-write/issues/260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md` (the measurement that raised this), `hooks/guard.ts` CHECK 2, `hooks/lib/paths.ts` (`collapseSegments`, `matchesAny`), `hooks/lib/bash-mutation-guard.ts`, `rules/protected-path-discipline.md`, `README-hooks.md`
 
 ---
 
@@ -115,6 +115,6 @@ Implemented: `86a437a` — `foldCase` and `matchesAnyFolded` in `hooks/lib/paths
 
 That a citation flagged by one reconciliation survives the next session untouched is itself the finding. The reconciler annotates; nothing in the loop acts on the annotation. Recorded on `shared/issues/260801-2038_o_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`, which is the nearest existing home for it.
 
-**The `**Cross-references:**` line points at `issues/260802-2320_o_…`; that file now carries `_c_`.** Third instance of `shared/issues/260802-1740_o_a-citation-path-carrying-a-state-marker-dies-on-ordinary-progress.md` inside this Circle alone. Not repaired here, for the same reason the sibling instances were not: hand-fixing one path leaves the mechanism untouched.
+**The `**Cross-references:**` line points at `issues/260802-2320_o_…`; that file now carries `_c_`.** Third instance of `shared/issues/260802-1740_*_a-citation-path-carrying-a-state-marker-dies-on-ordinary-progress.md` inside this Circle alone. Not repaired here, for the same reason the sibling instances were not: hand-fixing one path leaves the mechanism untouched.
 
 **Header field corrected.** `**Status:**` read `answered` while the marker read `_i_` and the `Implemented:` line was filled. Set to `implemented`. Two other records in this store had the same disagreement — see the note on `260803-2338_i_`.

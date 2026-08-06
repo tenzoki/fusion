@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** planner
-**Cross-references:** circles/260719-1536-plane-mirror-integration/_t_circle.md (the bounded read path in the Directive), circles/260719-1536-plane-mirror-integration/planning/260719-2223_o_plan-plane-bounded-bridge.md (Step 5, the seeding-read skill — depends on this answer), /Users/kai/Dropbox/qboot/projects/F03_digital-leadership/unite-co-creator/MARTIN.md (`/new-fe-feature` moves the story straight to In Progress), shared/analyses/260719-2141-plane-mirror-martin-convergence-feasibility.md §2 (activation mapping "breaks" — Martin reads to seed; fusion activates from files)
+**Cross-references:** circles/260719-1536-plane-mirror-integration/_c_circle.md (the bounded read path in the Directive), circles/260719-1536-plane-mirror-integration/planning/260719-2223_*_plan-plane-bounded-bridge.md (Step 5, the seeding-read skill — depends on this answer), /Users/kai/Dropbox/qboot/projects/F03_digital-leadership/unite-co-creator/MARTIN.md (`/new-fe-feature` moves the story straight to In Progress), shared/analyses/260719-2141-plane-mirror-martin-convergence-feasibility.md §2 (activation mapping "breaks" — Martin reads to seed; fusion activates from files)
 
 ---
 

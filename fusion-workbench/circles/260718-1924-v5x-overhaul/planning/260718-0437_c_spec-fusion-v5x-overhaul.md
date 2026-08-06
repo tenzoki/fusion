@@ -1,7 +1,7 @@
 # Spec: fusion v5.x overhaul — umbrella framing
 
 **Date:** 2026-07-18
-**Status:** Final — all forks resolved by the user; ready for the planner.
+**Status:** Complete — all ten forks were resolved and the spec was realised across v5.1.0–v5.4.0; closed retroactively by the reconciler, see Reconciliation Log.
 **Source:** User request to overhaul the fusion plugin for v5.x, spanning five themes: (1) selective context management for a consuming project's CLAUDE.md and rules, (2) a new `editor` (Redakteur) agent, (3) systematic revision of the agent prompts, (4) an agent-coordination analysis, (5) a circle-centric, spec-driven working-model doc plus a docs cleanup for v5.0.
 
 ---
@@ -166,3 +166,7 @@ Technical and mechanical decisions deferred to per-circle planning, not to the s
 - **Circle D audit order and factoring** — which prompts first, how the shared Setup text becomes an included unit (couples to Circle B), and how the rubric is scored per prompt. Planner determines.
 - **Circle E doc structure** — how `philosophy.md` is re-sectioned, what moves to README versus stays in docs, where the hooks-and-gates explainer lives. Planner and editor determine.
 - **Activation order within the umbrella** — whether A and B truly run fully in parallel or A leads B by a step, and the per-circle activation order. Playmaker and orchestrator determine at activation time.
+
+## Reconciliation Log
+
+**260806-1152 (reconciler, workbench-wide pass)** — marker `_o_` → `_c_`, retroactive: every capability this spec carries was delivered by the master plan (`planning/260718-1001_*_master-plan-fusion-v5x-overhaul.md`, now Complete) and verified at the Circle's coherent closure on 2026-07-19 (`history/260719-1455-reconciliation.md`). Same record-lag class as the master plan; see its log for the delivery evidence.

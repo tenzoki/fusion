@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** analyst
-**Cross-references:** `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md` (Question 4, first thin spot); `shared/decisions/260801-1020_o_where-does-normative-consistency-live.md` (the capability this would serve); `rules/fusion-workbench-conventions.md:326` (the one existing instance of the pattern)
+**Cross-references:** `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md` (Question 4, first thin spot); `shared/decisions/260801-1020_*_where-does-normative-consistency-live.md` (the capability this would serve); `rules/fusion-workbench-conventions.md:326` (the one existing instance of the pattern)
 
 ---
 

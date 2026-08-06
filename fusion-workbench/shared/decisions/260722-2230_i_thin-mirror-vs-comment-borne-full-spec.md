@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** orchestrator
-**Cross-references:** circles/260719-1536-plane-mirror-integration/decisions/260719-2313_i_round-trip-write-overwrites-origin-story-description.md (the parent decision this continues — its Option 3 named this spec-comment as the planned next step); shared/planning/260722-1943_o_spec-plane-spec-comment.md (spec); shared/planning/260722-2021_c_plan-plane-spec-comment.md (plan)
+**Cross-references:** circles/260719-1536-plane-mirror-integration/decisions/260719-2313_i_round-trip-write-overwrites-origin-story-description.md (the parent decision this continues — its Option 3 named this spec-comment as the planned next step); shared/planning/260722-1943_*_spec-plane-spec-comment.md (spec); shared/planning/260722-2021_c_plan-plane-spec-comment.md (plan)
 
 ---
 

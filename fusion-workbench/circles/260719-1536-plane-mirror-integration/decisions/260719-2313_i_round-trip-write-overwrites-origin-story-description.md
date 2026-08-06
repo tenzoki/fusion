@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** orchestrator (raised by coder during Step 5)
-**Cross-references:** circles/260719-1536-plane-mirror-integration/planning/260719-2223_p_plan-plane-bounded-bridge.md (Step 3 build_write_body, Step 5 seed round-trip); shared/decisions/260719-2141_a_plane-rolle-push-only-vs-bounded-readback-martin.md (the bounded-bridge decision this refines)
+**Cross-references:** circles/260719-1536-plane-mirror-integration/planning/260719-2223_*_plan-plane-bounded-bridge.md (Step 3 build_write_body, Step 5 seed round-trip); shared/decisions/260719-2141_*_plane-rolle-push-only-vs-bounded-readback-martin.md (the bounded-bridge decision this refines)
 
 ---
 

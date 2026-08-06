@@ -48,3 +48,6 @@ in the file that defines the form.
 If `circles/260801-1244-curator` is close, this is squarely its remit (reconciling
 normative surfaces against what actually happened) and is better done there than patched
 here. Cross-referenced rather than refiled if the curator spec already covers it.
+
+---
+Resolved: 2026-08-06 (reconciler, workbench-wide pass) — both `Binding decision:` instances now cite resolvable paths in wildcard form: `rules/circle-records.md:36` → `circles/260716-1847-workbench-umbau/decisions/260716-1910_*_circle-marker-am-verzeichnis-oder-an-der-circle-datei.md` and `rules/rule-file-provenance.md:48` → `shared/decisions/260801-1020_*_provenance-header-on-rule-files.md`. Both targets exist (as `_i_`). Fixed by the Textschicht citation batches (`fae818b`) after the conventions partition (`0fead5e`); the citation form is D1 `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_i_zitierform-fuer-workbench-records.md`. This finding had been left open at this Circle's closure by explicit user decision; the fix arrived from the later Circle.

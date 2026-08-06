@@ -17,7 +17,7 @@ Every path in the guard's `protectedPaths` list means what it says for all sixte
 
 ## Grounding snapshot
 
-The defect is verified and filed, not inferred. `shared/issues/260801-1156_o_bash-bypasses-the-protected-path-check-entirely.md` states the control flow: the guard reaches the protected-path check only from `Write`, `Edit`, `MultiEdit`, and `NotebookEdit`, while a `Bash` call is classified for git branch and worktree operations and then returns unconditionally (`hooks/guard.ts:265-268`), never reaching the check at `hooks/guard.ts:309`. `Edit rules/x.md` is blocked and `mv rules/x.md /tmp/` is allowed. This Circle closes that issue.
+The defect is verified and filed, not inferred. `shared/issues/260801-1156_*_bash-bypasses-the-protected-path-check-entirely.md` states the control flow: the guard reaches the protected-path check only from `Write`, `Edit`, `MultiEdit`, and `NotebookEdit`, while a `Bash` call is classified for git branch and worktree operations and then returns unconditionally (`hooks/guard.ts:265-268`), never reaching the check at `hooks/guard.ts:309`. `Edit rules/x.md` is blocked and `mv rules/x.md /tmp/` is allowed. This Circle closes that issue.
 
 The scope is wider than the work that surfaced it. The bypass affects all sixteen agents today, and the sharpest case is `fusion-workbench/.guard-state/**`: an agent can delete its own escalation counter through a shell, which defeats the halt the counter exists to drive.
 
@@ -32,8 +32,8 @@ Most of the hard part already exists. `hooks/lib/git-branch-guard.ts` is a pure,
 - Spec: `shared/planning/260801-1122_o_spec-normative-consolidation.md`. C5c, its constraints block, and `## Circle structure`.
 - Gap analysis: `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md`.
 - **D1** — `shared/decisions/260801-1020_a_where-does-normative-consistency-live.md`. A writing consolidation agent rather than a report-only detector. Context for why the guard question arose; this Circle does not depend on the answer.
-- **D2** — `shared/decisions/260801-1020_a_may-any-fusion-writer-touch-rules.md`. Rule-file writes are permitted through an environment-gated exemption plus project-level guard configuration. This Circle is what makes that exemption a control rather than a decoration, and Circle `260801-1244-guard-rules-write` realises the exemption itself.
-- **D3** — `shared/decisions/260801-1020_a_provenance-header-on-rule-files.md`. Answered by the spec's D-e. Unrelated to this Circle's work; cited so the three open normative decisions are visible from every record in the set.
+- **D2** — `shared/decisions/260801-1020_*_may-any-fusion-writer-touch-rules.md`. Rule-file writes are permitted through an environment-gated exemption plus project-level guard configuration. This Circle is what makes that exemption a control rather than a decoration, and Circle `260801-1244-guard-rules-write` realises the exemption itself.
+- **D3** — `shared/decisions/260801-1020_*_provenance-header-on-rule-files.md`. Answered by the spec's D-e. Unrelated to this Circle's work; cited so the three open normative decisions are visible from every record in the set.
 - **D-i**, the decision that produced this Circle, is recorded in the spec's `## Decisions taken`: fix the guard rather than constrain one agent to guarded tools. Enforcement over instruction, and it protects all sixteen agents rather than one.
 
 ## Dependencies

@@ -31,3 +31,6 @@ Filed separately for that reason. If the curator lands first, C9 step 1 closes t
 ## Fix
 
 Update the third citation to its Circle-relative path. For the first two, either locate the records if they were moved outside the workbench, or replace the citations with a statement that the motivating records are not retained — the honest-absence form the spec's C8 provenance convention accepts. Do not invent a replacement record.
+
+---
+Resolved: 2026-08-06 (reconciler, workbench-wide pass) — all three citations are gone from the shipped text. The stash section moved to `rules/workbench-stash-and-lock.md` in the conventions partition (`0fead5e`); there the two nonexistent 260519 records were replaced by substance-in-text per decision `circles/260801-1244-guard-rules-write/decisions/260805-0709_*_wohin-gehoert-die-forensik-aus-protected-path-discipline.md`, and the third citation now resolves in wildcard form at `rules/circle-records.md:36` (`circles/260716-1847-workbench-umbau/decisions/260716-1910_*_circle-marker-am-verzeichnis-oder-an-der-circle-datei.md`). Commit `fae818b`; sibling finding `circles/260801-1244-guard-rules-write/issues/260805-1841_*_stash-lock-drei-tote-record-zitate.md` closed there. The issue's own repro grep at HEAD `cde5319` reports only illustrative examples and the optional consumer manifest.

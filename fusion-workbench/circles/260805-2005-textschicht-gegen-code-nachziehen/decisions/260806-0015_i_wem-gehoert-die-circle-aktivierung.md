@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** open
 **Filed by:** coder
-**Cross-references:** circles/260805-2005-textschicht-gegen-code-nachziehen/planning/260805-2353_p_plan-textschicht-gegen-code.md (Track 2, Schritt 2; Schritt 9 realisiert die Antwort); circles/260801-1244-guard-rules-write/issues/260805-1839_o_die-circle-aktivierung-gehoert-drei-parteien-und-keine-hat-einen-vollstaendigen-ablauf.md; circles/260801-1244-guard-rules-write/issues/260805-1839_o_der-shaper-portfolio-activation-modus-hat-keinen-erreichbaren-dispatcher-mehr.md; circles/260801-1244-guard-rules-write/issues/260805-1839_o_die-lock-regel-sagt-always-when-any-party-commits-und-zwei-skills-committen-ohne-lock.md; circles/260801-1244-guard-rules-write/issues/260805-1840_o_konventionen-active-circle-nothing-else-touches-it.md
+**Cross-references:** circles/260805-2005-textschicht-gegen-code-nachziehen/planning/260805-2353_*_plan-textschicht-gegen-code.md (Track 2, Schritt 2; Schritt 9 realisiert die Antwort); circles/260801-1244-guard-rules-write/issues/260805-1839_*_die-circle-aktivierung-gehoert-drei-parteien-und-keine-hat-einen-vollstaendigen-ablauf.md; circles/260801-1244-guard-rules-write/issues/260805-1839_*_der-shaper-portfolio-activation-modus-hat-keinen-erreichbaren-dispatcher-mehr.md; circles/260801-1244-guard-rules-write/issues/260805-1839_*_die-lock-regel-sagt-always-when-any-party-commits-und-zwei-skills-committen-ohne-lock.md; circles/260801-1244-guard-rules-write/issues/260805-1840_*_konventionen-active-circle-nothing-else-touches-it.md
 
 ---
 

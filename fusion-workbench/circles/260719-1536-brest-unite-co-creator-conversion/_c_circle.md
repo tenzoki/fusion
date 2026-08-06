@@ -18,7 +18,7 @@ Apply Circle B's context-loading mechanism to the `unite-co-creator` project (a 
 The fusion-side mechanism already shipped: `bin/fusion-rules` topic argument + manifest block, `rules/context-manifest.md` + `rules/context-lean-claude-md.md` conventions (v5.1.0, commit `4620837`). This Circle is the downstream dogfood proof on a consuming project; it produces no fusion-plugin artifacts — all edits land in the `unite-co-creator` repo.
 
 Cites (Origin Rule — reach is cited, not copied):
-- v5.x master plan Circle B steps 5–7: `circles/260718-1924-v5x-overhaul/planning/260718-1001_o_master-plan-fusion-v5x-overhaul.md`
+- v5.x master plan Circle B steps 5–7: `circles/260718-1924-v5x-overhaul/planning/260718-1001_*_master-plan-fusion-v5x-overhaul.md`
 - The context-manifest convention: `rules/context-manifest.md`, `rules/context-lean-claude-md.md`
 
 ## Dependencies

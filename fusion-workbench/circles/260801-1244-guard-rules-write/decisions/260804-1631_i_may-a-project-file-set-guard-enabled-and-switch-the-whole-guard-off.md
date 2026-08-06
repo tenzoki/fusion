@@ -5,7 +5,7 @@
 **Status:** open
 **Filed by:** planner, planning the C5b remediation
 **Cross-references:**
-`circles/260801-1244-guard-rules-write/issues/260804-1602_o_guard-enabled-false-from-the-project-layer-turns-off-the-branch-policy-and-an-active-halt.md` (the measurement that raises this),
+`circles/260801-1244-guard-rules-write/issues/260804-1602_*_guard-enabled-false-from-the-project-layer-turns-off-the-branch-policy-and-an-active-halt.md` (the measurement that raises this),
 `circles/260801-1244-guard-rules-write/analyses/260804-1600-c5b-independent-assessment.md` `### What a consuming project can now do to itself`,
 `hooks/guard.ts:652-657` (the short-circuit), `:660-680` (the Bash dispatch and the self-detect gate it sits above),
 `README-hooks.md:141` (the shipped sentence that already states the consequence, for a file only fusion can write),

@@ -130,3 +130,7 @@ to the orchestrator as a correction to the plan.
 the record flags: for a path list, dropping whole entries and appending `(+N more)` reads
 better than a mid-token ellipsis, and that is a `rulesWriteDetail` change rather than a
 `forEvent` change.
+
+---
+
+**Reconciliation 260806-1152 (reconciler, workbench-wide pass) — stays `_o_`, and is now unowned.** The Circle that priced this deferral ("after the ship, or a later one") closed coherent on 260805-2359; no successor Circle's Grounding claims it. Verified at HEAD `cde5319`: the two advisory emissions at `hooks/guard.ts:565` (`rulesWriteDetail` path list) and `:593` (override note interpolating the command) still bypass the `forEvent()` clamp (`EVENT_DETAIL_MAX = 200`, `hooks/guard.ts:235,246`). Candidate for the same follow-up batch as `circles/260805-2005-textschicht-gegen-code-nachziehen/issues/260806-0022_*_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md` (the portfolio's other unowned residual).

@@ -5,11 +5,11 @@
 **Status:** implemented (corrected from `open` by reconciliation 260804-1021; the filename marker `_i_` was already right)
 **Filed by:** analyst, task T4-1 of `circles/260801-1244-guard-rules-write`
 **Cross-references:**
-`circles/260801-1244-guard-rules-write/issues/260803-1803_o_the-classifier-asserts-a-working-directory-that-cdpath-and-pushd-n-invalidate.md`
+`circles/260801-1244-guard-rules-write/issues/260803-1803_*_the-classifier-asserts-a-working-directory-that-cdpath-and-pushd-n-invalidate.md`
 (the measurement that raised this),
 `circles/260801-1244-guard-rules-write/analyses/260803-1803-guard-path-model-root-cause.md`
 (the analysis recommending the in-command half),
-`circles/260801-1244-guard-rules-write/issues/260803-1431_o_gate-0-misses-the-dotdot-in-a-cd-p-operand-so-a-planted-link-still-spends-the-grant.md`,
+`circles/260801-1244-guard-rules-write/issues/260803-1431_*_gate-0-misses-the-dotdot-in-a-cd-p-operand-so-a-planted-link-still-spends-the-grant.md`,
 `hooks/lib/bash-mutation-guard.ts` (`applyDirEffect`, `resolveDir`, `firstDirArg`),
 `rules/protected-path-discipline.md`
 
@@ -135,6 +135,6 @@ in `rules/protected-path-discipline.md` and in `README-hooks.md`
 
 **Header field corrected.** `**Status:**` read `open` while the marker read `_i_` and both transition lines were filled. Set to `implemented`.
 
-**One cross-reference does not resolve.** `decisions/260803-2338_i_…` cites this record as `260803-1803_a_…`; the marker moved to `_i_` when `b85f6a0` landed. Fourth instance of `shared/issues/260802-1740_o_a-citation-path-carrying-a-state-marker-dies-on-ordinary-progress.md` inside this Circle. Not repaired by hand, for the same reason as the others.
+**One cross-reference does not resolve.** `decisions/260803-2338_i_…` cites this record as `260803-1803_a_…`; the marker moved to `_i_` when `b85f6a0` landed. Fourth instance of `shared/issues/260802-1740_*_a-citation-path-carrying-a-state-marker-dies-on-ordinary-progress.md` inside this Circle. Not repaired by hand, for the same reason as the others.
 
 **One more leftover, same shape as `260803-2338_i_`'s.** This record carries **two** `## Answer` headings. The first, at `:82-89`, still reads "Not yet answered. This needs the user" with a `## Realisation — Not implemented` beneath it; the real answer follows at `:91`. A reader scanning by heading meets the stale one first. Both records that reached `_i_` inside a single Turn carry this, and neither carries it by accident: the answer was appended at the closing gate and the pre-gate text was left in place. Worth a convention note more than a hand-fix — recorded in `history/260804-1021-reconciliation.md`.

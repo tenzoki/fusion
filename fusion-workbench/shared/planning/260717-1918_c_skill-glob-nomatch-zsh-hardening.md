@@ -1,7 +1,7 @@
 # Implementation Plan: harden skill/agent shell globs against zsh no-match abort
 
 **Date:** 2026-07-17
-**Status:** Draft
+**Status:** Complete — verified retroactively at HEAD `cde5319`; see Reconciliation Log.
 **Spec:** none — planned from the defect issue `fusion-workbench/shared/issues/260717-1903[o]-skill-shell-scripts-assume-bash-glob-abort-under-zsh.md`
 
 ## Directive
@@ -230,3 +230,7 @@ Full-suite gate: `npm test` green after step 6, and `claude plugin validate .` s
 
 - [ ] None blocking. The open/answered decisions in scope (`260716-*`, `260717-0033[a]`) concern the Circle-container restructure and the Plane, not shell hygiene; none feeds this plan. The one open decision `260716-1847[o]-offline-verhalten-bei-plane-ausfall` is unrelated.
 - [ ] Cosmetic only: whether to append `| sort` to the cleanup listing (site 12) for deterministic display order. Executor's call at implementation time; not a blocker.
+
+## Reconciliation Log
+
+**260806-1152 (reconciler, workbench-wide pass)** — Status Draft → Complete, retroactive; the marker was already `_c_` while the body still said Draft with no step markers. Evidence the plan was executed: the driving issue `shared/issues/260717-1903_c_skill-shell-scripts-assume-bash-glob-abort-under-zsh.md` carries a Resolved footer naming the delivered shape (`find`-based enumeration, `< <(find …)` process substitution where counters persist, and the `glob-nomatch-lint.test.ts` gate against reintroducing raw `.[!.]*`; verified under zsh 5.9 with 196 hooks tests then green). Spot-checked at HEAD `cde5319`: `skills/migrate/SKILL.md` steps 2/4 run `while IFS= read -r … done < <(find …)` loops throughout, `skills/setup/SKILL.md` and the sibling skills carry the same form, and the lint gate is part of the 30-file suite (1611 green this pass). Site 12's escaped-bracket construct was later simplified by the v5.0.0 underscore-marker change, as the issue footer records.
