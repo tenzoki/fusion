@@ -96,9 +96,17 @@ const running: ChildProcess[] = [];
 /** Start the real monitor against `wb` and return the port it answers on. */
 async function startMonitor(wb: string): Promise<number> {
   const port = await freePort();
+  // MONITOR_BIND=127.0.0.1: the monitor's default bind is 0.0.0.0 (LAN
+  // dashboard), but macOS Local Network privacy parks a non-loopback listener
+  // of an unauthorized process in CLOSED state (netstat shows CLOSED, never
+  // LISTEN) and drops its inbound SYNs — even from loopback — so the fetch
+  // poll below times out whenever the terminal app's Local Network permission
+  // is absent or revoked. A loopback bind is exempt from that filtering,
+  // which makes the suite deterministic regardless of TCC state.
   const proc = spawn(monitorBin, ["test", String(port), "-d", wb], {
     stdio: "ignore",
     detached: true,
+    env: { ...process.env, MONITOR_BIND: "127.0.0.1" },
   });
   running.push(proc);
   const deadline = Date.now() + 15000;
