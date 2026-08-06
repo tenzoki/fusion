@@ -1,5 +1,0 @@
-circle-records.md behauptet, sechs Skills zitierten die Datei direkt — vier davon zitieren sie gar nicht, ein siebter zitiert sie und fehlt
----
-Schweregrad: mittel. rules/circle-records.md:16-18: "/fusion:next, /fusion:direct, /fusion:cleanup, /fusion:archive, /fusion:circle-stash, /fusion:setup — cite it directly". Grep je Skill: next=2 Treffer, direct=3, cleanup=0, archive=0, circle-stash=0, setup=0. circle-stash zitiert stattdessen workbench-stash-and-lock.md. Nebenbefund: /fusion:migrate zitiert die Datei (SKILL.md:94), steht aber nicht in der Liste.
----
-Emittiert an orchestrator, playmaker, shaper; ausgeliefert. Klasse 2/3, verifiziert. Analyse: circles/260801-1244-guard-rules-write/analyses/260805-1840-doku-gesamtpruefung-gegen-code.md
