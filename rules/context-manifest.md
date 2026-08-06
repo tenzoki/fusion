@@ -143,10 +143,14 @@ enforced by `hooks/lib/__tests__/context-manifest.test.ts`.
 If the manifest is present but malformed — a unit missing its `agents` or
 `topics` array, an array that is not a well-formed `[...]`, or a `- path:` /
 `- skill:` with an empty value — `bin/fusion-rules` **stops with a clear error
-on stderr and a non-zero exit (3)**. It does not silently emit a partial set
-(`HYG-NO-SILENT-FAIL`). A half-loaded context is worse than a stopped Setup: the
-agent would run believing it had its rules. An empty manifest (`units: []`, or a
-file of only comments) is valid and emits nothing extra.
+on stderr and a non-zero exit (3)**. The failure is loud, not silent
+(`HYG-NO-SILENT-FAIL`) — but it is not output-free: the helper emits
+progressively, so the always-on set already stands on stdout when the manifest
+is read, and a caller that ignores the exit code is left holding a
+plausible-looking partial set. The exit code is the protection; check it. A
+half-loaded context is worse than a stopped Setup: the agent would run believing
+it had its rules. An empty manifest (`units: []`, or a file of only comments) is
+valid and emits nothing extra.
 
 ## The lean-`CLAUDE.md` convention
 

@@ -168,7 +168,7 @@
  * `opts.env.CDPATH` instead — the only environment variable this classifier
  * reads, and the reason the environment is a parameter. See
  * `ambientCdpathIsSet`; the decision that chose degrading over documenting is
- * `decisions/260803-1803_a_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md`.
+ * `decisions/260803-1803_*_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md`.
  *
  * ## Fail-closed, and its bound
  *
@@ -820,7 +820,7 @@ function gitDirectoryReason(segment) {
  * a reader following that advice rewrites a command that was never the problem.
  * So this one names the variable, and names the two things that actually clear
  * it. Constraint from
- * `decisions/260803-1803_a_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md`:
+ * `decisions/260803-1803_*_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md`:
  * the deny reason has to name `CDPATH` as the cause.
  */
 function ambientCdpathReason(segment, token) {

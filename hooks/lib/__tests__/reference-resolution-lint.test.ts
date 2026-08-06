@@ -79,9 +79,22 @@ const WORKBENCH_PRESENT = existsSync(join(workbenchRoot, ".fusion-setup"));
 interface SurfaceFile {
   rel: string;
   abs: string;
-  /** true: only comment lines (`# …`) are scanned — bin scripts, install.sh */
-  commentOnly: boolean;
+  /** when set, only lines matching it are scanned — bin scripts and install.sh
+   *  (`# …`), hooks/lib TS sources (`// …`, `/* …`, `* …`). Absent: all lines. */
+  commentRe?: RegExp;
+  /** true: only class (c) record citations are scanned. hooks/lib comments are
+   *  classifier documentation, dense with fabricated path operands
+   *  (`rules/retired`, `rules/link`, `rules/up/x`, …) that class (a) would each
+   *  need an EXAMPLE_PATHS entry for — an ever-growing allowlist of exactly the
+   *  kind the exemption-design note above warns against. Record citations are
+   *  the class that measurably rots there (issue 260805-1839: five stale `_a_`
+   *  markers across three modules), and they carry no fabricated twins in
+   *  comments, so class (c) runs at full strength. */
+  recordsOnly?: boolean;
 }
+
+const SH_COMMENT_RE = /^\s*#/;
+const TS_COMMENT_RE = /^\s*(?:\/\/|\/\*|\*)/;
 
 function mdFilesUnder(dir: string): SurfaceFile[] {
   const root = join(pluginRoot, dir);
@@ -90,7 +103,7 @@ function mdFilesUnder(dir: string): SurfaceFile[] {
     .filter((e) => e.isFile() && e.name.endsWith(".md"))
     .map((e) => {
       const abs = join(e.parentPath, e.name);
-      return { rel: relative(pluginRoot, abs).split(sep).join("/"), abs, commentOnly: false };
+      return { rel: relative(pluginRoot, abs).split(sep).join("/"), abs };
     });
 }
 
@@ -103,11 +116,11 @@ function surface(): SurfaceFile[] {
   ];
   for (const d of readdirSync(join(pluginRoot, "skills"))) {
     const abs = join(pluginRoot, "skills", d, "SKILL.md");
-    if (existsSync(abs)) files.push({ rel: `skills/${d}/SKILL.md`, abs, commentOnly: false });
+    if (existsSync(abs)) files.push({ rel: `skills/${d}/SKILL.md`, abs });
   }
   for (const f of readdirSync(pluginRoot)) {
     if (/^README.*\.md$/.test(f) || f === "CLAUDE.md") {
-      files.push({ rel: f, abs: join(pluginRoot, f), commentOnly: false });
+      files.push({ rel: f, abs: join(pluginRoot, f) });
     }
   }
   // bin header comments + install.sh comments — shell scripts only (bin/monitor
@@ -116,10 +129,20 @@ function surface(): SurfaceFile[] {
     const abs = join(pluginRoot, "bin", f);
     if (!statSync(abs).isFile()) continue;
     const head = readFileSync(abs).subarray(0, 2).toString("utf-8");
-    if (head === "#!") files.push({ rel: `bin/${f}`, abs, commentOnly: true });
+    if (head === "#!") files.push({ rel: `bin/${f}`, abs, commentRe: SH_COMMENT_RE });
   }
   const inst = join(pluginRoot, "install.sh");
-  if (existsSync(inst)) files.push({ rel: "install.sh", abs: inst, commentOnly: true });
+  if (existsSync(inst)) files.push({ rel: "install.sh", abs: inst, commentRe: SH_COMMENT_RE });
+  // hooks/lib TS sources, comment lines only, class (c) only (see the
+  // recordsOnly doc above). The module docstrings cite the decision records
+  // that shaped the guard, and those citations rot exactly like the markdown
+  // surface's. Code lines stay out of scope: string literals there are
+  // classifier inputs and deny-reason text, not references.
+  for (const f of readdirSync(join(pluginRoot, "hooks", "lib"))) {
+    const abs = join(pluginRoot, "hooks", "lib", f);
+    if (!statSync(abs).isFile() || !f.endsWith(".ts")) continue;
+    files.push({ rel: `hooks/lib/${f}`, abs, commentRe: TS_COMMENT_RE, recordsOnly: true });
+  }
   return files;
 }
 
@@ -129,7 +152,7 @@ function scannedLines(f: SurfaceFile): { line: number; text: string }[] {
   readFileSync(f.abs, "utf-8")
     .split("\n")
     .forEach((raw, i) => {
-      if (f.commentOnly && !/^\s*#/.test(raw)) return;
+      if (f.commentRe && !f.commentRe.test(raw)) return;
       out.push({ line: i + 1, text: raw });
     });
   return out;
@@ -231,7 +254,7 @@ const ANCHOR_RE = /`([A-Za-z0-9._\/-]+\.md)`\s*(?:→\s*)?`(#{1,6}) ([^`]+)`/g;
 function shippedMd(): Map<string, string[]> {
   const byBase = new Map<string, string[]>();
   for (const f of surface()) {
-    if (f.commentOnly) continue;
+    if (f.commentRe) continue;
     const base = f.rel.split("/").pop()!;
     byBase.set(base, [...(byBase.get(base) ?? []), f.rel]);
   }
@@ -518,10 +541,11 @@ function runAll() {
   const byBase = shippedMd();
   const all: Violation[] = [];
   const counts = { paths: 0, anchors: 0, records: 0 };
+  const none = { violations: [], resolved: 0 };
   for (const f of surface()) {
     const lines = scannedLines(f);
-    const a = scanPluginPaths(f.rel, lines);
-    const b = scanHeadingAnchors(f.rel, lines, byBase);
+    const a = f.recordsOnly ? none : scanPluginPaths(f.rel, lines);
+    const b = f.recordsOnly ? none : scanHeadingAnchors(f.rel, lines, byBase);
     const c = scanRecordCitations(f.rel, lines);
     all.push(...a.violations, ...b.violations, ...c.violations);
     counts.paths += a.resolved;

@@ -110,7 +110,7 @@ export function foldCase(path) {
  * ## Why UNCONDITIONALLY, and not only where the filesystem folds
  *
  * The user's decision, recorded at
- * `circles/260801-1244-guard-rules-write/decisions/260803-1419_a_how-should-the-protected-path-check-treat-the-case-of-a-path.md`.
+ * `circles/260801-1244-guard-rules-write/decisions/260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md`.
  * A boundary that differs by platform has to be re-stated in every document
  * that describes it, and is then discovered rather than known. Folding
  * everywhere over-blocks on a case-sensitive filesystem, where `AGENTS/coder.md`

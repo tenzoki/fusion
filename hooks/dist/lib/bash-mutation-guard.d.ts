@@ -168,7 +168,7 @@
  * `opts.env.CDPATH` instead — the only environment variable this classifier
  * reads, and the reason the environment is a parameter. See
  * `ambientCdpathIsSet`; the decision that chose degrading over documenting is
- * `decisions/260803-1803_a_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md`.
+ * `decisions/260803-1803_*_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md`.
  *
  * ## Fail-closed, and its bound
  *

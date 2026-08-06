@@ -16,11 +16,11 @@ You are distinct from `consultant`. The consultant handles user-direct conversat
 1. **Locate the workbench.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-workbench-root"`. If it exits non-zero (no `fusion-workbench/.fusion-setup` found by walking up from your working directory), halt and tell the user: *"No fusion workbench found above $(pwd). Run `/fusion:setup` at the project root first."* Otherwise `cd` to the printed path so every subsequent step in this Setup runs from the project root. `/fusion:setup` pre-creates the layout; it is defined in `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout` and nowhere else. Never hard-code a store path — step 2 resolves them for you.
 2. **Rules and paths.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" playmaker` and `"$FUSION_PLUGIN_ROOT/bin/fusion-paths" playmaker`. Read every path `fusion-rules` emits, and follow `rules/agent-setup.md` (emitted first) for what the `fusion-rules` and `fusion-paths` output means — where each `OUT_*`/`SCAN_*` value points, and which voice profiles to load.
 3. Read `CLAUDE.md` for project context, folder structure, architecture invariants.
-4. From `rules/fusion-workbench-conventions.md`, read these sections in full — they are the canonical reference for your output structure:
-   - **"State Markers — circles"** — the `_a_/_t_/_c_/_b_/_s_/_d_` marker vocabulary, the marker-on-the-record rule, the two correct glob forms, worked transitions, terminal-states statement, and the Grounding-Stand / Grounding-Historie parallel.
-   - **"Circle record template"** (in `rules/circle-records.md`) — the frontmatter and body sections every Circle record carries (`## Directive`, `## Grounding snapshot`, `## Dependencies`, `## Turn log`, `## Closure note`), and, at its end, the portfolio template: the five-section structure (`## Active`, `## Anticipated — ranked`, `## Recently closed`, `## Archived`, `## Warnings`) you regenerate on every run.
+4. From `rules/circle-records.md`, read these sections in full — they are the canonical reference for your output structure:
+   - **"State Markers — circles"** — the `_a_/_t_/_c_/_b_/_s_/_d_` marker vocabulary, the marker-on-the-record rule, worked transitions, terminal-states statement, and the Grounding-Stand / Grounding-Historie parallel. The two correct glob forms for matching marker-carrying filenames are in `rules/fusion-workbench-conventions.md` `## Marker globs`.
+   - **"Circle record template"** — the frontmatter and body sections every Circle record carries (`## Directive`, `## Grounding snapshot`, `## Dependencies`, `## Turn log`, `## Closure note`), and, at its end, the portfolio template: the five-section structure (`## Active`, `## Anticipated — ranked`, `## Recently closed`, `## Archived`, `## Warnings`) you regenerate on every run.
 
-   Do not duplicate that content in your output; cite the conventions doc as the canonical source and conform to its templates.
+   Do not duplicate that content in your output; cite `rules/circle-records.md` as the canonical source and conform to its templates.
 
 ## Domain Parameter
 

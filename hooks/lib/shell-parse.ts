@@ -126,9 +126,8 @@ export interface ParseOptions {
  *    `(A || B) && C` — reaching `C` proves the list returned zero and says
  *    nothing about whether `B` ran. `|` does not reach past `&&` either, and a
  *    pipeline element runs in a bash subshell. A consumer that reads this field
- *    as "the previous segment ran" is wrong in both shapes; both are open and
- *    argued in
- *    `circles/260801-1244-guard-rules-write/decisions/260804-0947_o_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`.
+ *    as "the previous segment ran" is wrong in both shapes; both are argued in
+ *    `circles/260801-1244-guard-rules-write/decisions/260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`.
  */
 export type SegmentJoiner =
   | "start"

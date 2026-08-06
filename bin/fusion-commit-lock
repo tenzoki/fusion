@@ -15,7 +15,11 @@
 # mkdir either creates the directory exclusively or fails). On success, the
 # holder file `.commit-lock/holder` records tag, PID, and acquired_at. The
 # stale-lock detector force-releases the lock if the holder PID is dead and
-# the lock is older than 60 seconds.
+# the lock is older than 60 seconds. A lock directory WITHOUT a holder file
+# (holder died between mkdir and the holder write, or the directory was
+# created some other way) is aged on the directory's own mtime and
+# force-released past the same threshold — otherwise it would block acquire
+# forever with nothing recorded to go stale.
 #
 # Usage:
 #   fusion-commit-lock acquire <tag>
@@ -82,6 +86,23 @@ ts_to_epoch() {
   return 1
 }
 
+# Modification time of a file or directory in epoch seconds. Best-effort:
+# tries BSD `stat -f` first (macOS), falls back to GNU `stat -c`. Prints
+# epoch on stdout; prints nothing on failure.
+mtime_epoch() {
+  local target="$1"
+  local epoch
+  if epoch="$(stat -f %m "$target" 2>/dev/null)"; then
+    printf '%s\n' "$epoch"
+    return 0
+  fi
+  if epoch="$(stat -c %Y "$target" 2>/dev/null)"; then
+    printf '%s\n' "$epoch"
+    return 0
+  fi
+  return 1
+}
+
 read_holder_field() {
   local field="$1"
   if [ ! -f "$HOLDER_FILE" ]; then
@@ -91,9 +112,28 @@ read_holder_field() {
 }
 
 is_stale_lock() {
-  # Returns 0 (true) if the lock dir exists, is older than STALE_AFTER_SECONDS,
-  # and the recorded PID is no longer running. Otherwise returns 1.
+  # Returns 0 (true) if the lock is reapable: the lock dir exists, is older
+  # than STALE_AFTER_SECONDS, and either the recorded PID is no longer running
+  # or there is no holder file at all (aged on the directory's mtime — a
+  # holder-less directory records no PID and no acquired_at, so without this
+  # branch it could never go stale and acquire would block forever).
+  # Otherwise returns 1.
+  if [ ! -d "$LOCK_DIR" ]; then
+    return 1
+  fi
   if [ ! -f "$HOLDER_FILE" ]; then
+    # Holder-less lock directory. Younger than the threshold it may belong to
+    # a live holder between `mkdir` and the holder write — leave it alone.
+    local dir_epoch now_epoch age
+    dir_epoch="$(mtime_epoch "$LOCK_DIR" || true)"
+    if [ -z "$dir_epoch" ]; then
+      return 1
+    fi
+    now_epoch="$(date -u +%s)"
+    age=$(( now_epoch - dir_epoch ))
+    if [ "$age" -ge "$STALE_AFTER_SECONDS" ]; then
+      return 0
+    fi
     return 1
   fi
   local acquired_at pid acquired_epoch now_epoch age
@@ -158,7 +198,11 @@ do_acquire() {
     if [ "$first_fail" -eq 1 ]; then
       local other_tag
       other_tag="$(read_holder_field tag 2>/dev/null || echo '?')"
-      echo "fusion-commit-lock: waiting for commit lock held by ${other_tag}..." >&2
+      if [ -z "$other_tag" ] || [ "$other_tag" = "?" ]; then
+        echo "fusion-commit-lock: waiting for commit lock held by ?... (no holder file in ${LOCK_DIR}; run 'fusion-commit-lock check', or remove the directory manually if no commit is running — it is force-released after ${STALE_AFTER_SECONDS}s)" >&2
+      else
+        echo "fusion-commit-lock: waiting for commit lock held by ${other_tag}..." >&2
+      fi
       first_fail=0
     fi
     # Sleep in seconds (fractional seconds work on macOS/Linux bash). Force
@@ -173,7 +217,11 @@ do_acquire() {
 
 do_release() {
   if [ ! -f "$HOLDER_FILE" ]; then
-    echo "fusion-commit-lock: not currently held by anyone" >&2
+    if [ -d "$LOCK_DIR" ]; then
+      echo "fusion-commit-lock: lock directory ${LOCK_DIR} exists but records no holder; refusing to guess. It is force-released by the next acquire once older than ${STALE_AFTER_SECONDS}s, or remove it manually (rmdir) if no commit is running." >&2
+    else
+      echo "fusion-commit-lock: not currently held by anyone" >&2
+    fi
     return 1
   fi
   local pid tag
