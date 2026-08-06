@@ -17,13 +17,20 @@ When the user invokes `/fusion:commit`, help them commit their changes with a we
    git diff --stat
    ```
 
-2. **If no staged changes, ask about staging**
-   - Show unstaged changes
-   - Ask if user wants to stage all, specific files, or cancel
-   - If `--all` flag provided, stage all changes automatically
+2. **Select what to commit — do NOT stage yet**
+   - Anything already staged when the skill starts is part of the commit; note it.
+   - Show the unstaged changes and ask which to include: all, specific files, or cancel
+   - If `--all` flag provided, include all changes automatically
+   - Record the selected paths as a list. Run **no** `git add` here — staging
+     happens inside the locked step 6. Parallel sessions share one `.git/index`,
+     and `git commit` commits the whole index: files staged now would sit
+     unprotected across the confirmation window below, where any parallel
+     committer holding the lock would absorb them into its own commit.
 
 3. **Analyze changes**
-   - Read the staged diff: `git diff --cached`
+   - Read what will be committed: `git diff --cached` for anything already
+     staged, plus `git diff -- <selected paths>` (and the content of selected
+     untracked files) for the rest
    - Understand what was modified, added, deleted
    - Identify the type: feature, fix, refactor, docs, test, chore, etc.
 
@@ -60,18 +67,25 @@ When the user invokes `/fusion:commit`, help them commit their changes with a we
    - Display the proposed commit message
    - Ask user to confirm, edit, or cancel
 
-6. **Execute commit**
+6. **Stage and commit as one held pair**
 
-   Commit under the project's commit lock — it serialises access to the shared git index against any parallel session's agents (`rules/workbench-stash-and-lock.md` `## Commit lock`; the `with` form acquires, runs, and releases on any exit):
+   Write the confirmed message to a scratch file (HEREDOC), then run stage and
+   commit as a single command under the project's commit lock — it serialises
+   access to the shared git index against any parallel session's agents
+   (`rules/workbench-stash-and-lock.md` `## Commit lock`; the `with` form
+   acquires, runs, and releases on any exit). The pair must be held together:
+   the lock only defends against commit absorption if no path is staged
+   outside it.
 
    ```bash
-   "$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with commit -- git commit -m "<message>"
+   "$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with commit -- bash -c 'git add <path> <path> && git commit -F <msg-file>'
    ```
 
-   If staging is still pending at this point (the user picked files in step 2 but nothing was staged yet), run stage and commit as one held pair:
+   Only when there is nothing to stage (everything to commit was already
+   staged before the skill started) does the bare form apply:
 
    ```bash
-   "$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with commit -- bash -c 'git add <path> <path> && git commit -m "<message>"'
+   "$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with commit -- git commit -F <msg-file>
    ```
 
 7. **Show result**
@@ -103,7 +117,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ## Flags
 
-- `--all`: Stage all changes before committing
+- `--all`: Include all changes (staged inside the locked step 6, not earlier)
 - `--amend`: Amend the previous commit (use with caution)
 
 ## Safety

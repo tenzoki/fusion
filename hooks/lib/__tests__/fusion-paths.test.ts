@@ -582,11 +582,11 @@ describe("bin/fusion-paths", () => {
     // this script reads, so the preference is one assignment; these tests pin
     // both its presence and its bound.
 
-    function makePluginRepo(pluginName: string): void {
+    function makePluginRepo(pluginName: string, manifestJson?: string): void {
       mkdirSync(join(project, ".claude-plugin"), { recursive: true });
       writeFileSync(
         join(project, ".claude-plugin", "plugin.json"),
-        `{ "name": "${pluginName}" }\n`,
+        manifestJson ?? `{ "name": "${pluginName}" }\n`,
       );
       mkdirSync(join(project, "agents"), { recursive: true });
       // A prompt that exists ONLY in this fake repo. The real script (its
@@ -613,6 +613,24 @@ describe("bin/fusion-paths", () => {
       // matching hooks/lib/self-detect.ts. Another plugin's repo is an
       // ordinary consuming project.
       expect(r.status).toBe(2);
+      expect(r.stderr).toContain("unknown name");
+    });
+
+    it("does not prefer the work tree when only a NESTED object names fusion", () => {
+      // The criterion is the TOP-LEVEL "name" — matching self-detect.ts's
+      // `pkg.name === "fusion"` after JSON.parse. A `"name": "fusion"` pair
+      // buried in a sub-object (author, dependency entry) must not flip the
+      // bash half while the TS half says no (issue 260806-0854).
+      makePluginRepo(
+        "irrelevant",
+        `{ "author": { "name": "fusion" }, "name": "other" }\n`,
+      );
+      const r = run(project, "fakeagent");
+      expect(
+        r.status,
+        "exit 0 means bin/fusion-plugin-cwd matched the nested name and the " +
+          "script resolved prompts from the work tree",
+      ).toBe(2);
       expect(r.stderr).toContain("unknown name");
     });
   });

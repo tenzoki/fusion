@@ -1156,7 +1156,9 @@ class ReuseServer(http.server.ThreadingHTTPServer):
 server = ReuseServer((BIND, PORT), Handler)
 
 # Loopback-only bind: no LAN URL to print, the server answers on 127.0.0.1 only.
-LOOPBACK_BINDS = ("127.0.0.1", "localhost", "::1")
+# IPv4 spellings only — the server is AF_INET (ThreadingHTTPServer default), so
+# an IPv6 bind like ::1 fails at construction and never reaches this check.
+LOOPBACK_BINDS = ("127.0.0.1", "localhost")
 
 # Best-effort LAN address for the printed URL only — failure to detect an
 # address must never be fatal.

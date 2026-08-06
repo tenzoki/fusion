@@ -137,7 +137,7 @@ If `--dry-run`, report what it would write without writing.
 
 ## Step 7 — Commit the housekeeping artifacts, then push
 
-Steps 3–6 produce changes: reconciler's tracking-file updates, the archive moves, the `CLAUDE.md` revision, and the activity log. Commit them now, in meaningful splits, exactly as in Step 2 (explicit staging, Conventional Commits messages, HEREDOC, no amend). Typical splits:
+Steps 3–6 produce changes: reconciler's tracking-file updates, the archive moves, the `CLAUDE.md` revision, and the activity log. Commit them now, in meaningful splits, exactly as in Step 2 (explicit staging, Conventional Commits messages, message via scratch file + `-F`, each stage+commit pair under `fusion-commit-lock with cleanup --`, no amend). Typical splits:
 
 - `chore(workbench): reconcile tracking files` — reconciler output
 - `chore(workbench): archive stale files (tier-1)` — the archive moves
