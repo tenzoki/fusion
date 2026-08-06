@@ -862,3 +862,9 @@
 {"ts":"2026-08-06T22:01:45","event":"gate_response","detail":"plan approved; constraint-1 reading = per-transition shell justification; both adopted defects in scope"}
 {"ts":"2026-08-06T22:01:45","event":"turn_start","turn":1,"detail":"head=38c5123; ready tasks: S1, S9, S10 (no dependencies)"}
 {"ts":"2026-08-06T22:01:45","event":"task_start","turn":1,"task":"S1","agent":"coder","detail":"measurement instrument: generator + shell witness + baseline fixture"}
+{"ts":"2026-08-06T22:19:05","event":"conceptrev_done","agent":"conceptrev","detail":"verdict=tangled; diagram 2 modelling gap: multi-line if/then still denies"}
+{"ts":"2026-08-06T22:19:05","event":"task_done","turn":1,"task":"S1","agent":"coder","detail":"3dc5014 — 24304-row generator, shell witness, 448-row baseline"}
+{"ts":"2026-08-06T22:19:05","event":"commit","turn":1,"detail":"ac1399e activation+planning; 3dc5014 S1 instrument"}
+{"ts":"2026-08-06T22:19:05","event":"gate_hit","turn":1,"detail":"design gap found by conceptrev before S2 — plan repair needed"}
+{"ts":"2026-08-06T23:41:37","event":"gate_response","turn":1,"detail":"repair design via planner; GIT_WORK_TREE bypass stays in backlog"}
+{"ts":"2026-08-06T23:41:37","event":"planner_start","turn":1,"agent":"planner","detail":"repair pass: edge vocabulary gap + closing-word vocabulary"}
