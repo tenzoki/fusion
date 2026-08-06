@@ -1,0 +1,14 @@
+# Enumerations-Lint: eine Conditional-Emission mit unparsbarer Bedingung fällt stumm aus der Prüfung — die Nicht-Vakuitäts-Schwelle bemerkt erst den Totalverlust
+
+---
+
+`conditionalEmissions()` in `hooks/lib/__tests__/derivable-enumerations-lint.test.ts` (Zeile 244) leitet zu jeder eingerückten `emit_if_exists`-Zeile die Agentenmenge aus der umgebenden `if`-Bedingung ab — erkennt aber nur zwei Bedingungsformen (ein `IS_<X>_AGENT`-Flag oder ein einzelnes `"$AGENT" = "<literal>"`). Jede andere Form (zusammengesetzte Bedingung mit `||`, zwei Literale, eine künftige neue Flag-Konvention) läuft in `if (!agents) continue;` — die Emission verschwindet **ohne jede Buchung** aus der Prüfmenge.
+
+Der Header verspricht das Gegenteil: "If the script's shape changes, the parser finds nothing and the non-vacuity assertion fails loudly." Das stimmt nur für den Totalverlust — die Schwelle ist `emissions.length > 2`. Eine **einzelne** neue Conditional-Emission mit unerkannter Bedingungsform bleibt ungeprüft, während die Zählung grün bleibt; genau ihre README-Zeile kann dann unbemerkt driften. Dieselbe Stille gilt für `alwaysOnList()`: eine einzelne umformatierte `emit_if_exists`-Zeile (etwa mit Trailing-Kommentar) fällt aus der Liste, und die README-Bullet-Prüfung verlangt sie dann nicht mehr.
+
+---
+
+Kontext: Gefunden im Inkrementalreview Turn 3–4 (Commit `a1b7872`). Fix-Richtung: Vollständigkeits-Assertion statt bloßer Mindestzahl — alle eingerückten `emit_if_exists`-Zeilen des Skripts zählen und verlangen, dass jede entweder in `conditionalEmissions()` gelandet ist oder auf einer expliziten, begründeten Skip-Liste steht; analog für die unindentierten Zeilen gegen `alwaysOnList()`. Dann schlägt ein neuer, unverstandener Block laut fehl statt still zu verschwinden — dieselbe Ehrlichkeitsmechanik, die der Test den EXAMPLE_PATHS bereits antut. Schwere: Low — heute deckt der Parser alle vorhandenen Blöcke (Lauf dieser Session: alle Tests grün, abgeleitete Emissionen > 2 und vollständig); das Loch öffnet sich erst mit der nächsten Formvariante.
+
+---
+Resolved: Vollständigkeits-Assertion in derivable-enumerations-lint.test.ts ergänzt ("accounts for every emit_if_exists line"): ein dummer Zähler findet jede `emit_if_exists "$PLUGIN_RULES_DIR/..."`-Zeile des Skripts (nach Einrückung getrennt) und verlangt, dass jede eingerückte in conditionalEmissions() und jede uneingerückte in alwaysOnList() gelandet ist; der Fehlbetrag nennt die unverbuchten Regel-Dateien und die Fix-Richtung (Parser die neue Form beibringen bzw. die alwaysOnList-Regex nachziehen). Falsifiziert mit einer temporär eingefügten Conditional-Emission unter einem unbekannten Flag (`IS_NEWFANGLED_FLAG`): der Test schlug laut fehl und nannte `probe-unparseable.md`; Probe danach rückstandsfrei entfernt (git diff leer). Damit deckt die Buchung auch die im Issue benannte alwaysOnList-Stille (umformatierte Einzelzeile) ab.

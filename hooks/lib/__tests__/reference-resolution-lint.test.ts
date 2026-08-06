@@ -54,8 +54,12 @@ import { dirname, resolve, join, relative, sep } from "node:path";
 //     anywhere but the marker position) is template syntax, not a reference;
 //   - a class-(c) token on a blockquote line (`> …`) sits in a worked
 //     before/after example (user-facing-output.md's example session reports);
-//   - a class-(c) token preceded by `e.g.` on its own line is an announced
-//     illustration (playmaker's rationale examples);
+//   - a class-(c) token following `e.g.` within the SAME clause of the line is
+//     an announced illustration (playmaker's rationale examples). The bound is
+//     the clause, not the line: a `)`, a `;` or a sentence end between the
+//     `e.g.` and the token closes the announcement, so a citation in a later
+//     clause that merely shares the line with an unrelated `e.g.` is resolved
+//     normally;
 //   - a class-(c) token whose slug contains `foo` is a fabricated name
 //     (`plan-foo` in circle-records.md and migrate);
 //   - `rules/decision-record-examples.md` is exempt from class (c) wholesale:
@@ -353,6 +357,23 @@ function inFooterTemplateSpan(before: string): boolean {
   return /`(?:Answered|Implemented|Deferred|Superseded by|Resolved):[^`]*$/.test(before);
 }
 
+/**
+ * A class-(c) token announced as an illustration by `e.g.`: exempt only while
+ * the clause the `e.g.` opened is still running. A `)`, a `;` or a sentence
+ * end (`. ` after the `e.g.`) between the `e.g.` and the token closes the
+ * announcement — without that bound, ANY earlier `e.g.` on the line exempted
+ * every later citation, and a dead citation four words behind an unrelated
+ * `(e.g. \`en\`)` passed silently (issue 260806-1031, the swallow-a-real-defect
+ * shape the exemption-design note above warns against).
+ */
+function inAnnouncedIllustration(before: string): boolean {
+  const at = before.lastIndexOf("e.g.");
+  if (at === -1) return false;
+  if (at > 0 && /[A-Za-z0-9_]/.test(before[at - 1])) return false; // word boundary
+  const sinceEg = before.slice(at + "e.g.".length);
+  return !/[);]|\.\s/.test(sinceEg);
+}
+
 interface WorkbenchEntry {
   relDir: string; // directory relative to the workbench root, "/"-joined
   base: string;
@@ -429,7 +450,7 @@ function scanRecordCitations(
     ) => {
       if (covered.some(([s, e]) => idx >= s && idx < e)) return;
       covered.push([idx, idx + token.length]);
-      if (/\be\.g\./.test(text.slice(0, idx))) return; // announced illustration
+      if (inAnnouncedIllustration(text.slice(0, idx))) return; // clause-bounded — see above
       if (inFooterTemplateSpan(text.slice(0, idx))) return; // footer-syntax illustration
       if (isPlaceholder(token)) return;
       if (token.includes("foo")) return; // fabricated name (plan-foo)
@@ -744,6 +765,18 @@ describe.runIf(WORKBENCH_PRESENT)("reference-resolution lint: class (c) behaviou
     // same-named record exists in that store — assert only the non-crash shape
     // plus that a violation, if any, names where the record lives.
     for (const v of violations) expect(v.problem).toMatch(/wrong store path|no record/);
+  });
+
+  it("the e.g. exemption is clause-bounded: a dead citation after the e.g.'s clause closed still fires", () => {
+    // The false-negative shape of issue 260806-1031: the `e.g.` opens and
+    // closes an unrelated parenthesis; the dead citation sits in a later
+    // clause of the same line and must be resolved, not exempted.
+    const { violations } = scanRecordCitations(
+      "fixture.md",
+      L("the default (e.g. `en`) is set per decision `990101-0101_o_never-existed.md`"),
+    );
+    expect(violations.length).toBe(1);
+    expect(violations[0].token).toContain("990101-0101");
   });
 
   it("skips announced illustrations, blockquotes, and fabricated names", () => {

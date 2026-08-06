@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { spawnSync } from "node:child_process";
-import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, utimesSync, writeFileSync } from "node:fs";
+import { spawn, spawnSync, type ChildProcess } from "node:child_process";
+import { chmodSync, copyFileSync, existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, join } from "node:path";
@@ -136,6 +136,92 @@ describe("fusion-commit-lock: holder-less lock directory", () => {
     expect(r.stderr).toContain("no holder");
     expect(existsSync(lockDir)).toBe(true);
   });
+});
+
+describe("fusion-commit-lock: the holder write is noclobber (issue 260806-1030, reaped slow creator)", () => {
+  // The race the noclobber write closes: a creator suspended between `mkdir`
+  // and the holder write for >= 60s gets reaped by the holder-less aging; on
+  // resume, a plain `>` would silently overwrite the reaping waiter's fresh
+  // holder and BOTH parties would believe they hold the lock. With `set -C`
+  // the late write fails and the creator treats the acquisition as lost.
+  //
+  // The suspension is simulated by driving a patched COPY of the real script
+  // with an injected `sleep` between `mkdir` and the holder write — the same
+  // reproduction the review used to demonstrate the race. The patch anchor is
+  // asserted, so a reshaped script fails loudly here instead of testing the
+  // wrong seam.
+  const CREATOR_DELAY_S = 4;
+
+  const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+  async function pollUntil(cond: () => boolean, timeoutMs: number): Promise<boolean> {
+    const until = Date.now() + timeoutMs;
+    while (Date.now() < until) {
+      if (cond()) return true;
+      await sleep(100);
+    }
+    return cond();
+  }
+
+  it(
+    "a creator reaped between mkdir and its holder write loses the acquisition instead of overwriting the waiter's holder",
+    async () => {
+      // A patched copy of the script, next to a copy of fusion-workbench-root
+      // (the script resolves the helper via its own dirname).
+      const src = readFileSync(script, "utf-8");
+      const anchor = 'if mkdir "$LOCK_DIR" 2>/dev/null; then';
+      expect(src, "the mkdir anchor left bin/fusion-commit-lock — update this test's patch seam").toContain(anchor);
+      const patched = src.replace(anchor, `${anchor}\n    sleep "\${FUSION_TEST_HOLDER_WRITE_DELAY:-0}"`);
+      const binDir = join(projectRoot, "bin");
+      mkdirSync(binDir);
+      copyFileSync(join(pluginRoot, "bin", "fusion-workbench-root"), join(binDir, "fusion-workbench-root"));
+      chmodSync(join(binDir, "fusion-workbench-root"), 0o755);
+      const patchedScript = join(binDir, "fusion-commit-lock");
+      writeFileSync(patchedScript, patched, { mode: 0o755 });
+
+      let creator: ChildProcess | null = null;
+      let creatorStderr = "";
+      try {
+        creator = spawn(patchedScript, ["acquire", "creator"], {
+          cwd: projectRoot,
+          env: { ...process.env, FUSION_TEST_HOLDER_WRITE_DELAY: String(CREATOR_DELAY_S) },
+          stdio: ["ignore", "ignore", "pipe"],
+        });
+        creator.stderr!.on("data", (d: Buffer) => { creatorStderr += d.toString(); });
+
+        // 1. The creator mkdirs, then stalls before its holder write.
+        expect(
+          await pollUntil(() => existsSync(lockDir) && !existsSync(holderFile), 10_000),
+          "the creator never created a holder-less lock directory",
+        ).toBe(true);
+
+        // 2. Its stall crosses the stale threshold (backdated, not waited out).
+        backdate(lockDir, STALE_AFTER_SECONDS + 30);
+
+        // 3. A waiter reaps the aged holder-less directory and acquires.
+        const waiter = run(["acquire", "waiter"], 10_000);
+        expect(waiter.status, waiter.stderr).toBe(0);
+        expect(waiter.stderr).toContain("stale lock detected");
+        expect(readFileSync(holderFile, "utf-8")).toMatch(/^tag: waiter$/m);
+
+        // 4. The creator resumes, its noclobber holder write fails against the
+        //    waiter's holder, and it re-enters the poll loop as a plain waiter
+        //    — observable as the first-fail message naming the real holder.
+        expect(
+          await pollUntil(() => creatorStderr.includes("waiting for commit lock held by waiter"), (CREATOR_DELAY_S + 6) * 1000),
+          `creator never reported losing the acquisition; stderr so far:\n${creatorStderr}`,
+        ).toBe(true);
+
+        // The waiter's holder survived the creator's resume...
+        expect(readFileSync(holderFile, "utf-8")).toMatch(/^tag: waiter$/m);
+        // ...and the creator did not return success: it is still polling.
+        expect(creator.exitCode, "the creator exited although the lock is held by the waiter").toBeNull();
+      } finally {
+        creator?.kill("SIGTERM");
+      }
+    },
+    30_000,
+  );
 });
 
 describe("fusion-commit-lock: stale holder file (the pre-existing reap path)", () => {

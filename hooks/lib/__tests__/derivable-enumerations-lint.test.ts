@@ -265,6 +265,55 @@ describe("enumeration lint: the conditional emission sets", () => {
     expect(phantom, "derived agent names that are not agents/<name>.md").toEqual([]);
   });
 
+  it("accounts for every emit_if_exists line: an unparseable block fails loudly instead of vanishing", () => {
+    // The completeness assertion the header's loud-failure promise needs
+    // (issue 260806-1031): conditionalEmissions() drops an emission whose
+    // if-condition it cannot classify (`if (!agents) continue`), and
+    // alwaysOnList()'s strict regex drops a reshaped line — in both cases the
+    // non-vacuity floors (> 2 / > 3) notice only TOTAL parser loss, so a
+    // single new block in an unrecognized form went unchecked while the count
+    // stayed green. Here a dumb count — every line whose command word is
+    // emit_if_exists with a $PLUGIN_RULES_DIR argument, split by indentation —
+    // must equal what the two parsers derived, and a shortfall names the
+    // unaccounted rule files.
+    const text = read("bin/fusion-rules");
+    const dumbIndented: string[] = [];
+    const dumbUnindented: string[] = [];
+    for (const line of text.split("\n")) {
+      const m = line.match(/^(\s*)emit_if_exists "\$PLUGIN_RULES_DIR\/([^"]+)"/);
+      if (!m) continue;
+      (m[1].length > 0 ? dumbIndented : dumbUnindented).push(m[2]);
+    }
+
+    const tally = (files: string[]) => {
+      const c = new Map<string, number>();
+      for (const f of files) c.set(f, (c.get(f) ?? 0) + 1);
+      return c;
+    };
+    const unaccounted = (dumb: string[], parsed: string[]) => {
+      const have = tally(parsed);
+      const missing: string[] = [];
+      for (const [f, n] of tally(dumb)) {
+        if ((have.get(f) ?? 0) < n) missing.push(f);
+      }
+      return missing;
+    };
+
+    expect(
+      unaccounted(dumbIndented, emissions.map((e) => e.file)),
+      "indented emit_if_exists lines that conditionalEmissions() did not derive — " +
+        "their if-condition is in a form the parser does not classify " +
+        "(compound condition, two literals, a new flag convention); teach the parser " +
+        "the new form so these emissions are checked again",
+    ).toEqual([]);
+    expect(
+      unaccounted(dumbUnindented, alwaysOnList()),
+      "unindented emit_if_exists lines that alwaysOnList() did not parse — " +
+        "the line was reshaped (trailing comment, changed quoting); update the " +
+        "alwaysOnList() regex so the README bullet check covers them again",
+    ).toEqual([]);
+  });
+
   it("README-agents co-mentions each conditional rule file with its full derived agent set", () => {
     // Co-mention on ONE line is the checkable half (see the boundary note in
     // the header): an agent added to the script's set but absent from the doc

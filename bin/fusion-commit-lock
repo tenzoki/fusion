@@ -14,12 +14,17 @@
 # Mechanism: atomic `mkdir fusion-workbench/.commit-lock/` (POSIX guarantees
 # mkdir either creates the directory exclusively or fails). On success, the
 # holder file `.commit-lock/holder` records tag, PID, and acquired_at. The
-# stale-lock detector force-releases the lock if the holder PID is dead and
-# the lock is older than 60 seconds. A lock directory WITHOUT a holder file
-# (holder died between mkdir and the holder write, or the directory was
-# created some other way) is aged on the directory's own mtime and
-# force-released past the same threshold — otherwise it would block acquire
-# forever with nothing recorded to go stale.
+# holder write is noclobber (`set -C`): if a holder file already exists, this
+# process was suspended between mkdir and the write, got reaped by the
+# holder-less aging below, and another party now holds the lock — the write
+# fails and the acquisition counts as lost (re-enter the poll loop) instead
+# of silently overwriting the new holder. The stale-lock detector
+# force-releases the lock if the holder PID is dead and the lock is older
+# than 60 seconds. A lock directory WITHOUT a holder file (holder died
+# between mkdir and the holder write, or the directory was created some
+# other way) is aged on the directory's own mtime and force-released past
+# the same threshold — otherwise it would block acquire forever with nothing
+# recorded to go stale.
 #
 # Usage:
 #   fusion-commit-lock acquire <tag>
@@ -172,11 +177,28 @@ try_acquire() {
   # On failure: return 1.
   local tag="$1"
   if mkdir "$LOCK_DIR" 2>/dev/null; then
-    {
-      printf 'tag: %s\n' "$tag"
-      printf 'pid: %s\n' "$$"
-      printf 'acquired_at: %s\n' "$(now_utc)"
-    } > "$HOLDER_FILE"
+    # Noclobber write (`set -C`, scoped to the subshell): the write FAILS if a
+    # holder file already exists. That happens when this process stalled
+    # between the mkdir above and this write for >= STALE_AFTER_SECONDS
+    # (SIGSTOP, system sleep, extreme load), the holder-less aging reaped the
+    # directory, and another acquirer took the lock and wrote its own holder.
+    # A plain `>` would overwrite that holder and leave BOTH parties believing
+    # they hold the lock — the exact race the lock exists to prevent. Failure
+    # means the acquisition is lost: return 1 and let do_acquire keep polling.
+    # (A residual window remains — this write landing between the reaper's
+    # mkdir and ITS holder write — but it shrinks from "60s + arbitrary" to
+    # milliseconds; closing it fully would take fcntl locking, beyond this
+    # script's POSIX-portability remit.)
+    if ! (
+      set -C
+      {
+        printf 'tag: %s\n' "$tag"
+        printf 'pid: %s\n' "$$"
+        printf 'acquired_at: %s\n' "$(now_utc)"
+      } > "$HOLDER_FILE"
+    ) 2>/dev/null; then
+      return 1
+    fi
     return 0
   fi
   return 1

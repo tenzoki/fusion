@@ -108,7 +108,9 @@ Always, when any party is about to commit. Workbench-anchored — different proj
 
 ### Mechanism
 
-Atomic `mkdir fusion-workbench/.commit-lock/` (POSIX guarantees mkdir either creates the directory exclusively or fails). The lock is root-anchored, like the other project-wide state — it guards the project's git index, which no single Circle owns. The holder file `.commit-lock/holder` records three lines: `tag`, `pid`, `acquired_at` (RFC-3339 UTC). Stale-lock detection at 60 seconds: if the holder PID is no longer running AND the lock is older than the threshold, the next acquirer force-releases it.
+Atomic `mkdir fusion-workbench/.commit-lock/` (POSIX guarantees mkdir either creates the directory exclusively or fails). The lock is root-anchored, like the other project-wide state — it guards the project's git index, which no single Circle owns. The holder file `.commit-lock/holder` records three lines: `tag`, `pid`, `acquired_at` (RFC-3339 UTC). The holder write is noclobber (`set -C`): if a holder file already exists at write time, this acquirer was suspended between its `mkdir` and the write, got reaped, and another party took the lock — the write fails and the acquisition counts as lost (the acquirer re-enters the poll loop) instead of overwriting the new holder.
+
+Stale-lock detection at 60 seconds, on two paths. With a holder file: if the recorded PID is no longer running AND the lock is older than the threshold, the next acquirer force-releases it. Without a holder file (the holder died — or is still suspended — between `mkdir` and the holder write, or the directory was created some other way): the directory is aged on its own mtime and force-released past the same threshold — otherwise it would block acquire forever with nothing recorded to go stale.
 
 ### Helper
 
@@ -134,9 +136,10 @@ Mandatory. Used in stale-lock messages. Format: the agent name (`orchestrator`, 
 
 ### Failure modes
 
-- **Concurrent acquire from a different party** → polled every 200ms with exponential backoff to 2s. One stderr message after the first failed acquire (`waiting for commit lock held by <other-tag>...`); silent thereafter. Blocks indefinitely — no max-wait timeout.
+- **Concurrent acquire from a different party** → polled every 200ms with exponential backoff to 2s. One stderr message after the first failed acquire (`waiting for commit lock held by <other-tag>...`; a holder-less directory is named as `held by ?` with the way out); silent thereafter. Blocks indefinitely — no max-wait timeout.
 - **Crash mid-commit** → next acquirer's stale-lock detector force-releases after 60 seconds if the recorded PID is dead. Stderr warning announces the force-release.
-- **Release-not-held** → non-zero exit with `not currently held by anyone`. Caller should log and proceed (defensive — typically indicates a programming error rather than a race).
+- **Crash (or long suspension) between `mkdir` and the holder write** → the directory records no PID and no timestamp, so it is aged on its own mtime and force-released after the same 60 seconds. A suspended-not-dead creator that resumes after being reaped loses its acquisition at the noclobber holder write and re-enters the poll loop.
+- **Release-not-held** → non-zero exit. Two messages: `not currently held by anyone` when no lock directory exists, and a refusal (`lock directory exists but records no holder; refusing to guess`) for a holder-less directory — reaping that state is the next acquire's job, or a manual `rmdir` when no commit is running. Caller should log and proceed (defensive — typically indicates a programming error rather than a race).
 
 ### Cross-reference
 
