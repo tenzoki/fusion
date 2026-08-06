@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, cpSync, copyFileSync, chmodSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, join } from "node:path";
@@ -347,6 +347,99 @@ describe("context-manifest: HYG-NO-SILENT-FAIL — malformed manifest fails loud
     expect(r.status).toBe(3);
     // The first unit WOULD have matched (coder, always), but the run must abort clean.
     expect(r.stdout).not.toContain(".claude/rules/CODING-HYGIENE.md");
+  });
+});
+
+describe("emit_if_exists: a missing always-on rule file is skipped silently (set -eu regression)", () => {
+  // The documented contract (rules/agent-setup.md: "missing files are skipped
+  // silently") must hold under `set -eu`. Before the fix, emit_if_exists was a
+  // bare `[ -f ] && printf`, returning 1 on a miss — which killed the emission
+  // mid-stream with partial output and exit 1. This suite runs the real script
+  // against a stripped plugin copy with one always-on file removed.
+  let strippedPlugin: string;
+
+  beforeEach(() => {
+    strippedPlugin = mkdtempSync(join(tmpdir(), "ctx-stripped-plugin-"));
+    mkdirSync(join(strippedPlugin, "bin"), { recursive: true });
+    copyFileSync(fusionRules, join(strippedPlugin, "bin", "fusion-rules"));
+    chmodSync(join(strippedPlugin, "bin", "fusion-rules"), 0o755);
+    cpSync(join(pluginRoot, "rules"), join(strippedPlugin, "rules"), { recursive: true });
+    // Remove one always-on file from the middle of the emit_if_exists block.
+    rmSync(join(strippedPlugin, "rules", "decision-record-examples.md"));
+  });
+
+  afterEach(() => {
+    rmSync(strippedPlugin, { recursive: true, force: true });
+  });
+
+  function runStripped(agent: string): RunResult {
+    try {
+      const stdout = execFileSync(join(strippedPlugin, "bin", "fusion-rules"), [agent], {
+        cwd: emptyProject,
+        encoding: "utf-8",
+        env: { ...process.env, FUSION_PLUGIN_ROOT: strippedPlugin },
+        stdio: ["ignore", "pipe", "pipe"],
+      });
+      return { status: 0, stdout, stderr: "" };
+    } catch (err: any) {
+      return {
+        status: err.status ?? -1,
+        stdout: err.stdout?.toString() ?? "",
+        stderr: err.stderr?.toString() ?? "",
+      };
+    }
+  }
+
+  it("exits 0 and emits every remaining always-on path when one file is missing", () => {
+    const r = runStripped("coder");
+    expect(r.status, "missing always-on file must not abort the emission").toBe(0);
+    const out = lines(r.stdout);
+    // Everything after the missing file in the emit block must still be there.
+    for (const f of [
+      "agent-setup.md",
+      "fusion-workbench-conventions.md",
+      "user-facing-output.md",
+      "critical-stance.md",
+      "git-branch-discipline.md",
+      "protected-path-discipline.md",
+    ]) {
+      expect(out.some((l) => l.endsWith(`/rules/${f}`)), `emits ${f}`).toBe(true);
+    }
+    expect(out.some((l) => l.endsWith("/rules/decision-record-examples.md"))).toBe(false);
+  });
+
+  it("holds for a conventions-only agent too", () => {
+    const r = runStripped("reconciler");
+    expect(r.status).toBe(0);
+    const out = lines(r.stdout);
+    expect(out.some((l) => l.endsWith("/rules/protected-path-discipline.md"))).toBe(true);
+  });
+});
+
+describe("malformed-manifest error message is verbatim (awk quote-escape regression)", () => {
+  // The fail strings used \x27 for the single quote. BWK awk (macOS
+  // /usr/bin/awk) consumes trailing hex digits greedily, so "\x27agents"
+  // parsed as \x27a + "gents" and printed "zgents". The fix uses the octal
+  // \047, which is bounded at three digits. Assert the message byte-exactly.
+  it("unit missing agents: → stderr carries `is missing 'agents:'` verbatim", () => {
+    writeManifest(
+      manifestProject,
+      ["units:", "  - path: .claude/rules/A.md", "    topics: [x]"].join("\n"),
+    );
+    const r = run(manifestProject, "coder");
+    expect(r.status).toBe(3);
+    expect(r.stderr).toContain("unit '.claude/rules/A.md' is missing 'agents:'");
+    expect(r.stderr, "hex-escape greed must not garble the message").not.toContain("zgents");
+  });
+
+  it("unit missing topics: → stderr carries `is missing 'topics:'` verbatim", () => {
+    writeManifest(
+      manifestProject,
+      ["units:", "  - path: .claude/rules/A.md", "    agents: [coder]"].join("\n"),
+    );
+    const r = run(manifestProject, "coder");
+    expect(r.status).toBe(3);
+    expect(r.stderr).toContain("unit '.claude/rules/A.md' is missing 'topics:'");
   });
 });
 

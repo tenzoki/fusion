@@ -45,11 +45,19 @@ Hold the emitted `KEY=value` values for the rest of the skill. `$WORKBENCH` is a
 **Deriving the shared store.** Every `SCAN_*` value carries both stores — the active Circle's and the shared one — and collapses to the shared store alone when no Circle is active (`rules/fusion-workbench-conventions.md` `## Path Resolution` → invariant 2). The shared store of a kind is therefore what remains of its `SCAN_*` value after dropping the active Circle's path:
 
 ```bash
-shared_of() { for p in $1; do case "$p" in "${CIRCLE:-__no_active_circle__}"/*) continue ;; esac; printf '%s\n' "$p"; done; }
+# Split via command substitution, not `for p in $1`: zsh does not word-split an
+# unquoted parameter expansion, but both bash and zsh field-split an unquoted
+# command substitution. Store paths never contain whitespace, so the split is safe.
+shared_of() { for p in $(printf '%s\n' "$1"); do case "$p" in "${CIRCLE:-__no_active_circle__}"/*) continue ;; esac; printf '%s\n' "$p"; done; }
 SHARED_PLANS="$(shared_of "$SCAN_PLANS")"; SHARED_ISSUES="$(shared_of "$SCAN_ISSUES")"; SHARED_DECISIONS="$(shared_of "$SCAN_DECISIONS")"; SHARED_REVIEWS="$(shared_of "$SCAN_REVIEWS")"; SHARED_HISTORY="$(shared_of "$SCAN_HISTORY")"
+for v in "PLANS:$SHARED_PLANS" "ISSUES:$SHARED_ISSUES" "DECISIONS:$SHARED_DECISIONS" "REVIEWS:$SHARED_REVIEWS" "HISTORY:$SHARED_HISTORY"; do
+  case "$v" in *:) echo "shared-store derivation for ${v%:} came back empty although the resolver emitted a SCAN_* value — workbench state or derivation is broken" >&2; exit 1 ;; esac
+done
 ```
 
 This derives the shared store from the invariant, not from the order the resolver happens to print the two paths in. Do not take "the last field" — that ordering is not part of the contract.
+
+**An empty derivation is an error, never an empty result.** Invariant 2 guarantees every `SCAN_*` value contains the shared store, so `shared_of` coming back empty means the derivation or the workbench state is broken — not that there is nothing to archive. The check above halts on it (`HYG-NO-SILENT-FAIL`); when it trips, report the failing kind to the user and stop. Do not proceed to a survey that would silently skip a whole store and report "nothing to archive".
 
 ## Argument modes
 
