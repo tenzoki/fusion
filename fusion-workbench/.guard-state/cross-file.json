@@ -26,9 +26,9 @@
       "lastEditTimestamp": "2026-07-19T21:37:26.475Z"
     },
     "orchestrator-live.md": {
-      "pingBackCount": 19,
-      "totalEdits": 22,
-      "lastEditTimestamp": "2026-08-04T08:38:29.259Z"
+      "pingBackCount": 20,
+      "totalEdits": 23,
+      "lastEditTimestamp": "2026-08-06T21:13:25.341Z"
     },
     "circles/260719-1536-brest-unite-co-creator-conversion/_a_circle.md": {
       "pingBackCount": 0,
@@ -191,9 +191,9 @@
       "lastEditTimestamp": "2026-07-19T20:19:25.290Z"
     },
     "portfolio.md": {
-      "pingBackCount": 1,
-      "totalEdits": 2,
-      "lastEditTimestamp": "2026-07-19T22:08:03.681Z"
+      "pingBackCount": 2,
+      "totalEdits": 3,
+      "lastEditTimestamp": "2026-08-06T21:00:20.195Z"
     },
     "shared/history/260719-2054-playmaker-orchestrator-phase4.md": {
       "pingBackCount": 0,
@@ -406,9 +406,9 @@
       "lastEditTimestamp": "2026-08-02T06:49:36.700Z"
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/orchestrator-live.md": {
-      "pingBackCount": 9,
-      "totalEdits": 10,
-      "lastEditTimestamp": "2026-08-05T21:18:29.407Z"
+      "pingBackCount": 10,
+      "totalEdits": 11,
+      "lastEditTimestamp": "2026-08-06T21:58:51.818Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/provenance-header-lint.test.ts": {
       "pingBackCount": 1,
@@ -1216,9 +1216,9 @@
       "lastEditTimestamp": "2026-08-04T09:59:58.401Z"
     },
     "circles/260804-1205-shell-reachability-model/_a_circle.md": {
-      "pingBackCount": 0,
-      "totalEdits": 1,
-      "lastEditTimestamp": "2026-08-04T10:06:41.379Z"
+      "pingBackCount": 1,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-06T20:59:48.772Z"
     },
     "circles/260801-1244-guard-rules-write/history/260804-1205-shaper-shell-reachability-model.md": {
       "pingBackCount": 0,
@@ -2049,8 +2049,23 @@
       "pingBackCount": 0,
       "totalEdits": 1,
       "lastEditTimestamp": "2026-08-05T21:35:08.716Z"
+    },
+    "shared/history/260806-2259-playmaker-user-fusion-next.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-06T21:00:42.245Z"
+    },
+    "shared/history/260806-2158-orchestrator-session.md": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-06T21:01:23.002Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260804-1205-shell-reachability-model/reviews/260807-0002-conceptrev-plan-shell-reachability-model.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-06T22:03:29.059Z"
     }
   },
-  "lastEditFile": "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/issues/260805-2323_o_emissions-golden-veraltet-nach-dem-step-7-doku-commit-die-suite-ist-um-einen-test-rot.md",
-  "lastEditTimestamp": "2026-08-05T21:40:29.476Z"
+  "lastEditFile": "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260804-1205-shell-reachability-model/reviews/260807-0002-conceptrev-plan-shell-reachability-model.md",
+  "lastEditTimestamp": "2026-08-06T22:03:29.059Z"
 }

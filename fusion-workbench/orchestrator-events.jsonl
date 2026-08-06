@@ -851,3 +851,14 @@
 {"ts":"2026-08-06T09:06:49","event":"portfolio_refresh","detail":"textschicht _c_; no active circle; next recommendation shell-reachability-model"}
 {"ts":"2026-08-06T09:06:49","event":"session_end","detail":"5 turns, 21 tasks, 14 commits, verdict coherent"}
 {"ts":"2026-08-06T09:39:27","event":"session_start","detail":"review-only pass: deep reconciliation + technical review of 4a8fea0..HEAD"}
+{"ts":"2026-08-06T10:03:44","event":"reconciliation","detail":"workbench-wide deep pass: coherent; 20 samples 0 false closures; ~65 citations converted"}
+{"ts":"2026-08-06T10:03:44","event":"session_end","detail":"review session: verdict coherent both passes; 3 text gaps filed; report shared/history/260806-1139"}
+{"ts":"2026-08-06T19:58:29","event":"session_start","detail":"Setup complete; directive pending; domain code; no active Circle"}
+{"ts":"2026-08-06T21:13:56","event":"circle_activated","detail":"260804-1205-shell-reachability-model _a_->_t_; .active-circle written; Plane push skipped (PLANE_API_KEY absent, config points at localhost fixture)"}
+{"ts":"2026-08-06T21:45:15","event":"scope_resolved","detail":"mode=custom; Circle 260804-1205-shell-reachability-model; +2 adopted defects by citation; +tasklist refresh"}
+{"ts":"2026-08-06T21:45:15","event":"planner_start","agent":"planner","detail":"shell reachability model for the mutation classifier"}
+{"ts":"2026-08-06T21:58:57","event":"planner_done","agent":"planner","detail":"circles/260804-1205-shell-reachability-model/planning/260806-2353_o_plan-shell-reachability-model.md — 11 steps, 2 human gates"}
+{"ts":"2026-08-06T21:58:57","event":"conceptrev_start","agent":"conceptrev","detail":"3 mermaid blocks in the plan"}
+{"ts":"2026-08-06T22:01:45","event":"gate_response","detail":"plan approved; constraint-1 reading = per-transition shell justification; both adopted defects in scope"}
+{"ts":"2026-08-06T22:01:45","event":"turn_start","turn":1,"detail":"head=38c5123; ready tasks: S1, S9, S10 (no dependencies)"}
+{"ts":"2026-08-06T22:01:45","event":"task_start","turn":1,"task":"S1","agent":"coder","detail":"measurement instrument: generator + shell witness + baseline fixture"}

@@ -1,0 +1,54 @@
+# fusion-workbench session state — for resumption after restart
+# Updated: 260806-2315
+
+session:
+  directive: "Replace the guard's flat joiner model with a shell reachability model: the mutation classifier asks whether the shell guarantees a segment runs, for the segment that moves the directory and the segment that writes. Plus two adopted defects and a task-queue refresh."
+  mode: "custom"
+  domain: "code"
+  started: "260806-2158"
+  history_file: "circles/260804-1205-shell-reachability-model/history/260806-2158-orchestrator-session.md"
+  git_head_at_start: "38c5123"
+  active_circle: "260804-1205-shell-reachability-model"
+
+progress:
+  turn: 0
+  max_turns: 5
+  tasks_total: 0
+  tasks_done: 0
+  tasks_skipped: 0
+  tasks_errored: 0
+  commits: 0
+  turn_start_head: null
+  paused_at_task: null
+  directive_revisions_this_session: 0
+
+current_task:
+  id: "PLAN"
+  summary: "Planner produces the implementation plan for the reachability model"
+  agent: "planner"
+  status: "running"
+  source_file: "circles/260804-1205-shell-reachability-model/_t_circle.md"
+
+work_queue: []
+
+plan_context:
+  plan_file: "(pending — planner running)"
+  user_directive: "Refresh the stale tasklist.md, and adopt the two unowned defects (setup/migrate scope mismatch, guard advisory clamp) into this Circle's scope by citation."
+  key_findings: |
+    Circle record carries a full Grounding snapshot. Binding constraints from it:
+    (1) No command that denies today may newly allow — the invariant every Turn of the
+        parent Circle held, measured across 222,319 generated commands.
+    (2) `until cd X; do W; done` must keep denying (body runs when the cd failed).
+        12 of 12 generated until rows deny today and must stay denying.
+    (3) Measure with a generated cross-product in BOTH bash and zsh, never with a
+        harvest of the suite's own strings. Two harvested enumerations shipped in the
+        parent Circle and both were falsified within a day.
+    (4) The git branch classifier consumes a separate flat segmenter and must stay
+        insulated: gold fixture of 98 commands, plus a source assertion that
+        `parseCommand` is never imported into it.
+    (5) The unresolvable-operand class stays out of reach: `mv "$f"` stays denied.
+    Adopted by citation (files stay where they are, per the Origin Rule):
+    - circles/260805-2005-textschicht-gegen-code-nachziehen/issues/260806-0022_o_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md
+    - circles/260801-1244-guard-rules-write/issues/260803-1352_o_two-guard-advisory-details-skip-the-200-char-clamp-and-render-a-row-nine-times-normal-height.md
+    Known open defect, deliberately not worked around: the Circle record's Status field
+    still reads "anticipated" after activation — shared/issues/260802-0920_o_next-skill-activates-a-circle-without-updating-its-status-field.md

@@ -31,9 +31,9 @@
       "thrashingScore": 1
     },
     "orchestrator-live.md": {
-      "totalChanges": 22,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-04T08:38:29.257Z",
+      "totalChanges": 23,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-06T21:13:25.338Z",
       "thrashingScore": 7
     },
     "circles/260719-1536-brest-unite-co-creator-conversion/_a_circle.md": {
@@ -229,10 +229,10 @@
       "thrashingScore": 12
     },
     "portfolio.md": {
-      "totalChanges": 2,
-      "changesThisSession": 0,
-      "lastChange": "2026-07-19T22:08:03.680Z",
-      "thrashingScore": 0
+      "totalChanges": 3,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-06T21:00:20.193Z",
+      "thrashingScore": 1
     },
     "shared/history/260719-2054-playmaker-orchestrator-phase4.md": {
       "totalChanges": 1,
@@ -487,10 +487,10 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/orchestrator-live.md": {
-      "totalChanges": 10,
-      "changesThisSession": 3,
-      "lastChange": "2026-08-05T21:18:29.404Z",
-      "thrashingScore": 5
+      "totalChanges": 11,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-06T21:58:51.814Z",
+      "thrashingScore": 3
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/provenance-header-lint.test.ts": {
       "totalChanges": 12,
@@ -626,7 +626,7 @@
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/agentstate.yaml": {
       "totalChanges": 3,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-05T20:55:56.409Z",
       "thrashingScore": 1
     },
@@ -794,7 +794,7 @@
     },
     "/Users/k1/Projects/productive/fusion/README-hooks.md": {
       "totalChanges": 37,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-05T20:57:12.775Z",
       "thrashingScore": 12
     },
@@ -1459,9 +1459,9 @@
       "thrashingScore": 3
     },
     "circles/260804-1205-shell-reachability-model/_a_circle.md": {
-      "totalChanges": 1,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-04T10:06:41.377Z",
+      "totalChanges": 2,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-06T20:59:48.768Z",
       "thrashingScore": 0
     },
     "circles/260801-1244-guard-rules-write/history/260804-1205-shaper-shell-reachability-model.md": {
@@ -2330,7 +2330,7 @@
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md": {
       "totalChanges": 6,
-      "changesThisSession": 5,
+      "changesThisSession": 0,
       "lastChange": "2026-08-05T21:29:12.155Z",
       "thrashingScore": 8
     },
@@ -2390,76 +2390,94 @@
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/issues/260804-1606_o_blocksbeforehalt-zero-halts-on-the-first-block-and-has-no-lower-bound.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-05T20:38:56.685Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260805-2238-coder-t3-close-blocksbeforehalt-issue.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-05T20:39:15.677Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/issues/260805-2248_o_readme-advisory-zeile-behauptet-fail-closed-steht-ab-obwohl-der-floor-ihn-am-leben-haelt.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-05T20:48:27.095Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/reviews/260805-01-coderev-inkrementalreview-step7-doku-durchgang.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-05T20:49:00.127Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260805-2310-coder-t4-readme-advisory-row.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-05T20:57:51.489Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/_t_circle.md": {
       "totalChanges": 4,
-      "changesThisSession": 4,
+      "changesThisSession": 0,
       "lastChange": "2026-08-05T21:25:59.472Z",
       "thrashingScore": 5
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/issues/260805-2323_o_emissions-golden-veraltet-nach-dem-step-7-doku-commit-die-suite-ist-um-einen-test-rot.md": {
       "totalChanges": 2,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-05T21:40:29.472Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/issues/260805-2323_o_die-emissionsmessung-auf-der-unite-cocreator-maschine-steht-noch-aus.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-05T21:27:12.613Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/planning/260802-1856_o_plan-guard-rules-write.md": {
       "totalChanges": 3,
-      "changesThisSession": 3,
+      "changesThisSession": 0,
       "lastChange": "2026-08-05T21:27:37.739Z",
       "thrashingScore": 3
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/shared/planning/260801-1122_o_spec-normative-consolidation.md": {
       "totalChanges": 2,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-05T21:31:43.042Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/planning/260804-1633_p_plan-c5b-remediation-and-ship.md": {
       "totalChanges": 2,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-05T21:32:11.648Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260805-2334-reconciliation.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-05T21:35:08.713Z",
+      "thrashingScore": 0
+    },
+    "shared/history/260806-2259-playmaker-user-fusion-next.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-06T21:00:42.242Z",
+      "thrashingScore": 0
+    },
+    "shared/history/260806-2158-orchestrator-session.md": {
+      "totalChanges": 2,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-06T21:01:22.999Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260804-1205-shell-reachability-model/reviews/260807-0002-conceptrev-plan-shell-reachability-model.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-06T22:03:29.057Z",
       "thrashingScore": 0
     }
   },
-  "sessionStart": "2026-08-05T20:37:42.061Z"
+  "sessionStart": "2026-08-06T20:59:48.768Z"
 }
