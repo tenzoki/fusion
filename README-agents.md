@@ -171,10 +171,10 @@ Agents discover their applicable rules via the helper `bin/fusion-rules <agent-n
 
 | Agent | Domain patterns matched | Typical project-local rule files |
 |---|---|---|
-| `coder`, `coderev`, `bugfixer` | `*coding*` | `rules/coding-guidelines.md`, `rules/coding-architecture.md` |
-| `ontocoder`, `ontorev` | `*ontology*`, `*normative*`, `*verb*` | `rules/ontology-rules.md`, `rules/verb-ontology.md`, `rules/normative.md` |
+| `coder`, `coderev`, `bugfixer` | `*coding*` | `./rules/coding-guidelines.md`, `./rules/coding-architecture.md` |
+| `ontocoder`, `ontorev` | `*ontology*`, `*normative*`, `*verb*` | `./rules/ontology-rules.md`, `./rules/verb-ontology.md`, `./rules/normative.md` |
 | `planner` | `*coding*`, `*ontology*` | both groups above |
-| `investigator` | `*investigator*` | `rules/investigator-capture-layout.md` |
+| `investigator` | `*investigator*` | `./rules/investigator-capture-layout.md` |
 | `orchestrator`, `shaper`, `taskplanner`, `reconciler`, `analyst`, `consultant`, `playmaker`, `conceptrev`, `editor` | (no domain patterns — always-on core plus any conditional emissions listed above) | — |
 
 If a pattern has no match in either directory, the agent operates on workbench conventions alone — agents skip missing rules silently rather than failing. Consuming projects can add their own rule files at any time and the next session picks them up automatically.

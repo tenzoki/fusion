@@ -67,7 +67,7 @@ separated `--source HEAD` at all, while `checkout` takes its source as a positio
 model sees in every spelling. Closing the gap by teaching `restore` the exception would make
 a command **newly allow**, which nothing in this guard's history has done, so it is a
 decision at the Human Gate rather than a patch
-(`decisions/260804-1815_a_should-git-restore-source-head-become-inert-…`).
+(`decisions/260804-1815_*_should-git-restore-source-head-become-inert-…`).
 
 Two costs come with the `checkout` row, and both are rules rather than lists:
 

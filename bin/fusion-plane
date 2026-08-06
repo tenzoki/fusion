@@ -718,7 +718,7 @@ process_artifact() {
   # push writes state and nothing else. Everything fusion authored itself keeps
   # the full-body mirror. Decided in
   # circles/260719-1536-plane-mirror-integration/decisions/
-  # 260719-2313_o_round-trip-write-overwrites-origin-story-description.md (Option 1).
+  # 260719-2313_*_round-trip-write-overwrites-origin-story-description.md (Option 1).
   origin="$(map_get_origin "$nk")"
   if [ "$origin" = "seed" ]; then write_scope="state-only"; else write_scope="full"; fi
 
