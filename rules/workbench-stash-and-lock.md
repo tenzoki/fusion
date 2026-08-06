@@ -29,7 +29,7 @@ Stashes are created by `/fusion:circle-stash [reason]` and consumed by `/fusion:
 ```
 fusion-workbench/stashes/
 └── <YYMMDD-HHMM>-<directive-slug>/
-    ├── manifest.yaml         # nine-field index
+    ├── manifest.yaml         # ten-field index
     ├── README.md             # human-readable summary + restore command
     ├── circle/               # the whole Circle directory, verbatim
     │   ├── _t_circle.md     #   record with its marker (filename in manifest)
@@ -51,7 +51,7 @@ The stash id `<YYMMDD-HHMM>-<directive-slug>` is derived from the current time (
 
 ### Manifest schema
 
-Nine fields, in this order:
+Ten fields, in this order:
 
 ```yaml
 stash_id: 260519-1200-stash-smoke              # YYMMDD-HHMM-<slug>
@@ -68,7 +68,7 @@ has_agentstate: true                           # false when stashed without a ru
 
 String values are quoted; `null` is the unquoted YAML literal.
 
-**`has_spec_plan` is gone** — the schema went from ten fields to nine. It used to enumerate which spec and plan files had been copied in from foreign directories; in the container model the Circle *contains* them, so the field had nothing left to enumerate. Existing ten-field stashes stay readable: `/fusion:circle-pop` ignores the field when present.
+**`has_spec_plan` is gone** — its removal took the schema from ten fields to nine, and `git_stash_sha`'s later addition brought it back to ten. `has_spec_plan` used to enumerate which spec and plan files had been copied in from foreign directories; in the container model the Circle *contains* them, so the field had nothing left to enumerate. Old stashes that still carry it stay readable: `/fusion:circle-pop` ignores the field when present.
 
 `git_stash_ref` is human-readable (`stash@{N}`) and recorded for the user. `git_stash_sha` is the stable underlying commit SHA — pop's `git stash apply` uses the SHA so an intervening `git stash push` during the urgent work cannot renumber the positional ref out from under it. The SHA is `null` when the working tree was clean and no stash entry was created.
 
@@ -77,7 +77,7 @@ String values are quoted; `null` is the unquoted YAML literal.
 - Created by `/fusion:circle-stash` (one stash directory per invocation).
 - Consumed by `/fusion:circle-pop`, which restores state but does NOT auto-delete the stash directory. The user prunes manually: `rm -rf fusion-workbench/stashes/<id>/ && git stash drop <ref>`.
 - A `STASH_IN_PROGRESS` lock file at the stash directory root signals an incomplete write. `/fusion:circle-pop` refuses to read stashes carrying this file.
-- Multiple stashes can coexist (decision `260519-1100_a_circle-stash-pop-design.md`). `/fusion:circle-pop` lists them when invoked without an argument and asks the user to pick.
+- Multiple stashes can coexist by design. `/fusion:circle-pop` lists them when invoked without an argument and asks the user to pick.
 
 ### Boundary events
 
@@ -95,9 +95,8 @@ Session history is the one nuance: it lives *inside* the stashed Circle and ther
 
 ### Cross-references
 
-- Design spec: `analyses/260519-0438-circle-stash-pop-concept.md` (pre-container; now under `shared/`)
-- Binding decision: `decisions/260519-1100_a_circle-stash-pop-design.md`
 - Skill bodies: `skills/circle-stash/SKILL.md`, `skills/circle-pop/SKILL.md`
+- The pre-container design spec and binding decision behind this protocol did not survive the workbench reorganisations; this document carries their surviving substance and is the definition.
 
 ## Commit lock
 
@@ -141,4 +140,4 @@ Mandatory. Used in stale-lock messages. Format: the agent name (`orchestrator`, 
 
 ### Cross-reference
 
-Issue `260516-0534_c_cross-agent-staging-race-on-unlocked-working-tree.md` (closed by this protocol; pre-container, now under `shared/issues/`).
+This protocol closed the cross-agent staging-race defect — parallel agents' stage+commit operations interleaving at the git-index level. Its issue record did not survive the workbench reorganisations; the failure modes above carry its substance.

@@ -2,7 +2,7 @@
 
 **Provenance:** No motivating record recoverable; introduced in `git:b05b423`.
 
-Shared conventions for all agents operating on `fusion-workbench/`, and for the rule files those agents load. This file is auto-loaded by the plugin system into every agent's context. Single source of truth for the workbench layout, the origin rule, the operative half of path resolution, the issue/planning and decision marker vocabularies, marker globs, filename patterns, issue and decision filing, inline tracking, history logging, timestamps, and the project language declaration.
+Shared conventions for all agents operating on `fusion-workbench/`, and for the rule files those agents load. This file is emitted by `bin/fusion-rules` to every agent at Setup step 2; nothing is auto-loaded. Single source of truth for the workbench layout, the origin rule, the operative half of path resolution, the issue/planning and decision marker vocabularies, marker globs, filename patterns, issue and decision filing, inline tracking, history logging, timestamps, and the project language declaration.
 
 **This document is the definition** of everything it still states in full. Four topics that were once defined here now have their own authoring homes, each cited at the point where it left, and each emitted to the audience that actually applies it rather than to all sixteen agents:
 
@@ -115,7 +115,7 @@ prompt, or change `bin/fusion-paths` itself. `bin/fusion-rules` emits it to no a
 
 In **Setup step 2**, alongside `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" <agent>`. That step is demonstrably executed by every agent on every run — it is the step that loads the rules the agent then obeys. A per-write call would be a new obligation with a new miss rate; a Setup-step call rides an obligation that already holds. Resolve once at Setup, use the values for the rest of the session. A skill resolves at its own first step, for the same reason.
 
-`fusion-rules` still takes an **agent** name only. The two helpers stand side by side in the same step with different namespaces, and that is deliberate: `fusion-rules` maps an agent to rule-file patterns, which is an authored fact about an agent and has no meaning for a skill. Their symmetry is the interface (one argument, `KEY=value` on stdout, the same `0/1/2` exit shape), not the argument domain.
+`fusion-rules` still takes an **agent** name only. The two helpers stand side by side in the same step with different namespaces, and that is deliberate: `fusion-rules` maps an agent to rule-file patterns, which is an authored fact about an agent and has no meaning for a skill. Their symmetry is the interface (one argument, output on stdout, the shared `0/1/2` exit core), not the argument domain.
 
 ### Contract
 
@@ -128,10 +128,10 @@ Signature `fusion-paths <name>`. Output: one `KEY=value` line per emitted key on
 | 0 | Success | yes |
 | 1 | Usage error, or no workbench found above `pwd` | yes |
 | 2 | Unknown name — no such agent and no such skill | yes |
-| 3 | `.active-circle` is corrupt or orphaned — a **workbench-state** fault | no |
+| 3 | `.active-circle` is corrupt or orphaned — a **workbench-state** fault | code collides — see below |
 | 4 | Internal error: a prompt names a key the resolver cannot order or value, or one name is both an agent and a skill — a **fusion bug** | no |
 
-The 0/1/2 shape is `bin/fusion-rules`'; 3 and 4 are this resolver's own, and the divergence is written down here so the "same shape as fusion-rules" claim stays checkable.
+The `0/1/2` core is shared with `bin/fusion-rules`; 3 and 4 are this resolver's own — and 3 **collides**: `fusion-rules` also exits 3, for a malformed `rules/context-manifest.yaml`. Read exit 3 against the helper that returned it; interpreting a `fusion-rules` 3 by this table sends the user to fix an intact `.active-circle`.
 
 **3 and 4 must never be merged.** They address different people. Exit 3 is the user's to fix: their pointer is stale, and the advice "fix `.active-circle` before continuing" is right. Exit 4 is not fixable from the workbench at all, and a caller that keys on the code would hand the user that same advice about a pointer that is perfectly fine. Distinguishing them only in the stderr text is not enough — prompts key on the code.
 
@@ -247,7 +247,7 @@ Decision records carry a richer state marker that distinguishes "the answer is r
 4. **`_a_` → `_s_`**: A new decision overrides the answered one. Append `Superseded by: <path>/YYMMDD-HHMM_a_new-decision.md — replaces Shape C with Shape D after expert veto`. Rename to `_s_`. The superseding record may live in another Circle or in `shared/` — cite it where it is; never copy it next to the superseded one.
 5. **`_o_` → `_s_`** (rare): A new decision overrides an open one before it was even answered. Same procedure as above.
 
-**`_i_` and `_s_` are terminal.** Do not rename them back to `_o_` or `_a_`. If an implemented decision needs revisiting, file a NEW decision (which may then `Supersede` the `_i_` one).
+**`_i_` and `_s_` are terminal.** Do not rename them back to `_o_` or `_a_`. If an implemented decision needs revisiting, file a NEW decision, which may then supersede the `_i_` one: append `Superseded by:` and rename `_i_` → `_s_` — the one allowed terminal-to-terminal transition.
 
 **Grounding-Stand vs Grounding-Historie:**
 

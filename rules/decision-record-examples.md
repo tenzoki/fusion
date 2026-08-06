@@ -10,7 +10,7 @@ Companion to `fusion-workbench-conventions.md`. Three end-to-end examples showin
 
 **Initial state — filed by shaper after the user said "we'll need to pick a vector store, but not now":**
 
-`fusion-workbench/decisions/260501-1430_o_vector-store-pick.md`:
+`fusion-workbench/shared/decisions/260501-1430_o_vector-store-pick.md` (no Circle active → shared store):
 
 ```markdown
 # Which vector store for v1?
@@ -67,11 +67,11 @@ Rename file: `260501-1430_a_vector-store-pick.md` → `260501-1430_i_vector-stor
 
 ---
 
-## Example 2 — Supersession: `_a_ → _s_`
+## Example 2 — Supersession: `_i_ → _s_`
 
 Six months later, a customer crosses 5M vectors and sqlite-vss thrashes. A new decision is filed:
 
-`fusion-workbench/decisions/261107-0915_o_vector-store-revisit.md` is created (with its own Options, Recommendation, etc.). After the user picks pgvector, it transitions `_o_ → _a_ → _i_` per Example 1.
+`fusion-workbench/shared/decisions/261107-0915_o_vector-store-revisit.md` is created (with its own Options, Recommendation, etc.). After the user picks pgvector, it transitions `_o_ → _a_ → _i_` per Example 1.
 
 The original decision file is then updated:
 
@@ -84,7 +84,7 @@ Superseded by: decisions/261107-0915_i_vector-store-revisit.md — sqlite-vss re
 
 Rename: `260501-1430_i_vector-store-pick.md` → `260501-1430_s_vector-store-pick.md`.
 
-**`_i_` and `_s_` are both terminal.** Going `_i_ → _s_` is the one allowed terminal-to-terminal transition because it records the historical fact that a previously-implemented decision has been overridden.
+**`_i_` and `_s_` are both terminal.** Going `_i_ → _s_` is the one allowed terminal-to-terminal transition (normed in the conventions' terminal-states rule) because it records the historical fact that a previously-implemented decision has been overridden.
 
 ---
 

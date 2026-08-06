@@ -37,7 +37,9 @@ The list is `agents/**`, `rules/**`, `skills/**`, `hooks/config.json`,
 may ship `fusion-guard.json` at its root, merged per **leaf** key: a key it declares is
 taken exactly as written, a key it omits inherits the plugin's value. So a declared
 `guard.protectedPaths` wins; a declared empty list really is empty, which is how a
-project narrows, and it stands this whole check down, fail-closed included. The guard's
+project narrows — but it does not stand this check down. The floor below keeps the
+check alive, fail-closed included: the effective list always contains at least
+`fusion-guard.json` itself once that file exists. The guard's
 own state directory is an ordinary entry and goes with the rest. Two things sit outside
 that reach. `guard.enabled` is the one key the project file may not set — a declared
 value is ignored and the loader reports the ignored key in a `guard_advisory` naming

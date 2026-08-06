@@ -44,8 +44,10 @@ export declare function matchesPattern(filePath: string, pattern: string): boole
  *     `fusion-guard.json` can declare `guard.categoryPaths` and `decisions`
  *     since the C5b loader shipped, which falsified the "no per-project config
  *     loader exists yet" this paragraph used to claim (`260804-1432`). Whether
- *     it should therefore fold is an open decision, deliberately not taken
- *     here: `decisions/260804-1632_o_should-findrelevantdecisions-fold-case-now-that-a-project-can-configure-categorypaths.md`.
+ *     it should therefore fold was raised and DEFERRED by the user
+ *     (2026-08-04): behaviour stays case-sensitive until a project reports a
+ *     category missing its own file, or path matching is unified elsewhere.
+ *     `circles/260801-1244-guard-rules-write/decisions/260804-1632_*_should-findrelevantdecisions-fold-case-now-that-a-project-can-configure-categorypaths.md`.
  *     The argument the decision starts from is that the two sides of a
  *     `categoryPaths` match are both authored by the same project, which is not
  *     the situation `protectedPaths` is in. `tracker.ts`'s noise filter reads a

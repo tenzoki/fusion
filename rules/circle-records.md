@@ -12,10 +12,10 @@ name a Circle-scoped key — `orchestrator` (`$SCAN_CIRCLES`, `$PORTFOLIO`), `pl
 (`$OUT_CIRCLE`, `$SCAN_CIRCLES`, `$PORTFOLIO`) and `shaper` (`$OUT_CIRCLE`,
 `$SCAN_CIRCLES`). Those three are who `bin/fusion-rules` emits this file to. The other
 thirteen agents work inside a Circle without ever transitioning one, and reach this file
-through the pointer in `rules/fusion-workbench-conventions.md`. The skills that transition
-Circles — `/fusion:next`, `/fusion:direct`, `/fusion:cleanup`, `/fusion:archive`,
-`/fusion:circle-stash`, `/fusion:setup` — cite it directly, as skills always do:
-`bin/fusion-rules` serves agents only and exits 2 on any other name.
+through the pointer in `rules/fusion-workbench-conventions.md`. Skills reach rule text by
+direct citation, never through `bin/fusion-rules`, which serves agents only and exits 2 on
+any other name; the skills that cite this file today are `/fusion:next`, `/fusion:direct`
+and `/fusion:migrate`.
 
 Two things deliberately stayed behind in the conventions file, because their audience is
 every agent rather than these three. The glob forms for reading a marker off a filename
@@ -33,7 +33,7 @@ The price of the marker-on-the-record design is that `ls circles/` no longer sho
 
 The vocabulary is parallel to but distinct from issues/planning and decisions. It is unchanged by the container layout.
 
-Binding decision: `decisions/260716-1910_i_circle-marker-am-verzeichnis-oder-an-der-circle-datei.md`.
+Binding decision: `circles/260716-1847-workbench-umbau/decisions/260716-1910_*_circle-marker-am-verzeichnis-oder-an-der-circle-datei.md`.
 
 | Marker | Meaning |
 |--------|---------|

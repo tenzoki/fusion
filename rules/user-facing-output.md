@@ -171,7 +171,7 @@ Same information, same technical terms, readable.
 > | 4414f18 | Renamed `typical_engine_types` → `typical_shapes` per ratified decision R14 (Task 3) |
 > | d1d59e7 | Walked 5 decision records from anticipated to implemented + closed plan 260510-2151 (Task 4) |
 >
-> Full log: `fusion-workbench/history/260511-2129-orchestrator-session.md`
+> Full log: `fusion-workbench/shared/history/260511-2129-orchestrator-session.md`
 
 ### Example 2 — activation confirmation
 
