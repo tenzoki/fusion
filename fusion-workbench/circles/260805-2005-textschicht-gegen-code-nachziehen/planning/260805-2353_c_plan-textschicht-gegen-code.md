@@ -275,3 +275,15 @@ None public. `bin/fusion-rules` changes behaviour twice, both matching already-d
 - [x] D1, D2, D3 — the three filed decision records (steps 1–3) are the open questions of this plan; each blocks its dependent steps and nothing else. *(All three answered and realised: D1 `_a_` applied as the citation grammar, D2 and D3 `_i_` via steps 9 and 16.)*
 - [ ] Out-of-scope findings named in step 17 stay open in the neighbour Circle's store; whether any of them (e.g. the coder description not naming Rust, the unbounded event log) get their own Circle or ride a later batch is the user's call, not this plan's.
 - [ ] Step 12 includes snippet-level behaviour fixes inside skill bodies (log-activity scan set) on the argument that the skill body is the executable. If the user prefers a stricter text-only reading of the Directive, that item moves to the open list instead.
+
+## Reconciliation Log
+
+**260806-1057 — final reconciliation before Circle closure (reconciler).** All 17 steps verified `[DONE]` against ground truth; Status Complete and the `_c_` marker are consistent.
+
+- All 12 session commits exist on `main` (`7ef2715` … `fbd8c4d`, session anchor `66e4a69`); suite green at 1611 tests / 30 files (`npx vitest run`, 260806-1055).
+- The four code fixes verified in source: `emit_if_exists` explicit `return 0` with contract comment (`bin/fusion-rules:242-246`); awk `\047` octal escapes (`bin/fusion-rules:505-506`); `shared_of` shell-neutral iteration + empty-derivation halt (`skills/archive/SKILL.md:51-54`); bracket probe filtered to the executor set `\[[oatcibspd]\]-` (`skills/setup/SKILL.md:43`, matching `skills/migrate/SKILL.md` Step 4).
+- Step 8/16 verified: `protected-path-internals.md` emission gated on `bin/fusion-plugin-cwd` (`bin/fusion-rules:162-167`); repo-rules preference implemented per D3 option (c).
+- Steps 14/15 verified: `hooks/lib/__tests__/reference-resolution-lint.test.ts` and `derivable-enumerations-lint.test.ts` exist and pass in the green suite.
+- Step 17's 66-count reconciles at HEAD as 60 `_c_` + 6 `_o_` in `circles/260801-1244-guard-rules-write/issues/260805-18*/19*` — Turns 4–5 closed the 6 residuals the step's footnote still listed as open, so the footnote's 51+3+6+6 partition describes the step's own snapshot, not the final state. All 60 closed records carry `Resolved:` footers; the six open ones each state a route (reachability-Circle Grounding, text batch candidates, guard-issue sibling `260804-2100`, user decisions).
+- D1–D3 all `_i_`: D1 implemented by `a1b7872` (+ batches `fae818b`, `9a96466`); D2 by `81d4154`; D3 by `c45fb44` (hashes appended to the records by this pass — their footers were written before the orchestrator commit existed).
+- One genuine residual stays open: `issues/260806-0022_*_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md` (scope mismatch between setup's whole-tree probe and migrate's `shared/` + `circles/` depth-2 reformat pass — re-verified at HEAD against `skills/setup/SKILL.md:43` and `skills/migrate/SKILL.md:85`).

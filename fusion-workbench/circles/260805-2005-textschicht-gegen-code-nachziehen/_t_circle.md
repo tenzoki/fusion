@@ -2,10 +2,12 @@
 
 ---
 **Domain:** code
-**Status:** anticipated
+**Status:** active
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** (none yet)
-**Active session history:** (none yet)
+**Active spec/plan:** planning/260805-2353_*_plan-textschicht-gegen-code.md (the record's own `## Directive` and `## Grounding snapshot` are the spec; no separate spec file exists)
+**Active session history:** history/260805-2350-orchestrator-session.md (sole orchestrator session; 5 Turns)
+
+*Status, plan and history fields corrected by the reconciler on 260806-1057 at the final reconciliation before closure — the body still said "anticipated" under the `_t_` marker (the known record-lag pattern, shared issue `shared/issues/260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`). The Turn log below is reconstructed from `orchestrator-events.jsonl` and the history files rather than appended live.*
 
 ---
 
@@ -104,6 +106,16 @@ Der Vollständigkeit halber, damit der Zuschnitt nicht wie ein Scherbenhaufen au
 **`260801-1244-curator` — braucht vor Aktivierung einen neuen Zuschnitt, und der wird hier nicht gemacht.** Der Zweck-Durchgang hält fest: C9 Schritt 3 und 4 (Partition und Zuschnitt der Konventionsdatei) wurden von Hand durch coder erledigt, nicht durch den Curator. Damit fehlt dem Curator-Circle sowohl sein erster echter Auftrag als auch sein Validierungsfall; D-g der Spec ist hinfällig. C1 bis C3, C6 und C7 bleiben als zusammenhängender Rest sinnvoll, und der Bedarf ist real (cocreator: 65 offene Issues, rund 25 offene Entscheidungen, drei Monate Drift). Die Neuformung ist eine eigene Shaper-Arbeit vor der Aktivierung jenes Circles. Berührungspunkt zu diesem Circle: die Doku-Korrekturen hier fassen Dateien an, die der Curator später als Beispielmaterial bräuchte — das ist ein Argument, diesen Circle zuerst laufen zu lassen, nicht dagegen.
 
 ## Turn log
+
+*Reconstructed by the reconciler on 260806-1057 from `orchestrator-events.jsonl` (session_start 2026-08-05T21:50Z, head `66e4a69`) and the 15 history files under `history/`. One orchestrator session, 5 Turns, 12 commits, suite 1551 → 1611.*
+
+| Turn | Commits | Outcome |
+|---|---|---|
+| 1 | `7ef2715`, `d3222a5` | Plan written and gated (`planning/260805-2353_*_plan-textschicht-gegen-code.md`); Track 1 code fixes S4–S7; decisions D1–D3 filed and all three answered at one user gate (D1 wildcard citation form, D2 real writer set + lock retrofit, D3 helpers prefer repo rules); 1 issue filed (`issues/260806-0022_*_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md`) |
+| 2 | `c45fb44`, `b90d1c8`, `81d4154` | S8 internals scoping + S16/D3 repo-preference (`bin/fusion-plugin-cwd`); mid-Turn bugfix of the inherited monitor bind regression (`MONITOR_BIND`, 9 red tests → green); S9/D2 writer-set + lock realisation; coderev filed 4 issues (1 medium, 3 low) |
+| 3 | `36d9a30`, `9a96466`, `fae818b`, `a1b7872`, `843239c` | Turn-2 review findings closed; Batches B+C then A (+S13 content corrections); the two lints S14+S15 landed (39 new tests, suite 1599); S17 bookkeeping: 51 findings closed in the neighbour Circle, plan Complete |
+| 4 | `b37f13e` | The six residuals S17's partition surfaced (holderless-lock aging + 9 lock tests, remaining hooks/lib citations in wildcard form, migrate half-fixes); coderev final pass filed 4 low issues |
+| 5 | `fbd8c4d` | The four low findings fixed (noclobber lock race, lock-rule doc, two lint hardenings); suite 1611; converged |
 
 ## Activation proposal
 
