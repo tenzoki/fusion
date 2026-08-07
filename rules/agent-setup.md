@@ -48,3 +48,9 @@ apply it to your short-form output — gate prompts, status reports, chat replie
 `user-facing-output.md`. If it also emitted a `default-voice-*.yaml` path (prose agents
 only), read it as your long-form writing profile for narrative output. If a profile you
 expect is absent, note the absence (in your history file if you keep one) and proceed.
+
+The two paths may name **different languages** — the chat profile resolves from the
+project's chat language, the writing profile from its artifact language. For a project
+whose two declarations differ that is the intended configuration, not a fault to report or
+work around. The resolution is defined in `rules/fusion-workbench-conventions.md`
+`## Project language`.

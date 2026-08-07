@@ -143,7 +143,7 @@ You may receive work in two forms:
 - [ ] <Question needing clarification>
 ```
 
-(The **Decidability** line is mandatory and is never left empty. It is defined in `rules/critical-stance.md` §4, which also says what to do when the answer is no. Head labels are written in the project's language, so in a `de` project the line reads `**Entscheidbarkeit:**`.)
+(The **Decidability** line is mandatory and is never left empty. It is defined in `rules/critical-stance.md` §4, which also says what to do when the answer is no. The label reads `**Decidability:**` in every project, a `de` one included: it is defined in this shipped template, which is an exempt surface, while the plan body under it follows the artifact language. See `rules/fusion-workbench-conventions.md` `## Project language`.)
 
 ## Design Principles
 

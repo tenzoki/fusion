@@ -6,7 +6,7 @@ Every piece of output the user reads — status reports, gate prompts, `AskUserQ
 
 This rule is loaded for every agent. If you find yourself writing output that violates it, rewrite before sending. The user reads everything you produce — make it worth reading.
 
-This rule governs short-form output — status reports, gate prompts, `AskUserQuestion` text, session summary headers, dashboard lines, chat replies. Two stylometric profiles layer on top of it, both resolved per the `**Language:**` line in `CLAUDE.md` (see `rules/fusion-workbench-conventions.md` `## Project language`):
+This rule governs short-form output — status reports, gate prompts, `AskUserQuestion` text, session summary headers, dashboard lines, chat replies. Two stylometric profiles layer on top of it, each resolved from its own declaration line in `CLAUDE.md` — the chat profile from `**Language:**`, the writing profile from `**Artifact language:**` (see `rules/fusion-workbench-conventions.md` `## Project language`):
 
 - **Long-form prose** (session summary bodies, consultant replies, analyst reports, investigator timelines, playmaker briefings, prose sections of specs and plans) additionally applies the **writing profile** at `./fusion-workbench/stilwerk/default-voice-<lang>.yaml`. Each long-form-prose agent's prompt enumerates which of its outputs the writing profile governs.
 - **Short-form chat** additionally applies the **chat profile** at `./fusion-workbench/stilwerk/chat-voice-<lang>.yaml` — see `## Style anti-patterns apply to everything` below.

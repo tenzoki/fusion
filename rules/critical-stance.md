@@ -62,7 +62,7 @@ Three statements, in increasing order of how much they cost to obey.
 **Decidability:** <the load-bearing question, and whether it is decidable from the inputs the mechanism has>
 ```
 
-If the answer is no, the plan must name the change of mechanism. `agents/planner.md` carries the line in its plan output format. Like every other head label it is written in the project's language — `**Entscheidbarkeit:**` where the project language is `de`.
+If the answer is no, the plan must name the change of mechanism. `agents/planner.md` carries the line in its plan output format. The label reads `**Decidability:**` in **every** project, a `de` one included: it is defined in a shipped template, which is an exempt surface, while the plan *body* under it follows the artifact language — the rule is `rules/fusion-workbench-conventions.md` `## Project language`, and this settles point 3 of `shared/decisions/260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`, where the claim that head labels take the project's language was surfaced as false.
 
 **What that checkpoint enforces, honestly: little by itself.** An instruction in an agent prompt is overridable under task pressure — fusion's own development notes carry a worked case of it, where a "MUST" in the orchestrator prompt lost to the urgency of the user's request and the mandated step was simply skipped. The enforcement is the **human at the approval gate**: the plan head is the part that always gets read, and a line that is missing, empty, or evasive is conspicuous there in a way a violated principle buried in step 7 is not. The line's job is to put the question where somebody looks, not to answer it.
 
