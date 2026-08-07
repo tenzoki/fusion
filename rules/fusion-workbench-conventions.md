@@ -2,7 +2,7 @@
 
 **Provenance:** No motivating record recoverable; introduced in `git:b05b423`.
 
-Shared conventions for all agents operating on `fusion-workbench/`, and for the rule files those agents load. This file is emitted by `bin/fusion-rules` to every agent at Setup step 2; nothing is auto-loaded. Single source of truth for the workbench layout, the origin rule, the operative half of path resolution, the issue/planning and decision marker vocabularies, marker globs, filename patterns, issue and decision filing, inline tracking, history logging, timestamps, and the project language declaration.
+Shared conventions for all agents operating on `fusion-workbench/`, and for the rule files those agents load. This file is emitted by `bin/fusion-rules` to every agent at Setup step 2; nothing is auto-loaded. Single source of truth for the workbench layout, the origin rule, the operative half of path resolution, the issue/planning and decision marker vocabularies, marker globs, filename patterns, issue and decision filing, inline tracking, history logging, timestamps, and the project's two language declarations.
 
 **This document is the definition** of everything it still states in full. Four topics that were once defined here now have their own authoring homes, each cited at the point where it left, and each emitted to the audience that actually applies it rather than to all sixteen agents:
 
@@ -175,12 +175,48 @@ Always obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`. LLMs have no clock — nev
 
 ## Project language
 
-Projects declare the language of their prose output in `CLAUDE.md` via a line of the form `**Language:** <lang>` — for example `**Language:** en` or `**Language:** de`. Valid values initially are `en` and `de`. The declaration governs which stylometric profiles under `./fusion-workbench/stilwerk/` apply. There are two profile families, both resolved from the same `**Language:**` line:
+**The surface decides.** Not the length of the text, not who reads it, not which agent wrote it. Every piece of output falls into exactly one of three cases:
 
-- **`default-voice-<lang>.yaml`** — the long-form writing profile, applied by long-form-prose agents to their narrative outputs (session summary bodies, consultant reports, analysis reports, investigator timelines, playmaker briefings, prose sections of specs and plans).
-- **`chat-voice-<lang>.yaml`** — the short-form chat profile, applied by **every** agent to its short-form user-facing output (gate prompts, `AskUserQuestion` text, status reports, chat replies). See `rules/user-facing-output.md` `## Style anti-patterns apply to everything`.
+- Output the user reads in the terminal — gate prompts, `AskUserQuestion` text, status reports, chat replies — is written in the **chat language**.
+- Output that persists as a file — specs and plans, defect and decision records, session histories, reviews, analyses, memos, the portfolio and the task queue — is written in the **artifact language**.
+- Text that ships to consuming projects is **English**, whatever either declaration says. The exempt surfaces are listed below.
 
-`bin/fusion-rules` emits the chat profile path for every agent and the writing profile path only for long-form-prose agents. Both families share one fallback: when the line is absent, the default is `en` — silently, no chat warning. When the declared language's variant is missing (e.g. `**Language:** de` but the `-de.yaml` variant does not exist), the agent falls back to the `-en.yaml` variant of the same family and records a single line in its session history file noting the fallback. If neither variant of a family exists, the agent emits nothing for that family and follows `rules/user-facing-output.md` alone — that rule always applies, regardless of profile presence.
+A project names its two languages in `CLAUDE.md`, on two lines:
+
+```
+**Language:** de
+**Artifact language:** en
+```
+
+`**Language:**` declares the chat language, `**Artifact language:**` the artifact language. Valid values for both are `en` and `de`. A project whose chat and artifacts share one language declares only the first line.
+
+**The fallback chain is one rule with no special cases.** `**Artifact language:**` absent, unreadable, or carrying anything other than `en` or `de` all mean the same thing — not declared — and then `**Language:**` governs both surfaces. `**Language:**` not declared, by the same three-way test, means `en`. Both fallbacks are silent: no chat warning, no history line. Missing, unreadable and invalid land in the same branch deliberately, so the case split stays disjoint and complete and the second declaration needs no error path of its own.
+
+**The stylometric profiles under `./fusion-workbench/stilwerk/` follow from the boundary above rather than defining it.** Each family governs one of the first two surfaces, so each resolves from that surface's language:
+
+- **`chat-voice-<lang>.yaml`** — the short-form chat profile, resolved from the **chat** language and applied by **every** agent to its short-form user-facing output (gate prompts, `AskUserQuestion` text, status reports, chat replies). See `rules/user-facing-output.md` `## Style anti-patterns apply to everything`.
+- **`default-voice-<lang>.yaml`** — the long-form writing profile, resolved from the **artifact** language and applied by the nine long-form-prose agents to their narrative outputs (session summary bodies, consultant reports, analysis reports, investigator timelines, playmaker briefings, prose sections of specs and plans).
+
+`bin/fusion-rules` emits the chat profile path for every agent and the writing profile path only for long-form-prose agents. The two paths may name different languages; for a project whose chat and artifacts differ that is the intended configuration, not a fault to report or work around.
+
+Each family keeps its own missing-variant fallback, and the fallback is **per family, not shared**: when the resolved language's variant is missing (e.g. the artifact language is `de` but no `default-voice-de.yaml` exists), the agent falls back to the `-en.yaml` variant of that same family and records a single line in its session history file noting the fallback. If neither variant of a family exists, the agent emits nothing for that family and follows `rules/user-facing-output.md` alone — that rule always applies, regardless of profile presence.
+
+**Exempt surfaces — English in every project, whatever either line says.** These ship to consuming projects of every language, so one project's declaration cannot govern them:
+
+- rule files under `rules/`,
+- agent prompts under `agents/`,
+- skill bodies under `skills/`,
+- code and code comments,
+- `README.md` and its siblings, and everything under `docs/`,
+- hook and CLI operator strings — banners, deny reasons, halt notices, helper usage and error text.
+
+`hooks/session-start.ts` `## Why the message is English` is the worked case: a hook fires before any agent has read `CLAUDE.md`, and localising one operator string while the other fifteen stay English is the inconsistency, not the fix.
+
+**Persisted surfaces that carry no profile still follow the artifact language.** Dashboard lines (`orchestrator-live.md`), commit messages and monitor strings are exempt from *both* stylometric profiles — `rules/user-facing-output.md` `## Style anti-patterns apply to everything` keeps their terse, parseable shape — but exemption from a style profile is not exemption from the language rule. They persist as files, so they take the artifact language. This reading was **settled by user decision rather than derived**: the dashboard is the one surface where "persists as a file" and "direct user interaction" genuinely overlap, and the user chose the persisted reading, on the ground that commit messages are the same class of persisted-but-user-facing surface and are named English explicitly. It is not an oversight and is not to be reopened as one.
+
+**Head labels follow the file that defines them, not the artifact they sit in.** A label defined in a shipped template — the plan head's `**Decidability:**`, a record's `**Status:**` and `**Domain:**` — is English in every project, because the template lives in an exempt file. The artifact *body* under those labels follows the artifact language. That is what makes `**Decidability:**` the plan-head label everywhere, with no per-language variant.
+
+**Existing artifacts are not translated.** The boundary applies going forward, the same way the filename patterns do. A workbench holding older prose in another language is not evidence against the rule.
 
 ## Filename Patterns
 
