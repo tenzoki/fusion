@@ -144,10 +144,13 @@ flowchart TD
      ist aus dem Harness gefallen, weil es seine Frage seit dem Fingerabdruck
      nicht mehr beantworten kann. Einzelheiten:
      `history/260807-1155-coder-schritt5-tests-und-messkorpus.md`.
-   - **Offen, Zuständigkeit strittig.** Der Befund `260807-1133_o_*` weist die
+   - ~~**Offen, Zuständigkeit strittig.** Der Befund `260807-1133_o_*` weist die
      Streichung der vier toten `EXAMPLE_PATHS`-Einträge diesem Schritt zu, der
      Auftrag an diesen Schritt verbietet ausdrücklich, die Datei anzufassen.
-     Nicht eigenmächtig entschieden.
+     Nicht eigenmächtig entschieden.~~ **Erledigt 260807-1202 als Nachzug zu S9,
+     vom Nutzer zugewiesen.** Der Zuschnitt der beiden Vorgängeraufträge, nicht
+     der Schritt, war die Ursache. Die vier Schlüssel sind gestrichen,
+     `reference-resolution-lint.test.ts` steht bei 23 grün, Befund auf `_c_`.
 
 6. [DONE] **Die Textschicht** — 260807-1133
    - Ausführer: coder
@@ -156,11 +159,21 @@ flowchart TD
    - Quelle: offener Punkt 3 des Circle-Datensatzes; Entscheidung 4 oben.
    - Abhängigkeiten: S4
 
-7. **Die Emissions-Goldfixture nachziehen**
+7. [DONE] **Die Emissions-Goldfixture nachziehen** — 260807-1204
    - Ausführer: ontocoder
    - Dateien: `hooks/lib/__tests__/fixtures/rules-emission.golden`
-   - Änderungen: Neu erzeugen. Die Byte-Zahl für `protected-path-discipline.md` sinkt in allen sechzehn Agentenblöcken, `protected-path-internals.md` verschwindet aus den drei Guard-Blöcken.
+   - Änderungen: Neu erzeugen. Die Byte-Zahl für `protected-path-discipline.md` sinkt in allen sechzehn Agentenblöcken, ~~`protected-path-internals.md` verschwindet aus den drei Guard-Blöcken~~.
    - Abhängigkeiten: S6
+   - **Ergebnis 260807-1204.** Neu erzeugt mit `UPDATE_RULES_GOLDEN=1`, 48 Zeilen
+     geändert, drei je Block: `protected-path-discipline.md` 21.063 → 5.919,
+     `git-branch-discipline.md` 6.299 → 6.432 und die `total`-Zeile. Jeder Agent
+     verliert netto 15.011 Byte; der Höchststand fällt von 116.798 auf 101.787,
+     damit steht erstmals jede der fünf Rollen unter `RELEASE_CAP` (105.354).
+     Zwei Erwartungen des Schritts trafen nicht zu: `protected-path-internals.md`
+     stand in der Fixture nie (sie misst den Konsum-Kontext, dort war die Datei
+     seit dem 06.08. gegated — `grep -c` ergibt 0), dafür war die Zeile für
+     `git-branch-discipline.md` aus S6 mit stehengeblieben. `RULE_BASELINE`
+     unangetastet; die Zahlen für einen Neuschnitt stehen im Sitzungsprotokoll.
 
 8. **Das MECE-Prinzip und sein Prüfpunkt** — [DONE] 260807-0955
    - Ausführer: coder
@@ -169,12 +182,33 @@ flowchart TD
    - Quelle: zweiter Bestandteil der Directive.
    - Abhängigkeiten: keine
 
-9. **Buchführung**
+9. [DONE] **Buchführung** — 260807-1202
    - Ausführer: coder
    - Dateien: die drei Befundsätze, der Entscheidungssatz `260807-0825`
    - Änderungen: `circles/260804-1205-shell-reachability-model/issues/260807-0251_o_*` und `260807-0252_o_*` sowie `circles/260807-0923-guard-misst-statt-orakelt/issues/260807-0930_o_*` je um eine `Resolved:`-Zeile ergänzen, die sagt, dass der beschriebene Code nicht mehr existiert, und auf `_c_` umbenennen. Den Entscheidungssatz `260807-0825_a_*` um `Implemented:` mit dem Commit-Hash ergänzen und auf `_i_` umbenennen. Die beiden Commits `3dc5014` und `9a24c9b` werden nicht per `git revert` zurückgenommen, sondern durch die Löschungen in S4 und S5 vorwärts abgeräumt: `9a24c9b` hat auch `command-word.ts` und `bash-mutation-guard.test.ts` angefasst, und ein Revert nähme dort Dinge mit, deren Schicksal S4 anders entscheidet.
    - Quelle: Auftrag, Abschnitt zu den zwei Commits.
    - Abhängigkeiten: S4, S6
+   - **Ergebnis 260807-1202.** Die drei Befunde tragen ihre `Resolved:`-Zeile und
+     stehen auf `_c_`, der Entscheidungssatz `260807-0825` trägt `Implemented:`
+     mit den fünf Commits und steht auf `_i_` (Kopf-Status ebenfalls auf
+     `implemented` gezogen). Jeder der drei Befunde ist vor dem Schließen am Baum
+     nachgeprüft und nicht angenommen worden: Korpus und Zeugen-Helfer gelöscht
+     (`436d78c`), `JoinerFacts`/`movesCallingShell` nirgends mehr vorhanden
+     (`ba7ccda`), `classifyBashMutation` und `parseCommand` aus `hooks/` fort und
+     `hooks/dist/guard.js` ohne Klassifizierer-Import.
+     Zu `3dc5014` und `9a24c9b`: alle sieben Quelldateien beider Commits sind
+     gelöscht, `GRAMMAR_TERMINATORS` ist mit `ba7ccda` wieder aus
+     `command-word.ts` entfallen, die `README-hooks.md`-Zeile mit `436d78c`.
+     **Ein Rest steht:** die kompilierten Waisen `hooks/dist/lib/shell-reach.{js,d.ts}`
+     und `hooks/dist/lib/bash-mutation-guard.{js,d.ts}`, 4.088 Zeilen, weiter in
+     git verzeichnet, weil `tsc` sein `outDir` nicht aufräumt. Keine Importkante
+     mehr darauf, aber im Tarball ausgeliefert. Befund
+     `issues/260807-1202_o_kompilierte-waisen-des-klassifizierers-stehen-noch-in-hooks-dist.md`,
+     fällig vor S10.
+     Der Befund `260807-1155` (`fusion-guard.json` behauptet eine Shell-
+     Verweigerung) war beim Nachprüfen bereits von ontocoder behoben und
+     geschlossen; beide Dateien sind byte-identisch und nennen die Messung statt
+     einer Verweigerung. Nichts mehr zu vermerken.
 
 10. **Vorprüfung im Fremdprojekt**
     - Ausführer: coder

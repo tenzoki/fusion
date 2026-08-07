@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** implemented
 **Filed by:** orchestrator (raised by the user mid-Turn, 260807-0825)
 **Cross-references:**
 - `circles/260804-1205-shell-reachability-model/_t_circle.md` — the Circle this question suspends
@@ -113,3 +113,12 @@ Randbedingungen kamen mit der Antwort: die grobe Vorwarnung aus der vorgeschlage
 entfällt ausdrücklich, weil sie der Keim wäre, aus dem das Orakel nachwächst; und das
 MECE-Prinzip wird als Abschnitt in `rules/critical-stance.md` verankert statt als eigene
 Regeldatei.
+
+---
+Implemented: `2d55c66`, `327d0b6`, `309ee28`, `ba7ccda`, `436d78c` — der Guard sagt nicht mehr voraus, welche Datei ein Shell-Befehl schreiben wird, sondern nimmt vor jedem Werkzeugaufruf einen Fingerabdruck aller geschützten Pfade und vergleicht ihn danach: eine veränderte Datei wird auf ihren Vorher-Inhalt zurückgeschrieben, der Halt wird gesetzt und ein erklärendes Ereignis geschrieben, während der Klassifizierer samt Erreichbarkeitsschicht, Testkorpus und Referenzhälfte der Textschicht ersatzlos entfallen ist.
+
+Die fünf Commits im Einzelnen: `2d55c66` nimmt `fusion-workbench/.guard-state/**` von der Schutzliste, weil die Messung dorthin ihre eigene Buchführung schreibt; `327d0b6` legt `hooks/lib/protected-snapshot.ts` an, verankert MECE als vierten Abschnitt in `rules/critical-stance.md` und die Pflichtzeile `**Entscheidbarkeit:**` in `agents/planner.md`; `309ee28` lässt den Fingerabdruck den Dateiinhalt tragen statt auf HEAD zurückzurollen und hängt die Regel-Ausnahme `FUSION_ALLOW_RULES_WRITE` auf die Messseite um; `ba7ccda` löscht `hooks/lib/bash-mutation-guard.ts` (3.351 Zeilen) und `hooks/lib/shell-reach.ts` (786 Zeilen), entfernt den `classifyBashMutation`-Aufruf aus `hooks/guard.ts` und schneidet `shell-parse.ts` auf das zurück, was die Branch-Politik braucht; `436d78c` zieht Testsuite und Textschicht nach.
+
+Beide Randbedingungen der Antwort sind eingehalten. Die erklärende Ablehnung besteht fort und ist stärker als erwartet: der PostToolUse-Hook kann über `hookSpecificOutput.additionalContext` einen Text an das Modell zurückgeben, gemessen gegen Claude Code 2.1.224, sodass der Rückfall auf Halt plus Ereignis nicht gebraucht wurde. Die grobe Vorwarnung aus Variante C ist nicht gebaut worden; der Halt-Zweig auf der Bash-Oberfläche, der noch `mutation.mutates` fragte, ist mit dem Klassifizierer gefallen.
+
+Die beiden Commits des abgelösten Circles, `3dc5014` und `9a24c9b`, sind nicht per `git revert` zurückgenommen, sondern vorwärts abgeräumt. Am Baum nachgeprüft am 260807-1202: alle sieben Quelldateien, die sie anlegten, sind gelöscht (`hooks/lib/shell-reach.ts`, `hooks/lib/__tests__/shell-reach.test.ts`, `helpers/reachability-corpus.ts`, `helpers/shell-witness.ts`, `reachability-corpus.test.ts`, `fixtures/mutation-verdicts-head.json`, dazu `hooks/lib/bash-mutation-guard.ts` aus der Zeit davor); `GRAMMAR_TERMINATORS`, das `9a24c9b` in `hooks/lib/command-word.ts` einfügte, ist mit `ba7ccda` wieder entfallen; die Modultabellenzeile, die `9a24c9b` in `README-hooks.md` einfügte, ist mit `436d78c` entfallen. Ein Rest steht: die kompilierten Waisen `hooks/dist/lib/shell-reach.{js,d.ts}` und `hooks/dist/lib/bash-mutation-guard.{js,d.ts}`, 4.088 Zeilen, sind weiter in git verzeichnet, weil `tsc` das Ausgabeverzeichnis nicht aufräumt. Sie werden von nichts mehr importiert; als Befund abgelegt unter `circles/260807-0923-guard-misst-statt-orakelt/issues/260807-1202_o_kompilierte-waisen-des-klassifizierers-stehen-noch-in-hooks-dist.md`.

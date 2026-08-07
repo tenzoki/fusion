@@ -37,3 +37,8 @@ zitiert dabei den Commit, der den Klassifizierer entfernt.
 **Umgehung während der Sitzung:** absolute Pfade statt `cd` plus relativem Pfad, und der Verzicht
 auf den Pfeil im Beschreibungstext. Beides sind die Auswege, die die Verweigerungsmeldung selbst
 nennt, kein Umgehen der Policy.
+
+---
+Resolved: Der beschriebene Code existiert nicht mehr, und mit ihm das Vorher-Urteil, das fehlalarmieren konnte. `ba7ccda` hat `hooks/lib/bash-mutation-guard.ts` und `hooks/lib/shell-reach.ts` gelöscht, den `classifyBashMutation`-Aufruf samt beider Rückrufe aus `hooks/guard.ts` entfernt und `hooks/lib/shell-parse.ts` auf das zurückgeschnitten, was die Branch-Politik braucht; `436d78c` hat die zugehörige Testsuite und die Textschicht nachgezogen. Am Baum nachgeprüft am 260807-1202: `classifyBashMutation` und `parseCommand` sind in `hooks/lib/shell-parse.ts` und `hooks/lib/command-word.ts` nicht mehr vorhanden, `hooks/dist/guard.js` importiert den Klassifizierer nicht mehr, und der PreToolUse-Hook fällt auf der Shell kein Schreiburteil mehr.
+
+Beide Fallklassen des Befunds sind damit gegenstandslos, nicht nur behoben: Fall 1 (Zeilenumbrüche eines gequoteten Heredoc-Körpers als Segmenttrenner) und Fall 2 (ein Pfeil in einem JSON-String als Ausgabeumleitung) waren Lesefehler an der Frage "welche Datei schreibt dieser Befehl gleich". Diese Frage wird nicht mehr gestellt. Die Messung vergleicht zwei Fingerabdrücke der geschützten Pfade und fragt den Befehlstext gar nicht mehr, weshalb weder ein Heredoc-Körper noch ein Größer-Zeichen in einem String sie erreichen kann. Die in der Sitzung genutzten Auswege (absolute Pfade statt `cd`, Verzicht auf den Pfeil im Beschreibungstext) werden nicht mehr gebraucht.

@@ -9,3 +9,6 @@ Ursache: die vier Pfade waren erfundene Befehlsoperanden der Klassifizierer-Besc
 Nicht in Schritt 6 behoben, weil der Auftrag ausdrücklich verbietet, unter `hooks/lib/__tests__/` etwas anderes als `rules-emission-golden.test.ts` anzufassen — Schritt 5 arbeitet parallel an der Suite. Der Eintrag gehört zu Schritt 5 (Testsuite) oder zu einem Nachzug danach; die Änderung ist eine Streichung von vier Zeilen und berührt keine Zusicherung sonst.
 
 Gemessen am 260807-1133: `npx vitest run lib/__tests__/reference-resolution-lint.test.ts` → 22 grün, 1 rot (nur diese Zusicherung).
+
+---
+Resolved: Die vier Schlüssel `rules/a.md`, `rules/b.md`, `rules/gen.pl` und `rules/junk.txt` sind aus `EXAMPLE_PATHS` in `hooks/lib/__tests__/reference-resolution-lint.test.ts` gestrichen. Die sechs übrigen Einträge stehen unverändert. Gegenprobe am Baum vor der Streichung: die vier Pfade kommen auf der gescannten Fläche (`rules/`, `agents/`, `docs/`, `templates/`, `skills/`, READMEs, `CLAUDE.md`, `bin/`-Skripte, `install.sh`, `hooks/lib/*.ts`) nirgends mehr vor; die verbliebenen Treffer liegen sämtlich unter `hooks/lib/__tests__/`, das nicht Teil der Fläche ist. Gemessen am 260807-1201: `npx vitest run lib/__tests__/reference-resolution-lint.test.ts` → 23 grün, 0 rot (vorher 22 grün, 1 rot). Die Textstellen selbst fielen mit `436d78c` (Textschicht) und `ba7ccda` (Klassifizierer).

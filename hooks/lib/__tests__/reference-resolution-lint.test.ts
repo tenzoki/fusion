@@ -191,12 +191,8 @@ function isPlaceholder(token: string): boolean {
 // reference to a real file.
 const EXAMPLE_PATHS: Record<string, string> = {
   "rules/x.md": "the guard docs' canonical fabricated operand (`rm rules/x.md`)",
-  "rules/a.md": "guard-doc fabricated operand (rename examples a.md -> b.md)",
-  "rules/b.md": "guard-doc fabricated operand (rename examples a.md -> b.md)",
   "rules/old.md": "guard-doc fabricated operand (retirement example)",
   "rules/retired/old.md": "guard-doc fabricated operand (retirement example)",
-  "rules/gen.pl": "guard-doc fabricated operand (perl flag-cluster examples)",
-  "rules/junk.txt": "guard-doc fabricated operand (git-clean measurement)",
   "rules/relevant-file.md": "guard-doc fabricated value in an event-JSON example",
   "bin/fu": "removed v3.20.0; CLAUDE.md names it as history, deliberately",
   "rules/context-manifest.yaml":
