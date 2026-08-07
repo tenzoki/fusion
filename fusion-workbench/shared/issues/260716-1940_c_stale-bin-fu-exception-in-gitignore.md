@@ -15,3 +15,14 @@ Source: fusion-workbench/planning/260716-1910[p]-plan-workbench-umbau-circle-con
 
 ---
 Reconciliation 260731-2324 (reconciler, domain `code`) — **confirmed still live, stays `_o_`.** `.gitignore:23` still carries `!bin/fu`, and `bin/` holds no such file: `fusion-commit-lock`, `fusion-paths`, `fusion-plane`, `fusion-rules`, `fusion-session-mark`, `fusion-workbench-root`, `monitor`. The launcher was removed in v3.20.0 and the un-ignore rule outlived it. Untouched by the v5.7.0 release, which changed no packaging file except `install.sh`'s pin-example comment.
+
+---
+Resolved: The dead `!bin/fu` exception is removed, and the stale comment naming the same launcher
+(which sat at line 53, not the 51 this record guessed) is rewritten to describe what `.fusion/`
+actually is, checked against `install.sh:35`. `bin/fu` was verified absent from both the work tree
+and the index rather than taken on this record's word. The packaging rule `CLAUDE.md` records — that
+`bin/*` as a file pattern is what lets the `!bin/...` exceptions work at all — was checked afterwards
+with `git check-ignore` on every remaining exception: all eight shipped helpers still resolve through
+their own negation, and two control paths confirm `bin/*` still catches new files. One trap noted for
+whoever repeats that check: `git check-ignore -v` exits 0 when any pattern matches, negations
+included, so the verdict has to be read from the form without `-v`.

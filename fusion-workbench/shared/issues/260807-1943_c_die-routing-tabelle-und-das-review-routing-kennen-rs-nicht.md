@@ -81,3 +81,18 @@ Ausgang beseitigt, ist `.rs` und `.java` an beiden Stellen nachzutragen.
 Aus derselben KRK-Meldung wie die Schwesterakte. Die Meldung behauptete, `.rs` fehle in der
 Dateiliste der Domänenerkennung; dort steht es. Zwei Zeilen weiter im selben Prompt fehlt es
 tatsächlich, an zwei Stellen. Die Meldung war in der Sache richtig und im Ort falsch.
+
+---
+Resolved: `.rs` and `.java` added, in the order the other three prompts use. The fix went to **four**
+sites, not the two this record counted. The coder executing it found the list twice more in the same
+file: Setup Step 5's `code_files` line carried `.rs` but not `.java`, and the `## Scope` "You may NOT
+edit code" list carried neither.
+
+That fourth site is why the scope was widened rather than held at the stated minimum. Read literally,
+the orchestrator's own prohibition did not forbid it from editing Rust or Java files, which is the
+opposite of what that section exists to say. Leaving one prompt asserting in three lists that Rust is
+code and in a fourth that it is not is the drift this record complains about, arrived at from inside.
+
+What this record scopes out stays scoped out: the list is still maintained by hand at five sites
+across four prompts, and no test checks that they agree. Consolidating it, choosing where it would
+live, and adding that check remain a design decision nobody has taken.

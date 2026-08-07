@@ -20,7 +20,6 @@ out/
 bin/*
 !bin/monitor
 !bin/fusion-rules
-!bin/fu
 !bin/fusion-workbench-root
 !bin/fusion-session-mark
 !bin/fusion-commit-lock
@@ -50,7 +49,8 @@ credentials.json
 # fusion-workbench is a runtime artifact created by agents in the consuming project
 ## fusion-workbench/
 
-# .fusion/ holds the project-local `fu` launcher copied from bin/fu at Setup — runtime artifact
+# .fusion/ is the fusion install directory (install.sh default: ~/.fusion, overridable
+# via FUSION_HOME). Runtime artifact, never source.
 .fusion/
 
 # Audit logs (append-only, machine-generated)

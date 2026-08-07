@@ -64,3 +64,25 @@ Richtung 1 und 3 zusammen wären die ehrliche Minimalantwort.
 Guard in einem Projekt halten lassen, dann `node ~/.fusion/hooks/dist/clear-halt.js` aus einem
 Verzeichnis ohne workbench darüber ausführen. Ausgabe ist `Guard is not halted.`, der Halt
 steht weiter.
+
+---
+Resolved: Directions 1 and 3, which this record names the honest minimum answer. Direction 2 (an
+explicit path argument) was deliberately left alone.
+
+`clear-halt.ts` now calls `findWorkbenchRoot()` before loading any state, using the same locator
+`lib/escalation.ts` already resolves through rather than a second one. No workbench above the working
+directory now goes to stderr with exit 1 and says what was and was not found, instead of reporting a
+clear guard. With a workbench, the path is printed first, so both remaining outcomes are answers about
+a named place, and the success wording became "not halted in this project".
+
+The halt message carries the `cd` at every site. `clearHaltCommand()` in `lib/escalation.ts` is the
+single author of the sentence, because both raising sites already import that file and two hooks each
+building their own copy is two sentences that drift. Fixed at seven locations, found by grepping the
+wording rather than trusting the two hooks: `guard.ts`, `tracker.ts`, `clear-halt.ts`, the new
+authoring site, `rules/protected-path-discipline.md` (which all 16 agents load), and three places in
+`README-hooks.md` plus one in `README.md`.
+
+Reproduced both ways against a scratch project with a seeded halt, never against this repository's own
+guard. Before: `Guard is not halted. No action needed.`, exit 0, halt untouched. After: a named
+diagnosis, exit 1, halt untouched — and from inside the project, the halt cleared as it always should
+have. That rule file grew 358 bytes, so the emission golden was regenerated in the same pass.
