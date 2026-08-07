@@ -1,27 +1,23 @@
 # Orchestrator — Live
 
-**Turn:** 1/5 | **Tasks:** 1/11 | **Commits:** 2 | **Errors:** 0
-**Started:** 21:56 | **Domain:** code | **Elapsed Turns:** 0 | **Guard:** OK (0 blocks)
+**Turn:** 1/5 | **Tasks:** 2/11 | **Commits:** 5 | **Errors:** 0
+**Started:** 21:56 | **Domain:** code | **Elapsed Turns:** 0 | **Session:** Stopped by user
 
-**Active Circle:** 260804-1205-shell-reachability-model
+**Active Circle:** 260804-1205-shell-reachability-model (parked, not closed)
 
 ## Current
-  [RUNNING] planner -> Repair the edge vocabulary: multi-line grammar words + closing-word set
+  [PARKED] orchestrator -> Waiting on decision 260807-0825: predict shell writes, or enforce?
 
 ## This Turn
-  [DONE]    planner -> Implementation plan, 11 steps, 2 human gates
-  [DONE]    conceptrev -> Diagram verdict: tangled, one real modelling gap
+  [DONE]    orchestrator -> Circle activation + planning .......... ac1399e
   [DONE]    coder -> S1 measurement instrument .................... 3dc5014
-  [DONE]    taskplanner -> Task queue rebuilt, stale-queue issue closed
-  [DONE]    orchestrator -> Circle activation + planning artifacts .. ac1399e
-  [RUNNING] planner -> Design repair pass before S2
+  [DONE]    planner -> Design repair, candidate/pending rule ...... 02745fe
+  [DONE]    coder -> S2 reach layer + pipe-exit edge ............. 9a24c9b
+  [DONE]    orchestrator -> Session bookkeeping and parking note
 
 ## Up Next
-  [QUEUED]  coder -> S2 parser: the reach edge, additive, zero verdict change
-  [QUEUED]  coder -> S9 advisory clamp (adopted defect, no dependencies)
-  [QUEUED]  coder -> S10 setup probe vs migrate reformat (adopted defect)
+  (nothing dispatched — the Circle is parked pending a user decision)
 
 ## Blocked
-  S2 -> design repair    S3 -> S2    S4 -> S3    S6 -> S3
-  S5 -> S4, S6           S7 -> S5 gate    S8 -> S7
-  S11 -> S8, S9, S10, both gates
+  S3..S8, S11 -> decision 260807-0825, then the corpus gap 260807-0251
+  S9, S10     -> independent of the decision; startable at any time

@@ -32,7 +32,7 @@
     },
     "orchestrator-live.md": {
       "totalChanges": 23,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-06T21:13:25.338Z",
       "thrashingScore": 7
     },
@@ -230,7 +230,7 @@
     },
     "portfolio.md": {
       "totalChanges": 3,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-06T21:00:20.193Z",
       "thrashingScore": 1
     },
@@ -488,7 +488,7 @@
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/orchestrator-live.md": {
       "totalChanges": 11,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-06T21:58:51.814Z",
       "thrashingScore": 3
     },
@@ -1460,7 +1460,7 @@
     },
     "circles/260804-1205-shell-reachability-model/_a_circle.md": {
       "totalChanges": 2,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-06T20:59:48.768Z",
       "thrashingScore": 0
     },
@@ -2462,22 +2462,34 @@
     },
     "shared/history/260806-2259-playmaker-user-fusion-next.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-06T21:00:42.242Z",
       "thrashingScore": 0
     },
     "shared/history/260806-2158-orchestrator-session.md": {
       "totalChanges": 2,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-06T21:01:22.999Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260804-1205-shell-reachability-model/reviews/260807-0002-conceptrev-plan-shell-reachability-model.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-06T22:03:29.057Z",
+      "thrashingScore": 0
+    },
+    "shared/issues/260807-0158_o_record-filenames-collide-on-the-minute-and-nothing-prevents-it.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-06T23:59:33.370Z",
+      "thrashingScore": 0
+    },
+    "shared/decisions/260807-0158_o_how-is-a-unique-record-filename-obtained.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T00:00:03.050Z",
       "thrashingScore": 0
     }
   },
-  "sessionStart": "2026-08-06T20:59:48.768Z"
+  "sessionStart": "2026-08-06T23:59:33.370Z"
 }

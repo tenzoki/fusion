@@ -868,3 +868,8 @@
 {"ts":"2026-08-06T22:19:05","event":"gate_hit","turn":1,"detail":"design gap found by conceptrev before S2 — plan repair needed"}
 {"ts":"2026-08-06T23:41:37","event":"gate_response","turn":1,"detail":"repair design via planner; GIT_WORK_TREE bypass stays in backlog"}
 {"ts":"2026-08-06T23:41:37","event":"planner_start","turn":1,"agent":"planner","detail":"repair pass: edge vocabulary gap + closing-word vocabulary"}
+{"ts":"2026-08-07T00:57:23","event":"conceptrev_done","agent":"conceptrev","detail":"verdict=tangled; new defect: compound as pipeline element; prior 3 findings closed"}
+{"ts":"2026-08-07T00:57:23","event":"task_done","turn":1,"task":"S2","agent":"coder","detail":"9a24c9b — reach layer + pipe-exit edge; 5 protected-path holes closed; differential 0/0"}
+{"ts":"2026-08-07T00:57:23","event":"commit","turn":1,"detail":"02745fe plan repair; 9a24c9b S2 reach layer"}
+{"ts":"2026-08-07T06:27:21","event":"gate_response","turn":1,"detail":"user stopped the session; Circle parked, not closed; premise question filed as decision 260807-0825"}
+{"ts":"2026-08-07T06:27:21","event":"session_end","turn":1,"detail":"4 commits, 2 of 11 plan steps, suite 1677 green, guard verdicts unmoved"}

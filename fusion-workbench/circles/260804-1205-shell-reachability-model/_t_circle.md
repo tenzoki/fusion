@@ -2,10 +2,10 @@
 
 ---
 **Domain:** code
-**Status:** anticipated
+**Status:** active (parked mid-Turn-1 pending decision `260807-0825`; the record was activated `_a_`→`_t_` on 260806-2313 and this field was corrected by hand on 260807-0825, which is the defect filed at `shared/issues/260802-0920_o_next-skill-activates-a-circle-without-updating-its-status-field.md`)
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** (none yet)
-**Active session history:** (none yet)
+**Active spec/plan:** circles/260804-1205-shell-reachability-model/planning/260806-2353_o_plan-shell-reachability-model.md
+**Active session history:** shared/history/260806-2158-orchestrator-session.md
 
 ---
 
@@ -54,6 +54,39 @@ The parent Circle's open ledger at reconciliation `260804-1021`: the `git -C` ro
 **Depended on by nothing yet.** `260801-1244-curator` is the other anticipated Circle in the portfolio and is unrelated to the guard's classifier.
 
 ## Turn log
+
+- **Turn 1 (session 260806-2158) — parked by the user, not closed.** Commits `ac1399e`
+  (activation and planning), `3dc5014` (plan step 1, the measurement instrument), `02745fe`
+  (plan repair after the first diagram evaluation), `9a24c9b` (plan step 2, the reach layer).
+  Plan steps 1 and 2 are `[DONE]`; steps 3 through 11 are unstarted. No Coherence verdict was
+  taken, because the Turn did not reach its end.
+
+  **State of the work:** the classifier's verdicts have not moved. The reach layer exists in
+  its own module and the guard does not read it yet, measured as zero rows moved in either
+  direction across 93,744 generated commands. The suite stands at 1,677 tests in 32 files,
+  green. `hooks/dist/` is rebuilt and committed, so the tree is consistent.
+
+  **What the Turn produced beyond the code.** The design was evaluated twice and repaired
+  twice. The second evaluation and the measurement that followed it found five holes in the
+  approved design that would have let a command delete a protected rule file, of which the
+  worst is `{ cd rules; } | cat && rm x.md`, verified to remove the file in both `bash` and
+  `zsh`. All five are closed in `hooks/lib/shell-reach.ts`. The sub-question they raised is
+  answered by measurement in `decisions/260807-0250_i_does-a-pipelines-subshell-fact-reach-every-segment-of-a-compound-element.md`.
+
+  **Why it stopped.** The user asked whether the Circle is still trying to decide an
+  undecidable question. It is, and the session's own evidence supports the challenge: the
+  approximation keeps producing holes as it grows, the instrument cannot yet express the shape
+  where the worst ones lived, and the only friction anyone has measured in a live consuming
+  project is untouched by this Directive. The question is filed as an open decision at
+  `decisions/260807-0825_o_should-the-guard-predict-shell-writes-or-enforce-them.md` and the
+  Circle is parked pending its answer.
+
+  **Do not start plan step 3 before that decision is answered.** Step 3 is where the
+  classifier's verdicts first move, and the corpus gap at
+  `issues/260807-0251_o_the-corpus-cannot-generate-the-operand-shape-where-the-worst-holes-were-measured.md`
+  is still open.
+
+  Session history: `shared/history/260806-2158-orchestrator-session.md`.
 
 ## Activation proposal
 
