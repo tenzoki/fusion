@@ -19,12 +19,22 @@
  *
  * ## Determinism
  *
- * Seedless and total. `generateCorpus()` walks the six dimension tables in a
+ * Seedless and total. `generateCorpus()` walks the eight dimension tables in a
  * fixed nested order and emits every combination once, so two runs produce the
  * same rows in the same order and a diff between two baselines is a diff about
  * verdicts rather than about ordering. `CorpusRow.id` is built from the
  * dimension values rather than from a counter, so inserting a dimension value
  * later renames nothing that already exists.
+ *
+ * Two dimensions are not rectangular, and they are the two that were added
+ * after the first baseline was captured. Only a wrapper with a BODY can have
+ * that body broken across lines (SPELLING), and only a COMPOUND command can
+ * stand as an element of a pipeline (POSITION), so the four compound wrappers
+ * carry 2 × 3 renderings and the other three carry one each. The id keeps its
+ * six components and folds both into the wrapper slot (`if`, `if-multiline`,
+ * `if-pipehead`, `if-multiline-pipetail`, …), with the ORIGINAL value of each
+ * dimension spelled as the bare wrapper name. That is what let both be added
+ * without renaming a single row an earlier baseline recorded.
  *
  * ## The `{{ROOT}}` placeholder
  *
@@ -42,10 +52,10 @@
  *
  * Two artifacts, and they are deliberately different sizes:
  *
- *   - the FULL corpus baseline (~24k rows) goes to a scratch file outside this
+ *   - the FULL corpus baseline (~94k rows) goes to a scratch file outside this
  *     repository. It is the differential's left-hand side at plan step 5 and it
  *     is too large to be worth reading in a diff.
- *   - a BOUNDED subcorpus (`selectSubcorpus`, 448 rows) is committed as
+ *   - a BOUNDED subcorpus (`selectSubcorpus`, 1008 rows) is committed as
  *     `fixtures/mutation-verdicts-head.json`, modelled on the existing
  *     `fixtures/git-verdicts-head.json`.
  *
@@ -73,10 +83,34 @@
  * measurement — and the rows that stop reproducing at step 3 ARE the
  * measurement step 5 buckets and takes to the human gate. Regenerating this
  * fixture before that gate would destroy the only before-image of the change.
+ *
+ * IT HAS BEEN REGENERATED TWICE, BOTH TIMES AT PLAN STEP 2 AND BOTH TIMES
+ * UNDER THE SAME LICENCE: A DIMENSION THE INSTRUMENT WAS MISSING. A differential
+ * run over a corpus that cannot produce a shape cannot see what the change does
+ * to that shape, so a missing dimension has to land BEFORE step 3 moves the
+ * classifier — after that there is no before-image to add it to.
+ *
+ *   1. SPELLING (448 → 560 rows). A compound body broken across lines is the
+ *      shape the reachability model is about, and it appeared in no row.
+ *   2. POSITION (560 → 1008 rows). A compound command standing as an element of
+ *      a pipeline was unreachable, because the wrapper was one dimension and
+ *      `brace` and `pipe-head` could not co-occur. That is the class the model
+ *      is most exposed to — the `|` sits next to neither the mover nor the
+ *      write — and five shapes in it were measured to resolve a write into a
+ *      directory neither shell ever entered.
+ *
+ * Both were rebuilt with the classifier still untouched, under two conditions
+ * checked rather than asserted: every row the fixture already held reproduced
+ * its verdict byte for byte and kept its relative order, and the file only
+ * grew. Any other regeneration before the step 5 gate destroys the
+ * before-image.
  */
 
 import { classifyBashMutation } from "../../bash-mutation-guard.js";
-import type { MutationOptions, MutationVerdict } from "../../bash-mutation-guard.js";
+import type {
+  MutationOptions,
+  MutationVerdict,
+} from "../../bash-mutation-guard.js";
 
 /* ------------------------------------------------------------------ *
  * The protected list and the project root the classifier is measured on
@@ -176,15 +210,7 @@ export const HEADS: readonly HeadSpec[] = [
  * real head. `newline` is a literal newline, which bash's grammar treats as a
  * sequencing operator and which the lexer reports as its own joiner.
  */
-export const JOINERS = [
-  "none",
-  "&&",
-  "||",
-  ";",
-  "|",
-  "&",
-  "newline",
-] as const;
+export const JOINERS = ["none", "&&", "||", ";", "|", "&", "newline"] as const;
 export type JoinerId = (typeof JOINERS)[number];
 
 /* ------------------------------------------------------------------ *
@@ -251,7 +277,147 @@ export const WRAPPERS = [
 export type WrapperId = (typeof WRAPPERS)[number];
 
 /* ------------------------------------------------------------------ *
- * Dimension 5 — the write verb
+ * Dimension 5 — the spelling
+ * ------------------------------------------------------------------ */
+
+/**
+ * Whether a compound wrapper's body is written on one line or broken across
+ * four.
+ *
+ *     if cd build; then rm out.js; fi          single-line
+ *     if cd build                              multi-line
+ *     then
+ *     rm out.js
+ *     fi
+ *
+ * The two are the same command to the shell and were NOT the same command to
+ * the classifier: the flat joiner model reads the body's `;` in one spelling
+ * and its newline in the other, and the reachability model has to read the
+ * grammar in both. This dimension is the reason the differential can see that.
+ *
+ * It was added at plan step 2 rather than step 1 because step 1's instrument
+ * rendered every wrapper single-line, which left the shape the whole Circle is
+ * about outside the corpus — the risk the plan's own table names ("the
+ * differential measures a corpus that does not contain the shape the change is
+ * about").
+ */
+export const SPELLINGS = ["single-line", "multi-line"] as const;
+export type SpellingId = (typeof SPELLINGS)[number];
+
+/**
+ * The spellings a wrapper has.
+ *
+ * Only a wrapper with a BODY can have that body broken across lines. `bare`,
+ * `pipeline` and `pipe-head` are flat chains — there is one spelling of
+ * `cd X && rm y`, and inventing a second by breaking after `&&` would measure
+ * the line-continuation rule rather than the reachability model.
+ */
+export function spellingsFor(wrapper: WrapperId): readonly SpellingId[] {
+  switch (wrapper) {
+    case "if":
+    case "while":
+    case "until":
+    case "brace":
+      return SPELLINGS;
+    case "bare":
+    case "pipeline":
+    case "pipe-head":
+      return ["single-line"];
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Dimension 6 — where the compound construct sits relative to a pipeline
+ * ------------------------------------------------------------------ */
+
+/**
+ * Whether the compound construct is itself an ELEMENT of a pipeline.
+ *
+ *     { cd build; } && rm out.js               standalone
+ *     { cd build; } | cat && rm out.js         pipe-head
+ *     echo hi | { cd build; } && rm out.js     pipe-tail
+ *
+ * ADDED AFTER STEP 2, FOR THE SAME REASON THE SPELLING DIMENSION WAS. A wrapper
+ * was one dimension with one value per row, so `brace` and `pipe-head` could
+ * never co-occur and the corpus could not produce a compound command standing
+ * in a pipeline. That is precisely the class the reachability model is most
+ * exposed to: the `|` sits next to neither the mover nor the write, so a
+ * membership test that reads one adjacent operator cannot see the subshell, and
+ * the model follows a directory change into a shell that never took one.
+ * Measured, before this dimension existed, five shapes it cannot generate
+ * (`{ … } | cat`, `if … fi | cat`, `while … done | cat`, `for … done | cat`,
+ * `{ { … } } | cat`) resolve a later `rm rules/x.md` into a directory bash and
+ * zsh never entered, and both shells delete the protected rule.
+ *
+ * It lands NOW rather than at step 5 because step 3 is what moves the
+ * classifier: a dimension added after that has no before-image, and the gate's
+ * differential would have a blind spot exactly where the risk is.
+ *
+ * The two conditions the spelling dimension was added under hold here too and
+ * were checked rather than asserted: every id the fixture already carried is
+ * untouched (the standalone position keeps today's slug), and the file only
+ * grows.
+ *
+ * STATED BOUND: in the two piped positions the compound's body is inert and the
+ * write stands AFTER the pipeline, so the corpus covers "the write runs in the
+ * calling shell after a subshelled mover". The mirror shape — a write INSIDE
+ * the piped element, where the directory change is entirely real
+ * (`{ cd rules; rm x.md; } | cat`) — is covered by the unit suite
+ * (`shell-reach.test.ts`) and not by this dimension. Adding it needs a seventh
+ * axis for where the write sits, which is a separate decision.
+ */
+export const POSITIONS = ["standalone", "pipe-head", "pipe-tail"] as const;
+export type PositionId = (typeof POSITIONS)[number];
+
+/**
+ * The positions a wrapper has.
+ *
+ * Only a COMPOUND command can be a pipeline element in the sense this dimension
+ * measures. `bare`, `pipeline` and `pipe-head` are flat chains that already
+ * carry their own `|` where they have one, and piping them again would measure
+ * the pipeline dimension twice.
+ */
+export function positionsFor(wrapper: WrapperId): readonly PositionId[] {
+  switch (wrapper) {
+    case "if":
+    case "while":
+    case "until":
+    case "brace":
+      return POSITIONS;
+    case "bare":
+    case "pipeline":
+    case "pipe-head":
+      return ["standalone"];
+  }
+}
+
+/**
+ * The wrapper component of a row's id.
+ *
+ * The single-line spelling keeps the bare wrapper name because it IS the
+ * rendering already recorded under it; the multi-line spelling is a new row and
+ * carries the marker. The standalone position does the same. That asymmetry is
+ * what makes both dimensions additive: the HEAD baseline's ids are untouched
+ * and the file can only grow.
+ */
+function wrapperSlug(
+  wrapper: WrapperId,
+  spelling: SpellingId,
+  position: PositionId,
+): string {
+  const base = spelling === "single-line" ? wrapper : `${wrapper}-multiline`;
+  switch (position) {
+    case "standalone":
+      return base;
+    case "pipe-head":
+      return `${base}-pipehead`;
+    case "pipe-tail":
+      return `${base}-pipetail`;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Dimension 7 — the write verb
  * ------------------------------------------------------------------ */
 
 /**
@@ -277,7 +443,11 @@ export interface WriteVerbSpec {
 
 export const WRITE_VERBS: readonly WriteVerbSpec[] = [
   { id: "rm", render: (o) => `rm ${o}`, renderPiped: (o) => `rm ${o}` },
-  { id: "rm-rf", render: (o) => `rm -rf ${o}`, renderPiped: (o) => `rm -rf ${o}` },
+  {
+    id: "rm-rf",
+    render: (o) => `rm -rf ${o}`,
+    renderPiped: (o) => `rm -rf ${o}`,
+  },
   {
     id: "mv",
     render: (o) => `mv ${o} ${o}.moved`,
@@ -306,7 +476,7 @@ export const WRITE_VERBS: readonly WriteVerbSpec[] = [
 ];
 
 /* ------------------------------------------------------------------ *
- * Dimension 6 — the target
+ * Dimension 8 — the target
  * ------------------------------------------------------------------ */
 
 /**
@@ -398,6 +568,8 @@ export interface CorpusDims {
   readonly joiner: JoinerId;
   readonly builtin: string;
   readonly wrapper: WrapperId;
+  readonly spelling: SpellingId;
+  readonly position: PositionId;
   readonly verb: string;
   readonly target: string;
 }
@@ -432,12 +604,31 @@ export function renderCommand(template: string, root: string): string {
   return template.split(ROOT_TOKEN).join(root);
 }
 
-function familiesFor(wrapper: WrapperId, joiner: JoinerId): FamilyId[] {
+function familiesFor(
+  wrapper: WrapperId,
+  joiner: JoinerId,
+  position: PositionId,
+): FamilyId[] {
   const out: FamilyId[] = [];
-  if (wrapper === "if" || wrapper === "while" || wrapper === "until" || wrapper === "brace") {
+  if (
+    wrapper === "if" ||
+    wrapper === "while" ||
+    wrapper === "until" ||
+    wrapper === "brace"
+  ) {
     out.push("compound");
   }
-  if (wrapper === "pipeline" || wrapper === "pipe-head") out.push("pipeline");
+  // A compound command standing IN a pipeline belongs to both families, and it
+  // has to: the `pipeline` bucket is what plan step 5 reads to see what the
+  // change cost the pipeline shapes, and these rows are pipeline shapes whose
+  // `|` is nowhere near the mover.
+  if (
+    wrapper === "pipeline" ||
+    wrapper === "pipe-head" ||
+    position !== "standalone"
+  ) {
+    out.push("pipeline");
+  }
   if (wrapper === "bare") out.push("flat");
   if (joiner === "||") out.push("or-joiner");
   if (joiner === "|") out.push("pipe-joiner");
@@ -449,29 +640,93 @@ function moverPhrase(builtin: DirBuiltinSpec, target: TargetSpec): string {
   return builtin.takesDir ? `${builtin.word} ${target.dir}` : builtin.word;
 }
 
+/**
+ * Render one construct.
+ *
+ * The multi-line spellings break at the points bash's grammar allows and
+ * nowhere else. `} && WRITE` and `MOVER && WRITE` stay on one line because
+ * neither shell accepts a line that STARTS with `&&`; the break that matters is
+ * the one before the body word and the one after it, which is where the joiner
+ * the flat model reads changes from `;` to a newline.
+ */
 function assemble(
   wrapper: WrapperId,
+  spelling: SpellingId,
+  position: PositionId,
   mover: string,
   verb: WriteVerbSpec,
   operand: string,
 ): string {
   const write = verb.render(operand, ROOT_TOKEN);
   const piped = verb.renderPiped(operand, ROOT_TOKEN);
+  const multi = spelling === "multi-line";
+
+  if (position !== "standalone") {
+    // The compound command ALONE, with an inert body, and the write moved out
+    // behind the pipeline. That separation is the whole point of the position
+    // dimension: the write has to run in the CALLING shell so the row can show
+    // whether the subshelled mover reached it. A body that still held the write
+    // would measure a write inside the subshell instead, which is a different
+    // question (see the stated bound on `POSITIONS`).
+    //
+    // `break` rather than `:` in the two loop bodies, because a `while` whose
+    // condition is a succeeding `cd` and whose body is `:` never terminates —
+    // and the standalone rendering's note about not adding a `break` does not
+    // apply here, where the body is inert by construction anyway.
+    const compound = ((): string => {
+      switch (wrapper) {
+        case "brace":
+          return multi ? `{\n${mover}\n}` : `{ ${mover}; }`;
+        case "if":
+          return multi ? `if ${mover}\nthen\n:\nfi` : `if ${mover}; then :; fi`;
+        case "while":
+          return multi
+            ? `while ${mover}\ndo\nbreak\ndone`
+            : `while ${mover}; do break; done`;
+        case "until":
+          return multi
+            ? `until ${mover}\ndo\nbreak\ndone`
+            : `until ${mover}; do break; done`;
+        // Unreachable: `positionsFor` gives the flat wrappers one position.
+        case "bare":
+        case "pipeline":
+        case "pipe-head":
+          return mover;
+      }
+    })();
+    // `cat` rather than `grep x`, for the reason `pipe-head` already gives:
+    // `grep` finds nothing in a mover's output, exits 1, and the `&&`
+    // short-circuits, so the row could never show where the write landed.
+    return position === "pipe-head"
+      ? `${compound} | cat && ${write}`
+      : `echo hi | ${compound} && ${write}`;
+  }
 
   switch (wrapper) {
     case "bare":
       return `${mover} && ${write}`;
     case "if":
-      return `if ${mover}; then ${write}; fi`;
+      return multi
+        ? `if ${mover}\nthen\n${write}\nfi`
+        : `if ${mover}; then ${write}; fi`;
     case "while":
       // No `break`. A `break` would add a segment and change the shape being
       // measured; termination is the witness runner's problem, and it has a
       // hard timeout for exactly the rows that do not terminate (`until popd`).
-      return `while ${mover}; do ${write}; done`;
+      return multi
+        ? `while ${mover}\ndo\n${write}\ndone`
+        : `while ${mover}; do ${write}; done`;
     case "until":
-      return `until ${mover}; do ${write}; done`;
+      return multi
+        ? `until ${mover}\ndo\n${write}\ndone`
+        : `until ${mover}; do ${write}; done`;
     case "brace":
-      return `{ ${mover}; } && ${write}`;
+      // The opener gets its own line, which is the whole point: it leaves a
+      // segment that carries the group's leading operator and runs nothing, and
+      // the mover then arrives joined by a newline. A rendering that kept
+      // `{ MOVER` together would break a line without changing a joiner and
+      // would measure nothing.
+      return multi ? `{\n${mover}\n} && ${write}` : `{ ${mover}; } && ${write}`;
     case "pipeline":
       return `${mover} && echo hi | ${piped}`;
     case "pipe-head":
@@ -485,7 +740,11 @@ function assemble(
   }
 }
 
-function attachHead(head: HeadSpec, joiner: JoinerId, construct: string): string {
+function attachHead(
+  head: HeadSpec,
+  joiner: JoinerId,
+  construct: string,
+): string {
   if (head.text === null) return construct;
   if (joiner === "newline") return `${head.text}\n${construct}`;
   return `${head.text} ${joiner} ${construct}`;
@@ -520,9 +779,11 @@ export interface CorpusOptions {
 /**
  * The corpus. Total, seedless, and in a fixed order.
  *
- * Nesting order is head/joiner → builtin → wrapper → verb → target, chosen so
- * that rows of one family sit together in the output and a truncated read of a
- * baseline is still a coherent slice.
+ * Nesting order is head/joiner → builtin → wrapper → spelling → verb → target,
+ * chosen so that rows of one family sit together in the output and a truncated
+ * read of a baseline is still a coherent slice. The spelling sits directly
+ * under the wrapper it varies, so the two spellings of one construct are
+ * adjacent in the file and read as the pair they are.
  */
 export function generateCorpus(opts: CorpusOptions = {}): CorpusRow[] {
   const root = opts.root ?? CLASSIFY_ROOT;
@@ -531,45 +792,53 @@ export function generateCorpus(opts: CorpusOptions = {}): CorpusRow[] {
   for (const { head, joiner } of headJoinerPairs()) {
     for (const builtin of DIR_BUILTINS) {
       for (const wrapper of WRAPPERS) {
-        for (const verb of WRITE_VERBS) {
-          for (const target of TARGETS) {
-            const construct = assemble(
-              wrapper,
-              moverPhrase(builtin, target),
-              verb,
-              target.operand,
-            );
-            const commandTemplate = attachHead(head, joiner, construct);
-            rows.push({
-              id: [
-                head.id,
-                joiner === "none" ? "nojoin" : joinerSlug(joiner),
-                builtin.id,
-                wrapper,
-                verb.id,
-                target.id,
-              ].join("/"),
-              dims: {
-                head: head.id,
-                joiner,
-                builtin: builtin.id,
-                wrapper,
-                verb: verb.id,
-                target: target.id,
-              },
-              families: familiesFor(wrapper, joiner),
-              commandTemplate,
-              command: renderCommand(commandTemplate, root),
-              landsWhenMoved: builtin.takesDir
-                ? target.landsWhenMoved
-                : target.landsWhenStill,
-              landsWhenStill: target.landsWhenStill,
-              protectedWhenMoved: builtin.takesDir
-                ? target.protectedWhenMoved
-                : target.protectedWhenStill,
-              protectedWhenStill: target.protectedWhenStill,
-              moverEstablishesDir: builtin.takesDir,
-            });
+        for (const spelling of spellingsFor(wrapper)) {
+          for (const position of positionsFor(wrapper)) {
+            for (const verb of WRITE_VERBS) {
+              for (const target of TARGETS) {
+                const construct = assemble(
+                  wrapper,
+                  spelling,
+                  position,
+                  moverPhrase(builtin, target),
+                  verb,
+                  target.operand,
+                );
+                const commandTemplate = attachHead(head, joiner, construct);
+                rows.push({
+                  id: [
+                    head.id,
+                    joiner === "none" ? "nojoin" : joinerSlug(joiner),
+                    builtin.id,
+                    wrapperSlug(wrapper, spelling, position),
+                    verb.id,
+                    target.id,
+                  ].join("/"),
+                  dims: {
+                    head: head.id,
+                    joiner,
+                    builtin: builtin.id,
+                    wrapper,
+                    spelling,
+                    position,
+                    verb: verb.id,
+                    target: target.id,
+                  },
+                  families: familiesFor(wrapper, joiner, position),
+                  commandTemplate,
+                  command: renderCommand(commandTemplate, root),
+                  landsWhenMoved: builtin.takesDir
+                    ? target.landsWhenMoved
+                    : target.landsWhenStill,
+                  landsWhenStill: target.landsWhenStill,
+                  protectedWhenMoved: builtin.takesDir
+                    ? target.protectedWhenMoved
+                    : target.protectedWhenStill,
+                  protectedWhenStill: target.protectedWhenStill,
+                  moverEstablishesDir: builtin.takesDir,
+                });
+              }
+            }
           }
         }
       }
@@ -617,7 +886,13 @@ function joinerSlug(joiner: JoinerId): string {
  *     held at `bare` and the builtin at `cd`, and every head, verb and target
  *     varies.
  *
- * 112 + 56 + 140 + 140 = 448 rows. The full corpus (24 304 rows) is the
+ * The SPELLING and the POSITION are deliberately not held at a value anywhere.
+ * They are the two dimensions the reachability model is about, and a projection
+ * that pinned either would leave the committed file unable to show the thing
+ * the change does. That is why the compound slice doubled when spelling landed
+ * and tripled again when position did.
+ *
+ * 672 + 56 + 140 + 140 = 1008 rows. The full corpus (93 744 rows) is the
  * differential's real left-hand side and lives in a scratch file; this is the
  * part a reviewer can read.
  */
@@ -642,18 +917,24 @@ export const SUBCORPUS_SLICES: readonly {
   {
     id: "or-joiner",
     select: (r) =>
-      r.dims.joiner === "||" && r.dims.wrapper === "bare" && r.dims.builtin === "cd",
+      r.dims.joiner === "||" &&
+      r.dims.wrapper === "bare" &&
+      r.dims.builtin === "cd",
   },
   {
     id: "pipe-joiner",
     select: (r) =>
-      r.dims.joiner === "|" && r.dims.wrapper === "bare" && r.dims.builtin === "cd",
+      r.dims.joiner === "|" &&
+      r.dims.wrapper === "bare" &&
+      r.dims.builtin === "cd",
   },
 ];
 
 /** The committed slice of `rows`, in corpus order, deduplicated. */
 export function selectSubcorpus(rows: readonly CorpusRow[]): CorpusRow[] {
-  return rows.filter((row) => SUBCORPUS_SLICES.some((slice) => slice.select(row)));
+  return rows.filter((row) =>
+    SUBCORPUS_SLICES.some((slice) => slice.select(row)),
+  );
 }
 
 /* ------------------------------------------------------------------ *

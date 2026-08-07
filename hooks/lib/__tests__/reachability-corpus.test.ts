@@ -9,7 +9,9 @@ import {
   FAMILIES,
   HEADS,
   JOINERS,
+  POSITIONS,
   PROTECTED_PATHS,
+  SPELLINGS,
   SUBCORPUS_SLICES,
   TARGETS,
   WRAPPERS,
@@ -18,8 +20,10 @@ import {
   classifyRow,
   diffBaseline,
   generateCorpus,
+  positionsFor,
   renderCommand,
   selectSubcorpus,
+  spellingsFor,
 } from "./helpers/reachability-corpus.js";
 import type { Baseline } from "./helpers/reachability-corpus.js";
 import {
@@ -87,14 +91,97 @@ describe("the corpus generator", () => {
     // 1 headless prefix + 5 heads × 6 operators = 31 prefixes.
     const prefixes = 1 + (HEADS.length - 1) * (JOINERS.length - 1);
     expect(prefixes).toBe(31);
+    // Neither the spelling nor the position dimension is rectangular — only a
+    // wrapper with a body has two spellings, only a compound command can be a
+    // pipeline element — so the wrapper axis is counted as RENDERINGS rather
+    // than as a length. 4 compound × 2 × 3 + 3 flat × 1 × 1 = 27.
+    const renderings = WRAPPERS.reduce(
+      (n, w) => n + spellingsFor(w).length * positionsFor(w).length,
+      0,
+    );
+    expect(renderings).toBe(27);
     expect(rows.length).toBe(
-      prefixes *
-        DIR_BUILTINS.length *
-        WRAPPERS.length *
-        WRITE_VERBS.length *
-        TARGETS.length,
+      prefixes * DIR_BUILTINS.length * renderings * WRITE_VERBS.length * TARGETS.length,
     );
     expect(new Set(rows.map((r) => r.id)).size).toBe(rows.length);
+  });
+
+  it("gives a body-bearing wrapper two spellings and a flat one exactly one", () => {
+    for (const wrapper of WRAPPERS) {
+      const spellings = new Set(
+        rows.filter((r) => r.dims.wrapper === wrapper).map((r) => r.dims.spelling),
+      );
+      expect([...spellings].sort(), wrapper).toEqual([...spellingsFor(wrapper)].sort());
+    }
+    // The two spellings of one construct differ in whitespace and in nothing
+    // else — same mover, same write, same target.
+    const single = rows.find(
+      (r) => r.id === "none/nojoin/cd/if/rm/protected-relative",
+    )!;
+    const multi = rows.find(
+      (r) => r.id === "none/nojoin/cd/if-multiline/rm/protected-relative",
+    )!;
+    expect(single.command).toBe("if cd rules; then rm x.md; fi");
+    expect(multi.command).toBe("if cd rules\nthen\nrm x.md\nfi");
+    expect(multi.families).toEqual(single.families);
+    expect(multi.landsWhenMoved).toBe(single.landsWhenMoved);
+    expect(multi.landsWhenStill).toBe(single.landsWhenStill);
+  });
+
+  it("produces a compound command standing IN a pipeline, in both positions", () => {
+    // The shape the position dimension exists for, and the reason a wrapper
+    // could not stay one dimension: `{ … }` and `| cat` are both wrappers, so
+    // before this they could never co-occur and the corpus could not generate
+    // the row the plan's second diagram evaluation reported. Named literally
+    // rather than by filter, so the row that was reported is the row pinned.
+    const byId = new Map(rows.map((r) => [r.id, r]));
+    expect(byId.get("none/nojoin/cd/brace-pipehead/rm/unprotected-relative")!.command).toBe(
+      "{ cd build; } | cat && rm out.js",
+    );
+    expect(
+      byId.get("none/nojoin/cd/brace-multiline-pipehead/rm/unprotected-relative")!.command,
+    ).toBe("{\ncd build\n} | cat && rm out.js");
+    expect(byId.get("none/nojoin/cd/brace-pipetail/rm/protected-relative")!.command).toBe(
+      "echo hi | { cd rules; } && rm x.md",
+    );
+    expect(byId.get("none/nojoin/cd/if-pipehead/rm/protected-relative")!.command).toBe(
+      "if cd rules; then :; fi | cat && rm x.md",
+    );
+    expect(byId.get("none/nojoin/cd/while-pipehead/rm/protected-relative")!.command).toBe(
+      "while cd rules; do break; done | cat && rm x.md",
+    );
+    // …and a piped compound belongs to BOTH buckets step 5 reads.
+    for (const row of rows) {
+      if (row.dims.position === "standalone") continue;
+      expect(row.families, row.id).toContain("compound");
+      expect(row.families, row.id).toContain("pipeline");
+    }
+  });
+
+  it("gives a flat wrapper exactly one position", () => {
+    // The bound in the other direction. `pipeline` and `pipe-head` already
+    // carry a `|` of their own; piping them again would measure the pipeline
+    // dimension twice instead of measuring a compound command inside one.
+    for (const wrapper of WRAPPERS) {
+      const positions = new Set(
+        rows.filter((r) => r.dims.wrapper === wrapper).map((r) => r.dims.position),
+      );
+      expect([...positions].sort(), wrapper).toEqual([...positionsFor(wrapper)].sort());
+    }
+  });
+
+  it("keeps a multi-line row on one line wherever the shell requires it", () => {
+    // No line may START with `&&` in either shell, so the brace group's tail
+    // and every flat chain stay unbroken. A generator that broke there would
+    // produce rows neither shell can parse, and the witness would report a
+    // syntax error as a surviving file.
+    for (const row of rows) {
+      for (const line of row.command.split("\n")) {
+        expect(line.trimStart().startsWith("&&"), row.id).toBe(false);
+        expect(line.trimStart().startsWith("||"), row.id).toBe(false);
+        expect(line.trimStart().startsWith("|"), row.id).toBe(false);
+      }
+    }
   });
 
   it("uses every value of every dimension", () => {
@@ -103,6 +190,8 @@ describe("the corpus generator", () => {
       joiner: new Set(rows.map((r) => r.dims.joiner)),
       builtin: new Set(rows.map((r) => r.dims.builtin)),
       wrapper: new Set(rows.map((r) => r.dims.wrapper)),
+      spelling: new Set(rows.map((r) => r.dims.spelling)),
+      position: new Set(rows.map((r) => r.dims.position)),
       verb: new Set(rows.map((r) => r.dims.verb)),
       target: new Set(rows.map((r) => r.dims.target)),
       family: new Set(rows.flatMap((r) => r.families)),
@@ -111,6 +200,8 @@ describe("the corpus generator", () => {
     expect([...seen.joiner].sort()).toEqual([...JOINERS].sort());
     expect([...seen.builtin].sort()).toEqual(DIR_BUILTINS.map((b) => b.id).sort());
     expect([...seen.wrapper].sort()).toEqual([...WRAPPERS].sort());
+    expect([...seen.spelling].sort()).toEqual([...SPELLINGS].sort());
+    expect([...seen.position].sort()).toEqual([...POSITIONS].sort());
     expect([...seen.verb].sort()).toEqual(WRITE_VERBS.map((v) => v.id).sort());
     expect([...seen.target].sort()).toEqual(TARGETS.map((t) => t.id).sort());
     expect([...seen.family].sort()).toEqual([...FAMILIES].sort());
@@ -171,8 +262,33 @@ describe("the bounded subcorpus", () => {
   });
 
   it("is a bounded projection, not the whole corpus", () => {
-    expect(sub.length).toBe(448);
+    // 672 compound + 56 pipeline + 140 `||` + 140 `|`. The compound slice
+    // doubled when the spelling dimension landed and tripled again when the
+    // position dimension did, which is the point: the committed file has to be
+    // able to show the shapes the change is about.
+    expect(sub.length).toBe(1008);
     expect(sub.length).toBeLessThan(rows.length / 10);
+  });
+
+  it("carries both spellings of every compound wrapper", () => {
+    const compound = sub.filter((r) => r.families.includes("compound"));
+    expect(compound.length).toBe(672);
+    for (const spelling of SPELLINGS) {
+      expect(
+        compound.filter((r) => r.dims.spelling === spelling).length,
+        spelling,
+      ).toBe(336);
+    }
+  });
+
+  it("carries every position of every compound wrapper", () => {
+    const compound = sub.filter((r) => r.families.includes("compound"));
+    for (const position of POSITIONS) {
+      expect(
+        compound.filter((r) => r.dims.position === position).length,
+        position,
+      ).toBe(224);
+    }
   });
 
   it("keeps corpus order and adds nothing", () => {

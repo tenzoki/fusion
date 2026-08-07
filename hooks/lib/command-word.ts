@@ -69,6 +69,40 @@ export const GRAMMAR_PREFIXES: ReadonlySet<string> = new Set([
   "coproc",
 ]);
 
+/**
+ * The reserved words that CLOSE a compound command: `fi`, `done`, `esac`, `}`.
+ *
+ * THIS IS A SECOND SET, NOT AN EXTENSION OF THE FIRST, and the separation is
+ * the whole point. `GRAMMAR_PREFIXES` answers "which word is skipped when
+ * looking for the command" — `findCommandWord` walks past every member of it.
+ * This set answers a different question: which words END a construct, so a
+ * reader of the shell's grammar can tell where a compound's body stops. Moving
+ * these four into `GRAMMAR_PREFIXES` would make `findCommandWord` skip them and
+ * change what counts as a command, which is a behaviour change in both
+ * classifiers; keeping them apart costs one export and changes nothing.
+ *
+ * The two sets are DISJOINT by construction — an opener is followed by a
+ * command in the same position and a terminator never is — and the suite pins
+ * the disjointness so a word cannot drift into both.
+ *
+ * `case`/`esac` is the asymmetric row: `case` is deliberately absent from
+ * `GRAMMAR_PREFIXES` (it introduces a WORD, not a command), while `esac` is
+ * here because it still closes something. A consumer that tracks open heads
+ * therefore sees an `esac` with no head to pop, which is the honest picture —
+ * `case` is not modelled.
+ *
+ * `hooks/lib/shell-reach.ts` is the only reader today. It skips these words in
+ * addition to `GRAMMAR_PREFIXES` when deciding whether a segment carries a
+ * command at all, which is exactly the gap `findCommandWord` leaves and must
+ * keep leaving.
+ */
+export const GRAMMAR_TERMINATORS: ReadonlySet<string> = new Set([
+  "fi",
+  "done",
+  "esac",
+  "}",
+]);
+
 /** A leading `VAR=value` environment assignment before the command word. */
 export const ENV_ASSIGNMENT_RE = /^[A-Za-z_][A-Za-z0-9_]*=/;
 

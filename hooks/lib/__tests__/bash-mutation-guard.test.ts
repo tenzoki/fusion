@@ -10,7 +10,12 @@ import {
   MUTATION_GIT_SUBCOMMANDS,
 } from "../bash-mutation-guard.js";
 import type { MutationOptions } from "../bash-mutation-guard.js";
-import { GRAMMAR_PREFIXES, WRAPPER_PROGRAMS } from "../command-word.js";
+import {
+  GRAMMAR_PREFIXES,
+  GRAMMAR_TERMINATORS,
+  WRAPPER_PROGRAMS,
+  findCommandWord,
+} from "../command-word.js";
 import { parseCommand, tokenize } from "../shell-parse.js";
 import type { SegmentJoiner } from "../shell-parse.js";
 
@@ -1854,6 +1859,44 @@ describe("shell grammar around the command word", () => {
       expect(denies(`${prefix} rm rules/x.md`), `${prefix} + protected`).toBe(true);
       expect(denies(`${prefix} rm /tmp/x`), `${prefix} + unprotected`).toBe(false);
     }
+  });
+
+  /**
+   * The two grammar sets answer different questions and must stay apart.
+   *
+   * `GRAMMAR_PREFIXES` is what `findCommandWord` SKIPS; `GRAMMAR_TERMINATORS`
+   * is what closes a compound, read by `shell-reach.ts` and by nothing else.
+   * Moving `fi` / `done` / `esac` / `}` into the first set would make
+   * `findCommandWord` walk past them and change what both classifiers read as
+   * the command — the behaviour change the reach layer was built to avoid, so
+   * the separation is pinned rather than described.
+   */
+  it("keeps the two grammar vocabularies disjoint", () => {
+    for (const terminator of GRAMMAR_TERMINATORS) {
+      expect(GRAMMAR_PREFIXES.has(terminator), `${terminator} in both sets`).toBe(
+        false,
+      );
+    }
+    for (const prefix of GRAMMAR_PREFIXES) {
+      expect(GRAMMAR_TERMINATORS.has(prefix), `${prefix} in both sets`).toBe(false);
+    }
+    expect([...GRAMMAR_TERMINATORS].sort()).toEqual(["esac", "fi", "}", "done"].sort());
+  });
+
+  it("still reads a terminator as the command word it looks like", () => {
+    // The gap `shell-reach.ts` closes for itself, asserted here as a property
+    // of `findCommandWord` rather than left implicit: a terminator is NOT
+    // skipped, so a segment led by one reports the terminator as its command.
+    for (const terminator of GRAMMAR_TERMINATORS) {
+      expect(findCommandWord([terminator]), terminator).toBe(0);
+      expect(findCommandWord([terminator, "rm", "rules/x.md"]), terminator).toBe(0);
+    }
+    // …and the classifier's verdict is unchanged by the new set existing: a
+    // real verb still classifies behind an opener, and a terminator standing
+    // in command position still names no verb this module knows.
+    expect(denies("if rm rules/x.md; then :; fi")).toBe(true);
+    expect(denies("fi")).toBe(false);
+    expect(denies("done")).toBe(false);
   });
 
   it("keeps ordinary conditionals and loops allowed", () => {
