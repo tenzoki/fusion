@@ -120,7 +120,7 @@ Remaining setup (after step 1 is resolved):
      analyses_count = count of *.md across $SCAN_ANALYSES
      issues_count   = count of *_o_*.md across $SCAN_ISSUES
      decisions_count = count of *_o_*.md across $SCAN_DECISIONS  (treat as 0 if a directory is absent)
-     code_files     = count of project files matching *.go, *.ts, *.tsx, *.py, *.js, *.rs (top-level + 1 subdir deep, capped at 1000)
+     code_files     = count of project files matching *.go, *.ts, *.tsx, *.py, *.js, *.rs, *.java (top-level + 1 subdir deep, capped at 1000)
      data_files     = count of *.yaml, *.yml, *.json, *.toml, *.csv (under ontology/, manifests/, schemas/, or data/)
 
      if decisions_count > 0 and decisions_count >= issues_count: domain = "strategic"
@@ -175,7 +175,7 @@ You may:
 - Write or delete `fusion-workbench/.active-circle` per the conventions doc (root-anchored pointer). On `_a_`→`_t_` activation, immediately after writing the pointer, run the Plane activation push if Plane is configured (see **Plane mirror**, call point 1).
 
 You may NOT:
-- Edit code (`.go`, `.ts`, `.tsx`, `.py`, `.js`, build files)
+- Edit code (`.go`, `.ts`, `.tsx`, `.py`, `.js`, `.rs`, `.java`, build files)
 - Edit data files (`.yaml`, `.json`, `.toml`, `.csv`, ontology, manifests)
 - Edit prompt files (`config/prompts/*.md`)
 - Launch `investigator` (user-initiated only)
@@ -287,7 +287,7 @@ Emit `queue_built` event and **REFRESH DASHBOARD** — overwrite `orchestrator-l
 
 | Condition | Route to |
 |-----------|----------|
-| Task touches `.go`, `.ts`, `.tsx`, `.py`, `.js`, `Makefile`, `go.mod`, `package.json`, build scripts, test files | `coder` |
+| Task touches `.go`, `.ts`, `.tsx`, `.py`, `.js`, `.rs`, `.java`, `Makefile`, `go.mod`, `package.json`, build scripts, test files | `coder` |
 | Task touches `.yaml`, `.json`, `.toml`, `.csv` in `ontology/`, `manifests/`, or schema directories | `ontocoder` |
 | Task touches prompt files (`.md` in `config/prompts/`) | `coder` |
 | Task touches code-level documentation (architecture, API docs, code READMEs) | `coder` |
@@ -377,7 +377,7 @@ After all tasks in the Turn are processed:
 
 1. **Determine what changed this Turn.** Use `git diff <turn-start-HEAD>..HEAD --name-only` to list changed files.
 2. **Route reviews:**
-   - Code files changed (`.go`, `.ts`, `.tsx`, `.py`, `.js`, build files) → emit `review_start` event, invoke `coderev` scoped to only the changed files, emit `review_done`
+   - Code files changed (`.go`, `.ts`, `.tsx`, `.py`, `.js`, `.rs`, `.java`, build files) → emit `review_start` event, invoke `coderev` scoped to only the changed files, emit `review_done`
    - Ontology/data files changed (`.yaml`, `.json`, `.toml`, `.csv` in `ontology/` or `manifests/`) → emit `review_start` event, invoke `ontorev` scoped to only the changed files, emit `review_done`
    - No changes → skip review
 3. **Collect review findings.** New issues filed by reviewers enter the next Turn's work queue. Update the live dashboard with review results.
