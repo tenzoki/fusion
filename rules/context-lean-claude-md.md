@@ -36,8 +36,12 @@ The fix has two halves:
 Keep it to what every agent needs on every session, independent of the topic:
 
 - **Project identity** — what this repo is, in a few sentences.
-- **`**Language:** <lang>`** — the line `bin/fusion-rules` reads to resolve the
-  stilwerk voice profiles. Load-bearing; must stay.
+- **`**Language:** <lang>`, plus `**Artifact language:** <lang>` where the
+  project declares one** — the lines `bin/fusion-rules` reads to resolve the
+  stilwerk voice profiles. The first is load-bearing and must stay. The second
+  is optional: only a project whose files are written in a different language
+  than its chat carries it, and where it is absent the first line governs both.
+  Defined in `rules/fusion-workbench-conventions.md` `## Project language`.
 - **The handful of truly-every-session rules** — conventions that bind every
   edit regardless of topic (e.g. "never commit build artifacts", a release-bump
   discipline, a naming convention). If a rule only matters for one topic, it does
