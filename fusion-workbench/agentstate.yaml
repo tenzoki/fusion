@@ -1,0 +1,93 @@
+# fusion-workbench session state — for resumption after restart
+# Updated: 260807-0945
+
+session:
+  directive: "Der statische Klassifizierer verschwindet vollständig, an seine Stelle tritt eine Messung nach der Ausführung. Zweiter Bestandteil: das MECE-Prinzip als Abschnitt in rules/critical-stance.md, mit Prüfpunkt im Arbeitsfluss."
+  mode: "plan"
+  domain: "code"
+  started: "260806-2158"
+  history_file: "circles/260807-0923-guard-misst-statt-orakelt/history/260807-0945-orchestrator-session.md"
+  git_head_at_start: "bf48802"
+  active_circle: "260807-0923-guard-misst-statt-orakelt"
+
+progress:
+  turn: 1
+  max_turns: 5
+  tasks_total: 11
+  tasks_done: 0
+  tasks_skipped: 0
+  tasks_errored: 0
+  commits: 0
+  turn_start_head: "bf48802"
+  paused_at_task: null
+  directive_revisions_this_session: 0
+
+current_task:
+  id: "S1"
+  summary: "Schutzliste verliert das Zustandsverzeichnis"
+  agent: "ontocoder"
+  status: "running"
+  source_file: "circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_o_plan-guard-misst-statt-orakelt.md"
+
+work_queue:
+  - id: "S1"
+    summary: "Schutzliste verliert fusion-workbench/.guard-state/**"
+    agent: "ontocoder"
+    status: "running"
+  - id: "S8"
+    summary: "MECE-Prinzip in critical-stance.md plus Entscheidbarkeits-Pflichtzeile im Plankopf"
+    agent: "coder"
+    status: "running"
+  - id: "S2"
+    summary: "Die Messung: Fingerabdruck vorher, Vergleich und Rückrollen nachher"
+    agent: "coder"
+    status: "queued"
+  - id: "S3"
+    summary: "Regel-Ausnahme bekommt einen Einstieg für beobachtete Pfade"
+    agent: "coder"
+    status: "queued"
+  - id: "S4"
+    summary: "Der Klassifizierer fällt (bash-mutation-guard, shell-reach, Grammatik-Anteile)"
+    agent: "coder"
+    status: "queued"
+  - id: "S5"
+    summary: "Tests und Messkorpus"
+    agent: "coder"
+    status: "queued"
+  - id: "S6"
+    summary: "Textschicht: protected-path-discipline.md neu, internals gelöscht"
+    agent: "coder"
+    status: "queued"
+  - id: "S7"
+    summary: "Emissions-Goldfixture nachziehen"
+    agent: "ontocoder"
+    status: "queued"
+  - id: "S9"
+    summary: "Buchführung: drei Befunde schließen, Entscheidung auf implementiert"
+    agent: "coder"
+    status: "queued"
+  - id: "S10"
+    summary: "Vorprüfung im Fremdprojekt über guard-harness"
+    agent: "coder"
+    status: "queued"
+  - id: "S11"
+    summary: "Freigabe: Version, Marktplatz, Tag, Push"
+    agent: "ontocoder"
+    status: "queued"
+
+plan_context:
+  plan_file: "circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_o_plan-guard-misst-statt-orakelt.md"
+  user_directive: |
+    Der Nutzer hat Option B gewählt (Rückbau plus Nachher-Prüfung), ausdrücklich OHNE die grobe
+    textuelle Vorwarnung aus Variante C, weil aus ihr das Orakel nachwächst. MECE kommt als
+    Abschnitt in critical-stance.md, nicht als eigene Regeldatei. Beide Schutzverzichte am
+    Freigabe-Gate bestätigt.
+  key_findings: |
+    Bindend: keine Vorher-Analyse des Befehlstexts, in keiner Form, auch nicht als Heuristik.
+    Unangetastet bleiben: git-branch-guard.ts mit seiner 98-Befehle-Goldfixture, der flache
+    Segmenter in shell-parse.ts, der Schutz der vier Schreibwerkzeuge, fs-locator.ts,
+    command-word.ts (ohne GRAMMAR_TERMINATORS).
+    Prüfung nur über hooks/lib/__tests__/helpers/guard-harness.ts, weil der Write-Guard in
+    diesem Repository stillsteht und eine lokale Zusicherung sonst leer besteht.
+    Zwei Fehlalarme des noch laufenden Klassifizierers in dieser Sitzung sind belegt unter
+    circles/260807-0923-guard-misst-statt-orakelt/issues/260807-0930_o_*.

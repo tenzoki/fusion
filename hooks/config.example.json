@@ -13,8 +13,7 @@
       "settings.json",
       "bin/monitor",
       "skills/**",
-      ".claude-plugin/plugin.json",
-      "fusion-workbench/.guard-state/**"
+      ".claude-plugin/plugin.json"
     ],
 
     "categoryPaths": {
