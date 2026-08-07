@@ -6,7 +6,8 @@ Die Domänenerkennung entscheidet vor der Codezählung, deshalb kann ein Codepro
 **Domain:** code
 **Filed by:** consultant, nach einer Meldung aus dem konsumierenden Projekt KRK
 **Affects:** `agents/orchestrator.md:115-133` (Setup Schritt 5, Block "Detect workbench domain"), von dort weiter `agents/taskplanner.md`, `agents/reconciler.md`, `agents/planner.md`
-**Cross-references:** `fusion-workbench/shared/issues/260807-1943_*_die-routing-tabelle-und-das-review-routing-kennen-rs-nicht.md` — der zweite Defekt aus derselben Prüfung, andere Fläche
+**Cross-references:** `fusion-workbench/shared/issues/260807-1943_*_die-routing-tabelle-und-das-review-routing-kennen-rs-nicht.md` und `fusion-workbench/shared/issues/260807-1951_*_die-tiefenschranke-der-codezaehlung-sieht-keinen-cargo-workspace.md` — die beiden anderen Defekte aus derselben Prüfung, jeder mit eigener Korrektur
+**Belegquelle:** `/Users/k1/Projects/productive/krk/fusion-workbench/shared/history/260807-1934-orchestrator-session.md` `### Erkannte Arbeitsdomäne`
 
 ---
 
@@ -23,9 +24,22 @@ agents/orchestrator.md:123
 
 Das steht so in der installierten Kopie unter `~/.fusion/agents/orchestrator.md` und im
 Arbeitsbaum, und es steht dort seit `b05b423`, dem ersten öffentlichen Release v2.3.0. Eine
-fusion-Version ohne `.rs` an dieser Stelle hat es nie gegeben.
+fusion-Version ohne `.rs` an dieser Stelle hat es nie gegeben. Die KRK-Sitzung lief auf 6.0.1
+(dort protokolliert unter `### Sitzungsvorbereitung`), also auf einer Fassung, die `.rs` führt.
 
-Der gemeldete Ausgang bleibt trotzdem ein echter Defekt, nur an anderer Stelle: `code_files`
+Gegenprobe direkt in KRK, mit `.rs` in der Liste, an der vorgeschriebenen Tiefe:
+
+```
+$ cd /Users/k1/Projects/productive/krk
+$ find . -maxdepth 2 -type f \( -name '*.go' -o -name '*.ts' -o -name '*.tsx' \
+    -o -name '*.py' -o -name '*.js' -o -name '*.rs' \) -not -path './fusion-workbench/*' | wc -l
+0
+```
+
+Die Zählung bleibt bei null, obwohl `.rs` mitzählt. Die gemeldete Ursache erklärt den Ausgang
+also nicht einmal dann, wenn man sie unterstellt. Zwei andere Defekte erklären ihn, und beide
+sind hier gemessen: dieser hier, und die Tiefenschranke in der Schwesterakte
+`260807-1951_*`. Dieser Defekt allein hätte gereicht, denn `code_files`
 wird gar nicht abgefragt, bevor `strategic` feststeht.
 
 ## Der Defekt
@@ -44,7 +58,17 @@ Die beiden Zweige, die `strategic` liefern, lesen `code_files` nicht. Erst der d
 fragt danach. Sobald einer der ersten beiden greift, ist die Codemenge des Projekts ohne jeden
 Einfluss auf das Ergebnis, ob dort 0 oder 90 oder 9000 Dateien liegen.
 
-Beide Zweige greifen bei einem gewöhnlichen Codeprojekt leicht:
+**Im gemeldeten Fall hat Zweig 1 gegriffen, gemessen.** Die KRK-Sitzung protokolliert ihre
+Eingangswerte:
+
+```
+commits=122, analyses_count=0, issues_count=1, decisions_count=3, code_files=0, data_files=0
+→ erster Zweig, weil decisions_count > 0 und decisions_count >= issues_count
+```
+
+Drei offene Entscheidungen gegen eine offene Defektakte, in einem Repository mit 122 Commits
+und 90 Rust-Dateien. Zweig 2 konnte hier gar nicht greifen (`analyses_count=0`); es genügte
+Zweig 1. Beide greifen bei einem gewöhnlichen Codeprojekt leicht:
 
 - **Zweig 1.** `decisions_count` und `issues_count` zählen nur die offenen Akten
   (`*_o_*.md`, `agents/orchestrator.md:120-121`). Zwei offene Entscheidungen und eine offene
@@ -71,34 +95,34 @@ Für ein Codeprojekt heißt das: die Abgleichrunde prüft die Behauptungen gegen
 statt gegen den Code, führt keine Tests aus, und schließt keine behobene Defektakte. Das
 Ergebnis sieht nach fehlendem Fortschritt aus, obwohl der Code stimmt.
 
-## Zweiter, kleinerer Befund an derselben Zeile
+## Wie oft das trifft
 
-`code_files` zählt "top-level + 1 subdir deep" (`agents/orchestrator.md:123`). Ein Rust-Projekt
-legt seinen Code unter `src/`, und alles ab `src/<modul>/<datei>.rs` liegt zwei Ebenen tief und
-wird nicht mitgezählt. Dieselbe Kappung trifft `internal/<pkg>/<pkg>/*.go` in Go und
-`src/components/<x>/*.tsx` in typischen Frontends. Die Kappung ist nicht falsch gemeint, sie
-soll den Scan begrenzen; das Limit dafür liefert aber schon `capped at 1000`. Die Tiefenschranke
-macht `code_files` zu einer Stichprobe, deren Verhältnis zu `data_files` in Zweig 4 dann nicht
-mehr trägt.
+In KRK ist es kein Einzelfall. Die Heuristik meldet dort seit dem 2. August durchgehend
+`strategic`, und die Orchestratoren haben es jedes Mal von Hand überstimmt:
 
-Ob dieser zweite Befund im gemeldeten Fall überhaupt zum Tragen kam, ist offen: sobald Zweig 1
-oder 2 greift, wird `code_files` ohnehin nie gelesen.
+```
+orchestrator-events.jsonl:5    2026-08-02  "domain=code (heuristic said strategic, overridden …)"
+orchestrator-events.jsonl:282  2026-08-07  "domain default=code (heuristic said strategic)"
+circles/260802-0842-…/history/260803-1038-orchestrator-session.md:26
+                              "liefert strategic, und das ist hier falsch"
+circles/260802-0842-…/history/260806-2257-orchestrator-session.md:31
+                              "Der Zählfehler entwertet das Ergebnis, deshalb bleibt es bei code"
+```
+
+Ein Messwert, den jeder Anwender bei jedem Lauf verwirft, ist keine Heuristik mehr. Das ist
+das eigentliche Gewicht dieses Defekts: nicht dass die Domäne einmal falsch war, sondern dass
+sie über fünf Tage und mindestens vier Sitzungen nie richtig war und die Korrektur jedes Mal
+am Menschen hing.
 
 ## Reproduktion
 
-In einem beliebigen Codeprojekt mit fusion-Workbench:
+In einem beliebigen Codeprojekt mit fusion-Workbench, drei offene Entscheidungen gegen eine
+offene Defektakte anlegen und den Orchestrator starten. Setup Schritt 5 meldet `strategic`,
+unabhängig vom Codebestand.
 
-```
-# Zweig 2 auslösen: Workbench nie mitcommittet, eine Analyse vorhanden
-git rev-list --count HEAD -- fusion-workbench/      # -> 0
-ls fusion-workbench/shared/analyses/*.md            # -> mindestens eine Datei
-# Orchestrator starten; Setup Schritt 5 meldet domain = strategic
-```
-
-Für den gemeldeten Fall selbst gibt es einen direkten Nachweis, ohne Rateschritt: der
-Orchestrator schreibt die Eingangswerte und die gewählte Domäne in die Setup-Zusammenfassung
-und in den Snapshot der Sessionakte (`agents/orchestrator.md:133`). In der Historie der KRK-Session
-steht also, welcher der beiden Zweige gegriffen hat.
+Der Nachweis für einen bereits gelaufenen Fall braucht keinen Nachbau: der Orchestrator
+schreibt die Eingangswerte und die gewählte Domäne in die Setup-Zusammenfassung und in den
+Snapshot der Sessionakte (`agents/orchestrator.md:133`). Genau von dort stammen die Zahlen oben.
 
 ## Was zu entscheiden ist, aber nicht hier
 
@@ -111,6 +135,13 @@ gehört in eine Entscheidungsakte, sobald jemand sie angeht.
 ## Herkunft dieses Befunds
 
 Gemeldet aus dem konsumierenden Projekt KRK mit einer benannten, nachprüfbaren Ursache. Die
-Ursache hielt der Prüfung nicht stand, der gemeldete Ausgang aber schon. KRK selbst konnte
-hier nicht geprüft werden; die Aussagen oben beziehen sich ausschließlich auf die zitierten
-Zeilen in fusion.
+Ursache hielt der Prüfung nicht stand, der gemeldete Ausgang aber schon.
+
+Die erste Fassung dieser Akte schloss mit dem Satz, KRK selbst habe nicht geprüft werden
+können. Das war falsch, und zwar ungeprüft falsch: das Repository liegt unter
+`/Users/k1/Projects/productive/krk` und ist lesbar. Aufgefallen ist es, als eine
+Parallelsitzung beiläufig aus demselben Verzeichnis berichtete. Alle Messwerte oben stammen
+aus der anschließenden Prüfung. Der Unterschied ist nicht kosmetisch: ohne sie stünde hier
+immer noch, Zweig 1 oder Zweig 2 könne gegriffen haben, und die Tiefenschranke sei ein
+Nebenbefund von offener Wirkung. Gemessen hat Zweig 1 gegriffen, und die Tiefenschranke ist
+ein eigener Defekt mit eigener Akte.
