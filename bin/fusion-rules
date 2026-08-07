@@ -105,19 +105,47 @@
 #   authored once in rules/context-manifest.md.
 #
 # Exit codes: 0 success; 1 usage error; 2 unknown agent; 3 malformed manifest.
-#   - Long-form-prose agents additionally receive the project's stylometric
-#     voice profile path so they can apply it to narrative outputs (session
-#     summary bodies, consultation replies, analysis reports, investigator
-#     timelines, playmaker briefings, prose sections of specs and plans,
-#     editor deliverables):
-#       orchestrator, consultant, shaper, planner, analyst, investigator,
-#       playmaker, conceptrev, editor
-#     Language is resolved from CLAUDE.md's `**Language:** <lang>` line
-#     (silently defaults to `en`). The emitted path is
-#     ./fusion-workbench/stilwerk/default-voice-<lang>.yaml. If the declared
-#     language's profile is missing and the language is not `en`, the helper
-#     falls back to default-voice-en.yaml. If neither file exists, the helper
-#     emits nothing — the agent's Setup logs the absence in its history file.
+#   - Two stylometric profile families, each resolved from its OWN declaration
+#     in CLAUDE.md:
+#       chat-voice-<lang>.yaml     — emitted for EVERY agent, for short-form
+#                                    chat output. Language: the `**Language:**`
+#                                    line.
+#       default-voice-<lang>.yaml  — emitted for the long-form-prose agents only
+#                                    (orchestrator, consultant, shaper, planner,
+#                                    analyst, investigator, playmaker,
+#                                    conceptrev, editor), for narrative outputs:
+#                                    session summary bodies, consultation
+#                                    replies, analysis reports, investigator
+#                                    timelines, playmaker briefings, prose
+#                                    sections of specs and plans, editor
+#                                    deliverables. Language: the
+#                                    `**Artifact language:**` line.
+#     What the two declarations name is a boundary by SURFACE, not by length:
+#     output the user reads in the terminal is the chat language, output that
+#     persists as a file is the artifact language. Authored once in
+#     rules/fusion-workbench-conventions.md `## Project language`; the routing
+#     here is a consequence of that boundary, not a second definition of it.
+#
+#     The fallback chain is one rule with no special cases. `**Artifact
+#     language:**` absent, unparseable, or carrying anything other than `en` or
+#     `de` all mean the same thing — not declared — and then `**Language:**`
+#     governs both families. `**Language:**` not declared, by the same test,
+#     means `en`. Both fallbacks are silent.
+#
+#     A project that declares only `**Language:**` therefore emits exactly what
+#     this helper emitted before the second declaration existed: ARTIFACT_LANG
+#     resolves to CHAT_LANG, so both families receive the very code the old
+#     single resolution produced, and the only added work is a second grep of
+#     CLAUDE.md, which prints nothing. BYTE-IDENTICAL (HYG-NO-REGRESS) — the
+#     same promise the manifest block above makes for its own addition, and
+#     locked the same way: hooks/lib/__tests__/rules-voice-profile.test.ts was
+#     written and run green against the pre-split script.
+#
+#     The missing-variant fallback is PER FAMILY and unchanged: if the resolved
+#     language's file is missing and that language is not `en`, the helper falls
+#     back to <stem>-en.yaml. If neither file of a family exists, the helper
+#     emits nothing for it — the agent's Setup logs the absence in its history
+#     file.
 
 set -eu
 
@@ -224,41 +252,57 @@ emit_pattern_in_dir() {
   [ "$had_nullglob" -eq 1 ] || shopt -u nullglob 2>/dev/null || true
 }
 
-resolve_lang_code() {
-  # Resolve the project's prose language from CLAUDE.md's `**Language:**` line.
+declared_lang() {
+  # Print the two-letter language code one CLAUDE.md declaration carries, or
+  # print nothing when it declares none.
   #
-  # Language source: the first line in ./CLAUDE.md matching
-  #   ^\*\*Language:\*\* *([a-z]{2})
-  # case-sensitive, two lowercase letters. Valid values: en, de. Anything else
-  # (no CLAUDE.md, no match, invalid value) falls through to "en".
-  # Prints the resolved two-letter code on stdout.
+  #   $1 = declaration label, e.g. "Language" or "Artifact language".
+  #
+  # Source: the first line in ./CLAUDE.md matching
+  #   ^\*\*<label>:\*\* *([a-z]{2})
+  # case-sensitive, two lowercase letters, with the label interpolated. Valid
+  # values: en, de. No CLAUDE.md, no matching line, and an unsupported value all
+  # print nothing — one branch, so a caller's single default covers every "not
+  # declared" case at once and neither declaration needs an error path.
+  #
+  # The default deliberately does NOT live here. The two call sites default
+  # differently (chat -> `en`, artifact -> whatever the chat language resolved
+  # to), and standing side by side there the difference between them is legible.
+  # One function, one job: this one extracts, it does not decide.
+  local label="$1"
   local claude_md="./CLAUDE.md"
   local extracted=""
   if [ -f "$claude_md" ]; then
-    extracted=$(grep -E '^\*\*Language:\*\* *[a-z]{2}' "$claude_md" 2>/dev/null \
+    # The pipeline's exit status is sed's, which succeeds on empty input, so a
+    # CLAUDE.md carrying no matching line does not trip `set -e`.
+    extracted=$(grep -E "^\*\*$label:\*\* *[a-z]{2}" "$claude_md" 2>/dev/null \
                 | head -n 1 \
-                | sed -E 's/^\*\*Language:\*\* *([a-z]{2}).*/\1/')
+                | sed -E "s/^\*\*$label:\*\* *([a-z]{2}).*/\1/")
   fi
   case "$extracted" in
     en|de) printf '%s\n' "$extracted" ;;
-    *)     printf '%s\n' "en" ;;
+    *)     ;;
   esac
 }
 
 emit_voice_profile() {
-  # Emit the stylometric profile path for a given profile family, resolved to
-  # the project's declared language.
+  # Emit the stylometric profile path for one profile family in one language.
   #
   #   $1 = profile stem, e.g. "default-voice" (long-form writing) or
   #        "chat-voice" (short-form chat).
+  #   $2 = the two-letter language code, already resolved by the caller.
   #
   # Resolution: ./fusion-workbench/stilwerk/${stem}-${lang}.yaml
   # If the file exists, emit it. If it does not and lang != en, fall back to
   # ${stem}-en.yaml and emit that if present. Otherwise emit nothing silently —
-  # the agent's Setup notes the absence in its history file.
+  # the agent's Setup notes the absence in its history file. The fallback is per
+  # family: each family falls back within itself, never onto the other's file.
+  #
+  # This function resolves no language of its own. Which declaration governs a
+  # family is the call site's decision, and it is visible there.
   local stem="$1"
+  local lang_code="$2"
   local stilwerk_dir="./fusion-workbench/stilwerk"
-  local lang_code; lang_code=$(resolve_lang_code)
   local profile="$stilwerk_dir/${stem}-${lang_code}.yaml"
   if [ -f "$profile" ]; then
     printf '%s\n' "$profile"
@@ -325,6 +369,18 @@ fi
 PROJECT_RULES_DIR="./rules"
 PROJECT_CLAUDE_RULES_DIR=".claude/rules"
 
+# The project's two language declarations, resolved once, before anything is
+# emitted. The defaults sit here rather than inside declared_lang so the one
+# difference that matters is readable in two adjacent lines: the chat language
+# falls back to English, the artifact language falls back to whatever the chat
+# language resolved to. That second default is the whole backwards-compatibility
+# story — a project declaring only `**Language:**` drives both profile families
+# from it, exactly as the single pre-split resolution did.
+CHAT_LANG="$(declared_lang 'Language')"
+[ -n "$CHAT_LANG" ] || CHAT_LANG="en"
+ARTIFACT_LANG="$(declared_lang 'Artifact language')"
+[ -n "$ARTIFACT_LANG" ] || ARTIFACT_LANG="$CHAT_LANG"
+
 # 1. Always emit the framework ground-truth rules. agent-setup.md goes first so
 #    an agent reads "how Setup works" before the detailed conventions.
 emit_if_exists "$PLUGIN_RULES_DIR/agent-setup.md"
@@ -337,16 +393,21 @@ emit_if_exists "$PLUGIN_RULES_DIR/protected-path-discipline.md"
 
 # 1a. Every agent receives the project's chat voice profile (short-form output
 #     style: gate prompts, AskUserQuestion text, status reports, chat replies).
-#     Resolved from CLAUDE.md's `**Language:**` line. Not gated on prose — every
-#     agent produces some user-facing chat. The semantics ("apply its blacklist
-#     to short-form output") live in rules/user-facing-output.md, which every
-#     agent already reads.
-emit_voice_profile "chat-voice"
+#     Resolved from the CHAT language, because every one of those surfaces is
+#     read in the terminal and never persists. Not gated on prose — every agent
+#     produces some user-facing chat. The semantics ("apply its blacklist to
+#     short-form output") live in rules/user-facing-output.md, which every agent
+#     already reads.
+emit_voice_profile "chat-voice" "$CHAT_LANG"
 
 # 1b. Long-form-prose agents additionally receive the writing voice profile
-#     (long-form narrative outputs), resolved from the same `**Language:**` line.
+#     (long-form narrative outputs), resolved from the ARTIFACT language,
+#     because every surface it governs is a file that persists. The two paths
+#     may therefore name different languages; for a project whose chat and
+#     artifacts differ that is the intended configuration, and rules/
+#     agent-setup.md `## Voice profiles` tells the agent so.
 if [ "$IS_PROSE_AGENT" -eq 1 ]; then
-  emit_voice_profile "default-voice"
+  emit_voice_profile "default-voice" "$ARTIFACT_LANG"
 fi
 
 # 1c. Design-diagram agents (the five producers + the conceptrev evaluator)
