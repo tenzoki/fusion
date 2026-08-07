@@ -476,9 +476,9 @@
       "lastEditTimestamp": "2026-08-04T17:35:53.986Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/guard.ts": {
-      "pingBackCount": 11,
-      "totalEdits": 47,
-      "lastEditTimestamp": "2026-08-04T17:57:00.089Z"
+      "pingBackCount": 13,
+      "totalEdits": 54,
+      "lastEditTimestamp": "2026-08-07T08:26:26.935Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/rules-write-exemption.test.ts": {
       "pingBackCount": 3,
@@ -521,9 +521,9 @@
       "lastEditTimestamp": "2026-08-03T08:39:01.132Z"
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/agentstate.yaml": {
-      "pingBackCount": 2,
-      "totalEdits": 3,
-      "lastEditTimestamp": "2026-08-05T20:55:56.412Z"
+      "pingBackCount": 3,
+      "totalEdits": 4,
+      "lastEditTimestamp": "2026-08-07T07:43:44.729Z"
     },
     "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe-before.ts": {
       "pingBackCount": 0,
@@ -576,9 +576,9 @@
       "lastEditTimestamp": "2026-08-03T11:27:53.943Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/escalation.ts": {
-      "pingBackCount": 0,
-      "totalEdits": 1,
-      "lastEditTimestamp": "2026-08-03T11:28:24.310Z"
+      "pingBackCount": 1,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-07T08:06:41.034Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/guard-escalation-shape.test.ts": {
       "pingBackCount": 0,
@@ -841,9 +841,9 @@
       "lastEditTimestamp": "2026-08-03T17:22:25.090Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/helpers/guard-harness.ts": {
-      "pingBackCount": 0,
-      "totalEdits": 1,
-      "lastEditTimestamp": "2026-08-03T18:14:17.663Z"
+      "pingBackCount": 1,
+      "totalEdits": 6,
+      "lastEditTimestamp": "2026-08-07T08:12:10.761Z"
     },
     "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe-t45.ts": {
       "pingBackCount": 0,
@@ -1456,9 +1456,9 @@
       "lastEditTimestamp": "2026-08-04T17:35:45.053Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/tracker.ts": {
-      "pingBackCount": 0,
-      "totalEdits": 1,
-      "lastEditTimestamp": "2026-08-04T12:15:09.883Z"
+      "pingBackCount": 2,
+      "totalEdits": 10,
+      "lastEditTimestamp": "2026-08-07T08:26:20.044Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/config.test.ts": {
       "pingBackCount": 4,
@@ -2089,8 +2089,88 @@
       "pingBackCount": 0,
       "totalEdits": 1,
       "lastEditTimestamp": "2026-08-07T07:27:01.771Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_o_plan-guard-misst-statt-orakelt.md": {
+      "pingBackCount": 3,
+      "totalEdits": 6,
+      "lastEditTimestamp": "2026-08-07T08:28:39.390Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/history/260807-0931-planner-guard-misst-statt-orakelt.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T07:36:38.983Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/config.json": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T07:45:15.775Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/config.example.json": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T07:45:17.004Z"
+    },
+    "/Users/k1/Projects/productive/fusion/rules/critical-stance.md": {
+      "pingBackCount": 2,
+      "totalEdits": 4,
+      "lastEditTimestamp": "2026-08-07T07:56:33.931Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/decisions/260807-0945_o_integritaet-des-eskalationsspeichers.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T07:46:30.843Z"
+    },
+    "/Users/k1/Projects/productive/fusion/agents/planner.md": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-07T07:46:57.813Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/issues/260807-0952_o_ontocoder-kann-keinen-entscheidungssatz-ablegen.md": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-07T07:55:59.331Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/history/260807-0945-ontocoder-schutzliste-verliert-zustandsverzeichnis.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T07:56:36.573Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/history/260807-0955-coder-s8-mece-prinzip.md": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-07T07:57:57.564Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/60a18b66-6899-47b8-bccf-7038dd18cc97/scratchpad/posttooluse-probe/.claude/settings.json": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T08:00:58.442Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/protected-snapshot.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-07T08:06:21.971Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/protected-snapshot-integration.test.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T08:13:02.995Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/decisions/260807-1026_a_verlust-des-bash-halts-auf-der-shell.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T08:26:55.694Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/issues/260807-1026_o_rueckrollen-auf-head-kann-menschliche-vorarbeit-verwerfen.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T08:27:13.790Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/history/260807-1026-schritt-2-die-messung.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T08:29:43.697Z"
     }
   },
-  "lastEditFile": "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/issues/260807-0930_o_zwei-fehlalarme-des-klassifizierers-in-der-sitzung-die-ihn-abschafft.md",
-  "lastEditTimestamp": "2026-08-07T07:27:01.771Z"
+  "lastEditFile": "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/history/260807-1026-schritt-2-die-messung.md",
+  "lastEditTimestamp": "2026-08-07T08:29:43.697Z"
 }

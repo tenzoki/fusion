@@ -94,6 +94,7 @@ You may receive work in two forms:
 **Date:** YYYY-MM-DD
 **Status:** Draft | Ready for Review | Approved
 **Spec:** <path to shaper spec, or "none — planned from raw request">
+**Decidability:** <the load-bearing question this plan's mechanism answers, and whether it is decidable from the inputs that mechanism has; if not, name the change of mechanism>
 
 ## Directive
 
@@ -141,6 +142,8 @@ You may receive work in two forms:
 
 - [ ] <Question needing clarification>
 ```
+
+(The **Decidability** line is mandatory and is never left empty. It is defined in `rules/critical-stance.md` §4, which also says what to do when the answer is no. Head labels are written in the project's language, so in a `de` project the line reads `**Entscheidbarkeit:**`.)
 
 ## Design Principles
 

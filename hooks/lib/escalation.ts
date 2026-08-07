@@ -210,6 +210,45 @@ export function recordBlock(
   return shouldHalt;
 }
 
+/**
+ * Raise the halt immediately, without counting toward the threshold.
+ *
+ * ## Why this is not `recordBlock`
+ *
+ * `recordBlock` models a REFUSED tool call: nothing happened, and three of them
+ * in a row are the evidence that an agent is pushing against the guard rather
+ * than working. The measurement in `tracker.ts` reports the opposite situation —
+ * a protected path was ACTUALLY WRITTEN and had to be restored from git. There
+ * is no "two more of these and we will do something about it": the boundary is
+ * already crossed, and the write happened before anyone could refuse it.
+ *
+ * So the transition is its own, and it lives here rather than inline at the
+ * caller because every other mutation of `haltActive` and `recentEvents` does.
+ * A second place that knows the shape of this state is a second place that can
+ * drift from it.
+ *
+ * `consecutiveBlocks` is deliberately NOT touched. It counts refusals, this was
+ * not one, and inflating it would make the next ordinary block halt early for a
+ * reason its own message could not explain.
+ */
+export function raiseHalt(
+  state: EscalationState,
+  trigger: string,
+  message: string,
+  toolName?: string,
+  filePath?: string,
+): void {
+  state.haltActive = true;
+  state.recentEvents.push({
+    level: "halt",
+    trigger,
+    message,
+    timestamp: new Date().toISOString(),
+    toolName,
+    filePath,
+  });
+}
+
 /** Reset consecutive block counter (called on successful allow). */
 export function resetBlockCounter(state: EscalationState): void {
   state.consecutiveBlocks = 0;

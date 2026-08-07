@@ -1,6 +1,13 @@
 /**
  * Compliance Guard — PreToolUse hook for Claude Code.
  *
+ * Before anything else, on ALL five guarded tools, it records a fingerprint of
+ * every protected path (lib/protected-snapshot.ts). `tracker.ts` takes a second
+ * one after the tool ran and restores whatever changed. That pair is the guard's
+ * actual protection of those paths; the checks below are the explaining refusal
+ * that keeps an agent from meeting a bare failure. See the call site in `main`
+ * for why the BEFORE half is a condition of admissibility rather than a nicety.
+ *
  * Intercepts Write/Edit/MultiEdit tool calls and checks them against:
  *   1. Halt state — if active, block ALL writes
  *   2. Protected paths — blocked, with one exemption: FUSION_ALLOW_RULES_WRITE
@@ -64,6 +71,7 @@ import {
   resetBlockCounter,
 } from "./lib/escalation.js";
 import { emitEvent } from "./lib/events.js";
+import { saveSnapshot, takeSnapshot } from "./lib/protected-snapshot.js";
 import {
   classifyGitCommand,
   overridesFromEnv,
@@ -299,14 +307,6 @@ function emitBlockEvent(
  *      the branch: the sharper, better-established policy names the verdict, and
  *      one tool call records exactly ONE block. Recording two would double-count
  *      the consecutive-block counter that drives the halt.
- *   2a. HALT DENY. When the guard is halted, DENY any command the classifier
- *      recognises as a mutation — and allow everything else, so an agent can
- *      still read its way to understanding why it is halted. This mirrors
- *      CHECK 1 on the write-tool path, and it sits ABOVE the exemption for the
- *      same reason CHECK 1 sits above CHECK 2: the flag grants one permission
- *      and lifting a halt is not it. Until this existed the halt was a
- *      write-TOOL control — a halted guard blocked Edit and allowed
- *      `sed -i`, which is the surface an agent with a shell would have used.
  *   2. MUTATION DENY. DENY a file-mutating command whose written operands
  *      resolve onto config.guard.protectedPaths. Gated on the self-detect
  *      stand-down (see the comment at the check itself). It runs on BOTH routes
@@ -328,6 +328,11 @@ function emitBlockEvent(
  * At most one block is recorded per call, on whichever deny fires first.
  * Both denies follow the same block/escalation/event pattern as the write-tool
  * checks. The innocuous allow path stays free of ALL write-guard bookkeeping.
+ *
+ * THE HALT IS NOT ONE OF THE OUTCOMES ANY MORE. A halted guard blocks the four
+ * write tools and lets the shell through, because deciding whether a command
+ * mutates anything is the same undecidable question this policy is being retired
+ * for. See the note where that branch stood.
  */
 function guardBashCommand(
   input: HookInput,
@@ -443,68 +448,24 @@ function guardBashCommand(
         : undefined,
     });
 
-    // STEP 2a — HALT. A halted guard blocks every recognised mutation, and
-    // nothing else. Three things about the placement are load-bearing:
+    // THE HALT NO LONGER REACHES THE SHELL, and the loss is deliberate.
     //
-    //   - ABOVE the exemption's effect. The exemption is applied INSIDE
-    //     classification, so this cannot be expressed by ordering two calls;
-    //     it is expressed by reading `mutation.mutates`, which the exemption
-    //     does not influence. `FUSION_ALLOW_RULES_WRITE` therefore cannot be
-    //     the way out of a halt, exactly as it cannot be on the write-tool
-    //     path where CHECK 1 returns above CHECK 2.
-    //   - ABOVE the protected-path deny, so a halted guard reports the halt
-    //     rather than the path. Same order the write-tool path uses, and the
-    //     same reason: the halt is the condition the user has to clear, and
-    //     naming the path would send an agent off rephrasing the command.
-    //   - MUTATIONS ONLY. Blocking all Bash under a halt would stop an agent
-    //     reading its way out of the situation — it could not even find the
-    //     clear-halt instruction — which is worse for everyone and protects
-    //     nothing extra. `ls`, `git status` and `cat` still run.
+    // A `mutation.mutates` branch used to sit here and deny every recognised
+    // mutation while the guard was halted. It asked "does this command write a
+    // file at all?" — which is the same undecidable question the whole
+    // classifier asked, in miniature. Keeping a residual recogniser alive just
+    // for the halt would have kept the oracle as a seedling, ready to grow back
+    // the moment someone noticed a command it missed.
     //
-    // Inside the self-detect gate, like the check below it: in the plugin's own
-    // repo the write-tool path returns before CHECK 1 too, so the halt stands
-    // down on both surfaces together rather than on one.
+    // What a halt still does: it blocks all four write tools (CHECK 1 below).
+    // What it no longer does: stop `rm notes.txt` from running. The user
+    // confirmed that cost explicitly on 260807-0945, and it is recorded at
+    // `circles/260807-0923-guard-misst-statt-orakelt/decisions/`
+    // `260807-1026_a_verlust-des-bash-halts-auf-der-shell.md`.
     //
-    // No recordBlock: the halt is not a fresh violation, it is the standing
-    // consequence of earlier ones. The write-tool halt does not count itself
-    // either.
-    if (mutation.mutates) {
-      const escalation = loadEscalation();
-      if (isHalted(escalation)) {
-        const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT ?? "<plugin-dir>";
-        const reason =
-          "[HALTED] All file-mutating shell commands are blocked. " +
-          "The guard has been halted after repeated violations. " +
-          "Read-only commands still run. " +
-          `Run: node ${pluginRoot}/hooks/dist/clear-halt.js to reset.`;
-        // NAME THE COMMAND. `mutation.targetPath` is populated on a DENYING
-        // verdict only, and this branch fires whenever `mutation.mutates` is
-        // true — the common case being a command that mutates something
-        // unprotected (`rm notes.txt`, `echo hi > out.txt`). For all of those
-        // the file field is undefined, so a constant detail recorded that a
-        // mutating Bash command was halted and nothing about WHICH one. A halt
-        // is the state a user has to come and clear, and `events.jsonl` is
-        // where they reconstruct what the agent was trying to do; the run of
-        // identical rows after the halt is precisely the behaviour the halt
-        // exists to observe.
-        //
-        // `offendingSegment` when there is one — a halted guard meeting a
-        // PROTECTED path denies here first, above the deny below, and that
-        // verdict does carry the segment, already rendered with its quoted
-        // literals redacted back into place. Otherwise the raw command, which
-        // is what the agent typed and carries no classifier placeholders.
-        emitEvent(
-          "guard_halt",
-          "Bash",
-          mutation.targetPath,
-          "Halt active — mutating Bash command blocked: " +
-            forEvent(mutation.offendingSegment ?? command),
-        );
-        block(reason);
-        return;
-      }
-    }
-
+    // The protected paths themselves are not left to the halt: they are
+    // measured after every tool call and restored, halt or no halt
+    // (`lib/protected-snapshot.ts`, `tracker.ts`).
     if (mutation.deny) {
       const reason =
         mutation.reason ??
@@ -677,6 +638,35 @@ async function main(): Promise<void> {
   if (!config.guard.enabled) {
     allow();
     return;
+  }
+
+  // THE BEFORE-FINGERPRINT. One record of what every protected path currently
+  // holds, so `tracker.ts` can tell afterwards what THIS tool call changed.
+  //
+  // This is not a second hook. It is the PreToolUse hook that already runs on
+  // all five guarded tools, taking one more reading before it decides anything.
+  //
+  // ## It is the condition of admissibility, not a refinement
+  //
+  // Without it the measurement would have nothing to compare against but
+  // `HEAD`, and it would revert every protected path that differs from `HEAD` —
+  // including a rule file the human is editing in their own editor at that
+  // moment. The guard would destroy human work on an unrelated tool call. With
+  // it, only the difference this one call produced is ever touched.
+  //
+  // ## Above every branch, and inside the stand-down
+  //
+  // Above, because all five tools can reach a protected path and the cheapest
+  // correct rule is "always have a before-picture". A denied call simply leaves
+  // a snapshot nobody compares against, which costs one file write.
+  //
+  // Inside `isFusionPluginCwd()`, because the measurement is a WRITE-guard
+  // concern and stands down here exactly as the write tools do — otherwise
+  // fusion's own agents would have their edits to `rules/` and `agents/`
+  // reverted while developing fusion, which is the one place those edits are
+  // the work.
+  if (!isFusionPluginCwd()) {
+    saveSnapshot(takeSnapshot(process.cwd(), config.guard.protectedPaths));
   }
 
   // Bash branch: the git branch-switch policy (deterministic, on every tool

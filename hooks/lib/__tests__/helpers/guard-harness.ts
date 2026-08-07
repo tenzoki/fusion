@@ -91,16 +91,33 @@ export interface GuardEntry {
  * be pointed at the shipped build without touching a test.
  */
 export function guardEntry(): GuardEntry {
+  return hookEntry("guard");
+}
+
+/**
+ * How to spawn the PostToolUse hook.
+ *
+ * The protected-path measurement is a PAIR — `guard.ts` records the
+ * fingerprint, `tracker.ts` compares it — so a case that asserts anything about
+ * reverting, halting or the explanation has to run both, in order, against the
+ * same project. Neither half means anything alone.
+ */
+export function trackerEntry(): GuardEntry {
+  return hookEntry("tracker");
+}
+
+/** Shared resolution for both hook entry points. See `guardEntry`. */
+function hookEntry(name: "guard" | "tracker"): GuardEntry {
   const mode = process.env.FUSION_GUARD_ENTRY ?? "tsx";
 
   if (mode === "dist") {
-    const distGuard = resolve(HOOKS_DIR, "dist/guard.js");
-    if (!existsSync(distGuard)) {
+    const compiled = resolve(HOOKS_DIR, `dist/${name}.js`);
+    if (!existsSync(compiled)) {
       throw new Error(
-        `FUSION_GUARD_ENTRY=dist but ${distGuard} does not exist. Run \`npm run build\` in hooks/ first.`,
+        `FUSION_GUARD_ENTRY=dist but ${compiled} does not exist. Run \`npm run build\` in hooks/ first.`,
       );
     }
-    return { bin: process.execPath, args: [distGuard], label: "dist/guard.js" };
+    return { bin: process.execPath, args: [compiled], label: `dist/${name}.js` };
   }
 
   if (mode !== "tsx") {
@@ -117,8 +134,8 @@ export function guardEntry(): GuardEntry {
   }
   return {
     bin: tsxBin,
-    args: [resolve(HOOKS_DIR, "guard.ts")],
-    label: "tsx guard.ts",
+    args: [resolve(HOOKS_DIR, `${name}.ts`)],
+    label: `tsx ${name}.ts`,
   };
 }
 
@@ -191,6 +208,18 @@ export interface ProjectOptions {
   /** Add `.claude-plugin/plugin.json` naming fusion, so self-detect stands down. */
   plugin?: boolean;
   /**
+   * Make the project a git repository with every seeded file committed.
+   *
+   * Required by any case that asserts on the protected-path measurement, whose
+   * revert is `git checkout HEAD -- <path>`. Without a repository every change
+   * takes the "not known to git" branch, so a case that meant to prove the
+   * restore would silently prove the report-only path instead — passing for the
+   * wrong reason, which is the failure this whole harness exists to prevent.
+   *
+   * Leave it off to test that branch on purpose.
+   */
+  git?: boolean;
+  /**
    * Extra project files, merged OVER `SEED_FILES`, so a case can add a file
    * (`fusion-guard.json`) or replace a seeded one. Paths are root-relative;
    * parent directories are created.
@@ -234,6 +263,10 @@ export function makeProject(opts: ProjectOptions = {}): Project {
     );
   }
 
+  if (opts.git === true) {
+    initGitRepo(root);
+  }
+
   symlinkSync(root, alias);
 
   // The invariant the whole harness rests on. If `root` ever stops being its
@@ -253,6 +286,45 @@ export function makeProject(opts: ProjectOptions = {}): Project {
   }
 
   return { root, alias, isPluginRoot: opts.plugin === true };
+}
+
+/**
+ * Turn a seeded project into a git repository with one commit holding
+ * everything.
+ *
+ * Every identity and hook setting is passed per-invocation rather than read
+ * from the machine, so the repository builds identically on a developer laptop
+ * with a global `commit.gpgsign` or a `core.hooksPath` and in CI with no git
+ * identity configured at all. `fusion-workbench/` is committed along with the
+ * rest: the seeded `.fusion-setup` marker is what makes the guard write state
+ * here, and excluding it would only add a difference between this project and a
+ * real one.
+ */
+function initGitRepo(root: string): void {
+  const git = (...args: string[]): void => {
+    const run = spawnSync("git", args, {
+      cwd: root,
+      encoding: "utf-8",
+      env: {
+        ...process.env,
+        GIT_AUTHOR_NAME: "fusion harness",
+        GIT_AUTHOR_EMAIL: "harness@example.invalid",
+        GIT_COMMITTER_NAME: "fusion harness",
+        GIT_COMMITTER_EMAIL: "harness@example.invalid",
+        GIT_CONFIG_GLOBAL: "/dev/null",
+        GIT_CONFIG_SYSTEM: "/dev/null",
+      },
+    });
+    if (run.status !== 0) {
+      throw new Error(
+        `harness git ${args.join(" ")} failed (${run.status}):\n${run.stderr}`,
+      );
+    }
+  };
+
+  git("init", "--quiet", "--initial-branch=main");
+  git("add", "-A");
+  git("commit", "--quiet", "--no-verify", "-m", "harness baseline");
 }
 
 function disposeProject(project: Project): void {
@@ -434,6 +506,93 @@ export function runWrite(
   overrides: Record<string, string> = {},
 ): GuardResult {
   return runGuard(root, toolName, { file_path: filePath }, overrides);
+}
+
+/* ------------------------------------------------------------------ *
+ * The PostToolUse side
+ * ------------------------------------------------------------------ */
+
+/** What `tracker.ts` wrote to stdout. */
+export interface TrackerResult {
+  hookSpecificOutput?: {
+    hookEventName?: string;
+    additionalContext?: string;
+  };
+}
+
+/**
+ * Spawn the tracker as a real subprocess and feed it one PostToolUse payload.
+ *
+ * Same subprocess discipline as `runGuard`, for the same reason: the self-detect
+ * answer is cached per process, so a stand-down assertion written in-process
+ * would pass vacuously.
+ */
+export function runTracker(
+  root: string,
+  toolName: string,
+  toolInput: Record<string, unknown>,
+  overrides: Record<string, string> = {},
+): TrackerResult {
+  const entry = trackerEntry();
+
+  const run = spawnSync(entry.bin, entry.args, {
+    cwd: root,
+    encoding: "utf-8",
+    env: childEnv(overrides),
+    input: JSON.stringify({
+      session_id: "guard-harness",
+      hook_event_name: "PostToolUse",
+      tool_name: toolName,
+      tool_input: toolInput,
+    }),
+  });
+
+  if (run.error) {
+    throw new Error(`harness could not spawn ${entry.label}: ${run.error}`);
+  }
+  if (run.status !== 0) {
+    throw new Error(
+      `${entry.label} exited ${run.status}\nstderr:\n${run.stderr}`,
+    );
+  }
+  // The tracker fails OPEN exactly as the guard does, and a crashed tracker
+  // would satisfy every "nothing was reverted" assertion in the suite.
+  if (run.stderr.includes("[tracker] Error:")) {
+    throw new Error(`tracker failed open (fail-open path taken):\n${run.stderr}`);
+  }
+
+  try {
+    return JSON.parse(run.stdout) as TrackerResult;
+  } catch {
+    throw new Error(
+      `${entry.label} emitted unparseable stdout: ${JSON.stringify(run.stdout)}`,
+    );
+  }
+}
+
+/**
+ * One complete tool call: PreToolUse, then the effect, then PostToolUse.
+ *
+ * `effect` stands in for the tool itself and runs BETWEEN the two hooks, which
+ * is the only placement that reproduces what the measurement measures. Calling
+ * the two hooks around nothing, or doing the write before the guard ran, tests a
+ * different mechanism.
+ *
+ * Returns both verdicts. A case that expects the PreToolUse guard to deny should
+ * assert on `pre` and pass an `effect` that does nothing, since a denied tool
+ * never runs.
+ */
+export function runToolCall(
+  root: string,
+  toolName: string,
+  toolInput: Record<string, unknown>,
+  effect: () => void,
+  overrides: Record<string, string> = {},
+): { pre: GuardResult; post: TrackerResult } {
+  const pre = runGuard(root, toolName, toolInput, overrides);
+  effect();
+  const post = runTracker(root, toolName, toolInput, overrides);
+  return { pre, post };
 }
 
 /* ------------------------------------------------------------------ *

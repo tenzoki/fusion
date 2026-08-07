@@ -1,24 +1,8 @@
 {
   "haltActive": false,
   "consecutiveBlocks": 0,
-  "lastBlockTimestamp": "2026-08-07T07:26:22.199Z",
+  "lastBlockTimestamp": "2026-08-07T08:16:44.677Z",
   "recentEvents": [
-    {
-      "level": "block",
-      "trigger": "protected_path",
-      "message": "fusion policy: this Bash command mutates a file whose target cannot be resolved before it runs. The segment `cp -R \"$SRC/$item\" \"$FAKE/\"` writes `\"$FAKE/\"`, which the guard cannot prove is outside the protected paths, so it is denied (fail-closed). If the target is genuinely unprotected, write the path out literally instead of building it at run time. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
-      "timestamp": "2026-08-05T09:39:59.527Z",
-      "toolName": "Bash",
-      "filePath": "\"$FAKE/\""
-    },
-    {
-      "level": "block",
-      "trigger": "protected_path",
-      "message": "fusion policy: this Bash command mutates a file whose target cannot be resolved before it runs. The segment `rm -rf \"$TMPD\"` writes `\"$TMPD\"`, which the guard cannot prove is outside the protected paths, so it is denied (fail-closed). If the target is genuinely unprotected, write the path out literally instead of building it at run time. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
-      "timestamp": "2026-08-05T15:33:51.258Z",
-      "toolName": "Bash",
-      "filePath": "\"$TMPD\""
-    },
     {
       "level": "block",
       "trigger": "protected_path",
@@ -82,6 +66,22 @@
       "timestamp": "2026-08-07T07:26:22.199Z",
       "toolName": "Bash",
       "filePath": "_s_"
+    },
+    {
+      "level": "block",
+      "trigger": "protected_path",
+      "message": "fusion policy: this Bash command mutates a file whose target cannot be resolved before it runs. The segment `rm -rf \"$SP\"` writes `\"$SP\"`, which the guard cannot prove is outside the protected paths, so it is denied (fail-closed). If the target is genuinely unprotected, write the path out literally instead of building it at run time. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
+      "timestamp": "2026-08-07T08:00:45.228Z",
+      "toolName": "Bash",
+      "filePath": "\"$SP\""
+    },
+    {
+      "level": "block",
+      "trigger": "protected_path",
+      "message": "fusion policy: this Bash command mutates a file whose target cannot be resolved before it runs. The segment `cp \"$f\" \"$BASE/$f\"` writes `\"$BASE/$f\"`, which the guard cannot prove is outside the protected paths, so it is denied (fail-closed). If the target is genuinely unprotected, write the path out literally instead of building it at run time. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
+      "timestamp": "2026-08-07T08:16:44.677Z",
+      "toolName": "Bash",
+      "filePath": "\"$BASE/$f\""
     }
   ]
 }
