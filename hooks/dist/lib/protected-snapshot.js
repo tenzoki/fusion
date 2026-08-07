@@ -16,9 +16,9 @@
  * one and compares. The difference between the two is exactly what this one tool
  * call did, whatever route it took to the file.
  *
- * Binding decision:
- * `circles/260804-1205-shell-reachability-model/decisions/260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`,
- * option 3.
+ * Binding decision, taken by the user on 2026-08-07 out of four options: detect
+ * afterwards instead of predicting — let the command run, notice that a
+ * protected path changed, put it back and halt.
  *
  * ## The fingerprint carries the CONTENT, and that is what makes the restore exact
  *
@@ -32,9 +32,8 @@
  *
  * Carrying the content collapses all five into one: write back what was there.
  * Non-existence stays its own value, and on the way back it reads as "delete".
- *
- * Closed by this:
- * `circles/260807-0923-guard-misst-statt-orakelt/issues/260807-1026_*_rueckrollen-auf-head-kann-menschliche-vorarbeit-verwerfen.md`.
+ * The `HEAD` restore was filed as a defect while this module was being written
+ * and closed by carrying the content instead.
  *
  * ## Non-existence is a value, not a gap
  *

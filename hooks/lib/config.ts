@@ -99,8 +99,8 @@
  * collision between two things the spec asks for: `/fusion:setup` seeds the
  * file, and an unconditional floor would make that seeding write a write to a
  * protected path, so the file could never be created by the mechanism meant to
- * create it. Decided by the user at the plan gate — see
- * `circles/260801-1244-guard-rules-write/decisions/260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md`.
+ * create it. Decided by the user at the plan gate on 2026-08-02: the
+ * self-protection floor applies only once the configuration file exists.
  *
  * The residual is real and is recorded rather than hidden: in a project where
  * the file has never been created, an agent may create one that narrows

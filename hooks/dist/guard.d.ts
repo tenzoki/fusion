@@ -31,9 +31,8 @@
  * nothing replaces it on THIS side of the tool call. What a shell does to a
  * protected path is now answered after the fact, by the fingerprint pair at the
  * top of this comment — measured rather than predicted, because "will this
- * command write?" is not decidable from the command text. Decision
- * `circles/260804-1205-shell-reachability-model/decisions/`
- * `260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`.
+ * command write?" is not decidable from the command text. Decided by the user
+ * on 2026-08-07: detect afterwards instead of predicting.
  * The branch policy does not touch the Bash allow path's zero-side-effect
  * property (no counter reset, no guard_allow event) — see guardBashCommand.
  *

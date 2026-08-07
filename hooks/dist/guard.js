@@ -31,9 +31,8 @@
  * nothing replaces it on THIS side of the tool call. What a shell does to a
  * protected path is now answered after the fact, by the fingerprint pair at the
  * top of this comment — measured rather than predicted, because "will this
- * command write?" is not decidable from the command text. Decision
- * `circles/260804-1205-shell-reachability-model/decisions/`
- * `260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`.
+ * command write?" is not decidable from the command text. Decided by the user
+ * on 2026-08-07: detect afterwards instead of predicting.
  * The branch policy does not touch the Bash allow path's zero-side-effect
  * property (no counter reset, no guard_allow event) — see guardBashCommand.
  *
@@ -258,9 +257,8 @@ function emitBlockEvent(halted, tool, file, detail) {
  * tools and lets the shell through, because deciding whether a command mutates
  * anything is the same undecidable question the retired policy asked. What a
  * halt no longer does is stop `rm notes.txt` from running; the user confirmed
- * that cost explicitly on 260807-0945, recorded at
- * `circles/260807-0923-guard-misst-statt-orakelt/decisions/`
- * `260807-1026_a_verlust-des-bash-halts-auf-der-shell.md`. The protected paths
+ * that cost explicitly on 2026-08-07, accepting the loss of the Bash halt on the
+ * shell as the price of dropping the classifier. The protected paths
  * themselves are not left to the halt — they are measured after every tool call
  * and restored, halt or no halt.
  */

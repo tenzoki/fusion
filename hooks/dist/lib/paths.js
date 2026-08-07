@@ -65,7 +65,6 @@ export function matchesPattern(filePath, pattern) {
  *     it should therefore fold was raised and DEFERRED by the user
  *     (2026-08-04): behaviour stays case-sensitive until a project reports a
  *     category missing its own file, or path matching is unified elsewhere.
- *     `circles/260801-1244-guard-rules-write/decisions/260804-1632_*_should-findrelevantdecisions-fold-case-now-that-a-project-can-configure-categorypaths.md`.
  *     The argument the decision starts from is that the two sides of a
  *     `categoryPaths` match are both authored by the same project, which is not
  *     the situation `protectedPaths` is in. `tracker.ts`'s noise filter reads a
@@ -109,8 +108,8 @@ export function foldCase(path) {
  *
  * ## Why UNCONDITIONALLY, and not only where the filesystem folds
  *
- * The user's decision, recorded at
- * `circles/260801-1244-guard-rules-write/decisions/260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md`.
+ * The user decided it on 2026-08-03: the protected-path check folds case on
+ * every platform, not only where the filesystem does.
  * A boundary that differs by platform has to be re-stated in every document
  * that describes it, and is then discovered rather than known. Folding
  * everywhere over-blocks on a case-sensitive filesystem, where `AGENTS/coder.md`

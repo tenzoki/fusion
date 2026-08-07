@@ -329,8 +329,9 @@ export function spellingWalksUp(spelledAs) {
  * ## Matched the way the PROTECTION side matches, not the way the grant does
  *
  * Case is folded, and a directory operand is retried with a trailing separator —
- * both of them the conventions of `isProtected` in `bash-mutation-guard.ts` and
- * of `matchesAnyFolded`, and neither of them gate 1's. The asymmetry that runs
+ * both of them protection-side conventions (`matchesAnyFolded` in `paths.ts`
+ * folds; `shouldDescend` in `protected-snapshot.ts` retries the trailing
+ * separator), and neither of them gate 1's. The asymmetry that runs
  * through this module decides it: a wider match here REFUSES more, so it is the
  * safe direction, and the two spellings it buys are both real. Without the fold,
  * a project declaring `rules/Immutable/**` loses its own entry to `RULES/…` on
@@ -441,33 +442,30 @@ export function rulesWriteRefusal(path, fs, spelledAs, projectProtected) {
  *
  * Every gate must hold; see the module docstring.
  *
- * ## What the flag reaches, measured
+ * ## What the flag reaches
  *
- * Everything INSIDE a rule directory is exempt, whole subtrees included. With
- * the flag set, `rm -rf rules/*`, `rm -rf rules/retired` and
- * `mv rules/retired /tmp/gone` all go through — and the last two destroy the
- * retirement archive the flag exists to POPULATE, which is the one outcome a
- * curator would least expect it to allow. That reach is inside the flag's
- * purpose (a curation job clears out and rewrites the rule set) and it is
- * stated here so it is a known reach rather than a discovered one.
+ * Everything INSIDE a rule directory is exempt, whole subtrees included. A
+ * curation job that clears out and rewrites the rule set is what the flag is
+ * for, so a deletion inside `rules/` is left standing like a rewrite is — the
+ * retirement archive the flag exists to POPULATE included, which is the one
+ * outcome a curator would least expect it to allow. That reach is stated here
+ * so it is a known reach rather than a discovered one.
  *
- * Only the bare directory NODE is out of reach, in every spelling: `rules`,
- * `rules/`, `./rules`, `rules//`, and the `.` a `cd rules` gives a name to.
- * `canonicalise` strips the trailing separator, and the bare name matches no
- * `rules/**` pattern, so the exemption never sees a rule path there and
- * `rm -rf rules` and `rm -rf rules/` stay denied. (Denied by the mutation
- * guard's FIRST pass, not its ancestor pass: `isProtected` retries a
- * directory operand with a trailing separator, and `rules/` matches
- * `^rules/.*$` because `.*` matches the empty string.)
+ * The question is asked once per FILE, never about a directory node. Both
+ * callers hand over a file path and can hand over nothing else: `guard.ts`
+ * CHECK 2 passes the write tool's target, and the measurement enumerates the
+ * protected set with `enumerateProtected`, which records only entries that are
+ * files. A bare `rules` therefore never reaches these gates in any spelling,
+ * and the reach of a command that empties the directory is the union of the
+ * answers given for the files it touched.
  *
  * Gate 0 narrows the exempt set by one further class: any spelling carrying a
- * `..` segment is refused, so `rm -rf rules/a/../retired` denies while
- * `rm -rf rules/retired` allows. It removes a spelling, not a reach.
+ * `..` segment is refused, so a write spelled `rules/a/../retired/x.md` is
+ * refused the grant while `rules/retired/x.md` gets it. It removes a spelling,
+ * not a reach.
  *
- * (Measured on the real guard subprocess in a throwaway project with the
- * shipped `hooks/config.json`; the table is in this Turn's T3-2 history file.
- * `.claude/rules/**` is not on the protected list at HEAD, so nothing there is
- * denied with or without the flag — see `RULE_DIR_PATTERNS`.)
+ * (`.claude/rules/**` is not on the protected list at HEAD, so nothing there is
+ * measured or refused with or without the flag — see `RULE_DIR_PATTERNS`.)
  */
 export function isProjectRulePath(path, fs, spelledAs, projectProtected) {
     return rulesWriteRefusal(path, fs, spelledAs, projectProtected) === null;
