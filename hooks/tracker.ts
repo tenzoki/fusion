@@ -50,7 +50,12 @@ import type { GuardConfig } from "./lib/config.js";
 import { matchesAny } from "./lib/paths.js";
 import { isFusionPluginCwd } from "./lib/self-detect.js";
 import { emitEvent } from "./lib/events.js";
-import { loadEscalation, raiseHalt, saveEscalation } from "./lib/escalation.js";
+import {
+  loadEscalation,
+  raiseHalt,
+  saveEscalation,
+  clearHaltCommand,
+} from "./lib/escalation.js";
 import {
   diffSnapshots,
   loadSnapshot,
@@ -343,7 +348,10 @@ function measureProtectedPaths(toolName: string): string | null {
     `Halt raised by the protected-path measurement (${outcomes.length} path(s) changed)`,
   );
 
-  const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT ?? "<plugin-dir>";
+  // The `cd` is not decoration: the halt was just recorded under `root`, and the
+  // clearing script locates it by walking up from its own working directory. Run
+  // from anywhere else it reports "not halted" and clears nothing — see
+  // `clearHaltCommand` in lib/escalation.ts.
   return (
     "fusion guard: a protected path changed during this tool call. " +
     summary +
@@ -352,7 +360,9 @@ function measureProtectedPaths(toolName: string): string | null {
     "These paths are a human decision: tell the user what you were trying to do " +
     "and why, and let them make the change or adjust guard.protectedPaths in the " +
     "project's fusion-guard.json. " +
-    `To resume afterwards: node ${pluginRoot}/hooks/dist/clear-halt.js`
+    "To resume afterwards, run this from the project directory — the halt is " +
+    "recorded there and the script finds it by walking up from its working " +
+    `directory: ${clearHaltCommand()}`
   );
 }
 

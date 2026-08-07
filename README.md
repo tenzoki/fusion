@@ -109,7 +109,7 @@ The guard isn't all-or-nothing. It runs on a spectrum from full enforcement to a
 | Advisory-only (warns, never blocks) | keep `enabled: true`; set `protectedPaths: []`; leave decision sensitivities at `medium`/`low` (only `high` blocks) |
 | Looser, not off | trim `protectedPaths`, raise the `churn.*` / `crossFile.*` thresholds, keep sensitivities ≤ `medium` |
 | Allow one agent branch switch | session env `FUSION_ALLOW_BRANCH_SWITCH=1` (or `FUSION_ALLOW_WORKTREE=1`) — not config |
-| Clear a stuck halt | `node ${CLAUDE_PLUGIN_ROOT}/hooks/dist/clear-halt.js` |
+| Clear a stuck halt | `cd <project-root> && node ${CLAUDE_PLUGIN_ROOT}/hooks/dist/clear-halt.js` — the halt is project-scoped, so run it inside the project |
 
   Only three things ever block a write: a write to a **protected path** (any sensitivity), a write to a **decision-governed path at `high` sensitivity**, and an active **halt** (which trips after `escalation.blocksBeforeHalt` consecutive blocks, default 3). Churn and cross-file detection are advisory — they emit warning events for the monitor but never block a write or halt on their own. `guard.enabled: false` stands the whole guard down, including the git branch-switch check. See [`README-hooks.md`](README-hooks.md) for the full model.
 

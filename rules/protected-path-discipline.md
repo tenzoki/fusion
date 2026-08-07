@@ -49,7 +49,13 @@ A measured change to a protected path raises the halt outright, rather than coun
 
 ```
 [HALTED] All write operations blocked. The guard has been halted after
-repeated violations. Run: node <plugin-root>/hooks/dist/clear-halt.js to reset.
+repeated violations. The halt is recorded per project and the clearing script
+finds it by walking up from its working directory, so the `cd` is part of the
+command: cd <project-root> && node <plugin-root>/hooks/dist/clear-halt.js
 ```
+
+The live message names both directories in full. Report it to the user as it
+came, `cd` included: run from anywhere else the script finds no workbench, says
+so, and exits non-zero without clearing anything.
 
 Shell commands and reading still run under a halt, deliberately, so you can find out what happened and tell the user how to clear it. Clearing it is a human act. Do not try to route around a halt; report it.

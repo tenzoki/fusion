@@ -43,7 +43,7 @@ import { loadConfig, projectDeclaredProtectedPaths } from "./lib/config.js";
 import { matchesAny } from "./lib/paths.js";
 import { isFusionPluginCwd } from "./lib/self-detect.js";
 import { emitEvent } from "./lib/events.js";
-import { loadEscalation, raiseHalt, saveEscalation } from "./lib/escalation.js";
+import { loadEscalation, raiseHalt, saveEscalation, clearHaltCommand, } from "./lib/escalation.js";
 import { diffSnapshots, loadSnapshot, measurementRoot, restore, takeSnapshot, } from "./lib/protected-snapshot.js";
 import { isObservedRulePath, rulesWriteDetail, rulesWriteExemptionActive, } from "./lib/rules-write-exemption.js";
 /**
@@ -269,7 +269,10 @@ function measureProtectedPaths(toolName) {
     raiseHalt(escalation, "protected_path_measured", `Protected path changed during a ${toolName} call — ${summary}`, toolName, outcomes.length === 1 ? outcomes[0].change.path : undefined);
     saveEscalation(escalation);
     emitEvent("guard_halt", toolName, undefined, `Halt raised by the protected-path measurement (${outcomes.length} path(s) changed)`);
-    const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT ?? "<plugin-dir>";
+    // The `cd` is not decoration: the halt was just recorded under `root`, and the
+    // clearing script locates it by walking up from its own working directory. Run
+    // from anywhere else it reports "not halted" and clears nothing — see
+    // `clearHaltCommand` in lib/escalation.ts.
     return ("fusion guard: a protected path changed during this tool call. " +
         summary +
         " The guard is now HALTED, so all write tools are blocked. " +
@@ -277,7 +280,9 @@ function measureProtectedPaths(toolName) {
         "These paths are a human decision: tell the user what you were trying to do " +
         "and why, and let them make the change or adjust guard.protectedPaths in the " +
         "project's fusion-guard.json. " +
-        `To resume afterwards: node ${pluginRoot}/hooks/dist/clear-halt.js`);
+        "To resume afterwards, run this from the project directory — the halt is " +
+        "recorded there and the script finds it by walking up from its working " +
+        `directory: ${clearHaltCommand()}`);
 }
 /* ------------------------------------------------------------------ *
  * Churn and cross-file ping-back

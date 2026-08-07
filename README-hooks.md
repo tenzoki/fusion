@@ -192,7 +192,7 @@ The guard runs on a spectrum — full enforcement, advisory, or off — assemble
 | Looser, not off | trim `protectedPaths`, raise the `churn.*` / `crossFile.*` thresholds, keep sensitivities ≤ `medium` |
 | Allow one agent branch switch | session env `FUSION_ALLOW_BRANCH_SWITCH=1` (or `FUSION_ALLOW_WORKTREE=1`) — not config. Neither waives the protected-path policy |
 | Let an agent edit **rule files** for one session | session env `FUSION_ALLOW_RULES_WRITE=1` — not config. Exempts the project's rule directories and the `retired/` destination inside them and nothing else; every other protected path stays protected on both surfaces, the guard is not turned off, and an active halt is not cleared. Each exempted write emits a `guard_advisory` event |
-| Clear a stuck halt | `node ${CLAUDE_PLUGIN_ROOT}/hooks/dist/clear-halt.js` (see [Clearing a halt](#clearing-a-halt)) |
+| Clear a stuck halt | `cd <project-root> && node ${CLAUDE_PLUGIN_ROOT}/hooks/dist/clear-halt.js` — the halt is project-scoped and the script locates it by walking up from its working directory, so the `cd` is part of the command (see [Clearing a halt](#clearing-a-halt)) |
 
 Four things cause a block, and only these: a **write-tool call on a protected path** (any sensitivity), a **branch- or worktree-moving git command** that no env override covers, a write to a **decision-governed path at `high` sensitivity**, and an active **halt**. A change to a protected path that reaches disk by any other route is not blocked at all — it is measured afterwards, put back, and it raises the halt (see [Protected paths are measured, not predicted](#protected-paths-are-measured-not-predicted)). Churn and cross-file detection are advisory: they emit warning events but never block. `guard.enabled: false` stands the whole guard down, branch-switch check included.
 
@@ -206,8 +206,13 @@ A halt blocks the **write tools** until a human clears it — every `Write`, `Ed
 
 ```
 [HALTED] All write operations blocked. The guard has been halted after
-repeated violations. Run: node <plugin>/hooks/dist/clear-halt.js to reset.
+repeated violations. The halt is recorded per project and the clearing script
+finds it by walking up from its working directory, so the `cd` is part of the
+command: cd <project-root> && node <plugin-root>/hooks/dist/clear-halt.js
 ```
+
+Both placeholders are filled in for real in the live message — the halt names the
+project root it was recorded under and the plugin root it was loaded from.
 
 It does **not** reach the shell any more. The halt used to block every `Bash` command the mutation classifier recognised as a write, which meant asking the undecidable question in miniature — "does this command write a file at all?". With the classifier gone the shell runs under a halt, and a protected path that changes there is measured and put back regardless of the halt. What a halt costs an agent is therefore the four write tools; reading was always unaffected and still is, deliberately, so an agent can find out why it is halted and tell the user how to clear it.
 
@@ -254,11 +259,25 @@ The agent-facing statement of all of this is `rules/protected-path-discipline.md
 
 ### Clearing a halt
 
-When the guard halts, all writes are blocked. To clear:
+When the guard halts, all writes are blocked. To clear, **run it from the project
+whose guard is halted**:
 
 ```bash
-node ${CLAUDE_PLUGIN_ROOT}/hooks/dist/clear-halt.js
+cd <project-root> && node ${CLAUDE_PLUGIN_ROOT}/hooks/dist/clear-halt.js
 ```
+
+The `cd` is load-bearing. The halt is project-scoped — it lives in
+`<project-root>/fusion-workbench/.guard-state/escalation.json`, and the script
+finds that file by walking up from its own working directory. The command is
+spelled plugin-scoped, which used to invite running it from anywhere; from a
+directory with no workbench above it the script reads the empty state, and the
+empty state is not halted. It reported `Guard is not halted. No action needed.`
+while the halt stood untouched in the project.
+
+It no longer does. With no workbench above the working directory the script names
+the directory it searched from, says that nothing was checked, and exits non-zero.
+When it does find one it prints the workbench path first, so `Guard is not halted
+in this project.` is always an answer about a named place.
 
 Or from within a Claude Code session, the orchestrator can invoke this at a human gate.
 

@@ -63,6 +63,7 @@ import {
   isHalted,
   recordBlock,
   resetBlockCounter,
+  clearHaltCommand,
 } from "./lib/escalation.js";
 import { emitEvent } from "./lib/events.js";
 import {
@@ -587,11 +588,16 @@ async function main(): Promise<void> {
 
   // CHECK 1: Halt mode — block everything
   if (isHalted(escalation)) {
-    const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT ?? "<plugin-dir>";
+    // The `cd` is not decoration. The halt is recorded in THIS project and the
+    // clearing script finds it by walking up from its own working directory, so
+    // a plugin-scoped command run from anywhere else reports "not halted" and
+    // changes nothing — see `clearHaltCommand` in lib/escalation.ts.
     const reason =
       "[HALTED] All write operations blocked. " +
       "The guard has been halted after repeated violations. " +
-      `Run: node ${pluginRoot}/hooks/dist/clear-halt.js to reset.`;
+      "The halt is recorded per project and the clearing script finds it by " +
+      "walking up from its working directory, so the `cd` is part of the " +
+      `command: ${clearHaltCommand()}`;
     // Names its surface, so a reader scanning a run of guard_halt rows can tell
     // this apart from the Bash halt and from a block that RAISED the halt. The
     // path is already the event's file field; repeating it here would only make

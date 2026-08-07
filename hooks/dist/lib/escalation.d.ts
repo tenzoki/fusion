@@ -26,6 +26,40 @@ export interface EscalationState {
     recentEvents: EscalationEvent[];
 }
 /**
+ * The command that clears a halt, spelled with BOTH directories in it.
+ *
+ * ## Why the `cd` is part of the command
+ *
+ * The halt is project-scoped — it is recorded in
+ * `<project-root>/fusion-workbench/.guard-state/escalation.json`, which
+ * `getEscalationPaths` above finds by walking up from the working directory.
+ * The clearing script is plugin-scoped, and every halt message used to name
+ * only the plugin half. A user read `node <plugin-root>/…/clear-halt.js`,
+ * ran it from their home directory, and was told `Guard is not halted. No
+ * action needed.` while the halt stood untouched in the project (issue
+ * 260805-1134). Nothing in the message had said the working directory
+ * decides, so the correct command at the wrong place looked like success.
+ *
+ * `clear-halt.ts` now refuses that case outright. This function is the other
+ * half: the message a user actually reads names the project directory too, so
+ * the mistake is harder to make than it is to diagnose.
+ *
+ * ## Why it lives here
+ *
+ * Two hooks raise a halt — `guard.ts` on the third consecutive block and
+ * `tracker.ts` on a measured protected-path change — and both have to say how
+ * to clear it. One authoring site, next to the state the command acts on, so a
+ * third caller cannot start telling users something different.
+ *
+ * Both directories degrade to a placeholder rather than being omitted:
+ * `CLAUDE_PLUGIN_ROOT` is exported by the SessionStart hook and is normally
+ * set, and a halt is only ever readable when a workbench exists, so neither
+ * fallback is the expected path. A placeholder that is visibly a blank keeps
+ * the shape of the command intact where a dropped clause would quietly teach
+ * the wrong invocation.
+ */
+export declare function clearHaltCommand(): string;
+/**
  * Load escalation state from disk. Returns the empty state when the file is
  * missing, when there is no workbench, when the text does not parse, AND when
  * it parses to something that is not an escalation state — see `coerceState`
