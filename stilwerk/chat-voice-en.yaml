@@ -1,14 +1,16 @@
 # Chat Voice (English)
 # Short-form chat style: gate prompts, AskUserQuestion text, status reports,
 # brief replies. Complements rules/user-facing-output.md with language-specific
-# anti-patterns. NOT for long-form prose — that uses default-voice-en.yaml.
+# anti-patterns. NOT for long-form prose — that uses the long-form writing
+# profile.
 
 name: "Chat Voice (English)"
-description: "Terse, direct chat style in English. Plain words over codes, second person, no AI stock phrases, no em-dash chains. Short-form companion to the long-form writing profile (default-voice-en.yaml)."
+description: "Terse, direct chat style in English. Plain words over codes, second person, no AI stock phrases, no em-dash chains. Short-form companion to the long-form writing profile."
 
 # Scope: short-form chat only. Structured artifacts (dashboard lines, commit
 # messages, monitor strings, tables, ID lists) are exempt — they stay terse and
-# machine-readable. Long-form prose uses default-voice-en.yaml, not this profile.
+# machine-readable. Long-form prose uses the long-form writing profile, not
+# this one.
 scope: short-form
 
 whitelist:
