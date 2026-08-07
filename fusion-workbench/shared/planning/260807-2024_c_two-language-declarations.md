@@ -1,7 +1,7 @@
 # Implementation Plan: split the language declaration into chat language and artifact language
 
 **Date:** 2026-08-07
-**Status:** Draft
+**Status:** Complete
 **Spec:** none — planned from a raw Directive (user, 260807-2024)
 **Decidability:** The load-bearing question is "which language does this piece of output belong to?" It is decidable from two inputs the mechanism has: the surface being written (a file that persists, or a string that only ever appears in the terminal), and the two declared lines in `CLAUDE.md`. No approximation is needed and no mechanism change follows. One honest residual, stated rather than hidden: `bin/fusion-rules` decides the question only for the two stylometric profile families, which are an exact proxy for their own surfaces but do not reach the profile-exempt persisted surfaces (dashboard lines, commit messages, monitor strings). For those the answer is carried by rule text an agent reads, not by code — the same enforcement `critical-stance.md` §4 already describes honestly for the plan-head line itself.
 
@@ -178,13 +178,13 @@ The subgraph **text that ships to every consumer** carries a single node and no 
     - Changes: S1, S5 and S6 change the byte size of four always-on rule files, so every agent's total moves and the golden fails until it is regenerated. Follow the documented two-run procedure exactly (`rules-emission-golden.test.ts` `## Updating the golden`): `cd hooks && UPDATE_RULES_GOLDEN=1 npx vitest run lib/__tests__/rules-emission-golden.test.ts`, which rewrites the fixture and then fails on purpose, then a second run without the flag. Review the fixture diff — that is the whole obligation. Do **not** touch `RULE_BASELINE`: it moves only after a cleanup, and this is growth. The growth is a few hundred bytes against a 12 000-byte budget and a distant drift ceiling, so no report and no gate should trip; if either does, that is a finding to report rather than a number to adjust. Then run the whole suite once (`cd hooks && npm test`) and confirm `reference-resolution-lint`, `derivable-enumerations-lint` and `path-literal-lint` are green.
     - Dependencies: S1, S5, S6, S9 (every step that changes rule-file bytes), and S4 (so the new suite runs in the same green pass)
 
-11. **S11 — Bump the plugin version**
+11. [DONE] **S11 — Bump the plugin version**
     - Executor: `coder`
     - Files: `.claude-plugin/plugin.json`
     - Changes: bump `version`. This repository's convention is a bump on every change (`CLAUDE.md`, Layout table). The rest of the release — the marketplace `version`, the git tag, the `FUSION_REF` example in `install.sh` and `README.md` — is the user's call at a release gate and is deliberately not planned here.
     - Dependencies: S10
 
-12. **S12 — Move the answered decision to implemented**
+12. [DONE] **S12 — Move the answered decision to implemented**
     - Executor: `coder`
     - Files: `fusion-workbench/shared/decisions/260807-1515_a_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`
     - Changes: the record's own reconciliation note (lines 160-164) states the condition for the transition — the rule text carries the exempt-surface list, the `**Decidability:**` resolution, and the "direct user interaction" wording. All three land in S1 and S5. Append an `Implemented:` line citing the commit hash and summarising the change in one sentence (the declaration is split in two; the exempt-surface list, the head-label resolution and the direct-user-interaction wording now sit in `rules/fusion-workbench-conventions.md` `## Project language`), then rename `_a_` → `_i_`. The commit hash exists only after the work is committed, so this step runs last and cites the real hash, never a placeholder.

@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** answered
+**Status:** implemented
 **Filed by:** reconciler, Abschluss-Pass zu `circles/260807-0923-guard-misst-statt-orakelt`, 260807-1515
 **Cross-references:**
 `rules/fusion-workbench-conventions.md` `## Project language` (die einzige Stelle, die die Deklaration definiert),
@@ -165,6 +165,6 @@ in `shared/history/260807-1917-orchestrator-session.md` `## Remaining Work`. Thi
 
 ---
 Answered: shared/history/260807-1917-orchestrator-session.md `## Decisions answered` — the language declaration covers direct user interaction only; every persisted artifact is English.
-Implemented:
+Implemented: def9d13..cd48540 — the declaration is split in two, `**Language:**` for the chat surface and `**Artifact language:**` for everything that persists as a file, with the first governing both when the second is absent, and the three rule-text edits this record set as its condition have landed: the exempt-surface list and the direct-user-interaction boundary in `rules/fusion-workbench-conventions.md` `## Project language`, and the `**Decidability:**` resolution in `rules/critical-stance.md`. The endpoints name what the range spans — `def9d13` rewrote `## Project language` into the authoring home for both declarations, `cd48540` regenerated the emission golden and left the suite green — because the work landed as task-scoped commits rather than as one. Consequence 2 of the answer holds unchanged: no existing German artifact was translated.
 Deferred:
 Superseded by:
