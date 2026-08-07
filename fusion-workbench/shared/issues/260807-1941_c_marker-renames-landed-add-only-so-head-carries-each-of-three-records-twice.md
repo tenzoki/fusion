@@ -99,3 +99,13 @@ cd /Users/k1/Projects/productive/fusion
 git status --short -- fusion-workbench/shared
 git ls-tree -r --name-only HEAD -- fusion-workbench/shared/decisions | grep 260807-1515
 ```
+
+---
+Resolved: Fixed in commit `1a37563` (Turn 2 of session 260807-1917), which restaged the three
+directories with `git add -A` so the deletions of the old marker names landed alongside the
+additions. Verified at HEAD: `git ls-tree -r --name-only HEAD` over `shared/decisions` and
+`shared/issues` now returns each of the three records exactly once, under its current marker only.
+The working tree was never wrong; only the index was. Root cause owned by the orchestrator: the
+Phase 2 staging step named the new filenames explicitly and never the old ones, and `git add <new>`
+does not remove a tracked path that has disappeared from disk. The general lesson for a marker
+rename is to stage the containing directory with `-A`, or to name both the old and the new path.

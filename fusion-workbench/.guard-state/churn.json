@@ -487,10 +487,10 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/orchestrator-live.md": {
-      "totalChanges": 11,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-06T21:58:51.814Z",
-      "thrashingScore": 3
+      "totalChanges": 12,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T17:46:07.848Z",
+      "thrashingScore": 4
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/provenance-header-lint.test.ts": {
       "totalChanges": 12,
@@ -2782,6 +2782,12 @@
       "totalChanges": 1,
       "changesThisSession": 1,
       "lastChange": "2026-08-07T17:43:41.058Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/shared/history/260807-1917-orchestrator-session.md": {
+      "totalChanges": 2,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-07T17:45:58.418Z",
       "thrashingScore": 0
     }
   },

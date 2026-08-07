@@ -1,16 +1,15 @@
 # Orchestrator — Live
 
-**Turn:** 1/5 | **Tasks:** 4/4 | **Commits:** 1 | **Errors:** 0
-**Started:** 19:17 | **Domain:** code | **Elapsed Turns:** 0 | **Guard:** OK (0 blocks)
+**Turn:** 2/5 | **Tasks:** 5/5 | **Commits:** 3 | **Errors:** 0
+**Started:** 19:17 | **Domain:** code | **Elapsed Turns:** 2 | **Guard:** OK (0 blocks)
+**Session:** Complete
 
 ## Current
-  [GATE] user -> Coherence check after Turn 1
+  [DONE] orchestrator -> Session closed, 5 tasks resolved
 
 ## This Turn
-  [DONE]    orchestrator -> Answer decision: project-language reach (T1) ....... 1d6c8b3
-  [DONE]    orchestrator -> Answer decision: record filename uniqueness (T2) ... 1d6c8b3
-  [DONE]    orchestrator -> Correct + close defect: filename collisions (T3) ... 1d6c8b3
-  [DONE]    orchestrator -> Rewrite session history in English (T4) ........... 1d6c8b3
+  [DONE]    orchestrator -> Restage the three marker-rename deletions (T5) ..... 1a37563
+  [DONE]    orchestrator -> Close staging defect 260807-1941 ................... session close
 
 ## Up Next
   (queue empty — converged)

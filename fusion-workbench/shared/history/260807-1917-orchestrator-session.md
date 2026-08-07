@@ -130,6 +130,30 @@ without re-deriving it. The measurement above is what should have accompanied it
 | T3 | Corrected and closed the filename-collision defect | `_o_` → `_c_` |
 | T4 | Rewrote this history file in English | — |
 
+### Turn 2
+
+Entered from the Phase 3 Rebalance gate, recommendation "revise Artifact". The reconciler found
+that Turn 1's commit staged the three marker renames add-only.
+
+- Tasks attempted: T5
+- Tasks completed: T5
+- Executor: orchestrator
+- Review findings: none
+- Circuit breaker status: OK
+- Coherence: ok
+
+| Task | What it did | Result |
+|---|---|---|
+| T5 | Restaged the three directories with `git add -A` so the deletions of the old marker names landed, and committed the Phase 3 reconciliation artifacts alongside | commit `1a37563`; defect `260807-1941` closed |
+
+**Verified after the fix:** `git ls-tree -r --name-only HEAD` over `shared/decisions` and
+`shared/issues` returns each of the three records exactly once, under its current marker only.
+
+**Root cause, owned.** The Phase 2 staging step named the three new filenames explicitly and never
+the old ones. `git add <new>` does not remove a tracked path that has disappeared from disk, so the
+old paths survived in the index. A marker rename has to stage the containing directory with `-A`,
+or name both the old and the new path. Nothing on disk was ever wrong; only the index was.
+
 ## Coherence
 
 <!-- RECONCILER-OWNED — appended at Phase 3 step 3. Format defined in agents/reconciler.md Step 4. Do not overwrite or modify. -->
@@ -171,10 +195,69 @@ Circles (`260801-1244-rule-provenance-header`, `260801-1244-guard-rules-write`,
 `/fusion:next`. Note that the three deferred rule-text edits above fall inside that Circle's own
 remit, since its stated first job is reconciling this repository's conventions file.
 
-**Open defects:** 22 remaining in `shared/issues` after T3 closed one.
+**Three new defects filed by the Phase 3 reconciler**, none of them caused by this session's
+Directive and all left open:
+
+1. `shared/issues/260807-1939_o_plane-natural-key-carries-the-state-marker-and-breaks-on-every-transition.md`
+   — the Plane mirror's per-Circle key carries the state marker, so it breaks on the transition the
+   mirror exists to push.
+2. `shared/issues/260807-1942_o_die-domaenenerkennung-entscheidet-vor-der-codezaehlung-und-erreicht-code-nie.md`
+   — the domain-detection heuristic in `agents/orchestrator.md` Setup Step 5 tests its branches in
+   an order that can classify a code project as `strategic`.
+3. `shared/issues/260807-1943_o_die-routing-tabelle-und-das-review-routing-kennen-rs-nicht.md`
+   — the orchestrator's routing and review tables omit `.rs`, which `coder`, `ontocoder` and
+   `planner` all carry.
+
+**Two of those three carry German titles**, filed minutes after D1 answered that persisted
+artifacts are English. That is not the sub-agent ignoring the answer: it read `**Language:** de`
+from `CLAUDE.md` and applied `rules/fusion-workbench-conventions.md` `## Project language` as
+written, which still scopes the declaration to "prose output" and says nothing about persisted
+artifacts. The answer does not bind any agent until the first of the three deferred rule-text edits
+lands. Every session between now and then will keep producing German records. This is the concrete
+cost of deferring, recorded here so the cost is visible rather than inferred.
+
+**Open defects:** 25 in `shared/issues` — 23 at Setup, minus the one T3 closed, plus the four the
+reconciler filed, minus the one T5 closed.
 
 ## Commits
 
 | Hash | Message | Task |
 |------|---------|------|
-| (see below) | chore(workbench): two decisions answered, the collision defect is corrected | T1–T4 |
+| `1d6c8b3` | Two decisions answered, the collision defect corrected | T1–T4 |
+| `1a37563` | The three marker renames now carry their deletions | T5 |
+| (session close) | Turn 2 log, session flow, closed staging defect | — |
+
+## Session Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant O as Orchestrator
+    participant R as Reconciler
+
+    Note over O: Setup
+    O->>U: open state, 3 open decisions, domain=code
+    U-->>O: answers 2 of them; disputes the collision measurement
+    O->>O: re-measure — 0 filename collisions, 84 shared stamps
+    U-->>O: record only, touch no rule file
+
+    Note over O: Turn 1
+    O->>O: T1 decision 260807-1515 _o_ to _a_
+    O->>O: T2 decision 260807-0158 _o_ to _a_
+    O->>O: T3 defect 260807-0158 corrected, _o_ to _c_
+    O->>O: T4 history rewritten in English
+    O->>U: commit 1d6c8b3
+    O->>U: Coherence gate — German commit message noted
+    U-->>O: proceed
+
+    Note over O: Phase 3
+    O->>R: final reconciliation (domain=code)
+    R-->>O: review-needed — renames staged add-only; 4 issues filed
+
+    Note over O: Turn 2 (Rebalance: revise Artifact)
+    O->>O: T5 restage deletions
+    O->>U: commit 1a37563
+    O->>O: defect 260807-1941 closed
+
+    Note over O: Converged
+```

@@ -891,3 +891,7 @@
 {"ts":"2026-08-07T17:44:51","event":"reconciliation","detail":"verdict=review-needed; 1 drift item (add-only rename staging), 5 stale marker citations, 4 new issues filed"}
 {"ts":"2026-08-07T17:44:51","event":"rebalance_artifact","detail":"T5: restage the three deletions and land the reconciler outputs"}
 {"ts":"2026-08-07T17:44:51","event":"turn_start","turn":2,"detail":"1 ready task"}
+{"ts":"2026-08-07T17:46:17","event":"task_done","turn":2,"task":"T5","agent":"orchestrator","detail":"1a37563 restaged the three deletions; defect 260807-1941 closed"}
+{"ts":"2026-08-07T17:46:17","event":"coherence_review","turn":2,"detail":"verdict=ok | Artifact<->Grounding: staging drift fixed and verified at HEAD, 0 open reviewer findings | Artifact<->Directive: commits move toward the stated Directive | Grounding<->Directive: 1 decision open by user choice, 4 answered, 0 conflicting"}
+{"ts":"2026-08-07T17:46:17","event":"turn_end","turn":2,"detail":"1 task resolved, 0 issues created, 1 issue closed"}
+{"ts":"2026-08-07T17:46:17","event":"session_end","detail":"5 tasks resolved, 3 commits, 2 decisions answered, 2 issues closed, 4 issues filed by reconciler, 0 errors, 3 human gates"}
