@@ -191,9 +191,9 @@
       "lastEditTimestamp": "2026-07-19T20:19:25.290Z"
     },
     "portfolio.md": {
-      "pingBackCount": 2,
-      "totalEdits": 3,
-      "lastEditTimestamp": "2026-08-06T21:00:20.195Z"
+      "pingBackCount": 3,
+      "totalEdits": 4,
+      "lastEditTimestamp": "2026-08-07T14:48:46.517Z"
     },
     "shared/history/260719-2054-playmaker-orchestrator-phase4.md": {
       "pingBackCount": 0,
@@ -441,9 +441,9 @@
       "lastEditTimestamp": "2026-08-02T11:45:13.742Z"
     },
     "/Users/k1/Projects/productive/fusion/CLAUDE.md": {
-      "pingBackCount": 3,
-      "totalEdits": 7,
-      "lastEditTimestamp": "2026-08-07T14:36:02.194Z"
+      "pingBackCount": 4,
+      "totalEdits": 8,
+      "lastEditTimestamp": "2026-08-07T14:50:52.922Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/package.json": {
       "pingBackCount": 0,
@@ -2206,9 +2206,9 @@
       "lastEditTimestamp": "2026-08-07T14:03:37.514Z"
     },
     "circles/260807-0923-guard-misst-statt-orakelt/_t_circle.md": {
-      "pingBackCount": 0,
-      "totalEdits": 1,
-      "lastEditTimestamp": "2026-08-07T14:08:52.705Z"
+      "pingBackCount": 1,
+      "totalEdits": 3,
+      "lastEditTimestamp": "2026-08-07T14:42:54.204Z"
     },
     "circles/260807-0923-guard-misst-statt-orakelt/history/260807-1526-reconciliation.md": {
       "pingBackCount": 0,
@@ -2259,8 +2259,18 @@
       "pingBackCount": 0,
       "totalEdits": 2,
       "lastEditTimestamp": "2026-08-07T14:39:54.567Z"
+    },
+    "circles/260801-1244-curator/_a_circle.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T14:49:18.210Z"
+    },
+    "shared/history/260807-1646-playmaker-direct-dispatch.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T14:50:00.520Z"
     }
   },
-  "lastEditFile": "circles/260807-0923-guard-misst-statt-orakelt/history/260807-1638-coder-versionsanhebung-6-0-1.md",
-  "lastEditTimestamp": "2026-08-07T14:39:54.567Z"
+  "lastEditFile": "/Users/k1/Projects/productive/fusion/CLAUDE.md",
+  "lastEditTimestamp": "2026-08-07T14:50:52.922Z"
 }

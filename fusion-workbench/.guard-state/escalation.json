@@ -1,16 +1,8 @@
 {
   "haltActive": false,
   "consecutiveBlocks": 0,
-  "lastBlockTimestamp": "2026-08-07T08:16:44.677Z",
+  "lastBlockTimestamp": "2026-08-07T14:43:00.175Z",
   "recentEvents": [
-    {
-      "level": "block",
-      "trigger": "protected_path",
-      "message": "fusion policy: this Bash command mutates a file whose target cannot be resolved before it runs. The segment `cp -R /Users/k1/Projects/productive/fusion/rules \"$SC/probe/rules\"` writes `\"$SC/probe/rules\"`, which the guard cannot prove is outside the protected paths, so it is denied (fail-closed). If the target is genuinely unprotected, write the path out literally instead of building it at run time. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
-      "timestamp": "2026-08-05T15:43:19.119Z",
-      "toolName": "Bash",
-      "filePath": "\"$SC/probe/rules\""
-    },
     {
       "level": "block",
       "trigger": "protected_path",
@@ -82,6 +74,14 @@
       "timestamp": "2026-08-07T08:16:44.677Z",
       "toolName": "Bash",
       "filePath": "\"$BASE/$f\""
+    },
+    {
+      "level": "block",
+      "trigger": "protected_path",
+      "message": "fusion policy: this Bash command mutates a file whose target cannot be resolved before it runs. The segment `mv \"$C/_t_circle.md\" \"$C/_c_circle.md\"` writes `\"$C/_t_circle.md\"`, which the guard cannot prove is outside the protected paths, so it is denied (fail-closed). If the target is genuinely unprotected, write the path out literally instead of building it at run time. Do not rephrase the command — the guard segments compound commands and inspects subshells — and do not re-route through Edit or Write, which are guarded on the same list. STOP and ask the user.",
+      "timestamp": "2026-08-07T14:43:00.175Z",
+      "toolName": "Bash",
+      "filePath": "\"$C/_t_circle.md\""
     }
   ]
 }

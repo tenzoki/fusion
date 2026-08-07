@@ -65,3 +65,60 @@ flowchart LR
 ```
 
 ## Turn log
+
+## Activation proposal
+
+**Als nächster Circle gereiht, aber nicht zur Aktivierung vorgeschlagen — playmaker-Lauf
+260807-1646 (Auslöser: direct-dispatch, Domänen-Bias `code`).**
+
+Dies ist der einzige geplante Circle im Portfolio. Nach der Code-Heuristik steht er sauber da:
+seine Grounding zitiert keine offene Entscheidung, und alle drei Abhängigkeiten
+(`260801-1244-rule-provenance-header` hart, `260801-1244-guard-rules-write` weich, transitiv
+`260801-1244-guard-bash-inspection`) sind kohärent geschlossen. Der Rang ist damit unstrittig und
+aussagearm, denn es gibt keinen zweiten Kandidaten. Aktivierbar ist der Circle nicht, und der
+Grund ist seit dem Lauf 260806-2259 gewachsen.
+
+**Bekannt war eine Lücke: der fehlende Validierungsfall.** C9 Schritt 3 und 4, Partition und
+Zuschnitt der Konventionsdatei, hat coder von Hand erledigt. Damit fehlt dem Circle sein erster
+echter Auftrag und zugleich sein Beweis, und Entscheidung D-g der Spec ist hinfällig. Quelle:
+`circles/260805-2005-textschicht-gegen-code-nachziehen/_c_circle.md` `## Dependencies`.
+
+**Neu ist, dass die Messwerte der Grounding nicht mehr stimmen.** Am 260807-1646 gegen HEAD
+`a94f142` am Baum nachgemessen, nicht abgeleitet:
+
+| Aussage der Grounding | Gemessen 260807 |
+|---|---|
+| `rules/fusion-workbench-conventions.md` hat 54 401 Bytes | 35 668 Bytes |
+| Die Datei hat 32 Überschriften zweiter Ebene | 23 |
+| Jeder Agent erhält 87 387 Bytes Dauer-Regeln | 89 313 für `coder`, 108 403 für `analyst` und `planner` |
+| Die Scherben entstehen erst in C9 | vier liegen bereits im Regelverzeichnis: `circle-records.md`, `workbench-path-resolution.md`, `rule-file-provenance.md`, `workbench-stash-and-lock.md` |
+| Die Workbench ist hier weder versioniert noch ignoriert, Entscheidungssätze haben kein git-Rückgängig | versioniert seit `e8988d9` (260801), 612 Dateien |
+
+Der letzte Punkt ist der Shaper-Arbeit von damals nicht anzulasten: die Grounding weist ihre
+Prüfung auf den 260801 aus, und der Commit fiel auf denselben Tag. Er ist trotzdem eine
+tragende Aussage, denn er hat die Anforderung begründet, jeden geänderten Entscheidungssatz vor
+der Bearbeitung ins eigene Sitzungsprotokoll zu schreiben, und er hat das Archiv als
+Ruhestandsziel ausgeschlossen.
+
+**Ein sechster Punkt betrifft die Motivation, nicht die Zahlen.** Die Grounding führt den
+Befund `shared/issues/260801-1215_*_conventions-file-cites-three-records-that-do-not-resolve.md`
+als „the strongest available argument that the reconcile step is worth doing". Er trägt heute
+den Marker `_c_` und ist geschlossen.
+
+**Was Bestand hat.** Die Fähigkeiten C1 bis C3, C6 und C7 bleiben als zusammenhängender Rest
+sinnvoll, und der Bedarf ist belegt statt behauptet: im beobachteten Konsumprojekt cocreator
+stehen 65 offene Befunde, rund 25 offene Entscheidungen und drei Monate Drift, gemessen in
+`circles/260801-1244-guard-rules-write/analyses/260805-1830-zweck-nutzung-und-stand-des-plugins.md`.
+Was fehlt, ist ein neuer Zuschnitt: eine Directive ohne C9, ein neuer Validierungsfall, und eine
+Grounding, die auf einer frischen Messung ruht statt auf der vom 260801.
+
+**Eine Reihenfolge, die vor der Neu-Schärfung liegt.** Die offene Entscheidung
+`shared/decisions/260807-1515_o_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md` fragt,
+wie weit die Projektsprache `de` in das durchgehend englische Regelkorpus reicht und was in einem
+Repository gilt, das seine eigenen Regeln ausliefert. Ihr Gegenstand ist genau der Gegenstand
+dieses Circles, nämlich Regeldateien und `CLAUDE.md`. Wer den Zuschnitt vor der Antwort macht,
+macht ihn danach ein zweites Mal.
+
+Vorgeschlagenes Vorgehen: erst die Sprachentscheidung beantworten, dann den shaper auf diesen
+Circle ansetzen, dann `/fusion:next`. Playmaker benennt nur; die Neu-Schärfung ist Shaper-Arbeit
+und die Aktivierung deine.

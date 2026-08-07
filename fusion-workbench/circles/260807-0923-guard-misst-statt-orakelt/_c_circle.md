@@ -2,9 +2,9 @@
 
 ---
 **Domain:** code
-**Status:** active
+**Status:** closed (kohärent geschlossen 260807-1650, ausgeliefert als v6.0.0 und v6.0.1)
 **Filed by:** orchestrator (Directive vom Nutzer im Chat, 260807-0923)
-**Active spec/plan:** (noch keiner)
+**Active spec/plan:** circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_c_plan-guard-misst-statt-orakelt.md
 **Active session history:** shared/history/260806-2158-orchestrator-session.md
 
 ---
@@ -138,4 +138,63 @@ erst eine Neu-Schärfung durch den shaper.
 
 ## Turn log
 
+- **Turn 1 (Sitzung 260806-2158) — vollständig, alle elf Plan-Schritte erledigt.** Commits
+  `2d55c66`..`a94f142`, ausgeliefert als **v6.0.0** und, nach zwei gemessenen Korrekturen,
+  **v6.0.1**. Kohärenzurteil der Abschluss-Reconciliation: zunächst `review-needed` wegen der
+  unbelegten Messwurzel, nach der Nachmessung und ihrer Behebung `coherent`. Sitzungsprotokoll:
+  `shared/history/260806-2158-orchestrator-session.md`, Reconciliation:
+  `history/260807-1526-reconciliation.md`.
+
+  | Schritt | Commit | Was |
+  |---|---|---|
+  | S1 | `2d55c66` | Schutzliste verliert das Zustandsverzeichnis |
+  | S2, S8 | `327d0b6` | Die Messung; MECE als vierter Abschnitt in `critical-stance.md` |
+  | S2', S3 | `309ee28` | Fingerabdruck trägt den Inhalt; Regel-Ausnahme umgezogen |
+  | S4 | `ba7ccda` | Der Klassifizierer fällt, 4.851 Zeilen |
+  | S5, S6 | `436d78c` | Testsuite und Textschicht |
+  | S7, S9 | `5a3cad4` | Goldfixture, Selbstschutz-Text, Buchführung |
+  | S10 | `72543dd` | Vorprüfung, Bau räumt vorher auf |
+  | S11 | `e684eae` | Freigabe v6.0.0 |
+  | Nachtrag | `a94f142` | Messwurzel und Startwarnung, v6.0.1 |
+
 ## Closure note
+
+**Geschlossen kohärent (`_t_` → `_c_`) am 260807-1650.** Die Directive ist erreicht und
+ausgeliefert.
+
+**Was erreicht wurde.** Der statische Klassifizierer ist ersatzlos verschwunden. An seiner Stelle
+misst der Guard nach jedem Werkzeugaufruf, ob sich eine geschützte Datei verändert hat, und
+schreibt den Vorher-Inhalt zurück. Die Bilanz über den Circle: 34.793 Zeilen gelöscht, 4.441
+hinzugefügt, Suite von 1.677 auf 1.014 Zusicherungen bei größerer Aussagekraft. Das MECE-Prinzip
+steht als vierter Abschnitt in `rules/critical-stance.md`, mit der Pflichtzeile
+`**Decidability:**` im Plankopf als Prüfpunkt.
+
+**Die Auflage der Directive ist nachgemessen, nicht behauptet.** Der Befehlstext wird im
+ausgelieferten Code an genau einer Stelle gelesen (`hooks/guard.ts`), und die geht ausschließlich
+an die Branch-Politik. Es gibt kein Pfad-Urteil aus Befehlstext mehr. Die verworfene grobe
+Vorwarnung ist also nicht durch eine Hintertür zurückgekehrt.
+
+**Was der Circle über sich selbst gelernt hat.** Zwei Befunde kamen erst durch Messung ans Licht,
+und beide hätte eine Prüfung nach Augenmaß durchgelassen. Der Entwurf enthielt fünf Löcher, durch
+die ein Befehl eine geschützte Regeldatei löschen konnte. Und v6.0.0 lieferte eine Messung aus,
+die aus einem Unterverzeichnis wirkungslos war und stattdessen ein Verzeichnis schützte, das es
+nicht geben muss. Beide sind behoben, beide sind mit dem Beleg dokumentiert.
+
+**Was offen bleibt und bewusst nicht hier gelöst wurde:**
+
+- `decisions/260807-0945_o_integritaet-des-eskalationsspeichers.md` — ein Agent kann seinen
+  eigenen Halt löschen, seit das Zustandsverzeichnis nicht mehr geschützt ist. Braucht ein
+  Bedrohungsmodell, das dieser Circle nicht geklärt hat.
+- `issues/260807-1427_o_*` — die Reichweite der Regel-Ausnahme ist nach dem Mechanismuswechsel
+  nicht neu gemessen.
+- `shared/issues/260804-2100_*` — die Vorab-Verweigerung der Schreibwerkzeuge löst weiter gegen
+  das Arbeitsverzeichnis auf. Durch die Messung gedeckt, aber die Warnung kommt später als nötig.
+- `shared/decisions/260807-1515_o_*` — die Projektsprache ist `de`, das Regelkorpus durchgehend
+  englisch. Betrifft das ganze Korpus, nicht eine Datei.
+- `shared/issues/260807-1515_o_*` — die Warteschlange veraltet wieder, weil nur ihre Neuerzeugung
+  gebaut wurde, nicht die Vorbeugung.
+
+**Ein Fund am Rande, der keinen Bezug zu diesem Circle hat:** dieses Projekt hat keine
+git-Identität konfiguriert. Bis zum 260807 leitete git sie aus Benutzer und Rechnername ab; nach
+einer Änderung des Rechnernamens verweigert sie git. Die beiden Freigabe-Commits tragen deshalb
+die Identität der bisherigen Historie, per `-c` gesetzt und ohne Änderung an der Konfiguration.

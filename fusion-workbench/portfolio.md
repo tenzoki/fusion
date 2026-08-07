@@ -1,98 +1,145 @@
 # Portfolio
 
-**Generated:** 260806-2259 (by playmaker session 260806-2259-playmaker-user-fusion-next)
+**Generated:** 260807-1646 (by playmaker session 260807-1646-playmaker-direct-dispatch)
 **Domain bias:** code
 
 ## Active (_t_)
 
-(none). No Circle record carries the active marker and `.active-circle` is absent, which is the
-consistent between-Turns state. The last Circle to close was
-`260805-2005-textschicht-gegen-code-nachziehen` on 260806. Activation of the next Circle runs
-through `/fusion:next`.
+(keiner). Kein Circle-Datensatz trägt den aktiven Marker, und der Zeiger `.active-circle` fehlt.
+Das ist der reguläre Zustand zwischen zwei Turns und keine Störung. Zuletzt geschlossen wurde
+`260807-0923-guard-misst-statt-orakelt` am 260807, ausgeliefert als v6.0.0 und v6.0.1. Die
+Aktivierung des nächsten Circles läuft über `/fusion:next`.
 
 ## Anticipated (_a_) — ranked
 
-Recommended next: 260804-1205-shell-reachability-model — activation-ready as written, its one hard
-dependency is closed and shipped, and the over-deny it removes is live in the released v5.10.0.
+Recommended next: 260801-1244-curator — der einzige geplante Circle, alle Abhängigkeiten
+geschlossen, aber vor der Aktivierung steht eine Neu-Schärfung durch den shaper, und vor der
+Neu-Schärfung gehört eine offene Entscheidung beantwortet.
 
-1. **260804-1205-shell-reachability-model** — "The mutation classifier asks whether the shell
-   guarantees a segment, not what one adjacent operator says".
+1. **260801-1244-curator** — „The curator reconciles the three normative surfaces, and proves it
+   on fusion's own conventions file".
 
-   Both anticipated Circles cite zero open decision records in their Grounding snapshot, and both
-   pass the dependencies-closed check, so the code-domain heuristic ties and the tie breaks on
-   readiness. This Circle is activatable as it stands. Its one hard dependency,
-   `260801-1244-guard-rules-write`, closed coherent on 260805 and shipped as v5.9.0 through
-   v5.9.2 with tags pushed, which also answers the sequencing question the record had left open:
-   the shipped-first path was taken. The consequence is that the flat-joiner over-deny this Circle
-   removes is live for consuming projects, tracked at
-   `circles/260801-1244-guard-rules-write/issues/260804-0839_o_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`
-   and still open at HEAD `38c5123`. The measured friction supports the priority rather than
-   merely asserting it: in four days of the observed consuming project the guard produced 17
-   fail-closed blocks and zero real hits, every one of them on an operand carrying a variable, a
-   tilde, or a glob (`circles/260801-1244-guard-rules-write/analyses/260805-1830-zweck-nutzung-und-stand-des-plugins.md`
-   section 3). Whoever activates this Circle absorbs that balance into its Grounding, together
-   with the honest bound that a reachability model resolves the joiner families and leaves the
-   unresolvable-operand class untouched. The record's appended proposals of runs 260805-2342,
-   260806-1103 and 260806-2259 restate both activation items.
-
-   Dependencies: `260801-1244-guard-rules-write` (closed-coherent). Clean, no cycle.
-
-2. **260801-1244-curator** — "The curator reconciles the three normative surfaces, and proves it
-   on fusion's own conventions file". Every dependency is closed
-   (`260801-1244-rule-provenance-header` hard, `260801-1244-guard-rules-write` soft, transitively
-   `260801-1244-guard-bash-inspection`), but the Circle is not activatable without a shaper
-   re-shape first: its closing work C9 was partly done by hand during the guard Circles, which
-   voids spec decision D-g and removes the Circle's designated validation case, as recorded in
+   Der Rang ist unstrittig und aussagearm: es ist der einzige geplante Circle. Nach der
+   Code-Heuristik steht er sauber da, denn seine Grounding zitiert keine offene Entscheidung
+   (D1 ist beantwortet, D2 und D3 sind umgesetzt), und alle drei Abhängigkeiten sind kohärent
+   geschlossen. Aktivierbar ist er trotzdem nicht, und der Grund ist seit dem letzten Lauf
+   gewachsen. Bisher fehlte ihm sein Validierungsfall, weil coder die Schritte 3 und 4 seiner
+   Abschlussarbeit C9 von Hand erledigt hat, festgehalten in
    `circles/260805-2005-textschicht-gegen-code-nachziehen/_c_circle.md` `## Dependencies`.
+   Inzwischen sind auch die Messwerte hinfällig, auf denen seine Grounding ruht. Heute am Baum
+   nachgemessen: die Konventionsdatei `rules/fusion-workbench-conventions.md` hat 35 668 Bytes,
+   die Grounding führt 54 401; sie hat 23 Überschriften zweiter Ebene, die Grounding führt 32;
+   die Scherben, die C9 erst erzeugen sollte, liegen bereits im Regelverzeichnis
+   (`rules/circle-records.md`, `rules/workbench-path-resolution.md`,
+   `rules/rule-file-provenance.md`, `rules/workbench-stash-and-lock.md`). Der eine lebende
+   Defekt, den die Grounding als „the strongest available argument that the reconcile step is
+   worth doing" anführt, trägt seit dem 260801 den Marker `_c_`:
+   `shared/issues/260801-1215_c_conventions-file-cites-three-records-that-do-not-resolve.md`.
+   Und die Aussage, die Workbench sei hier weder versioniert noch ignoriert, weshalb Änderungen
+   an Entscheidungssätzen kein git-Rückgängig hätten, stimmt nicht mehr: sie ist seit `e8988d9`
+   mit 612 Dateien versioniert. Das ist der Shaper-Arbeit von damals nicht anzulasten, denn sie
+   hat am 260801 geprüft und der Commit fiel auf denselben Tag. Was inhaltlich Bestand hat,
+   sind die Fähigkeiten C1 bis C3, C6 und C7 als zusammenhängender Rest, und der Bedarf ist
+   belegt statt behauptet: im beobachteten Konsumprojekt cocreator stehen 65 offene Befunde,
+   rund 25 offene Entscheidungen und drei Monate Drift
+   (`circles/260801-1244-guard-rules-write/analyses/260805-1830-zweck-nutzung-und-stand-des-plugins.md`).
+   Die Empfehlung lautet daher: neu schärfen, nicht aktivieren. Und die Neu-Schärfung sollte
+   nicht vor der offenen Entscheidung
+   `shared/decisions/260807-1515_o_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`
+   laufen, weil deren Gegenstand — Regeldateien und `CLAUDE.md` — genau der Gegenstand des
+   Curators ist. Ein Zuschnitt vor der Antwort müsste danach ein zweites Mal gemacht werden.
+
+   Abhängigkeiten: `260801-1244-rule-provenance-header` (geschlossen, hart),
+   `260801-1244-guard-rules-write` (geschlossen, weich), transitiv
+   `260801-1244-guard-bash-inspection` (geschlossen). Sauber, kein Zyklus.
 
 ## Recently closed (_c_ / _b_)
 
-- **260805-2005-textschicht-gegen-code-nachziehen** — closed coherent (`_c_`) on 260806: four code
-  fixes, a citation-form decision taken before the mechanical batches, two new lint tests, guard
-  internals scoping measured at zero emissions from a consuming working directory; 60 of 66 corpus
-  findings closed, suite at 1611 tests.
-- **260801-1244-guard-rules-write** — closed coherent (`_c_`) on 260805: deliberate per-session
-  rule-file writes, all twelve acceptance criteria verified, shipped as v5.9.0 through v5.9.2 with
-  tags pushed.
-- **260801-1244-rule-provenance-header** — closed coherent (`_c_`) on 260802: provenance headers
-  plus the lint gate, eight commits, all eight acceptance criteria verified against the tree.
-- **260801-1244-guard-bash-inspection** — closed coherent (`_c_`) on 260801: the protected-path
-  list now binds file-mutating Bash commands, not only the four write tools.
-- **260719-1536-plane-mirror-integration** — closed coherent (`_c_`) on 260720: the `bin/fusion-plane`
-  push-only mirror plus `/fusion:seed-from-plane`, proven offline; two go-live follow-ups
-  deliberately left open.
+- **260807-0923-guard-misst-statt-orakelt** — kohärent geschlossen (`_c_`) am 260807: der
+  statische Klassifizierer ist ersatzlos verschwunden, an seiner Stelle misst der Guard nach
+  jedem Werkzeugaufruf, ob sich eine geschützte Datei verändert hat, und schreibt sie zurück;
+  34 793 Zeilen gelöscht, 4 441 hinzugefügt, ausgeliefert als v6.0.0 und v6.0.1.
+- **260805-2005-textschicht-gegen-code-nachziehen** — kohärent geschlossen (`_c_`) am 260806:
+  vier Code-Korrekturen, zwei neue Lint-Prüfungen, 60 von 66 Korpus-Befunden geschlossen.
+- **260801-1244-guard-rules-write** — kohärent geschlossen (`_c_`) am 260805: bewusste
+  Regeldatei-Schreibvorgänge pro Sitzung, zwölf Abnahmekriterien geprüft, ausgeliefert als
+  v5.9.0 bis v5.9.2.
+- **260801-1244-rule-provenance-header** — kohärent geschlossen (`_c_`) am 260802: die
+  Herkunftszeile auf Regeldateien plus die Lint-Prüfung, acht Abnahmekriterien geprüft.
+- **260801-1244-guard-bash-inspection** — kohärent geschlossen (`_c_`) am 260801: die
+  Schutzliste bindet seither auch dateiverändernde Shell-Befehle, nicht nur die vier
+  Schreibwerkzeuge.
 
-Four older closed Circles fall outside the last-five cutoff:
-`260719-1536-brest-unite-co-creator-conversion`, `260718-1924-v5x-overhaul`,
-`260717-1638-marker-format-ohne-glob-metazeichen`, `260716-1847-workbench-umbau`.
+Fünf ältere geschlossene Circles fallen aus dem Fünfer-Fenster:
+`260719-1536-plane-mirror-integration`, `260719-1536-brest-unite-co-creator-conversion`,
+`260718-1924-v5x-overhaul`, `260717-1638-marker-format-ohne-glob-metazeichen`,
+`260716-1847-workbench-umbau`.
 
 ## Archived (_s_ / _d_)
 
-(none). No Circle record carries the superseded or deferred marker.
+- **260804-1205-shell-reachability-model** (`_s_`, abgelöst am 260807-0923 durch
+  `260807-0923-guard-misst-statt-orakelt`). Er wurde weder erreicht noch für unerreichbar
+  erklärt: der Nutzer hat mitten im ersten Turn den Mechanismus gewechselt, womit der Gegenstand
+  der Directive entfiel. Bestand haben laut Schließnotiz der Nachweis, dass die Näherung als
+  Sicherheitsmechanismus nicht trägt (fünf Löcher im genehmigten Entwurf, das schwerste in
+  `bash` und `zsh` ausgeführt), und die Erkenntnis, warum das keine Frage der Sorgfalt war —
+  daraus wurde das MECE-Prinzip als vierter Abschnitt in `rules/critical-stance.md`.
+
+Kein Circle trägt den Marker `_d_` (zurückgestellt).
 
 ## Warnings
 
-- **The curator Circle cannot be activated as it stands.** `260801-1244-curator` needs a shaper
-  re-shape first, because its closing work C9 was done by hand and spec decision D-g is void. That
-  re-shape is its own shaper job and nobody owns it yet. Convene the shaper before offering this
-  Circle at an activation gate.
-- **One open decision has appeared since the previous portfolio run.**
-  `shared/decisions/260806-1152_o_stash-manifest-dirname-and-pointer-content-duplicate.md` asks
-  whether the stash manifest needs both `original_circle_dirname` and `active_circle_content` when
-  the two always hold the same value. It is low-stakes and neither anticipated Circle cites it, so
-  it does not affect the ranking above. The earlier portfolio's statement that the workbench holds
-  no open decision records anywhere no longer holds and is not repeated here.
-- **Two unowned residual defects have no Circle.** The setup and migrate scope residual at
-  `circles/260805-2005-textschicht-gegen-code-nachziehen/issues/260806-0022_o_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md`
-  was named a follow-up candidate by its Circle's closure note. The guard advisory clamp defect at
-  `circles/260801-1244-guard-rules-write/issues/260803-1352_o_two-guard-advisory-details-skip-the-200-char-clamp-and-render-a-row-nine-times-normal-height.md`
-  was re-verified live by the 260806-1152 reconciliation and became unowned when its Circle closed.
-  You decide whether either rides along with the next Circle or waits.
-- **The task queue is three weeks stale.** `tasklist.md` still holds the fully closed queue from
-  the Circle that closed on 260716, tracked at
-  `shared/issues/260801-2038_o_tasklist-holds-a-fully-closed-queue-from-a-circle-closed-two-weeks-ago.md`.
-  A taskplanner run refreshes it; playmaker does not read or write that file.
+- **Der Curator ist nicht aktivierbar, und die Neu-Schärfung ist mehr als eine Nachbesserung.**
+  Fünf Aussagen seiner Grounding sind heute am Baum widerlegt (Größe und Gliederung der
+  Konventionsdatei, die bereits existierenden Scherben, der geschlossene Motivations-Defekt, die
+  Versionierung der Workbench). Der shaper braucht dafür eine frische Messung, nicht eine
+  Durchsicht. Niemand besitzt diese Arbeit bisher.
+- **Der `GIT_WORK_TREE=`-Befund ist geschlossen, nicht offen.** Er ist kein Kandidat für einen
+  eigenen Circle. Der Mechanismuswechsel hat ihn sachlich gelöst und nicht bloß weggeräumt:
+  `GIT_WORK_TREE=` verlagert den Schreibvorgang weiterhin, aber die Messung sieht die veränderte
+  Datei danach, gleich auf welchem Weg sie verändert wurde. Der Erkenner, der die Umgebung nie
+  las, ist mit `ba7ccda` gelöscht. Beleg: die Schließnotiz in
+  `circles/260801-1244-guard-rules-write/issues/260804-1332_c_git-work-tree-in-the-environment-relocates-the-write-and-the-classifier-reads-no-variable.md`
+  und Abschnitt II der Reconciliation
+  `circles/260807-0923-guard-misst-statt-orakelt/history/260807-1526-reconciliation.md`.
+- **Der höchstbewertete offene Befund ist jetzt ein anderer, und er hat sich verschärft.**
+  `shared/issues/260717-0030_o_git-stash-include-untracked-can-sweep-the-stash-directory.md`
+  beschreibt, dass `/fusion:circle-stash` in Schritt 7.11 das Stash-Verzeichnis wegfegen kann,
+  das Schritt 7.5 gerade angelegt hat — das Rettungswerkzeug zerstört genau das, wofür es
+  angerufen wurde. Der Befund hielt fest, fusions eigene Workbench sei ignoriert und damit in der
+  einen sicheren Konfiguration. Das gilt seit `e8988d9` (260801) nicht mehr: die Workbench ist
+  versioniert, und das ist eine der beiden verlierenden Konfigurationen. `CLAUDE.md` nennt sie in
+  der Layout-Tabelle weiterhin „gitignored". Ob das ein eigener Circle wird, ist deine
+  Entscheidung; der Befund selbst sagt, die Behebung brauche zuerst eine Entscheidung darüber,
+  ob die Workbench überhaupt je im git-Stash mitreisen soll.
+- **Zwei offene Entscheidungen warten auf dich und sind keine Ausführerarbeit.**
+  `circles/260807-0923-guard-misst-statt-orakelt/decisions/260807-0945_o_integritaet-des-eskalationsspeichers.md`
+  fragt, woran der Guard erkennt, dass der Eskalationszustand, den er liest, derselbe ist, den er
+  zuletzt geschrieben hat — ein Agent kann seinen eigenen Halt löschen, seit das
+  Zustandsverzeichnis nicht mehr geschützt ist. Vier Optionen liegen ausgearbeitet vor.
+  `shared/decisions/260807-1515_o_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md` fragt,
+  wie weit die Projektsprache `de` in das durchgehend englische Regelkorpus reicht. Diese zweite
+  gehört vor die Neu-Schärfung des Curators, siehe oben.
+- **39 offene Befunde liegen in keinem aktiven Circle.** 23 im geteilten Speicher, 16 in
+  Issue-Speichern geschlossener Circles. Sie sind damit unbesessen, nicht verloren: die
+  geschlossenen Circles behalten ihre Artefakte, aber niemand arbeitet sie ab. Der größte
+  Einzelposten sind elf Befunde in `circles/260801-1244-guard-rules-write/issues/`, und mehrere
+  davon beschreiben Code, den der Mechanismuswechsel entfernt hat. Ein Reconciler-Lauf über diesen
+  Speicher würde vermutlich einen Teil davon schließen. Das ist eine Vermutung aus dem Muster der
+  neun bereits geschlossenen, keine Messung.
+- **Ein Befund im geteilten Speicher könnte durch dieselbe Änderung hinfällig sein.**
+  `shared/issues/260801-1020_o_workbench-untracked-breaks-archive-durability-premise.md` ruht auf
+  der Annahme, die Workbench sei nicht versioniert. Sie ist es seit `e8988d9`. Ungeprüft, ob damit
+  die ganze Prämisse fällt oder nur die Hälfte.
+- **Die Warteschlange `tasklist.md` existiert nicht mehr.** Sie wurde gelöscht, weil sie den
+  abgelösten Circle nannte. Gebaut wurde bisher nur ihre Neuerzeugung, nicht die Vorbeugung gegen
+  das erneute Veralten; festgehalten in
+  `shared/issues/260807-1515_o_die-warteschlange-veraltet-wieder-weil-nur-die-neuerzeugung-gebaut-wurde-nicht-die-vorbeugung.md`.
+  Playmaker liest und schreibt diese Datei nicht.
+- **Buchführung am Rande:** `fusion-workbench/.active-circle` ist in git versioniert und auf der
+  Platte gelöscht, erscheint also bis zum nächsten Commit in jedem `git status`. Kein
+  Portfolio-Problem, aber eine Zeile, die sonst jemand sucht.
 
-No dependency cycles were detected among the anticipated Circles, no Circle carries the bounded
-marker so no parent Grounding is stale, and the `.active-circle` pointer state is consistent
-(absent while no Circle carries the active marker).
+Es wurden keine Abhängigkeitszyklen gefunden. Kein Circle trägt den Marker `_b_`, also ist keine
+Eltern-Grounding veraltet. Der Zeigerzustand ist stimmig: `.active-circle` fehlt, und kein Circle
+trägt den aktiven Marker.
