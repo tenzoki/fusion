@@ -7,10 +7,10 @@
       "thrashingScore": 0
     },
     "agentstate.yaml": {
-      "totalChanges": 2,
+      "totalChanges": 3,
       "changesThisSession": 1,
-      "lastChange": "2026-08-07T13:30:49.889Z",
-      "thrashingScore": 0
+      "lastChange": "2026-08-07T17:31:58.013Z",
+      "thrashingScore": 1
     },
     "/tmp/m4.txt": {
       "totalChanges": 1,
@@ -31,10 +31,10 @@
       "thrashingScore": 1
     },
     "orchestrator-live.md": {
-      "totalChanges": 23,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-06T21:13:25.338Z",
-      "thrashingScore": 7
+      "totalChanges": 24,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T17:32:01.818Z",
+      "thrashingScore": 8
     },
     "circles/260719-1536-brest-unite-co-creator-conversion/_a_circle.md": {
       "totalChanges": 1,
@@ -230,7 +230,7 @@
     },
     "portfolio.md": {
       "totalChanges": 4,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:48:46.515Z",
       "thrashingScore": 1
     },
@@ -530,7 +530,7 @@
     },
     "/Users/k1/Projects/productive/fusion/CLAUDE.md": {
       "totalChanges": 8,
-      "changesThisSession": 6,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:50:52.920Z",
       "thrashingScore": 10
     },
@@ -572,7 +572,7 @@
     },
     "/Users/k1/Projects/productive/fusion/hooks/guard.ts": {
       "totalChanges": 56,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:04:25.806Z",
       "thrashingScore": 18
     },
@@ -794,13 +794,13 @@
     },
     "/Users/k1/Projects/productive/fusion/README-hooks.md": {
       "totalChanges": 44,
-      "changesThisSession": 6,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:36:41.173Z",
       "thrashingScore": 22
     },
     "/Users/k1/Projects/productive/fusion/rules/protected-path-discipline.md": {
       "totalChanges": 61,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:09:00.237Z",
       "thrashingScore": 20
     },
@@ -1010,7 +1010,7 @@
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/helpers/guard-harness.ts": {
       "totalChanges": 8,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:20:00.825Z",
       "thrashingScore": 2
     },
@@ -1748,7 +1748,7 @@
     },
     "/Users/k1/Projects/productive/fusion/hooks/tracker.ts": {
       "totalChanges": 14,
-      "changesThisSession": 4,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:04:59.831Z",
       "thrashingScore": 8
     },
@@ -2072,7 +2072,7 @@
     },
     "circles/260801-1244-guard-rules-write/issues/260804-2100_o_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md": {
       "totalChanges": 3,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:27:41.908Z",
       "thrashingScore": 1
     },
@@ -2096,7 +2096,7 @@
     },
     "/Users/k1/Projects/productive/fusion/.claude-plugin/plugin.json": {
       "totalChanges": 3,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:32:10.612Z",
       "thrashingScore": 1
     },
@@ -2306,7 +2306,7 @@
     },
     "/Users/k1/Projects/productive/fusion/install.sh": {
       "totalChanges": 2,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:32:19.403Z",
       "thrashingScore": 0
     },
@@ -2576,7 +2576,7 @@
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/protected-snapshot.ts": {
       "totalChanges": 4,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:04:04.318Z",
       "thrashingScore": 1
     },
@@ -2636,94 +2636,118 @@
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/protected-snapshot-subdirectory.test.ts": {
       "totalChanges": 3,
-      "changesThisSession": 3,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:07:55.565Z",
       "thrashingScore": 3
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/self-detect.ts": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:03:37.512Z",
       "thrashingScore": 0
     },
     "circles/260807-0923-guard-misst-statt-orakelt/_t_circle.md": {
       "totalChanges": 3,
-      "changesThisSession": 3,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:42:54.201Z",
       "thrashingScore": 3
     },
     "circles/260807-0923-guard-misst-statt-orakelt/history/260807-1526-reconciliation.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:10:30.260Z",
       "thrashingScore": 0
     },
     "circles/260807-0923-guard-misst-statt-orakelt/history/260807-1601-coder-messwurzel-aus-dem-unterverzeichnis.md": {
       "totalChanges": 2,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:14:57.342Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/hooks/session-start.ts": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:19:37.510Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/hooks/hooks.json": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:19:43.324Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/session-start-subdirectory.test.ts": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:20:35.139Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/hooks-wiring.test.ts": {
       "totalChanges": 2,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:20:50.102Z",
       "thrashingScore": 0
     },
     "circles/260807-0923-guard-misst-statt-orakelt/history/260807-1626-sessionstart-warnt-bei-start-unterhalb-der-projektwurzel.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:27:20.101Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/F03-CLAUDE-plugin-marketplace/claude-plugins/.claude-plugin/marketplace.json": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:32:05.608Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/README.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:32:22.906Z",
       "thrashingScore": 0
     },
     "circles/260807-0923-guard-misst-statt-orakelt/history/260807-1638-coder-versionsanhebung-6-0-1.md": {
       "totalChanges": 2,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:39:54.564Z",
       "thrashingScore": 0
     },
     "circles/260801-1244-curator/_a_circle.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:49:18.207Z",
       "thrashingScore": 0
     },
     "shared/history/260807-1646-playmaker-direct-dispatch.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T14:50:00.518Z",
+      "thrashingScore": 0
+    },
+    "shared/decisions/260807-1515_o_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md": {
+      "totalChanges": 2,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-07T17:32:28.757Z",
+      "thrashingScore": 0
+    },
+    "260807-0158_o_how-is-a-unique-record-filename-obtained.md": {
+      "totalChanges": 2,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-07T17:32:52.537Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/shared/issues/260807-0158_o_record-filenames-collide-on-the-minute-and-nothing-prevents-it.md": {
+      "totalChanges": 2,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-07T17:33:21.395Z",
+      "thrashingScore": 0
+    },
+    "shared/history/260807-1917-orchestrator-session.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T17:34:09.752Z",
       "thrashingScore": 0
     }
   },
-  "sessionStart": "2026-08-07T13:30:49.889Z"
+  "sessionStart": "2026-08-07T17:31:58.013Z"
 }

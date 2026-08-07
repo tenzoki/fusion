@@ -877,3 +877,10 @@
 {"ts":"2026-08-07T07:26:36","event":"circle_superseded","detail":"260804-1205-shell-reachability-model abgeloest von 260807-0923-guard-misst-statt-orakelt"}
 {"ts":"2026-08-07T07:26:36","event":"circle_activated","detail":"260807-0923-guard-misst-statt-orakelt aktiv; Directive: messen statt orakeln"}
 {"ts":"2026-08-07T07:26:36","event":"guard_false_alarm","detail":"Fehlalarm 18 und 19 in dieser Sitzung: Heredoc-Zeilenumbruch als Segmenttrenner, Pfeil im JSON-String als Redirection"}
+{"ts":"2026-08-07T17:18:21","event":"session_start","detail":"Setup complete; domain=code; no active Circle; scope not yet resolved"}
+{"ts":"2026-08-07T17:31:42","event":"scope_resolved","detail":"mode=custom; 4 bookkeeping tasks; agents: orchestrator only; gates: none pending"}
+{"ts":"2026-08-07T17:31:42","event":"queue_built","detail":"4 tasks, 0 blocked"}
+{"ts":"2026-08-07T17:31:42","event":"turn_start","turn":1,"detail":"4 ready tasks"}
+{"ts":"2026-08-07T17:33:31","event":"task_done","turn":1,"task":"T1","agent":"orchestrator","detail":"decision 260807-1515 _o_->_a_ (project language covers direct user interaction only)"}
+{"ts":"2026-08-07T17:33:31","event":"task_done","turn":1,"task":"T2","agent":"orchestrator","detail":"decision 260807-0158 _o_->_a_ (premise falsified; pattern stands, citation rule instead)"}
+{"ts":"2026-08-07T17:33:31","event":"task_done","turn":1,"task":"T3","agent":"orchestrator","detail":"defect 260807-0158 _o_->_c_ (mis-scoped; corrected with re-measurement)"}

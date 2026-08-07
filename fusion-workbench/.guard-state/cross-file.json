@@ -6,9 +6,9 @@
       "lastEditTimestamp": "2026-07-16T17:25:16.337Z"
     },
     "agentstate.yaml": {
-      "pingBackCount": 1,
-      "totalEdits": 2,
-      "lastEditTimestamp": "2026-08-07T13:30:49.891Z"
+      "pingBackCount": 2,
+      "totalEdits": 3,
+      "lastEditTimestamp": "2026-08-07T17:31:58.017Z"
     },
     "/tmp/m4.txt": {
       "pingBackCount": 0,
@@ -26,9 +26,9 @@
       "lastEditTimestamp": "2026-07-19T21:37:26.475Z"
     },
     "orchestrator-live.md": {
-      "pingBackCount": 20,
-      "totalEdits": 23,
-      "lastEditTimestamp": "2026-08-06T21:13:25.341Z"
+      "pingBackCount": 21,
+      "totalEdits": 24,
+      "lastEditTimestamp": "2026-08-07T17:32:01.820Z"
     },
     "circles/260719-1536-brest-unite-co-creator-conversion/_a_circle.md": {
       "pingBackCount": 0,
@@ -2269,8 +2269,28 @@
       "pingBackCount": 0,
       "totalEdits": 1,
       "lastEditTimestamp": "2026-08-07T14:50:00.520Z"
+    },
+    "shared/decisions/260807-1515_o_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-07T17:32:28.759Z"
+    },
+    "260807-0158_o_how-is-a-unique-record-filename-obtained.md": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-07T17:32:52.538Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/shared/issues/260807-0158_o_record-filenames-collide-on-the-minute-and-nothing-prevents-it.md": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-07T17:33:21.397Z"
+    },
+    "shared/history/260807-1917-orchestrator-session.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T17:34:09.754Z"
     }
   },
-  "lastEditFile": "/Users/k1/Projects/productive/fusion/CLAUDE.md",
-  "lastEditTimestamp": "2026-08-07T14:50:52.922Z"
+  "lastEditFile": "shared/history/260807-1917-orchestrator-session.md",
+  "lastEditTimestamp": "2026-08-07T17:34:09.754Z"
 }
