@@ -934,3 +934,7 @@
 {"ts":"2026-08-07T22:36:53","event":"coherence_review","turn":2,"detail":"verdict=ok | Artifact<->Grounding: 1030 tests green, 4 citation-precision drifts repaired | Artifact<->Directive: all 14 commits move toward it | Grounding<->Directive: 5 active decisions, 0 conflicting"}
 {"ts":"2026-08-07T22:36:53","event":"turn_end","turn":2,"detail":"5 tasks resolved, 2 issues created, 4 issues closed"}
 {"ts":"2026-08-07T22:36:53","event":"session_end","detail":"18 tasks, 14 commits, v6.1.0 released, verdict coherent"}
+{"ts":"2026-08-07T23:32:45","event":"session_start","detail":"third Directive: fix the mechanically-fixable open defects"}
+{"ts":"2026-08-07T23:32:45","event":"scope_resolved","detail":"mode=issues; 3 of 31 open defects carry their own minimum fix; 2 reclassified as decisions"}
+{"ts":"2026-08-07T23:32:45","event":"queue_built","turn":1,"detail":"3 tasks, 0 blocked"}
+{"ts":"2026-08-07T23:32:45","event":"turn_start","turn":1,"detail":"3 ready tasks"}

@@ -571,10 +571,10 @@
       "thrashingScore": 53
     },
     "/Users/k1/Projects/productive/fusion/hooks/guard.ts": {
-      "totalChanges": 56,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-07T14:04:25.806Z",
-      "thrashingScore": 18
+      "totalChanges": 58,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-07T23:35:47.245Z",
+      "thrashingScore": 19
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/rules-write-exemption.test.ts": {
       "totalChanges": 14,
@@ -691,10 +691,10 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/escalation.ts": {
-      "totalChanges": 2,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-07T08:06:41.031Z",
-      "thrashingScore": 0
+      "totalChanges": 3,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T23:35:36.641Z",
+      "thrashingScore": 1
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/guard-escalation-shape.test.ts": {
       "totalChanges": 1,
@@ -793,15 +793,15 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/README-hooks.md": {
-      "totalChanges": 44,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-07T14:36:41.173Z",
-      "thrashingScore": 22
+      "totalChanges": 47,
+      "changesThisSession": 3,
+      "lastChange": "2026-08-07T23:36:44.488Z",
+      "thrashingScore": 17
     },
     "/Users/k1/Projects/productive/fusion/rules/protected-path-discipline.md": {
-      "totalChanges": 61,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-07T14:09:00.237Z",
+      "totalChanges": 62,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T23:36:26.769Z",
       "thrashingScore": 20
     },
     "circles/260801-1244-guard-rules-write/decisions/260803-1402_o_should-the-mutation-classifier-inspect-a-read-operand-to-close-the-planted-alias.md": {
@@ -1747,10 +1747,10 @@
       "thrashingScore": 10
     },
     "/Users/k1/Projects/productive/fusion/hooks/tracker.ts": {
-      "totalChanges": 14,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-07T14:04:59.831Z",
-      "thrashingScore": 8
+      "totalChanges": 16,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-07T23:35:58.725Z",
+      "thrashingScore": 5
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/config.test.ts": {
       "totalChanges": 20,
@@ -2281,10 +2281,10 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/agents/orchestrator.md": {
-      "totalChanges": 1,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-05T07:00:37.216Z",
-      "thrashingScore": 0
+      "totalChanges": 5,
+      "changesThisSession": 4,
+      "lastChange": "2026-08-07T23:40:59.796Z",
+      "thrashingScore": 5
     },
     "/Users/k1/Projects/productive/fusion/skills/circle-stash/SKILL.md": {
       "totalChanges": 3,
@@ -2701,10 +2701,10 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/README.md": {
-      "totalChanges": 4,
-      "changesThisSession": 2,
-      "lastChange": "2026-08-07T22:14:02.699Z",
-      "thrashingScore": 1
+      "totalChanges": 5,
+      "changesThisSession": 3,
+      "lastChange": "2026-08-07T23:36:47.915Z",
+      "thrashingScore": 3
     },
     "circles/260807-0923-guard-misst-statt-orakelt/history/260807-1638-coder-versionsanhebung-6-0-1.md": {
       "totalChanges": 2,
@@ -2962,6 +2962,30 @@
       "totalChanges": 1,
       "changesThisSession": 1,
       "lastChange": "2026-08-07T22:34:32.921Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/.gitignore": {
+      "totalChanges": 2,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-07T23:34:46.266Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/clear-halt.ts": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T23:36:16.436Z",
+      "thrashingScore": 0
+    },
+    "shared/history/260808-0136-gitignore-fu-exception-and-orchestrator-rs-java.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T23:36:54.884Z",
+      "thrashingScore": 0
+    },
+    "shared/history/260808-0139-clear-halt-distinguishes-no-workbench-from-not-halted.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T23:39:50.700Z",
       "thrashingScore": 0
     }
   },
