@@ -1,5 +1,7 @@
 # CLAUDE.md — fusion plugin source
 
+**Language:** de
+
 This repository is the **source of the fusion Claude Code plugin** (`tenzoki-plugins/fusion`). It is *not* a fusion-consuming project. The plugin's **write guard** self-disables here: `hooks/guard.ts` detects when cwd has `.claude-plugin/plugin.json` matching the plugin's own name and stands the write-protection (agents/**, rules/**, plugin.json, etc.) down so a fusion developer can edit its own source. Since v5.x that stand-down covers **both** write surfaces — the four write tools and the shell protected-path check on `Bash` — because leaving one active while the other stood down would teach an agent to route around the guard rather than respect it. The **git branch-switch policy stays active even here** — it only ever gated the agent's Bash tool calls, never the human's own terminal, so disabling it bought no human freedom while removing agent protection exactly where fusion is developed. Agents in this repo are still blocked from `git switch` / `git checkout <branch>` / `git worktree add` unless `FUSION_ALLOW_BRANCH_SWITCH=1` / `FUSION_ALLOW_WORKTREE=1` is set.
 
 ## What this is

@@ -873,3 +873,7 @@
 {"ts":"2026-08-07T00:57:23","event":"commit","turn":1,"detail":"02745fe plan repair; 9a24c9b S2 reach layer"}
 {"ts":"2026-08-07T06:27:21","event":"gate_response","turn":1,"detail":"user stopped the session; Circle parked, not closed; premise question filed as decision 260807-0825"}
 {"ts":"2026-08-07T06:27:21","event":"session_end","turn":1,"detail":"4 commits, 2 of 11 plan steps, suite 1677 green, guard verdicts unmoved"}
+{"ts":"2026-08-07T07:26:36","event":"session_start","detail":"Fortsetzung: Rueckbau-Directive, Circle 260807-0923-guard-misst-statt-orakelt"}
+{"ts":"2026-08-07T07:26:36","event":"circle_superseded","detail":"260804-1205-shell-reachability-model abgeloest von 260807-0923-guard-misst-statt-orakelt"}
+{"ts":"2026-08-07T07:26:36","event":"circle_activated","detail":"260807-0923-guard-misst-statt-orakelt aktiv; Directive: messen statt orakeln"}
+{"ts":"2026-08-07T07:26:36","event":"guard_false_alarm","detail":"Fehlalarm 18 und 19 in dieser Sitzung: Heredoc-Zeilenumbruch als Segmenttrenner, Pfeil im JSON-String als Redirection"}

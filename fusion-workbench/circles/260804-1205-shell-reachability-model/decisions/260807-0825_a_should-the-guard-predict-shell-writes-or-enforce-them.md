@@ -104,3 +104,12 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+---
+Answered: Der Nutzer hat am 260807-0923 im Chat Option 3 gewählt (nachher erkennen statt vorher
+vorhersagen), erweitert um den vollständigen Rückbau des Klassifizierers. Umgesetzt wird sie im
+Circle `circles/260807-0923-guard-misst-statt-orakelt/`, der diesen Circle ablöst. Zwei
+Randbedingungen kamen mit der Antwort: die grobe Vorwarnung aus der vorgeschlagenen Variante C
+entfällt ausdrücklich, weil sie der Keim wäre, aus dem das Orakel nachwächst; und das
+MECE-Prinzip wird als Abschnitt in `rules/critical-stance.md` verankert statt als eigene
+Regeldatei.

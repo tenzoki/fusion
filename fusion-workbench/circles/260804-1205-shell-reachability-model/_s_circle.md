@@ -106,3 +106,38 @@ The condition the 260805-2342 proposal named is now met: `260805-2005-textschich
 The ranking is unchanged and one input is new. Between the 260806-1103 proposal and this run, a workbench-wide reconciliation (`shared/history/260806-1152-reconciliation.md`) returned a coherent verdict and filed one open decision record, `shared/decisions/260806-1152_o_stash-manifest-dirname-and-pointer-content-duplicate.md`. That record asks whether the stash manifest needs two fields holding the same value. Neither anticipated Circle cites it, so it does not move the code-domain ranking. It does retire a claim both earlier proposals made: the workbench is no longer free of open decision records, and the next ranking should count them rather than carry the zero forward.
 
 The two activation items above stand unchanged, and both were re-verified against disk on this run. The false-alarm balance finding is still open at `circles/260801-1244-guard-rules-write/issues/260805-1830_o_alle-17-guard-blocks-im-beobachteten-konsumprojekt-waren-fail-closed-fehlalarme.md`, and the over-deny this Circle exists to close is still open at `circles/260801-1244-guard-rules-write/issues/260804-0839_o_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`, measured against HEAD `38c5123` (v5.10.0). No Circle carries the active marker and `.active-circle` is absent, so activation is unblocked. Proposed activation: now, via `/fusion:next`.
+
+## Closure note
+
+**Abgelöst (`_t_` → `_s_`) am 260807-0923 durch `circles/260807-0923-guard-misst-statt-orakelt/`.**
+
+Der Circle wird nicht abgeschlossen, weil seine Directive erreicht wäre, und nicht wegen Bounded
+Closure, weil sie unerreichbar gewesen wäre. Er wird abgelöst, weil der Nutzer den Mechanismus
+gewechselt hat: statt vorherzusagen, welche Datei ein Shell-Befehl schreibt, misst der Guard
+künftig nachher, welche sich verändert hat. Damit entfällt der Gegenstand dieser Directive. Der
+Nachfolge-Circle baut den Klassifizierer ab, den dieser Circle verfeinern wollte.
+
+**Was aus diesem Circle Bestand hat, obwohl sein Code wieder verschwindet:**
+
+1. **Der Nachweis, dass die Näherung als Sicherheitsmechanismus nicht trägt.** Der genehmigte
+   Entwurf enthielt fünf Löcher, durch die ein Befehl eine geschützte Regeldatei löschen konnte.
+   Das schwerste, `{ cd rules; } | cat && rm x.md`, wurde in `bash` und `zsh` ausgeführt und
+   entfernt die Datei in beiden. Zwei unabhängige Entwurfsprüfungen fanden davon je einen Teil,
+   und die zweite benannte den Fehler ein Segment zu früh. Diese Kette ist das Belegmaterial für
+   die Entscheidung `decisions/260807-0825_a_should-the-guard-predict-shell-writes-or-enforce-them.md`.
+2. **Die Erkenntnis, warum es keine Frage der Sorgfalt war.** Die Fallunterscheidungen des
+   Klassifizierers waren weder disjunkt noch vollständig, und sie ließen sich auch nicht dazu
+   machen, weil die zugrundeliegende Frage aus dem Befehlstext heraus unentscheidbar ist. Daraus
+   wird ein invariantes Prinzip in `rules/critical-stance.md`, siehe den Nachfolge-Circle.
+3. **Zwei offene Befunde, die den Mechanismuswechsel nicht überleben.** Der Korpus-Befund
+   `issues/260807-0251_o_the-corpus-cannot-generate-the-operand-shape-where-the-worst-holes-were-measured.md`
+   erlischt mit dem Korpus. Der Befund
+   `issues/260807-0252_o_joinerfacts-claims-a-pessimism-for-the-pipe-row-that-the-row-itself-does-not-carry.md`
+   beschreibt eine Aussage in Code, den der Rückbau ohnehin entfernt. Beide gehen mit dem
+   Klassifizierer und werden im Nachfolge-Circle geschlossen, nicht separat abgearbeitet.
+
+**Was auf `main` liegen bleibt, bis der Nachfolge-Circle es abräumt:** die Commits `3dc5014`
+(Messinstrument) und `9a24c9b` (Erreichbarkeits-Schicht). Beide sind verhaltensneutral, gemessen
+als null bewegte Urteile über 93.744 erzeugte Befehle, also eilt der Rückbau nicht.
+
+Sitzungsprotokoll: `shared/history/260806-2158-orchestrator-session.md`.

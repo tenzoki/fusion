@@ -529,9 +529,9 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/CLAUDE.md": {
-      "totalChanges": 1,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-02T12:07:45.104Z",
+      "totalChanges": 2,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T07:26:09.240Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/hooks/package.json": {
@@ -2480,16 +2480,34 @@
     },
     "shared/issues/260807-0158_o_record-filenames-collide-on-the-minute-and-nothing-prevents-it.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-06T23:59:33.370Z",
       "thrashingScore": 0
     },
     "shared/decisions/260807-0158_o_how-is-a-unique-record-filename-obtained.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T00:00:03.050Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260804-1205-shell-reachability-model/_t_circle.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T07:24:46.601Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/_t_circle.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T07:25:46.314Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/issues/260807-0930_o_zwei-fehlalarme-des-klassifizierers-in-der-sitzung-die-ihn-abschafft.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T07:27:01.768Z",
       "thrashingScore": 0
     }
   },
-  "sessionStart": "2026-08-06T23:59:33.370Z"
+  "sessionStart": "2026-08-07T07:24:46.601Z"
 }
