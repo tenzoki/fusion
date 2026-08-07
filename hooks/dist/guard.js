@@ -1,6 +1,13 @@
 /**
  * Compliance Guard — PreToolUse hook for Claude Code.
  *
+ * Before anything else, on ALL five guarded tools, it records a fingerprint of
+ * every protected path (lib/protected-snapshot.ts). `tracker.ts` takes a second
+ * one after the tool ran and restores whatever changed. That pair is the guard's
+ * actual protection of those paths; the checks below are the explaining refusal
+ * that keeps an agent from meeting a bare failure. See the call site in `main`
+ * for why the BEFORE half is a condition of admissibility rather than a nicety.
+ *
  * Intercepts Write/Edit/MultiEdit tool calls and checks them against:
  *   1. Halt state — if active, block ALL writes
  *   2. Protected paths — blocked, with one exemption: FUSION_ALLOW_RULES_WRITE
@@ -10,7 +17,7 @@
  *      does not differ by filesystem. See lib/paths.ts `matchesAnyFolded`.
  *   3. Decision-governed categories — escalated based on sensitivity
  *
- * Also intercepts Bash tool calls, for two independent policies:
+ * Also intercepts Bash tool calls, for ONE policy:
  *   a. Branch policy — DENIES branch/worktree-moving git operations. git is
  *      reachable only via Bash, so every attempt an agent can make passes
  *      through here; that makes this a choke-point on the tool CALL, not a
@@ -19,21 +26,16 @@
  *      `bash -c '…'`, a `case` arm, a script the agent invokes) is not seen.
  *      See lib/git-branch-guard.ts. Runs everywhere, including in the fusion
  *      plugin's own repo.
- *   b. Protected-path policy — DENIES file-mutating shell commands (mv, rm,
- *      cp, sed -i, redirection, …) whose written operands land on
- *      guard.protectedPaths, the same list check 2 above applies to the write
- *      tools. See lib/bash-mutation-guard.ts. This IS a write-guard concern
- *      and therefore stands down in the plugin's own repo, exactly as the
- *      write tools do. It carries the SAME one exemption check 2 above does,
- *      FUSION_ALLOW_RULES_WRITE, because mv/rm/sed -i/`>` reach the rule files
- *      Edit reaches and a flag that lifted only one surface would control
- *      neither.
- * The policies are INDEPENDENT in both directions: an env override that lifts
- * policy (a) for a git operation is not consent to policy (b), so a command
- * pairing an overridden branch switch with a protected-path write still denies
- * on the write. See guardBashCommand for the evaluation order.
- * Neither policy touches the Bash allow path's zero-side-effect property (no
- * counter reset, no guard_allow event) — see guardBashCommand.
+ * There used to be a second one: a classifier that read a shell command and
+ * predicted whether it was about to write a protected path. It is gone, and
+ * nothing replaces it on THIS side of the tool call. What a shell does to a
+ * protected path is now answered after the fact, by the fingerprint pair at the
+ * top of this comment — measured rather than predicted, because "will this
+ * command write?" is not decidable from the command text. Decision
+ * `circles/260804-1205-shell-reachability-model/decisions/`
+ * `260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`.
+ * The branch policy does not touch the Bash allow path's zero-side-effect
+ * property (no counter reset, no guard_allow event) — see guardBashCommand.
  *
  * Ported from fusion/reactor/pkg/guard/decision_guard.go.
  *
@@ -51,8 +53,8 @@ import { realFsLocator } from "./lib/fs-locator.js";
 import { loadConfig, findRelevantDecisions, projectDeclaredProtectedPaths, sensitivityLevel, } from "./lib/config.js";
 import { loadEscalation, saveEscalation, isHalted, recordBlock, resetBlockCounter, } from "./lib/escalation.js";
 import { emitEvent } from "./lib/events.js";
+import { saveSnapshot, takeSnapshot } from "./lib/protected-snapshot.js";
 import { classifyGitCommand, overridesFromEnv, overrideEnvFor, } from "./lib/git-branch-guard.js";
-import { classifyBashMutation } from "./lib/bash-mutation-guard.js";
 import { isProjectRulePath, rulesWriteDetail, rulesWriteExemptionActive, rulesWriteRefusalNote, } from "./lib/rules-write-exemption.js";
 /**
  * Real filesystem + git-ref resolver for the ambiguous bare-`git checkout
@@ -111,11 +113,11 @@ const fsLocator = realFsLocator(process.cwd());
  * every project on earth: an omitted list inherits the plugin's, and the
  * plugin's contains `rules/**`. Decision `260803-1314` and gate 1b.
  *
- * The mutation classifier wants a TWO-argument predicate
- * (`MutationOptions.exempt`), so the Bash seam closes over `declared` in one
- * arrow at the call site rather than this function being curried: the write
- * path's call is the one a reader checks against the rule, and it reads best
- * with all three arguments named in a row.
+ * Three arguments in a row rather than a curried form: the write path's call is
+ * the one a reader checks against the rule, and it reads best that way. A
+ * retired Bash mutation classifier used to take this as a two-argument closure
+ * — that seam is gone, and the measurement side asks its own, narrower question
+ * through `isObservedRulePath` instead.
  */
 function isExemptRulePath(path, spelledAs, declared) {
     return isProjectRulePath(path, fsLocator, spelledAs, declared);
@@ -146,8 +148,7 @@ function exemptionRefusalNote(path, spelledAs, declared) {
  * The arithmetic lives in `lib/project-relative.ts`, where it can be asked about
  * a working directory other than this process's own; this wrapper supplies the
  * one this process has. Claude Code sends absolute paths in
- * `tool_input.file_path` and the mutation classifier sends operands the shell
- * would resolve against the same directory, so both arrive here.
+ * `tool_input.file_path`, so that is what arrives here.
  */
 function normalizeToRelative(filePath) {
     return projectRelative(filePath, process.cwd());
@@ -202,19 +203,23 @@ function forEvent(text) {
  * Emit the event for a `recordBlock` outcome: `guard_block`, or `guard_halt`
  * when THIS block is the one that raised the halt.
  *
- * ## Why the four call sites share one function
+ * ## Why the call sites share one function
  *
- * `guard_halt` reaches `events.jsonl` from three kinds of place — the write-tool
- * halt (CHECK 1), the Bash halt (guardBashCommand STEP 2a), and a `recordBlock`
- * that tripped the threshold, which is these four sites. The monitor renders all
- * of them into one row type, so a reader reconstructing a stalled session sees a
- * run of identical-looking rows and has to guess which surface produced each.
+ * `guard_halt` reaches `events.jsonl` from two kinds of place — the write-tool
+ * halt (CHECK 1) and a `recordBlock` that tripped the threshold. The monitor
+ * renders both into one row type, so a reader reconstructing a stalled session
+ * sees a run of identical-looking rows and has to guess which surface produced
+ * each.
  *
- * The three now say which they are, in the detail:
+ * They now say which they are, in the detail:
  *
  *   - `Halt active — write tool call blocked`     (a halted guard refusing a write)
- *   - `Halt active — mutating Bash command blocked: <segment>` (refusing a shell mutation)
  *   - `Halt raised by this block — <cause>`       (the block that turned the halt on)
+ *
+ * A third prefix, `Halt active — mutating Bash command blocked: <segment>`, is
+ * no longer written by anything: the halt stopped reaching the shell when the
+ * mutation classifier was retired. Historical rows in an existing
+ * `events.jsonl` still carry it, which is why the monitor keeps rendering it.
  *
  * The last prefix is what this function adds. Writing it inline at each of the
  * four sites would mean four copies of one conditional, each free to drift; the
@@ -226,45 +231,38 @@ function emitBlockEvent(halted, tool, file, detail) {
     emitEvent(halted ? "guard_halt" : "guard_block", tool, file, halted ? `Halt raised by this block — ${detail}` : detail);
 }
 /**
- * Guard a Bash tool call against the two shell policies. Three outcomes are
+ * Guard a Bash tool call against the one shell policy. Two outcomes are
  * sequenced, in this order:
  *
  *   1. GIT DENY. Classify the command (segmenting on ; && || | and inspecting
  *      subshells) and DENY any branch/worktree-moving git operation the env
- *      overrides do not cover. This runs first and returns, so a call carrying
- *      both an un-overridden branch switch and a protected-path write denies on
- *      the branch: the sharper, better-established policy names the verdict, and
- *      one tool call records exactly ONE block. Recording two would double-count
- *      the consecutive-block counter that drives the halt.
- *   2a. HALT DENY. When the guard is halted, DENY any command the classifier
- *      recognises as a mutation — and allow everything else, so an agent can
- *      still read its way to understanding why it is halted. This mirrors
- *      CHECK 1 on the write-tool path, and it sits ABOVE the exemption for the
- *      same reason CHECK 1 sits above CHECK 2: the flag grants one permission
- *      and lifting a halt is not it. Until this existed the halt was a
- *      write-TOOL control — a halted guard blocked Edit and allowed
- *      `sed -i`, which is the surface an agent with a shell would have used.
- *   2. MUTATION DENY. DENY a file-mutating command whose written operands
- *      resolve onto config.guard.protectedPaths. Gated on the self-detect
- *      stand-down (see the comment at the check itself). It runs on BOTH routes
- *      out of step 1 — git-clean and git-override-allowed — because an override
- *      waives only what it names. FUSION_ALLOW_BRANCH_SWITCH authorises a branch
- *      switch; it is not consent to rewrite the protected paths, so
- *      `git switch main && rm rules/x.md` denies on the rm and the reason the
- *      user reads names the file, not the branch.
- *   2b. EXEMPTION NOTE. When FUSION_ALLOW_RULES_WRITE let a mutation of a rule
- *      file through step 2, record it: one clear-level escalation entry and one
- *      guard_advisory, the same note CHECK 2 writes on the write-tool path. It
- *      sits after the deny so it can only ever describe a command that ran, and
- *      before step 3 so a call carrying both permissions records both notes.
- *   3. OVERRIDE ALLOW. Only once both denies have passed is the override-used
- *      note recorded and the call allowed. Recording it later than step 2 keeps
- *      the note honest: it says a git op was let through, and after a step-2
- *      block nothing was let through.
+ *      overrides do not cover. This runs first and returns, so at most one block
+ *      is recorded per tool call. Recording two would double-count the
+ *      consecutive-block counter that drives the halt.
+ *   3. OVERRIDE ALLOW. Once the deny has passed, the override-used note is
+ *      recorded and the call allowed.
  *
- * At most one block is recorded per call, on whichever deny fires first.
- * Both denies follow the same block/escalation/event pattern as the write-tool
- * checks. The innocuous allow path stays free of ALL write-guard bookkeeping.
+ * The step numbering skips 2 on purpose. A protected-path deny used to sit
+ * there, reading the command text to predict which files it was about to write,
+ * and a 2b recorded the FUSION_ALLOW_RULES_WRITE exemption that deny had
+ * granted. Both are gone with the classifier: the protected paths are measured
+ * after the call now (`lib/protected-snapshot.ts` + `tracker.ts`), and the
+ * exemption is asked there, of a path that has actually changed, by
+ * `isObservedRulePath`. The gap in the numbering is a marker, so a reader who
+ * finds "step 3" in a comment elsewhere is not hunting for a step 2 that was
+ * silently renumbered away.
+ *
+ * The innocuous allow path stays free of ALL write-guard bookkeeping.
+ *
+ * THE HALT IS NOT ONE OF THE OUTCOMES. A halted guard blocks the four write
+ * tools and lets the shell through, because deciding whether a command mutates
+ * anything is the same undecidable question the retired policy asked. What a
+ * halt no longer does is stop `rm notes.txt` from running; the user confirmed
+ * that cost explicitly on 260807-0945, recorded at
+ * `circles/260807-0923-guard-misst-statt-orakelt/decisions/`
+ * `260807-1026_a_verlust-des-bash-halts-auf-der-shell.md`. The protected paths
+ * themselves are not left to the halt — they are measured after every tool call
+ * and restored, halt or no halt.
  */
 function guardBashCommand(input, config) {
     const command = typeof input.tool_input.command === "string"
@@ -273,9 +271,8 @@ function guardBashCommand(input, config) {
     const overrides = overridesFromEnv(process.env);
     const verdict = classifyGitCommand(command, overrides, checkoutResolver);
     // STEP 1 — git deny: a branch/worktree-moving git op with no override.
-    // Returns, so the mutation check below never adds a second block for the same
-    // tool call. An override does NOT reach here: it leaves verdict.deny false and
-    // is handled at step 3, after the mutation check has had its say.
+    // Returns, so exactly one block is recorded per tool call. An override does
+    // NOT reach here: it leaves verdict.deny false and is handled at step 3.
     if (verdict.deny) {
         const escalation = loadEscalation();
         const halted = recordBlock(escalation, config.escalation.blocksBeforeHalt, "git_branch_switch", verdict.reason ?? "", "Bash", verdict.offendingSegment);
@@ -284,185 +281,9 @@ function guardBashCommand(input, config) {
         block(verdict.reason ?? "fusion policy: agents never switch git branches autonomously.");
         return;
     }
-    // STEP 2 — protected-path check: a file-mutating shell command whose written
-    // operands land on config.guard.protectedPaths — the same list, the same
-    // "protected_path" trigger and the same escalation counter the write tools
-    // use, so the monitor and the three-block halt treat both surfaces alike.
-    //
-    // REACHED ON BOTH ROUTES OUT OF STEP 1 — the git-clean one and the
-    // git-override-allowed one. The override env vars grant exactly one
-    // permission each: FUSION_ALLOW_BRANCH_SWITCH says "this agent may move HEAD",
-    // FUSION_ALLOW_WORKTREE says "this agent may add a worktree". Neither says
-    // anything about the protected paths, and a check that returned early on the
-    // override would silently waive a permission nobody granted (it did, until
-    // this was fixed: `git switch main && rm rules/x.md` ran in full).
-    //
-    // GATED ON THE SELF-DETECT STAND-DOWN, unlike the git policy above. This is a
-    // WRITE-guard concern: the protected paths (agents/**, rules/**, plugin.json)
-    // are exactly the files a fusion developer's agents legitimately move, delete
-    // and rewrite, and they do so through a shell as often as through Edit.
-    // Leaving it active here while the write tools stand down would be incoherent
-    // — `Edit rules/x.md` allowed but `mv rules/x.md rules/retired/` denied,
-    // which teaches an agent to route around the guard rather than respect it.
-    // The branch policy's reasoning does NOT transfer: a human switches branches
-    // in their own terminal (which this hook never sees), so gating the agent
-    // there costs the developer nothing, whereas gating shell writes here costs
-    // them the repo. Consumers of the plugin get the check unconditionally, which
-    // is where it protects something.
-    //
-    // Deny-only: this check never allows, never resets the counter and never
-    // emits guard_allow, so the allow path below keeps its stated property.
-    if (!isFusionPluginCwd()) {
-        // What this project DECLARED for itself, which gate 1b subtracts from the
-        // exempt set — never the effective list. See `exemptRulePathPredicate`.
-        const declared = projectDeclaredProtectedPaths(config);
-        const mutation = classifyBashMutation(command, {
-            protectedPaths: config.guard.protectedPaths,
-            // Same normalisation the write path applies before matchesAny, so the
-            // relative globs in the config match a shell operand the same way they
-            // match a tool_input.file_path. The classifier additionally runs
-            // path.normalize() on the result, collapsing any `..` an operand carries.
-            normalize: normalizeToRelative,
-            // THE ENVIRONMENT THE COMMAND WILL RUN IN. The classifier reads exactly
-            // one variable from it — CDPATH — because the Bash tool's shell is
-            // initialised from the user's profile, so an exported CDPATH sends a
-            // bare-word `cd` down a search list with nothing in the command text to
-            // show for it. Passed here rather than read there for the same reason
-            // the rules-write flag is: a pure classifier can be tested one case at a
-            // time without a test touching the process every other case runs in.
-            env: process.env,
-            // THE RULES-WRITE EXEMPTION, same predicate CHECK 2 asks on the write
-            // tools (lib/rules-write-exemption.ts). Passed ONLY when the user set the
-            // flag, so with it unset the classifier is called exactly as it was
-            // before this existed and the deny side cannot drift.
-            //
-            // The flag has to reach BOTH surfaces or it controls neither. mv, rm,
-            // sed -i and `>` write the same rule files Edit writes, so a flag that
-            // only lifted CHECK 2 would be a polite route to a door left open, and
-            // an agent that met the deny here after the Edit went through would
-            // learn to route around the guard rather than respect it.
-            //
-            // The classifier hands the predicate TWO spellings — the resolved,
-            // normalised operand and the operand as the command wrote it — because
-            // its own `path.normalize` collapses `..` lexically and would otherwise
-            // hand gate 0 a path with the escape already erased from it. See
-            // `MutationOptions.exempt` and `rules-write-exemption.ts` `## Gate 0`.
-            exempt: rulesWriteExemptionActive(process.env)
-                ? (path, spelled) => isExemptRulePath(path, spelled, declared)
-                : undefined,
-            // And, for an operand it refuses, WHY — carried into the deny reason so a
-            // rule path denied under a set flag does not read exactly like the same
-            // path denied under an unset one. Paired with `exempt` on purpose: the
-            // classifier only asks this about an operand it already asked `exempt`
-            // about, so the two are configured together or not at all.
-            exemptRefusal: rulesWriteExemptionActive(process.env)
-                ? (path, spelled) => exemptionRefusalNote(path, spelled, declared)
-                : undefined,
-        });
-        // STEP 2a — HALT. A halted guard blocks every recognised mutation, and
-        // nothing else. Three things about the placement are load-bearing:
-        //
-        //   - ABOVE the exemption's effect. The exemption is applied INSIDE
-        //     classification, so this cannot be expressed by ordering two calls;
-        //     it is expressed by reading `mutation.mutates`, which the exemption
-        //     does not influence. `FUSION_ALLOW_RULES_WRITE` therefore cannot be
-        //     the way out of a halt, exactly as it cannot be on the write-tool
-        //     path where CHECK 1 returns above CHECK 2.
-        //   - ABOVE the protected-path deny, so a halted guard reports the halt
-        //     rather than the path. Same order the write-tool path uses, and the
-        //     same reason: the halt is the condition the user has to clear, and
-        //     naming the path would send an agent off rephrasing the command.
-        //   - MUTATIONS ONLY. Blocking all Bash under a halt would stop an agent
-        //     reading its way out of the situation — it could not even find the
-        //     clear-halt instruction — which is worse for everyone and protects
-        //     nothing extra. `ls`, `git status` and `cat` still run.
-        //
-        // Inside the self-detect gate, like the check below it: in the plugin's own
-        // repo the write-tool path returns before CHECK 1 too, so the halt stands
-        // down on both surfaces together rather than on one.
-        //
-        // No recordBlock: the halt is not a fresh violation, it is the standing
-        // consequence of earlier ones. The write-tool halt does not count itself
-        // either.
-        if (mutation.mutates) {
-            const escalation = loadEscalation();
-            if (isHalted(escalation)) {
-                const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT ?? "<plugin-dir>";
-                const reason = "[HALTED] All file-mutating shell commands are blocked. " +
-                    "The guard has been halted after repeated violations. " +
-                    "Read-only commands still run. " +
-                    `Run: node ${pluginRoot}/hooks/dist/clear-halt.js to reset.`;
-                // NAME THE COMMAND. `mutation.targetPath` is populated on a DENYING
-                // verdict only, and this branch fires whenever `mutation.mutates` is
-                // true — the common case being a command that mutates something
-                // unprotected (`rm notes.txt`, `echo hi > out.txt`). For all of those
-                // the file field is undefined, so a constant detail recorded that a
-                // mutating Bash command was halted and nothing about WHICH one. A halt
-                // is the state a user has to come and clear, and `events.jsonl` is
-                // where they reconstruct what the agent was trying to do; the run of
-                // identical rows after the halt is precisely the behaviour the halt
-                // exists to observe.
-                //
-                // `offendingSegment` when there is one — a halted guard meeting a
-                // PROTECTED path denies here first, above the deny below, and that
-                // verdict does carry the segment, already rendered with its quoted
-                // literals redacted back into place. Otherwise the raw command, which
-                // is what the agent typed and carries no classifier placeholders.
-                emitEvent("guard_halt", "Bash", mutation.targetPath, "Halt active — mutating Bash command blocked: " +
-                    forEvent(mutation.offendingSegment ?? command));
-                block(reason);
-                return;
-            }
-        }
-        if (mutation.deny) {
-            const reason = mutation.reason ??
-                "Protected path: this command writes a path under compliance guard protection.";
-            const escalation = loadEscalation();
-            const halted = recordBlock(escalation, config.escalation.blocksBeforeHalt, "protected_path", reason, "Bash", mutation.targetPath);
-            saveEscalation(escalation);
-            emitBlockEvent(halted, "Bash", mutation.targetPath, `Protected path: ${forEvent(mutation.offendingSegment ?? command)}`);
-            block(reason);
-            return;
-        }
-        // STEP 2b — the rules-write exemption note. Reached only when the check
-        // above did NOT deny, so it records paths that genuinely went through.
-        //
-        // The same note CHECK 2 writes on the write-tool path: one clear-level
-        // entry naming the variable and what it let through, and one guard_advisory
-        // carrying the same string. Two deliberate differences from that site:
-        //
-        //   - It SAVES. CHECK 2 pushes into an escalation object a later branch
-        //     always persists; on this path there is no later save, so the note
-        //     would be lost. Loading, pushing, saving and emitting in one place is
-        //     also what lets this note and the git override note below both survive
-        //     one tool call: the second load reads what the first wrote.
-        //   - The event's file field carries the exempted path only when there is
-        //     exactly ONE. A shell command can write several, and a field typed as
-        //     one path must not carry a list; the detail names all of them either
-        //     way.
-        //
-        // Not a deny, and reachable only when the user set the flag AND a rule path
-        // was actually exempted, so an innocuous Bash call still writes nothing.
-        if (mutation.exempted !== undefined && mutation.exempted.length > 0) {
-            const detail = rulesWriteDetail(mutation.exempted);
-            const filePath = mutation.exempted.length === 1 ? mutation.exempted[0] : undefined;
-            const escalation = loadEscalation();
-            escalation.recentEvents.push({
-                level: "clear",
-                trigger: "rules_write_exemption",
-                message: detail,
-                timestamp: new Date().toISOString(),
-                toolName: "Bash",
-                filePath,
-            });
-            saveEscalation(escalation);
-            emitEvent("guard_advisory", "Bash", filePath, detail);
-        }
-    }
-    // STEP 3 — override note: a normally-denied git op that an env flag allowed,
-    // and that survived the protected-path check above. Recorded here rather than
-    // at step 1 so the note is written only for a call that actually goes through;
-    // a step-2 block means nothing was allowed and there is nothing to note.
+    // STEP 3 — override note: a normally-denied git op that an env flag allowed.
+    // Recorded here rather than at step 1 so the note is written only for a call
+    // that actually goes through.
     //
     // Not a deny — it falls through to the same allow() below. It is also the one
     // conditional on this path that writes state without blocking, and it is
@@ -484,11 +305,10 @@ function guardBashCommand(input, config) {
         saveEscalation(escalation);
         emitEvent("guard_advisory", "Bash", undefined, detail);
     }
-    // Allow path: not a branch/worktree-moving git op the overrides left denied,
-    // and not a mutation of a protected path. Steps 1 and 2 are DENY-ONLY — each
-    // either blocks and returns, or falls through having written nothing — and
-    // step 3 writes only when the user set an override, which no innocuous call
-    // does. So reaching this point on an ordinary command still means it
+    // Allow path: not a branch/worktree-moving git op the overrides left denied.
+    // Step 1 is DENY-ONLY — it either blocks and returns, or falls through having
+    // written nothing — and step 3 writes only when the user set an override,
+    // which no innocuous call does. So reaching this point still means it
     // participates in NONE of the write-guard bookkeeping. An innocuous Bash call
     // (ls, git status, an allowed `git checkout HEAD -- <files>`) must have zero
     // side-effect on guard state:
@@ -563,23 +383,49 @@ async function main() {
         allow();
         return;
     }
-    // Bash branch: the git branch-switch policy (deterministic, on every tool
-    // call — see the header for what that does and does not bound) and the
-    // protected-path mutation policy. The two differ in where they stand
-    // down, so guardBashCommand — not this dispatch — owns the self-detect call.
+    // THE BEFORE-FINGERPRINT. One record of what every protected path currently
+    // holds, so `tracker.ts` can tell afterwards what THIS tool call changed.
     //
-    // The BRANCH policy runs unconditionally when the guard is enabled —
-    // INCLUDING in the fusion plugin's own repo. This hook only ever gated the
-    // AGENT's Bash tool calls; a human developer switches branches in their own
-    // terminal, which the hook never sees. Standing the branch policy down for
-    // the plugin repo therefore removed agent protection for zero human benefit
-    // (the branch-switch hole). The override env vars
-    // (FUSION_ALLOW_BRANCH_SWITCH / FUSION_ALLOW_WORKTREE) remain the deliberate
-    // escape hatch for a fusion developer who genuinely wants an agent to switch
-    // branches here.
+    // This is not a second hook. It is the PreToolUse hook that already runs on
+    // all five guarded tools, taking one more reading before it decides anything.
     //
-    // The MUTATION policy is a write-guard concern and does stand down here, for
-    // the reasons given at the check itself.
+    // ## It is the condition of admissibility, not a refinement
+    //
+    // Without it the measurement would have nothing to compare against but
+    // `HEAD`, and it would revert every protected path that differs from `HEAD` —
+    // including a rule file the human is editing in their own editor at that
+    // moment. The guard would destroy human work on an unrelated tool call. With
+    // it, only the difference this one call produced is ever touched.
+    //
+    // ## Above every branch, and inside the stand-down
+    //
+    // Above, because all five tools can reach a protected path and the cheapest
+    // correct rule is "always have a before-picture". A denied call simply leaves
+    // a snapshot nobody compares against, which costs one file write.
+    //
+    // Inside `isFusionPluginCwd()`, because the measurement is a WRITE-guard
+    // concern and stands down here exactly as the write tools do — otherwise
+    // fusion's own agents would have their edits to `rules/` and `agents/`
+    // reverted while developing fusion, which is the one place those edits are
+    // the work.
+    if (!isFusionPluginCwd()) {
+        saveSnapshot(takeSnapshot(process.cwd(), config.guard.protectedPaths));
+    }
+    // Bash branch: the git branch-switch policy, and nothing else. See the header
+    // for what that does and does not bound.
+    //
+    // It runs unconditionally when the guard is enabled — INCLUDING in the fusion
+    // plugin's own repo. This hook only ever gated the AGENT's Bash tool calls; a
+    // human developer switches branches in their own terminal, which the hook
+    // never sees. Standing the branch policy down for the plugin repo therefore
+    // removed agent protection for zero human benefit (the branch-switch hole).
+    // The override env vars (FUSION_ALLOW_BRANCH_SWITCH / FUSION_ALLOW_WORKTREE)
+    // remain the deliberate escape hatch for a fusion developer who genuinely
+    // wants an agent to switch branches here.
+    //
+    // The write-guard half of the Bash surface is no longer here at all: what a
+    // shell did to a protected path is measured by the fingerprint pair above and
+    // in `tracker.ts`, and THAT is what stands down in this repo.
     if (isBash) {
         guardBashCommand(input, config);
         return;
@@ -658,8 +504,8 @@ async function main() {
         // flag names. lib/rules-write-exemption.ts owns the boundary — it
         // canonicalises the path lexically AND resolves it against the real
         // filesystem, because a grant read off text alone is spendable on a symlink
-        // planted inside the rule directory. The Bash mutation path asks the same
-        // module the same two questions through the same `isExemptRulePath`, so a
+        // planted inside the rule directory. The measurement side asks the same
+        // module its own, narrower question (`isObservedRulePath`), so a
         // security-relevant rule is not written twice, once per surface, and cannot
         // drift apart.
         //

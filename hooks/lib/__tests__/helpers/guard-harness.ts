@@ -411,13 +411,14 @@ interface HookInput {
  * policy, so an exported copy would void the flag-unset half of the criteria
  * each exemption is meant to prove.
  *
- * `CDPATH` is not a permission and is stripped for a stronger reason. It moves
- * the verdict in the DENYING direction (a bare-word `cd` becomes unknowable —
- * `bash-mutation-guard.ts`, `ambientCdpathIsSet`), and it is a variable real
- * people really do export from a shell profile. Left in place it would deny
- * commands on a developer's machine that allow on everyone else's — including
- * the allow-side rows that exist to bound the cost of every OTHER change to the
- * directory model.
+ * `CDPATH` is not a permission and was stripped for a stronger reason: it moved
+ * a verdict in the DENYING direction, because a bare-word `cd` became unknowable
+ * to the mutation classifier's working-directory model, and it is a variable
+ * real people really do export from a shell profile. Left in place it denied
+ * commands on one developer's machine that allowed on everyone else's. The
+ * classifier and its directory model are gone, so nothing reads `CDPATH` today;
+ * the strip stays because it costs nothing and a variable that once moved a
+ * verdict is not one to hand back to the child on the strength of that.
  */
 const STRIPPED_ENV_VARS = [
   "FUSION_ALLOW_BRANCH_SWITCH",
@@ -644,10 +645,20 @@ export function readEvents(root: string): EventLine[] {
     .map((line) => JSON.parse(line) as EventLine);
 }
 
-/** True once the guard has written anything into `.guard-state/`. */
-export function guardStateWritten(root: string): boolean {
-  return existsSync(stateDir(root));
-}
+// A `guardStateWritten(root)` helper used to live here, answering "has the guard
+// written anything into `.guard-state/` at all". Ten cases asserted `false`
+// through it as the strongest available spelling of "an innocuous call has zero
+// side effect" (issues 260707-0750 and 260707-0751).
+//
+// It cannot answer that any more, and the reason is not a regression: the
+// PreToolUse hook writes a fingerprint of every protected path into
+// `.guard-state/protected-snapshot.json` on EVERY guarded tool call, so the
+// directory exists after the first `ls -la`. The two properties are unchanged
+// and are now asserted on the two files they are actually about —
+// `readEscalation(root) === null` (no counter written) and
+// `readEvents(root) === []` (no event appended). The helper is gone rather than
+// redefined, because a predicate over the directory can no longer distinguish a
+// guard that behaved from one that did not.
 
 /** Generous per-case budget: each case is a process start, ~0.2s in practice. */
 export const CASE_TIMEOUT = 30_000;

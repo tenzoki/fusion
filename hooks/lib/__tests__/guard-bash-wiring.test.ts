@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
-import { classifyBashMutation } from "../bash-mutation-guard.js";
 import {
   CASE_TIMEOUT,
   readEscalation,
@@ -12,7 +11,7 @@ import {
 } from "./helpers/guard-harness.js";
 
 // ---------------------------------------------------------------------------
-// Wiring gate for plan step 5 — classifyBashMutation inside guardBashCommand.
+// Wiring gate for `guardBashCommand` — what the SOURCE has to keep saying.
 //
 // Two properties of the Bash path are settled and load-bearing, each traced to
 // a filed issue, and both are stated in prose at guard.ts's allow path:
@@ -26,11 +25,23 @@ import {
 //      guard_block / guard_halt / guard_advisory entries the monitor exists
 //      to surface.
 //
-// The mutation check is deny-only precisely so both survive. This gate asserts
-// that on the SOURCE, which is what a future edit to guardBashCommand would
-// break; the file-level proof (escalation.json and events.jsonl unchanged
-// across an innocuous Bash call) is plan step 6's integration harness, which
-// needs a temporary project root the write guard does not stand down in.
+// The one remaining check on this path — the git branch policy — is deny-only
+// precisely so both survive. This gate asserts that on the SOURCE, which is what
+// a future edit to guardBashCommand would break; the file-level proof
+// (escalation.json and events.jsonl unchanged across an innocuous Bash call) is
+// in guard-bash-integration.test.ts, which needs a temporary project root the
+// write guard does not stand down in.
+//
+// ## What left this file
+//
+// It also carried the wiring of a mutation classifier that read a shell command
+// and predicted which protected paths it was about to write, plus the halt gate
+// that sat above it. Both are gone: the question was not decidable from the
+// command text, the protected paths are measured after the call instead
+// (`lib/protected-snapshot.ts`), and the user accepted the loss of the shell
+// halt explicitly on 260807-0945. Nothing on this surface reads a command for
+// anything but git any more, so the gates that pinned that reading have no
+// subject left.
 //
 // This is a guard, not a fixer (rules/critical-stance.md §2): it reads and
 // asserts, it never rewrites guard.ts.
@@ -114,124 +125,48 @@ describe("guard.ts Bash path — the two settled constraints", () => {
   });
 });
 
-describe("guard.ts Bash path — mutation check wiring", () => {
+describe("guard.ts Bash path — the branch policy is the whole of it", () => {
   const code = bashPathCode();
 
-  it("calls classifyBashMutation", () => {
-    expect(code).toContain("classifyBashMutation(command,");
+  it("classifies the command through the git policy", () => {
+    expect(code).toContain("classifyGitCommand(command,");
   });
 
-  it("gates the mutation check on the self-detect stand-down", () => {
-    // The check must sit INSIDE `if (!isFusionPluginCwd()) { … }`. The git
-    // policy above it deliberately is not gated.
-    const gate = code.indexOf("if (!isFusionPluginCwd())");
-    const call = code.indexOf("classifyBashMutation(");
-    expect(gate, "mutation check is not gated on isFusionPluginCwd").toBeGreaterThan(-1);
-    expect(call).toBeGreaterThan(gate);
-  });
-
-  it("does not gate the git branch policy on the stand-down", () => {
-    const gitCall = code.indexOf("classifyGitCommand(");
-    const gate = code.indexOf("if (!isFusionPluginCwd())");
-    expect(gitCall).toBeGreaterThan(-1);
-    expect(gitCall).toBeLessThan(gate);
-  });
-
-  it("feeds the classifier the config's protectedPaths", () => {
-    expect(code).toContain("protectedPaths: config.guard.protectedPaths");
-  });
-
-  it("normalizes operands the same way the write path does", () => {
-    // normalizeToRelative is the function that exists because Claude Code
-    // sends absolute paths; the config's globs are relative.
-    expect(code).toContain("normalize: normalizeToRelative");
-    expect(writePathCode()).toContain("normalizeToRelative(rawFilePath)");
-  });
-
-  it("hands the classifier the REAL environment, not a placeholder", () => {
-    // `MutationOptions.env` is required, so tsc already refuses a call that
-    // omits it — but `env: {}` would compile and would silently switch off the
-    // ambient-CDPATH degrade, which is a check nothing else would notice was
-    // gone. The classifier is pure by design and reads no environment itself,
-    // so this line is the only place the real one can enter.
-    expect(code).toContain("env: process.env");
+  it("is not gated on the self-detect stand-down at all", () => {
+    // The branch policy runs everywhere, INCLUDING the plugin's own repo: this
+    // hook only ever gated the AGENT's Bash calls, so standing it down here
+    // would remove agent protection for zero human benefit. The assertion used
+    // to be an ordering one, because a second check on this path DID stand down;
+    // with that check gone, the absence of the condition is the exact statement.
+    expect(code).not.toContain("isFusionPluginCwd");
   });
 
   it("blocks through the same trigger, escalation and events as the write path", () => {
-    expect(code).toContain('"protected_path"');
+    expect(code).toContain('"git_branch_switch"');
     expect(code).toContain("recordBlock(");
     expect(code).toContain("saveEscalation(escalation)");
-    // The block/halt event pair used to be an inline ternary at each of the
-    // four recordBlock sites. It now goes through one shared emitter, so BOTH
-    // halves are asserted: the Bash path calls it, and the emitter is still the
-    // thing that turns a halting block into a guard_halt. Asserting only the
-    // call would let the ternary be deleted from the helper; asserting only the
-    // helper would let this path stop using it.
+    // The block/halt event pair used to be an inline ternary at each recordBlock
+    // site. It goes through one shared emitter, so BOTH halves are asserted: the
+    // Bash path calls it, and the emitter is still the thing that turns a
+    // halting block into a guard_halt. Asserting only the call would let the
+    // ternary be deleted from the helper; asserting only the helper would let
+    // this path stop using it.
     expect(code).toContain("emitBlockEvent(");
     expect(blockEmitterCode()).toContain('halted ? "guard_halt" : "guard_block"');
     expect(writePathCode()).toContain("emitBlockEvent(");
-    expect(code).toContain("block(reason)");
+    expect(code).toContain("block(verdict.reason");
   });
 
-  it("evaluates the git verdict before the mutation verdict", () => {
-    expect(code.indexOf("classifyGitCommand(")).toBeLessThan(
-      code.indexOf("classifyBashMutation("),
-    );
-  });
-});
-
-describe("guard.ts Bash path — the halt gate", () => {
-  // `isHalted` used to be consulted on the write-tool path only, so a halted
-  // guard blocked `Edit` and allowed every `mv`, `rm` and `sed -i`. The
-  // structural properties below are what a future edit would break, and each
-  // one is a way the halt could be turned back into a decoration.
-  const code = bashPathCode();
-
-  it("consults isHalted at all", () => {
-    expect(code).toContain("isHalted(");
-  });
-
-  it("gates on `mutation.mutates`, not on `mutation.deny`", () => {
-    // Halting only what was already denied is no halt. The write-tool halt
-    // blocks every write, wherever it points; this is that mirror.
-    expect(code).toContain("mutation.mutates");
-    const gate = code.indexOf("mutation.mutates");
-    const halt = code.indexOf("isHalted(");
-    expect(gate).toBeGreaterThan(-1);
-    expect(halt).toBeGreaterThan(gate);
-  });
-
-  it("sits ABOVE the protected-path deny", () => {
-    // Same order the write-tool path uses (CHECK 1 above CHECK 2): the halt is
-    // the condition the user has to clear, so it names the verdict.
-    expect(code.indexOf("isHalted(")).toBeLessThan(code.indexOf("if (mutation.deny)"));
-  });
-
-  it("sits INSIDE the self-detect stand-down, like the check below it", () => {
-    // In the plugin's own repo the write-tool path returns before CHECK 1, so
-    // the two surfaces must stand down together.
-    expect(code.indexOf("if (!isFusionPluginCwd())")).toBeLessThan(
-      code.indexOf("isHalted("),
-    );
-  });
-
-  it("does not record a block for the halt itself", () => {
-    // The halt is the standing consequence of earlier violations, not a fresh
-    // one. The write-tool halt does not count itself either.
-    const halt = code.indexOf("isHalted(");
-    const deny = code.indexOf("if (mutation.deny)");
-    expect(code.slice(halt, deny)).not.toContain("recordBlock(");
-  });
-
-  it("cannot be lifted by the rules-write exemption", () => {
-    // The exemption is applied INSIDE classification, so the ordering that
-    // makes this true is not "the halt check comes first" — it is that the
-    // halt reads a field the exemption does not influence.
-    expect(code).toContain("mutation.mutates");
-    const halt = code.indexOf("isHalted(");
-    const advisory = code.indexOf("rules_write_exemption");
-    expect(advisory, "exemption advisory not found").toBeGreaterThan(-1);
-    expect(halt).toBeLessThan(advisory);
+  it("records exactly one block per tool call, and returns", () => {
+    // Both surfaces feed one consecutive-block counter, and that counter drives
+    // the three-block halt. The deny branch returns, so a command cannot be
+    // counted twice on its way through this function.
+    const deny = code.indexOf("if (verdict.deny)");
+    expect(deny, "the git deny branch not found").toBeGreaterThan(-1);
+    const denyBranch = code.slice(deny);
+    expect(denyBranch).toContain("recordBlock(");
+    expect(denyBranch).toContain("return;");
+    expect(code.split("recordBlock(")).toHaveLength(2);
   });
 });
 
@@ -323,118 +258,40 @@ describe("guard.ts — the refusal note is a diagnostic, never a verdict", () =>
     );
   });
 
-  it("is gated on the same flag as the exemption itself", () => {
-    // Two halves. The helper refuses to answer when the flag is unset, so a
-    // project that never uses the exemption reads the deny it always read; and
-    // the Bash seam is configured in the same conditional as `exempt`, so the
-    // classifier can never be asked WHY a grant it was never offered said no.
+  it("refuses to answer at all when the flag is unset", () => {
+    // So a project that never uses the exemption reads the deny it always read.
     expect(whole).toContain(
       "if (!rulesWriteExemptionActive(process.env)) return null;",
     );
-    const bash = bashPathCode();
-    const refusalOpt = bash.indexOf("exemptRefusal:");
-    expect(refusalOpt, "exemptRefusal not wired").toBeGreaterThan(-1);
-    expect(bash.slice(refusalOpt)).toMatch(
-      /^exemptRefusal: rulesWriteExemptionActive\(process\.env\)/,
-    );
   });
 
-  it("changes no verdict on either surface", () => {
+  it("changes no verdict", () => {
     // The note is appended to a reason string and nothing else. If it ever
     // appears in a condition, it has stopped being a diagnostic.
-    const write = writePathCode();
-    expect(write).not.toMatch(/if\s*\([^)]*exemptionRefusalNote/);
-    expect(bashPathCode()).not.toMatch(/if\s*\([^)]*exemptRefusal/);
+    expect(writePathCode()).not.toMatch(/if\s*\([^)]*exemptionRefusalNote/);
   });
 });
 
 describe("guard.ts Bash path — the git override waives only the git op", () => {
-  // The hole this closes: the override branch used to sit ABOVE the mutation
-  // check and `return` after allow(), so FUSION_ALLOW_BRANCH_SWITCH=1 made
-  // `git switch main && rm rules/x.md` allowed in full. That env var authorises
-  // a branch switch; it is not consent to write a protected path. The three
-  // assertions below pin the structure that keeps the two permissions separate.
   const code = bashPathCode();
-
-  it("runs the mutation check before it reads verdict.overrideUsed", () => {
-    const mutation = code.indexOf("classifyBashMutation(");
-    const override = code.indexOf("verdict.overrideUsed");
-    expect(override, "override branch not found").toBeGreaterThan(-1);
-    expect(mutation).toBeLessThan(override);
-  });
 
   it("does not return out of the override branch", () => {
     // Every `return` on this path belongs to a DENY. A return inside the
-    // override branch would mean nothing follows it — which is exactly how the
-    // hole was shaped when the branch sat first.
+    // override branch would mean nothing follows it, and the function would stop
+    // ending in the bare allow() the zero-side-effect property rests on.
     const tail = code.slice(code.indexOf("verdict.overrideUsed"));
     expect(tail).not.toContain("return");
   });
 
-  it("keeps the git deny above the mutation check, so one call blocks once", () => {
-    // Both denies call recordBlock, which increments the consecutive-block
-    // counter that drives the three-block halt. The git deny returns, so a
-    // command that is both git-denied and mutation-denied records ONE block.
-    const gitDeny = code.indexOf("if (verdict.deny)");
-    const mutation = code.indexOf("classifyBashMutation(");
-    expect(gitDeny).toBeGreaterThan(-1);
-    expect(gitDeny).toBeLessThan(mutation);
-    const gitDenyBlock = code.slice(gitDeny, mutation);
-    expect(gitDenyBlock).toContain("recordBlock(");
-    expect(gitDenyBlock).toContain("return;");
-  });
-});
-
-describe("guard.ts Bash path — the arguments it passes actually bite", () => {
-  // The wiring gate above is textual. This one is behavioural: it runs the
-  // classifier with the shipped protectedPaths and the REAL normalizeToRelative
-  // semantics (absolute-under-cwd → relative, everything else untouched), so a
-  // wiring that compiled but matched nothing would fail here.
-  const protectedPaths = JSON.parse(
-    readFileSync(
-      resolve(dirname(fileURLToPath(import.meta.url)), "../../config.json"),
-      "utf-8",
-    ),
-  ).guard.protectedPaths as string[];
-
-  const cwd = "/proj";
-  const normalize = (p: string): string =>
-    p === cwd
-      ? ""
-      : p.startsWith(cwd + "/")
-        ? p.slice(cwd.length + 1)
-        : p;
-
-  const classify = (command: string) =>
-    classifyBashMutation(command, { protectedPaths, normalize, env: {} });
-
-  it("denies a relative protected operand", () => {
-    const v = classify("mv rules/x.md /tmp/");
-    expect(v.deny).toBe(true);
-    expect(v.reason).toContain("rules/x.md");
-    expect(v.reason).toContain("mv rules/x.md /tmp/");
-  });
-
-  it("denies an absolute protected operand under the project root", () => {
-    const v = classify("rm -f /proj/agents/coder.md");
-    expect(v.deny).toBe(true);
-    expect(v.targetPath).toBe("agents/coder.md");
-  });
-
-  it("denies a protected operand reached through `..`", () => {
-    const v = classify("sed -i '' 's/MUST/may/' hooks/../rules/x.md");
-    expect(v.deny).toBe(true);
-    expect(v.targetPath).toBe("rules/x.md");
-  });
-
-  it("allows the same shapes against an unprotected path", () => {
-    expect(classify("mv notes.txt /tmp/").deny).toBe(false);
-    expect(classify("rm -f /proj/build/out.js").deny).toBe(false);
-    expect(classify("sed -i '' 's/a/b/' notes.txt").deny).toBe(false);
-  });
-
-  it("allows an absolute path outside the project root", () => {
-    expect(classify("rm -rf /tmp/rules/x.md").deny).toBe(false);
+  it("reads the override only after the deny branch has passed", () => {
+    // An override that was read FIRST used to allow the whole command and
+    // return, which is how `FUSION_ALLOW_BRANCH_SWITCH=1` once bought more than
+    // a branch switch. The deny branch has to be the first thing that answers.
+    const deny = code.indexOf("if (verdict.deny)");
+    const override = code.indexOf("verdict.overrideUsed");
+    expect(override, "override branch not found").toBeGreaterThan(-1);
+    expect(deny).toBeGreaterThan(-1);
+    expect(deny).toBeLessThan(override);
   });
 });
 
@@ -444,71 +301,14 @@ describe("guard.ts Bash path — the arguments it passes actually bite", () => {
 // so the escalation counter and the event log are real files we can read back.
 //
 // This is what the textual gates above cannot prove: how MANY blocks a single
-// tool call records, and that an innocuous call writes nothing at all.
-//
-// The throwaway-project machinery lives in helpers/guard-harness.ts, shared
-// with guard-bash-integration.test.ts (plan step 6). The cases below stay here
-// because they are about the OVERRIDE interaction specifically — the property
-// the step that wrote them established. There is no skip condition: `tsx` and
-// `vitest` come from the same node_modules, so a skip could only hide a real
-// problem.
+// tool call records, and that an innocuous call writes neither.
 // ---------------------------------------------------------------------------
 
 describe(
-  "guard.ts Bash path end-to-end — override, mutation, and the block count",
+  "guard.ts Bash path end-to-end — the override and the block count",
   () => {
     it(
-      "denies the protected-path write even though FUSION_ALLOW_BRANCH_SWITCH is set",
-      () => {
-        withProject(({ root }) => {
-          const res = runBash(root, "git switch main && rm rules/x.md", {
-            FUSION_ALLOW_BRANCH_SWITCH: "1",
-          });
-
-          expect(res.decision).toBe("block");
-          // The reason names the write, not the branch switch: the branch was
-          // authorised, the write never was.
-          expect(res.reason).toContain("rules/x.md");
-          expect(res.reason).not.toContain("never switch git branches");
-
-          const state = readEscalation(root);
-          expect(state?.consecutiveBlocks).toBe(1);
-          expect(state?.recentEvents.map((e) => e.trigger)).toEqual([
-            "protected_path",
-          ]);
-
-          // No advisory: nothing was allowed, so nothing is noted as allowed.
-          expect(readEvents(root).map((e) => e.event)).toEqual(["guard_block"]);
-        });
-      },
-      CASE_TIMEOUT,
-    );
-
-    it(
-      "denies the protected-path write even though FUSION_ALLOW_WORKTREE is set",
-      () => {
-        withProject(({ root }) => {
-          const res = runBash(
-            root,
-            "git worktree add ../wt feature && rm -f agents/coder.md",
-            { FUSION_ALLOW_WORKTREE: "1" },
-          );
-
-          expect(res.decision).toBe("block");
-          expect(res.reason).toContain("agents/coder.md");
-
-          const state = readEscalation(root);
-          expect(state?.consecutiveBlocks).toBe(1);
-          expect(state?.recentEvents.map((e) => e.trigger)).toEqual([
-            "protected_path",
-          ]);
-        });
-      },
-      CASE_TIMEOUT,
-    );
-
-    it(
-      "still allows an overridden branch switch on its own, and still notes it",
+      "allows an overridden branch switch, and notes it",
       () => {
         withProject(({ root }) => {
           const res = runBash(root, "git switch main", {
@@ -526,6 +326,24 @@ describe(
           const events = readEvents(root);
           expect(events.map((e) => e.event)).toEqual(["guard_advisory"]);
           expect(events[0].detail).toContain("FUSION_ALLOW_BRANCH_SWITCH");
+        });
+      },
+      CASE_TIMEOUT,
+    );
+
+    it(
+      "keeps the two overrides apart — the worktree flag does not lift the branch deny",
+      () => {
+        // Each override waives only what it names. The pairing used to matter
+        // most against the protected-path check, which this surface no longer
+        // carries; between the two git denies it still does.
+        withProject(({ root }) => {
+          const res = runBash(root, "git switch main", {
+            FUSION_ALLOW_WORKTREE: "1",
+          });
+
+          expect(res.decision).toBe("block");
+          expect(res.reason).toContain("never switch git branches");
         });
       },
       CASE_TIMEOUT,
@@ -551,16 +369,14 @@ describe(
     );
 
     it(
-      "records ONE block for a call that is both git-denied and mutation-denied",
+      "records ONE block for a command with two denying segments",
       () => {
         withProject(({ root }) => {
-          const res = runBash(root, "git switch main && rm rules/x.md");
+          const res = runBash(root, "git switch main && git worktree add ../wt x");
 
-          // Git denies first, so the user reads the branch reason. Two
-          // recordBlock calls for one tool call would double-count the counter
-          // that drives the three-block halt.
+          // Two recordBlock calls for one tool call would double-count the
+          // counter that drives the three-block halt.
           expect(res.decision).toBe("block");
-          expect(res.reason).toContain("never switch git branches");
 
           const state = readEscalation(root);
           expect(state?.consecutiveBlocks).toBe(1);
@@ -577,7 +393,10 @@ describe(
         withProject(({ root }) => {
           expect(runBash(root, "ls -la").decision).toBeUndefined();
 
-          // Neither file exists: no counter write, no guard_allow append.
+          // Neither file exists: no counter write, no guard_allow append. The
+          // PreToolUse fingerprint DOES land in `.guard-state/` on this call —
+          // that is the measurement's own bookkeeping, and the two issues are
+          // about the counter and the event log, which are named here directly.
           expect(readEscalation(root)).toBeNull();
           expect(readEvents(root)).toEqual([]);
         });
@@ -589,7 +408,7 @@ describe(
       "does not let an innocuous call reset the consecutive-block counter",
       () => {
         withProject(({ root }) => {
-          runBash(root, "rm rules/x.md");
+          runBash(root, "git switch main");
           expect(readEscalation(root)?.consecutiveBlocks).toBe(1);
 
           runBash(root, "git status");

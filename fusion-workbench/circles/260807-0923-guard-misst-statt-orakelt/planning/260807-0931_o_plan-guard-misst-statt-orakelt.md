@@ -126,14 +126,30 @@ flowchart TD
    - Quelle: Directive.
    - Abhängigkeiten: S3 (erst wenn die Ausnahme umgehängt ist, hängt nichts mehr am Klassifizierer)
 
-5. **Tests und Messkorpus**
+5. [DONE] **Tests und Messkorpus** — 260807-1155
    - Ausführer: coder
    - Dateien: löschen — `hooks/lib/__tests__/bash-mutation-guard.test.ts`, `shell-reach.test.ts`, `reachability-corpus.test.ts`, `helpers/reachability-corpus.ts`, `helpers/shell-witness.ts`, `fixtures/mutation-verdicts-head.json`; bearbeiten — `guard-bash-wiring.test.ts`, `guard-bash-integration.test.ts`, `guard-rules-write-integration.test.ts`, `guard-case-folding.test.ts`, `shell-parse.test.ts`, `config.test.ts`, `rules-emission-golden.test.ts`; unverändert — `git-branch-guard.test.ts`, `fixtures/git-verdicts-head.json`, `fs-locator.test.ts`, `rules-write-exemption.test.ts` (nur ergänzt)
    - Änderungen: Aus den gemischten Suiten den Bash-Klassifizierer-Anteil herausnehmen und den Anteil behalten, der die Schreibwerkzeuge, die Fallfaltung und die Branch-Politik prüft. Neu geschrieben wird die Messung, und zwar über `hooks/lib/__tests__/helpers/guard-harness.ts`: `makeProject` erzeugt ein echtes Fremdprojekt, in dem die Stilllegung nicht greift, `runBash` und `runWrite` fahren die Fälle. Abzudecken sind mindestens — eine geschützte Datei per Shell verändert wird zurückgerollt und setzt den Halt; eine vorher schon veränderte geschützte Datei wird nicht angefasst; ein Regelpfad unter gesetztem `FUSION_ALLOW_RULES_WRITE` bleibt stehen und erzeugt die Notiz; derselbe Pfad, vom Projekt in seiner `fusion-guard.json` selbst deklariert, wird trotz Flag zurückgerollt; ~~eine nicht versionierte geschützte Datei meldet und rollt nicht zurück~~ **(hinfällig nach der Nachbesserung zu S2: ein Projekt ganz ohne git wird ebenso zurückgeschrieben — der Testfall existiert in dieser Form)**. Die Zusicherungen zu S2 und S3 sind bereits geschrieben (`protected-snapshot-integration.test.ts`, 21 Fälle) und `rules-write-exemption.test.ts` ist um `isObservedRulePath` ergänzt; S5 fügt hier nichts mehr hinzu. `config.test.ts` verliert die drei `.guard-state`-Zusicherungen (Zeilen 247 und 497). `git-branch-guard.test.ts` bleibt vollständig grün, Gold-Fixture über 98 Befehle eingeschlossen; seine Quelltext-Zusicherung, dass die Branch-Politik `parseCommand` nie berührt, wird gegenstandslos und bleibt trotzdem stehen.
    - Quelle: Directive; Prüfauflage des Auftrags.
    - Abhängigkeiten: S4
+   - **Ergebnis 260807-1155.** Suite 999 grün / 2 rot; beide roten gehören S6
+     (`reference-resolution-lint.test.ts`, Befund `260807-1133`) und S7
+     (`rules-emission-golden.test.ts`, Goldfixture). `git-branch-guard.test.ts`
+     102 grün, Goldfixture über 98 Befehle nicht neu erzeugt. Zwei Dateien mehr
+     bearbeitet als die Liste nennt — `guard-halt-event.test.ts` und
+     `guard-escalation-shape.test.ts`, die sechs der Halt-Fehlschläge trugen.
+     `rules-emission-golden.test.ts` **nicht** angefasst (S6 hatte es bereits
+     bearbeitet). Die zehn `guardStateWritten === false`-Zusicherungen sind auf
+     "kein Zähler, kein Ereignis" geschärft statt gelöscht; das Prädikat selbst
+     ist aus dem Harness gefallen, weil es seine Frage seit dem Fingerabdruck
+     nicht mehr beantworten kann. Einzelheiten:
+     `history/260807-1155-coder-schritt5-tests-und-messkorpus.md`.
+   - **Offen, Zuständigkeit strittig.** Der Befund `260807-1133_o_*` weist die
+     Streichung der vier toten `EXAMPLE_PATHS`-Einträge diesem Schritt zu, der
+     Auftrag an diesen Schritt verbietet ausdrücklich, die Datei anzufassen.
+     Nicht eigenmächtig entschieden.
 
-6. **Die Textschicht**
+6. [DONE] **Die Textschicht** — 260807-1133
    - Ausführer: coder
    - Dateien: `rules/protected-path-discipline.md`, `rules/protected-path-internals.md` (löschen), `bin/fusion-rules`, `README-hooks.md`, `CLAUDE.md`, `hooks/lib/__tests__/rules-emission-golden.test.ts`
    - Änderungen: `protected-path-discipline.md` neu schreiben, Zielgröße rund 55 Zeilen. Inhalt: geschützte Pfade werden nach dem Aufruf gemessen, eine Veränderung wird zurückgerollt und setzt den Halt, das gilt für jeden Weg zur Datei; die eine Ausnahme `FUSION_ALLOW_RULES_WRITE`; das menschliche Gate als Ausweg. Ersatzlos gestrichen: Vier-Fragen-Prozedur, Joiner-Tabelle, Fail-Closed bei unauflösbarem Operanden, `cd`-Verfolgung, Ancestor-Regel, Residuen-Katalog. `protected-path-internals.md` löschen und in `bin/fusion-rules` die gesamte Zielgruppen-Mechanik dazu entfernen (`IS_GUARD_INTERNALS_AGENT`, Block 1d, die Kommentare bei Zeile 61 und 205). In `README-hooks.md` die beiden Klassifizierer-Zeilen der Modultabelle, den `cd`-Absatz und die Bash-Halt-Beschreibung ersetzen; die neuen Zeilen für `protected-snapshot.ts` und den geänderten `tracker.ts` aufnehmen. In `CLAUDE.md`: der `hooks/`-Eintrag der Layouttabelle, der Absatz "Die zwei Bash-Regeln", die Erwähnungen des Klassifizierers im Absatz zur Selbstentdeckung, und die beiden Symptomzeilen zu den Guard-Denies weichen einer Zeile über das Rückrollen. In `rules-emission-golden.test.ts` die Budget-Tabelle und die beiden Zusicherungen zur Auslieferung von `protected-path-internals.md` (Zeilen 348, 656-662) entfernen.

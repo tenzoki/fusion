@@ -1,17 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { spawnSync } from "node:child_process";
-import {
-  existsSync,
-  readFileSync,
-  realpathSync,
-  symlinkSync,
-  writeFileSync,
-} from "node:fs";
+import { existsSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import {
   CASE_TIMEOUT,
   guardEntry,
-  guardStateWritten,
   readEscalation,
   readEvents,
   runBash,
@@ -21,27 +14,36 @@ import {
 } from "./helpers/guard-harness.js";
 
 // ---------------------------------------------------------------------------
-// Integration harness — plan step 6.
+// The guard, run as the hook actually runs — a fresh process, JSON on stdin,
+// JSON on stdout, against a throwaway project root.
 //
-// The unit suites (bash-mutation-guard.test.ts, 177 cases; shell-parse, 30;
-// git-branch-guard, 84) carry the classification matrix. They import the
-// classifier directly, touch no filesystem, and are unaffected by cwd. This
-// file carries what they structurally cannot:
+// ## What this file used to be, and what is left of it
 //
-//   * that a classifier deny actually reaches a `{"decision":"block"}` through
-//     the whole hook, including config loading and path normalisation;
-//   * that the escalation counter and the event log move EXACTLY when they
-//     should — file-level facts, not verdict-level ones;
-//   * that the self-detect stand-down sits where it is meant to sit.
+// It carried the end-to-end half of a classifier that read a shell command and
+// predicted which files it was about to write. That classifier is gone: the
+// question "will this command write?" is not decidable from the command text,
+// and the guard now MEASURES what a protected path holds before and after every
+// tool call instead (`lib/protected-snapshot.ts`, and
+// `protected-snapshot-integration.test.ts` for its end-to-end cases).
+//
+// Every case here that asserted a shell-mutation deny went with it. What
+// remains is what the retirement did not touch, and each of the four is a
+// property a future edit could still break:
+//
+//   * the WRITE-tool path still denies a protected path through the whole hook,
+//     including config loading and path normalisation;
+//   * the escalation counter and the event log move EXACTLY when they should —
+//     file-level facts, not verdict-level ones;
+//   * the self-detect stand-down covers the write tools and NOT the branch
+//     policy;
+//   * the git branch policy still denies, still escalates, and still lets
+//     fusion's own revert strategy through.
 //
 // Each case is a fresh subprocess against a temporary project root that is NOT
 // a plugin root. That is a requirement of the thing under test, not a style
 // choice: `isFusionPluginCwd()` caches per process, so one process can only
 // ever answer one way, and inside THIS repository it answers "yes" and stands
-// the whole check down. See helpers/guard-harness.ts for the full reasoning.
-//
-// Case count is deliberately bounded — roughly 30 process starts, ~0.2s each.
-// The exhaustive matrix lives in the unit suite, where a case is free.
+// the write guard down. See helpers/guard-harness.ts for the full reasoning.
 // ---------------------------------------------------------------------------
 
 describe("integration harness — preconditions", () => {
@@ -61,7 +63,7 @@ describe("integration harness — preconditions", () => {
     withProject(({ root, alias }) => {
       expect(realpathSync(root)).toBe(root);
       // And the alias really is a second, unresolved name for the same
-      // directory — otherwise the trap tests below assert nothing.
+      // directory — otherwise the trap test below asserts nothing.
       expect(alias).not.toBe(root);
       expect(realpathSync(alias)).toBe(root);
     });
@@ -71,689 +73,29 @@ describe("integration harness — preconditions", () => {
     // The one-line sanity check that the harness is pointed somewhere the
     // check under test actually runs. If this allows, every denial assertion
     // in this file is vacuous.
+    //
+    // Asserted on the WRITE surface. It used to be a shell mutation, which is
+    // no longer a deny anywhere — a stand-down and a retired classifier would
+    // now look identical from the shell, which is exactly what a precondition
+    // must not do.
     withProject(({ root }) => {
-      expect(runBash(root, "rm -f rules/x.md").decision).toBe("block");
+      expect(runWrite(root, resolve(root, "rules/x.md")).decision).toBe("block");
     });
   }, CASE_TIMEOUT);
 });
 
 // ---------------------------------------------------------------------------
-// Shell mutation, through the full hook.
-// ---------------------------------------------------------------------------
-
-describe("Bash mutation of a protected path is denied end to end", () => {
-  const cases: { name: string; command: string; target: string }[] = [
-    {
-      name: "mv",
-      command: "mv rules/x.md /tmp/",
-      target: "rules/x.md",
-    },
-    {
-      name: "rm",
-      command: "rm -f agents/coder.md",
-      target: "agents/coder.md",
-    },
-    {
-      name: "redirection",
-      command: "printf '' > rules/x.md",
-      target: "rules/x.md",
-    },
-    {
-      name: "a wrapper form",
-      command: "sudo rm -f skills/demo/SKILL.md",
-      target: "skills/demo/SKILL.md",
-    },
-    {
-      name: "an ancestor directory",
-      // The directory is not itself in protectedPaths; removing it would take
-      // `rules/**` with it, which is why the ancestor pass exists.
-      command: "rm -rf rules",
-      target: "rules",
-    },
-    {
-      name: "a cd-relative operand",
-      // The sharpest case the originating issue names: without the virtual-cwd
-      // walk the operand is `.guard-state` and matches nothing.
-      command: "cd fusion-workbench && rm -rf .guard-state",
-      target: "fusion-workbench/.guard-state",
-    },
-    {
-      name: "the guard's own state directory, named directly",
-      command: "rm -rf fusion-workbench/.guard-state",
-      target: "fusion-workbench/.guard-state",
-    },
-    {
-      name: "git mv",
-      command: "git mv rules/x.md docs/",
-      target: "rules/x.md",
-    },
-  ];
-
-  for (const { name, command, target } of cases) {
-    it(
-      `denies ${name}: ${command}`,
-      () => {
-        withProject(({ root }) => {
-          const res = runBash(root, command);
-
-          expect(res.decision, `expected a block for: ${command}`).toBe("block");
-          // The reason must name BOTH the offending segment and the path, or
-          // the agent reading it cannot tell which part of a compound command
-          // was refused.
-          expect(res.reason).toContain(target);
-          expect(res.reason).toContain("STOP and ask the user");
-
-          // And the block reached the shared escalation surface — same trigger
-          // the write tools use, so the monitor and the halt treat them alike.
-          const state = readEscalation(root);
-          expect(state?.consecutiveBlocks).toBe(1);
-          expect(state?.recentEvents.map((e) => e.trigger)).toEqual([
-            "protected_path",
-          ]);
-          expect(readEvents(root).map((e) => e.event)).toEqual(["guard_block"]);
-        });
-      },
-      CASE_TIMEOUT,
-    );
-  }
-});
-
-describe("Bash fail-closed cases are denied end to end", () => {
-  it(
-    "denies a recognised mutation whose operands cannot be resolved",
-    () => {
-      withProject(({ root }) => {
-        const res = runBash(root, "mv $A $B");
-        expect(res.decision).toBe("block");
-        expect(res.reason).toContain("fail-closed");
-        expect(res.reason).toContain("$A");
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "denies a relative operand hanging off a working directory it lost track of",
-    () => {
-      withProject(({ root }) => {
-        const res = runBash(root, "cd $D && rm -rf out");
-        expect(res.decision).toBe("block");
-        expect(res.reason).toContain("fail-closed");
-        // The reason must point at the `cd`, not at the operand: rewriting the
-        // path cannot help, dropping the `cd` can.
-        expect(res.reason).toContain("cd");
-      });
-    },
-    CASE_TIMEOUT,
-  );
-});
-
-// ---------------------------------------------------------------------------
-// The working-directory model, inverted into an allow-list.
-//
-// Five entrances were measured against this harness, one throwaway project per
-// row, and every one of them ALLOWED a command that real bash then used to
-// delete or overwrite a protected file
-// (`analyses/260803-1803-guard-path-model-root-cause.md`). Two need no flag at
-// all. The classifier had asserted a working directory that a `-P`, an `-n` or
-// a `CDPATH=` invalidated.
-//
-// Each case runs the SAME command through real bash afterwards, in the same
-// project, so the assertion is "the guard denies the command that would have
-// destroyed this file" rather than "the guard denies a string". Each gets its
-// own project: three denials halt the guard, and every case after that would
-// then pass as `[HALTED]` — for the wrong reason.
-// ---------------------------------------------------------------------------
-
-/**
- * WHICH SHELL EXECUTES WHAT THE GUARD ALLOWED.
- *
- * The classifier's stated model is bash, and for four Turns every effect check
- * here ran `/bin/bash`. That is not the shell on the other side of the Bash
- * tool: Claude Code starts the user's login shell, `SHELL=/bin/zsh` on this
- * machine, and the two disagree about whole constructs — `command cd DIR` moves
- * bash and is inert in zsh. A row measured in the shell that does not run it
- * proves nothing about the shell that does, which is how eleven wrapper rows
- * shipped allowing (`issues/260803-2236…`). So a case names its shell, and the
- * rows where the two shells differ appear TWICE.
- */
-const SHELLS = { bash: "/bin/bash", zsh: "/bin/zsh" } as const;
-type ShellName = keyof typeof SHELLS;
-
-/**
- * Deny the command, for a reason that is not the halt, and prove the command
- * was worth denying by running it through the named real shell and watching
- * `watch` disappear.
- */
-function denyAndShellWouldHaveWritten(
-  command: string,
-  watch: string,
-  opts: { shell?: ShellName; env?: Record<string, string> } = {},
-): void {
-  const shell = opts.shell ?? "bash";
-  withProject(({ root }) => {
-    symlinkSync("../agents", resolve(root, "rules/L"));
-
-    const res = runBash(root, command, opts.env ?? {});
-    expect(res.decision, command).toBe("block");
-    expect(res.reason ?? "", command).not.toContain("[HALTED]");
-
-    // What the deny was worth: the same command, the same project, a real shell.
-    const target = resolve(root, watch);
-    const before = readFileSync(target, "utf-8");
-    spawnSync(SHELLS[shell], ["-c", command], { cwd: root, stdio: "ignore" });
-    const after = existsSync(target) ? readFileSync(target, "utf-8") : null;
-    expect(
-      after,
-      `${shell} left ${watch} alone, so ${command} proves nothing`,
-    ).not.toBe(before);
-  });
-}
-
-/** The bash-shell default, kept so the existing rows read as they did. */
-function denyAndBashWouldHaveWritten(
-  command: string,
-  watch: string,
-  env: Record<string, string> = {},
-): void {
-  denyAndShellWouldHaveWritten(command, watch, { shell: "bash", env });
-}
-
-describe("the working directory is modelled or admitted unknown, never guessed", () => {
-  // The grant side: the exploit needs `FUSION_ALLOW_RULES_WRITE` twice, once to
-  // plant the link inside `rules/` and once to spend the grant through it. The
-  // link is pre-planted here so the TRAVERSE is what is under test.
-  const FLAG = { FUSION_ALLOW_RULES_WRITE: "1" };
-
-  it(
-    "denies a physical cd that walks through a planted link (cd -P)",
-    () => {
-      denyAndBashWouldHaveWritten(
-        "cd -P rules/L/.. && rm agents/coder.md",
-        "agents/coder.md",
-        FLAG,
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "denies the same walk with the mode set by `set -P` instead of a flag",
-    () => {
-      denyAndBashWouldHaveWritten(
-        "set -P; cd rules/L/.. && rm agents/coder.md",
-        "agents/coder.md",
-        FLAG,
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "denies the same walk through pushd -P",
-    () => {
-      denyAndBashWouldHaveWritten(
-        "pushd -P rules/L/.. ; rm agents/coder.md",
-        "agents/coder.md",
-        FLAG,
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  // The protection side: NO flag, and the reach is the whole protected list.
-  it(
-    "denies a bare-word cd resolved through an in-command CDPATH",
-    () => {
-      denyAndBashWouldHaveWritten(
-        "cd docs && CDPATH=.. cd agents && rm coder.md",
-        "agents/coder.md",
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "denies a relative write after a pushd -n, which does not change directory",
-    () => {
-      denyAndBashWouldHaveWritten(
-        "pushd -n docs && rm agents/coder.md",
-        "agents/coder.md",
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  // The two no-flag entrances Turn 5 measured. Neither is a modifier on the
-  // builtin, which is why the allow-list inversion above could not reach them:
-  // one never arrives at `firstDirArg` (a wrapper hides the builtin), the other
-  // arrives, is correctly told there is no operand, and was then pushed onto
-  // the model's stack anyway.
-  it(
-    "denies a cd reached through `command`, which really does run the builtin",
-    () => {
-      denyAndBashWouldHaveWritten("command cd rules && rm x.md", "rules/x.md");
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "denies a cd reached through `builtin`, the wrapper that was in no table",
-    () => {
-      denyAndBashWouldHaveWritten("builtin cd rules && rm x.md", "rules/x.md");
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "denies a cd reached through `time`, which is a reserved word, not /usr/bin/time",
-    () => {
-      denyAndBashWouldHaveWritten("time cd agents && rm coder.md", "agents/coder.md");
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "denies the whole protected list through the wrapper, not one spelling of it",
-    () => {
-      denyAndBashWouldHaveWritten(
-        "command cd skills/demo && rm SKILL.md",
-        "skills/demo/SKILL.md",
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "denies a popd that collects a stack entry a bare pushd never pushed",
-    () => {
-      // Six segments, and the model was one entry deep and one shifted from the
-      // bare `pushd` onward: bash swaps, the model pushed. Each later `popd`
-      // then recovered a CONFIDENTLY-named directory bash does not go to, so the
-      // fail-closed pass never ran. Bash ends in `rules/`; the model said
-      // `build/`.
-      denyAndBashWouldHaveWritten(
-        "cd rules && pushd ../build && pushd ../docs && pushd && popd && popd && rm x.md",
-        "rules/x.md",
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "denies the same collection after a pushd +N rotation",
-    () => {
-      denyAndBashWouldHaveWritten(
-        "cd rules && pushd ../build && pushd ../docs && pushd +1 && popd && rm x.md",
-        "rules/x.md",
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "denies the same collection after a pushd -N rotation",
-    () => {
-      denyAndBashWouldHaveWritten(
-        "cd rules && pushd ../build && pushd ../docs && pushd -1 && popd && rm x.md",
-        "rules/x.md",
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  // ---------------------------------------------------------------------
-  // THE ALLOW DIRECTION of the same wrapper walk (`issues/260803-2236…`).
-  //
-  // Every row above builds its operand under the cd's DESTINATION, so it can
-  // only catch a `cd` the model FAILED to follow. Marking three wrappers
-  // builtin-capable made the model follow a `cd` the shell does not make, which
-  // moves a later relative operand OFF the protected list — and no probe shaped
-  // like the ones above can see it. These rows are the mirror: the operand sits
-  // under the ORIGIN, so the deny is the one that survives only while the model
-  // refuses to assert a directory it cannot prove.
-  //
-  // Each is measured in the shell that actually performs the write.
-  // ---------------------------------------------------------------------
-
-  it(
-    "denies a cd behind `command`, which zsh does NOT run as a builtin",
-    () => {
-      // zsh's `command` forces an external lookup, so the shell never leaves the
-      // project root and `rm rules/x.md` deletes the real file. The model used
-      // to place the shell in `build/` and allow it.
-      denyAndShellWouldHaveWritten(
-        "command cd build && rm rules/x.md",
-        "rules/x.md",
-        { shell: "zsh" },
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "denies a cd behind a chained `command`, which no hop count changes",
-    () => {
-      denyAndShellWouldHaveWritten(
-        "command command cd build && rm rules/x.md",
-        "rules/x.md",
-        { shell: "zsh" },
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "denies a cd behind `\\time`, the spelling that selects /usr/bin/time",
-    () => {
-      // `resolveWord` erases the backslash because for a VERB `\rm` really is
-      // `rm`. For `time` the erasure is backwards: the escape is what demotes
-      // the reserved word to the external program, which cannot run `cd` at
-      // all. Both shells agree, so bash is enough to prove the write.
-      denyAndShellWouldHaveWritten(
-        "\\time cd build && rm rules/x.md",
-        "rules/x.md",
-        { shell: "bash" },
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "denies a cd behind /usr/bin/time, the path spelling of the same word",
-    () => {
-      denyAndShellWouldHaveWritten(
-        "/usr/bin/time cd build && rm rules/x.md",
-        "rules/x.md",
-        { shell: "zsh" },
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "denies a cd behind a quoted `time`, in the shell that runs the tool call",
-    () => {
-      denyAndShellWouldHaveWritten(
-        "'time' cd build && rm agents/coder.md",
-        "agents/coder.md",
-        { shell: "zsh" },
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "denies a PATH-SPELLED cd, which is an external program and moves nothing",
-    () => {
-      // `/usr/bin/cd` is a real binary on macOS. It changes its own process's
-      // directory and exits; the shell stays put. `programName` maps it to `cd`
-      // — correct for a verb, backwards for a builtin — so the model followed
-      // it. Measured inert in bash AND zsh.
-      denyAndShellWouldHaveWritten(
-        "/usr/bin/cd build && rm rules/x.md",
-        "rules/x.md",
-        { shell: "bash" },
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  // ---------------------------------------------------------------------
-  // The stack's DEPTH survives a give-up (`issues/260803-2237…`).
-  // ---------------------------------------------------------------------
-
-  it(
-    "denies a popd whose stack depth was given up on, after an absolute cd re-proved the cwd",
-    () => {
-      // `pushd -n ..` leaves bash one entry deeper than a model that zeroed the
-      // stack's VALUES and kept its length. The mismatch hides while the cwd is
-      // unknown and stops hiding the moment an ABSOLUTE `cd` re-proves it: the
-      // model's `popd` then finds an empty stack, reads it as bash's stay-put
-      // no-op, and leaves a PROVEN `build/` standing while bash pops to the
-      // root and deletes the protected file.
-      withProject(({ root }) => {
-        const cmd = `cd docs && pushd -n .. && cd ${root}/build && popd && rm rules/x.md`;
-        const res = runBash(root, cmd);
-        expect(res.decision, cmd).toBe("block");
-        expect(res.reason ?? "", cmd).not.toContain("[HALTED]");
-
-        const target = resolve(root, "rules/x.md");
-        const before = readFileSync(target, "utf-8");
-        spawnSync("/bin/bash", ["-c", cmd], { cwd: root, stdio: "ignore" });
-        expect(existsSync(target), `bash left rules/x.md alone`).toBe(false);
-        expect(before.length).toBeGreaterThan(0);
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "keeps allowing the same five segments when the pushd is MODELLED",
-    () => {
-      // The discriminator. With `pushd ..` instead of `pushd -n ..` the model
-      // and bash agree — both end in `docs/` — and nothing protected is
-      // reachable. If this row ever denies, the fix above has stopped being a
-      // give-up and started being a blanket.
-      withProject(({ root }) => {
-        const cmd = `cd docs && pushd .. && cd ${root}/build && popd && rm rules/x.md`;
-        expect(runBash(root, cmd).decision, cmd).toBeUndefined();
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "leaves ordinary shell work alone, which is what bounds the cost",
-    () => {
-      // One project, all allows — no denial, so nothing can halt and mask the
-      // rest. The CDPATH control is the load-bearing row: the same command
-      // WITHOUT the assignment still allows, so the denials above cannot be
-      // read as the guard having simply stopped tracking `cd`.
-      withProject(({ root }) => {
-        for (const cmd of [
-          "cd build && rm out.js",
-          "cd /tmp && rm -rf x",
-          "rm -rf node_modules",
-          "rm -rf dist",
-          "cd docs && cd agents && rm coder.md",
-          "set -euo pipefail; cd build && rm out.js",
-          "pushd build > /dev/null && rm out.js; popd > /dev/null",
-          "mkdir -p build && cd build && rm out.js",
-          // A wrapper in FRONT of a directory builtin now gives up, and the
-          // wrapper in front of a VERB is untouched by that — which is the
-          // whole of what the give-up costs. `time npm test` and
-          // `command -v jq` are the shapes an agent really writes.
-          "time npm test",
-          "command -v jq >/dev/null && rm -rf dist",
-          "timeout 60 npm test",
-          // Quoting and escaping the BUILTIN is not the same as spelling it as
-          // a path: `\\cd` and `'cd'` were measured moving the shell in bash and
-          // zsh, because `cd` is a builtin rather than a reserved word.
-          "\\cd build && rm out.js",
-          "'cd' build && rm out.js",
-        ]) {
-          expect(runBash(root, cmd).decision, cmd).toBeUndefined();
-        }
-        expect(guardStateWritten(root)).toBe(false);
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "states the cost of the wrapper give-up as denials, not as prose",
-    () => {
-      // These three ALLOWED at 9aacab5, where the model followed the wrapper's
-      // `cd`. They deny now, fail-closed, naming the working directory. Nothing
-      // is lost: reaching a directory builtin through a wrapper does not make it
-      // do anything a bare `cd` does not, and the bare form is right there.
-      //
-      // One project PER ROW: three denials halt the guard, and a halted deny
-      // carries the halt's reason instead of this one, so the assertion would
-      // pass for the wrong reason on the third.
-      for (const cmd of [
-        "command cd build && rm out.js",
-        "builtin cd build && rm out.js",
-        "time cd build && rm out.js",
-      ]) {
-        withProject(({ root }) => {
-          const res = runBash(root, cmd);
-          expect(res.decision, cmd).toBe("block");
-          expect(res.reason ?? "", cmd).not.toContain("[HALTED]");
-          expect(res.reason ?? "", cmd).toContain(
-            "working directory the guard cannot determine",
-          );
-        });
-      }
-    },
-    CASE_TIMEOUT,
-  );
-});
-
-// ---------------------------------------------------------------------------
-// The ambient CDPATH — the same degrade, arriving through the environment.
-//
-// The in-command case above is visible in the command text. This one is not:
-// the Bash tool's shell is initialised from the user's profile, so
-// `export CDPATH=…` in a `.zshrc` sends every bare-word `cd` down a search list
-// with nothing in the command to show for it. The unit suite carries the
-// matrix; what these cases carry is that `process.env` reaches the classifier
-// through the real hook at all, and — the claim the user accepted the change on
-// — that a shell WITHOUT the variable behaves exactly as it did before.
-//
-// `runBash`'s third argument is an override on the child's environment, and the
-// harness strips `CDPATH` from every other child, so these cases cannot leak
-// into their neighbours and a developer's own profile cannot leak into any of
-// them.
-// ---------------------------------------------------------------------------
-
-describe("an ambient CDPATH degrades the working-directory model", () => {
-  it(
-    "denies a bare-word cd when CDPATH is set in the environment",
-    () => {
-      withProject(({ root }) => {
-        const cmd = "cd build && rm out.js";
-        const res = runBash(root, cmd, { CDPATH: "/decoy" });
-        expect(res.decision).toBe("block");
-        expect(res.reason ?? "").not.toContain("[HALTED]");
-        // The reason names the cause the command text cannot show, and both
-        // ways out of it.
-        expect(res.reason ?? "").toContain("CDPATH is set in this shell's environment");
-        expect(res.reason ?? "").toContain("anchor the `cd` operand");
-        expect(res.reason ?? "").toContain("unset CDPATH");
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "changes NOTHING when CDPATH is unset, which is the common case",
-    () => {
-      // The claim the decision was accepted on, measured through the real
-      // guard rather than reasoned about. One project, all allows: no denial,
-      // so nothing can halt and mask a later row. Each of these would deny
-      // under a set CDPATH, and none of them denies here.
-      withProject(({ root }) => {
-        for (const cmd of [
-          "cd build && rm out.js",
-          "cd docs && rm ../notes.txt",
-          "pushd build > /dev/null && rm out.js; popd > /dev/null",
-          "cd build && cd .. && rm notes.txt",
-          "rm -rf node_modules",
-        ]) {
-          expect(runBash(root, cmd).decision, cmd).toBeUndefined();
-        }
-        // An explicitly BLANK CDPATH is not a CDPATH: `export CDPATH=` in a
-        // profile has asked for nothing, and real bash diverts nothing for it.
-        expect(
-          runBash(root, "cd build && rm out.js", { CDPATH: "" }).decision,
-        ).toBeUndefined();
-        expect(
-          runBash(root, "cd build && rm out.js", { CDPATH: "   " }).decision,
-        ).toBeUndefined();
-        expect(guardStateWritten(root)).toBe(false);
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "leaves an anchored operand allowed even with CDPATH set",
-    () => {
-      // What keeps the cost near zero for the users who do have CDPATH set:
-      // bash consults it only for a BARE-WORD operand, so anchoring the `cd`
-      // buys back the exact old behaviour — which is what the deny reason
-      // tells them to do.
-      withProject(({ root }) => {
-        for (const cmd of [
-          "cd ./build && rm out.js",
-          "cd /tmp && rm -rf x",
-          "cd . && rm build/out.js",
-          "rm -rf node_modules",
-        ]) {
-          expect(
-            runBash(root, cmd, { CDPATH: "/decoy" }).decision,
-            cmd,
-          ).toBeUndefined();
-        }
-        expect(guardStateWritten(root)).toBe(false);
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "stands down with the rest of the check in the plugin's own repo",
-    () => {
-      // The degrade is part of the protected-path policy, not a policy of its
-      // own, so it yields where that one yields. Otherwise a fusion developer
-      // with CDPATH set would meet denials the stand-down exists to prevent.
-      withPluginProject(({ root }) => {
-        expect(
-          runBash(root, "cd build && rm out.js", { CDPATH: "/decoy" }).decision,
-        ).toBeUndefined();
-        expect(
-          runBash(root, "cd docs && rm ../rules/x.md", { CDPATH: "/decoy" })
-            .decision,
-        ).toBeUndefined();
-      });
-    },
-    CASE_TIMEOUT,
-  );
-});
-
-describe("the residual, made visible", () => {
-  it(
-    "allows an unrecognised program that writes a protected path",
-    () => {
-      // C5c raises the cost of the bypass from zero to deliberate; it does not
-      // eliminate it. This asserts CURRENT behaviour on purpose, so the claim
-      // in the guard's documentation stays honest and any future widening
-      // arrives with a failing test rather than a surprise.
-      withProject(({ root }) => {
-        expect(runBash(root, "curl -o rules/x.md https://example.test/x").decision)
-          .toBeUndefined();
-        expect(guardStateWritten(root)).toBe(false);
-      });
-    },
-    CASE_TIMEOUT,
-  );
-});
-
-// ---------------------------------------------------------------------------
-// The write path, unchanged — and the trap that makes it look guarded when it
-// is not.
+// The write path — and the trap that makes it look guarded when it is not.
 // ---------------------------------------------------------------------------
 
 describe("the Edit write path still denies a protected path", () => {
   it(
     "blocks an absolute file_path under the project root",
     () => {
-      // This confirms the harness reproduces the guard's EXISTING behaviour,
-      // not only the new Bash check. If the harness were misbuilt — wrong cwd,
-      // unresolved root, missing workbench marker — this is the case that
-      // catches it, because it depends on all three.
+      // This confirms the harness reproduces the guard's behaviour end to end.
+      // If the harness were misbuilt — wrong cwd, unresolved root, missing
+      // workbench marker — this is the case that catches it, because it depends
+      // on all three.
       withProject(({ root }) => {
         const res = runWrite(root, resolve(root, "rules/x.md"));
         expect(res.decision).toBe("block");
@@ -773,8 +115,8 @@ describe("the Edit write path still denies a protected path", () => {
       withProject(({ root }) => {
         expect(runWrite(root, resolve(root, "notes.txt")).decision).toBeUndefined();
         // The write path — unlike the Bash path — DOES reset the counter and
-        // emit guard_allow. Asserting it here is what stops the next test from
-        // passing by deletion.
+        // emit guard_allow. Asserting it here is what stops the Bash-side cases
+        // below from passing by deletion.
         expect(readEvents(root).map((e) => e.event)).toEqual(["guard_allow"]);
       });
     },
@@ -783,15 +125,15 @@ describe("the Edit write path still denies a protected path", () => {
 });
 
 describe("the macOS realpath trap", () => {
-  // Both cases below assert that an absolute path reached through an
-  // UNRESOLVED alias of the project root is allowed. That is not a bug report;
-  // it is the mechanism by which a harness built on a raw `mktemp -d` turns
-  // every protected-path assertion into a vacuous pass. Pinning it here means
-  // the next person cannot reintroduce it without also deleting a test that
+  // The case below asserts that an absolute path reached through an UNRESOLVED
+  // alias of the project root is allowed. That is not a bug report; it is the
+  // mechanism by which a harness built on a raw `mktemp -d` turns every
+  // protected-path assertion into a vacuous pass. Pinning it here means the
+  // next person cannot reintroduce it without also deleting a test that
   // explains exactly what they broke.
   //
-  // The positive halves — the same paths through the resolved root — are the
-  // "blocks an absolute file_path" case above and the Bash case below.
+  // The positive half — the same path through the resolved root — is the
+  // "blocks an absolute file_path" case above.
 
   it(
     "Edit: an absolute path through an unresolved alias silently ALLOWS",
@@ -802,37 +144,37 @@ describe("the macOS realpath trap", () => {
     },
     CASE_TIMEOUT,
   );
-
-  it(
-    "Bash: an absolute operand through the resolved root blocks, through the alias does not",
-    () => {
-      withProject(({ root, alias }) => {
-        const resolved = runBash(root, `rm -f ${resolve(root, "rules/x.md")}`);
-        expect(resolved.decision).toBe("block");
-        expect(resolved.reason).toContain("rules/x.md");
-
-        const aliased = runBash(root, `rm -f ${resolve(alias, "rules/x.md")}`);
-        expect(aliased.decision).toBeUndefined();
-      });
-    },
-    CASE_TIMEOUT,
-  );
 });
 
 // ---------------------------------------------------------------------------
-// Ordinary work — the largest blast radius in the Circle, and the two Bash
-// invariants that are only observable at file level.
+// Ordinary work — the two Bash invariants that are only observable at file
+// level.
+//
+// Both are stated in prose at guard.ts's Bash allow path and both are traced to
+// a filed issue: an innocuous Bash call must not reset the consecutive-block
+// counter (260707-0750) and must not append a guard_allow event (260707-0751).
+//
+// ## Why these are no longer asserted as "`.guard-state/` does not exist"
+//
+// They used to be, and that spelling was the strongest available: a fresh
+// project running innocuous Bash created no state directory at all. It is
+// wrong now, and would be wrong even if the two properties were violated. The
+// PreToolUse hook writes a fingerprint of every protected path into
+// `.guard-state/protected-snapshot.json` on every guarded tool call, so the
+// directory exists after the first `ls -la` — while the counter and the event
+// log, which are what the two issues are about, stay untouched. Asserting the
+// directory's absence would now fail on a guard that is behaving perfectly, and
+// deleting the cases would drop two properties that still hold. So the
+// assertion is on the two files the issues name.
 // ---------------------------------------------------------------------------
 
 describe("ordinary work is allowed and writes nothing", () => {
   it(
-    "a fresh project running innocuous Bash never creates .guard-state at all",
+    "a fresh project running innocuous Bash writes no counter and no event",
     () => {
       withProject(({ root }) => {
         expect(runBash(root, "ls -la").decision).toBeUndefined();
-        // Not "the counter is still zero" — the directory does not exist. That
-        // is the strongest form of "zero side effect" available.
-        expect(guardStateWritten(root)).toBe(false);
+        // Neither file exists: no counter write, no guard_allow append.
         expect(readEscalation(root)).toBeNull();
         expect(readEvents(root)).toEqual([]);
       });
@@ -843,17 +185,18 @@ describe("ordinary work is allowed and writes nothing", () => {
   it(
     "innocuous Bash after a block neither resets the counter nor appends an event",
     () => {
-      // Issues 260707-0750 (no counter reset) and 260707-0751 (no guard_allow
-      // flood). Both are settled properties of the Bash allow path, and both
-      // are invisible from a verdict — only the files show them.
+      // The opening block is a branch switch, which is the one deny the Bash
+      // surface still has. It used to be `rm -f rules/x.md`, from the retired
+      // classifier.
       withProject(({ root }) => {
-        expect(runBash(root, "rm -f rules/x.md").decision).toBe("block");
+        expect(runBash(root, "git switch main").decision).toBe("block");
         expect(readEscalation(root)?.consecutiveBlocks).toBe(1);
 
         const innocuous = [
           "ls -la",
           "git status",
-          // Mutation VERBS on unprotected targets — the false-positive surface.
+          // Mutation verbs on unprotected targets — commands agents run
+          // constantly, and the surface a returning classifier would light up.
           "mv notes.txt /tmp/",
           "rm -rf build",
           "sed -i '' 's/a/b/' notes.txt",
@@ -862,9 +205,6 @@ describe("ordinary work is allowed and writes nothing", () => {
           // fusion's own revert strategy. If this ever denies, every agent
           // loses its way to undo a bad edit.
           "git checkout HEAD -- rules/x.md",
-          // The `2>&1` segmentation artifact — a redirection scanner that
-          // treated a dangling operator as unresolved would deny this, and
-          // agents run it constantly.
           "echo hi 2>&1",
         ];
 
@@ -875,7 +215,7 @@ describe("ordinary work is allowed and writes nothing", () => {
           ).toBeUndefined();
         }
 
-        // Nine allows later: the counter has not moved and the log has not
+        // Eight allows later: the counter has not moved and the log has not
         // grown past the single block that opened the case.
         expect(readEscalation(root)?.consecutiveBlocks).toBe(1);
         expect(readEvents(root).map((e) => e.event)).toEqual(["guard_block"]);
@@ -887,6 +227,12 @@ describe("ordinary work is allowed and writes nothing", () => {
 
 // ---------------------------------------------------------------------------
 // Escalation: three Bash denials halt, exactly as three write denials do.
+//
+// The three used to be protected-path mutations. They are branch-policy denials
+// now, for the same reason the case above changed its opener — but the property
+// is the shared escalation surface, not which policy fed it, and that is
+// unchanged: a Bash deny increments the same counter a write deny does and the
+// third one raises the halt.
 // ---------------------------------------------------------------------------
 
 describe("three consecutive Bash denials escalate to a halt", () => {
@@ -894,13 +240,13 @@ describe("three consecutive Bash denials escalate to a halt", () => {
     "raises haltActive and emits guard_halt on the third",
     () => {
       withProject(({ root }) => {
-        expect(runBash(root, "rm -f rules/x.md").decision).toBe("block");
+        expect(runBash(root, "git switch main").decision).toBe("block");
         expect(readEscalation(root)?.haltActive).toBe(false);
 
-        expect(runBash(root, "mv agents/coder.md /tmp/").decision).toBe("block");
+        expect(runBash(root, "git checkout -b feature").decision).toBe("block");
         expect(readEscalation(root)?.haltActive).toBe(false);
 
-        expect(runBash(root, "printf '' > skills/demo/SKILL.md").decision).toBe(
+        expect(runBash(root, "git worktree add ../wt feature").decision).toBe(
           "block",
         );
 
@@ -908,9 +254,9 @@ describe("three consecutive Bash denials escalate to a halt", () => {
         expect(state?.consecutiveBlocks).toBe(3);
         expect(state?.haltActive).toBe(true);
         expect(state?.recentEvents.map((e) => e.trigger)).toEqual([
-          "protected_path",
-          "protected_path",
-          "protected_path",
+          "git_branch_switch",
+          "git_branch_switch",
+          "git_branch_switch",
           "consecutive_blocks",
         ]);
         expect(readEvents(root).map((e) => e.event)).toEqual([
@@ -928,7 +274,7 @@ describe("three consecutive Bash denials escalate to a halt", () => {
 // The stand-down pair — the load-bearing ordering property.
 // ---------------------------------------------------------------------------
 
-describe("self-detect stand-down: the mutation check yields, the branch policy does not", () => {
+describe("self-detect stand-down: the write guard yields, the branch policy does not", () => {
   // Run against a throwaway root carrying `.claude-plugin/plugin.json` with
   // name "fusion" — the single condition isFusionPluginCwd() tests. The REAL
   // repository would work too, and is what a developer actually sits in, but a
@@ -936,20 +282,10 @@ describe("self-detect stand-down: the mutation check yields, the branch policy d
   //
   // Each case is its own subprocess by construction (runBash spawns), which is
   // what the caching in self-detect.ts requires: one process, one answer.
-
-  it(
-    "allows a shell mutation of a protected path in the plugin's own repo",
-    () => {
-      withPluginProject(({ root }) => {
-        // Denied everywhere else in this file. Allowed here because agents/**,
-        // rules/** and skills/** are exactly what a fusion developer's agents
-        // legitimately move and rewrite.
-        expect(runBash(root, "mv rules/x.md /tmp/").decision).toBeUndefined();
-        expect(guardStateWritten(root)).toBe(false);
-      });
-    },
-    CASE_TIMEOUT,
-  );
+  //
+  // The measurement side of the stand-down — a protected path changed by a
+  // shell in the plugin's own repo is NOT reverted — is asserted in
+  // `protected-snapshot-integration.test.ts`, "the stand-downs".
 
   it(
     "still denies a branch switch in the plugin's own repo",
@@ -969,11 +305,8 @@ describe("self-detect stand-down: the mutation check yields, the branch policy d
   );
 
   it(
-    "stands the Edit write path down too, so the two surfaces stay coherent",
+    "stands the Edit write path down",
     () => {
-      // If Edit stood down while the shell check stayed active, an agent would
-      // learn that `Edit rules/x.md` works and `mv rules/x.md …` does not —
-      // which teaches routing around the guard rather than respecting it.
       withPluginProject(({ root }) => {
         expect(runWrite(root, resolve(root, "rules/x.md")).decision).toBeUndefined();
         const events = readEvents(root);
@@ -985,14 +318,14 @@ describe("self-detect stand-down: the mutation check yields, the branch policy d
   );
 
   it(
-    "denies the same mutation as soon as the plugin manifest is not at cwd",
+    "denies the same write as soon as the plugin manifest is not at cwd",
     () => {
       // The boundary, asserted from the other side in the same describe: the
-      // ONLY difference between this root and the one two cases up is
+      // ONLY difference between this root and the one above is
       // .claude-plugin/plugin.json. `isFusionPluginCwd()` does no upward walk,
       // so this is the whole of the condition.
       withProject(({ root }) => {
-        expect(runBash(root, "mv rules/x.md /tmp/").decision).toBe("block");
+        expect(runWrite(root, resolve(root, "rules/x.md")).decision).toBe("block");
       });
     },
     CASE_TIMEOUT,
@@ -1000,281 +333,22 @@ describe("self-detect stand-down: the mutation check yields, the branch policy d
 });
 
 // ---------------------------------------------------------------------------
-// A `cd` the shell does not guarantee, and a redirection that used to walk
-// through every directory give-up. Taken together, because each left the
-// other's last escape open
-// (`decisions/260803-2338_i_…after-a-cd-it-cannot-prove-succeeded.md` option 1,
-// `decisions/260804-0106_a_…around-the-program-or-around-the-cause…`).
+// git's revert strategy, end to end.
 //
-// Every denial below is measured against the real guard subprocess in its own
-// throwaway project, asserts the deny is not `[HALTED]`, and then runs the same
-// command through the NAMED real shell and watches the file change. The two
-// halves are separable in the unit suite; here they are measured as shipped.
-// ---------------------------------------------------------------------------
-
-describe("a cd the shell never promised to have made", () => {
-  it(
-    "denies the one-segment bypass, in bash",
-    () => {
-      // The whole escape: no flag, no wrapper, one extra segment. `cd` fails,
-      // bash stays at the project root, and the model followed the `cd`.
-      denyAndShellWouldHaveWritten(
-        "cd nonexistent; rm rules/x.md",
-        "rules/x.md",
-        { shell: "bash" },
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "denies the one-segment bypass, in zsh — the shell the tool call runs",
-    () => {
-      denyAndShellWouldHaveWritten(
-        "cd nonexistent; rm rules/x.md",
-        "rules/x.md",
-        { shell: "zsh" },
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "denies its REDIRECT spelling, in bash",
-    () => {
-      // The spelling neither decision closes on its own: the working directory
-      // is unknown (option 1 put it there) and `echo` is outside the verb
-      // table, so only the cause-shaped fail-closed bound reaches it.
-      denyAndShellWouldHaveWritten(
-        "cd nope || true; echo pwned > rules/x.md",
-        "rules/x.md",
-        { shell: "bash" },
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "denies its REDIRECT spelling, in zsh",
-    () => {
-      denyAndShellWouldHaveWritten(
-        "cd nope || true; echo pwned > rules/x.md",
-        "rules/x.md",
-        { shell: "zsh" },
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "names the separator rather than the operand, so the remedy is findable",
-    () => {
-      withProject(({ root }) => {
-        const res = runBash(root, "cd nonexistent; rm rules/x.md");
-        expect(res.decision).toBe("block");
-        expect(res.reason ?? "").not.toContain("[HALTED]");
-        expect(res.reason ?? "").toContain("does not guarantee succeeded");
-        expect(res.reason ?? "").toContain("&&");
-      });
-    },
-    CASE_TIMEOUT,
-  );
-});
-
-describe("a redirect target the guard cannot place denies whatever the program is", () => {
-  // The six rows that newly ALLOWED at `048f3db`, plus the wrapper row T6-1
-  // named as not closed, plus the three original `260803-1835` rows. Each in
-  // the shell that performs the write, one project per row.
-  const ROWS: {
-    command: string;
-    watch: string;
-    shell: "bash" | "zsh";
-    env?: Record<string, string>;
-  }[] = [
-    { command: "command cd rules && echo pwned > x.md", watch: "rules/x.md", shell: "bash" },
-    { command: "builtin cd rules && echo pwned > x.md", watch: "rules/x.md", shell: "bash" },
-    { command: "builtin cd rules && echo pwned > x.md", watch: "rules/x.md", shell: "zsh" },
-    { command: "time cd agents && echo pwned > coder.md", watch: "agents/coder.md", shell: "bash" },
-    { command: "time cd agents && echo pwned > coder.md", watch: "agents/coder.md", shell: "zsh" },
-    {
-      // `printf ''` truncates rather than writes, which is still a change the
-      // effect check sees — and it is the row as it was measured at `048f3db`.
-      command: "command cd skills/demo && printf '' > SKILL.md",
-      watch: "skills/demo/SKILL.md",
-      shell: "bash",
-    },
-    // T6-1's eleventh row: zsh's `command` forces an external lookup, so the
-    // shell never leaves the root and the LITERAL protected path is written.
-    {
-      command: "command cd build && echo pwned > rules/x.md",
-      watch: "rules/x.md",
-      shell: "zsh",
-    },
-    // The three rows `260803-1835` was filed on. Two need no flag.
-    {
-      command: "pushd -n docs && echo pwned > agents/coder.md",
-      watch: "agents/coder.md",
-      shell: "bash",
-    },
-    {
-      command: "cd docs && CDPATH=.. cd agents && echo pwned > coder.md",
-      watch: "agents/coder.md",
-      shell: "bash",
-    },
-    {
-      command: "cd -P rules/L/.. && echo pwned > agents/coder.md",
-      watch: "agents/coder.md",
-      shell: "bash",
-      env: { FUSION_ALLOW_RULES_WRITE: "1" },
-    },
-  ];
-
-  for (const { command, watch, shell, env } of ROWS) {
-    it(
-      `denies (${shell}): ${command}`,
-      () => {
-        denyAndShellWouldHaveWritten(command, watch, { shell, env });
-      },
-      CASE_TIMEOUT,
-    );
-  }
-});
-
-describe("the fail-closed bound survives — an unparseable ARGUMENT is still allowed", () => {
-  it(
-    "leaves the redirect idiom and the flag-value forms alone",
-    () => {
-      // One project, all allows, so no denial can halt the guard and mask the
-      // rest. These are the rows `260801-1859` was filed to protect, and the
-      // reason the reversal above is drawn around the CAUSE rather than around
-      // the program: in every one of them it is the TOKEN that cannot be
-      // resolved, from a working directory the guard knows exactly.
-      withProject(({ root }) => {
-        for (const cmd of [
-          'npm test > "$LOG"',
-          'npm test > "$TMPDIR/test.log"',
-          "curl -o $OUT https://x",
-          "curl -sL https://x -o \"$OUT\"",
-          "make $TARGET",
-          "cat report.md > ~/backup.md",
-          "echo hi >> ~/notes.md",
-          'echo x > "$F"',
-          'echo x > "rules/$F"',
-          'go build -o "$BIN" ./cmd/x',
-          'cd build && echo x > "$F"',
-        ]) {
-          expect(runBash(root, cmd).decision, cmd).toBeUndefined();
-        }
-        expect(guardStateWritten(root)).toBe(false);
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "keeps the ordinary `&&` shapes exact, which is what the cost table bought",
-    () => {
-      withProject(({ root }) => {
-        for (const cmd of [
-          "cd build && rm out.js",
-          "mkdir -p build && cd build && rm out.js",
-          "cd hooks && npm run build && rm -rf dist",
-          "cd hooks && npm test",
-          "pushd build > /dev/null && rm out.js; popd > /dev/null",
-          "cd hooks; npm test; cd ..",
-          "ls; rm build/out.js",
-        ]) {
-          expect(runBash(root, cmd).decision, cmd).toBeUndefined();
-        }
-        expect(guardStateWritten(root)).toBe(false);
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  /**
-   * A multi-line `&&` chain is the single-line form, and the guard has to see
-   * it as one. The lexer downgraded the pending `&&` on the newline, so this
-   * shape denied with the reason *"Join the `cd` to what follows it with
-   * `&&`"* — the one remedy the caller had already applied
-   * (`issues/260804-0838…`). An unfollowable deny is what
-   * `rules/protected-path-discipline.md` exists to prevent, and this shape is
-   * among the commonest an agent writes.
-   *
-   * The allow is asserted against the real shells rather than against the
-   * classifier's own reading: both bash and zsh run the chain as one and-or
-   * list, so `build/out.js` goes and the project root's copy stays.
-   */
-  it(
-    "allows a multi-line && chain, and both shells agree it is one and-or list",
-    () => {
-      for (const shell of ["bash", "zsh"] as const) {
-        withProject(({ root }) => {
-          for (const cmd of [
-            "cd hooks &&\n  npm run build &&\n  rm -rf dist",
-            "cd build &&\n  rm out.js",
-            "mkdir -p build &&\n  cd build &&\n  rm out.js",
-          ]) {
-            expect(runBash(root, cmd).decision, `${shell}: ${cmd}`).toBeUndefined();
-          }
-          expect(guardStateWritten(root)).toBe(false);
-
-          // What the allow claims, checked in the shell that would run it.
-          writeFileSync(resolve(root, "build/out.js"), "inner\n");
-          writeFileSync(resolve(root, "out.js"), "outer\n");
-          spawnSync(SHELLS[shell], ["-c", "cd build &&\n  rm out.js"], {
-            cwd: root,
-            stdio: "ignore",
-          });
-          expect(existsSync(resolve(root, "build/out.js")), shell).toBe(false);
-          expect(existsSync(resolve(root, "out.js")), shell).toBe(true);
-
-          // And the other half of the guarantee: a failing `cd` runs nothing,
-          // which is why following it across the newline is sound.
-          writeFileSync(resolve(root, "out.js"), "outer\n");
-          spawnSync(SHELLS[shell], ["-c", "cd nonexistent &&\n  rm out.js"], {
-            cwd: root,
-            stdio: "ignore",
-          });
-          expect(existsSync(resolve(root, "out.js")), shell).toBe(true);
-        });
-      }
-    },
-    CASE_TIMEOUT,
-  );
-
-  /**
-   * The discriminating neighbour: a newline that is NOT part of a `&&`
-   * operator still gives the directory up, so the fix cannot be read as
-   * "newlines are ignored".
-   */
-  it(
-    "still denies when the newline is the joiner rather than part of the operator",
-    () => {
-      withProject(({ root }) => {
-        const res = runBash(root, "cd hooks &&\n  npm run build;\n  rm -rf dist");
-        expect(res.decision).toBe("block");
-        expect(res.reason ?? "").not.toContain("[HALTED]");
-      });
-    },
-    CASE_TIMEOUT,
-  );
-});
-
-// ---------------------------------------------------------------------------
-// git carries its own working directory, and its own revert strategy.
+// `rules/protected-path-discipline.md` and `rules/git-branch-discipline.md` both
+// tell every agent in every consuming project that `git checkout HEAD -- <paths>`
+// is always allowed, and the orchestrator reverts an agent's out-of-scope edit
+// with it. The branch policy is what has to keep letting it through — it is the
+// one policy left on this surface, and the `--` separator is its discriminator.
 //
-// `260804-1024` (High) and `260804-1026` (Medium), both PRE-EXISTING and older
-// than the Circle that closed them. Every row below ALLOWED at `cc012fc`, and
-// each was measured performing its write in a real repository before the fix
-// (git 2.49.0, bash 3.2 and zsh 5.9).
-//
-// The unit suite carries the matrix; what this block carries is the half a
-// verdict cannot prove — that the command the guard now blocks really would
-// have destroyed the file, in the shell that would have run it. Verdict and
-// effect are measured in SEPARATE fresh projects per row, so no two assertions
-// share a tree and no deny can pass as `[HALTED]`.
+// The effect side asserts the command really does revert: the working file is
+// dirtied first, and the command has to put it back. An allow asserted without
+// the effect would pass just as well against a guard that had broken the
+// command some other way.
 // ---------------------------------------------------------------------------
+
+/** The two shells, because Claude Code starts the user's login shell, not bash. */
+const SHELLS = { bash: "/bin/bash", zsh: "/bin/zsh" } as const;
 
 /**
  * Turn a harness project into a git repository with two commits, so `HEAD~1`
@@ -1302,416 +376,68 @@ function initRepo(root: string): void {
   git("init", "-q", ".");
   git("add", "-A");
   git("commit", "-qm", "one");
-  // Every tracked file differs between the two commits, so a checkout of
-  // `HEAD~1` is a real write for the UNPROTECTED cost rows as well as for the
-  // protected ones. A file identical across both commits would make its row
-  // pass vacuously in the "survives" direction and fail in the "changes" one.
   writeFileSync(resolve(root, "rules/x.md"), "# a rule, revised\n", "utf-8");
   writeFileSync(resolve(root, "agents/coder.md"), "# an agent, revised\n", "utf-8");
   writeFileSync(resolve(root, "build/out.js"), "// built, revised\n", "utf-8");
   git("commit", "-qam", "two");
-  // Untracked files, so `git clean -f` has something to destroy.
-  writeFileSync(resolve(root, "rules/untracked.md"), "untracked\n", "utf-8");
-  writeFileSync(resolve(root, "build/untracked.js"), "untracked\n", "utf-8");
 }
 
-/** The state of a file as one string, so "changed" needs no case analysis. */
-function stateOf(path: string): string {
-  return existsSync(path) ? readFileSync(path, "utf-8") : " GONE";
-}
-
-/**
- * Deny the command — not as `[HALTED]` — and prove the deny was worth having by
- * running the same command through the named real shell, in a SECOND fresh
- * repository, and watching `watch` change.
- */
-function gitDenyAndShellWouldHaveWritten(
-  command: string,
-  watch: string,
-  shell: ShellName,
-): void {
-  withProject(({ root }) => {
-    initRepo(root);
-    const res = runBash(root, command);
-    expect(res.decision, command).toBe("block");
-    expect(res.reason ?? "", command).not.toContain("[HALTED]");
-  });
-
-  withProject(({ root }) => {
-    initRepo(root);
-    const target = resolve(root, watch);
-    const before = stateOf(target);
-    spawnSync(SHELLS[shell], ["-c", command], { cwd: root, stdio: "ignore" });
-    expect(
-      stateOf(target),
-      `${shell} left ${watch} alone, so ${command} proves nothing`,
-    ).not.toBe(before);
-  });
-}
-
-/**
- * The other direction, and the one a fix is easiest to get wrong in: the guard
- * ALLOWS the command, and the real shell performs the write it was allowed for.
- * An allow asserted without the effect would pass just as well against a guard
- * that had broken the command some other way.
- */
-function gitAllowAndShellPerforms(
-  command: string,
-  watch: string,
-  shell: ShellName,
-  expectation: "changes" | "survives",
-): void {
-  withProject(({ root }) => {
-    initRepo(root);
-    const res = runBash(root, command);
-    expect(res.decision ?? "allow", command).not.toBe("block");
-  });
-
-  withProject(({ root }) => {
-    initRepo(root);
-    const target = resolve(root, watch);
-    const before = stateOf(target);
-    spawnSync(SHELLS[shell], ["-c", command], { cwd: root, stdio: "ignore" });
-    const after = stateOf(target);
-    if (expectation === "changes") {
-      expect(after, `${shell}: ${command} wrote nothing`).not.toBe(before);
-    } else {
-      expect(after, `${shell}: ${command} disturbed ${watch}`).toBe(before);
-    }
-  });
-}
-
-describe("a git directory flag reaches the protected list, and is denied", () => {
-  const rows: { command: string; watch: string }[] = [
-    { command: "git -C rules rm x.md", watch: "rules/x.md" },
-    { command: "git -C agents rm coder.md", watch: "agents/coder.md" },
-    { command: "git --work-tree=rules clean -fdx", watch: "rules/x.md" },
-    { command: "git -C rules clean -fdx", watch: "rules/untracked.md" },
-    { command: "git -C rules restore --source=HEAD~1 x.md", watch: "rules/x.md" },
-    { command: "git -C rules -C ../agents rm coder.md", watch: "agents/coder.md" },
-    { command: "git --namespace foo rm rules/x.md", watch: "rules/x.md" },
-  ];
-
-  for (const { command, watch } of rows) {
+describe("the revert strategy is allowed, and it reverts", () => {
+  for (const form of ["git checkout HEAD -- rules/x.md", "git checkout HEAD -- ."]) {
     for (const shell of ["bash", "zsh"] as const) {
       it(
-        `denies (${shell}): ${command}`,
+        `allows and reverts (${shell}): ${form}`,
         () => {
-          gitDenyAndShellWouldHaveWritten(command, watch, shell);
-        },
-        CASE_TIMEOUT,
-      );
-    }
-  }
-});
-
-describe("a git checkout from a non-HEAD tree-ish is denied; from HEAD it is not", () => {
-  const denied: { command: string; watch: string }[] = [
-    { command: "git checkout HEAD~1 -- rules/x.md", watch: "rules/x.md" },
-    { command: "git checkout HEAD~1 rules/x.md", watch: "rules/x.md" },
-    { command: "git -C rules checkout HEAD~1 -- x.md", watch: "rules/x.md" },
-  ];
-
-  for (const { command, watch } of denied) {
-    for (const shell of ["bash", "zsh"] as const) {
-      it(
-        `denies (${shell}): ${command}`,
-        () => {
-          gitDenyAndShellWouldHaveWritten(command, watch, shell);
-        },
-        CASE_TIMEOUT,
-      );
-    }
-  }
-
-  // THE PROMISE, end to end. `rules/protected-path-discipline.md` tells every
-  // agent in every consuming project that this form is always allowed, and the
-  // orchestrator reverts an agent's out-of-scope edit with it. The effect side
-  // asserts it really does revert: the working file is dirtied first, and the
-  // command has to put it back.
-  for (const shell of ["bash", "zsh"] as const) {
-    it(
-      `allows the revert strategy, and it reverts (${shell})`,
-      () => {
-        withProject(({ root }) => {
-          initRepo(root);
-          const res = runBash(root, "git checkout HEAD -- rules/x.md");
-          expect(res.decision ?? "allow").not.toBe("block");
-        });
-
-        withProject(({ root }) => {
-          initRepo(root);
-          const target = resolve(root, "rules/x.md");
-          const committed = readFileSync(target, "utf-8");
-          writeFileSync(target, "# an agent's out-of-scope edit\n", "utf-8");
-          spawnSync(SHELLS[shell], ["-c", "git checkout HEAD -- rules/x.md"], {
-            cwd: root,
-            stdio: "ignore",
+          withProject(({ root }) => {
+            initRepo(root);
+            const res = runBash(root, form);
+            expect(res.decision ?? "allow").not.toBe("block");
           });
-          expect(readFileSync(target, "utf-8"), shell).toBe(committed);
-        });
-      },
-      CASE_TIMEOUT,
-    );
-  }
-});
 
-describe("the cost of the git directory rows, measured rather than asserted", () => {
-  // Direction 1 of `260804-1024` — give up on any `-C` — would have denied
-  // every row here. They are why the union was built instead, and a suite
-  // without them cannot tell a fix from a blanket give-up on git.
-  const rows: {
-    command: string;
-    watch: string;
-    expectation: "changes" | "survives";
-  }[] = [
-    { command: "git -C build rm out.js", watch: "build/out.js", expectation: "changes" },
-    {
-      command: "git -C build clean -fdx",
-      watch: "build/untracked.js",
-      expectation: "changes",
-    },
-    {
-      command: "git checkout HEAD~1 -- build/out.js",
-      watch: "build/out.js",
-      expectation: "changes",
-    },
-    // And the neighbours the same commands must NOT have touched.
-    {
-      command: "git -C build clean -fdx",
-      watch: "rules/untracked.md",
-      expectation: "survives",
-    },
-    { command: "git status", watch: "rules/x.md", expectation: "survives" },
-  ];
-
-  for (const { command, watch, expectation } of rows) {
-    for (const shell of ["bash", "zsh"] as const) {
-      it(
-        `allows (${shell}): ${command} [${watch} ${expectation}]`,
-        () => {
-          gitAllowAndShellPerforms(command, watch, shell, expectation);
-        },
-        CASE_TIMEOUT,
-      );
-    }
-  }
-});
-
-// ---------------------------------------------------------------------------
-// The two git routes the Turn 10 review measured failing open.
-//
-// `260804-1344` (High) — `git --namespace foo -C rules rm x.md` deleted a rule
-// file and allowed, because the option walk stopped at the unknown option's
-// VALUE and never read the `-C` behind it.
-//
-// `260804-1345` (High) — `git checkout HEAD~1 -- .` overwrote every tracked file
-// in the project from an arbitrary commit and allowed, because the ancestor
-// check excludes the project root deliberately and `checkout` writes THROUGH its
-// pathspec.
-//
-// `260804-1346` (Medium) — the same root-pathspec hole on `git clean`, reaching
-// untracked files only, which is exactly the rule file an agent has just written
-// under `FUSION_ALLOW_RULES_WRITE` and not yet committed.
-//
-// Every row below ALLOWED at `f82ac02` and every one was measured performing its
-// write in a real repository, in both shells. Verdict and effect are measured in
-// SEPARATE fresh projects, so no deny can pass as `[HALTED]`.
-// ---------------------------------------------------------------------------
-
-describe("a git option walk that stops early hides the directory behind it", () => {
-  const rows: { command: string; watch: string }[] = [
-    { command: "git --namespace foo -C rules rm x.md", watch: "rules/x.md" },
-    { command: "git --namespace foo -C agents rm coder.md", watch: "agents/coder.md" },
-    {
-      command: "git --namespace foo --work-tree=rules clean -fdx",
-      watch: "rules/untracked.md",
-    },
-  ];
-
-  for (const { command, watch } of rows) {
-    for (const shell of ["bash", "zsh"] as const) {
-      it(
-        `denies (${shell}): ${command}`,
-        () => {
-          gitDenyAndShellWouldHaveWritten(command, watch, shell);
-        },
-        CASE_TIMEOUT,
-      );
-    }
-  }
-
-  // The cost side. A fix that gave up on every invocation carrying an
-  // unrecognised option would pass every row above and deny all of these.
-  const allowed: {
-    command: string;
-    watch: string;
-    expectation: "changes" | "survives";
-  }[] = [
-    {
-      command: "git --namespace foo -C build rm out.js",
-      watch: "build/out.js",
-      expectation: "changes",
-    },
-    {
-      command: "git --namespace foo -C rules status",
-      watch: "rules/x.md",
-      expectation: "survives",
-    },
-  ];
-
-  for (const { command, watch, expectation } of allowed) {
-    for (const shell of ["bash", "zsh"] as const) {
-      it(
-        `allows (${shell}): ${command} [${watch} ${expectation}]`,
-        () => {
-          gitAllowAndShellPerforms(command, watch, shell, expectation);
-        },
-        CASE_TIMEOUT,
-      );
-    }
-  }
-});
-
-describe("a git verb that writes THROUGH the project root is denied", () => {
-  const rows: { command: string; watch: string }[] = [
-    { command: "git checkout HEAD~1 -- .", watch: "rules/x.md" },
-    { command: "git checkout HEAD~1 -- ./", watch: "rules/x.md" },
-    { command: "git restore --source=HEAD~1 .", watch: "rules/x.md" },
-    // The explicit and the implicit spelling of the same command, which took
-    // different code paths to the same allow (`260804-1346`).
-    { command: "git clean -fdx .", watch: "rules/untracked.md" },
-    { command: "git clean -fdx", watch: "rules/untracked.md" },
-  ];
-
-  for (const { command, watch } of rows) {
-    for (const shell of ["bash", "zsh"] as const) {
-      it(
-        `denies (${shell}): ${command}`,
-        () => {
-          gitDenyAndShellWouldHaveWritten(command, watch, shell);
-        },
-        CASE_TIMEOUT,
-      );
-    }
-  }
-
-  // The cost side, and the promise. `git checkout HEAD -- .` is the revert
-  // strategy over the whole tree: it writes nothing an agent could not have
-  // obtained by leaving the files alone, so it stays allowed and it really does
-  // revert. Asserting only "unchanged in a clean tree" would pass against a
-  // guard that had broken the command some other way, so the file is dirtied
-  // first and the command has to put it back.
-  for (const shell of ["bash", "zsh"] as const) {
-    it(
-      `allows the whole-tree revert, and it reverts (${shell})`,
-      () => {
-        withProject(({ root }) => {
-          initRepo(root);
-          const res = runBash(root, "git checkout HEAD -- .");
-          expect(res.decision ?? "allow").not.toBe("block");
-        });
-
-        withProject(({ root }) => {
-          initRepo(root);
-          const target = resolve(root, "rules/x.md");
-          const committed = readFileSync(target, "utf-8");
-          writeFileSync(target, "# an agent's out-of-scope edit\n", "utf-8");
-          spawnSync(SHELLS[shell], ["-c", "git checkout HEAD -- ."], {
-            cwd: root,
-            stdio: "ignore",
+          withProject(({ root }) => {
+            initRepo(root);
+            const target = resolve(root, "rules/x.md");
+            const committed = readFileSync(target, "utf-8");
+            writeFileSync(target, "# an agent's out-of-scope edit\n", "utf-8");
+            spawnSync(SHELLS[shell], ["-c", form], { cwd: root, stdio: "ignore" });
+            expect(readFileSync(target, "utf-8"), shell).toBe(committed);
           });
-          expect(readFileSync(target, "utf-8"), shell).toBe(committed);
-        });
-      },
-      CASE_TIMEOUT,
-    );
-  }
-
-  const allowed: {
-    command: string;
-    watch: string;
-    expectation: "changes" | "survives";
-  }[] = [
-    // An unprotected subtree is still an ordinary operand.
-    {
-      command: "git checkout HEAD~1 -- build",
-      watch: "build/out.js",
-      expectation: "changes",
-    },
-    {
-      command: "git restore --source=HEAD~1 build",
-      watch: "build/out.js",
-      expectation: "changes",
-    },
-    {
-      command: "git clean -fdx build",
-      watch: "build/untracked.js",
-      expectation: "changes",
-    },
-    {
-      command: "git clean -fdx build",
-      watch: "rules/untracked.md",
-      expectation: "survives",
-    },
-    // The root exclusion itself is NOT removed: these write the entry they
-    // name, and `260804-1345` warns explicitly against taking it out wholesale.
-    { command: "cp build/out.js .", watch: "out.js", expectation: "changes" },
-    { command: "mv build/out.js .", watch: "out.js", expectation: "changes" },
-  ];
-
-  for (const { command, watch, expectation } of allowed) {
-    for (const shell of ["bash", "zsh"] as const) {
-      it(
-        `allows (${shell}): ${command} [${watch} ${expectation}]`,
-        () => {
-          gitAllowAndShellPerforms(command, watch, shell, expectation);
         },
         CASE_TIMEOUT,
       );
     }
   }
-});
 
-describe("the deny reasons around the git rows name their own cause", () => {
-  // `260804-1347`: both rows already denied, so a verdict assertion would pass
-  // vacuously. The assertion is on the reason string — the deny told the agent
-  // to drop a `cd` the command does not contain, and for the `clean` row named
-  // `.`, the model's implicit pathspec, as the thing being written.
-  for (const command of [
-    "git -C $D rm build/out.js",
-    "git --work-tree=$W clean -fdx",
-  ]) {
-    it(
-      `names the git directory flag, not a cd: ${command}`,
-      () => {
-        withProject(({ root }) => {
-          const res = runBash(root, command);
-          expect(res.decision, command).toBe("block");
-          const reason = res.reason ?? "";
-          expect(reason, command).not.toContain("[HALTED]");
-          expect(reason, command).not.toContain("`cd`");
-          expect(reason, command).toContain("-C");
-          expect(reason, command).toContain("--work-tree");
-        });
-      },
-      CASE_TIMEOUT,
-    );
-  }
-
-  // `260804-1348` part 2: the mutation row's second stated cost is unreachable
-  // through the hook, because the BRANCH policy reaches this command first and
-  // gives a different reason with a different way through. Pinned so the two
-  // policies cannot start reporting each other's permission unnoticed.
   it(
-    "leaves `git checkout <file> <file>` to the branch policy, which answers first",
+    "leaves the file in place — the revert is not a delete",
     () => {
+      // Guards the assertion above against a git that "reverted" by removing
+      // the file, which would satisfy a content comparison against nothing.
+      withProject(({ root }) => {
+        initRepo(root);
+        spawnSync(SHELLS.bash, ["-c", "git checkout HEAD -- rules/x.md"], {
+          cwd: root,
+          stdio: "ignore",
+        });
+        expect(existsSync(resolve(root, "rules/x.md"))).toBe(true);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+describe("the branch policy answers a bare `git checkout` first", () => {
+  it(
+    "denies `git checkout <file> <file>` on the branch policy's own reason",
+    () => {
+      // No `--`, and the targets do not exist on disk, so the branch policy's
+      // fail-closed clause denies. There is no second policy on this surface any
+      // more, so the reason is the only one an agent can meet here — pinned so a
+      // future policy cannot start answering in its place unnoticed.
       withProject(({ root }) => {
         const res = runBash(root, "git checkout rules/a.md rules/b.md");
         expect(res.decision).toBe("block");
-        const reason = res.reason ?? "";
-        expect(reason).toContain("branch");
-        expect(reason).not.toContain("writes a protected path");
+        expect(res.reason ?? "").toContain("branch");
       });
     },
     CASE_TIMEOUT,

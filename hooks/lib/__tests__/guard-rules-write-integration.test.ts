@@ -15,7 +15,6 @@ import { resolve } from "node:path";
 import {
   CASE_TIMEOUT,
   childEnv,
-  guardStateWritten,
   projectConfig,
   readEvents,
   readEscalation,
@@ -436,239 +435,52 @@ describe("FUSION_ALLOW_RULES_WRITE on the write-tool path", () => {
 });
 
 // ---------------------------------------------------------------------------
-// The exemption on the Bash path — plan step 4.
+// The exemption and the Bash surface.
 //
-// This is the step that makes the flag a control rather than a decoration. The
-// write tools are the polite route to a rule file; `mv`, `rm`, `sed -i` and `>`
-// reach the same file, and the predecessor Circle closed that route. A flag
-// lifting only CHECK 2 would leave the door it guards standing open.
+// This block used to make the flag a control on the shell as well as on the
+// write tools: `mv`, `rm`, `sed -i` and `>` reach a rule file too, so the
+// mutation classifier applied the same exemption to a command's operands.
 //
-// The cases run against the same throwaway project root, so the mutation check
-// actually runs (it stands down in a plugin root, exactly as the write tools
-// do). Operands are RELATIVE here, unlike the write-tool cases above: a shell
-// command names paths relative to the working directory, which is the project
-// root, and `normalizeToRelative` leaves them untouched.
+// The classifier is gone. What a shell does to a protected path is measured
+// AFTER the call (`lib/protected-snapshot.ts` + `tracker.ts`), and the exemption
+// is asked there — of a path that has actually changed, through
+// `isObservedRulePath`. Its cases live in
+// `protected-snapshot-integration.test.ts` ("the rules-write exemption reaches
+// the measurement") and in `rules-write-exemption.test.ts`, not here.
+//
+// Seven cases that asserted the grant, the refusal and the advisory on a
+// PreToolUse Bash verdict went with it: there is no such verdict left to assert.
+// What remains are properties of the Bash surface itself, for which the flag is
+// only the setting.
 // ---------------------------------------------------------------------------
 
-describe("FUSION_ALLOW_RULES_WRITE on the Bash path", () => {
+describe("FUSION_ALLOW_RULES_WRITE and the Bash surface", () => {
   it(
-    "blocks a shell move of a rule file into retired/ when the flag is unset",
+    "allows a write to .claude/rules/, but NOT because of the flag",
     () => {
-      // The control for the case below, and the deferred criterion's own
-      // unset half (spec 260801-1122, line 316).
-      withProject(({ root }) => {
-        const res = runBash(root, "mv rules/x.md rules/retired/");
-
-        expect(res.decision).toBe("block");
-        expect(res.reason).toContain("rules/x.md");
-
-        const state = readEscalation(root);
-        expect(state?.consecutiveBlocks).toBe(1);
-        expect(state?.recentEvents.map((e) => e.trigger)).toEqual([
-          "protected_path",
-        ]);
-        expect(readEvents(root).map((e) => e.event)).toEqual(["guard_block"]);
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "allows the same move with the flag set, and records exactly one advisory",
-    () => {
-      // The deferred criterion's set half. Both operands are protected rule
-      // paths and both are exempted, so the note names both — the source that
-      // was removed and the directory it landed in.
-      withProject(({ root }) => {
-        const res = runBash(root, "mv rules/x.md rules/retired/", FLAG_SET);
-
-        expect(res.decision).toBeUndefined();
-
-        // EXACTLY ONE event, unlike the write-tool path: the Bash allow path
-        // emits no guard_allow (260707-0751), so the advisory is the only line.
-        const events = readEvents(root);
-        expect(events.map((e) => e.event)).toEqual(["guard_advisory"]);
-        expect(events[0]?.tool).toBe("Bash");
-        expect(events[0]?.detail).toContain("FUSION_ALLOW_RULES_WRITE");
-        expect(events[0]?.detail).toContain("rules/x.md");
-        expect(events[0]?.detail).toContain("rules/retired/");
-        // Two paths, so no single one is claimed in the file field.
-        expect(events[0]?.file).toBeUndefined();
-
-        const state = readEscalation(root);
-        expect(state?.recentEvents).toHaveLength(1);
-        expect(state?.recentEvents[0]?.level).toBe("clear");
-        expect(state?.recentEvents[0]?.trigger).toBe("rules_write_exemption");
-        expect(state?.recentEvents[0]?.message).toContain(
-          "FUSION_ALLOW_RULES_WRITE",
-        );
-        expect(state?.recentEvents[0]?.toolName).toBe("Bash");
-        expect(state?.recentEvents[0]?.filePath).toBeUndefined();
-        // An exemption is not a block: the counter that drives the halt is
-        // untouched, and no halt is entered.
-        expect(state?.consecutiveBlocks).toBe(0);
-        expect(state?.haltActive).toBe(false);
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "still denies `rm -rf rules` with the flag set, in either spelling",
-    () => {
-      // The boundary Step 2 drew, and the asymmetry that enforces it. The
-      // protected check RETRIES a directory operand with a trailing separator
-      // (isProtected, bash-mutation-guard.ts:902), so `rules` matches
-      // `rules/**` as `rules/` and denies in pass 1 — not, as the plan's line
-      // 222 says, through the ancestor pass. The exemption predicate does the
-      // opposite: it canonicalises the separator AWAY before matching, so
-      // neither spelling is a rule FILE and neither is exempt. The flag permits
-      // writing rule files; it does not permit destroying the rule directory.
-      withProject(({ root }) => {
-        const bare = runBash(root, "rm -rf rules", FLAG_SET);
-        expect(bare.decision).toBe("block");
-        expect(bare.reason).toContain("writes a protected path");
-        expect(bare.reason).toContain("`rules`");
-
-        const slash = runBash(root, "rm -rf rules/", FLAG_SET);
-        expect(slash.decision).toBe("block");
-
-        const state = readEscalation(root);
-        expect(state?.consecutiveBlocks).toBe(2);
-        expect(
-          (state?.recentEvents ?? []).some(
-            (e) => e.trigger === "rules_write_exemption",
-          ),
-        ).toBe(false);
-        expect(readEvents(root).map((e) => e.event)).toEqual([
-          "guard_block",
-          "guard_block",
-        ]);
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "still denies a shell move of an agent file with the flag set",
-    () => {
-      withProject(({ root }) => {
-        const res = runBash(root, "mv agents/coder.md /tmp/", FLAG_SET);
-
-        expect(res.decision).toBe("block");
-        expect(res.reason).toContain("agents/coder.md");
-
-        const state = readEscalation(root);
-        expect(state?.consecutiveBlocks).toBe(1);
-        expect(state?.recentEvents.map((e) => e.trigger)).toEqual([
-          "protected_path",
-        ]);
-        expect(readEvents(root).map((e) => e.event)).toEqual(["guard_block"]);
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "exempts a redirection into a rule file, and names it in the file field",
-    () => {
-      // Redirection is the third route to the same file, and it reaches the
-      // classifier through a different collector than a verb's operands. One
-      // exempted path this time, so the event carries it.
-      withProject(({ root }) => {
-        expect(runBash(root, "printf '' > rules/new.md").decision).toBe("block");
-
-        const res = runBash(root, "printf '' > rules/new.md", FLAG_SET);
-        expect(res.decision).toBeUndefined();
-
-        const events = readEvents(root);
-        expect(events.map((e) => e.event)).toEqual([
-          "guard_block",
-          "guard_advisory",
-        ]);
-        expect(events[1]?.file).toBe("rules/new.md");
-        expect(events[1]?.detail).toContain("rules/new.md");
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "allows a redirection into .claude/rules/, but NOT because of the flag",
-    () => {
-      // The plan names `printf '' > .claude/rules/local.md` as a flag-set allow
-      // case. It does allow — and it allows with the flag UNSET too, because
       // `.claude/rules/**` is not on the shipped protectedPaths at all
-      // (shared/issues/260801-1020_o_guard-protects-rules-but-not-claude-rules).
-      // The exemption is only ever consulted for a path the protected list
-      // already matched, so nothing is exempted and no advisory is written.
-      // Asserted at the truth rather than at the plan's expectation, so this
-      // case flips visibly when that issue closes.
+      // (shared/issues/260801-1020_o_guard-protects-rules-but-not-claude-rules),
+      // so the exemption — which is only ever consulted for a path the protected
+      // list already matched — is never asked and no advisory is written. With
+      // the flag and without it. Asserted at the truth rather than at the plan's
+      // expectation, so this case flips visibly when that issue closes.
+      //
+      // On the WRITE tool. The shell spelling of the same row
+      // (`printf '' > .claude/rules/local.md`) left with the mutation
+      // classifier: every shell command allows at PreToolUse now, so that
+      // spelling could no longer tell an unprotected path from a protected one.
       withProject(({ root }) => {
-        expect(runBash(root, "printf '' > .claude/rules/local.md").decision)
-          .toBeUndefined();
-        expect(readEvents(root)).toEqual([]);
+        expect(runWrite(root, ".claude/rules/local.md").decision).toBeUndefined();
+        expect(
+          readEvents(root).filter((e) => e.event === "guard_advisory"),
+        ).toEqual([]);
 
-        const res = runBash(
-          root,
-          "printf '' > .claude/rules/local.md",
-          FLAG_SET,
-        );
-        expect(res.decision).toBeUndefined();
-        expect(readEvents(root)).toEqual([]);
-        expect(readEscalation(root)).toBeNull();
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "writes no note when the call denies, even though a path was exempted",
-    () => {
-      // The move is exempt; the delete is not. The whole call is blocked, so
-      // NOTHING was let through and an advisory would claim a write that never
-      // happened — the same reasoning that puts the git override note after the
-      // mutation check rather than before it.
-      withProject(({ root }) => {
-        const res = runBash(
-          root,
-          "mv rules/x.md rules/retired/ && rm agents/coder.md",
-          FLAG_SET,
-        );
-
-        expect(res.decision).toBe("block");
-        expect(res.reason).toContain("agents/coder.md");
-        expect(readEvents(root).map((e) => e.event)).toEqual(["guard_block"]);
-        expect(readEscalation(root)?.recentEvents.map((e) => e.trigger)).toEqual(
-          ["protected_path"],
-        );
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "records both notes when one call uses both permissions",
-    () => {
-      // The reason the exemption note sits immediately before STEP 3 rather
-      // than inside it: each note loads, pushes and saves, so the second load
-      // reads what the first wrote and neither is lost.
-      withProject(({ root }) => {
-        const res = runBash(
-          root,
-          "git switch main && mv rules/x.md rules/retired/",
-          { ...FLAG_SET, FUSION_ALLOW_BRANCH_SWITCH: "1" },
-        );
-
-        expect(res.decision).toBeUndefined();
-
-        expect(readEvents(root).map((e) => e.event)).toEqual([
-          "guard_advisory",
-          "guard_advisory",
-        ]);
-        expect(readEscalation(root)?.recentEvents.map((e) => e.trigger)).toEqual(
-          ["rules_write_exemption", "git_branch_switch_override"],
-        );
+        expect(
+          runWrite(root, ".claude/rules/local.md", "Edit", FLAG_SET).decision,
+        ).toBeUndefined();
+        expect(
+          readEvents(root).filter((e) => e.event === "guard_advisory"),
+        ).toEqual([]);
       });
     },
     CASE_TIMEOUT,
@@ -781,8 +593,6 @@ const editCall = (root: string, path: string) =>
   runGuard(root, "Edit", { file_path: path }, FLAG_SET);
 const editCallNoFlag = (root: string, path: string) =>
   runGuard(root, "Edit", { file_path: path });
-const bashCall = (root: string, command: string) => runBash(root, command, FLAG_SET);
-const bashCallNoFlag = (root: string, command: string) => runBash(root, command);
 
 /** Plant the aliases directly, so the TRAVERSE is tested on its own. */
 function plantAliases(root: string): void {
@@ -847,57 +657,23 @@ describe("the exemption resolves the path against the filesystem (finding 1)", (
   }
 
   it(
-    "denies the same paths through the shell, on the same reasoning",
-    () => {
-      denyEach(
-        [
-          "rm rules/up/hooks/config.json",
-          "cp /dev/null rules/up/agents/coder.md",
-          "rm rules/gs/escalation.json",
-          "sed -i '' 's/a/b/' rules/copy",
-          "echo x > rules/copy",
-          "truncate -s 0 rules/up/settings.json",
-          "rm -rf rules/up/agents",
-          // The `..` spellings of the same links. `resolveTarget` runs
-          // `path.normalize` on every operand, so the escape reached the
-          // exemption predicate already collapsed here too — this surface was
-          // not a second bug, it was the same one arriving by a second road.
-          "rm rules/up/../hooks/config.json",
-          "cp /dev/null rules/up/../agents/coder.md",
-          "rm rules/gs/../.guard-state/escalation.json",
-          "echo x > rules/up/../agents/coder.md",
-          "truncate -s 0 rules/up/../settings.json",
-          "rm -rf rules/up/../agents",
-          "sed -i '' 's/a/b/' rules/up/../bin/monitor",
-          // Through the tracked virtual `cd`, so the escape cannot be smuggled
-          // in by moving the shell rather than the path.
-          "cd rules && rm up/../agents/coder.md",
-          "cd rules/retired && rm ../../agents/coder.md",
-        ],
-        bashCall,
-        { setup: plantAliases },
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
     "leaves the halt standing, because the record is no longer reachable",
     () => {
-      // The Directive's criterion, falsified in practice before this fix: two
-      // allowed Bash calls removed `escalation.json`, after which
-      // `loadEscalation()` returned the empty state and `haltActive` was false.
+      // The Directive's criterion, falsified in practice before this fix: an
+      // allowed write removed `escalation.json`, after which `loadEscalation()`
+      // returned the empty state and `haltActive` was false.
       //
       // In a HALTED project the block may come from either gate, and that is
       // the claim here — nothing got through and the halt is intact. That the
       // path itself is closed is proved separately, on an unhalted project, by
       // the `rules/gs/escalation.json` row of the table above.
+      //
+      // The shell spelling of the same attack (`rm rules/gs/escalation.json`)
+      // left with the mutation classifier. It is not unguarded: a shell that
+      // reaches a protected path is measured after the call and put back.
       withProject(
         ({ root }) => {
           plantAliases(root);
-          expect(runBash(root, "rm rules/gs/escalation.json", FLAG_SET).decision).toBe(
-            "block",
-          );
           expect(
             runGuard(root, "Edit", { file_path: "rules/gs/escalation.json" }, FLAG_SET)
               .decision,
@@ -905,30 +681,6 @@ describe("the exemption resolves the path against the filesystem (finding 1)", (
           expect(readEscalation(root)?.haltActive).toBe(true);
         },
         { escalation: { haltActive: true } },
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "refuses to CREATE an alias inside the rule directory",
-    () => {
-      // The second layer. `ln` is the one verb whose purpose is a second name,
-      // and the flag's permission is writing rule files. This closes the direct
-      // spelling; it does not close the class, because `mv` can relocate an
-      // existing link and must stay exemptible — which is why the traverse is
-      // what the cases above pin.
-      denyEach(
-        [
-          "ln -s ../ rules/up",
-          "ln -s ../fusion-workbench/.guard-state rules/gs",
-          "ln hooks/config.json rules/copy",
-          "sudo ln -s / rules/root",
-          "ln -sf /dev/null rules/x.md",
-          "cd rules && ln -s ../ up",
-        ],
-        bashCall,
-        { reasonContains: "rules/" },
       );
     },
     CASE_TIMEOUT,
@@ -968,19 +720,6 @@ describe("the exemption resolves the path against the filesystem (finding 1)", (
         editCall,
         { setup: plantLinks },
       );
-
-      // The same set through the shell.
-      denyEach(
-        [
-          "rm rules/a/../agents/coder.md",
-          "rm rules/b/../agents/coder.md",
-          "rm rules/abs/../agents/coder.md",
-          "echo x > rules/new/../coder.md",
-          "rm rules/loop/../x.md",
-        ],
-        bashCall,
-        { setup: plantLinks },
-      );
     },
     CASE_TIMEOUT,
   );
@@ -992,9 +731,7 @@ describe("the exemption resolves the path against the filesystem (finding 1)", (
       // resolves one through `resolve` + `relative` — which collapses `..` a
       // step earlier than `collapseSegments` does. A check reading anything but
       // the raw tool input would close the relative spelling and leave the one
-      // the tool actually sends wide open. The Bash classifier has the same
-      // shape: `opts.normalize` runs on an absolute operand before its own
-      // `path.normalize` does.
+      // the tool actually sends wide open.
       //
       // The paths are built by CONCATENATION. `resolve()` here would collapse
       // the very thing under test, and the case would pass for no reason.
@@ -1010,22 +747,13 @@ describe("the exemption resolves the path against the filesystem (finding 1)", (
         expect(res.reason ?? "").not.toContain("[HALTED]");
       });
 
-      withProject(({ root }) => {
-        plantAliases(root);
-        const res = runBash(root, `rm ${root}/rules/up/../agents/coder.md`, FLAG_SET);
-        expect(res.decision).toBe("block");
-        expect(res.reason ?? "").not.toContain("[HALTED]");
-      });
-
       // The control that keeps the case honest: an absolute spelling of a
-      // genuine rule file still gets the grant, on both surfaces.
+      // genuine rule file still gets the grant.
       withProject(({ root }) => {
         expect(
           runGuard(root, "Edit", { file_path: `${root}/rules/x.md` }, FLAG_SET)
             .decision,
         ).toBeUndefined();
-        expect(runBash(root, `rm ${root}/rules/x.md`, FLAG_SET).decision)
-          .toBeUndefined();
       });
     },
     CASE_TIMEOUT,
@@ -1050,10 +778,6 @@ describe("the exemption resolves the path against the filesystem (finding 1)", (
         ],
         editCall,
         { reasonContains: "Protected path" },
-      );
-      denyEach(
-        ["rm rules/retired/../x.md", "cd rules/retired && rm ../x.md"],
-        bashCall,
       );
     },
     CASE_TIMEOUT,
@@ -1111,16 +835,6 @@ describe("the exemption resolves the path against the filesystem (finding 1)", (
           editCall,
           { setup: plantVia(plant), reasonContains: "Protected path" },
         );
-
-        denyEach(
-          [
-            "rm rules/link/coder.md",
-            "rm rules/link/../agents/coder.md",
-            "echo x > rules/link/../settings.json",
-          ],
-          bashCall,
-          { setup: plantVia(plant) },
-        );
       },
       CASE_TIMEOUT,
     );
@@ -1165,13 +879,6 @@ describe("the exemption resolves the path against the filesystem (finding 1)", (
         expect(
           events.filter((e) => e.event === "guard_advisory").map((e) => e.file),
         ).toEqual([]);
-      });
-
-      withProject(({ root }) => {
-        plantAliases(root);
-        const res = runBash(root, "echo x > rules/up/../agents/coder.md", FLAG_SET);
-        expect(res.decision).toBe("block");
-        expect(readEvents(root).map((e) => e.event)).toEqual(["guard_block"]);
       });
 
       for (const spelled of [
@@ -1224,15 +931,6 @@ describe("the exemption resolves the path against the filesystem (finding 1)", (
             path,
           ).toBeUndefined();
         }
-        for (const command of [
-          "mv rules/x.md rules/retired/",
-          "rm rules/x.md",
-          "echo hi > rules/new.md",
-          "sed -i '' 's/a/b/' rules/x.md",
-          "cp /tmp/a rules/x.md",
-        ]) {
-          expect(runBash(root, command, FLAG_SET).decision, command).toBeUndefined();
-        }
       });
     },
     CASE_TIMEOUT,
@@ -1263,48 +961,6 @@ describe("the exemption resolves the path against the filesystem (finding 1)", (
   );
 
   it(
-    "refuses the grant to a link the WORKING DIRECTORY walked through",
-    () => {
-      // The fourth entrance into this class, and the one gate 0 could not see
-      // (`issues/260803-1431_…`). Gate 0 refuses a `..` in the SPELLING, and the
-      // spelling it is handed is `joinCwd(base, operand)` — but `base` came from
-      // `resolveDir`, which had already collapsed the `cd`'s own `..`
-      // lexically. So `cd -P rules/L/..` traversed the planted link without
-      // naming it and with no `..` left in any operand: gate 0 saw
-      // `rules/agents/coder.md`, gate 2 resolved that inside the real `rules/`,
-      // and the grant was spent on `agents/coder.md`.
-      //
-      // Nothing about the exemption changed to close it. The classifier stopped
-      // asserting a working directory it cannot compute, so the operand is now
-      // unresolved and never reaches a gate at all.
-      const plantRuleLink = (root: string) =>
-        symlinkSync("../agents", resolve(root, "rules/L"));
-
-      denyEach(
-        [
-          "cd -P rules/L/.. && rm agents/coder.md",
-          "set -P; cd rules/L/.. && rm agents/coder.md",
-          "pushd -P rules/L/.. ; rm agents/coder.md",
-        ],
-        bashCall,
-        { setup: plantRuleLink, reasonContains: "working directory" },
-      );
-
-      // The control that scopes it: bash's DEFAULT `cd` is logical, resolves
-      // `..` textually exactly as the classifier does, and leaves the file
-      // intact. That form still allows, so the fix is aimed at the modifier
-      // rather than at `..` in a `cd`.
-      withProject(({ root }) => {
-        plantRuleLink(root);
-        expect(
-          runBash(root, "cd rules/L/.. && rm agents/coder.md", FLAG_SET).decision,
-        ).toBeUndefined();
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
     "denies all of it with the flag UNSET too, so no deny is the flag not applying",
     () => {
       denyEach(
@@ -1312,9 +968,6 @@ describe("the exemption resolves the path against the filesystem (finding 1)", (
         editCallNoFlag,
         { setup: plantAliases },
       );
-      denyEach(["ln -s ../ rules/up", "rm rules/x.md"], bashCallNoFlag, {
-        setup: plantAliases,
-      });
     },
     CASE_TIMEOUT,
   );
@@ -1343,7 +996,6 @@ describe("the protected list is matched on a collapsed spelling (finding 2)", ()
     "./.claude-plugin/plugin.json",
     "./settings.json",
     "./bin/monitor",
-    "./fusion-workbench/.guard-state/escalation.json",
     "rules/retired/../../agents/coder.md",
   ];
 
@@ -1425,162 +1077,29 @@ describe("the protected list is matched on a collapsed spelling (finding 2)", ()
 });
 
 // ---------------------------------------------------------------------------
-
-describe("a halted guard blocks shell mutations too (finding 3)", () => {
-  // `isHalted` used to be consulted on the write-tool path only, so a halted
-  // guard blocked `Edit` and allowed every `mv`, `rm` and `sed -i`. The surface
-  // where the halt was absent is the surface an agent that has already been
-  // denied three times would actually use.
-  //
-  // Every case sets the flag, so each also proves the flag is not the way out.
-
-  const mutations = [
-    "rm notes.txt",
-    "mv notes.txt /tmp/",
-    "sed -i '' 's/a/b/' notes.txt",
-    "echo hi > notes.txt",
-    "cp /tmp/a /tmp/b",
-    "rm /tmp/scratch",
-    "git clean -fdx build",
-    "rm rules/x.md",
-    "mv rules/x.md rules/retired/",
-    "ls && rm /tmp/x",
-  ];
-
-  it(
-    "blocks every recognised mutation, protected or not, flag or not",
-    () => {
-      withProject(
-        ({ root }) => {
-          for (const command of mutations) {
-            const res = runBash(root, command, FLAG_SET);
-            expect(res.decision, command).toBe("block");
-            expect(res.reason, command).toContain("[HALTED]");
-          }
-        },
-        { escalation: { haltActive: true } },
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "still lets the agent read, so it can find out why it is halted",
-    () => {
-      // Blocking ALL Bash under a halt would stop an agent reading the
-      // clear-halt instruction it has just been given, which protects nothing
-      // extra and costs the way out.
-      withProject(
-        ({ root }) => {
-          for (const command of [
-            "ls -la",
-            "git status",
-            "cat notes.txt",
-            "grep -r x .",
-            "git log",
-            "cat fusion-workbench/.guard-state/escalation.json",
-          ]) {
-            expect(runBash(root, command, FLAG_SET).decision, command).toBeUndefined();
-          }
-        },
-        { escalation: { haltActive: true } },
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "allows the same mutations when the guard is NOT halted",
-    () => {
-      // The control that makes the case above mean something.
-      withProject(({ root }) => {
-        for (const command of ["rm notes.txt", "echo hi > notes.txt", "cp /tmp/a /tmp/b"]) {
-          expect(runBash(root, command, FLAG_SET).decision, command).toBeUndefined();
-        }
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "does not count the halt as a fresh violation",
-    () => {
-      // Mirrors the write-tool halt, which emits and blocks without calling
-      // recordBlock. A halt that incremented its own counter would inflate the
-      // record of what the agent actually did.
-      withProject(
-        ({ root }) => {
-          runBash(root, "rm notes.txt", FLAG_SET);
-          const state = readEscalation(root);
-          expect(state?.haltActive).toBe(true);
-          expect(state?.consecutiveBlocks).toBe(0);
-          expect(readEvents(root).map((e) => e.event)).toEqual(["guard_halt"]);
-        },
-        { escalation: { haltActive: true, consecutiveBlocks: 0 } },
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "writes no exemption advisory for a mutation it halted",
-    () => {
-      // The halt is above the exemption, so nothing was let through and
-      // nothing claims to have been.
-      withProject(
-        ({ root }) => {
-          runBash(root, "mv rules/x.md rules/retired/", FLAG_SET);
-          expect(
-            readEscalation(root)?.recentEvents.some(
-              (e) => e.trigger === "rules_write_exemption",
-            ),
-          ).toBe(false);
-          expect(readEvents(root).map((e) => e.event)).toEqual(["guard_halt"]);
-        },
-        { escalation: { haltActive: true } },
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "leaves the git branch policy to name its own denials",
-    () => {
-      // The branch policy runs above the mutation check and is not a write
-      // concern, so a halted guard still reports a branch switch as one.
-      withProject(
-        ({ root }) => {
-          const res = runBash(root, "git switch main", FLAG_SET);
-          expect(res.decision).toBe("block");
-          expect(res.reason).toContain("never switch git branches");
-        },
-        { escalation: { haltActive: true } },
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "stands down in the plugin's own repo, on BOTH surfaces together",
-    () => {
-      // The write-tool path returns on the self-detect check before it reaches
-      // CHECK 1, so the write halt already stood down here. The Bash halt sits
-      // inside the same gate, so the two stand down together rather than one
-      // surface halting while the other does not.
-      withPluginProject(
-        ({ root }) => {
-          expect(runGuard(root, "Edit", { file_path: "agents/coder.md" }).decision)
-            .toBeUndefined();
-          expect(runBash(root, "rm rules/x.md").decision).toBeUndefined();
-          // And the branch policy, which never stood down, still does not.
-          expect(runBash(root, "git switch main").decision).toBe("block");
-        },
-        { escalation: { haltActive: true } },
-      );
-    },
-    CASE_TIMEOUT,
-  );
-});
+// The halted guard used to block shell mutations too (finding 3).
+//
+// `isHalted` was once consulted on the write-tool path only, so a halted guard
+// blocked `Edit` and allowed every `mv`, `rm` and `sed -i`. This block closed
+// that, and seven cases pinned it: every recognised mutation denied under a
+// halt, reads still allowed, the halt not counted as a fresh violation, no
+// exemption advisory for a mutation it halted.
+//
+// All seven are gone, and not because the halt weakened. The halt asked
+// `mutation.mutates` — "does this command write a file at all?" — which is the
+// same question the retired protected-path classifier asked, in small, and just
+// as undecidable from the command text. With the classifier the halt lost its
+// reach into the shell. The user confirmed that cost explicitly on 260807-0945
+// (`decisions/260807-1026_*_verlust-des-bash-halts-auf-der-shell.md`): under a
+// halt `rm notes.txt` now runs.
+//
+// What replaced it is not a weaker halt but a different mechanism. A protected
+// path a shell reaches is measured after the call and written back, halt or no
+// halt (`protected-snapshot-integration.test.ts`). The halt itself still blocks
+// all four write tools, which is asserted in `guard-halt-event.test.ts`, and
+// the branch policy still denies under a halt on its own reason, which is
+// asserted there too.
+// ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
 // Turn 3 — a refusal that fails safe can still fail the user.
@@ -1653,11 +1172,6 @@ describe("a refused grant says which gate refused it (T3-2)", () => {
         (root, path) => runWrite(root, path, "Edit", FLAG_SET),
         { setup: hardLinkTwoRuleFiles, reasonContains: "hard link" },
       );
-      denyEach(
-        ["mv rules/x.md rules/retired/", "sed -i '' 's/a/b/' rules/y.md"],
-        bashCall,
-        { setup: hardLinkTwoRuleFiles, reasonContains: "hard link" },
-      );
     },
     CASE_TIMEOUT,
   );
@@ -1677,22 +1191,6 @@ describe("a refused grant says which gate refused it (T3-2)", () => {
         expect(res.reason).toContain("`..`");
         expect(res.reason).toContain("without a `..`");
       });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "explains the same gate on the shell surface, through the tracked cd",
-    () => {
-      denyEach(
-        [
-          "rm rules/retired/../x.md",
-          "cd rules/retired && rm ../x.md",
-          "echo x > rules/retired/../x.md",
-        ],
-        bashCall,
-        { reasonContains: "without a `..`" },
-      );
     },
     CASE_TIMEOUT,
   );
@@ -1755,7 +1253,7 @@ describe("a refused grant says which gate refused it (T3-2)", () => {
         // `rules/retired/.keep` and `.claude/rules/local.md` share no inode.
         expect(runWrite(root, ".claude/rules/local.md", "Edit", FLAG_SET).decision)
           .toBeUndefined();
-        expect(runBash(root, "rm rules/retired/.keep", FLAG_SET).decision)
+        expect(runWrite(root, "rules/retired/.keep", "Edit", FLAG_SET).decision)
           .toBeUndefined();
       });
     },
@@ -1830,25 +1328,16 @@ describe("the self-protection floor, through the guard", () => {
     CASE_TIMEOUT,
   );
 
-  it(
-    "blocks a SHELL delete of it, which is what makes the floor non-evadable",
-    () => {
-      // The floor's whole argument for applying only once the file exists is
-      // that the absent state is not reachable again through a guarded surface.
-      // `rm` is how it would be reached, so this is the case that argument
-      // stands or falls on.
-      withConfiguredProject({ escalation: { blocksBeforeHalt: 3 } }, ({ root }) => {
-        expect(runBash(root, "rm fusion-guard.json").decision).toBe("block");
-        expect(runBash(root, "mv fusion-guard.json /tmp/x").decision).toBe(
-          "block",
-        );
-        expect(runBash(root, "echo '{}' > fusion-guard.json").decision).toBe(
-          "block",
-        );
-      });
-    },
-    CASE_TIMEOUT,
-  );
+  // A case here used to assert `rm fusion-guard.json` denied on the shell,
+  // "which is what makes the floor non-evadable". The floor is still not
+  // evadable through a shell, but the mechanism changed and the assertion could
+  // not follow it: PreToolUse no longer reads a command for the paths it might
+  // write, so the `rm` runs — and the measurement pair then compares the file's
+  // fingerprint and writes it back, because the floor puts `fusion-guard.json`
+  // on the watched list. That is a POST-call property and it is asserted in
+  // `protected-snapshot-integration.test.ts`, where both hooks run around a real
+  // effect. Asserting a PreToolUse deny for it here would assert a mechanism
+  // that no longer carries the property.
 
   it(
     "does NOT block creating it when the project has none — the seeding case",
@@ -1859,8 +1348,6 @@ describe("the self-protection floor, through the guard", () => {
       // 260802-1912 option 1.
       withProject(({ root }) => {
         expect(runWrite(root, "fusion-guard.json", "Write").decision)
-          .toBeUndefined();
-        expect(runBash(root, "cp /tmp/template.json fusion-guard.json").decision)
           .toBeUndefined();
       });
     },
@@ -1875,8 +1362,6 @@ describe("the self-protection floor, through the guard", () => {
       // the guard's own configuration would be the flag turning the guard off.
       withConfiguredProject({ escalation: { blocksBeforeHalt: 3 } }, ({ root }) => {
         expect(runWrite(root, "fusion-guard.json", "Edit", FLAG_SET).decision)
-          .toBe("block");
-        expect(runBash(root, "rm fusion-guard.json", FLAG_SET).decision)
           .toBe("block");
       });
     },
@@ -1974,70 +1459,26 @@ describe("the self-protection floor reached from a subdirectory", () => {
     CASE_TIMEOUT,
   );
 
-  it(
-    "denies rm ../fusion-guard.json",
-    () => {
-      withSubdirectory(NARROWED, ({ sub }) => {
-        expect(runBash(sub, "rm ../fusion-guard.json").decision).toBe("block");
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "denies cd .. && rm fusion-guard.json",
-    () => {
-      // The tracked virtual `cd` and the floor have to agree, or the shell
-      // surface is a way around a control the write tools enforce.
-      withSubdirectory(NARROWED, ({ sub }) => {
-        expect(runBash(sub, "cd .. && rm fusion-guard.json").decision).toBe(
-          "block",
-        );
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "denies the absolute spelling on the shell surface too",
-    () => {
-      withSubdirectory(NARROWED, ({ root, sub }) => {
-        expect(
-          runBash(sub, `rm ${resolve(root, "fusion-guard.json")}`).decision,
-        ).toBe("block");
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "denies deleting the project root from below it, on the file it would take",
-    () => {
-      // The ancestor pass, now that one pattern in the list is absolute. Stated
-      // because it is a NEW deny rather than a restored one: `rm -rf ..` from a
-      // subdirectory used to allow, its operand being a `..` string that no
-      // relative pattern could match.
-      withSubdirectory(NARROWED, ({ sub }) => {
-        expect(runBash(sub, "rm -rf ..").decision).toBe("block");
-      });
-    },
-    CASE_TIMEOUT,
-  );
+  // The four shell spellings of the same floor — `rm ../fusion-guard.json`,
+  // `cd .. && rm fusion-guard.json`, the absolute form, and `rm -rf ..` on the
+  // ancestor pass — were asserted here and are gone with the mutation
+  // classifier. The floor still holds against a shell: the file is on the
+  // measurement's watched list, so a shell that removes it has it written back
+  // after the call (`protected-snapshot-integration.test.ts`). What cannot be
+  // asserted any more is a PreToolUse verdict, because there is none.
 
   it(
     "denies a protected path reached by walking OUT of the root and back in",
     () => {
       // Not the floor, and a fix rather than a cost — so it is asserted from the
       // ROOT, where the guard normally runs. `../<root>/secret/a` names a
-      // protected file and used to allow on both surfaces, because its TEXT
-      // began with `..` and no pattern in the list can. Resolving first is what
-      // closes it.
+      // protected file and used to allow, because its TEXT began with `..` and
+      // no pattern in the list can. Resolving first is what closes it.
       withSubdirectory(NARROWED, ({ root }) => {
         const back = `../${root.split("/").pop()}`;
         expect(
           runGuard(root, "Edit", { file_path: `${back}/secret/a` }).decision,
         ).toBe("block");
-        expect(runBash(root, `rm ${back}/secret/a`).decision).toBe("block");
       });
     },
     CASE_TIMEOUT,
@@ -2057,7 +1498,6 @@ describe("the self-protection floor reached from a subdirectory", () => {
         expect(
           runGuard(sub, "Edit", { file_path: "../secret/a" }).decision,
         ).toBeUndefined();
-        expect(runBash(sub, "rm ../secret/a").decision).toBeUndefined();
       });
     },
     CASE_TIMEOUT,
@@ -2072,8 +1512,6 @@ describe("the self-protection floor reached from a subdirectory", () => {
         expect(
           runGuard(sub, "Edit", { file_path: "notes.txt" }).decision,
         ).toBeUndefined();
-        expect(runBash(sub, "rm -rf out").decision).toBeUndefined();
-        expect(runBash(sub, "rm ../notes.txt").decision).toBeUndefined();
       });
     },
     CASE_TIMEOUT,
@@ -2109,9 +1547,20 @@ describe("the self-protection floor reached from a subdirectory", () => {
         expect(runBash(root, probe).decision).toBeUndefined();
         expect(sh(probe)).toBe("fusion-guard.json present");
 
-        // …and the copy the skill tells the agent NOT to run is denied, which is
-        // the behaviour that prose is written around.
-        expect(runBash(root, copy).decision).toBe("block");
+        // The skill's own `[ -f ] || cp` guard is what stops the second copy:
+        // the shell short-circuits and writes nothing. A line here used to
+        // assert that the guard ALSO denied the second copy at PreToolUse; it
+        // does not, because no shell command is read for the paths it might
+        // write any more. The file is still not overwritable from a shell —
+        // it is on the measurement's watched list and gets written back — and
+        // that is asserted where both hooks run, in
+        // `protected-snapshot-integration.test.ts`.
+        expect(sh(copy)).toBe("");
+        expect(
+          readFileSync(resolve(root, "fusion-guard.json"), "utf-8"),
+        ).toBe(
+          readFileSync(resolve(REPO_ROOT, "templates/fusion-guard.json"), "utf-8"),
+        );
       });
     },
     CASE_TIMEOUT,
@@ -2164,15 +1613,18 @@ describe("a project's own protectedPaths replace the plugin's", () => {
   );
 
   it(
-    "reaches the shell surface too, not only the write tools",
+    "reaches every write tool, not only Edit",
     () => {
-      // One list, both surfaces. A project list honoured by Edit but not by
-      // `rm` would teach an agent to route around the guard.
+      // One list, one surface now. The shell half of this case — a project list
+      // honoured by `Edit` but not by `rm` — was asserted against the mutation
+      // classifier; the list reaches the shell through the measurement instead,
+      // which reads the same `guard.protectedPaths`.
       withConfiguredProject(
         { guard: { protectedPaths: ["secret/**"] } },
         ({ root }) => {
-          expect(runBash(root, "rm -rf secret/a").decision).toBe("block");
-          expect(runBash(root, "rm rules/x.md").decision).toBeUndefined();
+          for (const tool of ["Write", "Edit", "MultiEdit", "NotebookEdit"]) {
+            expect(runWrite(root, "secret/a", tool).decision, tool).toBe("block");
+          }
         },
       );
     },
@@ -2257,11 +1709,20 @@ describe("an unparseable project configuration is reported, not swallowed", () =
       // The settled property (issues 260707-0750 and 260707-0751), pinned
       // where it actually applies. The case above bounds the departure; this
       // one bounds the bound.
+      //
+      // "Writing nothing" names the counter and the event log, not the state
+      // DIRECTORY. It used to name the directory, which was the strongest
+      // available spelling and is now simply false: the PreToolUse hook drops a
+      // fingerprint of the protected paths into
+      // `.guard-state/protected-snapshot.json` on every guarded call, so the
+      // directory exists after the first `ls -la` while both files the issues
+      // are about stay untouched.
       withConfiguredProject(
         { guard: { protectedPaths: ["secret/**"] } },
         ({ root }) => {
           expect(runBash(root, "ls -la").decision).toBeUndefined();
-          expect(guardStateWritten(root)).toBe(false);
+          expect(readEscalation(root)).toBeNull();
+          expect(readEvents(root)).toEqual([]);
         },
       );
     },
@@ -2275,7 +1736,8 @@ describe("an unparseable project configuration is reported, not swallowed", () =
       // the loader emit anything on a clean load, this is where it would show.
       withProject(({ root }) => {
         expect(runBash(root, "ls -la").decision).toBeUndefined();
-        expect(guardStateWritten(root)).toBe(false);
+        expect(readEscalation(root)).toBeNull();
+        expect(readEvents(root)).toEqual([]);
       });
     },
     CASE_TIMEOUT,
@@ -2305,21 +1767,24 @@ describe("an unparseable project configuration is reported, not swallowed", () =
 
 describe("what a project configuration can and cannot reach — measured", () => {
   it(
-    "MEASURES: in a project that has never been seeded, one write unprotects the guard's own state",
+    "MEASURES: in a project that has never been seeded, one write narrows the protected list",
     () => {
       // The residual decision 260802-1912 accepted, measured to its end rather
-      // than restated. The record bounds it as "an agent may create a
-      // fusion-guard.json that narrows protectedPaths". The narrowing also
-      // drops `fusion-workbench/.guard-state/**` — where `consecutiveBlocks`
-      // and `haltActive` live — so the reach is the escalation machinery, one
-      // step past what the record says. Filed as an issue by this step.
+      // than restated: an agent may create a `fusion-guard.json` that narrows
+      // `protectedPaths`, and the narrowing is in force from the very next tool
+      // call.
+      //
+      // The target used to be `fusion-workbench/.guard-state/escalation.json`,
+      // because the narrowing also dropped the guard's own state directory and
+      // reached the escalation machinery. That entry left `protectedPaths` in
+      // this Circle's first step — the measurement writes its own fingerprint,
+      // events and counter there, so watching it would make every tool call
+      // report its own bookkeeping — and the state directory is no longer
+      // protected for anyone. The residual itself is unchanged, so the case is
+      // measured on an ordinary protected path instead.
       withProject(({ root }) => {
-        // Before: the plugin's list is in force on both the guard's state
-        // directory and everything else.
-        expect(
-          runWrite(root, "fusion-workbench/.guard-state/escalation.json")
-            .decision,
-        ).toBe("block");
+        // Before: the plugin's list is in force.
+        expect(runWrite(root, "agents/coder.md").decision).toBe("block");
 
         // One allowed write, because the floor is not yet in force.
         expect(runWrite(root, "fusion-guard.json", "Write").decision)
@@ -2331,12 +1796,7 @@ describe("what a project configuration can and cannot reach — measured", () =>
         );
 
         // After: from the very next tool call.
-        expect(
-          runWrite(root, "fusion-workbench/.guard-state/escalation.json")
-            .decision,
-        ).toBeUndefined();
-        expect(runBash(root, "rm -rf fusion-workbench/.guard-state").decision)
-          .toBeUndefined();
+        expect(runWrite(root, "agents/coder.md").decision).toBeUndefined();
 
         // The floor did close behind it, which is the half of the decision
         // that holds: the narrowing file cannot now be revised or removed.
@@ -2350,15 +1810,15 @@ describe("what a project configuration can and cannot reach — measured", () =>
     "MEASURES: a HALT still holds — the residual above does not open that door",
     () => {
       // Worth pinning next to the case above so the residual is not read as
-      // wider than it is. CHECK 1 is above CHECK 2 on the write path, and the
-      // Bash halt fires on `mutation.mutates` before any protected-path
-      // question, so a halted guard blocks the narrowing write itself.
+      // wider than it is. CHECK 1 is above CHECK 2 on the write path, so a
+      // halted guard blocks the narrowing write itself.
+      //
+      // The shell spelling (`echo '{}' > fusion-guard.json`) was asserted here
+      // too, on the Bash halt, which is gone. On the shell the file is defended
+      // by the measurement rather than by the halt.
       withProject(
         ({ root }) => {
           expect(runWrite(root, "fusion-guard.json", "Write").decision).toBe(
-            "block",
-          );
-          expect(runBash(root, "echo '{}' > fusion-guard.json").decision).toBe(
             "block",
           );
         },
@@ -2399,17 +1859,22 @@ describe("what a project configuration can and cannot reach — measured", () =>
           expect(first.decision).toBe("block");
           expect(first.reason).toContain("Protected path");
 
-          // The other five rows of the measurement table. Only the verdict is
+          // The other rows of the measurement table. Only the verdict is
           // asserted from here on: the third block trips the halt, after which
           // the REASON is the halt's rather than the protected path's, and a
           // case that asserted otherwise would be asserting the escalation
           // threshold instead of the merge.
+          //
+          // Two shell rows left the table, and one of them is worth naming:
+          // `rm -rf fusion-workbench/.guard-state` read as a protection check
+          // and was neither. It stood fourth, by which point the halt was
+          // already active, so it blocked on the halt — measured against the
+          // baseline classifier, the path was not protected by the ancestor
+          // pass at all. The other, `rm -rf agents`, was a real ancestor deny
+          // and has no PreToolUse verdict left to assert.
           expect(runWrite(root, "rules/x.md").decision).toBe("block");
           expect(runWrite(root, "skills/demo/SKILL.md").decision).toBe("block");
-          expect(runBash(root, "rm -rf agents").decision).toBe("block");
-          expect(
-            runBash(root, "rm -rf fusion-workbench/.guard-state").decision,
-          ).toBe("block");
+          expect(runWrite(root, "hooks/config.json").decision).toBe("block");
           expect(runWrite(root, "fusion-guard.json").decision).toBe("block");
         });
       },
@@ -2425,7 +1890,7 @@ describe("what a project configuration can and cannot reach — measured", () =>
       withConfiguredProject({ guard: { protectedPaths: ["secret/**"] } }, ({ root }) => {
         expect(runWrite(root, "secret/a").decision).toBe("block");
         expect(runWrite(root, "agents/coder.md").decision).toBeUndefined();
-        expect(runBash(root, "rm -rf rules").decision).toBeUndefined();
+        expect(runWrite(root, "rules/x.md").decision).toBeUndefined();
       });
     },
     CASE_TIMEOUT,
@@ -2457,13 +1922,12 @@ describe("what a project configuration can and cannot reach — measured", () =>
   const GUARD_OFF = { guard: { enabled: false } };
 
   it(
-    "ignores guard.enabled: false and keeps denying on both write surfaces",
+    "ignores guard.enabled: false and keeps denying on the write surface",
     () => {
       withConfiguredProject(GUARD_OFF, ({ root }) => {
         expect(runWrite(root, "agents/coder.md").decision).toBe("block");
         expect(runWrite(root, "hooks/config.json").decision).toBe("block");
         expect(runWrite(root, "fusion-guard.json").decision).toBe("block");
-        expect(runBash(root, "rm -rf rules").decision).toBe("block");
       });
     },
     CASE_TIMEOUT,
@@ -2510,7 +1974,7 @@ describe("what a project configuration can and cannot reach — measured", () =>
       withProject(
         ({ root }) => {
           expect(runWrite(root, "agents/coder.md").decision).toBe("block");
-          expect(runBash(root, "rm -rf rules").decision).toBe("block");
+          expect(runWrite(root, "notes.txt").reason).toContain("[HALTED]");
         },
         {
           files: { "fusion-guard.json": projectConfig(GUARD_OFF) },
@@ -2585,7 +2049,7 @@ describe("what a project configuration can and cannot reach — measured", () =>
       () => {
         withConfiguredProject(config, ({ root }) => {
           expect(runWrite(root, "agents/coder.md").decision).toBe("block");
-          expect(runBash(root, "rm agents/coder.md").decision).toBe("block");
+          expect(runWrite(root, "rules/x.md").decision).toBe("block");
           expect(runWrite(root, "fusion-guard.json").decision).toBe("block");
 
           const advisories = readEvents(root).filter(
@@ -2713,9 +2177,12 @@ describe("the project configuration in the plugin's own repo", () => {
 //
 // Every row here is a real guard subprocess against a throwaway project root.
 // The unit matrices in `rules-write-exemption.test.ts` cover the predicate; what
-// these cases add is that the predicate's answer reaches a verdict — on BOTH
-// write surfaces, which is where a boundary written once and consulted twice
-// earns its keep.
+// these cases add is that the predicate's answer reaches a verdict.
+//
+// They used to add it on both surfaces. The shell half is not lost, it moved:
+// `isObservedRulePath` asks the same module the same question of a path the
+// measurement saw change, and its cases live in
+// `protected-snapshot-integration.test.ts`.
 // ---------------------------------------------------------------------------
 
 describe("a project's own protected entry outranks the rules-write flag", () => {
@@ -2745,22 +2212,25 @@ describe("a project's own protected entry outranks the rules-write flag", () => 
   );
 
   it(
-    "denies it on the Bash path too, in every shape a curator would reach for",
+    "denies it through every write tool, in every shape a curator would reach for",
     () => {
-      // A boundary honoured by Edit and not by `mv` teaches an agent to route
-      // around the guard, which is the failure the whole module is written
-      // against. `rm -rf` on the directory is the case the trailing-separator
-      // retry in `projectProtectedMatch` exists for.
+      // The shell shapes (`rm`, `mv`, `rm -rf` on the directory,
+      // `echo x >`) were asserted here against the mutation classifier and have
+      // no PreToolUse verdict left. The subtraction reaches the shell through
+      // the measurement, which asks the same module the same question about a
+      // path that has actually changed (`isObservedRulePath`).
       withImmutable(({ root }) => {
-        for (const cmd of [
-          "rm rules/immutable/x.md",
-          "mv rules/immutable/x.md rules/retired/",
-          "rm -rf rules/immutable",
-          "rm -rf rules/immutable/",
-          "echo x > rules/immutable/x.md",
-        ]) {
-          expect(runBash(root, cmd, FLAG_SET).decision, cmd).toBe("block");
+        for (const tool of ["Write", "Edit", "MultiEdit", "NotebookEdit"]) {
+          expect(
+            runWrite(root, "rules/immutable/x.md", tool, FLAG_SET).decision,
+            tool,
+          ).toBe("block");
         }
+        // The directory itself, which is the case the trailing-separator retry
+        // in `projectProtectedMatch` exists for.
+        expect(
+          runWrite(root, "rules/immutable/", "Edit", FLAG_SET).decision,
+        ).toBe("block");
       });
     },
     CASE_TIMEOUT,
@@ -2786,17 +2256,6 @@ describe("a project's own protected entry outranks the rules-write flag", () => 
   );
 
   it(
-    "names it on the Bash surface as well",
-    () => {
-      withImmutable(({ root }) => {
-        const res = runBash(root, "rm rules/immutable/x.md", FLAG_SET);
-        expect(res.reason).toContain("rules/immutable/**");
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
     "leaves the flag's headline use working in the same project",
     () => {
       // "The two default rule patterns keep working exactly as they do now" —
@@ -2809,7 +2268,7 @@ describe("a project's own protected entry outranks the rules-write flag", () => 
       // `rules/**` is also in force — the next case.
       withImmutable(({ root }) => {
         expect(
-          runBash(root, "mv rules/x.md rules/retired/", FLAG_SET).decision,
+          runWrite(root, "rules/retired/x.md", "Edit", FLAG_SET).decision,
         ).toBeUndefined();
       });
     },
@@ -2834,8 +2293,10 @@ describe("a project's own protected entry outranks the rules-write flag", () => 
           expect(runWrite(root, "rules/x.md", "Edit", FLAG_SET).decision).toBe(
             "block",
           );
+          // Including `rules/retired/`, which is where the flag's headline use
+          // writes.
           expect(
-            runBash(root, "mv rules/x.md rules/retired/", FLAG_SET).decision,
+            runWrite(root, "rules/retired/x.md", "Edit", FLAG_SET).decision,
           ).toBe("block");
           expect(
             runWrite(root, "rules/immutable/x.md", "Edit", FLAG_SET).decision,
@@ -2863,7 +2324,7 @@ describe("a project's own protected entry outranks the rules-write flag", () => 
     "HALF 2: a project that declares NOTHING gets the exemption unchanged",
     () => {
       // The trap, measured rather than reasoned about. This project's effective
-      // `protectedPaths` is the plugin's nine patterns, `rules/**` among them,
+      // `protectedPaths` is the plugin's own list, `rules/**` among them,
       // inherited because the file omits the key. If the subtraction ever read
       // the effective list instead of the declared one, every row here flips to
       // `block` and the flag is dead in every project on earth.
@@ -2873,7 +2334,7 @@ describe("a project's own protected entry outranks the rules-write flag", () => 
           runWrite(root, "rules/x.md", "Edit", FLAG_SET).decision,
         ).toBeUndefined();
         expect(
-          runBash(root, "mv rules/x.md rules/retired/", FLAG_SET).decision,
+          runWrite(root, "rules/retired/x.md", "Edit", FLAG_SET).decision,
         ).toBeUndefined();
       });
     },
@@ -2890,7 +2351,7 @@ describe("a project's own protected entry outranks the rules-write flag", () => 
           runWrite(root, "rules/x.md", "Edit", FLAG_SET).decision,
         ).toBeUndefined();
         expect(
-          runBash(root, "mv rules/x.md rules/retired/", FLAG_SET).decision,
+          runWrite(root, "rules/retired/x.md", "Edit", FLAG_SET).decision,
         ).toBeUndefined();
       });
     },
@@ -2943,7 +2404,7 @@ describe("a project's own protected entry outranks the rules-write flag", () => 
     "does not lift a HALT, any more than the flag itself does",
     () => {
       // Gate 1b narrows a grant; it cannot widen one. CHECK 1 is still above
-      // CHECK 2 and the Bash halt still fires on `mutation.mutates`.
+      // CHECK 2 on the write path.
       withProject(
         ({ root }) => {
           expect(

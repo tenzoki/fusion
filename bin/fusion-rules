@@ -50,26 +50,12 @@
 #     the doc explains why (branch-drift chaos) and what to do instead
 #     (STOP → Human Gate → ask the user; the env overrides are user-only).
 #   - Every agent also reads protected-path-discipline.md (shipped by plugin) —
-#     the sibling Bash policy: a shell command that WRITES a path in
-#     guard.protectedPaths (mv/rm/cp/sed -i/redirection, wrappers seen through,
-#     ancestor directories, cd tracked, fail-closed on an unresolvable operand)
-#     is denied by hooks/guard.ts the same way Edit/Write are. Since the
-#     three-layer cut it carries the CORE half only: the rule, the prediction
-#     rule for a case it does not list, what stays allowed, what to do instead
-#     (STOP → Human Gate; there is no override for this one), and a pointer to
-#     each of the other two layers.
-#   - Guard-internals agents (coder, coderev, bugfixer) additionally read
-#     protected-path-internals.md — in the fusion plugin's own repo only,
-#     because that is the only place the classifier's sources are in reach
-#     (see block 1d) — the REFERENCE half:
-#     verb tables, command-word resolution, clustered short flags, git's own
-#     working directory, the unmodelled directory-builtin forms, fail-closed
-#     and its bound. The split is by ADDRESSEE: the core tells an agent how to
-#     behave, the reference tells whoever changes or reviews the classifier how
-#     it works. The third layer — the measured residual catalogue and the
-#     measured illustration set — is evidence for a review rather than
-#     instruction for a behaviour and lives outside rules/ entirely, in the
-#     Circle's analysis store, reachable only by the pointer in the core.
+#     the sibling protected-path policy: every path in guard.protectedPaths is
+#     fingerprinted before a tool call (hooks/guard.ts) and again after it
+#     (hooks/tracker.ts), and a path that changed is written back to its
+#     pre-call content while the guard halts. It states the rule, why the route
+#     to the file does not matter, the one narrow exemption
+#     (FUSION_ALLOW_RULES_WRITE) and what to do instead (STOP → Human Gate).
 #   - Circle-transitioning agents (orchestrator, playmaker, shaper) additionally
 #     read circle-records.md (shipped by plugin) — the Circle state vocabulary,
 #     its worked transitions, the Circle record template and the portfolio
@@ -150,17 +136,13 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd -P)"
 # Repo-context criterion: is cwd the fusion plugin's own source repo? Decided
 # by the sibling helper bin/fusion-plugin-cwd — the shell half of
 # hooks/lib/self-detect.ts `isFusionPluginCwd()` (one criterion, two
-# implementations; the pairing is documented in the helper). Two consequences
-# below, neither of which touches a consuming project:
-#   - the plugin rule set is read from the WORK TREE's ./rules instead of
-#     $FUSION_PLUGIN_ROOT/rules (see PLUGIN_RULES_DIR): in the plugin's own
-#     repo the source is the meant state, while $FUSION_PLUGIN_ROOT pins to
-#     the installed copy for the whole session and can be days stale against
-#     the rules being edited. Decision
-#     260806-0015_*_veraltete-regeln-im-eigenen-repo-melden-oder-umgehen,
-#     option c.
-#   - protected-path-internals.md is emitted to the guard-internals agents
-#     here and ONLY here (see block 1d).
+# implementations; the pairing is documented in the helper). One consequence
+# below, and it does not touch a consuming project: the plugin rule set is read
+# from the WORK TREE's ./rules instead of $FUSION_PLUGIN_ROOT/rules (see
+# PLUGIN_RULES_DIR). In the plugin's own repo the source is the meant state,
+# while $FUSION_PLUGIN_ROOT pins to the installed copy for the whole session and
+# can be days stale against the rules being edited. Decision
+# 260806-0015_*_veraltete-regeln-im-eigenen-repo-melden-oder-umgehen, option c.
 if "$SCRIPT_DIR/fusion-plugin-cwd"; then
   IN_PLUGIN_REPO=1
 else
@@ -198,26 +180,6 @@ case "$AGENT" in
   planner|analyst|taskplanner|shaper|investigator|conceptrev)
                                   IS_DIAGRAM_AGENT=1 ;;
   *)                              IS_DIAGRAM_AGENT=0 ;;
-esac
-
-# Guard-internals-agent flag — independent of PATTERNS. The three agents that
-# change the shell classifier (hooks/lib/bash-mutation-guard.ts) or review a
-# change to it additionally read rules/protected-path-internals.md, the
-# reference half of the protected-path rule — in the plugin's own repo only;
-# the emission is gated at block 1d. The other thirteen read the core half
-# only and reach the reference by the pointer line in it.
-#
-# Named agents, NOT the `coding` filename pattern. Naming the file
-# `*-coding.md` would have needed no code at all, and it was measured picking up
-# a fourth agent: `planner` also carries PATTERNS="coding ontology", so the
-# pattern route emits the reference to planner as well, which the decision
-# record's audience does not include
-# (decisions/260805-0709_i_wohin-gehoert-die-forensik-aus-protected-path-discipline.md).
-# An audience that depends on a filename is also an audience nobody can read off
-# this file.
-case "$AGENT" in
-  coder|coderev|bugfixer)         IS_GUARD_INTERNALS_AGENT=1 ;;
-  *)                              IS_GUARD_INTERNALS_AGENT=0 ;;
 esac
 
 # Circle-transitioning-agent flag — independent of PATTERNS. The three agents
@@ -395,39 +357,20 @@ if [ "$IS_DIAGRAM_AGENT" -eq 1 ]; then
   emit_if_exists "$PLUGIN_RULES_DIR/design-diagrams.md"
 fi
 
-# 1d. Guard-internals agents (coder, coderev, bugfixer) additionally receive the
-#     reference half of the protected-path rule: the verb tables, the command-word
-#     resolution, the clustered-flag grammar, git's own working directory, the
-#     directory-builtin forms that are not modelled, and the fail-closed bound.
-#     The core half (always-on above) states the rule and the way through; this
-#     half states how the classifier reads a command, which only an agent that
-#     changes or reviews the classifier needs.
+# 1d. Circle-transitioning agents (orchestrator, playmaker, shaper) additionally
+#     receive the Circle record rules: the state vocabulary, the worked
+#     transitions, the record template and the portfolio template. Derived
+#     audience — see the IS_CIRCLE_AGENT block above.
 #
-#     Emitted in the fusion plugin's own repo ONLY. The audience is "whoever
-#     changes or reviews the classifier", and in a consuming project that
-#     audience is empty by construction: the classifier's sources live in the
-#     installed plugin, outside the project tree, and are not that project's
-#     to change. A consuming project's coder/coderev/bugfixer read the core
-#     half and reach the reference by the pointer line in it, like every other
-#     agent.
-if [ "$IS_GUARD_INTERNALS_AGENT" -eq 1 ] && [ "$IN_PLUGIN_REPO" -eq 1 ]; then
-  emit_if_exists "$PLUGIN_RULES_DIR/protected-path-internals.md"
-fi
-
-# 1da. Circle-transitioning agents (orchestrator, playmaker, shaper) additionally
-#      receive the Circle record rules: the state vocabulary, the worked
-#      transitions, the record template and the portfolio template. Derived
-#      audience — see the IS_CIRCLE_AGENT block above.
-#
-#      Two files that came out of the same partition are emitted to NOBODY and so
-#      appear nowhere below: rules/workbench-path-resolution.md (the resolver's
-#      name namespace, key table and key-set derivation — read when authoring a
-#      prompt or changing bin/fusion-paths) and rules/rule-file-provenance.md
-#      (read when creating or editing a rule file). Neither is instruction for a
-#      dispatched agent's routine work, and both are reached by the pointers left
-#      at their sites in fusion-workbench-conventions.md. They live in rules/
-#      rather than outside it because they remain the authoring home of their
-#      topic — the emission decision is about audience, not about status.
+#     Two files that came out of the same partition are emitted to NOBODY and so
+#     appear nowhere below: rules/workbench-path-resolution.md (the resolver's
+#     name namespace, key table and key-set derivation — read when authoring a
+#     prompt or changing bin/fusion-paths) and rules/rule-file-provenance.md
+#     (read when creating or editing a rule file). Neither is instruction for a
+#     dispatched agent's routine work, and both are reached by the pointers left
+#     at their sites in fusion-workbench-conventions.md. They live in rules/
+#     rather than outside it because they remain the authoring home of their
+#     topic — the emission decision is about audience, not about status.
 if [ "$IS_CIRCLE_AGENT" -eq 1 ]; then
   emit_if_exists "$PLUGIN_RULES_DIR/circle-records.md"
 fi

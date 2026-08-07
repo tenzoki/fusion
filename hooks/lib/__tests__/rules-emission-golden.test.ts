@@ -341,11 +341,6 @@ const RULE_BASELINE: Record<string, number> = {
   "design-diagrams.md": 5_673,
   "circle-records.md": 9_302,
   "workbench-stash-and-lock.md": 9_250,
-  // Emitted only in the plugin's own repo since 2026-08-06 (textschicht step
-  // 8), so no consuming-context emission carries it and it is not measured
-  // here. Kept — "a file this map carries that the emission dropped is simply
-  // not measured" — so a future in-repo measurement has its baseline.
-  "protected-path-internals.md": 21_870,
 };
 
 interface Role {
@@ -385,11 +380,11 @@ const ROLES: Record<string, Role> = {
    * else. This is the floor the other four roles are measured against, and the
    * only number that says what the always-on set actually costs.
    *
-   * Since 2026-08-06 this includes coder, coderev and bugfixer: their
-   * classifier reference (`protected-path-internals.md`) emits only when cwd
-   * is the fusion plugin's own repo (`bin/fusion-plugin-cwd`), and this golden
-   * measures the CONSUMING context, which never satisfies that criterion —
-   * asserted below in `measures the consuming-project context`.
+   * Since 2026-08-06 this includes coder, coderev and bugfixer. They carried a
+   * classifier reference (`protected-path-internals.md`) that emitted only in
+   * the plugin's own repo; the file went with the shell classifier it
+   * documented (Circle 260807-0923-guard-misst-statt-orakelt, step 6), so the
+   * three are plain agents in every context now.
    */
   "(core only)": {},
 
@@ -627,40 +622,24 @@ describe("rules emission golden", () => {
   });
 
   it("measures the consuming-project context — the plugin-repo gate is provably off", () => {
-    // Two emissions are gated on cwd being the fusion plugin's own repo
+    // One emission behaviour is gated on cwd being the fusion plugin's own repo
     // (`bin/fusion-plugin-cwd`: a .claude-plugin/plugin.json at cwd naming
-    // "fusion"): the guard-internals reference for coder/coderev/bugfixer, and
-    // the work-tree rules preference of decision 260806-0015 (option c). This
-    // golden claims to measure the CONSUMING context, so the neutral cwd must
-    // not satisfy the criterion — the plan's falsifier for step 8 was a temp
-    // cwd that accidentally measures the plugin-repo branch.
+    // "fusion"): the work-tree rules preference of decision 260806-0015
+    // (option c), asserted in the next test. This golden claims to measure the
+    // CONSUMING context, so the neutral cwd must not satisfy the criterion —
+    // the plan's falsifier for step 8 was a temp cwd that accidentally measures
+    // the plugin-repo branch.
+    //
+    // The guard-internals reference (`protected-path-internals.md` for
+    // coder/coderev/bugfixer) used to be the second gated emission and was
+    // asserted here in both directions. It is gone with the shell classifier it
+    // documented (Circle 260807-0923-guard-misst-statt-orakelt, step 6), so the
+    // in-repo and consuming rule SETS are identical again and only the rule
+    // DIRECTORY differs between them.
     expect(
       existsSync(join(neutralCwd, ".claude-plugin", "plugin.json")),
       "The neutral cwd carries a plugin manifest, so every byte total below " +
         "measures the plugin-repo emission, not the consuming-project one.",
-    ).toBe(false);
-
-    // And the gate has to be REAL, not dead code: from the plugin repo itself,
-    // coder gains the classifier reference the neutral run must not carry. If
-    // both contexts emitted the same set, the golden's "consuming context"
-    // claim would be untested.
-    const inRepo = execFileSync(fusionRules, ["coder"], {
-      cwd: pluginRoot,
-      encoding: "utf-8",
-      env: { ...process.env, FUSION_PLUGIN_ROOT: pluginRoot },
-      stdio: ["ignore", "pipe", "pipe"],
-    })
-      .split("\n")
-      .filter((l) => l.trim().length > 0);
-    expect(
-      inRepo.some((l) => l.endsWith("/protected-path-internals.md")),
-      "From the plugin repo, coder no longer receives protected-path-internals.md — " +
-        "either bin/fusion-plugin-cwd stopped recognising the repo or the 1d gate broke.",
-    ).toBe(true);
-    expect(
-      runRules("coder").some((l) => l.endsWith("/protected-path-internals.md")),
-      "From a consuming project, coder receives protected-path-internals.md — the " +
-        "1d gate in bin/fusion-rules is not holding.",
     ).toBe(false);
   });
 

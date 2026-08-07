@@ -28,6 +28,13 @@ import {
 // that failed open is well-formed JSON. The failure was total: the whole
 // protected list, both surfaces, and an active halt was not consulted either.
 //
+// The Bash column was measured on `rm -f agents/coder.md`, against a classifier
+// that predicted shell writes and has since been retired. The rows below run the
+// branch policy instead — the deny the shell surface still has — and they reach
+// the same `loadEscalation` on the same path, which is what the coercion has to
+// survive. The halt no longer reaches the shell at all, so the anti-vacuity
+// control below is a write-tool case only.
+//
 // ## What these cases assert, and what they deliberately do not
 //
 // They assert the PRODUCTION verdict — `decision === "block"` — not merely that
@@ -107,15 +114,25 @@ describe("a malformed escalation.json denies on the write-tool surface", () => {
 });
 
 describe("a malformed escalation.json denies on the Bash surface", () => {
+  // The command is a branch switch rather than `rm -f agents/coder.md`. The
+  // protected-path classifier that denied the second one is gone — the shell's
+  // reach into a protected path is measured after the call now — so the branch
+  // policy is the deny this surface still has, and it is the one that has to
+  // survive a state file the loader cannot read.
+  //
+  // The row still bites: the deny reaches `loadEscalation` and `recordBlock`
+  // before it can answer, so a coercion that let a wrong-shaped state through
+  // would throw there, take `main().catch`'s fail-open path, and emit `{}` —
+  // which Claude Code reads as ALLOW.
   for (const { name, content } of MALFORMED_ROWS) {
     it(
-      `denies rm -f ${TARGET} with ${name}`,
+      `denies git switch main with ${name}`,
       () => {
         withProject(
           ({ root }) => {
-            const res = runBash(root, `rm -f ${TARGET}`);
+            const res = runBash(root, "git switch main");
             expect(res.decision).toBe("block");
-            expect(res.reason).toContain(TARGET);
+            expect(res.reason).toContain("never switch git branches");
           },
           { files: { [STATE_FILE]: content } },
         );
@@ -144,21 +161,6 @@ describe("the seeded state file is genuinely read (anti-vacuity)", () => {
           const res = runWrite(root, resolve(root, TARGET));
           expect(res.decision).toBe("block");
           // The halt names itself, not the path — proof the file was read.
-          expect(res.reason).toContain("[HALTED]");
-        },
-        { files: { [STATE_FILE]: halted } },
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "halts the Bash surface from the same file",
-    () => {
-      withProject(
-        ({ root }) => {
-          const res = runBash(root, "rm -f notes.txt");
-          expect(res.decision).toBe("block");
           expect(res.reason).toContain("[HALTED]");
         },
         { files: { [STATE_FILE]: halted } },

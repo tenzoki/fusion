@@ -244,7 +244,6 @@ describe("a project with no fusion-guard.json is byte-identical to before step 6
       "bin/monitor",
       "skills/**",
       ".claude-plugin/plugin.json",
-      "fusion-workbench/.guard-state/**",
     ]) {
       expect(guard.protectedPaths).toContain(p);
     }
@@ -263,7 +262,7 @@ describe("a project with no fusion-guard.json is byte-identical to before step 6
 // guard object WHOLE — an omitted leaf comes from DEFAULTS, not from the
 // plugin"). That case was a correct description of the shipped code and the
 // reason it shipped: `DEFAULTS.guard.protectedPaths` is the empty list, so
-// `{"guard":{"enabled":true}}` removed all nine protected patterns. It is
+// `{"guard":{"enabled":true}}` removed every protected pattern. It is
 // deleted rather than adapted, because the behaviour it pinned is the defect.
 // ---------------------------------------------------------------------------
 
@@ -287,7 +286,7 @@ describe("merge — per leaf: project, then plugin, then DEFAULTS", () => {
   it("a DECLARED empty list is the empty list, not an inheritance", () => {
     // The half of the answer a union could never express, and the half the leaf
     // walk must not swallow. If this case ever passes by inheriting the
-    // plugin's nine patterns, deliberate narrowing is gone and spec criterion
+    // plugin's own list, deliberate narrowing is gone and spec criterion
     // :327 with it.
     const root = projectWith({ guard: { protectedPaths: [] } });
 
@@ -488,13 +487,13 @@ describe("the project layer may not set guard.enabled", () => {
 
   it("does not empty the protected list on the way past — issue 260804-1601", () => {
     // The measured defect in one line: `{"guard":{"enabled":true}}` is the most
-    // ordinary edit there is, and it used to remove all nine patterns.
+    // ordinary edit there is, and it used to remove every shipped pattern.
     const { guard } = loadConfig({
       pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
       projectRoot: projectWith({ guard: { enabled: true } }),
     });
 
-    for (const p of ["agents/**", "rules/**", "fusion-workbench/.guard-state/**"]) {
+    for (const p of ["agents/**", "rules/**", "hooks/config.json"]) {
       expect(guard.protectedPaths).toContain(p);
     }
   });
@@ -827,7 +826,7 @@ describe("the entries a project declared for itself", () => {
   });
 
   it("returns NOTHING for a project that declared no list — the trap", () => {
-    // The effective list here is the plugin's nine patterns, `rules/**` among
+    // The effective list here is the plugin's own list, `rules/**` among
     // them. If this ever returns those, `FUSION_ALLOW_RULES_WRITE` is dead
     // everywhere and no case about the exemption itself would notice.
     const config = loadConfig({

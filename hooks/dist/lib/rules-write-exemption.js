@@ -7,16 +7,24 @@
  * questions that job needs answered, and nothing else:
  *
  *   1. Did the user deliberately set the flag? (`rulesWriteExemptionActive`)
- *   2. Is this path one of the rule paths the flag exempts? (`isProjectRulePath`)
+ *   2. Is this path one of the rule paths the flag exempts? (`isProjectRulePath`
+ *      where a path was SPELLED by a tool call, `isObservedRulePath` where one
+ *      was MEASURED after the fact)
  *   3. When the answer to 2 is no, WHY — in a sentence the agent that met the
  *      deny can act on. (`rulesWriteRefusal`, `rulesWriteRefusalNote`)
  *   4. What gets recorded when a write does go through. (`rulesWriteDetail`)
  *
- * 1 and 2 must both hold. The write-tool path (`guard.ts` CHECK 2) and the Bash
- * mutation path (`MutationOptions.exempt`) ask the same two questions of the
- * same kind of value — a normalised, project-relative path — so they ask them
- * HERE. Writing the boundary twice, once per surface, is two places for a
- * security-relevant rule to drift apart.
+ * 1 and 2 must both hold. The write-tool path (`guard.ts` CHECK 2) and the
+ * measurement (`tracker.ts`) ask the same two questions of the same kind of
+ * value — a normalised, project-relative path — so they ask them HERE. Writing
+ * the boundary twice, once per surface, is two places for a security-relevant
+ * rule to drift apart.
+ *
+ * The two entry points to 2 are not two boundaries. They are the same gates,
+ * asked of an input that has fewer properties: a measured path was never
+ * spelled, so it has no spelling to walk up and no destination still to be
+ * resolved. `isObservedRulePath` says which gates that retires and why each one
+ * has nothing left to be about.
  *
  * That argument is about the two SURFACES sharing one predicate, and it is the
  * only thing it is about. It is NOT an argument that the grant side and the
@@ -463,6 +471,69 @@ export function rulesWriteRefusal(path, fs, spelledAs, projectProtected) {
  */
 export function isProjectRulePath(path, fs, spelledAs, projectProtected) {
     return rulesWriteRefusal(path, fs, spelledAs, projectProtected) === null;
+}
+/**
+ * Gate 1 and gate 1b, and no others — the exemption as the MEASUREMENT side has
+ * to ask it.
+ *
+ * `tracker.ts` does not hold a path a tool call spelled. It holds a path at
+ * which the guard's own enumeration found a file whose content changed. Three of
+ * the gates above have no subject left in that question, and each is dropped
+ * because it has nothing to be about — not because this side is more trusting.
+ *
+ *   - GATE 0 (`spellingWalksUp`) compares a spelling against the collapsed path
+ *     it produced. Here there is only one path and nobody spelled it:
+ *     `enumerateProtected` builds each one from `readdirSync` entries joined to
+ *     the walk's own prefix, and the literal patterns come from the
+ *     configuration. Neither can yield a `..` segment, and there is no second
+ *     spelling for the gate to hold against the first.
+ *
+ *   - GATE 2, SYMLINKS. The write-tool gates ask where a write WOULD land,
+ *     because that answer decides whether granting is safe. Here the write has
+ *     already happened and its effect is what was measured — and
+ *     `enumerateProtected` never descends a symlink and never reports one as a
+ *     protected path. A link planted in a rule directory to reach
+ *     `hooks/config.json` therefore produces no rule-path observation to exempt.
+ *     What it produces is an observation of `hooks/config.json`, at its own
+ *     name, which this function does not exempt.
+ *
+ *   - GATE 2, HARD LINKS. The same answer, and the stronger one. A hard link
+ *     gives a protected inode a second name inside `rules/`; a write through
+ *     either name changes the file under BOTH. The measurement watches every
+ *     protected path at the name its own pattern gives it, so the change is seen
+ *     — and refused — as `hooks/config.json`, whatever it is also seen as inside
+ *     `rules/`. There is nothing for a hard-link gate here to prevent.
+ *
+ * What remains is what the flag actually means: is this a rule path (gate 1),
+ * and did the project take the grant back in its own `fusion-guard.json` (gate
+ * 1b, decision `260803-1314`)? Both are pure text, and both are asked here
+ * exactly as `rulesWriteRefusal` asks them, `canonicalise` included — a
+ * predicate that trusted its caller to have canonicalised is the mistake that
+ * module docstring already records.
+ *
+ * `projectProtected` is what the project DECLARED — `projectDeclaredProtectedPaths`
+ * and nothing else. The effective list inherits the plugin's `rules/**` and
+ * would end the exemption in every project on earth. The same trap as on the
+ * write side, and it looks just as right.
+ *
+ * NOT `isProjectRulePath(path, fs, path, declared)`. `guard.ts` names that call
+ * shape — the collapsed path handed over as `spelledAs` too — as the one that
+ * type-checks while silently reopening gate 0's escape, and a second call site
+ * wearing that shape is how the shape becomes ordinary. Here it would also run
+ * two filesystem gates on a question with no filesystem in it.
+ *
+ * A refusal here needs no note. `rulesWriteRefusalNote` exists because an agent
+ * met a DENY it could not explain and rephrased its way around it; a measurement
+ * that declines to exempt produces the ordinary protected-path message, which is
+ * already complete.
+ */
+export function isObservedRulePath(path, projectProtected) {
+    if (!path)
+        return false;
+    const canonical = canonicalise(path);
+    if (!matchesAny(canonical, [...RULE_DIR_PATTERNS]))
+        return false;
+    return projectProtectedMatch(canonical, projectProtected) === null;
 }
 /**
  * The sentence a caller appends to its deny reason when the exemption was

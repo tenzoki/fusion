@@ -1,6 +1,13 @@
 /**
  * Compliance Guard — PreToolUse hook for Claude Code.
  *
+ * Before anything else, on ALL five guarded tools, it records a fingerprint of
+ * every protected path (lib/protected-snapshot.ts). `tracker.ts` takes a second
+ * one after the tool ran and restores whatever changed. That pair is the guard's
+ * actual protection of those paths; the checks below are the explaining refusal
+ * that keeps an agent from meeting a bare failure. See the call site in `main`
+ * for why the BEFORE half is a condition of admissibility rather than a nicety.
+ *
  * Intercepts Write/Edit/MultiEdit tool calls and checks them against:
  *   1. Halt state — if active, block ALL writes
  *   2. Protected paths — blocked, with one exemption: FUSION_ALLOW_RULES_WRITE
@@ -10,7 +17,7 @@
  *      does not differ by filesystem. See lib/paths.ts `matchesAnyFolded`.
  *   3. Decision-governed categories — escalated based on sensitivity
  *
- * Also intercepts Bash tool calls, for two independent policies:
+ * Also intercepts Bash tool calls, for ONE policy:
  *   a. Branch policy — DENIES branch/worktree-moving git operations. git is
  *      reachable only via Bash, so every attempt an agent can make passes
  *      through here; that makes this a choke-point on the tool CALL, not a
@@ -19,21 +26,16 @@
  *      `bash -c '…'`, a `case` arm, a script the agent invokes) is not seen.
  *      See lib/git-branch-guard.ts. Runs everywhere, including in the fusion
  *      plugin's own repo.
- *   b. Protected-path policy — DENIES file-mutating shell commands (mv, rm,
- *      cp, sed -i, redirection, …) whose written operands land on
- *      guard.protectedPaths, the same list check 2 above applies to the write
- *      tools. See lib/bash-mutation-guard.ts. This IS a write-guard concern
- *      and therefore stands down in the plugin's own repo, exactly as the
- *      write tools do. It carries the SAME one exemption check 2 above does,
- *      FUSION_ALLOW_RULES_WRITE, because mv/rm/sed -i/`>` reach the rule files
- *      Edit reaches and a flag that lifted only one surface would control
- *      neither.
- * The policies are INDEPENDENT in both directions: an env override that lifts
- * policy (a) for a git operation is not consent to policy (b), so a command
- * pairing an overridden branch switch with a protected-path write still denies
- * on the write. See guardBashCommand for the evaluation order.
- * Neither policy touches the Bash allow path's zero-side-effect property (no
- * counter reset, no guard_allow event) — see guardBashCommand.
+ * There used to be a second one: a classifier that read a shell command and
+ * predicted whether it was about to write a protected path. It is gone, and
+ * nothing replaces it on THIS side of the tool call. What a shell does to a
+ * protected path is now answered after the fact, by the fingerprint pair at the
+ * top of this comment — measured rather than predicted, because "will this
+ * command write?" is not decidable from the command text. Decision
+ * `circles/260804-1205-shell-reachability-model/decisions/`
+ * `260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`.
+ * The branch policy does not touch the Bash allow path's zero-side-effect
+ * property (no counter reset, no guard_allow event) — see guardBashCommand.
  *
  * Ported from fusion/reactor/pkg/guard/decision_guard.go.
  *

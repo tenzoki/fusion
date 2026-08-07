@@ -1,14 +1,13 @@
 import { describe, it, expect } from "vitest";
 import {
   CASE_TIMEOUT,
-  runBash,
   runGuard,
   runWrite,
   withProject,
 } from "./helpers/guard-harness.js";
 
 // ---------------------------------------------------------------------------
-// Case folding on the protected list — both write surfaces, end to end.
+// Case folding on the protected list — the write tools, end to end.
 //
 // ## What was broken
 //
@@ -39,13 +38,17 @@ import {
 // case-sensitive APFS disk image, `Edit AGENTS/coder.md` denies although both
 // files exist and are different.
 //
-// ## Why this file covers BOTH surfaces
+// ## Why the shell rows left this file
 //
-// A fix on the write tools alone would leave the shell open and teach an agent
-// that the way past a deny is to reach for Bash, which is the failure
-// `rules/protected-path-discipline.md` exists to prevent. The constraint is
-// written into the decision record, so it is pinned here rather than left to a
-// reviewer to notice.
+// It used to cover both surfaces, because a fold applied to the write tools
+// alone would have left the shell classifier open and taught an agent that the
+// way past a deny is to reach for Bash. There is no shell classifier any more:
+// the protected paths are MEASURED after every tool call
+// (`lib/protected-snapshot.ts`), and that comparison reads a path's bytes rather
+// than its spelling, so a differently-cased shell write is caught by identity
+// and not by a fold. The rows that asserted the fold on Bash had no mechanism
+// left to assert it against. The write tools still match by text, which is why
+// the fold — and this file — still exist.
 //
 // ## One fresh project per case
 //
@@ -84,7 +87,6 @@ describe("the protected list is matched with case folded — write tools", () =>
     "Settings.json",
     "BIN/Monitor",
     ".Claude-Plugin/Plugin.json",
-    "fusion-workbench/.GUARD-STATE/escalation.json",
   ];
 
   for (const path of bypasses) {
@@ -143,74 +145,6 @@ describe("the protected list is matched with case folded — write tools", () =>
   );
 });
 
-describe("the protected list is matched with case folded — Bash", () => {
-  const bypasses: [string, string][] = [
-    ["rm AGENTS/coder.md", "the issue's own row"],
-    ["mv RULES/x.md /tmp/gone", "relocation out of the tree"],
-    ["cp /tmp/y HOOKS/config.json", "overwrite by copy"],
-    ["sed -i '' 's/a/b/' Agents/coder.md", "in-place rewrite"],
-    ["echo pwned > Agents/coder.md", "redirection"],
-    ["cat /tmp/y >> RULES/x.md", "appending redirection"],
-    ["sudo rm AGENTS/coder.md", "seen through a wrapper"],
-    ["cd AGENTS && rm coder.md", "resolved through the virtual cwd"],
-    ["git mv RULES/x.md /tmp/gone", "a git row"],
-    ["rm fusion-workbench/.GUARD-STATE/escalation.json", "the guard's own state"],
-  ];
-
-  for (const [command, why] of bypasses) {
-    it(
-      `denies ${JSON.stringify(command)} (${why})`,
-      () => {
-        withProject(({ root }) => {
-          const res = runBash(root, command);
-          expectProtectedDeny(res, command);
-          expect(res.reason).toContain("protected path");
-        });
-      },
-      CASE_TIMEOUT,
-    );
-  }
-
-  it(
-    "denies a differently-cased ANCESTOR directory",
-    () => {
-      // `ancestorOfProtected` is a raw string comparison rather than a glob
-      // match, so it needs the fold applied by hand. Without it `rm -rf RULES`
-      // walks past a check `rm -rf rules` fails.
-      for (const command of ["rm -rf HOOKS", "mv HOOKS /tmp", "cp /tmp/x HOOKS/"]) {
-        withProject(({ root }) => {
-          const res = runBash(root, command);
-          expectProtectedDeny(res, command);
-          expect(res.reason).toContain("CONTAINS a protected path");
-        });
-      }
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "still allows the build directories the ancestor rule was scoped around",
-    () => {
-      // The ancestor fold must not start catching ordinary work: none of these
-      // is an ancestor of a protected pattern in any case.
-      for (const command of [
-        "rm -rf node_modules",
-        "rm -rf NODE_MODULES",
-        "rm -rf hooks/dist",
-        "rm -rf HOOKS/DIST",
-        "rm -rf docs",
-        "rm -rf DOCS",
-        "rm -rf build",
-      ]) {
-        withProject(({ root }) => {
-          expect(runBash(root, command).decision, command).toBeUndefined();
-        });
-      }
-    },
-    CASE_TIMEOUT,
-  );
-});
-
 describe("folding does not reach ordinary unprotected work", () => {
   it(
     "allows paths that differ from a protected path only in case but are not near the list",
@@ -244,14 +178,9 @@ describe("the GRANT side is unchanged — folding widened protection only", () =
   it(
     "still grants exactly what it granted before",
     () => {
-      // The flag's headline use and its two ordinary forms. If the fold had
-      // leaked into the exemption these would still pass, so the widening half
-      // below is the one that would catch it.
-      withProject(({ root }) => {
-        expect(
-          runBash(root, "mv rules/x.md rules/retired/", FLAG).decision,
-        ).toBeUndefined();
-      });
+      // The flag's two ordinary forms. If the fold had leaked into the
+      // exemption these would still pass, so the widening half below is the one
+      // that would catch it.
       withProject(({ root }) => {
         expect(runWrite(root, "rules/x.md", "Edit", FLAG).decision).toBeUndefined();
       });
@@ -281,12 +210,15 @@ describe("the GRANT side is unchanged — folding widened protection only", () =
   it(
     "keeps the trailing-separator asymmetry: the bare rule directory stays out of reach",
     () => {
-      // `rm -rf rules/` must not become exempt, in either case. This is the
-      // OTHER asymmetry in `paths.ts` and the fold sits beside it, not on top
-      // of it.
-      for (const command of ["rm -rf rules/", "rm -rf rules", "rm -rf RULES/", "rm -rf RULES"]) {
+      // The rule DIRECTORY itself must not become exempt, in either case and
+      // in either spelling. This is the OTHER asymmetry in `paths.ts` and the
+      // fold sits beside it, not on top of it. The shell spellings of the same
+      // four rows (`rm -rf rules/` and friends) left with the mutation
+      // classifier; the flag is a write-tool grant, so the write tools are where
+      // the asymmetry is observable.
+      for (const path of ["rules/", "RULES/"]) {
         withProject(({ root }) => {
-          expectProtectedDeny(runBash(root, command, FLAG), command);
+          expectProtectedDeny(runWrite(root, path, "Edit", FLAG), path);
         });
       }
     },
