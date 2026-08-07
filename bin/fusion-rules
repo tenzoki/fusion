@@ -257,13 +257,26 @@ declared_lang() {
   # print nothing when it declares none.
   #
   #   $1 = declaration label, e.g. "Language" or "Artifact language".
+  #        Interpolated unescaped into an ERE and into a `sed` address, so the
+  #        label must be a metacharacter-free literal. Both call sites are.
   #
-  # Source: the first line in ./CLAUDE.md matching
-  #   ^\*\*<label>:\*\* *([a-z]{2})
-  # case-sensitive, two lowercase letters, with the label interpolated. Valid
+  # Source: the first line in ./CLAUDE.md whose start is `**<label>:**`,
+  # case-sensitive, with the label interpolated. The rest of that line, minus
+  # the separating spaces and any trailing whitespace, is the declared VALUE,
+  # and the value is matched WHOLE against the supported set below. Valid
   # values: en, de. No CLAUDE.md, no matching line, and an unsupported value all
   # print nothing — one branch, so a caller's single default covers every "not
   # declared" case at once and neither declaration needs an error path.
+  #
+  # Whole-value matching is the point, and the extraction is deliberately
+  # ignorant of what the supported values are. An earlier version captured
+  # `([a-z]{2})` and let `.*` eat the remainder, which made the test a PREFIX
+  # test: `deutsch`, `denmark` and `de-DE` each resolved to `de`, so a value
+  # naming no language fusion supports silently selected the German writing
+  # profile for every artifact. The supported set lives in exactly one place —
+  # the `case` below — and the extractor hands it a candidate rather than
+  # pre-truncating one into shape. Adding a third language means editing that
+  # `case` and nothing else.
   #
   # The default deliberately does NOT live here. The two call sites default
   # differently (chat -> `en`, artifact -> whatever the chat language resolved
@@ -275,9 +288,13 @@ declared_lang() {
   if [ -f "$claude_md" ]; then
     # The pipeline's exit status is sed's, which succeeds on empty input, so a
     # CLAUDE.md carrying no matching line does not trip `set -e`.
-    extracted=$(grep -E "^\*\*$label:\*\* *[a-z]{2}" "$claude_md" 2>/dev/null \
+    #
+    # The trailing `[[:space:]]*$` strip is not cosmetic: it is what keeps
+    # `**Language:** de ` and a CRLF file's `de\r` resolving to `de`, as they
+    # did while `.*` was swallowing them.
+    extracted=$(grep -E "^\*\*$label:\*\*" "$claude_md" 2>/dev/null \
                 | head -n 1 \
-                | sed -E "s/^\*\*$label:\*\* *([a-z]{2}).*/\1/")
+                | sed -E "s/^\*\*$label:\*\* *//; s/[[:space:]]*\$//")
   fi
   case "$extracted" in
     en|de) printf '%s\n' "$extracted" ;;

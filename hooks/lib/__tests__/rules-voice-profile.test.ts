@@ -233,6 +233,14 @@ describe("bin/fusion-rules voice-profile emission", () => {
   // Absent, unparseable and unsupported all land in one branch — "not
   // declared" — so the chat language governs. Not `en`: falling to `en` here
   // would be a second, hidden rule.
+  //
+  // THE VALUE IS MATCHED WHOLE. The four cases below that carry a value
+  // beginning with `de` or `en` are the executable form of that: while
+  // `declared_lang` captured two letters and let `.*` eat the remainder, the
+  // test was a PREFIX test, so `deutsch`, `denmark` and `de-DE` each resolved
+  // to `de` and selected the German writing profile — `denmark` most plainly,
+  // a value naming no language fusion supports. Each of those three fails
+  // loudly if the extraction ever truncates a value into shape again.
   // -------------------------------------------------------------------------
   describe("an artifact declaration that is not a supported code", () => {
     it("treats an unsupported two-letter code as not declared", () => {
@@ -242,13 +250,53 @@ describe("bin/fusion-rules voice-profile emission", () => {
       expect(profilePaths("planner", dir)).toEqual([CHAT_DE, WRITE_DE]);
     });
 
-    it("treats a spelled-out language name as not declared", () => {
-      // `English` never even reaches the value test: the pattern is
-      // case-sensitive and wants exactly two lowercase letters.
+    it("treats a capitalised value as not declared, the pattern being case-sensitive", () => {
+      // What this case pins is the capital `E`, not the spelling-out: a
+      // lowercase spelled-out name is covered separately below, and used to
+      // resolve where this one never did.
       const dir = makeProject({
         claudeMd: "**Language:** de\n**Artifact language:** English\n",
       });
       expect(profilePaths("planner", dir)).toEqual([CHAT_DE, WRITE_DE]);
+    });
+
+    it("treats a lowercase spelled-out language name as not declared", () => {
+      // `deutsch` begins with the supported code `de`. Under prefix matching
+      // it resolved to `de` and this case was red.
+      const dir = makeProject({
+        claudeMd: "**Language:** en\n**Artifact language:** deutsch\n",
+      });
+      expect(profilePaths("planner", dir)).toEqual([CHAT_EN, WRITE_EN]);
+    });
+
+    it("treats a word that merely starts with a supported code as not declared", () => {
+      // `denmark` names no language at all, let alone one fusion supports.
+      // Under prefix matching it selected the German writing profile.
+      const dir = makeProject({
+        claudeMd: "**Language:** en\n**Artifact language:** denmark\n",
+      });
+      expect(profilePaths("planner", dir)).toEqual([CHAT_EN, WRITE_EN]);
+    });
+
+    it("treats a region-qualified code as not declared", () => {
+      // `de-DE` is the closest of the three to a defensible value, and it is
+      // still not one of the two the project supports. Accepting it would put
+      // a second spelling of `de` into the vocabulary by accident.
+      const dir = makeProject({
+        claudeMd: "**Language:** en\n**Artifact language:** de-DE\n",
+      });
+      expect(profilePaths("planner", dir)).toEqual([CHAT_EN, WRITE_EN]);
+    });
+  });
+
+  describe("a chat declaration that is not a supported code", () => {
+    it("falls the chat language back to en, and the artifact language with it", () => {
+      // The other direction of the same defect: `**Language:** deutsch` alone
+      // used to drive BOTH families to `de`. The artifact family follows the
+      // chat language here because it is itself undeclared, which is the
+      // documented chain and not a second rule.
+      const dir = makeProject({ claudeMd: "**Language:** deutsch\n" });
+      expect(profilePaths("planner", dir)).toEqual([CHAT_EN, WRITE_EN]);
     });
   });
 
