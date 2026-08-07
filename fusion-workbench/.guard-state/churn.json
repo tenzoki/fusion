@@ -2743,9 +2743,45 @@
       "thrashingScore": 0
     },
     "shared/history/260807-1917-orchestrator-session.md": {
+      "totalChanges": 2,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-07T17:42:37.735Z",
+      "thrashingScore": 0
+    },
+    "shared/issues/260807-1939_o_plane-natural-key-enthaelt-den-marker-und-bricht-bei-jedem-statuswechsel.md": {
       "totalChanges": 1,
       "changesThisSession": 1,
-      "lastChange": "2026-08-07T17:34:09.752Z",
+      "lastChange": "2026-08-07T17:40:32.885Z",
+      "thrashingScore": 0
+    },
+    "shared/issues/260807-1941_o_marker-renames-landed-add-only-so-head-carries-each-of-three-records-twice.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T17:41:33.130Z",
+      "thrashingScore": 0
+    },
+    "shared/decisions/260807-0158_a_how-is-a-unique-record-filename-obtained.md": {
+      "totalChanges": 2,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-07T17:41:55.414Z",
+      "thrashingScore": 0
+    },
+    "shared/decisions/260807-1515_a_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T17:42:07.969Z",
+      "thrashingScore": 0
+    },
+    "shared/issues/260807-0158_c_record-filenames-collide-on-the-minute-and-nothing-prevents-it.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T17:42:20.599Z",
+      "thrashingScore": 0
+    },
+    "shared/history/260807-1941-reconciliation.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T17:43:41.058Z",
       "thrashingScore": 0
     }
   },

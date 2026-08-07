@@ -4,7 +4,7 @@
 **Domain:** knowledge
 **Status:** answered
 **Filed by:** consultant, from a report by the consuming project `unite-co-creator`, session 260806-1242
-**Cross-references:** `fusion-workbench/shared/issues/260807-0158_o_record-filenames-collide-on-the-minute-and-nothing-prevents-it.md` (the measured defect); `rules/fusion-workbench-conventions.md` `## Filename Patterns` (lines 185-208) and `## Timestamps` (lines 172-174); `bin/fusion-commit-lock` (the precedent)
+**Cross-references:** `fusion-workbench/shared/issues/260807-0158_*_record-filenames-collide-on-the-minute-and-nothing-prevents-it.md` (the measured defect; marker wildcarded by the reconciler at 260807-1941, because the same session moved it `_o_` → `_c_` and the exact-marker form no longer resolved); `rules/fusion-workbench-conventions.md` `## Filename Patterns` (lines 185-208) and `## Timestamps` (lines 172-174); `bin/fusion-commit-lock` (the precedent)
 
 ---
 
@@ -119,6 +119,34 @@ filename, never by the timestamp alone.** The marker may be wildcarded, which is
 record the answer only. `rules/fusion-workbench-conventions.md` `## Filename Patterns` still says
 nothing about how a record is cited; adding the cite-by-full-filename rule there is what closes
 this out.
+
+## Reconciliation 260807-1941 (reconciler, domain `code`) — stays `_a_`, and the measurement reproduces exactly
+
+The three rows of the answer's table were re-derived independently from the tree at `1d6c8b3`,
+without reading the session's commands, and all three match to the digit:
+
+| Check | Answer says | Re-measured 260807-1941 |
+|---|---|---|
+| Record files with a `YYMMDD-HHMM` basename under `circles/` plus `shared/` | 579 | 579 |
+| Files sharing a full basename, marker normalised | 0 | 0 |
+| Files sharing a full basename within one directory | 0 | 0 |
+| `YYMMDD-HHMM` stamps carried by two or more files | 84 | 84 |
+
+One clarification the answer did not need but a later reader will: normalising the marker across
+*all* `.md` files under `circles/` and `shared/` produces one apparent duplicate, `_X_circle.md`.
+That is the twelve Circle records, which carry no timestamp at all and are disambiguated by their
+stable directory name (`rules/fusion-workbench-conventions.md` `## Filename Patterns`, the Circle
+record row). They are not records of the `YYMMDD-HHMM_S_<topic>.md` shape this decision is about, and
+excluding them is what the 579 figure already does.
+
+Stays `_a_` rather than moving to `_i_`: the answer's operative half is a citation rule, and that
+rule is not yet written into `rules/fusion-workbench-conventions.md` `## Filename Patterns`. The
+user deliberately deferred that edit in the answering session ("nur festschreiben"). This record
+moves to `_i_` when the rule text lands.
+
+The cross-reference above was repaired in this pass: it named the defect by its pre-transition
+`_o_` marker, which the same session invalidated. Rewritten to the ratified wildcard form
+(`circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md`).
 
 ---
 Answered: shared/history/260807-1917-orchestrator-session.md `## Decisions answered` — premise falsified by measurement; the pattern stands and the answer is a citation rule.

@@ -149,6 +149,30 @@ the concurrency half alone would have produced pairs, not runs of fifteen.
 This defect and its decision record were filed in the same minute and share the identifier
 `260807-0158`. Cite either by full filename.
 
+## Reconciliation 260807-1941 (reconciler, domain `code`) — closure confirmed, correction re-measured
+
+The correction's three rows were re-derived independently from the tree and reproduce exactly: 579
+record files with a `YYMMDD-HHMM` basename under `circles/` plus `shared/`, 0 sharing a full basename
+with the marker normalised, 0 sharing one within a directory, 84 stamps carried by two or more files.
+The body's original table (556 files, 75 shared identifiers, 238 files) counts timestamps, and the
+correction says so. Both statements now stand side by side in the file, in that order, which is the
+right shape: the measurement that was wrong is still readable, and the heading above it says why.
+
+The decision to close rather than rename holds. The file is cited by full filename from
+`shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md` and from the session
+history; the `_o_` → `_c_` marker change is the only name change, and that is what the marker is for.
+
+Two notes for a later reader:
+
+- **The residual is carried, not dropped.** The citation rule this defect proposed under `## Not
+  retroactively fixable` survives as the operative half of the answered decision. Writing it into
+  `rules/fusion-workbench-conventions.md` `## Filename Patterns` is open rule-text work, deferred by
+  the user in the closing session, and listed in `shared/history/260807-1917-orchestrator-session.md`
+  `## Remaining Work`.
+- **The five bare-stamp citations named under `## What this costs` were not re-checked in this pass.**
+  The correction states they were each verified at 260807-1925 to resolve to exactly one file, and
+  nothing since then has added a record at those stamps. Reported as inherited, not as re-verified.
+
 ---
 Resolved: Closed as mis-scoped, not as fixed. The premise was falsified by re-measurement on
 260807-1925: zero filename collisions across 579 record files, 84 multiply-occupied timestamps. The

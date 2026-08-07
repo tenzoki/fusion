@@ -139,6 +139,30 @@ to record the answer only. Three edits remain open for whoever takes them up:
 `rules/critical-stance.md` needs the `**Entscheidbarkeit:**` line resolved; and the wording that
 scopes the declaration to "prose output" needs to say "direct user interaction" instead.
 
+## Reconciliation 260807-1941 (reconciler, domain `code`) — stays `_a_`, and the answer is already being obeyed
+
+Checked against the tree, not against the header. The `_o_` → `_a_` transition is real on disk, the
+`**Status:** answered` line matches the filename marker, and the `Answered:` footer cites a path that
+resolves (`shared/history/260807-1917-orchestrator-session.md`, section `## Decisions answered`).
+
+Two observations about the answer's reach in this session:
+
+1. **The answer's first application is visible and correct.** The session history file at the cited
+   path is English, and it carries its own note saying it was rewritten from German as task T4 for
+   exactly this reason. That is the boundary working in the same session that drew it.
+2. **One recorded deviation.** Commit `1d6c8b3`, which lands this record, carries a German message
+   while the answer makes commit messages English. The user was shown this at the Coherence gate of
+   session `260807-1917` and chose to proceed; amending was declined. It is an accepted deviation,
+   not a defect, and it is noted here so a later reader does not read the commit as evidence against
+   the boundary. Consequence 2 of the answer already covers the shape of it: existing German
+   artifacts are not translated.
+
+Stays `_a_` rather than moving to `_i_`: the answer implies three rule-text edits and none of them
+was made, by explicit user choice ("nur festschreiben"). They are enumerated in the answer above and
+in `shared/history/260807-1917-orchestrator-session.md` `## Remaining Work`. This record moves to
+`_i_` when the rule text carries the exempt-surface list, the `**Decidability:**` resolution, and the
+"direct user interaction" wording.
+
 ---
 Answered: shared/history/260807-1917-orchestrator-session.md `## Decisions answered` — the language declaration covers direct user interaction only; every persisted artifact is English.
 Implemented:

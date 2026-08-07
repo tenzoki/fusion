@@ -134,6 +134,20 @@ without re-deriving it. The measurement above is what should have accompanied it
 
 <!-- RECONCILER-OWNED — appended at Phase 3 step 3. Format defined in agents/reconciler.md Step 4. Do not overwrite or modify. -->
 
+**Verdict:** review-needed
+
+**Edges:**
+
+- Artifact↔Grounding: 3 transitions and 4 measurement rows verified against the tree, all reproducing exactly (579 stamped record files, 0 basename duplicates by either definition, 84 multiply-occupied stamps, 22 open defects, 1 open decision); 1 drift item found — commit `1d6c8b3` staged the three renamed files as additions without staging the three deletions, so HEAD carries each of the three records under two markers at once (`shared/issues/260807-1941_o_marker-renames-landed-add-only-so-head-carries-each-of-three-records-twice.md`); plus 5 marker-carrying citations across live surfaces that the renames invalidated; 0 open reviewer findings, since no code or data changed and neither reviewer ran.
+- Artifact↔Directive: commit `1d6c8b3` moves toward the Directive and touches nothing outside it — the four files it changes are exactly the two decisions, the one defect and this history file the Directive names, plus root session state. One recorded and accepted deviation: the commit message is German while the answer it lands makes commit messages English; the user was shown this at the Coherence gate and declined to amend.
+- Grounding↔Directive: 5 active decisions in `shared/decisions` (4 answered, 1 open), all consistent with the Directive, 0 conflicting. The two answered in this session are the Directive's own subject; `260719-2141_a_concurrency-worktree-slots-vs-single-active-circle.md` and `260801-1020_a_where-does-normative-consistency-live.md` are unrelated to it and unaffected by it; `260806-1152_o_stash-manifest-dirname-and-pointer-content-duplicate.md` remains open by explicit user choice.
+
+**Rebalance recommendation:** revise Artifact
+
+The Directive was reached and the Grounding is sound. What is not durable is the commit: stage the three deletions, by amending `1d6c8b3` if it is still unpushed or by a follow-up commit if it is not. Nothing on disk changes either way. The three deferred rule-text edits are not part of this verdict — they were deferred by explicit user instruction and are listed under `## Remaining Work` below.
+
+**Reconciliation log:** `shared/history/260807-1941-reconciliation.md`
+
 ## Remaining Work
 
 **One decision still open**, deliberately, because the user asked for the underlying mechanics
