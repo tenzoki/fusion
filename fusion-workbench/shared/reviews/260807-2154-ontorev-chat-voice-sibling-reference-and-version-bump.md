@@ -236,3 +236,15 @@ that follow-up.
    priority. The comment-only half can land any time; `scope: long-form` needs approval.
 
 Nothing here blocks the change under review. It is correct as committed.
+
+---
+
+**Reconciliation 260808-0030 (reconciler, domain `code`).** All three findings re-checked against
+`c54ead9`. The version-pin finding is resolved: `.claude-plugin/plugin.json:3`, the marketplace
+entry at `tenzoki/claude-plugins@0c091d9`, `install.sh:27` and `README.md:26` all read `6.1.0`, and
+tag `v6.1.0` exists locally and on the remote at `fd74b89` — four version surfaces coherent, closed
+as `shared/issues/260807-2154_c_plugin-json-says-6-1-0-while-tag-marketplace-and-both-pin-examples-say-6-0-1.md`.
+The two structured-data findings remain open and were re-verified line by line; see the
+reconciliation notes appended to
+`shared/issues/260807-2154_o_corrected-sibling-wording-never-reaches-an-existing-consumer.md` and
+`shared/issues/260807-2154_o_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md`.

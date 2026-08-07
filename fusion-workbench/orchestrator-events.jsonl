@@ -895,3 +895,42 @@
 {"ts":"2026-08-07T17:46:17","event":"coherence_review","turn":2,"detail":"verdict=ok | Artifact<->Grounding: staging drift fixed and verified at HEAD, 0 open reviewer findings | Artifact<->Directive: commits move toward the stated Directive | Grounding<->Directive: 1 decision open by user choice, 4 answered, 0 conflicting"}
 {"ts":"2026-08-07T17:46:17","event":"turn_end","turn":2,"detail":"1 task resolved, 0 issues created, 1 issue closed"}
 {"ts":"2026-08-07T17:46:17","event":"session_end","detail":"5 tasks resolved, 3 commits, 2 decisions answered, 2 issues closed, 4 issues filed by reconciler, 0 errors, 3 human gates"}
+{"ts":"2026-08-07T18:20:34","event":"session_start","detail":"second Directive: split the language declaration so chat and persisted artifacts resolve independently"}
+{"ts":"2026-08-07T18:20:34","event":"scope_resolved","detail":"mode=custom; planning first; agents: planner, then coder; gate: plan review"}
+{"ts":"2026-08-07T18:20:34","event":"planner_start","detail":"two-declaration language split in CLAUDE.md + bin/fusion-rules"}
+{"ts":"2026-08-07T18:30:16","event":"planner_done","detail":"shared/planning/260807-2024_o_two-language-declarations.md; 12 steps, 1 human gate"}
+{"ts":"2026-08-07T18:30:16","event":"conceptrev_start","detail":"shared/planning/260807-2024_o_two-language-declarations.md (2 mermaid diagrams)"}
+{"ts":"2026-08-07T18:36:58","event":"conceptrev_done","detail":"verdict=acceptable; 2 diagrams; 3 corrections (orphan caption position, 2 missing DAG edges, caption miscounts)"}
+{"ts":"2026-08-07T19:12:43","event":"gate_response","detail":"plan approved with conceptrev corrections; dashboard follows artifact language (English)"}
+{"ts":"2026-08-07T19:12:43","event":"queue_built","detail":"13 tasks in 9 dispatches, 0 blocked at start"}
+{"ts":"2026-08-07T19:12:43","event":"turn_start","turn":1,"detail":"2 ready tasks (T0, S1)"}
+{"ts":"2026-08-07T19:12:43","event":"task_start","turn":1,"task":"T0","agent":"coder","detail":"plan diagram corrections"}
+{"ts":"2026-08-07T19:12:43","event":"task_start","turn":1,"task":"S1","agent":"coder","detail":"rules/fusion-workbench-conventions.md ## Project language"}
+{"ts":"2026-08-07T19:18:13","event":"task_done","turn":1,"task":"T0","agent":"coder","detail":"c1b72fc diagram corrections; mmdc 11.16.0 render-checked"}
+{"ts":"2026-08-07T19:18:13","event":"task_done","turn":1,"task":"S1","agent":"coder","detail":"def9d13 ## Project language rewritten, heading byte-exact, 4 lint gates green"}
+{"ts":"2026-08-07T19:18:13","event":"task_start","turn":1,"task":"S2+S3+S4","agent":"coder","detail":"regression lock, two-code resolution, split cases"}
+{"ts":"2026-08-07T19:18:13","event":"task_start","turn":1,"task":"S5+S6","agent":"coder","detail":"head-label claim and resolution pointers"}
+{"ts":"2026-08-07T19:18:13","event":"task_start","turn":1,"task":"S9","agent":"coder","detail":"README.md and context-lean-claude-md.md"}
+{"ts":"2026-08-07T19:31:36","event":"task_done","turn":1,"task":"S7","agent":"coder","detail":"CLAUDE.md carries both declarations; split verified live"}
+{"ts":"2026-08-07T19:31:36","event":"gate_hit","turn":1,"task":"S8","detail":"ontocoder step; structured data change"}
+{"ts":"2026-08-07T19:31:36","event":"gate_response","turn":1,"task":"S8","detail":"proceed, all four files"}
+{"ts":"2026-08-07T19:33:04","event":"task_start","turn":1,"task":"S8","agent":"ontocoder","detail":"four stilwerk chat profiles"}
+{"ts":"2026-08-07T19:34:37","event":"task_done","turn":1,"task":"S8","agent":"ontocoder","detail":"four chat profiles repointed by role; shipped and workbench copies identical"}
+{"ts":"2026-08-07T19:47:01","event":"task_done","turn":1,"task":"S10","agent":"coder","detail":"cd48540 golden regenerated, 1026 tests green"}
+{"ts":"2026-08-07T19:47:01","event":"task_done","turn":1,"task":"S11+S12","agent":"coder","detail":"0e9e39f v6.1.0; decision 260807-1515 _a_->_i_"}
+{"ts":"2026-08-07T19:47:01","event":"review_start","turn":1,"agent":"coderev","detail":"bin/fusion-rules, new test suite, rule and prompt text"}
+{"ts":"2026-08-07T19:47:01","event":"review_start","turn":1,"agent":"ontorev","detail":"four stilwerk chat profiles, plugin.json"}
+{"ts":"2026-08-07T19:57:45","event":"review_done","turn":1,"agent":"coderev","detail":"4 issues filed: 3 medium, 1 low; 0 critical, 0 high"}
+{"ts":"2026-08-07T19:57:45","event":"review_done","turn":1,"agent":"ontorev","detail":"3 issues filed: 2 medium, 1 low; change correct as committed"}
+{"ts":"2026-08-07T22:12:12","event":"coherence_review","turn":1,"detail":"verdict=review-needed | Artifact<->Grounding: 7 findings, 5 medium 2 low, 0 critical 0 high; 2 are real gaps in the work itself | Artifact<->Directive: reached and verified live | Grounding<->Directive: triggering decision now implemented, 1 new open decision, 0 conflicting"}
+{"ts":"2026-08-07T22:12:12","event":"rebalance_artifact","turn":1,"detail":"Turn 2: close the 3 findings that belong to this work; user also opted into the release"}
+{"ts":"2026-08-07T22:12:12","event":"turn_end","turn":1,"detail":"13 tasks resolved, 7 issues created, 9 commits"}
+{"ts":"2026-08-07T22:12:12","event":"turn_start","turn":2,"detail":"2 ready tasks (R1, R2+R3)"}
+{"ts":"2026-08-07T22:23:59","event":"task_done","turn":2,"task":"R1","agent":"coder","detail":"4992ffb exact value match, 16 test cases"}
+{"ts":"2026-08-07T22:23:59","event":"task_done","turn":2,"task":"R2+R3","agent":"coder","detail":"22b0ba8 agent-setup paragraph, three stale claims, version pins"}
+{"ts":"2026-08-07T22:23:59","event":"task_done","turn":2,"task":"R4","agent":"coder","detail":"fd74b89 golden regenerated, 1030 tests green, release pre-checks passed"}
+{"ts":"2026-08-07T22:23:59","event":"task_done","turn":2,"task":"R5","agent":"orchestrator","detail":"v6.1.0 released: both repos pushed, tag v6.1.0 on fd74b89, marketplace 0c091d9"}
+{"ts":"2026-08-07T22:36:53","event":"reconciliation","detail":"verdict=coherent; 12/12 plan steps verified; 0 false [DONE]; 2 new issues filed"}
+{"ts":"2026-08-07T22:36:53","event":"coherence_review","turn":2,"detail":"verdict=ok | Artifact<->Grounding: 1030 tests green, 4 citation-precision drifts repaired | Artifact<->Directive: all 14 commits move toward it | Grounding<->Directive: 5 active decisions, 0 conflicting"}
+{"ts":"2026-08-07T22:36:53","event":"turn_end","turn":2,"detail":"5 tasks resolved, 2 issues created, 4 issues closed"}
+{"ts":"2026-08-07T22:36:53","event":"session_end","detail":"18 tasks, 14 commits, v6.1.0 released, verdict coherent"}

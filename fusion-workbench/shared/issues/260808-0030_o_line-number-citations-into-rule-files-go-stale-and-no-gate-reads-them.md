@@ -1,0 +1,82 @@
+# Line-number citations into rule files go stale on any edit above them, and no gate reads a line number
+
+---
+
+**Severity:** Low
+**Domain:** code
+**Filed by:** reconciler, Phase 3 pass of session `260807-2020` (the two-language-declaration split)
+**Affects:** every record that cites a rule file by `file.md:NNN` or "lines N-M"; `hooks/lib/__tests__/reference-resolution-lint.test.ts` (the gate that could catch it and does not)
+**Cross-references:**
+`fusion-workbench/shared/decisions/260807-0158_a_how-is-a-unique-record-filename-obtained.md:7` (the first measured instance, staled by this session),
+`fusion-workbench/shared/issues/260807-2153_o_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md` (two citations staled by this session's own second Turn),
+`fusion-workbench/shared/decisions/260806-0015_*_zitierform-fuer-workbench-records.md` (the ratified citation form for the *record* class, which solved the analogous problem there)
+
+---
+
+## The defect
+
+A record that cites a rule file by line number is correct on the day it is written and silently
+wrong afterwards. Any insertion above the cited line moves it, and nothing anywhere reports the
+move: the citation still parses, the file still exists, and the reader is sent to a line that now
+holds something else.
+
+Measured in this session, on records that are live rather than historical:
+
+| Citation | Where it points today | What moved it |
+|---|---|---|
+| `260807-0158_a_how-is-a-unique-record-filename-obtained.md:7` — `## Filename Patterns` "(lines 185-208)" | the section now runs 221-245 | S1 of `shared/planning/260807-2024_c_two-language-declarations.md` grew `## Project language` by ~36 lines |
+| `260807-2153_o_…:` — `bin/fusion-rules:387` (the unconditional emission) | now `:404`; line 387 is `PROJECT_CLAUDE_RULES_DIR=".claude/rules"` | commit `4992ffb` added a 17-line block to `declared_lang()` |
+| `260807-2153_o_…:` — `bin/fusion-rules:464` (the project-rules search layer) | now `:481`; line 464 is a bare comment marker | the same commit |
+
+The second and third are the sharper case: an **open** finding was staled by a **later Turn of the
+same session**, roughly two hours after it was filed. This is not slow rot.
+
+A wider sweep over `fusion-workbench/shared/` finds the same shape throughout the older corpus —
+`fusion-workbench-conventions.md:326`, `:516-558`, `:68-85`, `:229-244`, `:129-153` and others are
+cited from decisions, analyses and plans, and none of them resolves to what its citing text
+describes. Those are historical records and are not worth repairing individually; they are
+evidence that the failure is systemic rather than incidental.
+
+## Why nothing catches it
+
+`hooks/lib/__tests__/reference-resolution-lint.test.ts` is the gate built for exactly this class of
+rot, and its header enumerates the three kinds of reference it resolves: plugin-file paths, section
+-heading anchors in the adjacent `` `file.md` `## Section` `` form, and workbench-record citations
+in the ratified wildcard form. A line number is none of the three. The gate reads the path, confirms
+the file exists, and stops.
+
+Its input surface is also bounded to the plugin's own shipped text — `rules/`, `agents/`, `skills/`
+and the READMEs. Workbench records are the *target* of class (c) resolution, never the source, so
+the citations measured above sit outside the gate twice over: wrong reference class, wrong file set.
+
+## Why the record class was solved and this one was not
+
+Decision `260806-0015_*_zitierform-fuer-workbench-records.md` met the same problem for record
+citations — a marker in a cited filename goes stale the moment the record transitions — and solved
+it by ratifying a citation *form* (`YYMMDD-HHMM_*_<slug>`) that survives the change, then teaching
+the lint to enforce it. The line-number case has no such form, and the same reconciliation passes
+that repair marker citations walk straight past the line numbers beside them.
+
+## Fix directions (none chosen)
+
+1. **Prefer the heading anchor, and say so.** `rules/fusion-workbench-conventions.md` `## Filename
+   Patterns` is stable under every edit that does not rename the heading, and the existing lint
+   already resolves that form. A convention line would make it the default and leave line numbers
+   for the cases where a heading genuinely is not precise enough. Cheapest, and it composes with
+   the gate that already exists.
+2. **Extend the lint to line citations it can check.** For a `file.md:NNN` naming a plugin file the
+   gate can already open, it could at least fail when `NNN` exceeds the file's length. That catches
+   the crude half and nothing subtler; a citation that drifted from line 185 to 221 in a 500-line
+   file stays green.
+3. **Accept and repair on reconciliation.** Treat stale line citations as ordinary drift, corrected
+   when a pass touches the record anyway — which is what happened here. Costs nothing up front and
+   guarantees that citations in records nobody re-reads stay wrong.
+
+Option 1 is the only one that removes the failure rather than sampling it, and it needs a decision
+about scope before implementation: whether the preference binds fusion's own shipped text only, or
+also the records agents write.
+
+## Not a blocker
+
+Nothing is broken at runtime. The cost is a reader sent to the wrong line, and reconciliation time
+spent re-deriving citations that were correct when filed.

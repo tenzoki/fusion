@@ -153,3 +153,25 @@ Answered: shared/history/260807-1917-orchestrator-session.md `## Decisions answe
 Implemented: <set when status moves to _i_>
 Deferred: <set when status moves to _d_>
 Superseded by: <set when status moves to _s_>
+
+---
+
+## Reconciliation 260808-0030 (reconciler, domain `code`) — stays `_a_`; the condition is unmet, and this record's own citation went stale
+
+`grep` over `rules/fusion-workbench-conventions.md` `## Filename Patterns` at `c54ead9`: the
+section still carries the artifact-kind table, the `<sender>` rule and the `$OUT_MEMO`
+write-semantics note, and **no citation rule**. The condition this record set for itself — "moves
+to `_i_` when the rule text lands" — is unmet. It was explicitly scoped out of the language-split
+Directive (`shared/planning/260807-2024_c_two-language-declarations.md` `## Out of Scope`) and
+remains open work from session 260807-1917.
+
+**This record's own cross-reference is now stale, and session 260807-2020 is what staled it.** The
+header at line 7 cites `## Filename Patterns` at **lines 185-208**; the section now begins at
+**line 221** and runs to **245**. Step S1 of the language-split plan grew `## Project language` by
+roughly 36 lines, and every section below it moved. The `## Timestamps` citation in the same line
+(172-174) is unaffected and still correct.
+
+Not rewritten here, because the general case is the point rather than this one number: nothing in
+the suite reads a line citation. Filed as
+`shared/issues/260808-0030_o_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`,
+which names this record as its first measured instance.

@@ -7,9 +7,9 @@
       "thrashingScore": 0
     },
     "agentstate.yaml": {
-      "totalChanges": 3,
-      "changesThisSession": 1,
-      "lastChange": "2026-08-07T17:31:58.013Z",
+      "totalChanges": 4,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-07T19:12:39.923Z",
       "thrashingScore": 1
     },
     "/tmp/m4.txt": {
@@ -31,10 +31,10 @@
       "thrashingScore": 1
     },
     "orchestrator-live.md": {
-      "totalChanges": 24,
-      "changesThisSession": 1,
-      "lastChange": "2026-08-07T17:32:01.818Z",
-      "thrashingScore": 8
+      "totalChanges": 27,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-07T19:57:52.806Z",
+      "thrashingScore": 9
     },
     "circles/260719-1536-brest-unite-co-creator-conversion/_a_circle.md": {
       "totalChanges": 1,
@@ -487,9 +487,9 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/orchestrator-live.md": {
-      "totalChanges": 12,
-      "changesThisSession": 1,
-      "lastChange": "2026-08-07T17:46:07.848Z",
+      "totalChanges": 13,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-07T19:33:02.226Z",
       "thrashingScore": 4
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/provenance-header-lint.test.ts": {
@@ -529,10 +529,10 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/CLAUDE.md": {
-      "totalChanges": 8,
+      "totalChanges": 9,
       "changesThisSession": 0,
-      "lastChange": "2026-08-07T14:50:52.920Z",
-      "thrashingScore": 10
+      "lastChange": "2026-08-07T19:39:59.281Z",
+      "thrashingScore": 3
     },
     "/Users/k1/Projects/productive/fusion/hooks/package.json": {
       "totalChanges": 1,
@@ -2089,10 +2089,10 @@
       "thrashingScore": 51
     },
     "/Users/k1/Projects/productive/fusion/bin/fusion-rules": {
-      "totalChanges": 6,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-05T07:00:21.934Z",
-      "thrashingScore": 2
+      "totalChanges": 11,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T22:14:41.748Z",
+      "thrashingScore": 3
     },
     "/Users/k1/Projects/productive/fusion/.claude-plugin/plugin.json": {
       "totalChanges": 3,
@@ -2305,10 +2305,10 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/install.sh": {
-      "totalChanges": 2,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-07T14:32:19.403Z",
-      "thrashingScore": 0
+      "totalChanges": 3,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T22:14:04.092Z",
+      "thrashingScore": 1
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260805-1054-coder-rollendeckel-und-dist-build.md": {
       "totalChanges": 1,
@@ -2533,10 +2533,10 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/rules/critical-stance.md": {
-      "totalChanges": 4,
+      "totalChanges": 5,
       "changesThisSession": 0,
-      "lastChange": "2026-08-07T07:56:33.929Z",
-      "thrashingScore": 5
+      "lastChange": "2026-08-07T19:20:13.865Z",
+      "thrashingScore": 1
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/decisions/260807-0945_o_integritaet-des-eskalationsspeichers.md": {
       "totalChanges": 1,
@@ -2545,10 +2545,10 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/agents/planner.md": {
-      "totalChanges": 2,
+      "totalChanges": 3,
       "changesThisSession": 0,
-      "lastChange": "2026-08-07T07:46:57.806Z",
-      "thrashingScore": 0
+      "lastChange": "2026-08-07T19:20:15.624Z",
+      "thrashingScore": 1
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/issues/260807-0952_o_ontocoder-kann-keinen-entscheidungssatz-ablegen.md": {
       "totalChanges": 2,
@@ -2665,9 +2665,9 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/hooks/session-start.ts": {
-      "totalChanges": 1,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-07T14:19:37.510Z",
+      "totalChanges": 2,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T22:14:12.114Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/hooks/hooks.json": {
@@ -2701,10 +2701,10 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/README.md": {
-      "totalChanges": 1,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-07T14:32:22.906Z",
-      "thrashingScore": 0
+      "totalChanges": 4,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-07T22:14:02.699Z",
+      "thrashingScore": 1
     },
     "circles/260807-0923-guard-misst-statt-orakelt/history/260807-1638-coder-versionsanhebung-6-0-1.md": {
       "totalChanges": 2,
@@ -2726,70 +2726,244 @@
     },
     "shared/decisions/260807-1515_o_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md": {
       "totalChanges": 2,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T17:32:28.757Z",
       "thrashingScore": 0
     },
     "260807-0158_o_how-is-a-unique-record-filename-obtained.md": {
       "totalChanges": 2,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T17:32:52.537Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/shared/issues/260807-0158_o_record-filenames-collide-on-the-minute-and-nothing-prevents-it.md": {
       "totalChanges": 2,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T17:33:21.395Z",
       "thrashingScore": 0
     },
     "shared/history/260807-1917-orchestrator-session.md": {
       "totalChanges": 2,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T17:42:37.735Z",
       "thrashingScore": 0
     },
     "shared/issues/260807-1939_o_plane-natural-key-enthaelt-den-marker-und-bricht-bei-jedem-statuswechsel.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T17:40:32.885Z",
       "thrashingScore": 0
     },
     "shared/issues/260807-1941_o_marker-renames-landed-add-only-so-head-carries-each-of-three-records-twice.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T17:41:33.130Z",
       "thrashingScore": 0
     },
     "shared/decisions/260807-0158_a_how-is-a-unique-record-filename-obtained.md": {
       "totalChanges": 2,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T17:41:55.414Z",
       "thrashingScore": 0
     },
     "shared/decisions/260807-1515_a_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T17:42:07.969Z",
       "thrashingScore": 0
     },
     "shared/issues/260807-0158_c_record-filenames-collide-on-the-minute-and-nothing-prevents-it.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T17:42:20.599Z",
       "thrashingScore": 0
     },
     "shared/history/260807-1941-reconciliation.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T17:43:41.058Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/shared/history/260807-1917-orchestrator-session.md": {
       "totalChanges": 2,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T17:45:58.418Z",
+      "thrashingScore": 0
+    },
+    "shared/planning/260807-2024_o_two-language-declarations.md": {
+      "totalChanges": 7,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-07T19:42:04.183Z",
+      "thrashingScore": 2
+    },
+    "shared/history/260807-2024-planner-two-language-declarations.md": {
+      "totalChanges": 1,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-07T18:29:40.655Z",
+      "thrashingScore": 0
+    },
+    "shared/reviews/260807-2035-conceptrev-plan-two-language-declarations.md": {
+      "totalChanges": 1,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-07T18:36:37.702Z",
+      "thrashingScore": 0
+    },
+    "shared/history/260807-2115-coder-diagram-corrections-two-language-declarations.md": {
+      "totalChanges": 1,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-07T19:15:56.520Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/rules/fusion-workbench-conventions.md": {
+      "totalChanges": 3,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T22:14:13.428Z",
+      "thrashingScore": 1
+    },
+    "shared/history/260807-2116-coder-s1-project-language.md": {
+      "totalChanges": 1,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-07T19:17:13.561Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/rules/context-lean-claude-md.md": {
+      "totalChanges": 1,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-07T19:20:10.989Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/rules/user-facing-output.md": {
+      "totalChanges": 1,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-07T19:20:20.158Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/rules/agent-setup.md": {
+      "totalChanges": 2,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T22:13:57.016Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/rules-voice-profile.test.ts": {
+      "totalChanges": 3,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T22:15:37.313Z",
+      "thrashingScore": 1
+    },
+    "shared/history/260807-2120-coder-s9-readme-and-lean-claude-md.md": {
+      "totalChanges": 1,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-07T19:20:59.473Z",
+      "thrashingScore": 0
+    },
+    "shared/decisions/260807-2131_o_which-language-governs-a-customer-deliverable.md": {
+      "totalChanges": 1,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-07T19:32:32.645Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/stilwerk/chat-voice-de.yaml": {
+      "totalChanges": 3,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-07T19:32:59.841Z",
+      "thrashingScore": 3
+    },
+    "/Users/k1/Projects/productive/fusion/stilwerk/chat-voice-en.yaml": {
+      "totalChanges": 3,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-07T19:33:05.845Z",
+      "thrashingScore": 3
+    },
+    "shared/history/260807-2141-coder-s10-golden-regeneration.md": {
+      "totalChanges": 1,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-07T19:42:28.760Z",
+      "thrashingScore": 0
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/894b89c6-f871-4615-82c1-1fb39d27da91/scratchpad/check.rb": {
+      "totalChanges": 2,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-07T19:49:06.134Z",
+      "thrashingScore": 0
+    },
+    "shared/issues/260807-2152_o_declared-lang-prefix-matches-so-deutsch-resolves-to-de.md": {
+      "totalChanges": 1,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-07T19:53:17.231Z",
+      "thrashingScore": 0
+    },
+    "shared/issues/260807-2153_o_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md": {
+      "totalChanges": 1,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-07T19:53:35.937Z",
+      "thrashingScore": 0
+    },
+    "shared/issues/260807-2154_o_the-artifact-language-is-mechanised-for-nine-agents-and-asserted-for-sixteen.md": {
+      "totalChanges": 1,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-07T19:54:05.705Z",
+      "thrashingScore": 0
+    },
+    "shared/issues/260807-2155_o_three-language-claims-outside-the-authoring-home-still-describe-the-single-declaration.md": {
+      "totalChanges": 3,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-07T19:54:45.843Z",
+      "thrashingScore": 3
+    },
+    "shared/issues/260807-2154_o_corrected-sibling-wording-never-reaches-an-existing-consumer.md": {
+      "totalChanges": 1,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-07T19:54:53.700Z",
+      "thrashingScore": 0
+    },
+    "shared/issues/260807-2154_o_plugin-json-says-6-1-0-while-tag-marketplace-and-both-pin-examples-say-6-0-1.md": {
+      "totalChanges": 1,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-07T19:55:15.201Z",
+      "thrashingScore": 0
+    },
+    "shared/issues/260807-2154_o_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md": {
+      "totalChanges": 2,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-07T19:55:43.165Z",
+      "thrashingScore": 0
+    },
+    "shared/reviews/260807-2154-ontorev-chat-voice-sibling-reference-and-version-bump.md": {
+      "totalChanges": 1,
+      "changesThisSession": 0,
+      "lastChange": "2026-08-07T19:56:55.993Z",
+      "thrashingScore": 0
+    },
+    "shared/history/260808-0014-language-claim-fixes-and-version-pin-bump.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T22:15:19.203Z",
+      "thrashingScore": 0
+    },
+    "shared/history/260808-0016-coder-r1-declared-lang-exact-match.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T22:16:53.332Z",
+      "thrashingScore": 0
+    },
+    "shared/issues/260808-0030_o_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T22:32:05.240Z",
+      "thrashingScore": 0
+    },
+    "shared/issues/260808-0030_o_the-coderev-pass-filed-four-issues-and-left-no-review-file.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T22:32:46.295Z",
+      "thrashingScore": 0
+    },
+    "shared/history/260808-0030-reconciliation.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T22:34:32.921Z",
       "thrashingScore": 0
     }
   },
-  "sessionStart": "2026-08-07T17:31:58.013Z"
+  "sessionStart": "2026-08-07T22:13:57.016Z"
 }

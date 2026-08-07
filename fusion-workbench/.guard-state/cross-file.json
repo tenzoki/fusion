@@ -6,9 +6,9 @@
       "lastEditTimestamp": "2026-07-16T17:25:16.337Z"
     },
     "agentstate.yaml": {
-      "pingBackCount": 2,
-      "totalEdits": 3,
-      "lastEditTimestamp": "2026-08-07T17:31:58.017Z"
+      "pingBackCount": 3,
+      "totalEdits": 4,
+      "lastEditTimestamp": "2026-08-07T19:12:39.925Z"
     },
     "/tmp/m4.txt": {
       "pingBackCount": 0,
@@ -26,9 +26,9 @@
       "lastEditTimestamp": "2026-07-19T21:37:26.475Z"
     },
     "orchestrator-live.md": {
-      "pingBackCount": 21,
-      "totalEdits": 24,
-      "lastEditTimestamp": "2026-08-07T17:32:01.820Z"
+      "pingBackCount": 24,
+      "totalEdits": 27,
+      "lastEditTimestamp": "2026-08-07T19:57:52.809Z"
     },
     "circles/260719-1536-brest-unite-co-creator-conversion/_a_circle.md": {
       "pingBackCount": 0,
@@ -406,9 +406,9 @@
       "lastEditTimestamp": "2026-08-02T06:49:36.700Z"
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/orchestrator-live.md": {
-      "pingBackCount": 11,
-      "totalEdits": 12,
-      "lastEditTimestamp": "2026-08-07T17:46:07.850Z"
+      "pingBackCount": 12,
+      "totalEdits": 13,
+      "lastEditTimestamp": "2026-08-07T19:33:02.228Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/provenance-header-lint.test.ts": {
       "pingBackCount": 1,
@@ -441,9 +441,9 @@
       "lastEditTimestamp": "2026-08-02T11:45:13.742Z"
     },
     "/Users/k1/Projects/productive/fusion/CLAUDE.md": {
-      "pingBackCount": 4,
-      "totalEdits": 8,
-      "lastEditTimestamp": "2026-08-07T14:50:52.922Z"
+      "pingBackCount": 5,
+      "totalEdits": 9,
+      "lastEditTimestamp": "2026-08-07T19:39:59.283Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/package.json": {
       "pingBackCount": 0,
@@ -1741,9 +1741,9 @@
       "lastEditTimestamp": "2026-08-05T15:50:24.310Z"
     },
     "/Users/k1/Projects/productive/fusion/bin/fusion-rules": {
-      "pingBackCount": 2,
-      "totalEdits": 6,
-      "lastEditTimestamp": "2026-08-05T07:00:21.936Z"
+      "pingBackCount": 4,
+      "totalEdits": 11,
+      "lastEditTimestamp": "2026-08-07T22:14:41.751Z"
     },
     "/Users/k1/Projects/productive/fusion/.claude-plugin/plugin.json": {
       "pingBackCount": 2,
@@ -1921,9 +1921,9 @@
       "lastEditTimestamp": "2026-08-05T07:06:24.411Z"
     },
     "/Users/k1/Projects/productive/fusion/install.sh": {
-      "pingBackCount": 1,
-      "totalEdits": 2,
-      "lastEditTimestamp": "2026-08-07T14:32:19.405Z"
+      "pingBackCount": 2,
+      "totalEdits": 3,
+      "lastEditTimestamp": "2026-08-07T22:14:04.095Z"
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260805-1054-coder-rollendeckel-und-dist-build.md": {
       "pingBackCount": 0,
@@ -2111,9 +2111,9 @@
       "lastEditTimestamp": "2026-08-07T07:45:17.004Z"
     },
     "/Users/k1/Projects/productive/fusion/rules/critical-stance.md": {
-      "pingBackCount": 2,
-      "totalEdits": 4,
-      "lastEditTimestamp": "2026-08-07T07:56:33.931Z"
+      "pingBackCount": 3,
+      "totalEdits": 5,
+      "lastEditTimestamp": "2026-08-07T19:20:13.866Z"
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/decisions/260807-0945_o_integritaet-des-eskalationsspeichers.md": {
       "pingBackCount": 0,
@@ -2121,9 +2121,9 @@
       "lastEditTimestamp": "2026-08-07T07:46:30.843Z"
     },
     "/Users/k1/Projects/productive/fusion/agents/planner.md": {
-      "pingBackCount": 0,
-      "totalEdits": 2,
-      "lastEditTimestamp": "2026-08-07T07:46:57.813Z"
+      "pingBackCount": 1,
+      "totalEdits": 3,
+      "lastEditTimestamp": "2026-08-07T19:20:15.626Z"
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/issues/260807-0952_o_ontocoder-kann-keinen-entscheidungssatz-ablegen.md": {
       "pingBackCount": 0,
@@ -2221,9 +2221,9 @@
       "lastEditTimestamp": "2026-08-07T14:14:57.345Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/session-start.ts": {
-      "pingBackCount": 0,
-      "totalEdits": 1,
-      "lastEditTimestamp": "2026-08-07T14:19:37.512Z"
+      "pingBackCount": 1,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-07T22:14:12.116Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/hooks.json": {
       "pingBackCount": 0,
@@ -2251,9 +2251,9 @@
       "lastEditTimestamp": "2026-08-07T14:32:05.610Z"
     },
     "/Users/k1/Projects/productive/fusion/README.md": {
-      "pingBackCount": 0,
-      "totalEdits": 1,
-      "lastEditTimestamp": "2026-08-07T14:32:22.908Z"
+      "pingBackCount": 2,
+      "totalEdits": 4,
+      "lastEditTimestamp": "2026-08-07T22:14:02.701Z"
     },
     "circles/260807-0923-guard-misst-statt-orakelt/history/260807-1638-coder-versionsanhebung-6-0-1.md": {
       "pingBackCount": 0,
@@ -2324,8 +2324,153 @@
       "pingBackCount": 0,
       "totalEdits": 2,
       "lastEditTimestamp": "2026-08-07T17:45:58.420Z"
+    },
+    "shared/planning/260807-2024_o_two-language-declarations.md": {
+      "pingBackCount": 2,
+      "totalEdits": 7,
+      "lastEditTimestamp": "2026-08-07T19:42:04.186Z"
+    },
+    "shared/history/260807-2024-planner-two-language-declarations.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T18:29:40.657Z"
+    },
+    "shared/reviews/260807-2035-conceptrev-plan-two-language-declarations.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T18:36:37.705Z"
+    },
+    "shared/history/260807-2115-coder-diagram-corrections-two-language-declarations.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T19:15:56.524Z"
+    },
+    "/Users/k1/Projects/productive/fusion/rules/fusion-workbench-conventions.md": {
+      "pingBackCount": 1,
+      "totalEdits": 3,
+      "lastEditTimestamp": "2026-08-07T22:14:13.430Z"
+    },
+    "shared/history/260807-2116-coder-s1-project-language.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T19:17:13.563Z"
+    },
+    "/Users/k1/Projects/productive/fusion/rules/context-lean-claude-md.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T19:20:10.991Z"
+    },
+    "/Users/k1/Projects/productive/fusion/rules/user-facing-output.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T19:20:20.160Z"
+    },
+    "/Users/k1/Projects/productive/fusion/rules/agent-setup.md": {
+      "pingBackCount": 1,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-07T22:13:57.020Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/rules-voice-profile.test.ts": {
+      "pingBackCount": 2,
+      "totalEdits": 3,
+      "lastEditTimestamp": "2026-08-07T22:15:37.315Z"
+    },
+    "shared/history/260807-2120-coder-s9-readme-and-lean-claude-md.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T19:20:59.475Z"
+    },
+    "shared/decisions/260807-2131_o_which-language-governs-a-customer-deliverable.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T19:32:32.647Z"
+    },
+    "/Users/k1/Projects/productive/fusion/stilwerk/chat-voice-de.yaml": {
+      "pingBackCount": 0,
+      "totalEdits": 3,
+      "lastEditTimestamp": "2026-08-07T19:32:59.843Z"
+    },
+    "/Users/k1/Projects/productive/fusion/stilwerk/chat-voice-en.yaml": {
+      "pingBackCount": 0,
+      "totalEdits": 3,
+      "lastEditTimestamp": "2026-08-07T19:33:05.847Z"
+    },
+    "shared/history/260807-2141-coder-s10-golden-regeneration.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T19:42:28.762Z"
+    },
+    "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/894b89c6-f871-4615-82c1-1fb39d27da91/scratchpad/check.rb": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-07T19:49:06.135Z"
+    },
+    "shared/issues/260807-2152_o_declared-lang-prefix-matches-so-deutsch-resolves-to-de.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T19:53:17.233Z"
+    },
+    "shared/issues/260807-2153_o_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T19:53:35.940Z"
+    },
+    "shared/issues/260807-2154_o_the-artifact-language-is-mechanised-for-nine-agents-and-asserted-for-sixteen.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T19:54:05.708Z"
+    },
+    "shared/issues/260807-2155_o_three-language-claims-outside-the-authoring-home-still-describe-the-single-declaration.md": {
+      "pingBackCount": 0,
+      "totalEdits": 3,
+      "lastEditTimestamp": "2026-08-07T19:54:45.846Z"
+    },
+    "shared/issues/260807-2154_o_corrected-sibling-wording-never-reaches-an-existing-consumer.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T19:54:53.702Z"
+    },
+    "shared/issues/260807-2154_o_plugin-json-says-6-1-0-while-tag-marketplace-and-both-pin-examples-say-6-0-1.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T19:55:15.203Z"
+    },
+    "shared/issues/260807-2154_o_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-07T19:55:43.168Z"
+    },
+    "shared/reviews/260807-2154-ontorev-chat-voice-sibling-reference-and-version-bump.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T19:56:55.995Z"
+    },
+    "shared/history/260808-0014-language-claim-fixes-and-version-pin-bump.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T22:15:19.205Z"
+    },
+    "shared/history/260808-0016-coder-r1-declared-lang-exact-match.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T22:16:53.334Z"
+    },
+    "shared/issues/260808-0030_o_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T22:32:05.243Z"
+    },
+    "shared/issues/260808-0030_o_the-coderev-pass-filed-four-issues-and-left-no-review-file.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T22:32:46.298Z"
+    },
+    "shared/history/260808-0030-reconciliation.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-07T22:34:32.923Z"
     }
   },
-  "lastEditFile": "/Users/k1/Projects/productive/fusion/fusion-workbench/orchestrator-live.md",
-  "lastEditTimestamp": "2026-08-07T17:46:07.850Z"
+  "lastEditFile": "shared/history/260808-0030-reconciliation.md",
+  "lastEditTimestamp": "2026-08-07T22:34:32.923Z"
 }

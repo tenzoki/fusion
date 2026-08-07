@@ -280,3 +280,47 @@ Named here so nobody re-checks:
 - **Existing German artifacts are not translated** (Directive, and consequence 2 of the answered decision).
 - **The citation rule for `## Filename Patterns`** (cite a record by full filename, never by bare timestamp) and **any tidying pass over bilingual fragments in rule files** are recorded as remaining work elsewhere and are explicitly not part of this Directive.
 - **The release itself** — marketplace `version`, git tag, `FUSION_REF` examples — is the user's call at a release gate. S11 bumps only `plugin.json`, which this repository's convention requires on any change.
+
+## Reconciliation Log
+
+**260808-0030 (reconciler, domain `code`) — all twelve steps verified on disk. Status `Complete` and marker `_c_` both stand.**
+
+Verified against the tree at `c54ead9`, not against the step markers. Every `[DONE]` was
+re-derived from the file it claims to have changed; two steps were additionally re-executed
+rather than read.
+
+| Step | Evidence at `c54ead9` |
+|---|---|
+| S1 | `rules/fusion-workbench-conventions.md:176-219`. All seven required points present in the required order: surface boundary (`:178-182`), the two declaration lines (`:184-191`), the fallback chain (`:193`), the profile routing (`:195-202`), the exempt-surface list with the `hooks/session-start.ts` worked case (`:204-213`), the persisted-but-profile-exempt paragraph (`:215`), head labels (`:217`). Heading text `## Project language` unchanged, so the ten citations and `reference-resolution-lint` still resolve. |
+| S2 | `hooks/lib/__tests__/rules-voice-profile.test.ts` exists, 16 `it()` cases. **Re-executed independently:** `git show 73c52b4~1:bin/fusion-rules` run against a temp project holding only `**Language:** de` emits `chat-voice-de.yaml` + `default-voice-de.yaml` for `planner` and `chat-voice-de.yaml` alone for `coder` — byte-identical to what today's script emits for the same project. The backwards-compatibility promise is discharged by measurement, not by the step's own claim. |
+| S3 | `bin/fusion-rules:255` `declared_lang()`, `:305` `emit_voice_profile()` with the language as `$2` and no internal resolution, `:396-399` both codes resolved with the defaults visible at the call site, `:418` / `:427` the two routed calls. |
+| S4 | 16 cases, up from the planned 12; the four added in Turn 2 cover the prefix-match class. |
+| S5 | `rules/critical-stance.md:65` and `agents/planner.md:146` now carry the same rule and both cite `## Project language`. `**Entscheidbarkeit:**` appears nowhere in `rules/` or `agents/`. |
+| S6 | `rules/user-facing-output.md:9` names both lines and which family takes which; `rules/agent-setup.md:52-56` carries the differing-languages sentence. Neither restates the fallback chain or the exempt list. |
+| S7 | `CLAUDE.md:3-4` carries both declarations; `CLAUDE.md:57` routes each family to its own line. |
+| S8 | Both shipped chat profiles name the sibling by role (`chat-voice-en.yaml:4-5,8,12-13`; `chat-voice-de.yaml:4,7,12`). `diff` confirms the two workbench copies are byte-identical to the shipped ones. No `default-voice-*.yaml` filename remains in either. |
+| S9 | `README.md:117` describes the optional second line; `rules/context-lean-claude-md.md:39` names both. The lean example at `:103` is untouched, as planned. |
+| S10 | `cd hooks && npm test` — **33 files, 1030 tests, all green**, including the regenerated golden, `reference-resolution-lint`, `derivable-enumerations-lint` and `path-literal-lint`. |
+| S11 | `.claude-plugin/plugin.json:3` = `6.1.0`. |
+| S12 | The record is `260807-1515_i_…` and carries an `Implemented:` line. See the decision's own reconciliation note for the one citation defect found. |
+
+**The split itself re-executed, end to end.** Against today's script in a temp project: `de`/`en`
+→ `chat-voice-de` + `default-voice-en`; `en`/`de` → the mirror, so a hard-coded "artifacts are
+English" is ruled out; `en`/`de-DE` → `default-voice-en`, where `git show 4992ffb~1:bin/fusion-rules`
+emits `default-voice-de` for the same input. Turn 2's `declared_lang` fix is real and
+`shared/issues/260807-2152_c_…` is correctly closed.
+
+**Two Open Questions carry unticked boxes in a plan marked Complete.** Both are resolved, and
+neither is a gap: OQ1 (does the artifact language cover the dashboard and monitor strings?) was
+put to the user at S1's human gate and answered "persisted reading" — the answer is recorded in
+`rules/fusion-workbench-conventions.md:215` as settled by user decision. OQ2 was closed in the
+plan's own text as "worth knowing, not worth a mechanism". Left unticked rather than edited,
+because the convention marks steps and not questions.
+
+**Drift found: one, and it points outward rather than at the plan.** S1 grew
+`rules/fusion-workbench-conventions.md` by roughly 36 lines, which moved every section below
+`## Project language` and staled the line-range citations that other records hold into it —
+`shared/decisions/260807-0158_a_…:7` cites `## Filename Patterns` at lines 185-208, now 221-245.
+Nothing in the suite catches this: `reference-resolution-lint` resolves paths, heading anchors and
+record citations, and reads no line number. Filed as
+`shared/issues/260808-0030_o_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`.

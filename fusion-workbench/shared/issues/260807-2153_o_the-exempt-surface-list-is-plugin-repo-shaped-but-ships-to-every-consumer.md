@@ -81,3 +81,33 @@ Split the list in two, by who the text reaches:
 Whichever shape is chosen, the sentence "These ship to consuming projects of every
 language" must stop being offered as the reason for a rule that a project which ships
 nothing also has to obey.
+
+---
+
+## Reconciliation 260808-0030 (reconciler, domain `code`) — stays `_o_`; the substance holds, two line citations do not
+
+Re-checked against `c54ead9`, after Turn 2 edited both files this finding names.
+
+**The defect is unchanged and still live.** The quoted block is verbatim at
+`rules/fusion-workbench-conventions.md:204-213`, including the reason clause "These ship to
+consuming projects of every language, so one project's declaration cannot govern them". Turn 2's
+`22b0ba8` touched exactly one line of `## Project language` (the commit-message justification at
+`:215`) and left the exempt-surface block alone. The emission is still unconditional, so the text
+still reaches every agent in every project.
+
+**Two citations in this finding are now stale, both from Turn 2's own commit.** `4992ffb` added a
+17-line explanatory block to `declared_lang()`, shifting everything below it:
+
+- `bin/fusion-rules:387` → the emission is now at **`bin/fusion-rules:404`**. Line 387 today is
+  `PROJECT_CLAUDE_RULES_DIR=".claude/rules"`.
+- `bin/fusion-rules:464` (cited in prose as the second search layer) → now
+  **`bin/fusion-rules:481`**, `emit_pattern_in_dir "$PROJECT_RULES_DIR" "$pat"`. Line 464 today is
+  a bare comment marker.
+
+Nothing else moved: `PROJECT_RULES_DIR="./rules"` is at `:386`, and the three consuming-project
+observations in the analysis are unaffected.
+
+**The fix direction is untouched by this pass.** Both bullets the finding grants as surviving
+universalisation — code and comments, operator strings — are still the two that carry an
+independent justification, and `hooks/session-start.ts` `## Why the message is English` still
+exists and is still cited from the rule at `:213`.

@@ -64,3 +64,30 @@ Option 1 or 2 needs a decision before implementation — the guarded-copy semant
 - Rule: `rules/agent-setup.md` `## Voice profiles`
 - Rule: `rules/fusion-workbench-conventions.md` `## Project language`
 - Review: `fusion-workbench/shared/reviews/260807-2154-ontorev-chat-voice-sibling-reference-and-version-bump.md`
+
+---
+
+## Reconciliation 260808-0030 (reconciler, domain `code`) — stays `_o_`; accurate as written, one citation off by one
+
+Re-checked against `c54ead9`. Every load-bearing claim verified:
+
+- `skills/setup/SKILL.md:135-138` — the four `[ -f … ] ||` guarded copies, exactly as cited.
+- `skills/setup/SKILL.md:140` — **off by one.** The sentence "existing files are left untouched,
+  so any project-local edits to the profiles survive subsequent setups" is at **`:141`**. The
+  quotation itself is verbatim; only the number is wrong, and it was wrong at filing — Turn 2 did
+  not touch this file.
+- `skills/migrate/SKILL.md:114` and `skills/archive/SKILL.md:91` — both correct; `stilwerk/` sits
+  in the never-touch list and the archive exclusion list respectively.
+- `grep -rn "stilwerk" skills/` — still no other write path. No skill refreshes an existing
+  workbench's profiles.
+- `rules/agent-setup.md:52-56` — correct, and this is the paragraph the failure scenario turns on.
+  Turn 2 appended to that section (`:58-61`, the chat-only-profile clause) but inserted nothing
+  above it, so the range still resolves.
+- Plan Risks row at line 262 — present, with the reach limit stated as quoted.
+
+**The stale German line the failure scenario quotes is quoted correctly.** `chat-voice-de.yaml:4`
+in *this* tree now reads "dafür gilt das Langform-Schreibprofil"; the finding attributes the
+`default-voice-de.yaml` wording to a pre-v6.1.0 consumer's own copy, which is the whole point of
+the finding and is not a claim about this tree.
+
+The three candidate resolutions all remain open. None was taken this session.

@@ -168,3 +168,39 @@ Answered: shared/history/260807-1917-orchestrator-session.md `## Decisions answe
 Implemented: def9d13..cd48540 — the declaration is split in two, `**Language:**` for the chat surface and `**Artifact language:**` for everything that persists as a file, with the first governing both when the second is absent, and the three rule-text edits this record set as its condition have landed: the exempt-surface list and the direct-user-interaction boundary in `rules/fusion-workbench-conventions.md` `## Project language`, and the `**Decidability:**` resolution in `rules/critical-stance.md`. The endpoints name what the range spans — `def9d13` rewrote `## Project language` into the authoring home for both declarations, `cd48540` regenerated the emission golden and left the suite green — because the work landed as task-scoped commits rather than as one. Consequence 2 of the answer holds unchanged: no existing German artifact was translated.
 Deferred:
 Superseded by:
+
+---
+
+## Reconciliation 260808-0030 (reconciler, domain `code`) — `_i_` is earned; one citation defect in the `Implemented:` line
+
+The transition was checked against the rule text as it stands at `c54ead9`, after Turn 2 had also
+edited `## Project language`, and against the three conditions this record's own 260807-1941 note
+set for itself. All three are met:
+
+1. **The exempt-surface list** — `rules/fusion-workbench-conventions.md:204-213`, six bullets plus
+   the `hooks/session-start.ts` `## Why the message is English` worked case at `:213`.
+2. **The `**Decidability:**` resolution** — `rules/critical-stance.md:65`, which also names this
+   record as the point-3 claim it settles, and `agents/planner.md:146`, the file that carries the
+   template. `**Entscheidbarkeit:**` appears nowhere in `rules/` or `agents/`.
+3. **The "direct user interaction" wording** — the old scoping clause ("the language of their prose
+   output") is gone from the whole corpus; `grep -rn 'prose output'` returns only the nine agent
+   prompts' profile-scope paragraphs, which are about which profile governs which surface and make
+   no claim about the declaration's reach. The replacement at `:178-182` draws the boundary by
+   surface rather than by the phrase, which is stricter than the condition asked for. `:215` carries
+   the "direct user interaction" phrase itself, in the paragraph that settles the one genuinely
+   overlapping surface.
+
+Consequence 2 of the answer holds: no existing German artifact was translated in this session.
+
+**One defect in the `Implemented:` line, left for the user to correct or accept.** It cites the
+range `def9d13..cd48540`, and its own prose then says "`def9d13` rewrote `## Project language`
+into the authoring home". In git's two-dot notation `A..B` **excludes** `A`, so a reader who runs
+`git log def9d13..cd48540` does not see the commit the sentence names as the range's start. The
+inclusive form is `def9d13~1..cd48540` or `def9d13^..cd48540`. The substance is right — the work
+did land across those commits, and `def9d13` is where S1 landed — so this is a citation-precision
+defect, not a false claim of implementation. Not corrected here: `_i_` is terminal, and the
+reconciler's licence on a terminal record is to append evidence, not to rewrite its annotations.
+
+Turn 2's commits (`4992ffb`, `22b0ba8`, `fd74b89`, `c54ead9`) fall outside the cited range and
+refine rather than establish the three conditions. The `_i_` marker stands regardless of which
+endpoint form is chosen.

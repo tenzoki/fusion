@@ -55,3 +55,13 @@ One cosmetic note, verified by rendering the block a second time with the `direc
 ### Document-level
 
 Both diagram types fit their content per the type table in `rules/design-diagrams.md`: a `flowchart` for the resolution and surface structure, a `flowchart TD` for the step DAG. Neither diagram is overloaded. Diagram 1 shows one concern, how a declaration reaches a surface, with the exempt surfaces drawn as that concern's negative space rather than as a second subject. Density is low in both cases (0.83 and 1.17 edges per node), and no measurement anywhere in this document points at a tangled design. The verdict is held at acceptable rather than clean by the two caption-versus-graph mismatches and by the missing S12 dependency, all three of which are corrections to the plan text and the DAG rather than evidence that the design needs rethinking.
+
+---
+
+**Reconciliation 260808-0030 (reconciler, domain `code`).** The corrections this pass asked for
+landed in commit `c1b72fc` and are present in the plan at `c54ead9`: both diagrams in
+`shared/planning/260807-2024_c_two-language-declarations.md` carry the corrected edge set, and the
+prose at line 116 now states why the `shipped` subgraph has no edge into the rest of the graph
+rather than leaving the orphan unexplained. The step-dependency DAG at lines 195-226 is acyclic
+with one source (`S1`) and one sink (`S12`), as the plan's own closing paragraph claims; all twelve
+steps were verified implemented in this pass.

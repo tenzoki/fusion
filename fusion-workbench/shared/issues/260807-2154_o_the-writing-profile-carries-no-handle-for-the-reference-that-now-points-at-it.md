@@ -69,3 +69,29 @@ either profile. This is a robustness gap, not a live fault.
 - Rule: `rules/agent-setup.md` `## Voice profiles`
 - Rule: `rules/fusion-workbench-conventions.md` `## Project language`
 - Review: `fusion-workbench/shared/reviews/260807-2154-ontorev-chat-voice-sibling-reference-and-version-bump.md`
+
+---
+
+## Reconciliation 260808-0030 (reconciler, domain `code`) — stays `_o_`; every claim re-verified, no citation moved
+
+Re-checked against `c54ead9`. Turn 2 touched no file under `stilwerk/` (last change there is
+`b6bca62`, Turn 1), so the reference-side citations are as filed and were re-read line by line:
+
+- `stilwerk/chat-voice-en.yaml:4-5, 8, 12-13` — "the long-form writing profile", three sites.
+- `stilwerk/chat-voice-de.yaml:4, 7, 12` — "das Langform-Schreibprofil", three sites.
+- `stilwerk/default-voice-en.yaml:1,4` and `default-voice-de.yaml:1,4` — the two `Consulting &
+  Strategy` names, unchanged.
+- `grep -n '^scope:'` over both writing profiles — no match; the `scope:` asymmetry holds.
+- `grep -in 'chat\|kurzform\|short-form'` over both writing profiles — no match; neither family
+  names the other from the writing side.
+- `rules/agent-setup.md:48-50` — still the sentence the reference resolves through, still at that
+  range. Turn 2 appended below it and inserted nothing above.
+
+**One thing this session added, and it does not close the finding.** Turn 2's `22b0ba8` gave
+`rules/agent-setup.md` a new paragraph at `:58-61` telling an agent that holds only the chat
+profile to resolve the artifact language from `CLAUDE.md`. That addresses a different gap — the
+seven agents with no writing profile at all — and adds no handle to the writing profile itself.
+The dangling-reference half is exactly as filed.
+
+Severity stays Low, and both proposed items still need user approval: item 1 is a schema change to
+a file every consuming project holds.
