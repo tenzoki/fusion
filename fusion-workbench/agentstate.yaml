@@ -13,10 +13,10 @@ progress:
   turn: 1
   max_turns: 5
   tasks_total: 13
-  tasks_done: 0
+  tasks_done: 9
   tasks_skipped: 0
   tasks_errored: 0
-  commits: 0
+  commits: 6
   turn_start_head: "b246996"
   directive_revisions_this_session: 0
 

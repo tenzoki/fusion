@@ -117,56 +117,56 @@ The subgraph **text that ships to every consumer** carries a single node and no 
 
 ## Implementation Steps
 
-1. **S1 — Rewrite `## Project language` as the single authoring home for both declarations**
+1. [DONE] **S1 — Rewrite `## Project language` as the single authoring home for both declarations**
    - Executor: `coder`
    - Files: `rules/fusion-workbench-conventions.md` (lines 176-183)
    - Changes: replace the section body. It must state, in this order: (a) the boundary by surface — terminal output is chat language, output that persists as a file is artifact language; (b) the two declaration lines, `**Language:**` and `**Artifact language:**`, valid values `en` and `de`; (c) the fallback chain — second line absent or unparseable means the first governs both, first line absent means `en`, both silent; (d) the profile routing as a consequence, `chat-voice-<lang>.yaml` from the chat language for every agent and `default-voice-<lang>.yaml` from the artifact language for the nine long-form-prose agents, with the existing per-family missing-variant fallback carried over unchanged; (e) the exempt-surface list — rule files, agent prompts, skill bodies, code and code comments, READMEs and `docs/`, and hook and CLI operator strings are English whatever either line says, because they ship to consuming projects of every language, citing `hooks/session-start.ts` `## Why the message is English` as the worked case; (f) the persisted-but-profile-exempt surfaces — dashboard lines, commit messages, monitor strings — follow the artifact language even though no profile governs their style, cross-referencing `rules/user-facing-output.md` `## Style anti-patterns apply to everything`; (g) head labels: a label defined in a shipped template is English in every project (the template lives in an exempt file), while the artifact body follows the artifact language. Keep the heading text `## Project language` exactly — ten citations resolve against it and `reference-resolution-lint.test.ts` checks them.
    - Dependencies: none
    - **Human gate.** Point (f) is a consequence the answered decision implies but never spells out: it puts `orchestrator-live.md` and the monitor strings in English. The precedent is strong — the answer names commit messages, which are the same class of persisted-but-user-facing surface — but a dashboard the user watches live is the one place where "persists as a file" and "direct user interaction" genuinely overlap, and the user should confirm the reading before it is written into the authoring home. See Open Questions.
 
-2. **S2 — Lock today's emission before changing it**
+2. [DONE] **S2 — Lock today's emission before changing it**
    - Executor: `coder`
    - Files: `hooks/lib/__tests__/rules-voice-profile.test.ts` (new)
    - Changes: create the suite and write the backwards-compatibility case only: a temp project directory holding a `CLAUDE.md` with `**Language:** de` and nothing else, plus an empty `fusion-workbench/stilwerk/` containing all four profile files; assert `bin/fusion-rules planner` emits exactly `./fusion-workbench/stilwerk/chat-voice-de.yaml` and `./fusion-workbench/stilwerk/default-voice-de.yaml`, and that `bin/fusion-rules coder` emits the chat path only. Follow the golden suite's two environment disciplines and say so in the header: force `FUSION_PLUGIN_ROOT` to this repository (`rules-emission-golden.test.ts:52-56`), and assert the temp cwd carries no `.claude-plugin/plugin.json`, or the work-tree preference silently measures the wrong branch (`rules-emission-golden.test.ts:625-645`). Note in the header that these emitted paths are relative (`./fusion-workbench/...`), unlike the absolute rule paths, because `emit_voice_profile` builds them from a relative `stilwerk_dir`. **Run this test green against the unmodified `bin/fusion-rules`** — a regression lock written after the change is a description, not a lock.
    - Dependencies: S1 (the contract it asserts is defined there)
 
-3. **S3 — Resolve two language codes in `bin/fusion-rules` and route each family to its own**
+3. [DONE] **S3 — Resolve two language codes in `bin/fusion-rules` and route each family to its own**
    - Executor: `coder`
    - Files: `bin/fusion-rules` (header comment lines 105-125; `resolve_lang_code` line 227; `emit_voice_profile` line 248; the call sites at lines 338-350)
    - Changes: replace `resolve_lang_code()` with `declared_lang <label>`, which prints the code or nothing, built from the same case-sensitive `^\*\*<label>:\*\* *[a-z]{2}` extraction with the label interpolated and quoted. Resolve both codes once, before the emission block, with the defaults visible at the call sites: `CHAT_LANG` defaulting to `en`, `ARTIFACT_LANG` defaulting to `$CHAT_LANG`. Give `emit_voice_profile` a second parameter for the language code and drop its internal resolution; leave its fallback chain (declared variant → `-en` → nothing) untouched. Call it as `emit_voice_profile "chat-voice" "$CHAT_LANG"` at the unconditional site and `emit_voice_profile "default-voice" "$ARTIFACT_LANG"` inside the `IS_PROSE_AGENT` branch. Update the header block: the paragraph at lines 115-120 describes one line resolving both families and must describe two, name the absent-second-line fallback, and state the byte-identical guarantee for a project that declares only the first line — the same `HYG-NO-REGRESS` promise the manifest block at lines 86-93 already makes for its own addition. Keep `set -eu` safety: the extraction stays inside a pipeline whose exit status is `sed`'s.
    - Dependencies: S2. Re-run S2's test after the change — it must still be green, unmodified. That is the byte-identical guarantee discharged rather than asserted in prose.
 
-4. **S4 — Extend the suite with the split behaviour**
+4. [DONE] **S4 — Extend the suite with the split behaviour**
    - Executor: `coder`
    - Files: `hooks/lib/__tests__/rules-voice-profile.test.ts`
    - Changes: add the cases that make a collapse back into one declaration impossible without a red test. (a) `**Language:** de` + `**Artifact language:** en` → `chat-voice-de.yaml` and `default-voice-en.yaml`. (b) the reverse, `**Language:** en` + `**Artifact language:** de` → `chat-voice-en.yaml` and `default-voice-de.yaml`, which is what rules out a hard-coded "artifacts are always English". (c) `bin/fusion-rules coder` with both lines declared emits the chat path only and the chat path is in the *chat* language — the artifact declaration must not leak into the chat family. (d) no `CLAUDE.md` at all → both families resolve `en`. (e) per-family missing-variant fallback, independently: artifact `de` declared with `default-voice-de.yaml` deleted falls back to `default-voice-en.yaml` while the chat family keeps its own `-de` variant, and the mirror case. (f) `**Artifact language:** xx` and `**Artifact language:** English` → treated as not declared, so the chat language governs, not `en`. (g) a `CLAUDE.md` carrying only `**Artifact language:** en` → the chat family falls back to its own `en` default and the second line never satisfies the first line's pattern. Do **not** add a source-shape assertion (grepping `bin/fusion-rules` for two labels): it would pin an implementation where cases (a) and (b) already pin the contract, and a test that reads the source fails for edits that break nothing.
    - Dependencies: S3
 
-5. **S5 — Resolve the head-label claim in both places that make it**
+5. [DONE] **S5 — Resolve the head-label claim in both places that make it**
    - Executor: `coder`
    - Files: `rules/critical-stance.md` (line 65), `agents/planner.md` (line 146)
    - Changes: in `critical-stance.md`, delete the sentence "Like every other head label it is written in the project's language — `**Entscheidbarkeit:**` where the project language is `de`" and replace it with the settled rule: the label is `**Decidability:**` in every project, because a label defined in a shipped template lives in an exempt surface, while the plan body follows the artifact language; point at `rules/fusion-workbench-conventions.md` `## Project language` rather than restating the rule. In `agents/planner.md`, make the parenthetical after the plan output format say the same thing, so the file that carries the template and the file that defines the norm no longer disagree. Note explicitly in the `critical-stance.md` sentence that this also settles point 3 of decision `260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`, which is where the claim came from.
    - Dependencies: S1
 
-6. **S6 — Repoint the two rules that describe the resolution without owning it**
+6. [DONE] **S6 — Repoint the two rules that describe the resolution without owning it**
    - Executor: `coder`
    - Files: `rules/user-facing-output.md` (line 9), `rules/agent-setup.md` (lines 44-50)
    - Changes: in `user-facing-output.md`, change "both resolved per the `**Language:**` line" to name the two lines and which family takes which, in one clause, with the existing pointer at `## Project language` carrying the definition — do not restate the fallback chain or the exempt list here. In `agent-setup.md` `## Voice profiles`, add one sentence: the two emitted profile paths may resolve to different languages, and that is the intended configuration for a project whose chat and artifacts differ — an agent must not read the mismatch as a fault to be reported or worked around. Without it, the first agent to meet `chat-voice-de.yaml` beside `default-voice-en.yaml` has a rule telling it to read both and none telling it they may disagree.
    - Dependencies: S1
 
-7. **S7 — Add the declaration to this repository and correct the bullet that describes it**
+7. [DONE] **S7 — Add the declaration to this repository and correct the bullet that describes it**
    - Executor: `coder`
    - Files: `CLAUDE.md` (line 3, line 56)
    - Changes: add `**Artifact language:** en` directly under `**Language:** de`, which is this repository's configuration per the answered decision. Rewrite the "Two stylometric profile families" bullet at line 56: the two families no longer resolve from one line — the chat profile from `**Language:**`, the writing profile from `**Artifact language:**` with the chat line as its fallback. Keep the bullet's existing claims about what each family is for and about the shared `en` fallback, which stay true.
    - Dependencies: S3. Ordered after the implementation on purpose: adding the line first would leave a window in which `CLAUDE.md` declares a behaviour the code does not have.
 
-8. **S8 — Correct the same-language sibling pointers in the chat profiles**
+8. [IN PROGRESS] **S8 — Correct the same-language sibling pointers in the chat profiles**
    - Executor: `ontocoder`
    - Files: `stilwerk/chat-voice-de.yaml` (lines 4, 7, 12), `stilwerk/chat-voice-en.yaml` (lines 4, 7, 11), `fusion-workbench/stilwerk/chat-voice-de.yaml` (same three lines), `fusion-workbench/stilwerk/chat-voice-en.yaml` (same three lines)
    - Changes: each chat profile names its long-form sibling by filename (`default-voice-de.yaml` / `default-voice-en.yaml`), which is wrong for any project whose two declarations differ. Replace the filename with a language-neutral reference to "the long-form writing profile", so the sentence is correct in both configurations; keep each file's own language and register. Edit the shipped copies under `stilwerk/` and this repository's workbench copies under `fusion-workbench/stilwerk/` — they are byte-identical today (verified with `diff`) and both are read: `/fusion:setup` copies the shipped ones into a new consumer, while fusion's own agents read the workbench ones. `default-voice-*.yaml` carries no such pointer and is not touched. Note in the step's commit that `/fusion:setup` copies a profile only when it is absent, so an existing consumer keeps its stale copy until it removes the file — which is why the fix must be a wording change that is *correct in both configurations* rather than a second filename.
    - Dependencies: S1
 
-9. **S9 — Bring the two remaining prose descriptions of the line up to the split**
+9. [DONE] **S9 — Bring the two remaining prose descriptions of the line up to the split**
    - Executor: `coder`
    - Files: `README.md` (line 117), `rules/context-lean-claude-md.md` (lines 39-40)
    - Changes: `README.md` tells a user setting up a project to set `**Language:**` and says that line selects which profile pair applies; extend it to both lines, one sentence, with the second described as optional and defaulting to the first. `context-lean-claude-md.md` lists the declaration among what must stay in a lean `CLAUDE.md`; it now has to name both lines and say the second is optional. Leave the example block at line 99 as it stands — a single-language project declaring one line is a legitimate and now explicitly supported configuration, and the example is about leanness, not about language.
