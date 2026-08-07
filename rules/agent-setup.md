@@ -54,3 +54,8 @@ project's chat language, the writing profile from its artifact language. For a p
 whose two declarations differ that is the intended configuration, not a fault to report or
 work around. The resolution is defined in `rules/fusion-workbench-conventions.md`
 `## Project language`.
+
+Receiving **only** the chat path does not exempt you from the artifact language. That one
+path names your chat surface; the files you write — reviews, defect records, the task
+queue, your own session history — persist, and no profile you hold names their language.
+Read the declarations in `CLAUDE.md` and resolve it there, under that same rule.
