@@ -210,13 +210,16 @@ export interface ProjectOptions {
   /**
    * Make the project a git repository with every seeded file committed.
    *
-   * Required by any case that asserts on the protected-path measurement, whose
-   * revert is `git checkout HEAD -- <path>`. Without a repository every change
-   * takes the "not known to git" branch, so a case that meant to prove the
-   * restore would silently prove the report-only path instead — passing for the
-   * wrong reason, which is the failure this whole harness exists to prevent.
+   * NOT required by the protected-path measurement any more. Its restore reads
+   * the content out of the before-fingerprint, so it works identically in a
+   * project that has never been versioned — there is a case that asserts exactly
+   * that by omitting this option. What git still buys a case is an independent
+   * witness: `git status --porcelain` and `git show :<path>` can say what the
+   * working tree and the index hold without asking the guard.
    *
-   * Leave it off to test that branch on purpose.
+   * (While the restore was `git checkout HEAD -- <path>` this option WAS
+   * required, and a case that forgot it proved the report-only branch while
+   * looking like it proved the restore.)
    */
   git?: boolean;
   /**

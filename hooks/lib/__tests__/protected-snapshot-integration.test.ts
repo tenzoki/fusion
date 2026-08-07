@@ -17,7 +17,13 @@
 
 import { describe, expect, it } from "vitest";
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { resolve } from "node:path";
 import {
   CASE_TIMEOUT,
@@ -38,6 +44,18 @@ function read(root: string, rel: string): string | null {
 /** Write a project file the way a shell command or an editor would. */
 function put(root: string, rel: string, content: string): void {
   writeFileSync(resolve(root, rel), content, "utf-8");
+}
+
+/** Write raw bytes, for the cases that are about the bytes. */
+function putBytes(root: string, rel: string, bytes: Buffer): void {
+  const abs = resolve(root, rel);
+  mkdirSync(resolve(abs, ".."), { recursive: true });
+  writeFileSync(abs, bytes);
+}
+
+/** Run one git command in the project, for the cases about the human's index. */
+function git(root: string, ...args: string[]): void {
+  execFileSync("git", args, { cwd: root, encoding: "utf-8" });
 }
 
 /** The context sentence the tracker handed back to the model, or "". */
@@ -67,7 +85,7 @@ describe("the measurement restores what a tool call changed", () => {
           // And the model was told which file and why — the constraint the
           // binding decision put on any answer to this question.
           expect(context(post)).toContain("rules/x.md");
-          expect(context(post)).toContain("restored from git");
+          expect(context(post)).toContain("has been restored");
           expect(context(post)).toContain("HALTED");
 
           const events = readEvents(project.root);
@@ -210,10 +228,15 @@ describe("the measurement leaves alone what this tool call did not do", () => {
   );
 });
 
-describe("a path git does not know is reported, never silently dropped", () => {
+describe("the restore target is the snapshot, not git", () => {
   it(
-    "reports and halts on a newly created protected file, and does not delete it",
+    "deletes a protected file this call created — it did not exist before",
     () => {
+      // While the restore was `git checkout HEAD --`, this was the branch that
+      // could not run: HEAD holds no content for an untracked path, so the file
+      // stayed on disk and the guard reported a violation it had not undone.
+      // Non-existence is a fingerprint like any other, and putting a path back
+      // to it means deleting it.
       withProject(
         (project) => {
           const { post } = runToolCall(
@@ -223,17 +246,11 @@ describe("a path git does not know is reported, never silently dropped", () => {
             () => put(project.root, "rules/planted.md", "# new\n"),
           );
 
-          // Not rolled back: HEAD has no content to restore, and the guard does
-          // not delete files to make the tree match a snapshot.
-          expect(read(project.root, "rules/planted.md")).toBe("# new\n");
+          expect(read(project.root, "rules/planted.md")).toBeNull();
 
-          // Reported, with the missing versioning named as the cause.
           expect(context(post)).toContain("rules/planted.md");
-          expect(context(post)).toContain("could NOT be restored");
-          expect(context(post)).toContain("not known to git");
-          expect(context(post)).toContain("still on disk");
-
-          // And halted anyway, because the boundary was crossed.
+          expect(context(post)).toContain("was created");
+          expect(context(post)).toContain("removed again");
           expect(readEscalation(project.root)?.haltActive).toBe(true);
         },
         { git: true },
@@ -243,12 +260,11 @@ describe("a path git does not know is reported, never silently dropped", () => {
   );
 
   it(
-    "reports rather than pretending, when the project is not a git repository",
+    "restores in a project that is not a git repository at all",
     () => {
       // A consuming project's workbench is a runtime artifact and often not
-      // versioned at all. The failure mode this case exists to forbid is a
-      // guard that reports the violation as handled while the file stays
-      // modified.
+      // versioned. Note the absent `git: true` — this project has no `.git` and
+      // the restore is unaffected, because the content came from the snapshot.
       withProject((project) => {
         const { post } = runToolCall(
           project.root,
@@ -257,9 +273,71 @@ describe("a path git does not know is reported, never silently dropped", () => {
           () => put(project.root, "rules/x.md", "# owned\n"),
         );
 
-        expect(read(project.root, "rules/x.md")).toBe("# owned\n");
-        expect(context(post)).toContain("could NOT be restored");
+        expect(read(project.root, "rules/x.md")).toBe("# a rule\n");
+        expect(context(post)).toContain("has been restored");
+        expect(context(post)).not.toContain("could NOT");
         expect(readEscalation(project.root)?.haltActive).toBe(true);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "restores the human's STAGED version, not the committed one",
+    () => {
+      // The finding this restore mechanism was changed for:
+      // `circles/260807-0923-guard-misst-statt-orakelt/issues/260807-1026_*_rueckrollen-auf-head-kann-menschliche-vorarbeit-verwerfen.md`.
+      // A human edited a protected file and staged it; the agent then
+      // overwrote it in one tool call. `git checkout HEAD --` restored the
+      // COMMITTED bytes and discarded the human's work along with the agent's.
+      withProject(
+        (project) => {
+          put(project.root, "rules/x.md", "# the human wrote this and staged it\n");
+          git(project.root, "add", "rules/x.md");
+
+          runToolCall(
+            project.root,
+            "Bash",
+            { command: "true" },
+            () => put(project.root, "rules/x.md", "# the agent overwrote it\n"),
+          );
+
+          expect(read(project.root, "rules/x.md")).toBe(
+            "# the human wrote this and staged it\n",
+          );
+          // And the staged version is still what the index holds, so the human
+          // has lost nothing at all.
+          expect(
+            execFileSync("git", ["show", ":rules/x.md"], {
+              cwd: project.root,
+              encoding: "utf-8",
+            }),
+          ).toBe("# the human wrote this and staged it\n");
+        },
+        { git: true },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "puts back the exact bytes of a binary protected file",
+    () => {
+      // `bin/monitor` is on the shipped protected list and is a binary. There is
+      // deliberately no size threshold and no special case for binaries, so this
+      // is the case that has to hold instead: the round trip is bytes, and
+      // `0xc3 0x28` is not valid utf-8, so a text round trip would corrupt it.
+      withProject((project) => {
+        const original = Buffer.from([0x00, 0x01, 0xff, 0xfe, 0x0a, 0xc3, 0x28]);
+        putBytes(project.root, "bin/monitor", original);
+
+        runToolCall(project.root, "Bash", { command: "true" }, () =>
+          putBytes(project.root, "bin/monitor", Buffer.from([0x09, 0x09])),
+        );
+
+        expect(
+          readFileSync(resolve(project.root, "bin/monitor")).equals(original),
+        ).toBe(true);
       });
     },
     CASE_TIMEOUT,
@@ -406,6 +484,168 @@ describe("the halt no longer reaches the shell", () => {
           expect(pre.reason).toContain("[HALTED]");
         },
         { git: true, escalation: { haltActive: true } },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+describe("the rules-write exemption reaches the measurement", () => {
+  it(
+    "leaves a rule file alone under the flag, and records why",
+    () => {
+      // The flag's whole purpose: a curation session edits the rule set. Before
+      // this was wired in, the measurement reverted exactly the writes the flag
+      // had legitimately allowed.
+      withProject(
+        (project) => {
+          const { post } = runToolCall(
+            project.root,
+            "Bash",
+            { command: "true" },
+            () => put(project.root, "rules/x.md", "# curated\n"),
+            { FUSION_ALLOW_RULES_WRITE: "1" },
+          );
+
+          expect(read(project.root, "rules/x.md")).toBe("# curated\n");
+          expect(context(post)).toBe("");
+          expect(readEscalation(project.root)?.haltActive ?? false).toBe(false);
+
+          // Not silence: the same note the write-tool path records, so a reader
+          // of events.jsonl sees the cause and not only the absence of a block.
+          const advisories = readEvents(project.root).filter(
+            (e) => e.event === "guard_advisory",
+          );
+          expect(
+            advisories.some(
+              (e) =>
+                (e.detail ?? "").includes("FUSION_ALLOW_RULES_WRITE") &&
+                (e.detail ?? "").includes("rules/x.md"),
+            ),
+          ).toBe(true);
+        },
+        { git: true },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "agrees with the PreToolUse guard on a write-tool call",
+    () => {
+      // The regression the wiring closed, and the reason it could not be left
+      // to a later step: `guard.ts` ALLOWED the Edit under the flag and the
+      // tracker then reverted it, inside one tool call, so the flag looked
+      // broken from both ends at once.
+      withProject(
+        (project) => {
+          const { pre, post } = runToolCall(
+            project.root,
+            "Edit",
+            { file_path: resolve(project.root, "rules/x.md") },
+            () => put(project.root, "rules/x.md", "# curated\n"),
+            { FUSION_ALLOW_RULES_WRITE: "1" },
+          );
+
+          expect(pre.decision).toBeUndefined();
+          expect(read(project.root, "rules/x.md")).toBe("# curated\n");
+          expect(context(post)).toBe("");
+        },
+        { git: true },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "reverts everything outside the rule directories in the same call",
+    () => {
+      // The flag grants one permission. It is not a way past the protected list,
+      // and a call that touches both gets both answers.
+      withProject(
+        (project) => {
+          const { post } = runToolCall(
+            project.root,
+            "Bash",
+            { command: "true" },
+            () => {
+              put(project.root, "rules/x.md", "# curated\n");
+              put(project.root, "agents/coder.md", "# not covered\n");
+            },
+            { FUSION_ALLOW_RULES_WRITE: "1" },
+          );
+
+          expect(read(project.root, "rules/x.md")).toBe("# curated\n");
+          expect(read(project.root, "agents/coder.md")).toBe("# an agent\n");
+
+          expect(context(post)).toContain("agents/coder.md");
+          expect(context(post)).not.toContain("rules/x.md");
+          expect(readEscalation(project.root)?.haltActive).toBe(true);
+        },
+        { git: true },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "reverts a rule path the project declared for itself, flag or no flag",
+    () => {
+      // Gate 1b, decision 260803-1314: an entry a project wrote by hand
+      // outranks a flag an agent set in a shell.
+      //
+      // The declared list REPLACES the plugin's, so `rules/immutable/**` is the
+      // only protected path here — which is what isolates gate 1b. Adding
+      // `rules/**` alongside it would refuse the grant for the whole rule tree,
+      // deliberately (see `isProjectRulePath`), and prove nothing about the
+      // narrower entry.
+      withProject(
+        (project) => {
+          runToolCall(
+            project.root,
+            "Bash",
+            { command: "true" },
+            () => put(project.root, "rules/immutable/law.md", "# rewritten\n"),
+            { FUSION_ALLOW_RULES_WRITE: "1" },
+          );
+
+          expect(read(project.root, "rules/immutable/law.md")).toBe(
+            "# untouchable\n",
+          );
+          expect(readEscalation(project.root)?.haltActive).toBe(true);
+        },
+        {
+          git: true,
+          files: {
+            "rules/immutable/law.md": "# untouchable\n",
+            "fusion-guard.json": projectConfig({
+              guard: { protectedPaths: ["rules/immutable/**"] },
+            }),
+          },
+        },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "reverts the same rule file when the flag is not set",
+    () => {
+      // The other half of the flag test: without it, nothing changes. Same
+      // project, same write, no override.
+      withProject(
+        (project) => {
+          runToolCall(
+            project.root,
+            "Bash",
+            { command: "true" },
+            () => put(project.root, "rules/x.md", "# curated\n"),
+          );
+
+          expect(read(project.root, "rules/x.md")).toBe("# a rule\n");
+          expect(readEscalation(project.root)?.haltActive).toBe(true);
+        },
+        { git: true },
       );
     },
     CASE_TIMEOUT,

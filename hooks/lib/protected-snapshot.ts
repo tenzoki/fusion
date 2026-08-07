@@ -20,6 +20,22 @@
  * `circles/260804-1205-shell-reachability-model/decisions/260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`,
  * option 3.
  *
+ * ## The fingerprint carries the CONTENT, and that is what makes the restore exact
+ *
+ * A digest answers "did this change?". Only the bytes answer "change it back to
+ * WHAT?". While the fingerprint was a digest, the only restore target available
+ * was `HEAD` — and `HEAD` is not the state the measurement measured. Five
+ * branches followed from that gap: a path in git and clean, a path in git with
+ * the human's work already staged, an untracked path, a path this very call
+ * created, and a project that is no git repository at all. The second branch
+ * silently discarded human work; the last three could not be restored.
+ *
+ * Carrying the content collapses all five into one: write back what was there.
+ * Non-existence stays its own value, and on the way back it reads as "delete".
+ *
+ * Closed by this:
+ * `circles/260807-0923-guard-misst-statt-orakelt/issues/260807-1026_*_rueckrollen-auf-head-kann-menschliche-vorarbeit-verwerfen.md`.
+ *
  * ## Non-existence is a value, not a gap
  *
  * `ABSENT` is a fingerprint like any other. Without it, creating a protected
@@ -27,6 +43,21 @@
  * would have to guess which. With it, all three changes — created, modified,
  * deleted — fall out of one comparison of two strings, and the case split below
  * is disjoint and complete by construction rather than by care.
+ *
+ * ## No size threshold, and no special case for binaries
+ *
+ * Measured in the worst place available: fusion's own repository, where the
+ * shipped patterns match 53 files totalling 745 KB — and where the measurement
+ * stands down anyway. A consuming project matches none of `agents/`, `skills/`,
+ * `bin/monitor` or the plugin manifest; what it matches is its own `rules/` and
+ * three small JSON files. A buffer that size needs no threshold, so there is
+ * none.
+ *
+ * That is a design statement and not only a measurement. A threshold would be a
+ * special case, and the fallback above it could only be `HEAD` — the branch this
+ * change exists to remove, reintroduced with a number in front of it. For the
+ * same reason content is read and written as BYTES, base64 on the way through
+ * JSON: `bin/monitor` is then not a case of its own either.
  *
  * ## The BEFORE fingerprint is the condition of admissibility
  *
@@ -40,31 +71,36 @@
  *
  * ## What this module does NOT do
  *
- * It reads the filesystem and reports differences. It does not revert, halt,
- * emit events, or decide whether a change was exempt. Those are `tracker.ts`'s,
- * so that this module stays a pure measurement that a test can drive one case at
- * a time.
+ * It owns the fingerprint FORMAT, in both directions — taking one, and putting
+ * a path back to one. It decides nothing: no halt, no event, no judgement about
+ * whether a change was exempt. Those are `tracker.ts`'s, so this module stays
+ * measurable one case at a time.
+ *
+ * Both directions live here on purpose. The encoding is one fact, and a caller
+ * that decoded the bytes for itself would be a second place that has to agree
+ * about it.
  */
 
-import { createHash } from "node:crypto";
 import {
   existsSync,
   mkdirSync,
   readFileSync,
   readdirSync,
   renameSync,
+  rmSync,
   statSync,
   writeFileSync,
 } from "node:fs";
-import { resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import { foldCase, matchesAnyFolded } from "./paths.js";
 import { findWorkbenchRoot } from "./workbench-root.js";
 
 /**
  * The fingerprint of a path that does not exist.
  *
- * A sha256 digest is sixty-four characters of `[0-9a-f]`, so a value carrying a
- * `:` cannot collide with the fingerprint of any real file.
+ * Base64 draws on `[A-Za-z0-9+/=]`, so a value carrying a `:` cannot collide
+ * with the fingerprint of any real file — including the empty one, whose
+ * fingerprint is the empty string and is therefore still distinct from this.
  */
 export const ABSENT = "absent:no-such-file";
 
@@ -95,7 +131,7 @@ export interface ProtectedSnapshot {
    * different roots is meaningless, so `diffSnapshots` refuses one.
    */
   cwd: string;
-  /** Project-relative path → content digest, or `ABSENT`. */
+  /** Project-relative path → base64 content, or `ABSENT`. */
   paths: Record<string, string>;
 }
 
@@ -104,6 +140,15 @@ export interface ProtectedChange {
   /** Project-relative, as the protected patterns are written. */
   path: string;
   kind: "created" | "modified" | "deleted";
+  /**
+   * The fingerprint this path carried BEFORE the tool call — base64 content, or
+   * `ABSENT`. It is the restore target, and `restore` reads it.
+   *
+   * Carried on the change rather than looked up again from the snapshot, so the
+   * value restored is provably the value compared. A second lookup is a second
+   * answer to one question, and the two can disagree.
+   */
+  before: string;
 }
 
 /* ------------------------------------------------------------------ *
@@ -208,12 +253,15 @@ function literalPaths(patterns: readonly string[]): string[] {
  * ------------------------------------------------------------------ */
 
 /**
- * The fingerprint of one path: a digest of its bytes, or `ABSENT`.
+ * The fingerprint of one path: its bytes in base64, or `ABSENT`.
  *
  * Content, not mtime. An mtime moves when nothing changed (a checkout, a
  * `touch`, a copy) and stands still at one-second granularity when something
  * did — both directions are wrong here, and the wrong one costs a revert of
  * work nobody changed.
+ *
+ * Bytes, not text: a protected path can be a binary (`bin/monitor` is on the
+ * shipped list), and a utf-8 round trip would corrupt it on the way back.
  *
  * A directory reads as `ABSENT`: the patterns select files, and a path that is
  * a directory is not a file whose content this guard can restore.
@@ -222,7 +270,7 @@ export function fingerprint(root: string, rel: string): string {
   const abs = resolve(root, rel);
   try {
     if (!statSync(abs).isFile()) return ABSENT;
-    return createHash("sha256").update(readFileSync(abs)).digest("hex");
+    return readFileSync(abs).toString("base64");
   } catch {
     return ABSENT;
   }
@@ -280,9 +328,52 @@ export function diffSnapshots(
       path,
       kind:
         was === ABSENT ? "created" : now === ABSENT ? "deleted" : "modified",
+      before: was,
     });
   }
   return changes.sort((a, b) => a.path.localeCompare(b.path));
+}
+
+/* ------------------------------------------------------------------ *
+ * Restoring
+ * ------------------------------------------------------------------ */
+
+/**
+ * Put one path back to the fingerprint it carried before the tool call.
+ *
+ * ## One case split, and it is the same one the fingerprint already makes
+ *
+ * `ABSENT` before means the path did not exist, so restoring it means deleting
+ * it. Anything else is content, so restoring it means writing those bytes. The
+ * two branches are disjoint by the definition of `ABSENT` and complete because a
+ * fingerprint is one or the other — the split is not maintained here, it is
+ * inherited.
+ *
+ * `kind` is deliberately NOT consulted. It is a label for the reader of a
+ * message; `before` is the value that decides. Branching on both would be two
+ * encodings of one fact, free to drift.
+ *
+ * The parent directory is created on the way, because a `rm -rf rules/` removes
+ * it along with the file and the restore has to be able to put a whole subtree
+ * back.
+ *
+ * ## Throws rather than reporting
+ *
+ * An I/O failure here — a path that is now a directory, a read-only filesystem —
+ * is a real failure of the restore, and the caller has to say so to the user. It
+ * throws so that a caller cannot mistake failure for success by ignoring a
+ * return value. `tracker.ts` turns the exception into the sentence.
+ */
+export function restore(root: string, change: ProtectedChange): void {
+  const abs = resolve(root, change.path);
+  if (change.before === ABSENT) {
+    // `force` only suppresses "it was already gone", which is success here. A
+    // path that is now a DIRECTORY still throws, and should.
+    rmSync(abs, { force: true });
+    return;
+  }
+  mkdirSync(dirname(abs), { recursive: true });
+  writeFileSync(abs, Buffer.from(change.before, "base64"));
 }
 
 /* ------------------------------------------------------------------ *

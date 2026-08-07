@@ -218,7 +218,7 @@ export function recordBlock(
  * `recordBlock` models a REFUSED tool call: nothing happened, and three of them
  * in a row are the evidence that an agent is pushing against the guard rather
  * than working. The measurement in `tracker.ts` reports the opposite situation —
- * a protected path was ACTUALLY WRITTEN and had to be restored from git. There
+ * a protected path was ACTUALLY WRITTEN and had to be put back. There
  * is no "two more of these and we will do something about it": the boundary is
  * already crossed, and the write happened before anyone could refuse it.
  *

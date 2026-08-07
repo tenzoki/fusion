@@ -5,6 +5,7 @@ import {
   RULES_WRITE_ENV,
   RULE_DIR_PATTERNS,
   RULE_DIR_ROOTS,
+  isObservedRulePath,
   isProjectRulePath as isProjectRulePathWith,
   projectProtectedMatch,
   projectProtectedNote,
@@ -856,6 +857,113 @@ describe("the note a curator meets when their own project refused them", () => {
     expect(
       rulesWriteRefusalNote("rules/x.md", PLAIN, "rules/x.md", IMMUTABLE),
     ).toBeNull();
+  });
+});
+
+describe("isObservedRulePath — the measurement side's narrower entry", () => {
+  /**
+   * The entry `tracker.ts` uses. Two arguments, not four, because a MEASURED
+   * path has no spelling a tool call gave it and no destination still to be
+   * resolved — see the function's docstring for why each dropped gate has
+   * nothing left to be about.
+   *
+   * These cases pin two things. That the two gates it does keep behave exactly
+   * as `isProjectRulePath`'s do, and that the reach it grants is no WIDER than
+   * the write-tool entry's on any path either of them can be asked about. A
+   * grant that widened as it moved surfaces is how a lost denial looks.
+   */
+  const observed = (path: string, declared: readonly string[] = []): boolean =>
+    isObservedRulePath(path, declared);
+
+  it("exempts a rule file, in both rule roots", () => {
+    expect(observed("rules/x.md")).toBe(true);
+    expect(observed("rules/retired/old.md")).toBe(true);
+    expect(observed(".claude/rules/local.md")).toBe(true);
+  });
+
+  it("exempts nothing outside the rule directories", () => {
+    for (const path of [
+      "agents/coder.md",
+      "skills/demo/SKILL.md",
+      "hooks/config.json",
+      "hooks/hooks.json",
+      "settings.json",
+      "bin/monitor",
+      ".claude-plugin/plugin.json",
+      "fusion-guard.json",
+      "fusion-workbench/.guard-state/escalation.json",
+      "rulesets/x.md",
+      "notrules/x.md",
+    ]) {
+      expect(observed(path), path).toBe(false);
+    }
+  });
+
+  it("does not exempt the bare rule directory node, in any spelling", () => {
+    for (const path of ["rules", "rules/", "./rules", "rules//"]) {
+      expect(observed(path), path).toBe(false);
+    }
+  });
+
+  it("canonicalises for itself rather than trusting its caller", () => {
+    // Same property `isProjectRulePath` has and for the same reason: a
+    // predicate that trusted its caller would be right on one surface and
+    // wrong on the other.
+    expect(observed("./rules/x.md")).toBe(true);
+    expect(observed("rules//x.md")).toBe(true);
+    expect(observed("rules/../agents/coder.md")).toBe(false);
+  });
+
+  it("refuses the empty path", () => {
+    expect(observed("")).toBe(false);
+  });
+
+  it("gate 1b: a path the project declared for itself is not exempt", () => {
+    expect(observed("rules/immutable/law.md", ["rules/immutable/**"])).toBe(
+      false,
+    );
+    // And the entry reaches only what it names.
+    expect(observed("rules/x.md", ["rules/immutable/**"])).toBe(true);
+  });
+
+  it("gate 1b: a project declaring rules/** ends the exemption for rules/", () => {
+    // Stated in `isProjectRulePath`'s docstring as intended, not incidental:
+    // the project declared exactly that.
+    expect(observed("rules/x.md", ["rules/**"])).toBe(false);
+  });
+
+  it("gate 1b folds case and retries a directory operand, as the write side does", () => {
+    expect(observed("rules/Immutable/law.md", ["rules/immutable/**"])).toBe(
+      false,
+    );
+  });
+
+  it("never grants more than the write-tool entry does", () => {
+    // The property that has to hold across BOTH surfaces. Every path either
+    // entry can be asked about: if the measurement exempts it, the write tool
+    // does too. The reverse is allowed to fail — gate 2 can refuse a path on
+    // the write side for a reason that does not exist on this one — and no
+    // case here asserts it does not.
+    const paths = [
+      "rules/x.md",
+      "rules/retired/old.md",
+      ".claude/rules/local.md",
+      "rules",
+      "rules/",
+      "agents/coder.md",
+      "hooks/config.json",
+      "rules/../agents/coder.md",
+      "",
+    ];
+    for (const declared of [[], ["rules/immutable/**"], ["rules/**"]]) {
+      for (const path of paths) {
+        if (!observed(path, declared)) continue;
+        expect(
+          isProjectRulePath(path, PLAIN, path, declared),
+          `${path} with ${JSON.stringify(declared)}`,
+        ).toBe(true);
+      }
+    }
   });
 });
 

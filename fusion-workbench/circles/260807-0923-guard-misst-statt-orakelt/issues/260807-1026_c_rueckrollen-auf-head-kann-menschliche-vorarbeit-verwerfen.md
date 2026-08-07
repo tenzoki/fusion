@@ -34,3 +34,27 @@ werden muss.
 **Dringlichkeit:** niedrig für die Freigabe, hoch genug, um vor der Freigabe entschieden
 zu werden. Der Fall setzt voraus, dass Mensch und Agent im selben Zeitfenster dieselbe
 geschützte Datei anfassen.
+
+---
+Resolved: Umgesetzt in der vorgeschlagenen Form, vom Nutzer am 260807 entschieden. Der
+Fingerabdruck in `hooks/lib/protected-snapshot.ts` traegt jetzt den Dateiinhalt (base64,
+byteweise gelesen und geschrieben); `ABSENT` bleibt ein eigener Wert und heisst beim
+Zurueckschreiben "loeschen". `restore()` im selben Modul schreibt den Vorher-Zustand
+zurueck, `hooks/tracker.ts` ruft es ueber `restorePath` auf; `revertFromHead` und der
+`git checkout HEAD --`-Aufruf sind entfallen.
+
+Die im Befund benannte Fallunterscheidung ist damit weg, nicht verkleinert: die fuenf
+Zweige (in git und sauber / in git mit gestagter Arbeit / nicht versioniert / in diesem
+Aufruf angelegt / gar kein Repository) sind ein Zweig geworden. Die Kosten, die der
+Befund als moegliche Obergrenze nannte, sind nicht angefallen: es gibt keine
+Groessenschwelle und keine Sonderbehandlung fuer Binaerdateien. Gemessene Grundlage —
+der volle Satz geschuetzter Dateien umfasst im Plugin-Repo 53 Dateien mit 745 KB, und
+das ist der schlechteste Fall; in einem Konsumprojekt bleiben das eigene `rules/` und
+drei kleine JSON-Dateien. Eine Schwelle waere ein Sonderfall und ihr Rueckfall koennte
+nur wieder HEAD sein.
+
+Testfaelle in `hooks/lib/__tests__/protected-snapshot-integration.test.ts`, alle ueber
+den Harness in einem echten Fremdprojekt: der im Befund beschriebene Fall der gestagten
+menschlichen Vorarbeit ("restores the human's STAGED version, not the committed one"),
+das byteweise Zurueckschreiben einer Binaerdatei, das Loeschen einer in diesem Aufruf
+angelegten geschuetzten Datei, und das Zurueckschreiben in einem Projekt ganz ohne git.

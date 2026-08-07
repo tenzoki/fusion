@@ -5,11 +5,12 @@
  *
  *   1. MEASURE THE PROTECTED PATHS. Take a second fingerprint of every path on
  *      `guard.protectedPaths` and compare it with the one `guard.ts` recorded
- *      before the tool ran. Anything that changed is restored from git, the
- *      guard is halted, and the model is told which file and why. This is the
- *      guard's actual enforcement of those paths, and it replaced a classifier
- *      that tried to predict, from a shell command's text, which files the
- *      command would write. See lib/protected-snapshot.ts.
+ *      before the tool ran. Anything that changed is written back to what the
+ *      before-fingerprint holds, the guard is halted, and the model is told
+ *      which file and why. This is the guard's actual enforcement of those
+ *      paths, and it replaced a classifier that tried to predict, from a shell
+ *      command's text, which files the command would write. See
+ *      lib/protected-snapshot.ts.
  *   2. CHURN AND PING-BACK. Record write-tool file mutations in the churn
  *      heatmap and the cross-file ping-back state, emitting warning/critical
  *      events at the configured thresholds. Unchanged.
@@ -36,7 +37,6 @@
  * `hookSpecificOutput.additionalContext` envelope when something was restored.
  */
 
-import { spawnSync } from "node:child_process";
 import { resolve, relative, isAbsolute } from "node:path";
 import { loadChurn, saveChurn, recordChange, analyzeChurn } from "./lib/churn.js";
 import {
@@ -45,13 +45,24 @@ import {
   recordEdit,
   analyzeCrossFile,
 } from "./lib/cross-file.js";
-import { loadConfig } from "./lib/config.js";
+import { loadConfig, projectDeclaredProtectedPaths } from "./lib/config.js";
+import type { GuardConfig } from "./lib/config.js";
 import { matchesAny } from "./lib/paths.js";
 import { isFusionPluginCwd } from "./lib/self-detect.js";
 import { emitEvent } from "./lib/events.js";
 import { loadEscalation, raiseHalt, saveEscalation } from "./lib/escalation.js";
-import { diffSnapshots, loadSnapshot, takeSnapshot } from "./lib/protected-snapshot.js";
+import {
+  diffSnapshots,
+  loadSnapshot,
+  restore,
+  takeSnapshot,
+} from "./lib/protected-snapshot.js";
 import type { ProtectedChange } from "./lib/protected-snapshot.js";
+import {
+  isObservedRulePath,
+  rulesWriteDetail,
+  rulesWriteExemptionActive,
+} from "./lib/rules-write-exemption.js";
 
 /**
  * Workbench dashboard/state files that the orchestrator continuously
@@ -136,61 +147,40 @@ function respond(additionalContext?: string): void {
 /** What happened to one protected path that changed during this tool call. */
 interface RevertOutcome {
   change: ProtectedChange;
-  /** True when git put the file back the way it was committed. */
+  /** True when the path carries again what it carried before the call. */
   restored: boolean;
   /** Why not, when `restored` is false. Empty otherwise. */
   reason: string;
 }
 
 /**
- * Put one path back from `HEAD`.
+ * Put one path back to what it held before this tool call.
  *
- * ## Attempting is the test
+ * ## Why git is not involved any more
  *
- * There is no separate "does git know this path?" query, on purpose. A
- * predicate followed by an action is two answers to one question that can
- * disagree — the file can be untracked in the predicate's reading and tracked
- * in git's, or the repository can be absent, or `HEAD` can be unborn in a fresh
- * repository. `git checkout HEAD -- <path>` already asks exactly the right
- * question and answers it with an exit status, so that status IS the branch.
+ * This used to be `git checkout HEAD -- <path>`, and `HEAD` is not the state the
+ * measurement measured. The gap between the two produced five branches — in git
+ * and clean, in git with the human's work already staged, untracked, created by
+ * this very call, no repository at all — of which one discarded human work and
+ * three could not restore anything. The fingerprint now carries the content, so
+ * there is one branch: write back what was there. See
+ * `lib/protected-snapshot.ts` `restore`, which owns it.
  *
- * ## A path git does not know is never rolled back
+ * ## A failure is reported, never swallowed
  *
- * It reports and halts instead, naming the missing versioning as the cause. That
- * covers three situations with one rule: the file is untracked, the file was
- * newly CREATED by this tool call (which is the same thing — `HEAD` has no
- * content to restore), or the project is not a git repository at all. In each,
- * `git checkout` writes nothing and exits non-zero.
- *
- * A silent failure here would be the worst outcome available: the guard would
- * report a violation as handled while the modified file stayed modified. So the
- * status is read, the stderr is kept, and both reach the model.
- *
- * ## The one case where reverting to HEAD is coarser than the snapshot
- *
- * The measurement knows the file's state BEFORE the tool call; git knows its
- * state at HEAD. Those differ when a human had staged or working-tree changes to
- * a protected file that the agent then overwrote — restoring HEAD discards the
- * human's version along with the agent's. Restoring the before-content exactly
- * would need the snapshot to carry content rather than digests. The revert
- * mechanism is fixed by this Circle's plan, so the gap is filed rather than
- * fixed here:
- * `circles/260807-0923-guard-misst-statt-orakelt/issues/260807-1026_o_rueckrollen-auf-head-kann-menschliche-vorarbeit-verwerfen.md`.
- *
- * `spawnSync`, not `execFileSync`: a non-zero exit is an expected branch of this
- * function, not an exception to be caught and re-derived.
+ * The worst outcome available here is a guard that reports a violation as
+ * handled while the modified file stays modified. `restore` throws on any I/O
+ * failure — a path that is now a directory, a read-only filesystem — and this is
+ * the one place that turns the exception into a sentence the model gets. It is
+ * not a fail-open catch: nothing continues as though the restore had worked.
  */
-function revertFromHead(root: string, rel: string): string | null {
-  const run = spawnSync("git", ["checkout", "HEAD", "--", rel], {
-    cwd: root,
-    encoding: "utf-8",
-  });
-  if (run.error) return `git could not be run (${String(run.error)})`;
-  if (run.status !== 0) {
-    const stderr = (run.stderr ?? "").trim().split("\n")[0] ?? "";
-    return `not known to git at HEAD${stderr === "" ? "" : ` (${stderr})`}`;
+function restorePath(root: string, change: ProtectedChange): string | null {
+  try {
+    restore(root, change);
+    return null;
+  } catch (err) {
+    return err instanceof Error ? err.message : String(err);
   }
-  return null;
 }
 
 /** One human sentence per outcome, for the model and for the event log. */
@@ -202,9 +192,47 @@ function describe(outcome: RevertOutcome): string {
       : change.kind === "deleted"
         ? "was deleted"
         : "was modified";
+  // For a path that did not exist before, "put back" is a deletion. Saying
+  // "restored" there would describe the file as recovered when it is gone.
+  const undone =
+    change.kind === "created"
+      ? "has been removed again — it did not exist before this tool call"
+      : "has been restored to its content from before this tool call";
   return restored
-    ? `${change.path} ${what} and has been restored from git.`
+    ? `${change.path} ${what} and ${undone}.`
     : `${change.path} ${what} and could NOT be restored: ${reason}. The change is still on disk.`;
+}
+
+/**
+ * Split the measured changes into the ones `FUSION_ALLOW_RULES_WRITE` covers and
+ * the ones it does not.
+ *
+ * The flag is the one narrow permission in the protected-path policy, and it has
+ * to reach the measurement or it stops meaning anything: after the classifier
+ * goes, a rule file edited during a curation session is caught HERE, and
+ * reverting it would take the flag back with no message saying so.
+ *
+ * Two arguments to the exemption and both are load-bearing. It is asked only
+ * when the user actually set the flag, and the project's DECLARED entries —
+ * never the effective list, which inherits the plugin's `rules/**` — decide
+ * whether the project took the grant back for itself. See `isObservedRulePath`
+ * for which gates apply to a measured path and why the others do not.
+ */
+function splitOffExempted(
+  changes: ProtectedChange[],
+  config: GuardConfig,
+): { exempted: string[]; violations: ProtectedChange[] } {
+  if (!rulesWriteExemptionActive(process.env)) {
+    return { exempted: [], violations: changes };
+  }
+  const declared = projectDeclaredProtectedPaths(config);
+  const exempted: string[] = [];
+  const violations: ProtectedChange[] = [];
+  for (const change of changes) {
+    if (isObservedRulePath(change.path, declared)) exempted.push(change.path);
+    else violations.push(change);
+  }
+  return { exempted, violations };
 }
 
 /**
@@ -248,16 +276,29 @@ function measureProtectedPaths(toolName: string): string | null {
   );
   if (changes.length === 0) return null;
 
-  // STEP 3 OF THIS CIRCLE'S PLAN WIRES THE RULES-WRITE EXEMPTION IN HERE.
-  // Until it lands, a write that `FUSION_ALLOW_RULES_WRITE` legitimately let
-  // through on the write-tool path is measured and reverted by this function.
-  // That is a real regression for the duration of one plan step, and it is
-  // written down rather than left to be discovered: the exemption needs its own
-  // narrower entry point for an OBSERVED path (gate 1 and gate 1b only), which
-  // is exactly what step 3 adds.
+  const { exempted, violations } = splitOffExempted(changes, config);
 
-  const outcomes: RevertOutcome[] = changes.map((change) => {
-    const reason = revertFromHead(root, change.path);
+  // The same note the write-tool path records when the flag lets a write
+  // through, from the same function, so `events.jsonl` reads identically
+  // whichever route the write took. No escalation entry is pushed here: for a
+  // write-tool call `guard.ts` already recorded this grant on the PreToolUse
+  // side of the very same call, and a second entry would count one permission
+  // twice.
+  if (exempted.length > 0) {
+    emitEvent(
+      "guard_advisory",
+      toolName,
+      exempted.length === 1 ? exempted[0] : undefined,
+      rulesWriteDetail(exempted),
+    );
+  }
+
+  // Every changed path was one the flag covers: nothing to restore, nothing to
+  // halt, and the advisory above is the whole record.
+  if (violations.length === 0) return null;
+
+  const outcomes: RevertOutcome[] = violations.map((change) => {
+    const reason = restorePath(root, change);
     return { change, restored: reason === null, reason: reason ?? "" };
   });
 
