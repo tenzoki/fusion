@@ -119,7 +119,7 @@ flowchart TD
    - Quelle: offener Punkt 1 des Circle-Datensatzes; Entscheidung 2 oben.
    - Abhängigkeiten: S2
 
-4. **Der Klassifizierer fällt**
+4. [DONE] **Der Klassifizierer fällt** — 260807-1117
    - Ausführer: coder
    - Dateien: `hooks/lib/bash-mutation-guard.ts` (löschen), `hooks/lib/shell-reach.ts` (löschen), `hooks/lib/shell-parse.ts`, `hooks/lib/command-word.ts`, `hooks/guard.ts`
    - Änderungen: Beide Module löschen. Aus `guard.ts` den `classifyBashMutation`-Import, den Schritt-2-Block samt beider Rückrufe und die Kopfdokumentation dazu entfernen; Schritt 1 (Branch-Politik) und Schritt 3 (Override-Notiz) bleiben. `shell-parse.ts` behält genau das, was `git-branch-guard.ts` und `command-word.ts` importieren: `extractCommandSegments`, `stripDataRegions`, `tokenize`, `resolveWord` und den Blank-Modus. Alles, was nur über `parseCommand`, den Capture-Modus, `SUBSTITUTION_FILLER`, `SegmentJoiner`, `ParsedSegment` oder `ParsedCommand` erreichbar ist, fällt. Aus `command-word.ts` fällt `GRAMMAR_TERMINATORS`, dessen einziger Leser `shell-reach.ts` war (`command-word.ts:94`). Das Prüfkriterium ist mechanisch: nach dem Schnitt darf `hooks/` keinen Verweis auf `parseCommand` mehr enthalten, und `tsc` muss durchlaufen.

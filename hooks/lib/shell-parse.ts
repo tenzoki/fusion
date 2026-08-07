@@ -1,64 +1,41 @@
 /**
- * Shell parsing primitives shared by the guard's classifiers.
+ * Shell parsing primitives for the guard's git branch policy.
  *
  * These functions used to live in `git-branch-guard.ts`. They are generic —
  * nothing about blanking a heredoc body or splitting on `&&` is git-specific —
- * and a second classifier (`bash-mutation-guard.ts`) consumes them, so a module
- * named for git should not own the lexer its sibling depends on.
+ * and a second classifier consumed them for a while, so a module named for git
+ * should not own the lexer. That second consumer is gone; the lexer stays here,
+ * because the split is what keeps the git policy free of lexing detail and its
+ * suite able to test the two apart.
  *
  * This module is PURE and EXPORTED so it is unit-testable without the hook
  * firing. It never touches the filesystem, the environment, or the process.
  *
- * ## Two quote modes
+ * ## One quote mode: data is blanked
  *
- * The git classifier and the mutation classifier need OPPOSITE treatment of a
- * single-quoted region, so `parseCommand` takes the mode as a parameter:
+ * A single-quoted region is replaced by spaces, because `echo 'git switch main'`
+ * is inert prose and its content must not be read as a command. So is a
+ * quoted-delimiter heredoc body — data a command reads, never a command.
+ * Regions where bash DOES expand (a double-quoted span carrying `$`, a
+ * backtick or an escape; an unquoted-delimiter heredoc body) are preserved
+ * verbatim, so a real hidden command still gets classified. That is the
+ * fail-closed direction and it must not flip.
  *
- *   - `"blank"` — a single-quoted body is replaced by spaces. Correct for the
- *     git classifier, where `echo 'git switch main'` is inert prose and the
- *     content must not be read as a command. This is the historical behaviour
- *     of `stripDataRegions`, preserved byte-for-byte.
+ * There used to be a second, opposite mode. A retired mutation classifier
+ * needed a single-quoted region kept as an ordinary path (`mv 'rules/x.md'
+ * /tmp/`) rather than erased, so the parser took the mode as a parameter and
+ * minted placeholder tokens for the captured literals. Nothing needs that
+ * reading any more, and the parameter, the placeholders and the ordered,
+ * depth-tagged parse built on top of them are gone with it. What survives is
+ * the flat blank-mode path the git policy has always used, byte for byte.
  *
- *   - `"capture"` — a single-quoted region (quotes included) is replaced by an
- *     opaque placeholder token and the literal text is recorded in a side
- *     table. Correct for the mutation classifier, where `mv 'rules/x.md' /tmp/`
- *     carries an ordinary path that blanking would destroy. A DOUBLE-quoted
- *     span is captured on the same terms when it expands nothing — no `$`, no
- *     backtick, no backslash escape — because bash performs no redirection and
- *     no word splitting inside it either, and reading a `>` in a commit message
- *     as an operator is a false positive on prose.
- *
- * Capture mode keeps quoted content INERT by construction rather than by
- * blanking: the placeholder contains no whitespace and no shell operator, so
- * `echo 'mv rules/x.md /tmp'` tokenizes to exactly two words and `mv` is never
- * in command position. A placeholder can only ever REDUCE segmentation, never
- * introduce a segment or a command word that blanking would have hidden.
- *
- * The double-quoted capture is bounded ON PURPOSE by those three characters: a
- * span bash would expand stays code, so a hidden `$(…)` is still lifted into
- * its own segment and the fail-closed direction is unchanged.
- *
- * Quoted-delimiter heredoc bodies stay blanked in BOTH modes. They are data
- * that a command reads, never an operand that a command writes.
- *
- * ## What a lifted command substitution leaves behind
+ * `resolveWord` still takes a literal table, and it is still the seam that mode
+ * was threaded through. The git policy passes an empty map (`NO_LITERALS` in
+ * `git-branch-guard.ts`), which is the whole of it today.
  *
  * A `$(…)` / backtick body is lifted out into its own segment, because it runs
- * as its own command. What lands in the OUTER segment at run time is the
- * substitution's VALUE, and the two modes want that value described
- * differently:
- *
- *   - `"blank"` — a single space, so the outer segmentation is exactly what it
- *     has always been. The git classifier asks only which commands run, and the
- *     substitution's value is never one of them.
- *
- *   - `"capture"` — `SUBSTITUTION_FILLER`, a token carrying a `$` so that
- *     `resolveWord` reports it `{ unresolved: true }`. A consumer enforcing a
- *     fail-closed rule needs the operand to still BE there and be unknowable;
- *     with a space it vanished instead, and `rm $(echo rules/x.md)` reached the
- *     mutation classifier as a bare `rm` with no operands while `rm $VAR`
- *     denied. The filler glues to its neighbours exactly as the value would, so
- *     `"$(pwd)/build"` stays one word.
+ * as its own command, and a single space is left where it stood. The git policy
+ * asks only which commands run, and a substitution's VALUE is never one of them.
  */
 
 /**
@@ -68,91 +45,12 @@
 const SEGMENT_SENTINEL = "\u0000";
 
 /**
- * Wrapper character for capture-mode placeholders. Chosen because it is not
- * whitespace, not a shell operator, not `=` (so a placeholder can never look
- * like a leading `VAR=value` env assignment), and not the segment sentinel.
+ * Matches a placeholder token anywhere inside a word — the shape the retired
+ * capture mode minted for a quoted literal. Nothing in this module mints one any
+ * more; `resolveWord` still recognises it, because its `literals` parameter is
+ * the seam a caller supplies its own table through.
  */
-const PLACEHOLDER_CHAR = "\u0001";
-
-/** Matches a capture-mode placeholder token anywhere inside a word. */
 const PLACEHOLDER_RE = /\u0001q\d+\u0001/g;
-
-/**
- * What a lifted `$(…)` / backtick substitution leaves in the outer segment in
- * CAPTURE mode. It must contain a `$` (so `resolveWord` reports it unresolved),
- * no whitespace (so it glues to its neighbours the way the substitution's value
- * would), no segment operator, and no `=` (so it can never read as a leading
- * `VAR=value` assignment) — and it has to stay readable when a deny reason
- * quotes the segment back at a human. Blank mode keeps the historical space.
- *
- * EXPORTED because it carries a balanced `(`/`)` pair that is NOT shell grammar.
- * A consumer counting real subshell parentheses in a segment (the virtual-cwd
- * walk in `bash-mutation-guard.ts`) has to remove the filler first, and it must
- * not have to know the filler's spelling to do it.
- */
-export const SUBSTITUTION_FILLER = "$(…)";
-
-/** How `parseCommand` treats single-quoted regions. */
-export type QuotedMode = "blank" | "capture";
-
-export interface ParseOptions {
-  quoted: QuotedMode;
-}
-
-/**
- * The operator that joins a segment to the one before it AT ITS OWN NESTING
- * LEVEL. `"start"` is the first segment of a level — nothing ran before it.
- *
- * The distinction a consumer buys with this is the one bash makes: after `&&`
- * the previous segment is GUARANTEED to have succeeded, and after every other
- * operator it is not. A classifier that models a `cd` may only carry the model
- * across a `&&`; across `;`, `||`, `|`, `&` or a newline the shell runs the next
- * segment from wherever it never left
- * (`decisions/260803-2338_i_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`).
- *
- * Only `&&` is a guarantee, so a reader that wants one should test for `&&`
- * rather than enumerate the others: a future operator added here is then
- * unguaranteed by default, which is the fail-closed direction.
- *
- * Two precisions, both learned the hard way:
- *
- * 1. **A newline AFTER `&&` does not make the joiner `newline`.** Bash's
- *    grammar is `and_or : and_or AND_AND newline_list pipeline`, so the
- *    newlines sit inside the operator. An ordinary multi-line chain
- *    (`cd hooks &&\n  npm run build &&\n  rm -rf dist`) carries `&&` on every
- *    segment, exactly as its single-line form does. See the `flush` comment.
- * 2. **`&&` guarantees the AND-OR LIST to its left, not the previous
- *    SEGMENT.** A flat list evaluates left to right, so `A || B && C` is
- *    `(A || B) && C` — reaching `C` proves the list returned zero and says
- *    nothing about whether `B` ran. `|` does not reach past `&&` either, and a
- *    pipeline element runs in a bash subshell. A consumer that reads this field
- *    as "the previous segment ran" is wrong in both shapes; both are argued in
- *    `circles/260801-1244-guard-rules-write/decisions/260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`.
- */
-export type SegmentJoiner =
-  | "start"
-  | "&&"
-  | "||"
-  | ";"
-  | "|"
-  | "&"
-  | "newline";
-
-export interface ParsedSegment {
-  /** The segment's text, trimmed. Carries placeholders in capture mode. */
-  text: string;
-  /** 0 = outer command, >= 1 = body of a `$(…)` / backtick subshell. */
-  depth: number;
-  /** How this segment is joined to the previous one. See `SegmentJoiner`. */
-  joiner: SegmentJoiner;
-}
-
-export interface ParsedCommand {
-  /** Segments in SOURCE ORDER (by their start offset in the command). */
-  segments: ParsedSegment[];
-  /** Placeholder token -> the single-quoted literal it stands for. Empty in blank mode. */
-  literals: Map<string, string>;
-}
 
 /**
  * The outcome of resolving one word to a static literal.
@@ -196,13 +94,6 @@ function findHeredocTerminator(
   }
 }
 
-/** Mint a placeholder for a single-quoted literal and record it. */
-function capture(literal: string, literals: Map<string, string>): string {
-  const token = `${PLACEHOLDER_CHAR}q${literals.size}${PLACEHOLDER_CHAR}`;
-  literals.set(token, literal);
-  return token;
-}
-
 /**
  * Handle shell *data regions* so that the substitution recursion and operator
  * segmentation which follow only ever classify executable *code*. Bash performs
@@ -220,14 +111,11 @@ function capture(literal: string, literals: Map<string, string>): string {
  *                                        "… `git switch` …"   (bash substitutes)
  *   - unquoted-delimiter heredoc bodies: <<EOF … EOF          (bash expands body)
  *
- * In `"blank"` mode removed content is replaced with spaces; newlines are kept
- * so surrounding token boundaries survive. In `"capture"` mode a single-quoted
- * region is replaced by a placeholder instead, as is a double-quoted region
- * with nothing in it to expand (heredoc bodies are still blanked). Parsing is
- * fail-closed on ambiguity: an unterminated quote, or a
- * heredoc whose terminator never appears, leaves the remainder AS-IS (treated
- * as code) rather than silently dropping it — matching this module's
- * over-segment-not-under bias.
+ * Removed content is replaced with spaces; newlines are kept so surrounding
+ * token boundaries survive. Parsing is fail-closed on ambiguity: an
+ * unterminated quote, or a heredoc whose terminator never appears, leaves the
+ * remainder AS-IS (treated as code) rather than silently dropping it — matching
+ * this module's over-segment-not-under bias.
  *
  * This is also where a `\`-at-end-of-line CONTINUATION is removed, because bash
  * removes it in the same pre-tokenization pass that gives quoting its meaning:
@@ -236,16 +124,11 @@ function capture(literal: string, literals: Map<string, string>): string {
  * (data, consumed whole a few branches down, never reinterpreted here).
  *
  * Known conservative limitation: a single-quoted string nested inside a
- * double-quoted `$(…)` (e.g. `"$(echo 'x')"`) is not blanked or captured,
- * because the double-quoted span is copied verbatim without re-entering quote
- * tracking. That errs toward DENY (data treated as code), never toward a
- * missed switch.
+ * double-quoted `$(…)` (e.g. `"$(echo 'x')"`) is not blanked, because the
+ * double-quoted span is copied verbatim without re-entering quote tracking.
+ * That errs toward DENY (data treated as code), never toward a missed switch.
  */
-function stripData(
-  command: string,
-  mode: QuotedMode,
-  literals: Map<string, string>,
-): string {
+function stripData(command: string): string {
   const n = command.length;
   let out = "";
   let i = 0;
@@ -289,19 +172,15 @@ function stripData(
         break;
       }
       const body = command.slice(i + 1, close);
-      out +=
-        mode === "capture"
-          ? capture(body, literals)
-          : "'" + blankData(body) + "'";
+      out += "'" + blankData(body) + "'";
       i = close + 1;
       continue;
     }
 
     // Double-quoted string. Scanned as one verbatim unit so an inner `'` or
     // `<<` is not misread as a single-quote / heredoc opener, honouring
-    // backslash escapes. What it becomes is decided at the close: code when
-    // bash would expand it, an inert placeholder in capture mode when it would
-    // not (see there).
+    // backslash escapes. It stays CODE: bash expands there, so a hidden
+    // `$(git switch main)` has to reach the classifier.
     if (ch === '"') {
       let j = i + 1;
       let body = "";
@@ -329,27 +208,12 @@ function stripData(
         out += command.slice(i); // unterminated → treat rest as code
         break;
       }
-      // In CAPTURE mode a double-quoted span that expands NOTHING is data, not
-      // code: bash performs no redirection, no word splitting and no
-      // segmentation inside it. Minting a placeholder is what stops
-      // `git commit -m "docs: rules/a.md -> rules/b.md"` reading its own commit
-      // message as a redirection into `rules/b.md`
-      // (`issues/260801-1901_c_a-redirect-operator-inside-a-double-quoted-string-is-read-as-a-redirection.md`).
-      //
-      // Three characters veto the capture, and each keeps a property:
-      //   - `$` and a backtick — bash DOES expand there, so the span has to
-      //     stay code or a hidden `$(rm rules/x.md)` / `$(git switch main)`
-      //     would never reach a classifier. This is the fail-closed direction
-      //     and it must not flip.
-      //   - `\` — the span carries an escape pair this loop copied verbatim,
-      //     and only the CODE path removes it (`resolveWord`). Capturing would
-      //     hand back `a\"b` where the word denotes `a"b`.
-      // Blank mode is untouched, so `stripDataRegions` stays byte-identical to
-      // the legacy segmenter the git classifier consumes.
-      out +=
-        mode === "capture" && !/[$`\\]/.test(body)
-          ? capture(body, literals)
-          : '"' + body + '"';
+      // Re-emitted with its quotes, byte-identical to the source when it holds
+      // no line continuation. A retired mode captured an expansion-free span as
+      // data here, so a `>` in a commit message was not read as a redirection;
+      // that reading belonged to the mutation classifier, which is gone, and
+      // this path is what it always was for the git policy.
+      out += '"' + body + '"';
       i = j + 1;
       continue;
     }
@@ -453,12 +317,12 @@ function stripData(
 
 /**
  * Blank shell data regions (single-quoted strings, quoted-delimiter heredoc
- * bodies) so only executable code reaches the segmenter. The historical
- * entry point, kept under its original name and behaviour for the git
- * classifier and its suite. New consumers want `parseCommand`.
+ * bodies) so only executable code reaches the segmenter. The entry point the
+ * git classifier and its suite consume, kept under its original name and
+ * behaviour.
  */
 export function stripDataRegions(command: string): string {
-  return stripData(command, "blank", new Map());
+  return stripData(command);
 }
 
 /**
@@ -481,9 +345,8 @@ export function stripDataRegions(command: string): string {
  * retained verbatim as the git classifier's segmenter — that classifier only
  * asks whether ANY segment denies, so order and depth are invisible to it, and
  * leaving it untouched is what makes the extraction provably behaviour-neutral.
- * `parseCommand` re-derives the same segments in source order with depth; a
- * unit test pins the two against each other. A consumer that needs order or
- * depth (a virtual-cwd walk, for one) must use `parseCommand`.
+ * An ordered, depth-tagged parser used to sit beside it for a consumer that
+ * needed a virtual-cwd walk; it is gone, and this is the only segmenter now.
  */
 export function extractCommandSegments(command: string): string[] {
   const segments: string[] = [];
@@ -561,32 +424,22 @@ export function extractCommandSegments(command: string): string[] {
 /**
  * Remove the parentheses of a `(…)` SUBSHELL from one word.
  *
- * `scanSegments` models `$(…)` and backticks but NOT the plain `(…)` subshell:
+ * The segmenter models `$(…)` and backticks but NOT the plain `(…)` subshell:
  * its parentheses are ordinary characters in the segment text, so they arrive
  * glued to the words they touch — `(rm rules/x.md)` is `["(rm", "rules/x.md)"]`.
  * Glued that way neither the command word nor the operand is recognisable, and
  * every classifier reading these tokens was blind to the command inside:
  * `(rm rules/x.md)` and `(git switch main)` both ran.
  *
- * The `$(…)` filler is exempt. It carries a balanced pair that is NOT shell
- * grammar (see `SUBSTITUTION_FILLER`), so `rm $(echo x)` must keep its filler
- * whole while `(echo $(pwd))` still sheds the real subshell's parens.
- *
- * The strip is unconditional otherwise, because a parenthesis in CODE position
- * is grammar. A filename that genuinely contains one has to be quoted — capture
- * mode hands that over as a placeholder, with no paren in the token — or
- * backslash-escaped, where the paren is lost here; that can only ever SHORTEN a
- * word, and a shorter word cannot match a protected pattern a longer one did
- * not, so it costs no allow and buys no false deny.
+ * The strip is unconditional, because a parenthesis in CODE position is
+ * grammar. A filename that genuinely contains one has to be quoted — and a
+ * quoted region is blanked before it ever reaches here — or backslash-escaped,
+ * where the paren is lost; that can only ever SHORTEN a word, and a shorter
+ * word cannot match a protected pattern a longer one did not, so it costs no
+ * allow and buys no false deny.
  */
 function stripSubshellParens(token: string): string {
-  let out = token.replace(/^\(+/, "");
-  // Peel trailing `)` one at a time, stopping at the filler's own close, so
-  // `$(…))` sheds the subshell's paren and keeps the filler's.
-  while (out.endsWith(")") && !out.endsWith(SUBSTITUTION_FILLER)) {
-    out = out.slice(0, -1);
-  }
-  return out;
+  return token.replace(/^\(+/, "").replace(/\)+$/, "");
 }
 
 /**
@@ -595,12 +448,10 @@ function stripSubshellParens(token: string): string {
  * was NOTHING but parentheses disappears, which is what the spaced form
  * `( rm x )` should leave behind.
  *
- * The strip lives here rather than in either classifier because both consume
- * this function and both had the hole. It leaves the SEGMENTER untouched, which
- * is what keeps the change contained: blank mode still reproduces the historical
- * segmentation byte for byte, and the subshell-scope counter in
- * `bash-mutation-guard.ts` reads a segment's raw TEXT rather than its tokens, so
- * it still sees every parenthesis it has to balance.
+ * The strip lives here rather than in the classifier because it is a lexing
+ * question, not a policy one. It leaves the SEGMENTER untouched, which is what
+ * keeps the change contained: the segmentation is still byte-for-byte what it
+ * always was.
  */
 export function tokenize(segment: string): string[] {
   return segment
@@ -608,208 +459,6 @@ export function tokenize(segment: string): string[] {
     .split(/\s+/)
     .map(stripSubshellParens)
     .filter((t) => t.length > 0);
-}
-
-/** A segment plus where it started, so the caller can restore source order. */
-interface LocatedSegment extends ParsedSegment {
-  /** Offset of the segment's first non-blank character in the prepared string. */
-  start: number;
-}
-
-/** Index of the `)` closing the `(` at `openIdx`, or -1 when unbalanced. */
-function findBalancedParen(text: string, openIdx: number): number {
-  let depth = 0;
-  for (let i = openIdx; i < text.length; i++) {
-    const ch = text[i];
-    if (ch === "(") depth++;
-    else if (ch === ")") {
-      depth--;
-      if (depth === 0) return i;
-    }
-  }
-  return -1;
-}
-
-/**
- * Walk `text` left to right, emitting one segment per `;` / `&&` / `||` / `|` /
- * `&` / newline-separated run and recursing into `$(…)` and backtick subshell
- * bodies at `depth + 1`. Every segment records its absolute start offset (via
- * `base`) so the caller can sort the whole tree back into source order.
- *
- * The operator set and the trim-and-drop-empties rule mirror
- * `extractCommandSegments` exactly; only the ORDER, the added depth, the
- * recorded JOINER and the `filler` left in place of a lifted subshell differ.
- * Passing `" "` as the filler reproduces the flat segmenter exactly, which is
- * what blank mode does. One deliberate divergence: an unterminated backtick
- * makes the remainder a subshell body here (fail-closed, matching how an
- * unbalanced `$(` is already treated), where the flat segmenter leaves a lone
- * backtick as literal text.
- *
- * `&&` and `||` are now consumed as ONE operator rather than as two flushes of
- * which the second finds an empty segment. That is the same segmentation — an
- * empty flush pushes nothing — and it is what lets the pair be NAMED. The
- * lookahead is on the repeated character only, so `|&` is still `|` then `&`
- * and `;;` is still two `;`.
- */
-function scanSegments(
-  text: string,
-  depth: number,
-  base: number,
-  out: LocatedSegment[],
-  filler: string,
-): void {
-  const n = text.length;
-  let cur = "";
-  let curStart = -1;
-  let i = 0;
-  /** The joiner the NEXT segment this level emits will carry. */
-  let pending: SegmentJoiner = "start";
-
-  const push = (s: string, at: number): void => {
-    if (curStart === -1 && s.trim().length > 0) curStart = base + at;
-    cur += s;
-  };
-  const flush = (next: SegmentJoiner): void => {
-    const trimmed = cur.trim();
-    if (trimmed.length > 0) {
-      out.push({ text: trimmed, depth, start: curStart, joiner: pending });
-      pending = next;
-    } else if (pending === "&&" && next !== "newline") {
-      // The operator flushed nothing, so TWO operators stand between the last
-      // emitted segment and the next one (`a && ; b`, or `a && | b`).
-      // The weaker wins: `&&` is the only joiner that guarantees anything, and
-      // it stops guaranteeing the moment something else can reach past it.
-      // `pending === "start"` is deliberately left alone — nothing has been
-      // emitted at this level yet, so there is no earlier segment to guarantee.
-      //
-      // A NEWLINE is the one thing that is not a second operator. Bash's
-      // grammar is `and_or : and_or AND_AND newline_list pipeline`, so the
-      // newlines after `&&` sit INSIDE the operator; the operator is still
-      // `&&`. Measured in bash 3.2 and zsh 5.9: `cd build &&\nrm out.js`
-      // deletes `build/out.js` when the `cd` succeeds and runs nothing when it
-      // fails — exactly the single-line form. Downgrading here made an ordinary
-      // multi-line chain deny with the reason "join the `cd` to what follows it
-      // with `&&`", which the caller had already done — an unfollowable deny,
-      // the failure `rules/protected-path-discipline.md` exists to prevent
-      // (`issues/260804-0838…`). `||` was never downgraded on this path, and
-      // that asymmetry was the tell that the downgrade was accidental.
-      //
-      // The exemption is only for a newline reached with `&&` still pending. A
-      // real second operator after the newlines still wins, because the flush
-      // it causes finds `pending === "&&"` again and takes this branch:
-      // `a &&\n; b` joins on `;`.
-      pending = next;
-    }
-    cur = "";
-    curStart = -1;
-  };
-
-  while (i < n) {
-    const ch = text[i];
-
-    // `$(…)` command substitution — the body runs as its own command.
-    if (ch === "$" && text[i + 1] === "(") {
-      const end = findBalancedParen(text, i + 1);
-      const bodyStart = i + 2;
-      const body = end === -1 ? text.slice(bodyStart) : text.slice(bodyStart, end);
-      scanSegments(body, depth + 1, base + bodyStart, out, filler);
-      push(filler, i); // the substitution's VALUE, not its text, lands here
-      i = end === -1 ? n : end + 1;
-      continue;
-    }
-
-    // Backtick command substitution — same, with the older syntax.
-    if (ch === "`") {
-      const close = text.indexOf("`", i + 1);
-      const bodyStart = i + 1;
-      const body = close === -1 ? text.slice(bodyStart) : text.slice(bodyStart, close);
-      scanSegments(body, depth + 1, base + bodyStart, out, filler);
-      push(filler, i);
-      i = close === -1 ? n : close + 1;
-      continue;
-    }
-
-    // Segment operators. `&&` and `||` are taken as a PAIR so the joiner can
-    // name them; the segmentation is identical either way, because the old
-    // second flush found an empty segment and dropped it.
-    if (ch === "&" || ch === "|") {
-      const doubled = text[i + 1] === ch;
-      flush(doubled ? (ch === "&" ? "&&" : "||") : ch === "&" ? "&" : "|");
-      i += doubled ? 2 : 1;
-      continue;
-    }
-    if (ch === ";") {
-      flush(";");
-      i++;
-      continue;
-    }
-
-    // A newline terminates a command in shell too. Consume the whole run.
-    if (ch === "\n" || ch === "\r") {
-      flush("newline");
-      while (i < n && (text[i] === "\n" || text[i] === "\r")) i++;
-      continue;
-    }
-
-    push(ch, i);
-    i++;
-  }
-
-  // Nothing follows the last segment, so the joiner it would hand on is unused.
-  flush("start");
-}
-
-/**
- * Parse a Bash command string into ordered, depth-tagged segments.
- *
- * `quoted: "blank"` reproduces `extractCommandSegments(stripDataRegions(cmd))`
- * — the same segments, now in source order and carrying their subshell depth
- * and their JOINER. `quoted: "capture"` additionally hands back the
- * single-quoted literals, so a consumer can read a quoted path as a path, and
- * leaves an unresolvable filler where a lifted `$(…)` stood instead of a space
- * (see the module docstring).
- *
- * The git classifier does not come through here — it consumes
- * `extractCommandSegments(stripDataRegions(cmd))`, which is a separate function
- * left byte-identical on purpose. So a field added to `ParsedSegment` reaches
- * the mutation classifier and nothing else, and the equivalence test below the
- * two still compares only what both produce: the segment TEXT.
- */
-export function parseCommand(
-  command: string,
-  options: ParseOptions,
-): ParsedCommand {
-  const literals = new Map<string, string>();
-  if (!command || command.trim().length === 0) return { segments: [], literals };
-
-  // Defensive: a placeholder is only ever minted by `capture`, so a
-  // PLACEHOLDER_CHAR arriving in the input cannot be allowed to forge one.
-  // Blank mode is left byte-identical to the historical path.
-  const source =
-    options.quoted === "capture"
-      ? command.split(PLACEHOLDER_CHAR).join(" ")
-      : command;
-
-  const prepared = stripData(source, options.quoted, literals);
-
-  const located: LocatedSegment[] = [];
-  scanSegments(
-    prepared,
-    0,
-    0,
-    located,
-    options.quoted === "capture" ? SUBSTITUTION_FILLER : " ",
-  );
-  located.sort((a, b) => a.start - b.start);
-
-  return {
-    segments: located.map(({ text, depth, joiner }) => ({
-      text,
-      depth,
-      joiner,
-    })),
-    literals,
-  };
 }
 
 /**
