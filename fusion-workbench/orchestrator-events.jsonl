@@ -938,3 +938,8 @@
 {"ts":"2026-08-07T23:32:45","event":"scope_resolved","detail":"mode=issues; 3 of 31 open defects carry their own minimum fix; 2 reclassified as decisions"}
 {"ts":"2026-08-07T23:32:45","event":"queue_built","turn":1,"detail":"3 tasks, 0 blocked"}
 {"ts":"2026-08-07T23:32:45","event":"turn_start","turn":1,"detail":"3 ready tasks"}
+{"ts":"2026-08-07T23:45:00","event":"task_done","turn":1,"task":"D1","agent":"coder","detail":"fcb8d96 dead bin/fu exception and its stale comment removed"}
+{"ts":"2026-08-07T23:45:00","event":"task_done","turn":1,"task":"D2","agent":"coder","detail":"58329f6 clear-halt distinguishes no-workbench from not-halted; halt message carries the cd at 7 sites"}
+{"ts":"2026-08-07T23:45:00","event":"task_done","turn":1,"task":"D3","agent":"coder","detail":"c79e02a .rs and .java at all four extension-list sites"}
+{"ts":"2026-08-07T23:45:00","event":"turn_end","turn":1,"detail":"3 tasks resolved, 3 issues closed, 0 issues created"}
+{"ts":"2026-08-07T23:45:00","event":"session_end","detail":"3 defects fixed, 4 commits, 1030 tests green, 28 defects remain open"}
