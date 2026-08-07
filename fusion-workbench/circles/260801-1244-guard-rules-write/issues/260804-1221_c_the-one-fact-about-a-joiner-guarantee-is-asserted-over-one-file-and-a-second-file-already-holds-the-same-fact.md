@@ -135,3 +135,6 @@ cheap and does not wait on the restructure.
 
 Nothing is wrong in behaviour today, as this issue states and measured across 48,537
 commands. It stays open on the shape, not on a verdict.
+
+---
+Resolved: Der Gegenstand existiert nicht mehr. Die behauptende Zusicherung stand in `hooks/lib/__tests__/bash-mutation-guard.test.ts`, der `JoinerFacts`-Docstring in `hooks/lib/bash-mutation-guard.ts:1706-1730`, das zweite Zuhause der Tatsache in `hooks/lib/shell-parse.ts:678-686`. Erste beide Dateien sind mit `ba7ccda` gelöscht; `shell-parse.ts` ist im selben Commit auf das zurückgeschnitten, was die Branch-Politik braucht. Am Baum nachgeprüft in der Reconciliation 260807-1515 gegen HEAD `e684eae`: weder `JoinerFacts` noch `SegmentJoiner` kommen außerhalb von `hooks/dist/` noch vor. Es gibt keine Joiner-Tatsache mehr, die an zwei Orten stehen könnte.

@@ -123,3 +123,6 @@ Recorded because it bounds the urgency: **the verdict is right in both shells to
 row is load-bearing and correct; what is wrong is the reason written beside it, and this
 Circle has learned repeatedly that a row justified by the wrong reason is a row the next
 editor removes.
+
+---
+Resolved: Der Gegenstand existiert nicht mehr. `DIR_BUILTINS` und sein Kommentar standen in `hooks/lib/bash-mutation-guard.ts:1788-1792`, gelöscht mit `ba7ccda`. Am Baum nachgeprüft in der Reconciliation 260807-1515 gegen HEAD `e684eae`: kein Treffer für `DIR_BUILTINS` außerhalb `hooks/dist/`.

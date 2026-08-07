@@ -156,3 +156,82 @@ at high severity against a security control.
 
 The two adopted defects (plan steps 9 and 10) were never started. Both are independent of the
 decision above and could be done at any time.
+
+---
+
+## Coherence
+
+<!-- RECONCILER-OWNED -->
+
+**Verdict:** review-needed
+
+**Cadence note.** This verdict is taken at the Circle boundary, not at this file's own scope.
+The session began under `circles/260804-1205-shell-reachability-model` and continued under
+`circles/260807-0923-guard-misst-statt-orakelt` after the supersession on 260807-0923. The
+verdict is computed against the **successor's** Directive, which is the one the work was done
+under; this file remained the session's history file across the supersession, which is why the
+verdict lands here.
+
+**Edges:**
+
+- **Artifact↔Grounding: flagged.** 11 of 11 plan steps verified against the tree at HEAD
+  `e684eae`, suite re-run green (1002 tests, 30 files). Two marker drifts found and repaired
+  (plan `260807-0931` was `_o_` with every step `[DONE]`; decision `260807-1026` was `_a_` with
+  its own answer describing the landed implementation). Nine open findings whose subject had
+  vanished with the classifier were closed with tree evidence, all of them in the two already
+  closed guard Circles. **The flag is one substantive item, not the bookkeeping.** The Circle's
+  Grounding claims the protection becomes "eine vollständige Aussage" in place of a 21-hole
+  approximation. The measurement roots at `process.cwd()` without walking up
+  (`hooks/guard.ts:501`, `hooks/tracker.ts:272-275`, `enumerateProtected` at
+  `hooks/lib/protected-snapshot.ts:198-223`), while the configuration it uses does walk up
+  (`findWorkbenchRoot` in `hooks/lib/escalation.ts` and `hooks/lib/events.ts`). From a
+  subdirectory working directory the enumeration would find nothing under `rules/**` and nothing
+  would be restored — and where the retired classifier at least fell back on fail-closed, this
+  falls back on nothing. No test exercises the measurement from a subdirectory. This is
+  *inference from the source, not measured*; the standing finding
+  `circles/260801-1244-guard-rules-write/issues/260804-2100_*_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md`
+  labels its own reachability the same way and stays open. Remaining reviewer-filed issues on the
+  guard surface: 10 in `circles/260801-1244-guard-rules-write`, 2 in the active Circle.
+
+- **Artifact↔Directive: toward, and the named prohibition is honoured.** Eight commits
+  `bf48802..e684eae` (`2d55c66`, `327d0b6`, `309ee28`, `ba7ccda`, `436d78c`, `5a3cad4`,
+  `72543dd`, `e684eae`), all four Directive components delivered: the classifier removed outright
+  (`ba7ccda` deletes `hooks/lib/bash-mutation-guard.ts` and `hooks/lib/shell-reach.ts`), the
+  after-the-fact measurement in its place (`327d0b6`, `309ee28`), MECE anchored as section 4 of
+  `rules/critical-stance.md` with the mandatory `**Decidability:**` plan-head line
+  (`327d0b6`), and the release shipped as v6.0.0 with the tag (`e684eae`). **The Directive's
+  explicit prohibition — no coarse textual pre-warning, because the classifier would regrow from
+  it — is honoured, checked rather than assumed.** `input.tool_input.command` is read at exactly
+  one place in the shipped hooks (`hooks/guard.ts:333-334`) and is passed only to
+  `classifyGitCommand`. `guardBashCommand` (`hooks/guard.ts:328-406`) has two outcomes, the
+  branch deny and the override note, and no path-writing judgement. `hooks/tracker.ts` never
+  reads the command at all. **The bound, stated rather than glossed:** three modules that parse
+  command text survive — `shell-parse.ts` (segmenter), `command-word.ts` (command-word
+  resolution) and `git-branch-guard.ts` — and the Directive carved all three out by name, since
+  the branch policy asks a finite verb vocabulary rather than a path. `fs-locator.ts` survives
+  too, serving the rules-write exemption on the write-tool side, where the path arrives in the
+  argument. None of the four derives a written path from a command's text.
+
+- **Grounding↔Directive: consistent.** Six active decision records across `$SCAN_DECISIONS`
+  (four open, two answered-not-implemented), none conflicting with the Directive. The one inside
+  the Circle, `circles/260807-0923-guard-misst-statt-orakelt/decisions/260807-0945_*_integritaet-des-eskalationsspeichers.md`,
+  is a consequence the Directive accepted knowingly and deferred by name rather than a
+  contradiction of it; the user confirmed the waiver at plan approval. The binding decision
+  `circles/260804-1205-shell-reachability-model/decisions/260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`
+  stands `_i_` with both of its own side conditions verified. The five shared records
+  (`260719-2141_a_`, `260801-1020_a_`, `260806-1152_o_`, `260807-0158_o_`, and the new
+  `260807-1515_o_` on the reach of the project-language declaration) are unrelated to this
+  Directive.
+
+**Rebalance recommendation:** revise Artifact
+
+**What that means concretely, and what it does not.** It does not mean the Circle should stay
+open or that v6.0.0 was mis-shipped: the Directive is achieved and the release is sound. It means
+the Grounding's completeness claim is one unrun measurement ahead of the evidence. The cheap
+resolution is to run the case once — the guard from a subdirectory of a project whose
+`protectedPaths` carries `rules/**` — and then either move the measurement root to
+`findWorkbenchRoot`, or narrow the Grounding's wording to what the measurement actually
+establishes. Either closes the edge; guessing which one is right without the measurement is the
+failure mode this Circle exists to have stopped.
+
+Reconciliation log: `circles/260807-0923-guard-misst-statt-orakelt/history/260807-1526-reconciliation.md`

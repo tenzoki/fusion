@@ -83,3 +83,6 @@ finding arose from this Circle's Directive and its record stays in this Circle's
 
 The open question at § "Is there a live escape behind it?" is untouched and still
 unverified.
+
+---
+Resolved: Der Gegenstand existiert nicht mehr. Beide Textstellen (`hooks/lib/bash-mutation-guard.ts:1960`/`:1963`, der `unmodelled`-Docstring, und `:1521-1522`, der `ShellState`-Docstring) lagen in der mit `ba7ccda` gelöschten Datei. Am Baum nachgeprüft in der Reconciliation 260807-1515 gegen HEAD `e684eae`: `unmodelled` kommt im Produktivcode nur noch einmal vor, in `hooks/lib/rules-write-exemption.ts:94`, und dort in einem Satz über die Regel-Ausnahme, nicht über einen Erkenner-Zustand. `ShellState` existiert nicht mehr.

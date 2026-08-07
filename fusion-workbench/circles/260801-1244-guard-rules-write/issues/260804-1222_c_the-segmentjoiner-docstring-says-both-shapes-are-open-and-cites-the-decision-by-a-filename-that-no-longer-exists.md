@@ -91,3 +91,6 @@ one docstring region" this issue warns about does not happen.
 The marker-in-a-citation half is the class
 `shared/issues/260802-1740_o_a-citation-path-carrying-a-state-marker-dies-on-ordinary-progress.md`
 describes, and it stays that record's to generalise.
+
+---
+Resolved: Der Gegenstand existiert nicht mehr. `hooks/lib/shell-parse.ts:128-131` trägt keinen `SegmentJoiner`-Docstring mehr, weil `SegmentJoiner` mit `ba7ccda` aus der Datei entfallen ist — der Schnitt ließ nur stehen, was `git-branch-guard.ts` und `command-word.ts` importieren. Am Baum nachgeprüft in der Reconciliation 260807-1515 gegen HEAD `e684eae`: kein Treffer für `SegmentJoiner` außerhalb `hooks/dist/`. Die verwesende Zitierform, die dieser Befund als zweiten Punkt nennt, ist inzwischen an anderer Stelle als Konvention gelöst (`circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md`, Wildcard-Form) und durch `hooks/lib/__tests__/reference-resolution-lint.test.ts` maschinell geprüft.

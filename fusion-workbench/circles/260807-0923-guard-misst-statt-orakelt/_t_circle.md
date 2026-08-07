@@ -103,6 +103,31 @@ Buchführung zu diesem Circle hat der Guard einen Befehl des Orchestrators block
 Heredoc, dessen Zeilenumbrüche als Segmenttrenner gelesen wurden. Fehlalarm Nummer 18, in der
 Sitzung, die den Mechanismus abschafft.
 
+**Nachtrag 260807-1601 (coder): die „vollständige Aussage" ist jetzt gemessen, und sie war es
+vorher nicht.** Die Directive setzt der 21-Löcher-Näherung eine vollständige Aussage entgegen.
+Diese Gegenüberstellung meint die *Route* — welchen Weg eine Schreiboperation zur Datei nimmt —
+und für Routen gilt sie. Sie schwieg über eine zweite Achse: das Koordinatensystem, in dem die
+Muster überhaupt gelesen werden.
+
+Nachgemessen aus einem Unterverzeichnis, durch die echten Hooks
+(`hooks/lib/__tests__/protected-snapshot-subdirectory.test.ts`): die Messung war dort
+wirkungslos. Eine Shell hat `rules/x.md` in der Projektwurzel überschrieben, die Datei blieb
+überschrieben, kein Rollback, kein Halt, kein Ereignis. Zugleich wurde ein `sub/rules/y.md`
+zurückgeschrieben, das auf der Schutzliste des Projekts unter keiner Schreibweise steht. Der
+Guard schützte ein Verzeichnis, das es nicht geben muss, und ließ das ungeschützt, das es gibt.
+
+Behoben, indem die Messwurzel auf `findWorkbenchRoot()` gezogen wurde — dieselbe Wurzel, die die
+Konfiguration schon benutzte —, und die Stilllegung im eigenen Repo mit ihr, sonst hätte der
+Guard die Arbeit eines fusion-Entwicklers aus `fusion-workbench/` heraus zurückgeschrieben. Die
+Directive-Aussage bleibt damit stehen; sie ruht jetzt auf einer Messung statt auf einer
+Auslassung.
+
+**Ein Rest, gemessen und stehengelassen:** die *Vorab*-Verweigerung der Schreibwerkzeuge löst
+ihre Pfade weiterhin gegen cwd auf. Aus einem Unterverzeichnis lässt sie einen `Edit` auf eine
+geschützte Datei der Wurzel durch, und erst die Messung fängt ihn ab — Schutz gleich, Warnung
+später. Nicht angefasst, weil das eine Verweigerungs-Änderung wäre und die Datei ohnehin gedeckt
+ist. Festgehalten in `260804-2100`.
+
 ## Dependencies
 
 Keine. Der Circle hängt an nichts Offenem, und nichts Offenes hängt an ihm.

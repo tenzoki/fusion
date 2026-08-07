@@ -106,8 +106,19 @@ export function trackerEntry(): GuardEntry {
   return hookEntry("tracker");
 }
 
-/** Shared resolution for both hook entry points. See `guardEntry`. */
-function hookEntry(name: "guard" | "tracker"): GuardEntry {
+/**
+ * How to spawn the SessionStart hook.
+ *
+ * Its whole subject is `process.cwd()`, so every case has to be a fresh
+ * subprocess with a real working directory — the same discipline `runGuard`
+ * needs for the cached self-detect answer, arrived at from the other side.
+ */
+export function sessionStartEntry(): GuardEntry {
+  return hookEntry("session-start");
+}
+
+/** Shared resolution for all three hook entry points. See `guardEntry`. */
+function hookEntry(name: "guard" | "tracker" | "session-start"): GuardEntry {
   const mode = process.env.FUSION_GUARD_ENTRY ?? "tsx";
 
   if (mode === "dist") {
@@ -597,6 +608,65 @@ export function runToolCall(
   effect();
   const post = runTracker(root, toolName, toolInput, overrides);
   return { pre, post };
+}
+
+/* ------------------------------------------------------------------ *
+ * The SessionStart side
+ * ------------------------------------------------------------------ */
+
+/** What `session-start.ts` wrote to stdout. */
+export interface SessionStartResult {
+  hookSpecificOutput?: {
+    hookEventName?: string;
+    systemMessage?: string;
+  };
+}
+
+/**
+ * Spawn the SessionStart hook as a real subprocess with `cwd` set to `dir`, and
+ * return the parsed verdict.
+ *
+ * `dir` is an ARBITRARY directory rather than a `Project`, because the case
+ * that matters most is a directory that is not a project root — a subdirectory
+ * of one, or a directory with no workbench above it at all.
+ *
+ * No stdin payload is written. The hook reads nothing from stdin (it needs only
+ * its own working directory), which is also true of the two `printf` commands
+ * `hooks/hooks.json` already runs at SessionStart.
+ */
+export function runSessionStart(dir: string): SessionStartResult {
+  const entry = sessionStartEntry();
+
+  const run = spawnSync(entry.bin, entry.args, {
+    cwd: dir,
+    encoding: "utf-8",
+    env: childEnv(),
+  });
+
+  if (run.error) {
+    throw new Error(`harness could not spawn ${entry.label}: ${run.error}`);
+  }
+  if (run.status !== 0) {
+    throw new Error(
+      `${entry.label} exited ${run.status}\nstderr:\n${run.stderr}`,
+    );
+  }
+  // The hook fails OPEN like its two siblings, emitting `{}` after the marker
+  // line. Unchecked, a crashed hook would satisfy every "no warning" assertion
+  // in the suite — which is exactly two thirds of the cases.
+  if (run.stderr.includes("[session-start] Error:")) {
+    throw new Error(
+      `session-start failed open (fail-open path taken):\n${run.stderr}`,
+    );
+  }
+
+  try {
+    return JSON.parse(run.stdout) as SessionStartResult;
+  } catch {
+    throw new Error(
+      `${entry.label} emitted unparseable stdout: ${JSON.stringify(run.stdout)}`,
+    );
+  }
 }
 
 /* ------------------------------------------------------------------ *

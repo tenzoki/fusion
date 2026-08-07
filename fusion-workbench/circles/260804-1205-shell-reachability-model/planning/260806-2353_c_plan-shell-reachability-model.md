@@ -1,7 +1,7 @@
 # Implementation Plan: the shell reachability model
 
 **Date:** 2026-08-06
-**Status:** Approved by user 260807-0016. Constraint 1 confirmed in the planner's reading: every deny-to-allow transition needs individual real-shell justification; an unjustified one is a regression.
+**Status:** Superseded 260807-0923 — see the Reconciliation Log at the bottom. Steps 3 through 11 were never started and are no longer startable: the classifier they edit was deleted outright in `ba7ccda`. Approved by user 260807-0016. Constraint 1 confirmed in the planner's reading: every deny-to-allow transition needs individual real-shell justification; an unjustified one is a regression.
 **Revised 260807-0130**, repair pass against the diagram evaluation `reviews/260807-0002-conceptrev-plan-shell-reachability-model.md` (verdict tangled, diagram 2 only). Three findings resolved in place: the reach layer gains a **pending-edge rule** so a grammar word on its own line propagates (finding 2); diagram 2 is redrawn total and disjoint (finding 1); the closing-word vocabulary is settled as a second, separately purposed set (finding 3). Two consequences the findings forced out: the layer moves to its own module rather than into the parser, because the import it was told to make would close a module cycle, and the S1 corpus needs a spelling dimension it does not have. Step numbering, the dependency graph and step 1 are untouched.
 **Spec:** none — planned from the Circle record `circles/260804-1205-shell-reachability-model/_t_circle.md` and option 2 of `circles/260801-1244-guard-rules-write/decisions/260804-0947_i_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`
 **Executors:** `coder` (every step; no structured-data file is touched, so `ontocoder` has nothing to own here)
@@ -393,3 +393,21 @@ Level 4 is the one that answers the Circle's constraints; levels 1 to 3 are what
 ## Before starting
 
 Run `fusion --update` and restart the session. The work-tree preference covers `bin/fusion-rules` and `bin/fusion-paths` only; the hooks themselves always run from the installed copy and are pinned for the whole session, so a stale install means stale guard behaviour while the guard's own sources are being edited. This is behaviour rule (a) of decision `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_veraltete-regeln-im-eigenen-repo-melden-oder-umgehen.md`, and it applies to every step from S1 onward.
+
+## Reconciliation Log
+
+**260807-1515 (reconciler, Domain `code`) — Plan auf `_c_`, Status `Superseded`. Abgelöst, nicht abgearbeitet.**
+
+Geprüft gegen HEAD `e684eae` (Tag `v6.0.0`), nicht gegen die Statuszeilen des Plans.
+
+| Schritt | Aktenlage | Am Baum |
+|---|---|---|
+| 1 | `[DONE]`, Commit `3dc5014` (Messinstrument) | Die vier Dateien, die er anlegte, existieren nicht mehr: `helpers/reachability-corpus.ts`, `reachability-corpus.test.ts`, `helpers/shell-witness.ts`, `fixtures/mutation-verdicts-head.json`. Vorwärts abgeräumt in `436d78c`. |
+| 2 | umgesetzt, Commit `9a24c9b` (Erreichbarkeitsschicht) | `hooks/lib/shell-reach.ts` und `hooks/lib/__tests__/shell-reach.test.ts` existieren nicht mehr (`ba7ccda`); `GRAMMAR_TERMINATORS` ist im selben Commit aus `hooks/lib/command-word.ts` entfallen. |
+| 3–11 | unbegonnen | Nicht mehr startbar. Schritt 3 („re-key the guard's two questions onto the reach edge") und Schritt 4 bearbeiten `hooks/lib/bash-mutation-guard.ts`, mit `ba7ccda` gelöscht (3.351 Zeilen). |
+
+**Warum `_c_` und nicht ein eigener Marker.** Das Planungs-Vokabular kennt `_o_/_p_/_c_/_d_` und hat keinen Zustand für „abgelöst"; der Circle-Datensatz hat ihn (`_s_`), Pläne haben ihn nicht. `_o_` wäre die falschere Antwort, weil eine Zählung offener Pläne diesen sonst weiter als lebende Arbeit meldet. Der Statuskopf trägt daher das Wort, das der Marker nicht ausdrücken kann.
+
+**Ein Schritt dieses Plans beschreibt Arbeit, die weiter aussteht.** Schritt 9 („Clamp the two unbounded guard advisory details") hing nur organisatorisch an diesem Circle. Sein Gegenstand lebt: `circles/260801-1244-guard-rules-write/issues/260803-1352_*_two-guard-advisory-details-skip-the-200-char-clamp-and-render-a-row-nine-times-normal-height.md` steht weiter offen und ist in dieser Reconciliation gegen HEAD nachgemessen — die beiden Emissionen stehen jetzt bei `hooks/guard.ts:466` und `:697`, und ein dritter Schreiber ist in `hooks/tracker.ts:289` dazugekommen. Wer diesen Plan archiviert, verliert die Aufgabe nicht: sie hängt am Befund, nicht am Plan.
+
+**Der Circle selbst** trägt seit 260807-0923 den Marker `_s_`; seine Closure note nennt Grund und Bestand. Nachfolger: `circles/260807-0923-guard-misst-statt-orakelt/`.

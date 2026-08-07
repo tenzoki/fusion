@@ -30,8 +30,12 @@ The same hook carries one thing that is not observation-only — the protected-p
 Claude Code
   |
   +-- SessionStart
-  |     \-- exports FUSION_PLUGIN_ROOT to $CLAUDE_ENV_FILE
-  |         (also emits a systemMessage banner visible to the user)
+  |     +-- exports FUSION_PLUGIN_ROOT to $CLAUDE_ENV_FILE
+  |     +-- emits the "Fusion loaded" systemMessage banner (static printf)
+  |     \-- session-start.ts
+  |           |   Warns when the workbench root sits ABOVE the working
+  |           |   directory instead of at it. Silent otherwise.
+  |           \-- lib/workbench-root.ts   (the same upward walk every hook uses)
   |
   +-- PreToolUse (Write/Edit/MultiEdit/NotebookEdit/Bash)
   |     \-- guard.ts
@@ -69,7 +73,8 @@ The effective hook configuration:
       {
         "hooks": [
           { "type": "command", "command": "[ -n \"${CLAUDE_PLUGIN_ROOT}\" ] && echo \"export FUSION_PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}\" >> \"$CLAUDE_ENV_FILE\" || true" },
-          { "type": "command", "command": "printf '%s\\n' '{\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"systemMessage\":\"Fusion loaded. Orchestrator sessions: run /fusion:setup before any other work.\"}}'" }
+          { "type": "command", "command": "printf '%s\\n' '{\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"systemMessage\":\"Fusion loaded. Orchestrator sessions: run /fusion:setup before any other work.\"}}'" },
+          { "type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/dist/session-start.js" }
         ]
       }
     ],
@@ -110,10 +115,49 @@ These are the plugin's defaults. A consuming project overrides them per project,
 
 The hooks activate automatically on session start. No manual startup needed.
 
+### Start your session at the project root
+
+Start Claude Code in the directory that holds `fusion-workbench/`. Starting one or more
+levels below it leaves fusion working, but not everywhere — and the first screen of the
+session now says so:
+
+```
+fusion: restart this session at the project root.
+
+  project root:      /home/you/acme
+  working directory: /home/you/acme/fusion-workbench
+
+This session started below the project root. Some of fusion's checks
+resolve against the working directory instead of the root, so from here
+they inspect the wrong directory and let through what they would
+otherwise stop. The workbench itself is found by walking up, so your
+files and settings are still read from the right place.
+```
+
+The split behind it is small: `lib/workbench-root.ts` walks up from the working directory
+looking for `fusion-workbench/.fusion-setup`, so the root it finds is either the working
+directory itself or an ancestor of it. Found at the working directory, or not found at all
+(not a fusion project), the hook stays silent. Found above it, you get the message.
+
+**What the warning does and does not do.** It changes no behaviour and blocks nothing. It
+exists because several of fusion's checks resolve against the working directory rather than
+the project root — the PreToolUse write-tool deny (`lib/project-relative.ts`) and the
+plugin-repo detection (`lib/self-detect.ts`, `bin/fusion-plugin-cwd`) among them — and from
+a subdirectory each of those inspects a directory that is not the project's. Teaching each
+one to walk up separately would be several special cases with several chances to disagree.
+One message at the moment the working directory is chosen, and still cheap to change, makes
+the assumption they share audible instead.
+
+The protected-path *measurement* is not among them: it anchors at the workbench root and is
+unaffected by where the session started (`lib/protected-snapshot.ts`, `measurementRoot`).
+So a protected path is still restored from a subdirectory. What you lose is the clean
+refusal *before* the write.
+
 ## Files
 
 | File | Purpose | Committed? |
 |------|---------|------------|
+| `session-start.ts` | SessionStart hook — warns when the session started below the project root. See [Start your session at the project root](#start-your-session-at-the-project-root) | Yes |
 | `guard.ts` | PreToolUse hook — fingerprints the protected paths, then checks and blocks writes | Yes |
 | `tracker.ts` | PostToolUse hook — fingerprints the protected paths again, restores whatever changed and raises the halt; then records changes and detects churn | Yes |
 | `clear-halt.ts` | Manual halt reset utility | Yes |
@@ -129,7 +173,7 @@ The hooks activate automatically on session start. No manual startup needed.
 | `lib/churn.ts` | Churn heatmap tracker | Yes |
 | `lib/cross-file.ts` | Cross-file ping-back tracker (paired-touch / circular edit detector) | Yes |
 | `lib/workbench-root.ts` | Walks up from cwd to find `fusion-workbench/.fusion-setup` (single source of truth for workbench presence in TS) | Yes |
-| `lib/self-detect.ts` | Detects when cwd is the fusion plugin's own repo so the **write** guard stands down — the write tools and the protected-path measurement alike, since the protected paths are what a fusion developer edits here (the git branch-switch policy stays active even here) | Yes |
+| `lib/self-detect.ts` | Detects the fusion plugin's own repo so the **write** guard stands down — the write tools and the protected-path measurement alike, since the protected paths are what a fusion developer edits here (the git branch-switch policy stays active even here). Two entry points, on purpose: `isFusionPluginCwd()` asks about cwd for the write tools, `isFusionPluginRoot(dir)` asks about a named directory so the measurement can ask about the workbench root it walked up to | Yes |
 | `lib/shell-parse.ts` | The shell lexer the branch policy consumes: strips data regions (quotes, heredoc bodies), splices backslash line continuations, segments on `;`/`&&`/`\|\|`/`\|`/`&`/newline, recurses into `$(…)` and backticks, tokenizes. Only the `blank` mode survives (quoted content erased, so a quoted `git switch` is inert prose); the `capture` mode and the per-segment joiner went with the mutation classifier that needed them | Yes |
 | `lib/command-word.ts` | Which token of a segment names the program: skips env assignments, shell grammar words (`if`, `while`, `do`, …) and wrapper programs (`sudo`, `exec`, `xargs`, …), and resolves quoting, a path and a backslash escape. `sudo git switch main`, `if git switch main; then :; fi` and `\git switch main` therefore read as the `git` they are | Yes |
 | `lib/git-branch-guard.ts` | Branch/worktree classifier — the git branch-switch policy, and the only classifier left | Yes |
@@ -201,7 +245,9 @@ What replaced it asks a decidable question — *has a protected path changed?* �
 
 **What the measurement does not reach.** Two bounds belong to the mechanism and are stated in `rules/protected-path-discipline.md` too, because an agent has to know them: the change happens *before* it is seen, so whatever the write set off in between (a watcher that reloaded, a build that started) is not undone with it; and a read is not a change, so a command that carries a protected file's content somewhere else trips nothing — which is true of any list-based guard rather than a gap this one could close. Two further residuals are the measurement's own. **Parallel tool calls** interleave the single snapshot file, so a change can be attributed to the wrong call or missed entirely; Claude Code offers no per-call correlation key in the hook payload, so this is stated rather than solved, and the exposure is under-reporting — a change that IS seen is always a real change to a protected path, so the revert is never wrong when it fires. A **symlinked directory** is skipped rather than walked (following one invites a cycle), so a link planted to reach outside the protected tree is not watched at its far end; a symlinked *file* inside a protected directory is fingerprinted by its target's content, so replacing what it points at is measured.
 
-**Where it stands down.** The whole measurement is skipped when cwd is the fusion plugin's own repository, exactly as the write tools are: there the protected paths — `agents/**`, `rules/**`, `skills/**`, the plugin manifest — are the work rather than the thing being protected, and reverting them would destroy a developer's own edits. `guard.ts` writes no snapshot there either, so there would be nothing to compare against in any case. The git branch policy is not skipped.
+**Where it stands down.** The whole measurement is skipped when the fusion plugin's own repository is what the workbench root resolves to, for the same reason the write tools stand down there: the protected paths — `agents/**`, `rules/**`, `skills/**`, the plugin manifest — are the work rather than the thing being protected, and reverting them would destroy a developer's own edits. `guard.ts` writes no snapshot there either, so there would be nothing to compare against in any case. The git branch policy is not skipped.
+
+The question is asked of the **root**, not of cwd (`isFusionPluginRoot(root)` inside `measurementRoot()`), and that is not a detail. The write tools still ask it of cwd (`isFusionPluginCwd()`), which is why the two halves can disagree in one directory: a fusion developer whose session started in `fusion-workbench/`. Once the measurement root began walking up, leaving its stand-down at cwd would have meant reverting that developer's own files on every tool call — a new defect traded for the closed one. The two roots move together.
 
 The agent-facing statement of all of this is `rules/protected-path-discipline.md`, loaded into all sixteen agents at Setup. It is deliberately short — the rule, why the route to the file does not matter, the one exemption, and what to do instead — because with the classifier gone there is no longer a command grammar for an agent to learn.
 

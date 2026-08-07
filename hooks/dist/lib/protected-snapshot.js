@@ -82,6 +82,7 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync, } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { foldCase, matchesAnyFolded } from "./paths.js";
+import { isFusionPluginRoot } from "./self-detect.js";
 import { findWorkbenchRoot } from "./workbench-root.js";
 /**
  * The fingerprint of a path that does not exist.
@@ -321,15 +322,73 @@ export function restore(root, change) {
     writeFileSync(abs, Buffer.from(change.before, "base64"));
 }
 /* ------------------------------------------------------------------ *
+ * Where the measurement anchors
+ * ------------------------------------------------------------------ */
+/**
+ * The directory the protected patterns are matched against — or null when there
+ * is no measurement to take.
+ *
+ * ## Why this is the workbench root and not `process.cwd()`
+ *
+ * `guard.protectedPaths` is written in project-relative shapes: `rules/**`,
+ * `hooks/config.json`, `bin/monitor`. The project they are relative to is the
+ * one `findWorkbenchRoot` walks up to — that is where the workbench lives, where
+ * `fusion-guard.json` is read from, and where every other state module already
+ * writes. Anchoring the patterns at `process.cwd()` instead made the guard
+ * answer a different question from the configuration that feeds it, and the
+ * disagreement was not theoretical:
+ *
+ *   - From `<project>/sub`, `rules/**` enumerated NOTHING. A shell command that
+ *     rewrote the project's own `rules/x.md` left it rewritten — no revert, no
+ *     halt, no event, nothing said to the model.
+ *   - From that same `<project>/sub`, a `sub/rules/y.md` — a path the project's
+ *     list never named under any spelling — WAS enumerated, reverted and halted
+ *     on.
+ *
+ * So the guard protected a directory that need not exist while leaving the one
+ * that does unwatched. Both halves were measured through the real hooks before
+ * this root moved; both are pinned in
+ * `lib/__tests__/protected-snapshot-subdirectory.test.ts`.
+ *
+ * ## Null has two causes and they are deliberately one answer
+ *
+ * **No workbench.** The same no-op every other state module takes: a plain
+ * Claude session in a directory that never ran `/fusion:setup` must not
+ * bootstrap a stray workbench.
+ *
+ * **The workbench root IS the fusion plugin's own repository.** The measurement
+ * is a write-guard concern and stands down here exactly as the write tools do:
+ * `agents/**`, `rules/**` and `skills/**` are the work in this one repository,
+ * not the thing being protected, and reverting them would destroy it.
+ *
+ * That second test is `isFusionPluginRoot(root)` and NOT `isFusionPluginCwd()`,
+ * and the difference is the whole reason this function exists. `isFusionPluginCwd`
+ * reads cwd with no upward walk, so a fusion developer whose session started in
+ * `fusion-workbench/` — the ordinary case — is not detected there. Moving the
+ * measurement root up while leaving the stand-down at cwd would have started
+ * reverting that developer's own edits: a new defect in exchange for the closed
+ * one. The two roots move together or not at all.
+ */
+export function measurementRoot() {
+    const root = findWorkbenchRoot();
+    if (root === null)
+        return null;
+    if (isFusionPluginRoot(root))
+        return null;
+    return root;
+}
+/* ------------------------------------------------------------------ *
  * Persistence — the seam between the two hooks
  * ------------------------------------------------------------------ */
 /**
  * `<project-root>/fusion-workbench/.guard-state/protected-snapshot.json`, or
  * null when no workbench is set up.
  *
- * The same no-workbench no-op every other state module takes: a plain Claude
- * session in a directory that never ran `/fusion:setup` must not bootstrap a
- * stray workbench, so the whole measurement stands down there.
+ * Deliberately `findWorkbenchRoot` and not `measurementRoot`: this is where the
+ * file LIVES, which is a workbench question, while `measurementRoot` also
+ * answers whether a measurement happens at all. Where both are non-null they are
+ * the same directory by construction, so the snapshot is always stored under the
+ * root its own paths are relative to.
  */
 function snapshotPath() {
     const root = findWorkbenchRoot();

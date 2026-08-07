@@ -145,3 +145,6 @@ answers *probably its own* — it is an environment-variable problem, not a reac
 problem. That is a user decision. Meanwhile the residual is citable from both rule layers
 and from the forensics analysis, which is the bound the plan's risk table relies on: a
 residual in a document is findable, a closed issue is not.
+
+---
+Resolved: Der Gegenstand existiert nicht mehr, in beiden Hälften. Der Erkenner, der die Umgebung nicht las (`verbOperands`, `resolveGit` in `hooks/lib/bash-mutation-guard.ts`), ist mit `ba7ccda` gelöscht; `command-word.ts` bleibt zwar, löst aber nur noch das Programmwort für die Branch-Politik auf und entscheidet über keinen geschriebenen Pfad. Die Residuen-Listen in `rules/protected-path-discipline.md` und `README-hooks.md`, die diesen Fall namentlich führten, sind mit `436d78c` neu geschrieben: die Regeldatei steht bei 53 Zeilen und beschreibt die Messung, nicht mehr 21 Löcher. Am Baum nachgeprüft in der Reconciliation 260807-1515 gegen HEAD `e684eae`. Sachlich ist der Fall damit gelöst und nicht nur weggeräumt: `GIT_WORK_TREE=` verlegt den Schreibvorgang weiterhin, aber die Messung sieht die veränderte Datei danach, gleich auf welchem Weg sie verändert wurde.

@@ -100,3 +100,126 @@ fail-closed to the coordinate space the list can reach, and saying it in the den
 Neither is this step's, and the second is the one this record calls cheapest and most
 valuable. What is discharged is the documentation half, in the file every agent loads. The
 deny an agent actually meets still does not explain itself.
+
+---
+
+**Reconciliation 260807-1515 (reconciler, Domain `code`) — bleibt `_o_`, und die verbleibende Hälfte wiegt jetzt schwerer als vorher.**
+
+Der Befund hatte zwei Hälften. Die zweite ist verschwunden, die erste ist geblieben und trägt seit v6.0.0 den gesamten Schutz.
+
+**Verschwunden:** „while the fail-closed rule still denies". Die Fail-Closed-Regel war Teil des Erkenners in `hooks/lib/bash-mutation-guard.ts`, gelöscht mit `ba7ccda`. Auf der Shell verweigert vor der Ausführung nichts mehr. Der `!isFusionPluginCwd()`-Gate auf der Bash-Mutations-Politik, den der Kopf unter `**Affects:**` nennt, ist mit derselben Politik entfallen.
+
+**Geblieben, und am Baum nachgeprüft gegen HEAD `e684eae`:** die Schutzliste wird weiterhin gegen cwd aufgelöst, und jetzt an der Stelle, an der der Schutz tatsächlich stattfindet.
+
+- `hooks/guard.ts:501` — `saveSnapshot(takeSnapshot(process.cwd(), config.guard.protectedPaths))`.
+- `hooks/tracker.ts:272-275` — `const root = process.cwd(); takeSnapshot(root, config.guard.protectedPaths)`.
+- `enumerateProtected` (`hooks/lib/protected-snapshot.ts:198-223`) läuft von genau dieser Wurzel und prüft die Muster gegen wurzel-relative Pfade.
+
+Das heißt: läuft der Hook mit cwd in einem Unterverzeichnis, findet die Aufzählung unter `rules/**` nichts, der Fingerabdruck ist leer, die Differenz ist leer, und es wird nichts zurückgeschrieben. Vorher fiel dieselbe Schwäche wenigstens noch auf die Fail-Closed-Seite zurück und verweigerte; jetzt fällt sie auf gar nichts zurück.
+
+**Die Konfiguration läuft dabei aufwärts, die Messung nicht.** `hooks/lib/escalation.ts` und `hooks/lib/events.ts` importieren beide `findWorkbenchRoot` und finden die Workbench durch Aufwärtslaufen; `guard.ts` und `tracker.ts` benutzen für die Messwurzel `process.cwd()` ohne Aufwärtslauf. Die Asymmetrie ist die eigentliche Ursache und sie ist an einer Stelle behebbar.
+
+**Ehrlich zum Beweisstand:** dass die Aufzählung aus einem Unterverzeichnis leer bleibt, ist aus dem Quelltext **abgeleitet** und nicht gemessen. Der Befund selbst hat seine Erreichbarkeit schon als „inference, not measured" ausgewiesen, und das gilt unverändert. Gesucht und nicht gefunden: kein Fall unter `hooks/lib/__tests__/protected-snapshot*.ts` startet aus einem Unterverzeichnis. Der einzige Unterverzeichnis-Block der Suite, `guard-rules-write-integration.test.ts:1389` („the self-protection floor reached from a subdirectory"), prüft die Konfigurationsauflösung über `findWorkbenchRoot` und ausdrücklich nicht die Messung.
+
+**Zu tun wäre**, in dieser Reihenfolge: den Fall einmal messen (Hook aus `sub/` gegen ein Projekt mit `rules/**` in der Schutzliste), und dann entscheiden, ob die Messwurzel auf `findWorkbenchRoot` umzieht.
+
+---
+
+**Messung 260807-1601 (coder) — beides erledigt, der Befund bleibt `_o_` mit deutlich engerem Rest.**
+
+Beide Schritte der obigen Reihenfolge sind gegangen. Die Ableitung stimmte.
+
+**Gemessen, vor jeder Korrektur**, durch die echten Hooks als Unterprozesse gegen ein echtes
+Fremdprojekt, cwd `<projekt>/sub`, mit der ausgelieferten Schutzliste
+(`hooks/lib/__tests__/protected-snapshot-subdirectory.test.ts`, in seiner ersten Fassung):
+
+```
+/bin/sh schreibt <projekt>/rules/x.md      Datei bleibt verändert. Kein Rollback,
+                                           kein Halt, kein guard_block, kein Satz
+                                           an das Modell.
+Fingerabdruck vor dem Aufruf               cwd: <projekt>/sub, kein Eintrag für
+                                           rules/x.md; settings.json und
+                                           .claude-plugin/plugin.json beide ABSENT.
+Zustandsschreibung                         landete in <projekt>/fusion-workbench/,
+                                           nicht in sub/ — die Konfiguration lief
+                                           also aufwärts, die Messung nicht.
+
+/bin/sh schreibt <projekt>/sub/rules/y.md  ZURÜCKGESCHRIEBEN und Halt, obwohl der
+                                           Pfad auf der Schutzliste des Projekts
+                                           unter keiner Schreibweise steht.
+```
+
+Das ist **Ausgang 2**, und die zweite Zeile ist die eigentliche Pointe: es fehlt nicht nur
+etwas, es geschieht auch etwas Falsches an seiner Stelle. Der Guard schützte ein `rules/`, das
+es nicht geben muss, und ließ das ungeschützt, das es gibt — genau die Form, die die Disposition
+vom 2026-08-05 schon aus dem gelöschten Klassifizierer kannte.
+
+**Korrigiert.** Die Messwurzel ist `measurementRoot()` in `hooks/lib/protected-snapshot.ts`, und
+das ist `findWorkbenchRoot()` — dieselbe Wurzel, die die Konfiguration schon benutzte. `guard.ts`
+und `tracker.ts` lesen beide von dort statt von `process.cwd()`.
+
+**Die Stilllegung musste mitziehen, und das war kein Nebenaspekt.** `isFusionPluginCwd()` prüft
+cwd ohne Aufwärtslauf und antwortet aus `<fusion-repo>/fusion-workbench` mit *nein* — dem
+Verzeichnis, in dem eine fusion-Sitzung gewöhnlich startet. Wäre nur die Messwurzel
+aufwärtsgezogen worden, hätte der Guard ab sofort die `rules/`- und `agents/`-Bearbeitungen
+eines fusion-Entwicklers zurückgeschrieben: ein neuer Defekt im Tausch gegen den geschlossenen.
+`isFusionPluginRoot(dir)` ist die parametrisierte Form, `measurementRoot()` wertet sie an der
+Messwurzel aus, und der dritte Fall der Testdatei misst das statt es anzunehmen.
+
+**Warum der Befund `_o_` bleibt.** Der Rest ist echt, gemessen, und steht in derselben Datei,
+die dieser Kopf unter `**Affects:**` nennt. `hooks/lib/project-relative.ts` (`projectRelative`)
+löst die Pfade der **Vorab-Verweigerung** der Schreibwerkzeuge weiterhin gegen `process.cwd()`
+auf. Gemessen:
+
+```
+Edit <projekt>/rules/x.md aus <projekt>/sub    pre: {} — erlaubt, die Sperre sieht ihn nicht
+                                               danach: zurückgeschrieben + Halt durch die Messung
+```
+
+Der Schutz ist also gleich, die Warnung kommt später: aus der Wurzel bekommt ein Agent ein
+sauberes „verweigert" *vor* dem Schreiben, aus einem Unterverzeichnis schreibt er, es wird
+zurückgerollt und der Guard hält an. Bewusst nicht angefasst — das wäre eine Änderung auf der
+Verweigerungsseite, und die Datei ist ohnehin gedeckt. Als vierter Fall der Testdatei
+festgehalten, damit der Satz gemessen ist und nicht geraten.
+
+Beide Klauseln des Titels sind damit falsch geworden — Fail-Closed gibt es nicht mehr, und die
+Schutzliste greift wieder. Was den Befund offen hält, ist einzig die verbliebene
+Koordinaten-Asymmetrie auf der Vorab-Sperre.
+
+**Textschicht nachgezogen:** `rules/protected-path-discipline.md` benannte das Koordinatensystem
+gar nicht und trug seine Vollständigkeitsaussage damit auf einer stillschweigenden Annahme.
+Der Abschnitt `## The rule` sagt jetzt, dass die Muster gegen die Projektwurzel gelesen werden,
+in beide Richtungen, und dass das gemessen ist.
+
+---
+
+**Sichtbarkeit 260807-1626 (coder) — der Rest ist unverändert, aber nicht mehr still. BLEIBT `_o_`.**
+
+Der Auslöser war eine Nutzeranforderung im Chat, nicht dieser Befund: „aus einem
+Unterverzeichnis zu starten macht keinen Sinn, eine deutliche Warnung wäre hilfreich."
+
+`hooks/session-start.ts` warnt seit heute bei SessionStart als `systemMessage`, sobald
+`findWorkbenchRoot()` eine Wurzel **oberhalb** des Arbeitsverzeichnisses findet statt an ihm,
+und nennt beide Verzeichnisse. Kein Workbench oberhalb, oder Start an der Wurzel: still.
+Sechs Fälle in `hooks/lib/__tests__/session-start-subdirectory.test.ts`, jeder ein echter
+Unterprozess; falsifiziert.
+
+**Was das an diesem Befund ändert: nichts am Verhalten.** `hooks/lib/project-relative.ts`
+löst die Pfade der Vorab-Verweigerung weiterhin gegen `process.cwd()` auf, genau wie in der
+Messung vom 260807-1601 festgehalten. Der Befund bleibt offen und behält seinen Rest.
+
+**Was es ändert: die Erreichbarkeit der Bedingung für den Menschen.** Die Auslösebedingung
+dieses Befunds — Sitzung unterhalb der Projektwurzel — war bisher von außen nicht erkennbar;
+diese Sitzung selbst lief in `<repo>/fusion-workbench` und hätte es nur durch Nachrechnen
+gemerkt. Jetzt steht sie auf dem ersten Bildschirm.
+
+**Warum eine Warnung und nicht die Reparatur.** Dieselbe Annahme tragen mindestens vier
+Stellen (die Vorab-Sperre hier, `isFusionPluginCwd()`, `bin/fusion-plugin-cwd` und darüber
+`bin/fusion-rules`/`bin/fusion-paths`). Vier getrennte Aufwärtsläufe wären vier Sonderfälle
+mit vier Gelegenheiten, sich zu widersprechen. Die Warnung ersetzt keinen davon; sie macht
+die geteilte Annahme an der einen Stelle hörbar, an der das Arbeitsverzeichnis noch billig zu
+ändern ist. Die Entscheidung, ob die Vorab-Sperre selbst aufwärtsläuft, steht weiterhin aus
+und ist das, was diesen Befund offen hält.
+
+Sitzungsprotokoll:
+`circles/260807-0923-guard-misst-statt-orakelt/history/260807-1626-sessionstart-warnt-bei-start-unterhalb-der-projektwurzel.md`

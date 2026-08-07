@@ -49,6 +49,29 @@ Die Frage lautet daher nicht "soll `.guard-state/` zurück auf die Schutzliste" 
 Keine. Die vier Optionen sind hier gesammelt, nicht gewogen: eine belastbare Empfehlung setzte voraus, das Bedrohungsmodell zu klären, das dieser Circle nicht geklärt hat — nämlich ob der Halt gegen einen Agenten wirken soll, der die Umgehung nicht sucht, oder gegen einen, der sie sucht. Gegen den ersten trägt schon die heutige Lage; gegen den zweiten trägt keine der vier Optionen vollständig, solange der Agent eine Shell hat. Wer diese Frage aufnimmt, beantwortet zuerst diese.
 
 ---
+
+**Reconciliation 260807-1515 (reconciler, Domain `code`) — bleibt `_o_`, zu Recht.**
+
+Am Baum nachgeprüft gegen HEAD `e684eae`, statt der Aktenlage geglaubt:
+
+- Der Eintrag `fusion-workbench/.guard-state/**` steht nicht mehr in `guard.protectedPaths`. Er
+  kommt in `hooks/config.json` nur noch im Feld `_comment` vor, als Beschreibung des
+  Laufzeit-Zustands. Die Voraussetzung des Befunds gilt also weiter.
+- `hooks/lib/escalation.ts` ist unverändert der einzige Leser und Schreiber von
+  `escalation.json`, und ein fehlender Zustand liest sich weiter als "kein Halt". Keine der
+  vier Optionen ist gebaut worden.
+- Der Verzicht ist zusätzlich größer geworden, seit dieser Satz abgelegt wurde: seit `ba7ccda`
+  blockiert ein Halt die Shell überhaupt nicht mehr (Satz
+  `circles/260807-0923-guard-misst-statt-orakelt/decisions/260807-1026_*_verlust-des-bash-halts-auf-der-shell.md`,
+  seit dieser Reconciliation `_i_`). Ein Agent, der `escalation.json` löschen will, braucht dafür
+  also nicht einmal mehr an einem Schreibwerkzeug vorbei. Das ändert keine der vier Optionen,
+  aber es verschiebt das Bedrohungsmodell, das die `## Recommendation` als erste zu klärende
+  Frage benennt.
+
+Durchsucht nach einer Antwort, ohne Fund: `circles/260807-0923-guard-misst-statt-orakelt/analyses/`
+(leer), `circles/260807-0923-guard-misst-statt-orakelt/planning/` (der Plan legt die Frage
+ausdrücklich ab, statt sie zu beantworten), `shared/decisions/` und `shared/analyses/`.
+
 Answered:
 Implemented:
 Deferred:

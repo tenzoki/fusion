@@ -1,9 +1,9 @@
 # Umsetzungsplan: Der Guard misst, was sich geändert hat
 
 **Datum:** 2026-08-07
-**Status:** Vom Nutzer freigegeben am 260807-0945. Beide Schutzverzichte (Zustandsverzeichnis von der Schutzliste, kein Halt mehr auf der Shell) ausdrücklich bestätigt; die Halt-Integrität wird als eigene offene Frage abgelegt und nicht in diesem Circle gelöst. Der MECE-Teil bleibt Bestandteil.
+**Status:** Complete — alle elf Schritte `[DONE]`, ausgeliefert als v6.0.0 (`e684eae`, Tag `v6.0.0`). Nachgeprüft in der Reconciliation 260807-1515. Freigegeben wurde der Plan vom Nutzer am 260807-0945; beide Schutzverzichte (Zustandsverzeichnis von der Schutzliste, kein Halt mehr auf der Shell) waren dabei ausdrücklich bestätigt, und die Halt-Integrität ist als eigene offene Frage abgelegt und in diesem Circle nicht gelöst worden. Der MECE-Teil war Bestandteil und ist umgesetzt.
 **Spec:** keiner — geplant gegen den Circle-Datensatz `circles/260807-0923-guard-misst-statt-orakelt/_t_circle.md`
-**Bindende Entscheidung:** `circles/260804-1205-shell-reachability-model/decisions/260807-0825_a_should-the-guard-predict-shell-writes-or-enforce-them.md`, Option 3
+**Bindende Entscheidung:** `circles/260804-1205-shell-reachability-model/decisions/260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`, Option 3
 **Entscheidbarkeit:** Die tragende Frage lautet nach dem Umbau "hat sich eine geschützte Datei verändert?" und wird durch Vergleich zweier Fingerabdrücke beantwortet. Sie ist entschieden, nicht genähert. Die abgelöste Frage "wird dieser Befehl gleich schreiben?" war unentscheidbar; genau deshalb wechselt der Mechanismus statt der Näherung.
 
 ## Directive
@@ -245,7 +245,7 @@ flowchart TD
       diese beiden Module und sonst keine. Beschrieben in `README-hooks.md`
       unter "Rebuilding after TS changes".
 
-11. **Freigabe — menschliches Gate**
+11. [DONE] **Freigabe — menschliches Gate** — freigegeben vom Nutzer am 260807, ausgeliefert als **v6.0.0** statt der geplanten 5.11.0. Die Hauptversion war die Entscheidung des Nutzers, weil sich beobachtbares Verhalten ändert. Commit `e684eae`, Tag `v6.0.0`, beide Repositories gepusht (`38c5123..e684eae` und `938deaf..df8c053`). Der Marktplatz-Klon lag nicht am in `CLAUDE.md` dokumentierten Ort; der richtige Pfad steht dort jetzt, samt der Unterscheidung zwischen Arbeitsklon und Cache-Klon.
     - Ausführer: ontocoder (nach ausdrücklicher Freigabe durch den Nutzer)
     - Dateien: `.claude-plugin/plugin.json`, `<marktplatz>/.claude-plugin/marketplace.json`, `install.sh` (Kopfzeile), `README.md` (Pin-Beispiel)
     - Änderungen: **Gate.** Der Nutzer gibt frei, dann: Version in `plugin.json` erhöhen, Marktplatz-Klon rebasen und dort dieselbe Version setzen, beide Repositories committen und pushen, `v<version>` taggen und den Tag pushen, die beiden Pin-Beispiele auf die neue Version ziehen. Ohne diesen Schritt wirkt nichts davon in einem Konsumprojekt. Der Ablauf steht in `CLAUDE.md` unter "Release process"; er wird hier nicht dupliziert.
@@ -268,4 +268,28 @@ Die Suite ist der Nachweis, und `hooks/lib/__tests__/helpers/guard-harness.ts` i
 ## Offene Fragen
 
 - [x] Kann die PostToolUse-Antwort einen erklärenden Text an das Modell zurückgeben? **Ja, geklärt in S2 (260807-1026).** Der Hook-Vertrag von Claude Code führt für PostToolUse `hookSpecificOutput.additionalContext` und setzt es "next to the tool result", damit das Gespräch weiterläuft und Claude darauf reagieren kann. Gemessen gegen Claude Code 2.1.224 mit einem eigenen Probe-Hook: der Text kommt als System-Reminder `PostToolUse:Bash hook additional context: <text>` beim Modell an. Die Randbedingung der Entscheidung `260807-0825` ist damit **vollständig** erfüllt, nicht nur teilweise; der Rückfall auf Halt plus Ereignis wurde nicht gebraucht. Der Kopf von `tracker.ts` behauptete das Gegenteil und ist korrigiert: blockieren kann ein PostToolUse-Hook nicht, erklären schon.
-- [ ] Wie wird die Integrität des Eskalationsspeichers gesichert, nachdem `.guard-state/` von der Schutzliste fällt? S1 legt die Frage ab; beantwortet wird sie in diesem Circle nicht.
+- [ ] Wie wird die Integrität des Eskalationsspeichers gesichert, nachdem `.guard-state/` von der Schutzliste fällt? S1 legt die Frage ab; beantwortet wird sie in diesem Circle nicht. **Steht weiter offen** als `circles/260807-0923-guard-misst-statt-orakelt/decisions/260807-0945_*_integritaet-des-eskalationsspeichers.md`, mit vier Optionen und ohne Empfehlung. Bewusst nicht in diesem Circle gelöst.
+
+## Reconciliation Log
+
+**260807-1515 (reconciler, Domain `code`) — Plan auf `_c_`, alle elf Schritte am Baum bestätigt.**
+
+Geprüft gegen HEAD `e684eae` (Tag `v6.0.0`), nicht gegen die Statuszeilen des Plans.
+
+| Schritt | Behauptung | Am Baum nachgeprüft |
+|---|---|---|
+| S1 | `.guard-state/**` fällt von der Schutzliste | `grep guard-state hooks/config.json` findet den Eintrag nur noch im `_comment` als Beschreibung des Laufzeit-Zustands, nicht in `guard.protectedPaths`. Commit `2d55c66`. |
+| S2 | Messung: Fingerabdruck vorher, Vergleich nachher | `hooks/lib/protected-snapshot.ts` existiert (438 Zeilen); `hooks/guard.ts:68` importiert `saveSnapshot`/`takeSnapshot`, `hooks/tracker.ts:54-60` importiert `diffSnapshots`/`loadSnapshot`/`restore`/`takeSnapshot`. Commits `327d0b6`, `309ee28`. |
+| S3 | Regel-Ausnahme bekommt einen Einstieg für beobachtete Pfade | `isObservedRulePath` in `hooks/lib/rules-write-exemption.ts:602-610`, stellt Tor 1 und Tor 1b und nichts sonst. Commit `309ee28`. |
+| S4 | Der Klassifizierer fällt | `hooks/lib/bash-mutation-guard.ts` und `hooks/lib/shell-reach.ts` existieren nicht mehr. `hooks/guard.ts` enthält keinen `classifyBashMutation`-Aufruf; `guardBashCommand` liest den Befehlstext ausschließlich für `classifyGitCommand`. Commit `ba7ccda`. |
+| S5 | Tests und Messkorpus | Suite in dieser Reconciliation neu gefahren: **30 Dateien, 1002 Tests, alle grün**, 94 s. Commit `436d78c`. |
+| S6 | Textschicht | `rules/protected-path-internals.md` existiert nicht mehr; `rules/protected-path-discipline.md` beschreibt die Messung. Commit `436d78c`. |
+| S7 | Emissions-Goldfixture | Commit `5a3cad4`. |
+| S8 | MECE als vierter Abschnitt in `rules/critical-stance.md` | Abschnitt `## 4. A case split is disjoint and complete — or the question is cut wrong` steht dort, mit der Pflichtzeile `**Decidability:**` im Plankopf. Commit `327d0b6`. |
+| S9 | Buchführung | Drei Befunde `_c_` mit Belegzeile, Entscheidungssatz `260807-0825` auf `_i_`. In dieser Reconciliation nachgezählt und bestätigt. Commit `5a3cad4`. |
+| S10 | Vorprüfung im Fremdprojekt | Commit `72543dd`; `hooks/package.json` baut mit `rm -rf dist && tsc`, `hooks/dist/lib/` enthält keine Waisen des Klassifizierers mehr. |
+| S11 | Freigabe | `.claude-plugin/plugin.json` steht auf `6.0.0`, `git tag --points-at HEAD` liefert `v6.0.0`. Commit `e684eae`. |
+
+**Eine Abweichung zwischen Plan und Baum, keine Beanstandung.** Der Plan sagt in `## Ausgangslage`, `command-word.ts` und `fs-locator.ts` blieben stehen, weil sie anderen Herren dienen. Das trifft zu und ist der einzige Rest an Befehlstext-Analyse im ausgelieferten Code: `command-word.ts` löst das Programmwort für `git-branch-guard.ts` auf, `fs-locator.ts` bedient die Regel-Ausnahme auf der Schreibwerkzeug-Seite. Keiner von beiden leitet aus einem Befehlstext einen geschriebenen Pfad ab.
+
+**Zitierform korrigiert.** Die Kopfzeile `**Bindende Entscheidung:**` nannte `260807-0825_a_*`; der Satz steht seit `5a3cad4` auf `_i_`. Auf die Wildcard-Form `_*_` gezogen, wie sie `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md` festlegt. Dieselbe Verwesung stand in Schritt 9 und Schritt 10 des Plans (`260807-0251_o_*`, `260807-0252_o_*`, `260807-0930_o_*`, `260807-1202_o_*`) — dort bewusst **nicht** angefasst: das sind Arbeitsanweisungen, die den damaligen Zustand beschreiben, und sie umzuschreiben hieße die Aufgabenstellung im Nachhinein zu verändern.

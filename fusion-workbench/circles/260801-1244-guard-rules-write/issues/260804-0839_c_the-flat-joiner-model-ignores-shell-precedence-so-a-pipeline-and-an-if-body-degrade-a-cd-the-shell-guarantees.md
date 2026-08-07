@@ -137,3 +137,6 @@ actually carries that it has met a cost and not a hazard.
 **Counted once.** This finding stays in this Circle's issue store; the reference to
 `260804-1205` is a citation, not a move — the Origin Rule's second corollary, reach is
 cited, never placed.
+
+---
+Resolved: Der beschriebene Über-Verweigerer existiert nicht mehr, und zwar weil die Verweigerung selbst entfallen ist. Die betroffene Stelle `hooks/lib/bash-mutation-guard.ts:2465` liegt in einer mit `ba7ccda` gelöschten Datei; `SegmentJoiner` kommt in `hooks/lib/shell-parse.ts` nicht mehr vor (in der Reconciliation 260807-1515 gegen HEAD `e684eae` gegrept, kein Treffer außerhalb `hooks/dist/`). Auf der Shell verweigert der Guard seit v6.0.0 gar nichts mehr vor der Ausführung; die vier Befehlsformen dieses Befunds (`cd hooks && npx tsc | tee typecheck.log`, `if cd hooks; then rm -rf dist; fi` und ihre Geschwister) laufen durch. Geschützte Pfade werden nach dem Aufruf gemessen und zurückgeschrieben. Der Befund ist damit nicht gelöst, sondern gegenstandslos — das ist die ausdrückliche Folge der Entscheidung `circles/260804-1205-shell-reachability-model/decisions/260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`, Option 3, deren Datenlage dieser Befund mitgetragen hat.

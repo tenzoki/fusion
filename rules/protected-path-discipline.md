@@ -12,6 +12,8 @@ The sibling rule `git-branch-discipline.md` covers the guard's other `Bash` poli
 
 The match is on the path's **text**, and it **folds case** unconditionally on every platform, so `AGENTS/coder.md` is watched exactly as `agents/coder.md` is.
 
+The patterns are read relative to the **project root** — the directory holding `fusion-workbench/`, the same one the configuration is loaded from — and not relative to wherever your session happens to have started. So `rules/**` means the project's own `rules/` directory whether the session began at the root or three levels below it, and a `rules/` that happens to sit inside your working directory is not protected by that pattern unless the project's own list names it. This is measured from a subdirectory in both directions, not assumed; it was not always true, and while it was not, a session started one directory down watched nothing the list named.
+
 ## The route to the file does not matter
 
 Nothing reads your command any more, so there is nothing to phrase around. Whatever changed a protected path during your tool call is undone, whichever way it got there: `Write`, `Edit`, `MultiEdit`, `NotebookEdit`, a shell command of any shape, a path assembled at run time, `eval`, an alias, a shell function, a script the command invoked, a program nobody ever put in a table. Creating a protected file and deleting one are changes like any other and are undone the same way.

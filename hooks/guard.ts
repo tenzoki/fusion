@@ -65,7 +65,11 @@ import {
   resetBlockCounter,
 } from "./lib/escalation.js";
 import { emitEvent } from "./lib/events.js";
-import { saveSnapshot, takeSnapshot } from "./lib/protected-snapshot.js";
+import {
+  measurementRoot,
+  saveSnapshot,
+  takeSnapshot,
+} from "./lib/protected-snapshot.js";
 import {
   classifyGitCommand,
   overridesFromEnv,
@@ -486,19 +490,24 @@ async function main(): Promise<void> {
   // moment. The guard would destroy human work on an unrelated tool call. With
   // it, only the difference this one call produced is ever touched.
   //
-  // ## Above every branch, and inside the stand-down
+  // ## Above every branch
   //
-  // Above, because all five tools can reach a protected path and the cheapest
-  // correct rule is "always have a before-picture". A denied call simply leaves
-  // a snapshot nobody compares against, which costs one file write.
+  // Because all five tools can reach a protected path and the cheapest correct
+  // rule is "always have a before-picture". A denied call simply leaves a
+  // snapshot nobody compares against, which costs one file write.
   //
-  // Inside `isFusionPluginCwd()`, because the measurement is a WRITE-guard
-  // concern and stands down here exactly as the write tools do — otherwise
-  // fusion's own agents would have their edits to `rules/` and `agents/`
-  // reverted while developing fusion, which is the one place those edits are
-  // the work.
-  if (!isFusionPluginCwd()) {
-    saveSnapshot(takeSnapshot(process.cwd(), config.guard.protectedPaths));
+  // ## The root is `measurementRoot()`, not `process.cwd()`
+  //
+  // The patterns are project-relative, so they have to be matched against the
+  // project — the workbench root the configuration already walks up to — and not
+  // against wherever the session happened to start. Anchored at cwd, a session
+  // one directory below the root watched nothing the project's list named. That
+  // function also owns both stand-downs (no workbench, and the plugin's own
+  // repository), so a null root here means "no measurement" for either reason;
+  // its header carries the full argument and the measured evidence.
+  const measureRoot = measurementRoot();
+  if (measureRoot !== null) {
+    saveSnapshot(takeSnapshot(measureRoot, config.guard.protectedPaths));
   }
 
   // Bash branch: the git branch-switch policy, and nothing else. See the header

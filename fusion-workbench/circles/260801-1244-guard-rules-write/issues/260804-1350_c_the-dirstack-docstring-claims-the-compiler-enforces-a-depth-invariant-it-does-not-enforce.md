@@ -111,3 +111,6 @@ Recorded because the issue itself says so: **there is no defect in behaviour.** 
 and pop site was re-read against bash 3.2 and zsh 5.9 semantics for that review and none is
 wrong. What is open is a confident sentence about a checked property, which is this module's
 documented failure mode.
+
+---
+Resolved: Der Gegenstand existiert nicht mehr. Beide Stellen (`hooks/lib/bash-mutation-guard.ts:1794-1819`, der `DirStack`-Docstring, und `:2360-2375`, `applyDirEffect`) lagen in der mit `ba7ccda` gelöschten Datei. Am Baum nachgeprüft in der Reconciliation 260807-1515 gegen HEAD `e684eae`: `DirStack` und `applyDirEffect` kommen außerhalb `hooks/dist/` nicht mehr vor. Es gibt kein Verzeichnismodell mehr, dessen Tiefe eine Zusicherung tragen könnte.

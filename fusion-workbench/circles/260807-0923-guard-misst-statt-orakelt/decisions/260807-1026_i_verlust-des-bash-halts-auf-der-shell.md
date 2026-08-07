@@ -2,11 +2,11 @@
 
 ---
 **Domain:** code
-**Status:** answered
+**Status:** implemented
 **Filed by:** coder (Umsetzung von Schritt 2; die Antwort gab der Nutzer am 260807-0945)
 **Cross-references:**
-- `circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_o_plan-guard-misst-statt-orakelt.md` — Entscheidung 3 und Schritt 2
-- `circles/260804-1205-shell-reachability-model/decisions/260807-0825_a_should-the-guard-predict-shell-writes-or-enforce-them.md` — die bindende Entscheidung, Option 3
+- `circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_*_plan-guard-misst-statt-orakelt.md` — Entscheidung 3 und Schritt 2
+- `circles/260804-1205-shell-reachability-model/decisions/260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md` — die bindende Entscheidung, Option 3
 - `hooks/guard.ts` — die Stelle, an der der Zweig stand, trägt den Verweis auf diesen Satz
 - `rules/protected-path-discipline.md` §`### What a halt costs you` — die Textstelle, die den alten Zustand beschreibt und in Schritt 6 nachzuziehen ist
 
@@ -58,10 +58,29 @@ mehr und kann keine geschützte Datei dauerhaft verändern".
 ---
 Answered: Der Nutzer hat den Verlust am 260807-0945 bei der Planfreigabe ausdrücklich
 bestätigt, in Kenntnis der Folge (Plankopf, Zeile `**Status:**`, und Entscheidung 3 des
-Plans). Gewählt ist Option 1. Umgesetzt in Schritt 2: der `mutation.mutates`-Zweig in
-`hooks/guard.ts` ist entfernt und durch eine Notiz an derselben Stelle ersetzt; zwei
-Testfälle in `hooks/lib/__tests__/protected-snapshot-integration.test.ts` halten beide
-Hälften fest (Shell-Mutation läuft unter Halt durch, Schreibwerkzeug bleibt blockiert).
-Implemented:
+Plans). Gewählt ist Option 1.
+
+---
+Implemented: `ba7ccda` — der `mutation.mutates`-Zweig in `hooks/guard.ts` ist mit dem
+Klassifizierer entfernt; ein Halt blockiert seither die vier Schreibwerkzeuge und lässt die
+Shell durch.
+
+Am Baum nachgeprüft in der Reconciliation 260807-1515, gegen HEAD `e684eae`:
+
+- `git log -S"mutation.mutates" -- hooks/guard.ts` nennt `ba7ccda` als die Änderung, die den
+  Ausdruck entfernt hat.
+- `guardBashCommand` in `hooks/guard.ts:328-406` kennt genau zwei Ausgänge, die Branch-Verweigerung
+  und die Override-Notiz. Der Kopf der Funktion trägt die Notiz an der Stelle, an der der Zweig
+  stand, samt der ausdrücklichen Aussage "THE HALT IS NOT ONE OF THE OUTCOMES", und lässt die
+  Schrittnummer 2 als Lücke stehen, damit die Streichung im Quelltext sichtbar bleibt.
+- Beide Hälften sind festgehalten in `hooks/lib/__tests__/protected-snapshot-integration.test.ts`
+  `describe("the halt no longer reaches the shell")` ab Zeile 479: "lets an unprotected shell
+  mutation through while halted" (Zeile 481) und "still blocks every write tool while halted"
+  (Zeile 507). Suite in derselben Reconciliation neu gefahren, 1002 Tests grün.
+
+Der Satz stand auf `_a_`, obwohl seine eigene `Answered:`-Zeile die Umsetzung schon beschrieb.
+Damit war er in der Buchführung Grounding-Stand, während er am Baum Grounding-Historie war; die
+Reconciliation zieht ihn auf `_i_` nach.
+
 Deferred:
 Superseded by:

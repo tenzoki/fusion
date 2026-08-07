@@ -134,3 +134,16 @@ better than a mid-token ellipsis, and that is a `rulesWriteDetail` change rather
 ---
 
 **Reconciliation 260806-1152 (reconciler, workbench-wide pass) — stays `_o_`, and is now unowned.** The Circle that priced this deferral ("after the ship, or a later one") closed coherent on 260805-2359; no successor Circle's Grounding claims it. Verified at HEAD `cde5319`: the two advisory emissions at `hooks/guard.ts:565` (`rulesWriteDetail` path list) and `:593` (override note interpolating the command) still bypass the `forEvent()` clamp (`EVENT_DETAIL_MAX = 200`, `hooks/guard.ts:235,246`). Candidate for the same follow-up batch as `circles/260805-2005-textschicht-gegen-code-nachziehen/issues/260806-0022_*_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md` (the portfolio's other unowned residual).
+
+---
+
+**Reconciliation 260807-1515 (reconciler, Domain `code`) — bleibt `_o_`. Der Gegenstand hat den Umbau überlebt, nur die Zeilennummern sind gewandert.**
+
+Am Baum nachgeprüft gegen HEAD `e684eae`. Beide ungeklammerten Emissionen stehen unverändert da, an neuen Stellen:
+
+- `hooks/guard.ts:466` — `emitEvent("guard_advisory", input.tool_name, undefined, diagnostic)`, die Konfigurations-Diagnose (vorher `:532`).
+- `hooks/guard.ts:697` — `emitEvent("guard_advisory", input.tool_name, filePath, detail)` mit `detail = rulesWriteDetail([filePath])`, die Regel-Ausnahme (vorher `:560`).
+
+`EVENT_DETAIL_MAX = 200` steht bei `hooks/guard.ts:235`, `forEvent` bei `:246`, und `forEvent` wird im ganzen Modul genau einmal aufgerufen: bei `:358`, für die Branch-Verweigerung. Die beiden hier beschriebenen Pfade gehen weiter daran vorbei.
+
+**Ein Zusatz, den der Umbau gebracht hat:** `hooks/tracker.ts:289` emittiert seit `327d0b6` ein drittes `guard_advisory`, aus der Messung heraus. Es geht ebenfalls nicht durch `forEvent` — der Klammer-Helfer liegt in `guard.ts` und wird von `tracker.ts` nicht importiert. Wer diesen Befund aufnimmt, sollte den dritten Schreiber mitnehmen und die Klammer dorthin ziehen, wo beide Hooks sie erreichen (etwa nach `hooks/lib/events.ts`), statt sie ein zweites Mal zu schreiben.

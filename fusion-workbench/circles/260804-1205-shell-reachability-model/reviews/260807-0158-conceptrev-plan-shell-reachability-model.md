@@ -175,3 +175,11 @@ Give S1 the wrapper cross. A brace group, an `if` and a `while` each need a pipe
 variant, or S5 measures a corpus that does not contain the shape the fix is about.
 S4 needs `{ cd build; } | cat && rm out.js` as its own denying case beside the
 `pipe-head` row it already pins.
+
+---
+
+**Reconciliation 260807-1515 (reconciler, Domain `code`) — Anmerkung, keine Änderung am Befund.**
+
+Der geprüfte Plan ist seit dieser Reconciliation `planning/260806-2353_c_plan-shell-reachability-model.md` mit Status `Superseded`: sein Gegenstand, der statische Klassifizierer, ist mit `ba7ccda` gelöscht und der Circle trägt seit 260807-0923 den Marker `_s_`. Die hier festgehaltenen Diagramm-Befunde sind damit nicht widerlegt, sondern gegenstandslos.
+
+Ein Ergebnis dieser Prüfkette hat den Circle überlebt und ist die Begründung des Nachfolgers: die zweite Bewertung und die daran anschließende Messung fanden fünf Löcher im bereits genehmigten Entwurf, und diese Kette ist als Belegmaterial in `circles/260804-1205-shell-reachability-model/decisions/260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md` eingegangen. Aus derselben Erfahrung stammt der MECE-Abschnitt in `rules/critical-stance.md` (Commit `327d0b6`).

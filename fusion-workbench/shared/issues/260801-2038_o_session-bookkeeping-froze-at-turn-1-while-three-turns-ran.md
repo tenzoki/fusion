@@ -59,3 +59,24 @@ Session `circles/260801-1244-guard-rules-write/history/260803-1038-orchestrator-
 **The Circle-record half is the expensive one.** `## Turn log` is where a Circle's history lives after its session state is deleted, and this Circle is one gate away from closure with three Turns and twenty-three commits behind it and an empty log. `shared/issues/260801-1020_o_plane-mirror-circle-closed-with-empty-turn-log.md` records what that costs a Circle that has already closed.
 
 **Not repaired here, for the reason this issue's own candidate 3 gives.** The reconciler's scope excludes `agentstate.yaml` and Circle records, and widening it would put two writers on the session-state surfaces. Reported, not papered over.
+
+---
+
+**Reconciliation 260807-1515 (reconciler, domain `code`) — stays `_o_`. Third instance, and the first one where the session shipped a release past the frozen bookkeeping.**
+
+Session `shared/history/260806-2158-orchestrator-session.md`, active Circle `circles/260807-0923-guard-misst-statt-orakelt`, HEAD at start `bf48802`, HEAD now `e684eae`. The same three surfaces froze, in the same pattern:
+
+| Surface | Says | Reality |
+|---|---|---|
+| `fusion-workbench/agentstate.yaml` | `# Updated: 260807-0945`, `progress.turn: 1`, `tasks_done: 0`, `commits: 0`, `current_task: S1 running`, nine of eleven tasks `queued` | eleven plan steps `[DONE]`, eight commits, v6.0.0 released and tagged |
+| `circles/260807-0923-guard-misst-statt-orakelt/_t_circle.md` | `**Active spec/plan:** (noch keiner)`, `## Turn log` empty, `## Closure note` empty, `**Status:** active` | the plan has existed since 260807-0931 and is complete; the Circle's own `history/` holds eleven files |
+| `shared/history/260806-2158-orchestrator-session.md` | `**Directive:**` is the *superseded* Circle's; `**Status:** Stopped by the user mid-Turn-1 … its record still carries the active marker and `.active-circle` still points at it` | the superseded Circle carries `_s_` since 260807-0923, `.active-circle` points at the successor, and the session went on to ship a major release |
+| `fusion-workbench/orchestrator-events.jsonl` | current | the one surface that kept up, for the third time |
+
+**Candidate resolution 2, computed for the third time.** `agentstate.yaml` says `commits: 0`; `git rev-list --count bf48802..HEAD` says `8`. Divergence 8, against the stated threshold of "more than one". The check now has three data points across three Circles and is still run by nothing in the toolchain.
+
+**One new observation this instance adds.** `agentstate.yaml`'s `session.history_file` names `circles/260807-0923-guard-misst-statt-orakelt/history/260807-0945-orchestrator-session.md`. That file does not exist — the Circle's `history/` holds eleven sub-agent logs and no orchestrator session log, and the session's actual log stayed at `shared/history/260806-2158-orchestrator-session.md` under the superseded Circle. So the resume anchor points at nothing, which is a stronger failure than a stale value: a resuming orchestrator would find neither the Turn state nor the log it names.
+
+**Why that happened here and would happen again.** The session began under one Circle and continued under its successor. Nothing in the process moves the session's history file, or forks a second one, when a Circle is superseded mid-session — so the anchor was written for a file the session never created. That is a gap in the supersession path specifically, not only in the end-of-Turn write, and it is worth naming separately when candidate 1 is taken up.
+
+**Not repaired here**, same reason as the two instances above.

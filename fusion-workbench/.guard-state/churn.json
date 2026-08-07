@@ -7,9 +7,9 @@
       "thrashingScore": 0
     },
     "agentstate.yaml": {
-      "totalChanges": 1,
-      "changesThisSession": 0,
-      "lastChange": "2026-07-16T17:25:35.451Z",
+      "totalChanges": 2,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T13:30:49.889Z",
       "thrashingScore": 0
     },
     "/tmp/m4.txt": {
@@ -529,10 +529,10 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/CLAUDE.md": {
-      "totalChanges": 2,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-07T07:26:09.240Z",
-      "thrashingScore": 0
+      "totalChanges": 7,
+      "changesThisSession": 5,
+      "lastChange": "2026-08-07T14:36:02.192Z",
+      "thrashingScore": 8
     },
     "/Users/k1/Projects/productive/fusion/hooks/package.json": {
       "totalChanges": 1,
@@ -571,10 +571,10 @@
       "thrashingScore": 53
     },
     "/Users/k1/Projects/productive/fusion/hooks/guard.ts": {
-      "totalChanges": 54,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-07T08:26:26.933Z",
-      "thrashingScore": 28
+      "totalChanges": 56,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-07T14:04:25.806Z",
+      "thrashingScore": 18
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/rules-write-exemption.test.ts": {
       "totalChanges": 14,
@@ -793,15 +793,15 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/README-hooks.md": {
-      "totalChanges": 38,
-      "changesThisSession": 1,
-      "lastChange": "2026-08-07T10:13:07.793Z",
-      "thrashingScore": 12
+      "totalChanges": 44,
+      "changesThisSession": 6,
+      "lastChange": "2026-08-07T14:36:41.173Z",
+      "thrashingScore": 22
     },
     "/Users/k1/Projects/productive/fusion/rules/protected-path-discipline.md": {
-      "totalChanges": 60,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-05T09:57:30.652Z",
+      "totalChanges": 61,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T14:09:00.237Z",
       "thrashingScore": 20
     },
     "circles/260801-1244-guard-rules-write/decisions/260803-1402_o_should-the-mutation-classifier-inspect-a-read-operand-to-close-the-planted-alias.md": {
@@ -1009,10 +1009,10 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/helpers/guard-harness.ts": {
-      "totalChanges": 6,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-07T08:12:10.759Z",
-      "thrashingScore": 8
+      "totalChanges": 8,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-07T14:20:00.825Z",
+      "thrashingScore": 2
     },
     "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/85697369-e7d7-4015-82eb-33002aab63e5/scratchpad/probe-t45.ts": {
       "totalChanges": 1,
@@ -1747,10 +1747,10 @@
       "thrashingScore": 10
     },
     "/Users/k1/Projects/productive/fusion/hooks/tracker.ts": {
-      "totalChanges": 10,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-07T08:26:20.042Z",
-      "thrashingScore": 17
+      "totalChanges": 14,
+      "changesThisSession": 4,
+      "lastChange": "2026-08-07T14:04:59.831Z",
+      "thrashingScore": 8
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/config.test.ts": {
       "totalChanges": 20,
@@ -2071,10 +2071,10 @@
       "thrashingScore": 0
     },
     "circles/260801-1244-guard-rules-write/issues/260804-2100_o_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md": {
-      "totalChanges": 1,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-04T19:01:24.602Z",
-      "thrashingScore": 0
+      "totalChanges": 3,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-07T14:27:41.908Z",
+      "thrashingScore": 1
     },
     "circles/260801-1244-guard-rules-write/history/260804-2100-coder-step5-guard-error-on-the-dashboard.md": {
       "totalChanges": 1,
@@ -2095,10 +2095,10 @@
       "thrashingScore": 2
     },
     "/Users/k1/Projects/productive/fusion/.claude-plugin/plugin.json": {
-      "totalChanges": 2,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-05T09:38:32.953Z",
-      "thrashingScore": 0
+      "totalChanges": 3,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T14:32:10.612Z",
+      "thrashingScore": 1
     },
     "circles/260801-1244-guard-rules-write/history/260805-0645-coder-step1-emission-golden.md": {
       "totalChanges": 1,
@@ -2305,9 +2305,9 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/install.sh": {
-      "totalChanges": 1,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-05T09:38:32.234Z",
+      "totalChanges": 2,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T14:32:19.403Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-guard-rules-write/history/260805-1054-coder-rollendeckel-und-dist-build.md": {
@@ -2510,7 +2510,7 @@
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_o_plan-guard-misst-statt-orakelt.md": {
       "totalChanges": 8,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T10:20:54.917Z",
       "thrashingScore": 2
     },
@@ -2575,10 +2575,10 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/protected-snapshot.ts": {
-      "totalChanges": 2,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-07T08:06:21.939Z",
-      "thrashingScore": 0
+      "totalChanges": 4,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-07T14:04:04.318Z",
+      "thrashingScore": 1
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/protected-snapshot-integration.test.ts": {
       "totalChanges": 1,
@@ -2606,34 +2606,112 @@
     },
     "package.json": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T10:12:49.903Z",
       "thrashingScore": 0
     },
     "lib/__tests__/rules-emission-golden.test.ts": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T10:13:14.299Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/issues/260807-1202_o_kompilierte-waisen-des-klassifizierers-stehen-noch-in-hooks-dist.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T10:13:29.893Z",
       "thrashingScore": 0
     },
     "lib/__tests__/protected-snapshot-integration.test.ts": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T10:17:21.450Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/history/260807-1220-coder-schritt10-vorpruefung-und-kompilierte-waisen.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T10:21:38.144Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/protected-snapshot-subdirectory.test.ts": {
+      "totalChanges": 3,
+      "changesThisSession": 3,
+      "lastChange": "2026-08-07T14:07:55.565Z",
+      "thrashingScore": 3
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/self-detect.ts": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T14:03:37.512Z",
+      "thrashingScore": 0
+    },
+    "circles/260807-0923-guard-misst-statt-orakelt/_t_circle.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T14:08:52.703Z",
+      "thrashingScore": 0
+    },
+    "circles/260807-0923-guard-misst-statt-orakelt/history/260807-1526-reconciliation.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T14:10:30.260Z",
+      "thrashingScore": 0
+    },
+    "circles/260807-0923-guard-misst-statt-orakelt/history/260807-1601-coder-messwurzel-aus-dem-unterverzeichnis.md": {
+      "totalChanges": 2,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-07T14:14:57.342Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/session-start.ts": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T14:19:37.510Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/hooks.json": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T14:19:43.324Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/session-start-subdirectory.test.ts": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T14:20:35.139Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/hooks-wiring.test.ts": {
+      "totalChanges": 2,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-07T14:20:50.102Z",
+      "thrashingScore": 0
+    },
+    "circles/260807-0923-guard-misst-statt-orakelt/history/260807-1626-sessionstart-warnt-bei-start-unterhalb-der-projektwurzel.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T14:27:20.101Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/F03-CLAUDE-plugin-marketplace/claude-plugins/.claude-plugin/marketplace.json": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T14:32:05.608Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/README.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T14:32:22.906Z",
+      "thrashingScore": 0
+    },
+    "circles/260807-0923-guard-misst-statt-orakelt/history/260807-1638-coder-versionsanhebung-6-0-1.md": {
+      "totalChanges": 2,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-07T14:39:54.564Z",
       "thrashingScore": 0
     }
   },
-  "sessionStart": "2026-08-07T10:12:49.903Z"
+  "sessionStart": "2026-08-07T13:30:49.889Z"
 }

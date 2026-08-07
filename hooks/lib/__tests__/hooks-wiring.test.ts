@@ -19,6 +19,7 @@ interface HookEntry {
 }
 interface HooksConfig {
   hooks: {
+    SessionStart?: HookEntry[];
     PreToolUse?: HookEntry[];
     PostToolUse?: HookEntry[];
   };
@@ -54,5 +55,34 @@ describe("hooks.json wiring — guard reaches Bash", () => {
     for (const tool of ["Write", "Edit", "MultiEdit", "NotebookEdit"]) {
       expect(tools).toContain(tool);
     }
+  });
+});
+
+describe("hooks.json wiring — the working-directory warning runs at SessionStart", () => {
+  // Same regression shape as the Bash matcher above: `session-start.ts` has its
+  // own suite (`session-start-subdirectory.test.ts`), and every case there
+  // spawns the hook directly. So the hook can be entirely correct and entirely
+  // unreachable, with a green suite either way, if nothing asserts the wiring.
+  it("invokes dist/session-start.js from a SessionStart entry", () => {
+    const sessionStart = loadHooks().hooks.SessionStart ?? [];
+    const commands = sessionStart.flatMap((entry) =>
+      entry.hooks.map((h) => h.command),
+    );
+    expect(
+      commands.some((c) => c.includes("dist/session-start.js")),
+      "a SessionStart entry must invoke dist/session-start.js",
+    ).toBe(true);
+  });
+
+  it("keeps the FUSION_PLUGIN_ROOT export and the loaded banner alongside it", () => {
+    // The three SessionStart commands are independent by design (see the header
+    // of `hooks/session-start.ts`). This pins that adding the third did not
+    // absorb or displace either of the two that were already there.
+    const sessionStart = loadHooks().hooks.SessionStart ?? [];
+    const commands = sessionStart.flatMap((entry) =>
+      entry.hooks.map((h) => h.command),
+    );
+    expect(commands.some((c) => c.includes("FUSION_PLUGIN_ROOT"))).toBe(true);
+    expect(commands.some((c) => c.includes("Fusion loaded"))).toBe(true);
   });
 });

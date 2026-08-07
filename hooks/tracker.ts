@@ -54,6 +54,7 @@ import { loadEscalation, raiseHalt, saveEscalation } from "./lib/escalation.js";
 import {
   diffSnapshots,
   loadSnapshot,
+  measurementRoot,
   restore,
   takeSnapshot,
 } from "./lib/protected-snapshot.js";
@@ -252,6 +253,17 @@ function splitOffExempted(
  * the project has no workbench, or in the plugin's own repository, and in all
  * three the answer "nothing was measured" is correct.
  *
+ * ## The root comes from `measurementRoot()`, and it is checked BEFORE the load
+ *
+ * The after-snapshot has to be taken in the same coordinate space as the before
+ * one, so both halves read the root from the same function rather than each
+ * asking `process.cwd()` — see its header for why that is the workbench root.
+ *
+ * The null check sits ahead of `loadSnapshot()` on purpose. A null root means a
+ * stand-down (no workbench, or the plugin's own repository), and a snapshot file
+ * left over from an earlier session would otherwise be compared against a
+ * project this hook must not touch.
+ *
  * ## Known residual: parallel tool calls
  *
  * `guard.ts` writes one snapshot file and `tracker.ts` reads it. Two tool calls
@@ -266,10 +278,12 @@ function measureProtectedPaths(toolName: string): string | null {
   const config = loadConfig();
   if (!config.guard.enabled) return null;
 
+  const root = measurementRoot();
+  if (root === null) return null;
+
   const before = loadSnapshot();
   if (!before) return null;
 
-  const root = process.cwd();
   const changes = diffSnapshots(
     before,
     takeSnapshot(root, config.guard.protectedPaths),
@@ -477,19 +491,18 @@ async function main(): Promise<void> {
     return;
   }
 
-  // Self-detect: cwd is fusion's own repo. Both halves stand down together.
+  // Self-detect: cwd is fusion's own repo, so CHURN stands down — plugin
+  // development edits are not meaningful churn signal.
   //
-  // The MEASUREMENT stands down for the same reason the write tools do: the
-  // protected paths are `agents/**`, `rules/**`, `skills/**` and the plugin
-  // manifest, which in this one repository are the work rather than the thing
-  // being protected. Left active it would revert a fusion developer's own edits
-  // on the next tool call, which is worse than useless — it destroys work.
-  // `guard.ts` writes no snapshot here either, so there would be nothing to
-  // compare against in any case; this is the explicit half of that pair.
-  //
-  // CHURN stands down because plugin development edits are not meaningful churn
-  // signal. That reason is older and unrelated, and both are stated so a later
-  // editor does not lift one gate believing it lifts the other's reason too.
+  // This gate is no longer what stands the MEASUREMENT down, and the two are
+  // separated on purpose. Churn is keyed on paths relativized against
+  // `process.cwd()`, so cwd is the directory it must ask about. The measurement
+  // is anchored at the workbench root, so it has to ask about THAT directory,
+  // and it does — `measurementRoot()` folds its own plugin-repo stand-down in.
+  // While one gate served both, a session started in a subdirectory of this
+  // repository passed it (no `.claude-plugin/plugin.json` in `fusion-workbench/`)
+  // and the measurement would have reverted a fusion developer's own edits to
+  // `rules/` and `agents/` once its root moved up.
   if (isFusionPluginCwd()) {
     respond();
     return;

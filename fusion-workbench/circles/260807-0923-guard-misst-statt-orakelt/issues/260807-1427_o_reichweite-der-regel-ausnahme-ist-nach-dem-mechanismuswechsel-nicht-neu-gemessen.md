@@ -59,3 +59,27 @@ Der Auftrag war auf drei benannte Textreste, eine mechanische Nachsuche nach
 `fusion-workbench/`- und `circles/`-Pfaden und die drei Versionsoberflächen begrenzt, mit
 ausdrücklichem „committe nicht". Eine Messreihe im Fremdprojekt unmittelbar vor der Freigabe
 gehört nicht unangekündigt in denselben Diff.
+
+---
+
+**Reconciliation 260807-1515 (reconciler, Domain `code`) — bleibt `_o_`, zu Recht.**
+
+Der beschriebene Zustand liegt so am Baum, geprüft gegen HEAD `e684eae`:
+
+- Der Abschnitt in `hooks/lib/rules-write-exemption.ts` heißt nicht mehr "measured", und die
+  Operanden-Absätze des Klassifizierers sind ersetzt — die Textkorrektur, die der Befund
+  beschreibt, ist also erfolgt.
+- Die Messung, die der Befund fordert, ist **nicht** erfolgt. Kein Protokoll unter
+  `circles/260807-0923-guard-misst-statt-orakelt/history/` nennt einen Lauf mit `rm -rf rules`
+  im Fremdprojekt, und `hooks/lib/__tests__/rules-write-exemption*.test.ts` prüft die Ausnahme
+  über einzelne Dateipfade, nie über einen Verzeichnisknoten. Die Suite ist grün (1002 Tests),
+  ohne dass irgendein Fall die offene Frage beantwortet: grün heißt hier "die geprüften Fälle
+  stimmen", nicht "der Verzeichnisfall ist gemessen".
+- Die Ableitung des Befunds ist am Code nachvollziehbar: `enumerateProtected` in
+  `hooks/lib/protected-snapshot.ts` nimmt ausschließlich `entry.isFile()` auf, und
+  `isObservedRulePath` (`hooks/lib/rules-write-exemption.ts:602`) bekommt genau diese Ausgabe.
+  Sie bleibt damit **abgeleitet und ungeprüft**, wie der Befund selbst sagt.
+
+Die Vorprüfung in Schritt 10 des Plans hat den Fall nicht abgedeckt; sie fuhr die sieben
+Harness-Suiten ein zweites Mal gegen `dist`, nicht eine eigene Messreihe zur Reichweite der
+Ausnahme. Der Befund überlebt den Circle unverändert.
