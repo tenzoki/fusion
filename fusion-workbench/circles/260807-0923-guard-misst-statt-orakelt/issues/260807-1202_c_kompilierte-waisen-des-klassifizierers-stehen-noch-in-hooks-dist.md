@@ -13,3 +13,10 @@ Gemessen: `git ls-files hooks/dist/lib/` führt alle vier Dateien; `hooks/dist/`
 Kein Verhaltensrisiko im Betrieb: geladen wird nichts davon. Das Gewicht ist Auslieferung und Lesbarkeit — der HTTPS-Installer kopiert `hooks/dist/` unverändert nach `~/.fusion`, ein Leser findet dort weiter den Klassifizierer, den die Textschicht seit `436d78c` für abgeschafft erklärt.
 
 Nicht in Schritt 9 behoben, weil der Auftrag an diesen Schritt ausdrücklich Buchführung ist und keine Arbeit am Code. Der Eintrag gehört vor Schritt 10 (Vorprüfung im Fremdprojekt), dessen zweiter Durchlauf mit `FUSION_GUARD_ENTRY=dist` ohnehin gegen das Kompilat fährt, oder spätestens vor Schritt 11 (Freigabe), weil erst der Tarball den Rest sichtbar macht.
+
+---
+Resolved: Die Ursache ist abgestellt, nicht nur der Rest. `hooks/package.json` baut jetzt mit `rm -rf dist && tsc`, und `test` ruft `npm run build && vitest run` statt eines eigenen `tsc` — es gibt damit genau eine Stelle, die `hooks/dist/` erzeugt, und sie räumt vorher auf. Der erste Lauf des neuen Skripts hat die vier Waisen entfernt (`hooks/dist/lib/bash-mutation-guard.{js,d.ts}`, `hooks/dist/lib/shell-reach.{js,d.ts}`); alle übrigen 36 Dateien in `hooks/dist/` sind byte-identisch neu entstanden, `git status` zeigt für sie keine Änderung. Damit ist auch belegt, was der Befund vermutete: das Kompilat war im Übrigen aktuell.
+
+Auf weitere Waisen geprüft, mechanisch statt per Augenschein: die Modulnamen unter `dist/` gegen die Quellen aus `include` (`*.ts` plus `lib/**/*.ts` ohne `lib/__tests__`) verglichen, per `comm -13`. Die Differenz waren genau `lib/bash-mutation-guard` und `lib/shell-reach`, also die vier bekannten Dateien und sonst nichts.
+
+Beschrieben in `README-hooks.md` unter "Rebuilding after TS changes", wo die Bau-Schritte stehen. Der Kommentar in `hooks/lib/__tests__/rules-emission-golden.test.ts` zitierte das alte Skript wörtlich und ist nachgezogen.

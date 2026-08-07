@@ -100,6 +100,45 @@ describe("the measurement restores what a tool call changed", () => {
   );
 
   it(
+    "reverts one an actual shell process wrote, not only one this test wrote",
+    () => {
+      // The case above changes the bytes with `writeFileSync` from inside the
+      // test process. That is the same event as far as the measurement is
+      // concerned — it compares two fingerprints and never learns who moved
+      // them — but "the same event as far as the mechanism is concerned" is an
+      // inference, and this is the claim the release rests on. So here a real
+      // `/bin/sh` really does redirect into a protected path.
+      withProject(
+        (project) => {
+          const { post } = runToolCall(
+            project.root,
+            "Bash",
+            { command: "echo '# owned by the shell' > rules/x.md" },
+            () =>
+              execFileSync("/bin/sh", ["-c", "echo '# owned by the shell' > rules/x.md"], {
+                cwd: project.root,
+                encoding: "utf-8",
+              }),
+          );
+
+          expect(read(project.root, "rules/x.md")).toBe("# a rule\n");
+          expect(readEscalation(project.root)?.haltActive).toBe(true);
+          expect(context(post)).toContain("rules/x.md");
+          expect(context(post)).toContain("has been restored");
+
+          const events = readEvents(project.root);
+          expect(
+            events.filter((e) => e.event === "guard_block").map((e) => e.file),
+          ).toContain("rules/x.md");
+          expect(events.some((e) => e.event === "guard_halt")).toBe(true);
+        },
+        { git: true },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
     "reverts a protected file that was deleted",
     () => {
       withProject(

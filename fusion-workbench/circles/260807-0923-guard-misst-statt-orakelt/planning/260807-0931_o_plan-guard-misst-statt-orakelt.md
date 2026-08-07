@@ -210,12 +210,40 @@ flowchart TD
      geschlossen; beide Dateien sind byte-identisch und nennen die Messung statt
      einer Verweigerung. Nichts mehr zu vermerken.
 
-10. **Vorprüfung im Fremdprojekt**
+10. [DONE] **Vorprüfung im Fremdprojekt** — 260807-1220
     - Ausführer: coder
     - Dateien: keine (Prüflauf)
     - Änderungen: In `hooks/` `npm test` (baut und fährt die Suite) und `npm run build`. Danach die Harness-Suiten ein zweites Mal mit `FUSION_GUARD_ENTRY=dist`, damit das ausgelieferte Kompilat geprüft ist und nicht nur die Quelle. Zuletzt `claude plugin validate .` und der Rauchtest `claude --plugin-dir . --agent fusion:orchestrator -p "reply SMOKE-OK"`. Eine lokale Prüfung ohne Harness ist hier bedeutungslos, weil der Write-Guard in diesem Repository stillsteht; ein zweiter Prüfmechanismus wird nicht gebaut.
     - Quelle: Prüfauflage des Auftrags; `CLAUDE.md` Release-Schritt 0.
     - Abhängigkeiten: S5, S7, S8, S9
+    - **Ergebnis 260807-1220. Alle vier Läufe bestanden, Exit-Code 0.**
+      `npm test` 30 Dateien / 1002 Tests grün, `npm run build` ohne Ausgabe;
+      die sieben Harness-Suiten mit `FUSION_GUARD_ENTRY=dist` 7 Dateien /
+      225 Tests grün; `claude plugin validate .` "Validation passed with
+      warnings" (eine Warnung, die zu `CLAUDE.md` am Plugin-Wurzelverzeichnis);
+      der Rauchtest antwortet `SMOKE-OK`. Der vom Auftrag ausdrücklich
+      verlangte Fall — geschützte Datei per Shell verändert, im echten
+      Fremdprojekt, gegen `dist` — war nur der Sache nach abgedeckt: der
+      vorhandene Fall meldete den Werkzeugaufruf als `Bash`, änderte die Bytes
+      aber mit `writeFileSync` im Testprozess. Ein zweiter Fall ist ergänzt, der
+      ein echtes `/bin/sh` in die geschützte Datei umleiten lässt
+      (`protected-snapshot-integration.test.ts`, "reverts one an actual shell
+      process wrote"); er ist einzeln gegen `dist` gefahren und grün. Dass
+      `FUSION_GUARD_ENTRY` die vitest-Worker überhaupt erreicht, ist mit einer
+      Gegenprobe belegt (`=nonsense` bricht mit der erwarteten Meldung ab) und
+      nicht angenommen. Vorher erledigt: der Befund `260807-1202` zu den
+      kompilierten Waisen, siehe unten. Einzelheiten:
+      `history/260807-1220-coder-schritt10-vorpruefung-und-kompilierte-waisen.md`.
+    - **Nachzug vor dem Lauf, 260807-1215.** Der Befund
+      `260807-1202_c_kompilierte-waisen-*` ist geschlossen, und zwar an der
+      Ursache: `hooks/package.json` baut mit `rm -rf dist && tsc`, und `test`
+      ruft `npm run build && vitest run` statt eines eigenen `tsc`. Damit gibt
+      es genau eine Stelle, die `hooks/dist/` erzeugt, und sie räumt vorher auf.
+      Der erste Lauf entfernte die vier Waisen; die übrigen 36 Dateien entstanden
+      byte-identisch neu. Auf weitere Waisen mechanisch geprüft (`comm -13` über
+      Modulnamen aus `dist/` gegen die Quellen aus `include`): es gab genau
+      diese beiden Module und sonst keine. Beschrieben in `README-hooks.md`
+      unter "Rebuilding after TS changes".
 
 11. **Freigabe — menschliches Gate**
     - Ausführer: ontocoder (nach ausdrücklicher Freigabe durch den Nutzer)

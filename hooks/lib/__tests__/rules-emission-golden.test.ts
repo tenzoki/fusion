@@ -157,8 +157,9 @@ import { dirname, resolve, join, relative } from "node:path";
 // there already do. Between cleanups it stays where it is — a reference that
 // followed the measurement would measure nothing.
 //
-// Use `npx vitest run`, not `npm test`: the latter is `tsc && vitest run` and
-// rebuilds `hooks/dist`, which is owned by step 5 of the plan.
+// Use `npx vitest run`, not `npm test`: the latter is
+// `npm run build && vitest run`, which wipes and rebuilds `hooks/dist`. This
+// suite measures rule text and has no business regenerating the compiled hooks.
 // ---------------------------------------------------------------------------
 
 const here = dirname(fileURLToPath(import.meta.url));

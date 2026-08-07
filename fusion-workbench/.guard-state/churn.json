@@ -530,7 +530,7 @@
     },
     "/Users/k1/Projects/productive/fusion/CLAUDE.md": {
       "totalChanges": 2,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T07:26:09.240Z",
       "thrashingScore": 0
     },
@@ -572,7 +572,7 @@
     },
     "/Users/k1/Projects/productive/fusion/hooks/guard.ts": {
       "totalChanges": 54,
-      "changesThisSession": 7,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T08:26:26.933Z",
       "thrashingScore": 28
     },
@@ -626,7 +626,7 @@
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/agentstate.yaml": {
       "totalChanges": 4,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T07:43:44.725Z",
       "thrashingScore": 1
     },
@@ -692,7 +692,7 @@
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/escalation.ts": {
       "totalChanges": 2,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T08:06:41.031Z",
       "thrashingScore": 0
     },
@@ -793,9 +793,9 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/README-hooks.md": {
-      "totalChanges": 37,
-      "changesThisSession": 0,
-      "lastChange": "2026-08-05T20:57:12.775Z",
+      "totalChanges": 38,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T10:13:07.793Z",
       "thrashingScore": 12
     },
     "/Users/k1/Projects/productive/fusion/rules/protected-path-discipline.md": {
@@ -1010,7 +1010,7 @@
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/helpers/guard-harness.ts": {
       "totalChanges": 6,
-      "changesThisSession": 5,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T08:12:10.759Z",
       "thrashingScore": 8
     },
@@ -1748,7 +1748,7 @@
     },
     "/Users/k1/Projects/productive/fusion/hooks/tracker.ts": {
       "totalChanges": 10,
-      "changesThisSession": 9,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T08:26:20.042Z",
       "thrashingScore": 17
     },
@@ -2492,118 +2492,148 @@
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260804-1205-shell-reachability-model/_t_circle.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T07:24:46.601Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/_t_circle.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T07:25:46.314Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/issues/260807-0930_o_zwei-fehlalarme-des-klassifizierers-in-der-sitzung-die-ihn-abschafft.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T07:27:01.768Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_o_plan-guard-misst-statt-orakelt.md": {
-      "totalChanges": 6,
-      "changesThisSession": 6,
-      "lastChange": "2026-08-07T08:28:39.387Z",
-      "thrashingScore": 10
+      "totalChanges": 8,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-07T10:20:54.917Z",
+      "thrashingScore": 2
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/history/260807-0931-planner-guard-misst-statt-orakelt.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T07:36:38.981Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/hooks/config.json": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T07:45:15.762Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/hooks/config.example.json": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T07:45:17.001Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/rules/critical-stance.md": {
       "totalChanges": 4,
-      "changesThisSession": 4,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T07:56:33.929Z",
       "thrashingScore": 5
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/decisions/260807-0945_o_integritaet-des-eskalationsspeichers.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T07:46:30.839Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/agents/planner.md": {
       "totalChanges": 2,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T07:46:57.806Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/issues/260807-0952_o_ontocoder-kann-keinen-entscheidungssatz-ablegen.md": {
       "totalChanges": 2,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T07:55:59.329Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/history/260807-0945-ontocoder-schutzliste-verliert-zustandsverzeichnis.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T07:56:36.571Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/history/260807-0955-coder-s8-mece-prinzip.md": {
       "totalChanges": 2,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T07:57:57.562Z",
       "thrashingScore": 0
     },
     "/private/tmp/claude-502/-Users-k1-Projects-productive-fusion/60a18b66-6899-47b8-bccf-7038dd18cc97/scratchpad/posttooluse-probe/.claude/settings.json": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T08:00:58.440Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/protected-snapshot.ts": {
       "totalChanges": 2,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T08:06:21.939Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/protected-snapshot-integration.test.ts": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T08:13:02.993Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/decisions/260807-1026_a_verlust-des-bash-halts-auf-der-shell.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T08:26:55.692Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/issues/260807-1026_o_rueckrollen-auf-head-kann-menschliche-vorarbeit-verwerfen.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T08:27:13.788Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/history/260807-1026-schritt-2-die-messung.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T08:29:43.695Z",
+      "thrashingScore": 0
+    },
+    "package.json": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T10:12:49.903Z",
+      "thrashingScore": 0
+    },
+    "lib/__tests__/rules-emission-golden.test.ts": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T10:13:14.299Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/issues/260807-1202_o_kompilierte-waisen-des-klassifizierers-stehen-noch-in-hooks-dist.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T10:13:29.893Z",
+      "thrashingScore": 0
+    },
+    "lib/__tests__/protected-snapshot-integration.test.ts": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T10:17:21.450Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/history/260807-1220-coder-schritt10-vorpruefung-und-kompilierte-waisen.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-07T10:21:38.144Z",
       "thrashingScore": 0
     }
   },
-  "sessionStart": "2026-08-07T07:24:46.601Z"
+  "sessionStart": "2026-08-07T10:12:49.903Z"
 }

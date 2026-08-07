@@ -274,6 +274,8 @@ cd hooks && npm install && npm run build
 
 The compiled `hooks/dist/` directory is committed to the repo and ships with the plugin.
 
+`build` is `rm -rf dist && tsc`, and the wipe is the load-bearing half. `tsc` writes into `outDir` without pruning it, so deleting a source file leaves its compiled output behind — tracked in git, copied into `~/.fusion` by the installer, and readable there as a module the plugin no longer has. That happened once already, with the four files of the retired Bash classifier. `npm test` runs the same script (`npm run build && vitest run`), so a full build is the only way `hooks/dist/` is produced and it always matches the sources.
+
 ## Origin
 
 Ported from Fusion's guard system (`fusion/reactor/pkg/guard/`):
