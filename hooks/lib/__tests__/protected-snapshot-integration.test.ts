@@ -22,6 +22,7 @@ import {
   lstatSync,
   mkdirSync,
   readFileSync,
+  readdirSync,
   readlinkSync,
   rmSync,
   symlinkSync,
@@ -39,6 +40,7 @@ import {
   withPluginProject,
   withProject,
 } from "./helpers/guard-harness.js";
+import { RETAINED_COPIES, REVERTED_DIR } from "../reverted-copy.js";
 
 /** Read a project file, or null when it is gone. */
 function read(root: string, rel: string): string | null {
@@ -1099,6 +1101,387 @@ describe("a before-picture is used by exactly one measurement", () => {
         );
         expect(blocks.length).toBe(1);
       });
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+/* ------------------------------------------------------------------ *
+ * Actor identity — `260809-1107`
+ * ------------------------------------------------------------------ */
+
+/** The preserved copies, oldest name first. `[]` when the directory is absent. */
+function preservedNames(root: string): string[] {
+  const dir = resolve(root, REVERTED_DIR);
+  return existsSync(dir) ? readdirSync(dir).sort() : [];
+}
+
+/** One preserved copy, read as text. */
+function preservedContent(root: string, name: string): string {
+  return readFileSync(resolve(root, REVERTED_DIR, name), "utf-8");
+}
+
+/**
+ * The guard cannot know who wrote inside the tool-call window, so it stops
+ * claiming to — and stops destroying what it writes over.
+ *
+ * The measured sequence in `260809-1107` is exactly what `runToolCall` produces:
+ * the `effect` runs between the two hooks and is, as far as the hooks can tell,
+ * a concurrent writer. That is the point rather than a limitation of the
+ * harness. No case here can distinguish itself from a human editor's save, which
+ * is precisely the property under test.
+ *
+ * At HEAD `62f5490` no preserved copy exists anywhere, so every assertion on
+ * `preservedNames` fails before this step.
+ */
+describe("the observed content is kept before the guard writes over it", () => {
+  it(
+    "keeps what a concurrent writer put there, names it, and reverts all the same",
+    () => {
+      withProject(
+        (project) => {
+          const { post } = runToolCall(
+            project.root,
+            "Bash",
+            { command: "true" },
+            () =>
+              put(
+                project.root,
+                "rules/x.md",
+                "# HUMAN EDIT made during the tool call\n",
+              ),
+          );
+
+          // The revert and the halt are untouched by this step.
+          expect(read(project.root, "rules/x.md")).toBe("# a rule\n");
+          expect(readEscalation(project.root)?.haltActive).toBe(true);
+
+          // And the bytes the revert wrote over still exist.
+          const kept = preservedNames(project.root);
+          expect(kept.length).toBe(1);
+          expect(preservedContent(project.root, kept[0])).toBe(
+            "# HUMAN EDIT made during the tool call\n",
+          );
+
+          // Named where the model reads it, or the recovery is theoretical.
+          const copy = `${REVERTED_DIR}/${kept[0]}`;
+          expect(context(post)).toContain(copy);
+
+          // And in the event log, so a reader of events.jsonl can find it after
+          // the session that produced it is gone.
+          const blocked = readEvents(project.root).filter(
+            (e) => e.event === "guard_block" && e.file === "rules/x.md",
+          );
+          expect(blocked.length).toBe(1);
+          expect(blocked[0].detail ?? "").toContain(copy);
+
+          // The sentence no longer asserts the agent did it. Asserted on the
+          // claim rather than on a phrase: "may not have been you" is the whole
+          // of what changed for a reader who meets an unexplained revert.
+          expect(context(post)).toContain("may not have been you");
+        },
+        { git: true },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "keeps the bytes of a file the call created, before removing it again",
+    () => {
+      // The created case is where the guard destroys the MOST: the revert is a
+      // deletion, so without a copy the content is gone with no version of it
+      // anywhere — not in git, not in the snapshot, which holds only ABSENT.
+      withProject(
+        (project) => {
+          const { post } = runToolCall(
+            project.root,
+            "Bash",
+            { command: "true" },
+            () => put(project.root, "rules/planted.md", "# new\n"),
+          );
+
+          expect(read(project.root, "rules/planted.md")).toBeNull();
+
+          const kept = preservedNames(project.root);
+          expect(kept.length).toBe(1);
+          expect(preservedContent(project.root, kept[0])).toBe("# new\n");
+          expect(context(post)).toContain(`${REVERTED_DIR}/${kept[0]}`);
+        },
+        { git: true },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "keeps nothing for a deleted path, and claims no copy it does not have",
+    () => {
+      // Nothing was observed, so nothing is kept: the path held no bytes when it
+      // was measured, and the revert brings the content back rather than writing
+      // over any. A copy here would be a file that misleads whoever finds it.
+      withProject(
+        (project) => {
+          const { post } = runToolCall(
+            project.root,
+            "Bash",
+            { command: "true" },
+            () => rmSync(resolve(project.root, "agents/coder.md")),
+          );
+
+          expect(read(project.root, "agents/coder.md")).toBe("# an agent\n");
+          expect(preservedNames(project.root)).toEqual([]);
+          expect(context(post)).toContain("was deleted");
+          expect(context(post)).not.toContain("preserved at");
+        },
+        { git: true },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    `keeps at most ${RETAINED_COPIES} copies, pruning the rest as it writes`,
+    () => {
+      // Retention is a COUNT and not an age — the open question in the plan,
+      // answered with the count because an age bound expires the evidence
+      // exactly when a long session finally goes looking for it.
+      //
+      // One tool call changing 25 protected files rather than 25 tool calls: the
+      // property is per WRITE, so this measures it with one pair of subprocesses
+      // instead of fifty. Which 20 survive is deliberately not asserted — inside
+      // one millisecond the order is the flattened path's, and the module claims
+      // no more than the bound.
+      const many = 25;
+      const seeded: Record<string, string> = {};
+      for (let i = 0; i < many; i++) {
+        seeded[`rules/r${String(i).padStart(2, "0")}.md`] = `# rule ${i}\n`;
+      }
+
+      withProject(
+        (project) => {
+          runToolCall(project.root, "Bash", { command: "true" }, () => {
+            for (const rel of Object.keys(seeded)) {
+              put(project.root, rel, "# overwritten\n");
+            }
+          });
+
+          // Every one of them was still reverted: the bound is on the copies,
+          // never on the enforcement.
+          expect(read(project.root, "rules/r00.md")).toBe("# rule 0\n");
+          expect(read(project.root, "rules/r24.md")).toBe("# rule 24\n");
+
+          expect(preservedNames(project.root).length).toBe(RETAINED_COPIES);
+        },
+        { git: true, files: seeded },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+/**
+ * What is written back narrows to the payload path — for the four write tools,
+ * and for nothing else.
+ *
+ * The user decided this at the plan gate on 2026-08-09, against the plan's own
+ * recommendation:
+ * `shared/decisions/260809-1527_*_should-the-revert-narrow-to-the-payload-path-for-the-four-write-tools.md`,
+ * option 2. A write tool physically writes the path its payload names and has no
+ * second write, so for those four the distinction costs almost nothing and
+ * removes the destruction of concurrent human work rather than making it
+ * recoverable.
+ *
+ * `Bash` is excluded by the same reasoning that admits the four: the narrowing
+ * rests on the payload naming the target, and a shell command's text names
+ * nothing of the kind. Obligation 4 of that record asks for the `Bash` half to
+ * be pinned explicitly so a later refactor cannot quietly extend the narrowing
+ * to it — that is the last case in this block, and it is not a duplicate of the
+ * revert cases above.
+ */
+describe("the revert narrows to the payload path at the four write tools", () => {
+  it(
+    "still reverts the very path the write tool names",
+    () => {
+      // The control against over-narrowing. If this stopped reverting, the
+      // narrowing would have become a hole rather than a distinction.
+      withProject(
+        (project) => {
+          const { post } = runToolCall(
+            project.root,
+            "Write",
+            { file_path: resolve(project.root, "rules/x.md") },
+            () => put(project.root, "rules/x.md", "# the agent wrote this\n"),
+          );
+
+          expect(read(project.root, "rules/x.md")).toBe("# a rule\n");
+          expect(context(post)).toContain("has been restored");
+          expect(readEscalation(project.root)?.haltActive).toBe(true);
+        },
+        { git: true },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "leaves a protected path the Edit did not name, and reports it in full",
+    () => {
+      // The defect's own shape: the agent edits one protected file while the
+      // human saves another in their editor. The first is this call's, the
+      // second cannot be — an Edit has no second write.
+      withProject(
+        (project) => {
+          const { post } = runToolCall(
+            project.root,
+            "Edit",
+            { file_path: resolve(project.root, "rules/x.md") },
+            () => {
+              put(project.root, "rules/x.md", "# the agent edited this\n");
+              put(project.root, "agents/coder.md", "# the human saved this\n");
+            },
+          );
+
+          // Named by the payload: written back, as always.
+          expect(read(project.root, "rules/x.md")).toBe("# a rule\n");
+          // Not named by the payload: left exactly as the human left it.
+          expect(read(project.root, "agents/coder.md")).toBe(
+            "# the human saved this\n",
+          );
+
+          // Not reverted is not unreported — obligation 2. The message names it,
+          // says it was not written back, and names the copy of it.
+          expect(context(post)).toContain("agents/coder.md");
+          expect(context(post)).toContain("NOT written back");
+          const kept = preservedNames(project.root);
+          expect(
+            kept
+              .map((n) => preservedContent(project.root, n))
+              .sort(),
+          ).toEqual(["# the agent edited this\n", "# the human saved this\n"]);
+          for (const name of kept) {
+            expect(context(post)).toContain(`${REVERTED_DIR}/${name}`);
+          }
+
+          // Its own guard_block event, alongside the reverted one. A SET, not a
+          // list: the PreToolUse guard denied this Edit outright — the payload
+          // names a protected path — and that denial emits its own guard_block
+          // for `rules/x.md` before the measurement ever runs.
+          const blocked = readEvents(project.root).filter(
+            (e) => e.event === "guard_block",
+          );
+          expect([...new Set(blocked.map((e) => e.file))].sort()).toEqual([
+            "agents/coder.md",
+            "rules/x.md",
+          ]);
+          const spared = blocked.find((e) => e.file === "agents/coder.md");
+          expect(spared?.detail ?? "").toContain("NOT written back");
+
+          // Obligation 3: the halt is unchanged by any of this.
+          expect(readEscalation(project.root)?.haltActive).toBe(true);
+        },
+        { git: true },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "leaves a protected path alone when the write tool names an unprotected file",
+    () => {
+      // The most ordinary form of the defect, and the one a user actually meets:
+      // the agent edits a notebook nobody protects while the human saves a rule
+      // file. Nothing about this call points at `rules/x.md`.
+      //
+      // `NotebookEdit` carries its path under `notebook_path`, so this case also
+      // exercises the second half of `extractFilePath` — a narrowing that read
+      // only `file_path` would revert here and look correct everywhere else.
+      withProject(
+        (project) => {
+          const { post } = runToolCall(
+            project.root,
+            "NotebookEdit",
+            { notebook_path: resolve(project.root, "analysis.ipynb") },
+            () => put(project.root, "rules/x.md", "# the human saved this\n"),
+          );
+
+          expect(read(project.root, "rules/x.md")).toBe(
+            "# the human saved this\n",
+          );
+          expect(context(post)).toContain("NOT written back");
+          expect(context(post)).toContain("analysis.ipynb");
+          expect(readEscalation(project.root)?.haltActive).toBe(true);
+          expect(preservedNames(project.root).length).toBe(1);
+        },
+        { git: true },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "reverts everything when a write tool's payload names no path at all",
+    () => {
+      // The absence of evidence is not evidence of a concurrent writer. A
+      // payload the hook cannot read tells it nothing about what this call
+      // wrote, so the conservative answer is the full revert — the narrowing is
+      // taken only where the distinction is actually available.
+      withProject(
+        (project) => {
+          runToolCall(
+            project.root,
+            "MultiEdit",
+            { edits: [{ old_string: "a", new_string: "b" }] },
+            () => put(project.root, "rules/x.md", "# changed\n"),
+          );
+
+          expect(read(project.root, "rules/x.md")).toBe("# a rule\n");
+          expect(readEscalation(project.root)?.haltActive).toBe(true);
+        },
+        { git: true },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "OBLIGATION 4: Bash still reverts every changed protected path, narrowing nothing",
+    () => {
+      // This case exists so the `Bash` half cannot be extended into the
+      // narrowing by a later refactor without a red test. It is the same
+      // two-file change as the Edit case above, and the opposite outcome: a
+      // shell command's text names no target, so there is no path to spare and
+      // no decidable question to ask. Extending the narrowing here would bring
+      // back exactly the undecidable prediction v6.0.0 removed.
+      withProject(
+        (project) => {
+          const { post } = runToolCall(
+            project.root,
+            "Bash",
+            { command: "sh ./some-script.sh" },
+            () => {
+              put(project.root, "rules/x.md", "# one\n");
+              put(project.root, "agents/coder.md", "# two\n");
+            },
+          );
+
+          // BOTH written back. Neither is spared by anything in the payload.
+          expect(read(project.root, "rules/x.md")).toBe("# a rule\n");
+          expect(read(project.root, "agents/coder.md")).toBe("# an agent\n");
+
+          expect(context(post)).not.toContain("NOT written back");
+          expect(readEscalation(project.root)?.haltActive).toBe(true);
+
+          // And the copies are there for both, so the full revert stays
+          // recoverable rather than merely full.
+          expect(
+            preservedNames(project.root)
+              .map((n) => preservedContent(project.root, n))
+              .sort(),
+          ).toEqual(["# one\n", "# two\n"]);
+        },
+        { git: true },
+      );
     },
     CASE_TIMEOUT,
   );

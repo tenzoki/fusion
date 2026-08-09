@@ -44,8 +44,21 @@ import { matchesAny } from "./lib/paths.js";
 import { isFusionPluginCwd } from "./lib/self-detect.js";
 import { emitEvent } from "./lib/events.js";
 import { loadEscalation, raiseHalt, saveEscalation, clearHaltCommand, } from "./lib/escalation.js";
-import { consumeSnapshot, diffSnapshots, measurementRoot, restore, takeSnapshot, } from "./lib/protected-snapshot.js";
+import { ABSENT, consumeSnapshot, diffSnapshots, measurementRoot, restore, takeSnapshot, } from "./lib/protected-snapshot.js";
+import { preserveObserved } from "./lib/reverted-copy.js";
+import { projectRelative } from "./lib/project-relative.js";
+import { foldCase } from "./lib/paths.js";
 import { isObservedRulePath, rulesWriteDetail, rulesWriteExemptionActive, } from "./lib/rules-write-exemption.js";
+/**
+ * The four tools whose payload NAMES the path they write.
+ *
+ * Two readers, and the second is the reason this is a module-level constant
+ * rather than a local list: `trackChurn` uses it to decide what counts as a file
+ * mutation, and `narrowingTarget` uses it to decide whether the tool payload can
+ * be trusted to name the target at all. Two copies of this list could disagree,
+ * and the disagreement would be a silent change in what the guard reverts.
+ */
+const WRITE_TOOLS = ["Write", "Edit", "MultiEdit", "NotebookEdit"];
 /**
  * Workbench dashboard/state files that the orchestrator continuously
  * rewrites by design. Tracking them as churn or ping-back produces
@@ -139,9 +152,95 @@ function restorePath(root, change) {
         return err instanceof Error ? err.message : String(err);
     }
 }
-/** One human sentence per outcome, for the model and for the event log. */
-function describe(outcome) {
-    const { change, restored, reason } = outcome;
+/**
+ * Keep what the path was observed to hold, before anything is written back.
+ *
+ * The failure is CARRIED rather than thrown, because a copy that could not be
+ * made must not stop the revert: the guard's job is still to put the path back,
+ * and a preservation failure is one more thing to say in the sentence, not a
+ * reason to leave a protected path rewritten. `describe` says which of the three
+ * happened — kept, nothing to keep, or keeping failed — so no outcome claims a
+ * recoverable revert it cannot back up.
+ */
+function preserve(root, rel, observed) {
+    try {
+        return { path: preserveObserved(root, rel, observed), error: null };
+    }
+    catch (err) {
+        return { path: null, error: err instanceof Error ? err.message : String(err) };
+    }
+}
+/**
+ * The one path this tool call is known to have written — or null when there is
+ * no such knowledge and every changed protected path has to be written back.
+ *
+ * ## What is decidable here, and what is not
+ *
+ * The hook cannot tell who changed a protected path: its inputs are two
+ * fingerprints, a tool name and a tool payload, and none of them separates the
+ * agent's write from the user's editor, a watcher or a second session
+ * (`260809-1107`). One narrower question IS decidable. For the four write tools
+ * the payload names the file the tool writes, and a write tool has no second
+ * write — so a protected path that changed while being something OTHER than the
+ * payload's path was moved by something that is not this tool call.
+ *
+ * The user decided at the plan gate on 2026-08-09 that this evidence travels
+ * into the revert and not only into the message
+ * (`shared/decisions/260809-1527_*_should-the-revert-narrow-to-the-payload-path-for-the-four-write-tools.md`,
+ * option 2). What is not written back is still preserved, still named in the
+ * sentence, still recorded as a `guard_block`, and still halts.
+ *
+ * ## `Bash` is answered with null, and that is the whole of the bound
+ *
+ * The narrowing rests on the payload naming the target. A `Bash` payload names
+ * nothing of the kind — the command's text is exactly the input v6.0.0 stopped
+ * reading, because which files a command writes is not decidable from it. So
+ * `Bash` keeps the full revert of every changed protected path, and extending
+ * this function to it would bring back the undecidable question by the back
+ * door. Obligation 4 of that decision record puts a test on this sentence.
+ *
+ * Null is also the answer when a write tool arrives with no usable path in its
+ * payload. That direction is deliberate: an unreadable payload is the absence of
+ * evidence, and the absence of evidence must not spare a path from being written
+ * back.
+ *
+ * ## Two coordinate spaces, and the payload is in the wrong one
+ *
+ * A payload path is absolute or relative to `process.cwd()`; a protected path is
+ * relative to the measurement root, which may be an ancestor of it. `resolve`
+ * lifts the payload into an absolute path in the session's space and
+ * `projectRelative` puts it into the root's — the same normalisation the
+ * PreToolUse write-tool check uses, so the two halves of one tool call read one
+ * path the same way. A payload landing outside the root comes back absolute,
+ * matches no protected path, and therefore spares nothing that was measured.
+ */
+function narrowingTarget(input, root) {
+    if (!WRITE_TOOLS.includes(input.tool_name))
+        return null;
+    const raw = extractFilePath(input.tool_input);
+    if (raw === null)
+        return null;
+    return projectRelative(resolve(process.cwd(), raw), root);
+}
+/**
+ * One human sentence per outcome, for the model and for the event log.
+ *
+ * ## What this sentence stopped claiming
+ *
+ * It used to read "was modified and has been restored to its content from before
+ * this tool call", and the second half is still exactly right: the restore target
+ * IS the content from before the call. What the surrounding message asserted, and
+ * no longer does, is that the AGENT made the change — see `measureProtectedPaths`,
+ * which now says in as many words that the guard measures a window and not an
+ * author. The wording here is unchanged in that respect on purpose: it describes
+ * what was measured and what was done about it, which is all the hook knows.
+ *
+ * What is added is the copy. A revert that names where the observed content was
+ * kept is recoverable; one that does not is destruction, and the difference has
+ * to reach the reader of the sentence and of `events.jsonl` alike.
+ */
+function describe(outcome, toolName) {
+    const { change, verdict, reason, preserved, sparedBy } = outcome;
     const what = change.kind === "created"
         ? "was created"
         : change.kind === "deleted"
@@ -152,9 +251,21 @@ function describe(outcome) {
     const undone = change.kind === "created"
         ? "has been removed again — it did not exist before this tool call"
         : "has been restored to its content from before this tool call";
-    return restored
-        ? `${change.path} ${what} and ${undone}.`
-        : `${change.path} ${what} and could NOT be restored: ${reason}. The change is still on disk.`;
+    // Three states, and the empty one is the deleted-path case: there were no
+    // observed bytes to keep, and the revert brought the content back rather than
+    // destroying any.
+    const kept = preserved.path !== null
+        ? ` The content it carried is preserved at ${preserved.path}.`
+        : preserved.error !== null
+            ? ` Its content could NOT be preserved: ${preserved.error}.`
+            : "";
+    if (verdict === "left-in-place") {
+        return (`${change.path} ${what}, and this ${toolName} call names ${sparedBy} — a different path — ` +
+            `so the change was NOT written back and is still on disk.${kept}`);
+    }
+    return verdict === "restored"
+        ? `${change.path} ${what} and ${undone}.${kept}`
+        : `${change.path} ${what} and could NOT be restored: ${reason}. The change is still on disk.${kept}`;
 }
 /**
  * Split the measured changes into the ones `FUSION_ALLOW_RULES_WRITE` covers and
@@ -245,8 +356,32 @@ function splitOffExempted(changes, config) {
  * already the shape of this residual. A change that IS seen is always a real
  * change to a protected path, so the revert is never wrong about the FILE when
  * it fires — only, per `260809-1107`, about who moved it.
+ *
+ * ## The observed content is kept before anything is written back
+ *
+ * The guard cannot tell the agent's write from a human editor's save inside the
+ * window, so it can and does revert work nobody asked it to revert. That stays
+ * true. What changed is that the bytes it wrote over are no longer gone:
+ * `lib/reverted-copy.ts` keeps them under `.guard-state/reverted/`, and the name
+ * of that copy goes into the sentence the model reads and into the `guard_block`
+ * event. A revert that is recoverable is a different failure from one that is
+ * not.
+ *
+ * The bytes come from the after-snapshot this function already took. Reading the
+ * file again would be a second answer to a question the comparison has already
+ * answered, and the two are free to disagree — the same reason `ProtectedChange`
+ * carries `before` instead of looking it up a second time.
+ *
+ * ## What is written back narrows for the four write tools, and only for them
+ *
+ * See `narrowingTarget` for the decidable question and for why `Bash` is
+ * excluded from it. Here is what follows: a path the narrowing spares is still
+ * preserved, still described, still emitted as its own `guard_block`, and still
+ * raises the halt. The only thing that changes is whether the bytes on disk are
+ * overwritten — never whether the change is reported.
  */
-function measureProtectedPaths(toolName) {
+function measureProtectedPaths(input) {
+    const toolName = input.tool_name;
     const config = loadConfig();
     if (!config.guard.enabled)
         return null;
@@ -280,20 +415,47 @@ function measureProtectedPaths(toolName) {
     // halt, and the advisory above is the whole record.
     if (violations.length === 0)
         return null;
+    const spared = narrowingTarget(input, root);
     const outcomes = violations.map((change) => {
+        // Kept first, and from the after-snapshot rather than from the file: this is
+        // the last moment the observed content still exists anywhere.
+        const preserved = preserve(root, change.path, after.paths[change.path] ?? ABSENT);
+        // Folded, because the protected patterns are matched folded — an unfolded
+        // comparison would spare `RULES/x.md` from a payload naming `rules/x.md` on
+        // a case-insensitive volume, where the two are one file.
+        if (spared !== null && foldCase(change.path) !== foldCase(spared)) {
+            return {
+                change,
+                verdict: "left-in-place",
+                reason: "",
+                preserved,
+                sparedBy: spared,
+            };
+        }
         const reason = restorePath(root, change);
-        return { change, restored: reason === null, reason: reason ?? "" };
+        return {
+            change,
+            verdict: reason === null ? "restored" : "restore-failed",
+            reason: reason ?? "",
+            preserved,
+            sparedBy: "",
+        };
     });
     // One `guard_block` per changed path, carrying the file and the cause, so a
     // reader of `events.jsonl` can see WHICH files moved rather than only that
-    // something did.
+    // something did. A path the narrowing spared gets one too — obligation 2 of
+    // the decision record: what is not reverted is never passed over in silence.
     for (const outcome of outcomes) {
-        emitEvent("guard_block", toolName, outcome.change.path, describe(outcome));
+        emitEvent("guard_block", toolName, outcome.change.path, describe(outcome, toolName));
     }
     // The halt is raised outright, not counted toward the three-block threshold.
     // A protected path was actually written; there is no "two more of these" to
     // wait for. See `raiseHalt` in lib/escalation.ts.
-    const summary = outcomes.map(describe).join(" ");
+    //
+    // It is raised for a spared path exactly as for a reverted one — obligation 3
+    // of the decision record. The narrowing decides what is written back, never
+    // whether a measured change is a change.
+    const summary = outcomes.map((o) => describe(o, toolName)).join(" ");
     const escalation = loadEscalation();
     raiseHalt(escalation, "protected_path_measured", `Protected path changed during a ${toolName} call — ${summary}`, toolName, outcomes.length === 1 ? outcomes[0].change.path : undefined);
     saveEscalation(escalation);
@@ -304,7 +466,11 @@ function measureProtectedPaths(toolName) {
     // `clearHaltCommand` in lib/escalation.ts.
     return ("fusion guard: a protected path changed during this tool call. " +
         summary +
-        " The guard is now HALTED, so all write tools are blocked. " +
+        " What the guard measures is the window around the call, not who wrote in " +
+        "it: your own tool call, the user saving in their editor, a file watcher " +
+        "and a second session are indistinguishable here, so this may not have " +
+        "been you. " +
+        "The guard is now HALTED, so all write tools are blocked. " +
         "Do not try to reapply the change or route around this. " +
         "These paths are a human decision: tell the user what you were trying to do " +
         "and why, and let them make the change or adjust guard.protectedPaths in the " +
@@ -326,8 +492,7 @@ function measureProtectedPaths(toolName) {
  */
 function trackChurn(input) {
     // Only track write operations for churn
-    const writeTools = ["Write", "Edit", "MultiEdit", "NotebookEdit"];
-    if (!writeTools.includes(input.tool_name)) {
+    if (!WRITE_TOOLS.includes(input.tool_name)) {
         // For Bash, we just emit a tracker_record event and return
         if (input.tool_name === "Bash") {
             emitEvent("tracker_record", "Bash", undefined, "Bash command observed");
@@ -435,7 +600,7 @@ async function main() {
     // the churn heatmap, which only ever looks at the write tools. A protected
     // path can change by any route, which is the whole point of measuring rather
     // than predicting.
-    const measured = measureProtectedPaths(input.tool_name);
+    const measured = measureProtectedPaths(input);
     trackChurn(input);
     respond(measured ?? undefined);
 }
