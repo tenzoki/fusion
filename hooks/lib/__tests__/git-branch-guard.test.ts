@@ -769,20 +769,24 @@ describe("an unrecognised global option no longer hides the subcommand (260804-1
   });
 
   it("states the COST as a rule with an open example set, not as a list", () => {
-    // The price of resuming: a bare word behind an unrecognised option is read
-    // as that option's value, so a NON-subcommand standing there lets the walk
-    // run on into the subcommand's own arguments. The shape is
-    // `git <unknown-option> <non-subcommand> <switch|worktree|checkout>`, and
-    // it is a RULE — these are examples of it, not the extent of it.
+    // The price of resuming: a bare word behind an unrecognised option that
+    // takes a SEPARATE word is read as that option's value, so a
+    // NON-subcommand standing there lets the walk run on into the subcommand's
+    // own arguments. The shape is
+    // `git <unknown-option-taking-a-separate-word> <non-subcommand>
+    // <switch|worktree|checkout>`, and it is a RULE — these are examples of it,
+    // not the extent of it.
     //
     // `git --no-pager grep switch` is the one an agent could plausibly type:
     // searching the tree for the word "switch" with the pager off. Measured, it
     // is the only realistic everyday command in a 1143-row sweep that this
     // change moves from allow to deny.
+    //
+    // The attached-value spelling of the same shape used to be in this list and
+    // is not any more; it now sits in the narrowing block below.
     for (const cmd of [
       "git --no-pager grep switch",
       "git --no-pager grep checkout main",
-      "git --exec-path=/x grep switch",
       "git --paginate grep worktree add",
     ]) {
       expect(deny(cmd).deny, cmd).toBe(true);
@@ -826,6 +830,97 @@ describe("an unrecognised global option no longer hides the subcommand (260804-1
     ]) {
       expect(deny(cmd).deny, cmd).toBe(true);
     }
+  });
+});
+
+/**
+ * The attached-value narrowing (`260809-1548`).
+ *
+ * The resumed walk above treated EVERY unrecognised `-`-prefixed token as one
+ * that might take a following word, and skipped that word accordingly. For an
+ * option written with its value attached — `--exec-path=/x` — that is provably
+ * wrong: the value is inside the token, so no further word belongs to the
+ * option and the next bare word is git's real subcommand. Three of the ten
+ * measured false denials came from nothing but that.
+ *
+ * It opens nothing, and the reason is structural rather than empirical: the
+ * failure mode the resumed walk exists to close is an option whose value stands
+ * SEPARATELY, in the position a subcommand would occupy. An attached-value
+ * option has no such word, so it cannot be the form that hides a subcommand —
+ * which is why the deny rows below are unmoved by the narrowing.
+ */
+describe("an attached-value global option does not also consume the next word (260809-1548)", () => {
+  it("allows the everyday command the flag turned into a deny", () => {
+    // Each of these is an ordinary invocation git itself reads correctly: the
+    // word after the attached option IS the subcommand, and `switch` /
+    // `checkout` / `worktree` further along are that subcommand's arguments.
+    // Before the narrowing all three denied.
+    for (const cmd of [
+      "git --exec-path=/x grep switch",
+      "git --exec-path=/x grep checkout main",
+      "git --exec-path=/x grep worktree add",
+    ]) {
+      expect(deny(cmd).deny, cmd).toBe(false);
+    }
+  });
+
+  it("still denies the same option in front of a real subcommand", () => {
+    // The bound from the other side, and the anti-vacuity for the block: the
+    // narrowing must not touch the position the policy is actually about. The
+    // word after the attached option is tested against the three rows exactly
+    // as it is with no option in front.
+    for (const cmd of [
+      "git --exec-path=/x switch main",
+      "git --exec-path=/x checkout -b f",
+      "git --exec-path=/x worktree add ../wt f",
+      "git --exec-path=/x checkout main",
+    ]) {
+      expect(deny(cmd).deny, cmd).toBe(true);
+    }
+  });
+
+  it("leaves the separated form, which is the actual defect, untouched", () => {
+    // `--namespace ns switch main` really does switch branches against real
+    // git 2.49.0. The narrowing keys on `=` in the token, so this row cannot
+    // move — and if it ever did, the walk would be back at `260809-1106`.
+    for (const cmd of [
+      "git --namespace ns switch main",
+      "git --attr-source HEAD switch t1",
+      "git --config-env x=Y switch main",
+      "git --no-pager grep switch",
+    ]) {
+      expect(deny(cmd).deny, cmd).toBe(true);
+    }
+  });
+
+  it("does not disturb the four options the walk names, `=` or not", () => {
+    // `-c k=v` carries an `=` in its VALUE token, not its flag token, and
+    // `--git-dir=`/`--work-tree=` are handled before the flag is ever set.
+    // None of them reaches the narrowing, and the verdicts prove it.
+    expect(deny("git -c k=v switch main").deny).toBe(true);
+    expect(deny("git --git-dir=/r switch main").deny).toBe(true);
+    expect(deny("git --work-tree=/w switch main").deny).toBe(true);
+    // The `--git-dir` fail-closed path for the ambiguous checkout form still
+    // forces a deny even with a resolver that would otherwise allow.
+    const r = mockResolver(["f"], []);
+    expect(classifyWith("git --git-dir=/r checkout f", r).deny).toBe(true);
+    expect(classifyWith("git checkout f", r).deny).toBe(false);
+  });
+
+  it("carries the `-C` hints it steps over on the way to the subcommand", () => {
+    // An attached-value option no longer stops the walk from resuming past a
+    // LATER unknown option, so the hint-collection path still has to work in
+    // its presence.
+    const r: CheckoutResolver = {
+      pathExists: (t, hints) => hints.includes("/repo") && t === "sub/file.md",
+      isRef: () => false,
+    };
+    expect(
+      classifyWith(
+        "git --exec-path=/x --namespace ns -C /repo checkout sub/file.md",
+        r,
+      ).deny,
+    ).toBe(false);
   });
 });
 

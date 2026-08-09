@@ -248,7 +248,8 @@ flowchart TD
 - **Depends on:** task 4 (same source file and same test file as tasks 3 and 4; land after
   both so each classifier change is one commit)
 - **Priority:** normal
-- **Status:** [ ] open
+- **Status:** [x] done (260809-1912, coder — `unknownOption = !t.includes("=")` in
+  `classifySegment`; sweep re-measured 145 → 142, newly allowed 0)
 - **Detail:** The resumed option walk added in `9716ee5` sets `unknownOption = true` for
   every unrecognised `-`-prefixed token, so it skips the following token as a possible
   value. For an option written in the attached form, `--exec-path=/x`, that is provably

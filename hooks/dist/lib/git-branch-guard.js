@@ -152,22 +152,47 @@ const BRANCH_SUBCOMMANDS = new Set(["switch", "worktree", "checkout"]);
  * arguments, where `-C` means something else entirely (`git commit -C HEAD~1`
  * reuses a message).
  *
+ * ## An ATTACHED value is not a separate word, and is not treated as one
+ *
+ * "Unrecognised" is not the same question as "takes a following word". An
+ * option written `--exec-path=/x` carries its value inside its own token, so
+ * there is no following word for it to consume and the next bare word is git's
+ * real subcommand. Such a token therefore does NOT set the flag, and the walk
+ * stops at that word exactly as it does with no unknown option in front
+ * (`issues/260809-1548_*_an-unknown-global-option-carrying-its-own-value-should-not-also-consume-the-next-word.md`).
+ *
+ * This opens nothing. The failure mode the resumed walk exists to close is an
+ * option whose value stands SEPARATELY, in the position a subcommand would
+ * occupy; an attached-value option has no such word, so it cannot be the form
+ * that hides a subcommand. What it removes is false denies: `git
+ * --exec-path=/x grep switch` is an ordinary tree search that the flag turned
+ * into a deny, because `grep` was read as the option's value and `switch` then
+ * stood in subcommand position.
+ *
+ * The test is `=` in the token, not a table of options that take attached
+ * values — a table would carry the same "every option git has not shipped yet"
+ * defect this section already refuses to close by adding a row.
+ *
  * ## What this preserves, and what it costs
  *
  * The resumed walk can only try MORE subcommand candidates and record MORE
- * directories than a walk that stopped, so the candidate set after the change
- * is a superset of the one before and the change can only ADD denies. That is
- * the same monotonicity `classifyCheckout` rests on, and it is why no
- * measurement is needed on the deny side. The ALLOW side is measured rather
- * than argued, by the bounded corpus in
+ * directories than the pre-`9716ee5` walk, which stopped at the first bare
+ * non-matching word. That still holds with the attached-value carve-out: at
+ * such a token the walk stops where the old one stopped, so the candidate set
+ * remains a superset of the baseline's and the change can only ADD denies
+ * against it. That is the same monotonicity `classifyCheckout` rests on, and it
+ * is why no measurement is needed on the deny side. The ALLOW side is measured
+ * rather than argued, by the bounded corpus in
  * `__tests__/helpers/git-corpus.ts` — no verdict that denied at the baseline
  * allows after it.
  *
  * The cost is a false deny of the shape
- * `git <unknown-option> <non-subcommand> <switch|worktree|checkout>`. The class
- * is open; the shape is not special to any one option. It is smaller here than
- * it was in its original home: this table has three rows against the mutation
- * classifier's many, so far fewer trailing words can match one.
+ * `git <unknown-option-taking-a-separate-word> <non-subcommand>
+ * <switch|worktree|checkout>`. The class is open; the shape is not special to
+ * any one option. It is smaller here than it was in its original home: this
+ * table has three rows against the mutation classifier's many, so far fewer
+ * trailing words can match one. And it excludes the attached form outright,
+ * which is what the section above buys.
  *
  * THE BOUND, stated because "the class is closed" is the claim that was wrong
  * last time. Closed: every well-formed invocation in which each unrecognised
@@ -219,7 +244,11 @@ function classifySegment(segment, resolver) {
                 i += t.includes("=") ? 1 : 2;
                 continue;
             }
-            unknownOption = true;
+            // An option carrying its own value is complete in ONE token, so no
+            // separate word belongs to it and the next bare word is git's real
+            // subcommand. `--exec-path=/x` therefore leaves the flag clear; a
+            // separated-value option (`--namespace ns`) still sets it.
+            unknownOption = !t.includes("=");
             i += 1;
             continue;
         }
@@ -376,8 +405,13 @@ export function classifyGitCommand(command, overrides, resolver) {
     // Strip inert shell data regions (single-quoted strings, quoted-delimiter
     // heredoc bodies) before segmenting, so prose that merely mentions
     // `git switch` / `git worktree add` in backticks is not misread as command
-    // substitution. Code regions where bash DOES expand (double quotes, unquoted
-    // heredocs) are preserved, keeping the guard fail-closed.
+    // substitution. What bash would still EXPAND survives, which is what keeps
+    // the guard fail-closed — but the two surfaces survive differently: a
+    // double-quoted string is preserved whole, while an unquoted-delimiter
+    // heredoc body keeps only its `$(…)` and backtick regions and is blanked
+    // around them (`blankHeredocBody` in `shell-parse.ts`). Its prose is written
+    // to a file, not run, and keeping the whole body as code denied an agent
+    // documenting this very policy in a runbook (`issues/260809-1111`).
     const segments = extractCommandSegments(stripDataRegions(command));
     // The first segment an override let through, held back rather than returned
     // so the rest of the command is still classified against the OTHER class.

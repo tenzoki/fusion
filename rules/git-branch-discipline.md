@@ -35,10 +35,12 @@ Nor behind an extra word. The classifier resolves the command word before it rea
 Closing the option defect (`shared/issues/260809-1106_*_the-unknown-global-option-fix-was-deleted-….md`) has a price, and the price is a **rule with an open example set**, not a list to learn. When the walk over git's global options meets an option it does not recognise, it reads the following word as that option's value; if that word is not a subcommand either, the walk carries on and may find `switch`, `checkout` or `worktree` further along, standing where a verb would stand while actually being an argument. The shape is:
 
 ```
-git <unrecognised-global-option> <non-subcommand> <switch|checkout|worktree> …
+git <unrecognised-global-option-taking-a-SEPARATE-word> <non-subcommand> <switch|checkout|worktree> …
 ```
 
 `git --no-pager grep switch` — searching the tree for the word "switch" with the pager off — is an example of it, and the one somebody plausibly types. These are examples and not the extent of it: the set moves as the option table and the walk change, so read the shape rather than counting the cases.
+
+The capitalisation in the shape is load-bearing, and it narrows the cost (`shared/issues/260809-1548_*_an-unknown-global-option-carrying-its-own-value-….md`). An option that carries its own value in one token — `--exec-path=/x` — has no following word to consume, so the walk stops at the next bare word exactly as it would with no option in front. `git --exec-path=/x grep switch` is therefore allowed, while `git --no-pager grep switch` is not. Nothing was opened by that: the failure mode the walk exists to close is a value standing *separately*, in the position a subcommand would occupy, and an attached value never stands there.
 
 The bound, from the other side: with no unrecognised option in front, the walk stops at the first non-flag word exactly as it did before, so `git grep switch` and `git commit -m switch` are untouched. A deny of this shape is the classifier being fail-closed, not evidence that your command moves HEAD. Report it as what it is; do not take it as licence to go hunting for a spelling that gets past a deny, which is what point 1 below forbids wherever the deny is real.
 
