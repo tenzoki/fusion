@@ -1253,6 +1253,62 @@ describe("shell data regions — heredocs and single quotes (issue 260716-2005)"
     expect(deny(cmd).deny).toBe(true);
   });
 
+  // `260809-2044` — the regression the relaxation above caused. Blanking a body
+  // is right about a body; it is a deny→allow wherever the lexer took a `<<WORD`
+  // for a redirect and bash did not, because the blanking then ran from the
+  // false opener to the first line equal to the delimiter and erased the real
+  // commands in between. Each shape below was confirmed against bash 3.2 with
+  // the switch replaced by `touch RAN`: the marker appears, so the line the
+  // lexer used to blank is a line the shell executes.
+
+  it("DENIES a switch blanked by a `<<EOF` a COMMENT merely names (260809-2044)", () => {
+    const cmd =
+      "# write config with <<EOF\n" +
+      "git switch main\n" +
+      "cat > cfg <<EOF\n" +
+      "value=1\n" +
+      "EOF";
+    expect(deny(cmd).deny).toBe(true);
+  });
+
+  it("DENIES a switch blanked by an ARITHMETIC left shift (260809-2044)", () => {
+    expect(deny("echo $((1<<2))\ngit switch main\n2").deny).toBe(true);
+  });
+
+  it("DENIES a switch blanked by the other three non-tokenized spans", () => {
+    // The same defect, in the members of the class the two measured shapes
+    // belong to: `((…))`, `$[…]` and `${…}` suspend bash's tokenizer exactly as
+    // `$((…))` does, so a `<<` in any of them was a false opener too.
+    for (const cmd of [
+      "(( 1<<2 ))\ngit switch main\n2",
+      "echo $[1<<2]\ngit switch main\n2",
+      "echo ${x:-<<EOF}\ngit switch main\nEOF",
+      "a[1<<2]=v\ngit switch main\n2",
+    ]) {
+      expect(deny(cmd).deny, `command: ${JSON.stringify(cmd)}`).toBe(true);
+    }
+  });
+
+  it("DENIES a worktree add blanked by a false opener too", () => {
+    // The defect is in the lexer, not in the branch half of the policy.
+    const cmd =
+      "# see <<EOF\ngit worktree add ../wt x\ncat <<EOF\nv\nEOF";
+    expect(deny(cmd).deny).toBe(true);
+  });
+
+  it("still ALLOWS the shapes where bash really DOES open the heredoc", () => {
+    // The near-misses, checked so a later widening of the span family cannot
+    // quietly swallow them: bash reads `<<2` as a real redirect in all three,
+    // and the body it consumes is a body. Measured the same way — no `RAN`.
+    for (const cmd of [
+      "x=1<<2\ngit switch main\n2",
+      "let x=1<<2\ngit switch main\n2",
+      "echo a[1<<2]\ngit switch main\n2",
+    ]) {
+      expect(deny(cmd).deny, `command: ${JSON.stringify(cmd)}`).toBe(false);
+    }
+  });
+
   it("DENIES a real git switch on the redirect line even with a quoted heredoc after", () => {
     const cmd =
       "git switch main <<'EOF'\n" +

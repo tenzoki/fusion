@@ -40,6 +40,36 @@
  * A `$(…)` / backtick body is lifted out into its own segment, because it runs
  * as its own command, and a single space is left where it stood. The git policy
  * asks only which commands run, and a substitution's VALUE is never one of them.
+ *
+ * ## The second axis: spans bash does not tokenize
+ *
+ * Quoting is not the only thing that suspends bash's tokenizer. It reads a
+ * family of spans as ONE unit and recognizes no operator inside them, and a
+ * lexer that models only quotes will read an operator where bash reads none.
+ * That cost a live deny→allow (`issues/260809-2044`): a `<<WORD` in a `#`
+ * comment or in `$((a<<b))` was taken for a heredoc redirect, and the body
+ * blanking that followed erased the real commands standing between the false
+ * opener and the first line equal to the delimiter.
+ *
+ * The members, each confirmed against bash 3.2 by running the shape with the
+ * blanked line replaced by `touch RAN` and checking the marker appeared:
+ *
+ *   - `# …` to end of line          — a comment
+ *   - `$((…))` and `((…))`          — arithmetic expansion and command
+ *   - `$[…]`                        — the deprecated arithmetic form
+ *   - `${…}`                        — parameter expansion (carries `${a[i<<1]}`)
+ *   - `name[…]=`                    — the subscript of an array assignment
+ *
+ * And the near-misses, checked so the next pass does not re-derive them: `x=1<<2`,
+ * `let x=1<<2` and `echo a[1<<2]` really ARE heredoc redirects to bash, so the
+ * lexer was right about all three and none of them is a member.
+ *
+ * These spans are emitted VERBATIM. Nothing new is blanked — a comment is left
+ * where it stood rather than erased — so a span boundary this lexer guesses
+ * wrong can only hand MORE text to the classifier, never less. That keeps the
+ * bias where the rest of the module puts it: a mis-parse here costs a false
+ * deny, which is an annoyance, and can never cost an allow on a line the shell
+ * runs, which is the defect this section exists to prevent.
  */
 /**
  * The outcome of resolving one word to a static literal.

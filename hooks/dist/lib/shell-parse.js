@@ -40,6 +40,36 @@
  * A `$(…)` / backtick body is lifted out into its own segment, because it runs
  * as its own command, and a single space is left where it stood. The git policy
  * asks only which commands run, and a substitution's VALUE is never one of them.
+ *
+ * ## The second axis: spans bash does not tokenize
+ *
+ * Quoting is not the only thing that suspends bash's tokenizer. It reads a
+ * family of spans as ONE unit and recognizes no operator inside them, and a
+ * lexer that models only quotes will read an operator where bash reads none.
+ * That cost a live deny→allow (`issues/260809-2044`): a `<<WORD` in a `#`
+ * comment or in `$((a<<b))` was taken for a heredoc redirect, and the body
+ * blanking that followed erased the real commands standing between the false
+ * opener and the first line equal to the delimiter.
+ *
+ * The members, each confirmed against bash 3.2 by running the shape with the
+ * blanked line replaced by `touch RAN` and checking the marker appeared:
+ *
+ *   - `# …` to end of line          — a comment
+ *   - `$((…))` and `((…))`          — arithmetic expansion and command
+ *   - `$[…]`                        — the deprecated arithmetic form
+ *   - `${…}`                        — parameter expansion (carries `${a[i<<1]}`)
+ *   - `name[…]=`                    — the subscript of an array assignment
+ *
+ * And the near-misses, checked so the next pass does not re-derive them: `x=1<<2`,
+ * `let x=1<<2` and `echo a[1<<2]` really ARE heredoc redirects to bash, so the
+ * lexer was right about all three and none of them is a member.
+ *
+ * These spans are emitted VERBATIM. Nothing new is blanked — a comment is left
+ * where it stood rather than erased — so a span boundary this lexer guesses
+ * wrong can only hand MORE text to the classifier, never less. That keeps the
+ * bias where the rest of the module puts it: a mis-parse here costs a false
+ * deny, which is an annoyance, and can never cost an allow on a line the shell
+ * runs, which is the defect this section exists to prevent.
  */
 /**
  * Segment separator used by the flat legacy segmenter. NUL cannot appear in a
@@ -61,22 +91,36 @@ function blankData(s) {
     return s.replace(/[^\n]/g, " ");
 }
 /**
- * Index of the `)` that closes the `$(` starting at `open` (the index of the
- * `$`), honouring nesting. -1 when it is never closed.
+ * Index of the `close` that balances the `open` at index `from`, honouring
+ * nesting. -1 when it is never balanced.
+ *
+ * The one bracket scan in this module. `findSubstitutionClose` is it with
+ * `(`/`)` and the offset that skips a `$`, and `scanNonTokenizedSpan` is it with
+ * the other three bracket pairs — so the extent a substitution has when
+ * `blankHeredocBody` decides what survives, when `extractCommandSegments` lifts
+ * it out, and when `stripData` steps over an arithmetic span is one extent by
+ * construction rather than three that happen to agree.
  */
-function findSubstitutionClose(s, open) {
+function findBalancedClose(s, from, open, close) {
     let depth = 0;
-    for (let i = open + 1; i < s.length; i++) {
+    for (let i = from; i < s.length; i++) {
         const ch = s[i];
-        if (ch === "(")
+        if (ch === open)
             depth++;
-        else if (ch === ")") {
+        else if (ch === close) {
             depth--;
             if (depth === 0)
                 return i;
         }
     }
     return -1;
+}
+/**
+ * Index of the `)` that closes the `$(` starting at `open` (the index of the
+ * `$`), honouring nesting. -1 when it is never closed.
+ */
+function findSubstitutionClose(s, open) {
+    return findBalancedClose(s, open + 1, "(", ")");
 }
 /**
  * Blank an UNQUOTED-delimiter heredoc body, keeping every region bash actually
@@ -151,6 +195,82 @@ function findHeredocTerminator(command, from, hd) {
         pos = lineEnd + 1;
     }
 }
+/** First character of a shell identifier (an array-assignment name). */
+const IDENT_HEAD = /[A-Za-z_]/;
+/** Subsequent character of a shell identifier. */
+const IDENT_TAIL = /[A-Za-z0-9_]/;
+/**
+ * True for a character after which the NEXT character begins a new word: a
+ * blank, or one of bash's metacharacters. Exactly bash's own set — `{` is
+ * absent from it, which is what leaves the `#` of `${#x}` a literal rather
+ * than a comment opener.
+ */
+const WORD_BREAK = /[ \t\n|&;()<>]/;
+/**
+ * End index (EXCLUSIVE) of the non-tokenized span starting at `i`, or -1 when
+ * no span starts there. See the module header for the family and for why every
+ * member is emitted verbatim.
+ *
+ * `wordStart` says whether `i` begins a word, which two members need: a `(` in
+ * mid-word is not the arithmetic command, and a `name[` that is not a word's
+ * first character is not an assignment.
+ *
+ * Fail-closed throughout: an unbalanced bracket returns -1, so the text is
+ * scanned as ordinary code exactly as it was before this function existed.
+ */
+function scanNonTokenizedSpan(command, i, wordStart) {
+    const n = command.length;
+    const ch = command[i];
+    if (ch === "$") {
+        // `$((…))` arithmetic expansion. Tested BEFORE the plain `$(` command
+        // substitution, which must keep falling through — a substitution body is a
+        // COMMAND context, where a `<<` really is a redirect and has to be seen.
+        // The `$((cmd))` reading bash rejects as arithmetic is not a loss here:
+        // the span is emitted verbatim, so `extractCommandSegments` still lifts the
+        // body out and still classifies it.
+        if (command[i + 1] === "(" && command[i + 2] === "(") {
+            const close = findBalancedClose(command, i + 1, "(", ")");
+            return close === -1 ? -1 : close + 1;
+        }
+        // `${…}` parameter expansion. Carries the array subscript of `${a[i<<1]}`
+        // with it, so that shape needs no rule of its own.
+        if (command[i + 1] === "{") {
+            const close = findBalancedClose(command, i + 1, "{", "}");
+            return close === -1 ? -1 : close + 1;
+        }
+        // `$[…]`, the deprecated arithmetic form bash still honours.
+        if (command[i + 1] === "[") {
+            const close = findBalancedClose(command, i + 1, "[", "]");
+            return close === -1 ? -1 : close + 1;
+        }
+        return -1;
+    }
+    // `((…))` arithmetic command. Word-start only: anywhere else a `(` is the
+    // subshell grammar, and a subshell IS a command context.
+    if (wordStart && ch === "(" && command[i + 1] === "(") {
+        const close = findBalancedClose(command, i, "(", ")");
+        return close === -1 ? -1 : close + 1;
+    }
+    // `name[…]=` / `name[…]+=` — the subscript of an array assignment, which bash
+    // evaluates arithmetically. The trailing `=` is required: without it the word
+    // is a glob pattern, and bash reads the `<<` of `echo a[1<<2]` as a real
+    // heredoc. The span ends at the `]`; the `=` and the value after it are
+    // ordinary code.
+    if (wordStart && IDENT_HEAD.test(ch ?? "")) {
+        let j = i + 1;
+        while (j < n && IDENT_TAIL.test(command[j]))
+            j++;
+        if (command[j] === "[") {
+            const close = findBalancedClose(command, j, "[", "]");
+            if (close !== -1 &&
+                (command[close + 1] === "=" ||
+                    (command[close + 1] === "+" && command[close + 2] === "="))) {
+                return close + 1;
+            }
+        }
+    }
+    return -1;
+}
 /**
  * Handle shell *data regions* so that the substitution recursion and operator
  * segmentation which follow only ever classify executable *code*. Bash performs
@@ -200,6 +320,10 @@ function stripData(command) {
     let i = 0;
     // Heredocs whose body has not yet been consumed, in declaration order.
     let pending = [];
+    // Does `i` begin a word? Start of input does, and so does the position after
+    // a blank or a metacharacter. Two of the non-tokenized spans are word-start
+    // only, and so is a `#` comment.
+    let wordStart = true;
     while (i < n) {
         const ch = command[i];
         // Backslash escape in code context.
@@ -223,6 +347,7 @@ function stripData(command) {
             // continuation.
             out += command[i] + command[i + 1];
             i += 2;
+            wordStart = false;
             continue;
         }
         // Single-quoted string → data. Look ahead for the close; unterminated =
@@ -236,6 +361,7 @@ function stripData(command) {
             const body = command.slice(i + 1, close);
             out += "'" + blankData(body) + "'";
             i = close + 1;
+            wordStart = false;
             continue;
         }
         // Double-quoted string. Scanned as one verbatim unit so an inner `'` or
@@ -277,6 +403,34 @@ function stripData(command) {
             // this path is what it always was for the git policy.
             out += '"' + body + '"';
             i = j + 1;
+            wordStart = false;
+            continue;
+        }
+        // `#` at a word start opens a COMMENT: bash ignores it and the rest of the
+        // line. Emitted verbatim, so the only thing this branch changes is that no
+        // operator is recognized in it — a `<<EOF` a comment merely NAMES stops
+        // opening a heredoc and blanking the commands below (`issues/260809-2044`).
+        // Blanking the comment instead would be sound bash, but it would be a new
+        // way for this function to REMOVE text, which is the shape of the defect it
+        // is fixing; the comment's own text keeps classifying exactly as it did.
+        if (ch === "#" && wordStart) {
+            let end = command.indexOf("\n", i);
+            if (end === -1)
+                end = n;
+            out += command.slice(i, end);
+            i = end;
+            wordStart = false;
+            continue;
+        }
+        // A span bash's tokenizer consumes without recognizing an operator inside
+        // it — arithmetic, parameter expansion, an array-assignment subscript. See
+        // the module header. Verbatim, so a wrong guess about the span's extent can
+        // only over-classify.
+        const spanEnd = scanNonTokenizedSpan(command, i, wordStart);
+        if (spanEnd !== -1) {
+            out += command.slice(i, spanEnd);
+            i = spanEnd;
+            wordStart = false;
             continue;
         }
         // Here-string `<<<` is NOT a heredoc — bash expands its word. Leave as code.
@@ -285,6 +439,7 @@ function stripData(command) {
             command[i + 2] === "<") {
             out += "<<<";
             i += 3;
+            wordStart = true;
             continue;
         }
         // Heredoc redirect `<<[-] DELIM`. Parse the delimiter; a quoted (or
@@ -329,11 +484,13 @@ function stripData(command) {
                 pending.push({ delim, dash, strip: quoted });
                 out += "<<"; // inert marker; the delimiter word itself is dropped
                 i = j;
+                wordStart = false;
                 continue;
             }
             // Not a real delimiter → emit a single `<` and advance.
             out += ch;
             i++;
+            wordStart = true;
             continue;
         }
         // End of a redirect line: consume the bodies of any pending heredocs.
@@ -371,10 +528,12 @@ function stripData(command) {
             pending = [];
             if (bailed)
                 break;
+            wordStart = true;
             continue;
         }
         out += ch;
         i++;
+        wordStart = WORD_BREAK.test(ch);
     }
     return out;
 }

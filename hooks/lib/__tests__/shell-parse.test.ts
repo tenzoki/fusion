@@ -258,6 +258,119 @@ describe("blanking data regions", () => {
   });
 });
 
+describe("spans bash does not tokenize (issue 260809-2044)", () => {
+  // Quoting is not the only thing that suspends bash's tokenizer. In a comment
+  // and in the bracketed arithmetic/expansion spans it recognizes no operator,
+  // so a `<<WORD` there is not a heredoc redirect — and reading one cost a
+  // deny→allow, because the body blanking then erased every line between the
+  // false opener and the first line equal to the delimiter.
+  //
+  // Each member below was confirmed against bash 3.2 by running the shape with
+  // a `touch RAN` where the blanked command stood; the marker appears in all of
+  // them. `rm rules/x.md` stands in for that command here.
+
+  const FALSE_OPENERS: [string, string][] = [
+    ["a comment naming a heredoc", "# write cfg with <<EOF\nrm rules/x.md\ncat > cfg <<EOF\nv=1\nEOF"],
+    ["arithmetic expansion", "echo $((1<<2))\nrm rules/x.md\n2"],
+    ["arithmetic command", "(( 1<<2 ))\nrm rules/x.md\n2"],
+    ["the deprecated $[…] form", "echo $[1<<2]\nrm rules/x.md\n2"],
+    ["parameter expansion", "echo ${x:-<<EOF}\nrm rules/x.md\nEOF"],
+    ["an array-assignment subscript", "a[1<<2]=v\nrm rules/x.md\n2"],
+  ];
+
+  for (const [what, cmd] of FALSE_OPENERS) {
+    it(`does not open a heredoc on a << inside ${what}`, () => {
+      const label = `command: ${JSON.stringify(cmd)}`;
+      // The command bash executes survives as a segment of its own — the whole
+      // point. Nothing weaker will do: before the fix it was spaces.
+      expect(segments(cmd), label).toContain("rm rules/x.md");
+    });
+  }
+
+  it("emits every such span VERBATIM — nothing new is blanked", () => {
+    // The bias that makes a wrong guess about a span's extent cost a deny and
+    // never an allow. A comment is left where it stood rather than erased, so
+    // its own text keeps classifying exactly as it did before this branch
+    // existed; the only thing that changed is that no operator is read in it.
+    for (const cmd of [
+      "echo $((1<<2))",
+      "echo ${x:-y}",
+      "echo $[1+2]",
+      "echo hi # rm rules/x.md",
+      "a[1]=v",
+    ]) {
+      expect(stripDataRegions(cmd), `command: ${JSON.stringify(cmd)}`).toBe(cmd);
+    }
+  });
+
+  it("keeps reading a $(…) substitution as the COMMAND context it is", () => {
+    // `$((` is arithmetic, but `$(` is a command, and a `<<` inside one is a
+    // real redirect. Tested together so a future widening of the `$((` rule
+    // cannot take the substitution with it.
+    expect(segments("echo $(rm rules/x.md)")).toContain("rm rules/x.md");
+    // The spaced form is a subshell inside a substitution. Its parentheses stay
+    // glued to the segment — `tokenize` peels those, not the segmenter — so the
+    // claim is that the command reaches the segmenter, not its exact spelling.
+    expect(
+      segments("echo $( (rm rules/x.md) )").some((s) => s.includes("rm rules/x.md")),
+    ).toBe(true);
+    // A process substitution is a command context too, so the heredoc opened
+    // inside one is real and its body is blanked.
+    expect(segments("cat <(cat <<EOF\nrm rules/x.md\nEOF\n)")).not.toContain(
+      "rm rules/x.md",
+    );
+  });
+
+  it("leaves the near-misses alone — bash really opens those heredocs", () => {
+    // `x=1<<2`, `let x=1<<2` and `echo a[1<<2]` are real redirects to bash (the
+    // last one is a glob, not a subscript — which is why the subscript rule
+    // requires the trailing `=`). The body must stay blanked in all three.
+    for (const cmd of [
+      "x=1<<2\nrm rules/x.md\n2",
+      "let x=1<<2\nrm rules/x.md\n2",
+      "echo a[1<<2]\nrm rules/x.md\n2",
+    ]) {
+      expect(
+        segments(cmd).some((s) => s.includes("rules/x.md")),
+        `command: ${JSON.stringify(cmd)}`,
+      ).toBe(false);
+    }
+  });
+
+  it("only reads a `#` that starts a WORD as a comment", () => {
+    // Bash's own rule, and the reason `{` is absent from the word-break set:
+    // the `#` of `${#x}` and of `a#b` is a literal, so a heredoc opened after
+    // one is a real heredoc and its body must still be blanked.
+    for (const cmd of [
+      "echo a#b <<EOF\nrm rules/x.md\nEOF",
+      "echo ${#x} <<EOF\nrm rules/x.md\nEOF",
+    ]) {
+      expect(
+        segments(cmd).some((s) => s.includes("rules/x.md")),
+        `command: ${JSON.stringify(cmd)}`,
+      ).toBe(false);
+    }
+  });
+
+  it("does not recognize a span whose bracket never balances", () => {
+    // An unbalanced opener has no known extent, so no span is recognized and
+    // the scan continues exactly as it did before this branch existed. For
+    // `${` that leaves the text; for `$((` it leaves the pre-existing heredoc
+    // reading of the `<<`, and the body stays blanked.
+    //
+    // Neither is a hole: bash rejects BOTH commands outright — "unexpected EOF
+    // while looking for matching `)'" and the same for `}' — so nothing in
+    // either one runs, whichever way this lexer reads them. Pinned so a future
+    // change to the -1 branch has to argue with a measurement.
+    expect(segments("echo ${x:-y\nrm rules/x.md\n2")).toContain("rm rules/x.md");
+    expect(segments("echo $((1<<2\nrm rules/x.md\n2")).toEqual([
+      "(1<<",
+      "2",
+      "echo",
+    ]);
+  });
+});
+
 describe("segmentation on the operators", () => {
   it("splits on every operator in the set", () => {
     expect(segments("a && b ; c || d | e")).toEqual(["a", "b", "c", "d", "e"]);
