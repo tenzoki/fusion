@@ -32,6 +32,15 @@
  * rule file exists. A revert the model never hears about would satisfy the
  * mechanism and violate the constraint.
  *
+ * ## The reply is written before anything records it
+ *
+ * The enforcement — the restore — has to happen first; it is what the sentence
+ * is about. Everything after that is a report: the `guard_block` rows, the halt
+ * record, the churn heatmap. Each goes through `answer` or `bestEffort` from
+ * lib/fail-open.ts, so none of them can discard the sentence on its way out. The
+ * churn half used to run ahead of the reply and did exactly that; that module's
+ * header carries the class and the measurements.
+ *
  * Protocol: reads JSON from stdin, writes {} to stdout, or a
  * `hookSpecificOutput.additionalContext` envelope when something was restored.
  */

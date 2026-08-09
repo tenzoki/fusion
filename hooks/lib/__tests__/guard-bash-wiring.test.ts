@@ -154,7 +154,12 @@ describe("guard.ts Bash path — the branch policy is the whole of it", () => {
     expect(code).toContain("emitBlockEvent(");
     expect(blockEmitterCode()).toContain('halted ? "guard_halt" : "guard_block"');
     expect(writePathCode()).toContain("emitBlockEvent(");
-    expect(code).toContain("block(verdict.reason");
+    // The denied reason is the classifier's, held in a name because the deny is
+    // now written before the two state writes that record it and both need the
+    // same string. `block(verdict.reason ?? …)` inline was the older spelling;
+    // what has to stay true is that the reason comes from the verdict.
+    expect(code).toContain("verdict.reason ??");
+    expect(code).toContain("() => block(reason)");
   });
 
   it("records exactly one block per tool call, and returns", () => {
@@ -275,12 +280,22 @@ describe("guard.ts — the refusal note is a diagnostic, never a verdict", () =>
 describe("guard.ts Bash path — the git override waives only the git op", () => {
   const code = bashPathCode();
 
-  it("does not return out of the override branch", () => {
-    // Every `return` on this path belongs to a DENY. A return inside the
-    // override branch would mean nothing follows it, and the function would stop
-    // ending in the bare allow() the zero-side-effect property rests on.
+  it("answers the override branch with allow, never block", () => {
+    // This case used to read "does not return out of the override branch", on
+    // the ground that a return there would stop the function ending in the bare
+    // allow() the zero-side-effect property rests on. That reason stopped
+    // holding: the branch now writes its own verdict FIRST and records the note
+    // after it, so it has to return, and the function still ends in the bare
+    // allow() — pinned by its own case above, which is where that property
+    // belongs.
+    //
+    // What was actually being protected is that the override is not a second
+    // deny surface. `FUSION_ALLOW_BRANCH_SWITCH` buys exactly the git op it
+    // names, and a `block(` appearing under this branch would mean the flag had
+    // grown a refusal of its own.
     const tail = code.slice(code.indexOf("verdict.overrideUsed"));
-    expect(tail).not.toContain("return");
+    expect(tail).toContain("allow,");
+    expect(tail).not.toContain("block(");
   });
 
   it("reads the override only after the deny branch has passed", () => {

@@ -41,5 +41,15 @@
  * Protocol: reads JSON from stdin, writes JSON to stdout.
  *   Allow: {}
  *   Block: {"decision":"block","reason":"..."}
+ *
+ * ## Every verdict is written before it is recorded
+ *
+ * There is no bare `block(...)` or `allow()` after a state write anywhere below.
+ * Each site goes through `answer` from lib/fail-open.ts — the verdict first,
+ * then the escalation counter and the event rows as guarded reports — and the
+ * few reports that cannot be moved after the verdict go through `bestEffort`.
+ * Four denies used to be discarded by a throw in their own bookkeeping and
+ * replaced with the fail-open ALLOW; that module's header carries the class, the
+ * measurements and the records.
  */
 export {};

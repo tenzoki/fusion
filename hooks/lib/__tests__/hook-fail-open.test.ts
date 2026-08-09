@@ -1,5 +1,24 @@
 /**
- * A hook whose error report fails must still have written its verdict.
+ * A hook whose error report fails must still have written its verdict — and a
+ * verdict it already reached must survive its own bookkeeping.
+ *
+ * ## Two halves, one sentence
+ *
+ * The first half is the fail-open tail: an UNEXPECTED error leaves the hook with
+ * no verdict to write, so it writes the permissive one and says why. That is the
+ * defect described below, and the first two cases pin it.
+ *
+ * The second half is every site INSIDE `main` where the guard had ALREADY
+ * decided and the record of that decision stood in front of it. There the
+ * fail-open verdict is not a fallback but a loss: a deny the guard reached from
+ * the config and the path, replaced by an allow because a counter could not be
+ * written. Four such sites were measured
+ * (`shared/issues/260809-1825_*`, `…2046_*`, `…2045_*`), and
+ * `describe("a verdict the hook already reached survives its own bookkeeping")`
+ * below drives each of them through the real hook subprocess.
+ *
+ * Both halves are one rule, and `lib/fail-open.ts` states it: the verdict is
+ * written first, everything that records it runs after, guarded.
  *
  * ## The defect
  *
@@ -40,17 +59,19 @@
 
 import { describe, expect, it, vi } from "vitest";
 import { spawnSync } from "node:child_process";
-import { chmodSync, mkdirSync } from "node:fs";
+import { chmodSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { failOpen } from "../fail-open.js";
+import { answer, bestEffort, failOpen } from "../fail-open.js";
 import {
   CASE_TIMEOUT,
   childEnv,
   guardEntry,
+  projectConfig,
+  readEscalation,
   trackerEntry,
   withProject,
 } from "./helpers/guard-harness.js";
-import type { GuardEntry } from "./helpers/guard-harness.js";
+import type { GuardEntry, ProjectOptions } from "./helpers/guard-harness.js";
 
 /** The unprotected file every tool call here names. */
 const PAYLOAD = "notes.txt";
@@ -101,9 +122,14 @@ function runRaw(
  * before disposal so the cleanup does not depend on how the platform treats
  * removing a read-only directory.
  */
-function withUnwritableStateDir<T>(fn: (root: string) => T): T {
+function withUnwritableStateDir<T>(
+  fn: (root: string) => T,
+  opts: Omit<ProjectOptions, "plugin"> = {},
+): T {
   return withProject(({ root }) => {
     const dir = resolve(root, "fusion-workbench", ".guard-state");
+    // After `makeProject` has seeded any `escalation` the case asked for — a
+    // halted project cannot be built once the directory is read-only.
     mkdirSync(dir, { recursive: true });
     chmodSync(dir, 0o555);
     try {
@@ -111,7 +137,7 @@ function withUnwritableStateDir<T>(fn: (root: string) => T): T {
     } finally {
       chmodSync(dir, 0o755);
     }
-  });
+  }, opts);
 }
 
 /** Parse a hook's stdout, failing with the raw text when it is not JSON. */
@@ -165,30 +191,169 @@ describe("an unwritable .guard-state/ does not cost a hook its verdict", () => {
     CASE_TIMEOUT,
   );
 
+});
+
+/**
+ * The four sites where the guard had already decided, and the record of the
+ * decision stood in front of it.
+ *
+ * Each case makes the guard's own bookkeeping fail and then asserts the verdict
+ * anyway. They are written as SUBPROCESS runs rather than unit calls for the
+ * reason the harness header gives — the self-detect answer is cached per process
+ * — and they read the raw result because the marker line they require is exactly
+ * what `runGuard` treats as a harness failure.
+ *
+ * The marker assertion is what keeps each case from passing vacuously: running
+ * as root, or on a filesystem that ignores the mode bits, nothing fails and the
+ * deny arrives for the ordinary reason, proving nothing about the ordering.
+ */
+describe("a verdict the hook already reached survives its own bookkeeping", () => {
   it(
-    "fails open on a protected path too, which is what fail-open means here",
+    "denies a protected path with the state directory unwritable (260809-1825)",
     () => {
-      // Pinned because it is the uncomfortable half of the criteria and reads
-      // like a bug otherwise. `guard.ts` persists the block counter BEFORE it
-      // writes the deny (`saveEscalation` then `block`), so an unwritable state
-      // directory throws while the verdict is still unwritten and the handler
-      // supplies the fail-open one — an ALLOW, on a protected path.
-      //
-      // This task did not introduce that and does not decide it. Before the
-      // reordering the same call exited 1 with empty stdout, which is the
-      // ambiguity the record was filed about; what changed is that the outcome
-      // is now stated rather than guessed at. Making the deny survive its own
-      // bookkeeping is a different fix in a different place, filed as
-      // `shared/issues/260809-1825_*_an-unwritable-guard-state-directory-turns-….md`.
-      // If that lands, this case is the one that should fail.
+      // This case used to assert the opposite, under the name "fails open on a
+      // protected path too", and its comment named the record whose landing
+      // should flip it. That record is this change.
       withUnwritableStateDir((root) => {
         const run = runRaw(guardEntry(), root, "PreToolUse", "Edit", {
           file_path: resolve(root, "rules/x.md"),
         });
 
         expect(run.stderr).toContain("[guard] Error:");
-        expect(verdictOf(run, "guard")).toEqual({});
+        const verdict = verdictOf(run, "guard");
+        expect(verdict.decision).toBe("block");
+        expect(String(verdict.reason)).toContain("rules/x.md");
         expect(run.status).toBe(0);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies a write in a HALTED project with the state directory unwritable",
+    () => {
+      // CHECK 1, and the site that shows why enumerating this class by call name
+      // missed one: it fails through `emitEvent` writing `events.jsonl`, not
+      // through `saveEscalation`. The payload is the UNPROTECTED file, so the
+      // deny under test can only be the halt.
+      withUnwritableStateDir((root) => {
+        const run = runRaw(guardEntry(), root, "PreToolUse", "Edit", {
+          file_path: resolve(root, PAYLOAD),
+        });
+
+        expect(run.stderr).toContain("[guard] Error:");
+        const verdict = verdictOf(run, "guard");
+        expect(verdict.decision).toBe("block");
+        expect(String(verdict.reason)).toContain("[HALTED]");
+        expect(run.status).toBe(0);
+      }, { escalation: { haltActive: true, consecutiveBlocks: 3 } });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies a decision-governed path with the state directory unwritable",
+    () => {
+      // CHECK 3. `notes.txt` is not on the protected list, so the only thing
+      // that can refuse this call is the decision-governed escalation the
+      // project's own config declares.
+      withUnwritableStateDir(
+        (root) => {
+          const run = runRaw(guardEntry(), root, "PreToolUse", "Edit", {
+            file_path: resolve(root, PAYLOAD),
+          });
+
+          expect(run.stderr).toContain("[guard] Error:");
+          const verdict = verdictOf(run, "guard");
+          expect(verdict.decision).toBe("block");
+          expect(String(verdict.reason)).toContain("D-1");
+          expect(run.status).toBe(0);
+        },
+        {
+          files: {
+            "fusion-guard.json": projectConfig({
+              decisions: [
+                { id: "D-1", category: "demo", statement: "notes are governed" },
+              ],
+              guard: {
+                categoryPaths: { demo: [PAYLOAD] },
+                categorySensitivity: { demo: "high" },
+              },
+            }),
+          },
+        },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "denies a git branch switch with the state directory unwritable (260809-2046)",
+    () => {
+      // The fourth site, and the one outside `260809-1825`'s enumeration. The
+      // branch policy is the one policy fusion documents as running in every
+      // repository, its own included, so an allow here is the widest of the four.
+      withUnwritableStateDir((root) => {
+        const run = runRaw(guardEntry(), root, "PreToolUse", "Bash", {
+          command: "git switch main",
+        });
+
+        expect(run.stderr).toContain("[guard] Error:");
+        const verdict = verdictOf(run, "guard");
+        expect(verdict.decision).toBe("block");
+        expect(String(verdict.reason)).toContain("never switch git branches");
+        expect(run.status).toBe(0);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "delivers the protected-path sentence with churn.json unwritable (260809-2045)",
+    () => {
+      // The PostToolUse side of the same shape. `measureProtectedPaths` has
+      // already reverted the file and raised the halt by the time the churn
+      // heatmap runs; the only thing left to deliver is the sentence, and it used
+      // to be held until an advisory metric had finished.
+      //
+      // `churn.json` is replaced by a NON-EMPTY directory rather than the whole
+      // state directory being made unwritable: the guard has to be able to write
+      // its before-fingerprint, or there is no measurement to report and the case
+      // would pass for the wrong reason.
+      withProject(({ root }) => {
+        const rule = resolve(root, "rules/x.md");
+        const stateDir = resolve(root, "fusion-workbench", ".guard-state");
+
+        // PreToolUse takes the before-picture.
+        runRaw(guardEntry(), root, "PreToolUse", "Write", { file_path: rule });
+
+        // The tool runs: a protected path changes.
+        writeFileSync(rule, "# tampered\n", "utf-8");
+
+        // `saveChurn`'s rename cannot land on a non-empty directory.
+        mkdirSync(resolve(stateDir, "churn.json", "occupied"), {
+          recursive: true,
+        });
+        writeFileSync(resolve(stateDir, "churn.json", "occupied", "f"), "x\n");
+
+        const run = runRaw(trackerEntry(), root, "PostToolUse", "Write", {
+          file_path: rule,
+        });
+
+        expect(run.stderr).toContain("[tracker] Error:");
+        expect(run.status).toBe(0);
+
+        const body = verdictOf(run, "tracker") as {
+          hookSpecificOutput?: { additionalContext?: string };
+        };
+        const sentence = body.hookSpecificOutput?.additionalContext ?? "";
+        expect(sentence).toContain("rules/x.md");
+        expect(sentence).toContain("clear-halt.js");
+
+        // And the enforcement the sentence describes really happened, so the
+        // case cannot pass on a message about nothing.
+        expect(readFileSync(rule, "utf-8")).toBe("# a rule\n");
+        expect(readEscalation(root)?.haltActive).toBe(true);
       });
     },
     CASE_TIMEOUT,
@@ -273,5 +438,125 @@ describe("failOpen writes the verdict before anything that can fail", () => {
 
     stderr.mockRestore();
     expect(wrote).toBe(true);
+  });
+});
+
+describe("answer writes the verdict before the reports that record it", () => {
+  it("runs the verdict first, then each report in order", () => {
+    const order: string[] = [];
+
+    answer(
+      "guard",
+      () => order.push("verdict"),
+      () => order.push("counter"),
+      () => order.push("event"),
+    );
+
+    expect(order).toEqual(["verdict", "counter", "event"]);
+  });
+
+  it("keeps the verdict when a report throws", () => {
+    const stderr = vi
+      .spyOn(process.stderr, "write")
+      .mockImplementation(() => true);
+    let wrote = false;
+
+    expect(() =>
+      answer(
+        "guard",
+        () => {
+          wrote = true;
+        },
+        () => {
+          throw new Error("EACCES: .guard-state is read-only");
+        },
+      ),
+    ).not.toThrow();
+
+    stderr.mockRestore();
+    expect(wrote).toBe(true);
+  });
+
+  it("does not let one failed report take the next one with it", () => {
+    // The escalation counter and the event log are two files. One `try` around
+    // both would make an unwritable `escalation.json` cost the `events.jsonl`
+    // row as well — the same swallowing, one level down.
+    const stderr = vi
+      .spyOn(process.stderr, "write")
+      .mockImplementation(() => true);
+    let second = false;
+
+    answer(
+      "guard",
+      () => {},
+      () => {
+        throw new Error("first report failed");
+      },
+      () => {
+        second = true;
+      },
+    );
+
+    stderr.mockRestore();
+    expect(second).toBe(true);
+  });
+
+  it("says on stderr that a report was lost", () => {
+    // A guarded step is not a silent step: the failure lands on the same marker
+    // line a crash would have used, so nothing disappears without a trace.
+    const lines: string[] = [];
+    const stderr = vi
+      .spyOn(process.stderr, "write")
+      .mockImplementation((chunk) => {
+        lines.push(String(chunk));
+        return true;
+      });
+
+    answer(
+      "guard",
+      () => {},
+      () => {
+        throw new Error("EACCES");
+      },
+    );
+
+    stderr.mockRestore();
+    expect(lines.join("")).toContain("[guard] Error:");
+    expect(lines.join("")).toContain("EACCES");
+  });
+});
+
+describe("bestEffort hands back why a step failed", () => {
+  it("returns null when the step succeeded", () => {
+    expect(bestEffort("tracker", () => {})).toBeNull();
+  });
+
+  it("returns the failure, for a caller whose own wording depends on it", () => {
+    // `tracker.ts` reads this: a halt it could not record must not be described
+    // to the model as a halt that was.
+    const stderr = vi
+      .spyOn(process.stderr, "write")
+      .mockImplementation(() => true);
+
+    const why = bestEffort("tracker", () => {
+      throw new Error("EISDIR");
+    });
+
+    stderr.mockRestore();
+    expect(why).toContain("EISDIR");
+  });
+
+  it("survives a broken stderr", () => {
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation(() => {
+      throw new Error("EPIPE");
+    });
+
+    expect(() =>
+      bestEffort("guard", () => {
+        throw new Error("boom");
+      }),
+    ).not.toThrow();
+
+    stderr.mockRestore();
   });
 });

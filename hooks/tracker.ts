@@ -32,6 +32,15 @@
  * rule file exists. A revert the model never hears about would satisfy the
  * mechanism and violate the constraint.
  *
+ * ## The reply is written before anything records it
+ *
+ * The enforcement — the restore — has to happen first; it is what the sentence
+ * is about. Everything after that is a report: the `guard_block` rows, the halt
+ * record, the churn heatmap. Each goes through `answer` or `bestEffort` from
+ * lib/fail-open.ts, so none of them can discard the sentence on its way out. The
+ * churn half used to run ahead of the reply and did exactly that; that module's
+ * header carries the class and the measurements.
+ *
  * Protocol: reads JSON from stdin, writes {} to stdout, or a
  * `hookSpecificOutput.additionalContext` envelope when something was restored.
  */
@@ -43,7 +52,7 @@ import type { GuardConfig } from "./lib/config.js";
 import { matchesAny } from "./lib/paths.js";
 import { isFusionPluginCwd } from "./lib/self-detect.js";
 import { emitEvent } from "./lib/events.js";
-import { failOpen } from "./lib/fail-open.js";
+import { answer, bestEffort, failOpen } from "./lib/fail-open.js";
 import {
   loadEscalation,
   raiseHalt,
@@ -480,11 +489,17 @@ function measureProtectedPaths(input: HookInput): string | null {
   // side of the very same call, and a second entry would count one permission
   // twice.
   if (exempted.length > 0) {
-    emitEvent(
-      "guard_advisory",
-      toolName,
-      exempted.length === 1 ? exempted[0] : undefined,
-      rulesWriteDetail(exempted),
+    // Best effort, and this one stands AHEAD of the restore: a throw here used
+    // to skip the enforcement entirely, leaving a protected path rewritten with
+    // no revert, no halt and nothing said — a worse outcome than the lost
+    // sentence the same class produces further down.
+    bestEffort("tracker", () =>
+      emitEvent(
+        "guard_advisory",
+        toolName,
+        exempted.length === 1 ? exempted[0] : undefined,
+        rulesWriteDetail(exempted),
+      ),
     );
   }
 
@@ -531,11 +546,13 @@ function measureProtectedPaths(input: HookInput): string | null {
   // something did. A path the narrowing spared gets one too — obligation 2 of
   // the decision record: what is not reverted is never passed over in silence.
   for (const outcome of outcomes) {
-    emitEvent(
-      "guard_block",
-      toolName,
-      outcome.change.path,
-      describe(outcome, toolName),
+    bestEffort("tracker", () =>
+      emitEvent(
+        "guard_block",
+        toolName,
+        outcome.change.path,
+        describe(outcome, toolName),
+      ),
     );
   }
 
@@ -555,18 +572,48 @@ function measureProtectedPaths(input: HookInput): string | null {
     toolName,
     outcomes.length === 1 ? outcomes[0].change.path : undefined,
   );
-  saveEscalation(escalation);
-  emitEvent(
-    "guard_halt",
-    toolName,
-    undefined,
-    `Halt raised by the protected-path measurement (${outcomes.length} path(s) changed)`,
+
+  // The one best-effort step whose RESULT is read, and the one report that
+  // legitimately runs before the reply. `260809-2045` asked whether this write
+  // should be best effort at all: yes — an unwritable state directory must cost
+  // the halt record and not the sentence, because the sentence is what stops an
+  // agent working around a change it cannot explain (see this file's header).
+  // But the sentence would then claim a halt that was never written, so the
+  // failure is carried into the wording rather than swallowed under it.
+  const haltError = bestEffort("tracker", () => saveEscalation(escalation));
+
+  bestEffort("tracker", () =>
+    emitEvent(
+      "guard_halt",
+      toolName,
+      undefined,
+      `Halt raised by the protected-path measurement (${outcomes.length} path(s) changed)`,
+    ),
   );
 
   // The `cd` is not decoration: the halt was just recorded under `root`, and the
   // clearing script locates it by walking up from its own working directory. Run
   // from anywhere else it reports "not halted" and clears nothing — see
   // `clearHaltCommand` in lib/escalation.ts.
+  //
+  // With no halt on disk there is nothing for that script to clear, so the
+  // second branch names the state directory as the thing to fix instead. What
+  // the agent must DO is identical either way, which is why the two branches
+  // differ only in the two clauses that would otherwise be false.
+  const halt =
+    haltError === null
+      ? "The guard is now HALTED, so all write tools are blocked. "
+      : `The halt could NOT be recorded (${haltError}), so write tools are NOT ` +
+        "blocked and the guard's own state directory is unwritable. Treat this " +
+        "as a stop regardless, and tell the user their guard state is broken. ";
+
+  const resume =
+    haltError === null
+      ? "To resume afterwards, run this from the project directory — the halt is " +
+        "recorded there and the script finds it by walking up from its working " +
+        `directory: ${clearHaltCommand()}`
+      : "There is no halt to clear.";
+
   return (
     "fusion guard: a protected path changed during this tool call. " +
     summary +
@@ -574,14 +621,12 @@ function measureProtectedPaths(input: HookInput): string | null {
     "it: your own tool call, the user saving in their editor, a file watcher " +
     "and a second session are indistinguishable here, so this may not have " +
     "been you. " +
-    "The guard is now HALTED, so all write tools are blocked. " +
+    halt +
     "Do not try to reapply the change or route around this. " +
     "These paths are a human decision: tell the user what you were trying to do " +
     "and why, and let them make the change or adjust guard.protectedPaths in the " +
     "project's fusion-guard.json. " +
-    "To resume afterwards, run this from the project directory — the halt is " +
-    "recorded there and the script finds it by walking up from its working " +
-    `directory: ${clearHaltCommand()}`
+    resume
   );
 }
 
@@ -594,8 +639,12 @@ function measureProtectedPaths(input: HookInput): string | null {
  *
  * Split out of `main` so the measurement above can run for EVERY guarded tool
  * call while this part keeps its own early returns. Before the split, every
- * `return` here was also the hook's reply; now the reply is written once, at the
- * end of `main`, and carries whatever the measurement had to say.
+ * `return` here was also the hook's reply; now the reply is written once, in
+ * `main`, and carries whatever the measurement had to say.
+ *
+ * It runs AFTER that reply, as a guarded report. This is an advisory heatmap:
+ * its `loadConfig`, its `emitEvent` calls and its `saveChurn` can each throw,
+ * and none of them may cost the sentence explaining a reverted protected path.
  */
 function trackChurn(input: HookInput): void {
   // Only track write operations for churn
@@ -716,9 +765,15 @@ async function main(): Promise<void> {
   // than predicting.
   const measured = measureProtectedPaths(input);
 
-  trackChurn(input);
-
-  respond(measured ?? undefined);
+  // The reply first, the heatmap after it. `measureProtectedPaths` has by now
+  // restored the protected path and raised the halt; the only thing left to
+  // deliver is the sentence naming the file and how a human clears it, and that
+  // sentence used to be held until an advisory metric had finished. Measured
+  // with `churn.json` replaced by a non-empty directory: `{}` on stdout, the
+  // file reverted, `haltActive: true`, and the agent told nothing
+  // (`260809-2045`). The tracker's header calls the explaining refusal a
+  // constraint, and a revert the model never hears about violates it.
+  answer("tracker", () => respond(measured ?? undefined), () => trackChurn(input));
 }
 
 main().catch((err) => {

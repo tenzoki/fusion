@@ -41,6 +41,16 @@
  * Protocol: reads JSON from stdin, writes JSON to stdout.
  *   Allow: {}
  *   Block: {"decision":"block","reason":"..."}
+ *
+ * ## Every verdict is written before it is recorded
+ *
+ * There is no bare `block(...)` or `allow()` after a state write anywhere below.
+ * Each site goes through `answer` from lib/fail-open.ts — the verdict first,
+ * then the escalation counter and the event rows as guarded reports — and the
+ * few reports that cannot be moved after the verdict go through `bestEffort`.
+ * Four denies used to be discarded by a throw in their own bookkeeping and
+ * replaced with the fail-open ALLOW; that module's header carries the class, the
+ * measurements and the records.
  */
 import { resolve } from "node:path";
 import { existsSync } from "node:fs";
@@ -52,7 +62,7 @@ import { realFsLocator } from "./lib/fs-locator.js";
 import { loadConfig, findRelevantDecisions, projectDeclaredProtectedPaths, sensitivityLevel, } from "./lib/config.js";
 import { loadEscalation, saveEscalation, isHalted, recordBlock, resetBlockCounter, clearHaltCommand, } from "./lib/escalation.js";
 import { emitEvent } from "./lib/events.js";
-import { failOpen } from "./lib/fail-open.js";
+import { answer, bestEffort, failOpen } from "./lib/fail-open.js";
 import { measurementRoot, saveSnapshot, takeSnapshot, } from "./lib/protected-snapshot.js";
 import { classifyGitCommand, overridesFromEnv, overrideEnvFor, } from "./lib/git-branch-guard.js";
 import { isProjectRulePath, rulesWriteDetail, rulesWriteExemptionActive, rulesWriteRefusalNote, } from "./lib/rules-write-exemption.js";
@@ -273,41 +283,57 @@ function guardBashCommand(input, config) {
     // Returns, so exactly one block is recorded per tool call. An override does
     // NOT reach here: it leaves verdict.deny false and is handled at step 3.
     if (verdict.deny) {
+        const reason = verdict.reason ??
+            "fusion policy: agents never switch git branches autonomously.";
+        // Loaded and mutated IN MEMORY ahead of the deny, and persisted after it.
+        // Neither call touches the filesystem for writing — `loadEscalation`
+        // coerces whatever it finds, including nothing — so the deny below cannot
+        // be lost to them, while `halted` is still available to the event row.
         const escalation = loadEscalation();
-        const halted = recordBlock(escalation, config.escalation.blocksBeforeHalt, "git_branch_switch", verdict.reason ?? "", "Bash", verdict.offendingSegment);
-        saveEscalation(escalation);
-        emitBlockEvent(halted, "Bash", undefined, `Git branch-switch denied: ${forEvent(verdict.offendingSegment ?? command)}`);
-        block(verdict.reason ?? "fusion policy: agents never switch git branches autonomously.");
+        const halted = recordBlock(escalation, config.escalation.blocksBeforeHalt, "git_branch_switch", reason, "Bash", verdict.offendingSegment);
+        // The branch policy is the one policy that runs in EVERY repository, this
+        // one included, and with `.guard-state/` unwritable it used to allow the
+        // switch it had just decided to refuse (`260809-2046`).
+        answer("guard", () => block(reason), () => saveEscalation(escalation), () => emitBlockEvent(halted, "Bash", undefined, `Git branch-switch denied: ${forEvent(verdict.offendingSegment ?? command)}`));
         return;
     }
     // STEP 3 — override note: a normally-denied git op that an env flag allowed.
     // Recorded here rather than at step 1 so the note is written only for a call
     // that actually goes through.
     //
-    // Not a deny — it falls through to the same allow() below. It is also the one
+    // Not a deny — it emits the same allow() as the path below. It is also the one
     // conditional on this path that writes state without blocking, and it is
     // reachable ONLY when the user set an override, so an innocuous Bash call
     // still touches nothing.
+    //
+    // It RETURNS rather than falling through, and the return is what keeps the
+    // final statement of this function a bare `allow()` — the textual form of
+    // "an innocuous Bash call touches nothing", pinned by guard-bash-wiring.
+    // The allow is written before the note, for the reason every other site here
+    // writes its verdict first: an unwritable `.guard-state/` costs the note and
+    // not the reply.
     if (verdict.overrideUsed && verdict.overrideKind) {
         const envVar = overrideEnvFor(verdict.overrideKind);
         const detail = `Override ${envVar} allowed normally-denied git op: ${verdict.overrideSegment ?? command}`;
         // Record the override in guard-state for visibility (same state surface
         // the block path writes to — recentEvents in escalation.json + events.jsonl).
-        const escalation = loadEscalation();
-        escalation.recentEvents.push({
-            level: "clear",
-            trigger: "git_branch_switch_override",
-            message: detail,
-            timestamp: new Date().toISOString(),
-            toolName: "Bash",
-        });
-        saveEscalation(escalation);
-        emitEvent("guard_advisory", "Bash", undefined, detail);
+        answer("guard", allow, () => {
+            const escalation = loadEscalation();
+            escalation.recentEvents.push({
+                level: "clear",
+                trigger: "git_branch_switch_override",
+                message: detail,
+                timestamp: new Date().toISOString(),
+                toolName: "Bash",
+            });
+            saveEscalation(escalation);
+        }, () => emitEvent("guard_advisory", "Bash", undefined, detail));
+        return;
     }
     // Allow path: not a branch/worktree-moving git op the overrides left denied.
-    // Step 1 is DENY-ONLY — it either blocks and returns, or falls through having
-    // written nothing — and step 3 writes only when the user set an override,
-    // which no innocuous call does. So reaching this point still means it
+    // Both branches above RETURN, and each writes state only in the case it was
+    // written for — step 1 when the classifier denies, step 3 when the user set an
+    // override. So reaching this point means neither ran, and the call
     // participates in NONE of the write-guard bookkeeping. An innocuous Bash call
     // (ls, git status, an allowed `git checkout HEAD -- <files>`) must have zero
     // side-effect on guard state:
@@ -374,8 +400,17 @@ async function main() {
     //
     // No escalation entry and no counter movement: a diagnostic is a diagnostic,
     // not an exemption and not a violation.
+    //
+    // Best effort, and this is the one site where that is about position rather
+    // than order. The diagnostic has to precede every branch — it says the
+    // effective configuration is not the one the user wrote, which is exactly what
+    // the branches below decide on — so it cannot be moved after a verdict. What
+    // `bestEffort` removes is its ability to DECIDE one: an unwritable
+    // `.guard-state/` here used to throw before any check ran, and a protected
+    // path was then allowed because the guard could not log a note about a broken
+    // config file.
     for (const diagnostic of config.diagnostics) {
-        emitEvent("guard_advisory", input.tool_name, undefined, diagnostic);
+        bestEffort("guard", () => emitEvent("guard_advisory", input.tool_name, undefined, diagnostic));
     }
     // Guard disabled
     if (!config.guard.enabled) {
@@ -411,6 +446,24 @@ async function main() {
     // function also owns both stand-downs (no workbench, and the plugin's own
     // repository), so a null root here means "no measurement" for either reason;
     // its header carries the full argument and the measured evidence.
+    //
+    // ## Not a report, and deliberately NOT guarded
+    //
+    // A sweep for "what runs before a verdict here" finds this line, so what was
+    // checked about it belongs next to it. It is not a record of a decision — it
+    // is the input to the NEXT hook's decision, and it has to precede the tool
+    // call by construction. It also cannot throw: `saveSnapshot` swallows its own
+    // I/O failure by design, and `takeSnapshot` catches per directory and per
+    // path, over patterns the loader has already validated as strings
+    // (`isStringArray` in lib/config.ts).
+    //
+    // Wrapping it in `bestEffort` anyway would be wrong rather than merely
+    // redundant. `saveSnapshot`'s catch does one thing a caller's catch could not:
+    // it REMOVES the stale snapshot, so a failed save leaves no before-picture
+    // instead of the previous call's. Swallowing the failure one level up would
+    // hand `tracker.ts` a picture two calls old and revert a state no measurement
+    // objected to — `260809-1108`, traded back for the fail-open this file just
+    // closed.
     const measureRoot = measurementRoot();
     if (measureRoot !== null) {
         saveSnapshot(takeSnapshot(measureRoot, config.guard.protectedPaths));
@@ -439,8 +492,7 @@ async function main() {
     // very files a fusion developer needs to edit. Only write tools reach here —
     // the branch-switch policy above already ran and is intentionally NOT disabled.
     if (isFusionPluginCwd()) {
-        emitEvent("guard_allow", input.tool_name, extractFilePath(input.tool_input) ?? undefined, "Self-detect: cwd is fusion plugin repo — write guard standing down");
-        allow();
+        answer("guard", allow, () => emitEvent("guard_allow", input.tool_name, extractFilePath(input.tool_input) ?? undefined, "Self-detect: cwd is fusion plugin repo — write guard standing down"));
         return;
     }
     const rawFilePath = extractFilePath(input.tool_input);
@@ -495,8 +547,13 @@ async function main() {
         // this apart from the Bash halt and from a block that RAISED the halt. The
         // path is already the event's file field; repeating it here would only make
         // the row longer.
-        emitEvent("guard_halt", input.tool_name, filePath, "Halt active — write tool call blocked");
-        block(reason);
+        //
+        // This check is the one site in the class whose fail-open ran through
+        // `emitEvent` rather than `saveEscalation` — measured at `{}` on a HALTED
+        // project with `.guard-state/` at mode `0555`. It is the same defect through
+        // a different call, which is why `260809-1825`'s enumeration by call name
+        // was one site short of its own shape.
+        answer("guard", () => block(reason), () => emitEvent("guard_halt", input.tool_name, filePath, "Halt active — write tool call blocked"));
         return;
     }
     // CHECK 2: Protected paths — blocked, with exactly ONE exemption.
@@ -563,10 +620,11 @@ async function main() {
             const note = exemptionRefusalNote(filePath, rawFilePath, declared);
             const reason = `Protected path: ${filePath} cannot be modified directly. This path is under compliance guard protection.` +
                 (note === null ? "" : ` ${note}`);
+            // In memory, both of them. The persistence is a report below, so the deny
+            // this call has already reached cannot be lost to it — measured allowing a
+            // protected-path Edit with `.guard-state/` at mode `0555` (`260809-1825`).
             const halted = recordBlock(escalation, config.escalation.blocksBeforeHalt, "protected_path", reason, input.tool_name, filePath);
-            saveEscalation(escalation);
-            emitBlockEvent(halted, input.tool_name, filePath, "Protected path");
-            block(reason);
+            answer("guard", () => block(reason), () => saveEscalation(escalation), () => emitBlockEvent(halted, input.tool_name, filePath, "Protected path"));
             return;
         }
         // Same note the git override records at guardBashCommand STEP 3: one
@@ -583,7 +641,11 @@ async function main() {
             toolName: input.tool_name,
             filePath,
         });
-        emitEvent("guard_advisory", input.tool_name, filePath, detail);
+        // Best effort in place, for the same reason as the config diagnostics: the
+        // verdict is still two checks away, so there is nothing to write first — but
+        // a failed advisory must not decide what CHECK 3 and the allow path are
+        // about to decide.
+        bestEffort("guard", () => emitEvent("guard_advisory", input.tool_name, filePath, detail));
     }
     // CHECK 3: Decision-governed categories
     const relevant = findRelevantDecisions(filePath, config);
@@ -604,21 +666,24 @@ async function main() {
                 `${decisionList}\n\n` +
                 `Sensitivity: ${highestSensitivity}. Review the decision(s) above before proceeding.`;
             const halted = recordBlock(escalation, config.escalation.blocksBeforeHalt, "decision_governed", reason, input.tool_name, filePath);
-            saveEscalation(escalation);
-            emitBlockEvent(halted, input.tool_name, filePath, `Decision: ${relevant.map((d) => d.id).join(", ")}`);
-            block(reason);
+            answer("guard", () => block(reason), () => saveEscalation(escalation), () => emitBlockEvent(halted, input.tool_name, filePath, `Decision: ${relevant.map((d) => d.id).join(", ")}`));
             return;
         }
         // Low/medium sensitivity: emit advisory event but allow the write
         if (highestSensitivity !== "none") {
-            emitEvent("guard_advisory", input.tool_name, filePath, `Advisory (${highestSensitivity}): ${relevant.map((d) => d.id).join(", ")}`);
+            bestEffort("guard", () => emitEvent("guard_advisory", input.tool_name, filePath, `Advisory (${highestSensitivity}): ${relevant.map((d) => d.id).join(", ")}`));
         }
     }
-    // ALLOW — no rule matched, reset consecutive blocks
+    // ALLOW — no rule matched, reset consecutive blocks.
+    //
+    // The counter reset is in memory; persisting it and logging the allow are
+    // reports. An unwritable state directory here costs the reset and the row, and
+    // the call is still allowed — which is what it was going to be, so unlike the
+    // three denies above nothing about the verdict moves. It goes through `answer`
+    // all the same: one rule for every site is what stops the next reader having
+    // to work out which sites were exceptions and why.
     resetBlockCounter(escalation);
-    saveEscalation(escalation);
-    emitEvent("guard_allow", input.tool_name, filePath);
-    allow();
+    answer("guard", allow, () => saveEscalation(escalation), () => emitEvent("guard_allow", input.tool_name, filePath));
 }
 main().catch((err) => {
     // Fail open on unexpected errors — don't block the agent.
