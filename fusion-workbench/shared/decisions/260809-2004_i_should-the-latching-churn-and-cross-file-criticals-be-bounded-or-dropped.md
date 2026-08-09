@@ -107,3 +107,21 @@ for rather than as one of the three original options. For **churn**: drop the th
 comparison on the lifetime counter only. The lifetime number itself stays, because the
 orchestrator's Setup reads it. For **cross-file**: remove it outright, on the measured ground
 that nothing consumes its verdict and its reset function has never had a caller.
+
+---
+Implemented: c353196 — churn keeps `totalChanges` and lost the lifetime threshold comparison
+together with `totalChangesWarning` / `totalChangesCritical` on every configuration surface, so
+a project cannot declare a value no code reads. The per-session threshold is untouched and
+still fires, with three new cases in `churn.test.ts` proving it rather than assuming it.
+Cross-file is removed outright: the module, its test, the tracker emit block that was its only
+consumer, its two event types, its configuration type and defaults, both JSON files, the
+monitor's render branches, its row in the lint-checked file table, prose in three documents,
+three other test files, and the workbench's own 535-entry state file. Three deliberate
+backward references survive in comments. `resetCrossFile` and `getTopChurnFiles` went with it,
+both callerless. 1127 tests green.
+
+One part of the question turned out to have a second cause the decision had not seen, and it is
+filed rather than absorbed: `shared/issues/260809-2023_o_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md`.
+Of 535 churn keys, 297 resolve to no file under any reading, because the tracker normalises an
+absolute path against the working directory and otherwise stores it raw. Dropping the lifetime
+threshold does not touch that.
