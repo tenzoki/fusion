@@ -235,11 +235,14 @@ describe("a project with no fusion-guard.json is byte-identical to before step 6
       "hooks/hooks.json",
       "settings.json",
       "bin/monitor",
-      "skills/**",
       ".claude-plugin/plugin.json",
     ]) {
       expect(guard.protectedPaths).toContain(p);
     }
+    // `skills/**` stood on this list until 260809, when the user took it off:
+    // skill files are the user's to edit. Asserted as an absence rather than
+    // just deleted, so a re-add is a decision somebody makes on purpose.
+    expect(guard.protectedPaths).not.toContain("skills/**");
     expect(guard.protectedPaths).not.toContain(PROJECT_CONFIG_FILENAME);
   });
 
@@ -451,9 +454,9 @@ describe("merge — per leaf: project, then plugin, then DEFAULTS", () => {
 // `guard.enabled` — decision 260804-1631, answered option 1.
 //
 // The key sits above every check in guard.ts: above the Bash dispatch, above an
-// active halt, above the git branch policy that runs even where the write guard
-// stands down. A project that could set it could switch off a guard it is
-// governed by, and the shipped code emitted nothing at all when it did.
+// active halt, above the before-fingerprint the protected-path measurement rests
+// on. A project that could set it could switch off a guard it is governed by,
+// and the shipped code emitted nothing at all when it did.
 //
 // The diagnostic is asserted in every case below rather than in one. It is what
 // the decision record calls "the only thing standing between this option and a

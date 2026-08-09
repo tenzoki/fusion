@@ -4,11 +4,11 @@
 
 This rule is loaded for every agent. It is enforced by **measurement**, not by your goodwill: the PreToolUse hook (`hooks/guard.ts`) fingerprints every protected path before your tool call, the PostToolUse hook (`hooks/tracker.ts`) fingerprints them again after it. A path whose fingerprint moved raises the halt, and you are told which path moved, what became of it — written back, or left standing where the guard can tell the change was not this call's — and where the bytes it carried were kept. The text here exists so you understand why that happens and what to do instead; it is not the enforcement surface.
 
-The sibling rule `git-branch-discipline.md` covers the guard's other `Bash` policy, the one about moving HEAD. The two share a hook and nothing else: different verbs, different overrides, different behaviour in the plugin's own repository.
+This is the only thing the guard inspects a tool call for. A second policy used to sit beside it, reading a `Bash` command's text to predict whether it was about to move HEAD; it was deleted, along with the shell lexer both policies had shared. Nothing about a `Bash` command is read any more — the guard fingerprints protected paths around it and allows it.
 
 ## The rule
 
-**Agents never write a protected path.** `guard.protectedPaths` in `hooks/config.json` is the list — `agents/**`, `rules/**`, `skills/**`, `hooks/config.json`, `hooks/hooks.json`, `settings.json`, `bin/monitor` and `.claude-plugin/plugin.json` — and it is the plugin's **default**, not the answer for a given project. A project may ship `fusion-guard.json` at its own root, merged per **leaf** key: a declared `guard.protectedPaths` wins outright, and a declared empty list really is empty, which is how a project narrows. One floor survives every narrowing: once `fusion-guard.json` exists, the guard watches that file itself, whatever the list inside it says.
+**Agents never write a protected path.** `guard.protectedPaths` in `hooks/config.json` is the list — `agents/**`, `rules/**`, `.claude/rules/**`, `hooks/config.json`, `hooks/hooks.json`, `settings.json`, `bin/monitor` and `.claude-plugin/plugin.json` — and it is the plugin's **default**, not the answer for a given project. A project may ship `fusion-guard.json` at its own root, merged per **leaf** key: a declared `guard.protectedPaths` wins outright, and a declared empty list really is empty, which is how a project narrows. One floor survives every narrowing: once `fusion-guard.json` exists, the guard watches that file itself, whatever the list inside it says.
 
 The match is on the path's **text**, and it **folds case** unconditionally on every platform, so `AGENTS/coder.md` is watched exactly as `agents/coder.md` is.
 

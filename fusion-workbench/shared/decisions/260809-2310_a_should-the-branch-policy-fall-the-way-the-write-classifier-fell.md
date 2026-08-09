@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** answered
 **Filed by:** orchestrator (at the user's challenge, Rebalance / revise Grounding)
 **Cross-references:** `circles/260804-1205-shell-reachability-model/decisions/260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md` (the precedent, and the binding decision `rules/critical-stance.md` §4 was written from); `shared/issues/260809-2300_o_the-arithmetic-command-span-is-recognised-only-after-a-blank-so-if-and-for-defeat-it.md`; `shared/issues/260809-2044_c_...`, `260809-1110_c_...`, `260809-1111_c_...`, `260809-1548_c_...`, `260809-1226_c_...` (the five patches of session 260809-1725); `shared/issues/260809-2255_o_the-branch-policy-verification-left-an-active-halt-...`
 
@@ -103,7 +103,26 @@ of the classifier they correct stops being load-bearing.
 this is answered, rather than being closed by the next entrance-specific fix.
 
 ---
-Answered: <set when status moves to _a_>
+Answered: 2026-08-09 by the user, at the gate this record was filed for. **None of the four
+options as written — the branch policy is deleted outright, and so are the `settings.json` deny
+rules option 4 would have kept.** The reasoning is this record's own, taken one step further than
+its recommendation: option 1 keeps a policy whose measured true positives, across the whole
+history, nobody recorded, and pays for it with restore semantics for HEAD that the record itself
+flags as needing their own answer. A mechanism with no recorded catch is not worth re-engineering;
+it is worth removing. The constraint that the two env overrides "must survive in some form" falls
+with the policy they override — there is nothing left to permit.
+
+The recommendation (option 1) is left standing above, unedited, because it was the right reading
+of the four options on the table and the user's answer is a fifth. A reader comparing them should
+see both.
+
+Consequences accepted with it, stated so nobody has to rediscover them:
+- an agent CAN now switch branches, and nothing in fusion stops it. The Human Gate for a task
+  that needs a different branch is gone from `agents/orchestrator.md` with the rest.
+- `git checkout HEAD -- <files>`, the constraint that shaped the classifier, is unconditionally
+  allowed now — it was the one thing the policy had to be argued into permitting.
+- `260809-2300` (the seventh entrance) and the five patches of session 260809-1725 are moot: the
+  code they corrected no longer exists.
 Implemented: <set when status moves to _i_>
 Deferred: <set when status moves to _d_>
 Superseded by: <set when status moves to _s_>

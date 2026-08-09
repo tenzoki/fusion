@@ -168,10 +168,9 @@ export interface Project {
 
 /** Files every throwaway project starts with. Relative paths, root-anchored. */
 const SEED_FILES: Record<string, string> = {
-  // Protected by the shipped config (`rules/**`, `agents/**`, `skills/**`).
+  // Protected by the shipped config (`rules/**`, `agents/**`).
   "rules/x.md": "# a rule\n",
   "agents/coder.md": "# an agent\n",
-  "skills/demo/SKILL.md": "# a skill\n",
   // The retirement destination a rule-file move needs, and the second rule
   // root — which the shipped config protects as of
   // `shared/issues/260801-1020_*_guard-protects-rules-but-not-claude-rules.md`,
@@ -180,7 +179,10 @@ const SEED_FILES: Record<string, string> = {
   // without first having to build the directory it wants to write into.
   "rules/retired/.keep": "",
   ".claude/rules/local.md": "# a project-wide rule\n",
-  // Unprotected, for the allow side.
+  // Unprotected, for the allow side. `skills/demo/SKILL.md` is here rather than
+  // in the protected group above because the user removed `skills/**` from the
+  // shipped list on 260809: skill files are the user's to edit.
+  "skills/demo/SKILL.md": "# a skill\n",
   "notes.txt": "notes\n",
   "build/out.js": "// built\n",
   "docs/.keep": "",
@@ -420,10 +422,10 @@ interface HookInput {
  * failure is invisible — the suite is green on both machines, and only one of
  * them is checking the property.
  *
- * The first three are PERMISSIONS: `FUSION_ALLOW_RULES_WRITE` gates the
- * rules-write exemption exactly as the two branch variables gate the branch
- * policy, so an exported copy would void the flag-unset half of the criteria
- * each exemption is meant to prove.
+ * `FUSION_ALLOW_RULES_WRITE` is a PERMISSION: it gates the rules-write
+ * exemption, so an exported copy would void the flag-unset half of every
+ * criterion that exemption is meant to prove. Two more permission variables
+ * stood beside it and gated the git branch policy; they went when it did.
  *
  * `CDPATH` is not a permission and was stripped for a stronger reason: it moved
  * a verdict in the DENYING direction, because a bare-word `cd` became unknowable
@@ -434,12 +436,7 @@ interface HookInput {
  * the strip stays because it costs nothing and a variable that once moved a
  * verdict is not one to hand back to the child on the strength of that.
  */
-const STRIPPED_ENV_VARS = [
-  "FUSION_ALLOW_BRANCH_SWITCH",
-  "FUSION_ALLOW_WORKTREE",
-  "FUSION_ALLOW_RULES_WRITE",
-  "CDPATH",
-] as const;
+const STRIPPED_ENV_VARS = ["FUSION_ALLOW_RULES_WRITE", "CDPATH"] as const;
 
 /**
  * The environment `runGuard` hands to the child, exported so a case can assert

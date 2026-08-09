@@ -12,7 +12,7 @@ When Claude Code executes a Write, Edit, MultiEdit, or NotebookEdit tool call, t
 
 If a check fails, the tool call is denied and the agent receives the reason — including which decision(s) the write would violate. This gives the agent explicit feedback about *why* it was blocked, not just that it was.
 
-`Bash` calls are intercepted as well, for the **git branch policy** (see `rules/git-branch-discipline.md`). The protected paths are not defended on that side by reading the command: they are **measured** around every guarded tool call, write tools and shell alike — see [Protected paths are measured, not predicted](#protected-paths-are-measured-not-predicted) below, and `rules/protected-path-discipline.md`.
+`Bash` calls reach the hook as well, and nothing about them is inspected. The guard fingerprints the protected paths around a shell call and allows it. Two policies used to read the command text here — one predicting which files a command would write, one predicting whether it would move HEAD — and both are gone, along with the shell lexer they shared. What a shell did to a protected path is **measured**, the same way it is for the write tools — see [Protected paths are measured, not predicted](#protected-paths-are-measured-not-predicted) below, and `rules/protected-path-discipline.md`.
 
 ### Escalation
 
@@ -41,11 +41,9 @@ Claude Code
   |
   +-- PreToolUse (Write/Edit/MultiEdit/NotebookEdit/Bash)
   |     \-- guard.ts
-  |           |   Bash is inspected for ONE policy: git branch/worktree moves.
-  |           |   The protected paths are fingerprinted here, on all five tools.
+  |           |   Bash is inspected for NOTHING. It is here so the protected
+  |           |   paths are fingerprinted around it, as on all five tools.
   |           +-- lib/protected-snapshot.ts  (fingerprint BEFORE the call)
-  |           +-- lib/shell-parse.ts         (the shared shell lexer)
-  |           +-- lib/git-branch-guard.ts    (branch/worktree classifier)
   |           +-- config.json (rules, paths, decisions, thresholds)
   |           +-- fusion-workbench/.guard-state/protected-snapshot.json (the before-picture)
   |           +-- fusion-workbench/.guard-state/escalation.json (halt flag, block count)
@@ -103,8 +101,8 @@ The effective hook configuration:
 
 Edit `hooks/config.json` to define:
 
-- **Enabled** — `guard.enabled` is the master on/off switch; `false` disables the guard entirely, including the branch-switch check and the shell protected-path check
-- **Protected paths** — which files are off-limits, to the write tools **and** to file-mutating shell commands
+- **Enabled** — `guard.enabled` is the master on/off switch; `false` disables the guard entirely, the protected-path measurement included
+- **Protected paths** — which files are off-limits: denied outright to the write tools, and measured around every guarded tool call so a change reaching one any other way is put back
 - **Category paths** — which file areas map to which decision categories
 - **Decisions** — the actual rules, each with an ID, category, statement, and optional rule file reference
 - **Sensitivity** — how aggressively each category escalates (none/low/medium/high)
@@ -176,10 +174,7 @@ refusal *before* the write.
 | `lib/guard-state-file.ts` | The read-coerce-write seam under `fusion-workbench/.guard-state/`: resolves one state file, reads it, hands whatever it holds to the caller's coercion, and writes it back atomically. The coercion is a parameter, so absence, unparseable text and a valid JSON value of the wrong shape are one answer and no state module has anywhere to put an `as` cast — the defect that let a `{}` state file discard the protected-path halt message. `escalation.ts` and `churn.ts` both use it; escalation wraps it with the merge its save needs, which re-reads the file so a halt another process raised since the load survives. `protected-snapshot.ts` is the only module outside the seam, and deliberately: its load answers `null` rather than an empty state, its save removes the stale file when its own write fails, and its read unlinks as it goes | Yes |
 | `lib/churn.ts` | Churn heatmap tracker | Yes |
 | `lib/workbench-root.ts` | Walks up from cwd to find `fusion-workbench/.fusion-setup` (single source of truth for workbench presence in TS) | Yes |
-| `lib/self-detect.ts` | Detects the fusion plugin's own repo so the **write** guard stands down — the write tools and the protected-path measurement alike, since the protected paths are what a fusion developer edits here (the git branch-switch policy stays active even here). Two entry points, on purpose: `isFusionPluginCwd()` asks about cwd for the write tools, `isFusionPluginRoot(dir)` asks about a named directory so the measurement can ask about the workbench root it walked up to | Yes |
-| `lib/shell-parse.ts` | The shell lexer the branch policy consumes: blanks the data regions (single-quoted bodies and heredoc bodies, an unquoted delimiter keeping the `$(…)` and backtick regions bash executes there), emits verbatim the six spans where bash suspends its tokenizer (a `#` comment, `$((…))`, `((…))`, `$[…]`, `${…}`, an array-assignment subscript), splices backslash line continuations, segments on `;`/`&&`/`\|\|`/`\|`/`&`/newline, recurses into `$(…)` and backticks, tokenizes. Only the `blank` mode survives (single-quoted content erased, so a quoted `git switch` is inert prose); the `capture` mode and the per-segment joiner went with the mutation classifier that needed them | Yes |
-| `lib/command-word.ts` | Which token of a segment names the program: skips env assignments, shell grammar words (`if`, `while`, `do`, …) and wrapper programs (`sudo`, `exec`, `xargs`, …), and resolves quoting, a path and a backslash escape. `sudo git switch main`, `if git switch main; then :; fi` and `\git switch main` therefore read as the `git` they are | Yes |
-| `lib/git-branch-guard.ts` | Branch/worktree classifier — the git branch-switch policy, and the only classifier left | Yes |
+| `lib/self-detect.ts` | Detects the fusion plugin's own repo so the **write** guard stands down — the write tools and the protected-path measurement alike, since the protected paths are what a fusion developer edits here. Two entry points, on purpose: `isFusionPluginCwd()` asks about cwd for the write tools, `isFusionPluginRoot(dir)` asks about a named directory so the measurement can ask about the workbench root it walked up to | Yes |
 | `package.json` | Dev dependencies (tsx, typescript, vitest) | Yes |
 
 ## Usage
@@ -190,14 +185,13 @@ The guard runs on a spectrum — full enforcement, advisory, or off — assemble
 
 | Goal | Change |
 |---|---|
-| Off entirely | `guard.enabled: false` — disables the write guard, the protected-path measurement **and** the branch-switch block. Plugin `hooks/config.json` only: a project's `fusion-guard.json` cannot set `enabled` (see [Per-project configuration](#per-project-configuration-fusion-guardjson)) |
+| Off entirely | `guard.enabled: false` — disables the write guard **and** the protected-path measurement. Plugin `hooks/config.json` only: a project's `fusion-guard.json` cannot set `enabled` (see [Per-project configuration](#per-project-configuration-fusion-guardjson)) |
 | Advisory-only (blocks only the guard-config floor) | keep `enabled: true`; set `protectedPaths: []`; leave decision sensitivities at `medium`/`low` (only `high` blocks). An empty list **narrows** the protected set to the self-protection floor rather than standing the check down: the file that declares the list exists by declaring it, and once `fusion-guard.json` exists the effective list keeps that file in both spellings (see [Per-project configuration](#per-project-configuration-fusion-guardjson)) — so a write-tool call aimed at it denies, and a change reaching it any other way is measured and put back |
 | Looser, not off | trim `protectedPaths`, raise the `churn.*` thresholds, keep sensitivities ≤ `medium` |
-| Allow one agent branch switch | session env `FUSION_ALLOW_BRANCH_SWITCH=1` (or `FUSION_ALLOW_WORKTREE=1`) — not config. Neither waives the protected-path policy |
 | Let an agent edit **rule files** for one session | session env `FUSION_ALLOW_RULES_WRITE=1` — not config. Exempts the project's rule directories and the `retired/` destination inside them and nothing else; every other protected path stays protected on both surfaces, the guard is not turned off, and an active halt is not cleared. Each exempted write emits a `guard_advisory` event |
 | Clear a stuck halt | `cd <project-root> && node ${CLAUDE_PLUGIN_ROOT}/hooks/dist/clear-halt.js` — the halt is project-scoped and the script locates it by walking up from its working directory, so the `cd` is part of the command (see [Clearing a halt](#clearing-a-halt)) |
 
-Four things cause a block, and only these: a **write-tool call on a protected path** (any sensitivity), a **branch- or worktree-moving git command** that no env override covers, a write to a **decision-governed path at `high` sensitivity**, and an active **halt**. A change to a protected path that reaches disk by any other route is not blocked at all — it is measured afterwards, put back, and it raises the halt (see [Protected paths are measured, not predicted](#protected-paths-are-measured-not-predicted)). Churn detection is advisory: it emits warning events but never blocks. `guard.enabled: false` stands the whole guard down, branch-switch check included.
+Three things cause a block, and only these: a **write-tool call on a protected path** (any sensitivity), a write to a **decision-governed path at `high` sensitivity**, and an active **halt**. Nothing a shell command says causes one — a change to a protected path that reaches disk by any route other than a write tool is not blocked at all, it is measured afterwards, put back, and it raises the halt (see [Protected paths are measured, not predicted](#protected-paths-are-measured-not-predicted)). Churn detection is advisory: it emits warning events but never blocks. `guard.enabled: false` stands the whole guard down.
 
 **How a path is matched.** On the *text* of the path — no symlink is resolved on the protection side — and with **case folded**, on both surfaces. `Edit AGENTS/coder.md`, `Edit HOOKS/config.json` and `Edit Rules/x.md` deny exactly as their lower-case spellings do, and the measurement watches `AGENTS/coder.md` exactly as it watches `agents/coder.md`. Until the fold landed, none of that held: a glob compiles to a case-sensitive regex, so on any case-insensitive filesystem — APFS in its default configuration, so every stock macOS install, and a case-insensitive Windows volume — the entire `protectedPaths` list was bypassable by shifting one letter, with no flag involved.
 
@@ -257,7 +251,7 @@ What replaced it asks a decidable question — *has a protected path changed?* �
 
 **What the measurement does not reach.** Two bounds belong to the mechanism and are stated in `rules/protected-path-discipline.md` too, because an agent has to know them: the change happens *before* it is seen, so whatever the write set off in between (a watcher that reloaded, a build that started) is not undone with it; and a read is not a change, so a command that carries a protected file's content somewhere else trips nothing — which is true of any list-based guard rather than a gap this one could close. Two further residuals are the measurement's own. **Parallel tool calls** interleave the single snapshot file, so a change can be attributed to the wrong call or missed entirely; Claude Code offers no per-call correlation key in the hook payload, so this is stated rather than solved, and the exposure is under-reporting — a change that IS seen is always a real change to a protected path, so the revert is never wrong when it fires. A **symlinked directory** is skipped rather than walked (following one invites a cycle), so a link planted to reach outside the protected tree is not watched at its far end; a symlinked *file* inside a protected directory is fingerprinted by its target's content, so replacing what it points at is measured.
 
-**Where it stands down.** The whole measurement is skipped when the fusion plugin's own repository is what the workbench root resolves to, for the same reason the write tools stand down there: the protected paths — `agents/**`, `rules/**`, `skills/**`, the plugin manifest — are the work rather than the thing being protected, and reverting them would destroy a developer's own edits. `guard.ts` writes no snapshot there either, so there would be nothing to compare against in any case. The git branch policy is not skipped.
+**Where it stands down.** The whole measurement is skipped when the fusion plugin's own repository is what the workbench root resolves to, for the same reason the write tools stand down there: the protected paths — `agents/**`, `rules/**`, the plugin manifest — are the work rather than the thing being protected, and reverting them would destroy a developer's own edits. `guard.ts` writes no snapshot there either, so there would be nothing to compare against in any case. Nothing else in the guard is still active there to skip.
 
 The question is asked of the **root**, not of cwd (`isFusionPluginRoot(root)` inside `measurementRoot()`), and that is not a detail. The write tools still ask it of cwd (`isFusionPluginCwd()`), which is why the two halves can disagree in one directory: a fusion developer whose session started in `fusion-workbench/`. Once the measurement root began walking up, leaving its stand-down at cwd would have meant reverting that developer's own files on every tool call — a new defect traded for the closed one. The two roots move together.
 

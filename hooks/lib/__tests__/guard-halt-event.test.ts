@@ -37,6 +37,13 @@ import {
 // protected-path deny's segment went with it. The monitor still renders the old
 // prefix, because historical rows in an existing events.jsonl still carry it;
 // nothing writes it any more, so there is nothing left here to assert about it.
+//
+// The git branch policy was the shell surface's last deny, and it kept two cases
+// here — one that its ordinary blocks carry no halt prefix, one that a halt does
+// not rewrite its reason. It was deleted on 260809, for the reason the classifier
+// was: it predicted from a command's text whether HEAD would move. So the shell
+// contributes NO rows to this file now, and the one Bash case left asserts
+// exactly that silence.
 // ---------------------------------------------------------------------------
 
 /** A halted project, without the three real denials it would take to reach one. */
@@ -80,7 +87,7 @@ describe("a reader can tell the two guard_halt sources apart", () => {
           "block",
         );
         expect(
-          runWrite(root, resolve(root, "skills/demo/SKILL.md")).decision,
+          runWrite(root, resolve(root, ".claude/rules/x.md")).decision,
         ).toBe("block");
 
         const events = readEvents(root);
@@ -97,27 +104,12 @@ describe("a reader can tell the two guard_halt sources apart", () => {
         // event's own file field rather than a repetition inside the detail.
         expect(events[2].detail).toContain("Halt raised by this block");
         expect(events[2].detail).toContain("Protected path");
-        expect(events[2].file).toBe("skills/demo/SKILL.md");
+        expect(events[2].file).toBe(".claude/rules/x.md");
       });
     },
     CASE_TIMEOUT * 2,
   );
 
-  it(
-    "keeps the halt-raised prefix off the git branch policy's ordinary blocks",
-    () => {
-      withProject(({ root }) => {
-        expect(runBash(root, "git switch main").decision).toBe("block");
-        const events = readEvents(root);
-        expect(events).toHaveLength(1);
-        expect(events[0].event).toBe("guard_block");
-        expect(events[0].detail).toContain("Git branch-switch denied");
-        expect(events[0].detail).toContain("git switch main");
-        expect(events[0].detail).not.toContain("Halt");
-      });
-    },
-    CASE_TIMEOUT,
-  );
 });
 
 describe("the halt does not reach the shell", () => {
@@ -131,22 +123,6 @@ describe("the halt does not reach the shell", () => {
       withProject(({ root }) => {
         expect(runBash(root, "rm -f notes.txt").decision).toBeUndefined();
         expect(haltDetails(root)).toEqual([]);
-      }, HALTED);
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "still denies a branch switch under a halt, on the branch policy's reason",
-    () => {
-      // The one Bash deny left is not the halt's, and it must not start
-      // reporting as one: the halt is not the condition an agent has to clear
-      // to switch branches.
-      withProject(({ root }) => {
-        const res = runBash(root, "git switch main");
-        expect(res.decision).toBe("block");
-        expect(res.reason).toContain("never switch git branches");
-        expect(res.reason).not.toContain("[HALTED]");
       }, HALTED);
     },
     CASE_TIMEOUT,

@@ -17,24 +17,21 @@
  *      does not differ by filesystem. See lib/paths.ts `matchesAnyFolded`.
  *   3. Decision-governed categories — escalated based on sensitivity
  *
- * Also intercepts Bash tool calls, for ONE policy:
- *   a. Branch policy — DENIES branch/worktree-moving git operations. git is
- *      reachable only via Bash, so every attempt an agent can make passes
- *      through here; that makes this a choke-point on the tool CALL, not a
- *      proof of impossibility. The classifier reads the command text, so a
- *      command that hides the verb from its own text (`eval '…'`,
- *      `bash -c '…'`, a `case` arm, a script the agent invokes) is not seen.
- *      See lib/git-branch-guard.ts. Runs everywhere, including in the fusion
- *      plugin's own repo.
- * There used to be a second one: a classifier that read a shell command and
- * predicted whether it was about to write a protected path. It is gone, and
- * nothing replaces it on THIS side of the tool call. What a shell does to a
- * protected path is now answered after the fact, by the fingerprint pair at the
- * top of this comment — measured rather than predicted, because "will this
- * command write?" is not decidable from the command text. Decided by the user
- * on 2026-08-07: detect afterwards instead of predicting.
- * The branch policy does not touch the Bash allow path's zero-side-effect
- * property (no counter reset, no guard_allow event) — see guardBashCommand.
+ * It also RECEIVES Bash tool calls, and inspects them for nothing at all. Two
+ * policies used to read the command text here, and both asked the same
+ * undecidable question of the same input:
+ *   - a classifier that predicted whether a command was about to write a
+ *     protected path. Retired 2026-08-07; what a shell does to a protected path
+ *     is now answered after the fact, by the fingerprint pair at the top of this
+ *     comment — measured rather than predicted.
+ *   - a branch policy that predicted whether a command was about to move HEAD.
+ *     Deleted 2026-08-09 by the same reasoning, and on its own record: five
+ *     patches in one afternoon, each closing a measured entrance and revealing
+ *     the next, 24 consecutive false blocks against the agents' own verification
+ *     commands, and no recorded true positive in its whole history.
+ * A Bash call therefore reaches the before-fingerprint and then allows,
+ * participating in NO write-guard bookkeeping (no counter reset, no
+ * guard_allow event).
  *
  * Ported from fusion/reactor/pkg/guard/decision_guard.go.
  *

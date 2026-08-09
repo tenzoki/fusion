@@ -83,7 +83,7 @@ describe("the protected list is matched with case folded — write tools", () =>
     "HOOKS/config.json",
     "hooks/Config.json",
     "HOOKS/hooks.json",
-    "SKILLS/demo/SKILL.md",
+    ".CLAUDE/RULES/local.md",
     "Settings.json",
     "BIN/Monitor",
     ".Claude-Plugin/Plugin.json",
@@ -228,7 +228,7 @@ describe("the GRANT side is unchanged — folding widened protection only", () =
   it(
     "keeps the bare protected directory denied on the write tools",
     () => {
-      for (const path of ["agents/", "rules/", "skills/", "AGENTS/", "Rules/"]) {
+      for (const path of ["agents/", "rules/", "AGENTS/", "Rules/"]) {
         withProject(({ root }) => {
           expectProtectedDeny(runWrite(root, path), path);
         });

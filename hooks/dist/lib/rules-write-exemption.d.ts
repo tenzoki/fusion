@@ -35,11 +35,11 @@
  *
  * ## What the flag does NOT do
  *
- * It grants exactly one permission, the way the two git overrides do. It waives
- * the protected-path check for rule files and nothing else. It does not turn the
- * guard off, it does not lift an active halt, it does not touch the
- * decision-governed check, and it exempts no path outside the rule directories —
- * not `agents/**`, not `skills/**`, not `hooks/config.json`, not
+ * It grants exactly one permission. It waives the protected-path check for rule
+ * files and nothing else. It does not turn the guard off, it does not lift an
+ * active halt, it does not touch the decision-governed check, and it exempts no
+ * path outside the rule directories —
+ * not `agents/**`, not `hooks/config.json`, not
  * `hooks/hooks.json`, not `settings.json`, not `bin/monitor`, not
  * `.claude-plugin/plugin.json`, not the guard's own state directory, and not
  * `fusion-guard.json`, the project guard configuration, which has its own
@@ -52,8 +52,8 @@
  * filesystem as an `FsLocator`, and the project's own declared protected entries
  * as a plain list of globs — so every case is testable in-process, without a
  * subprocess and without mutating ambient state that a neighbouring case would
- * then read. `guard.ts` supplies all three, the same way it supplies
- * `CheckoutResolver` to the git classifier.
+ * then read. `guard.ts` supplies all three, because the modules that decide
+ * policy stay pure and that file owns the environment.
  *
  * ## Gate 0 — a `..` anywhere in the SPELLING refuses the grant outright
  *
@@ -552,10 +552,9 @@ export declare function projectProtectedNote(pattern: string): string;
  * Did the user set `FUSION_ALLOW_RULES_WRITE`?
  *
  * The accepted spellings are `"1"` and `"true"`, case-insensitive, and nothing
- * else — `isEnvFlagSet` is the same parser the two git overrides use, so a user
- * who knows how `FUSION_ALLOW_BRANCH_SWITCH` behaves already knows how this
- * behaves. `env` is a parameter: this module never reads the ambient
- * environment.
+ * else — see `isEnvFlagSet` above. This is now the only flag fusion parses that
+ * way; two git overrides shared the parser until the branch policy was deleted.
+ * `env` is a parameter: this module never reads the ambient environment.
  */
 export declare function rulesWriteExemptionActive(env: NodeJS.ProcessEnv): boolean;
 /**

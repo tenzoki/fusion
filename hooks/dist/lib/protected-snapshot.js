@@ -578,7 +578,7 @@ function writeNoFollow(abs, bytes) {
  *
  * **The workbench root IS the fusion plugin's own repository.** The measurement
  * is a write-guard concern and stands down here exactly as the write tools do:
- * `agents/**`, `rules/**` and `skills/**` are the work in this one repository,
+ * `agents/**` and `rules/**` are the work in this one repository,
  * not the thing being protected, and reverting them would destroy it.
  *
  * That second test is `isFusionPluginRoot(root)` and NOT `isFusionPluginCwd()`,

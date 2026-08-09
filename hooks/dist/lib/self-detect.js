@@ -1,7 +1,7 @@
 /**
  * Self-detection: is the guard running inside the fusion plugin's own repo?
  *
- * The guard protects agents/**, rules/**, skills/**, .claude-plugin/plugin.json
+ * The guard protects agents/**, rules/**, .claude-plugin/plugin.json
  * etc. This is correct for projects USING fusion, but wrong when developing
  * fusion itself — every edit to the plugin's own source would be blocked.
  *

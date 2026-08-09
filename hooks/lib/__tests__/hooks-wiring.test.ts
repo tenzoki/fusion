@@ -31,9 +31,13 @@ function loadHooks(): HooksConfig {
 
 describe("hooks.json wiring — guard reaches Bash", () => {
   // Regression guard for 260707-0616[o]: the guard's PreToolUse matcher
-  // omitted Bash, so the git-branch/worktree classifier never ran in
-  // production even though its unit tests passed. This asserts the wiring
-  // so the gap cannot silently regress.
+  // omitted Bash, so the policy that then read shell commands never ran in
+  // production even though its unit tests passed. Nothing reads a command any
+  // more, and Bash is still wired here for a reason that outlives every
+  // classifier: it is where the BEFORE-fingerprint of the protected paths is
+  // taken. Drop Bash from this matcher and a shell write to a protected path
+  // has nothing to be compared against — `tracker.ts` measures an `after` with
+  // no `before` and the whole protection lapses on that surface.
   it("routes Bash tool calls to guard.js via PreToolUse", () => {
     const preToolUse = loadHooks().hooks.PreToolUse ?? [];
     const guardEntry = preToolUse.find((entry) =>

@@ -43,8 +43,8 @@
  *
  * `guard.enabled` is read from the plugin layer and `DEFAULTS` only. It sits
  * above every check in `guard.ts` — above the Bash dispatch, above the halt,
- * above the git branch policy that fusion documents in three places as running
- * unconditionally — so a project that could write it could switch off a guard it
+ * above the before-fingerprint the whole protected-path measurement rests on —
+ * so a project that could write it could switch off a guard it
  * is governed by, silently and unrecoverably. Decision `260804-1631`, answered
  * option 1 at the same gate.
  *
@@ -571,7 +571,7 @@ function validateLayer(
 
       if (kind === "project" && key === "guard" && leafKey === "enabled") {
         diagnostics.push(
-          `Guard configuration at ${source}: "guard.enabled" cannot be set by a project — a project does not switch off the guard that governs it, and the git branch policy runs even where the write guard stands down. The key was ignored.`,
+          `Guard configuration at ${source}: "guard.enabled" cannot be set by a project — a project does not switch off the guard that governs it. The key was ignored.`,
         );
         continue;
       }

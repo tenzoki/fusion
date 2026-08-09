@@ -37,23 +37,25 @@
  * It was written for the two `main().catch` handlers, and there it was complete.
  * The same inversion sat untouched at every site INSIDE `main`, on both hooks —
  * `saveEscalation` before `block`, `emitEvent` before `block`, `trackChurn`
- * before `respond`. Four of those turned a verdict the guard had already reached
- * into its opposite, all four measured with `.guard-state/` at mode `0555` or
- * with `churn.json` replaced by a directory:
+ * before `respond`. Several of those turned a verdict the guard had already
+ * reached into its opposite, each measured with `.guard-state/` at mode `0555`
+ * or with `churn.json` replaced by a directory:
  *
  *   - the protected-path deny and the decision-governed deny
  *     (`shared/issues/260809-1825_*_an-unwritable-guard-state-directory-….md`),
  *   - the halt refusing a write, which fails through `emitEvent` rather than
  *     through `saveEscalation` — the same class reached by a different call,
- *   - the git branch deny, the one policy that runs in every repository
- *     including this one
- *     (`shared/issues/260809-2046_*_the-git-branch-deny-is-a-fourth-fail-open-site-….md`),
  *   - and the protected-path halt's explanation, which the churn heatmap
  *     discarded on its way out
  *     (`shared/issues/260809-2045_*_the-churn-half-still-runs-before-the-reply-….md`).
  *
- * A fix that reordered those four sites one at a time would leave the fifth for
- * the next review, which is what produced two records for one defect the last
+ * A fourth site sat on the git branch deny
+ * (`shared/issues/260809-2046_*_the-git-branch-deny-is-a-fourth-fail-open-site-….md`);
+ * it went with that policy rather than being fixed, but it is named here because
+ * it is the one that showed the class was not four sites but a shape.
+ *
+ * A fix that reordered those sites one at a time would leave the next for the
+ * next review, which is what produced two records for one defect the last
  * time. So the argument stated above is the mechanism now: `answer` is the
  * ordinary path's spelling of "verdict first, reporting after", and
  * `bestEffort` is the same guarantee for a report that cannot be moved after the

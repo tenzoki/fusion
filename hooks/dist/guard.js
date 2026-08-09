@@ -17,24 +17,21 @@
  *      does not differ by filesystem. See lib/paths.ts `matchesAnyFolded`.
  *   3. Decision-governed categories — escalated based on sensitivity
  *
- * Also intercepts Bash tool calls, for ONE policy:
- *   a. Branch policy — DENIES branch/worktree-moving git operations. git is
- *      reachable only via Bash, so every attempt an agent can make passes
- *      through here; that makes this a choke-point on the tool CALL, not a
- *      proof of impossibility. The classifier reads the command text, so a
- *      command that hides the verb from its own text (`eval '…'`,
- *      `bash -c '…'`, a `case` arm, a script the agent invokes) is not seen.
- *      See lib/git-branch-guard.ts. Runs everywhere, including in the fusion
- *      plugin's own repo.
- * There used to be a second one: a classifier that read a shell command and
- * predicted whether it was about to write a protected path. It is gone, and
- * nothing replaces it on THIS side of the tool call. What a shell does to a
- * protected path is now answered after the fact, by the fingerprint pair at the
- * top of this comment — measured rather than predicted, because "will this
- * command write?" is not decidable from the command text. Decided by the user
- * on 2026-08-07: detect afterwards instead of predicting.
- * The branch policy does not touch the Bash allow path's zero-side-effect
- * property (no counter reset, no guard_allow event) — see guardBashCommand.
+ * It also RECEIVES Bash tool calls, and inspects them for nothing at all. Two
+ * policies used to read the command text here, and both asked the same
+ * undecidable question of the same input:
+ *   - a classifier that predicted whether a command was about to write a
+ *     protected path. Retired 2026-08-07; what a shell does to a protected path
+ *     is now answered after the fact, by the fingerprint pair at the top of this
+ *     comment — measured rather than predicted.
+ *   - a branch policy that predicted whether a command was about to move HEAD.
+ *     Deleted 2026-08-09 by the same reasoning, and on its own record: five
+ *     patches in one afternoon, each closing a measured entrance and revealing
+ *     the next, 24 consecutive false blocks against the agents' own verification
+ *     commands, and no recorded true positive in its whole history.
+ * A Bash call therefore reaches the before-fingerprint and then allows,
+ * participating in NO write-guard bookkeeping (no counter reset, no
+ * guard_allow event).
  *
  * Ported from fusion/reactor/pkg/guard/decision_guard.go.
  *
@@ -52,9 +49,6 @@
  * replaced with the fail-open ALLOW; that module's header carries the class, the
  * measurements and the records.
  */
-import { resolve } from "node:path";
-import { existsSync } from "node:fs";
-import { execFileSync } from "node:child_process";
 import { matchesAnyFolded, collapseSegments } from "./lib/paths.js";
 import { projectRelative } from "./lib/project-relative.js";
 import { isFusionPluginCwd } from "./lib/self-detect.js";
@@ -64,46 +58,11 @@ import { loadEscalation, saveEscalation, isHalted, recordBlock, resetBlockCounte
 import { emitEvent } from "./lib/events.js";
 import { answer, bestEffort, failOpen } from "./lib/fail-open.js";
 import { measurementRoot, saveSnapshot, takeSnapshot, } from "./lib/protected-snapshot.js";
-import { classifyGitCommand, overridesFromEnv, overrideEnvFor, } from "./lib/git-branch-guard.js";
 import { isProjectRulePath, rulesWriteDetail, rulesWriteExemptionActive, rulesWriteRefusalNote, } from "./lib/rules-write-exemption.js";
-/**
- * Real filesystem + git-ref resolver for the ambiguous bare-`git checkout
- * <target>` form. Resolves paths and refs in the effective cwd (process cwd
- * plus any `-C <dir>` global options, applied in order — the same directory
- * git itself would use). Fails safe: any error → treat as "not a path / not a
- * ref", which fails the ALLOW conditions and lets the classifier deny.
- */
-function effectiveCwd(cwdHints) {
-    let dir = process.cwd();
-    for (const hint of cwdHints)
-        dir = resolve(dir, hint);
-    return dir;
-}
-const checkoutResolver = {
-    pathExists(target, cwdHints) {
-        try {
-            return existsSync(resolve(effectiveCwd(cwdHints), target));
-        }
-        catch {
-            return false;
-        }
-    },
-    isRef(target, cwdHints) {
-        try {
-            // Exit 0 (+ prints the resolved object) iff target is a valid ref/object.
-            // stdio ignored; execFileSync throws on any non-zero exit → not a ref.
-            execFileSync("git", ["-C", effectiveCwd(cwdHints), "rev-parse", "--verify", "--quiet", target], { stdio: "ignore" });
-            return true;
-        }
-        catch {
-            return false;
-        }
-    },
-};
 /**
  * The real filesystem the rules-write exemption's second gate consults —
  * symlinks, path folding and hard links, rooted at the project. Built once per
- * process, next to `checkoutResolver`, for the same reason: the modules that
+ * process, for the reason this file builds every such object: the modules that
  * decide policy stay pure and this file owns the environment.
  */
 const fsLocator = realFsLocator(process.cwd());
@@ -189,27 +148,6 @@ function block(reason) {
     process.stdout.write(JSON.stringify({ decision: "block", reason }) + "\n");
 }
 /**
- * Longest command or segment a detail string carries. Beyond this the reader
- * has what they need to recognise the call, and `events.jsonl` stays a log
- * rather than a transcript.
- */
-const EVENT_DETAIL_MAX = 200;
-/**
- * Fold a command or segment into one bounded line fit for an event detail.
- *
- * `emitEvent` serialises through `JSON.stringify`, so a newline could not break
- * the JSONL framing — it would arrive as a literal `\n` inside the string. The
- * collapse is for the reader and for the monitor's single-line row, not for the
- * file format. Truncation is what keeps an unbounded operand list out of the
- * log.
- */
-function forEvent(text) {
-    const oneLine = text.replace(/\s+/g, " ").trim();
-    return oneLine.length <= EVENT_DETAIL_MAX
-        ? oneLine
-        : `${oneLine.slice(0, EVENT_DETAIL_MAX - 1)}…`;
-}
-/**
  * Emit the event for a `recordBlock` outcome: `guard_block`, or `guard_halt`
  * when THIS block is the one that raised the halt.
  *
@@ -231,122 +169,14 @@ function forEvent(text) {
  * mutation classifier was retired. Historical rows in an existing
  * `events.jsonl` still carry it, which is why the monitor keeps rendering it.
  *
- * The last prefix is what this function adds. Writing it inline at each of the
- * four sites would mean four copies of one conditional, each free to drift; the
+ * The last prefix is what this function adds. Writing it inline at each site
+ * would mean a copy of one conditional per site, each free to drift; the
  * distinction is a property of the block/halt pair, so it lives with the pair.
  * The non-halt detail is passed through UNCHANGED, so an ordinary `guard_block`
  * row reads exactly as it always has.
  */
 function emitBlockEvent(halted, tool, file, detail) {
     emitEvent(halted ? "guard_halt" : "guard_block", tool, file, halted ? `Halt raised by this block — ${detail}` : detail);
-}
-/**
- * Guard a Bash tool call against the one shell policy. Two outcomes are
- * sequenced, in this order:
- *
- *   1. GIT DENY. Classify the command (segmenting on ; && || | and inspecting
- *      subshells) and DENY any branch/worktree-moving git operation the env
- *      overrides do not cover. This runs first and returns, so at most one block
- *      is recorded per tool call. Recording two would double-count the
- *      consecutive-block counter that drives the halt.
- *   3. OVERRIDE ALLOW. Once the deny has passed, the override-used note is
- *      recorded and the call allowed.
- *
- * The step numbering skips 2 on purpose. A protected-path deny used to sit
- * there, reading the command text to predict which files it was about to write,
- * and a 2b recorded the FUSION_ALLOW_RULES_WRITE exemption that deny had
- * granted. Both are gone with the classifier: the protected paths are measured
- * after the call now (`lib/protected-snapshot.ts` + `tracker.ts`), and the
- * exemption is asked there, of a path that has actually changed, by
- * `isObservedRulePath`. The gap in the numbering is a marker, so a reader who
- * finds "step 3" in a comment elsewhere is not hunting for a step 2 that was
- * silently renumbered away.
- *
- * The innocuous allow path stays free of ALL write-guard bookkeeping.
- *
- * THE HALT IS NOT ONE OF THE OUTCOMES. A halted guard blocks the four write
- * tools and lets the shell through, because deciding whether a command mutates
- * anything is the same undecidable question the retired policy asked. What a
- * halt no longer does is stop `rm notes.txt` from running; the user confirmed
- * that cost explicitly on 2026-08-07, accepting the loss of the Bash halt on the
- * shell as the price of dropping the classifier. The protected paths
- * themselves are not left to the halt — they are measured after every tool call
- * and restored, halt or no halt.
- */
-function guardBashCommand(input, config) {
-    const command = typeof input.tool_input.command === "string"
-        ? input.tool_input.command
-        : "";
-    const overrides = overridesFromEnv(process.env);
-    const verdict = classifyGitCommand(command, overrides, checkoutResolver);
-    // STEP 1 — git deny: a branch/worktree-moving git op with no override.
-    // Returns, so exactly one block is recorded per tool call. An override does
-    // NOT reach here: it leaves verdict.deny false and is handled at step 3.
-    if (verdict.deny) {
-        const reason = verdict.reason ??
-            "fusion policy: agents never switch git branches autonomously.";
-        // Loaded and mutated IN MEMORY ahead of the deny, and persisted after it.
-        // Neither call touches the filesystem for writing — `loadEscalation`
-        // coerces whatever it finds, including nothing — so the deny below cannot
-        // be lost to them, while `halted` is still available to the event row.
-        const escalation = loadEscalation();
-        const halted = recordBlock(escalation, config.escalation.blocksBeforeHalt, "git_branch_switch", reason, "Bash", verdict.offendingSegment);
-        // The branch policy is the one policy that runs in EVERY repository, this
-        // one included, and with `.guard-state/` unwritable it used to allow the
-        // switch it had just decided to refuse (`260809-2046`).
-        answer("guard", () => block(reason), () => saveEscalation(escalation), () => emitBlockEvent(halted, "Bash", undefined, `Git branch-switch denied: ${forEvent(verdict.offendingSegment ?? command)}`));
-        return;
-    }
-    // STEP 3 — override note: a normally-denied git op that an env flag allowed.
-    // Recorded here rather than at step 1 so the note is written only for a call
-    // that actually goes through.
-    //
-    // Not a deny — it emits the same allow() as the path below. It is also the one
-    // conditional on this path that writes state without blocking, and it is
-    // reachable ONLY when the user set an override, so an innocuous Bash call
-    // still touches nothing.
-    //
-    // It RETURNS rather than falling through, and the return is what keeps the
-    // final statement of this function a bare `allow()` — the textual form of
-    // "an innocuous Bash call touches nothing", pinned by guard-bash-wiring.
-    // The allow is written before the note, for the reason every other site here
-    // writes its verdict first: an unwritable `.guard-state/` costs the note and
-    // not the reply.
-    if (verdict.overrideUsed && verdict.overrideKind) {
-        const envVar = overrideEnvFor(verdict.overrideKind);
-        const detail = `Override ${envVar} allowed normally-denied git op: ${verdict.overrideSegment ?? command}`;
-        // Record the override in guard-state for visibility (same state surface
-        // the block path writes to — recentEvents in escalation.json + events.jsonl).
-        answer("guard", allow, () => {
-            const escalation = loadEscalation();
-            escalation.recentEvents.push({
-                level: "clear",
-                trigger: "git_branch_switch_override",
-                message: detail,
-                timestamp: new Date().toISOString(),
-                toolName: "Bash",
-            });
-            saveEscalation(escalation);
-        }, () => emitEvent("guard_advisory", "Bash", undefined, detail));
-        return;
-    }
-    // Allow path: not a branch/worktree-moving git op the overrides left denied.
-    // Both branches above RETURN, and each writes state only in the case it was
-    // written for — step 1 when the classifier denies, step 3 when the user set an
-    // override. So reaching this point means neither ran, and the call
-    // participates in NONE of the write-guard bookkeeping. An innocuous Bash call
-    // (ls, git status, an allowed `git checkout HEAD -- <files>`) must have zero
-    // side-effect on guard state:
-    //   - It MUST NOT reset the consecutive-block counter. Agents run Bash
-    //     constantly between write attempts; resetting here would let any
-    //     interleaved Bash zero the counter and defeat the write/branch halt
-    //     escalation (see issue 260707-0750).
-    //   - It MUST NOT emit a guard_allow event. One append per Bash call floods
-    //     events.jsonl and buries the guard_block/guard_halt/guard_advisory
-    //     entries the monitor exists to surface (see issue 260707-0751).
-    // Only genuine forward progress on the guarded write surface (the write-tool
-    // allow path below) resets the counter and emits guard_allow.
-    allow();
 }
 async function main() {
     // Read hook input from stdin
@@ -367,9 +197,9 @@ async function main() {
         allow(); // Unparseable input — fail open
         return;
     }
-    // Tools this guard inspects: write operations + Bash (for the git
-    // branch-switch and protected-path policies). Everything else is allowed
-    // unconditionally.
+    // Tools this guard handles: the four write operations, which it decides, plus
+    // Bash, which it only fingerprints protected paths around. Everything else is
+    // allowed unconditionally.
     const writeTools = ["Write", "Edit", "MultiEdit", "NotebookEdit"];
     const isWriteTool = writeTools.includes(input.tool_name);
     const isBash = input.tool_name === "Bash";
@@ -468,29 +298,42 @@ async function main() {
     if (measureRoot !== null) {
         saveSnapshot(takeSnapshot(measureRoot, config.guard.protectedPaths));
     }
-    // Bash branch: the git branch-switch policy, and nothing else. See the header
-    // for what that does and does not bound.
+    // Bash branch: nothing is inspected, and the call is allowed.
     //
-    // It runs unconditionally when the guard is enabled — INCLUDING in the fusion
-    // plugin's own repo. This hook only ever gated the AGENT's Bash tool calls; a
-    // human developer switches branches in their own terminal, which the hook
-    // never sees. Standing the branch policy down for the plugin repo therefore
-    // removed agent protection for zero human benefit (the branch-switch hole).
-    // The override env vars (FUSION_ALLOW_BRANCH_SWITCH / FUSION_ALLOW_WORKTREE)
-    // remain the deliberate escape hatch for a fusion developer who genuinely
-    // wants an agent to switch branches here.
+    // Bash is here for the before-fingerprint above and for nothing else. A shell
+    // reaches protected paths like any other tool, so it needs a before-picture;
+    // what it then DID to them is answered by `tracker.ts` afterwards. Both
+    // policies that used to read the command text at this point are deleted — see
+    // the file header for which, and why the question they shared is not
+    // answerable from that input.
     //
-    // The write-guard half of the Bash surface is no longer here at all: what a
-    // shell did to a protected path is measured by the fingerprint pair above and
-    // in `tracker.ts`, and THAT is what stands down in this repo.
+    // The allow is BARE, and that is the property to preserve. An innocuous Bash
+    // call must have zero side-effect on guard state:
+    //   - It MUST NOT reset the consecutive-block counter. Agents run Bash
+    //     constantly between write attempts; resetting here would let any
+    //     interleaved Bash zero the counter and defeat the write-halt escalation
+    //     (see issue 260707-0750).
+    //   - It MUST NOT emit a guard_allow event. One append per Bash call floods
+    //     events.jsonl and buries the guard_block/guard_halt/guard_advisory
+    //     entries the monitor exists to surface (see issue 260707-0751).
+    // Only genuine forward progress on the guarded write surface (the write-tool
+    // allow path below) resets the counter and emits guard_allow.
+    //
+    // THE HALT DOES NOT REACH HERE either. A halted guard blocks the four write
+    // tools and lets the shell through, because deciding whether a command
+    // mutates anything is the same undecidable question both retired policies
+    // asked. What a halt does not do is stop `rm notes.txt` from running; the user
+    // confirmed that cost explicitly on 2026-08-07. The protected paths
+    // themselves are not left to the halt — they are measured after every tool
+    // call and restored, halt or no halt.
     if (isBash) {
-        guardBashCommand(input, config);
+        allow();
         return;
     }
     // Self-detect: if cwd is the fusion plugin's own repo, stand the WRITE guard
     // down. The protected paths (agents/**, rules/**, plugin.json, etc.) are the
     // very files a fusion developer needs to edit. Only write tools reach here —
-    // the branch-switch policy above already ran and is intentionally NOT disabled.
+    // Bash returned above, having decided nothing either way.
     if (isFusionPluginCwd()) {
         answer("guard", allow, () => emitEvent("guard_allow", input.tool_name, extractFilePath(input.tool_input) ?? undefined, "Self-detect: cwd is fusion plugin repo — write guard standing down"));
         return;
@@ -544,9 +387,9 @@ async function main() {
             "walking up from its working directory, so the `cd` is part of the " +
             `command: ${clearHaltCommand()}`;
         // Names its surface, so a reader scanning a run of guard_halt rows can tell
-        // this apart from the Bash halt and from a block that RAISED the halt. The
-        // path is already the event's file field; repeating it here would only make
-        // the row longer.
+        // this apart from a block that RAISED the halt, and from the historical
+        // Bash-halt rows an older `events.jsonl` still carries. The path is already
+        // the event's file field; repeating it here would only make the row longer.
         //
         // This check is the one site in the class whose fail-open ran through
         // `emitEvent` rather than `saveEscalation` — measured at `{}` on a HALTED
@@ -627,11 +470,9 @@ async function main() {
             answer("guard", () => block(reason), () => saveEscalation(escalation), () => emitBlockEvent(halted, input.tool_name, filePath, "Protected path"));
             return;
         }
-        // Same note the git override records at guardBashCommand STEP 3: one
-        // clear-level escalation entry naming the variable and what it let through,
-        // and one guard_advisory carrying the same string. This one also carries the
-        // path, in both the entry and the event, because a rules-write exemption
-        // always has one and a branch override does not.
+        // One clear-level escalation entry naming the variable and what it let
+        // through, and one guard_advisory carrying the same string. Both carry the
+        // path, because a rules-write exemption always has one.
         const detail = rulesWriteDetail([filePath]);
         escalation.recentEvents.push({
             level: "clear",

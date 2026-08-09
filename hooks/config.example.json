@@ -13,7 +13,6 @@
       "hooks/hooks.json",
       "settings.json",
       "bin/monitor",
-      "skills/**",
       ".claude-plugin/plugin.json"
     ],
 

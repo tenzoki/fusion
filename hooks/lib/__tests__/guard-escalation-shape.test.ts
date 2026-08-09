@@ -3,7 +3,6 @@ import { resolve } from "node:path";
 import {
   CASE_TIMEOUT,
   readEscalation,
-  runBash,
   runWrite,
   withProject,
 } from "./helpers/guard-harness.js";
@@ -28,12 +27,12 @@ import {
 // that failed open is well-formed JSON. The failure was total: the whole
 // protected list, both surfaces, and an active halt was not consulted either.
 //
-// The Bash column was measured on `rm -f agents/coder.md`, against a classifier
-// that predicted shell writes and has since been retired. The rows below run the
-// branch policy instead — the deny the shell surface still has — and they reach
-// the same `loadEscalation` on the same path, which is what the coercion has to
-// survive. The halt no longer reaches the shell at all, so the anti-vacuity
-// control below is a write-tool case only.
+// The Bash column is history. It was measured on `rm -f agents/coder.md`,
+// against a classifier that predicted shell writes; when that went, the rows
+// were re-pointed at the git branch policy, the one deny the shell surface still
+// had. That is deleted too, and the shell surface now has no deny to make fail
+// open — a Bash call reads no state, so there is no coercion for it to survive.
+// Every row below is a write-tool case, the surface where the defect was found.
 //
 // ## What these cases assert, and what they deliberately do not
 //
@@ -104,35 +103,6 @@ describe("a malformed escalation.json denies on the write-tool surface", () => {
             const res = runWrite(root, resolve(root, TARGET));
             expect(res.decision).toBe("block");
             expect(res.reason).toContain("Protected path");
-          },
-          { files: { [STATE_FILE]: content } },
-        );
-      },
-      CASE_TIMEOUT,
-    );
-  }
-});
-
-describe("a malformed escalation.json denies on the Bash surface", () => {
-  // The command is a branch switch rather than `rm -f agents/coder.md`. The
-  // protected-path classifier that denied the second one is gone — the shell's
-  // reach into a protected path is measured after the call now — so the branch
-  // policy is the deny this surface still has, and it is the one that has to
-  // survive a state file the loader cannot read.
-  //
-  // The row still bites: the deny reaches `loadEscalation` and `recordBlock`
-  // before it can answer, so a coercion that let a wrong-shaped state through
-  // would throw there, take `main().catch`'s fail-open path, and emit `{}` —
-  // which Claude Code reads as ALLOW.
-  for (const { name, content } of MALFORMED_ROWS) {
-    it(
-      `denies git switch main with ${name}`,
-      () => {
-        withProject(
-          ({ root }) => {
-            const res = runBash(root, "git switch main");
-            expect(res.decision).toBe("block");
-            expect(res.reason).toContain("never switch git branches");
           },
           { files: { [STATE_FILE]: content } },
         );

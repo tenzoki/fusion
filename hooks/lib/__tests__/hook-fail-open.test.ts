@@ -288,27 +288,6 @@ describe("a verdict the hook already reached survives its own bookkeeping", () =
   );
 
   it(
-    "denies a git branch switch with the state directory unwritable (260809-2046)",
-    () => {
-      // The fourth site, and the one outside `260809-1825`'s enumeration. The
-      // branch policy is the one policy fusion documents as running in every
-      // repository, its own included, so an allow here is the widest of the four.
-      withUnwritableStateDir((root) => {
-        const run = runRaw(guardEntry(), root, "PreToolUse", "Bash", {
-          command: "git switch main",
-        });
-
-        expect(run.stderr).toContain("[guard] Error:");
-        const verdict = verdictOf(run, "guard");
-        expect(verdict.decision).toBe("block");
-        expect(String(verdict.reason)).toContain("never switch git branches");
-        expect(run.status).toBe(0);
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
     "delivers the protected-path sentence with churn.json unwritable (260809-2045)",
     () => {
       // The PostToolUse side of the same shape. `measureProtectedPaths` has

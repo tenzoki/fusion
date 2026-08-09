@@ -182,9 +182,6 @@ describe("harness capabilities the rules-write cases depend on", () => {
         expect(stripped.status).toBe(0);
         expect(stripped.stdout).toBe("undefined");
 
-        // The two branch variables keep the protection they already had.
-        expect(childEnv()).not.toHaveProperty("FUSION_ALLOW_BRANCH_SWITCH");
-        expect(childEnv()).not.toHaveProperty("FUSION_ALLOW_WORKTREE");
 
         // And a case that deliberately sets the flag still gets it, or every
         // flag-SET case in steps 3 and 4 would be untestable.
@@ -381,12 +378,15 @@ describe("FUSION_ALLOW_RULES_WRITE on the write-tool path", () => {
   );
 
   it(
-    "still blocks skills/** with the flag set",
+    "still blocks the plugin manifest with the flag set",
     () => {
+      // Was `skills/demo/SKILL.md` until the user took `skills/**` off the
+      // shipped list on 260809. The property is about a protected path OUTSIDE
+      // the rule directories, and the manifest is one.
       withProject(({ root }) => {
         const res = runWrite(
           root,
-          resolve(root, "skills/demo/SKILL.md"),
+          resolve(root, ".claude-plugin/plugin.json"),
           "Edit",
           FLAG_SET,
         );
@@ -517,23 +517,6 @@ describe("FUSION_ALLOW_RULES_WRITE and the Bash surface", () => {
     CASE_TIMEOUT,
   );
 
-  it(
-    "does not lift the branch policy, which the flag says nothing about",
-    () => {
-      // Each variable grants exactly one permission. This one is about writing
-      // rule files.
-      withProject(({ root }) => {
-        const res = runBash(root, "git switch main", FLAG_SET);
-
-        expect(res.decision).toBe("block");
-        expect(res.reason).toContain("never switch git branches");
-        expect(readEscalation(root)?.recentEvents.map((e) => e.trigger)).toEqual(
-          ["git_branch_switch"],
-        );
-      });
-    },
-    CASE_TIMEOUT,
-  );
 });
 
 // ---------------------------------------------------------------------------
@@ -631,7 +614,6 @@ describe("the exemption resolves the path against the filesystem (finding 1)", (
     ["the permission settings", "rules/up/settings.json"],
     ["the plugin manifest", "rules/up/.claude-plugin/plugin.json"],
     ["the monitor binary", "rules/up/bin/monitor"],
-    ["a skill body", "rules/up/skills/demo/SKILL.md"],
     ["the guard's own state", "rules/up/fusion-workbench/.guard-state/escalation.json"],
     ["the halt record through a dangling link", "rules/gs/escalation.json"],
     ["a protected inode under a second name", "rules/copy"],
@@ -651,7 +633,6 @@ describe("the exemption resolves the path against the filesystem (finding 1)", (
     ["the permission settings, through the link and back up", "rules/up/../settings.json"],
     ["the plugin manifest, through the link and back up", "rules/up/../.claude-plugin/plugin.json"],
     ["the monitor binary, through the link and back up", "rules/up/../bin/monitor"],
-    ["a skill body, through the link and back up", "rules/up/../skills/demo/SKILL.md"],
     // `rules/gs` was planted to close the DANGLING-link route to the halt
     // record. This is the same record through the same link, one `..` on.
     ["the halt record, through the dangling link and back up", "rules/gs/../.guard-state/escalation.json"],
@@ -1006,7 +987,6 @@ describe("the protected list is matched on a collapsed spelling (finding 2)", ()
     "a/b/../../agents/coder.md",
     "./hooks/config.json",
     "./hooks/hooks.json",
-    "./skills/demo/SKILL.md",
     "./.claude-plugin/plugin.json",
     "./settings.json",
     "./bin/monitor",
@@ -1082,7 +1062,7 @@ describe("the protected list is matched on a collapsed spelling (finding 2)", ()
       // string, so `agents/` matches while `agents` does not. Stripping it here
       // — as the exemption's own canonicalisation does, correctly, on the grant
       // side — would have turned four denials into allows.
-      denyEach(["agents/", "rules/", "./rules/", "skills/", "rules//"], editCall, {
+      denyEach(["agents/", "rules/", "./rules/", "rules//"], editCall, {
         reasonContains: "Protected path",
       });
     },
@@ -1110,9 +1090,10 @@ describe("the protected list is matched on a collapsed spelling (finding 2)", ()
 // What replaced it is not a weaker halt but a different mechanism. A protected
 // path a shell reaches is measured after the call and written back, halt or no
 // halt (`protected-snapshot-integration.test.ts`). The halt itself still blocks
-// all four write tools, which is asserted in `guard-halt-event.test.ts`, and
-// the branch policy still denies under a halt on its own reason, which is
-// asserted there too.
+// all four write tools, which is asserted in `guard-halt-event.test.ts`. The
+// git branch policy was the shell's last deny and outlived the classifier by
+// two days; it is deleted too, so nothing an agent types into a shell is read
+// by the guard at all.
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
@@ -1887,7 +1868,7 @@ describe("what a project configuration can and cannot reach — measured", () =>
           // pass at all. The other, `rm -rf agents`, was a real ancestor deny
           // and has no PreToolUse verdict left to assert.
           expect(runWrite(root, "rules/x.md").decision).toBe("block");
-          expect(runWrite(root, "skills/demo/SKILL.md").decision).toBe("block");
+          expect(runWrite(root, ".claude/rules/local.md").decision).toBe("block");
           expect(runWrite(root, "hooks/config.json").decision).toBe("block");
           expect(runWrite(root, "fusion-guard.json").decision).toBe("block");
         });
@@ -1926,11 +1907,11 @@ describe("what a project configuration can and cannot reach — measured", () =>
   // -------------------------------------------------------------------------
   // Issue 260804-1602 — `guard.enabled` from a project.
   //
-  // The key sits above every check in guard.ts. Each surface it used to
-  // disable gets its own assertion, and the two git rows get their own PROJECT
-  // so no earlier block has tripped the halt: a `git switch` denied by an
-  // active halt would pass this case while proving nothing about the branch
-  // policy.
+  // The key sits above every check in guard.ts, so each surface it used to
+  // disable gets its own assertion. Two git rows stood here until the branch
+  // policy was deleted; what they guarded — that a project cannot switch off a
+  // check by declaring a key — is unchanged and is asserted on the surfaces
+  // that are left.
   // -------------------------------------------------------------------------
 
   const GUARD_OFF = { guard: { enabled: false } };
@@ -1947,36 +1928,6 @@ describe("what a project configuration can and cannot reach — measured", () =>
     CASE_TIMEOUT,
   );
 
-  it(
-    "ignores it for the git branch policy, which is the one that runs everywhere",
-    () => {
-      withConfiguredProject(GUARD_OFF, ({ root }) => {
-        const sw = runBash(root, "git switch main");
-        expect(sw.decision).toBe("block");
-        // The BRANCH policy's reason, not a halt's and not a protected path's.
-        expect(sw.reason).toContain("agents never switch git branches");
-        expect(runBash(root, "git worktree add /tmp/w").decision).toBe("block");
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "ignores it in the plugin's own repo too, where the write guard stands down",
-    () => {
-      // Measured before the fix: in a root carrying `.claude-plugin/plugin.json`
-      // the seeded template still denied `git switch main`, and
-      // `{"guard":{"enabled":false}}` allowed it. The branch policy's documented
-      // survival of the stand-down did not survive one project file.
-      withPluginProject(
-        ({ root }) => {
-          expect(runBash(root, "git switch main").decision).toBe("block");
-        },
-        { files: { "fusion-guard.json": projectConfig(GUARD_OFF) } },
-      );
-    },
-    CASE_TIMEOUT,
-  );
 
   it(
     "ignores it against an ALREADY ACTIVE halt",
@@ -2100,7 +2051,7 @@ describe("what a project configuration can and cannot reach — measured", () =>
 
         expect(runWrite(root, "agents/coder.md").decision).toBe("block");
         expect(readEscalation(root)?.haltActive).toBe(false);
-        expect(runWrite(root, "skills/demo/SKILL.md").decision).toBe("block");
+        expect(runWrite(root, ".claude/rules/local.md").decision).toBe("block");
         expect(readEscalation(root)?.haltActive).toBe(true);
 
         const advisories = readEvents(root).filter(
@@ -2159,11 +2110,12 @@ describe("the project configuration in the plugin's own repo", () => {
   it(
     "still REPORTS a broken configuration there, because the load is not stood down",
     () => {
-      // The config load sits above the self-detect gate, and deliberately: the
-      // file is not inert in this repository. `escalation.blocksBeforeHalt`
-      // reaches the git branch policy, which runs here unconditionally. A
-      // broken file that silently stopped configuring that would be exactly
-      // the silent fallback the spec rejects.
+      // The config load sits above the self-detect gate, and deliberately: a
+      // project that cannot be told its guard configuration is broken has no
+      // way to find out, and silence here is exactly the fallback the spec
+      // rejects. That the write guard then stands down does not make the load
+      // pointless — it makes the diagnostic the only thing the load still owes
+      // the user in this one repository.
       withPluginProject(
         ({ root }) => {
           expect(runWrite(root, "rules/x.md").decision).toBeUndefined();

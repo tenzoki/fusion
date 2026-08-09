@@ -407,7 +407,6 @@ describe("emit_if_exists: a missing always-on rule file is skipped silently (set
       "fusion-workbench-conventions.md",
       "user-facing-output.md",
       "critical-stance.md",
-      "git-branch-discipline.md",
       "protected-path-discipline.md",
     ]) {
       expect(out.some((l) => l.endsWith(`/rules/${f}`)), `emits ${f}`).toBe(true);

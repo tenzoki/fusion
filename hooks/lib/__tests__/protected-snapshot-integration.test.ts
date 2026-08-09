@@ -200,12 +200,12 @@ describe("the measurement restores what a tool call changed", () => {
           const { post } = runToolCall(
             project.root,
             "Edit",
-            { file_path: resolve(project.root, "skills/demo/SKILL.md") },
-            () => put(project.root, "skills/demo/SKILL.md", "# rewritten\n"),
+            { file_path: resolve(project.root, "agents/coder.md") },
+            () => put(project.root, "agents/coder.md", "# rewritten\n"),
           );
 
-          expect(read(project.root, "skills/demo/SKILL.md")).toBe("# a skill\n");
-          expect(context(post)).toContain("skills/demo/SKILL.md");
+          expect(read(project.root, "agents/coder.md")).toBe("# an agent\n");
+          expect(context(post)).toContain("agents/coder.md");
         },
         { git: true },
       );

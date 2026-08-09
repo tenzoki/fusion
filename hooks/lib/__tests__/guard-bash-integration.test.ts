@@ -34,10 +34,15 @@ import {
 //     including config loading and path normalisation;
 //   * the escalation counter and the event log move EXACTLY when they should —
 //     file-level facts, not verdict-level ones;
-//   * the self-detect stand-down covers the write tools and NOT the branch
-//     policy;
-//   * the git branch policy still denies, still escalates, and still lets
-//     fusion's own revert strategy through.
+//   * the self-detect stand-down covers the write tools;
+//   * fusion's own revert strategy runs.
+//
+// A second policy outlived the first here — the git branch guard, which read the
+// same command text to predict whether HEAD would move. It was deleted on
+// 260809 for the reason the classifier was, and with it went every deny this
+// surface had. So `Bash` now contributes no block, no counter movement and no
+// event anywhere in this file; the cases that remain on it assert that silence
+// and the one command fusion cannot afford to lose.
 //
 // Each case is a fresh subprocess against a temporary project root that is NOT
 // a plugin root. That is a requirement of the thing under test, not a style
@@ -185,11 +190,13 @@ describe("ordinary work is allowed and writes nothing", () => {
   it(
     "innocuous Bash after a block neither resets the counter nor appends an event",
     () => {
-      // The opening block is a branch switch, which is the one deny the Bash
-      // surface still has. It used to be `rm -f rules/x.md`, from the retired
-      // classifier.
+      // The opening block is a write-tool deny. It has been three things: `rm -f
+      // rules/x.md` under the mutation classifier, then a branch switch, and now
+      // this — because the Bash surface has no deny of its own left to open
+      // with. The property under test never depended on which policy blocked,
+      // only that a block is standing when the innocuous calls run.
       withProject(({ root }) => {
-        expect(runBash(root, "git switch main").decision).toBe("block");
+        expect(runWrite(root, resolve(root, "rules/x.md")).decision).toBe("block");
         expect(readEscalation(root)?.consecutiveBlocks).toBe(1);
 
         const innocuous = [
@@ -226,55 +233,10 @@ describe("ordinary work is allowed and writes nothing", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Escalation: three Bash denials halt, exactly as three write denials do.
-//
-// The three used to be protected-path mutations. They are branch-policy denials
-// now, for the same reason the case above changed its opener — but the property
-// is the shared escalation surface, not which policy fed it, and that is
-// unchanged: a Bash deny increments the same counter a write deny does and the
-// third one raises the halt.
-// ---------------------------------------------------------------------------
-
-describe("three consecutive Bash denials escalate to a halt", () => {
-  it(
-    "raises haltActive and emits guard_halt on the third",
-    () => {
-      withProject(({ root }) => {
-        expect(runBash(root, "git switch main").decision).toBe("block");
-        expect(readEscalation(root)?.haltActive).toBe(false);
-
-        expect(runBash(root, "git checkout -b feature").decision).toBe("block");
-        expect(readEscalation(root)?.haltActive).toBe(false);
-
-        expect(runBash(root, "git worktree add ../wt feature").decision).toBe(
-          "block",
-        );
-
-        const state = readEscalation(root);
-        expect(state?.consecutiveBlocks).toBe(3);
-        expect(state?.haltActive).toBe(true);
-        expect(state?.recentEvents.map((e) => e.trigger)).toEqual([
-          "git_branch_switch",
-          "git_branch_switch",
-          "git_branch_switch",
-          "consecutive_blocks",
-        ]);
-        expect(readEvents(root).map((e) => e.event)).toEqual([
-          "guard_block",
-          "guard_block",
-          "guard_halt",
-        ]);
-      });
-    },
-    CASE_TIMEOUT * 2,
-  );
-});
-
-// ---------------------------------------------------------------------------
 // The stand-down pair — the load-bearing ordering property.
 // ---------------------------------------------------------------------------
 
-describe("self-detect stand-down: the write guard yields, the branch policy does not", () => {
+describe("self-detect stand-down: the write guard yields", () => {
   // Run against a throwaway root carrying `.claude-plugin/plugin.json` with
   // name "fusion" — the single condition isFusionPluginCwd() tests. The REAL
   // repository would work too, and is what a developer actually sits in, but a
@@ -286,23 +248,6 @@ describe("self-detect stand-down: the write guard yields, the branch policy does
   // The measurement side of the stand-down — a protected path changed by a
   // shell in the plugin's own repo is NOT reverted — is asserted in
   // `protected-snapshot-integration.test.ts`, "the stand-downs".
-
-  it(
-    "still denies a branch switch in the plugin's own repo",
-    () => {
-      withPluginProject(({ root }) => {
-        const res = runBash(root, "git switch main");
-        expect(res.decision).toBe("block");
-        expect(res.reason).toContain("never switch git branches");
-
-        const state = readEscalation(root);
-        expect(state?.recentEvents.map((e) => e.trigger)).toEqual([
-          "git_branch_switch",
-        ]);
-      });
-    },
-    CASE_TIMEOUT,
-  );
 
   it(
     "stands the Edit write path down",
@@ -335,11 +280,19 @@ describe("self-detect stand-down: the write guard yields, the branch policy does
 // ---------------------------------------------------------------------------
 // git's revert strategy, end to end.
 //
-// `rules/protected-path-discipline.md` and `rules/git-branch-discipline.md` both
-// tell every agent in every consuming project that `git checkout HEAD -- <paths>`
-// is always allowed, and the orchestrator reverts an agent's out-of-scope edit
-// with it. The branch policy is what has to keep letting it through — it is the
-// one policy left on this surface, and the `--` separator is its discriminator.
+// The orchestrator reverts an agent's out-of-scope edit with
+// `git checkout HEAD -- <paths>`, so this command running is a precondition of
+// fusion's own error handling. Two retired policies each had to be argued into
+// letting it through — the mutation classifier because it names a file, the
+// branch policy because it names `HEAD` — and it survived both by a
+// discriminator that could have been got wrong. Nothing inspects it now, which
+// makes this the case that would notice a third policy arriving on this surface
+// and taking it out.
+//
+// Scope: the PreToolUse VERDICT. If the reverted path is protected, the
+// measurement in `tracker.ts` still puts it back and halts afterwards — that is
+// `rules/protected-path-discipline.md`'s "restoring a protected file is a human
+// act", and it is asserted in `protected-snapshot-integration.test.ts`, not here.
 //
 // The effect side asserts the command really does revert: the working file is
 // dirtied first, and the command has to put it back. An allow asserted without
@@ -420,152 +373,6 @@ describe("the revert strategy is allowed, and it reverts", () => {
           stdio: "ignore",
         });
         expect(existsSync(resolve(root, "rules/x.md"))).toBe(true);
-      });
-    },
-    CASE_TIMEOUT,
-  );
-});
-
-/**
- * Give a harness repository two extra branches WITHOUT moving HEAD, so a case
- * can name a real switch target.
- *
- * Deliberately self-contained rather than folded into `initRepo`: the cases
- * above depend on that helper's exact effect, and this file's discipline is
- * that a fix adds cases instead of reshaping the ones already passing.
- */
-function addBranches(root: string, ...names: string[]): void {
-  for (const name of names) {
-    const res = spawnSync("git", ["branch", name], {
-      cwd: root,
-      stdio: "ignore",
-      env: {
-        ...process.env,
-        GIT_CONFIG_GLOBAL: "/dev/null",
-        GIT_CONFIG_SYSTEM: "/dev/null",
-      },
-    });
-    if (res.status !== 0) {
-      throw new Error(`harness git branch ${name} failed (${String(res.status)})`);
-    }
-  }
-}
-
-/** The branch HEAD points at, or `"HEAD"` when it is detached. */
-function currentBranch(root: string): string {
-  const res = spawnSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
-    cwd: root,
-    encoding: "utf-8",
-    env: {
-      ...process.env,
-      GIT_CONFIG_GLOBAL: "/dev/null",
-      GIT_CONFIG_SYSTEM: "/dev/null",
-    },
-  });
-  if (res.status !== 0) {
-    throw new Error(`harness git rev-parse failed (${String(res.status)})`);
-  }
-  return res.stdout.trim();
-}
-
-/**
- * The two argument forms the classifier did not know, end to end.
- *
- * Both are the same character of defect — a token the parser mis-read in a
- * position where the evidence that HEAD moves is unconditional — and both were
- * measured moving HEAD against real git 2.49.0 while the guard allowed the
- * call:
- *
- *   * a trailing `--` returned ALLOW before the branch-creating flags were even
- *     looked at
- *     (`issues/260809-1105_o_a-trailing-separator-lifts-the-branch-deny-so-git-checkout-b-name-runs.md`);
- *   * an unrecognised global option's separated value stood in subcommand
- *     position, so `switch` was never reached
- *     (`issues/260809-1106_o_the-unknown-global-option-fix-was-deleted-with-the-mutation-classifier-and-the-branch-guard-never-had-it.md`,
- *     the same class as the closed `260804-1333` / `260804-1344` pair).
- *
- * Each row is asserted twice, and the second half is what makes the first mean
- * anything: the VERDICT through the real hook, and the EFFECT in a throwaway
- * repository. A deny asserted against a command that turns out to be a no-op
- * proves nothing, and at HEAD `451a07e` every one of these commands both
- * allowed and moved HEAD.
- *
- * The effect runs here and only here. `rules/git-branch-discipline.md` forbids
- * reaching for the live command in this repository, and while these defects
- * were open it would have succeeded and moved fusion's own HEAD.
- */
-describe("the branch policy denies the forms that used to slip past it, and they really move HEAD", () => {
-  const ROWS = [
-    { issue: "260809-1105", cmd: "git checkout -b bar --", lands: "bar" },
-    { issue: "260809-1105", cmd: "git checkout -B bar --", lands: "bar" },
-    { issue: "260809-1106", cmd: "git --namespace ns switch other", lands: "other" },
-    { issue: "260809-1106", cmd: "git --attr-source HEAD switch t1", lands: "t1" },
-  ];
-
-  for (const { issue, cmd, lands } of ROWS) {
-    it(
-      `blocks (${issue}): ${cmd}`,
-      () => {
-        withProject(({ root }) => {
-          initRepo(root);
-          addBranches(root, "other", "t1");
-          const res = runBash(root, cmd);
-          expect(res.decision).toBe("block");
-          expect(res.reason ?? "").toContain("branch");
-        });
-      },
-      CASE_TIMEOUT,
-    );
-
-    for (const shell of ["bash", "zsh"] as const) {
-      it(
-        `and it moves HEAD (${shell}): ${cmd}`,
-        () => {
-          withProject(({ root }) => {
-            initRepo(root);
-            addBranches(root, "other", "t1");
-            const before = currentBranch(root);
-            spawnSync(SHELLS[shell], ["-c", cmd], { cwd: root, stdio: "ignore" });
-            const after = currentBranch(root);
-            expect(after, `${shell}: ${cmd}`).toBe(lands);
-            expect(after, `${shell}: ${cmd} did not move HEAD at all`).not.toBe(
-              before,
-            );
-          });
-        },
-        CASE_TIMEOUT,
-      );
-    }
-  }
-
-  it(
-    "and fusion's own revert spelling is still allowed alongside them",
-    () => {
-      // The reorder in `classifyCheckout` reads every argument, pathspecs
-      // included. This is the row that would catch it over-reaching into the
-      // one command the whole policy is built around.
-      withProject(({ root }) => {
-        initRepo(root);
-        const res = runBash(root, "git checkout HEAD -- rules/x.md");
-        expect(res.decision ?? "allow").not.toBe("block");
-      });
-    },
-    CASE_TIMEOUT,
-  );
-});
-
-describe("the branch policy answers a bare `git checkout` first", () => {
-  it(
-    "denies `git checkout <file> <file>` on the branch policy's own reason",
-    () => {
-      // No `--`, and the targets do not exist on disk, so the branch policy's
-      // fail-closed clause denies. There is no second policy on this surface any
-      // more, so the reason is the only one an agent can meet here — pinned so a
-      // future policy cannot start answering in its place unnoticed.
-      withProject(({ root }) => {
-        const res = runBash(root, "git checkout rules/a.md rules/b.md");
-        expect(res.decision).toBe("block");
-        expect(res.reason ?? "").toContain("branch");
       });
     },
     CASE_TIMEOUT,

@@ -50,8 +50,7 @@ Fusion is deliberately not autonomous. It stops and hands you the decision at de
 - reviewing a produced **plan** (approve how it gets built),
 - any **ontology or structured-data change** (every `ontocoder` task, and especially structural changes to entities, relations, or schemas),
 - **destructive operations** — deleting files, removing features, dropping data,
-- an **ambiguous task** where scope or acceptance criteria can't be pinned down,
-- **switching git branches** — agents never change branch on their own.
+- an **ambiguous task** where scope or acceptance criteria can't be pinned down.
 
 At each gate you get plain choices: proceed, skip for later, defer, or modify the instruction.
 
@@ -80,7 +79,7 @@ While the gates govern *decisions*, a **compliance guard** governs *file writes*
 - **Decision-governed paths — blocked only at high sensitivity.** Files a project decision governs carry a sensitivity level. Only `high` blocks; `medium` and `low` pass. This lets a project ring-fence its most binding areas without freezing everything.
 - **Churn — observation only.** The guard counts how often each file is touched in a session. When a file is thrashed past the threshold, it emits a **warning** the monitor and orchestrator can see. The count is taken *after* the write and never blocks it: it signals, it does not stop.
 - **Escalation → halt.** Consecutive blocks accumulate. After a threshold (default 3), the guard enters **halt** and blocks all writes until a human clears it. This catches an agent stuck retrying something it's not allowed to do.
-- **Git branch switches — blocked.** Agents cannot `git switch`, `git checkout <branch>`, or `git worktree add`. This is enforced at the command level; you can't reword around it. Only you, by setting a session environment variable, can allow it.
+- **Shell commands — not read at all.** The guard does not try to work out from a command's text what it is about to do. It fingerprints the protected paths before the call and again after it, and puts back anything that moved. What blocks is decided on paths, never on wording.
 
 So of everything the guard watches, only three things ever block a write: a protected path, a high-sensitivity decision-governed path, and an active halt. Churn only warns.
 

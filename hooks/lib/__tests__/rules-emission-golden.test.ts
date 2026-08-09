@@ -336,7 +336,6 @@ const RULE_BASELINE: Record<string, number> = {
   "decision-record-examples.md": 4_191,
   "user-facing-output.md": 16_683,
   "critical-stance.md": 5_317,
-  "git-branch-discipline.md": 6_299,
   "protected-path-discipline.md": 19_943,
   // Role-specific, each loaded by a derived audience rather than a named list.
   "design-diagrams.md": 5_673,

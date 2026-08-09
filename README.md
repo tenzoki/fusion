@@ -101,17 +101,16 @@ This serves a live HTML dashboard at `http://localhost:8099` (reading `orchestra
 
 ### Tuning or disabling the compliance guard
 
-The guard isn't all-or-nothing. It runs on a spectrum from full enforcement to advisory to off, assembled from the fields already in `hooks/config.json` (plus two session env vars). Pick the row that matches how much friction you want:
+The guard isn't all-or-nothing. It runs on a spectrum from full enforcement to advisory to off, assembled from the fields already in `hooks/config.json` (plus one session env var). Pick the row that matches how much friction you want:
 
 | Goal | Change |
 |---|---|
-| Off entirely | `guard.enabled: false` — disables the write guard **and** the branch-switch block |
+| Off entirely | `guard.enabled: false` — disables the write guard **and** the protected-path measurement |
 | Advisory-only (warns, never blocks) | keep `enabled: true`; set `protectedPaths: []`; leave decision sensitivities at `medium`/`low` (only `high` blocks) |
 | Looser, not off | trim `protectedPaths`, raise the `churn.*` thresholds, keep sensitivities ≤ `medium` |
-| Allow one agent branch switch | session env `FUSION_ALLOW_BRANCH_SWITCH=1` (or `FUSION_ALLOW_WORKTREE=1`) — not config |
 | Clear a stuck halt | `cd <project-root> && node ${CLAUDE_PLUGIN_ROOT}/hooks/dist/clear-halt.js` — the halt is project-scoped, so run it inside the project |
 
-  Only three things ever block a write: a write to a **protected path** (any sensitivity), a write to a **decision-governed path at `high` sensitivity**, and an active **halt** (which trips after `escalation.blocksBeforeHalt` consecutive blocks, default 3). Churn detection is advisory — it emits warning events for the monitor but never blocks a write or halts on its own. `guard.enabled: false` stands the whole guard down, including the git branch-switch check. See [`README-hooks.md`](README-hooks.md) for the full model.
+  Only three things ever block a write: a write to a **protected path** (any sensitivity), a write to a **decision-governed path at `high` sensitivity**, and an active **halt** (which trips after `escalation.blocksBeforeHalt` consecutive blocks, default 3). Churn detection is advisory — it emits warning events for the monitor but never blocks a write or halts on its own. `guard.enabled: false` stands the whole guard down. See [`README-hooks.md`](README-hooks.md) for the full model.
 
 - **Rules** — three layers, all discovered by `bin/fusion-rules` at each agent's Setup: the plugin's own `rules/` (framework ground truth, always loaded), the project's `./rules/` (fusion-agent-specific rules — capture layouts, priority overrides), and the project's `.claude/rules/` (project-wide rules every Claude session should respect — coding and ontology standards). Missing files are skipped silently; add what your project needs.
 - **Language and voice** — set `**Language:** en` (or `de`) in your project `CLAUDE.md`. Setup copies four stylometric profiles into `fusion-workbench/stilwerk/`: `default-voice-{en,de}.yaml` (long-form writing, for prose agents) and `chat-voice-{en,de}.yaml` (short-form chat, for every agent). The `**Language:**` line selects the chat pair. A project whose written files use a different language than its chat adds an optional second line, `**Artifact language:** en` (or `de`), which then selects the writing pair — leave it out and one language governs everything, as before. Both lines are defined in `rules/fusion-workbench-conventions.md` `## Project language`.

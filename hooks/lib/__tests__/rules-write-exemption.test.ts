@@ -989,10 +989,10 @@ describe("isObservedRulePath — the measurement side's narrower entry", () => {
 
 describe("rulesWriteExemptionActive — the accepted flag spellings", () => {
   /**
-   * Exactly what the two git overrides accept, because they share
-   * `isEnvFlagSet`: "1" and "true", case-insensitive, surrounding whitespace
-   * tolerated. Everything else, including the plausible-looking "yes" and "on",
-   * leaves the exemption off.
+   * "1" and "true", case-insensitive, surrounding whitespace tolerated.
+   * Everything else, including the plausible-looking "yes" and "on", leaves the
+   * exemption off. Two git overrides once shared this parser; this is the only
+   * flag left that uses it, so the spellings are pinned here or nowhere.
    */
   const accepted = ["1", "true", "TRUE", "True", " 1 ", " true "];
   const rejected = ["0", "yes", "on", "no", "false", "", " ", "2", "1.0", "truthy"];
@@ -1020,9 +1020,9 @@ describe("rulesWriteExemptionActive — the accepted flag spellings", () => {
   it("ignores a similarly named variable", () => {
     expect(
       rulesWriteExemptionActive({
-        FUSION_ALLOW_BRANCH_SWITCH: "1",
-        FUSION_ALLOW_WORKTREE: "1",
         FUSION_ALLOW_RULES: "1",
+        FUSION_ALLOW_RULES_WRITES: "1",
+        FUSION_RULES_WRITE: "1",
       }),
     ).toBe(false);
   });

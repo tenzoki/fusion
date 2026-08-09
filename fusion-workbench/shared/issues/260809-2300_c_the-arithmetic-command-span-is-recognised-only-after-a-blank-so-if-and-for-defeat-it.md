@@ -102,3 +102,16 @@ has. Five patches to the same classifier landed in session 260809-1725, each clo
 entrance and each revealing the next. Closing this one with a sixth entrance-specific fix would
 buy the same thing the previous five bought. The decision asks whether the branch policy should
 be measured the way protected paths already are, and this record waits for it.
+
+---
+Resolved: 2026-08-09 — **by deletion, not by a fix.** `hooks/lib/shell-parse.ts`, the module
+this record's `Affects` line names, and `hooks/lib/git-branch-guard.ts`, the policy it reached
+through, are both deleted. There is no arithmetic span, no lexer and no branch verdict left for
+this entrance to reach.
+
+This record did exactly what it said it would: it stayed open rather than being closed by a
+sixth entrance-specific patch, and it named the decision it was waiting for. That decision
+(`shared/decisions/260809-2310_a_*`) was answered on the same day, more sharply than this record
+anticipated — the policy went rather than changing mechanism. So the seventh entrance is closed
+in the only way an entrance to an undecidable question ever closes: the question is no longer
+asked.
