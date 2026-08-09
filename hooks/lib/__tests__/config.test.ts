@@ -16,6 +16,7 @@ import {
   PROJECT_CONFIG_FILENAME,
   type GuardConfig,
 } from "../config.js";
+import { RULE_DIR_PATTERNS } from "../rules-write-exemption.js";
 
 // ---------------------------------------------------------------------------
 // The C5b configuration loader — plan step 6.
@@ -237,7 +238,12 @@ describe("a project with no fusion-guard.json is byte-identical to before step 6
 
     for (const p of [
       "agents/**",
+      // Both rule roots, because `bin/fusion-rules` emits from both and an
+      // agent reads every emitted path: two directories of equally binding
+      // normative content, one protected list
+      // (`shared/issues/260801-1020_*_guard-protects-rules-but-not-claude-rules.md`).
       "rules/**",
+      ".claude/rules/**",
       "hooks/config.json",
       "hooks/hooks.json",
       "settings.json",
@@ -248,6 +254,25 @@ describe("a project with no fusion-guard.json is byte-identical to before step 6
       expect(guard.protectedPaths).toContain(p);
     }
     expect(guard.protectedPaths).not.toContain(PROJECT_CONFIG_FILENAME);
+  });
+
+  it("protects every rule root the FUSION_ALLOW_RULES_WRITE flag exempts", () => {
+    // Derived rather than restated, because this is the invariant the two lists
+    // drifted apart on. `rules-write-exemption.ts` documents the exemption as
+    // "consulted only for a path that was already protected"; while
+    // `.claude/rules/**` sat on the exempt set and not on the protected one,
+    // that sentence was true only by the exemption being dead code there, and
+    // a write to the heavier of the two rule roots was allowed outright
+    // (`shared/issues/260801-1020_*_guard-protects-rules-but-not-claude-rules.md`).
+    // An exempt pattern with no protected twin means the same inversion again.
+    const { guard } = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: tmp(),
+    });
+
+    for (const pattern of RULE_DIR_PATTERNS) {
+      expect(guard.protectedPaths, pattern).toContain(pattern);
+    }
   });
 });
 

@@ -173,8 +173,11 @@ const SEED_FILES: Record<string, string> = {
   "agents/coder.md": "# an agent\n",
   "skills/demo/SKILL.md": "# a skill\n",
   // The retirement destination a rule-file move needs, and the second rule
-  // root. Both exist in every project so a case can name them without first
-  // having to build the directory it wants to write into.
+  // root — which the shipped config protects as of
+  // `shared/issues/260801-1020_*_guard-protects-rules-but-not-claude-rules.md`,
+  // so `.claude/rules/local.md` belongs to the protected group above and not to
+  // the allow side below. Both exist in every project so a case can name them
+  // without first having to build the directory it wants to write into.
   "rules/retired/.keep": "",
   ".claude/rules/local.md": "# a project-wide rule\n",
   // Unprotected, for the allow side.

@@ -334,7 +334,9 @@ flowchart TD
   `hooks/lib/__tests__/rules-write-exemption.test.ts`, `README-hooks.md`
 - **Depends on:** task 5 (both edit `hooks/lib/__tests__/config.test.ts`; sequencing only)
 - **Priority:** normal
-- **Status:** [ ] open
+- **Status:** [x] done (260809-1942, coder — resolution 1, `.claude/rules/**` added to the
+  shipped `protectedPaths`; no written reason for the asymmetry exists, and the two records
+  that name it both call it a defect)
 - **Detail:** `hooks/config.json` lists `rules/**` among the guard's protected paths and
   does not list `.claude/rules/**`. Path matching is anchored — `globToRegex` in
   `hooks/lib/paths.ts:9-22` wraps the pattern as `^...$` and `hooks/guard.ts:94-106`

@@ -276,11 +276,14 @@ export const RULES_WRITE_ENV = "FUSION_ALLOW_RULES_WRITE";
  * The rule directories the flag exempts, as globs in the same dialect as
  * `guard.protectedPaths`.
  *
- * `.claude/rules/**` is deliberately included although it is not on the
- * protected list today, so the exemption is already correct when
- * `shared/issues/260801-1020_o_guard-protects-rules-but-not-claude-rules.md`
- * closes. Until then it is a harmless no-op: the exemption is consulted only for
- * a path that was already protected.
+ * Both roots are LIVE. `.claude/rules/**` stood here before it was protected —
+ * a deliberate no-op at the time, since the exemption is consulted only for a
+ * path the protected list already matched — and it was written that way so the
+ * grant would be correct the moment
+ * `shared/issues/260801-1020_*_guard-protects-rules-but-not-claude-rules.md`
+ * closed. It has closed: `guard.protectedPaths` names both rule roots, so a
+ * path under `.claude/rules/` is protected exactly as one under `rules/` is,
+ * and this flag reaches exactly as far into each.
  *
  * `rules/retired/` needs no pattern of its own — it is inside `rules/`.
  */
@@ -532,8 +535,9 @@ export function rulesWriteRefusal(
  * refused the grant while `rules/retired/x.md` gets it. It removes a spelling,
  * not a reach.
  *
- * (`.claude/rules/**` is not on the protected list at HEAD, so nothing there is
- * measured or refused with or without the flag — see `RULE_DIR_PATTERNS`.)
+ * (The reach is the same in both rule roots. `.claude/rules/**` is on the
+ * protected list, so a path under it is measured, denied and exempted exactly
+ * as one under `rules/` is — see `RULE_DIR_PATTERNS`.)
  */
 export function isProjectRulePath(
   path: string,

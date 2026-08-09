@@ -768,6 +768,26 @@ describe("isProjectRulePath — the project's own entry wins", () => {
     ).toBe(true);
   });
 
+  it("and the same holds for the second rule root, declared by itself", () => {
+    // The mirror of the case above, asserted since `.claude/rules/**` joined
+    // the shipped protected list: the second root is not a lesser one, so a
+    // project withdraws the flag from it in exactly the same way and keeps the
+    // flag over the first.
+    const own = [".claude/rules/**"];
+    expect(
+      isProjectRulePath(".claude/rules/local.md", PLAIN, ".claude/rules/local.md", own),
+    ).toBe(false);
+    expect(
+      isProjectRulePath(
+        ".claude/rules/retired/local.md",
+        PLAIN,
+        ".claude/rules/retired/local.md",
+        own,
+      ),
+    ).toBe(false);
+    expect(isProjectRulePath("rules/x.md", PLAIN, "rules/x.md", own)).toBe(true);
+  });
+
   it("an entry naming nothing in the rule directories changes nothing", () => {
     // The common case for a project that configures its own list: it names
     // paths that have nothing to do with the rule directories.

@@ -284,6 +284,51 @@ describe("FUSION_ALLOW_RULES_WRITE on the write-tool path", () => {
   );
 
   it(
+    "protects the second rule root, and exempts it on the same terms",
+    () => {
+      // This case used to assert the opposite, and the flip is the fix.
+      // `.claude/rules/**` was on `RULE_DIR_PATTERNS` — the exempt set — while
+      // it was NOT on `guard.protectedPaths`, so a write there was allowed
+      // outright and the exemption was never asked: protection inverted
+      // relative to the content, since `bin/fusion-rules` emits from both roots
+      // with no precedence and the heavier project-wide material belongs in
+      // this one (`rules/context-lean-claude-md.md`). Closed by
+      // `shared/issues/260801-1020_*_guard-protects-rules-but-not-claude-rules.md`.
+      //
+      // Two projects rather than one, because the first call records a block
+      // and the second asserts the whole event sequence of a fresh project.
+      withProject(({ root }) => {
+        const res = runWrite(root, resolve(root, ".claude/rules/local.md"));
+
+        expect(res.decision).toBe("block");
+        expect(res.reason).toContain("Protected path");
+        expect(res.reason).toContain(".claude/rules/local.md");
+      });
+
+      withProject(({ root }) => {
+        const res = runWrite(
+          root,
+          resolve(root, ".claude/rules/local.md"),
+          "Edit",
+          FLAG_SET,
+        );
+
+        expect(res.decision).toBeUndefined();
+
+        const events = readEvents(root);
+        expect(events.map((e) => e.event)).toEqual([
+          "guard_advisory",
+          "guard_allow",
+        ]);
+        expect(events[0]?.file).toBe(".claude/rules/local.md");
+        expect(events[0]?.detail).toContain("FUSION_ALLOW_RULES_WRITE");
+        expect(events[0]?.detail).toContain(".claude/rules/local.md");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
     "exempts a rule file inside retired/, which needs no pattern of its own",
     () => {
       // `rules/retired/` is the destination the curator job moves a retired
@@ -455,37 +500,6 @@ describe("FUSION_ALLOW_RULES_WRITE on the write-tool path", () => {
 // ---------------------------------------------------------------------------
 
 describe("FUSION_ALLOW_RULES_WRITE and the Bash surface", () => {
-  it(
-    "allows a write to .claude/rules/, but NOT because of the flag",
-    () => {
-      // `.claude/rules/**` is not on the shipped protectedPaths at all
-      // (shared/issues/260801-1020_o_guard-protects-rules-but-not-claude-rules),
-      // so the exemption — which is only ever consulted for a path the protected
-      // list already matched — is never asked and no advisory is written. With
-      // the flag and without it. Asserted at the truth rather than at the plan's
-      // expectation, so this case flips visibly when that issue closes.
-      //
-      // On the WRITE tool. The shell spelling of the same row
-      // (`printf '' > .claude/rules/local.md`) left with the mutation
-      // classifier: every shell command allows at PreToolUse now, so that
-      // spelling could no longer tell an unprotected path from a protected one.
-      withProject(({ root }) => {
-        expect(runWrite(root, ".claude/rules/local.md").decision).toBeUndefined();
-        expect(
-          readEvents(root).filter((e) => e.event === "guard_advisory"),
-        ).toEqual([]);
-
-        expect(
-          runWrite(root, ".claude/rules/local.md", "Edit", FLAG_SET).decision,
-        ).toBeUndefined();
-        expect(
-          readEvents(root).filter((e) => e.event === "guard_advisory"),
-        ).toEqual([]);
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
   it(
     "leaves guard state untouched for an innocuous call with the flag set",
     () => {

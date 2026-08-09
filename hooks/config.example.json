@@ -8,6 +8,7 @@
     "protectedPaths": [
       "agents/**",
       "rules/**",
+      ".claude/rules/**",
       "hooks/config.json",
       "hooks/hooks.json",
       "settings.json",
