@@ -19,10 +19,10 @@
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9837
-  git-branch-discipline.md 7315
-  protected-path-discipline.md 7777
+  git-branch-discipline.md 8846
+  protected-path-discipline.md 10413
   design-diagrams.md 5673
-  total 94719
+  total 98886
 
 [bugfixer]
   agent-setup.md 3513
@@ -30,9 +30,9 @@
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9837
-  git-branch-discipline.md 7315
-  protected-path-discipline.md 7777
-  total 89046
+  git-branch-discipline.md 8846
+  protected-path-discipline.md 10413
+  total 93213
 
 [coder]
   agent-setup.md 3513
@@ -40,9 +40,9 @@
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9837
-  git-branch-discipline.md 7315
-  protected-path-discipline.md 7777
-  total 89046
+  git-branch-discipline.md 8846
+  protected-path-discipline.md 10413
+  total 93213
 
 [coderev]
   agent-setup.md 3513
@@ -50,9 +50,9 @@
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9837
-  git-branch-discipline.md 7315
-  protected-path-discipline.md 7777
-  total 89046
+  git-branch-discipline.md 8846
+  protected-path-discipline.md 10413
+  total 93213
 
 [conceptrev]
   agent-setup.md 3513
@@ -60,10 +60,10 @@
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9837
-  git-branch-discipline.md 7315
-  protected-path-discipline.md 7777
+  git-branch-discipline.md 8846
+  protected-path-discipline.md 10413
   design-diagrams.md 5673
-  total 94719
+  total 98886
 
 [consultant]
   agent-setup.md 3513
@@ -71,9 +71,9 @@
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9837
-  git-branch-discipline.md 7315
-  protected-path-discipline.md 7777
-  total 89046
+  git-branch-discipline.md 8846
+  protected-path-discipline.md 10413
+  total 93213
 
 [editor]
   agent-setup.md 3513
@@ -81,9 +81,9 @@
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9837
-  git-branch-discipline.md 7315
-  protected-path-discipline.md 7777
-  total 89046
+  git-branch-discipline.md 8846
+  protected-path-discipline.md 10413
+  total 93213
 
 [investigator]
   agent-setup.md 3513
@@ -91,10 +91,10 @@
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9837
-  git-branch-discipline.md 7315
-  protected-path-discipline.md 7777
+  git-branch-discipline.md 8846
+  protected-path-discipline.md 10413
   design-diagrams.md 5673
-  total 94719
+  total 98886
 
 [ontocoder]
   agent-setup.md 3513
@@ -102,9 +102,9 @@
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9837
-  git-branch-discipline.md 7315
-  protected-path-discipline.md 7777
-  total 89046
+  git-branch-discipline.md 8846
+  protected-path-discipline.md 10413
+  total 93213
 
 [ontorev]
   agent-setup.md 3513
@@ -112,9 +112,9 @@
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9837
-  git-branch-discipline.md 7315
-  protected-path-discipline.md 7777
-  total 89046
+  git-branch-discipline.md 8846
+  protected-path-discipline.md 10413
+  total 93213
 
 [orchestrator]
   agent-setup.md 3513
@@ -122,11 +122,11 @@
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9837
-  git-branch-discipline.md 7315
-  protected-path-discipline.md 7777
+  git-branch-discipline.md 8846
+  protected-path-discipline.md 10413
   circle-records.md 9305
   workbench-stash-and-lock.md 11208
-  total 109559
+  total 113726
 
 [planner]
   agent-setup.md 3513
@@ -134,10 +134,10 @@
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9837
-  git-branch-discipline.md 7315
-  protected-path-discipline.md 7777
+  git-branch-discipline.md 8846
+  protected-path-discipline.md 10413
   design-diagrams.md 5673
-  total 94719
+  total 98886
 
 [playmaker]
   agent-setup.md 3513
@@ -145,10 +145,10 @@
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9837
-  git-branch-discipline.md 7315
-  protected-path-discipline.md 7777
+  git-branch-discipline.md 8846
+  protected-path-discipline.md 10413
   circle-records.md 9305
-  total 98351
+  total 102518
 
 [reconciler]
   agent-setup.md 3513
@@ -156,9 +156,9 @@
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9837
-  git-branch-discipline.md 7315
-  protected-path-discipline.md 7777
-  total 89046
+  git-branch-discipline.md 8846
+  protected-path-discipline.md 10413
+  total 93213
 
 [shaper]
   agent-setup.md 3513
@@ -166,11 +166,11 @@
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9837
-  git-branch-discipline.md 7315
-  protected-path-discipline.md 7777
+  git-branch-discipline.md 8846
+  protected-path-discipline.md 10413
   design-diagrams.md 5673
   circle-records.md 9305
-  total 104024
+  total 108191
 
 [taskplanner]
   agent-setup.md 3513
@@ -178,7 +178,7 @@
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9837
-  git-branch-discipline.md 7315
-  protected-path-discipline.md 7777
+  git-branch-discipline.md 8846
+  protected-path-discipline.md 10413
   design-diagrams.md 5673
-  total 94719
+  total 98886

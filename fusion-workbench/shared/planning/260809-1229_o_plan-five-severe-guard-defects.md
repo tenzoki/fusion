@@ -263,7 +263,7 @@ Every step below is assigned to `coder`: all five defects are TypeScript in `hoo
 
 ---
 
-### Step 6 — The three specification obligations, in one edit
+### [DONE] Step 6 — The three specification obligations, in one edit
 
 - **Executor:** `coder`
 - **Files:** `rules/protected-path-discipline.md`, `rules/git-branch-discipline.md`

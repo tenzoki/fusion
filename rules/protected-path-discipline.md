@@ -2,7 +2,7 @@
 
 **Provenance:** circles/260801-1244-guard-bash-inspection
 
-This rule is loaded for every agent. It is enforced by **measurement**, not by your goodwill: the PreToolUse hook (`hooks/guard.ts`) fingerprints every protected path before your tool call, the PostToolUse hook (`hooks/tracker.ts`) fingerprints them again after it. A path whose fingerprint moved is written back to the content it held before the call, the guard halts, and you are told which file changed and what to do. The text here exists so you understand why that happens and what to do instead; it is not the enforcement surface.
+This rule is loaded for every agent. It is enforced by **measurement**, not by your goodwill: the PreToolUse hook (`hooks/guard.ts`) fingerprints every protected path before your tool call, the PostToolUse hook (`hooks/tracker.ts`) fingerprints them again after it. A path whose fingerprint moved raises the halt, and you are told which path moved, what became of it — written back, or left standing where the guard can tell the change was not this call's — and where the bytes it carried were kept. The text here exists so you understand why that happens and what to do instead; it is not the enforcement surface.
 
 The sibling rule `git-branch-discipline.md` covers the guard's other `Bash` policy, the one about moving HEAD. The two share a hook and nothing else: different verbs, different overrides, different behaviour in the plugin's own repository.
 
@@ -16,18 +16,30 @@ The patterns are read relative to the **project root** — the directory holding
 
 ## The route to the file does not matter
 
-Nothing reads your command any more, so there is nothing to phrase around. Whatever changed a protected path during your tool call is undone, whichever way it got there: `Write`, `Edit`, `MultiEdit`, `NotebookEdit`, a shell command of any shape, a path assembled at run time, `eval`, an alias, a shell function, a script the command invoked, a program nobody ever put in a table. Creating a protected file and deleting one are changes like any other and are undone the same way.
+Nothing reads your command any more, so there is nothing to phrase around. A protected path that changed during your tool call is **seen**, whichever way it got there: `Write`, `Edit`, `MultiEdit`, `NotebookEdit`, a shell command of any shape, a path assembled at run time, `eval`, an alias, a shell function, a script the command invoked, a program nobody ever put in a table. Creating a protected file and deleting one are changes like any other and are seen the same way.
 
-That is why this rule carries no catalogue of command shapes. Its predecessor had to admit twenty-one documented ways past it, because it decided from a command's *text* which files the command would write, and that question is not decidable. The measurement asks whether a protected path **changed**, which is decided by comparing two fingerprints, so no way of spelling a command is a way around it.
+That is why this rule carries no catalogue of command shapes. Its predecessor had to admit twenty-one documented ways past it, because it decided from a command's *text* which files the command would write, and that question is not decidable. What the measurement compares instead is what the path **is** — it does not exist, or it is a symbolic link pointing *there*, or it holds *these* bytes — and it asks that of the path itself, never of whatever the path may point at. So a link put in a protected path's place reads as the change it is, rather than quietly redirecting the guard onto a file nobody protected; and a write-back whose target would resolve through a link, in the final component or in any parent, refuses and reports the refusal instead of landing somewhere else (`shared/issues/260809-1104_*_a-symlink-in-place-of-a-protected-file-….md` and `shared/issues/260809-1231_*_the-restore-writes-through-a-symlinked-parent-….md`, both closed).
 
-The catalogue it does not need is one of *phrasings*. Gaps of another kind do exist, at the seam between the fingerprint and the filesystem it is taken from, and one of them is measured and open: `shared/issues/260809-1104_*_a-symlink-in-place-of-a-protected-file-writes-through-it-and-removes-the-path-from-the-watched-set.md` records a case in which a protected path leaves the watched set and stays out of it, and names which entries of the shipped list lose their protection that way and which keep it. So the promise made at the top of this section is not total, and you should not treat it as total. Finding a further gap is a defect to file, never a route to take: point 1 of `## What to do instead` holds whether the miss turned up by accident or by looking for it.
+Read that as a claim about the question being asked, not as a promise about the machinery asking it. Every gap this rule has had to admit was found at the seam between the fingerprint and the filesystem it is taken from, not in a clever spelling of a command, and that seam is where the next one would be. Finding one is a defect to file, never a route to take: point 1 of `## What to do instead` holds whether the miss turned up by accident or by looking for it.
 
-Two prices come with that, and they are stated here rather than left to be discovered:
+## What is written back, and what is only reported
+
+Detection does not depend on the tool. The write-back does, in one narrow and deliberate way (`shared/decisions/260809-1527_*_should-the-revert-narrow-to-the-payload-path-….md`):
+
+- **Under `Bash`, every changed protected path is written back.** A shell payload names no files, so there is no narrower question to ask and nothing here was narrowed. Fusion's own revert spelling is not an exception either: `git checkout HEAD -- rules/x.md` changes a protected path, so it is put back and halts like anything else. Restoring a protected file is a human act.
+- **Under `Write`, `Edit`, `MultiEdit` and `NotebookEdit`, the payload names the path being written.** That path is written back if it moved. A *different* protected path that moved in the same window was moved by something that is not this tool call, so it is left standing. That is where the guard stops destroying a concurrent writer's work — not a seam to aim at, because a write tool writes the path its payload names and has no second write.
+
+Both branches raise the same halt, and neither is silent: a path left standing is still named in the message you receive and still recorded as its own `guard_block` event.
+
+## What the measurement costs
+
+Three prices come with it, and they are stated here rather than left to be discovered:
 
 - **The change happens before it is seen.** Your tool call runs, the file is written, and only afterwards is the previous content put back. Whatever the write set off in the meantime — a watcher that reloaded, a build that started, a process that read the new bytes — is not undone with it.
 - **A read is not a change.** A protection list watches files for changes, so a command that reads a protected file and carries its content somewhere else trips nothing. That is true of any list-based guard and is not a gap this one could close.
+- **The window is the whole tool call, and it is not exclusively yours.** Anything that writes a protected path between the two fingerprints is measured, including writers that are not you: the user saving in their own editor, a file watcher, a build you started in an earlier call, a second Claude session. Measured, with no agent write anywhere in the sequence — during one `Bash` call the user saved a rule file, the save was written back over, and the session halted (`shared/issues/260809-1107_*_any-writer-active-during-the-tool-call-….md`). A long call, a test suite or a build, holds that window open for minutes. So a halt naming a path you never touched is a case that really happens, and the answer to it is to report, not to reapply anything.
 
-Fusion's own revert spelling is not an exception. `git checkout HEAD -- rules/x.md` changes a protected path, so it is put back and halts like anything else; restoring a protected file is a human act.
+The bytes a write-back overwrites are **preserved first**, under `fusion-workbench/.guard-state/reverted/`, and the message names that file exactly. Only the most recent copies are kept, so if a write-back took something that was not yours, hand the user the named path while it is still there instead of reconstructing the content from memory.
 
 ## The one exemption
 
@@ -40,7 +52,7 @@ Fusion's own revert spelling is not an exception. `git checkout HEAD -- rules/x.
 ## What to do instead
 
 1. **STOP.** Do not reapply the change, and do not go looking for a route the measurement misses. Reaching for one is the act this rule forbids, whatever the guard happened to allow.
-2. **Do not re-route through another tool.** The write tools and the shell are measured against one list, so switching surfaces changes nothing.
+2. **Do not re-route through another tool.** The write tools and the shell are measured against one list, so switching surfaces changes nothing — and the narrowing above is not a re-route either, since a write tool's payload path is exactly the path that does get written back.
 3. **Human Gate.** Surface the situation to the user: name the file, say what you were trying to do and why. The hooks only ever see an agent's tool calls, so the user can make the change in their own terminal, adjust `guard.protectedPaths` in the project's `fusion-guard.json`, or tell you to do something else entirely.
 
 The shape of the alternative, concretely. Retiring a rule file with `mv rules/old.md rules/retired/old.md` runs and is then undone. What you do instead is propose the retirement — name the file, say why it should go, say where it should land — and then continue with the work that depended on it.

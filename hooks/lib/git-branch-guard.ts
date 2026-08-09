@@ -179,7 +179,7 @@ const BRANCH_SUBCOMMANDS = new Set(["switch", "worktree", "checkout"]);
  * call allowed: `git --namespace ns switch other` and
  * `git --attr-source HEAD switch t1` were both measured switching branches
  * against real git 2.49.0 while the guard allowed them
- * (`issues/260809-1106_o_the-unknown-global-option-fix-was-deleted-with-the-mutation-classifier-and-the-branch-guard-never-had-it.md`).
+ * (`issues/260809-1106_*_the-unknown-global-option-fix-was-deleted-with-the-mutation-classifier-and-the-branch-guard-never-had-it.md`).
  *
  * `--namespace` is the instance git 2.49 happens to ship; it is not the defect.
  * Every option the table does not carry has this shape, including ones git has
@@ -344,7 +344,7 @@ function classifySegment(
  * ambiguity the separator settles. Two characters therefore lifted the
  * policy's primary case: `git checkout -b bar --` was ALLOWED and created a
  * branch against real git 2.49.0
- * (`issues/260809-1105_o_a-trailing-separator-lifts-the-branch-deny-so-git-checkout-b-name-runs.md`).
+ * (`issues/260809-1105_*_a-trailing-separator-lifts-the-branch-deny-so-git-checkout-b-name-runs.md`).
  *
  * The reorder can only ADD denies — it returns earlier on a subset of inputs
  * and changes nothing else — so the no-new-allow direction needs no
