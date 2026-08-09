@@ -13,6 +13,10 @@ import type {
   GitGuardOverrides,
   CheckoutResolver,
 } from "../git-branch-guard.js";
+// The fold under test lives one module down, at the point the command word is
+// resolved. Asserting it there as well as through the verdicts is what pins it
+// to that point rather than to this classifier's own comparison.
+import { programName } from "../command-word.js";
 import {
   CORPUS,
   CORPUS_RESOLVER,
@@ -410,6 +414,150 @@ describe("git branch-switch classifier — the command word cannot be hidden", (
     expect(v.deny).toBe(true);
     expect(v.kind).toBe("branch-switch");
     expect(v.offendingSegment).toContain("git switch main");
+  });
+});
+
+/**
+ * The classifier decided a segment was a git call by comparing the resolved
+ * command word against the literal `"git"`, case-sensitively, while the
+ * protected-path half of the SAME hook folded case and had written down why
+ * (`matchesAnyFolded`, `guard.ts` CHECK 2: a glob compiles to a case-sensitive
+ * regex, so `AGENTS/coder.md` missed `agents/**` — the whole protected list,
+ * one letter). The argument was never carried across to the command word.
+ * Measured on the work-tree build before the fix:
+ *
+ *     DENY    git switch main         (control)
+ *     allow   GIT switch main
+ *     allow   Git switch main
+ *     allow   gIt worktree add ../w x
+ *
+ * (`issues/260809-1110_*_the-command-word-comparison-is-case-sensitive-while-the-protected-path-match-folds.md`)
+ *
+ * ## THE CASE IS FILESYSTEM-DEPENDENT, AND THAT IS NOT THE SAME AS UNREACHABLE
+ *
+ * These rows are stated rather than left to be re-derived, because a reader on
+ * a case-sensitive volume will otherwise read the whole block as testing a
+ * command nobody can run. WHETHER `GIT` REACHES THE GIT BINARY IS THE
+ * FILESYSTEM'S ANSWER, NOT THE GUARD'S:
+ *
+ *   - On a case-INSENSITIVE volume — APFS in its default configuration, so
+ *     every stock macOS install, and a case-insensitive Windows volume — it
+ *     does. Measured: `zsh -c 'GIT --version'` and `bash -c 'GIT --version'`
+ *     both print `git version 2.49.0`. Every case below is a live bypass there.
+ *   - On a case-SENSITIVE volume it does not, and the command fails with
+ *     "command not found" instead. The deny is then an over-deny of a command
+ *     that could not have run — which is the cost this fold accepts, the same
+ *     one the path side accepted at
+ *     `decisions/260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md`.
+ *
+ * So the assertions hold on BOTH, and deliberately: the fold is unconditional
+ * precisely so the guard's boundary does not move with the volume it happens to
+ * be running on. A suite that skipped these rows on a case-sensitive checkout
+ * would stop testing the property exactly where it is hardest to notice.
+ */
+describe("git branch-switch classifier — the command word is case-folded", () => {
+  it("folds at the RESOLUTION point, not at the comparison", () => {
+    // The anti-regression assertion. Folding at `programName` is what gives
+    // every consumer of a resolved name the same answer; folding at
+    // `git-branch-guard`'s own `!== "git"` would have left the next table to
+    // rediscover the defect. If this moves back, this line fails before any
+    // verdict does.
+    expect(programName("GIT")).toBe("git");
+    expect(programName("Git")).toBe("git");
+    expect(programName("/usr/bin/GIT")).toBe("git");
+    expect(programName("GIT")).toBe(programName("git"));
+    // The ordinary spelling is untouched, and so is a program with no row
+    // anywhere — the fold is a normalisation, not a policy.
+    expect(programName("git")).toBe("git");
+    expect(programName("RM")).toBe("rm");
+  });
+
+  it("denies every HEAD-moving form however the command word is cased", () => {
+    for (const cmd of [
+      "GIT switch main",
+      "Git switch main",
+      "gIt worktree add x y",
+      "GIT worktree add ../wt feature",
+      "GIT checkout -b bar",
+      "GIT checkout main",
+    ]) {
+      expect(deny(cmd).deny, cmd).toBe(true);
+    }
+  });
+
+  it("denies through the path, escape and quoting forms too", () => {
+    // The spellings `resolveInvocation` already erases, now in the other case.
+    // Each one erases a DIFFERENT thing, so a fold applied at only one of them
+    // would leave the others standing.
+    for (const cmd of [
+      "/usr/bin/GIT switch main",
+      "\\GIT switch main",
+      '"GIT" switch main',
+      "FOO=1 GIT switch main",
+      "if GIT switch main; then :; fi",
+    ]) {
+      expect(deny(cmd).deny, cmd).toBe(true);
+    }
+  });
+
+  it("denies across a wrapper cased either way", () => {
+    // The wrapper table reads the same folded name, so the fold reaches both
+    // words independently. `SUDO git …` is the direction worth naming: the
+    // wrapper is what was unrecognised there, and an unrecognised wrapper hides
+    // the verb underneath it.
+    for (const cmd of [
+      "sudo GIT switch main",
+      "SUDO git switch main",
+      "SUDO GIT worktree add ../wt f",
+      "EXEC git switch main",
+    ]) {
+      expect(deny(cmd).deny, cmd).toBe(true);
+    }
+  });
+
+  it("carries the same kind and reason a lower-case deny carries", () => {
+    const v = deny("gIt worktree add ../wt f");
+    expect(v.kind).toBe("worktree-add");
+    expect(v.reason).toBe(deny("git worktree add ../wt f").reason);
+    expect(v.offendingSegment).toContain("gIt worktree add");
+  });
+
+  it("still routes a folded deny through the overrides, not around them", () => {
+    // The fold decides WHICH segments are classified; it must not change what
+    // the user's explicit permission then does with them.
+    expect(deny("GIT switch main", ALLOW_BRANCH).deny).toBe(false);
+    expect(deny("GIT switch main", ALLOW_BRANCH).overrideUsed).toBe(true);
+    expect(deny("GIT worktree add ../wt f", ALLOW_BRANCH).deny).toBe(true);
+  });
+
+  it("changes no verdict for a program the policy has no row for", () => {
+    // The whole no-widening argument in one place: the tables a resolved name
+    // is compared against are a deny table (the git row) and a skip table
+    // (`WRAPPER_PROGRAMS`, which only ever exposes an inner word to that same
+    // deny table). Nothing here grants, so a name that folds onto a row the
+    // branch policy does not carry — `rm`, `echo`, `npm` — is exactly as
+    // allowed as it was.
+    for (const cmd of [
+      "RM -rf x",
+      "ECHO hello",
+      "SUDO RM -rf x",
+      "NPM test",
+    ]) {
+      expect(deny(cmd).deny, cmd).toBe(false);
+    }
+  });
+
+  it("leaves the read-only and revert forms allowed in any case", () => {
+    for (const cmd of [
+      "GIT status",
+      "Git log --oneline -5",
+      "GIT worktree list",
+      "GIT checkout HEAD -- foo.go",
+      "GIT restore foo.go",
+      "SUDO GIT checkout HEAD -- rules/x.md",
+    ]) {
+      expect(deny(cmd).deny, cmd).toBe(false);
+    }
   });
 });
 

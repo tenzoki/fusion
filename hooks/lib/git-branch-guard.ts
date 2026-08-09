@@ -169,6 +169,14 @@ const BRANCH_SUBCOMMANDS = new Set(["switch", "worktree", "checkout"]);
  * `resolveInvocation` has already stripped the assignment, the path, the
  * quoting, the escape, the wrapper and the grammar word respectively.
  *
+ * IT ALSO COVERS `GIT …`, `Git …` and `/usr/bin/GIT …`, because the name
+ * `resolveInvocation` returns is case-folded. The comparison below stays a
+ * plain `!==` on purpose: the fold belongs at the one point the word is
+ * resolved, not at each table that reads it, so every consumer gets the same
+ * answer. Do not re-case it here. The full argument — including why folding
+ * can only add denies — is at `programName` in `command-word.ts`
+ * (`issues/260809-1110_*_the-command-word-comparison-is-case-sensitive-while-the-protected-path-match-folds.md`).
+ *
  * ## An unrecognised global option consumes a value, and the walk RESUMES
  *
  * The walk below steps over git's global options to reach the subcommand. It

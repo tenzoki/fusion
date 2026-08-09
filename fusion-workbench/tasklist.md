@@ -138,7 +138,7 @@ flowchart TD
   `hooks/lib/__tests__/git-branch-guard.test.ts`
 - **Depends on:** none
 - **Priority:** high
-- **Status:** [ ] open
+- **Status:** [x] done (260809-1839, coder — fold in `programName`, `hooks/lib/command-word.ts`)
 - **Detail:** `classifySegment` decides a segment is a git call by comparing the resolved
   command word against the literal `"git"`, case-sensitively. On a case-insensitive
   filesystem — macOS APFS in its default configuration — the shell resolves `GIT` to the

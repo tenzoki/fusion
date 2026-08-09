@@ -66,3 +66,28 @@ Folding the command word cannot widen an allow. It can only make more segments r
 
 **Reconciliation 260809-1651 (reconciler, domain `code`) — stays `_o_`. Checked because this session rewrote the file it names.**
 `hooks/lib/git-branch-guard.ts` was rewritten in `9716ee5` (steps 2 and 3 of `shared/planning/260809-1229_c_plan-five-severe-guard-defects.md`), which touched `classifyCheckout` and the global-option walk and left the command-word comparison alone. `programName` in `hooks/lib/command-word.ts` still returns the basename as spelled, and no fold happens at the comparison. All four acceptance criteria remain unmet. `rules/git-branch-discipline.md` `## Why` now names this record explicitly as a measured defect inside the command form the classifier does classify, which is a documentation change and not a code one.
+
+---
+Resolved: `programName` in `hooks/lib/command-word.ts` now folds the resolved command word
+with `toLowerCase` (not `toLocaleLowerCase`, so a Turkish locale cannot move the boundary by
+lowering `GIT` to a dotless `gıt`). The fold is unconditional on every platform, matching the
+decision the protected-path half already took at `matchesAnyFolded`. The comparison at
+`hooks/lib/git-branch-guard.ts:241` is unchanged and now carries a note that the fold happens
+upstream and must not be re-cased there.
+
+Checked rather than assumed, that folding cannot widen an allow: `Invocation.name` has exactly
+one production consumer, and the two tables reading the resolved name are a deny table (the git
+row) and a skip table whose only effect is to expose an inner command word to that same deny
+table. No name appears in both, so nothing can be hidden by folding. Three sites deliberately
+keep the raw word: `GRAMMAR_PREFIXES` and the environment-assignment match, because bash
+reserved words are case-sensitive and `IF` is not `if`; and `reachesBuiltin`, where the path is
+the whole question.
+
+Measured after: `GIT switch main`, `Git switch main`, `gIt worktree add x y`,
+`/usr/bin/GIT switch main`, `\GIT switch main`, `"GIT" switch main` and `SUDO git switch main`
+all deny; `RM -rf x`, `npm test`, `GIT status` and `GIT checkout HEAD -- foo.go` all allow.
+1128 tests green. The corpus fixture carries no upper-case spelling, so no baseline verdict moved.
+
+Consequence left standing on purpose: `rules/git-branch-discipline.md` `## Why` still describes
+this defect as measured and open, which is now false. That file is rewritten once, against the
+finished classifier, by `260809-1226`.

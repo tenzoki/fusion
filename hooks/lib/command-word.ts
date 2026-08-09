@@ -192,10 +192,63 @@ export function findCommandWord(words: string[]): number {
   return -1;
 }
 
-/** `/bin/rm` → `rm`. A local script named `rm` is treated as `rm` (fail-closed). */
+/**
+ * `/bin/rm` → `rm`. A local script named `rm` is treated as `rm` (fail-closed).
+ *
+ * ## The name is CASE-FOLDED, and the fold happens HERE
+ *
+ * On a case-insensitive filesystem — APFS in its default configuration, so
+ * every stock macOS install — the shell resolves `GIT` to the same binary as
+ * `git`. The git classifier compared the resolved word against the literal
+ * `"git"`, so the spelling alone flipped its verdict: `git switch main` denied
+ * while `GIT switch main`, `Git switch main` and `gIt worktree add ../w x` all
+ * allowed, with `zsh -c 'GIT --version'` and `bash -c 'GIT --version'` both
+ * printing the git version
+ * (`issues/260809-1110_*_the-command-word-comparison-is-case-sensitive-while-the-protected-path-match-folds.md`).
+ *
+ * The protected-path half of the same hook had already taken this decision and
+ * written down why (`matchesAnyFolded`, `guard.ts` CHECK 2, `lib/paths.ts`): a
+ * glob compiles to a case-SENSITIVE regex, so `AGENTS/coder.md` missed
+ * `agents/**` — the whole protected list, one letter. The argument transfers
+ * unchanged to the command word; it was simply never carried across.
+ *
+ * FOLDING CANNOT WIDEN AN ALLOW, which is why it belongs at the resolution
+ * point rather than at each comparison. Two tables read the name this returns,
+ * and neither grants anything:
+ *
+ *   - the git row in `git-branch-guard.ts` — a DENY table. Folding can only
+ *     make MORE segments match it, never fewer.
+ *   - `WRAPPER_PROGRAMS` here — a SKIP table, whose only effect is to expose an
+ *     inner command word to that same deny table (`sudo git switch main` →
+ *     `git switch main`). Folding it can only expose more inner words. It
+ *     cannot hide a denied one, because no name in `WRAPPER_PROGRAMS` is also a
+ *     denied name — `git` is not a wrapper — so no fold turns a classified
+ *     program into a skipped one.
+ *
+ * `reachesBuiltin` does not read this value; it reads the RAW word, because the
+ * path is the whole question there. See that field.
+ *
+ * UNCONDITIONAL, on every platform, matching the user's decision for the path
+ * side (`decisions/260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md`):
+ * a boundary that differs by filesystem has to be re-stated in every document
+ * that describes it and is discovered rather than known. The cost on a
+ * case-sensitive volume is near nil in the other direction too — there `GIT`
+ * resolves to nothing and the command the guard now denies would have failed
+ * with "command not found" anyway.
+ *
+ * `toLowerCase` rather than `toLocaleLowerCase`, for the reason `lib/paths.ts`
+ * `foldCase` gives: the Unicode default mapping is the same everywhere, while
+ * the locale-sensitive one is not — under a Turkish locale `GIT` would lower to
+ * a dotless `gıt` and stop matching. A security boundary must not move with
+ * `LANG`.
+ *
+ * If a consumer ever needs the command word AS SPELLED, add a field to
+ * `Invocation` for it rather than making this comparison case-sensitive again.
+ */
 export function programName(word: string): string {
   const slash = word.lastIndexOf("/");
-  return slash === -1 ? word : word.slice(slash + 1);
+  const base = slash === -1 ? word : word.slice(slash + 1);
+  return base.toLowerCase();
 }
 
 /**
@@ -227,7 +280,12 @@ function skipWrapper(spec: WrapperSpec, args: string[]): string[] {
 
 /** The program a segment runs, and the arguments it runs it with. */
 export interface Invocation {
-  /** Basename of the resolved command word: `/bin/rm` and `\rm` are both `rm`. */
+  /**
+   * Basename of the resolved command word, CASE-FOLDED: `/bin/rm`, `\rm` and
+   * `RM` are all `rm`. The fold is `programName`'s, and the argument for why it
+   * can only ever add denies is written out there. A consumer needing the
+   * spelling as typed gets a new field, not a case-sensitive comparison.
+   */
   name: string;
   /** Everything after the command word, wrapper words already consumed. */
   args: string[];
