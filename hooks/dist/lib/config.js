@@ -117,6 +117,10 @@
  * per entry. The loader itself does not emit, so it stays pure and unit-testable
  * without a workbench on disk.
  *
+ * A MISSING file is recorded for the plugin layer and not for the project
+ * layer, and that asymmetry is the rule rather than an exception to it. See
+ * `readLayer`, which is where the two layers part.
+ *
  * Uses native JSON.parse — zero external dependencies.
  */
 import { readFileSync, existsSync } from "node:fs";
@@ -207,17 +211,40 @@ const EMPTY_LAYER = { raw: {}, diagnostics: [] };
 /**
  * Read one configuration file into a layer.
  *
- * An ABSENT file is not a problem and produces no diagnostic: for the project
- * layer that is the ordinary state of a project that has not configured
- * anything, and for the plugin layer it is the silence this loader has always
- * kept. A file that EXISTS but cannot be read as a JSON object is dropped and
- * named, because the alternative is a mistyped configuration hiding behind
+ * An ABSENT file means two different things, one per layer, and the loader says
+ * so rather than treating both as ordinary (`260809-1101`).
+ *
+ * For the PROJECT layer, absence is the ordinary state of a project that has
+ * configured nothing. It stays silent, and must: nagging every project that has
+ * never written `fusion-guard.json` would put an advisory on every guarded call
+ * of a correctly-behaving project.
+ *
+ * For the PLUGIN layer, absence is a broken install. The plugin's own
+ * `config.json` is the only thing carrying a non-empty `protectedPaths` —
+ * `DEFAULTS.guard.protectedPaths` is the empty list, and the seeded template
+ * says as much in its own words — so a missing plugin file drops the effective
+ * list to nothing while the guard goes on reporting normal operation. That is
+ * the one silence in this loader that contradicts the contract the module
+ * docstring states, in the direction that removes protection. It gets ONE
+ * DIAGNOSTIC naming the path that was searched, which is the same loudness the
+ * module already chose for a plugin file that exists but does not parse.
+ *
+ * A file that EXISTS but cannot be read as a JSON object is dropped and named,
+ * because the alternative is a mistyped configuration hiding behind
  * apparently-normal operation. The same holds one level down, per key, in
- * `validateLayer` — which is where `kind` goes.
+ * `validateLayer` — the second of the two places `kind` goes.
  */
 function readLayer(path, kind) {
-    if (!existsSync(path))
-        return EMPTY_LAYER;
+    if (!existsSync(path)) {
+        if (kind !== "plugin")
+            return EMPTY_LAYER;
+        return {
+            raw: {},
+            diagnostics: [
+                `Guard configuration: the plugin's own config.json was not found at ${path}. fusion ships the only non-empty protectedPaths list in that file, so nothing is protected beyond what this project declares in ${PROJECT_CONFIG_FILENAME}. The fusion install is incomplete; reinstall it.`,
+            ],
+        };
+    }
     let parsed;
     try {
         parsed = JSON.parse(readFileSync(path, "utf-8"));

@@ -117,6 +117,10 @@
  * per entry. The loader itself does not emit, so it stays pure and unit-testable
  * without a workbench on disk.
  *
+ * A MISSING file is recorded for the plugin layer and not for the project
+ * layer, and that asymmetry is the rule rather than an exception to it. See
+ * `readLayer`, which is where the two layers part.
+ *
  * Uses native JSON.parse — zero external dependencies.
  */
 /** The project-level configuration file, at the project root, git-tracked. */

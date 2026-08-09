@@ -209,7 +209,7 @@ flowchart TD
   `:337-346`), `hooks/lib/__tests__/config.test.ts`
 - **Depends on:** none
 - **Priority:** normal
-- **Status:** [ ] open
+- **Status:** [x] done (260809-1900, coder — absent plugin layer diagnosed in `readLayer`)
 - **Detail:** `readLayer` returns the empty layer for a configuration file that does not
   exist, with no diagnostic. Applied to the plugin layer that silently drops the effective
   `guard.protectedPaths` to `DEFAULTS.guard.protectedPaths`, which is the empty list — the

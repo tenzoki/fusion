@@ -1100,17 +1100,59 @@ describe("diagnostics — a dropped source is named, never silent", () => {
     ).toEqual([]);
   });
 
-  it("says nothing about an absent PLUGIN file either, as it never has", () => {
-    // A missing plugin config falls back to DEFAULTS silently and always has.
-    // Diagnosing it here would emit an advisory on every tool call of a broken
-    // install, which is a change this step did not ask for.
+  it("reports an ABSENT plugin file, and names the path it searched", () => {
+    // The asymmetry with the case above is the whole point (`260809-1101`). A
+    // project that never wrote a configuration file is the ordinary case and
+    // must not be nagged; a plugin whose own `config.json` is missing is a
+    // broken install, and it is the one file carrying a non-empty protected
+    // list. Before this the loader dropped it silently, so the guard protected
+    // nothing and said nothing — the one silence contradicting the contract the
+    // module docstring states, in the direction that removes protection.
+    //
+    // The case it replaces asserted `diagnostics).toEqual([])` here and gave
+    // "as it never has" as its reason. That was a correct description of the
+    // shipped code and is the behaviour this task changes.
+    //
+    // That the entry reaches the user as a `guard_advisory` needs no case of
+    // its own: `hooks/guard.ts` emits one per entry of `config.diagnostics`
+    // without asking which layer produced it, and the end-to-end mapping is
+    // pinned in `guard-rules-write-integration.test.ts` ("reports the ignored
+    // key, once, naming it").
+    const missing = resolve(tmp(), "config.json");
+
     const config = loadConfig({
-      pluginConfigPath: resolve(tmp(), "config.json"),
+      pluginConfigPath: missing,
       projectRoot: null,
     });
 
-    expect(config.diagnostics).toEqual([]);
+    expect(config.diagnostics).toHaveLength(1);
+    expect(config.diagnostics[0]).toContain(missing);
+    // Still falls through to DEFAULTS rather than throwing: the diagnostic is
+    // the change, the fallback is not.
     expect(config.guard.protectedPaths).toEqual([]);
+  });
+
+  it("reports the absent plugin file exactly once, not once per key it lacks", () => {
+    // `guard_advisory` is emitted one per diagnostic on EVERY guarded call
+    // (`hooks/guard.ts`), so the count is the difference between one advisory
+    // and a flood. The acceptance criterion says "exactly one".
+    const config = loadConfig({
+      pluginConfigPath: resolve(tmp(), "config.json"),
+      projectRoot: projectWith({ guard: { protectedPaths: ["secret/**"] } }),
+    });
+
+    expect(config.diagnostics).toHaveLength(1);
+  });
+
+  it("says nothing about an absent plugin file when the project layer is the absent one", () => {
+    // The other half of the asymmetry, stated as its own case so a future
+    // change that made BOTH layers loud would fail here rather than pass.
+    const config = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: tmp(),
+    });
+
+    expect(config.diagnostics).toEqual([]);
   });
 
   it("reports a plugin file that EXISTS and does not parse", () => {

@@ -72,3 +72,22 @@ Cross-references:
 
 **Reconciliation 260809-1651 (reconciler, domain `code`) — stays `_o_`. Untouched by the defect round.**
 The six commits `451a07e..fb262d8` touch `hooks/tracker.ts`, `hooks/lib/protected-snapshot.ts`, `hooks/lib/git-branch-guard.ts` and the new `hooks/lib/reverted-copy.ts`. `hooks/lib/config.ts`, `hooks/lib/churn.ts`, `hooks/lib/cross-file.ts` and `hooks/lib/escalation.ts` are not in the diff, so every line this record cites still reads as filed and its acceptance criteria are unmet.
+
+---
+Resolved: `readLayer` in `hooks/lib/config.ts` now asks which layer it is reading before
+returning on an absent file. An absent project `fusion-guard.json` still returns the empty
+layer silently, which is the ordinary case and must not nag. An absent plugin `config.json`
+returns one diagnostic naming the searched path; `hooks/guard.ts` turns it into a
+`guard_advisory` on every guarded call, because that emit loop walks the diagnostics without
+asking which layer produced an entry. Both docstrings stating the contract were rewritten: the
+module section now records the asymmetry, and `readLayer`'s own docstring argues each half
+instead of claiming absence is uniformly harmless.
+
+One existing test pinned exactly the old behaviour and was replaced rather than kept. Three
+cases stand in its place: the plugin absence is reported and names the path, it is reported
+once rather than once per missing key, and the project-absent case stays silent — the last so
+that a future change making both layers loud fails instead of passing. The end-to-end
+`guard_advisory` mapping needed no new case; it is already pinned in
+`guard-rules-write-integration.test.ts`.
+
+1140 tests green. Reachability stays low, as filed: `install.sh` copies `hooks/` wholesale.
