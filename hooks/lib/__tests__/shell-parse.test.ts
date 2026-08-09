@@ -164,9 +164,69 @@ describe("blanking data regions", () => {
     expect(segments(cmd).some((s) => s.includes("rules/x.md"))).toBe(false);
   });
 
-  it("still classifies an UNQUOTED-delimiter heredoc body as code", () => {
+  it("keeps a plain line of an UNQUOTED-delimiter heredoc body out too", () => {
+    // Bash EXPANDS in this body, it does not EXECUTE it: the line is written to
+    // the redirect target exactly as under a quoted delimiter. Keeping the body
+    // as code made every line its own candidate command (`issues/260809-1111`).
     const cmd = "cat > /tmp/note <<EOF\nrm rules/x.md\nEOF";
-    expect(segments(cmd)).toContain("rm rules/x.md");
+    expect(segments(cmd)).toEqual(["cat > /tmp/note <<", "EOF"]);
+    // ... which is now, line for line, what the quoted form produces.
+    expect(segments(cmd)).toEqual(
+      segments("cat > /tmp/note <<'EOF'\nrm rules/x.md\nEOF"),
+    );
+  });
+
+  it("lifts the substitutions out of an UNQUOTED-delimiter heredoc body", () => {
+    // The half of the fail-closed argument that IS true: a substitution in such
+    // a body runs, so it has to reach the classifier as a segment of its own.
+    expect(segments("cat <<EOF\nsee $(rm rules/x.md) here\nEOF")).toContain(
+      "rm rules/x.md",
+    );
+    expect(segments("cat <<EOF\nsee `rm rules/x.md` here\nEOF")).toContain(
+      "rm rules/x.md",
+    );
+    // And the prose the substitution stood in is gone with the rest of the body.
+    expect(segments("cat <<EOF\nsee $(rm rules/x.md) here\nEOF")).toEqual([
+      "rm rules/x.md",
+      "cat <<",
+      "EOF",
+    ]);
+  });
+
+  it("keeps a QUOTED-delimiter body's substitutions out — the quotes suppress them", () => {
+    // The exemption is unquoted-only: `<<'EOF'` writes `$(…)` to the file
+    // literally, so nothing in the body runs and nothing is lifted.
+    expect(segments("cat <<'EOF'\nsee $(rm rules/x.md) here\nEOF")).toEqual([
+      "cat <<",
+      "EOF",
+    ]);
+    expect(segments("cat <<'EOF'\nsee `rm rules/x.md` here\nEOF")).toEqual([
+      "cat <<",
+      "EOF",
+    ]);
+  });
+
+  it("fails closed on a substitution whose extent the body does not settle", () => {
+    // An unbalanced `$(` or an unpaired backtick has no known end, so the rest
+    // of the body stays code rather than being blanked on a guess. Stated as
+    // "the text survives" rather than as an exact segment: the unpaired backtick
+    // stays glued to the word after it, which is what the segmenter has always
+    // done with one outside a heredoc too.
+    for (const cmd of [
+      "cat <<EOF\nsee $(rm rules/x.md\nEOF",
+      "cat <<EOF\nsee `rm rules/x.md\nEOF",
+    ]) {
+      expect(
+        segments(cmd).some((s) => s.includes("rules/x.md")),
+        `command: ${JSON.stringify(cmd)}`,
+      ).toBe(true);
+    }
+  });
+
+  it("blanks an unquoted body whose terminator IS the end of the command", () => {
+    // No trailing newline after the terminator — the branch that ends the scan
+    // at `n`. The body still has to be blanked, not left behind as code.
+    expect(segments("cat <<EOF\nrm rules/x.md\nEOF")).toEqual(["cat <<", "EOF"]);
   });
 
   it("never lets single-quoted text become a command word", () => {
@@ -291,17 +351,15 @@ describe("a backslash line continuation splices two lines into one command", () 
   });
 
   it("does not reinterpret a continuation inside a heredoc body", () => {
-    // A heredoc body is data the command READS. A quoted delimiter blanks it;
-    // an unquoted one is retained as code (fail-closed, so a hidden `$(…)`
-    // still classifies) but its content is passed through untouched either way.
+    // A heredoc body is data the command READS, under either delimiter form, so
+    // the continuation is never spliced: the body is blanked, and the `\` goes
+    // with the rest of it.
     expect(segments("cat > /tmp/n <<'EOF'\nrm \\\nrules/x.md\nEOF")).toEqual([
       "cat > /tmp/n <<",
       "EOF",
     ]);
     expect(segments("cat > /tmp/n <<EOF\nrm \\\nrules/x.md\nEOF")).toEqual([
       "cat > /tmp/n <<",
-      "rm \\",
-      "rules/x.md",
       "EOF",
     ]);
   });

@@ -174,7 +174,7 @@ flowchart TD
 - **Depends on:** task 3 (both add cases to `git-branch-guard.test.ts`; sequencing only, no
   semantic dependency)
 - **Priority:** high
-- **Status:** [ ] open
+- **Status:** [x] done (260809-1855, coder — `blankHeredocBody` in `hooks/lib/shell-parse.ts`)
 - **Detail:** A heredoc with an unquoted delimiter has its body preserved as code, and the
   segmenter then splits on newlines, so every body line becomes its own candidate command.
   Measured: `cat <<EOF > runbook.md` with a body line `git switch main` segments to `["cat

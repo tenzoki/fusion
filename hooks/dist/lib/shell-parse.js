@@ -14,12 +14,16 @@
  * ## One quote mode: data is blanked
  *
  * A single-quoted region is replaced by spaces, because `echo 'git switch main'`
- * is inert prose and its content must not be read as a command. So is a
- * quoted-delimiter heredoc body — data a command reads, never a command.
- * Regions where bash DOES expand (a double-quoted span carrying `$`, a
- * backtick or an escape; an unquoted-delimiter heredoc body) are preserved
- * verbatim, so a real hidden command still gets classified. That is the
- * fail-closed direction and it must not flip.
+ * is inert prose and its content must not be read as a command. So is a heredoc
+ * body — data a command reads, never a command — under EITHER delimiter form,
+ * with one exemption: an unquoted delimiter leaves bash performing command
+ * substitution in the body, so every `$(…)` and backtick region there survives
+ * the blanking in place and reaches the segmenter, which lifts it out as a
+ * command of its own. Nothing else in such a body runs — a line reading `git
+ * switch main` is written to the file, exactly as under a quoted delimiter — so
+ * blanking around the substitutions costs no deny. A double-quoted span
+ * carrying `$`, a backtick or an escape is preserved verbatim, whole. That is
+ * the fail-closed direction and it must not flip.
  *
  * There used to be a second, opposite mode. A retired mutation classifier
  * needed a single-quoted region kept as an ordinary path (`mv 'rules/x.md'
@@ -55,6 +59,74 @@ const PLACEHOLDER_RE = /\u0001q\d+\u0001/g;
  */
 function blankData(s) {
     return s.replace(/[^\n]/g, " ");
+}
+/**
+ * Index of the `)` that closes the `$(` starting at `open` (the index of the
+ * `$`), honouring nesting. -1 when it is never closed.
+ */
+function findSubstitutionClose(s, open) {
+    let depth = 0;
+    for (let i = open + 1; i < s.length; i++) {
+        const ch = s[i];
+        if (ch === "(")
+            depth++;
+        else if (ch === ")") {
+            depth--;
+            if (depth === 0)
+                return i;
+        }
+    }
+    return -1;
+}
+/**
+ * Blank an UNQUOTED-delimiter heredoc body, keeping every region bash actually
+ * EXECUTES there — `$(…)` command substitutions and backtick subshells — in
+ * place and verbatim.
+ *
+ * The body is data: bash writes it to the redirect target rather than running
+ * it, so a line reading `git switch main` is prose under an unquoted delimiter
+ * exactly as under a quoted one. What differs is that an unquoted delimiter
+ * leaves substitutions live, and a substitution DOES run. Keeping those regions
+ * where they stood hands them to `extractCommandSegments` unchanged: that
+ * function already lifts a `$(…)`/backtick body out as a segment of its own,
+ * wherever in the command it appears. So this is that one mechanism reused, not
+ * a heredoc special case, and the fail-closed property stays exactly where it
+ * was earned (`issues/260809-1111`).
+ *
+ * Fail-closed on ambiguity, matching the module's bias: an unbalanced `$(` or an
+ * unpaired backtick keeps the REST of the body as code rather than blanking a
+ * region whose extent is unknown.
+ *
+ * Known conservative limitation: a backslash escape is not honoured, so bash's
+ * literal `\$(git switch main)` (written to the file, never run) is still read
+ * as a substitution and denies. That over-blocks, which is the safe direction.
+ */
+function blankHeredocBody(body) {
+    const n = body.length;
+    let out = "";
+    let i = 0;
+    while (i < n) {
+        const ch = body[i];
+        if (ch === "$" && body[i + 1] === "(") {
+            const close = findSubstitutionClose(body, i);
+            if (close === -1)
+                return out + body.slice(i); // unbalanced → rest is code
+            out += body.slice(i, close + 1);
+            i = close + 1;
+            continue;
+        }
+        if (ch === "`") {
+            const close = body.indexOf("`", i + 1);
+            if (close === -1)
+                return out + body.slice(i); // unpaired → rest is code
+            out += body.slice(i, close + 1);
+            i = close + 1;
+            continue;
+        }
+        out += ch === "\n" ? "\n" : " ";
+        i++;
+    }
+    return out;
 }
 /**
  * Find the start index of a heredoc's terminator line at or after `from`.
@@ -94,7 +166,16 @@ function findHeredocTerminator(command, from, hd) {
  *
  *   - double-quoted strings that carry `$`, a backtick or an escape:
  *                                        "… `git switch` …"   (bash substitutes)
- *   - unquoted-delimiter heredoc bodies: <<EOF … EOF          (bash expands body)
+ *   - the `$(…)` and backtick regions of an unquoted-delimiter heredoc body:
+ *                                        <<EOF … $(git switch main) … EOF
+ *
+ * An unquoted-delimiter body is blanked around those regions
+ * (`blankHeredocBody`) rather than kept whole. Expansion is not execution: bash
+ * substitutes in such a body, so a substitution there runs and has to classify,
+ * but the surrounding text is written to the file the same way a quoted
+ * delimiter writes it. Keeping the whole body as code made every line of a
+ * runbook its own candidate command, and denied an agent documenting the very
+ * policy this guard enforces (`issues/260809-1111`).
  *
  * Removed content is replaced with spaces; newlines are kept so surrounding
  * token boundaries survive. Parsing is fail-closed on ambiguity: an
@@ -270,9 +351,11 @@ function stripData(command) {
                     break;
                 }
                 const body = command.slice(i, term);
-                // A quoted-delimiter body is data in BOTH modes: it is what a command
-                // reads, never a path a command writes.
-                out += hd.strip ? blankData(body) : body;
+                // A heredoc body is data under either delimiter form: it is what a
+                // command reads, never a path a command writes. A quoted delimiter
+                // blanks it whole; an unquoted one blanks it around the `$(…)` and
+                // backtick regions bash still executes there.
+                out += hd.strip ? blankData(body) : blankHeredocBody(body);
                 let termEnd = command.indexOf("\n", term);
                 if (termEnd === -1)
                     termEnd = n;
@@ -296,10 +379,10 @@ function stripData(command) {
     return out;
 }
 /**
- * Blank shell data regions (single-quoted strings, quoted-delimiter heredoc
- * bodies) so only executable code reaches the segmenter. The entry point the
- * git classifier and its suite consume, kept under its original name and
- * behaviour.
+ * Blank shell data regions (single-quoted strings, heredoc bodies — an unquoted
+ * delimiter keeping the `$(…)`/backtick regions bash executes) so only
+ * executable code reaches the segmenter. The entry point the git classifier and
+ * its suite consume, kept under its original name.
  */
 export function stripDataRegions(command) {
     return stripData(command);
@@ -341,20 +424,10 @@ export function extractCommandSegments(command) {
         const start = outer.indexOf("$(");
         if (start === -1)
             break;
-        let depth = 0;
-        let end = -1;
-        for (let i = start + 1; i < outer.length; i++) {
-            const ch = outer[i];
-            if (ch === "(")
-                depth++;
-            else if (ch === ")") {
-                depth--;
-                if (depth === 0) {
-                    end = i;
-                    break;
-                }
-            }
-        }
+        // Same scan `blankHeredocBody` uses to decide a substitution's extent, so
+        // the region this function lifts out and the region that survives blanking
+        // are the same region by construction.
+        const end = findSubstitutionClose(outer, start);
         if (end === -1) {
             // Unbalanced — treat the rest as subshell body (fail-closed) and stop.
             const body = outer.slice(start + 2);
@@ -386,9 +459,10 @@ export function extractCommandSegments(command) {
         .replace(/\|/g, SENTINEL)
         .replace(/&/g, SENTINEL)
         // A newline is a command terminator in shell too, so it separates
-        // segments. This is what makes a fail-closed (retained-as-code) heredoc
-        // body classify on its own line rather than being shadowed by the
-        // `cat`/redirect command that opened the heredoc.
+        // segments. It is also what makes a text region `stripDataRegions` had to
+        // retain as code — a heredoc whose terminator never appears, an
+        // unterminated quote — classify on its own line rather than being shadowed
+        // by the command that opened it.
         .replace(/[\r\n]+/g, SENTINEL);
     for (const part of flattened.split(SENTINEL)) {
         const trimmed = part.trim();

@@ -62,13 +62,20 @@ Explicitly not recommended, for the reasons `260716-2005` already gave: an allow
 
 ## Acceptance criteria
 
-- [ ] `cat <<EOF` with a body line `git switch main` allows.
-- [ ] `cat <<EOF` with a body containing `$(git switch main)` still denies.
-- [ ] `cat <<EOF` with a body containing a backticked `` `git switch main` `` still denies (bash substitutes there).
-- [ ] The quoted-delimiter cases from `260716-2005` stay green.
-- [ ] A real branch switch outside any heredoc still denies.
+- [x] `cat <<EOF` with a body line `git switch main` allows.
+- [x] `cat <<EOF` with a body containing `$(git switch main)` still denies.
+- [x] `cat <<EOF` with a body containing a backticked `` `git switch main` `` still denies (bash substitutes there).
+- [x] The quoted-delimiter cases from `260716-2005` stay green.
+- [x] A real branch switch outside any heredoc still denies.
 
 ---
 
 **Reconciliation 260809-1651 (reconciler, domain `code`) — stays `_o_`. Untouched by this session.**
 `hooks/lib/shell-parse.ts` is not in the diff `451a07e..fb262d8`. The heredoc branch and the newline segmentation are unchanged, and all five acceptance criteria remain unmet.
+
+---
+Resolved: `stripData`'s unquoted-delimiter branch now blanks the body through a new `blankHeredocBody`, which keeps every `$(…)` and backtick region in place and verbatim and blanks everything around it. The regions it keeps are then lifted out by `extractCommandSegments` exactly as they are anywhere else in a command — the suggested direction, with the lifting done by leaving the regions where they stood rather than by passing a segment list out of a function that returns a string. `findSubstitutionClose` is shared by the blanker and the segmenter, so "where does this substitution end" has one answer. Fail-closed where it was earned: an unbalanced `$(` or an unpaired backtick keeps the rest of the body as code, and a heredoc whose terminator never appears is unchanged. No heuristic reads the body text.
+
+Measured against the built classifier, all five criteria hold; the two fixture baselines (`git-corpus-451a07e.json`, `git-verdicts-head.json`) are unmoved. Changed: `hooks/lib/shell-parse.ts`, `hooks/lib/__tests__/shell-parse.test.ts`, `hooks/lib/__tests__/git-branch-guard.test.ts`. Left at `_p_` for the orchestrator to close after it validates and commits.
+
+Known limitation, stated rather than fixed: a backslash escape in the body is not honoured, so bash's literal `\$(git switch main)` — written to the file, never run — still denies. That over-blocks, which is the safe direction; it is documented on `blankHeredocBody`.

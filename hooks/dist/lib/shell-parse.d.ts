@@ -14,12 +14,16 @@
  * ## One quote mode: data is blanked
  *
  * A single-quoted region is replaced by spaces, because `echo 'git switch main'`
- * is inert prose and its content must not be read as a command. So is a
- * quoted-delimiter heredoc body — data a command reads, never a command.
- * Regions where bash DOES expand (a double-quoted span carrying `$`, a
- * backtick or an escape; an unquoted-delimiter heredoc body) are preserved
- * verbatim, so a real hidden command still gets classified. That is the
- * fail-closed direction and it must not flip.
+ * is inert prose and its content must not be read as a command. So is a heredoc
+ * body — data a command reads, never a command — under EITHER delimiter form,
+ * with one exemption: an unquoted delimiter leaves bash performing command
+ * substitution in the body, so every `$(…)` and backtick region there survives
+ * the blanking in place and reaches the segmenter, which lifts it out as a
+ * command of its own. Nothing else in such a body runs — a line reading `git
+ * switch main` is written to the file, exactly as under a quoted delimiter — so
+ * blanking around the substitutions costs no deny. A double-quoted span
+ * carrying `$`, a backtick or an escape is preserved verbatim, whole. That is
+ * the fail-closed direction and it must not flip.
  *
  * There used to be a second, opposite mode. A retired mutation classifier
  * needed a single-quoted region kept as an ordinary path (`mv 'rules/x.md'
@@ -50,10 +54,10 @@ export type ResolvedWord = {
     unresolved: true;
 };
 /**
- * Blank shell data regions (single-quoted strings, quoted-delimiter heredoc
- * bodies) so only executable code reaches the segmenter. The entry point the
- * git classifier and its suite consume, kept under its original name and
- * behaviour.
+ * Blank shell data regions (single-quoted strings, heredoc bodies — an unquoted
+ * delimiter keeping the `$(…)`/backtick regions bash executes) so only
+ * executable code reaches the segmenter. The entry point the git classifier and
+ * its suite consume, kept under its original name.
  */
 export declare function stripDataRegions(command: string): string;
 /**

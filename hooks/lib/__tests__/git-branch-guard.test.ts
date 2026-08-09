@@ -1097,6 +1097,67 @@ describe("shell data regions — heredocs and single quotes (issue 260716-2005)"
     expect(deny(cmd).deny).toBe(true);
   });
 
+  // The unquoted-delimiter half, which `260716-2005` deliberately left standing
+  // and `260809-1111` closed: expansion is not execution. Bash substitutes in
+  // such a body — so the two cases above still deny — but it WRITES the rest of
+  // it, so a plain line documenting the policy is prose here exactly as it is
+  // under a quoted delimiter.
+
+  it("ALLOWS an UNQUOTED-delimiter heredoc whose body line is a bare git switch", () => {
+    const cmd =
+      "cat <<EOF > runbook.md\n" +
+      "git switch main\n" +
+      "EOF";
+    expect(deny(cmd).deny).toBe(false);
+  });
+
+  it("ALLOWS an UNQUOTED heredoc documenting the branch policy in prose", () => {
+    const cmd =
+      "cat <<EOF > runbook.md\n" +
+      "To move between branches you would normally run git switch main,\n" +
+      "and git worktree add ../wt x for a second tree. Both are blocked.\n" +
+      "EOF";
+    expect(deny(cmd).deny).toBe(false);
+  });
+
+  it("ALLOWS an UNQUOTED `<<-` heredoc with a tab-indented terminator", () => {
+    const cmd =
+      "\tcat <<-EOF\n" +
+      "\tgit checkout other-branch\n" +
+      "\tEOF";
+    expect(deny(cmd).deny).toBe(false);
+  });
+
+  it("DENIES the substitution but not the prose it stands in", () => {
+    // One body, both readings, so neither can be green by accident.
+    const denied =
+      "cat <<EOF > runbook.md\n" +
+      "git switch main is blocked, and $(git switch main) is a real call\n" +
+      "EOF";
+    const allowed =
+      "cat <<EOF > runbook.md\n" +
+      "git switch main is blocked, and a real call would be a substitution\n" +
+      "EOF";
+    expect(deny(denied).deny).toBe(true);
+    expect(deny(allowed).deny).toBe(false);
+  });
+
+  it("STILL DENIES a real git switch after an UNQUOTED heredoc's terminator", () => {
+    // The blanking must stop at the terminator, not swallow the command after it.
+    const cmd =
+      "cat <<EOF > runbook.md\n" +
+      "git switch main\n" +
+      "EOF\n" +
+      "git switch main";
+    expect(deny(cmd).deny).toBe(true);
+  });
+
+  it("fails closed when an UNQUOTED heredoc terminator never appears", () => {
+    // No closing EOF → the body was never proven to be a body → code → deny.
+    const cmd = "cat <<EOF\ngit switch main\n";
+    expect(deny(cmd).deny).toBe(true);
+  });
+
   it("DENIES a real git switch on the redirect line even with a quoted heredoc after", () => {
     const cmd =
       "git switch main <<'EOF'\n" +
@@ -1132,9 +1193,11 @@ describe("stripDataRegions", () => {
     expect(out).toContain("EOF");
   });
 
-  it("keeps an unquoted heredoc body verbatim (bash expands there)", () => {
-    const out = stripDataRegions("cat <<EOF\n`x`\nEOF");
-    expect(out).toContain("`x`");
+  it("keeps an unquoted heredoc body's substitutions and blanks the rest", () => {
+    const out = stripDataRegions("cat <<EOF\nplain `x` text\nEOF");
+    expect(out).toContain("`x`"); // bash substitutes there → still code
+    expect(out).not.toContain("plain"); // bash writes that → data
+    expect(out).toContain("EOF");
   });
 
   it("leaves a here-string <<< as code", () => {
