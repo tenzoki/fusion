@@ -21,9 +21,12 @@
  *         everything non-git.
  *
  * The load-bearing allow-case is fusion's own revert strategy
- * (`git checkout HEAD -- <files>`), which MUST stay allowed. A `--`
- * separator is the primary, unambiguous discriminator: everything after it
- * is a pathspec, so HEAD cannot move.
+ * (`git checkout HEAD -- <files>`), which MUST stay allowed. A `--` separator
+ * is the discriminator for that case: everything after it is a pathspec.
+ * It is NOT unconditional, and reading it as unconditional is what let
+ * `git checkout -b bar --` through — a branch-creating flag is resolved by git
+ * before the separator is ever consulted. The separator settles the AMBIGUOUS
+ * form only; see `classifyCheckout` for the ordering that follows from that.
  *
  * The bare, `--`-less form `git checkout <target>` is genuinely ambiguous —
  * git resolves it in favour of a branch/ref if one exists, otherwise treats
@@ -148,6 +151,14 @@ interface SegmentDeny {
 
 
 /**
+ * The three subcommands this classifier has a verdict for. A bare word that
+ * matches none of them is either git's real subcommand (one this policy does
+ * not speak about) or the value an unrecognised global option consumed — the
+ * distinction `classifySegment`'s walk makes below.
+ */
+const BRANCH_SUBCOMMANDS = new Set(["switch", "worktree", "checkout"]);
+
+/**
  * Classify a single already-segmented command. Returns a SegmentDeny for a
  * denied operation, or null if the segment is allowed. `resolver` (when
  * present) resolves the ambiguous bare-`git checkout <target>` form.
@@ -157,6 +168,70 @@ interface SegmentDeny {
  * `sudo git …`, `exec git …` and `if git …; then`, because
  * `resolveInvocation` has already stripped the assignment, the path, the
  * quoting, the escape, the wrapper and the grammar word respectively.
+ *
+ * ## An unrecognised global option consumes a value, and the walk RESUMES
+ *
+ * The walk below steps over git's global options to reach the subcommand. It
+ * consumes the value of the four options it knows (`-C`, `-c`, `--git-dir`,
+ * `--work-tree`) and treats every other `-`-prefixed token as valueless. An
+ * option that DOES take a separated value therefore left its value standing in
+ * subcommand position, where it matched none of the three rows, and the whole
+ * call allowed: `git --namespace ns switch other` and
+ * `git --attr-source HEAD switch t1` were both measured switching branches
+ * against real git 2.49.0 while the guard allowed them
+ * (`issues/260809-1106_o_the-unknown-global-option-fix-was-deleted-with-the-mutation-classifier-and-the-branch-guard-never-had-it.md`).
+ *
+ * `--namespace` is the instance git 2.49 happens to ship; it is not the defect.
+ * Every option the table does not carry has this shape, including ones git has
+ * not shipped yet, which is why this was not closed by adding a row.
+ *
+ * This is not a new remedy. The identical defect was found and closed in the
+ * mutation classifier's `resolveGit` on 2026-08-04
+ * (`issues/260804-1333_c_an-unrecognised-git-global-option-swallows-the-subcommand-and-the-invocation-reads-as-an-unrecognised-program.md`),
+ * its first answer — reading two adjacent words as subcommand candidates — was
+ * found insufficient the same day
+ * (`issues/260804-1344_c_the-git-option-walk-stops-at-an-unknown-options-value-so-a-c-behind-it-is-invisible.md`),
+ * and the walk-resumption below is that record's remedy. Both modules had the
+ * same eight lines; the fix was applied to one of them, and when the mutation
+ * classifier was retired in v6.0.0 the fix went with it. What survives that
+ * pattern is a test naming the sibling records, which
+ * `git-branch-guard.test.ts` now carries.
+ *
+ * So: a bare word is tested against `BRANCH_SUBCOMMANDS`. If it matches, that
+ * is the invocation. If it does not and an unrecognised option stands in front
+ * of it, it is that option's VALUE and the walk continues from the next index,
+ * recording any `-C` and `--work-tree` it then meets. If it does not match and
+ * no unrecognised option stands in front of it, it is git's real subcommand and
+ * the walk stops — which is what keeps the walk out of the subcommand's OWN
+ * arguments, where `-C` means something else entirely (`git commit -C HEAD~1`
+ * reuses a message).
+ *
+ * ## What this preserves, and what it costs
+ *
+ * The resumed walk can only try MORE subcommand candidates and record MORE
+ * directories than a walk that stopped, so the candidate set after the change
+ * is a superset of the one before and the change can only ADD denies. That is
+ * the same monotonicity `classifyCheckout` rests on, and it is why no
+ * measurement is needed on the deny side. The ALLOW side is measured rather
+ * than argued, by the bounded corpus in
+ * `__tests__/helpers/git-corpus.ts` — no verdict that denied at the baseline
+ * allows after it.
+ *
+ * The cost is a false deny of the shape
+ * `git <unknown-option> <non-subcommand> <switch|worktree|checkout>`. The class
+ * is open; the shape is not special to any one option. It is smaller here than
+ * it was in its original home: this table has three rows against the mutation
+ * classifier's many, so far fewer trailing words can match one.
+ *
+ * THE BOUND, stated because "the class is closed" is the claim that was wrong
+ * last time. Closed: every well-formed invocation in which each unrecognised
+ * global option takes at most ONE separated value. Not closed and not claimed:
+ * an option taking two separated values, and a second bare word standing
+ * between the value and the subcommand (`git --namespace foo bar -C d switch
+ * main`), which resolves to nothing here. Neither is a fail-open in practice —
+ * git itself reads that second bare word as the subcommand and refuses the
+ * command — but neither is proven, and the suite asserts the bound rather than
+ * leaving it in prose.
  */
 function classifySegment(
   segment: string,
@@ -175,36 +250,54 @@ function classifySegment(
   // `--git-dir` / `--work-tree` redirect resolution in ways cwdHints can't
   // capture; when present we can't trust an on-disk allow → force fail-closed.
   let unresolvableGlobal = false;
+  /** Did an option this walk could not name stand immediately before `i`? */
+  let unknownOption = false;
 
-  let subIdx = 0;
-  while (subIdx < rest.length) {
-    const t = rest[subIdx];
-    if (t === "-C") {
-      if (rest[subIdx + 1] !== undefined) cwdHints.push(rest[subIdx + 1]);
-      subIdx += 2; // skip flag + its argument
-      continue;
-    }
-    if (t === "-c") {
-      subIdx += 2; // skip flag + its config arg
-      continue;
-    }
-    if (t.startsWith("--git-dir") || t.startsWith("--work-tree")) {
-      unresolvableGlobal = true;
-      // `--git-dir=x` (single token) or `--git-dir x` (two tokens).
-      subIdx += t.includes("=") ? 1 : 2;
-      continue;
-    }
+  let subcommand: string | undefined;
+  let args: string[] = [];
+
+  let i = 0;
+  while (i < rest.length) {
+    const t = rest[i];
+
     if (t.startsWith("-")) {
-      subIdx += 1; // some other global flag — skip it
+      // Cleared by every option the walk CAN name; set again below for one it
+      // cannot, so the flag is still remembered when the next bare word arrives.
+      unknownOption = false;
+      if (t === "-C") {
+        if (rest[i + 1] !== undefined) cwdHints.push(rest[i + 1]);
+        i += 2; // skip flag + its argument
+        continue;
+      }
+      if (t === "-c") {
+        i += 2; // skip flag + its config arg
+        continue;
+      }
+      if (t.startsWith("--git-dir") || t.startsWith("--work-tree")) {
+        unresolvableGlobal = true;
+        // `--git-dir=x` (single token) or `--git-dir x` (two tokens).
+        i += t.includes("=") ? 1 : 2;
+        continue;
+      }
+      unknownOption = true;
+      i += 1;
       continue;
     }
-    break; // first non-flag token is the subcommand
+
+    // A bare word: git's subcommand, or the value an unrecognised option ate.
+    if (BRANCH_SUBCOMMANDS.has(t)) {
+      subcommand = t;
+      args = rest.slice(i + 1);
+      break;
+    }
+    // No unrecognised option in front of it, so this word IS git's subcommand
+    // and it is not one this policy speaks about.
+    if (!unknownOption) return null;
+    unknownOption = false;
+    i += 1;
   }
 
-  const subcommand = rest[subIdx];
-  if (!subcommand) return null; // bare `git` with no subcommand → allow
-
-  const args = rest.slice(subIdx + 1);
+  if (subcommand === undefined) return null; // bare `git`, or no row matched
 
   if (subcommand === "switch") {
     // Every form of `git switch` moves HEAD → deny.
@@ -227,15 +320,47 @@ function classifySegment(
 
 /**
  * Classify `git checkout` args.
+ *   - branch-creating / detaching flags (-b/-B/--detach/--orphan/-) → DENY,
+ *     ahead of everything else. See the ordering note below.
  *   - `--` separator present → everything after it is paths → file restore
  *     (HEAD stays) → ALLOW. Covers `git checkout HEAD -- foo`,
  *     `git checkout -- foo`, `git checkout <ref> -- foo`.
- *   - branch-creating / detaching flags (-b/-B/--detach/--orphan/-) → DENY.
  *   - bare `git checkout <target…>` with no `--`: ambiguous. ALLOW only when a
  *     resolver is present, on-disk resolution is trustworthy, and EVERY
  *     positional arg exists as a path AND none is a valid ref (a real file
  *     restore). Otherwise DENY (fail-closed) — a real branch is a valid ref,
  *     so branch switches always land here.
+ *
+ * ## Why the flag scan runs FIRST, and why the two are not alternatives
+ *
+ * The shared invariant, which `classifySegment`'s resumed walk states from the
+ * other side: EVIDENCE THAT HEAD MOVES IS UNCONDITIONAL. No later token
+ * withdraws it, and no earlier token may hide it.
+ *
+ * The separator check used to run first and returned ALLOW the moment a `--`
+ * appeared anywhere in the argument list. That reading is right for
+ * `git checkout <ref> -- <paths>` and wrong the instant a branch-creating flag
+ * is also present, because git resolves the flag and never reaches the
+ * ambiguity the separator settles. Two characters therefore lifted the
+ * policy's primary case: `git checkout -b bar --` was ALLOWED and created a
+ * branch against real git 2.49.0
+ * (`issues/260809-1105_o_a-trailing-separator-lifts-the-branch-deny-so-git-checkout-b-name-runs.md`).
+ *
+ * The reorder can only ADD denies — it returns earlier on a subset of inputs
+ * and changes nothing else — so the no-new-allow direction needs no
+ * measurement. The direction that did need checking is the load-bearing allow:
+ * `git checkout HEAD -- rules/x.md` has args `["HEAD", "--", "rules/x.md"]`,
+ * none of which is one of the five flags, so it falls through to the separator
+ * check exactly as before.
+ *
+ * THE COST, stated rather than left to be discovered: the scan reads every
+ * argument, including the pathspecs behind the separator, so a file literally
+ * named `-b`, `-B`, `--detach`, `--orphan` or `-` is now a false deny in
+ * `git checkout <ref> -- -b`. Scanning only the arguments before the separator
+ * would avoid it, and is not done, because "a flag anywhere is evidence" is the
+ * invariant this function should be readable as — and because a pathspec with
+ * one of those five names is a shape nobody writes on purpose, while the
+ * fail-closed direction is the one the policy is for.
  */
 function classifyCheckout(
   args: string[],
@@ -243,9 +368,7 @@ function classifyCheckout(
   unresolvableGlobal: boolean,
   resolver?: CheckoutResolver,
 ): SegmentDeny | null {
-  if (args.includes("--")) return null; // pathspec form → ALLOW
-
-  // No `--` separator. Any of these flags are unambiguous HEAD-movers.
+  // Unambiguous HEAD-movers, checked before the separator can speak for them.
   for (const a of args) {
     if (
       a === "-b" ||
@@ -257,6 +380,8 @@ function classifyCheckout(
       return { kind: "branch-switch", reason: DENY_REASON };
     }
   }
+
+  if (args.includes("--")) return null; // pathspec form → ALLOW
 
   // `git checkout` with no args at all is a no-op status-ish call → allow.
   if (args.length === 0) return null;

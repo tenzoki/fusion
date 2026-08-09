@@ -13,6 +13,11 @@ import type {
   GitGuardOverrides,
   CheckoutResolver,
 } from "../git-branch-guard.js";
+import {
+  CORPUS,
+  CORPUS_RESOLVER,
+  OVERRIDE_COMBOS,
+} from "./helpers/git-corpus.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
@@ -423,6 +428,344 @@ describe("git branch-switch classifier — fail-closed on ambiguity", () => {
 
   it("allows git -C /repo checkout HEAD -- foo (-- separator wins)", () => {
     expect(deny("git -C /repo checkout HEAD -- foo.go").deny).toBe(false);
+  });
+});
+
+/**
+ * `classifyCheckout` returned ALLOW the moment it saw a `--` anywhere in the
+ * argument list, and only looked at the branch-creating flags afterwards. The
+ * separator and the flags are NOT alternatives: git resolves `-b` first and
+ * never reaches the ambiguity the separator settles, so two trailing characters
+ * lifted the policy's primary case. Measured against real git 2.49.0:
+ * `git checkout -b bar --` printed "Switched to a new branch 'bar'" while the
+ * guard allowed it.
+ * (`issues/260809-1105_o_a-trailing-separator-lifts-the-branch-deny-so-git-checkout-b-name-runs.md`)
+ *
+ * The suite's own shape had encoded the same assumption as the code: each flag
+ * was covered alone (`:85` `-b`, `:89` `-B`, `:93` `--detach`) and the separator
+ * was covered alone, and no case combined them.
+ */
+describe("a trailing `--` does not withdraw a HEAD-moving flag", () => {
+  const FLAG_FORMS = [
+    "git checkout -b bar --",
+    "git checkout -B bar --",
+    "git checkout --detach HEAD --",
+    "git checkout --orphan o --",
+    "git checkout - --",
+  ];
+
+  it("denies every branch-creating / detaching flag combined with a trailing --", () => {
+    for (const cmd of FLAG_FORMS) {
+      const v = deny(cmd);
+      expect(v.deny, cmd).toBe(true);
+      expect(v.kind, cmd).toBe("branch-switch");
+    }
+  });
+
+  it("denies them with pathspecs standing behind the separator too", () => {
+    for (const cmd of [
+      "git checkout -b bar -- .",
+      "git checkout -B bar -- rules/x.md",
+      "git checkout --detach HEAD -- rules/x.md agents/coder.md",
+    ]) {
+      expect(deny(cmd).deny, cmd).toBe(true);
+    }
+  });
+
+  it("denies them however the git call is spelled or reached", () => {
+    for (const cmd of [
+      "git -C /repo checkout -b bar --",
+      "sudo git checkout -b bar --",
+      "\\git checkout -b bar --",
+      "git status && git checkout -b bar --",
+      "echo $(git checkout -b bar --)",
+    ]) {
+      expect(deny(cmd).deny, cmd).toBe(true);
+    }
+  });
+
+  it("denies them even when a resolver would happily resolve the operands", () => {
+    // The resolver only ever speaks for the AMBIGUOUS form. A flag is decided
+    // before it is consulted, so no filesystem state can talk the deny down.
+    const r = mockResolver(["bar", "rules/x.md"], []);
+    for (const cmd of FLAG_FORMS) {
+      expect(classifyWith(cmd, r).deny, cmd).toBe(true);
+    }
+  });
+
+  it("leaves fusion's own revert spelling allowed", () => {
+    // `["HEAD", "--", "rules/x.md"]` holds none of the five flags, so it falls
+    // through to the separator check exactly as it did before the reorder.
+    for (const cmd of [
+      "git checkout HEAD -- rules/x.md",
+      "git checkout HEAD -- .",
+      "git checkout -- rules/x.md",
+      "git checkout abc123 -- rules/x.md",
+      "git restore rules/x.md",
+      "git -C /repo checkout HEAD -- foo.go",
+    ]) {
+      expect(deny(cmd).deny, cmd).toBe(false);
+    }
+  });
+
+  it("states the cost of scanning past the separator", () => {
+    // The scan reads every argument, pathspecs included, so a file literally
+    // NAMED like one of the five flags is a false deny. Pinned rather than left
+    // to be discovered, and accepted: fail-closed is the direction, and this is
+    // not a filename anyone writes on purpose.
+    expect(deny("git checkout HEAD -- -b").deny).toBe(true);
+    // The bound of that cost: an ordinary pathspec is untouched.
+    expect(deny("git checkout HEAD -- -b.md").deny).toBe(false);
+  });
+});
+
+/**
+ * The same defect, found and closed in the OTHER classifier on 2026-08-04 and
+ * lost when that classifier was retired.
+ *
+ * `classifySegment` walks git's global options to reach the subcommand. It
+ * consumes the value of the four options it knows and treats every other
+ * `-`-prefixed token as valueless, so an option that DOES take a separated
+ * value left its value standing in subcommand position, matching no row, and
+ * the call allowed. Measured against real git 2.49.0: `git --namespace ns
+ * switch other` and `git --attr-source HEAD switch t1` both switched branches.
+ * (`issues/260809-1106_o_the-unknown-global-option-fix-was-deleted-with-the-mutation-classifier-and-the-branch-guard-never-had-it.md`)
+ *
+ * ## The sibling records, named here on purpose
+ *
+ * `issues/260804-1333_c_an-unrecognised-git-global-option-swallows-the-subcommand-and-the-invocation-reads-as-an-unrecognised-program.md`
+ * closed this class in `bash-mutation-guard.ts` by reading two adjacent words as
+ * subcommand candidates.
+ * `issues/260804-1344_c_the-git-option-walk-stops-at-an-unknown-options-value-so-a-c-behind-it-is-invisible.md`
+ * found the residual in that answer the same day and replaced it with a RESUMED
+ * walk, which is what this classifier now carries.
+ *
+ * Both modules had the identical eight lines. The fix was applied to one of
+ * them, nothing pinned the other, and v6.0.0 deleted the module that had it —
+ * so a High-severity defect closed with a working fix was live again five days
+ * later. This test name is the mechanism that would surface the shared fix the
+ * next time one of two classifiers is retired; that is the filed issue's own
+ * acceptance criterion, not decoration.
+ */
+describe("an unrecognised global option no longer hides the subcommand (260804-1333, 260804-1344)", () => {
+  it("denies a switch behind an option that takes a separated value", () => {
+    for (const cmd of [
+      "git --namespace ns switch main",
+      "git --attr-source HEAD switch t1",
+      "git --config-env x=Y switch main",
+      "git --namespace ns worktree add ../wt f",
+      "git --namespace ns checkout -b f",
+      "git --namespace ns checkout main",
+    ]) {
+      expect(deny(cmd).deny, cmd).toBe(true);
+    }
+  });
+
+  it("denies when a -C stands BEHIND the option's value (the 260804-1344 residual)", () => {
+    // Two adjacent candidates cannot see this: three words stand between the
+    // unknown option and the subcommand. Only a resumed walk reaches it.
+    for (const cmd of [
+      "git --namespace foo -C sub switch main",
+      "git --attr-source HEAD -C sub -c k=v switch main",
+      "git --namespace foo --work-tree=x checkout main",
+    ]) {
+      expect(deny(cmd).deny, cmd).toBe(true);
+    }
+  });
+
+  it("still records the -C hints the resumed walk passes on its way", () => {
+    const r: CheckoutResolver = {
+      pathExists: (t, hints) => hints.includes("/repo") && t === "sub/file.md",
+      isRef: () => false,
+    };
+    // The walk reaches `checkout` only by resuming past `ns`, and it has to
+    // arrive carrying the `-C` it stepped over — otherwise the resolver cannot
+    // see the file and this allow silently becomes a fail-closed deny.
+    expect(
+      classifyWith("git --namespace ns -C /repo checkout sub/file.md", r).deny,
+    ).toBe(false);
+    // Anti-vacuity: at HEAD `451a07e` the walk stopped at `ns` and the whole
+    // call allowed, so the assertion above passed for the wrong reason. Drop
+    // the `-C` and the same resolver cannot see the file, which only DENIES if
+    // the walk really did reach `checkout`.
+    expect(
+      classifyWith("git --namespace ns checkout sub/file.md", r).deny,
+    ).toBe(true);
+  });
+
+  it("stops at the real subcommand when no unrecognised option precedes it", () => {
+    // The walk must not wander into the subcommand's OWN arguments, where the
+    // same spellings mean something else (`git commit -C HEAD~1` reuses a
+    // message; `git diff switch` is a pathspec).
+    for (const cmd of [
+      "git diff",
+      "git diff switch",
+      "git commit -m switch",
+      "git log --oneline switch",
+      "git -C d commit -C HEAD~1",
+      "git show switch",
+    ]) {
+      expect(deny(cmd).deny, cmd).toBe(false);
+    }
+  });
+
+  it("is not a blanket give-up on every invocation carrying an unknown option", () => {
+    for (const cmd of [
+      "git --namespace foo -C build status",
+      "git --namespace foo status",
+      "git --attr-source HEAD diff",
+      "git --namespace foo -C build commit -m x",
+    ]) {
+      expect(deny(cmd).deny, cmd).toBe(false);
+    }
+  });
+
+  it("states the COST as a rule with an open example set, not as a list", () => {
+    // The price of resuming: a bare word behind an unrecognised option is read
+    // as that option's value, so a NON-subcommand standing there lets the walk
+    // run on into the subcommand's own arguments. The shape is
+    // `git <unknown-option> <non-subcommand> <switch|worktree|checkout>`, and
+    // it is a RULE — these are examples of it, not the extent of it.
+    //
+    // `git --no-pager grep switch` is the one an agent could plausibly type:
+    // searching the tree for the word "switch" with the pager off. Measured, it
+    // is the only realistic everyday command in a 1143-row sweep that this
+    // change moves from allow to deny.
+    for (const cmd of [
+      "git --no-pager grep switch",
+      "git --no-pager grep checkout main",
+      "git --exec-path=/x grep switch",
+      "git --paginate grep worktree add",
+    ]) {
+      expect(deny(cmd).deny, cmd).toBe(true);
+    }
+    // The bound of the cost, from the other side: with no unrecognised option
+    // in front, the same commands are untouched.
+    for (const cmd of [
+      "git grep switch",
+      "git grep checkout main",
+      "git -C sub grep switch",
+    ]) {
+      expect(deny(cmd).deny, cmd).toBe(false);
+    }
+    // And the cost depends on what TRAILS the mis-read word, not just on the
+    // word: a `checkout` with nothing after it is a no-op the policy allows, so
+    // the same shape passes here.
+    expect(deny("git --paginate grep checkout").deny).toBe(false);
+  });
+
+  it("states the BOUND of the resumed walk rather than claiming the class closed", () => {
+    // Closed: every well-formed invocation whose unrecognised global options
+    // each take at most ONE separated value.
+    expect(deny("git --namespace ns switch main").deny).toBe(true);
+    // NOT closed and NOT claimed: a second bare word between the value and the
+    // subcommand, and an option taking two separated values. Both resolve to
+    // nothing here. Neither is a fail-open in practice — git reads the second
+    // bare word as the subcommand and refuses the command — but neither is
+    // proven, so the gap is pinned as a gap instead of being described as shut.
+    expect(deny("git --namespace foo bar -C d switch main").deny).toBe(false);
+    expect(deny("git --twoval a b switch main").deny).toBe(false);
+  });
+
+  it("keeps the valueless-unknown-option control, which already passed", () => {
+    // The row that would hide a regression in the walk itself: it denied before
+    // the change for a different reason (the walk never stopped), so it is the
+    // one that proves the greps discriminate.
+    for (const cmd of [
+      "git --no-pager switch main",
+      "git --literal-pathspecs switch main",
+      "git switch main",
+    ]) {
+      expect(deny(cmd).deny, cmd).toBe(true);
+    }
+  });
+});
+
+/**
+ * The no-new-allow property, measured rather than claimed.
+ *
+ * Both fixes rest on the same structural argument — the candidate set after the
+ * change is a superset of the one before, so each can only ADD denies. That
+ * argument was made for the mutation classifier too, and it was checked there
+ * against a generated cross-product of 181,115 commands (`260804-1344`). The
+ * generator went with the module.
+ *
+ * This corpus is deliberately not a rebuild of that instrument: it is sized to
+ * the two-edit change it measures. `helpers/git-corpus.ts` carries the
+ * cross-product and the reasoning; `fixtures/git-corpus-451a07e.json` carries
+ * one deny bit per verdict, recorded against the UNMODIFIED classifier at HEAD
+ * `451a07e` before either edit was made, so this is a real before/after and not
+ * a snapshot of the code asserting itself.
+ *
+ * The implication asserted runs in exactly one direction: a verdict that DENIED
+ * at the baseline still denies. New denies are expected — `git checkout -b f --`
+ * and `git --namespace ns switch main` are both in the corpus precisely so that
+ * the fixes show up — and the cost they carry is stated in
+ * `rules/git-branch-discipline.md` rather than pinned here.
+ */
+describe("no verdict that denied at the baseline allows after the two fixes", () => {
+  const BASE = JSON.parse(
+    readFileSync(join(HERE, "fixtures", "git-corpus-451a07e.json"), "utf8"),
+  ) as { baseline: string; rows: { cmd: string; deny: boolean[] }[] };
+
+  it("holds a corpus big enough, and denying enough, to be worth checking", () => {
+    // A fixture that emptied, or one whose baseline allowed everything, would
+    // satisfy the implication vacuously.
+    expect(BASE.rows.length).toBe(CORPUS.length);
+    expect(BASE.rows.length).toBeGreaterThan(100);
+    const denied = BASE.rows.reduce(
+      (n, r) => n + r.deny.filter(Boolean).length,
+      0,
+    );
+    expect(denied).toBeGreaterThan(100);
+  });
+
+  it("reads the same commands the fixture was generated from", () => {
+    // Reordering GLOBALS or TAILS would silently re-point every bit at a
+    // different command, and the implication would then hold about nothing.
+    expect(BASE.rows.map((r) => r.cmd)).toEqual(CORPUS);
+  });
+
+  it("still denies every baseline deny, over all four overrides, with and without a resolver", () => {
+    for (const { cmd, deny: before } of BASE.rows) {
+      const now: boolean[] = [];
+      for (const o of OVERRIDE_COMBOS) {
+        now.push(classifyGitCommand(cmd, o).deny);
+        now.push(classifyGitCommand(cmd, o, CORPUS_RESOLVER).deny);
+      }
+      for (let i = 0; i < before.length; i++) {
+        if (before[i]) {
+          expect(now[i], `newly ALLOWED: ${JSON.stringify(cmd)} [${i}]`).toBe(
+            true,
+          );
+        }
+      }
+    }
+  });
+
+  it("the corpus actually exercises both fixes (anti-vacuity from the other side)", () => {
+    // If neither fix moved a single corpus verdict, the check above would be
+    // green against a classifier that had not changed at all.
+    const moved = BASE.rows.filter(({ cmd, deny: before }) => {
+      const now = OVERRIDE_COMBOS.flatMap((o) => [
+        classifyGitCommand(cmd, o).deny,
+        classifyGitCommand(cmd, o, CORPUS_RESOLVER).deny,
+      ]);
+      return now.some((d, i) => d !== before[i]);
+    });
+    expect(moved.length).toBeGreaterThan(0);
+    // And every one of them moved in the denying direction only.
+    for (const { cmd, deny: before } of moved) {
+      const now = OVERRIDE_COMBOS.flatMap((o) => [
+        classifyGitCommand(cmd, o).deny,
+        classifyGitCommand(cmd, o, CORPUS_RESOLVER).deny,
+      ]);
+      for (let i = 0; i < before.length; i++) {
+        if (now[i] !== before[i]) {
+          expect(now[i], `${cmd} [${i}] moved toward allow`).toBe(true);
+        }
+      }
+    }
   });
 });
 

@@ -21,9 +21,12 @@
  *         everything non-git.
  *
  * The load-bearing allow-case is fusion's own revert strategy
- * (`git checkout HEAD -- <files>`), which MUST stay allowed. A `--`
- * separator is the primary, unambiguous discriminator: everything after it
- * is a pathspec, so HEAD cannot move.
+ * (`git checkout HEAD -- <files>`), which MUST stay allowed. A `--` separator
+ * is the discriminator for that case: everything after it is a pathspec.
+ * It is NOT unconditional, and reading it as unconditional is what let
+ * `git checkout -b bar --` through — a branch-creating flag is resolved by git
+ * before the separator is ever consulted. The separator settles the AMBIGUOUS
+ * form only; see `classifyCheckout` for the ordering that follows from that.
  *
  * The bare, `--`-less form `git checkout <target>` is genuinely ambiguous —
  * git resolves it in favour of a branch/ref if one exists, otherwise treats

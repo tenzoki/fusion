@@ -426,6 +426,134 @@ describe("the revert strategy is allowed, and it reverts", () => {
   );
 });
 
+/**
+ * Give a harness repository two extra branches WITHOUT moving HEAD, so a case
+ * can name a real switch target.
+ *
+ * Deliberately self-contained rather than folded into `initRepo`: the cases
+ * above depend on that helper's exact effect, and this file's discipline is
+ * that a fix adds cases instead of reshaping the ones already passing.
+ */
+function addBranches(root: string, ...names: string[]): void {
+  for (const name of names) {
+    const res = spawnSync("git", ["branch", name], {
+      cwd: root,
+      stdio: "ignore",
+      env: {
+        ...process.env,
+        GIT_CONFIG_GLOBAL: "/dev/null",
+        GIT_CONFIG_SYSTEM: "/dev/null",
+      },
+    });
+    if (res.status !== 0) {
+      throw new Error(`harness git branch ${name} failed (${String(res.status)})`);
+    }
+  }
+}
+
+/** The branch HEAD points at, or `"HEAD"` when it is detached. */
+function currentBranch(root: string): string {
+  const res = spawnSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
+    cwd: root,
+    encoding: "utf-8",
+    env: {
+      ...process.env,
+      GIT_CONFIG_GLOBAL: "/dev/null",
+      GIT_CONFIG_SYSTEM: "/dev/null",
+    },
+  });
+  if (res.status !== 0) {
+    throw new Error(`harness git rev-parse failed (${String(res.status)})`);
+  }
+  return res.stdout.trim();
+}
+
+/**
+ * The two argument forms the classifier did not know, end to end.
+ *
+ * Both are the same character of defect — a token the parser mis-read in a
+ * position where the evidence that HEAD moves is unconditional — and both were
+ * measured moving HEAD against real git 2.49.0 while the guard allowed the
+ * call:
+ *
+ *   * a trailing `--` returned ALLOW before the branch-creating flags were even
+ *     looked at
+ *     (`issues/260809-1105_o_a-trailing-separator-lifts-the-branch-deny-so-git-checkout-b-name-runs.md`);
+ *   * an unrecognised global option's separated value stood in subcommand
+ *     position, so `switch` was never reached
+ *     (`issues/260809-1106_o_the-unknown-global-option-fix-was-deleted-with-the-mutation-classifier-and-the-branch-guard-never-had-it.md`,
+ *     the same class as the closed `260804-1333` / `260804-1344` pair).
+ *
+ * Each row is asserted twice, and the second half is what makes the first mean
+ * anything: the VERDICT through the real hook, and the EFFECT in a throwaway
+ * repository. A deny asserted against a command that turns out to be a no-op
+ * proves nothing, and at HEAD `451a07e` every one of these commands both
+ * allowed and moved HEAD.
+ *
+ * The effect runs here and only here. `rules/git-branch-discipline.md` forbids
+ * reaching for the live command in this repository, and while these defects
+ * were open it would have succeeded and moved fusion's own HEAD.
+ */
+describe("the branch policy denies the forms that used to slip past it, and they really move HEAD", () => {
+  const ROWS = [
+    { issue: "260809-1105", cmd: "git checkout -b bar --", lands: "bar" },
+    { issue: "260809-1105", cmd: "git checkout -B bar --", lands: "bar" },
+    { issue: "260809-1106", cmd: "git --namespace ns switch other", lands: "other" },
+    { issue: "260809-1106", cmd: "git --attr-source HEAD switch t1", lands: "t1" },
+  ];
+
+  for (const { issue, cmd, lands } of ROWS) {
+    it(
+      `blocks (${issue}): ${cmd}`,
+      () => {
+        withProject(({ root }) => {
+          initRepo(root);
+          addBranches(root, "other", "t1");
+          const res = runBash(root, cmd);
+          expect(res.decision).toBe("block");
+          expect(res.reason ?? "").toContain("branch");
+        });
+      },
+      CASE_TIMEOUT,
+    );
+
+    for (const shell of ["bash", "zsh"] as const) {
+      it(
+        `and it moves HEAD (${shell}): ${cmd}`,
+        () => {
+          withProject(({ root }) => {
+            initRepo(root);
+            addBranches(root, "other", "t1");
+            const before = currentBranch(root);
+            spawnSync(SHELLS[shell], ["-c", cmd], { cwd: root, stdio: "ignore" });
+            const after = currentBranch(root);
+            expect(after, `${shell}: ${cmd}`).toBe(lands);
+            expect(after, `${shell}: ${cmd} did not move HEAD at all`).not.toBe(
+              before,
+            );
+          });
+        },
+        CASE_TIMEOUT,
+      );
+    }
+  }
+
+  it(
+    "and fusion's own revert spelling is still allowed alongside them",
+    () => {
+      // The reorder in `classifyCheckout` reads every argument, pathspecs
+      // included. This is the row that would catch it over-reaching into the
+      // one command the whole policy is built around.
+      withProject(({ root }) => {
+        initRepo(root);
+        const res = runBash(root, "git checkout HEAD -- rules/x.md");
+        expect(res.decision ?? "allow").not.toBe("block");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+});
+
 describe("the branch policy answers a bare `git checkout` first", () => {
   it(
     "denies `git checkout <file> <file>` on the branch policy's own reason",

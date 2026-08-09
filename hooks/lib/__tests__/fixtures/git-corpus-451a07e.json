@@ -1,0 +1,1409 @@
+{
+ "baseline": "451a07e",
+ "rows": [
+  {
+   "cmd": "git switch main",
+   "deny": [
+    true,
+    true,
+    false,
+    false,
+    true,
+    true,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git checkout -b f",
+   "deny": [
+    true,
+    true,
+    false,
+    false,
+    true,
+    true,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git checkout -b f --",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git checkout HEAD -- f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git checkout f",
+   "deny": [
+    true,
+    false,
+    false,
+    false,
+    true,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git checkout main",
+   "deny": [
+    true,
+    true,
+    false,
+    false,
+    true,
+    true,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git worktree add ../wt f",
+   "deny": [
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git worktree list",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git diff",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git commit -m x",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git status",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git restore f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git -C d switch main",
+   "deny": [
+    true,
+    true,
+    false,
+    false,
+    true,
+    true,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git -C d checkout -b f",
+   "deny": [
+    true,
+    true,
+    false,
+    false,
+    true,
+    true,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git -C d checkout -b f --",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git -C d checkout HEAD -- f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git -C d checkout f",
+   "deny": [
+    true,
+    false,
+    false,
+    false,
+    true,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git -C d checkout main",
+   "deny": [
+    true,
+    true,
+    false,
+    false,
+    true,
+    true,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git -C d worktree add ../wt f",
+   "deny": [
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git -C d worktree list",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git -C d diff",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git -C d commit -m x",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git -C d status",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git -C d restore f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git -c k=v switch main",
+   "deny": [
+    true,
+    true,
+    false,
+    false,
+    true,
+    true,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git -c k=v checkout -b f",
+   "deny": [
+    true,
+    true,
+    false,
+    false,
+    true,
+    true,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git -c k=v checkout -b f --",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git -c k=v checkout HEAD -- f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git -c k=v checkout f",
+   "deny": [
+    true,
+    false,
+    false,
+    false,
+    true,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git -c k=v checkout main",
+   "deny": [
+    true,
+    true,
+    false,
+    false,
+    true,
+    true,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git -c k=v worktree add ../wt f",
+   "deny": [
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git -c k=v worktree list",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git -c k=v diff",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git -c k=v commit -m x",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git -c k=v status",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git -c k=v restore f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --no-pager switch main",
+   "deny": [
+    true,
+    true,
+    false,
+    false,
+    true,
+    true,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --no-pager checkout -b f",
+   "deny": [
+    true,
+    true,
+    false,
+    false,
+    true,
+    true,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --no-pager checkout -b f --",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --no-pager checkout HEAD -- f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --no-pager checkout f",
+   "deny": [
+    true,
+    false,
+    false,
+    false,
+    true,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --no-pager checkout main",
+   "deny": [
+    true,
+    true,
+    false,
+    false,
+    true,
+    true,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --no-pager worktree add ../wt f",
+   "deny": [
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --no-pager worktree list",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --no-pager diff",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --no-pager commit -m x",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --no-pager status",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --no-pager restore f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --literal-pathspecs switch main",
+   "deny": [
+    true,
+    true,
+    false,
+    false,
+    true,
+    true,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --literal-pathspecs checkout -b f",
+   "deny": [
+    true,
+    true,
+    false,
+    false,
+    true,
+    true,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --literal-pathspecs checkout -b f --",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --literal-pathspecs checkout HEAD -- f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --literal-pathspecs checkout f",
+   "deny": [
+    true,
+    false,
+    false,
+    false,
+    true,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --literal-pathspecs checkout main",
+   "deny": [
+    true,
+    true,
+    false,
+    false,
+    true,
+    true,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --literal-pathspecs worktree add ../wt f",
+   "deny": [
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --literal-pathspecs worktree list",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --literal-pathspecs diff",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --literal-pathspecs commit -m x",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --literal-pathspecs status",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --literal-pathspecs restore f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --namespace ns switch main",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --namespace ns checkout -b f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --namespace ns checkout -b f --",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --namespace ns checkout HEAD -- f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --namespace ns checkout f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --namespace ns checkout main",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --namespace ns worktree add ../wt f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --namespace ns worktree list",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --namespace ns diff",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --namespace ns commit -m x",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --namespace ns status",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --namespace ns restore f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --attr-source HEAD switch main",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --attr-source HEAD checkout -b f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --attr-source HEAD checkout -b f --",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --attr-source HEAD checkout HEAD -- f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --attr-source HEAD checkout f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --attr-source HEAD checkout main",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --attr-source HEAD worktree add ../wt f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --attr-source HEAD worktree list",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --attr-source HEAD diff",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --attr-source HEAD commit -m x",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --attr-source HEAD status",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --attr-source HEAD restore f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --namespace ns -C d switch main",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --namespace ns -C d checkout -b f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --namespace ns -C d checkout -b f --",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --namespace ns -C d checkout HEAD -- f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --namespace ns -C d checkout f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --namespace ns -C d checkout main",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --namespace ns -C d worktree add ../wt f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --namespace ns -C d worktree list",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --namespace ns -C d diff",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --namespace ns -C d commit -m x",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --namespace ns -C d status",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --namespace ns -C d restore f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --no-pager -C d switch main",
+   "deny": [
+    true,
+    true,
+    false,
+    false,
+    true,
+    true,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --no-pager -C d checkout -b f",
+   "deny": [
+    true,
+    true,
+    false,
+    false,
+    true,
+    true,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --no-pager -C d checkout -b f --",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --no-pager -C d checkout HEAD -- f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --no-pager -C d checkout f",
+   "deny": [
+    true,
+    false,
+    false,
+    false,
+    true,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --no-pager -C d checkout main",
+   "deny": [
+    true,
+    true,
+    false,
+    false,
+    true,
+    true,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --no-pager -C d worktree add ../wt f",
+   "deny": [
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --no-pager -C d worktree list",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --no-pager -C d diff",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --no-pager -C d commit -m x",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --no-pager -C d status",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "cmd": "git --no-pager -C d restore f",
+   "deny": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  }
+ ]
+}
