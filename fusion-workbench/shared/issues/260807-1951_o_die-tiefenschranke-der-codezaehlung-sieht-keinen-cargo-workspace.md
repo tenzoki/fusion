@@ -102,6 +102,37 @@ Korrektur. Ob stattdessen eine größere feste Tiefe gewählt wird, ob die übli
 Zählung überhaupt in Prosa im Prompt stehen sollte statt in einem `bin/`-Helfer, ist eine
 Entwurfsfrage. Sie gehört in eine Entscheidungsakte, wenn jemand sie angeht.
 
+## Nachtrag 260809: die Breite fehlt genauso wie die Tiefe
+
+Aus einer zweiten Meldung eines konsumierenden Projekts, dessen Quellen unter `codebase/go/`
+und `codebase/viewer/` liegen: gezählt wurden 13 Dateien, vorhanden sind rund 17 500. Derselbe
+Tiefendefekt, ein zweites Mal von außen gemeldet.
+
+Beim Nachfassen kam eine zweite, davon unabhängige Lücke hinzu. Die Endungsliste `*.go`,
+`*.ts`, `*.tsx`, `*.py`, `*.js`, `*.rs`, `*.java` lässt ganze Sprachen aus. Ein Kotlin-,
+Swift-, C-, C++-, C#-, Ruby-, PHP-, Scala- oder Elixir-Projekt zählt in **jeder** Tiefe null,
+und die Einzeldatei-Komponentenformate (`.vue`, `.svelte`) fehlen mit. Tiefe und Breite sind
+getrennte Defekte mit derselben Folge: wer nur einen behebt, meldet weiter falsch.
+
+`data_files` trägt den spiegelbildlichen Fehler. Fünf Endungen unter vier festen
+Verzeichnisnamen, dafür ganz ohne Tiefenschranke. Wird nur `code_files` korrigiert,
+verschiebt sich das Verhältnis in `data_files > code_files * 2`, statt zu stimmen.
+
+**Gemessen im Plugin-Repo selbst** (260809-1725, Setup-Domänenerkennung): die Suche mit
+Tiefenschranke 2 lieferte `code_files=4`; die TypeScript-Quellen unter `hooks/lib/` und
+`hooks/lib/__tests__/` liegen drei und vier Ebenen tief. `git ls-files` zählt an derselben
+Stelle 95 Dateien und braucht dafür nicht länger (0,011s gegen 0,015s). Hier kippte kein
+Zweig, der Rückfallwert `code` stimmt ohnehin — der Defekt ist im eigenen Repo also stumm
+und fällt nur dort auf, wo die Zahlen tragen.
+
+`git ls-files` ist deshalb erwähnenswert, weil es die im Abschnitt davor offengelassene
+Ausnahmeliste (`target/`, `node_modules/`, `vendor/`) überflüssig macht: was `.gitignore`
+ausschließt, taucht gar nicht erst auf.
+
+**Die Entwurfsfrage aus dem vorigen Abschnitt ist jetzt abgelegt:**
+`shared/decisions/260809-1731_o_how-should-the-domain-heuristic-count-a-projects-source-files.md`.
+Sie hält Tiefe und Breite als gesetzt fest (Nutzerrichtung) und lässt den Mechanismus offen.
+
 ## Herkunft dieses Befunds
 
 Aus der KRK-Meldung, die eine fehlende Endung `.rs` als Ursache nannte. Die Endung ist vorhanden.
