@@ -93,3 +93,12 @@ every position bash allows it, not only after a blank.
 - [ ] A differential over the pre-fix and post-fix classifiers shows no verdict moving toward
       allow. Commit the harness this time, or state in the record why it is not worth keeping —
       the `6fae676` harness was not committed and its headline number could not be reproduced.
+
+---
+Blocked, deliberately, on `shared/decisions/260809-2310_o_should-the-branch-policy-fall-the-way-the-write-classifier-fell.md`.
+
+This is the seventh entrance to a question that is not decidable from the input the mechanism
+has. Five patches to the same classifier landed in session 260809-1725, each closing a measured
+entrance and each revealing the next. Closing this one with a sixth entrance-specific fix would
+buy the same thing the previous five bought. The decision asks whether the branch policy should
+be measured the way protected paths already are, and this record waits for it.
