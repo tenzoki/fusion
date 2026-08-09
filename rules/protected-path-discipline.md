@@ -18,7 +18,9 @@ The patterns are read relative to the **project root** — the directory holding
 
 Nothing reads your command any more, so there is nothing to phrase around. Whatever changed a protected path during your tool call is undone, whichever way it got there: `Write`, `Edit`, `MultiEdit`, `NotebookEdit`, a shell command of any shape, a path assembled at run time, `eval`, an alias, a shell function, a script the command invoked, a program nobody ever put in a table. Creating a protected file and deleting one are changes like any other and are undone the same way.
 
-That is why this rule carries no catalogue of holes. Its predecessor had to admit twenty-one documented ways past it, because it decided from a command's *text* which files the command would write, and that question is not decidable. The measurement asks whether a protected path **changed**, which is decided by comparing two fingerprints.
+That is why this rule carries no catalogue of command shapes. Its predecessor had to admit twenty-one documented ways past it, because it decided from a command's *text* which files the command would write, and that question is not decidable. The measurement asks whether a protected path **changed**, which is decided by comparing two fingerprints, so no way of spelling a command is a way around it.
+
+The catalogue it does not need is one of *phrasings*. Gaps of another kind do exist, at the seam between the fingerprint and the filesystem it is taken from, and one of them is measured and open: `shared/issues/260809-1104_*_a-symlink-in-place-of-a-protected-file-writes-through-it-and-removes-the-path-from-the-watched-set.md` records a case in which a protected path leaves the watched set and stays out of it, and names which entries of the shipped list lose their protection that way and which keep it. So the promise made at the top of this section is not total, and you should not treat it as total. Finding a further gap is a defect to file, never a route to take: point 1 of `## What to do instead` holds whether the miss turned up by accident or by looking for it.
 
 Two prices come with that, and they are stated here rather than left to be discovered:
 
