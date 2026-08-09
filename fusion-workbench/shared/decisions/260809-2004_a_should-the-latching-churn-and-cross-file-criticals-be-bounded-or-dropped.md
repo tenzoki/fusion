@@ -99,3 +99,11 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+---
+Answered: `shared/history/260809-1725-orchestrator-session.md` (Turn 1, Rebalance-free human
+gate) — user chose the recommendation, and chose it as the two-part answer the record argued
+for rather than as one of the three original options. For **churn**: drop the threshold
+comparison on the lifetime counter only. The lifetime number itself stays, because the
+orchestrator's Setup reads it. For **cross-file**: remove it outright, on the measured ground
+that nothing consumes its verdict and its reset function has never had a caller.

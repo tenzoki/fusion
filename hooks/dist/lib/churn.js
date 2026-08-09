@@ -21,8 +21,6 @@ const CHURN_FILE = "churn.json";
 const DEFAULT_THRESHOLDS = {
     changesPerSessionWarning: 5,
     changesPerSessionCritical: 10,
-    totalChangesWarning: 8,
-    totalChangesCritical: 15,
 };
 /** A fresh empty state. A function, so no caller can share the files map. */
 function emptyState() {
@@ -142,8 +140,10 @@ function updateThrashingScore(stats) {
 /**
  * Analyze churn patterns and return warnings.
  *
- * Ported from churn_heatmap.go:122-184.
- * Checks per-session and total change counts against thresholds.
+ * Ported from churn_heatmap.go:122-184, minus the total-level comparison the
+ * port brought with it — see `ChurnThresholds` for why it went. Only
+ * `changesThisSession` is compared here; `totalChanges` and `thrashingScore`
+ * are carried for their readers and steer nothing.
  */
 export function analyzeChurn(state, thresholds) {
     const t = {
@@ -154,21 +154,11 @@ export function analyzeChurn(state, thresholds) {
     const criticalFiles = new Set();
     const warningFiles = new Set();
     for (const [filePath, stats] of Object.entries(state.files)) {
-        // Session-level thresholds
         if (stats.changesThisSession >= t.changesPerSessionCritical) {
             criticalFiles.add(filePath);
         }
         else if (stats.changesThisSession >= t.changesPerSessionWarning) {
             warningFiles.add(filePath);
-        }
-        // Total-level thresholds
-        if (stats.totalChanges >= t.totalChangesCritical) {
-            criticalFiles.add(filePath);
-        }
-        else if (stats.totalChanges >= t.totalChangesWarning) {
-            if (!criticalFiles.has(filePath)) {
-                warningFiles.add(filePath);
-            }
         }
     }
     if (criticalFiles.size > 0) {
@@ -188,17 +178,6 @@ export function analyzeChurn(state, thresholds) {
         });
     }
     return warnings;
-}
-/**
- * Get the top N files by thrashing score.
- *
- * Ported from churn_heatmap.go:221-239.
- */
-export function getTopChurnFiles(state, n) {
-    return Object.entries(state.files)
-        .sort(([, a], [, b]) => b.thrashingScore - a.thrashingScore)
-        .slice(0, n)
-        .map(([path]) => path);
 }
 /**
  * Reset session-level counters.

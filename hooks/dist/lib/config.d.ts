@@ -33,10 +33,11 @@
  * to the leaf. Nothing about a declared value moved.
  *
  * The rule is deliberately not scoped to `protectedPaths`. `escalation`,
- * `churn`, `crossFile` and `decisions` carried the identical defect, invisible
- * only because the plugin file and `DEFAULTS` happen to agree on every leaf they
- * share and nothing keeps them agreeing (`260804-1633`). One walk closes all
- * five rather than five per-key rules.
+ * `churn` and `decisions` carry the identical defect, invisible only because
+ * the plugin file and `DEFAULTS` happen to agree on every leaf they share and
+ * nothing keeps them agreeing (`260804-1633`). One walk closes all four rather
+ * than four per-key rules. (A fifth, `crossFile`, was closed the same way until
+ * the ping-back tracker was removed with decision `260809-2004`.)
  *
  * ## The one key a project may not set
  *
@@ -157,12 +158,6 @@ export interface GuardSettings {
     churn: {
         changesPerSessionWarning: number;
         changesPerSessionCritical: number;
-        totalChangesWarning: number;
-        totalChangesCritical: number;
-    };
-    crossFile: {
-        pingBackWarning: number;
-        pingBackCritical: number;
     };
 }
 /** Which of the three layers a value came from. */

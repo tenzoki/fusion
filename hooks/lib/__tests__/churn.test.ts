@@ -3,7 +3,6 @@ import {
   coerceChurnState,
   recordChange,
   analyzeChurn,
-  getTopChurnFiles,
   resetSession,
 } from "../churn.js";
 import type { ChurnState } from "../churn.js";
@@ -62,27 +61,21 @@ describe("analyzeChurn", () => {
     state = freshState();
   });
 
+  const THRESHOLDS = {
+    changesPerSessionWarning: 5,
+    changesPerSessionCritical: 10,
+  };
+
   it("returns no warnings below thresholds", () => {
     recordChange(state, "pkg/main.go");
-    const warnings = analyzeChurn(state, {
-      changesPerSessionWarning: 5,
-      changesPerSessionCritical: 10,
-      totalChangesWarning: 8,
-      totalChangesCritical: 15,
-    });
-    expect(warnings).toHaveLength(0);
+    expect(analyzeChurn(state, THRESHOLDS)).toHaveLength(0);
   });
 
   it("returns warning at session warning threshold", () => {
     for (let i = 0; i < 5; i++) {
       recordChange(state, "pkg/main.go");
     }
-    const warnings = analyzeChurn(state, {
-      changesPerSessionWarning: 5,
-      changesPerSessionCritical: 10,
-      totalChangesWarning: 20,
-      totalChangesCritical: 30,
-    });
+    const warnings = analyzeChurn(state, THRESHOLDS);
     expect(warnings).toHaveLength(1);
     expect(warnings[0].level).toBe("warning");
     expect(warnings[0].files).toContain("pkg/main.go");
@@ -92,75 +85,73 @@ describe("analyzeChurn", () => {
     for (let i = 0; i < 10; i++) {
       recordChange(state, "pkg/main.go");
     }
-    const warnings = analyzeChurn(state, {
-      changesPerSessionWarning: 5,
-      changesPerSessionCritical: 10,
-      totalChangesWarning: 20,
-      totalChangesCritical: 30,
-    });
+    const warnings = analyzeChurn(state, THRESHOLDS);
     expect(warnings).toHaveLength(1);
     expect(warnings[0].level).toBe("critical");
+    expect(warnings[0].files).toContain("pkg/main.go");
   });
 
-  it("returns critical at total critical threshold", () => {
-    // Simulate accumulated changes across sessions
-    state.files["pkg/old.go"] = {
-      totalChanges: 15,
+  it("still fires the session critical with the SHIPPED thresholds and nothing passed", () => {
+    // The acceptance criterion the removal must not quietly take with it. The
+    // case above passes an explicit threshold object; this one exercises
+    // DEFAULT_THRESHOLDS, which is what `analyzeChurn` falls back to when a
+    // project declares no `churn` block at all.
+    for (let i = 0; i < 10; i++) recordChange(state, "pkg/main.go");
+    const warnings = analyzeChurn(state);
+    expect(warnings.map((w) => w.level)).toEqual(["critical"]);
+    expect(warnings[0].files).toEqual(["pkg/main.go"]);
+  });
+
+  it("a huge lifetime total with a quiet session produces NO warning", () => {
+    // Issue 260809-1101, the regression this file exists to hold. `totalChanges`
+    // is monotonic for the life of a project, so comparing it against a limit
+    // made the first file to cross it report a critical on every subsequent
+    // write to any file, for ever — 100% duty cycle over 21 days in this
+    // repository's own log. The counter stays (the orchestrator's Setup reads
+    // it); the comparison is gone.
+    state.files["hooks/lib/bash-mutation-guard.ts"] = {
+      totalChanges: 147,
+      changesThisSession: 0,
+      lastChange: new Date().toISOString(),
+      thrashingScore: 49,
+    };
+    expect(analyzeChurn(state, THRESHOLDS)).toEqual([]);
+    // And with no thresholds passed either, since the defaults are where the
+    // old lifetime pair lived.
+    expect(analyzeChurn(state)).toEqual([]);
+  });
+
+  it("a lifetime-heavy file is reported only while the current session is hot", () => {
+    // The other half of the same claim: the file above is not exempt, it is
+    // simply judged on what is happening now. One session-critical run of
+    // edits and it is reported; the reported set names it and nothing else.
+    state.files["hooks/lib/bash-mutation-guard.ts"] = {
+      totalChanges: 147,
+      changesThisSession: 10,
+      lastChange: new Date().toISOString(),
+      thrashingScore: 65,
+    };
+    state.files["docs/quiet.md"] = {
+      totalChanges: 900,
       changesThisSession: 1,
       lastChange: new Date().toISOString(),
-      thrashingScore: 5,
+      thrashingScore: 300,
     };
-    const warnings = analyzeChurn(state, {
-      changesPerSessionWarning: 5,
-      changesPerSessionCritical: 10,
-      totalChangesWarning: 8,
-      totalChangesCritical: 15,
-    });
-    expect(warnings).toHaveLength(1);
-    expect(warnings[0].level).toBe("critical");
-    expect(warnings[0].files).toContain("pkg/old.go");
+    const warnings = analyzeChurn(state, THRESHOLDS);
+    expect(warnings.map((w) => w.level)).toEqual(["critical"]);
+    expect(warnings[0].files).toEqual(["hooks/lib/bash-mutation-guard.ts"]);
   });
 
-  it("does not double-count critical files as warning", () => {
-    // File is both session-critical and total-critical — should only appear in critical
+  it("does not double-count a critical file as a warning", () => {
     state.files["pkg/hot.go"] = {
       totalChanges: 20,
       changesThisSession: 12,
       lastChange: new Date().toISOString(),
       thrashingScore: 10,
     };
-    const warnings = analyzeChurn(state, {
-      changesPerSessionWarning: 5,
-      changesPerSessionCritical: 10,
-      totalChangesWarning: 8,
-      totalChangesCritical: 15,
-    });
-    // Should have exactly 1 critical, no warning for same file
-    const criticalWarnings = warnings.filter((w) => w.level === "critical");
-    const warningWarnings = warnings.filter((w) => w.level === "warning");
-    expect(criticalWarnings).toHaveLength(1);
-    expect(warningWarnings).toHaveLength(0);
-  });
-});
-
-describe("getTopChurnFiles", () => {
-  it("returns files sorted by thrashing score", () => {
-    const state = freshState();
-    // Create files with different scores
-    for (let i = 0; i < 5; i++) recordChange(state, "pkg/hot.go");
-    for (let i = 0; i < 2; i++) recordChange(state, "pkg/warm.go");
-    recordChange(state, "pkg/cold.go");
-
-    const top = getTopChurnFiles(state, 2);
-    expect(top).toHaveLength(2);
-    expect(top[0]).toBe("pkg/hot.go"); // highest score
-  });
-
-  it("handles request for more files than exist", () => {
-    const state = freshState();
-    recordChange(state, "pkg/only.go");
-    const top = getTopChurnFiles(state, 10);
-    expect(top).toHaveLength(1);
+    const warnings = analyzeChurn(state, THRESHOLDS);
+    expect(warnings.filter((w) => w.level === "critical")).toHaveLength(1);
+    expect(warnings.filter((w) => w.level === "warning")).toHaveLength(0);
   });
 });
 

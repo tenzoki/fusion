@@ -3,7 +3,7 @@
 **Generated:** 2026-08-09 17:51
 **Domain:** code
 **Open tasks:** 10
-**Blocked:** 1 (task 9, awaiting a human decision)
+**Blocked:** 0 (task 9's decision was answered on 2026-08-09; the task is done)
 
 **Scope of this queue.** It covers exactly the ten open defect records named in the
 dispatch, all in `fusion-workbench/shared/issues/`. It is not a full workbench scan: open
@@ -373,11 +373,11 @@ flowchart TD
   "hooks/config.json", "hooks/hooks.json", "settings.json", "bin/monitor", "skills/**",
   ".claude-plugin/plugin.json"]` — no `.claude/rules/**`.
 
-### 9. Give the churn and cross-file criticals a reset boundary — decision first
+### 9. Stop the churn and cross-file criticals latching
 
 - **ID:** `I:260809-1101-latching`
 - **Source:** `fusion-workbench/shared/issues/260809-1101_o_churn-and-cross-file-criticals-latch-permanently-and-never-reset.md`
-- **Executor:** coder — **only after the decision below is answered**
+- **Executor:** coder
 - **Files:** depends on the decision. Candidate set: `hooks/lib/churn.ts:107-132` and
   `:178`, `hooks/lib/cross-file.ts:122-153`, `:169-174`, `:200-208`,
   `hooks/tracker.ts:432-448` and `:458-474`, `hooks/config.json` (the `churn` and
@@ -385,9 +385,13 @@ flowchart TD
 - **Depends on:** task 1 (same two state modules), task 7 (`hooks/tracker.ts` emit loop),
   task 8 (`hooks/config.json`) — plus an unanswered human decision, below
 - **Priority:** normal
-- **Status:** [ ] open — **blocked**
-- **Blocked on:** a decision nobody has recorded yet. No decision record exists for this;
-  the queue does not invent one. Whoever picks this up files the question first and stops.
+- **Status:** [x] done (260809-2023, coder — churn keeps `totalChanges` and loses only the
+  lifetime threshold comparison; cross-file removed outright. `npm test` green, 34 files /
+  1127 tests.)
+- **Decision:** answered on 2026-08-09 in
+  `shared/decisions/260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md`
+  — the user took the record's two-part recommendation rather than one of the three
+  original options: option 2 for churn, option 3 for cross-file.
 - **Detail:** `totalChanges` in `churn.json` and `pingBackCount` in `cross-file.json` are
   monotonic for the life of a project. `recordChange` resets the per-session counter after
   two hours but `stats.totalChanges` only ever increments, and `analyzeChurn` re-checks
@@ -411,11 +415,19 @@ flowchart TD
   the session-level ones; or remove cross-file outright. The analysis notes cross-file has
   no reader outside its own accumulation, which makes removal a smaller change than repair.
   Removing a shipped observation surface is not a call an executor makes on its own.
-- **First action for the executor:** file the decision record in `shared/decisions/` naming
-  the three options and what each costs, then stop and surface it. Do not implement one of
-  the three and record the choice afterwards.
-- **Verified open:** `resetCrossFile` still has no caller; `hooks/lib/churn.ts` and
-  `hooks/lib/cross-file.ts` are not in the diff `451a07e..fb262d8`.
+- **What landed:** the `totalChanges*` threshold pair left `hooks/lib/churn.ts`,
+  `hooks/lib/config.ts` (type, defaults, leaf rules, assembly), `hooks/config.json` and
+  `hooks/config.example.json`; the counter itself stayed, because the orchestrator's Setup
+  reads it. `hooks/lib/cross-file.ts`, its test, its emit block in `hooks/tracker.ts`, its
+  two `GuardEventType` members, its `crossFile` configuration surfaces, its
+  `WARNING_EVENT_TYPES` membership and render branches in `bin/monitor`, its
+  `README-hooks.md` row and the prose in three docs, and the accumulated
+  `.guard-state/cross-file.json` are all gone. Two dead exports went with it
+  (`resetCrossFile`, `getTopChurnFiles`).
+- **Spun off, not dropped:** the decision's measurement 7 (the Setup thrashing read ranks a
+  deleted file) has a second cause the decision did not see — the churn key is derived from
+  `process.cwd()` — and needs its own decision. Filed as
+  `shared/issues/260809-2023_o_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md`.
 
 ### 10. Drop the "cannot smuggle a branch switch" claim from `## The rule`
 
@@ -508,3 +520,7 @@ assertion in `config.test.ts` for task 8.
   restricted to the ten records named at dispatch. Eight dependencies recorded: five from
   file collisions turned into sequencing (tasks 4, 6, 7, 8, 9), three from content (task 10
   on task 6, and through it on tasks 3 and 4). One task blocked pending a decision (task 9).
+- **2026-08-09 20:23** — Task 9 unblocked and done. Its decision
+  (`260809-2004`) was answered as a two-part choice: drop the lifetime threshold comparison
+  for churn, remove cross-file outright. One follow-up issue filed (`260809-2023`) for the
+  churn map's cwd-derived keys, which the decision's measurement 7 saw only one side of.

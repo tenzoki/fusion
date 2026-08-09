@@ -77,15 +77,8 @@
   },
 
   "churn": {
+    "_comment": "Per-session change counts only. There is deliberately no lifetime threshold: totalChanges is monotonic for the life of a project, so comparing it against one made every write report a critical for ever once any file crossed it (decision 260809-2004).",
     "changesPerSessionWarning": 5,
-    "changesPerSessionCritical": 10,
-    "totalChangesWarning": 8,
-    "totalChangesCritical": 15
-  },
-
-  "crossFile": {
-    "_comment": "Cross-file ping-back detection. A 'ping-back' is an edit to a file that was previously edited and has had at least one OTHER file edited in between. Catches circular edit loops (A,B,A,B,...) that don't trip per-file churn thresholds.",
-    "pingBackWarning": 3,
-    "pingBackCritical": 5
+    "changesPerSessionCritical": 10
   }
 }

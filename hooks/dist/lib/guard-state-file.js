@@ -4,16 +4,17 @@
  *
  * ## Why this module exists
  *
- * Three state modules — `escalation.ts`, `churn.ts`, `cross-file.ts` — each
- * carried their own copy of the same twelve lines: resolve the state directory
- * from `findWorkbenchRoot()`, read a JSON file, hand the parsed value to the
- * caller, and write it back through a `.tmp` and a rename. Copies drift, and
- * this set drifted in the way that matters. `escalation.ts` was taught to COERCE
- * the parsed value after a shape-valid `escalation.json` failed the whole guard
- * open (issue `260802-2334`); the other two kept casting with `as` and threw on
- * the next field access, which discarded the protected-path halt message on the
- * same tool call (issue `260809-1101`). One defect, fixed once, in one of three
- * places.
+ * Three state modules — `escalation.ts`, `churn.ts` and the since-removed
+ * `cross-file.ts` — each carried their own copy of the same twelve lines:
+ * resolve the state directory from `findWorkbenchRoot()`, read a JSON file, hand
+ * the parsed value to the caller, and write it back through a `.tmp` and a
+ * rename. Copies drift, and this set drifted in the way that matters.
+ * `escalation.ts` was taught to COERCE the parsed value after a shape-valid
+ * `escalation.json` failed the whole guard open (issue `260802-2334`); the other
+ * two kept casting with `as` and threw on the next field access, which discarded
+ * the protected-path halt message on the same tool call (issue `260809-1101`).
+ * One defect, fixed once, in one of three places. Two modules use the seam
+ * today; the ping-back tracker left with decision `260809-2004`.
  *
  * So the seam is a parameter rather than a pattern to reproduce:
  * `loadGuardState` takes the coercion, and a state module that wants to persist
@@ -40,8 +41,8 @@
  * save that reads is exactly the shape this module already owns, so it joined
  * rather than growing a second reader next door. It keeps its own coercion and
  * wraps `loadGuardState`/`saveGuardState` with the merge. The merge does NOT
- * generalise to `churn.json` or `cross-file.json`: their lost updates cost
- * counter accuracy, where escalation's cost a raised halt.
+ * generalise to `churn.json`: its lost updates cost counter accuracy, where
+ * escalation's cost a raised halt.
  *
  * ## What is NOT routed through here, and why
  *

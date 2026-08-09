@@ -7,7 +7,7 @@
  * No-op when no fusion workbench is set up at or above the current
  * working directory (i.e. the project never ran `/fusion:setup`).
  */
-export type GuardEventType = "guard_allow" | "guard_block" | "guard_halt" | "guard_advisory" | "guard_error" | "halt_cleared" | "churn_warning" | "churn_critical" | "cross_file_warning" | "cross_file_critical" | "tracker_record";
+export type GuardEventType = "guard_allow" | "guard_block" | "guard_halt" | "guard_advisory" | "guard_error" | "halt_cleared" | "churn_warning" | "churn_critical" | "tracker_record";
 export interface GuardEvent {
     ts: string;
     event: GuardEventType;

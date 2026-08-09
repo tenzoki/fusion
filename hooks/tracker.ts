@@ -11,9 +11,8 @@
  *      paths, and it replaced a classifier that tried to predict, from a shell
  *      command's text, which files the command would write. See
  *      lib/protected-snapshot.ts.
- *   2. CHURN AND PING-BACK. Record write-tool file mutations in the churn
- *      heatmap and the cross-file ping-back state, emitting warning/critical
- *      events at the configured thresholds. Unchanged.
+ *   2. CHURN. Record write-tool file mutations in the churn heatmap, emitting
+ *      warning/critical events at the configured per-session thresholds.
  *
  * ## What a PostToolUse hook can and cannot do
  *
@@ -39,12 +38,6 @@
 
 import { resolve, relative, isAbsolute } from "node:path";
 import { loadChurn, saveChurn, recordChange, analyzeChurn } from "./lib/churn.js";
-import {
-  loadCrossFile,
-  saveCrossFile,
-  recordEdit,
-  analyzeCrossFile,
-} from "./lib/cross-file.js";
 import { loadConfig, projectDeclaredProtectedPaths } from "./lib/config.js";
 import type { GuardConfig } from "./lib/config.js";
 import { matchesAny } from "./lib/paths.js";
@@ -593,7 +586,7 @@ function measureProtectedPaths(input: HookInput): string | null {
 }
 
 /* ------------------------------------------------------------------ *
- * Churn and cross-file ping-back
+ * Churn
  * ------------------------------------------------------------------ */
 
 /**
@@ -635,8 +628,8 @@ function trackChurn(input: HookInput): void {
   }
 
   // Load config for thresholds — the same two-source resolution the guard hook
-  // does, so a project's `fusion-guard.json` sets ITS churn and cross-file
-  // thresholds and not just the plugin's.
+  // does, so a project's `fusion-guard.json` sets ITS churn thresholds and not
+  // just the plugin's.
   //
   // `config.diagnostics` is deliberately ignored here. This is PostToolUse, and
   // every tool call that reaches this line (a write tool, past the plugin-repo
@@ -668,32 +661,6 @@ function trackChurn(input: HookInput): void {
         input.tool_name,
         filePath,
         `${warning.message}: ${warning.files.join(", ")}`,
-      );
-    }
-  }
-
-  // Record cross-file ping-back state and analyze for circular edits.
-  // Distinct from per-file churn: catches A,B,A,B-style rotation that
-  // doesn't cross any single file's churn threshold.
-  const crossFile = loadCrossFile();
-  recordEdit(crossFile, filePath);
-  saveCrossFile(crossFile);
-
-  const crossFileWarnings = analyzeCrossFile(crossFile, config.crossFile);
-  for (const w of crossFileWarnings) {
-    if (w.level === "critical") {
-      emitEvent(
-        "cross_file_critical",
-        input.tool_name,
-        filePath,
-        `${w.message}: ${w.files.join(", ")}`,
-      );
-    } else if (w.level === "warning") {
-      emitEvent(
-        "cross_file_warning",
-        input.tool_name,
-        filePath,
-        `${w.message}: ${w.files.join(", ")}`,
       );
     }
   }

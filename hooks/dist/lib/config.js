@@ -33,10 +33,11 @@
  * to the leaf. Nothing about a declared value moved.
  *
  * The rule is deliberately not scoped to `protectedPaths`. `escalation`,
- * `churn`, `crossFile` and `decisions` carried the identical defect, invisible
- * only because the plugin file and `DEFAULTS` happen to agree on every leaf they
- * share and nothing keeps them agreeing (`260804-1633`). One walk closes all
- * five rather than five per-key rules.
+ * `churn` and `decisions` carry the identical defect, invisible only because
+ * the plugin file and `DEFAULTS` happen to agree on every leaf they share and
+ * nothing keeps them agreeing (`260804-1633`). One walk closes all four rather
+ * than four per-key rules. (A fifth, `crossFile`, was closed the same way until
+ * the ping-back tracker was removed with decision `260809-2004`.)
  *
  * ## The one key a project may not set
  *
@@ -189,12 +190,6 @@ const DEFAULTS = {
     churn: {
         changesPerSessionWarning: 5,
         changesPerSessionCritical: 10,
-        totalChangesWarning: 8,
-        totalChangesCritical: 15,
-    },
-    crossFile: {
-        pingBackWarning: 3,
-        pingBackCritical: 5,
     },
 };
 /**
@@ -350,12 +345,6 @@ const CONTAINER_LEAF_RULES = {
     churn: {
         changesPerSessionWarning: { check: isThreshold, expected: "a number" },
         changesPerSessionCritical: { check: isThreshold, expected: "a number" },
-        totalChangesWarning: { check: isThreshold, expected: "a number" },
-        totalChangesCritical: { check: isThreshold, expected: "a number" },
-    },
-    crossFile: {
-        pingBackWarning: { check: isThreshold, expected: "a number" },
-        pingBackCritical: { check: isThreshold, expected: "a number" },
     },
 };
 /** Top-level keys whose value is itself a leaf rather than a container. */
@@ -485,9 +474,6 @@ export function loadConfig(sources) {
         plugin.raw.escalation?.[key] ??
         DEFAULTS.escalation[key];
     const pickChurn = (key) => project.raw.churn?.[key] ?? plugin.raw.churn?.[key] ?? DEFAULTS.churn[key];
-    const pickCrossFile = (key) => project.raw.crossFile?.[key] ??
-        plugin.raw.crossFile?.[key] ??
-        DEFAULTS.crossFile[key];
     // Which layer the protected list came from, recorded before the floor makes
     // the answer unreadable off the list itself. See `GuardConfig`.
     const protectedPathsSource = project.raw.guard?.protectedPaths !== undefined
@@ -540,12 +526,6 @@ export function loadConfig(sources) {
         churn: {
             changesPerSessionWarning: pickChurn("changesPerSessionWarning"),
             changesPerSessionCritical: pickChurn("changesPerSessionCritical"),
-            totalChangesWarning: pickChurn("totalChangesWarning"),
-            totalChangesCritical: pickChurn("totalChangesCritical"),
-        },
-        crossFile: {
-            pingBackWarning: pickCrossFile("pingBackWarning"),
-            pingBackCritical: pickCrossFile("pingBackCritical"),
         },
         diagnostics,
         protectedPathsSource,

@@ -30,13 +30,6 @@
 
   "churn": {
     "changesPerSessionWarning": 5,
-    "changesPerSessionCritical": 10,
-    "totalChangesWarning": 8,
-    "totalChangesCritical": 15
-  },
-
-  "crossFile": {
-    "pingBackWarning": 3,
-    "pingBackCritical": 5
+    "changesPerSessionCritical": 10
   }
 }

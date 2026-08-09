@@ -74,3 +74,37 @@ Cross-references:
 
 **Reconciliation 260809-1651 (reconciler, domain `code`) — stays `_o_`. Untouched by the defect round.**
 The six commits `451a07e..fb262d8` touch `hooks/tracker.ts`, `hooks/lib/protected-snapshot.ts`, `hooks/lib/git-branch-guard.ts` and the new `hooks/lib/reverted-copy.ts`. `hooks/lib/config.ts`, `hooks/lib/churn.ts`, `hooks/lib/cross-file.ts` and `hooks/lib/escalation.ts` are not in the diff, so every line this record cites still reads as filed and its acceptance criteria are unmet.
+
+---
+Resolved: Both latches are gone, each by the route decision
+`260809-2004` chose for its own counter (task 9, `I:260809-1101-latching`).
+
+**Churn** keeps `totalChanges` and loses only the comparison that latched. The
+`totalChangesWarning` / `totalChangesCritical` pair left `analyzeChurn`, the
+`ChurnThresholds` type and `DEFAULT_THRESHOLDS` in `hooks/lib/churn.ts`, and left
+`GuardSettings`, `DEFAULTS`, the leaf-rule table and the `pickChurn` assembly in
+`hooks/lib/config.ts` together with the two keys in `hooks/config.json` and
+`hooks/config.example.json` — the whole set, so a project's own
+`fusion-guard.json` cannot declare a threshold nothing reads. The per-session
+level is untouched and is now the only thing that can fire; it resets, so a
+`churn_critical` means the current session again. `churn.test.ts` gained three
+cases: the shipped defaults still produce a session critical, a file at 147
+lifetime changes with a quiet session produces nothing, and the same file is
+reported again as soon as its session count is hot.
+
+**Cross-file** is removed outright: `hooks/lib/cross-file.ts` and its test, the
+emit block in `hooks/tracker.ts` that was its only consumer, the two
+`cross_file_*` members of `GuardEventType`, the `crossFile` blocks in both
+configuration files and all four of its surfaces in `hooks/lib/config.ts`, its
+membership of `WARNING_EVENT_TYPES` and its two render branches in `bin/monitor`,
+its row in the `README-hooks.md` lib table and the prose in `README-hooks.md`,
+`README.md` and `CLAUDE.md`, plus the accumulated
+`fusion-workbench/.guard-state/cross-file.json`. `resetCrossFile` and
+`CROSS_FILE_DEFAULT_THRESHOLDS` went with it. The dead `getTopChurnFiles` went
+too. `npm test` green: 34 files, 1127 tests.
+
+Measurement 7 of the decision — the Setup thrashing read ranking a deleted file
+— is NOT fixed here and was not left unmentioned: it has a second cause the
+decision did not see (the churn key is derived from `process.cwd()`, so one file
+accumulates several keys) and it needs its own decision. Filed as
+`shared/issues/260809-2023_o_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md`.

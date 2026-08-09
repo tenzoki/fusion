@@ -11,9 +11,8 @@
  *      paths, and it replaced a classifier that tried to predict, from a shell
  *      command's text, which files the command would write. See
  *      lib/protected-snapshot.ts.
- *   2. CHURN AND PING-BACK. Record write-tool file mutations in the churn
- *      heatmap and the cross-file ping-back state, emitting warning/critical
- *      events at the configured thresholds. Unchanged.
+ *   2. CHURN. Record write-tool file mutations in the churn heatmap, emitting
+ *      warning/critical events at the configured per-session thresholds.
  *
  * ## What a PostToolUse hook can and cannot do
  *

@@ -17,7 +17,7 @@ import { dirname, resolve, join } from "node:path";
 // when guard_advisory joined the panel, because an advisory is emitted once per
 // exempted write and a curation session with FUSION_ALLOW_RULES_WRITE set emits
 // them in bursts — thirty rewritten rule files would push every guard_block,
-// guard_halt, churn_critical and cross_file_critical off the panel. The fix is
+// guard_halt and churn_critical off the panel. The fix is
 // two independent caps (MAX_WARNINGS_RETURNED for the warning class,
 // MAX_ADVISORIES_RETURNED for the advisory class) merged back by timestamp, and
 // a fix nothing tests is a fix that comes back.
@@ -151,12 +151,7 @@ afterEach(() => {
   }
 });
 
-const RESCUED = new Set([
-  "guard_block",
-  "guard_halt",
-  "churn_critical",
-  "cross_file_critical",
-]);
+const RESCUED = new Set(["guard_block", "guard_halt", "churn_critical"]);
 
 describe("bin/monitor — warnings panel capacity", () => {
   it(
@@ -164,10 +159,9 @@ describe("bin/monitor — warnings panel capacity", () => {
     async () => {
       const ts = makeClock();
       const events: GuardEvent[] = [
-        // The four things the panel exists to surface — emitted FIRST, so a
+        // The three things the panel exists to surface — emitted FIRST, so a
         // single shared budget would rank them oldest and drop them.
         { ts: ts(), event: "churn_critical", tool: "Edit", file: "src/a.ts", detail: "Churn critical: 9 edits" },
-        { ts: ts(), event: "cross_file_critical", tool: "Edit", file: "src/b.ts", detail: "Cross-file critical: 11 files" },
         { ts: ts(), event: "guard_block", tool: "Bash", file: "rules/x.md", detail: "Protected path: rm -rf rules" },
         { ts: ts(), event: "guard_halt", tool: "Bash", file: "rules/x.md", detail: "Halt active — mutating Bash command blocked: rm -rf rules" },
       ];
@@ -186,11 +180,10 @@ describe("bin/monitor — warnings panel capacity", () => {
       const { warnings } = await dashboard(seedWorkbench(events));
       const kinds = warnings.map((w) => w.event);
 
-      // Every one of the four survives the burst. Under the single shared
+      // Every one of the three survives the burst. Under the single shared
       // budget this read [ ...29 advisories ] and nothing else.
       expect(kinds.filter((k) => RESCUED.has(k)).sort()).toEqual([
         "churn_critical",
-        "cross_file_critical",
         "guard_block",
         "guard_halt",
       ]);
@@ -353,7 +346,6 @@ describe("bin/monitor — the fail-open row", () => {
       const ts = makeClock();
       const events: GuardEvent[] = [
         { ts: ts(), event: "churn_critical", tool: "Edit", file: "src/a.ts", detail: "Churn critical: 9 edits" },
-        { ts: ts(), event: "cross_file_critical", tool: "Edit", file: "src/b.ts", detail: "Cross-file critical: 11 files" },
         { ts: ts(), event: "guard_block", tool: "Bash", file: "rules/x.md", detail: "Protected path: rm -rf rules" },
         { ts: ts(), event: "guard_halt", tool: "Bash", file: "rules/x.md", detail: "Halt active — mutating Bash command blocked: rm -rf rules" },
       ];
@@ -373,10 +365,9 @@ describe("bin/monitor — the fail-open row", () => {
       const kinds = warnings.map((w) => w.event);
 
       // Charged to the warning class — which is what Step 5 prescribed — this
-      // reads [ ...30 guard_error ] and NONE of the four.
+      // reads [ ...30 guard_error ] and NONE of the three.
       expect(kinds.filter((k) => RESCUED.has(k)).sort()).toEqual([
         "churn_critical",
-        "cross_file_critical",
         "guard_block",
         "guard_halt",
       ]);
@@ -444,8 +435,6 @@ describe("bin/monitor — the fail-open row", () => {
       // The whole chain is pinned, not just the new branch, so a reordering
       // that swallows one event into another's arm fails here.
       expect(level("churn_critical")).toEqual({ levelClass: "critical", levelLabel: "Critical" });
-      expect(level("cross_file_critical")).toEqual({ levelClass: "critical", levelLabel: "Critical" });
-      expect(level("cross_file_warning")).toEqual({ levelClass: "warning", levelLabel: "Cross-file" });
       expect(level("guard_block")).toEqual({ levelClass: "block", levelLabel: "Blocked" });
       expect(level("guard_halt")).toEqual({ levelClass: "halt", levelLabel: "Halt" });
       expect(level("guard_advisory")).toEqual({ levelClass: "advisory", levelLabel: "Advisory" });

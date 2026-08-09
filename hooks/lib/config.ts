@@ -33,10 +33,11 @@
  * to the leaf. Nothing about a declared value moved.
  *
  * The rule is deliberately not scoped to `protectedPaths`. `escalation`,
- * `churn`, `crossFile` and `decisions` carried the identical defect, invisible
- * only because the plugin file and `DEFAULTS` happen to agree on every leaf they
- * share and nothing keeps them agreeing (`260804-1633`). One walk closes all
- * five rather than five per-key rules.
+ * `churn` and `decisions` carry the identical defect, invisible only because
+ * the plugin file and `DEFAULTS` happen to agree on every leaf they share and
+ * nothing keeps them agreeing (`260804-1633`). One walk closes all four rather
+ * than four per-key rules. (A fifth, `crossFile`, was closed the same way until
+ * the ping-back tracker was removed with decision `260809-2004`.)
  *
  * ## The one key a project may not set
  *
@@ -191,12 +192,6 @@ export interface GuardSettings {
   churn: {
     changesPerSessionWarning: number;
     changesPerSessionCritical: number;
-    totalChangesWarning: number;
-    totalChangesCritical: number;
-  };
-  crossFile: {
-    pingBackWarning: number;
-    pingBackCritical: number;
   };
 }
 
@@ -274,7 +269,6 @@ interface RawConfig {
   decisions?: Decision[];
   escalation?: Partial<GuardSettings["escalation"]>;
   churn?: Partial<GuardSettings["churn"]>;
-  crossFile?: Partial<GuardSettings["crossFile"]>;
 }
 
 const DEFAULTS: GuardSettings = {
@@ -292,12 +286,6 @@ const DEFAULTS: GuardSettings = {
   churn: {
     changesPerSessionWarning: 5,
     changesPerSessionCritical: 10,
-    totalChangesWarning: 8,
-    totalChangesCritical: 15,
-  },
-  crossFile: {
-    pingBackWarning: 3,
-    pingBackCritical: 5,
   },
 };
 
@@ -502,12 +490,6 @@ const CONTAINER_LEAF_RULES: Record<string, Record<string, LeafRule>> = {
   churn: {
     changesPerSessionWarning: { check: isThreshold, expected: "a number" },
     changesPerSessionCritical: { check: isThreshold, expected: "a number" },
-    totalChangesWarning: { check: isThreshold, expected: "a number" },
-    totalChangesCritical: { check: isThreshold, expected: "a number" },
-  },
-  crossFile: {
-    pingBackWarning: { check: isThreshold, expected: "a number" },
-    pingBackCritical: { check: isThreshold, expected: "a number" },
   },
 };
 
@@ -669,13 +651,6 @@ export function loadConfig(sources?: ConfigSources): GuardConfig {
   ): GuardSettings["churn"][K] =>
     project.raw.churn?.[key] ?? plugin.raw.churn?.[key] ?? DEFAULTS.churn[key];
 
-  const pickCrossFile = <K extends keyof GuardSettings["crossFile"]>(
-    key: K,
-  ): GuardSettings["crossFile"][K] =>
-    project.raw.crossFile?.[key] ??
-    plugin.raw.crossFile?.[key] ??
-    DEFAULTS.crossFile[key];
-
   // Which layer the protected list came from, recorded before the floor makes
   // the answer unreadable off the list itself. See `GuardConfig`.
   const protectedPathsSource: ConfigLayer =
@@ -734,12 +709,6 @@ export function loadConfig(sources?: ConfigSources): GuardConfig {
     churn: {
       changesPerSessionWarning: pickChurn("changesPerSessionWarning"),
       changesPerSessionCritical: pickChurn("changesPerSessionCritical"),
-      totalChangesWarning: pickChurn("totalChangesWarning"),
-      totalChangesCritical: pickChurn("totalChangesCritical"),
-    },
-    crossFile: {
-      pingBackWarning: pickCrossFile("pingBackWarning"),
-      pingBackCritical: pickCrossFile("pingBackCritical"),
     },
     diagnostics,
     protectedPathsSource,

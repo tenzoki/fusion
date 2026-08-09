@@ -109,9 +109,9 @@ export declare function loadEscalation(): EscalationState;
  * NOT preserved — `consecutiveBlocks` and `lastBlockTimestamp`, which are
  * last-writer-wins. A lost increment costs counter accuracy: the threshold halt
  * arrives one block later than it might have. That is the same trade the
- * counters in `churn.ts` and `cross-file.ts` make with the same shape, and it
- * is left alone for the same reason — the boundary the guard actually enforces
- * is the outright halt above, not the count that approaches one.
+ * counters in `churn.ts` make with the same shape, and it is left alone for the
+ * same reason — the boundary the guard actually enforces is the outright halt
+ * above, not the count that approaches one.
  *
  * ## The window this shrinks rather than closes
  *

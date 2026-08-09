@@ -52,19 +52,34 @@ export interface ChurnWarning {
   recommendation: string;
 }
 
-/** Thresholds for churn analysis, loaded from config. */
+/**
+ * Thresholds for churn analysis, loaded from config.
+ *
+ * SESSION-LEVEL ONLY, and that is the whole design. `totalChanges` is still
+ * counted and still persisted — the orchestrator's Setup reads it — but it is
+ * compared against nothing. It used to have a `totalChangesWarning` /
+ * `totalChangesCritical` pair, and because the counter is monotonic for the life
+ * of a project, the first file to cross the critical line made `analyzeChurn`
+ * return a critical on EVERY subsequent write to ANY file, for ever. Measured in
+ * this repository's own log: a 100% duty cycle sustained over 21 days, 3,064 of
+ * 15,248 event lines, and a 30-row dashboard panel spending all thirty slots on
+ * four latched rows while real blocks and halts were evicted (issue
+ * `260809-1101`, decision `260809-2004`).
+ *
+ * The session level does not latch: `recordChange` resets it after
+ * `SESSION_MAX_AGE_MS`, so a `churn_critical` now means "this file is being
+ * rewritten right now", which is the question the level was for. A lifetime
+ * alarm can come back if it is wanted, but as a rate or a window rather than as
+ * a comparison against a number that only ever grows.
+ */
 export interface ChurnThresholds {
   changesPerSessionWarning: number;
   changesPerSessionCritical: number;
-  totalChangesWarning: number;
-  totalChangesCritical: number;
 }
 
 const DEFAULT_THRESHOLDS: ChurnThresholds = {
   changesPerSessionWarning: 5,
   changesPerSessionCritical: 10,
-  totalChangesWarning: 8,
-  totalChangesCritical: 15,
 };
 
 /** A fresh empty state. A function, so no caller can share the files map. */
@@ -197,8 +212,10 @@ function updateThrashingScore(stats: FileChurnStats): void {
 /**
  * Analyze churn patterns and return warnings.
  *
- * Ported from churn_heatmap.go:122-184.
- * Checks per-session and total change counts against thresholds.
+ * Ported from churn_heatmap.go:122-184, minus the total-level comparison the
+ * port brought with it — see `ChurnThresholds` for why it went. Only
+ * `changesThisSession` is compared here; `totalChanges` and `thrashingScore`
+ * are carried for their readers and steer nothing.
  */
 export function analyzeChurn(
   state: ChurnState,
@@ -214,20 +231,10 @@ export function analyzeChurn(
   const warningFiles = new Set<string>();
 
   for (const [filePath, stats] of Object.entries(state.files)) {
-    // Session-level thresholds
     if (stats.changesThisSession >= t.changesPerSessionCritical) {
       criticalFiles.add(filePath);
     } else if (stats.changesThisSession >= t.changesPerSessionWarning) {
       warningFiles.add(filePath);
-    }
-
-    // Total-level thresholds
-    if (stats.totalChanges >= t.totalChangesCritical) {
-      criticalFiles.add(filePath);
-    } else if (stats.totalChanges >= t.totalChangesWarning) {
-      if (!criticalFiles.has(filePath)) {
-        warningFiles.add(filePath);
-      }
     }
   }
 
@@ -252,18 +259,6 @@ export function analyzeChurn(
   }
 
   return warnings;
-}
-
-/**
- * Get the top N files by thrashing score.
- *
- * Ported from churn_heatmap.go:221-239.
- */
-export function getTopChurnFiles(state: ChurnState, n: number): string[] {
-  return Object.entries(state.files)
-    .sort(([, a], [, b]) => b.thrashingScore - a.thrashingScore)
-    .slice(0, n)
-    .map(([path]) => path);
 }
 
 /**

@@ -150,10 +150,7 @@ const DEFAULTS_BEFORE_STEP_6 = {
   churn: {
     changesPerSessionWarning: 5,
     changesPerSessionCritical: 10,
-    totalChangesWarning: 8,
-    totalChangesCritical: 15,
   },
-  crossFile: { pingBackWarning: 3, pingBackCritical: 5 },
 };
 
 /** `loadConfig` as it behaved before step 6, for one source. */
@@ -186,16 +183,6 @@ function loadConfigAsOfStep5(path: string): object {
       changesPerSessionCritical:
         raw.churn?.changesPerSessionCritical ??
         D.churn.changesPerSessionCritical,
-      totalChangesWarning:
-        raw.churn?.totalChangesWarning ?? D.churn.totalChangesWarning,
-      totalChangesCritical:
-        raw.churn?.totalChangesCritical ?? D.churn.totalChangesCritical,
-    },
-    crossFile: {
-      pingBackWarning:
-        raw.crossFile?.pingBackWarning ?? D.crossFile.pingBackWarning,
-      pingBackCritical:
-        raw.crossFile?.pingBackCritical ?? D.crossFile.pingBackCritical,
     },
   };
 }
@@ -368,7 +355,7 @@ describe("merge — per leaf: project, then plugin, then DEFAULTS", () => {
     expect(guard.categorySensitivity).toEqual({ onto: "high" });
   });
 
-  it("walks the same way through escalation, churn, crossFile and decisions", () => {
+  it("walks the same way through escalation, churn and decisions", () => {
     // Issue 260804-1633: the same omission defect, latent in four more keys and
     // invisible only because `hooks/config.json` and DEFAULTS happen to agree
     // on every leaf they share. The plugin layer below deliberately disagrees
@@ -376,7 +363,6 @@ describe("merge — per leaf: project, then plugin, then DEFAULTS", () => {
     const root = projectWith({
       escalation: { blocksBeforeHalt: 7 },
       churn: { changesPerSessionWarning: 1 },
-      crossFile: { pingBackWarning: 1 },
     });
 
     const config = loadConfig({
@@ -386,10 +372,7 @@ describe("merge — per leaf: project, then plugin, then DEFAULTS", () => {
         churn: {
           changesPerSessionWarning: 91,
           changesPerSessionCritical: 92,
-          totalChangesWarning: 93,
-          totalChangesCritical: 94,
         },
-        crossFile: { pingBackWarning: 95, pingBackCritical: 96 },
       }),
       projectRoot: root,
     });
@@ -397,13 +380,9 @@ describe("merge — per leaf: project, then plugin, then DEFAULTS", () => {
     // Declared: the project's.
     expect(config.escalation.blocksBeforeHalt).toBe(7);
     expect(config.churn.changesPerSessionWarning).toBe(1);
-    expect(config.crossFile.pingBackWarning).toBe(1);
     // Omitted, inside an object the project DID declare: the plugin's, not
-    // DEFAULTS' 10 / 8 / 15 / 5.
+    // DEFAULTS' 10.
     expect(config.churn.changesPerSessionCritical).toBe(92);
-    expect(config.churn.totalChangesWarning).toBe(93);
-    expect(config.churn.totalChangesCritical).toBe(94);
-    expect(config.crossFile.pingBackCritical).toBe(96);
     // A whole top-level key the project never mentioned.
     expect(config.decisions).toEqual([
       { id: "D-1", category: "onto", statement: "…" },
@@ -417,8 +396,7 @@ describe("merge — per leaf: project, then plugin, then DEFAULTS", () => {
     });
 
     expect(config.escalation.blocksBeforeHalt).toBe(3);
-    expect(config.churn.totalChangesCritical).toBe(15);
-    expect(config.crossFile.pingBackCritical).toBe(5);
+    expect(config.churn.changesPerSessionCritical).toBe(10);
     expect(config.decisions).toEqual([]);
   });
 
@@ -1341,7 +1319,7 @@ describe("the seeded template declares inheritance and lists nothing", () => {
     // Each key below is deliberately DISTINCT from DEFAULTS, so "the template
     // declared this key" and "the template stayed silent" have different
     // answers for all five. Against the shipped config alone they would not:
-    // its escalation, churn and crossFile all equal DEFAULTS, so a template
+    // its escalation and churn both equal DEFAULTS, so a template
     // that restated them would pass the case above unnoticed.
     const pluginConfigPath = pluginConfig({
       guard: {
@@ -1356,10 +1334,7 @@ describe("the seeded template declares inheritance and lists nothing", () => {
       churn: {
         changesPerSessionWarning: 91,
         changesPerSessionCritical: 92,
-        totalChangesWarning: 93,
-        totalChangesCritical: 94,
       },
-      crossFile: { pingBackWarning: 95, pingBackCritical: 96 },
     });
 
     const root = projectSeededWithTemplate();

@@ -28,8 +28,6 @@ export type GuardEventType =
   | "halt_cleared"
   | "churn_warning"
   | "churn_critical"
-  | "cross_file_warning"
-  | "cross_file_critical"
   | "tracker_record";
 
 export interface GuardEvent {

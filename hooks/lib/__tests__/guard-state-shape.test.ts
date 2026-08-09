@@ -1,6 +1,7 @@
 /**
- * A shape-valid `churn.json` or `cross-file.json` used to swallow the
- * protected-path halt message.
+ * A shape-valid `churn.json` used to swallow the protected-path halt message.
+ * (`cross-file.json` carried the identical defect and the identical coverage
+ * here until the ping-back tracker was removed with decision `260809-2004`.)
  *
  * ## The mechanism, in the order it runs
  *
@@ -11,7 +12,7 @@
  * a valid JSON value of the wrong shape (`{}` is enough) passed that catch and
  * threw on the next field access, inside the churn half. The throw reached the
  * top-level handler, which calls `respond()` with NO argument, so the reply went
- * out empty.
+ * out empty. Both state loads: `churn.json` is the one that survives.
  *
  * What that costs is precise. The revert and the halt had already landed and
  * persisted; the sentence naming the changed file and the command that clears
@@ -34,8 +35,8 @@
  *
  * `runTracker` throws when the tracker prints `[tracker] Error:`, which is the
  * fail-open path this defect took, so a regression fails here loudly. On top of
- * that each case asserts the sentence itself reached stdout, and the last two
- * assert that a well-formed state file is still carried forward — a coercion
+ * that each case asserts the sentence itself reached stdout, and the last case
+ * asserts that a well-formed state file is still carried forward — a coercion
  * that emptied everything would satisfy all the malformed rows while silently
  * resetting a project's counters on load.
  */
@@ -52,7 +53,6 @@ import {
 } from "./helpers/guard-harness.js";
 
 const CHURN_FILE = "fusion-workbench/.guard-state/churn.json";
-const CROSS_FILE = "fusion-workbench/.guard-state/cross-file.json";
 
 /** The unprotected file the tool call names. */
 const PAYLOAD = "notes.txt";
@@ -125,27 +125,9 @@ describe("a malformed churn.json no longer swallows the halt message", () => {
   }
 });
 
-describe("a malformed cross-file.json no longer swallows the halt message", () => {
-  for (const [name, content] of MALFORMED_ROWS) {
-    it(
-      `reports the protected-path halt with cross-file.json = ${name}`,
-      () => {
-        withProject(
-          ({ root }) => {
-            expectTheHaltSentence(editWhileARuleFileChanges(root).context);
-            expect(readEscalation(root)?.haltActive).toBe(true);
-          },
-          { files: { [CROSS_FILE]: content } },
-        );
-      },
-      CASE_TIMEOUT,
-    );
-  }
-});
-
-describe("both state files malformed at once", () => {
+describe("the malformed file is repaired, not just survived", () => {
   it(
-    "still reports the halt, and repairs both files instead of failing again",
+    "still reports the halt, and repairs the file instead of failing again",
     () => {
       withProject(
         ({ root }) => {
@@ -153,22 +135,18 @@ describe("both state files malformed at once", () => {
 
           // The second amplifier in the issue: nothing repaired the file,
           // because the save sits after the throw, so every later tool call in
-          // the project took the same path until a human deleted it. Both files
-          // now come back as states the next load can read.
+          // the project took the same path until a human deleted it. It now
+          // comes back as a state the next load can read.
           const churn = readState(root, CHURN_FILE);
           expect(churn?.files).toMatchObject({ [PAYLOAD]: expect.anything() });
           expect(typeof churn?.sessionStart).toBe("string");
-
-          const crossFile = readState(root, CROSS_FILE);
-          expect(crossFile?.files).toMatchObject({ [PAYLOAD]: expect.anything() });
-          expect(crossFile?.lastEditFile).toBe(PAYLOAD);
 
           // And nothing took the fail-open path on the way. `runTracker` throws
           // on the stderr line; this asserts the event the handler emits, which
           // is what a reader of the log would have seen.
           expect(readEvents(root).map((e) => e.event)).not.toContain("guard_error");
         },
-        { files: { [CHURN_FILE]: "{}", [CROSS_FILE]: "{}" } },
+        { files: { [CHURN_FILE]: "{}" } },
       );
     },
     CASE_TIMEOUT,
@@ -177,7 +155,7 @@ describe("both state files malformed at once", () => {
   it(
     "records the churn of an ordinary write with no protected path involved",
     () => {
-      // The same malformed files without the halt path, so the repair is shown
+      // The same malformed file without the halt path, so the repair is shown
       // to be the load's doing and not something the measurement arranged.
       withProject(
         ({ root }) => {
@@ -195,7 +173,7 @@ describe("both state files malformed at once", () => {
           // assertion is on the flag rather than on the file's absence.
           expect(readEscalation(root)?.haltActive).toBe(false);
         },
-        { files: { [CHURN_FILE]: "{}", [CROSS_FILE]: "{}" } },
+        { files: { [CHURN_FILE]: "{}" } },
       );
     },
     CASE_TIMEOUT,
@@ -232,45 +210,6 @@ describe("a well-formed state file is carried forward, not emptied", () => {
                 },
               },
               sessionStart: new Date().toISOString(),
-            }),
-          },
-        },
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "keeps the cross-file history, so a return visit still counts as one",
-    () => {
-      withProject(
-        ({ root }) => {
-          runToolCall(
-            root,
-            "Edit",
-            { file_path: resolve(root, PAYLOAD) },
-            () => writeFileSync(resolve(root, PAYLOAD), "edited\n", "utf-8"),
-          );
-          const files = readState(root, CROSS_FILE)?.files as Record<
-            string,
-            { pingBackCount: number }
-          >;
-          // The seeded state says notes.txt was edited before and something else
-          // was edited last, which is what makes this edit a return visit.
-          expect(files[PAYLOAD].pingBackCount).toBe(1);
-        },
-        {
-          files: {
-            [CROSS_FILE]: JSON.stringify({
-              files: {
-                [PAYLOAD]: {
-                  pingBackCount: 0,
-                  totalEdits: 1,
-                  lastEditTimestamp: "2026-08-09T10:00:00.000Z",
-                },
-              },
-              lastEditFile: "build/out.js",
-              lastEditTimestamp: "2026-08-09T10:00:00.000Z",
             }),
           },
         },
