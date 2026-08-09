@@ -19,9 +19,12 @@ import { describe, expect, it } from "vitest";
 import { execFileSync } from "node:child_process";
 import {
   existsSync,
+  lstatSync,
   mkdirSync,
   readFileSync,
+  readlinkSync,
   rmSync,
+  symlinkSync,
   writeFileSync,
 } from "node:fs";
 import { resolve } from "node:path";
@@ -61,6 +64,28 @@ function git(root: string, ...args: string[]): void {
 /** The context sentence the tracker handed back to the model, or "". */
 function context(post: { hookSpecificOutput?: { additionalContext?: string } }): string {
   return post.hookSpecificOutput?.additionalContext ?? "";
+}
+
+/** Is this path a symbolic link — asked of the path, never of its target. */
+function isLink(root: string, rel: string): boolean {
+  try {
+    return lstatSync(resolve(root, rel)).isSymbolicLink();
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Replace `rel` with a symbolic link to `targetRel`, the way one `ln -s` does.
+ *
+ * `rmSync` first, because `symlinkSync` refuses an occupied name — which is
+ * also why the attack is two operations rather than one, and why it fits inside
+ * a single tool call all the same.
+ */
+function linkOver(root: string, rel: string, targetRel: string): void {
+  const abs = resolve(root, rel);
+  rmSync(abs, { recursive: true, force: true });
+  symlinkSync(resolve(root, targetRel), abs);
 }
 
 describe("the measurement restores what a tool call changed", () => {
@@ -685,6 +710,243 @@ describe("the rules-write exemption reaches the measurement", () => {
           expect(readEscalation(project.root)?.haltActive).toBe(true);
         },
         { git: true },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+/**
+ * `260809-1104` (Critical) and `260809-1231`, the two halves of one question.
+ *
+ * The measured defect: replacing a glob-protected file with a symbolic link did
+ * three things at once, and the guard reported the first as a success while
+ * seeing neither of the others. It wrote the protected file's previous bytes
+ * THROUGH the link into an arbitrary file; it left the protected path a
+ * symlink while saying it had been restored; and from the next tool call
+ * onward the path was gone from the watched set entirely, so its content could
+ * be rewritten with nothing measured. `260809-1231` is the same primitive one
+ * component further up — a symlinked PARENT directory, which `O_NOFOLLOW` on
+ * the final component reaches by definition not at all.
+ *
+ * ## Anti-vacuity
+ *
+ * Every case below asserts that the victim — the file or directory the link
+ * points at — is UNCHANGED. At `451a07e` each victim carries the protected
+ * file's bytes after the call, so none of these can pass by accident, and none
+ * of them passes at all.
+ */
+describe("a symbolic link does not carry a protected path out of the set", () => {
+  const VICTIM = "IMPORTANT UNRELATED FILE\n";
+  const VICTIM_IN_DIR = "IMPORTANT FILE IN AN UNRELATED DIRECTORY\n";
+
+  it(
+    "restores a glob-protected file replaced by a link, without writing the target",
+    () => {
+      withProject(
+        (project) => {
+          const { post } = runToolCall(
+            project.root,
+            "Bash",
+            { command: "true" },
+            () => linkOver(project.root, "rules/x.md", "victim/target.txt"),
+          );
+
+          // The protected path is a regular file again, carrying what it did.
+          expect(isLink(project.root, "rules/x.md")).toBe(false);
+          expect(read(project.root, "rules/x.md")).toBe("# a rule\n");
+
+          // And the guard's own remediation did not become the write primitive.
+          expect(read(project.root, "victim/target.txt")).toBe(VICTIM);
+
+          expect(readEscalation(project.root)?.haltActive).toBe(true);
+          expect(context(post)).toContain("rules/x.md");
+          expect(context(post)).toContain("has been restored");
+          expect(context(post)).not.toContain("could NOT");
+        },
+        { files: { "victim/target.txt": VICTIM } },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "keeps that path in the watched set on the FOLLOWING tool call",
+    () => {
+      // The consequence `260809-1104` calls the one that matters most. A
+      // protection list that a single `ln -s` removes a path from is not a
+      // protection list for that path, and only a second call can show it.
+      withProject(
+        (project) => {
+          runToolCall(project.root, "Bash", { command: "true" }, () =>
+            linkOver(project.root, "rules/x.md", "victim/target.txt"),
+          );
+
+          const { post } = runToolCall(
+            project.root,
+            "Bash",
+            { command: "true" },
+            () => put(project.root, "rules/x.md", "# ATTACKER CONTENT\n"),
+          );
+
+          expect(read(project.root, "rules/x.md")).toBe("# a rule\n");
+          expect(read(project.root, "victim/target.txt")).toBe(VICTIM);
+          expect(context(post)).toContain("rules/x.md");
+        },
+        { files: { "victim/target.txt": VICTIM } },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "does the same for a literal, wildcard-free protected entry",
+    () => {
+      // `literalPaths` watches these whether or not enumeration finds them, so
+      // the path never left the set — but `fingerprint` and `restore` followed
+      // the link all the same, which is the half of the defect that survives
+      // for literal entries. `settings.json` rather than `fusion-guard.json`
+      // deliberately: replacing the configuration file with a link also changes
+      // what the PostToolUse loader reads, which would put two mechanisms in
+      // one case.
+      withProject(
+        (project) => {
+          const { post } = runToolCall(
+            project.root,
+            "Bash",
+            { command: "true" },
+            () => linkOver(project.root, "settings.json", "victim/target.txt"),
+          );
+
+          expect(isLink(project.root, "settings.json")).toBe(false);
+          expect(read(project.root, "settings.json")).toBe('{"seeded":true}\n');
+          expect(read(project.root, "victim/target.txt")).toBe(VICTIM);
+          expect(readEscalation(project.root)?.haltActive).toBe(true);
+          expect(context(post)).toContain("settings.json");
+
+          // And it is still measured on the next call, as it was before.
+          const second = runToolCall(
+            project.root,
+            "Bash",
+            { command: "true" },
+            () => put(project.root, "settings.json", '{"attacker":true}\n'),
+          );
+          expect(read(project.root, "settings.json")).toBe('{"seeded":true}\n');
+          expect(context(second.post)).toContain("settings.json");
+        },
+        {
+          files: {
+            "settings.json": '{"seeded":true}\n',
+            "victim/target.txt": VICTIM,
+          },
+        },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "refuses the restore when the PARENT directory became a link, and says so",
+    () => {
+      // `260809-1231`. `mkdirSync(…, {recursive: true})` succeeds on an
+      // existing symlinked directory and `writeFileSync` then resolves it, so
+      // the final-component fix reaches none of this. Refusing is the only
+      // outcome that cannot be taken back: the change stays measured and
+      // halted, and the model is told it is still on disk.
+      withProject(
+        (project) => {
+          const { post } = runToolCall(
+            project.root,
+            "Bash",
+            { command: "true" },
+            () => linkOver(project.root, "rules/sub", "victim/dir"),
+          );
+
+          expect(read(project.root, "victim/dir/deep.md")).toBe(VICTIM_IN_DIR);
+          expect(context(post)).toContain("rules/sub/deep.md");
+          expect(context(post)).toContain("could NOT be restored");
+          expect(context(post)).toContain("still on disk");
+          expect(readEscalation(project.root)?.haltActive).toBe(true);
+        },
+        {
+          files: {
+            "rules/sub/deep.md": "# deep\n",
+            "victim/dir/deep.md": VICTIM_IN_DIR,
+          },
+        },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "restores a path that WAS a link as a link to its original target",
+    () => {
+      // The other direction, and the reason the fingerprint carries the link
+      // rather than merely rejecting it. A project whose rule file legitimately
+      // is a symlink must get its link back — flattening it into a copy would
+      // be the same silent loss of the human's arrangement that this guard
+      // exists to prevent.
+      withProject(
+        (project) => {
+          const target = resolve(project.root, "shared/target.md");
+          symlinkSync(target, resolve(project.root, "rules/linked.md"));
+
+          const { post } = runToolCall(
+            project.root,
+            "Bash",
+            { command: "true" },
+            () => {
+              rmSync(resolve(project.root, "rules/linked.md"));
+              put(project.root, "rules/linked.md", "# a regular file now\n");
+            },
+          );
+
+          expect(isLink(project.root, "rules/linked.md")).toBe(true);
+          expect(readlinkSync(resolve(project.root, "rules/linked.md"))).toBe(
+            target,
+          );
+          // The target is what it was: the restore neither wrote through the
+          // link nor copied the regular file into it.
+          expect(read(project.root, "shared/target.md")).toBe(
+            "# the link target\n",
+          );
+          expect(readEscalation(project.root)?.haltActive).toBe(true);
+          expect(context(post)).toContain("rules/linked.md");
+        },
+        { files: { "shared/target.md": "# the link target\n" } },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "still does not descend into a symlinked DIRECTORY inside a protected tree",
+    () => {
+      // Unchanged, and deliberately so. Following a symlinked directory invites
+      // a cycle and a walk that never returns, so what lies at the far end is
+      // not watched. That is a stated residual rather than the defect above:
+      // the defect was that the LINK ITSELF left the set and the restore wrote
+      // through it, and both of those are closed while this stays true.
+      withProject(
+        (project) => {
+          symlinkSync(
+            resolve(project.root, "outside"),
+            resolve(project.root, "rules/linkdir"),
+          );
+
+          const { post } = runToolCall(
+            project.root,
+            "Bash",
+            { command: "true" },
+            () => put(project.root, "outside/inside.md", "# changed\n"),
+          );
+
+          expect(read(project.root, "outside/inside.md")).toBe("# changed\n");
+          expect(context(post)).toBe("");
+          expect(readEscalation(project.root)?.haltActive ?? false).toBe(false);
+        },
+        { files: { "outside/inside.md": "# outside the tree\n" } },
       );
     },
     CASE_TIMEOUT,

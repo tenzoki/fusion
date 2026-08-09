@@ -35,13 +35,22 @@
  * The `HEAD` restore was filed as a defect while this module was being written
  * and closed by carrying the content instead.
  *
- * ## Non-existence is a value, not a gap
+ * ## Non-existence is a value, not a gap — and neither is being a link
  *
  * `ABSENT` is a fingerprint like any other. Without it, creating a protected
  * file and deleting one would both read as "no entry on one side" and the diff
  * would have to guess which. With it, all three changes — created, modified,
  * deleted — fall out of one comparison of two strings, and the case split below
  * is disjoint and complete by construction rather than by care.
+ *
+ * `LINK_PREFIX` is the same move made a second time. A path that is a symbolic
+ * link used to be fingerprinted by whatever it POINTED AT — an object the
+ * project never protected — so a regular file replaced by a link read as
+ * deleted, or as unchanged when the target's bytes happened to match, and the
+ * restore then wrote the protected content into that target. Giving the link a
+ * value of its own kind keeps the whole mechanism answering one question about
+ * one object: not "what is at the end of this path", but "what IS this path".
+ * See `fingerprint` and `restore`, and issues `260809-1104` / `260809-1231`.
  *
  * ## No size threshold, and no special case for binaries
  *
@@ -81,13 +90,21 @@
  */
 
 import {
+  closeSync,
+  constants,
   existsSync,
+  lstatSync,
   mkdirSync,
+  openSync,
   readFileSync,
   readdirSync,
+  readlinkSync,
+  realpathSync,
   renameSync,
   rmSync,
   statSync,
+  symlinkSync,
+  unlinkSync,
   writeFileSync,
 } from "node:fs";
 import { dirname, resolve } from "node:path";
@@ -103,6 +120,18 @@ import { findWorkbenchRoot } from "./workbench-root.js";
  * fingerprint is the empty string and is therefore still distinct from this.
  */
 export const ABSENT = "absent:no-such-file";
+
+/**
+ * The prefix of the fingerprint of a path that IS a symbolic link. What follows
+ * it is the link's target, verbatim as `readlink` reports it.
+ *
+ * A third value rather than a special case: the domain is `ABSENT`, a
+ * `symlink:` value, or base64 content, and it is disjoint by the same argument
+ * `ABSENT` already rests on — both sentinels carry a `:`, base64 cannot. So a
+ * regular file replaced by a link reads as `modified` out of the one string
+ * comparison in `diffSnapshots`, with no branch added there.
+ */
+export const LINK_PREFIX = "symlink:";
 
 /**
  * Directory names never descended into, whatever the patterns say.
@@ -131,7 +160,7 @@ export interface ProtectedSnapshot {
    * different roots is meaningless, so `diffSnapshots` refuses one.
    */
   cwd: string;
-  /** Project-relative path → base64 content, or `ABSENT`. */
+  /** Project-relative path → base64 content, `ABSENT`, or a `LINK_PREFIX` value. */
   paths: Record<string, string>;
 }
 
@@ -141,8 +170,9 @@ export interface ProtectedChange {
   path: string;
   kind: "created" | "modified" | "deleted";
   /**
-   * The fingerprint this path carried BEFORE the tool call — base64 content, or
-   * `ABSENT`. It is the restore target, and `restore` reads it.
+   * The fingerprint this path carried BEFORE the tool call — base64 content,
+   * `ABSENT`, or a `LINK_PREFIX` value. It is the restore target, and `restore`
+   * reads it.
    *
    * Carried on the change rather than looked up again from the snapshot, so the
    * value restored is provably the value compared. A second lookup is a second
@@ -186,15 +216,26 @@ function shouldDescend(rel: string, patterns: readonly string[]): boolean {
  * (see `shouldDescend`), so an ordinary project reads its root directory and
  * then a handful of small trees — not `src/`, not `node_modules`, not `.git`.
  *
- * ## Symlinks are not followed, and that is a stated residual
+ * ## A symbolic link is a state of the path, not a way out of the set
  *
- * A symlinked directory is skipped rather than walked, because following one
- * invites a cycle and a walk that never returns. A symlinked FILE inside a
- * protected directory is hashed by its target's content, since `readFileSync`
- * follows it — so replacing what it points at IS measured, while a link planted
- * to reach OUTSIDE the protected tree is not watched at the far end. The
- * protection side has always been textual about symlinks (`lib/paths.ts`), so
- * this is the same boundary, not a new one.
+ * A symlinked FILE is enumerated like any other path, and its fingerprint is
+ * the link itself (see `fingerprint`), not what it points at. That is the half
+ * that changed: while a link was skipped here, one `ln -s` over a glob-covered
+ * file took the path out of the watched set permanently, and the next tool call
+ * could rewrite it with nothing measured at all (`260809-1104`, consequence 3 —
+ * the one the issue names as mattering most).
+ *
+ * A symlinked DIRECTORY is still skipped rather than walked, and the reason is
+ * unchanged: following one invites a cycle and a walk that never returns. What
+ * sits at the far end of such a link is therefore not watched. That is a
+ * residual and not a hole in the set the patterns name, because the link
+ * standing in the tree is itself now a measured path wherever the patterns
+ * select it as a file.
+ *
+ * A DANGLING link — one whose target does not exist — counts as a file here.
+ * `linksToDirectory` answers false for it, so it stays in the set and its
+ * fingerprint records what it points at. Dropping it would hand back the same
+ * disappearance through a link that happens to be broken.
  */
 export function enumerateProtected(
   root: string,
@@ -215,8 +256,15 @@ export function enumerateProtected(
       return;
     }
     for (const entry of entries) {
-      if (entry.isSymbolicLink()) continue;
       const childRel = rel === "" ? entry.name : `${rel}/${entry.name}`;
+      if (entry.isSymbolicLink()) {
+        // The dirent comes from `lstat`, so `isDirectory()` and `isFile()` are
+        // both false on a link and the one extra `stat` below is what separates
+        // the two cases.
+        if (linksToDirectory(resolve(root, childRel))) continue;
+        if (matchesAnyFolded(childRel, patterns)) found.push(childRel);
+        continue;
+      }
       if (entry.isDirectory()) {
         if (WALK_SKIP.includes(entry.name)) continue;
         if (shouldDescend(childRel, patterns)) walk(childRel);
@@ -228,6 +276,21 @@ export function enumerateProtected(
 
   walk("");
   return found;
+}
+
+/**
+ * Does this symbolic link point at a directory?
+ *
+ * The one place the walk deliberately FOLLOWS a link, and it reads nothing —
+ * `stat` answers the cycle question and stops. A broken link answers false, so
+ * it is treated as a file and stays watched; see `enumerateProtected`'s header.
+ */
+function linksToDirectory(abs: string): boolean {
+  try {
+    return statSync(abs).isDirectory();
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -253,7 +316,28 @@ function literalPaths(patterns: readonly string[]): string[] {
  * ------------------------------------------------------------------ */
 
 /**
- * The fingerprint of one path: its bytes in base64, or `ABSENT`.
+ * The fingerprint of one path: its bytes in base64, its link target, or
+ * `ABSENT`.
+ *
+ * ## `lstat`, so the answer is about the PATH and not about its target
+ *
+ * This used to be `statSync` + `readFileSync`, and both resolve a link. The
+ * fingerprint of a protected path standing over a symlink was therefore the
+ * fingerprint of an object the project never protected — and the restore, which
+ * followed the link too, wrote the protected file's previous bytes into that
+ * object. Measured in `260809-1104`: one `ln -s` overwrote an arbitrary file
+ * outside the protected tree, and the guard reported it as a successful
+ * restore.
+ *
+ * `lstat` asks about the path itself, and a link gets a value of its own kind.
+ * That is what makes a regular file turning into a link read as `modified`
+ * rather than as `deleted`, and it is what stops the target's content from
+ * standing in for the path's.
+ *
+ * `readFileSync` on the line below still resolves every component in FRONT of
+ * the last one, so a symlinked parent directory is not answered here. It is
+ * answered where it does damage — see `restore`, which refuses to write through
+ * one (`260809-1231`).
  *
  * Content, not mtime. An mtime moves when nothing changed (a checkout, a
  * `touch`, a copy) and stands still at one-second granularity when something
@@ -269,7 +353,9 @@ function literalPaths(patterns: readonly string[]): string[] {
 export function fingerprint(root: string, rel: string): string {
   const abs = resolve(root, rel);
   try {
-    if (!statSync(abs).isFile()) return ABSENT;
+    const stat = lstatSync(abs);
+    if (stat.isSymbolicLink()) return LINK_PREFIX + readlinkSync(abs);
+    if (!stat.isFile()) return ABSENT;
     return readFileSync(abs).toString("base64");
   } catch {
     return ABSENT;
@@ -344,10 +430,17 @@ export function diffSnapshots(
  * ## One case split, and it is the same one the fingerprint already makes
  *
  * `ABSENT` before means the path did not exist, so restoring it means deleting
- * it. Anything else is content, so restoring it means writing those bytes. The
- * two branches are disjoint by the definition of `ABSENT` and complete because a
- * fingerprint is one or the other — the split is not maintained here, it is
- * inherited.
+ * it. A `LINK_PREFIX` value means it was a symbolic link, so restoring it means
+ * recreating that link. Anything else is content, so restoring it means writing
+ * those bytes. The three branches are disjoint by the definition of the two
+ * sentinels and complete because a fingerprint is one of the three — the split
+ * is not maintained here, it is inherited.
+ *
+ * Recreating the link rather than flattening it into a regular file is not a
+ * courtesy. The invariant is "put the path back to what it was", and a project
+ * whose rule file legitimately IS a symlink would otherwise have that link
+ * silently replaced with a copy by the mechanism that exists to prevent exactly
+ * that kind of loss.
  *
  * `kind` is deliberately NOT consulted. It is a label for the reader of a
  * message; `before` is the value that decides. Branching on both would be two
@@ -357,23 +450,140 @@ export function diffSnapshots(
  * it along with the file and the restore has to be able to put a whole subtree
  * back.
  *
+ * ## The write never follows a link, at any component
+ *
+ * Two doors, one question — *is the object about to be written the object that
+ * was measured?* — and both have to be shut, because either one alone turns the
+ * guard's own remediation into an arbitrary-write primitive.
+ *
+ *   - The FINAL component (`260809-1104`): a link standing at the protected
+ *     path is unlinked before the write, and the write opens with `O_NOFOLLOW`
+ *     so a link planted in the gap between the two fails loudly with `ELOOP`
+ *     instead of landing on a stranger's file. `O_NOFOLLOW` is absent on
+ *     Windows, where the `?? 0` degrades the open to today's behaviour rather
+ *     than to `NaN`.
+ *   - The PARENT chain (`260809-1231`): `mkdirSync(…, {recursive: true})`
+ *     succeeds on an existing symlinked directory and `writeFileSync` then
+ *     resolves it, so `O_NOFOLLOW` on the last component reaches none of this.
+ *     `assertPathResolvesInPlace` compares the parent's realpath against the
+ *     lexical one and REFUSES when they diverge. Refusing cannot open
+ *     behaviour: the change stays measured, the halt still fires, and the model
+ *     is told the change is still on disk. Writing anyway is the only outcome
+ *     that could not be taken back.
+ *
+ * The parent check guards the delete branch too. Unlinking a stranger's file is
+ * the same primitive pointed the other way.
+ *
  * ## Throws rather than reporting
  *
- * An I/O failure here — a path that is now a directory, a read-only filesystem —
- * is a real failure of the restore, and the caller has to say so to the user. It
- * throws so that a caller cannot mistake failure for success by ignoring a
- * return value. `tracker.ts` turns the exception into the sentence.
+ * An I/O failure here — a path that is now a directory, a read-only filesystem,
+ * a parent that resolves somewhere else — is a real failure of the restore, and
+ * the caller has to say so to the user. It throws so that a caller cannot
+ * mistake failure for success by ignoring a return value. `tracker.ts` turns
+ * the exception into the sentence.
  */
 export function restore(root: string, change: ProtectedChange): void {
   const abs = resolve(root, change.path);
+
   if (change.before === ABSENT) {
+    assertPathResolvesInPlace(root, change.path);
     // `force` only suppresses "it was already gone", which is success here. A
     // path that is now a DIRECTORY still throws, and should.
     rmSync(abs, { force: true });
     return;
   }
+
+  // Before the check, because a `rm -rf rules/` took the parent with it and an
+  // absent parent has no realpath to compare. `mkdirSync` cannot itself create
+  // a path through a link that was not already there.
   mkdirSync(dirname(abs), { recursive: true });
-  writeFileSync(abs, Buffer.from(change.before, "base64"));
+  assertPathResolvesInPlace(root, change.path);
+
+  // Whatever stands here now, it is not what the guard is putting back. A link
+  // in particular must go before the write, or the write lands on its target.
+  removeIfSymlink(abs);
+
+  if (change.before.startsWith(LINK_PREFIX)) {
+    rmSync(abs, { force: true });
+    symlinkSync(change.before.slice(LINK_PREFIX.length), abs);
+    return;
+  }
+
+  writeNoFollow(abs, Buffer.from(change.before, "base64"));
+}
+
+/**
+ * Throw unless every component in front of the last one resolves to itself.
+ *
+ * A divergence means some directory on the way is a symbolic link, so the
+ * object at the end of the path is not the object the patterns name and not the
+ * object the before-fingerprint describes.
+ *
+ * Both sides resolve the ROOT, because macOS resolves `/tmp` to `/private/tmp`
+ * and the suite already carries cases named for that trap. Only the root: the
+ * relative part is joined lexically on the expected side, which is precisely
+ * what makes a link in it detectable.
+ *
+ * The comparison folds case for the same reason `matchesAnyFolded` does. On a
+ * case-insensitive volume `realpath` reports the on-disk spelling while the
+ * lexical side carries the spelling the pattern was written in, and an
+ * unfolded comparison would refuse a perfectly ordinary restore over a letter.
+ * Folding costs nothing here: two paths that differ only in case name the same
+ * directory on such a volume, and on a case-sensitive one no link is hidden by
+ * it that a different name would not already reveal.
+ */
+function assertPathResolvesInPlace(root: string, rel: string): void {
+  let expected: string;
+  let actual: string;
+  try {
+    expected = resolve(realpathSync(root), dirname(rel));
+    actual = realpathSync(dirname(resolve(root, rel)));
+  } catch (err) {
+    throw new Error(
+      `the parent directory of ${rel} could not be resolved, so the restore was refused: ${
+        err instanceof Error ? err.message : String(err)
+      }`,
+    );
+  }
+  if (foldCase(actual) !== foldCase(expected)) {
+    throw new Error(
+      `${rel} resolves through a symbolic link — its parent directory is ${actual}, not ${expected}. ` +
+        `Writing there would put the content somewhere the guard never measured, so the restore was refused.`,
+    );
+  }
+}
+
+/** Unlink whatever is at `abs` if — and only if — it is a symbolic link. */
+function removeIfSymlink(abs: string): void {
+  let stat;
+  try {
+    stat = lstatSync(abs);
+  } catch {
+    return; // Nothing there. The write below creates it.
+  }
+  if (stat.isSymbolicLink()) unlinkSync(abs);
+}
+
+/**
+ * `writeFileSync` that refuses a symbolic link at the final component.
+ *
+ * `removeIfSymlink` already took one away; this closes the window between that
+ * call and this one. `O_NOFOLLOW` makes `open` fail with `ELOOP` rather than
+ * writing the target, and the exception travels the same route every other I/O
+ * failure here does.
+ */
+function writeNoFollow(abs: string, bytes: Buffer): void {
+  const flags =
+    constants.O_WRONLY |
+    constants.O_CREAT |
+    constants.O_TRUNC |
+    (constants.O_NOFOLLOW ?? 0);
+  const fd = openSync(abs, flags, 0o666);
+  try {
+    writeFileSync(fd, bytes);
+  } finally {
+    closeSync(fd);
+  }
 }
 
 /* ------------------------------------------------------------------ *
