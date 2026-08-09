@@ -1,8 +1,10 @@
 # Orchestrator Session — 260809-1725
 
-**Directive:** (not yet stated — session opened with `/fusion:setup`; no task scope resolved yet)
-**Mode:** (unresolved — Phase 0 pending)
-**Status:** Setup complete, awaiting user directive
+**Directive:** Work through the open guard and hooks defects — the ten records the user selected
+at the scope gate from 54 open items.
+**Mode:** issues (scope cut to one cluster at a human gate)
+**Status:** Complete. Coherence verdict `review-needed`; the Rebalance was taken as **revise
+Grounding**, not revise Artifact — see `## Closing move` below.
 
 ## Setup snapshot
 
@@ -45,9 +47,78 @@ One anticipated Circle exists, so the `/fusion:next` hint was printed to the use
 - `plane.config.yaml` and `fusion-guard.json` already present; nothing seeded.
 - Voice profiles loaded: chat `chat-voice-de.yaml`, writing `default-voice-en.yaml`.
 
+## Budget
+
+| Metric | Count |
+|--------|-------|
+| Turns | 2 |
+| Defect records closed | 16 |
+| Decisions answered and implemented | 1 (`260809-2004`) |
+| Decisions filed and open | 2 (`260809-1731`, `260809-2310`) |
+| Issues created (by executors, review and reconciliation) | 11 |
+| Commits | 20 |
+| Agent errors | 0 |
+| Human gates | 4 (scope, latching counters, blocker triage, closing) |
+
 ## Per-Turn Log
 
-(no Turn started)
+### Turn 1 — the ten selected records (`6b94e17..14c13f0`)
+
+All ten closed, fourteen commits. One task was blocked on an unrecorded decision, so the
+question was filed first (`260809-2004`), answered by the user at a gate, and then implemented
+in the same Turn — the answer split the question in two, which none of the three options offered
+had done.
+
+`coderev` over the Turn filed six findings, one High. The High was a regression this session
+introduced at `69a2d00`: a heredoc opener recognised from too little context blanked real
+command lines, so a branch switch standing in the blanked region was allowed. The reviewer also
+tested two claims the implementing agents had asserted, and both held.
+
+### Turn 2 — the review's findings (`14c13f0..97d5846`)
+
+Three tasks, three commits, six records closed. The blocker fix looked for the class rather than
+the instance and found six spans where bash suspends its tokenizer, four of them not in the
+record. The ordering fix found fourteen sites where a hook recorded before it answered, eleven
+of which could discard a verdict, where three records between them had named four. The
+documentation pass removed a detector's description from three shipped documents, two of which
+`/fusion:help` routes users to.
+
+**No `coderev` pass was run over Turn 2.** That is the gap the reconciliation weighed most
+heavily, and it is the honest cost of closing here.
+
+## Closing move — revise Grounding
+
+The reconciliation found a seventh entrance to the span the blocker fix had closed
+(`if((1<<2))` and four siblings, one blank earlier) and returned `review-needed` recommending
+revise Artifact. The user rejected that reading, and was right to.
+
+The branch policy answers "will this text move HEAD when a shell runs it", which is the same
+undecidable question, over the same input, that the write classifier answered until v6.0.0 —
+when the answer was a change of mechanism rather than a better classifier. This session paid the
+price of the old shape in one afternoon: five patches, each closing a measured entrance and
+revealing the next, a rule text rewritten twice, and twenty-four consecutive blocks that left
+the guard halted because the classifier denied the agents' own verification commands.
+
+So the Rebalance was taken as **revise Grounding**: no sixth patch, and
+`shared/decisions/260809-2310_o_should-the-branch-policy-fall-the-way-the-write-classifier-fell.md`
+asks whether HEAD, the symbolic ref and the worktree list should be measured the way protected
+paths already are. `260809-2300` is marked as waiting for that answer rather than left looking
+like ordinary outstanding work.
+
+## Two failures of mine, recorded rather than smoothed
+
+**I filed a duplicate.** `260809-1729` restated a defect that had been on file since 260807 with
+better evidence. I had not looked in the store first, which is the failure `260805-1548`
+describes. Closed as a duplicate; its two genuinely new points travelled to `260807-1951`.
+
+**I reported the guard as clear for the whole session.** The dashboard and every status line read
+`Guard: OK` while `escalation.json` had `haltActive: true` and 24 consecutive blocks. I read that
+file once at Setup and never again. The halt was live when the session closed and the user was
+told the clearing command.
+
+One process defect, no record needed: a commit message was truncated mid-sentence by an
+apostrophe in a nested heredoc (`5f2cd56`). The reasoning survives in full in the issue record;
+later commits were written through a message file.
 
 ## Coherence
 

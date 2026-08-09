@@ -948,3 +948,46 @@
 {"ts":"2026-08-09T09:13:39","event":"task_done","turn":1,"task":"A-1","agent":"analyst","detail":"enforced policies: 6 targets, 8 issues (1 critical, 4 high)"}
 {"ts":"2026-08-09T09:13:39","event":"task_done","turn":1,"task":"A-2","agent":"analyst","detail":"support layer: 6 targets, 4 issues"}
 {"ts":"2026-08-09T09:13:39","event":"gate_hit","turn":1,"agent":"user","detail":"scope: defects before consolidation; plus CHECK 3 liveness decision"}
+{"ts":"2026-08-09T14:57:41","event":"reconciliation","turn":1,"agent":"reconciler","detail":"verdict coherent, 0 discrepancies, 2 text drifts corrected"}
+{"ts":"2026-08-09T14:57:41","event":"turn_end","turn":1,"detail":"11 tasks resolved, 6 issues closed, 13 filed, 6 commits"}
+{"ts":"2026-08-09T14:57:41","event":"session_end","detail":"coherent; tests 1030->1078; consolidation prepared, not executed"}
+{"ts":"2026-08-09T15:25:39","event":"session_start","detail":"setup only; no directive yet; domain=code"}
+{"ts":"2026-08-09T15:50:51","event":"scope_resolved","detail":"mode=issues; target=guard/hooks cluster (10 open defects); executors=coder; domain=code"}
+{"ts":"2026-08-09T15:58:48","event":"queue_built","detail":"10 tasks, 1 blocked (T9 awaiting decision), 8 dependency edges"}
+{"ts":"2026-08-09T15:58:48","event":"turn_start","turn":1,"detail":"turn_start_head=6b94e17; 9 ready tasks"}
+{"ts":"2026-08-09T15:58:48","event":"task_start","turn":1,"task":"I:260809-1101-coerce","agent":"coder","detail":"hooks/lib/churn.ts + cross-file.ts state coercion"}
+{"ts":"2026-08-09T16:17:51","event":"commit","turn":1,"detail":"bf65028 workbench filing; 9bf7ca1 T1 coerce guard state"}
+{"ts":"2026-08-09T16:17:51","event":"task_done","turn":1,"task":"I:260809-1101-coerce","agent":"coder","detail":"9bf7ca1; 1113 tests green"}
+{"ts":"2026-08-09T16:17:51","event":"task_start","turn":1,"task":"I:260809-1109-failopen","agent":"coder","detail":"guard.ts + tracker.ts top-level handlers"}
+{"ts":"2026-08-09T16:31:46","event":"task_done","turn":1,"task":"I:260809-1109-failopen","agent":"coder","detail":"db9bbe4; 1120 tests green; filed 260809-1825"}
+{"ts":"2026-08-09T16:31:46","event":"task_start","turn":1,"task":"I:260809-1110-casefold","agent":"coder","detail":"command-word.ts + git-branch-guard.ts case folding"}
+{"ts":"2026-08-09T16:42:48","event":"task_done","turn":1,"task":"I:260809-1110-casefold","agent":"coder","detail":"15eacb0; 1128 tests green"}
+{"ts":"2026-08-09T16:42:48","event":"task_start","turn":1,"task":"I:260809-1111-heredoc","agent":"coder","detail":"shell-parse.ts heredoc body as data"}
+{"ts":"2026-08-09T16:54:44","event":"task_done","turn":1,"task":"I:260809-1111-heredoc","agent":"coder","detail":"69a2d00; 1138 tests green"}
+{"ts":"2026-08-09T16:54:44","event":"task_start","turn":1,"task":"I:260809-1101-plugin-layer","agent":"coder","detail":"config.ts absent plugin layer diagnostic"}
+{"ts":"2026-08-09T17:01:34","event":"task_done","turn":1,"task":"I:260809-1101-plugin-layer","agent":"coder","detail":"d8bbc73; 1140 tests green"}
+{"ts":"2026-08-09T17:01:34","event":"task_start","turn":1,"task":"I:260809-1548-attached-option","agent":"coder","detail":"git-branch-guard.ts attached-value global option"}
+{"ts":"2026-08-09T17:18:02","event":"task_done","turn":1,"task":"I:260809-1548-attached-option","agent":"coder","detail":"378b80a + e11bd35; 1145 tests green; corpus 145->142"}
+{"ts":"2026-08-09T17:18:02","event":"task_start","turn":1,"task":"I:260809-1101-escalation","agent":"coder","detail":"escalation.ts lost update"}
+{"ts":"2026-08-09T17:33:50","event":"task_done","turn":1,"task":"I:260809-1101-escalation","agent":"coder","detail":"5f2cd56; 1151 tests green; commit message truncated by quoting, record carries full rationale"}
+{"ts":"2026-08-09T17:33:50","event":"task_start","turn":1,"task":"I:260801-1020-claude-rules","agent":"coder","detail":"protect .claude/rules/**"}
+{"ts":"2026-08-09T17:46:52","event":"task_done","turn":1,"task":"I:260801-1020-claude-rules","agent":"coder","detail":"b2e3d12; 1153 tests green; filed 260809-1942"}
+{"ts":"2026-08-09T17:46:52","event":"task_start","turn":1,"task":"I:260809-1226-overclaim","agent":"coder","detail":"rules/git-branch-discipline.md against the finished classifier"}
+{"ts":"2026-08-09T18:00:46","event":"task_done","turn":1,"task":"I:260809-1226-overclaim","agent":"coder","detail":"9db884c; 1153 tests green"}
+{"ts":"2026-08-09T18:00:46","event":"gate_hit","turn":1,"task":"I:260809-1101-latching","detail":"blocked on an unrecorded decision; filing the question first"}
+{"ts":"2026-08-09T18:12:09","event":"gate_response","turn":1,"task":"I:260809-1101-latching","detail":"proceed; churn thresholds dropped on lifetime counter, cross-file removed"}
+{"ts":"2026-08-09T18:12:09","event":"task_start","turn":1,"task":"I:260809-1101-latching","agent":"coder","detail":"implement the answered decision"}
+{"ts":"2026-08-09T18:49:05","event":"task_done","turn":1,"task":"I:260809-1101-latching","agent":"coder","detail":"c353196 + 9c5b92b; 1127 tests green"}
+{"ts":"2026-08-09T18:49:05","event":"review_done","turn":1,"agent":"coderev","detail":"6 issues filed; 1 high regression introduced by 69a2d00"}
+{"ts":"2026-08-09T19:36:45","event":"coherence_review","turn":1,"verdict":"review-needed","detail":"Artifact<->Grounding: 6 issues filed, 1 high regression from 69a2d00. Artifact<->Directive: all 10 defects closed, but one commit introduced a defect of the class it was fixing. Grounding<->Directive: 1 decision answered and implemented, no conflicts."}
+{"ts":"2026-08-09T19:36:45","event":"turn_end","turn":1,"detail":"10 tasks resolved, 13 commits, 6 issues created by review, 1 decision answered+implemented"}
+{"ts":"2026-08-09T19:36:45","event":"turn_start","turn":2,"detail":"turn_start_head=14c13f0; blocker first, then the ordering class, then the docs"}
+{"ts":"2026-08-09T19:36:45","event":"task_start","turn":2,"task":"I:260809-2044-heredoc-opener","agent":"coder","detail":"false heredoc opener blanks real commands"}
+{"ts":"2026-08-09T19:56:35","event":"task_done","turn":2,"task":"I:260809-2044-heredoc-opener","agent":"coder","detail":"6fae676; class of six spans; 1143 tests green"}
+{"ts":"2026-08-09T19:56:35","event":"task_start","turn":2,"task":"I:ordering-class","agent":"coder","detail":"report-before-reply ordering at all four sites; closes 1825, 2045, 2046"}
+{"ts":"2026-08-09T20:34:14","event":"task_done","turn":2,"task":"I:ordering-class","agent":"coder","detail":"f9c4214; 14 sites, 11 verdict-discarding; 1154 tests green"}
+{"ts":"2026-08-09T20:34:14","event":"task_start","turn":2,"task":"I:docs-drift","agent":"coder","detail":"2047 + 2048 + the branch-rule wording"}
+{"ts":"2026-08-09T20:47:58","event":"task_done","turn":2,"task":"I:docs-drift","agent":"coder","detail":"97d5846; filed 260809-2243"}
+{"ts":"2026-08-09T20:47:58","event":"turn_end","turn":2,"detail":"3 tasks resolved closing 6 records; 3 commits; 1 issue created; second coderev pass not run"}
+{"ts":"2026-08-09T21:14:30","event":"rebalance_grounding","turn":2,"detail":"filed 260809-2310: should the branch policy be measured rather than predicted"}
+{"ts":"2026-08-09T21:15:38","event":"session_end","detail":"2 turns, 16 records closed, 20 commits, verdict review-needed, closed via revise Grounding"}
