@@ -80,3 +80,8 @@ Cross-references:
 `circles/260801-1244-guard-rules-write/issues/260802-2334_c_a-shape-valid-escalation-json-makes-the-whole-guard-fail-open-on-both-surfaces.md`;
 `circles/260801-1244-guard-rules-write/issues/260804-1607_c_guard-error-is-not-rendered-by-the-monitor-so-a-fail-open-guard-is-invisible.md`;
 `rules/protected-path-discipline.md`.
+
+---
+
+**Reconciliation 260809-1651 (reconciler, domain `code`) — stays `_o_`. Untouched by the defect round.**
+The six commits `451a07e..fb262d8` touch `hooks/tracker.ts`, `hooks/lib/protected-snapshot.ts`, `hooks/lib/git-branch-guard.ts` and the new `hooks/lib/reverted-copy.ts`. `hooks/lib/config.ts`, `hooks/lib/churn.ts`, `hooks/lib/cross-file.ts` and `hooks/lib/escalation.ts` are not in the diff, so every line this record cites still reads as filed and its acceptance criteria are unmet.

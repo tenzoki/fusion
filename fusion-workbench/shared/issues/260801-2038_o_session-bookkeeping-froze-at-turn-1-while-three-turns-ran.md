@@ -80,3 +80,24 @@ Session `shared/history/260806-2158-orchestrator-session.md`, active Circle `cir
 **Why that happened here and would happen again.** The session began under one Circle and continued under its successor. Nothing in the process moves the session's history file, or forks a second one, when a Circle is superseded mid-session — so the anchor was written for a file the session never created. That is a gap in the supersession path specifically, not only in the end-of-Turn write, and it is worth naming separately when candidate 1 is taken up.
 
 **Not repaired here**, same reason as the two instances above.
+
+---
+
+**Reconciliation 260809-1651 (reconciler, domain `code`) — stays `_o_`. Fourth instance, and the first in which the `**Directive:**` fallback this record warns about was actually exercised.**
+
+Session `shared/history/260808-0920-orchestrator-session.md`, HEAD at start `451a07e`, HEAD now `fb262d8`. Three of the four surfaces froze again, in the same pattern. There is no active Circle this time, so the Circle-record row of the earlier instances is replaced by the plan:
+
+| Surface | Says | Reality |
+|---|---|---|
+| `fusion-workbench/agentstate.yaml` | `# Updated: 260809-1056`, `progress.turn: 1`, `tasks_done: 1`, `commits: 0`, `current_task: A-1/A-2 running` (`agent: analyst`), `plan_context.plan_file: null` | two analyses delivered, a seven-step plan written and approved, six commits, six defects closed, two decision records filed |
+| `shared/history/260808-0920-orchestrator-session.md` | `**Directive:** (not yet stated — user ran /fusion:setup without a task)`, `**Status:** In progress`, `## Session log` ends at 09:20 with "Awaiting the user's Directive" | the Directive was stated and is in `agentstate.yaml`; eight hours and six commits of work followed |
+| `shared/planning/260809-1229_c_plan-five-severe-guard-defects.md` | current — steps marked `[DONE]` as they landed, status and closure summary written | the one artifact surface that kept up |
+| `fusion-workbench/orchestrator-events.jsonl` | current | the one session surface that kept up, for the fourth time |
+
+**Candidate resolution 2, computed for the fourth time.** `agentstate.yaml` says `commits: 0`; `git rev-list --count 451a07e..HEAD` says `6`. Divergence 6, against the stated threshold of "more than one". Four data points across four sessions, and nothing in the toolchain runs the check.
+
+**What this instance adds.** In the three earlier instances `agentstate.yaml` carried the Directive and the reconciliation survived on it. Here the history file's `**Directive:**` line reads "(not yet stated)" while `agentstate.yaml` carries the real one, so the two surfaces now contradict each other on the field the reconciler's Step 2.5 names as canonical. `agentstate.yaml` was still present, so this reconciliation again survived — but the orchestrator deletes that file on a clean exit, and after this session's clean exit the only surviving statement of the Directive would be "(not yet stated)". The failure this record calls a fallback risk is one clean exit away from being a data loss.
+
+**One surface improved.** `session.history_file` names `shared/history/260808-0920-orchestrator-session.md`, which exists. The dangling resume anchor recorded in the third instance did not recur; that instance's cause was a mid-session Circle supersession, which did not happen here.
+
+**Not repaired here**, same reason as the three instances above: this record's own candidate 3.

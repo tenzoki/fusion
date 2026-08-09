@@ -64,3 +64,6 @@ restore when the PARENT directory became a link, and says so" in
 victim directory's file unchanged, the message text, and `haltActive`, through
 the real hooks against a project root outside this repository. The ordinary
 revert cases run under the same `/tmp` root and stayed green.
+
+**Reconciliation 260809-1651 (reconciler, domain `code`) — closure confirmed against the tree, and the `inference:` label discharged.**
+All four acceptance criteria verified at HEAD `fb262d8`. The parent-chain comparison is at `hooks/lib/protected-snapshot.ts:579-580`, both sides realpath-resolved, and a divergence throws rather than writing. The case "refuses the restore when the PARENT directory became a link, and says so" (`hooks/lib/__tests__/protected-snapshot-integration.test.ts:853`) passes and asserts the victim directory's file unchanged plus the message text plus `haltActive`, through the real hooks against a root outside this repository. The record was filed `inference:` because the primitive was reasoned from source rather than reproduced; the test is the measurement it said belonged with the fix.

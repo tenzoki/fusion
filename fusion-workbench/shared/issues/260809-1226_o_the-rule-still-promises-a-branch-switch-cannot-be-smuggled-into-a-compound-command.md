@@ -37,3 +37,8 @@ Worth deciding at the same time: whether the same rewrite is owed to the wrapper
 - [ ] `rules/git-branch-discipline.md` `## The rule` makes no claim about a branch switch being unsmuggleable that the open classifier defects falsify.
 - [ ] Whatever the section does claim is a property of segmentation alone, with classification correctness left to `## Why`.
 - [ ] The wrapper-resolution paragraph is either confirmed accurate or corrected in the same pass, with the case-folding defect taken into account.
+
+---
+
+**Reconciliation 260809-1651 (reconciler, domain `knowledge`) — stays `_o_`. Checked because step 6 of the plan rewrote the file this record names.**
+`fb262d8` edited `rules/git-branch-discipline.md` for three other obligations and left the overclaim standing: `## The rule` still closes its segmentation paragraph with "You cannot smuggle a branch switch inside a compound command." Criterion 1 is therefore unmet. Criterion 2 is unmet for the same reason, though `## Why` was strengthened in the direction this record asks for — it now names `260809-1110` as a measured defect inside the classified command form, and records that the trailing-separator and unknown-global-option cases are closed, so the contradiction between the two sections is now sharper rather than softer. Criterion 3, the wrapper-resolution paragraph, is unchanged and still enumerates the coverage the case-folding defect falsifies.

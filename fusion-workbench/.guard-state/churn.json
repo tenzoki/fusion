@@ -487,9 +487,9 @@
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/orchestrator-live.md": {
-      "totalChanges": 13,
+      "totalChanges": 14,
       "changesThisSession": 0,
-      "lastChange": "2026-08-07T19:33:02.226Z",
+      "lastChange": "2026-08-09T09:07:14.316Z",
       "thrashingScore": 4
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/provenance-header-lint.test.ts": {
@@ -572,7 +572,7 @@
     },
     "/Users/k1/Projects/productive/fusion/hooks/guard.ts": {
       "totalChanges": 58,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T23:35:47.245Z",
       "thrashingScore": 19
     },
@@ -692,7 +692,7 @@
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/escalation.ts": {
       "totalChanges": 3,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T23:35:36.641Z",
       "thrashingScore": 1
     },
@@ -794,15 +794,15 @@
     },
     "/Users/k1/Projects/productive/fusion/README-hooks.md": {
       "totalChanges": 47,
-      "changesThisSession": 3,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T23:36:44.488Z",
       "thrashingScore": 17
     },
     "/Users/k1/Projects/productive/fusion/rules/protected-path-discipline.md": {
-      "totalChanges": 62,
-      "changesThisSession": 1,
-      "lastChange": "2026-08-07T23:36:26.769Z",
-      "thrashingScore": 20
+      "totalChanges": 65,
+      "changesThisSession": 3,
+      "lastChange": "2026-08-09T14:36:10.875Z",
+      "thrashingScore": 23
     },
     "circles/260801-1244-guard-rules-write/decisions/260803-1402_o_should-the-mutation-classifier-inspect-a-read-operand-to-close-the-planted-alias.md": {
       "totalChanges": 1,
@@ -1748,7 +1748,7 @@
     },
     "/Users/k1/Projects/productive/fusion/hooks/tracker.ts": {
       "totalChanges": 16,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T23:35:58.725Z",
       "thrashingScore": 5
     },
@@ -2090,7 +2090,7 @@
     },
     "/Users/k1/Projects/productive/fusion/bin/fusion-rules": {
       "totalChanges": 11,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T22:14:41.748Z",
       "thrashingScore": 3
     },
@@ -2282,7 +2282,7 @@
     },
     "/Users/k1/Projects/productive/fusion/agents/orchestrator.md": {
       "totalChanges": 5,
-      "changesThisSession": 4,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T23:40:59.796Z",
       "thrashingScore": 5
     },
@@ -2306,7 +2306,7 @@
     },
     "/Users/k1/Projects/productive/fusion/install.sh": {
       "totalChanges": 3,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T22:14:04.092Z",
       "thrashingScore": 1
     },
@@ -2666,7 +2666,7 @@
     },
     "/Users/k1/Projects/productive/fusion/hooks/session-start.ts": {
       "totalChanges": 2,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T22:14:12.114Z",
       "thrashingScore": 0
     },
@@ -2702,7 +2702,7 @@
     },
     "/Users/k1/Projects/productive/fusion/README.md": {
       "totalChanges": 5,
-      "changesThisSession": 3,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T23:36:47.915Z",
       "thrashingScore": 3
     },
@@ -2816,7 +2816,7 @@
     },
     "/Users/k1/Projects/productive/fusion/rules/fusion-workbench-conventions.md": {
       "totalChanges": 3,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T22:14:13.428Z",
       "thrashingScore": 1
     },
@@ -2840,13 +2840,13 @@
     },
     "/Users/k1/Projects/productive/fusion/rules/agent-setup.md": {
       "totalChanges": 2,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T22:13:57.016Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/rules-voice-profile.test.ts": {
       "totalChanges": 3,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T22:15:37.313Z",
       "thrashingScore": 1
     },
@@ -2936,64 +2936,136 @@
     },
     "shared/history/260808-0014-language-claim-fixes-and-version-pin-bump.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T22:15:19.203Z",
       "thrashingScore": 0
     },
     "shared/history/260808-0016-coder-r1-declared-lang-exact-match.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T22:16:53.332Z",
       "thrashingScore": 0
     },
     "shared/issues/260808-0030_o_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T22:32:05.240Z",
       "thrashingScore": 0
     },
     "shared/issues/260808-0030_o_the-coderev-pass-filed-four-issues-and-left-no-review-file.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T22:32:46.295Z",
       "thrashingScore": 0
     },
     "shared/history/260808-0030-reconciliation.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T22:34:32.921Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/.gitignore": {
       "totalChanges": 2,
-      "changesThisSession": 2,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T23:34:46.266Z",
       "thrashingScore": 0
     },
     "/Users/k1/Projects/productive/fusion/hooks/clear-halt.ts": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T23:36:16.436Z",
       "thrashingScore": 0
     },
     "shared/history/260808-0136-gitignore-fu-exception-and-orchestrator-rs-java.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T23:36:54.884Z",
       "thrashingScore": 0
     },
     "shared/history/260808-0139-clear-halt-distinguishes-no-workbench-from-not-halted.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T23:39:50.700Z",
       "thrashingScore": 0
     },
     "shared/history/260808-0132-orchestrator-session.md": {
       "totalChanges": 1,
-      "changesThisSession": 1,
+      "changesThisSession": 0,
       "lastChange": "2026-08-07T23:45:29.430Z",
+      "thrashingScore": 0
+    },
+    "/tmp/fusion-commit-msg-p23.txt": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-09T13:47:45.478Z",
+      "thrashingScore": 0
+    },
+    "/tmp/fusion-commit-msg-p5.txt": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-09T14:30:48.989Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/rules/git-branch-discipline.md": {
+      "totalChanges": 4,
+      "changesThisSession": 4,
+      "lastChange": "2026-08-09T14:36:36.556Z",
+      "thrashingScore": 5
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/git-branch-guard.ts": {
+      "totalChanges": 2,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-09T14:40:26.010Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/shared/planning/260809-1229_o_plan-five-severe-guard-defects.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-09T14:41:36.817Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/shared/history/260809-1636-coder-step6-guard-rule-text.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-09T14:43:42.933Z",
+      "thrashingScore": 0
+    },
+    "/tmp/fusion-commit-msg-p6.txt": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-09T14:46:08.945Z",
+      "thrashingScore": 0
+    },
+    "260809-1229_o_plan-five-severe-guard-defects.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-09T14:46:29.148Z",
+      "thrashingScore": 0
+    },
+    "260809-1229_c_plan-five-severe-guard-defects.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-09T14:53:27.935Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/shared/history/260809-1651-reconciliation.md": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-09T14:55:40.378Z",
+      "thrashingScore": 0
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/shared/history/260808-0920-orchestrator-session.md": {
+      "totalChanges": 2,
+      "changesThisSession": 2,
+      "lastChange": "2026-08-09T14:57:17.884Z",
+      "thrashingScore": 0
+    },
+    "/tmp/fusion-commit-msg-wb.txt": {
+      "totalChanges": 1,
+      "changesThisSession": 1,
+      "lastChange": "2026-08-09T14:57:27.656Z",
       "thrashingScore": 0
     }
   },
-  "sessionStart": "2026-08-07T22:13:57.016Z"
+  "sessionStart": "2026-08-09T13:47:45.478Z"
 }

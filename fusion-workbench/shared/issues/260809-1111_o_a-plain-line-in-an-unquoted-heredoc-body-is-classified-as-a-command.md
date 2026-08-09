@@ -67,3 +67,8 @@ Explicitly not recommended, for the reasons `260716-2005` already gave: an allow
 - [ ] `cat <<EOF` with a body containing a backticked `` `git switch main` `` still denies (bash substitutes there).
 - [ ] The quoted-delimiter cases from `260716-2005` stay green.
 - [ ] A real branch switch outside any heredoc still denies.
+
+---
+
+**Reconciliation 260809-1651 (reconciler, domain `code`) — stays `_o_`. Untouched by this session.**
+`hooks/lib/shell-parse.ts` is not in the diff `451a07e..fb262d8`. The heredoc branch and the newline segmentation are unchanged, and all five acceptance criteria remain unmet.

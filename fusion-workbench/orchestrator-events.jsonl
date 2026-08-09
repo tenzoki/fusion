@@ -943,3 +943,8 @@
 {"ts":"2026-08-07T23:45:00","event":"task_done","turn":1,"task":"D3","agent":"coder","detail":"c79e02a .rs and .java at all four extension-list sites"}
 {"ts":"2026-08-07T23:45:00","event":"turn_end","turn":1,"detail":"3 tasks resolved, 3 issues closed, 0 issues created"}
 {"ts":"2026-08-07T23:45:00","event":"session_end","detail":"3 defects fixed, 4 commits, 1030 tests green, 28 defects remain open"}
+{"ts":"2026-08-08T07:22:40","event":"session_start","detail":"domain=code, no active Circle, 28 open issues"}
+{"ts":"2026-08-09T08:54:13","event":"turn_start","turn":1,"detail":"guard behaviour audit, 2 analyst tasks"}
+{"ts":"2026-08-09T09:13:39","event":"task_done","turn":1,"task":"A-1","agent":"analyst","detail":"enforced policies: 6 targets, 8 issues (1 critical, 4 high)"}
+{"ts":"2026-08-09T09:13:39","event":"task_done","turn":1,"task":"A-2","agent":"analyst","detail":"support layer: 6 targets, 4 issues"}
+{"ts":"2026-08-09T09:13:39","event":"gate_hit","turn":1,"agent":"user","detail":"scope: defects before consolidation; plus CHECK 3 liveness decision"}

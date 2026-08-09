@@ -406,9 +406,9 @@
       "lastEditTimestamp": "2026-08-02T06:49:36.700Z"
     },
     "/Users/k1/Projects/productive/fusion/fusion-workbench/orchestrator-live.md": {
-      "pingBackCount": 12,
-      "totalEdits": 13,
-      "lastEditTimestamp": "2026-08-07T19:33:02.228Z"
+      "pingBackCount": 13,
+      "totalEdits": 14,
+      "lastEditTimestamp": "2026-08-09T09:07:14.319Z"
     },
     "/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/provenance-header-lint.test.ts": {
       "pingBackCount": 1,
@@ -666,9 +666,9 @@
       "lastEditTimestamp": "2026-08-07T23:36:44.490Z"
     },
     "/Users/k1/Projects/productive/fusion/rules/protected-path-discipline.md": {
-      "pingBackCount": 19,
-      "totalEdits": 62,
-      "lastEditTimestamp": "2026-08-07T23:36:26.771Z"
+      "pingBackCount": 20,
+      "totalEdits": 65,
+      "lastEditTimestamp": "2026-08-09T14:36:10.877Z"
     },
     "circles/260801-1244-guard-rules-write/decisions/260803-1402_o_should-the-mutation-classifier-inspect-a-read-operand-to-close-the-planted-alias.md": {
       "pingBackCount": 0,
@@ -2494,8 +2494,68 @@
       "pingBackCount": 0,
       "totalEdits": 1,
       "lastEditTimestamp": "2026-08-07T23:45:29.433Z"
+    },
+    "/tmp/fusion-commit-msg-p23.txt": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-09T13:47:45.482Z"
+    },
+    "/tmp/fusion-commit-msg-p5.txt": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-09T14:30:48.991Z"
+    },
+    "/Users/k1/Projects/productive/fusion/rules/git-branch-discipline.md": {
+      "pingBackCount": 0,
+      "totalEdits": 4,
+      "lastEditTimestamp": "2026-08-09T14:36:36.558Z"
+    },
+    "/Users/k1/Projects/productive/fusion/hooks/lib/git-branch-guard.ts": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-09T14:40:26.012Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/shared/planning/260809-1229_o_plan-five-severe-guard-defects.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-09T14:41:36.820Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/shared/history/260809-1636-coder-step6-guard-rule-text.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-09T14:43:42.935Z"
+    },
+    "/tmp/fusion-commit-msg-p6.txt": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-09T14:46:08.947Z"
+    },
+    "260809-1229_o_plan-five-severe-guard-defects.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-09T14:46:29.151Z"
+    },
+    "260809-1229_c_plan-five-severe-guard-defects.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-09T14:53:27.937Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/shared/history/260809-1651-reconciliation.md": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-09T14:55:40.380Z"
+    },
+    "/Users/k1/Projects/productive/fusion/fusion-workbench/shared/history/260808-0920-orchestrator-session.md": {
+      "pingBackCount": 0,
+      "totalEdits": 2,
+      "lastEditTimestamp": "2026-08-09T14:57:17.886Z"
+    },
+    "/tmp/fusion-commit-msg-wb.txt": {
+      "pingBackCount": 0,
+      "totalEdits": 1,
+      "lastEditTimestamp": "2026-08-09T14:57:27.658Z"
     }
   },
-  "lastEditFile": "shared/history/260808-0132-orchestrator-session.md",
-  "lastEditTimestamp": "2026-08-07T23:45:29.433Z"
+  "lastEditFile": "/tmp/fusion-commit-msg-wb.txt",
+  "lastEditTimestamp": "2026-08-09T14:57:27.658Z"
 }

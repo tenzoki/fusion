@@ -1,7 +1,7 @@
 # Implementation Plan: the five severe defects in the fusion compliance guard
 
 **Date:** 2026-08-09
-**Status:** Draft
+**Status:** Complete — the six implementation steps (1 to 6) landed 2026-08-09 in commits `509e4c6`, `9716ee5`, `62f5490`, `d8745f0`, `fb262d8`. Six defects closed; the suite went 1030 to 1078 tests, green throughout. Step 0, the environment precondition, was not performed and is not marked `[DONE]`: the installed copy is still one minor version behind the work tree. It gates no deliverable — the suite spawns the work-tree build — so the plan's output is complete while its precondition is not. See the Reconciliation Log.
 **Spec:** none — planned from a raw request. The grounding is `shared/analyses/260809-1103-guard-enforced-policies.md` (the enforcement layer) and `shared/analyses/260809-1101-guard-support-layer.md` (the support layer and its twelve consolidation targets).
 **Decidability:** Two questions carry this plan and they have different answers.
 
@@ -383,3 +383,33 @@ Internal to `hooks/`; no external surface changes.
 - [ ] **Does the parent-chain refusal in Step 1 break a legitimate project layout?** A project that symlinks `rules/` to a shared directory would see every restore refuse. Measurable: no such layout is visible from this tree. If one is expected, the alternative is to compare against the *previously observed* resolved parent rather than against the lexical one, which is a larger change.
 - [x] **Retention for the preserved copies: 20 files, or an age bound, or both?** **Taken as the count, and only the count** — `RETAINED_COPIES = 20` in `hooks/lib/reverted-copy.ts`, pruned on every write. No age bound was added: an age bound expires the evidence exactly when a long session finally goes looking for it, which is the same shape of argument that kept an age bound off the snapshot in Step 4. Cheap to revisit; the constant is exported and the suite asserts the bound through it rather than restating the number.
 - [ ] **Does the deleted cross-product harness deserve rebuilding?** `260804-1344` measured 181,115 commands for newly-allowed rows, and that instrument went with the mutation classifier. Step 3 substitutes a few-hundred-command corpus, which is proportionate to a two-line change and would not be proportionate to the grammar rewrite rejected in the Approach. If that rewrite is ever taken up, the harness is its precondition.
+
+---
+
+## Reconciliation Log
+
+**260809-1651, reconciler, domain `code`, against HEAD `fb262d8`.** Every step verified against the tree and against a full suite run, not against the step's own `[DONE]` marker. Suite measured here: `npm test` in `hooks/`, 33 files, 1078 tests, 0 failures, exit 0, 78 s — the same counts the session reported.
+
+**Steps 1 to 6: landed as planned.**
+
+| Step | Verified at | Pinned by |
+|---|---|---|
+| 1 — object identity | `protected-snapshot.ts:396-398` (`lstatSync` + `LINK_PREFIX`), `:546-548` (link restored as a link), `:579-580` (parent-chain realpath comparison), `:600`/`:620` (`lstat`-and-unlink, `O_NOFOLLOW`) | six cases under "a symbolic link does not carry a protected path out of the set" |
+| 2 — trailing separator | `git-branch-guard.ts:372-383` above the `--` allow at `:384` | describe "a trailing `--` does not withdraw a HEAD-moving flag" (`git-branch-guard.test.ts:448`) |
+| 3 — resumed option walk | `git-branch-guard.ts:287-297` | describe naming both sibling records (`:550`) and the baseline-corpus block (`:706`) over `fixtures/git-corpus-451a07e.json` |
+| 4 — call identity | `protected-snapshot.ts:730-741` (failed save unlinks), `:758-765` (`consumeSnapshot`), `:188-197` (`ts` documented as written and not read) | both cases under "a before-picture is used by exactly one measurement" |
+| 5 — actor identity | `tracker.ts:285-286`, `:508-531`, `:535-560`; `reverted-copy.ts:79` (`RETAINED_COPIES = 20`), `:107-123` | five cases under "the revert narrows to the payload path at the four write tools", including the `Bash` obligation |
+| 6 — specification obligations | `rules/protected-path-discipline.md` (`## What the measurement costs`, third price with the `260809-1107` example; the catalogue claim rewritten), `rules/git-branch-discipline.md` (`## What stays allowed` qualified; `## One deny you will not have expected` added) | the lint suite over `rules/` |
+
+**Step 0 was not performed, and this is the plan's one unmet claim.** Its acceptance criterion is that `~/.fusion/.claude-plugin/plugin.json` reports the same version as the work tree. It reports `6.0.1` against `6.1.0`. Nothing downstream depends on it: the suite runs `npm run build` and spawns the work-tree build, which is why every step verified green with the precondition unmet. The step's own stated purpose — that guard behaviour observed *live* during the work is the behaviour of code one release old — was never exercised either, because the plan forbade live verification of the branch steps in this repository and the fingerprint steps were verified through the harness. The step remains worth performing before the next live guard session, and the header claim "all seven steps landed" has been corrected accordingly.
+
+**The two corrections the plan made to itself both check out.** The Step 3 note of 2026-08-09 inverted its own no-new-allow property in the right direction (denies may grow, allows may not), and the corpus block asserts the property as corrected. The Step 5 gate overrule is implemented as `shared/decisions/260809-1527_i_*` option 2, and that record's four implementation obligations are each demonstrable in `tracker.ts` — checked line by line in the reconciliation note appended to the decision.
+
+**Coupling to the consolidation round — one target realised, ten standing, one claim to correct.**
+
+- `1103` Target 3 (single-use snapshot) **is** Step 4 and is done. It should be struck from the cleanup list, as the plan's own table says.
+- `1101` C4 is anticipated as promised: `preserveObserved(root, relPath, observed)` takes the root as a parameter (`reverted-copy.ts:107-108`) and the module header states why an internal `findWorkbenchRoot()` would have been wrong.
+- The remaining ten stand untouched, verified individually: `PLACEHOLDER_RE` still in `shell-parse.ts` (T1), `reachesBuiltin` still in `command-word.ts` (T2), `isEnvFlagSet` still exported from `git-branch-guard.ts` and imported by `rules-write-exemption.ts:269` (T4 / C6), the mutation-classifier archaeology still in the `git-branch-guard.ts` header (T5), `command-word.ts` still a separate module (T6), the gate-0 commentary still in `rules-write-exemption.ts:87-93` (C1), the four-site state-file triple intact (C2), `getTopChurnFiles` and `CROSS_FILE_DEFAULT_THRESHOLDS` still exported unused (C3), and the decision-governed check still inert (C5, blocked on `shared/decisions/260809-1224_o_*`).
+- **One row of the Coupling table is now inaccurate.** It says Step 5 "adds a **fifth** call site" of C2's read-coerce-write triple. `reverted-copy.ts` does `mkdirSync` then `writeFileSync` with no `.tmp` and no `renameSync` (`:115`, `:123`), so it is not an instance of that pattern and C2 still has exactly the four call sites the analysis measured. The direction of the error is harmless — C2 is smaller than the table implies, not larger — but a planner reading the table would size the step wrong.
+
+**Two rule-text obligations the round left open, both correctly still `_o_`.** `shared/issues/260809-1226_o_*` (the segmentation paragraph still promises a branch switch cannot be smuggled into a compound command) survived Step 6's edit of the same file, and `shared/issues/260809-1548_o_*` (an attached-value global option should not consume the next word) was deliberately not built. Neither is bookkeeping left behind; both were checked against the current text and the current code.

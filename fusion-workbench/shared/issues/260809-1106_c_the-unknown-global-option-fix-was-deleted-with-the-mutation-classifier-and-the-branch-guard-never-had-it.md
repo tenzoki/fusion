@@ -83,3 +83,6 @@ classifier at `451a07e`, and no verdict that denied there allows now. Step 6 of
 `shared/planning/260809-1229_*_plan-five-severe-guard-defects.md` carried the
 cost into `rules/git-branch-discipline.md` as a rule with an open example set,
 in the wording `260804-1333` settled on.
+
+**Reconciliation 260809-1651 (reconciler, domain `code`) — closure confirmed against the tree.**
+All five acceptance criteria verified at HEAD `fb262d8`. The walk in `classifySegment` resumes: a bare word matching no subcommand row with `unknownOption` set clears the flag and continues from the next index (`hooks/lib/git-branch-guard.ts:287-297`), so a later `-C` is still recorded; with no unrecognised option in front it returns `null` at `:293-295`, keeping `git commit -m switch` and `git diff` allowed. The describe block naming both sibling records (`hooks/lib/__tests__/git-branch-guard.test.ts:550`) and the baseline-corpus block "no verdict that denied at the baseline allows after the two fixes" (`:706`, over `fixtures/git-corpus-451a07e.json`) both pass. The cost is carried into `rules/git-branch-discipline.md` `## One deny you will not have expected` as a rule with an open example set.

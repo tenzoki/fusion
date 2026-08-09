@@ -45,3 +45,8 @@ Acceptance criteria.
 Filed by the orchestrator from the step-3 completion report, 2026-08-09.
 Depends on plan `shared/planning/260809-1229_o_plan-five-severe-guard-defects.md`
 step 6 for criterion 3.
+
+---
+
+**Reconciliation 260809-1651 (reconciler, domain `code`) — stays `_o_`. Verified as genuinely open, not as bookkeeping left behind.**
+The refinement was not built. `classifySegment` sets `unknownOption = true` for every unrecognised `-`-prefixed token without testing for `=` (`hooks/lib/git-branch-guard.ts:283-285`), so `--exec-path=/x` still causes the next word to be skipped. Criterion 1 unmet; criteria 2 and 3 follow from it. The record's own dependency on step 6 of `shared/planning/260809-1229_c_plan-five-severe-guard-defects.md` is now discharged in the sense that step 6 has landed — `rules/git-branch-discipline.md` `## One deny you will not have expected` carries the cost as a rule with an open example set, so criterion 3 becomes an edit to existing text rather than a wait for it to be written.

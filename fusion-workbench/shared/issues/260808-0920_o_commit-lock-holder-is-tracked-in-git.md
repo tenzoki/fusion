@@ -34,3 +34,8 @@ Two parts to a fix, and they are separable:
 
 Found during orchestrator Setup on 260808-0920. Not blocking: the lock is not
 held, and `bin/fusion-commit-lock check` reports `not held`.
+
+---
+
+**Reconciliation 260809-1651 (reconciler, domain `code`) — stays `_o_`. Neither part of the fix has been applied.**
+`git ls-files fusion-workbench/.commit-lock/` still returns `fusion-workbench/.commit-lock/holder`, so part 1 (`git rm --cached`) has not run; the path shows as ` D` in the working tree only, which is the deletion this record already describes and not its removal from the index. `.gitignore` carries no `fusion-workbench/.commit-lock/` entry, so part 2 has not run either. The broader question the record raises — whether `.session-marker`, `.active-circle` and `.guard-state/` belong in the same pass — is answerable now with one observation: `.session-marker` and `agentstate.yaml` are both untracked and show as `??`, while `.guard-state/` is tracked and its four files are modified on every session. So the same sweep hazard applies to `.guard-state/` today, with the difference that its churn is continuous rather than transient.

@@ -59,3 +59,8 @@ Worth checking in the same pass whether the same inversion exists in the other c
 - [ ] With `.guard-state/` unwritable, `tracker.js` writes a valid response envelope to stdout and exits 0.
 - [ ] A failure inside the error reporting cannot suppress the verdict.
 - [ ] A test drives both through the real subprocess with an unwritable state directory.
+
+---
+
+**Reconciliation 260809-1651 (reconciler, domain `code`) — stays `_o_`. Checked because this session rewrote one of the two files it names.**
+`hooks/tracker.ts` was substantially rewritten in `62f5490` and `d8745f0`, so the handler this record cites by line was a plausible incidental fix. It was not touched. Both top-level handlers still call `emitEvent` before the verdict: `hooks/guard.ts` ends `emitEvent(...)` then `allow()`, `hooks/tracker.ts` ends `emitEvent(...)` then `respond()`. All four acceptance criteria remain unmet. One thing did change in the record's favour: the sharper instance it inherited from `260809-1108` — a stale before-picture surviving the same failure — is closed, so the fail-silent path now costs a lost verdict rather than a lost verdict plus a wrong revert.

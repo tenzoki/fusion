@@ -91,3 +91,6 @@ exist. Pinned by two cases in
 real hooks: the filed measurement reproduced (a directory placed at
 `protected-snapshot.json.tmp`, the rest of `.guard-state/` writable), and a
 second PostToolUse with no PreToolUse in front of it measuring nothing.
+
+**Reconciliation 260809-1651 (reconciler, domain `code`) — closure confirmed against the tree.**
+All four acceptance criteria verified at HEAD `fb262d8`. `saveSnapshot`'s `catch` calls `rmSync(path, { force: true })` and documents the nested failure rather than swallowing it (`hooks/lib/protected-snapshot.ts:730-741`); `consumeSnapshot` loads then unlinks (`:758-765`) and `hooks/tracker.ts` calls it in place of `loadSnapshot`. The `ts` field's documentation now says the field is kept for a human debugger and states why the obvious reader must not be written (`hooks/lib/protected-snapshot.ts:188-197`) — the age bound this record also suggested was deliberately not built, and the reason is recorded rather than left implicit. Both cases under "a before-picture is used by exactly one measurement" pass through the real hooks.

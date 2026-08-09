@@ -61,3 +61,8 @@ Folding the command word cannot widen an allow. It can only make more segments r
 - [ ] `/usr/bin/GIT switch main` and `\GIT switch main` deny.
 - [ ] Non-git programs are unaffected: `RM -rf x` resolves to the name `rm` and changes no verdict, since the branch policy holds no `rm` row.
 - [ ] A test states the filesystem dependency, so the case is not read as unreachable on a case-sensitive volume.
+
+---
+
+**Reconciliation 260809-1651 (reconciler, domain `code`) — stays `_o_`. Checked because this session rewrote the file it names.**
+`hooks/lib/git-branch-guard.ts` was rewritten in `9716ee5` (steps 2 and 3 of `shared/planning/260809-1229_c_plan-five-severe-guard-defects.md`), which touched `classifyCheckout` and the global-option walk and left the command-word comparison alone. `programName` in `hooks/lib/command-word.ts` still returns the basename as spelled, and no fold happens at the comparison. All four acceptance criteria remain unmet. `rules/git-branch-discipline.md` `## Why` now names this record explicitly as a measured defect inside the command form the classifier does classify, which is a documentation change and not a code one.
