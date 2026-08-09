@@ -33,7 +33,9 @@ import {
   projectConfig,
   readEscalation,
   readEvents,
+  runGuard,
   runToolCall,
+  runTracker,
   withPluginProject,
   withProject,
 } from "./helpers/guard-harness.js";
@@ -983,6 +985,120 @@ describe("the revert restores content, not merely a git status", () => {
         },
         { git: true },
       );
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+/**
+ * `260809-1108` — a before-picture belongs to ONE tool call.
+ *
+ * The measured defect had two doors into the same room. `saveSnapshot` writes to
+ * `protected-snapshot.json.tmp` and renames, so a failing write leaves the
+ * PREVIOUS snapshot untouched and the next comparison reads it: the guard then
+ * reverts a protected path to a state from two or more calls ago, one no
+ * measurement ever objected to, while telling the model it restored "the content
+ * from before this tool call". And nothing removed a snapshot after use, so a
+ * PostToolUse with no PreToolUse in front of it measured against a picture that
+ * described a call which had already ended.
+ *
+ * One invariant closes both: a before-picture is consumed exactly once.
+ *
+ * ## Why these two cases do not use `runToolCall`
+ *
+ * Every other case in this file uses it, and should: it puts the effect between
+ * the two hooks in the order a real tool call has. These two are ABOUT the seam
+ * being broken — an unpaired PreToolUse in the first, an unpaired PostToolUse in
+ * the second — so they drive `runGuard` and `runTracker` directly. A paired call
+ * cannot express either shape.
+ *
+ * ## Anti-vacuity
+ *
+ * Both cases assert on the bytes of `rules/x.md` at the end, and at `9716ee5`
+ * those bytes are the reverted ones (`# a rule`) rather than the ones asserted
+ * here, with `haltActive` true and a second `guard_block` in the event log. Six
+ * assertions across the two cases fail before the change.
+ */
+describe("a before-picture is used by exactly one measurement", () => {
+  /** Where `guard.ts` leaves the before-picture for `tracker.ts` to read. */
+  function snapshotFile(root: string): string {
+    return resolve(
+      root,
+      "fusion-workbench",
+      ".guard-state",
+      "protected-snapshot.json",
+    );
+  }
+
+  it(
+    "leaves no snapshot behind when the save fails, so the next call measures nothing",
+    () => {
+      withProject((project) => {
+        // Call 1's PreToolUse succeeds, so a valid before-picture exists.
+        runGuard(project.root, "Bash", { command: "true" });
+        expect(existsSync(snapshotFile(project.root))).toBe(true);
+
+        // Break the snapshot write IN ISOLATION, the way the issue measured it:
+        // a directory where the atomic write wants to put its temporary file.
+        // The rest of `.guard-state/` stays writable, so events, escalation and
+        // churn are undisturbed and only this one write fails.
+        mkdirSync(snapshotFile(project.root) + ".tmp");
+
+        // A change from an earlier, settled call. No measurement objected to it,
+        // and reverting it is the destruction of state the defect describes.
+        put(project.root, "rules/x.md", "# settled between the calls\n");
+
+        // Call 2: its PreToolUse cannot save, so it has no before-picture of its
+        // own — and must not inherit call 1's.
+        runGuard(project.root, "Bash", { command: "true" });
+        expect(existsSync(snapshotFile(project.root))).toBe(false);
+
+        put(project.root, "rules/x.md", "# this call's own change\n");
+        const post = runTracker(project.root, "Bash", { command: "true" });
+
+        // Nothing measured: the file keeps what this call wrote, the settled
+        // state is not resurrected over it, and no halt is raised.
+        expect(read(project.root, "rules/x.md")).toBe(
+          "# this call's own change\n",
+        );
+        expect(context(post)).toBe("");
+        expect(readEscalation(project.root)?.haltActive ?? false).toBe(false);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "does not measure a second time from the snapshot it already used",
+    () => {
+      withProject((project) => {
+        runGuard(project.root, "Bash", { command: "true" });
+        put(project.root, "rules/x.md", "# what the tool call changed\n");
+        const first = runTracker(project.root, "Bash", { command: "true" });
+
+        // The paired call behaves exactly as before: measured, reverted, halted.
+        expect(read(project.root, "rules/x.md")).toBe("# a rule\n");
+        expect(context(first)).toContain("rules/x.md");
+        expect(readEscalation(project.root)?.haltActive).toBe(true);
+        expect(existsSync(snapshotFile(project.root))).toBe(false);
+
+        // A second PostToolUse with no PreToolUse in front of it. Whoever wrote
+        // this, the before-picture that described the previous call says nothing
+        // about it.
+        put(project.root, "rules/x.md", "# written after that call ended\n");
+        const second = runTracker(project.root, "Bash", { command: "true" });
+
+        expect(read(project.root, "rules/x.md")).toBe(
+          "# written after that call ended\n",
+        );
+        expect(context(second)).toBe("");
+
+        // One measurement, one block event — not two from one picture.
+        const blocks = readEvents(project.root).filter(
+          (e) => e.event === "guard_block" && e.file === "rules/x.md",
+        );
+        expect(blocks.length).toBe(1);
+      });
     },
     CASE_TIMEOUT,
   );

@@ -65,6 +65,9 @@ function context(post: {
   return post.hookSpecificOutput?.additionalContext ?? "";
 }
 
+/** What `guard.ts` writes for `tracker.ts` to read. */
+type Snapshot = { cwd: string; paths: Record<string, string> } | null;
+
 /**
  * The before-fingerprint `guard.ts` wrote, read straight off disk, or null when
  * it wrote none.
@@ -74,10 +77,18 @@ function context(post: {
  * assertion on the project file alone would show only the outcome; this shows
  * the cause, which is what separates "reverted for the right reason" from
  * "reverted".
+ *
+ * ## It is read DURING the tool call, from inside the effect
+ *
+ * The before-picture is consumed by the PostToolUse hook and is gone afterwards
+ * (`260809-1108`: a picture that survives its own use gets used a second time,
+ * against a call that has already ended). So the moment at which this evidence
+ * exists is the moment the tool itself runs, which is exactly where `runToolCall`
+ * puts the effect. Reading it there is also the sharper placement: a null answer
+ * during the call means no before-picture was ever taken, while a null answer
+ * after it could equally mean the measurement ran and cleaned up.
  */
-function snapshot(
-  root: string,
-): { cwd: string; paths: Record<string, string> } | null {
+function snapshot(root: string): Snapshot {
   const p = resolve(
     root,
     "fusion-workbench",
@@ -106,12 +117,16 @@ describe("the measurement anchored from a subdirectory", () => {
       withProject(
         (project) => {
           const sub = resolve(project.root, "sub");
+          let snap: Snapshot = null;
 
           const { post } = runToolCall(
             sub,
             "Bash",
             { command: "echo '# owned by the shell' > ../rules/x.md" },
-            () => sh(sub, "echo '# owned by the shell' > ../rules/x.md"),
+            () => {
+              snap = snapshot(project.root);
+              sh(sub, "echo '# owned by the shell' > ../rules/x.md");
+            },
           );
 
           // The half that was silently unprotected. `rules/x.md` is on the
@@ -130,7 +145,6 @@ describe("the measurement anchored from a subdirectory", () => {
           // THE CAUSE, read off the guard's own before-fingerprint: it anchored
           // at the project root, not at the working directory, and the path is
           // spelled the way the protected list spells it.
-          const snap = snapshot(project.root);
           expect(snap?.cwd).toBe(project.root);
           expect(Object.keys(snap?.paths ?? {})).toContain("rules/x.md");
         },
@@ -146,12 +160,16 @@ describe("the measurement anchored from a subdirectory", () => {
       withProject(
         (project) => {
           const sub = resolve(project.root, "sub");
+          let snap: Snapshot = null;
 
           const { post } = runToolCall(
             sub,
             "Bash",
             { command: "echo '# owned by the shell' > rules/y.md" },
-            () => sh(sub, "echo '# owned by the shell' > rules/y.md"),
+            () => {
+              snap = snapshot(project.root);
+              sh(sub, "echo '# owned by the shell' > rules/y.md");
+            },
           );
 
           // The other half, and it flips the other way. Relative to the project
@@ -166,7 +184,6 @@ describe("the measurement anchored from a subdirectory", () => {
             readEvents(project.root).filter((e) => e.event === "guard_block"),
           ).toEqual([]);
 
-          const snap = snapshot(project.root);
           expect(snap?.cwd).toBe(project.root);
           expect(Object.keys(snap?.paths ?? {})).not.toContain("rules/y.md");
           expect(Object.keys(snap?.paths ?? {})).not.toContain(
@@ -235,12 +252,16 @@ describe("the measurement anchored from a subdirectory", () => {
       withPluginProject(
         (project) => {
           const sub = resolve(project.root, "sub");
+          let snap: Snapshot = null;
 
           const { post } = runToolCall(
             sub,
             "Bash",
             { command: "echo '# the developer at work' > ../rules/x.md" },
-            () => sh(sub, "echo '# the developer at work' > ../rules/x.md"),
+            () => {
+              snap = snapshot(project.root);
+              sh(sub, "echo '# the developer at work' > ../rules/x.md");
+            },
           );
 
           // The developer's edit survives, exactly as it does from the root.
@@ -255,7 +276,9 @@ describe("the measurement anchored from a subdirectory", () => {
 
           // And no before-fingerprint was ever taken, which is the stand-down
           // itself rather than a comparison that happened to come out empty.
-          expect(snapshot(project.root)).toBeNull();
+          // Read while the tool was running, so it cannot be confused with a
+          // picture that existed and was consumed by the PostToolUse hook.
+          expect(snap).toBeNull();
         },
         { git: true, files: SUBDIR_FILES },
       );

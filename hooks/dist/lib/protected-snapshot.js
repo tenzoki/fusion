@@ -72,10 +72,39 @@
  * It is not a refinement, and it is not an optimisation. Without it the guard
  * would compare the working tree against `HEAD` and revert everything that
  * differs — including a rule file the human is editing in their own editor right
- * now. The guard would destroy human work on the next unrelated tool call.
- * Comparing two snapshots taken around ONE tool call is what makes the
- * measurement attributable, and attribution is what makes reverting permissible
- * at all.
+ * now. The guard would destroy human work on the next unrelated tool call. The
+ * pair is what bounds the measurement to one tool call, and that bound is what
+ * makes reverting permissible at all.
+ *
+ * What the pair bounds is the INTERVAL, not the author. Two fingerprints taken
+ * around one tool call say that a protected path changed between them; they do
+ * not say who changed it, and nothing in this module's inputs could. A human
+ * editor saving during the call, a file watcher and a second Claude session are
+ * all indistinguishable here from the agent's own write. That is a real cost and
+ * it is measured: `260809-1107`. It is stated here rather than papered over,
+ * because the older wording — "attributable", full stop — claimed more than the
+ * mechanism can deliver, and a claim that strong is what lets a reader stop
+ * looking for the case that breaks it.
+ *
+ * ## A before-picture is consumed exactly once
+ *
+ * The pair only bounds an interval if the picture the second half reads is the
+ * one the first half of THAT call wrote. Two ways it was not, both measured in
+ * `260809-1108`: a failing save left the previous snapshot in place, so a
+ * comparison ran against a picture two or more calls old and reverted a state
+ * no measurement had objected to; and nothing removed a snapshot after use, so a
+ * second PostToolUse with no PreToolUse in front of it measured against a call
+ * that had already ended. `saveSnapshot` therefore removes the stale file when
+ * its own write fails, and `consumeSnapshot` unlinks the picture as it reads it.
+ * After either, the correct answer to "what was here before?" is that nobody
+ * knows — and `tracker.ts` measures nothing, which is the one safe reading.
+ *
+ * There is deliberately **no age bound** on a snapshot. A legitimate tool-call
+ * window has no upper limit: this repository's own test suite holds one open for
+ * well over a minute and a build holds it longer, so any "too old to trust"
+ * threshold would turn a legitimate measurement into a silent skip — a fail-open
+ * introduced by the fix for a fail-wrong. Single use gives the same guarantee
+ * without a number in it.
  *
  * ## What this module does NOT do
  *
@@ -587,7 +616,23 @@ function snapshotPath() {
         return null;
     return resolve(root, "fusion-workbench", ".guard-state", "protected-snapshot.json");
 }
-/** Write the pre-call snapshot atomically. No-op without a workbench. */
+/**
+ * Write the pre-call snapshot atomically. No-op without a workbench.
+ *
+ * ## A failed write removes the previous snapshot
+ *
+ * The write that can fail is the one to `${path}.tmp`, and it leaves the
+ * existing `protected-snapshot.json` completely untouched. So the comment that
+ * used to stand in the `catch` — "the next comparison has no before-picture and
+ * skips" — described the opposite of what happened: `loadSnapshot` found the
+ * PREVIOUS call's picture and handed it over, and the comparison then reverted
+ * every protected path that had changed since, to a state no measurement had
+ * ever objected to (`260809-1108`).
+ *
+ * Removing the stale file is what makes that sentence true. The failure stays
+ * silent otherwise, for the reason it always was: `guard.ts` fails OPEN, and a
+ * full disk must not turn every tool call into a guard error.
+ */
 export function saveSnapshot(snapshot) {
     const path = snapshotPath();
     if (!path)
@@ -599,10 +644,47 @@ export function saveSnapshot(snapshot) {
         renameSync(tmp, path);
     }
     catch {
-        // A snapshot that cannot be written means the next comparison has no
-        // before-picture and skips. Silent here on purpose: `guard.ts` fails OPEN,
-        // and a full disk must not turn every tool call into a guard error.
+        try {
+            // `force` so "there was none" counts as success — the common case when
+            // the very first save of a session fails.
+            rmSync(path, { force: true });
+        }
+        catch {
+            // The stale file could not be removed either, so the next comparison may
+            // still read it. Nothing better is available from inside a hook that must
+            // not fail the tool call, and the alternative — throwing — would trade a
+            // wrong revert for no guard at all.
+        }
     }
+}
+/**
+ * Read the pre-call snapshot and remove it, so no second measurement can use it.
+ *
+ * This is what `tracker.ts` calls. `loadSnapshot` below is the plain read and
+ * has no production caller: a picture that is read without being consumed is
+ * exactly the state `260809-1108` describes, where a PostToolUse with no
+ * PreToolUse in front of it measured against a call that had already ended.
+ *
+ * The unlink happens AFTER the object is in memory, so a later failure in the
+ * same call still works from the picture it already holds. It also runs when the
+ * load returned null: a snapshot that cannot be parsed is not a picture anyone
+ * can use, and leaving it would keep answering the same nothing on every
+ * subsequent call.
+ */
+export function consumeSnapshot() {
+    const path = snapshotPath();
+    if (!path)
+        return null;
+    const snapshot = loadSnapshot();
+    try {
+        rmSync(path, { force: true });
+    }
+    catch {
+        // See `saveSnapshot`: a hook cannot fail the tool call over its own
+        // bookkeeping. The snapshot that stays behind is the known residual, not a
+        // new one.
+    }
+    return snapshot;
 }
 /**
  * The pre-call snapshot, or null when there is none to compare against.
@@ -611,6 +693,10 @@ export function saveSnapshot(snapshot) {
  * it as "measure nothing". Falling back to `HEAD`, or to an empty snapshot,
  * would revert changes this tool call did not make — the exact failure the
  * before-fingerprint exists to prevent.
+ *
+ * The plain read, leaving the file where it is. `consumeSnapshot` is what the
+ * measurement uses; this one is the half of it that answers "what does the file
+ * say", separated so the reading and the removing are each one thing.
  */
 export function loadSnapshot() {
     const path = snapshotPath();

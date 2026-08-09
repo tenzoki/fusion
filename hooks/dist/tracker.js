@@ -44,7 +44,7 @@ import { matchesAny } from "./lib/paths.js";
 import { isFusionPluginCwd } from "./lib/self-detect.js";
 import { emitEvent } from "./lib/events.js";
 import { loadEscalation, raiseHalt, saveEscalation, clearHaltCommand, } from "./lib/escalation.js";
-import { diffSnapshots, loadSnapshot, measurementRoot, restore, takeSnapshot, } from "./lib/protected-snapshot.js";
+import { consumeSnapshot, diffSnapshots, measurementRoot, restore, takeSnapshot, } from "./lib/protected-snapshot.js";
 import { isObservedRulePath, rulesWriteDetail, rulesWriteExemptionActive, } from "./lib/rules-write-exemption.js";
 /**
  * Workbench dashboard/state files that the orchestrator continuously
@@ -199,9 +199,26 @@ function splitOffExempted(changes, config) {
  * against an empty snapshot. Both of those alternatives would revert changes
  * this tool call did not make — a rule file open in the human's editor is the
  * concrete case — and destroying human work is a far worse failure than missing
- * one violation. The snapshot is missing only when the guard was disabled, when
- * the project has no workbench, or in the plugin's own repository, and in all
- * three the answer "nothing was measured" is correct.
+ * one violation.
+ *
+ * Four ways there is none, and "nothing was measured" is the right answer to all
+ * four: the guard was disabled, the project has no workbench, this is the
+ * plugin's own repository, or `guard.ts` could not write one on this call. The
+ * last is the case `260809-1108` measured, and it used to be answered with the
+ * PREVIOUS call's picture instead of with silence.
+ *
+ * ## The picture is CONSUMED, not merely read
+ *
+ * `consumeSnapshot` unlinks the file as it reads it, so the same before-picture
+ * can never serve two measurements. Without that, a PostToolUse with no
+ * PreToolUse in front of it measured the tree against a call that had already
+ * ended, and reverted whatever had happened since — including work the guard had
+ * already seen and accepted.
+ *
+ * There is no age check to go with it, deliberately. A tool call may legitimately
+ * run for minutes, so a "too old" bound would silently skip the measurement for
+ * exactly the long calls that change the most; the argument is in
+ * `lib/protected-snapshot.ts`'s header.
  *
  * ## The root comes from `measurementRoot()`, and it is checked BEFORE the load
  *
@@ -216,13 +233,18 @@ function splitOffExempted(changes, config) {
  *
  * ## Known residual: parallel tool calls
  *
- * `guard.ts` writes one snapshot file and `tracker.ts` reads it. Two tool calls
- * running concurrently interleave those writes, so a change can be attributed to
- * the wrong call or, if the second snapshot is taken after the first tool
- * already wrote, missed. Claude Code offers no per-call correlation key in the
- * hook payload, so this is stated rather than solved. A change that IS seen is
- * always a real change to a protected path, so the revert is never wrong when it
- * fires; the exposure is under-reporting.
+ * `guard.ts` writes one snapshot file and `tracker.ts` consumes it. Two tool
+ * calls running concurrently interleave those writes, so the picture a call
+ * reads may be the one another call wrote. Claude Code offers no per-call
+ * correlation key in the hook payload, so this is stated rather than solved.
+ *
+ * Single use narrows it in one respect and only one: the same picture can no
+ * longer serve two measurements, so the second of two interleaved calls finds
+ * nothing and measures nothing rather than comparing against a before-state that
+ * was never its own. The exposure that remains is under-reporting, which was
+ * already the shape of this residual. A change that IS seen is always a real
+ * change to a protected path, so the revert is never wrong about the FILE when
+ * it fires — only, per `260809-1107`, about who moved it.
  */
 function measureProtectedPaths(toolName) {
     const config = loadConfig();
@@ -231,10 +253,17 @@ function measureProtectedPaths(toolName) {
     const root = measurementRoot();
     if (root === null)
         return null;
-    const before = loadSnapshot();
+    const before = consumeSnapshot();
     if (!before)
         return null;
-    const changes = diffSnapshots(before, takeSnapshot(root, config.guard.protectedPaths));
+    // Held in a name rather than passed straight through, because it is the one
+    // record of what each protected path was OBSERVED to hold during this call.
+    // Anything downstream that needs that value reads it from here; going back to
+    // the file would be a second answer to one question, free to disagree with the
+    // one the comparison used — the same reason `ProtectedChange` carries `before`
+    // instead of looking it up again.
+    const after = takeSnapshot(root, config.guard.protectedPaths);
+    const changes = diffSnapshots(before, after);
     if (changes.length === 0)
         return null;
     const { exempted, violations } = splitOffExempted(changes, config);
