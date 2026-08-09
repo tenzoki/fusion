@@ -107,7 +107,7 @@ flowchart TD
   subprocess test under `hooks/lib/__tests__/`
 - **Depends on:** none
 - **Priority:** high
-- **Status:** [ ] open
+- **Status:** [x] done (260809-1826, coder — shared helper `hooks/lib/fail-open.ts`)
 - **Detail:** Both hooks end with a handler whose comment promises fail-open, and both
   call `emitEvent(...)` before `allow()` / `respond()`. `emitEvent` appends to
   `fusion-workbench/.guard-state/events.jsonl`. When the original throw was an I/O error

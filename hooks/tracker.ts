@@ -50,6 +50,7 @@ import type { GuardConfig } from "./lib/config.js";
 import { matchesAny } from "./lib/paths.js";
 import { isFusionPluginCwd } from "./lib/self-detect.js";
 import { emitEvent } from "./lib/events.js";
+import { failOpen } from "./lib/fail-open.js";
 import {
   loadEscalation,
   raiseHalt,
@@ -754,8 +755,14 @@ async function main(): Promise<void> {
 }
 
 main().catch((err) => {
-  // Fail open — PostToolUse must not interfere with the agent
-  emitEvent("guard_error", undefined, undefined, `Tracker error (fail-open): ${err}`);
-  process.stderr.write(`[tracker] Error: ${err}\n`);
-  respond();
+  // Fail open — PostToolUse must not interfere with the agent.
+  //
+  // `respond` goes first and the reporting after it, for the reason `guard.ts`
+  // ends with and `lib/fail-open.ts` states in full: `emitEvent` writes under
+  // `.guard-state/`, so the error class most likely to bring the tracker here is
+  // the one that used to throw a second time inside this handler and leave
+  // stdout empty.
+  failOpen("tracker", err, () => respond(), () =>
+    emitEvent("guard_error", undefined, undefined, `Tracker error (fail-open): ${err}`),
+  );
 });

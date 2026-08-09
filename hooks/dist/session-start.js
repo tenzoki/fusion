@@ -72,6 +72,7 @@
  * Conventions). A warning only the model sees is not a warning.
  */
 import { resolve } from "node:path";
+import { failOpen } from "./lib/fail-open.js";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 /**
  * The warning text for a session whose working directory is `cwd`, given the
@@ -122,6 +123,12 @@ catch (error) {
     // Fail open, exactly as guard.ts and tracker.ts do: a hook that cannot decide
     // must not take the session down with it. The marker line is what the test
     // harness watches for, so a crash cannot pass as a quiet run.
-    process.stderr.write(`[session-start] Error: ${String(error)}\n`);
-    process.stdout.write("{}\n");
+    //
+    // No event is emitted here, and that is the one way this handler differs from
+    // its two siblings. This hook writes nothing under `.guard-state/` on any
+    // path, so it has no log to append to and teaching it one would mean a
+    // SessionStart hook creating guard state before a single tool call has run.
+    // What it shares is the order: the `{}` goes out before the marker line, so a
+    // broken stderr cannot cost the session its verdict.
+    failOpen("session-start", error, () => process.stdout.write("{}\n"));
 }

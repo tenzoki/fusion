@@ -171,6 +171,7 @@ refusal *before* the write.
 | `lib/config.ts` | JSON config loader | Yes |
 | `lib/escalation.ts` | Escalation state management | Yes |
 | `lib/events.ts` | Append-only event logger | Yes |
+| `lib/fail-open.ts` | The fail-open tail of every hook entry point: writes the hook's verdict first, then reports the error in guarded steps. Both hooks used to report first, and the report appends under `.guard-state/` — the likeliest thing to have failed — so the handler threw again and the hook exited 1 with empty stdout | Yes |
 | `lib/guard-state-file.ts` | The read-coerce-write seam under `fusion-workbench/.guard-state/`: resolves one state file, reads it, hands whatever it holds to the caller's coercion, and writes it back atomically. The coercion is a parameter, so absence, unparseable text and a valid JSON value of the wrong shape are one answer and no state module has anywhere to put an `as` cast — the defect that let a `{}` state file discard the protected-path halt message. `escalation.ts` and `protected-snapshot.ts` still keep their own; the latter deliberately, since its load answers `null` rather than an empty state | Yes |
 | `lib/churn.ts` | Churn heatmap tracker | Yes |
 | `lib/cross-file.ts` | Cross-file ping-back tracker (paired-touch / circular edit detector) | Yes |

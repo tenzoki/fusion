@@ -52,6 +52,7 @@ import { realFsLocator } from "./lib/fs-locator.js";
 import { loadConfig, findRelevantDecisions, projectDeclaredProtectedPaths, sensitivityLevel, } from "./lib/config.js";
 import { loadEscalation, saveEscalation, isHalted, recordBlock, resetBlockCounter, clearHaltCommand, } from "./lib/escalation.js";
 import { emitEvent } from "./lib/events.js";
+import { failOpen } from "./lib/fail-open.js";
 import { measurementRoot, saveSnapshot, takeSnapshot, } from "./lib/protected-snapshot.js";
 import { classifyGitCommand, overridesFromEnv, overrideEnvFor, } from "./lib/git-branch-guard.js";
 import { isProjectRulePath, rulesWriteDetail, rulesWriteExemptionActive, rulesWriteRefusalNote, } from "./lib/rules-write-exemption.js";
@@ -620,8 +621,13 @@ async function main() {
     allow();
 }
 main().catch((err) => {
-    // Fail open on unexpected errors — don't block the agent
-    emitEvent("guard_error", undefined, undefined, `Guard error (fail-open): ${err}`);
-    process.stderr.write(`[guard] Error: ${err}\n`);
-    allow();
+    // Fail open on unexpected errors — don't block the agent.
+    //
+    // `allow` goes first and the reporting after it. `emitEvent` appends under
+    // `.guard-state/`, which is where nearly every write above it goes, so an I/O
+    // failure there is both the likeliest cause of `err` and, while it stood ahead
+    // of the verdict, the one cause the handler could not survive: it threw again
+    // and the guard exited 1 with empty stdout. See `lib/fail-open.ts` for the
+    // order and why each reporting step is guarded on its own.
+    failOpen("guard", err, allow, () => emitEvent("guard_error", undefined, undefined, `Guard error (fail-open): ${err}`));
 });

@@ -67,5 +67,22 @@ for (const e of state.recentEvents.slice(-5)) {
 }
 clearHalt(state);
 saveEscalation(state);
-emitEvent("halt_cleared", undefined, undefined, "Manual halt clear via clear-halt.ts");
+// No `failOpen` here, and the difference is not an oversight. This is a manual
+// tool a human runs, not a hook: it owes Claude Code no verdict on stdout, and a
+// run that could not do its job must exit non-zero with the stack trace rather
+// than print a reassuring line. Every failure above this point is exactly that —
+// the state could not be read or could not be written, so the halt is still
+// there and the human needs to see why.
+//
+// What DOES carry over from the hooks is the half about reporting: the event row
+// is a best-effort note about work already finished, and it must not be able to
+// withdraw the confirmation of that work. `saveEscalation` has returned, so the
+// halt IS cleared; an unwritable `.guard-state/` from here on costs the log line
+// and nothing else.
+try {
+    emitEvent("halt_cleared", undefined, undefined, "Manual halt clear via clear-halt.ts");
+}
+catch (error) {
+    console.error(`Note: the halt was cleared, but the event log could not be written: ${String(error)}`);
+}
 console.log("\nHalt cleared. Guard will resume normal operation.");
