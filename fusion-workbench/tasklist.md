@@ -427,7 +427,8 @@ flowchart TD
 - **Depends on:** task 6 (which also edits this file), and through it tasks 3 and 4 —
   **this task is last on purpose**
 - **Priority:** low
-- **Status:** [ ] open
+- **Status:** [x] done (260809-1955, coder — four passes in `rules/git-branch-discipline.md`;
+  golden regenerated 9512 → 12211)
 - **Detail:** The segmentation paragraph in `## The rule` describes what the guard does —
   splits on `;`, `&&`, `||`, `|`, `&` and newlines, splices line continuations, strips
   subshell parentheses, inspects command substitutions — and closes with an absolute: "You
