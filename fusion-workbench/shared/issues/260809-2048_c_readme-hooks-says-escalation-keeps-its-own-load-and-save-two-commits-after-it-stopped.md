@@ -47,3 +47,18 @@ asking what still classifies.
 - [ ] `README-hooks.md:176` names `protected-snapshot.ts` as the only module
       outside the seam.
 - [ ] The `lib/shell-parse.ts` row mentions the substitution carve-out.
+
+---
+Resolved: `97d5846`, verified at HEAD by the reconciler (260809-2252) — the record was
+closed by rename with no resolution note, so this footer is the reconciler's, not the
+closing agent's.
+
+Criterion 1 — CONFIRMED. `README-hooks.md:176` now reads "`escalation.ts` and `churn.ts`
+both use it; escalation wraps it with the merge its save needs … `protected-snapshot.ts` is
+the only module outside the seam, and deliberately", and enumerates the three reasons the
+seam's own header gives. The false clause naming `escalation.ts` as outside the seam is gone.
+
+Criterion 2 — CONFIRMED. The `lib/shell-parse.ts` row (`README-hooks.md:180`) now carries the
+carve-out: "an unquoted delimiter keeping the `$(…)` and backtick regions bash executes
+there". The same row was extended past the criterion with the six suspended spans `6fae676`
+added, which is consistent with `rules/git-branch-discipline.md` at HEAD.

@@ -54,3 +54,22 @@ None of the three is a rule file, so no provenance header is involved.
 - [ ] `grep -ri "ping-back\|pingback" docs/ skills/ agents/ README*.md` returns
       only retrospective mentions that name decision `260809-2004`.
 - [ ] `docs/philosophy.md` no longer attributes a halt to churn.
+
+---
+Resolved: `97d5846`, verified at HEAD by the reconciler (260809-2252) — the record was
+closed by rename with no resolution note, so this footer is the reconciler's, not the
+closing agent's. Both criteria re-derived against the tree rather than read off the commit
+message.
+
+Criterion 1 — CONFIRMED. `grep -rin "ping-back\|pingback" docs/ skills/ agents/ rules/
+README*.md CLAUDE.md bin/monitor` returns exactly one hit, `README-hooks.md:25`, and it is
+retrospective and names decision `260809-2004` ("The same decision removed the cross-file
+ping-back tracker outright").
+
+Criterion 2 — CONFIRMED. `docs/philosophy.md:17` now reads "Per-file churn is counted beside
+all of that and only ever warns"; no halt is attributed to churn. The other two named sites
+are also correct: `docs/working-model.md:81` is reduced to churn and states "observation
+only", and `skills/help/SKILL.md:84` no longer names ping-back detection.
+
+One thing this fix did not carry, filed rather than absorbed and correctly still `_o_`:
+`260809-2243`, the stray `</content>` at the end of the same document.

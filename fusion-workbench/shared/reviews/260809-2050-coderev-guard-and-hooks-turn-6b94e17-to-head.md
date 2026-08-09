@@ -214,3 +214,42 @@ Checked and correct, recorded so the next pass does not re-derive them:
 - `260809-1825_o_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` — extended by M2.
 - `260809-1942_o_protected-path-discipline-enumerates-the-shipped-list-and-now-omits-one-entry.md` — the `.claude/rules/**` omission.
 - `260809-2023_o_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md` — the surviving `thrashingScore` reader in `agents/orchestrator.md:113` and `skills/setup/SKILL.md:226` sits on top of this.
+
+---
+
+## Reconciliation 260809-2252 (reconciler, domain `code`) — disposition of the six findings
+
+Annotation only. No finding above is rewritten; each line below records what the tree at HEAD
+says about it, re-derived rather than read off the closing commits.
+
+| Finding | Record | Disposition at HEAD |
+|---|---|---|
+| H1 — false heredoc opener | `260809-2044` | Closed by `6fae676`. See the note below. |
+| M1 — churn half before the reply | `260809-2045` | Closed by `f9c4214`. See the note below. |
+| M2 — branch deny is a fourth fail-open site | `260809-2046` | Closed by `f9c4214`. See the note below. |
+| M3 — three shipped documents promise ping-back | `260809-2047` | **CONFIRMED fixed** by `97d5846`, both criteria re-derived at HEAD. One site the review did not reach survives — see below. |
+| L1 — README-hooks describes the seam's callers stale | `260809-2048` | **CONFIRMED fixed** by `97d5846`, both criteria re-derived at HEAD. |
+| L2 — clear-halt discards a halt in its own window | `260809-2049` | Correctly still `_o_`. The review's own sequencing put it under "cleanup, any time"; nothing in Turn 2 touched it. |
+
+**M3's removal was one site short, and the review's own cross-cutting observation predicted the
+shape of the miss.** "A removal checklist that ends at `grep` ends one step early" holds one
+step further than this review took it: `hooks/tracker.ts:92-94`, the header comment on
+`TRACKER_NOISE_FILES`, still reads "Tracking them as churn or ping-back produces pure noise —
+exclude from both metrics". There is no second metric; the constant has one reader at HEAD
+(`hooks/tracker.ts:674`, the churn path). It says "ping-back", not "cross-file", so neither the
+identifier sweep in `c353196` nor the prose sweep in `97d5846` — which searched the three
+*documents* — would have found it. Filed as
+`shared/issues/260809-2252_o_the-tracker-noise-list-still-says-it-excludes-two-metrics-when-only-churn-reads-it.md`.
+
+Everything else this review recorded under "Not findings" was re-checked and holds. In
+particular `hooks/dist/` is still byte-identical to a fresh `npm run build` at HEAD (the build
+is `rm -rf dist && tsc`, and `git status` reports no tracked change after a full run), so the
+compiled hooks the installer ships still match the sources — the claim survives the three Turn 2
+commits that changed both.
+
+**One caveat this review could not carry, recorded here because it is the reconciliation's
+main reservation: no `coderev` pass was run over Turn 2.** The three commits it left unreviewed
+include a fourteen-site change to the fail-open ordering of the security boundary and the fix
+for the regression this review itself caught. The verifications behind the H1, M1 and M2 lines
+above are the reconciler's, against the acceptance criteria in the records — they are not a
+review, and they did not look for new defects outside those criteria.

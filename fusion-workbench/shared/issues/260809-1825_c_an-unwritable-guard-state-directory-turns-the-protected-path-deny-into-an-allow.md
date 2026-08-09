@@ -85,11 +85,49 @@ reordering unless something makes it impossible.
 
 ## Acceptance criteria
 
-- [ ] With `.guard-state/` unwritable, an `Edit` of a protected path still emits
+- [x] With `.guard-state/` unwritable, an `Edit` of a protected path still emits
       `{"decision":"block", …}` and exits 0.
-- [ ] The same for a halted project (CHECK 1) and for a decision-governed path
+- [x] The same for a halted project (CHECK 1) and for a decision-governed path
       that escalates (CHECK 3).
-- [ ] A failure persisting the escalation counter is reported, not silent.
-- [ ] `hooks/lib/__tests__/hook-fail-open.test.ts` "fails open on a protected
+- [x] A failure persisting the escalation counter is reported, not silent.
+- [x] `hooks/lib/__tests__/hook-fail-open.test.ts` "fails open on a protected
       path too" is rewritten to assert the deny, and its comment stops pointing
       at this record.
+
+---
+Resolved: `f9c4214`, verified at HEAD by the reconciler (260809-2252). The record was closed by
+rename with no resolution note and with all four criteria unticked; the ticks above and this
+footer are the reconciler's. Verification was by running the committed `hooks/dist/` against
+scratch project roots, and the parent commit's `dist` (`git archive f9c4214^`) beside it, so
+the "before" is measured rather than argued.
+
+- Criterion 1 — CONFIRMED. `.guard-state/` at `0555`, `Edit` of a protected path: `f9c4214^`
+  answers `{}`; HEAD answers `{"decision":"block", …}` naming the path, exit 0. Pinned by
+  `hooks/lib/__tests__/hook-fail-open.test.ts:211-230`.
+- Criterion 2 — CONFIRMED for both. CHECK 1 (`hooks/guard.ts:682-693`) and CHECK 3
+  (`:840-851`) measured the same way; pinned at `hook-fail-open.test.ts:232-252` and `:254-288`.
+- Criterion 3 — CONFIRMED. The escalation write failure reaches stderr as
+  `[guard] Error: … escalation.json.tmp`, after the verdict, through `bestEffort` →
+  `writeMarker` (`hooks/lib/fail-open.ts:130`, `:104`).
+- Criterion 4 — CONFIRMED. The test is now
+  `"denies a protected path with the state directory unwritable (260809-1825)"`
+  (`hook-fail-open.test.ts:212`); the surviving mention of this record at `:214-216` is
+  historical ("That record is this change"), so it no longer pins the defect.
+
+**One correction to the record's own text, recorded rather than edited into it.** The CHECK 1
+site was measured failing at `events.jsonl`, not at `escalation.json.tmp` as `## Measured`
+states. The fix covers both, so the conclusion stands; the attribution of the failing call did
+not.
+
+**The record's open question was answered in the implementation, not deferred.** `## Suggested
+direction` warned that making `saveEscalation` best-effort at call sites "spreads the decision
+across every caller" and asked to prefer the reordering. The commit did both — reordering at the
+deny sites and best-effort at `hooks/tracker.ts:583` — with the reasoning written at
+`tracker.ts:576-582` and the failure carried into the halt wording (`:603-615`), verified live
+with `escalation.json` replaced by a directory. That is a documented resolution, not drift.
+
+**Scope note the record could not have carried.** This record named three sites, `260809-2046`
+a fourth and `260809-2045` a fifth. The commit treated the shape rather than the enumeration
+and converted fifteen sites; eleven of them were verdict-discarding before it, which is exactly
+the count the commit claims. The commit's own "fourteen" is one short of its own class — see the
+reconciliation log for the omitted site.

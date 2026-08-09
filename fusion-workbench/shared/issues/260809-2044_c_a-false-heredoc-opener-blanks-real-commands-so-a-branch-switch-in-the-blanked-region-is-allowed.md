@@ -98,12 +98,56 @@ shapes above.
 
 ## Acceptance criteria
 
-- [ ] `# … <<EOF\ngit switch main\n… <<EOF\n…\nEOF` denies.
-- [ ] `echo $((1<<2))\ngit switch main\n2` denies.
-- [ ] `cat <<EOF\ngit switch main\nEOF` still ALLOWS — the `260809-1111` case
+- [x] `# … <<EOF\ngit switch main\n… <<EOF\n…\nEOF` denies.
+- [x] `echo $((1<<2))\ngit switch main\n2` denies.
+- [x] `cat <<EOF\ngit switch main\nEOF` still ALLOWS — the `260809-1111` case
       must not regress.
-- [ ] `cat <<EOF\n$(git switch main)\nEOF` still denies.
-- [ ] Both new cases sit in `hooks/lib/__tests__/git-branch-guard.test.ts` next
+- [x] `cat <<EOF\n$(git switch main)\nEOF` still denies.
+- [x] Both new cases sit in `hooks/lib/__tests__/git-branch-guard.test.ts` next
       to the `260809-1111` case, naming this record.
-- [ ] `rules/git-branch-discipline.md` states the residual, or the claims are
+- [x] `rules/git-branch-discipline.md` states the residual, or the claims are
       narrowed to what the lexer can carry.
+
+---
+Resolved: `6fae676` (criteria 1-5) and `97d5846` (criterion 6), verified at HEAD by the
+reconciler (260809-2252). The record was closed by rename with no resolution note and with all
+six criteria unticked; the ticks above and this footer are the reconciler's. Verification was by
+rebuilding the differential the implementing agent never committed, compiling `6fae676^` beside
+HEAD and driving both classifiers over one corpus, plus end-to-end runs through the shipped
+`PreToolUse` hook from a scratch project root outside this repository (so the self-detect
+stand-down did not mask the result).
+
+- Criteria 1 and 2 — CONFIRMED, measured through the real hook: both the comment-borne and the
+  arithmetic `<<` shapes BLOCK at HEAD and allowed at `6fae676^`.
+- Criteria 3 and 4 — CONFIRMED. The `260809-1111` contract is intact: a plain heredoc body still
+  allows, `$(git switch main)` in that body still denies.
+- Criterion 5 — CONFIRMED. `hooks/lib/__tests__/git-branch-guard.test.ts:1264` and `:1274`, both
+  naming this record, sitting directly under the `260809-1111` block at `:1196`.
+- Criterion 6 — CONFIRMED, by `97d5846` rather than by `6fae676`.
+  `rules/git-branch-discipline.md` now names the six spans, states that emitting rather than
+  removing bounds a wrong guess ("costs a false deny and never an allow"), and cites this
+  record as closed.
+
+**The commit's direction claim holds; its count does not, and the count was measuring itself.**
+"Exactly six verdicts moved, all toward deny" was re-derived over 47,722 comparisons across four
+corpora (HEAD suites plus 87 adversarial cases, a 6,000-case template cross-product, and 40,000
+seeded fuzz cases). **Not one verdict moved toward allow anywhere** — the strong half of the
+claim survives, and it has a structural reason behind it: a suspended span only makes the
+scanner skip bytes, so the new lexer recognises a strict subset of the old lexer's heredoc
+openers, which means less blanking and more text classified. The "six", however, is an artifact:
+run the same differential against the test suites **as they stood before the commit** and *zero*
+verdicts move. The six the original harness counted were the six cases `6fae676` itself added.
+The number is not evidence about the fix's reach over pre-existing coverage, and it is not
+reproducible — that harness was never committed.
+
+**The six spans are a real count, but of what the commit added, not of the lexer's coverage.**
+All six are countable syntactic productions at `hooks/lib/shell-parse.ts:453` (comment) and
+`:257`, `:263`, `:268`, `:277`, `:287` (the five arms of `scanNonTokenizedSpan`), and each was
+re-confirmed against bash 3.2.57. The number of contexts at HEAD in which a `<<` does not open a
+heredoc is **eleven** — those six plus backslash-escape pairs, single quotes, double quotes, the
+`<<<` here-string and an already-open heredoc body, all five predating the commit.
+
+**A live gap of this record's own class survives and is filed separately.** `((` is recognised
+only at a word start, so `if((1<<2))` with no blank defeats it and the guard allows a
+`git switch` on the next line — same shape as this record, different entry.
+`shared/issues/260809-2300_o_the-arithmetic-command-span-is-recognised-only-after-a-blank-so-if-and-for-defeat-it.md`.

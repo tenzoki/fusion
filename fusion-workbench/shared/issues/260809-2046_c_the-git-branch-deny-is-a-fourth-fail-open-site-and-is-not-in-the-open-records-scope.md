@@ -59,7 +59,23 @@ found later.
 
 ## Acceptance criteria
 
-- [ ] With `.guard-state/` unwritable, `Bash` with `git switch main` still emits
+- [x] With `.guard-state/` unwritable, `Bash` with `git switch main` still emits
       `{"decision":"block", …}` and exits 0.
-- [ ] `260809-1825` names this site, or this record is closed by the commit that
+- [x] `260809-1825` names this site, or this record is closed by the commit that
       closes it.
+
+---
+Resolved: `f9c4214`, verified at HEAD by the reconciler (260809-2252). The record was closed by
+rename with no resolution note and with both criteria unticked; the ticks above and this footer
+are the reconciler's.
+
+- Criterion 1 — CONFIRMED. With `.guard-state/` at `0555`, `Bash` carrying `git switch main`
+  answers `{"decision":"block","reason":"fusion policy: agents never switch git branches…"}`
+  at HEAD, against `{}` at `f9c4214^`. Code at `hooks/guard.ts:381-392`; pinned by
+  `hooks/lib/__tests__/hook-fail-open.test.ts:290-309`.
+- Criterion 2 — CONFIRMED by its second disjunct. `260809-1825`'s body was never edited to name
+  this site, but one commit closed all three records, which is what the criterion offered as the
+  alternative. The first disjunct is not met and does not need to be.
+
+The record's "worth checking while there" note about the Bash STEP 3 override path was also
+addressed, at `hooks/guard.ts:411-433`.

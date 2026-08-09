@@ -82,8 +82,29 @@ rather than independently.
 
 ## Acceptance criteria
 
-- [ ] With `churn.json` unwritable, a measured protected-path change still
+- [x] With `churn.json` unwritable, a measured protected-path change still
       returns the `additionalContext` sentence and exits 0.
-- [ ] The churn failure is reported (stderr and/or `guard_error`), not silent.
-- [ ] A test in `hooks/lib/__tests__/hook-fail-open.test.ts` pins it, naming
+- [x] The churn failure is reported (stderr and/or `guard_error`), not silent.
+- [x] A test in `hooks/lib/__tests__/hook-fail-open.test.ts` pins it, naming
       this record.
+
+---
+Resolved: `f9c4214`, verified at HEAD by the reconciler (260809-2252). The record was closed by
+rename with no resolution note and with all three criteria unticked; the ticks above and this
+footer are the reconciler's.
+
+- Criterion 1 — CONFIRMED. `hooks/tracker.ts:776` now reads
+  `answer("tracker", () => respond(measured ?? undefined), () => trackChurn(input))`, so the
+  reply is written before the heatmap runs. Measured with `churn.json` replaced by a non-empty
+  directory and a `Write` call (the path that actually reaches `saveChurn`): the full
+  `additionalContext` naming the reverted file and `clear-halt.js` is delivered, the file is
+  restored, and `haltActive` is `true`.
+- Criterion 2 — CONFIRMED. The churn failure follows the reply on stderr as
+  `[tracker] Error: Error: EISDIR: … rename '…churn.json.tmp' -> '…churn.json'`.
+- Criterion 3 — CONFIRMED. `hooks/lib/__tests__/hook-fail-open.test.ts:311-360`,
+  `"delivers the protected-path sentence with churn.json unwritable (260809-2045)"`, and it
+  asserts the enforcement as well as the sentence (`:355-356`).
+
+The question this record deferred to `260809-1825` — whether `saveEscalation` inside
+`measureProtectedPaths` should also be best-effort — was answered in the same commit at
+`hooks/tracker.ts:583`, with the failure carried into the halt wording rather than swallowed.

@@ -30,3 +30,20 @@ Delete the line. Nothing else in the file refers to it.
 - [ ] `docs/philosophy.md` ends with the `/fusion:help` bullet and no markup token
       after it.
 - [ ] `grep -rn "</content>" docs/ skills/ agents/ rules/ README*.md` finds nothing.
+
+---
+**Reconciliation 260809-2252 (reconciler, domain `code`) — stays `_o_`, and the scope is one
+site wider than the record's own body says.**
+
+The defect is confirmed at HEAD: `docs/philosophy.md:52` is `</content>`, with no opening tag
+in the file. But it is not the only one. `README.md:151` carries the identical stray tag, from
+the identical commit — `git log -S'</content>' -- README.md` and the same query against
+`docs/philosophy.md` both return `43ee3b5` and nothing else, so one wrapper leaked into both
+documents the commit rewrote.
+
+The record's `## What is wrong` names only `docs/philosophy.md`; its second acceptance
+criterion already covers the wider case (`grep -rn "</content>" docs/ skills/ agents/ rules/
+README*.md finds nothing`), so the criterion is satisfiable only by two edits, not one.
+`README.md` is the more consequential of the two: it is the first surface a user reads.
+
+Whole-tree check: those two lines are the only occurrences outside `fusion-workbench/`.
