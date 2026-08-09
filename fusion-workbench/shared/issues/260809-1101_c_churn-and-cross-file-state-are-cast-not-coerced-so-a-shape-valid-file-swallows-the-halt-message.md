@@ -85,3 +85,14 @@ Cross-references:
 
 **Reconciliation 260809-1651 (reconciler, domain `code`) — stays `_o_`. Untouched by the defect round.**
 The six commits `451a07e..fb262d8` touch `hooks/tracker.ts`, `hooks/lib/protected-snapshot.ts`, `hooks/lib/git-branch-guard.ts` and the new `hooks/lib/reverted-copy.ts`. `hooks/lib/config.ts`, `hooks/lib/churn.ts`, `hooks/lib/cross-file.ts` and `hooks/lib/escalation.ts` are not in the diff, so every line this record cites still reads as filed and its acceptance criteria are unmet.
+
+---
+Resolved (260809-1811, coder — marker left at `_p_` for the orchestrator to close after its own validation):
+
+Both loaders now coerce. The fix took the shared route the record and analysis C2 asked for rather than a second and third private copy: `hooks/lib/guard-state-file.ts` holds the resolve-read-coerce-write seam plus three coercion primitives, and the coercion is a PARAMETER of the load, so absence, unparseable text and a shape-valid value of the wrong type are one answer and neither state module has anywhere left to put an `as` cast. `hooks/lib/churn.ts` supplies `coerceChurnState`, `hooks/lib/cross-file.ts` supplies `coerceCrossFileState`; both round-trip a well-formed file unchanged.
+
+`hooks/lib/escalation.ts` and `hooks/lib/protected-snapshot.ts` were NOT migrated onto the helper. Escalation was out of this task's scope, and the snapshot does not fit the seam as written: its load answers `null` rather than an empty state, its save removes the stale file when its own write fails, and its read unlinks as it goes. That leaves C2 partly open, and the reason is recorded in the helper's own header.
+
+Verification: `hooks/lib/__tests__/guard-state-shape.test.ts` drives both hooks through the harness against a project seeded with a malformed state file, and asserts the halt sentence still reaches stdout. Checked against the pre-fix sources first — 8 of its 16 cases fail there with `[tracker] Error: TypeError: Cannot read properties of undefined`, which is the defect as filed. `npm test` in `hooks/` is green at 1113 tests, and the new file also passes with `FUSION_GUARD_ENTRY=dist`, against the compiled `dist/tracker.js`.
+
+The monotonic-latch defect in the same two modules (`260809-1101_o_churn-and-cross-file-criticals-latch-permanently-and-never-reset.md`) was deliberately not touched: it is queued separately and blocked on a human decision.

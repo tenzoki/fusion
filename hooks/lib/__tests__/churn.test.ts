@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import {
+  coerceChurnState,
   recordChange,
   analyzeChurn,
   getTopChurnFiles,
@@ -160,6 +161,100 @@ describe("getTopChurnFiles", () => {
     recordChange(state, "pkg/only.go");
     const top = getTopChurnFiles(state, 10);
     expect(top).toHaveLength(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// The coercion the load runs on whatever `churn.json` holds.
+//
+// The cast it replaced caught a MISSING file and UNPARSEABLE text and nothing
+// else, so a file that parsed to a valid JSON value of the wrong shape threw on
+// the next field access — inside `tracker.ts`, whose top-level handler then
+// discarded the protected-path halt message the same tool call had produced
+// (issue 260809-1101). Every row below is well-formed JSON, which is exactly why
+// the old `try/catch` could not see any of them.
+//
+// The end-to-end consequence is asserted in `guard-state-shape.test.ts`; these
+// cases pin the shape the loader hands on.
+// ---------------------------------------------------------------------------
+describe("coerceChurnState", () => {
+  it("reads {} as an empty state that recordChange can use", () => {
+    const state = coerceChurnState(JSON.parse("{}"));
+    expect(state.files).toEqual({});
+    // The throw the defect was reported as. Not just "no exception": the
+    // resulting state has to be usable, or the load has only moved the failure.
+    expect(() => recordChange(state, "pkg/main.go")).not.toThrow();
+    expect(state.files["pkg/main.go"].totalChanges).toBe(1);
+  });
+
+  for (const [name, value] of [
+    ["null", null],
+    ["an array", []],
+    ["a bare number", 7],
+    ["a string", "churn"],
+    ["undefined — an absent, unreadable or unparseable file", undefined],
+  ] as [string, unknown][]) {
+    it(`reads ${name} as an empty state`, () => {
+      const state = coerceChurnState(value);
+      expect(state.files).toEqual({});
+      expect(Number.isFinite(Date.parse(state.sessionStart))).toBe(true);
+    });
+  }
+
+  it("replaces a files value that is not an object", () => {
+    expect(coerceChurnState({ files: [] }).files).toEqual({});
+    expect(coerceChurnState({ files: "none" }).files).toEqual({});
+  });
+
+  it("drops a file entry that is not an object rather than zero-filling it", () => {
+    // A zero-filled entry would claim the guard had observed a file it knows
+    // nothing about. The next real change re-creates it correctly.
+    const state = coerceChurnState({
+      files: { "pkg/a.go": null, "pkg/b.go": "hot", "pkg/c.go": {} },
+    });
+    expect(Object.keys(state.files)).toEqual(["pkg/c.go"]);
+  });
+
+  it("defaults the per-file counters instead of carrying garbage into a threshold", () => {
+    const stats = coerceChurnState({
+      files: {
+        "pkg/a.go": {
+          totalChanges: "many",
+          changesThisSession: -4,
+          lastChange: 17,
+          thrashingScore: 2.7,
+        },
+      },
+    }).files["pkg/a.go"];
+    expect(stats.totalChanges).toBe(0);
+    expect(stats.changesThisSession).toBe(0);
+    expect(stats.thrashingScore).toBe(2);
+    expect(stats.lastChange).toBe("");
+  });
+
+  it("replaces a sessionStart Date cannot read, so the session reset still fires", () => {
+    // `recordChange` compares Date.now() against this value. An unparseable
+    // string yields NaN, which compares false against every threshold — the
+    // two-hour reset would silently never fire again.
+    const state = coerceChurnState({ files: {}, sessionStart: "not a date" });
+    expect(Number.isFinite(Date.parse(state.sessionStart))).toBe(true);
+  });
+
+  it("round-trips a well-formed state unchanged", () => {
+    // The anti-vacuity half: a coercion that emptied everything would pass every
+    // case above and silently reset a project's accumulated churn on load.
+    const written: ChurnState = {
+      files: {
+        "pkg/a.go": {
+          totalChanges: 12,
+          changesThisSession: 3,
+          lastChange: "2026-08-09T10:00:00.000Z",
+          thrashingScore: 6,
+        },
+      },
+      sessionStart: "2026-08-09T09:00:00.000Z",
+    };
+    expect(coerceChurnState(JSON.parse(JSON.stringify(written)))).toEqual(written);
   });
 });
 

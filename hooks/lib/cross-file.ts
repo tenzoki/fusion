@@ -15,27 +15,21 @@
  */
 
 import {
-  readFileSync,
-  writeFileSync,
-  renameSync,
-  mkdirSync,
-  existsSync,
-} from "node:fs";
-import { resolve } from "node:path";
-import { findWorkbenchRoot } from "./workbench-root.js";
+  isStateObject,
+  loadGuardState,
+  nonNegativeCount,
+  optionalTimestamp,
+  saveGuardState,
+} from "./guard-state-file.js";
 
 /**
  * Cross-file state lives in `<project-root>/fusion-workbench/.guard-state/cross-file.json`.
- * Returns null when no `.fusion-setup` marker is found upward — every state
- * operation becomes a silent no-op so that plain Claude sessions in
- * non-fusion-set-up directories don't bootstrap stray workbenches.
+ * With no `.fusion-setup` marker found upward, every state operation becomes a
+ * silent no-op so that plain Claude sessions in non-fusion-set-up directories
+ * don't bootstrap stray workbenches. The resolution, the read and the atomic
+ * write live in `guard-state-file.ts`; this module supplies only the shape.
  */
-function getCrossFilePaths(): { stateDir: string; statePath: string } | null {
-  const root = findWorkbenchRoot();
-  if (!root) return null;
-  const stateDir = resolve(root, "fusion-workbench", ".guard-state");
-  return { stateDir, statePath: resolve(stateDir, "cross-file.json") };
-}
+const STATE_FILE = "cross-file.json";
 
 /** Per-file ping-back statistics. */
 export interface FileCrossFileStats {
@@ -73,38 +67,62 @@ const DEFAULT_THRESHOLDS: CrossFileThresholds = {
   pingBackCritical: 5,
 };
 
-const EMPTY_STATE: CrossFileState = {
-  files: {},
-  lastEditFile: null,
-  lastEditTimestamp: null,
-};
+/** A fresh empty state. A function, so no caller can share the files map. */
+function emptyState(): CrossFileState {
+  return { files: {}, lastEditFile: null, lastEditTimestamp: null };
+}
 
-/** Load cross-file state from disk. Returns empty state if missing or no workbench. */
-export function loadCrossFile(): CrossFileState {
-  const empty: CrossFileState = {
-    files: {},
-    lastEditFile: null,
-    lastEditTimestamp: null,
-  };
-  const paths = getCrossFilePaths();
-  if (!paths) return empty;
-  try {
-    if (!existsSync(paths.statePath)) return empty;
-    const content = readFileSync(paths.statePath, "utf-8");
-    return JSON.parse(content) as CrossFileState;
-  } catch {
-    return empty;
+/**
+ * Coerce an arbitrary parsed JSON value into a `CrossFileState`.
+ *
+ * The defect and the reasoning are the same as `coerceChurnState`'s, and that
+ * function's header carries the full account: the load used to cast with `as`
+ * inside a `try/catch` written for a missing or unparseable file, so a file that
+ * parsed to a valid JSON value of the wrong shape threw on the next field
+ * access, and the throw discarded the protected-path halt message the same tool
+ * call had produced (issue `260809-1101`). A well-formed file round-trips
+ * unchanged.
+ *
+ * `lastEditFile` is the one field where the coercion is load-bearing beyond not
+ * throwing: `recordEdit` reads it to decide whether an edit is a return visit,
+ * so a non-string value has to become `null` — "no previous edit" — rather than
+ * being carried into that comparison. An entry under `files` whose value is not
+ * an object is dropped, for the reason `coerceChurnState` gives.
+ */
+export function coerceCrossFileState(value: unknown): CrossFileState {
+  if (!isStateObject(value)) return emptyState();
+
+  const rawFiles = isStateObject(value.files) ? value.files : {};
+  const files: Record<string, FileCrossFileStats> = {};
+  for (const [path, stats] of Object.entries(rawFiles)) {
+    if (!isStateObject(stats)) continue;
+    files[path] = {
+      pingBackCount: nonNegativeCount(stats.pingBackCount),
+      totalEdits: nonNegativeCount(stats.totalEdits),
+      lastEditTimestamp: optionalTimestamp(stats.lastEditTimestamp) ?? "",
+    };
   }
+
+  return {
+    files,
+    lastEditFile:
+      typeof value.lastEditFile === "string" ? value.lastEditFile : null,
+    lastEditTimestamp: optionalTimestamp(value.lastEditTimestamp),
+  };
+}
+
+/**
+ * Load cross-file state from disk. Returns the empty state when the file is
+ * missing, when there is no workbench, when the text does not parse, AND when it
+ * parses to something that is not a cross-file state.
+ */
+export function loadCrossFile(): CrossFileState {
+  return loadGuardState(STATE_FILE, coerceCrossFileState);
 }
 
 /** Save cross-file state atomically. No-op if no workbench is set up. */
 export function saveCrossFile(state: CrossFileState): void {
-  const paths = getCrossFilePaths();
-  if (!paths) return;
-  mkdirSync(paths.stateDir, { recursive: true });
-  const tmp = paths.statePath + ".tmp";
-  writeFileSync(tmp, JSON.stringify(state, null, 2), "utf-8");
-  renameSync(tmp, paths.statePath);
+  saveGuardState(STATE_FILE, state);
 }
 
 /**
@@ -198,11 +216,7 @@ export function analyzeCrossFile(
 
 /** Reset state. Useful as a "checkpoint" after a commit indicates progress. */
 export function resetCrossFile(): CrossFileState {
-  const fresh: CrossFileState = {
-    files: {},
-    lastEditFile: null,
-    lastEditTimestamp: null,
-  };
+  const fresh = emptyState();
   saveCrossFile(fresh);
   return fresh;
 }

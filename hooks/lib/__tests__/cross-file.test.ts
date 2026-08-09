@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import {
+  coerceCrossFileState,
   recordEdit,
   analyzeCrossFile,
 } from "../cross-file.js";
@@ -116,5 +117,81 @@ describe("cross-file ping-back tracker", () => {
     recordEdit(state, "B");
     recordEdit(state, "A"); // A.pingBack=1, default warning=3
     expect(analyzeCrossFile(state)).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// The coercion the load runs on whatever `cross-file.json` holds. Same defect as
+// churn's, same rows: every one of them is well-formed JSON, which is why the
+// `try/catch` around the old `as` cast could not see any of it (issue
+// 260809-1101). See `churn.test.ts` for the full account.
+// ---------------------------------------------------------------------------
+describe("coerceCrossFileState", () => {
+  it("reads {} as an empty state that recordEdit can use", () => {
+    const coerced = coerceCrossFileState(JSON.parse("{}"));
+    expect(coerced.files).toEqual({});
+    expect(() => recordEdit(coerced, "A")).not.toThrow();
+    expect(coerced.files["A"].totalEdits).toBe(1);
+  });
+
+  for (const [name, value] of [
+    ["null", null],
+    ["an array", []],
+    ["a bare number", 7],
+    ["undefined — an absent, unreadable or unparseable file", undefined],
+  ] as [string, unknown][]) {
+    it(`reads ${name} as an empty state`, () => {
+      expect(coerceCrossFileState(value)).toEqual({
+        files: {},
+        lastEditFile: null,
+        lastEditTimestamp: null,
+      });
+    });
+  }
+
+  it("nulls a lastEditFile that is not a string, so no edit reads as a return visit", () => {
+    // `recordEdit` compares this value against the file being edited. A non-string
+    // carried into that comparison would count a first edit as a ping-back.
+    const coerced = coerceCrossFileState({
+      files: { A: { pingBackCount: 0, totalEdits: 1, lastEditTimestamp: "" } },
+      lastEditFile: 42,
+    });
+    expect(coerced.lastEditFile).toBeNull();
+    recordEdit(coerced, "A");
+    expect(coerced.files["A"].pingBackCount).toBe(0);
+  });
+
+  it("drops a file entry that is not an object and defaults the counters", () => {
+    const coerced = coerceCrossFileState({
+      files: {
+        A: null,
+        B: { pingBackCount: -3, totalEdits: "many", lastEditTimestamp: 9 },
+      },
+    });
+    expect(Object.keys(coerced.files)).toEqual(["B"]);
+    expect(coerced.files["B"]).toEqual({
+      pingBackCount: 0,
+      totalEdits: 0,
+      lastEditTimestamp: "",
+    });
+  });
+
+  it("round-trips a well-formed state unchanged", () => {
+    // Anti-vacuity: a coercion that emptied everything would pass every case
+    // above while silently resetting a project's ping-back history on load.
+    const written: CrossFileState = {
+      files: {
+        A: {
+          pingBackCount: 4,
+          totalEdits: 9,
+          lastEditTimestamp: "2026-08-09T10:00:00.000Z",
+        },
+      },
+      lastEditFile: "A",
+      lastEditTimestamp: "2026-08-09T10:00:00.000Z",
+    };
+    expect(coerceCrossFileState(JSON.parse(JSON.stringify(written)))).toEqual(
+      written,
+    );
   });
 });

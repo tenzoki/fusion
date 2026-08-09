@@ -5,58 +5,94 @@
  * Tracks per-file change frequency and thrashing patterns.
  * State persists in state/churn.json across sessions.
  */
-import { readFileSync, writeFileSync, renameSync, mkdirSync } from "node:fs";
-import { resolve } from "node:path";
-import { findWorkbenchRoot } from "./workbench-root.js";
+import { isStateObject, loadGuardState, nonNegativeCount, optionalTimestamp, saveGuardState, } from "./guard-state-file.js";
 /**
  * Churn state lives in `<project-root>/fusion-workbench/.guard-state/churn.json`,
  * where `<project-root>` is the directory above the `.fusion-setup` marker
  * found by walking up from the current working directory.
  *
- * If no marker is found (project never ran `/fusion:setup`), the path
- * resolver returns `null` and every state operation becomes a silent no-op
- * — preventing stray workbench creation when a Claude session's cwd
- * happens to be in a directory that isn't a fusion project.
+ * If no marker is found (project never ran `/fusion:setup`), every state
+ * operation becomes a silent no-op — preventing stray workbench creation when a
+ * Claude session's cwd happens to be in a directory that isn't a fusion project.
+ * The resolution, the read and the atomic write all live in
+ * `guard-state-file.ts`; this module supplies only the shape.
  */
-function getChurnPaths() {
-    const root = findWorkbenchRoot();
-    if (!root)
-        return null;
-    const stateDir = resolve(root, "fusion-workbench", ".guard-state");
-    return { stateDir, churnPath: resolve(stateDir, "churn.json") };
-}
+const CHURN_FILE = "churn.json";
 const DEFAULT_THRESHOLDS = {
     changesPerSessionWarning: 5,
     changesPerSessionCritical: 10,
     totalChangesWarning: 8,
     totalChangesCritical: 15,
 };
-/** Load churn state from disk. Returns empty state if missing or no workbench. */
-export function loadChurn() {
-    const paths = getChurnPaths();
-    const empty = {
-        files: {},
-        sessionStart: new Date().toISOString(),
+/** A fresh empty state. A function, so no caller can share the files map. */
+function emptyState() {
+    return { files: {}, sessionStart: new Date().toISOString() };
+}
+/**
+ * Coerce an arbitrary parsed JSON value into a `ChurnState`.
+ *
+ * ## Why this is not an `as` cast
+ *
+ * `JSON.parse(content) as ChurnState` used to be the whole of the load, inside a
+ * `try/catch` that handles a MISSING file and UNPARSEABLE text and nothing else.
+ * A file that parses to a valid JSON value of the wrong SHAPE — `{}` is enough —
+ * passed that catch and threw on the next field access: `state.files[filePath]`
+ * on `undefined`. The throw escaped to `tracker.ts`'s top-level handler, which
+ * calls `respond()` with no argument and so discarded the protected-path halt
+ * sentence the same tool call had already produced. The revert and the halt
+ * still landed; what was lost was the only message telling the agent which file
+ * changed and how a human clears it, which is precisely the silent-revert
+ * failure `rules/protected-path-discipline.md` was written against. Nothing
+ * repaired the file either — `saveChurn` sits after the throw — so every later
+ * tool call in that project took the same path (issue `260809-1101`).
+ *
+ * This is the same defect `260802-2334` closed for `escalation.json`, and the
+ * fix is the same one: coerce rather than trust. A well-formed file round-trips
+ * unchanged, so there is no behaviour change for the ordinary case.
+ *
+ * ## The two coercions worth stating
+ *
+ * `sessionStart` must be a string Date can read, because `recordChange` derives
+ * a session age from it and `NaN` compares false against every threshold — an
+ * unreadable value would silently retire the two-hour session reset rather than
+ * failing. An entry under `files` whose value is not an object is DROPPED rather
+ * than zero-filled: a zero-filled entry would claim the guard had observed a
+ * file it knows nothing about, and the next real change re-creates it correctly.
+ */
+export function coerceChurnState(value) {
+    if (!isStateObject(value))
+        return emptyState();
+    const rawFiles = isStateObject(value.files) ? value.files : {};
+    const files = {};
+    for (const [path, stats] of Object.entries(rawFiles)) {
+        if (!isStateObject(stats))
+            continue;
+        files[path] = {
+            totalChanges: nonNegativeCount(stats.totalChanges),
+            changesThisSession: nonNegativeCount(stats.changesThisSession),
+            // Read by no code, only by a human or an agent reading the file. An empty
+            // string reads as "unknown"; inventing a time would read as a fact.
+            lastChange: optionalTimestamp(stats.lastChange) ?? "",
+            thrashingScore: nonNegativeCount(stats.thrashingScore),
+        };
+    }
+    return {
+        files,
+        sessionStart: optionalTimestamp(value.sessionStart) ?? new Date().toISOString(),
     };
-    if (!paths)
-        return empty;
-    try {
-        const content = readFileSync(paths.churnPath, "utf-8");
-        return JSON.parse(content);
-    }
-    catch {
-        return empty;
-    }
+}
+/**
+ * Load churn state from disk. Returns the empty state when the file is missing,
+ * when there is no workbench, when the text does not parse, AND when it parses
+ * to something that is not a churn state — see `coerceChurnState` for why that
+ * last case is the one worth spelling out.
+ */
+export function loadChurn() {
+    return loadGuardState(CHURN_FILE, coerceChurnState);
 }
 /** Save churn state to disk atomically. No-op if no workbench is set up. */
 export function saveChurn(state) {
-    const paths = getChurnPaths();
-    if (!paths)
-        return;
-    mkdirSync(paths.stateDir, { recursive: true });
-    const tmpPath = `${paths.churnPath}.tmp`;
-    writeFileSync(tmpPath, JSON.stringify(state, null, 2), "utf-8");
-    renameSync(tmpPath, paths.churnPath);
+    saveGuardState(CHURN_FILE, state);
 }
 /**
  * Record a file change in the churn state.
