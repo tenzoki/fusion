@@ -78,7 +78,7 @@ While the gates govern *decisions*, a **compliance guard** governs *file writes*
 
 - **Protected paths — blocked.** Agent definitions, rules, and workbench state files are off-limits to agents. A write to one is denied outright.
 - **Decision-governed paths — blocked only at high sensitivity.** Files a project decision governs carry a sensitivity level. Only `high` blocks; `medium` and `low` pass. This lets a project ring-fence its most binding areas without freezing everything.
-- **Churn and ping-back — observation only.** The guard counts how often each file is touched and watches for back-and-forth edit loops (file A → file B → file A). When a file is thrashed too often, it emits a **warning** the monitor and orchestrator can see. It never blocks the write — this check runs *after* the write, so it can only signal, not stop.
+- **Churn — observation only.** The guard counts how often each file is touched in a session. When a file is thrashed past the threshold, it emits a **warning** the monitor and orchestrator can see. The count is taken *after* the write and never blocks it: it signals, it does not stop.
 - **Escalation → halt.** Consecutive blocks accumulate. After a threshold (default 3), the guard enters **halt** and blocks all writes until a human clears it. This catches an agent stuck retrying something it's not allowed to do.
 - **Git branch switches — blocked.** Agents cannot `git switch`, `git checkout <branch>`, or `git worktree add`. This is enforced at the command level; you can't reword around it. Only you, by setting a session environment variable, can allow it.
 

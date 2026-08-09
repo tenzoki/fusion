@@ -81,7 +81,7 @@ For the maintainer-side release flow (bumping `plugin.json` + `marketplace.json`
 
 Three things to configure:
 
-- **Compliance guard:** `$FUSION_PLUGIN_ROOT/README-hooks.md` and `$FUSION_PLUGIN_ROOT/hooks/config.example.json`. Categories, churn thresholds, escalation behavior, ping-back detection.
+- **Compliance guard:** `$FUSION_PLUGIN_ROOT/README-hooks.md` and `$FUSION_PLUGIN_ROOT/hooks/config.example.json`. Categories, protected paths, churn thresholds, escalation behavior.
 - **Project rules:** read `$FUSION_PLUGIN_ROOT/bin/fusion-rules` (the header comment is the spec). Two project-side rule locations:
   - `./rules/` — fusion-agent-specific rules (e.g. `investigator-capture-layout.md`, `taskplanner-priorities.md`) that have no meaning outside a fusion context.
   - `.claude/rules/` — project-wide rules every Claude session should respect (coding/ontology/normative/verb guidelines).
