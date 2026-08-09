@@ -32,17 +32,25 @@
  * coercion, not a malformed file, and swallowing it here would hide exactly the
  * class of failure this module exists to end.
  *
+ * ## What `escalation.ts` adds on top, rather than beside
+ *
+ * It was the one module this seam deliberately left alone at first, because its
+ * behaviour was pinned by open work. That work landed — its save now re-reads
+ * the file to merge in a halt another process raised since its load — and a
+ * save that reads is exactly the shape this module already owns, so it joined
+ * rather than growing a second reader next door. It keeps its own coercion and
+ * wraps `loadGuardState`/`saveGuardState` with the merge. The merge does NOT
+ * generalise to `churn.json` or `cross-file.json`: their lost updates cost
+ * counter accuracy, where escalation's cost a raised halt.
+ *
  * ## What is NOT routed through here, and why
  *
- * `escalation.ts` keeps its own load and save for now. Its coercion is the one
- * that already exists and its behaviour is pinned by open work elsewhere in this
- * queue; moving it is a behaviour-preserving edit that belongs in its own commit
- * rather than riding along with a defect fix. `protected-snapshot.ts` does not
- * fit this seam as written: its load answers `null` rather than an empty state
- * (no before-picture must never be read as an empty one), its save removes the
- * stale file when its own write fails, and its read unlinks the file as it goes.
- * Those are three deliberate differences, each with a measured issue behind it,
- * not incidental variation. Both remain as recommendation C2 in
+ * `protected-snapshot.ts` does not fit this seam as written: its load answers
+ * `null` rather than an empty state (no before-picture must never be read as an
+ * empty one), its save removes the stale file when its own write fails, and its
+ * read unlinks the file as it goes. Those are three deliberate differences, each
+ * with a measured issue behind it, not incidental variation. It remains as
+ * recommendation C2 in
  * `fusion-workbench/shared/analyses/260809-1101-guard-support-layer.md`.
  */
 /** Where one state file lives, or null when no workbench is set up. */

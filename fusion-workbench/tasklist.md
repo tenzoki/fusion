@@ -286,7 +286,11 @@ flowchart TD
   `hooks/tracker.ts:335-343`, `hooks/lib/__tests__/escalation.test.ts`
 - **Depends on:** task 2 (both edit `hooks/guard.ts` and `hooks/tracker.ts`)
 - **Priority:** normal
-- **Status:** [ ] open
+- **Status:** [x] done (260809-1927, coder — candidate 1, the merge on save; `saveEscalation`
+  re-reads and adopts a halt raised since its load, in `hooks/lib/escalation.ts`, which
+  joined the `hooks/lib/guard-state-file.ts` seam because the merge has to read. No call
+  site in `hooks/guard.ts` or `hooks/tracker.ts` changed. Counters stay last-writer-wins;
+  `churn.json` and `cross-file.json` untouched.)
 - **Detail:** `escalation.json` is loaded, mutated in memory and written back with an
   atomic rename, with no lock. The rename prevents a torn file; it does not prevent a lost
   update, because `saveEscalation` serialises the whole state object the caller is holding,

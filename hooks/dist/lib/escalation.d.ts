@@ -32,7 +32,8 @@ export interface EscalationState {
  *
  * The halt is project-scoped — it is recorded in
  * `<project-root>/fusion-workbench/.guard-state/escalation.json`, which
- * `getEscalationPaths` above finds by walking up from the working directory.
+ * `guardStatePath` in `guard-state-file.ts` finds by walking up from the
+ * working directory.
  * The clearing script is plugin-scoped, and every halt message used to name
  * only the plugin half. A user read `node <plugin-root>/…/clear-halt.js`,
  * ran it from their home directory, and was told `Guard is not halted. No
@@ -66,7 +67,78 @@ export declare function clearHaltCommand(): string;
  * for why that last case is the one worth spelling out.
  */
 export declare function loadEscalation(): EscalationState;
-/** Save escalation state to disk atomically. No-op if no workbench is set up. */
+/**
+ * Save escalation state to disk atomically, WITHOUT discarding what another
+ * process wrote since this state was loaded. No-op if no workbench is set up.
+ *
+ * ## The lost update this exists to prevent
+ *
+ * The rename makes each write atomic against a reader; it does nothing about a
+ * lost update, because what is written is the whole state object the caller is
+ * holding. `guard.ts` holds that object across the entire PreToolUse decision —
+ * it loads before CHECK 1 and the allow path saves at the very end — and
+ * `tracker.ts` loads, calls `raiseHalt` and saves inside that window whenever
+ * the measurement finds a protected path changed. A blind write of the guard's
+ * object then puts `haltActive: false` back over a halt that was correctly
+ * raised, takes its `recentEvents` entry with it, and leaves the `guard_halt`
+ * row in `events.jsonl` describing a halt no longer recorded (issue
+ * `260809-1101_*_escalation-json-read-modify-write-can-lose-a-halt-raised-by-a-parallel-tool-call.md`).
+ *
+ * `speculation:` that interleaving is not measured. The read-modify-write shape
+ * is plain in the code; whether Claude Code runs two guarded tool calls close
+ * enough together for it to happen, and how often, is unknown — the hook
+ * payload carries no per-call correlation key to measure it with. The fix is
+ * cheap enough not to need the frequency, but nothing here should be read as
+ * evidence that it has been observed.
+ *
+ * ## What the merge preserves, and what it deliberately does not
+ *
+ * PRESERVED — a halt that appeared on disk after this state was loaded. It is
+ * adopted rather than overwritten, which makes `haltActive` monotonic within
+ * one call, the direction `coerceState` already argues for. The test is
+ * "newly raised", not "raised": a caller that loaded a halt and is now writing
+ * `false` — `clear-halt.ts`, the human intervention — meant to clear it, and
+ * an unconditional OR would resurrect a halt the user just cleared.
+ *
+ * PRESERVED — events another writer appended. Every mutation in this module is
+ * an append, so the merge needs no event identity: the disk list is the trunk
+ * and this caller's events since its own load are re-applied on top, in that
+ * order. Without this the adopted halt would arrive with no entry explaining
+ * it.
+ *
+ * NOT preserved — `consecutiveBlocks` and `lastBlockTimestamp`, which are
+ * last-writer-wins. A lost increment costs counter accuracy: the threshold halt
+ * arrives one block later than it might have. That is the same trade the
+ * counters in `churn.ts` and `cross-file.ts` make with the same shape, and it
+ * is left alone for the same reason — the boundary the guard actually enforces
+ * is the outright halt above, not the count that approaches one.
+ *
+ * ## The window this shrinks rather than closes
+ *
+ * The re-read and the rename are two operations, so a halt raised BETWEEN them
+ * is still lost. What changes is the size of the window: from the whole
+ * PreToolUse decision — every check, every config read, every path match — down
+ * to the two calls below. Only a lock closes it completely, and taking one
+ * around every guarded tool call buys the remaining microseconds at the price of
+ * serialising the guard and owning a stale-lock story (`bin/fusion-commit-lock`
+ * has one, for a surface where contention is the normal case rather than the
+ * rare one). That trade was declined here; a lock stays available if the window
+ * is ever measured to matter.
+ *
+ * ## Two things the caller can rely on afterwards
+ *
+ * The caller's object is updated to what was written, so the state in hand and
+ * the state on disk do not silently disagree, and a second save from the same
+ * object appends only what was pushed after the first. Nothing re-decides the
+ * tool call in flight: a guard that discovers an adopted halt here has already
+ * allowed this call, and the halt takes effect on the next one, where CHECK 1
+ * reads it.
+ *
+ * A state object with no recorded baseline — hand-built rather than loaded — is
+ * read as "loaded from an empty file, not halted": all of its events are
+ * treated as this caller's appends, and any halt on disk counts as newly
+ * raised. Both defaults fail toward keeping what is already recorded.
+ */
 export declare function saveEscalation(state: EscalationState): void;
 /** Check if the guard is in halt mode. */
 export declare function isHalted(state: EscalationState): boolean;

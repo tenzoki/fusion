@@ -11,22 +11,21 @@
  *
  * 3 consecutive blocks auto-escalate to halt (configurable).
  */
-import { readFileSync, writeFileSync, renameSync, mkdirSync } from "node:fs";
-import { resolve } from "node:path";
 import { findWorkbenchRoot } from "./workbench-root.js";
+import { isStateObject, loadGuardState, nonNegativeCount, saveGuardState, } from "./guard-state-file.js";
 /**
- * Escalation state lives in `<project-root>/fusion-workbench/.guard-state/escalation.json`.
- * Returns null if no `.fusion-setup` marker is found upward — every state
- * operation becomes a no-op so plain Claude sessions in non-fusion-set-up
- * directories never bootstrap stray workbenches.
+ * Escalation state lives in `<project-root>/fusion-workbench/.guard-state/escalation.json`,
+ * resolved by the shared seam in `guard-state-file.ts` — which returns the
+ * empty state and no-ops the write when no `.fusion-setup` marker is found
+ * upward, so plain Claude sessions in non-fusion-set-up directories never
+ * bootstrap stray workbenches.
+ *
+ * The seam's own header used to record that this module kept a private copy of
+ * the load and the save "for now", pending the open work that is this merge.
+ * That work is here, and it needs to READ the file at save time — so the second
+ * reader would have been a second copy of exactly what the seam exists to end.
  */
-function getEscalationPaths() {
-    const root = findWorkbenchRoot();
-    if (!root)
-        return null;
-    const stateDir = resolve(root, "fusion-workbench", ".guard-state");
-    return { stateDir, statePath: resolve(stateDir, "escalation.json") };
-}
+const ESCALATION_FILE = "escalation.json";
 /** A fresh empty state. A function, so no caller can share the events array. */
 function emptyState() {
     return {
@@ -87,16 +86,17 @@ const MAX_RECENT_EVENTS = 10;
  * Validating them would buy nothing this function exists to buy.
  */
 function coerceState(value) {
-    if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    if (!isStateObject(value))
         return emptyState();
-    }
     const raw = value;
-    const blocks = raw.consecutiveBlocks;
     return {
         haltActive: Boolean(raw.haltActive),
-        consecutiveBlocks: typeof blocks === "number" && Number.isFinite(blocks)
-            ? Math.max(0, Math.floor(blocks))
-            : 0,
+        consecutiveBlocks: nonNegativeCount(raw.consecutiveBlocks),
+        // NOT `optionalTimestamp`. That primitive additionally requires the string
+        // to parse as a date, which `churn.ts` needs because it computes a session
+        // age from its own timestamp. Nothing computes anything from this one — it
+        // is displayed by `clear-halt.ts` and no more — so tightening it here would
+        // be a behaviour change with no defect behind it.
         lastBlockTimestamp: typeof raw.lastBlockTimestamp === "string" ? raw.lastBlockTimestamp : null,
         recentEvents: Array.isArray(raw.recentEvents)
             ? raw.recentEvents
@@ -110,7 +110,8 @@ function coerceState(value) {
  *
  * The halt is project-scoped — it is recorded in
  * `<project-root>/fusion-workbench/.guard-state/escalation.json`, which
- * `getEscalationPaths` above finds by walking up from the working directory.
+ * `guardStatePath` in `guard-state-file.ts` finds by walking up from the
+ * working directory.
  * The clearing script is plugin-scoped, and every halt message used to name
  * only the plugin half. A user read `node <plugin-root>/…/clear-halt.js`,
  * ran it from their home directory, and was told `Guard is not halted. No
@@ -142,37 +143,117 @@ export function clearHaltCommand() {
     return `cd ${projectRoot} && node ${pluginRoot}/hooks/dist/clear-halt.js`;
 }
 /**
+ * Keyed on the state object itself, so no call site changes and nothing is
+ * added to the serialised shape. A hand-built state that never came from
+ * `loadEscalation` simply has no entry — see `saveEscalation` for what it then
+ * assumes and why that direction is the safe one.
+ */
+const baselines = new WeakMap();
+/**
  * Load escalation state from disk. Returns the empty state when the file is
  * missing, when there is no workbench, when the text does not parse, AND when
  * it parses to something that is not an escalation state — see `coerceState`
  * for why that last case is the one worth spelling out.
  */
 export function loadEscalation() {
-    const paths = getEscalationPaths();
-    if (!paths)
-        return emptyState();
-    try {
-        const content = readFileSync(paths.statePath, "utf-8");
-        return coerceState(JSON.parse(content));
-    }
-    catch {
-        return emptyState();
-    }
+    const state = loadGuardState(ESCALATION_FILE, coerceState);
+    baselines.set(state, {
+        haltActive: state.haltActive,
+        eventCount: state.recentEvents.length,
+    });
+    return state;
 }
-/** Save escalation state to disk atomically. No-op if no workbench is set up. */
+/**
+ * Save escalation state to disk atomically, WITHOUT discarding what another
+ * process wrote since this state was loaded. No-op if no workbench is set up.
+ *
+ * ## The lost update this exists to prevent
+ *
+ * The rename makes each write atomic against a reader; it does nothing about a
+ * lost update, because what is written is the whole state object the caller is
+ * holding. `guard.ts` holds that object across the entire PreToolUse decision —
+ * it loads before CHECK 1 and the allow path saves at the very end — and
+ * `tracker.ts` loads, calls `raiseHalt` and saves inside that window whenever
+ * the measurement finds a protected path changed. A blind write of the guard's
+ * object then puts `haltActive: false` back over a halt that was correctly
+ * raised, takes its `recentEvents` entry with it, and leaves the `guard_halt`
+ * row in `events.jsonl` describing a halt no longer recorded (issue
+ * `260809-1101_*_escalation-json-read-modify-write-can-lose-a-halt-raised-by-a-parallel-tool-call.md`).
+ *
+ * `speculation:` that interleaving is not measured. The read-modify-write shape
+ * is plain in the code; whether Claude Code runs two guarded tool calls close
+ * enough together for it to happen, and how often, is unknown — the hook
+ * payload carries no per-call correlation key to measure it with. The fix is
+ * cheap enough not to need the frequency, but nothing here should be read as
+ * evidence that it has been observed.
+ *
+ * ## What the merge preserves, and what it deliberately does not
+ *
+ * PRESERVED — a halt that appeared on disk after this state was loaded. It is
+ * adopted rather than overwritten, which makes `haltActive` monotonic within
+ * one call, the direction `coerceState` already argues for. The test is
+ * "newly raised", not "raised": a caller that loaded a halt and is now writing
+ * `false` — `clear-halt.ts`, the human intervention — meant to clear it, and
+ * an unconditional OR would resurrect a halt the user just cleared.
+ *
+ * PRESERVED — events another writer appended. Every mutation in this module is
+ * an append, so the merge needs no event identity: the disk list is the trunk
+ * and this caller's events since its own load are re-applied on top, in that
+ * order. Without this the adopted halt would arrive with no entry explaining
+ * it.
+ *
+ * NOT preserved — `consecutiveBlocks` and `lastBlockTimestamp`, which are
+ * last-writer-wins. A lost increment costs counter accuracy: the threshold halt
+ * arrives one block later than it might have. That is the same trade the
+ * counters in `churn.ts` and `cross-file.ts` make with the same shape, and it
+ * is left alone for the same reason — the boundary the guard actually enforces
+ * is the outright halt above, not the count that approaches one.
+ *
+ * ## The window this shrinks rather than closes
+ *
+ * The re-read and the rename are two operations, so a halt raised BETWEEN them
+ * is still lost. What changes is the size of the window: from the whole
+ * PreToolUse decision — every check, every config read, every path match — down
+ * to the two calls below. Only a lock closes it completely, and taking one
+ * around every guarded tool call buys the remaining microseconds at the price of
+ * serialising the guard and owning a stale-lock story (`bin/fusion-commit-lock`
+ * has one, for a surface where contention is the normal case rather than the
+ * rare one). That trade was declined here; a lock stays available if the window
+ * is ever measured to matter.
+ *
+ * ## Two things the caller can rely on afterwards
+ *
+ * The caller's object is updated to what was written, so the state in hand and
+ * the state on disk do not silently disagree, and a second save from the same
+ * object appends only what was pushed after the first. Nothing re-decides the
+ * tool call in flight: a guard that discovers an adopted halt here has already
+ * allowed this call, and the halt takes effect on the next one, where CHECK 1
+ * reads it.
+ *
+ * A state object with no recorded baseline — hand-built rather than loaded — is
+ * read as "loaded from an empty file, not halted": all of its events are
+ * treated as this caller's appends, and any halt on disk counts as newly
+ * raised. Both defaults fail toward keeping what is already recorded.
+ */
 export function saveEscalation(state) {
-    const paths = getEscalationPaths();
-    if (!paths)
-        return;
-    mkdirSync(paths.stateDir, { recursive: true });
-    // Trim recent events to max
-    if (state.recentEvents.length > MAX_RECENT_EVENTS) {
-        state.recentEvents = state.recentEvents.slice(-MAX_RECENT_EVENTS);
-    }
-    // Atomic write: write to temp then rename
-    const tmpPath = `${paths.statePath}.tmp`;
-    writeFileSync(tmpPath, JSON.stringify(state, null, 2), "utf-8");
-    renameSync(tmpPath, paths.statePath);
+    const baseline = baselines.get(state) ?? { haltActive: false, eventCount: 0 };
+    const onDisk = loadGuardState(ESCALATION_FILE, coerceState);
+    const merged = {
+        haltActive: state.haltActive || (onDisk.haltActive && !baseline.haltActive),
+        consecutiveBlocks: state.consecutiveBlocks,
+        lastBlockTimestamp: state.lastBlockTimestamp,
+        recentEvents: [
+            ...onDisk.recentEvents,
+            ...state.recentEvents.slice(baseline.eventCount),
+        ].slice(-MAX_RECENT_EVENTS),
+    };
+    saveGuardState(ESCALATION_FILE, merged);
+    state.haltActive = merged.haltActive;
+    state.recentEvents = merged.recentEvents;
+    baselines.set(state, {
+        haltActive: merged.haltActive,
+        eventCount: merged.recentEvents.length,
+    });
 }
 /** Check if the guard is in halt mode. */
 export function isHalted(state) {
