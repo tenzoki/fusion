@@ -79,7 +79,7 @@ Collect every available source. For each source record, per entry: a **date**, t
 |------|--------|-------|
 | `h` | fusion session histories | every directory in `$SCAN_HISTORY` (workbench-relative — prefix with `$WORKBENCH`) |
 | `a` | shared activity log | `activity-log-$USER.md` — check **both** the project root and `$WORKBENCH` |
-| `g` | git commits | `git log` (only if `.git` is present) |
+| `g` | git commit days | `git log` (only if `.git` is present) — a day's commits form **one** unit, not one each |
 
 ```bash
 # session histories — $SCAN_HISTORY is SPACE-SEPARATED and may name TWO stores.
@@ -93,7 +93,8 @@ for d in $(printf '%s\n' "$SCAN_HISTORY"); do find "$WORKBENCH/$d" -maxdepth 1 -
 # activity log — TWO possible locations (project root, and the workbench)
 for f in "activity-log-$USER.md" "$WORKBENCH/activity-log-$USER.md"; do [ -f "$f" ] && echo "$f"; done
 
-# git commits with ISO dates (skip if not a git repo)
+# git commits with ISO dates (skip if not a git repo).
+# Collect them per commit here; step 4 groups them by date into one unit per day.
 git log --date=short --pretty='%ad %h %s' 2>/dev/null
 ```
 
@@ -103,11 +104,15 @@ git log --date=short --pretty='%ad %h %s' 2>/dev/null
 
 ### 4. Date each log unit
 
-Each **log unit** is one dated thing: one session-history file, one `## YYYY-MM-DD` day-section in the activity log, or one git commit. Derive its date in this order:
+Each **log unit** is one dated thing: one session-history file, one `## YYYY-MM-DD` day-section in the activity log, or one **git-commit day** (all of that date's commits taken together as a single unit, never one unit per commit).
+
+That keeps the three sources on the same grain: a history file is one session, an activity-log day-section is one day, and a git-commit day is one day. If git counted per commit it would run finer than the other two and silently dominate every ranking below, because it is normally the highest-volume source.
+
+Derive a unit's date in this order:
 
 1. **Filename date token** on session-history files: `260731-2208-orchestrator-session.md` → `2026-07-31`. The leading `YYMMDD` expands to `20YY-MM-DD`; `HHMM` follows it.
 2. **`## YYYY-MM-DD` headers** inside the activity log — one unit per day-section.
-3. **Commit date** for git units (the `%ad` field above).
+3. **Commit date** for git units (the `%ad` field above). The date *is* the unit: group every commit sharing a date into one unit and read them together in step 5.
 4. **Fallback:** if a file has no parseable date token, read its mtime: `date -r <file> +%Y-%m-%d`. Record every such fallback in the report's Notes section rather than guessing a date.
 
 ### 5. Extract topics per log unit
@@ -127,7 +132,7 @@ Keep the **substance** of what was decided, built, analysed, or written — even
 
 ### 6. Build the recent lists — yesterday, then last 7 days
 
-Build two lists the same way, differing only by their window. For each: filter to the log units whose date falls in the window, collect the **distinct** topics, note where each appeared (source codes + dates), and order by how active the topic was (most log units first). State plainly when a window is empty.
+Build two lists the same way, differing only by their window. For each: filter to the log units whose date falls in the window, collect the **distinct** topics, note where each appeared (source codes + dates), and order by how active the topic was (most log units first, counted as step 4 defines a unit, so a day of commits counts once however many commits it holds). State plainly when a window is empty.
 
 - **Yesterday list** — window `[yday_start, today]`. The most recent, finest-grained view: what was touched since yesterday — or, when today is Monday, since Friday — right up to now. A topic worked on today belongs here too.
 - **Last-7-days list** — window `[week_start, today]`. The broader recent view.
@@ -136,7 +141,7 @@ The yesterday window is a subset of the 7-day window, so topics overlap between 
 
 ### 7. Build the third list — recurring themes by churn
 
-Across **all** log units (full history, not just the window), count each theme's **churn = the number of distinct sessions it appears in**. A "session" is one log unit as defined in step 4 (one session-history file, one activity-log day-section, or one git-commit day). Count each session once per theme even if the theme is mentioned several times inside it.
+Across **all** log units (full history, not just the window), count each theme's **churn = the number of distinct sessions it appears in**. A "session" is one **log unit** exactly as step 4 defines it, git included: one session-history file, one activity-log day-section, or one git-commit day. Ten commits in one afternoon are one session, not ten. Step 4 is the only place that unit is defined; count each session once per theme even if the theme is mentioned several times inside it.
 
 - Rank themes by churn, descending.
 - Include only themes with churn **≥ 2** (a theme seen in a single session is not recurring — leave those for the recent lists, not here).
@@ -160,7 +165,7 @@ Structure:
 **Generated:** <YYYY-MM-DD HH:MM, from `date`>
 **Yesterday window:** <yday_start> → <today><!-- append " (Fri–Sun collapsed)" when today is Monday -->
 **Recent window:** <week_start> → <today> (7 days)
-**Sources scanned:** <e.g. session histories (14 files across 2 stores), git (37 commits), activity log: none>
+**Sources scanned:** <e.g. session histories (14 files across 2 stores), git (37 commits on 12 days = 12 units), activity log: none>
 
 ## Topics — yesterday
 
