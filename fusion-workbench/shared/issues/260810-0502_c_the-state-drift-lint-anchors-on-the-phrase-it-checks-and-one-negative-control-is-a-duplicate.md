@@ -155,3 +155,32 @@ that accepts a row with an empty `Drift when` cell. It was outside the task's ac
 the assigned line ranges, and the test is unchanged.
 
 `npm test` from `hooks/` — exit 0 (41 files, 1096 tests).
+
+---
+Resolved: three of the four claims. Each call point is now `{ act, window, binds }`, where every
+`act` regex matches a line that existed before the drift check did — Step 3e anchors on
+`^Otherwise, emit \`turn_end\` event`, Setup Step 1 on `Present the saved state to the user as a
+summary`. That property is enforced rather than asserted in a comment: a control requires every
+anchor to match uniquely inside a `PRE_FIX` fixture which the same test asserts contains no
+occurrence of "drift check", so an anchor that can only match the check fails there. The single
+`toMatch(/drift check/i)` became three assertions over a window truncated at the nearest heading on
+either side: mentioned at all, then no skip licence in any sentence mentioning it, then a binding
+phrase tying it to the act. The duplicated negative control was separated and the invented fixture
+lines were corrected, with the comment now saying which lines are historical and which constructed.
+
+Demonstrated against mutated copies, the real prompt untouched: the old lint passed all four
+inversions 10/10 and also accepted an honest standalone obligation, reproducing the record's claim
+exactly. The new lint fails each inversion separately, naming its call point and quoting the licence
+it found, rejects the honest standalone obligation, and reports a deleted check as "this act no
+longer runs the drift check" rather than as a missing anchor.
+
+One limit is recorded in the lint's own header rather than papered over: the skip-licence check is a
+blacklist and cannot be otherwise, since whether prose instructs or forbids is not decidable by
+regex. It closes the four measured inversions, which are kept as a verbatim regression control, and
+does not close the class.
+
+Remainder, filed separately as `260810-1813_o_the-condition-table-test-accepts-a-row-whose-drift-when-cell-is-empty.md`:
+§4's second claim, that the condition-table test accepts a row with an empty `Drift when` cell, was
+outside this task's acceptance and outside the executor's assigned line ranges.
+
+Verification: `npm test` from `hooks/` — exit 0, 41 files, 1096 tests; this lint file went 9 to 13.
