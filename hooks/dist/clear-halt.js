@@ -49,9 +49,29 @@
  * line. The clear itself still happened, and nothing is re-raised: the point is
  * that the human is never told "normal operation" about a state this script did
  * not actually leave behind.
+ *
+ * ## Why that check reports per case rather than per fact
+ *
+ * The re-read produces two facts — what arrived that the human was not shown,
+ * and whether the file is halted now — and they are not independent. What "still
+ * halted" MEANS depends on whether anything arrived to account for it. Reported
+ * as two separate sentences (issue 260810-1032) the combination "halted, nothing
+ * arrived" printed a guess at a cause this run had not measured and then told the
+ * human to read a list it had not printed. The three combinations that reach the
+ * report are written out separately below, and each says only what was measured.
+ *
+ * The third of them, halted with nothing arrived, is not reachable from either
+ * shipped hook: every `saveEscalation` call site that can leave the halt on
+ * appends a halt event with it. It IS reachable from anything else that writes
+ * the state file — a hand edit, a restored backup, a state written by another
+ * fusion version, a writer added later — and `stillHalted` is a measurement of
+ * the file the human's next write will meet, not a claim about today's call
+ * sites. Dropping it would hand that human the success line over a halted file,
+ * which is the failure this whole check exists to close.
  */
 import { resolve } from "node:path";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
+import { guardStatePath } from "./lib/guard-state-file.js";
 import { loadEscalation, saveEscalation, clearHalt, isHalted, } from "./lib/escalation.js";
 import { emitEvent } from "./lib/events.js";
 /**
@@ -187,23 +207,45 @@ if (arrived.length > 0 || stillHalted) {
     // Exit 2, distinct from the 1 above: there the tool did nothing, here it did
     // its job and something else happened around it. Both are non-zero because
     // neither is the outcome the success line describes.
-    console.error("\nThe halt you came to clear is cleared.");
+    //
+    // Three combinations reach this block and each gets its own report. The split
+    // is on `arrived` first, because that is what decides whether there is
+    // anything to point the human at; see the header section on reporting per
+    // case.
     if (arrived.length > 0) {
+        console.error("\nThe halt you came to clear is cleared.");
         console.error(`But ${arrived.length} halt${arrived.length === 1 ? " was" : "s were"} raised while this ran, which you were not shown:`);
         for (const e of arrived) {
             const where = e?.filePath ? ` (${e.filePath})` : "";
             console.error(`  [${e?.level}] ${e?.trigger}: ${e?.message}${where}`);
         }
+        if (stillHalted) {
+            console.error("The guard is still halted. Read what is named above, then run this again to clear it.");
+        }
+        else {
+            console.error("That halt is not in effect either: the merge cannot tell a halt raised meanwhile from the one you were clearing, so it was written away with it.");
+            console.error("Nothing is blocked right now — but the violation above happened. Read what it names; the next measured change to that path halts again.");
+        }
     }
     else {
-        console.error("But the guard is halted again, by something raised while this ran.");
-    }
-    if (stillHalted) {
-        console.error("The guard is still halted. Read what is named above, then run this again to clear it.");
-    }
-    else {
-        console.error("That halt is not in effect either: the merge cannot tell a halt raised meanwhile from the one you were clearing, so it was written away with it.");
-        console.error("Nothing is blocked right now — but the violation above happened. Read what it names; the next measured change to that path halts again.");
+        // Halted, with nothing arrived. Everything this run knows is negative: the
+        // clear was written (`saveEscalation` returned), the file read back
+        // afterwards says halted, and no halt event on it is one this run had not
+        // already seen. So there is nothing to name and no cause to assert — only
+        // the file itself is left to hand over, which is why it is named in full.
+        //
+        // `guardStatePath` is the same resolver `escalation.ts` loads through, so
+        // the two cannot disagree about where the halt lives; only the leaf name is
+        // repeated, because `escalation.ts` keeps its own constant private. `root`
+        // is non-null this far down, so the fallback is unreachable and is written
+        // as a description rather than a second copy of the layout.
+        const stateFile = guardStatePath("escalation.json")?.filePath ??
+            "the .guard-state/escalation.json file under the workbench named above";
+        console.error("\nThe clear was written, but the guard is halted again.");
+        console.error("Nothing arrived to explain it. No halt event is on disk that you were not already shown, so this run cannot name a second violation: something put the halt back without recording one.");
+        console.error("That is what a writer still holding the state from before the clear does, and what a hand edit of the state file does:");
+        console.error(`  ${stateFile}`);
+        console.error("The guard is still halted. Run this again once nothing else is writing that file. If it comes back halted with nothing named, read the file yourself.");
     }
     process.exit(2);
 }

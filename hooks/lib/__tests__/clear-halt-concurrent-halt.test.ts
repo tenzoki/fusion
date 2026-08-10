@@ -76,11 +76,14 @@ let clearHaltEntry: string;
 function shimSource(realEscalation: string): string {
   const spec = JSON.stringify(realEscalation);
   return `
+import { readFileSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
 import * as real from ${spec};
 export * from ${spec};
 
 const message = process.env.FUSION_TEST_INJECT_HALT;
 const at = process.env.FUSION_TEST_INJECT_HALT_AT;
+const handEdit = process.env.FUSION_TEST_HAND_EDIT_HALT === "1";
 let fired = false;
 
 function raiseSecondHalt() {
@@ -89,6 +92,19 @@ function raiseSecondHalt() {
   const other = real.loadEscalation();
   real.raiseHalt(other, "protected_path_measured", message, "Bash", "rules/injected.md");
   real.saveEscalation(other);
+}
+
+function handEditHaltBackOn() {
+  // A human with an editor, acting between this run's save and its re-read:
+  // \`haltActive\` flipped back on, \`recentEvents\` left exactly as they are. No
+  // exported function can produce that shape, because \`raiseHalt\` always
+  // appends an event with the halt, so this is written as bytes. That is not a
+  // convenience: bytes are the only route the record found to the state under
+  // test, and writing it any other way would test a different one.
+  const file = resolve(process.cwd(), "fusion-workbench", ".guard-state", "escalation.json");
+  const onDisk = JSON.parse(readFileSync(file, "utf-8"));
+  onDisk.haltActive = true;
+  writeFileSync(file, JSON.stringify(onDisk, null, 2), "utf-8");
 }
 
 export function loadEscalation() {
@@ -102,6 +118,7 @@ export function loadEscalation() {
 export function saveEscalation(state) {
   real.saveEscalation(state);
   if (at === "save") raiseSecondHalt();
+  if (handEdit) handEditHaltBackOn();
 }
 `;
 }
@@ -125,12 +142,25 @@ interface Run {
   stderr: string;
 }
 
-/** Spawn the script in `root`. `at` chooses when the second writer acts. */
-function runClearHalt(root: string, at?: "load" | "save"): Run {
+/**
+ * What the injected writer does, and when.
+ *
+ * `load` and `save` raise a real second halt through the real module, at the two
+ * moments that bracket the script's own write. `hand-edit` is a different writer
+ * altogether: it puts `haltActive` back on in the state file after the save
+ * without recording anything, which is the one shape no exported function
+ * produces.
+ */
+type Injection = "load" | "save" | "hand-edit";
+
+/** Spawn the script in `root`. `at` chooses when and how the second writer acts. */
+function runClearHalt(root: string, at?: Injection): Run {
   const overrides: Record<string, string> =
     at === undefined
       ? {}
-      : { FUSION_TEST_INJECT_HALT: INJECTED_MESSAGE, FUSION_TEST_INJECT_HALT_AT: at };
+      : at === "hand-edit"
+        ? { FUSION_TEST_HAND_EDIT_HALT: "1" }
+        : { FUSION_TEST_INJECT_HALT: INJECTED_MESSAGE, FUSION_TEST_INJECT_HALT_AT: at };
 
   const run = spawnSync(process.execPath, [clearHaltEntry], {
     cwd: root,
@@ -290,6 +320,93 @@ describe("clear-halt with a halt raised while it ran", () => {
 
           // The `clear` event is on the record, and the counter is reset: the
           // report is about a SECOND halt, not a refusal to do the job asked.
+          expect(after?.recentEvents.map((e) => e.trigger)).toContain("halt_cleared");
+          expect(after?.consecutiveBlocks).toBe(0);
+        },
+        { escalation: haltedState([ORIGINAL_HALT]) },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+/* ------------------------------------------------------------------ *
+ * The third combination — issue 260810-1032
+ * ------------------------------------------------------------------ */
+
+/**
+ * Halted after the save, with nothing arrived.
+ *
+ * ## Why this is built by hand and not injected through the module
+ *
+ * The two cases above raise their second halt through the real `raiseHalt`,
+ * which appends a halt event with it — so `arrived` is never empty there. This
+ * state needs the opposite: `haltActive` back on with `recentEvents` untouched.
+ * No exported function produces it, and the review that filed 260810-1032
+ * enumerated every `saveEscalation` call site in the two shipped hooks and found
+ * none that can. What CAN produce it is anything else that writes the file, so
+ * the case writes the file: `handEditHaltBackOn` in the shim edits the JSON
+ * between the script's save and its re-read.
+ *
+ * `verified:` unreachable from `guard.ts` and `tracker.ts` as they stand today.
+ * The branch is kept and tested anyway because `stillHalted` is a measurement of
+ * the file the human's next write will meet, not a claim about today's call
+ * sites — a restored backup, another fusion version, or a hand edit lands here,
+ * and the alternative to reporting it is printing the success line over a halted
+ * file.
+ */
+describe("clear-halt with the halt put back and nothing raised", () => {
+  it(
+    "says the halt came back, names no list, and points at the state file",
+    () => {
+      withProject(
+        (project) => {
+          const run = runClearHalt(project.root, "hand-edit");
+          const after = readEscalation(project.root);
+
+          // The state under test really was built, or this case would be the
+          // ordinary path wearing a different name.
+          expect(after?.haltActive).toBe(true);
+          // And nothing arrived: the only halt-level event on disk is the one
+          // the script was already holding when it took its decision.
+          expect(after?.recentEvents.filter((e) => e.level === "halt")).toHaveLength(1);
+
+          expect(run.status).toBe(2);
+          expect(run.stdout).not.toContain(SUCCESS_LINE);
+
+          // The defect itself: an instruction to read something the program
+          // never printed, under a header for a list that has no entries.
+          expect(run.stderr).not.toContain("Read what is named above");
+          expect(run.stderr).not.toContain("which you were not shown");
+          // Nor the opening line claiming the halt is cleared, which is the one
+          // thing the file on disk contradicts.
+          expect(run.stderr).not.toContain("The halt you came to clear is cleared.");
+
+          // What it says instead: the situation, and the one concrete thing left
+          // to hand over.
+          expect(run.stderr).toContain("The guard is still halted.");
+          expect(run.stderr).toContain("Nothing arrived to explain it.");
+          expect(run.stderr).toContain(
+            resolve(project.root, "fusion-workbench", ".guard-state", "escalation.json"),
+          );
+        },
+        { escalation: haltedState([ORIGINAL_HALT]) },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "still did the job it was asked to do",
+    () => {
+      withProject(
+        (project) => {
+          runClearHalt(project.root, "hand-edit");
+          const after = readEscalation(project.root);
+
+          // The clear was written before anything put the halt back: the record
+          // carries it and the counter is reset. The report is about the state
+          // the script was left standing in, not a refusal.
           expect(after?.recentEvents.map((e) => e.trigger)).toContain("halt_cleared");
           expect(after?.consecutiveBlocks).toBe(0);
         },

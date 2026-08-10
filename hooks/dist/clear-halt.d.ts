@@ -49,5 +49,24 @@
  * line. The clear itself still happened, and nothing is re-raised: the point is
  * that the human is never told "normal operation" about a state this script did
  * not actually leave behind.
+ *
+ * ## Why that check reports per case rather than per fact
+ *
+ * The re-read produces two facts — what arrived that the human was not shown,
+ * and whether the file is halted now — and they are not independent. What "still
+ * halted" MEANS depends on whether anything arrived to account for it. Reported
+ * as two separate sentences (issue 260810-1032) the combination "halted, nothing
+ * arrived" printed a guess at a cause this run had not measured and then told the
+ * human to read a list it had not printed. The three combinations that reach the
+ * report are written out separately below, and each says only what was measured.
+ *
+ * The third of them, halted with nothing arrived, is not reachable from either
+ * shipped hook: every `saveEscalation` call site that can leave the halt on
+ * appends a halt event with it. It IS reachable from anything else that writes
+ * the state file — a hand edit, a restored backup, a state written by another
+ * fusion version, a writer added later — and `stillHalted` is a measurement of
+ * the file the human's next write will meet, not a claim about today's call
+ * sites. Dropping it would hand that human the success line over a halted file,
+ * which is the failure this whole check exists to close.
  */
 export {};
