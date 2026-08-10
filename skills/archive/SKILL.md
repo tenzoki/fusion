@@ -6,7 +6,9 @@ allowed-tools: [Bash, Read, Write, Edit, AskUserQuestion]
 
 # Archive
 
-Move a curated set of workbench artifacts out of the live workbench and into a timestamped archive subfolder. Archives are local, on-disk snapshots — moved, not copied — so the live workbench stays focused while git preserves the bytes.
+Move a curated set of workbench artifacts out of the live workbench and into a timestamped archive subfolder. Archives are local, on-disk snapshots — moved, not copied — so the live workbench stays focused.
+
+**Whether git preserves the bytes is the project's decision, not this skill's.** fusion ships no `.gitignore` rule for the workbench, so a consuming project's workbench may be tracked, ignored, or neither (`rules/fusion-workbench-conventions.md` `## Which of them a tracked workbench tracks`). Only where the project tracks it does a past commit still hold what a move relocated. Where it does not, the archive folder is the **only** copy of every artifact this skill moves: Step 7's collision guard prevents an overwrite, and nothing after that prevents a loss.
 
 ## What changed with the Circle-container layout
 

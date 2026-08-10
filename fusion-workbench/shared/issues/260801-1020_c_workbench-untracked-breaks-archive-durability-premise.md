@@ -33,3 +33,18 @@ The commented-out ignore line suggests someone reversed the decision to ignore t
 Note that in the *general* case fusion ships no `.gitignore` rule for consuming projects, so a consuming project may land in any of the three states (tracked, ignored, or neither). Archive's sentence is unconditional and is therefore unsafe as written regardless of what this repo chooses.
 
 Filed by: analyst, from `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md`.
+
+---
+Resolved: Only the general-case part of this record was still live. Consequences 1–3 dissolved for
+this repository when the workbench became tracked (`e8988d9`, 260801) and `CLAUDE.md` was corrected
+on 260807 to say so; that correction stands and was not touched. What survived is that
+`skills/archive/SKILL.md:9` promised "git preserves the bytes" unconditionally, while fusion ships
+no `.gitignore` rule for consuming projects, so a consumer's workbench may be tracked, ignored, or
+neither. The intro sentence now drops the durability clause and a following paragraph states the
+condition in the form `rules/fusion-workbench-conventions.md` `## Which of them a tracked workbench
+tracks` already governs: whether git preserves the bytes is the project's decision, and where the
+project does not track the workbench the archive folder is the only copy of every artifact the skill
+moves — Step 7's collision guard prevents an overwrite and nothing after that prevents a loss. No
+other occurrence of the unconditional promise exists in that skill body; Step 9 already told the
+user archives are local and not committed automatically. `rules/fusion-workbench-conventions.md` was
+not edited (another task owns it this session).
