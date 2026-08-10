@@ -842,6 +842,8 @@ Two records did **not** freeze in any of the four. `orchestrator-events.jsonl` k
 
 **Run it in the same command as every boundary event emission** — `turn_start` (Phase 2), `turn_end` (Step 3e) and `session_end` (Cleanup) — and once more at Setup Step 1 when a prior session's state file is found. Riding those emissions is the design, not a convenience: a *separate* obligation at the Turn boundary is precisely what got skipped four times, so the check is attached instead to the one call that empirically never was. Run it from the workbench root, with `WORKBENCH` and `SCAN_CIRCLES` as Step 2 resolved them. If either came back empty the Circle row is **named as unchecked** rather than dropped: a drift check that exists to catch a silent skip must not perform one (`rules/fusion-workbench-conventions.md` `## Path Resolution` → *Where the call belongs*).
 
+**The Circle row is guarded by an `if`, not by a trailing `[ -n "$REC" ] && row …`.** A guard in final position hands its own status to the whole block, so the `&&` form reported failure on the ordinary session that has no Circle active — the session in which nothing is wrong. A check that cries wolf on its commonest path teaches its reader to ignore its status, which is the failure this check exists to catch, arriving one level up. Keep the `if` when editing this block, and do not compress it back.
+
 ```bash
 S=fusion-workbench/agentstate.yaml
 E=fusion-workbench/orchestrator-events.jsonl
@@ -865,7 +867,9 @@ row "progress.commits" "$(y commits)" "$(git rev-list --count "$H0..HEAD" 2>/dev
 row "progress.turn" "$(y turn)" "$TURNS (turn_start events this session)"
 row "session.history_file" "${HF:-(unset)}" "$([ -n "$HF" ] && [ -f "fusion-workbench/$HF" ] && echo present || echo MISSING) (on disk)"
 row "history Directive" "$(grep -m1 '^\*\*Directive:\*\*' "fusion-workbench/$HF" 2>/dev/null | cut -c15-44)" "$(y directive | cut -c1-30)"
-[ -n "$REC" ] && row "Circle Turn log" "$(sed -n '/^## Turn log/,/^## [A-Z]/p' "$REC" | grep -c '^- Turn') entries" "$TURNS turns run"
+if [ -n "$REC" ]; then
+  row "Circle Turn log" "$(sed -n '/^## Turn log/,/^## [A-Z]/p' "$REC" | grep -c '^- Turn') entries" "$TURNS turns run"
+fi
 ```
 
 **Read the rows against these conditions.** Each row pairs one surface with the one record that can contradict it, and a row is drift only under its own condition — a value that legitimately differs is not a fault to report:

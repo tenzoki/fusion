@@ -154,8 +154,12 @@ The pointer holds the **directory name** — no marker, no `circles/` prefix, no
 
 ```bash
 printf '%s\n' "<candidate-dirname>" > "$WORKBENCH/.active-circle"
-[ -f "$WORKBENCH/tasklist.md" ] && echo "queue: the work queue at the root predates this activation"
+if [ -f "$WORKBENCH/$TASKLIST" ]; then
+  echo "queue: the work queue at the root predates this activation"
+fi
 ```
+
+`$TASKLIST` is the queue's name as Step 2 resolved it; do not spell the filename here. **The note is guarded by an `if`, not by a trailing `[ -f … ] && echo …`.** A guard in final position hands its own status to the whole block, so the `&&` form made this block exit non-zero whenever no queue was at the root, which is the ordinary case for a fresh workbench. The failing command would then be the pointer write itself, the single most consequential write in this skill, and nothing in the status distinguishes "the pointer write failed" from "there was no queue to mention". Keep the `if` when editing this block.
 
 **The pointer write moves the ground, and the queue at the root does not move with it** (`agents/orchestrator.md` `### The queue's ground`). Say so in the same command as the write rather than as a step of its own, because a step of its own is the shape that gets skipped. Do **not** retire or delete the queue here: the activation gate above guarantees no Circle was active a moment ago, so any queue present was built over `shared/` and is a valid backlog — the 260810 queue covering 34 shared defect records is exactly that file. What changed is its *standing*, not its content. If the queue exists, add one line to the activation message in Step 6.5:
 
