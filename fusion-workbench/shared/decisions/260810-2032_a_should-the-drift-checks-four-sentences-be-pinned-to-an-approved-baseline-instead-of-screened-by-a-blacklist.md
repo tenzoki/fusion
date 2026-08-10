@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** answered
 **Filed by:** orchestrator (on the executor of `R:260810-1918-drift-lint-residuals`)
 **Cross-references:** `shared/issues/260810-1918_c_the-skip-licence-blacklist-misses-every-negation-that-does-not-use-the-word-not.md`; `shared/issues/260810-0502_c_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`; `rules/critical-stance.md` §4; queued task `I:260801-2038-frozen-state`
 
@@ -79,3 +79,29 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+---
+Answered: user decision, session `260810-1646` (`shared/history/260810-1646-orchestrator-session.md`)
+— **option 2, pin the four sentences to an approved baseline, sequenced after
+`I:260801-2038-frozen-state`.**
+
+Option 3 (keep both mechanisms) was declined, so the blacklist's fate is not settled by this answer
+and is not to be read into it. The pin is additive for now; whether the eleven patterns come out
+afterwards is a separate call for whoever builds it, to be made against what the pin demonstrably
+covers rather than in advance.
+
+**Binding on the implementer:**
+
+1. **Sequencing is not advisory.** `I:260801-2038-frozen-state` rewrites exactly these four sentences
+   in `agents/orchestrator.md`. The pin lands after that task's change is committed, against the text
+   that change leaves behind. A pin landed first would hand that executor a red suite in a file it
+   does not own.
+2. **The failure message carries the answer.** A pin that fails on a legitimate rewording must say, in
+   the failure itself, that re-approving the baseline is the expected response and how to do it. This
+   was the counter-argument the user was shown when deciding: a gate that punishes good edits gets
+   routed around, and the message is the only place that can be prevented.
+3. **The normalisation must be stated, not implied.** Whatever it collapses — whitespace, case,
+   markdown emphasis, line wrapping — belongs in the test's header, because a reader who cannot
+   predict what counts as "the same sentence" cannot predict when re-approval is due.
+
+Implemented:
