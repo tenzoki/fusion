@@ -176,6 +176,7 @@ refusal *before* the write.
 | `lib/churn.ts` | Churn heatmap tracker. Keys are relative to the **workbench root** — the same coordinate space the protected-path measurement uses, resolved by the same two helpers — so one file has one counter whatever directory the session started in, and a state file written under the old cwd-relative key is migrated once on load. Nothing is ever deleted from the map; the ranking is where absent files are left out | Yes |
 | `lib/workbench-root.ts` | Walks up from cwd to find `fusion-workbench/.fusion-setup` (single source of truth for workbench presence in TS) | Yes |
 | `lib/self-detect.ts` | Detects the fusion plugin's own repo so the **write** guard stands down — the write tools and the protected-path measurement alike, since the protected paths are what a fusion developer edits here. Two entry points, on purpose: `isFusionPluginCwd()` asks about cwd for the write tools, `isFusionPluginRoot(dir)` asks about a named directory so the measurement can ask about the workbench root it walked up to | Yes |
+| `lib/domain-cascade.ts` | Parses the domain cascade out of `agents/orchestrator.md` Setup Step 5 and **executes** it. No hook calls it — the gates do, so what they measure is the verdict a real project reaches rather than the layout of the prompt's branch lines. There is deliberately no second copy of the cascade in TypeScript: the interpreter runs the prompt's own block, so the two cannot drift | Yes |
 | `package.json` | Dev dependencies (tsx, typescript, vitest) | Yes |
 
 ## Usage

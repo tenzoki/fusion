@@ -103,3 +103,59 @@ So the decisive answer is yes: **`260807-1942` can be reinstated in full with th
 nothing in the file demonstrates that helper rejecting anything. The record's own concession also
 still holds — the fixture at `:127-136` is a faithful copy of the `2910cf6` cascade, which is more
 than the sibling lint can say.
+
+---
+
+## Resolved — `260810-1646`, session `260810-1646-orchestrator-session.md` Turn 1
+
+**Fix direction 2, taken.** The cascade is no longer linted as prose; it is executed.
+
+`hooks/lib/domain-cascade.ts` extracts the fenced block from `agents/orchestrator.md`, parses each
+branch's condition into an expression tree and evaluates it against a set of counts. There is
+deliberately **no second copy** of the six branches in TypeScript: the interpreter runs the prompt's
+own block, so prompt and function cannot drift — the drift is unrepresentable rather than guarded
+against. The grammar is strict; anything it cannot read raises `CascadeError` rather than being
+skipped, so a renamed count, an unanticipated condition form, a missing final `else` or a fifth
+domain fails loudly instead of quietly narrowing what the gate covers.
+
+`hooks/lib/__tests__/domain-cascade.test.ts` asserts three properties:
+
+1. **Verdicts** for the projects commit `2910cf6` measured — this repository (88/21) and KRK
+   (108/11) reach `code`, an ontology tree (2/30) reaches `data`, and Cargo (27), Go (19) and the
+   frontend (11), whose data side was never measured, reach `code` for every data count that does
+   not trip the documented ratio. Every `code`/`data` scenario carries the artifact profile that
+   produced the original defect (122 commits, 3 open decisions against 1 open defect record), so a
+   `strategic` answer anywhere is `260807-1942` returning. One case measures this repository live
+   through `bin/fusion-count-sources`.
+2. **No dead branch** — every branch fires for some input across a 5 000-case sweep. A branch that
+   can never fire is not decision logic.
+3. **The absent count** stays out of arithmetic: `unavailable` is modelled as the string the helper
+   actually prints, so a count branch lifted above the `counted_by == "none"` line raises instead of
+   silently comparing. That is the behavioural form of the load-bearing position.
+
+**All four defeats were applied to the real prompt and measured**, alongside the predecessor gate
+taken verbatim from `HEAD` — which confirms this record's finding rather than taking it on trust:
+
+| cascade | behavioural (new) | order lint (new) | order lint (the predecessor) |
+|---|---|---|---|
+| unmutated prompt | PASS | PASS | PASS |
+| decoy `elif code_files < 0` above the pre-fix order | **FAIL** | PASS | PASS |
+| inverted `elif code_files == 0` in the `> 0` slot | **FAIL** | PASS | PASS |
+| dead threshold `elif code_files > 100000` | **FAIL** | PASS | PASS |
+| token only in a trailing comment | **FAIL** | **FAIL** | PASS |
+
+The order lint is kept as the narrower second gate — the prompt's own prose asks an editor for that
+order, so something should measure it — but it is no longer the primary one and its header says so.
+It now reads the **parsed condition** rather than the line's text, which is why the comment defeat
+fails there too; it still cannot see a condition that can never hold, and that is the sibling file's
+job by design, not an oversight.
+
+**The second defect is closed too.** `assertAbsentCountFirst` now has a real negative control: a
+cascade with `if code_files > 0` standing above the `counted_by == "none"` branch, expected to
+throw, matched on `260807-1951` — an issue ID only that helper emits. The pre-fix `.not.toThrow()`
+assertion is kept alongside it, since the pre-fix absent-count position genuinely was correct.
+
+`agents/orchestrator.md` was **not** edited: locating the block by its content needs no marker, and
+the anti-drift property comes from having one definition rather than from an anchor.
+
+Verification: `npm test` from `hooks/` — exit 0, 1096 tests across 41 files.
