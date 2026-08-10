@@ -81,6 +81,29 @@ Collect every available source. For each source record, per entry: a **date**, t
 | `a` | shared activity log | `activity-log-$USER.md` — check **both** the project root and `$WORKBENCH` |
 | `g` | git commit days | `git log` (only if `.git` is present) — a day's commits form **one** unit, not one each |
 
+**Substitute the resolver values before you run anything below.** `WORKBENCH`, `OUT_MEMO` and
+`SCAN_HISTORY` are resolver keys from step 0, not shell variables. Nothing exports them, and the
+Bash tool starts a fresh shell for every call, so write their values into every block literally,
+the same way step 2 says to use the printed date values.
+
+Run this assertion first, before the gather block. A key you forgot to substitute expands to the
+empty string, which is exactly what the assertion is looking for:
+
+```bash
+empty=
+[ -n "$WORKBENCH" ]    || empty="$empty WORKBENCH"
+[ -n "$OUT_MEMO" ]     || empty="$empty OUT_MEMO"
+[ -n "$SCAN_HISTORY" ] || empty="$empty SCAN_HISTORY"
+[ -z "$empty" ] || { echo "fusion bug: cadence resolver key empty or unset:$empty" >&2; exit 1; }
+echo "keys resolved: WORKBENCH=$WORKBENCH  OUT_MEMO=$OUT_MEMO  SCAN_HISTORY=$SCAN_HISTORY"
+```
+
+**A non-zero exit here stops the skill.** Report it to the user as a fusion bug, name the key the
+message names, and write **no digest at all** — not even an empty one. An empty *directory* is
+legitimate: a fresh workbench has no history yet, and that still earns a normal digest saying the
+week was quiet. An empty *key* never is. A digest built on an unresolved key asserts a quiet week
+that nothing ever checked, and the reader cannot tell the two apart.
+
 ```bash
 # session histories — $SCAN_HISTORY is SPACE-SEPARATED and may name TWO stores.
 # `find` tolerates missing dirs and is glob-safe under zsh (a plain `ls a/*.md b/*.md`
@@ -152,8 +175,15 @@ Across **all** log units (full history, not just the window), count each theme's
 The report goes to `$WORKBENCH/$OUT_MEMO/cadence-$USER.md`.
 
 ```bash
+[ -n "$WORKBENCH" ] && [ -n "$OUT_MEMO" ] || { echo "fusion bug: WORKBENCH or OUT_MEMO empty — refusing to write the digest" >&2; exit 1; }
 mkdir -p "$WORKBENCH/$OUT_MEMO"
 ```
+
+The check repeats step 3's assertion because it has to: the Bash tool gives every call its own
+shell, so nothing step 3 established survives to here. Without it an empty pair makes
+`mkdir -p "$WORKBENCH/$OUT_MEMO"` read as `mkdir -p "/"`, which succeeds, and the digest lands at
+`/cadence-$USER.md` instead of the memo store. As in step 3, a non-zero exit stops the skill and
+is reported as a fusion bug.
 
 **Overwrite the file each run — it is a fresh snapshot, not an append log.** This differs from the other files in that store: `memos-$USER.md` and `tasks-$USER.md` written by `/fusion:memo` *are* append logs, so a reader who assumes the same convention here would be wrong. Cadence keeps no history of its own runs; each run replaces the previous snapshot outright.
 
@@ -213,6 +243,11 @@ Output follows `rules/user-facing-output.md` plus the chat profile for the proje
 - **Not a git repo:** skip the `g` source silently; note it in the sources line.
 - **Nothing datable in the window:** still write the file, with the empty-window note in the affected list.
 - **Ambiguous or missing dates:** fall back to mtime (step 4.4) and record the fallback in Notes rather than guessing.
+
+**An empty resolver key is not degradation.** Every case above still writes a digest. `WORKBENCH`,
+`OUT_MEMO` or `SCAN_HISTORY` resolving to nothing is a fusion bug instead: the step-3 assertion
+stops the skill, names the key, and no digest is written. That is the one condition under which
+this skill produces no file.
 
 ## What this skill is NOT
 
