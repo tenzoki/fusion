@@ -558,11 +558,83 @@ After reconciler returns and any Rebalance gate is resolved, run this step if a 
 
 4. **Push closure to Plane, then clear `.active-circle`.** If Plane is configured (`fusion-workbench/plane.config.yaml` present), first run `"$FUSION_PLUGIN_ROOT/bin/fusion-plane" push --circle <dir> --closure` with `<dir>` the Circle directory name from step 1 — this drives the Circle to Done and attaches the closing artifacts. It **must** run while the pointer still exists, so it precedes the clear; a `deferred` result (exit 10) is surfaced in the session report, never blocking (see **Plane mirror**). Then clear the pointer — `rm -f fusion-workbench/.active-circle`. (Use `rm -f`; absence after this point is the canonical "no active Circle" state.)
 
+   **Retire the queue in the same command as that clear** (see **The queue's ground** below). Clearing the pointer is what makes a closure a closure — the one act in this step that cannot be skipped and still leave a closed Circle — so the queue's fate rides it rather than standing beside it as a step of its own. With `DIR` as the Circle directory path from step 1:
+
+   ```bash
+   Q=fusion-workbench/tasklist.md
+   G=$(grep -m1 '^\*\*Active Circle:\*\*' "$Q" 2>/dev/null | grep -oE 'circles/[A-Za-z0-9._-]+|`[A-Za-z0-9._-]+`' | head -1 | tr -d '`' | sed 's|^circles/||')
+   if [ -n "$G" ] && [ "$G" = "$(basename "$DIR")" ]; then
+     P=$("$FUSION_PLUGIN_ROOT/bin/fusion-paths" orchestrator | sed -n 's/^OUT_PLAN=//p')
+     mkdir -p "$WORKBENCH/$P"
+     mv "$Q" "$WORKBENCH/$P/$(date +%y%m%d-%H%M)_c_retired-tasklist.md"
+   fi
+   rm -f fusion-workbench/.active-circle
+   ```
+
+   `$OUT_PLAN` is re-resolved here rather than reused from Setup, for the reason step 1 gives about the pointer: a Circle activated mid-session is not reflected in a `fusion-paths` call that ran before the activation. The re-resolution runs while the pointer still names the closing Circle, so it lands in that Circle's own plan store — which is where the queue belongs by the Origin Rule, since it was built to execute that Circle's Directive.
+
+   Plain `mv`, never `rm`: the queue is authored text with reasoning and acceptance wording, which is why a tracked workbench tracks it. Append two lines to the head of the moved file naming the closure that retired it and this session's history file. **The queue is retired only when its own head names the closing Circle** — a queue that names no Circle was not built on this ground and is left where it is; retiring it would destroy a valid backlog. If the retirement fired, say so in the session report: the entries that were not this Circle's are re-derivable from the records, which are the authority, but the queue's prose is not, and it is now at the path you moved it to.
+
 5. **Dispatch playmaker.** Use `Agent(fusion:playmaker)` with the prompt prefix `**Domain:** <detected-domain-from-Setup-Step-5>`. Playmaker regenerates `$PORTFOLIO` to reflect the closure and (per its process Step 5, "Detect Bounded-Closure propagation") writes any `## Parent grounding stale` notes for `_b_` propagation.
 
 6. **Append `## Portfolio update` section** to the orchestrator's session history file citing the playmaker's history file path.
 
 7. **Emit a `portfolio_refresh` event.**
+
+### The queue's ground
+
+`fusion-workbench/tasklist.md` is **derived** from the records and **durable** in the file system. It is built once against the workbench as it stood that minute, and where a project tracks its workbench it is git-tracked, because it carries reasoning and acceptance wording rather than a machine refresh (`rules/fusion-workbench-conventions.md` `## Which of them a tracked workbench tracks`). Those two properties pull against each other: the ground the queue was built on moves, and the file does not move with it.
+
+The ground is `fusion-workbench/.active-circle`. It moved on 260807 and the queue did not: the active Circle was **superseded** mid-session while a queue naming it stayed at the root, and for the next seven hours eleven of its entries described work a commit had already made pointless. Several agents read the file as stale that session and none could act on it, because `tasklist.md` is taskplanner's alone to write. The record is `260807-1515_*_die-warteschlange-veraltet-wieder-weil-nur-die-neuerzeugung-gebaut-wurde-nicht-die-vorbeugung.md` in `$SCAN_ISSUES`; its predecessor was closed by regenerating the file, and the file was stale again seven hours later, which is why the answer here is not a third regeneration.
+
+**The pointer is the condition, not an event list.** A rule keyed to the closure markers has no event for a supersession, and that is precisely how the 260807 case got through. Everything below hangs on `.active-circle` changing, whatever marker transition was behind it.
+
+#### Reading a queue
+
+Two inputs decide whether the queue at the root is current: the `**Active Circle:**` line it may carry in its head, and the pointer. Run this before treating the queue as current, from the workbench's parent directory:
+
+```bash
+Q=fusion-workbench/tasklist.md; P=fusion-workbench/.active-circle
+[ -f "$Q" ] || { echo "queue: none at the root"; exit 0; }
+G=$(grep -m1 '^\*\*Active Circle:\*\*' "$Q" | grep -oE 'circles/[A-Za-z0-9._-]+|`[A-Za-z0-9._-]+`' | head -1 | tr -d '`' | sed 's|^circles/||')
+AC=$(cat "$P" 2>/dev/null)
+if [ -n "$G" ]; then
+  [ "$G" = "$AC" ] && echo "queue: current — built for Circle $G, which is active" \
+                   || echo "queue: STALE — built for Circle $G; active is ${AC:-none}"
+elif [ -n "$AC" ]; then
+  [ -n "$(find "$Q" -newer "$P")" ] && echo "queue: built after Circle $AC became active" \
+                                    || echo "queue: NOT SCOPED — written before Circle $AC became active"
+else
+  echo "queue: unaffiliated backlog — no Circle active, none named"
+fi
+```
+
+The four branches are one per combination of the two inputs, so every queue falls in exactly one:
+
+| The queue's head | `.active-circle` | Verdict |
+|---|---|---|
+| names a Circle | holds that same Circle | **current** |
+| names a Circle | holds a different one, or is absent | **stale** — its entries were chosen for a Circle that is not the ground any more. Do not consume it as current; rebuild or read it as history. |
+| names none | holds a Circle | **not scoped** if the file is older than the pointer: it was written before this Circle became active, so it does not cover this Circle's work. Newer than the pointer means it was built under this ground and is current. |
+| names none | absent | **unaffiliated backlog** — a queue over `shared/` with no Circle to outlive. Current. |
+
+Row 3's ordering test is the weaker one. `find -newer` compares modification times, and a checkout or a copy resets the queue's, which reads as *newer* and therefore as current. It fails quiet, not loud. Rows 1 and 2 are exact, and they are the rows that catch a closed Circle, because a closed Circle leaves no pointer for an ordering test to use.
+
+`/fusion:setup` Step 3 and `/fusion:next` Step 5 run this, and this section is the canonical implementation both cite.
+
+#### Where the ground moves
+
+| Site | What happens to the queue |
+|---|---|
+| Phase 4 step 4 — the pointer is cleared at closure | **Retired** in the same command, when its head names the closing Circle. See step 4. |
+| `/fusion:next` step 6.3 — the pointer is written at activation | Left alone, and **said out loud** in the same command: a queue already at the root was built with no Circle active, so it is a backlog rather than this Circle's work. Retiring it would destroy a valid queue. |
+| The `_a_`→`_t_` pointer write this prompt performs directly (see **You may**) | Same as 6.3, and for the same reason. The next read of the queue reports it under row 3. |
+
+#### What this is, honestly
+
+**A convention, not an enforcement**, with one contingent exception. Nothing executes the two tables above; they are prompt text, and prompt text loses to task pressure — this project's own worked case is "Problem 11" in `CLAUDE.md`, where a "MUST" in this prompt was skipped under the urgency of a user request (`rules/critical-stance.md` §2). The exception is the retirement: *when it is performed*, the stale queue stops existing at the root, so there is nothing left to misread. That is prevention in effect, conditional on the step running at all.
+
+**The prevention half is incomplete, and its gap is in the producer.** Retirement fires only for a queue whose head names its Circle, and `agents/taskplanner.md` does not mandate that line — the queue measured on 260807 carried it, the one built on 260810 does not. A queue that never recorded its ground cannot have it recovered: which Circle a queue was *built for* is not decidable from its text, only from a stamp the producer chose to write (`rules/critical-stance.md` §4 — when the question is undecidable from the available inputs, the mechanism changes, not the approximation). Filed as `260810-0431_o_the-work-queue-does-not-record-the-ground-it-was-built-on.md` in `$SCAN_ISSUES`. Until that lands, rows 3 and 4 carry the headerless case with the weaker ordering test, and this section says so rather than reading as coverage it does not have.
 
 ### Cleanup
 

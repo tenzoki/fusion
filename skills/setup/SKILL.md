@@ -237,6 +237,16 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
 
   If any Circles exist, print a one-line advisory pointing to `/fusion:next` for portfolio review. If none exist, no hint is printed — opt-in behaviour preserved. The orchestrator's Setup Step 5 contains the canonical implementation.
 
+- **The work queue's ground.** `./fusion-workbench/tasklist.md` is built once against the workbench as it stood that minute, and it outlives the Circle it was built for — measured on 260807, where the active Circle was superseded mid-session and eleven entries of the queue went on describing work a commit had already made pointless. Setup is the last step before the orchestrator reads that file as its work queue in Phase 1, so the queue's standing is settled here, in front of the consumer, not only at the boundary where it went stale.
+
+  Run the check from `agents/orchestrator.md` `### The queue's ground` → `#### Reading a queue`. That section is the canonical implementation and carries the four-row verdict table; do not restate the branches here.
+
+  Report the verdict in the Setup-complete summary, in one line, and say what it means for the session:
+
+  - **current** or **unaffiliated backlog** — nothing to say beyond the line itself.
+  - **stale** — name the Circle the queue was built for and the one that is active (or that none is). Tell the user plainly that Phase 1 should rebuild the queue before it is worked, and that the file's entries were chosen for ground that has moved.
+  - **not scoped** — the queue predates the active Circle, so it is a backlog rather than this Circle's work. Not a fault; say which it is so the user does not read it as the Circle's task list.
+
 ## Step 4 — History file
 
 Timestamp: `date +%y%m%d-%H%M`.
@@ -258,4 +268,4 @@ Create `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` (the value `fusion-pat
 
 ## Done
 
-Only after every step above completes may you begin the user's actual task. Report Setup complete with: workspace path, history file path, snapshot counts, **detected workbench domain**, and whether an interrupted session was resumed. (Setup no longer migrates — a pre-v4 workbench is caught by the layout check in Step 0, which refuses and routes the user to `/fusion:migrate` before any of this runs.)
+Only after every step above completes may you begin the user's actual task. Report Setup complete with: workspace path, history file path, snapshot counts, **detected workbench domain**, **the work queue's verdict from Step 3** (one line — a stale queue is the one thing in this summary the user has to act on before Phase 1 runs), and whether an interrupted session was resumed. (Setup no longer migrates — a pre-v4 workbench is caught by the layout check in Step 0, which refuses and routes the user to `/fusion:migrate` before any of this runs.)

@@ -101,6 +101,8 @@ Extract and present three things from the portfolio file:
 
 3. **Warnings** — quote (verbatim or summarised) any content in the `## Warnings` section: `dependency-cycle-detected`, `MULTIPLE-ACTIVE`, `STALE-POINTER`, `POINTER-MISMATCH`, `MISSING-POINTER`, parent-grounding-stale cross-references. If it reads `(none)`, omit this part.
 
+4. **The work queue's ground** — run the check from `agents/orchestrator.md` `### The queue's ground` → `#### Reading a queue`. That section is the canonical implementation and carries the four-row verdict table; do not restate the branches here. `/fusion:next` is one of the two surfaces that reads the queue's standing out loud, and it is the one a user reaches when deciding what to work on next, which is the moment a queue built for a Circle that has since closed does the most damage. Render one line only on the **stale** and **not scoped** verdicts, naming the Circle the queue was built for and the Circle that is active (or that none is). On **current**, **unaffiliated backlog**, or no queue at the root, print nothing — the briefing is about the portfolio, and a queue in good standing is not news.
+
 After rendering the briefing, proceed to Step 6.
 
 ## Step 6 — Interactive activation
@@ -152,7 +154,12 @@ The pointer holds the **directory name** — no marker, no `circles/` prefix, no
 
 ```bash
 printf '%s\n' "<candidate-dirname>" > "$WORKBENCH/.active-circle"
+[ -f "$WORKBENCH/tasklist.md" ] && echo "queue: the work queue at the root predates this activation"
 ```
+
+**The pointer write moves the ground, and the queue at the root does not move with it** (`agents/orchestrator.md` `### The queue's ground`). Say so in the same command as the write rather than as a step of its own, because a step of its own is the shape that gets skipped. Do **not** retire or delete the queue here: the activation gate above guarantees no Circle was active a moment ago, so any queue present was built over `shared/` and is a valid backlog — the 260810 queue covering 34 shared defect records is exactly that file. What changed is its *standing*, not its content. If the queue exists, add one line to the activation message in Step 6.5:
+
+> *Die Warteschlange `tasklist.md` stammt von vor dieser Aktivierung und beschreibt keine Arbeit dieses Circles. Der Orchestrator baut in Phase 1 eine neue; bis dahin ist die alte ein Rückstands-Stapel, keine Aufgabenliste für `<candidate-dirname>`.*
 
 ### 6.4 — Overwrite the dashboard placeholder
 

@@ -81,3 +81,56 @@ Aufgefallen beim Abschluss von `circles/260807-0923-guard-misst-statt-orakelt`, 
 dessen Directive nicht: der Mangel ist eine Eigenschaft davon, wie der Orchestrator und die
 beiden Skills eine Warteschlange am Circle-Rand behandeln, nicht der Guard-Arbeit, neben der er
 gefunden wurde. Herkunftsregel, wie schon bei beiden `260801-2038`-Befunden.
+
+---
+
+## Abschlussnotiz — 260810-0431, coder, Aufgabe T7
+
+Gebaut wurde der Abschnitt `### The queue's ground` in `agents/orchestrator.md` (Phase 4).
+Er ist die einzige Definition; `/fusion:setup` Schritt 3 und `/fusion:next` Schritt 5 zitieren
+ihn, statt die Verzweigungen ein zweites Mal hinzuschreiben. Keine dritte Neuerzeugung.
+
+**Option 2, in abgewandelter Form.** Die Warteschlange wird beim Löschen des Zeigers in
+Phase 4 Schritt 4 zurückgezogen, im selben Befehl wie das `rm -f` — das Löschen des Zeigers
+ist das, was einen Abschluss zum Abschluss macht, also der eine Schritt dort, den eine
+Sitzung nicht überspringen kann und trotzdem einen geschlossenen Circle hinterlässt. Zwei
+Abweichungen von der empfohlenen Fassung, beide gemessen statt vermutet:
+
+1. **Verschoben, nicht gelöscht** (`mv`, nie `rm`). Seit `65f7c3b` ist `tasklist.md` in einem
+   versionierten Workbench nachverfolgt, mit der Begründung, sie sei geschriebener Text mit
+   Begründung und Abnahmekriterien. Die Einträge sind aus den Datensätzen neu ableitbar, die
+   Prosa nicht. Sie landet im `planning/`-Speicher des schließenden Circles (Herkunftsregel).
+2. **Nur, wenn ihr eigener Kopf den schließenden Circle nennt.** Ein pauschales Löschen an
+   der Circle-Grenze hätte die Warteschlange vom 260810 vernichtet: 34 Einträge, alle aus
+   `shared/issues/`, keiner an einen Circle gebunden, vollständig gültig. Option 2 wörtlich
+   angewandt wäre an genau diesem Fall ein Datenverlust gewesen.
+
+**Option 3, vollständig**, an beiden Leseflächen: eine Vier-Zeilen-Tabelle, eine Zeile je
+Kombination aus "nennt der Kopf einen Circle" und "zeigt `.active-circle` auf einen". Gegen
+die Warteschlange vom 260807 (die gemessene) und die vom 260810 geprüft, mit vier
+Zeigerzuständen: der 260807-Fall wird in beiden Ausprägungen als veraltet gemeldet, der
+260810-Fall als unaffiliierter Rückstand, also gültig.
+
+**Option 1 wurde nicht gebaut**, absichtlich: verbindliche Neuerzeugung ist die Antwort, die
+dieser Befund als bereits zweimal versucht beschreibt.
+
+**Was nicht getragen wird.** Die genaue Hälfte — Zeilen 1 und 2 der Tabelle und das
+Zurückziehen — greift nur bei einer Warteschlange, deren Kopf `**Active Circle:**` führt.
+`agents/taskplanner.md` Schritt 4 schreibt dieses Feld nicht vor: der 260807-Lauf hat es aus
+eigenem Antrieb gesetzt, der 260810-Lauf nicht, und beide waren gegenüber dem Prompt korrekt.
+Für welchen Circle eine Warteschlange *gebaut* wurde, ist aus ihrem Text nicht entscheidbar,
+wenn sie es nicht selbst festgehalten hat (`rules/critical-stance.md` §4). Das ist eine Zeile
+in einem Erzeuger, der außerhalb der Dateiliste dieser Aufgabe lag, und liegt als eigener
+Befund vor: `260810-0431_o_the-work-queue-does-not-record-the-ground-it-was-built-on.md`.
+Bis der landet, tragen die Zeilen 3 und 4 den kopflosen Fall mit dem schwächeren
+Zeitstempelvergleich, und der Abschnitt sagt das selbst, statt sich als Deckung zu lesen.
+
+**Was das ist, ehrlich.** Konvention, keine Erzwingung. Nichts führt die beiden Tabellen aus;
+es ist Prompt-Text. Erzwungen wird nur, dass der Text vorhanden und an die Akte gebunden
+bleibt, die ihn tragen — `hooks/lib/__tests__/queue-ground-lint.test.ts`, neun Prüfungen,
+darunter drei Gegenproben gegen die Vorzustände. Das Zurückziehen ist Vorbeugung in der
+Wirkung, aber nur, sofern der Schritt überhaupt läuft.
+
+Prüflauf: `cd hooks && npm test` — 961 von 962 grün. Der eine Fehlschlag ist
+`rules-emission-golden`, dessen Fixtur nach `65f7c3b` bewusst am Sitzungsende neu erzeugt
+wird; keine Regel-Datei wurde hier angefasst.
