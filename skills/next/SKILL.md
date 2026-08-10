@@ -13,13 +13,15 @@ The skill writes nothing on the briefing path. The only writes it performs are p
 **A path into a file the plugin ships carries the `$FUSION_SRC` root.** Where a step below sends you to an agent prompt or another skill's body, open it at that root — nothing the plugin ships exists at a consuming project's root, so a bare `agents/…` or `skills/…` path resolves to nothing there. Resolve the root once, before the first step that cites one:
 
 ```bash
-if "$FUSION_PLUGIN_ROOT/bin/fusion-plugin-cwd" 2>/dev/null; then FUSION_SRC="$PWD"; else FUSION_SRC="$FUSION_PLUGIN_ROOT"; fi
-echo "source root: $FUSION_SRC"
+if [ -z "${FUSION_PLUGIN_ROOT:-}" ]; then FUSION_SRC=""; elif "$FUSION_PLUGIN_ROOT/bin/fusion-plugin-cwd" 2>/dev/null; then FUSION_SRC="$PWD"; else FUSION_SRC="$FUSION_PLUGIN_ROOT"; fi
+echo "source root: ${FUSION_SRC:-UNRESOLVED (FUSION_PLUGIN_ROOT is unset)}"
 ```
 
 Hold the printed path and use it wherever a step below writes `$FUSION_SRC/…`. Each shell call gets a fresh shell, so the one executable check in this file re-resolves those same two lines rather than relying on the variable surviving.
 
-**Why the branch.** `$FUSION_PLUGIN_ROOT` names the installed copy and is pinned for the whole session. Inside the fusion plugin's own source repository that is the wrong copy: `bin/fusion-rules` and `bin/fusion-paths` read the work tree there on purpose, so a citation left on the install would hand you rules and paths from the checkout and a cited prompt section from the install — two versions of one file, differing in silence. `bin/fusion-plugin-cwd` is the criterion those two helpers already use, so this is the same answer and not a second one. It tests the working directory and never walks up: from a subdirectory of that repository it answers no, deliberately, and every branch here then behaves as it does in a consuming project. An install too old to carry the helper also falls to `$FUSION_PLUGIN_ROOT`, which is the behaviour that preceded this rule. `skills/cleanup/SKILL.md:11` takes the plugin-root route for skill bodies and states the reason; it is not repeated at each site here.
+**`UNRESOLVED` is not a path, and no step below reads through it.** With `FUSION_PLUGIN_ROOT` unset the variable holds the empty string and every `$FUSION_SRC/…` citation resolves from `/`, finding nothing and saying nothing about why. The check is this print, once, rather than a test at each site. When it prints `UNRESOLVED`, say so in the briefing, say that the queue's standing was not established, and tell the user to restart the session so the SessionStart hook exports the variable. Do not improvise the content of a section you could not open. That is `rules/fusion-workbench-conventions.md` `## Path Resolution` → *Where the call belongs* applied to a held root: nothing is read through a value that came back empty, and the run names the value instead.
+
+**Why the branch.** `$FUSION_PLUGIN_ROOT` names the installed copy and is pinned for the whole session. Inside the fusion plugin's own source repository that is the wrong copy: `bin/fusion-rules` and `bin/fusion-paths` read the work tree there on purpose, so a citation left on the install would hand you rules and paths from the checkout and a cited prompt section from the install — two versions of one file, differing in silence. `bin/fusion-plugin-cwd` is the criterion those two helpers already use, so this is the same answer and not a second one. It tests the working directory and never walks up: from a subdirectory of that repository it answers no, deliberately, and every branch here then behaves as it does in a consuming project. An install too old to carry the helper also falls to `$FUSION_PLUGIN_ROOT`, which is the behaviour that preceded this rule — an unset `FUSION_PLUGIN_ROOT` does not, because there is nothing to fall to. `$FUSION_SRC/skills/cleanup/SKILL.md:11` takes the plugin-root route for skill bodies and states the reason; it is not repeated at each site here.
 
 **A Circle is a directory, and the state marker sits on the record inside it** — `circles/<dirname>/_a_circle.md` → `_t_circle.md`. The directory name never changes. See `rules/circle-records.md` `## State Markers — circles`.
 
@@ -117,7 +119,7 @@ Extract and present three things from the portfolio file:
    Confirm the section is there before you run it. This citation carries no inline fallback, so a source root whose copy predates the section resolves the path to a file that has no such heading and the check is skipped in silence:
 
    ```bash
-   if "$FUSION_PLUGIN_ROOT/bin/fusion-plugin-cwd" 2>/dev/null; then FUSION_SRC="$PWD"; else FUSION_SRC="$FUSION_PLUGIN_ROOT"; fi
+   if [ -z "${FUSION_PLUGIN_ROOT:-}" ]; then FUSION_SRC=""; elif "$FUSION_PLUGIN_ROOT/bin/fusion-plugin-cwd" 2>/dev/null; then FUSION_SRC="$PWD"; else FUSION_SRC="$FUSION_PLUGIN_ROOT"; fi
    SEC="$FUSION_SRC/agents/orchestrator.md"
    grep -q '^#### Reading a queue' "$SEC" 2>/dev/null || echo "queue-check: UNAVAILABLE — $SEC carries no '#### Reading a queue' section. The path names the copy actually in use: an install that predates the section (run 'fusion --update' and restart the session), a work tree that does not carry it, or nothing at all when FUSION_PLUGIN_ROOT is unset."
    ```

@@ -35,3 +35,25 @@ assumption holds is the question that decides which of the two fixes is right, a
 `shared/issues/260810-1918_c_the-commit-skills-heredoc-example-is-indented-so-a-verbatim-copy-never-terminates.md`.
 
 **Filed by:** coderev, review of session `260810-1646` Turn 2, range `da8c9db..b3cc034`.
+
+---
+
+Resolved — the numbered list ends at step 5 and the last two steps became headed sections.
+
+`skills/commit/SKILL.md` closes its `## Process` list after step 5, states in one paragraph why it
+stops there, and continues as `### 6. Stage and commit as one held pair` and `### 7. Show result`.
+The whole of step 6 now sits at column 0 inside its own section: the lock rationale, the heredoc
+paragraph, the fenced heredoc, and **both** `fusion-commit-lock` invocations. Nothing renders outside
+the step that introduces it, and `7. Show result` no longer starts a second list. The reader still
+walks seven steps in order; two of them are headings rather than list items.
+
+**The question the record left open was answered, not deferred.** It asked whether the verbatim-copy
+assumption behind `260810-1918` holds, since an agent writes a `Bash` call from the block rather than
+copying it byte-for-byte. *Inference, not measurement:* it holds for the part that decides the
+outcome. The message body is a placeholder an agent substitutes, but the opener
+`cat > <msg-file> <<'FUSION_MSG_EOF'` and the terminator line are literals with nothing to
+substitute, and those are the two lines an agent reproduces as it found them, leading whitespace
+included. The terminator is the line that has to be at column 0, so the fence stays at column 0 and
+the document structure moved around it.
+
+**Resolved by:** coder, session `260810-1646`, Turn 3.

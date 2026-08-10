@@ -59,6 +59,32 @@ moved the anchor those two cite. Every plugin-file citation in the file is now r
 `260810-1918_c_the-cleanup-skill-carries-a-second-domain-cascade…`), and the reconcile step's new
 citation of Setup Step 5 is written `$FUSION_PLUGIN_ROOT/agents/orchestrator.md`.
 
+---
+
+Resolved — half 2 done, one substitution per file, and the cited line was checked before the edit.
+
+`skills/setup/SKILL.md` and `skills/next/SKILL.md` now end the announcing paragraph with
+`$FUSION_SRC/skills/cleanup/SKILL.md:11`. The anchor was verified against the file rather than
+assumed from half 1's note: line 11 of `skills/cleanup/SKILL.md` still carries the rooting
+instruction, so extending that paragraph in place instead of inserting above it did keep the citation
+valid.
+
+**One deviation from the prescribed fix, stated.** The record and half 1 both name
+`$FUSION_PLUGIN_ROOT/skills/cleanup/SKILL.md:11`; what was written is `$FUSION_SRC/…`. The two
+differ only inside the fusion plugin's own repository, and there `$FUSION_PLUGIN_ROOT` is the
+installed copy while `$FUSION_SRC` is the work tree. The sentence being repaired sits three lines
+below the paragraph that introduces `$FUSION_SRC`, whose whole argument is that citing the install
+while reading the work tree hands you two versions of one file differing in silence — and this
+citation carries a line number, which is exactly the kind of anchor a stale install gets wrong. Using
+the root that paragraph just mandated makes the sentence obey the rule it announces. In a consuming
+project the two roots are the same value, so nothing changes there.
+
+The reference lint is unaffected either way: `ROOT_VAR_RE` only knows the `FUSION_PLUGIN_ROOT` and
+`CLAUDE_PLUGIN_ROOT` spellings and checks existence, not rooting, so both forms pass — which is
+`260810-2029`, still open.
+
+**Resolved by:** coder, session `260810-1646`, Turn 3.
+
 **Half 2 (not done).** The self-citation in the announcing paragraph is still bare in both copies —
 `skills/setup/SKILL.md:12` and `skills/next/SKILL.md:13` each end with `skills/cleanup/SKILL.md:11`,
 the exact form the sentence before it calls unresolvable in a consuming project. Both files were

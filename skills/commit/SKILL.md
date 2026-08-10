@@ -67,19 +67,23 @@ When the user invokes `/fusion:commit`, help them commit their changes with a we
    - Display the proposed commit message
    - Ask user to confirm, edit, or cancel
 
-6. **Stage and commit as one held pair**
+Steps 6 and 7 are headed sections rather than items of the list above. Step 6
+has to show a here-document at column 0, and a column-0 block ends the list it
+sits in — so the list ends at step 5 and the last two steps carry their own
+headings. The procedure is still seven steps in order.
 
-   Write the confirmed message to a scratch file, then run stage and
-   commit as a single command under the project's commit lock — it serialises
-   access to the shared git index against any parallel session's agents
-   (`rules/workbench-stash-and-lock.md` `## Commit lock`; the `with` form
-   acquires, runs, and releases on any exit). The pair must be held together:
-   the lock only defends against commit absorption if no path is staged
-   outside it.
+### 6. Stage and commit as one held pair
 
-   Write the scratch file with a **quoted** heredoc delimiter, so the shell
-   expands nothing in the message — a body written under a bare `<<EOF` still
-   substitutes `$var` and runs backtick commands.
+Write the confirmed message to a scratch file, then run stage and commit as a
+single command under the project's commit lock — it serialises access to the
+shared git index against any parallel session's agents
+(`rules/workbench-stash-and-lock.md` `## Commit lock`; the `with` form acquires,
+runs, and releases on any exit). The pair must be held together: the lock only
+defends against commit absorption if no path is staged outside it.
+
+Write the scratch file with a **quoted** heredoc delimiter, so the shell expands
+nothing in the message — a body written under a bare `<<EOF` still substitutes
+`$var` and runs backtick commands.
 
 The block below sits at column 0 deliberately, and a copy of it must too. A
 here-document opened with `<<` ends only at a terminator that is the whole
@@ -95,23 +99,30 @@ cat > <msg-file> <<'FUSION_MSG_EOF'
 FUSION_MSG_EOF
 ```
 
-   The message reaches `git` only as `-F <msg-file>`. It is never an argument
-   on a command line, so apostrophes in it cannot end a quoted string.
+The message reaches `git` only as `-F <msg-file>`. It is never an argument on a
+command line, so apostrophes in it cannot end a quoted string.
 
-   ```bash
-   "$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with commit -- bash -c 'git add <path> <path> && git commit -F <msg-file>'
-   ```
+```bash
+"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with commit -- bash -c 'git add <absolute-path> <absolute-path> && git commit -F <msg-file>'
+```
 
-   Only when there is nothing to stage (everything to commit was already
-   staged before the skill started) does the bare form apply:
+**Write the staging paths absolute.** `with` `cd`s to the workbench root — the
+directory that holds `fusion-workbench/` — before running the command after
+`--`. The selection recorded in step 2 is relative to the git toplevel, and the
+layout permits the workbench root to sit below it, in which case every relative
+path in that selection misses.
 
-   ```bash
-   "$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with commit -- git commit -F <msg-file>
-   ```
+Only when there is nothing to stage (everything to commit was already staged
+before the skill started) does the bare form apply:
 
-7. **Show result**
-   - Display commit hash
-   - Show `git log -1 --oneline`
+```bash
+"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with commit -- git commit -F <msg-file>
+```
+
+### 7. Show result
+
+- Display commit hash
+- Show `git log -1 --oneline`
 
 ## Examples
 

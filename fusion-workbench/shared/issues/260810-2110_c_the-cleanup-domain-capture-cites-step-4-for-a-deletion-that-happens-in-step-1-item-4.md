@@ -33,3 +33,16 @@ the value it holds."*
 **Cross-references.** `skills/cleanup/SKILL.md:61-72, 88-93, 121-130`.
 
 **Filed by:** coderev, review of session `260810-1646` Turn 2, range `da8c9db..b3cc034`.
+
+---
+
+Resolved — the sentence now names an item as an item and a heading as a heading.
+
+`skills/cleanup/SKILL.md` Step 1 item 1 reads: *"item 4 of this step removes `agentstate.yaml`, and
+Step 3 (Reconcile) needs the value it holds."* Checked against the file rather than the record: the
+deletion is still Step 1's item 4 (`- Delete fusion-workbench/agentstate.yaml if it exists`), and
+`## Step 3 — Reconcile` is still the heading the second half means, so both referents in the repaired
+sentence resolve to what the behaviour actually does. Naming Reconcile in the sentence removes the
+last way to read "Step 3" as an item number.
+
+**Resolved by:** coder, session `260810-1646`, Turn 3.

@@ -60,7 +60,7 @@ The goal is that no unfinished work is lost when the session ends.
 
 1. If `fusion-workbench/agentstate.yaml` exists, read it. Its `work_queue` entries with status other than `done`/`skipped`/`deferred` are unfinished. (This file is root-anchored — the hooks read it there. It is not resolved by `fusion-paths`.)
 
-   **Capture the session's domain here, before anything deletes the file** — step 4 below removes `agentstate.yaml`, and Step 3 needs the value it holds. Same one-liner `/fusion:next` Step 2, `/fusion:direct` Step 3 and `/fusion:seed-from-plane` Step 4 use:
+   **Capture the session's domain here, before anything deletes the file** — item 4 of this step removes `agentstate.yaml`, and Step 3 (Reconcile) needs the value it holds. Same one-liner `/fusion:next` Step 2, `/fusion:direct` Step 3 and `/fusion:seed-from-plane` Step 4 use:
 
    ```bash
    DOMAIN=""

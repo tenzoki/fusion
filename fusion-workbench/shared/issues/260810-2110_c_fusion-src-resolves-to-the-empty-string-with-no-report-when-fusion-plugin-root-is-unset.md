@@ -72,3 +72,40 @@ body, and the two changes are one change.
 `shared/decisions/260810-1544_o_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`.
 
 **Filed by:** coderev, review of session `260810-1646` Turn 2, range `da8c9db..b3cc034`.
+
+---
+
+Resolved — the empty value is named where it is produced, not tested at each of the five sites.
+
+The branch in `skills/setup/SKILL.md` and `skills/next/SKILL.md` now separates the unset root from
+the absent helper, and the print says which happened:
+
+```bash
+if [ -z "${FUSION_PLUGIN_ROOT:-}" ]; then FUSION_SRC=""; elif "$FUSION_PLUGIN_ROOT/bin/fusion-plugin-cwd" 2>/dev/null; then FUSION_SRC="$PWD"; else FUSION_SRC="$FUSION_PLUGIN_ROOT"; fi
+echo "source root: ${FUSION_SRC:-UNRESOLVED (FUSION_PLUGIN_ROOT is unset)}"
+```
+
+Both copies in each file carry it — the announcing block and the inline re-resolution in the
+`SEC=` check — because each shell call gets a fresh shell and the prose says the check re-resolves
+*those same two lines*. Four sites, two files.
+
+**Why the report sits at the resolution point and not at the five consumers.** The rule cited in the
+record is about a held value: *nothing is read through a value that came back empty, and the run
+names the value instead.* The value is produced once, so naming it once covers all five consumers,
+including the two silent ones. Each file gained one paragraph saying that `UNRESOLVED` is not a path,
+that no `$FUSION_SRC/…` step reads through it, and what to report instead — in `/fusion:setup` that
+the churn ranking and the domain detection were not run, in `/fusion:next` that the queue's standing
+was not established. Testing at each site would have been five restatements of one fact, which is the
+shape the same review flags twice elsewhere.
+
+**Measured, not reasoned.** The branch was run in `bash` and in `zsh`, both under `nounset`, in four
+conditions: root unset (prints `UNRESOLVED (FUSION_PLUGIN_ROOT is unset)`), root set with cwd inside
+the plugin repo (prints the work tree), root set with cwd elsewhere (prints the install copy), and
+root set to a directory carrying no helper (prints that directory — the pre-rule behaviour, which is
+usable). The two branches the record said were indistinguishable now differ in the output.
+
+**What was deliberately not done.** The resolution still lives in two skill bodies. Moving it into a
+`bin/` helper is `260810-2030` and was out of scope for this Turn; if that decision lands, the guard
+above moves with it and these four sites collapse to one.
+
+**Resolved by:** coder, session `260810-1646`, Turn 3.

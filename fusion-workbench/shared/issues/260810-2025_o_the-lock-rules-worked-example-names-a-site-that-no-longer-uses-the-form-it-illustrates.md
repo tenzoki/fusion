@@ -40,3 +40,21 @@ reason to edit rules casually. Whoever takes this touches a rule file and should
 `rules/rule-file-provenance.md` first.
 
 **Filed by:** orchestrator, session `260810-1646`, on the Turn-2 commit-procedure executor's proposal.
+
+---
+**Second gap in the same section, found in Turn 3 and belonging to the same pass.** `## Commit lock`
+does not state that `with` performs a `cd`. Measured rather than read off the code: the `with` branch
+calls `resolve_root`, which runs `bin/fusion-workbench-root` and walks up from the **caller's**
+working directory to the nearest ancestor holding `fusion-workbench/.fusion-setup`, then `cd`s there.
+So the wrapped command runs at the workbench root — not the workbench directory, and not the git
+toplevel.
+
+That distinction decides whether a staging list works. In a scratch repository whose git toplevel,
+workbench root and caller directory were three different places, toplevel-relative and
+caller-relative staging both exited 128 with nothing staged, while workbench-root-relative, absolute
+and the `:/` magic pathspec all succeeded.
+
+`agents/orchestrator.md` Step 3b now says it at its own call site and prescribes absolute paths.
+`skills/cleanup/SKILL.md` runs the same shape and was deliberately **not** given a third copy of the
+sentence — this rule file is the authoring home, and the two call sites should cite it rather than
+restate it. Whoever edits the worked example above should state the `cd` in the same pass.
