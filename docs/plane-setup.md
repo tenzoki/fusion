@@ -191,6 +191,20 @@ changed" ran on the way in to every command, including this one, so a dry run re
 the map and on a map carrying legacy duplicates it destroyed a Plane UUID. The
 migration is now a command of its own; reads only read.
 
+That holds for every spelling of the dry run, because the one flag that could break it
+is refused outright: `push --plan --rebuild-map` exits 2 with a usage error and does
+nothing at all. A rebuild replaces the map, a dry run writes nothing, and the pair asks
+for both — so neither is quietly performed and neither is quietly dropped. Rebuild
+first, then plan against the rebuilt map:
+
+```bash
+bin/fusion-plane push --rebuild-map --circle <circle-dir> \
+  && bin/fusion-plane plan --circle <circle-dir>
+```
+
+Planning *before* the rebuild would be the misleading order anyway: the op list is
+computed from the map, so it would describe a board the rebuild is about to change.
+
 **1. Create a disposable Circle.** "Throwaway" means a Circle created only for this
 check, whose Plane issues you delete afterwards, so no real work lands on the board.
 The quickest way:

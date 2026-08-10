@@ -47,6 +47,7 @@ import { dirname, resolve, join } from "node:path";
 // ---------------------------------------------------------------------------
 
 const EXIT_DEFERRED = 10;
+const EXIT_USAGE = 2;
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pluginRoot = resolve(here, "../../..");
@@ -542,26 +543,100 @@ describe("fusion-plane: reads never write .plane-map.json", () => {
     return { wb, before: readFileSync(mapPath(wb), "utf-8") };
   }
 
+  /**
+   * A captured `GET issues/` response that WOULD rewrite this map if a rebuild ran:
+   * its one issue carries the embedded key that folds onto the surviving entry, so a
+   * rebuild replaces the legacy pair with a single foreign UUID. The fifth spelling
+   * below is only evidence of anything if its fixture is destructive like this one.
+   */
+  function rewritingFixture(wb: string): string {
+    const p = join(wb, "rebuild-issues.json");
+    writeFileSync(
+      p,
+      JSON.stringify({
+        results: [
+          {
+            id: "plane-uuid-from-the-rebuild",
+            description_html: `<p>fusion-key: ${CIRCLE}::issues/${OPEN_ISSUE}<br></p>`,
+          },
+        ],
+      }),
+    );
+    return p;
+  }
+
+  /** The pending fold is not hidden: the run names what folding the file would cost. */
+  const namesTheFold = (r: RunResult) => expect(r.stderr).toContain("plane-issue-first");
+
+  /** The mutation is refused out loud — the only other way a read can stay a read. */
+  const refusesTheMutation = (r: RunResult) => {
+    expect(r.status, "a refused pair exits with the usage code, not 0").toBe(EXIT_USAGE);
+    expect(r.stderr, "and says which flag it refused").toContain("--rebuild-map");
+  };
+
   // The destructive path, driven: each of these ran the fold and wrote the file.
-  for (const [label, args] of [
-    ["map", ["map"]],
-    ["map <key>", ["map", CIRCLE]],
-    ["push --plan", ["push", "--circle", CIRCLE, "--plan"]],
-    ["plan", ["plan", "--circle", CIRCLE]],
-  ] as [string, string[]][]) {
+  // The fifth reached the file by another route — the fixture rebuild sat ahead of
+  // the dry-run gate, so `--plan` performed a full map replacement (issue
+  // 260810-0746). It holds the invariant now because the pair is refused.
+  for (const [label, argsFor, saysSo] of [
+    ["map", () => ["map"], namesTheFold],
+    ["map <key>", () => ["map", CIRCLE], namesTheFold],
+    ["push --plan", () => ["push", "--circle", CIRCLE, "--plan"], namesTheFold],
+    ["plan", () => ["plan", "--circle", CIRCLE], namesTheFold],
+    [
+      "push --plan --rebuild-map --fixture",
+      (wb: string) => ["push", "--circle", CIRCLE, "--plan", "--rebuild-map", "--fixture", rewritingFixture(wb)],
+      refusesTheMutation,
+    ],
+  ] as [string, (wb: string) => string[], (r: RunResult) => void][]) {
     it(`\`${label}\` leaves the file byte-identical and keeps every UUID`, () => {
       const { wb, before } = legacyWorkbench();
-      const r = run(wb, ...args);
+      const r = run(wb, ...argsFor(wb));
       const after = readFileSync(mapPath(wb), "utf-8");
       expect(after, `${label} is inspection, not a mutation`).toBe(before);
       expect(after, "the UUID the fold would discard is still on disk").toContain(
         "plane-issue-first",
       );
-      // …and the pending fold is not hidden: the run says the file is legacy and
-      // names what folding it would cost.
-      expect(r.stderr).toContain("plane-issue-first");
+      saysSo(r);
     });
   }
+
+  it("`push --plan --rebuild-map` with no fixture is refused, not silently dropped", () => {
+    // The other half of the same defect (issue 260810-0747). The live rebuild sits
+    // inside the `DRYRUN -eq 0` branch, so under `--plan` the flag was read once at
+    // parse time and never again: exit 0, map untouched, nothing on either stream.
+    // `map_forget` states this file's own rule for exactly that shape — a mutation
+    // the caller asked for and did not get is a reported failure, never a no-op.
+    // Both dry-run sources reach the same refusal: the flag, the `plan` alias, and
+    // the env twin that forces `--plan` for a command that never typed it.
+    const { wb, before } = legacyWorkbench();
+    const runs: RunResult[] = [
+      run(wb, "push", "--circle", CIRCLE, "--plan", "--rebuild-map"),
+      run(wb, "push", "--circle", CIRCLE, "--rebuild-map", "--plan"), // flag order is not a seam
+      run(wb, "plan", "--circle", CIRCLE, "--rebuild-map"), // the alias reaches the same gate
+      runEnv(wb, { FUSION_PLANE_DRYRUN: "1" }, "push", "--circle", CIRCLE, "--rebuild-map"),
+    ];
+    for (const r of runs) {
+      expect(r.status, "exit 0 having changed nothing, in silence, is the forbidden answer").toBe(
+        EXIT_USAGE,
+      );
+      expect(r.stderr).toContain("--rebuild-map");
+      expect(readFileSync(mapPath(wb), "utf-8"), "and it is refused before any write").toBe(before);
+    }
+    // The env spelling names the env, not a flag the caller never typed.
+    expect(runs[3].stderr).toContain("FUSION_PLANE_DRYRUN=1");
+  });
+
+  it("a rebuild without a dry run still rebuilds — the refusal costs the working spelling nothing", () => {
+    // The refusal must not be a ban on `--rebuild-map`. Same workbench, same
+    // fixture, `--plan` dropped: the map IS replaced, which is what the flag means.
+    const { wb, before } = legacyWorkbench();
+    const r = run(wb, "push", "--circle", CIRCLE, "--rebuild-map", "--fixture", rewritingFixture(wb));
+    expect(r.status, "the rebuild ran; the push that follows it may defer").not.toBe(EXIT_USAGE);
+    const after = readFileSync(mapPath(wb), "utf-8");
+    expect(after).not.toBe(before);
+    expect(JSON.parse(after)[issueKey(OPEN_ISSUE)].plane_id).toBe("plane-uuid-from-the-rebuild");
+  });
 
   it("no map file is created by a read (not even an empty one)", () => {
     // `map_ensure` used to `printf '{}' > $MAP` before anything read it. A

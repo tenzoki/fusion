@@ -17,6 +17,9 @@
 #                     Reconcile one Circle (or all) into Plane. --plan is the
 #                     dry-run seam (JSON op list, no curl). --rebuild-map
 #                     reconstructs .plane-map.json from Plane before reconcile.
+#                     The two are mutually exclusive: a rebuild replaces the map
+#                     and a dry run writes nothing, so the pair is a usage error
+#                     (EXIT_USAGE) rather than a run that honours one of them.
 #   plan  --circle <dir>|--all
 #                     Alias for `push --plan ...` (dry-run; emits JSON, no curl).
 #   seed  <seq>       Bounded one-shot read: resolve a Plane sequence_id, GET the
@@ -104,7 +107,9 @@
 #   that only reads: `map_view` produces it in memory, and only a command that was
 #   asked to write the map (`map --migrate`, `map --forget`, `map --prune`, a live
 #   push) puts it on disk. So `map`, `push --plan` and `plan` resolve through the
-#   folded keys and leave .plane-map.json byte-identical. That split is the fix for
+#   folded keys and leave .plane-map.json byte-identical — in EVERY spelling of
+#   them, `--rebuild-map` included, because that combination is refused as a usage
+#   error before anything runs (see cmd_push). That split is the fix for
 #   issue 260810-0456, where the fold sat on the read path and a dry run destroyed
 #   a Plane UUID. Where the old scheme already produced two entries for one record,
 #   the fold keeps the one pushed most recently and every dropped entry is named,
@@ -1507,6 +1512,30 @@ cmd_push() {
   [ -z "$rebuild_fixture" ] && [ -n "${FUSION_PLANE_ISSUES_FIXTURE:-}" ] && rebuild_fixture="$FUSION_PLANE_ISSUES_FIXTURE"
   [ -z "$COMMENTS_FIXTURE" ] && [ -n "${FUSION_PLANE_COMMENTS_FIXTURE:-}" ] && COMMENTS_FIXTURE="$FUSION_PLANE_COMMENTS_FIXTURE"
 
+  # ── --rebuild-map + a dry run is a CONTRADICTION, and it is refused here ─────
+  # A rebuild REPLACES .plane-map.json; `--plan` is documented, in four places, as
+  # writing nothing. The pair asks for both at once, and every way of resolving it
+  # in favour of one side was a defect: the fixture spelling performed the rebuild
+  # under `--plan` (issue 260810-0746), the flagless spelling dropped the flag
+  # without a word (issue 260810-0747, against this file's own `map_forget`
+  # doctrine that an absent mutation is reported, never silent).
+  #
+  # It is refused rather than downgraded to "planned", for a reason the op list
+  # makes concrete: `--plan`'s whole output is the ops computed FROM the map, so a
+  # run that reported a planned rebuild would then emit ops computed against the
+  # map the rebuild would have replaced — a plan for a board that will not exist by
+  # the time it is executed. Producing a truthful one means performing the
+  # rebuild's effect on the view, i.e. doing the mutation the flag was refused for.
+  # One check, before any work, covering both spellings and both dry-run sources.
+  if [ "$rebuild" -eq 1 ] && [ "$DRYRUN" -eq 1 ]; then
+    local dry_src="--plan"
+    if [ "${FUSION_PLANE_DRYRUN:-0}" = "1" ]; then dry_src="FUSION_PLANE_DRYRUN=1"; fi
+    err "push: --rebuild-map replaces .plane-map.json and $dry_src says this run writes nothing — refusing the pair rather than honouring one of them."
+    err "push:   rebuild, then plan against the rebuilt map:"
+    err "push:     $SELF push --rebuild-map --circle <dir> && $SELF plan --circle <dir>"
+    return "$EXIT_USAGE"
+  fi
+
   resolve_workbench || return "$EXIT_CONFIG"
   cfg_load          || return "$EXIT_CONFIG"
   build_base
@@ -1524,8 +1553,11 @@ cmd_push() {
   # property above is untouched.
   map_view
 
-  # A fixture-driven rebuild needs neither key nor network, so it runs ahead of
-  # the live gate below (and clears the flag, leaving that branch untouched).
+  # A fixture-driven rebuild needs neither key nor network, so it runs ahead of the
+  # live gate's config+key checks below (and clears the flag, leaving that branch
+  # untouched). It is a WRITE nonetheless, and this placement used to be how it
+  # reached the file under `--plan` (issue 260810-0746); it cannot now, because a
+  # dry run carrying `--rebuild-map` never gets past the refusal above.
   if [ "$rebuild" -eq 1 ] && [ -n "$rebuild_fixture" ]; then
     rebuild_map "$rebuild_fixture" || return "$?"
     rebuild=0
@@ -2020,6 +2052,9 @@ Subcommands:
                                    description_stripped / _html / description.
                                    With --fixture <json>, rebuild from a captured
                                    `GET issues/` response instead (test seam).
+                                   NOT combinable with --plan: a rebuild replaces
+                                   the map, a dry run writes nothing. Rebuild
+                                   first, then plan against the rebuilt map.
   plan --circle <dir>|--all
                         Dry-run alias for `push --plan`.
   seed <seq>            Bounded one-shot read: resolve sequence_id, GET the
