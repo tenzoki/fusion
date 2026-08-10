@@ -130,3 +130,8 @@ measured at `ed87d87`.
 
 ---
 Answered: shared/history/260810-0844-orchestrator-session.md `## Grounding revision` — recorded at the Rebalance gate, session 260810-0844. Not yet realised in code; the defect record it unblocks stays open until a commit implements it.
+
+---
+Implemented: 26ea3c3 — option (a1), tolerate and report. agents/orchestrator.md Setup Step 5 guards the bin/fusion-count-sources call with [ -x ] and, when absent, prints the helper's own absent-count shape (counted_by=none) with the reason on stderr, exiting 0. The existing counted_by == "none" cascade branch from 31d8bb3 is reused, not duplicated, and a paragraph forbids giving the absent helper a branch of its own. Parts (b) — a uniform guarded-call convention for prompt-called helpers — and (c) — whether the work-tree preference extends to helper resolution — remain OPEN and were deliberately not touched; parts (b) and (c) have been split out into their own record so this one can carry a single state.
+
+Split: parts (b) and (c) moved to shared/decisions/260810-1544_o_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md — a decision record bundling separable questions cannot be tracked, because its state is not a single value. With those two carried elsewhere, this record's remaining scope is part (a1) alone, which 26ea3c3 realises.

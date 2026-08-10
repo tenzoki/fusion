@@ -1086,3 +1086,17 @@
 {"ts":"2026-08-10T08:20:45","event":"gate_hit","turn":3,"task":"T8","detail":"natural key design choice: version field vs anchored stable_key"}
 {"ts":"2026-08-10T11:57:40","event":"reconciliation","detail":"9 discrepancies; verdict review-needed; recommendation revise Grounding"}
 {"ts":"2026-08-10T11:57:40","event":"rebalance_grounding","detail":"3 decisions answered _o_ to _a_: 260810-0920 churn key, 260810-0921 helper resolution, 260810-1010 extension set"}
+{"ts":"2026-08-10T11:57:53","event":"session_end","detail":"5 turns, 17 commits, 20 records closed, 15 filed, 3 decisions answered, v7.1.0 released; verdict review-needed resolved by revising Grounding"}
+{"ts":"2026-08-10T12:03:19","event":"session_start","detail":"directive not yet stated; mode unresolved; domain code; no active Circle"}
+{"ts":"2026-08-10T12:33:42","event":"scope_resolved","detail":"mode=issues; target=45 open records in shared/issues; circles/*/issues deliberately excluded; domain=code; baseline green (1040 tests)"}
+{"ts":"2026-08-10T13:00:43","event":"turn_start","turn":1,"detail":"8 ready tasks (1,2,3,4,5,9,10,12); 18 gated deferred to end-of-session batch"}
+{"ts":"2026-08-10T13:00:57","event":"state_drift","turn":1,"detail":"history Directive: history file carried the Setup placeholder '(not yet stated)' while agentstate.yaml carried the Directive 'Fehlerbereinigung fortsetzen'; record is agentstate.yaml, written at scope resolution. progress.turn surface=0 vs 1 turn_start event, expected at the emission itself. Both surfaces brought current in the same step."}
+{"ts":"2026-08-10T13:02:43","event":"task_start","turn":1,"task":"I:260809-2243-stray-tag","agent":"coder","detail":"docs/philosophy.md + README.md stray </content>"}
+{"ts":"2026-08-10T13:02:43","event":"task_start","turn":1,"task":"I:260809-2023-churn-key","agent":"coder","detail":"hooks/tracker.ts + hooks/lib/churn.ts churn key anchor + migration"}
+{"ts":"2026-08-10T13:10:20","event":"commit","turn":1,"task":"I:260809-2243-stray-tag","detail":"e0acdb6 docs: the closing half of a wrapper stops shipping to every consumer"}
+{"ts":"2026-08-10T13:10:20","event":"task_done","turn":1,"task":"I:260809-2243-stray-tag","agent":"coder","detail":"e0acdb6; suite green 39/1040; record _o_->_c_"}
+{"ts":"2026-08-10T13:35:05","event":"commit","turn":1,"task":"I:260801-1020-archive-premise","detail":"4f16c60 docs(skills): the archive skill stops promising git holds the bytes; message amended after a quoting truncation, content unchanged"}
+{"ts":"2026-08-10T13:35:05","event":"task_done","turn":1,"task":"I:260801-1020-archive-premise","agent":"coder","detail":"4f16c60; suite exit 0, 40 files 1067 tests 292s; record _o_->_c_"}
+{"ts":"2026-08-10T13:38:41","event":"commit","turn":1,"task":"I:260810-0507-plane-doc-key","detail":"7c4dfb2 docs(plane): the documented key shape matches the one the tool builds"}
+{"ts":"2026-08-10T13:38:41","event":"task_done","turn":1,"task":"I:260810-0507-plane-doc-key","agent":"coder","detail":"7c4dfb2; suite exit 0, 40 files 1067 tests; record _o_->_c_"}
+{"ts":"2026-08-10T13:38:41","event":"revert","turn":1,"task":"I:260810-0507-plane-doc-key","detail":"no revert performed; recording an over-staging: git add -u on shared/issues/ swept the Resolved: notes of two in-flight records (churn-key T4, helper-absence T2) into 7c4dfb2 ahead of their own commits. Records now claim resolution one commit early; the code lands in their own commits. Staging procedure corrected: no -u on a directory."}

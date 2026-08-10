@@ -137,3 +137,6 @@ against a rule, not a number.
 
 ---
 Answered: shared/history/260810-0844-orchestrator-session.md `## Grounding revision` — recorded at the Rebalance gate, session 260810-0844. Not yet realised in code; the defect record it unblocks stays open until a commit implements it.
+
+---
+Implemented: 25c5454 — churnKey() anchors on the workbench root, reusing hooks/lib/workbench-root.ts and hooks/lib/project-relative.ts (part a). migrateChurnKeys() rewrites workbench-relative and this-checkout keys and drops entries naming other roots; two spellings of one file are merged by summing the counters, taking the later lastChange, and recomputing thrashingScore from the merged counters rather than combining two derived values (part b). rankThrashing() excludes absent files on the read path, once per Setup, while the map keeps every entry (part c). Measured on the live map: 590 entries in, 414 after re-anchoring, 191 absent excluded from the ranking, all ten top-ranked files existing where three of the top four did not. Part (c)'s accepted cost stands: the file still grows without bound, which this answer did not settle.
