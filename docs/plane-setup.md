@@ -95,8 +95,8 @@ A lint test fails the build if one appears.
 
 By default the mirror keeps each issue's **description** a deliberately thin stub:
 `Mirrored fusion <kind>`, the embedded `fusion-key:` line, and the source. That is
-enough for the board to identify the issue and for `push --rebuild-map` to find it
-again; the authoritative brief stays in files.
+enough for the board to identify the issue and for a rebuild (`map --rebuild`) to find
+it again; the authoritative brief stays in files.
 
 If you want the full Circle brief visible on the board too, opt in — uncomment
 `spec_comment` in `plane.config.yaml` and set it to `true`:
@@ -194,16 +194,15 @@ migration is now a command of its own; reads only read.
 That holds for every spelling of the dry run, because the one flag that could break it
 is refused outright: `push --plan --rebuild-map` exits 2 with a usage error and does
 nothing at all. A rebuild replaces the map, a dry run writes nothing, and the pair asks
-for both — so neither is quietly performed and neither is quietly dropped. Rebuild
-first, then plan against the rebuilt map:
+for both — so neither is quietly performed and neither is quietly dropped.
 
-```bash
-bin/fusion-plane push --rebuild-map --circle <circle-dir> \
-  && bin/fusion-plane plan --circle <circle-dir>
-```
-
-Planning *before* the rebuild would be the misleading order anyway: the op list is
-computed from the map, so it would describe a board the rebuild is about to change.
+Rebuilding the map is a separate command, `map --rebuild`, and it is deliberately **not**
+part of this step: it reads your board and replaces your local map, so it belongs neither
+under "nothing goes over the wire" nor before you have looked at what a push would do.
+If you need a plan computed from a rebuilt map, that recipe is under "Repairing a map
+written before the key changed" below. Planning *before* the rebuild would be the
+misleading order anyway: the op list is computed from the map, so it would describe a
+board the rebuild is about to change.
 
 **1. Create a disposable Circle.** "Throwaway" means a Circle created only for this
 check, whose Plane issues you delete afterwards, so no real work lands on the board.
@@ -245,9 +244,9 @@ unreachable. The count is artifacts actually created or updated.
 Check 4 is *the* critical one. An empty description, or one missing the key, means
 `description_html` is the wrong body field name on your instance. It is the single
 failure that is otherwise completely silent: the push reports `ok`, the issue looks
-plausible on the board, and you only discover the problem later when
-`push --rebuild-map` cannot reconstruct the map — because rebuilding works by reading
-that embedded key back out.
+plausible on the board, and you only discover the problem later when `map --rebuild`
+cannot reconstruct the map — because rebuilding works by reading that embedded key back
+out.
 
 One exception to check 5: a Circle **seeded from an existing Plane story** carries no
 kind label, deliberately. Such a story is yours, not fusion's, and fusion writes only
@@ -293,8 +292,8 @@ bin/fusion-plane map --migrate
 ```
 
 That is the one command whose whole job is the fold. Anything that already writes the
-map — `map --forget`, `map --prune`, a live `push` — folds it in passing; `map`,
-`push --plan` and `plan` never do.
+map — `map --forget`, `map --prune`, `map --rebuild`, a live `push` — folds it in
+passing; `map`, `push --plan` and `plan` never do.
 
 A map write can also fail to land: a read-only mount, a full disk, a workbench you no
 longer have write access to. When the replacement fails, the command names the file on
@@ -310,14 +309,43 @@ with nothing pointing at it, for you to find and close by hand. Whenever a fold 
 cost one, the helper prints the key and the UUID on stderr before anything is written.
 Keep that line; it is the only handle you have on the stray issue.
 
-`push --rebuild-map` folds the same way and, since it reads the keys back out of Plane's
-own issue bodies, can meet the same duplicate pair there. It keeps the UUID your map is
-already tracking, or failing that the most recently updated issue, and prints every UUID
-it drops. Note that a rebuild **replaces** the map rather than merging into it, so an
-entry it cannot see is gone: that means seed-origin bindings, whose Plane issue is your
-own story and carries no `fusion-key:` line at all. Those are printed too, each with the
-`seed --record-origin` command that restores it. Re-bind them, or the next push may
-overwrite your story's title.
+#### Rebuilding the map from the board
+
+If the map is lost or badly out of date, rebuild it from Plane itself:
+
+```bash
+bin/fusion-plane map --rebuild
+```
+
+That reads `GET issues/` once, reads the embedded `fusion-key:` back out of each issue
+body, and replaces `.plane-map.json`. It writes **only** the map — it creates and updates
+nothing on the board — but it is not free of the wire and it needs the API key. If the
+key is absent or Plane is unreachable it changes nothing and exits 10: a rebuild from an
+unanswered request would empty your map.
+
+To see what a push would do *after* a rebuild, run the two commands one after the other:
+
+```bash
+bin/fusion-plane map --rebuild
+bin/fusion-plane plan --circle <circle-dir>
+```
+
+Two commands, deliberately not chained with `&&`. A rebuild that could not reach Plane
+exits 10 having changed nothing, and `&&` would then skip the plan without a word —
+leaving you looking at no output and no reason for it. Run the first, read what it
+reports, then run the second. (`push --rebuild-map` performs the same rebuild and then
+goes on to reconcile, which writes to the board. Use it when you want the push; use
+`map --rebuild` when you want the map.)
+
+A rebuild folds legacy keys the same way `map --migrate` does and, since it reads the
+keys back out of Plane's own issue bodies, can meet the same duplicate pair there. It
+keeps the UUID your map is already tracking, or failing that the most recently updated
+issue, and prints every UUID it drops. Note that a rebuild **replaces** the map rather
+than merging into it, so an entry it cannot see is gone: that means seed-origin bindings,
+whose Plane issue is your own story and carries no `fusion-key:` line at all. Those are
+printed too, each with the `seed --record-origin` command that restores it. Re-bind them,
+or the next push may overwrite your story's title. An issue whose response carries no
+`id` is skipped and named as well — nothing in the rebuilt map will point at it.
 
 #### Why this is worth doing
 
@@ -342,7 +370,7 @@ so the child still gets attached.
 
 - **Empty description, or no `fusion-key:` line** → the body field name is wrong for
   this instance. Fix `build_write_body` in `bin/fusion-plane`.
-- **Description looks right on the board but `push --rebuild-map` finds nothing** →
+- **Description looks right on the board but `map --rebuild` finds nothing** →
   no longer expected. Rebuild used to read only the plain `description` field while
   fusion writes `description_html`, so it found nothing on any instance that does not
   derive one from the other. It now reads `description_stripped`, then

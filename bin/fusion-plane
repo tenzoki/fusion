@@ -13,13 +13,17 @@
 # deferral at once.
 #
 # Subcommands:
-#   push [--circle <dir>|--all] [--plan] [--rebuild-map] [--closure]
+#   push [--circle <dir>|--all] [--plan] [--rebuild-map [--fixture <json>]]
+#        [--closure]
 #                     Reconcile one Circle (or all) into Plane. --plan is the
 #                     dry-run seam (JSON op list, no curl). --rebuild-map
-#                     reconstructs .plane-map.json from Plane before reconcile.
-#                     The two are mutually exclusive: a rebuild replaces the map
-#                     and a dry run writes nothing, so the pair is a usage error
-#                     (EXIT_USAGE) rather than a run that honours one of them.
+#                     reconstructs .plane-map.json from Plane before reconcile —
+#                     the same rebuild `map --rebuild` performs, followed by the
+#                     reconcile it does not do. The rebuild and --plan are mutually
+#                     exclusive: a rebuild replaces the map and a dry run writes
+#                     nothing, so the pair is a usage error (EXIT_USAGE) rather
+#                     than a run that honours one of them. To plan against a
+#                     rebuilt map, run `map --rebuild` and then `plan`.
 #   plan  --circle <dir>|--all
 #                     Alias for `push --plan ...` (dry-run; emits JSON, no curl).
 #   seed  <seq>       Bounded one-shot read: resolve a Plane sequence_id, GET the
@@ -34,7 +38,10 @@
 #                     whose Plane issue is definitively gone (HTTP 404); an
 #                     unreachable Plane deletes NOTHING (C4). `--migrate` folds a
 #                     legacy marker-bearing map onto the stable keys on disk — the
-#                     one command whose whole job is that fold.
+#                     one command whose whole job is that fold. `--rebuild`
+#                     reconstructs the whole map from Plane and STOPS: the rebuild
+#                     without the reconcile, so a plan can be computed against a
+#                     rebuilt map without first mutating the board.
 #   states            Resolve and print canonical → instance → UUID state map.
 #   doctor            Report key presence, config validity, states/ reachability.
 #
@@ -105,8 +112,8 @@
 #   LEGACY MAPS: an entry written under the old marker-bearing form is FOLDED onto
 #   the stable form. The fold is computed for every lookup and WRITTEN by nothing
 #   that only reads: `map_view` produces it in memory, and only a command that was
-#   asked to write the map (`map --migrate`, `map --forget`, `map --prune`, a live
-#   push) puts it on disk. So `map`, `push --plan` and `plan` resolve through the
+#   asked to write the map (`map --migrate`, `map --forget`, `map --prune`,
+#   `map --rebuild`, a live push) puts it on disk. So `map`, `push --plan` and `plan` resolve through the
 #   folded keys and leave .plane-map.json byte-identical — in EVERY spelling of
 #   them, `--rebuild-map` included, because that combination is refused as a usage
 #   error before anything runs (see cmd_push). That split is the fix for
@@ -139,11 +146,22 @@
 #
 # Test seam: FUSION_PLANE_WORKBENCH=<dir> overrides workbench resolution so the
 # vitest suite can point at a fixture workbench (its own plane.config.yaml +
-# circles/…). FUSION_PLANE_DRYRUN=1 forces --plan for any push.
-# `push --rebuild-map --fixture <captured issues JSON>` (or
-# FUSION_PLANE_ISSUES_FIXTURE) runs the rebuild extraction against a captured
-# `GET issues/` response instead of the wire — same seam shape as
-# `seed --plan --fixture`.
+# circles/…). FUSION_PLANE_DRYRUN=1 forces --plan for any push or seed — EXCEPT
+# beside `--rebuild-map`, where the forced dry run and the rebuild contradict each
+# other and the pair is refused (EXIT_USAGE, see cmd_push). So that env var and a
+# rebuild are mutually exclusive on `push`, and the env var means nothing to
+# `map --rebuild`, which is not a push.
+#
+# THE REBUILD FIXTURE SEAM, in the two spellings that read it — and they are NOT
+# the same shape, which is what this paragraph got wrong until 260810:
+#   `map --rebuild --fixture <captured issues JSON>` runs the rebuild extraction
+#   against a captured `GET issues/` response instead of the wire, needs no key,
+#   makes no call, and exits 0. It is offline like `seed --plan --fixture` but it
+#   is NOT a dry run: replacing .plane-map.json is the command's whole job.
+#   `push --rebuild-map --fixture <same>` performs that same rebuild and then falls
+#   into the live branch — config, key, fetch_states, reconcile — so with no key it
+#   ends at EXIT_DEFERRED (10) after the map has already been replaced.
+# FUSION_PLANE_ISSUES_FIXTURE is the env twin of `--fixture` for both.
 #
 # Dependencies: bash, zsh (login profile exports the key), curl, jq, awk, sed,
 # date, mktemp, sort. jq is required (JSON map/plan); config YAML is parsed by a
@@ -747,7 +765,7 @@ map_report_fold() {
   n_before="$(jq 'length' "$MAP")"
   n_after="$(jq 'length' "$MAP_VIEW")"
   info "map: $MAP still carries the old marker-bearing keys — $n_before entries fold onto $n_after stable keys."
-  info "map: nothing has been folded on disk. Commands that WRITE the map fold it (map --migrate, map --forget, map --prune, a live push); reads do not (map, push --plan, plan)."
+  info "map: nothing has been folded on disk. Commands that WRITE the map fold it (map --migrate, map --forget, map --prune, map --rebuild, a live push); reads do not (map, push --plan, plan)."
   [ "$n_after" -lt "$n_before" ] || return 0
   info "map: folding drops $((n_before - n_after)) mapping(s). Each names a Plane issue that stays on the board unreferenced — close it by hand:"
   # The list is the whole point of the line above, so a failure to produce it is
@@ -1382,6 +1400,22 @@ emit_plan() {
 # the API-result-order dependence rule 3 exists to remove. Ranking all entries and
 # subtracting afterwards represents a repeated issue by its freshest copy.
 #
+# AN ENTRY WITHOUT A USABLE `id` IS DROPPED AT EXTRACTION, exactly the way an
+# entry without an embedded key is (issue 260810-0939). `id: .id` used to bind
+# unguarded while the sibling field one line up was guarded, and the two costs of
+# that were: an entry reached the rebuilt map as `plane_id: null`, which
+# `map_get_id`'s `// empty` reads as "no mapping" anyway, so the next push CREATES
+# rather than PATCHing; and two DISTINCT id-less entries both ranked as `null`,
+# where `[null] - [null]` is empty and the collision above went silent. Guarding at
+# extraction removes both, and leaves the subtraction operating only on real UUIDs,
+# where it is provably correct.
+#
+# Dropped is not silent, because nothing here is: the keys it costs come back in
+# `.skipped`, with a count per key, and the caller reports them beside the
+# collisions and the orphans. Plane's `GET issues/` always returns `id`, so the
+# live path cannot reach this — the reachable route is the `--fixture` seam, and a
+# fixture that says nothing about what it dropped is a fixture that debugs nothing.
+#
 # The losers are returned in `.collisions` and reported by the caller; `.orphans`
 # carries the entries the CURRENT map has that this rebuild did not find, because
 # a rebuild replaces the map wholesale (see rebuild_map).
@@ -1396,7 +1430,12 @@ JQ_REBUILD_MAP="$JQ_STABLE_KEY"'
       | select($key != "")
       | { key: ($key|ltrimstr(" ")|rtrimstr(" ")|stable_key),
           id: .id,
-          updated: (.updated_at // "") } ]
+          updated: (.updated_at // "") } ] as $found
+  | ( $found | map(select((.id | type) == "string" and .id != "")) ) as $usable
+  | ( $found | map(select(((.id | type) != "string") or .id == ""))
+             | group_by(.key)
+             | map({ key: .[0].key, count: length }) ) as $skipped
+  | $usable
   | group_by(.key)
   | map( .[0].key as $k
        | ( sort_by([ (if .id == ($current[$k].plane_id // "") then 1 else 0 end),
@@ -1408,6 +1447,7 @@ JQ_REBUILD_MAP="$JQ_STABLE_KEY"'
                | add ) // {} ),
       collisions: ( map(select((.lost|length) > 0)
                         | {key: .key, kept: .win.id, dropped: .lost}) ),
+      skipped: $skipped,
       orphans: ( ( ($current|keys) - map(.key) )
                  | map({ key: ., plane_id: $current[.].plane_id,
                          origin: ($current[.].origin // "fusion") }) ) }'
@@ -1418,16 +1458,23 @@ JQ_REBUILD_MAP="$JQ_STABLE_KEY"'
 JQ_REBUILD_REPORT='
   ( .collisions[]
     | "two or more Plane issues carry the key \(.key) — kept \(.kept), DROPPED \(.dropped|join(", ")). Each dropped UUID is a duplicate issue still on the board; close it by hand." ),
+  ( .skipped[]
+    | "\(.count) issue(s) carrying the key \(.key) came back with no id — SKIPPED: an issue the response does not identify cannot be mapped. Nothing was lost from Plane, and nothing in the rebuilt map points at those issue(s)." ),
   ( .orphans[]
     | "the map entry \(.key) -> \(.plane_id) (origin=\(.origin)) carries no fusion-key in Plane and is gone from the rebuilt map"
       + (if .origin == "seed"
          then " — it was a seed binding, so re-bind it with: seed --record-origin \(.key) \(.plane_id)   (otherwise the next push may overwrite that human'"'"'s story)"
          else "." end) )'
 
-# push --rebuild-map: reconstruct .plane-map.json from Plane by reading the
-# embedded fusion-key out of each issue's body (live; best-effort).
-# rebuild_map [<fixture>] — with a fixture path, read the captured issues JSON
-# from that file instead of the wire (test seam; no curl, no key needed).
+# rebuild_map [<fixture>] — reconstruct .plane-map.json from Plane by reading the
+# embedded fusion-key out of each issue's body (live; best-effort). With a fixture
+# path, read the captured issues JSON from that file instead of the wire (test
+# seam; no curl, no key needed).
+#
+# TWO commands end here and share this body exactly: `map --rebuild`, which stops
+# when this returns, and `push --rebuild-map`, which continues into the reconcile.
+# One rebuild, two things done with it — there is no second implementation to keep
+# in step (issue 260810-0939).
 #
 # A rebuild REPLACES the map; it does not merge into it. What Plane's issue bodies
 # carry is the whole of what a rebuild can know, and an entry the rebuild cannot
@@ -1547,8 +1594,10 @@ cmd_push() {
     local dry_src="--plan"
     if [ "${FUSION_PLANE_DRYRUN:-0}" = "1" ]; then dry_src="FUSION_PLANE_DRYRUN=1"; fi
     err "push: --rebuild-map replaces .plane-map.json and $dry_src says this run writes nothing — refusing the pair rather than honouring one of them."
-    err "push:   rebuild, then plan against the rebuilt map:"
-    err "push:     $SELF push --rebuild-map --circle <dir> && $SELF plan --circle <dir>"
+    err "push:   the rebuild is a command of its own. Run it, read what it reports, then plan against the rebuilt map:"
+    err "push:     $SELF map --rebuild"
+    err "push:     $SELF plan --circle <dir>"
+    err "push:   Two commands, deliberately not chained into one: a rebuild that cannot reach Plane exits $EXIT_DEFERRED having changed nothing, and a chain would then drop the plan without a word. Run the first, read what it reports, then run the second."
     return "$EXIT_USAGE"
   fi
 
@@ -1788,14 +1837,57 @@ PRUNE_KEYS
   printf 'STATUS: ok (%d pruned of %d checked)\n' "$dropped" "$checked"
 }
 
+# map_rebuild [<fixture>] — the rebuild AS A COMMAND OF ITS OWN: replace
+# .plane-map.json from Plane (or from a captured `GET issues/` response) and stop.
+# Same shape as map_migrate — mutate the map, report, return — and the same body as
+# `push --rebuild-map`, because both end in rebuild_map(). What differs is only what
+# happens next: nothing here, a full reconcile there.
+#
+# It exists because the refusal of `push --plan --rebuild-map` had nowhere honest to
+# send the operator (issue 260810-0939). Its remedy was
+# `push --rebuild-map --circle <dir> && plan --circle <dir>`, and that first command
+# is a live reconcile: config, key, fetch_states, then POSTs and PATCHes on the
+# board. Someone who asked for a PREVIEW was told to mutate Plane to obtain one, and
+# the doc printed it under a heading promising nothing goes over the wire. This
+# command reads the board — a rebuild is by definition a read of it — and writes
+# only the local map.
+#
+# The live path needs config + key, exactly like map_prune, and answers an absent
+# key the same way it answers an unreachable Plane: EXIT_DEFERRED, map not changed.
+# Never a rebuild "from nothing", which would empty the map on an outage. The
+# fixture path needs neither key nor network (test seam), so it runs ahead of both
+# checks.
+map_rebuild() {
+  local fixture="${1:-}"
+  if [ -n "$fixture" ]; then
+    rebuild_map "$fixture" || return "$?"
+    printf 'STATUS: rebuilt (%s entries, from fixture %s)\n' "$(jq 'length' "$MAP")" "$fixture"
+    return "$EXIT_OK"
+  fi
+  cfg_load     || return "$EXIT_CONFIG"
+  build_base
+  config_valid || return "$EXIT_CONFIG"
+  if ! plane_key_present; then
+    err "map --rebuild: PLANE_API_KEY absent — a rebuild reads the board and nothing was read; map not changed"
+    printf 'STATUS: deferred (0 rebuilt) — key absent\n'
+    return "$EXIT_DEFERRED"
+  fi
+  rebuild_map || return "$?"
+  printf 'STATUS: rebuilt (%s entries)\n' "$(jq 'length' "$MAP")"
+}
+
 cmd_map() {
-  local forget="" want_prune=0 want_migrate=0 key="" mutators=0
+  local forget="" want_prune=0 want_migrate=0 want_rebuild=0 fixture="" key="" mutators=0
   while [ "$#" -gt 0 ]; do
     case "$1" in
       --forget)   shift; forget="${1:-}"; [ -n "$forget" ] || { err "map --forget needs a natural key"; return "$EXIT_USAGE"; } ;;
       --forget=*) forget="${1#--forget=}"; [ -n "$forget" ] || { err "map --forget needs a natural key"; return "$EXIT_USAGE"; } ;;
       --prune)    want_prune=1 ;;
       --migrate)  want_migrate=1 ;;
+      --rebuild)  want_rebuild=1 ;;
+      # Test seam, same captured `GET issues/` response `push --rebuild-map` reads.
+      --fixture)   shift; fixture="${1:-}"; [ -n "$fixture" ] || { err "map --fixture needs a path"; return "$EXIT_USAGE"; } ;;
+      --fixture=*) fixture="${1#--fixture=}"; [ -n "$fixture" ] || { err "map --fixture needs a path"; return "$EXIT_USAGE"; } ;;
       -*)         err "map: unknown flag '$1'"; return "$EXIT_USAGE" ;;
       "")         : ;;
       *)          [ -z "$key" ] || { err "map: unexpected extra argument '$1'"; return "$EXIT_USAGE"; }; key="$1" ;;
@@ -1805,10 +1897,21 @@ cmd_map() {
   [ -z "$forget" ]          || mutators=$((mutators + 1))
   [ "$want_prune" -eq 0 ]   || mutators=$((mutators + 1))
   [ "$want_migrate" -eq 0 ] || mutators=$((mutators + 1))
+  [ "$want_rebuild" -eq 0 ] || mutators=$((mutators + 1))
   if [ "$mutators" -gt 1 ]; then
-    err "map: --forget, --prune and --migrate are mutually exclusive"
+    err "map: --forget, --prune, --migrate and --rebuild are mutually exclusive"
     return "$EXIT_USAGE"
   fi
+  # A fixture with nothing to feed is a typo, not a no-op: `map --fixture x` would
+  # otherwise dump the map and exit 0, reporting a rebuild that never ran.
+  if [ -n "$fixture" ] && [ "$want_rebuild" -eq 0 ]; then
+    err "map: --fixture belongs to --rebuild"
+    return "$EXIT_USAGE"
+  fi
+  # The env twin is read only where it means something, so exporting it cannot
+  # change what `map` or `map --forget` do.
+  [ "$want_rebuild" -eq 1 ] && [ -z "$fixture" ] && [ -n "${FUSION_PLANE_ISSUES_FIXTURE:-}" ] \
+    && fixture="$FUSION_PLANE_ISSUES_FIXTURE"
 
   resolve_workbench || return "$EXIT_CONFIG"
   # Build the read view once, in this shell, before any branch below looks the map
@@ -1825,6 +1928,8 @@ cmd_map() {
     map_prune
   elif [ "$want_migrate" -eq 1 ]; then
     map_migrate
+  elif [ "$want_rebuild" -eq 1 ]; then
+    map_rebuild "$fixture"
   elif [ -n "$key" ]; then
     map_json | jq --arg k "$key" '.[$k] // "no such key"'
   else
@@ -2060,17 +2165,22 @@ usage() {
 Usage: fusion-plane <subcommand> [args]
 
 Subcommands:
-  push [--circle <dir>|--all] [--plan] [--rebuild-map] [--closure]
+  push [--circle <dir>|--all] [--plan] [--rebuild-map [--fixture <json>]]
+       [--closure]
                         Reconcile a Circle (or all) into Plane.
                         --plan      dry-run: emit the JSON op list, no curl.
                         --rebuild-map  rebuild .plane-map.json from Plane first,
                                    reading the embedded fusion-key back out of
-                                   description_stripped / _html / description.
-                                   With --fixture <json>, rebuild from a captured
-                                   `GET issues/` response instead (test seam).
+                                   description_stripped / _html / description,
+                                   THEN reconcile (a live run: it writes to the
+                                   board). --fixture <json> rebuilds from a
+                                   captured `GET issues/` response instead of the
+                                   wire (test seam); the reconcile still follows.
                                    NOT combinable with --plan: a rebuild replaces
-                                   the map, a dry run writes nothing. Rebuild
-                                   first, then plan against the rebuilt map.
+                                   the map, a dry run writes nothing. For a plan
+                                   against a rebuilt map use `map --rebuild`,
+                                   which rebuilds without reconciling, and then
+                                   `plan` — two commands, not chained with &&.
   plan --circle <dir>|--all
                         Dry-run alias for `push --plan`.
   seed <seq>            Bounded one-shot read: resolve sequence_id, GET the
@@ -2093,15 +2203,27 @@ Subcommands:
     map --migrate       Fold a legacy marker-bearing map onto the stable keys ON
                         DISK. Reads alone never do this; every dropped duplicate
                         is named by key and UUID so the strays can be closed.
+    map --rebuild       Rebuild the WHOLE map from Plane and stop — the rebuild
+                        `push --rebuild-map` performs, without the reconcile that
+                        follows it there, so a plan can be computed against a
+                        rebuilt map without writing to the board. Reads Plane
+                        (GET issues/), writes only the map: it needs the key, and
+                        an unreachable Plane or an absent key changes NOTHING and
+                        exits 10. --fixture <json> rebuilds from a captured
+                        `GET issues/` response instead (test seam: no key, no
+                        call). Every dropped, skipped and orphaned entry is named.
   states                Resolve+print canonical → instance → UUID states.
   doctor                Report key presence, config validity, states/ reach.
 
 Env:
   PLANE_API_KEY            (in ~/.zshrc) the only place the key ever lives.
-  FUSION_PLANE_DRYRUN=1    force --plan for any push / seed.
+  FUSION_PLANE_DRYRUN=1    force --plan for any push / seed. Beside --rebuild-map
+                           it forces the refused pair, so that spelling exits 2;
+                           it means nothing to `map --rebuild`, which is no push.
   FUSION_PLANE_WORKBENCH   override workbench dir (test seam).
   FUSION_PLANE_SEED_FIXTURE  captured `GET issues/` JSON for `seed --plan` (test seam).
-  FUSION_PLANE_ISSUES_FIXTURE  captured `GET issues/` JSON for `push --rebuild-map` (test seam).
+  FUSION_PLANE_ISSUES_FIXTURE  captured `GET issues/` JSON for `map --rebuild` /
+                           `push --rebuild-map` (test seam).
 EOF
 }
 

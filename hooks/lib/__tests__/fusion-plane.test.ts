@@ -925,6 +925,232 @@ describe("fusion-plane push --rebuild-map: a collision is decided, not raced", (
     expect(r.stderr).toContain("plane-uuid-humans-story");
     expect(r.stderr, "the report has to carry the way back").toContain("seed --record-origin");
   });
+
+  // -- the id guard (issue 260810-0939 …the-winner-subtraction-silences-a-real-
+  //    collision-when-neither-entry-carries-an-id) --------------------------------
+  //
+  // The winner's id is subtracted from the losers so an issue returned twice is not
+  // reported as colliding with itself. That is sound while `.id` is a real UUID —
+  // and there was exactly one input where two DISTINCT entries share one: neither
+  // carries an id at all. `[null] - [null]` is empty, so the group reported nothing,
+  // and the map got `plane_id: null` (which `map_get_id` reads as "no mapping"
+  // anyway). Both halves are now closed at extraction.
+
+  it("two distinct entries that both lack an id reach the map as nothing, and are named", () => {
+    const wb = freshWorkbench();
+    const fixture = join(wb, "issues.json");
+    writeFileSync(
+      fixture,
+      JSON.stringify({
+        results: [
+          { updated_at: "2026-08-01T00:00:00Z", description_html: `<p>fusion-key: ${LEGACY_OPEN}<br></p>` },
+          { updated_at: "2026-08-02T00:00:00Z", description_html: `<p>fusion-key: ${LEGACY_CLOSED}<br></p>` },
+        ],
+      }),
+    );
+    const r = run(wb, "map", "--rebuild", "--fixture", fixture);
+    const map = JSON.parse(readFileSync(join(wb, ".plane-map.json"), "utf-8"));
+    expect(map[issueKey(OPEN_ISSUE)], "a plane_id of null is not a mapping").toBeUndefined();
+    expect(
+      Object.values(map).some((e: any) => e.plane_id === null),
+      "no entry may reach the map with a null plane_id",
+    ).toBe(false);
+    // The silence is the defect: the pre-fix filter at least printed DROPPED null.
+    expect(r.stderr, "an input the rebuild threw away is reported").toContain("SKIPPED");
+    expect(r.stderr, "and the key it threw away, so it is identifiable").toContain(
+      issueKey(OPEN_ISSUE),
+    );
+    expect(r.stderr, "counted per key, so two entries do not read as one").toContain("2 issue(s)");
+  });
+
+  it("an id-less entry never displaces one carrying an id", () => {
+    // The over-application guard on the other side: dropping at extraction must
+    // cost the usable entry nothing, and must not turn a one-real-issue response
+    // into a collision.
+    const wb = freshWorkbench();
+    const fixture = join(wb, "issues.json");
+    writeFileSync(
+      fixture,
+      JSON.stringify({
+        results: [
+          { id: "plane-uuid-REAL", updated_at: "2026-08-01T00:00:00Z", description_html: `<p>fusion-key: ${LEGACY_OPEN}<br></p>` },
+          { updated_at: "2026-08-02T00:00:00Z", description_html: `<p>fusion-key: ${LEGACY_CLOSED}<br></p>` },
+        ],
+      }),
+    );
+    const r = run(wb, "map", "--rebuild", "--fixture", fixture);
+    const map = JSON.parse(readFileSync(join(wb, ".plane-map.json"), "utf-8"));
+    expect(survivor(map), "the identifiable issue still binds its key").toBe("plane-uuid-REAL");
+    expect(collisionLine(r.stderr), "an unidentifiable entry is not a colliding issue").toBeUndefined();
+    expect(r.stderr, "but it is still reported").toContain("SKIPPED");
+  });
+
+  it("a genuine two-issue collision is untouched by the id guard", () => {
+    // The over-application failure for this fix, pinned: both issues carry real
+    // UUIDs, so nothing is skipped and the collision reports in full.
+    const { stderr } = rebuildFrom({ order: "fs" });
+    expect(stderr, "nothing was unidentifiable here").not.toContain("SKIPPED");
+    const line = collisionLine(stderr);
+    expect(line!.kept).toBe("plane-uuid-SECOND");
+    expect(line!.dropped).toEqual(["plane-uuid-FIRST"]);
+    expect(stderr).toContain("close it by hand");
+  });
+});
+
+// ===========================================================================
+// 2d. The rebuild as a command of its own
+//     (issue 260810-0939 …the-rebuild-map-refusal-tells-the-operator-to-run-a-
+//      live-push-to-obtain-a-dry-run).
+//
+//     The refusal of `push --plan --rebuild-map` is correct and had nowhere
+//     honest to send the operator: its remedy was `push --rebuild-map … && plan …`,
+//     whose first command is a full live reconcile — config, key, fetch_states,
+//     POST and PATCH on the board. Someone who asked for a preview was told to
+//     mutate Plane to get one, under a doc heading promising the opposite.
+//
+//     `map --rebuild` is the rebuild without the reconcile, in the shape
+//     `map --migrate` already had: mutate the map, report, stop.
+// ===========================================================================
+describe("fusion-plane map --rebuild: the rebuild without the reconcile", () => {
+  const mapPath = (wb: string) => join(wb, ".plane-map.json");
+  const outbox = (wb: string) => join(wb, ".plane-outbox.jsonl");
+
+  /** A captured `GET issues/` response binding the Circle's open issue to one UUID. */
+  function fixtureFor(wb: string, id = "plane-uuid-rebuilt"): string {
+    const p = join(wb, "rebuild-issues.json");
+    writeFileSync(
+      p,
+      JSON.stringify({
+        results: [
+          { id, description_html: `<p>fusion-key: ${CIRCLE}::issues/${OPEN_ISSUE}<br></p>` },
+        ],
+      }),
+    );
+    return p;
+  }
+
+  it("rebuilds the map and stops — no reconcile, no outbox, exit 0", () => {
+    // "And stops" is the whole point, so it is measured against the command that
+    // does NOT stop: the same rebuild under `push --rebuild-map` walks on into the
+    // live branch and defers every artifact to the outbox.
+    const wb = freshWorkbench();
+    const r = run(wb, "map", "--rebuild", "--fixture", fixtureFor(wb));
+    expect(r.status).toBe(0);
+    expect(r.stdout).toContain("STATUS: rebuilt");
+    expect(JSON.parse(readFileSync(mapPath(wb), "utf-8"))[issueKey(OPEN_ISSUE)].plane_id).toBe(
+      "plane-uuid-rebuilt",
+    );
+    expect(existsSync(outbox(wb)), "a rebuild reconciles nothing, so it defers nothing").toBe(false);
+
+    // The positive control for that last assertion.
+    const wb2 = freshWorkbench();
+    const push = run(wb2, "push", "--circle", CIRCLE, "--rebuild-map", "--fixture", fixtureFor(wb2));
+    expect(push.status, "the push form goes on to reconcile and defers").toBe(EXIT_DEFERRED);
+    expect(existsSync(outbox(wb2))).toBe(true);
+  });
+
+  it("needs neither the API key nor a valid config — it makes no call", () => {
+    // Two proofs in one run. The fixture workbench's base_url is the reserved
+    // `.test` TLD (RFC 6761, guaranteed not to resolve), so any call would fail and
+    // this exits 0. And the config is put back to the shipped all-zero project_id,
+    // which `config_valid` rejects: reaching exit 0 through it proves the fixture
+    // path runs ahead of the config+key gate, exactly as `--migrate` needs neither.
+    const wb = freshWorkbench();
+    const cfg = join(wb, "plane.config.yaml");
+    writeFileSync(
+      cfg,
+      readFileSync(cfg, "utf-8").replace(
+        /^project_id:.*$/m,
+        'project_id: "00000000-0000-0000-0000-000000000000"',
+      ),
+    );
+    const r = run(wb, "map", "--rebuild", "--fixture", fixtureFor(wb));
+    expect(r.status, "no key, no config, no network — and it rebuilt").toBe(0);
+    expect(r.stderr, "nothing reached the wire, so nothing reported it unreachable").not.toContain(
+      "unreachable",
+    );
+    expect(Object.keys(JSON.parse(readFileSync(mapPath(wb), "utf-8")))).toEqual([
+      issueKey(OPEN_ISSUE),
+    ]);
+  });
+
+  it("C4: with no key or no reachable Plane it changes NOTHING and exits 10", () => {
+    // The live spelling, against the unroutable fixture host. Either branch that
+    // gets here — absent key, or key present and the host unreachable — must leave
+    // the map exactly as it was. A rebuild from an unanswered request would empty it.
+    const wb = freshWorkbench();
+    writeFileSync(mapPath(wb), JSON.stringify(collidingLegacyMap, null, 2) + "\n");
+    const before = readFileSync(mapPath(wb), "utf-8");
+    const r = run(wb, "map", "--rebuild");
+    expect(r.status).toBe(EXIT_DEFERRED);
+    expect(readFileSync(mapPath(wb), "utf-8"), "an outage must never cost map entries").toBe(before);
+    expect(r.stdout + r.stderr).toContain("map not changed");
+  });
+
+  it("reads the fixture from FUSION_PLANE_ISSUES_FIXTURE too", () => {
+    const wb = freshWorkbench();
+    const r = runEnv(wb, { FUSION_PLANE_ISSUES_FIXTURE: fixtureFor(wb) }, "map", "--rebuild");
+    expect(r.status).toBe(0);
+    expect(JSON.parse(readFileSync(mapPath(wb), "utf-8"))[issueKey(OPEN_ISSUE)].plane_id).toBe(
+      "plane-uuid-rebuilt",
+    );
+  });
+
+  it("the env fixture means nothing to the other map commands", () => {
+    // An exported test seam must not turn `map` into a rebuild behind the user.
+    const wb = freshWorkbench();
+    writeFileSync(mapPath(wb), JSON.stringify(collidingLegacyMap, null, 2) + "\n");
+    const before = readFileSync(mapPath(wb), "utf-8");
+    const r = runEnv(wb, { FUSION_PLANE_ISSUES_FIXTURE: fixtureFor(wb) }, "map");
+    expect(r.status).toBe(0);
+    expect(readFileSync(mapPath(wb), "utf-8")).toBe(before);
+  });
+
+  it("--fixture without --rebuild is a usage error, not a quiet dump of the map", () => {
+    const r = run(freshWorkbench(), "map", "--fixture", "/nonexistent.json");
+    expect(r.status).toBe(EXIT_USAGE);
+    expect(r.stderr).toContain("--fixture");
+  });
+
+  it("--rebuild is mutually exclusive with the other mutators", () => {
+    const wb = freshWorkbench();
+    expect(run(wb, "map", "--rebuild", "--migrate").status).toBe(EXIT_USAGE);
+    expect(run(wb, "map", "--rebuild", "--prune").stderr).toContain("mutually exclusive");
+    expect(run(wb, "map", "--rebuild", "--forget", CIRCLE).status).toBe(EXIT_USAGE);
+  });
+
+  it("the refusal hands the operator this command, and not an && chain", () => {
+    // The defect was in the remedy, not the refusal. What it printed was
+    // `push --rebuild-map --circle <dir> && plan --circle <dir>`: a live reconcile
+    // offered as the way to obtain a dry run, chained with an `&&` that swallows the
+    // plan whenever the first half defers (exit 10, the ordinary offline case).
+    const wb = freshWorkbench();
+    const r = run(wb, "push", "--circle", CIRCLE, "--plan", "--rebuild-map");
+    expect(r.status).toBe(EXIT_USAGE);
+    expect(r.stderr, "it names the non-reconciling command").toContain("map --rebuild");
+    expect(r.stderr, "and no longer the live push").not.toContain("push --rebuild-map --circle");
+    expect(r.stderr, "two commands, so a deferred first step cannot swallow the second").not.toContain(
+      "&&",
+    );
+  });
+
+  it("rebuild, then plan: the remedy runs, and the plan mutates nothing", () => {
+    // The refusal's guidance, executed end to end. This is what makes the sentence
+    // "rebuild, then plan against the rebuilt map" true: the rebuild happens without
+    // a single call to the board, the plan is computed FROM the rebuilt map, and the
+    // map is byte-identical afterwards.
+    const wb = freshWorkbench();
+    expect(run(wb, "map", "--rebuild", "--fixture", fixtureFor(wb)).status).toBe(0);
+    const afterRebuild = readFileSync(mapPath(wb), "utf-8");
+
+    const p = run(wb, "plan", "--circle", CIRCLE);
+    expect(p.status).toBe(0);
+    const op = opFor(plan(p.stdout).ops, issueKey(OPEN_ISSUE));
+    expect(op.op, "the rebuilt UUID is what the plan now updates").toBe("update");
+    expect(op.plane_id).toBe("plane-uuid-rebuilt");
+    expect(readFileSync(mapPath(wb), "utf-8"), "and the plan wrote nothing").toBe(afterRebuild);
+    expect(existsSync(outbox(wb)), "neither half touched the board").toBe(false);
+  });
 });
 
 // ===========================================================================
