@@ -70,3 +70,33 @@ verbatim is a **rule**, not a section of one agent's prompt. Moving `#### Readin
 file under `rules/` and emitting it to the three consumers would use the mechanism the project already
 has for exactly this, and would remove the cross-file citation instead of repairing it. That is the
 same partition the conventions file's own header table documents for four other topics.
+
+---
+Resolved: route 1, the citation is repaired rather than removed. One paragraph near the top of
+`skills/setup/SKILL.md` and `skills/next/SKILL.md` states the convention once — a path into a file
+the plugin ships carries the `$FUSION_PLUGIN_ROOT` root — and cites `skills/cleanup/SKILL.md:11` as
+the site that gives the reason, rather than restating it. Every citation in both files is then
+rooted: in `setup` at Step 2, the churn block at Step 3 (citation only, its content untouched), the
+domain heuristic and the queue's-ground check; in `next` at Step 5 item 4 and Step 6.3. That covers
+`skills/setup/SKILL.md:227` and `:228`, which were outside this record's stated scope but inside the
+same file.
+
+Both queue's-ground sites gained a presence check: it greps `$FUSION_PLUGIN_ROOT/agents/orchestrator.md`
+for `#### Reading a queue` and prints `queue-check: UNAVAILABLE`, naming the install and telling the
+user to run `fusion --update`. Setup reports that line in place of a verdict; `/fusion:next` renders
+it even though it otherwise stays silent on a healthy queue, because silence there reads as a queue
+in good standing.
+
+One deliberate consequence, recorded because it is verification strength rather than a side effect:
+rooting a citation takes it out of the reference lint's heading check, which needs a backtick
+immediately before the file token. Nothing is lost — `queue-ground-lint` already pins
+`### The queue's ground` to exactly one occurrence in the orchestrator prompt, and the rooted path
+still resolves through that lint's path class. `#### Reading a queue` was never lint-checked at all;
+the new runtime grep is the first thing that checks it, and it checks the copy that actually gets
+read.
+
+Route 2 — moving the section into a rule file under `rules/` — was judged the better structural
+answer and was not executed. It carries an unresolved question about which consumers a rule file can
+reach, filed as `$OUT_DECISION/260810-1822_o_should-the-queue-ground-procedure-become-a-rule-file-when-one-of-its-three-consumers-cannot-be-emitted-to.md`.
+
+Verification: `npm test` from `hooks/` — exit 0, 41 files, 1096 tests.
