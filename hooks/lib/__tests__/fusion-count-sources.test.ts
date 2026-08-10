@@ -93,11 +93,28 @@ function run(cwd: string, ...args: string[]): Counts {
  * so neither a floor nor a line-count assertion sees it. Every token therefore
  * has to look like an extension.
  *
+ * The third shape is why the two patterns below are not the same pattern. The
+ * filter has to be WIDER than the match, or a line the match cannot see is not
+ * seen by the filter either and drops out silently — which is the first shape
+ * again, one anchor further in. `  CODE_EXT=` (indented) and `CODE_EXT+=` are
+ * both valid bash computing the identical value, so the script keeps shipping
+ * every extension while a filter anchored like the match asserts coverage over
+ * a smaller set. Widened, such a line lands in `declared` and then throws
+ * "declared but not parsed". Issue: shared/issues/260810-0939_*_the-declared-
+ * but-not-parsed-guard-is-anchored-like-the-regex-so-two-drift-shapes-still-
+ * cover-less.md.
+ *
+ * What the filter must NOT catch is a line deleted outright: the script then
+ * really does ship fewer extensions and covering fewer is correct. That is the
+ * whole difference between this guard and the floors it replaced, and it is
+ * pinned in the test below.
+ *
  * `src` is a parameter so the guard itself is testable against a mutated source.
  */
 function extensions(varName: string, src: string = readFileSync(script, "utf-8")): string[] {
   const assignment = new RegExp(`^${varName}="(?:\\$${varName}\\|)?(.+)"$`);
-  const declared = src.split("\n").filter((l) => l.startsWith(`${varName}=`));
+  const declaration = new RegExp(`^\\s*${varName}\\+?=`);
+  const declared = src.split("\n").filter((l) => declaration.test(l));
   if (declared.length === 0) throw new Error(`${varName}: no assignment lines found in ${script}`);
 
   const found: string[] = [];
@@ -327,6 +344,24 @@ describe("fusion-count-sources", () => {
     expect(() => extensions("CODE_EXT", mutate('CODE_EXT="$CODE_EXT|c|h|', 'CODE_EXT="${CODE_EXT}|c|h|'))).toThrow(
       /not an extension/,
     );
+
+    // The two spellings that survive an anchored filter. Both are valid bash
+    // leaving the runtime value identical, so the script still ships every
+    // extension it ships now — the drift is entirely in what this file can see.
+    expect(() => extensions("CODE_EXT", mutate('CODE_EXT="$CODE_EXT|c|h|', '  CODE_EXT="$CODE_EXT|c|h|'))).toThrow(
+      /declared but not parsed/,
+    );
+    expect(() => extensions("CODE_EXT", mutate('CODE_EXT="$CODE_EXT|c|h|', 'CODE_EXT+="|c|h|'))).toThrow(
+      /declared but not parsed/,
+    );
+
+    // And the case that must stay quiet. A line deleted outright is not drift:
+    // the script ships 8 fewer extensions and covering 8 fewer is right. A
+    // filter widened far enough to call this an error would need a line count
+    // or a floor back, which is the mechanism the guard replaced.
+    const deleted = mutate('CODE_EXT="$CODE_EXT|c|h|cc|cpp|cxx|hh|hpp|hxx"\n', "");
+    expect(() => extensions("CODE_EXT", deleted)).not.toThrow();
+    expect(extensions("CODE_EXT", deleted).length).toBe(extensions("CODE_EXT", src).length - 8);
 
     expect(() => extensions("NO_SUCH_EXT", src)).toThrow(/no assignment lines/);
   });
