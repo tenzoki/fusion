@@ -14,10 +14,15 @@
 #
 # Exit codes:
 #   0  counted; both values are integers
-#   2  <project-root> is not inside a git work tree, so NO count was taken.
-#      Both values are `unavailable` and `counted_by=none`. This is a real
-#      answer, not a failure to report as an error — see "The absent count"
-#      below.
+#   2  NO count was taken. Both values are `unavailable` and `counted_by=none`.
+#      Two causes reach this, and they are deliberately one exit code and one
+#      output shape — see "The absent count" below:
+#        - <project-root> is not inside a git work tree. This is a real answer,
+#          not a failure, and nothing is written to stderr.
+#        - the count was attempted and could not be completed (a corrupt or
+#          locked index, an unreadable object store, a `git` too old for the
+#          pathspec, a killed process, a broken filter). One line naming the
+#          failing step goes to stderr; stdout is the same absent count.
 #   1  usage error: <project-root> does not exist or is not a directory.
 #
 # ---------------------------------------------------------------------------
@@ -57,6 +62,26 @@
 # silent zero is therefore worse than no number at all. The caller's contract
 # is in agents/orchestrator.md Setup Step 5: skip every branch that reads these
 # counts, fall back to domain `code`, and say so in the session log.
+#
+# That doctrine covers a count that FAILED exactly as it covers one that was
+# never possible, and the code below has one shape for both. What the caller
+# reads is `counted_by`: `git-ls-files` is this file asserting that it counted,
+# and Step 5's cascade puts the `counted_by == "none"` branch at the top
+# precisely so an absent count cannot be consumed as evidence. So every step
+# that can fail — the listing, and each filter over it — has its exit status
+# read, and any non-zero status routes to report_unavailable() rather than
+# through the printing at the bottom. Nothing may reach that printing except a
+# count that was actually taken.
+#
+# The trap this file fell into once, kept here because it is invisible on
+# reading: `listing="$(git ls-files … | sort -u)"` reports the status of `sort`,
+# not of `git`, and `sort` succeeds on the empty input a failed `git` leaves
+# behind. That produced `code_files=0 data_files=0 counted_by=git-ls-files`,
+# exit 0, over a git that had exited 128 — the labelled zero this whole section
+# forbids, defeating the guard branch built for it. A status that must survive
+# is therefore never piped: the read and the sort are separate commands.
+# Issue: fusion-workbench/shared/issues/260810-0459_*_fusion-count-sources-
+# reports-a-measured-zero-when-git-fails-which-its-own-header-forbids.md.
 #
 # ---------------------------------------------------------------------------
 # Untracked files
@@ -122,22 +147,52 @@ DATA_EXT="yaml|yml|json|jsonl|ndjson|toml|csv|tsv|xml"
 DATA_EXT="$DATA_EXT|xsd|avsc"
 DATA_EXT="$DATA_EXT|ttl|owl|rdf|jsonld|nt|n3|nq|trig"
 
-if ! git -C "$root" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+# The absent count, in the single shape this file has for it. Called with no
+# argument when not counting is the honest answer (no work tree); called with a
+# reason when a count was attempted and failed, and then that reason is named on
+# stderr so the failure is not silent. stdout is identical either way, because
+# the caller's question — "was a count taken?" — has the same answer.
+report_unavailable() {
+  if [ "$#" -gt 0 ]; then
+    printf 'fusion-count-sources: %s; no count taken\n' "$1" >&2
+  fi
   printf 'code_files=unavailable\n'
   printf 'data_files=unavailable\n'
   printf 'counted_by=none\n'
   exit 2
+}
+
+# Count the listing's lines matching one extension alternation, or fail.
+# grep's three statuses are three different facts and only one of them is an
+# error: 0 is matches found, 1 is a legitimate zero, and anything above 1 is
+# grep itself failing. The `|| true` this replaced flattened all three into
+# "fine", so a failing filter reached stdout as an empty value still wearing the
+# `git-ls-files` label — the same defect as the piped listing, one step later.
+count_matching() {
+  out="$(printf '%s\n' "$listing" | grep -Eic "\.($1)\$")" && status=0 || status=$?
+  case "$status" in
+    0) printf '%s\n' "$out" ;;
+    1) printf '0\n' ;;
+    *) return "$status" ;;
+  esac
+}
+
+if ! git -C "$root" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  report_unavailable
 fi
 
 # One listing, filtered twice. Pathspecs are relative to <project-root>, so a
 # project nested inside a larger repository counts its own subtree only.
-listing="$(git -C "$root" ls-files --cached --others --exclude-standard \
-             -- . ':(exclude)fusion-workbench' 2>/dev/null | sort -u)"
+# git's own stderr stays suppressed — it is noisy on the success path — but its
+# exit status is read, which is why this is not piped into `sort`.
+if ! raw="$(git -C "$root" ls-files --cached --others --exclude-standard \
+              -- . ':(exclude)fusion-workbench' 2>/dev/null)"; then
+  report_unavailable 'git ls-files failed'
+fi
+listing="$(printf '%s\n' "$raw" | sort -u)"
 
-# grep exits 1 on no match, which `set -e` would take as a failure; `|| true`
-# keeps a legitimate zero a zero.
-code_files="$(printf '%s\n' "$listing" | grep -Eic "\.($CODE_EXT)\$" || true)"
-data_files="$(printf '%s\n' "$listing" | grep -Eic "\.($DATA_EXT)\$" || true)"
+code_files="$(count_matching "$CODE_EXT")" || report_unavailable 'the source-file filter failed'
+data_files="$(count_matching "$DATA_EXT")" || report_unavailable 'the data-file filter failed'
 
 printf 'code_files=%s\n' "$code_files"
 printf 'data_files=%s\n' "$data_files"
