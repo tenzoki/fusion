@@ -24,11 +24,14 @@
 #                     seeding skill. `--record-origin <circle-dir> <uuid>` writes
 #                     the origin UUID under the new Circle's key (Phase B, no net).
 #                     `--plan --fixture <json>` is the dry-run test seam.
-#   map   [<key>]     Dump .plane-map.json, or inspect one natural key.
+#   map   [<key>]     Dump .plane-map.json, or inspect one natural key. Reads
+#                     only: it never writes the file, and never creates one.
 #                     `--forget <key>` drops one entry (reports whether it was
 #                     there — never a silent no-op). `--prune` drops every entry
 #                     whose Plane issue is definitively gone (HTTP 404); an
-#                     unreachable Plane deletes NOTHING (C4).
+#                     unreachable Plane deletes NOTHING (C4). `--migrate` folds a
+#                     legacy marker-bearing map onto the stable keys on disk — the
+#                     one command whose whole job is that fold.
 #   states            Resolve and print canonical → instance → UUID state map.
 #   doctor            Report key presence, config validity, states/ reachability.
 #
@@ -96,12 +99,27 @@
 #   first stayed at its old state forever (issue 260807-1939). A test lints for a
 #   seventh site.
 #
-#   LEGACY MAPS: an entry written under the old marker-bearing form is re-keyed to
-#   the stable form by `map_migrate_keys`, once per run, before any lookup. Where
-#   the old scheme already produced two entries for one record, the one pushed
-#   most recently wins and the collision is reported. `rebuild_map` normalises the
-#   same way, because the `fusion-key:` embedded in an already-created Plane issue
-#   is whatever key was current when that issue was POSTed.
+#   LEGACY MAPS: an entry written under the old marker-bearing form is FOLDED onto
+#   the stable form. The fold is computed for every lookup and WRITTEN by nothing
+#   that only reads: `map_view` produces it in memory, and only a command that was
+#   asked to write the map (`map --migrate`, `map --forget`, `map --prune`, a live
+#   push) puts it on disk. So `map`, `push --plan` and `plan` resolve through the
+#   folded keys and leave .plane-map.json byte-identical. That split is the fix for
+#   issue 260810-0456, where the fold sat on the read path and a dry run destroyed
+#   a Plane UUID. Where the old scheme already produced two entries for one record,
+#   the fold keeps the one pushed most recently and every dropped entry is named,
+#   by key and UUID, on stderr.
+#
+#   `rebuild_map` normalises the same way, because the `fusion-key:` embedded in an
+#   already-created Plane issue is whatever key was current when that issue was
+#   POSTed — and it now handles a collision the same way too (issue 260810-0457):
+#   two Plane issues carrying one key are ordered by (the UUID the current map
+#   holds, then `updated_at`, then the UUID string), the last wins, and the losers
+#   are named. The ordering is total, so the winner never depends on the order the
+#   API returned the issues in. What a rebuild does NOT do is merge: it replaces
+#   the map, so an entry whose Plane issue carries no `fusion-key:` — a seed-origin
+#   binding, always — is dropped. Those are named too, with the
+#   `seed --record-origin` line that restores each.
 #
 # Runtime state (workbench-root, gitignored with the rest of fusion-workbench/):
 #   plane.config.yaml   consumer-filled config (base_url, slugs, state names)
@@ -594,11 +612,36 @@ artifact_title() {
 
 # ── Natural-key → Plane map (jq-backed; helper-owned) ────────────────────────
 #
-# JQ_STABLE_KEY — the key normalisation, as a jq definition, shared by the map
-# migration and the rebuild. It is the jq twin of `stable_basename` above: drop
-# the `_<m>_` marker segment from the filename part of a natural key. It matches
-# only inside `::issues/` and `::decisions/` after a YYMMDD-HHMM stamp, so a
-# Circle key (a bare directory name, no `::`) passes through untouched.
+# READING AND WRITING ARE SEPARATE, AND THAT SEPARATION IS THE DESIGN.
+#
+# A map on disk may still carry the old marker-bearing keys, so every lookup has
+# to resolve against the folded (marker-free) form. Folding used to happen by
+# REWRITING the file, from `map_ensure`, which sat on the READ path — so `map`,
+# `push --plan` and `plan`, each documented as changing nothing, rewrote
+# .plane-map.json, and on a map carrying the very duplicates the fold exists to
+# repair they destroyed a Plane UUID. A destroyed UUID names a Plane issue that
+# goes on existing, unreferenced, for a human to find and close: cost outside this
+# repository, paid by a command the user ran to LOOK at something. Issues
+# 260810-0456 and 260810-0457.
+#
+# The three functions below are the answer, and it is structural rather than a
+# guard at each call site:
+#
+#   map_view   folds in memory and sets $MAP_VIEW to a path holding the folded
+#              form. It NEVER writes $MAP. EVERY read goes through it.
+#   map_write  applies a jq program to that folded form and replaces $MAP. Every
+#              caller of it is a command that was asked to write.
+#   map_put    the ONE place $MAP is replaced (map_write and rebuild_map both end
+#              here), so invalidating the view can never be forgotten.
+#
+# A read path added tomorrow gets `map_view` and has no way to write; that is the
+# property bought here, rather than two guarded call sites waiting for a third.
+#
+# JQ_STABLE_KEY — the key normalisation, as a jq definition, shared by the fold
+# and the rebuild. It is the jq twin of `stable_basename` above: drop the `_<m>_`
+# marker segment from the filename part of a natural key. It matches only inside
+# `::issues/` and `::decisions/` after a YYMMDD-HHMM stamp, so a Circle key (a
+# bare directory name, no `::`) passes through untouched.
 JQ_STABLE_KEY='def stable_key: sub("(?<p>::(issues|decisions)/[0-9]{6}-[0-9]{4})_[a-z]_"; .p + "_");'
 
 # JQ_MIGRATE_MAP — re-key a whole map to the stable form.
@@ -606,49 +649,122 @@ JQ_STABLE_KEY='def stable_key: sub("(?<p>::(issues|decisions)/[0-9]{6}-[0-9]{4})
 # COLLISION RULE: the old marker-bearing scheme could record ONE record twice —
 # once per state it was pushed in — which is the duplicate-issue defect itself. On
 # a collision the entry pushed most recently wins, because that is the Plane issue
-# the board has been tracking; the loser is reported by the caller, never dropped
-# silently, since it means a stray duplicate exists in Plane for a human to close.
+# the board has been tracking; the loser is reported by `map_report_fold`, by key
+# and by UUID, never dropped silently, since it means a stray duplicate exists in
+# Plane for a human to close.
 JQ_MIGRATE_MAP="$JQ_STABLE_KEY"'
   reduce (to_entries[]) as $e ({};
     ($e.key | stable_key) as $k
     | if (has($k) and ((.[$k].last_pushed // "") >= ($e.value.last_pushed // "")))
       then . else .[$k] = $e.value end)'
 
-MAP_MIGRATED=0
-# map_migrate_keys — bring a map written under the old marker-bearing key scheme
-# onto the stable keys, ONCE per run, before anything reads it. A map that is
-# already stable normalises to itself, so this is a no-op that writes nothing:
-# the file is only replaced when the content actually changed.
-map_migrate_keys() {
-  local tmp before after
-  [ "$MAP_MIGRATED" -eq 0 ] || return 0
-  MAP_MIGRATED=1
+# JQ_FOLD_LOSERS — the entries the fold drops, as `<old key> → <plane_id>` lines.
+# An original entry is a loser when the folded map does not carry its plane_id
+# under its own stable key. $v is the folded map (--slurpfile).
+JQ_FOLD_LOSERS="$JQ_STABLE_KEY"'
+  . as $orig | $v[0] as $folded
+  | [ $orig | to_entries[]
+      | select($folded[(.key | stable_key)].plane_id != .value.plane_id)
+      | "\(.key) → \(.value.plane_id)" ]
+  | .[]'
+
+MAP_VIEW=""          # path to read the map from: $MAP itself when it is already
+                     # stable (or unparseable), else a temp file holding the fold
+MAP_VIEW_TMP=""      # that temp file, when one was materialised
+MAP_VIEW_READY=0
+MAP_FOLD_REPORTED=0
+
+map_view_cleanup() { [ -z "$MAP_VIEW_TMP" ] || rm -f "$MAP_VIEW_TMP"; return 0; }
+trap map_view_cleanup EXIT
+
+# map_view — sets $MAP_VIEW to a path holding the map in the stable key form.
+# READ-ONLY with respect to $MAP: it never writes, creates or replaces it. Call it
+# and then read "$MAP_VIEW"; it does not print the path, because a command
+# substitution would run it in a subshell and lose the cached fold, the temp-file
+# handle and the once-per-run report with it.
+#
+# $MAP_VIEW may name a file that does not exist (no map yet). Callers check.
+map_view() {
+  [ "$MAP_VIEW_READY" -eq 0 ] || return 0
+  MAP_VIEW_READY=1
+  MAP_VIEW="$MAP"
   [ -f "$MAP" ] || return 0
-  tmp="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-migrate.XXXXXX")"
+  local tmp before after
+  tmp="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-view.XXXXXX")"
   if ! jq -S "$JQ_MIGRATE_MAP" "$MAP" > "$tmp" 2>/dev/null; then
-    err "map: could not parse $MAP — keys left as they are"
+    err "map: could not parse $MAP — keys read as they are"
     rm -f "$tmp"
     return 0
   fi
   before="$(jq -S '.' "$MAP" 2>/dev/null || printf '')"
   after="$(cat "$tmp")"
   if [ "$before" = "$after" ]; then
-    rm -f "$tmp"
+    rm -f "$tmp"          # already stable: the file IS the view
     return 0
   fi
-  local n_before n_after
-  n_before="$(jq 'length' "$MAP")"
-  n_after="$(jq 'length' "$tmp")"
-  mv "$tmp" "$MAP"
-  info "map: migrated to marker-free natural keys ($n_before entries → $n_after)"
-  if [ "$n_after" -lt "$n_before" ]; then
-    info "map: $((n_before - n_after)) entry/entries collided — the old scheme had mirrored one record under two markers, so a duplicate Plane issue exists for each; the most recently pushed one was kept. Close the strays in Plane."
-  fi
+  MAP_VIEW="$tmp"
+  MAP_VIEW_TMP="$tmp"
+  map_report_fold
 }
 
-map_ensure() { [ -f "$MAP" ] || printf '{}\n' > "$MAP"; map_migrate_keys; }
-map_get_id()    { [ -f "$MAP" ] || { printf ''; return; }; jq -r --arg k "$1" '.[$k].plane_id  // empty' "$MAP"; }
-map_get_state() { [ -f "$MAP" ] || { printf ''; return; }; jq -r --arg k "$1" '.[$k].last_state // empty' "$MAP"; }
+# map_report_fold — say, once per run, that the file is still in the old form,
+# what folding it costs, and that nothing has been folded on disk yet. Naming each
+# losing UUID (not just counting them) is the point: that string is the only
+# handle a human has on the stray Plane issue the fold orphans.
+map_report_fold() {
+  [ "$MAP_FOLD_REPORTED" -eq 0 ] || return 0
+  MAP_FOLD_REPORTED=1
+  local n_before n_after losers
+  n_before="$(jq 'length' "$MAP")"
+  n_after="$(jq 'length' "$MAP_VIEW")"
+  info "map: $MAP still carries the old marker-bearing keys — $n_before entries fold onto $n_after stable keys."
+  info "map: nothing has been folded on disk. Commands that WRITE the map fold it (map --migrate, map --forget, map --prune, a live push); reads do not (map, push --plan, plan)."
+  [ "$n_after" -lt "$n_before" ] || return 0
+  info "map: folding drops $((n_before - n_after)) mapping(s). Each names a Plane issue that stays on the board unreferenced — close it by hand:"
+  losers="$(jq -r --slurpfile v "$MAP_VIEW" "$JQ_FOLD_LOSERS" "$MAP" 2>/dev/null || printf '')"
+  printf '%s\n' "$losers" | while IFS= read -r line; do
+    [ -z "$line" ] || info "map:   $line"
+  done
+  return 0
+}
+
+# map_put <file> — THE ONE place $MAP is replaced. Every writer ends here, so the
+# read view is invalidated in exactly one place and cannot go stale behind a write.
+map_put() {
+  mv "$1" "$MAP"
+  [ -z "$MAP_VIEW_TMP" ] || rm -f "$MAP_VIEW_TMP"
+  MAP_VIEW_TMP=""
+  MAP_VIEW=""
+  MAP_VIEW_READY=0
+}
+
+# map_write <jq-program> [<jq-arg>…] — apply a jq program to the FOLDED map and
+# replace $MAP with the result. Called only from commands that were asked to
+# write, which is why folding on disk happens here and nowhere on a read path.
+map_write() {
+  local prog="$1" tmp rc=0
+  shift
+  map_view
+  tmp="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-map.XXXXXX")"
+  if [ -f "$MAP_VIEW" ]; then
+    jq -S "$@" "$prog" "$MAP_VIEW" > "$tmp" || rc=$?
+  else
+    printf '{}\n' | jq -S "$@" "$prog" > "$tmp" || rc=$?
+  fi
+  if [ "$rc" -ne 0 ]; then
+    err "map: could not write $MAP (jq exit $rc) — file left unchanged"
+    rm -f "$tmp"
+    return 1
+  fi
+  map_put "$tmp"
+}
+
+# map_json — the map's content in the stable key form on stdout, `{}` when there
+# is no map yet. The display half of map_view.
+map_json() { map_view; if [ -f "$MAP_VIEW" ]; then cat "$MAP_VIEW"; else printf '{}\n'; fi; }
+
+map_get_id()    { map_view; [ -f "$MAP_VIEW" ] || { printf ''; return; }; jq -r --arg k "$1" '.[$k].plane_id  // empty' "$MAP_VIEW"; }
+map_get_state() { map_view; [ -f "$MAP_VIEW" ] || { printf ''; return; }; jq -r --arg k "$1" '.[$k].last_state // empty' "$MAP_VIEW"; }
 
 # map_get_origin <natural-key> — WHO AUTHORED the Plane issue behind this key:
 #   "seed"   the issue pre-existed in Plane (a human's story); fusion bound it to
@@ -659,8 +775,9 @@ map_get_state() { [ -f "$MAP" ] || { printf ''; return; }; jq -r --arg k "$1" '.
 # entry from `push --rebuild-map`) has no `origin` and defaults to "fusion" —
 # exactly the behaviour those maps already had.
 map_get_origin() {
-  [ -f "$MAP" ] || { printf 'fusion'; return; }
-  jq -r --arg k "$1" '.[$k].origin // "fusion"' "$MAP"
+  map_view
+  [ -f "$MAP_VIEW" ] || { printf 'fusion'; return; }
+  jq -r --arg k "$1" '.[$k].origin // "fusion"' "$MAP_VIEW"
 }
 
 map_set() {
@@ -669,14 +786,11 @@ map_set() {
   # "fusion" for a new/legacy entry). A push must never silently relabel a
   # seed-origin entry as fusion-owned — that would re-enable the destructive
   # full-body write on the next run.
-  local nk="$1" pid="$2" kind="$3" st="$4" origin="${5:-}" tmp
-  map_ensure
+  local nk="$1" pid="$2" kind="$3" st="$4" origin="${5:-}"
   [ -n "$origin" ] || origin="$(map_get_origin "$nk")"
-  tmp="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-map.XXXXXX")"
-  jq --arg k "$nk" --arg id "$pid" --arg kind "$kind" --arg st "$st" \
-     --arg o "$origin" --arg t "$(now_utc)" \
-     '.[$k] = {plane_id:$id, kind:$kind, last_state:$st, last_pushed:$t, origin:$o}' "$MAP" > "$tmp" \
-     && mv "$tmp" "$MAP"
+  map_write '.[$k] = {plane_id:$id, kind:$kind, last_state:$st, last_pushed:$t, origin:$o}' \
+    --arg k "$nk" --arg id "$pid" --arg kind "$kind" --arg st "$st" \
+    --arg o "$origin" --arg t "$(now_utc)"
 }
 
 # ── Outbox (C4 never-silent) ─────────────────────────────────────────────────
@@ -1103,20 +1217,78 @@ emit_plan() {
 # marker-bearing mapping the next transition invalidates — which is why
 # `--rebuild-map` was no recovery path for that defect. Normalising on the way in
 # makes it one.
+#
+# COLLISION RULE — the same rule as JQ_MIGRATE_MAP's, expressed in the data a
+# rebuild actually has (issue 260810-0457). Two Plane issues can carry the same
+# `fusion-key:`, which is precisely the duplicate pair the marker-in-the-key defect
+# produced, and the board being rebuilt from is by construction a board carrying
+# them. This used to assign without a guard, so the winner was whichever the API
+# returned last and the loser vanished unreported. Now every group of candidates
+# for one key is ORDERED, and the ordering is a single total one rather than a
+# ladder of special cases — later beats earlier on:
+#
+#   1. the UUID the current map already records under that key. That entry is the
+#      issue fusion has been PATCHing, which is the migration's "most recently
+#      pushed wins" answered from better evidence than the rebuild has of its own.
+#   2. `updated_at` — the most recently touched issue, the migration's rule read
+#      off Plane, since a rebuilt entry has no `last_pushed` to compare.
+#   3. the UUID string, so a tie never resolves by API result order.
+#
+# The losers are returned in `.collisions` and reported by the caller; `.orphans`
+# carries the entries the CURRENT map has that this rebuild did not find, because
+# a rebuild replaces the map wholesale (see rebuild_map).
 JQ_REBUILD_MAP="$JQ_STABLE_KEY"'
-  (.results? // .) as $issues
-  | reduce $issues[] as $i ({};
-      ( [$i.description_stripped, $i.description_html, $i.description]
-        | map(select(type == "string"))
-        | map(capture("fusion-key: (?<k>[^\n<]+)").k)
-        | (.[0] // "") ) as $key
-      | if $key == "" then . else .[$key|ltrimstr(" ")|rtrimstr(" ")|stable_key] =
-          {plane_id:$i.id, kind:"unknown", last_state:"", last_pushed:""} end)'
+  ($cur // {}) as $current
+  | (.results? // .) as $issues
+  | [ $issues[]
+      | ( [.description_stripped, .description_html, .description]
+          | map(select(type == "string"))
+          | map(capture("fusion-key: (?<k>[^\n<]+)").k)
+          | (.[0] // "") ) as $key
+      | select($key != "")
+      | { key: ($key|ltrimstr(" ")|rtrimstr(" ")|stable_key),
+          id: .id,
+          updated: (.updated_at // "") } ]
+  | group_by(.key)
+  | map( .[0].key as $k
+       | ( sort_by([ (if .id == ($current[$k].plane_id // "") then 1 else 0 end),
+                     .updated, .id ]) ) as $ranked
+       | { key: $k, win: ($ranked | last), lost: $ranked[:-1] } )
+  | { map: ( ( map({ (.key): {plane_id: .win.id, kind:"unknown", last_state:"", last_pushed:""} })
+               | add ) // {} ),
+      collisions: ( map(select((.lost|length) > 0)
+                        | {key: .key, kept: .win.id, dropped: [.lost[].id]}) ),
+      orphans: ( ( ($current|keys) - map(.key) )
+                 | map({ key: ., plane_id: $current[.].plane_id,
+                         origin: ($current[.].origin // "fusion") }) ) }'
+
+# JQ_REBUILD_REPORT — one human line per UUID the rebuild does not carry forward,
+# read off the structure JQ_REBUILD_MAP returns. Kept beside it so the two cannot
+# drift: a field renamed in one is a missing line in the other.
+JQ_REBUILD_REPORT='
+  ( .collisions[]
+    | "two or more Plane issues carry the key \(.key) — kept \(.kept), DROPPED \(.dropped|join(", ")). Each dropped UUID is a duplicate issue still on the board; close it by hand." ),
+  ( .orphans[]
+    | "the map entry \(.key) -> \(.plane_id) (origin=\(.origin)) carries no fusion-key in Plane and is gone from the rebuilt map"
+      + (if .origin == "seed"
+         then " — it was a seed binding, so re-bind it with: seed --record-origin \(.key) \(.plane_id)   (otherwise the next push may overwrite that human'"'"'s story)"
+         else "." end) )'
 
 # push --rebuild-map: reconstruct .plane-map.json from Plane by reading the
 # embedded fusion-key out of each issue's body (live; best-effort).
 # rebuild_map [<fixture>] — with a fixture path, read the captured issues JSON
 # from that file instead of the wire (test seam; no curl, no key needed).
+#
+# A rebuild REPLACES the map; it does not merge into it. What Plane's issue bodies
+# carry is the whole of what a rebuild can know, and an entry the rebuild cannot
+# see is therefore dropped — most importantly a seed-origin binding, whose Plane
+# issue is a human's own story and carries no `fusion-key:` line at all
+# (`build_write_body` writes `{state:…}` only for scope "state-only"). Dropping it
+# loses `origin:"seed"`, after which a push may overwrite that human's title. The
+# entries this costs are listed by key and UUID before the write, so the operator
+# can re-bind them with `seed --record-origin`; they are not merged back silently,
+# because a rebuild that quietly kept unverifiable entries would stop being the
+# rebuild-from-Plane the recovery path is documented as.
 rebuild_map() {
   local fixture="${1:-}" issues_json tmp
   if [ -n "$fixture" ]; then
@@ -1134,10 +1306,28 @@ rebuild_map() {
       *)  err "rebuild-map: HTTP $PLANE_HTTP_CODE — map not changed"; return "$EXIT_DEFERRED" ;;
     esac
   fi
+  local current="{}"
+  map_view
+  [ -f "$MAP_VIEW" ] && current="$(cat "$MAP_VIEW")"
   tmp="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-rebuild.XXXXXX")"
-  printf '%s' "$issues_json" | jq "$JQ_REBUILD_MAP" > "$tmp" 2>/dev/null \
+  printf '%s' "$issues_json" | jq --argjson cur "$current" "$JQ_REBUILD_MAP" > "$tmp" 2>/dev/null \
     || { err "rebuild-map: could not parse issues"; rm -f "$tmp"; return "$EXIT_CONFIG"; }
-  mv "$tmp" "$MAP"
+
+  # Never silent, and named rather than counted: a UUID this rebuild does not
+  # carry into the new map is a Plane issue that stays on the board with nothing
+  # pointing at it, and that string is the only handle a human has on it.
+  local line
+  printf '%s\n' "$(jq -r "$JQ_REBUILD_REPORT" "$tmp" 2>/dev/null || printf '')" \
+    | while IFS= read -r line; do
+        [ -z "$line" ] || err "rebuild-map: $line"
+      done
+
+  local out
+  out="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-rebuild.XXXXXX")"
+  jq -S '.map' "$tmp" > "$out" 2>/dev/null \
+    || { err "rebuild-map: could not parse issues"; rm -f "$tmp" "$out"; return "$EXIT_CONFIG"; }
+  rm -f "$tmp"
+  map_put "$out"
   info "rebuild-map: wrote $(jq 'length' "$MAP") entries"
 }
 
@@ -1177,7 +1367,12 @@ cmd_push() {
   resolve_workbench || return "$EXIT_CONFIG"
   cfg_load          || return "$EXIT_CONFIG"
   build_base
-  map_ensure
+
+  # NO map_ensure here. This point is reached by `push --plan` and by `plan`, both
+  # documented as changing nothing, and the fold that used to sit behind
+  # `map_ensure` rewrote the file — destroying a Plane UUID on exactly the legacy
+  # map it existed to repair (issue 260810-0456). Lookups fold through `map_view`
+  # instead; the file is written only where this function actually writes it.
 
   # A fixture-driven rebuild needs neither key nor network, so it runs ahead of
   # the live gate below (and clears the flag, leaving that branch untouched).
@@ -1310,16 +1505,33 @@ cmd_states() {
 # absent key is a reported failure (EXIT_CONFIG), never a silent no-op, because
 # the caller asked for a mutation that did not happen.
 map_forget() {
-  local nk="$1" tmp
-  map_ensure
-  if [ "$(jq -r --arg k "$nk" 'has($k)' "$MAP")" != "true" ]; then
+  local nk="$1"
+  if [ "$(map_json | jq -r --arg k "$nk" 'has($k)')" != "true" ]; then
     err "map --forget: no such key '$nk' — map not changed"
     printf 'STATUS: not found (%s)\n' "$nk"
     return "$EXIT_CONFIG"
   fi
-  tmp="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-map.XXXXXX")"
-  jq --arg k "$nk" 'del(.[$k])' "$MAP" > "$tmp" && mv "$tmp" "$MAP"
+  map_write 'del(.[$k])' --arg k "$nk" || return "$EXIT_CONFIG"
   printf 'STATUS: forgotten (%s) — %s entries remain\n' "$nk" "$(jq 'length' "$MAP")"
+}
+
+# map_migrate — fold the file onto the marker-free keys DELIBERATELY. The fold is
+# reachable this way, and only this way, from a command that does nothing else, so
+# an operator repairing a legacy board performs the collapse (and reads the dropped
+# UUIDs) as the act they asked for. It used to happen as a side effect of any
+# lookup, including `map` and `push --plan` (issue 260810-0456).
+map_migrate() {
+  map_view
+  if [ ! -f "$MAP" ]; then
+    printf 'STATUS: nothing to migrate (no map at %s)\n' "$MAP"
+    return "$EXIT_OK"
+  fi
+  if [ "$MAP_VIEW" = "$MAP" ]; then
+    printf 'STATUS: already marker-free (%s entries) — nothing written\n' "$(jq 'length' "$MAP")"
+    return "$EXIT_OK"
+  fi
+  map_write '.' || return "$EXIT_CONFIG"
+  printf 'STATUS: migrated (%s entries)\n' "$(jq 'length' "$MAP")"
 }
 
 # map_prune — drop every entry whose Plane issue is DEFINITIVELY gone.
@@ -1329,8 +1541,7 @@ map_forget() {
 # and returns EXIT_DEFERRED. An unreachable Plane must never delete anything;
 # that would turn a network outage into map loss.
 map_prune() {
-  local nk pid tmp checked=0 dropped=0 unknown=0
-  map_ensure
+  local nk pid keys checked=0 dropped=0 unknown=0
   cfg_load     || return "$EXIT_CONFIG"
   build_base
   config_valid || return "$EXIT_CONFIG"
@@ -1339,6 +1550,10 @@ map_prune() {
     printf 'STATUS: deferred (0 pruned) — key absent\n'
     return "$EXIT_DEFERRED"
   fi
+  # The key list is SNAPSHOT before the loop, not streamed out of the file: the
+  # loop replaces the map on every 404, and a reader still walking the file (or
+  # the folded view) it just replaced reads whatever is left of it.
+  keys="$(map_json | jq -r 'keys[]')"
   while IFS= read -r nk; do
     [ -n "$nk" ] || continue
     pid="$(map_get_id "$nk")"
@@ -1351,8 +1566,7 @@ map_prune() {
     fi
     case "$PLANE_HTTP_CODE" in
       404)
-        tmp="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-map.XXXXXX")"
-        jq --arg k "$nk" 'del(.[$k])' "$MAP" > "$tmp" && mv "$tmp" "$MAP"
+        map_write 'del(.[$k])' --arg k "$nk" || return "$EXIT_CONFIG"
         info "prune: dropped '$nk' (Plane issue $pid is gone — HTTP 404)"
         dropped=$((dropped + 1))
         ;;
@@ -1363,7 +1577,9 @@ map_prune() {
         ;;
     esac
     sleep 0.2   # pace calls under 60/min
-  done < <(jq -r 'keys[]' "$MAP")
+  done <<PRUNE_KEYS
+$keys
+PRUNE_KEYS
   if [ "$unknown" -gt 0 ]; then
     printf 'STATUS: deferred (%d pruned of %d checked, %d unconfirmed) — nothing deleted on doubt\n' \
       "$dropped" "$checked" "$unknown"
@@ -1373,34 +1589,43 @@ map_prune() {
 }
 
 cmd_map() {
-  local forget="" want_prune=0 key=""
+  local forget="" want_prune=0 want_migrate=0 key="" mutators=0
   while [ "$#" -gt 0 ]; do
     case "$1" in
       --forget)   shift; forget="${1:-}"; [ -n "$forget" ] || { err "map --forget needs a natural key"; return "$EXIT_USAGE"; } ;;
       --forget=*) forget="${1#--forget=}"; [ -n "$forget" ] || { err "map --forget needs a natural key"; return "$EXIT_USAGE"; } ;;
       --prune)    want_prune=1 ;;
+      --migrate)  want_migrate=1 ;;
       -*)         err "map: unknown flag '$1'"; return "$EXIT_USAGE" ;;
       "")         : ;;
       *)          [ -z "$key" ] || { err "map: unexpected extra argument '$1'"; return "$EXIT_USAGE"; }; key="$1" ;;
     esac
     shift
   done
-  if [ -n "$forget" ] && [ "$want_prune" -eq 1 ]; then
-    err "map: --forget and --prune are mutually exclusive"
+  [ -z "$forget" ]          || mutators=$((mutators + 1))
+  [ "$want_prune" -eq 0 ]   || mutators=$((mutators + 1))
+  [ "$want_migrate" -eq 0 ] || mutators=$((mutators + 1))
+  if [ "$mutators" -gt 1 ]; then
+    err "map: --forget, --prune and --migrate are mutually exclusive"
     return "$EXIT_USAGE"
   fi
 
   resolve_workbench || return "$EXIT_CONFIG"
-  map_ensure
 
+  # Bare `map` and `map <key>` are INSPECTION and write nothing — not the file's
+  # bytes, not even an empty map where none exists. They read the folded view, so
+  # what they print is the mapping a push would resolve; if the file behind it is
+  # still in the old form, map_view says so on stderr and names what a fold costs.
   if [ -n "$forget" ]; then
     map_forget "$forget"
   elif [ "$want_prune" -eq 1 ]; then
     map_prune
+  elif [ "$want_migrate" -eq 1 ]; then
+    map_migrate
   elif [ -n "$key" ]; then
-    jq --arg k "$key" '.[$k] // "no such key"' "$MAP"
+    map_json | jq --arg k "$key" '.[$k] // "no such key"'
   else
-    jq '.' "$MAP"
+    map_json | jq '.'
   fi
 }
 
@@ -1545,7 +1770,6 @@ cmd_seed() {
   if [ "$mode" = "record" ]; then
     [ -n "$record_dir" ] && [ -n "$record_pid" ] || {
       err "seed --record-origin needs <circle-dir> <origin-plane-id>"; return "$EXIT_USAGE"; }
-    map_ensure
     # kind=circle; last_state empty on purpose (see header) — the next
     # `push --circle <dir>` reconciles the origin issue to the marker state.
     # origin=seed is the DURABLE discriminator: this issue is a human's story,
@@ -1645,7 +1869,8 @@ Subcommands:
                         key (no network) — closes the seed→push round-trip.
     seed --plan --fixture <captured issue JSON>
                         Dry-run seam: lookup+extract against a fixture, no curl.
-  map [<natural-key>]   Dump .plane-map.json, or inspect one entry.
+  map [<natural-key>]   Dump .plane-map.json, or inspect one entry. Read-only:
+                        it never writes the file and never creates one.
     map --forget <natural-key>
                         Drop ONE entry (use after deleting its issue in Plane,
                         so the next push creates rather than PATCHing a dead
@@ -1654,6 +1879,9 @@ Subcommands:
     map --prune         Drop every entry whose Plane issue is definitively gone
                         (HTTP 404). Needs the key and a reachable Plane; on any
                         inconclusive answer it deletes NOTHING and exits 10.
+    map --migrate       Fold a legacy marker-bearing map onto the stable keys ON
+                        DISK. Reads alone never do this; every dropped duplicate
+                        is named by key and UUID so the strays can be closed.
   states                Resolve+print canonical → instance → UUID states.
   doctor                Report key presence, config validity, states/ reach.
 

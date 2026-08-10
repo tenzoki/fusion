@@ -1,6 +1,14 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, cpSync, writeFileSync, readFileSync, renameSync, rmSync } from "node:fs";
+import {
+  mkdtempSync,
+  cpSync,
+  writeFileSync,
+  readFileSync,
+  renameSync,
+  rmSync,
+  existsSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, join } from "node:path";
@@ -29,10 +37,10 @@ import { dirname, resolve, join } from "node:path";
 //     fallback JSON (board_url + fetch_cmd) and exits 10.
 //
 // FUSION_PLANE_WORKBENCH points the helper at a fixture workbench, bypassing the
-// `.fusion-setup` upward walk. `push --plan` calls `map_ensure` (it writes an
-// empty `.plane-map.json`), so EVERY helper invocation gets a FRESH tmp copy of
+// `.fusion-setup` upward walk. EVERY helper invocation gets a FRESH tmp copy of
 // the committed fixture tree — runtime writes land in tmp, the committed fixture
-// is never mutated.
+// is never mutated. (`push --plan` no longer writes anything at all; it used to
+// call `map_ensure`, which is the defect section 2c exists for.)
 // ---------------------------------------------------------------------------
 
 const EXIT_DEFERRED = 10;
@@ -318,9 +326,32 @@ describe("fusion-plane push --plan: idempotency", () => {
 //     The record's reproduction, run as a test: push, rename, push again. It
 //     asserted `op=create` twice; it must now assert one key and `op=update`.
 // ===========================================================================
+const OPEN_ISSUE = "260719-1600_o_open-issue.md";
+const CLOSED_ISSUE = "260719-1600_c_open-issue.md";
+
+/**
+ * A map in the OLD marker-bearing form that recorded one record twice, once per
+ * state it was pushed in — i.e. two Plane issues for one record. Folding it onto
+ * the stable key must discard one of the two UUIDs, which makes it the exact
+ * input on which "who is allowed to write this file" stops being cosmetic.
+ * Shared by sections 2b and 2c.
+ */
+const collidingLegacyMap = {
+  [`${CIRCLE}::issues/${OPEN_ISSUE}`]: {
+    plane_id: "plane-issue-first",
+    kind: "fusion-issue",
+    last_state: "Todo",
+    last_pushed: "2026-07-19T00:00:00Z",
+  },
+  [`${CIRCLE}::issues/${CLOSED_ISSUE}`]: {
+    plane_id: "plane-issue-duplicate",
+    kind: "fusion-issue",
+    last_state: "Done",
+    last_pushed: "2026-07-20T00:00:00Z",
+  },
+};
+
 describe("fusion-plane: the natural key does not carry the state marker", () => {
-  const OPEN_ISSUE = "260719-1600_o_open-issue.md";
-  const CLOSED_ISSUE = "260719-1600_c_open-issue.md";
   const issuePath = (wb: string, f: string) => join(wb, "circles", CIRCLE, "issues", f);
 
   /** The planned op for the demo Circle's first issue, whatever its key is. */
@@ -396,9 +427,15 @@ describe("fusion-plane: the natural key does not carry the state marker", () => 
     const op = issueOp(wb, CLOSED_ISSUE);
     expect(op.op).toBe("update");
     expect(op.plane_id).toBe("plane-issue-legacy");
-    // The entry was re-keyed on disk, not merely tolerated at lookup time — the
-    // old form is gone, and the rest of the entry (here: origin=seed, which
-    // governs whether a human's story body gets overwritten) rode along intact.
+    // The lookup resolved through the FOLDED view. The dry run that resolved it
+    // wrote nothing (section 2c is why); `map --migrate` is what puts the fold on
+    // disk, and the rest of the entry — here origin=seed, which governs whether a
+    // human's story body gets overwritten — rides along intact.
+    expect(
+      Object.keys(JSON.parse(readFileSync(join(wb, ".plane-map.json"), "utf-8"))),
+      "a dry run resolves through the fold; it does not perform it",
+    ).toEqual([legacyKey]);
+    run(wb, "map", "--migrate");
     const map = JSON.parse(readFileSync(join(wb, ".plane-map.json"), "utf-8"));
     expect(Object.keys(map)).toEqual([issueKey(OPEN_ISSUE)]);
     expect(map[issueKey(OPEN_ISSUE)]).toMatchObject({
@@ -407,36 +444,21 @@ describe("fusion-plane: the natural key does not carry the state marker", () => 
     });
   });
 
-  it("a legacy map that mirrored one record twice collapses to the newest, and says so", () => {
+  it("a legacy map that mirrored one record twice folds to the newest, and names the loser", () => {
     // The duplicate this defect produced, arriving as input: the same record
     // recorded under two markers, i.e. two Plane issues. The map cannot keep both
-    // under one key, so it keeps the one pushed most recently — the issue the
-    // board has been tracking — and reports the collision rather than dropping a
-    // UUID in silence.
+    // under one key, so the fold keeps the one pushed most recently — the issue
+    // the board has been tracking — and NAMES the loser rather than dropping a
+    // UUID in silence. Naming, not counting: that string is the only handle a
+    // human has on the stray Plane issue this orphans.
     const wb = freshWorkbench();
-    writeFileSync(
-      join(wb, ".plane-map.json"),
-      JSON.stringify({
-        [`${CIRCLE}::issues/${OPEN_ISSUE}`]: {
-          plane_id: "plane-issue-first",
-          kind: "fusion-issue",
-          last_state: "Todo",
-          last_pushed: "2026-07-19T00:00:00Z",
-        },
-        [`${CIRCLE}::issues/${CLOSED_ISSUE}`]: {
-          plane_id: "plane-issue-duplicate",
-          kind: "fusion-issue",
-          last_state: "Done",
-          last_pushed: "2026-07-20T00:00:00Z",
-        },
-      }),
-    );
+    writeFileSync(join(wb, ".plane-map.json"), JSON.stringify(collidingLegacyMap));
     const r = run(wb, "map");
     const map = JSON.parse(r.stdout);
     expect(Object.keys(map)).toEqual([issueKey(OPEN_ISSUE)]);
     expect(map[issueKey(OPEN_ISSUE)].plane_id).toBe("plane-issue-duplicate");
     expect(r.stderr, "a dropped UUID means a stray Plane issue — never silent").toContain(
-      "collided",
+      "plane-issue-first",
     );
   });
 
@@ -481,6 +503,273 @@ describe("fusion-plane: the natural key does not carry the state marker", () => 
     const map = JSON.parse(readFileSync(join(wb, ".plane-map.json"), "utf-8"));
     expect(Object.keys(map)).toEqual([issueKey(OPEN_ISSUE)]);
     expect(map[issueKey(OPEN_ISSUE)]).toMatchObject({ plane_id: "plane-uuid-legacy" });
+  });
+});
+
+// ===========================================================================
+// 2c. Reading the map never writes it, and no fold loses a UUID unannounced
+//     (issues 260810-0456 …dry-run-rewrites-the-map… and
+//      260810-0457 …rebuild-map-drops-a-colliding-plane-uuid-silently…).
+//
+//     The fold introduced in 2b was correct and reached the file from the wrong
+//     side. It ran from `map_ensure`, which sat on the READ path, so `map`,
+//     `push --plan` and `plan` — the three commands whose documented contract is
+//     that they change nothing — rewrote .plane-map.json. Against the legacy
+//     duplicate the fold exists to repair, that rewrite discarded a Plane UUID,
+//     from a command the user ran to LOOK at something. A discarded UUID is not
+//     recoverable from files: it names a Plane issue that goes on existing,
+//     unreferenced, for a human to find and close.
+//
+//     `--rebuild-map` had the second exit of the same defect. It assigned without
+//     the fold's collision guard, so of two Plane issues carrying one key the
+//     winner was whichever the API happened to return last and the loser vanished
+//     unreported.
+//
+//     Every test below therefore asserts one of two things: a read left the file
+//     byte-identical, or a discarded UUID was NAMED. Counting is not enough — the
+//     UUID string is the only handle a human has on the stray issue.
+// ===========================================================================
+describe("fusion-plane: reads never write .plane-map.json", () => {
+  const mapPath = (wb: string) => join(wb, ".plane-map.json");
+
+  /** A workbench whose map is the legacy pair that folds down to one entry. */
+  function legacyWorkbench(): { wb: string; before: string } {
+    const wb = freshWorkbench();
+    writeFileSync(mapPath(wb), JSON.stringify(collidingLegacyMap, null, 2) + "\n");
+    return { wb, before: readFileSync(mapPath(wb), "utf-8") };
+  }
+
+  // The destructive path, driven: each of these ran the fold and wrote the file.
+  for (const [label, args] of [
+    ["map", ["map"]],
+    ["map <key>", ["map", CIRCLE]],
+    ["push --plan", ["push", "--circle", CIRCLE, "--plan"]],
+    ["plan", ["plan", "--circle", CIRCLE]],
+  ] as [string, string[]][]) {
+    it(`\`${label}\` leaves the file byte-identical and keeps every UUID`, () => {
+      const { wb, before } = legacyWorkbench();
+      const r = run(wb, ...args);
+      const after = readFileSync(mapPath(wb), "utf-8");
+      expect(after, `${label} is inspection, not a mutation`).toBe(before);
+      expect(after, "the UUID the fold would discard is still on disk").toContain(
+        "plane-issue-first",
+      );
+      // …and the pending fold is not hidden: the run says the file is legacy and
+      // names what folding it would cost.
+      expect(r.stderr).toContain("plane-issue-first");
+    });
+  }
+
+  it("no map file is created by a read (not even an empty one)", () => {
+    // `map_ensure` used to `printf '{}' > $MAP` before anything read it. A
+    // read that brings a file into existence is a small case of the same defect.
+    const wb = freshWorkbench();
+    expect(JSON.parse(run(wb, "map").stdout)).toEqual({});
+    expect(existsSync(mapPath(wb)), "an inspection must not create the file").toBe(false);
+    run(wb, "push", "--circle", CIRCLE, "--plan");
+    expect(existsSync(mapPath(wb)), "a dry run must not create the file either").toBe(false);
+  });
+
+  it("a read still resolves through the fold, so it agrees with what a push would do", () => {
+    // The separation must not cost the correctness the fold was added for: the
+    // lookup has to see the folded keys even though the file is untouched.
+    const { wb } = legacyWorkbench();
+    const shown = JSON.parse(run(wb, "map").stdout);
+    expect(Object.keys(shown)).toEqual([issueKey(OPEN_ISSUE)]);
+    expect(shown[issueKey(OPEN_ISSUE)].plane_id).toBe("plane-issue-duplicate");
+  });
+
+  it("`map --migrate` is the command that performs the fold, and it names the loser", () => {
+    const { wb } = legacyWorkbench();
+    const r = run(wb, "map", "--migrate");
+    expect(r.status).toBe(0);
+    expect(r.stdout).toContain("migrated");
+    const map = JSON.parse(readFileSync(mapPath(wb), "utf-8"));
+    expect(Object.keys(map)).toEqual([issueKey(OPEN_ISSUE)]);
+    expect(map[issueKey(OPEN_ISSUE)].plane_id).toBe("plane-issue-duplicate");
+    expect(
+      r.stderr,
+      "the dropped UUID is the only handle on the Plane issue this orphans",
+    ).toContain("plane-issue-first");
+  });
+
+  it("`map --migrate` on an already-folded map writes nothing and still succeeds", () => {
+    const wb = freshWorkbench();
+    const stable = {
+      [issueKey(OPEN_ISSUE)]: {
+        plane_id: "plane-issue-0001",
+        kind: "fusion-issue",
+        last_state: "Todo",
+        last_pushed: "2026-07-19T00:00:00Z",
+        origin: "fusion",
+      },
+    };
+    writeFileSync(mapPath(wb), JSON.stringify(stable, null, 2) + "\n");
+    const before = readFileSync(mapPath(wb), "utf-8");
+    const r = run(wb, "map", "--migrate");
+    expect(r.status).toBe(0);
+    expect(r.stdout).toContain("already marker-free");
+    expect(readFileSync(mapPath(wb), "utf-8")).toBe(before);
+  });
+
+  it("a command that WAS asked to write folds the file as it writes", () => {
+    // The other half of the split: withholding the fold from reads must not
+    // strand a legacy map forever. `map --forget` mutates, so it folds — and the
+    // entry it was not asked to touch comes out under its stable key.
+    const { wb } = legacyWorkbench();
+    const r = run(wb, "map", "--forget", issueKey(OPEN_ISSUE));
+    expect(r.status).toBe(0);
+    expect(JSON.parse(readFileSync(mapPath(wb), "utf-8"))).toEqual({});
+    expect(r.stderr).toContain("plane-issue-first");
+  });
+
+  it("--forget names the FOLDED key, which is the key everything else reports", () => {
+    // Consistency check on the split: the key a user copies out of `map` is the
+    // key `--forget` takes. A read showing one form while a mutation demanded
+    // another is how a recovery command becomes unusable as documented.
+    const { wb } = legacyWorkbench();
+    const shownKey = Object.keys(JSON.parse(run(wb, "map").stdout))[0];
+    expect(run(wb, "map", "--forget", shownKey).status).toBe(0);
+  });
+
+  it("--forget, --prune and --migrate are mutually exclusive", () => {
+    const wb = freshWorkbench();
+    expect(run(wb, "map", "--migrate", "--prune").status).toBe(2); // EXIT_USAGE
+    expect(run(wb, "map", "--migrate", "--forget", CIRCLE).stderr).toContain("mutually exclusive");
+  });
+});
+
+describe("fusion-plane push --rebuild-map: a collision is decided, not raced", () => {
+  const LEGACY_OPEN = `${CIRCLE}::issues/${OPEN_ISSUE}`;
+  const LEGACY_CLOSED = `${CIRCLE}::issues/${CLOSED_ISSUE}`;
+
+  /**
+   * Two Plane issues whose embedded keys fold onto ONE stable key — the duplicate
+   * pair the marker-in-the-key defect produced, which is by construction what a
+   * board being rebuilt from carries. `order` swaps only their position in the
+   * API response; `updated` sets each issue's own updated_at. Varying the two
+   * independently is what separates "the winner is decided" from "the winner is
+   * whatever came back last".
+   */
+  function rebuildFrom(
+    opts: { order: "fs" | "sf"; updatedFirst?: string; updatedSecond?: string; current?: object },
+  ): { map: Record<string, any>; stderr: string } {
+    const wb = freshWorkbench();
+    const first = {
+      id: "plane-uuid-FIRST",
+      updated_at: opts.updatedFirst ?? "",
+      description_html: `<p>fusion-key: ${LEGACY_OPEN}<br></p>`,
+    };
+    const second = {
+      id: "plane-uuid-SECOND",
+      updated_at: opts.updatedSecond ?? "",
+      description_html: `<p>fusion-key: ${LEGACY_CLOSED}<br></p>`,
+    };
+    const fixture = join(wb, "issues.json");
+    writeFileSync(
+      fixture,
+      JSON.stringify({ results: opts.order === "fs" ? [first, second] : [second, first] }),
+    );
+    if (opts.current) writeFileSync(join(wb, ".plane-map.json"), JSON.stringify(opts.current));
+    const r = run(wb, "push", "--circle", CIRCLE, "--rebuild-map", "--fixture", fixture);
+    return {
+      map: JSON.parse(readFileSync(join(wb, ".plane-map.json"), "utf-8")),
+      stderr: r.stderr,
+    };
+  }
+
+  const survivor = (m: Record<string, any>) => m[issueKey(OPEN_ISSUE)]?.plane_id;
+
+  it("the winner does not depend on the order Plane returned the issues in", () => {
+    // THE regression. `JQ_REBUILD_MAP` assigned without a guard, so the last
+    // write won and reversing the response reversed the surviving UUID.
+    for (const updated of [
+      { updatedFirst: "", updatedSecond: "" },
+      { updatedFirst: "2026-07-19T00:00:00Z", updatedSecond: "2026-07-19T00:00:00Z" },
+    ]) {
+      const fs = rebuildFrom({ order: "fs", ...updated });
+      const sf = rebuildFrom({ order: "sf", ...updated });
+      expect(survivor(sf.map), "API result order must not decide which UUID survives").toBe(
+        survivor(fs.map),
+      );
+    }
+  });
+
+  it("names the dropped UUID instead of discarding it in silence", () => {
+    const { stderr } = rebuildFrom({ order: "fs" });
+    expect(stderr, "the surviving UUID alone is not a report").toContain("DROPPED");
+    expect(stderr).toContain("plane-uuid-FIRST");
+    expect(stderr, "and the key it collided on, so the pair is identifiable").toContain(
+      issueKey(OPEN_ISSUE),
+    );
+  });
+
+  it("the most recently updated issue wins — the migration's rule, in the data a rebuild has", () => {
+    // A rebuilt entry has no `last_pushed`, so the fold's recency tiebreak has
+    // nothing to read. `updated_at` is that same question asked of Plane.
+    for (const order of ["fs", "sf"] as const) {
+      const { map } = rebuildFrom({
+        order,
+        updatedFirst: "2026-07-19T00:00:00Z",
+        updatedSecond: "2026-07-20T00:00:00Z",
+      });
+      expect(survivor(map)).toBe("plane-uuid-SECOND");
+    }
+  });
+
+  it("the UUID the current map already tracks outranks recency", () => {
+    // Better evidence than the rebuild has of its own: that entry is the issue
+    // fusion has been PATCHing, which is what the fold's rule is reaching for.
+    const current = {
+      [issueKey(OPEN_ISSUE)]: {
+        plane_id: "plane-uuid-FIRST",
+        kind: "fusion-issue",
+        last_state: "Todo",
+        last_pushed: "2026-07-21T00:00:00Z",
+      },
+    };
+    for (const order of ["fs", "sf"] as const) {
+      const { map } = rebuildFrom({
+        order,
+        updatedFirst: "2026-07-19T00:00:00Z",
+        updatedSecond: "2026-07-20T00:00:00Z",
+        current,
+      });
+      expect(survivor(map)).toBe("plane-uuid-FIRST");
+    }
+  });
+
+  it("an entry the rebuild cannot see is named as it is dropped, with the way to restore it", () => {
+    // A rebuild REPLACES the map. A seed-origin binding is a human's own Plane
+    // story, whose body carries no `fusion-key:` at all, so no rebuild can see
+    // it — and losing `origin:"seed"` is what lets a later push overwrite that
+    // human's title. It is not merged back (a rebuild that kept unverifiable
+    // entries would stop being a rebuild), so it is reported instead.
+    const wb = freshWorkbench();
+    writeFileSync(
+      join(wb, ".plane-map.json"),
+      JSON.stringify({
+        [CIRCLE]: {
+          plane_id: "plane-uuid-humans-story",
+          kind: "circle",
+          last_state: "Todo",
+          last_pushed: "2026-07-19T00:00:00Z",
+          origin: "seed",
+        },
+      }),
+    );
+    const fixture = join(wb, "issues.json");
+    writeFileSync(
+      fixture,
+      JSON.stringify({
+        results: [{ id: "plane-uuid-other", description_html: `<p>fusion-key: ${LEGACY_OPEN}<br></p>` }],
+      }),
+    );
+    const r = run(wb, "push", "--circle", CIRCLE, "--rebuild-map", "--fixture", fixture);
+    const map = JSON.parse(readFileSync(join(wb, ".plane-map.json"), "utf-8"));
+    expect(map[CIRCLE], "a rebuild replaces the map; this is the documented cost").toBeUndefined();
+    expect(r.stderr).toContain("plane-uuid-humans-story");
+    expect(r.stderr, "the report has to carry the way back").toContain("seed --record-origin");
   });
 });
 

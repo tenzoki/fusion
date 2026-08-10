@@ -184,6 +184,13 @@ happened. The dry run needs no API key and makes no network call. It does need
 `fusion-workbench/plane.config.yaml` to exist and parse — without it the helper exits
 1 rather than planning against defaults.
 
+"Nothing has happened" now covers the local files too. A dry run writes **nothing** —
+not `.plane-map.json`, not even an empty one where none existed. That was briefly
+untrue: the key migration described under "Repairing a map written before the key
+changed" ran on the way in to every command, including this one, so a dry run rewrote
+the map and on a map carrying legacy duplicates it destroyed a Plane UUID. The
+migration is now a command of its own; reads only read.
+
 **1. Create a disposable Circle.** "Throwaway" means a Circle created only for this
 check, whose Plane issues you delete afterwards, so no real work lands on the board.
 The quickest way:
@@ -258,6 +265,39 @@ If you deleted several issues and would rather not name each one,
 needs the API key and a reachable Plane; on any inconclusive answer — no network, a
 5xx, a rate limit — it deletes **nothing** and exits 10, so an outage can never cost
 you map entries.
+
+#### Repairing a map written before the key changed
+
+fusion's natural key used to carry the record's state marker, which meant the key
+changed on exactly the event a mirror exists to push. Maps written under that scheme
+still work: every command folds them onto the marker-free keys **as it reads them**, so
+lookups resolve and nothing is stranded. What no command does any more is fold them *on
+disk* unless you asked it to.
+
+```bash
+bin/fusion-plane map --migrate
+```
+
+That is the one command whose whole job is the fold. Anything that already writes the
+map — `map --forget`, `map --prune`, a live `push` — folds it in passing; `map`,
+`push --plan` and `plan` never do.
+
+The split matters because the fold can cost you a UUID. The old scheme could record one
+record **twice**, once per state it was pushed in, which means two Plane issues. Both
+fold onto one key, so one of the two mappings is discarded — and a discarded UUID is not
+recoverable from the map: it names a Plane issue that goes on existing on your board
+with nothing pointing at it, for you to find and close by hand. Whenever a fold would
+cost one, the helper prints the key and the UUID on stderr before anything is written.
+Keep that line; it is the only handle you have on the stray issue.
+
+`push --rebuild-map` folds the same way and, since it reads the keys back out of Plane's
+own issue bodies, can meet the same duplicate pair there. It keeps the UUID your map is
+already tracking, or failing that the most recently updated issue, and prints every UUID
+it drops. Note that a rebuild **replaces** the map rather than merging into it, so an
+entry it cannot see is gone: that means seed-origin bindings, whose Plane issue is your
+own story and carries no `fusion-key:` line at all. Those are printed too, each with the
+`seed --record-origin` command that restores it. Re-bind them, or the next push may
+overwrite your story's title.
 
 #### Why this is worth doing
 
