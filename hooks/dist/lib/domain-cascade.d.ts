@@ -49,6 +49,15 @@ export interface Branch {
 }
 export declare function parseCondition(src: string): Expr;
 /**
+ * Every fenced block in `markdown` that assigns both the `code` and the
+ * `strategic` domain — i.e. every executable copy of the cascade the text
+ * carries. Zero for an ordinary file, one for the definition site.
+ *
+ * Exported because "how many files hold one" is the reach gate's question as
+ * much as "which block do I run" is this module's.
+ */
+export declare function cascadeBlocks(markdown: string): string[];
+/**
  * The one fenced block assigning both the `code` and the `strategic` domain.
  * Exactly one such block must exist — two would mean the prompt describes the
  * decision twice, and this reader would have to guess which one runs.
@@ -81,3 +90,13 @@ export declare function variablesRead(e: Expr | null): Set<CountName>;
  * helper's own header forbids.
  */
 export declare function countsFromHelperOutput(stdout: string): Pick<Counts, "code_files" | "data_files" | "counted_by">;
+export interface CascadeStatement {
+    /** 1-based line number. */
+    line: number;
+    /** The line as written, trimmed. */
+    text: string;
+    domains: Domain[];
+    inputs: CountName[];
+}
+/** Every line of `markdown` that states the cascade rather than consuming it. */
+export declare function findCascadeStatements(markdown: string): CascadeStatement[];

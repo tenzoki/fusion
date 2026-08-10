@@ -50,3 +50,17 @@ Identify the case first. If it asserts on elapsed wall-clock time, the fix is to
 timing injectable rather than to widen the tolerance — a widened tolerance is the same test
 with a longer fuse. If it depends on the stale-lock threshold, that threshold is a constant the
 test could be given rather than sharing with production.
+
+---
+**Third observation, session `260810-1646`, Turn 2.** The failing case named itself this time: it is
+the "creator reaped between mkdir and its holder write" race in
+`hooks/lib/__tests__/fusion-commit-lock.test.ts`. Conditions were five executors running in parallel
+against one machine, which is the heaviest load this test has been observed under. It failed in one
+intermediate run, passed standalone at 10 of 10 immediately afterwards, and the full suite was clean
+both before and after. `bin/fusion-commit-lock` and its test are untouched since 260806, so nothing in
+the change under test can account for it.
+
+Two earlier observations in the same session, both under parallel load: one during Turn 1's
+five-executor batch, one during this Turn's. That makes three, all under load, none in isolation, and
+the case is now identified rather than merely suspected — which is what this record asked for before
+anything is widened.

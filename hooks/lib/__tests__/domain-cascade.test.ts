@@ -1,13 +1,16 @@
 import { describe, it, expect } from "vitest";
 import { spawnSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, join } from "node:path";
 import {
   parseCascade,
   evaluateCascade,
   countsFromHelperOutput,
+  cascadeBlocks,
+  findCascadeStatements,
   type Branch,
+  type CascadeStatement,
   type Counts,
   type Domain,
 } from "../domain-cascade.js";
@@ -29,12 +32,19 @@ import {
 // and all four now fail.
 //
 // This file asserts verdicts. `hooks/lib/domain-cascade.ts` parses the cascade
-// out of the prompt and runs it, so there is no second copy of the decision to
-// drift from the first — the thing under test IS the prompt's own block. The
-// layout lint next door (`domain-cascade-order-lint.test.ts`) is kept as a
-// second, narrower gate on the documented branch ORDER; this one is primary.
+// out of the prompt and runs it, so the thing under test IS the prompt's own
+// block rather than a transcription of it. The layout lint next door
+// (`domain-cascade-order-lint.test.ts`) is kept as a second, narrower gate on
+// the documented branch ORDER; this one is primary.
 //
-// Three properties are asserted, and they catch different things:
+// That the interpreter is not a copy was once written up as "there is no second
+// copy of the decision to drift from the first". There was one:
+// `skills/cleanup/SKILL.md` stated the cascade in prose, in the pre-fix order,
+// and no gate read it (issue 260810-1918). Both gates read one file. The last
+// describe block below is what closed that — it reads every consumer, and it is
+// the only reason the claim is worth anything.
+//
+// Four properties are asserted, and they catch different things:
 //   1. VERDICTS for the projects commit 2910cf6 measured. Catches any edit that
 //      changes what a real project is classified as.
 //   2. NO DEAD BRANCH — every branch fires for some input in a wide sweep. A
@@ -42,6 +52,9 @@ import {
 //   3. THE ABSENT COUNT stays out of arithmetic. `unavailable` is modelled as
 //      the string the helper actually prints, so a count branch lifted above
 //      the `counted_by == "none"` line raises instead of quietly comparing.
+//   4. ONE CONSUMER STATES IT. Every agent prompt and skill body is scanned for
+//      a statement of the cascade, fenced or prose; exactly one file may hold
+//      one. Properties 1-3 measure the definition, this one measures its reach.
 // ---------------------------------------------------------------------------
 
 const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
@@ -318,18 +331,40 @@ describe("orchestrator Setup Step 5 — the cascade, executed", () => {
     assertAbsentCountSafe(promptCascade());
   });
 
-  it("this repository, measured live, reaches domain `code`", () => {
+  it("this tree, measured live, reaches domain `code` on either of the helper's answers", () => {
     // End to end: the helper the prompt calls, feeding the cascade the prompt
     // states. A change to either side that breaks the pair fails here.
+    //
+    // The helper has two documented outcomes and this asserts a property of
+    // BOTH, because which one it gives is a fact about the tree, not about the
+    // code. Exit 2 with `counted_by=none` is "no count was taken" — its own
+    // header calls that a real answer — and it is what an `install.sh` unpack,
+    // a `git archive` export, a Docker COPY that drops `.git`, or a CI image
+    // with no `git` binary produces. Asserting exit 0 asserted a git checkout,
+    // so the suite failed in any tree without one and blamed the helper
+    // (issue 260810-1918). Both branches end at domain `code` here, by
+    // different routes: a counted tree because it holds source, an uncounted
+    // one because the absent-count branch is the cascade's no-evidence exit.
     const run = spawnSync(join(pluginRoot, "bin", "fusion-count-sources"), [pluginRoot], {
       encoding: "utf-8",
     });
-    expect(run.status, `fusion-count-sources exited ${run.status}: ${run.stderr}`).toBe(0);
+    expect(
+      [0, 2],
+      `fusion-count-sources exited ${run.status}, which is neither of its documented ` +
+        `outcomes (0 counted, 2 no count taken): ${run.stderr}`,
+    ).toContain(run.status);
 
     const measured = countsFromHelperOutput(run.stdout);
-    expect(measured.counted_by).toBe("git-ls-files");
-    expect(typeof measured.code_files).toBe("number");
-    expect(measured.code_files as number).toBeGreaterThan(0);
+
+    if (run.status === 0) {
+      expect(measured.counted_by).toBe("git-ls-files");
+      expect(typeof measured.code_files).toBe("number");
+      expect(measured.code_files as number).toBeGreaterThan(0);
+    } else {
+      expect(measured.counted_by).toBe("none");
+      expect(measured.code_files).toBe("unavailable");
+      expect(measured.data_files).toBe("unavailable");
+    }
 
     expect(domainOf(promptCascade(), counted(measured))).toBe("code");
   });
@@ -459,4 +494,209 @@ describe("the gate catches the four edits that defeated its predecessor", () => 
     ]);
     expect(() => parseCascade(truthy)).toThrow(/not a comparison/);
   });
+});
+
+// ---------------------------------------------------------------------------
+// Reach: exactly one consumer states the cascade (issue 260810-1918).
+//
+// Everything above measures the definition. This measures how far the gate
+// reaches, which is what the previous round got wrong: both gates read
+// `agents/orchestrator.md` and nothing else, while `skills/cleanup/SKILL.md`
+// carried the cascade as one prose sentence — in the pre-fix order, with no
+// `counted_by == "none"` case. A project reached `code` at Setup and
+// `strategic` at cleanup in the same session, and under `strategic` the
+// reconciler runs no code tests.
+//
+// The file set is the CONSUMER set: every agent prompt and every skill body —
+// the files an agent executes. It carries no exemptions, deliberately.
+// `path-literal-lint.test.ts` scans the same two directories and exempts
+// `setup` and `migrate` because their subject IS the layout; nothing makes a
+// skill a legitimate second home for this decision, so nothing is exempt here.
+//
+// Two shapes are detected, because two are representable: a fenced block that
+// would actually run (`cascadeBlocks`) and a prose sentence that a reader
+// executes (`findCascadeStatements`). Both live in `hooks/lib/domain-cascade.ts`
+// with their limits written at the code, and the limits are real — a paraphrase
+// spread across a table's rows is not caught. This is a floor, not a proof.
+// ---------------------------------------------------------------------------
+
+/** The single file allowed to state the cascade: Setup Step 5 lives here. */
+const DEFINITION_SITE = "agents/orchestrator.md";
+
+/** Every agent prompt plus every skill body. No exemptions — see the header. */
+function consumerFiles(): { rel: string; abs: string }[] {
+  const files: { rel: string; abs: string }[] = [];
+  for (const f of readdirSync(join(pluginRoot, "agents"))) {
+    if (f.endsWith(".md")) files.push({ rel: `agents/${f}`, abs: join(pluginRoot, "agents", f) });
+  }
+  for (const d of readdirSync(join(pluginRoot, "skills"))) {
+    const abs = join(pluginRoot, "skills", d, "SKILL.md");
+    if (existsSync(abs)) files.push({ rel: `skills/${d}/SKILL.md`, abs });
+  }
+  return files;
+}
+
+/** HYG-NO-SILENT-FAIL: file, line, what was matched, and what to do instead. */
+function reportStatements(rel: string, found: CascadeStatement[]): string {
+  return found
+    .map(
+      (s) =>
+        `  ${rel}:${s.line}  states the domain cascade\n` +
+        `    domains: ${s.domains.join(", ")}   inputs: ${s.inputs.join(", ")}\n` +
+        `    ${s.text.slice(0, 160)}\n` +
+        `    -> ${DEFINITION_SITE} Setup Step 5 is the one definition. Obtain the domain,\n` +
+        `       do not decide it: read session.domain from fusion-workbench/agentstate.yaml\n` +
+        `       (the route /fusion:next, /fusion:direct, /fusion:seed-from-plane and\n` +
+        `       /fusion:cleanup take), or take it from a **Domain:** dispatch parameter.`,
+    )
+    .join("\n");
+}
+
+describe("the domain cascade is stated in exactly one consumer", () => {
+  it("only the definition site carries a fenced cascade block", () => {
+    const holders = consumerFiles()
+      .filter(({ abs }) => cascadeBlocks(readFileSync(abs, "utf-8")).length > 0)
+      .map(({ rel }) => rel);
+    expect(
+      holders,
+      `a fenced cascade block assigning both \`code\` and \`strategic\` must exist in ` +
+        `${DEFINITION_SITE} and nowhere else in agents/ or skills/. Found in: ${holders.join(", ")}`,
+    ).toEqual([DEFINITION_SITE]);
+  });
+
+  it("no other consumer states the cascade in prose", () => {
+    const offenders: string[] = [];
+    for (const { rel, abs } of consumerFiles()) {
+      if (rel === DEFINITION_SITE) continue;
+      const found = findCascadeStatements(readFileSync(abs, "utf-8"));
+      if (found.length) offenders.push(reportStatements(rel, found));
+    }
+    expect(
+      offenders,
+      `a second statement of the domain cascade is a second definition of one decision, ` +
+        `and the two drift (issue 260810-1918):\n${offenders.join("\n")}`,
+    ).toEqual([]);
+  });
+
+  it("the detector recognises the definition site's own prose", () => {
+    // Calibration. A detector that fires on nothing proves nothing: if the one
+    // file that really does state the cascade stops matching, the emptiness of
+    // the test above is meaningless and this fails first.
+    const found = findCascadeStatements(promptText());
+    expect(
+      found.length,
+      `${DEFINITION_SITE} states the cascade in prose around its fenced block; the detector ` +
+        `no longer matches any of it, so it would not match a copy either`,
+    ).toBeGreaterThan(0);
+  });
+});
+
+describe("the reach gate catches the copy it was written for", () => {
+  // `skills/cleanup/SKILL.md:114`, verbatim as it shipped through v7.2.0.
+  const CLEANUP_COPY =
+    "- Detect the workbench domain the same way the orchestrator does (Setup Step 5 in " +
+    "`agents/orchestrator.md`): `strategic` if decisions dominate, `knowledge` if analyses " +
+    "with no code, `data` if data files dominate, else `code`. When unsure, default `code`.";
+
+  it("flags the cleanup sentence, naming its domains and its inputs", () => {
+    const found = findCascadeStatements(CLEANUP_COPY);
+    expect(found.length).toBe(1);
+    expect(found[0].domains.sort()).toEqual(["code", "data", "knowledge", "strategic"]);
+    expect(found[0].inputs).toContain("decisions_count");
+    expect(found[0].inputs).toContain("analyses_count");
+  });
+
+  it("catches it spliced into a copy of a real skill body, at the right line", () => {
+    // The end-to-end demonstration, on an in-memory copy of a shipped file —
+    // nothing in the working tree is mutated to run a gate (decision
+    // 260810-1820). Put the pre-fix sentence back into /fusion:cleanup and the
+    // gate that was empty a moment ago names the file, the line and the fix.
+    const original = readFileSync(join(pluginRoot, "skills", "cleanup", "SKILL.md"), "utf-8").split(
+      "\n",
+    );
+    expect(
+      findCascadeStatements(original.join("\n")),
+      "precondition: the shipped /fusion:cleanup body must be clean before the splice, or " +
+        "this test is measuring the tree instead of the gate",
+    ).toEqual([]);
+
+    const injectAt = original.findIndex((l) => l.startsWith("## Step 3"));
+    expect(injectAt, "skills/cleanup/SKILL.md no longer has a Step 3 heading").toBeGreaterThan(0);
+    const copy = [...original];
+    copy.splice(injectAt + 1, 0, CLEANUP_COPY);
+
+    const found = findCascadeStatements(copy.join("\n"));
+    expect(found.map((s) => s.line)).toEqual([injectAt + 2]);
+
+    const msg = reportStatements("skills/cleanup/SKILL.md", found);
+    expect(msg).toContain(`skills/cleanup/SKILL.md:${injectAt + 2}`);
+    expect(msg).toContain("agentstate.yaml");
+  });
+
+  it("catches the cascade re-fenced into a second file", () => {
+    // The other representable copy: not prose but a block that would run.
+    expect(cascadeBlocks(fence(PRE_FIX)).length).toBe(1);
+  });
+
+  // Rewordings a second copy would plausibly take. Each names two outcomes and
+  // two inputs, which is what makes it a statement of the decision.
+  const MUST_FIRE: [string, string][] = [
+    [
+      "reworded, prose inputs",
+      "Pick `strategic` when open decisions outnumber open issues, `knowledge` when analyses " +
+        "exist without source, `data` when data files dominate, otherwise `code`.",
+    ],
+    [
+      "written with the cascade's own variable names",
+      "`strategic` if decisions_count >= issues_count, else `knowledge` if analyses_count > 0 " +
+        "and code_files == 0, else `code`.",
+    ],
+    [
+      "a two-branch fragment, which is already a decision procedure",
+      "Use `strategic` if the workbench has more open decisions than issues; otherwise `code`.",
+    ],
+  ];
+
+  for (const [label, text] of MUST_FIRE) {
+    it(`flags a paraphrase: ${label}`, () => {
+      expect(findCascadeStatements(text).length).toBeGreaterThan(0);
+    });
+  }
+
+  // Real lines from the tree that name domains and must stay unflagged. They
+  // CONSUME a domain that was handed to them; none names the evidence a domain
+  // is decided from. Fixtures, so widening the detector shows its cost here
+  // rather than in a red suite nobody can read.
+  const MUST_NOT_FIRE: [string, string][] = [
+    [
+      "reconciler.md:47 — parsing the dispatch parameter",
+      "If the dispatch prompt's first non-empty content line is `**Domain:** <value>`, parse " +
+        "`<value>` as the domain (one of `code | data | strategic | knowledge`).",
+    ],
+    [
+      "reconciler.md:169 — branching on the domain it was given",
+      "**When `domain=strategic` or `domain=knowledge`:** do NOT rename issue markers " +
+        "`_o_→_c_` for items whose answer lives in a later analysis.",
+    ],
+    [
+      "playmaker.md:108 — a ranking heuristic, not a domain heuristic",
+      "**Unresolved-decision count** — number of `_o_` decision records cited in its Grounding " +
+        "snapshot. Lower is better (for `code`/`data`); higher is better (for `strategic`).",
+    ],
+    [
+      "reconciler.md:91 — pointing at the per-domain protocols",
+      "The bullets below describe the `code` protocol verbatim; for `data`, `strategic`, " +
+        "`knowledge` see the per-domain notes that follow.",
+    ],
+    [
+      "next/SKILL.md:72 — naming the value set",
+      "`<detected-domain>` ∈ `{code, data, strategic, knowledge}` for the remainder of this skill.",
+    ],
+  ];
+
+  for (const [label, text] of MUST_NOT_FIRE) {
+    it(`leaves a consumer alone: ${label}`, () => {
+      expect(findCascadeStatements(text)).toEqual([]);
+    });
+  }
 });

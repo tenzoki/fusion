@@ -8,7 +8,7 @@ allowed-tools: [Bash, Read, Write, Edit, Glob, Grep, AskUserQuestion, Agent(fusi
 
 The user invoked `/fusion:cleanup`. This is a one-shot, mostly-autonomous pipeline that closes out a work session: it captures unfinished work as issues, commits and pushes the real changes in meaningful splits, runs reconciliation, archives stale workbench files with safe defaults, revises `CLAUDE.md`, regenerates the activity log, then commits and pushes the housekeeping artifacts those last steps produced.
 
-**Skills cannot invoke other slash commands.** Where a step corresponds to another fusion skill, read that skill's body from `$FUSION_PLUGIN_ROOT/skills/<name>/SKILL.md` and execute its procedure inline. Do not tell the user to type the slash command — perform the work. The reconcile step dispatches the `reconciler` agent directly.
+**Skills cannot invoke other slash commands.** Where a step corresponds to another fusion skill, read that skill's body from `$FUSION_PLUGIN_ROOT/skills/<name>/SKILL.md` and execute its procedure inline. Do not tell the user to type the slash command — perform the work. The reconcile step dispatches the `reconciler` agent directly. **That root is not specific to skill bodies: every path into a file the plugin ships carries `$FUSION_PLUGIN_ROOT`** — an agent prompt at `$FUSION_PLUGIN_ROOT/agents/<name>.md` exactly as much as a skill body — because nothing the plugin ships exists at a consuming project's root, where a bare `agents/…` or `skills/…` path resolves to nothing. Rule files are the exception in form only: an agent receives them from `"$FUSION_PLUGIN_ROOT/bin/fusion-rules"`, which prints absolute paths, so a `rules/…` name below identifies the file that governs and is not a path to open by hand.
 
 ## Arguments
 
@@ -59,6 +59,17 @@ If `--dry-run`, announce it now: every subsequent step reports its intent but pe
 The goal is that no unfinished work is lost when the session ends.
 
 1. If `fusion-workbench/agentstate.yaml` exists, read it. Its `work_queue` entries with status other than `done`/`skipped`/`deferred` are unfinished. (This file is root-anchored — the hooks read it there. It is not resolved by `fusion-paths`.)
+
+   **Capture the session's domain here, before anything deletes the file** — step 4 below removes `agentstate.yaml`, and Step 3 needs the value it holds. Same one-liner `/fusion:next` Step 2, `/fusion:direct` Step 3 and `/fusion:seed-from-plane` Step 4 use:
+
+   ```bash
+   DOMAIN=""
+   if [ -f "$WORKBENCH/agentstate.yaml" ]; then DOMAIN="$(grep -E '^  domain:' "$WORKBENCH/agentstate.yaml" | head -1 | sed -E 's/.*domain:[[:space:]]*"?([a-z]+)"?.*/\1/')"; fi
+   DOMAIN_SOURCE="agentstate.yaml"; [ -n "$DOMAIN" ] || DOMAIN_SOURCE="fallback"
+   DOMAIN="${DOMAIN:-code}"
+   ```
+
+   Hold `$DOMAIN` and `$DOMAIN_SOURCE` for the rest of the run. The 2-space indent scopes the match to the `session:` block, and the `"?` handles a quoted or unquoted YAML value.
 2. Read `$WORKBENCH/$TASKLIST` (if present) for unchecked tasks, and skim every path in `$SCAN_PLANS` for open or in-progress plans with unmarked or `[IN PROGRESS]` steps. `$SCAN_PLANS` may name **two** directories — the active Circle's and the shared one. Skim both, or unfinished work in one of them is silently missed.
 
    Match the marker (the underscore is inert — no escaping needed):
@@ -111,11 +122,12 @@ Report: the list of commits created (hash + summary) and push result.
 
 Dispatch the reconciler to bring tracking files in line with ground truth.
 
-- Detect the workbench domain the same way the orchestrator does (Setup Step 5 in `agents/orchestrator.md`): `strategic` if decisions dominate, `knowledge` if analyses with no code, `data` if data files dominate, else `code`. When unsure, default `code`.
-- `Agent(fusion:reconciler)` with the dispatch prompt prefixed by `**Domain:** <detected-domain>` on its own line.
+- Use the `$DOMAIN` captured in Step 1. **This skill obtains the domain; it never decides one.** The decision is made in exactly one place — Setup Step 5 of `$FUSION_PLUGIN_ROOT/agents/orchestrator.md` — and `agentstate.yaml` carries the verdict that run produced. A second statement of that heuristic anywhere else drifts from the first and the two then disagree inside a single session, which is what the plugin's own `domain-cascade.test.ts` now fails on: it scans every agent prompt and every skill body, and only the orchestrator's may state the cascade.
+- With no `agentstate.yaml` (a cleanup run outside an orchestrator session), `$DOMAIN` is `code` — the same fallback `/fusion:next`, `/fusion:direct` and `/fusion:seed-from-plane` take, and the cascade's own no-evidence exit. Report which of the two applied, never just the value.
+- `Agent(fusion:reconciler)` with the dispatch prompt prefixed by `**Domain:** $DOMAIN` on its own line.
 - Read the reconciler's returned summary; note any discrepancies it fixed or flagged.
 
-If `--dry-run`, skip the dispatch and just report the detected domain.
+If `--dry-run`, skip the dispatch and report `$DOMAIN` with its `$DOMAIN_SOURCE`.
 
 ## Step 4 — Archive with safe defaults
 
@@ -153,7 +165,7 @@ A single concise summary, action-first per `rules/user-facing-output.md`:
 - Issues filed for open tasks: N (with paths)
 - Commits created across both phases: list (hash + summary)
 - Push: pushed to `<branch>` / skipped (`--no-push`) / **rejected** (with the git error)
-- Reconcile: discrepancies fixed/flagged
+- Reconcile: domain used, and where it came from (`agentstate.yaml` or the fallback); discrepancies fixed/flagged
 - Archive: files moved (count) into `<archive folder>` / nothing to archive
 - CLAUDE.md: lines added / updated / pruned
 - Activity log: updated

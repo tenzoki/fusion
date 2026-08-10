@@ -41,3 +41,12 @@ pair and is exactly the branch the module's header calls load-bearing. Only on `
 the counted path. That covers both of the helper's documented outcomes rather than one of them.
 
 **Filed by:** coderev, review of session `260810-1646` Turn 1, range `5ef92eb..940d522`.
+
+---
+Resolved: `hooks/lib/__tests__/domain-cascade.test.ts` now asserts the helper returned one of its two
+documented outcomes (0 or 2) and branches on which. On 0 it asserts the counted path as before; on 2
+it asserts `counted_by === "none"` with both counts `"unavailable"`. Both branches then assert the
+cascade answers `code` — the one property that holds either way, and by different routes: a counted
+tree because it holds source, an uncounted one because the absent-count branch is the cascade's
+no-evidence exit. An exit outside {0,2} fails with a message naming both documented outcomes rather
+than blaming the helper. The test's name lost "this repository", which was the assumption in prose.

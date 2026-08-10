@@ -16,7 +16,7 @@
 // This module makes the cascade runnable. It does NOT restate it.
 //
 // ---------------------------------------------------------------------------
-// Why there is no second copy
+// Why this file is not a second copy
 //
 // The obvious fix — write the six branches out again as TypeScript and assert
 // its verdicts — creates two definitions of one decision and no mechanism
@@ -26,9 +26,27 @@
 //
 // So the cascade here IS the cascade in the prompt. `parseCascade()` extracts
 // the fenced block, parses each branch's condition into an expression tree, and
-// `evaluateCascade()` runs it against a set of counts. Drift is not guarded
-// against, it is unrepresentable — there is one definition, in
-// `agents/orchestrator.md`, and this file is an interpreter for it.
+// `evaluateCascade()` runs it against a set of counts.
+//
+// ---------------------------------------------------------------------------
+// What that does NOT buy, and what does
+//
+// This header used to end "drift is not guarded against, it is unrepresentable
+// — there is one definition". That sentence was false when it was written. A
+// second definition is representable and one existed: `skills/cleanup/SKILL.md`
+// carried the cascade as a single prose sentence, in the pre-fix order and with
+// no absent-count case, so a project reached `code` at Setup and `strategic` at
+// cleanup inside one session (issue 260810-1918). It predated the claim
+// denying it, and both gates read `agents/orchestrator.md` alone, so neither
+// could see it. Running the prompt's own block keeps THIS file from being a
+// second copy; it says nothing about any other consumer.
+//
+// The claim is therefore a measurement now, not an argument.
+// `findCascadeStatements()` and `cascadeBlocks()` below detect a statement of
+// the cascade in a consumer's text, and `domain-cascade.test.ts` runs both over
+// every `agents/*.md` and every `skills/*/SKILL.md`, allowing exactly one file
+// to state it. What that reaches and what it cannot is written at those
+// functions, in the terms they actually measure — not promised here.
 //
 // What that costs is strictness, and it is deliberate: anything the grammar
 // below cannot read raises `CascadeError` rather than being skipped. A renamed
@@ -287,13 +305,25 @@ function stripComment(line) {
     return (at < 0 ? line : line.slice(0, at)).trim();
 }
 /**
+ * Every fenced block in `markdown` that assigns both the `code` and the
+ * `strategic` domain — i.e. every executable copy of the cascade the text
+ * carries. Zero for an ordinary file, one for the definition site.
+ *
+ * Exported because "how many files hold one" is the reach gate's question as
+ * much as "which block do I run" is this module's.
+ */
+export function cascadeBlocks(markdown) {
+    return markdown
+        .split(/^\s*```.*$/m)
+        .filter((b) => /domain\s*=\s*"code"/.test(b) && /domain\s*=\s*"strategic"/.test(b));
+}
+/**
  * The one fenced block assigning both the `code` and the `strategic` domain.
  * Exactly one such block must exist — two would mean the prompt describes the
  * decision twice, and this reader would have to guess which one runs.
  */
 export function extractCascadeBlock(markdown) {
-    const blocks = markdown.split(/^\s*```.*$/m);
-    const found = blocks.filter((b) => /domain\s*=\s*"code"/.test(b) && /domain\s*=\s*"strategic"/.test(b));
+    const found = cascadeBlocks(markdown);
     if (found.length !== 1) {
         throw new CascadeError(`expected exactly one fenced block assigning both the \`code\` and \`strategic\` ` +
             `domains, found ${found.length}`);
@@ -504,4 +534,90 @@ export function countsFromHelperOutput(stdout) {
         data_files: num("data_files"),
         counted_by: read("counted_by"),
     };
+}
+// --- reach: finding a second statement of the cascade ----------------------
+//
+// A fenced second cascade is caught by `cascadeBlocks()` above. The copy that
+// actually shipped was not fenced — it was one sentence of prose, and this is
+// what finds that shape.
+//
+// What a statement of the cascade IS, measurably: a line naming at least two of
+// the four DOMAINS as literals AND at least two of the cascade's own INPUTS.
+// Two outcomes plus two of the counts they are decided from is a decision
+// procedure; anything less is a consumer talking about a domain it was handed.
+// That split was measured, not assumed. Over every `agents/*.md` and
+// `skills/*/SKILL.md` in the tree the only lines it selects are the three
+// prose lines of Setup Step 5 itself and the cleanup sentence this was written
+// for — while the per-domain priority tables in `reconciler`, `taskplanner` and
+// `playmaker`, which name four domains each, are left alone because they name
+// no inputs.
+//
+// What it does not reach, stated rather than hoped:
+//   - A paraphrase spread across the ROWS of a table. Scoped to a paragraph the
+//     detector would find it — and would also find those three legitimate
+//     tables, five false positives measured. Per line is the cut that separates
+//     them; a tabular paraphrase is a hole in it.
+//   - A paraphrase naming no input ("`strategic` for planning work, else
+//     `code`"). It names no evidence, so it restates less than the cascade.
+//   - Anything outside `agents/` and `skills/`. `docs/philosophy.md` says what
+//     each domain PRIORITISES, in a line shape-identical to a paraphrase, so
+//     widening the file set means either noise or an exemption list. The gate's
+//     file set is the consumer set: the files an agent executes.
+//   - A consuming project's own files. Nothing here is shipped as a check that
+//     runs there.
+/** The four domain names as a consumer writes one: `code` or "code". */
+function domainLiteralsIn(line) {
+    const out = new Set();
+    const re = /`([^`]+)`|"([^"]+)"/g;
+    let m;
+    while ((m = re.exec(line)) !== null) {
+        const v = (m[1] ?? m[2]).trim();
+        if (DOMAINS.includes(v))
+            out.add(v);
+    }
+    return out;
+}
+/**
+ * The prose spelling of each input, mapped to the count it names. A line that
+ * says "decisions" and one that says `decisions_count` name the same input, so
+ * they collapse to one — two spellings of one count are not two inputs.
+ */
+const INPUT_PROSE = [
+    [/\bcommits?\b/i, "commits"],
+    [/\banalys[ei]s\b/i, "analyses_count"],
+    [/\bissues?\b/i, "issues_count"],
+    [/\bdecisions?\b/i, "decisions_count"],
+    [/\b(?:code|source)[ -]files?\b/i, "code_files"],
+    [/\bdata[ -]files?\b/i, "data_files"],
+];
+/** The cascade inputs a line names, by variable name or by prose spelling. */
+function inputsNamedIn(line) {
+    const out = new Set();
+    for (const name of COUNT_NAMES) {
+        if (new RegExp(`(?<![A-Za-z0-9_])${name}(?![A-Za-z0-9_])`).test(line))
+            out.add(name);
+    }
+    for (const [re, name] of INPUT_PROSE)
+        if (re.test(line))
+            out.add(name);
+    return out;
+}
+/** Every line of `markdown` that states the cascade rather than consuming it. */
+export function findCascadeStatements(markdown) {
+    const out = [];
+    markdown.split("\n").forEach((line, i) => {
+        const domains = domainLiteralsIn(line);
+        if (domains.size < 2)
+            return;
+        const inputs = inputsNamedIn(line);
+        if (inputs.size < 2)
+            return;
+        out.push({
+            line: i + 1,
+            text: line.trim(),
+            domains: [...domains],
+            inputs: [...inputs],
+        });
+    });
+    return out;
 }

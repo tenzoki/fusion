@@ -51,3 +51,31 @@ procedure and names the obstacle (`bin/fusion-rules` cannot emit to a skill) —
 would hit it too.
 
 **Filed by:** coderev, review of session `260810-1646` Turn 1, range `5ef92eb..940d522`.
+
+---
+Resolved: Fix direction (a) and (b) together, since (a) alone leaves the module's claim false.
+
+(a) `skills/cleanup/SKILL.md` Step 3 no longer states the cascade. It takes `session.domain` from
+`fusion-workbench/agentstate.yaml` — the verdict the orchestrator's Setup Step 5 already produced —
+using the same one-liner `/fusion:next` Step 2, `/fusion:direct` Step 3 and `/fusion:seed-from-plane`
+Step 4 use, with the same `code` fallback for a run outside a session. The capture sits in Step 1
+item 1, because Step 1 item 4 deletes `agentstate.yaml` before Step 3 runs. The fallback is now
+reported (`$DOMAIN_SOURCE`) rather than applied silently.
+
+(b) `hooks/lib/__tests__/domain-cascade.test.ts` gained a reach gate over every `agents/*.md` and
+every `skills/*/SKILL.md`, no exemptions: at most one file may state the cascade, in either
+representable shape — a fenced block that would run (`cascadeBlocks()`) or a prose line a reader
+executes (`findCascadeStatements()`, both in `hooks/lib/domain-cascade.ts`). A statement is a line
+naming ≥2 of the four domains and ≥2 of the cascade's own inputs; the threshold was measured against
+the whole tree, where it selects Setup Step 5's own prose and this defect and nothing else.
+
+The claim was corrected rather than left standing, in all three places it was made:
+`hooks/lib/domain-cascade.ts`'s header, `domain-cascade.test.ts`'s header, and `README-hooks.md`.
+A second definition is representable — one shipped. What holds is a measurement with named holes: a
+paraphrase spread across a table's rows is not caught, nor is anything outside `agents/` and
+`skills/`.
+
+Demonstrated on a copy of the tree, not in it (decision 260810-1820): with the pre-fix sentence
+written back into the copy's `skills/cleanup/SKILL.md`, `npx vitest run
+lib/__tests__/domain-cascade.test.ts` fails naming `skills/cleanup/SKILL.md:125`, its four domains,
+its three inputs, and the route to take instead. `npm test` on the real tree: exit 0.

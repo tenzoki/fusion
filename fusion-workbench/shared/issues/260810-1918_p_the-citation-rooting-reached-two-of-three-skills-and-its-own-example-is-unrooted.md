@@ -45,3 +45,24 @@ documented-route-to-read.md`; `shared/issues/260808-0030_o_line-number-citations
 stale-and-no-gate-reads-them.md` (the `:11` and `:114` anchors here are exactly that class).
 
 **Filed by:** coderev, review of session `260810-1646` Turn 1, range `5ef92eb..940d522`.
+
+---
+Partially resolved — half 1 done, half 2 blocked on file ownership, record stays `_p_`.
+
+**Half 1 (done).** `skills/cleanup/SKILL.md:11` now carries the blanket rule, extended in place
+rather than added beside it: `$FUSION_PLUGIN_ROOT` roots every path into a file the plugin ships,
+an agent prompt as much as a skill body, and rule files are named-not-opened because
+`bin/fusion-rules` prints them absolute. Kept at line 11 deliberately — `/fusion:setup` and
+`/fusion:next` both cite `skills/cleanup/SKILL.md:11`, and inserting a paragraph above it would have
+moved the anchor those two cite. Every plugin-file citation in the file is now rooted; the one at
+`:114` went away entirely with the cascade paraphrase (see
+`260810-1918_c_the-cleanup-skill-carries-a-second-domain-cascade…`), and the reconcile step's new
+citation of Setup Step 5 is written `$FUSION_PLUGIN_ROOT/agents/orchestrator.md`.
+
+**Half 2 (not done).** The self-citation in the announcing paragraph is still bare in both copies —
+`skills/setup/SKILL.md:12` and `skills/next/SKILL.md:13` each end with `skills/cleanup/SKILL.md:11`,
+the exact form the sentence before it calls unresolvable in a consuming project. Both files were
+held by other executors this Turn (Turn-2 dispatch: stay out of `skills/setup/SKILL.md` and
+`skills/next/SKILL.md`), so the edit was not made. It is one substitution per file, to
+`$FUSION_PLUGIN_ROOT/skills/cleanup/SKILL.md:11`, and the cited content at that line is still
+correct after half 1.
