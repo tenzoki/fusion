@@ -37,3 +37,28 @@ the record is closed-by-append in this workbench's style). Nothing in the shippe
 `hooks/lib/__tests__/reference-resolution-lint.test.ts:207-213`.
 
 **Filed by:** coderev, review of session `260810-1646` Turn 2, range `da8c9db..b3cc034`.
+
+---
+Resolved: the count is corrected in `260810-2029` and the measurement was re-taken independently
+rather than copied from this record.
+
+**Re-measured.** Running the root-variable pattern over the scanned surface of the reference lint,
+`$FUSION_SRC` stands in front of `agents/orchestrator.md` at `skills/setup/SKILL.md:220,238,239,254,260`
+and `skills/next/SKILL.md:115,121,185`. Five plus three is eight, matching this record's table
+line by line. The same measurement from the other side: the count of tokens the gate resolves through
+a root variable moves from 140 to 148 when `FUSION_SRC` is classified, so eight is also the size of
+the restored coverage and not only the count of sites.
+
+**Where the corrected number now lives.** In `260810-2029`'s title, in all three of its body
+statements, and in the header of `ROOT_VARS` in
+`hooks/lib/__tests__/reference-resolution-lint.test.ts`, which is the code the record is about and
+the place a later reader meets the number while changing the thing it counts. The filename of
+`260810-2029` still carries "seven": a record's stamp and topic do not change under
+`rules/fusion-workbench-conventions.md` `## State Markers — issues and planning`, and this record,
+the Turn-2 review and the gate's own header all cite that slug. The mismatch is called out in the
+record's opening lines so it cannot be read as a second, surviving claim.
+
+**The concern this record raised is answered by construction.** It said a later reader who adds
+`FUSION_SRC` and counts the restored sites would find one more than expected and could not tell a
+miscount from a new citation. That reader is now the gate itself: the restored sites are covered by a
+named test, and a ninth citation appearing later either resolves or fails by name.

@@ -14,9 +14,13 @@ import { dirname, resolve, join, relative, sep } from "node:path";
 //
 //   (a) plugin-file paths — `rules/<name>.md`, `agents/<name>.md`,
 //       `hooks/lib/<name>.ts`, `bin/<name>`, … — checked for existence against
-//       the repo tree. `$FUSION_PLUGIN_ROOT/<path>` is checked the same way
-//       with the variable stripped. A `./rules/...` spelling is the CONSUMING
-//       project's rule directory by convention and is never checked here.
+//       the repo tree. A `$VAR/<path>` spelling is checked the same way with
+//       the variable stripped, PROVIDED the variable is declared in ROOT_VARS
+//       as naming the plugin tree; an undeclared variable in front of a
+//       plugin-shaped path FAILS rather than being skipped (see ROOT_VARS for
+//       why, and for the one bound that remains). A `./rules/...` spelling is
+//       the CONSUMING project's rule directory by convention and is never
+//       checked here.
 //   (b) section-heading anchors in the adjacent form `` `file.md` `## Section` ``
 //       — the cited heading must exist in the cited file (prefix match, so
 //       `## Path Resolution` satisfies `## Path Resolution (Pfadauflösung)`;
@@ -200,17 +204,76 @@ const EXAMPLE_PATHS: Record<string, string> = {
     "fusion-workbench-conventions.md spells it bare in the exit-code table",
 };
 
+// The shape of a path inside the plugin tree, held as a source string because
+// it is needed in two forms: with the "not mid-path" lookbehind, to find such
+// paths in running prose (PLUGIN_PATH_RE), and anchored, to ask whether the
+// remainder of a `$VAR/`-rooted token is one (PLUGIN_SHAPE_RE) — there the
+// variable has already supplied the root, so there is nothing to look behind.
+const PLUGIN_PATH_BODY =
+  "(?:rules|agents|skills|docs|hooks|bin|templates|stilwerk)\\/" +
+  "[A-Za-z0-9<>$*{}…][A-Za-z0-9._<>$*{}…\\/-]*[A-Za-z0-9>}]" +
+  "|\\.claude-plugin\\/plugin\\.json|README(?:-[a-z]+)?\\.md|CLAUDE\\.md" +
+  "|install\\.sh|settings\\.json";
+
 // A path-shaped token under a plugin directory, not preceded by `./` (the
 // consuming-project spelling), `/` (mid-path), or a word character. First and
 // last characters must be alphanumeric so `rules/x.md:72` captures the path
 // without the line suffix and a bare `rules/` (prose) never matches.
-const PLUGIN_PATH_RE =
-  /(?<![A-Za-z0-9_.\/-])((?:rules|agents|skills|docs|hooks|bin|templates|stilwerk)\/[A-Za-z0-9<>$*{}…][A-Za-z0-9._<>$*{}…\/-]*[A-Za-z0-9>}]|\.claude-plugin\/plugin\.json|README(?:-[a-z]+)?\.md|CLAUDE\.md|install\.sh|settings\.json)/g;
+const PLUGIN_PATH_RE = new RegExp("(?<![A-Za-z0-9_.\\/-])(" + PLUGIN_PATH_BODY + ")", "g");
 
-// `$FUSION_PLUGIN_ROOT/<path>` (and the CLAUDE_PLUGIN_ROOT spelling) resolves
-// to the plugin tree, so the remainder is checkable like any class-(a) token.
+/** The same shape, anchored: is this whole token a path into the plugin tree? */
+const PLUGIN_SHAPE_RE = new RegExp("^(?:" + PLUGIN_PATH_BODY + ")$");
+
+/**
+ * Every `$VAR` that stands in front of a plugin-tree-shaped path anywhere in
+ * the scanned surface, and what that variable names:
+ *
+ *   `true`   — it names the plugin tree. The remainder is a plugin path and is
+ *              existence-checked exactly like a bare one.
+ *   a string — it names something else, and the string is the reason. The
+ *              token is skipped.
+ *
+ * A `$VAR/` token whose variable appears in NEITHER position, and whose
+ * remainder IS plugin-shaped, is a **violation** — not a skip. That is the one
+ * behavioural difference from the predecessor of this constant, which was a
+ * regex naming two variables and silently skipping every other. When session
+ * `260810-1646` introduced a third, `$FUSION_SRC`, eight citations of
+ * `agents/orchestrator.md` left the existence check and the suite stayed green
+ * from end to end: coverage shrank and nothing turned red. Eight is the
+ * measured count (`skills/setup/SKILL.md` five, `skills/next/SKILL.md` three) —
+ * the commit and the first record both said seven. A gate that enumerates what
+ * it recognises and skips the rest cannot report its own coverage shrinking, so
+ * this one fails on the unrecognised name instead, and the failure names both
+ * remedies.
+ *
+ * THE BOUND, stated rather than implied: a token under an unrecognised variable
+ * whose remainder is NOT plugin-shaped stays skipped, deliberately — it is not
+ * a class-(a) reference at all. Every `bin/fusion-paths` resolver key is that
+ * case, and the separation was measured over the whole surface before it was
+ * relied on: `$WORKBENCH`, `$WB` and the nine `$OUT_*` keys carry workbench
+ * store paths (`$OUT_ISSUE/<stamp>_o_<slug>.md`, `$WORKBENCH/monitor`) and
+ * never a `rules/…`, `agents/…` or `bin/…` remainder. So the two classes part
+ * on the REMAINDER, and no list of resolver-key names belongs here. What the
+ * gate would still miss is a new root variable used ONLY in front of a path
+ * that no plugin directory could hold — which is to say, not a plugin citation.
+ */
+const ROOT_VARS: Record<string, true | string> = {
+  FUSION_PLUGIN_ROOT: true,
+  CLAUDE_PLUGIN_ROOT: true,
+  // the source root the skills resolve once at Setup — the work tree inside
+  // this repository, the install everywhere else, and a copy of this same
+  // plugin tree either way.
+  FUSION_SRC: true,
+  STASH_DIR:
+    "the stash directory /fusion:circle-stash writes; its README.md is that " +
+    "stash's own manifest, not the plugin's README.md",
+};
+
+// `$VAR/<path>` for ANY variable. The variable is captured and classified
+// against ROOT_VARS rather than being written into the pattern, which is what
+// makes an unrecognised name reportable instead of unmatchable.
 const ROOT_VAR_RE =
-  /\$\{?(?:FUSION_PLUGIN_ROOT|CLAUDE_PLUGIN_ROOT)\}?\/([A-Za-z0-9][A-Za-z0-9._\/-]*[A-Za-z0-9])/g;
+  /\$\{?([A-Za-z_][A-Za-z0-9_]*)\}?\/([A-Za-z0-9][A-Za-z0-9._\/-]*[A-Za-z0-9])/g;
 
 function scanPluginPaths(
   rel: string,
@@ -219,14 +282,38 @@ function scanPluginPaths(
   const violations: Violation[] = [];
   let resolved = 0;
   for (const { line, text } of lines) {
-    const candidates: string[] = [];
-    for (const re of [PLUGIN_PATH_RE, ROOT_VAR_RE]) {
-      re.lastIndex = 0;
-      let m: RegExpExecArray | null;
-      while ((m = re.exec(text)) !== null) candidates.push(m[1]);
+    // `unknownRoot` set = the token was found behind a variable ROOT_VARS does
+    // not classify, and is reported as that rather than resolved.
+    const candidates: { token: string; unknownRoot?: string }[] = [];
+    PLUGIN_PATH_RE.lastIndex = 0;
+    let m: RegExpExecArray | null;
+    while ((m = PLUGIN_PATH_RE.exec(text)) !== null) candidates.push({ token: m[1] });
+    ROOT_VAR_RE.lastIndex = 0;
+    while ((m = ROOT_VAR_RE.exec(text)) !== null) {
+      const [, rootVar, rest] = m;
+      const names = ROOT_VARS[rootVar];
+      if (typeof names === "string") continue; // declared as naming something else
+      if (names === true) candidates.push({ token: rest }); // the plugin tree: resolve
+      else if (PLUGIN_SHAPE_RE.test(rest)) candidates.push({ token: rest, unknownRoot: rootVar });
     }
-    for (const token of candidates) {
+    for (const { token, unknownRoot } of candidates) {
       if (isPlaceholder(token) || token.includes("*") || token.includes("…")) continue;
+      if (unknownRoot) {
+        violations.push({
+          file: rel,
+          line,
+          token: `$${unknownRoot}/${token}`,
+          problem:
+            `'$${unknownRoot}' is not a root variable this gate classifies, so the ` +
+            `plugin path behind it was never checked to exist — coverage shrinks here ` +
+            `silently, which is the defect this branch exists to prevent`,
+          fix:
+            `declare ${unknownRoot} in ROOT_VARS: 'true' if it names the plugin tree ` +
+            `(the path is then existence-checked like any other), or a reason string if ` +
+            `it names something else (the citation is then skipped, and the string says why)`,
+        });
+        continue;
+      }
       if (token in EXAMPLE_PATHS) continue;
       if (existsSync(join(pluginRoot, token))) {
         resolved++;
@@ -628,6 +715,87 @@ describe("reference-resolution lint: class (a) behaviour", () => {
     const { violations } = scanPluginPaths("fixture.md", L('"$FUSION_PLUGIN_ROOT/bin/no-such-helper"'));
     expect(violations.length).toBe(1);
     expect(violations[0].token).toBe("bin/no-such-helper");
+  });
+
+  it("resolves a $FUSION_SRC-rooted path and catches a dangling one", () => {
+    // The eight sites of issue 260810-2029 are spelled this way. Before
+    // FUSION_SRC was classified, both halves of this test scored zero.
+    const ok = scanPluginPaths("fixture.md", L('read "$FUSION_SRC/agents/orchestrator.md" first'));
+    expect(ok.violations).toEqual([]);
+    expect(ok.resolved).toBe(1);
+    const bad = scanPluginPaths("fixture.md", L('read "$FUSION_SRC/agents/no-such-agent.md"'));
+    expect(bad.violations.length).toBe(1);
+    expect(bad.violations[0].token).toBe("agents/no-such-agent.md");
+  });
+
+  it("fails on a plugin path behind an unrecognised root variable, instead of skipping it", () => {
+    // The shrinkage shape itself: a citation whose target does NOT exist, which
+    // the two-name predecessor accepted in silence because it could not match
+    // the variable at all.
+    const { violations, resolved } = scanPluginPaths(
+      "fixture.md",
+      L('read "$SOME_NEW_ROOT/bin/no-such-helper" at Setup'),
+    );
+    expect(resolved).toBe(0);
+    expect(violations.length).toBe(1);
+    expect(violations[0].token).toBe("$SOME_NEW_ROOT/bin/no-such-helper");
+    expect(violations[0].problem).toContain("not a root variable this gate classifies");
+    // both remedies, so the fix is never guessed
+    expect(violations[0].fix).toContain("ROOT_VARS");
+    expect(violations[0].fix).toContain("true");
+    expect(violations[0].fix).toContain("reason string");
+  });
+
+  it("fails on an unrecognised root even when its target does exist", () => {
+    const { violations } = scanPluginPaths("fixture.md", L('"$SOME_NEW_ROOT/agents/orchestrator.md"'));
+    expect(violations.length).toBe(1);
+    expect(violations[0].token).toBe("$SOME_NEW_ROOT/agents/orchestrator.md");
+  });
+
+  it("leaves a fusion-paths resolver key alone: its remainder is a workbench path, not a plugin one", () => {
+    const { violations, resolved } = scanPluginPaths(
+      "fixture.md",
+      L("file it at `$OUT_ISSUE/260810-2029_o_slug.md`, serve `$WORKBENCH/monitor`, scan `$SCAN_PLANS/`"),
+    );
+    expect(violations).toEqual([]);
+    expect(resolved).toBe(0);
+  });
+
+  it("skips a variable declared as naming something other than the plugin tree", () => {
+    const { violations, resolved } = scanPluginPaths(
+      "fixture.md",
+      L("Use the `Write` tool to create `$STASH_DIR/README.md`"),
+    );
+    expect(violations).toEqual([]);
+    expect(resolved).toBe(0);
+  });
+
+  it("every non-plugin ROOT_VARS entry is load-bearing: each still shadows a plugin-shaped path", () => {
+    // The falsifier for the skip half, mirroring the EXAMPLE_PATHS guards: an
+    // entry that no longer shadows anything is an exemption that can only
+    // swallow a future reference, so it must be dropped rather than kept.
+    const declared = Object.entries(ROOT_VARS)
+      .filter(([, v]) => typeof v === "string")
+      .map(([k]) => k);
+    const dead = declared.filter((v) => {
+      const re = new RegExp("\\$\\{?" + v + "\\}?\\/([A-Za-z0-9][A-Za-z0-9._\\/-]*[A-Za-z0-9])", "g");
+      return !surface().some(
+        (f) =>
+          !f.recordsOnly &&
+          scannedLines(f).some(({ text }) => {
+            re.lastIndex = 0;
+            let m: RegExpExecArray | null;
+            while ((m = re.exec(text)) !== null) if (PLUGIN_SHAPE_RE.test(m[1])) return true;
+            return false;
+          }),
+      );
+    });
+    expect(
+      dead,
+      `${dead.join(", ")} is declared in ROOT_VARS as naming something other than the ` +
+        `plugin tree, but no plugin-shaped path sits behind it anywhere in the surface — ` +
+        `the entry shadows nothing and can only swallow a future citation; drop it`,
+    ).toEqual([]);
   });
 
   it("does not read a ./rules/ spelling as a plugin path", () => {

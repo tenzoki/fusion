@@ -64,3 +64,11 @@ Two earlier observations in the same session, both under parallel load: one duri
 five-executor batch, one during this Turn's. That makes three, all under load, none in isolation, and
 the case is now identified rather than merely suspected — which is what this record asked for before
 anything is widened.
+
+**Fourth observation, same session, Turn 3.** Same case, again under three parallel executors, again
+passing on the surrounding runs. Recorded by the orchestrator rather than by the executor that saw
+it: it declined to append here on the ground that the record was not its own and three parties were
+writing this workbench at the time, which is the right call and is noted so the restraint does not
+read as an oversight.
+
+Four observations now, all under parallel load, none in isolation.
