@@ -101,3 +101,18 @@ a checking surface rather than stronger wording.
   bugfixer branch that a missing executor result delays.
 - `rules/critical-stance.md:25` — reuse before you build, which is why this points at the
   bugfixer's report shape rather than at a new one.
+
+---
+Resolved: the report shape now has nowhere to put a missing verification, and a second party reads the field.
+
+`agents/coder.md` and `agents/ontocoder.md` share one report shape, extended from the one `agents/bugfixer.md` already carried rather than invented beside it. The load-bearing part is the derivation, not the added field: `Verification:` admits exactly three forms and no fourth — an exit code, a run that did not finish, or `none` — and `Result` is defined **from** it, so `done` requires the first form with `exit 0`. "Done" became a claim about a number the agent read rather than a claim that its editing stopped. The split is disjoint and complete over one question: did a verification run produce an exit code.
+
+`agents/orchestrator.md` Step 3a step 5 reads that line before it reads scope, in four cases. A non-zero exit blocks the task and goes to Step 3b, whose existing validation confirms the failure and carries it into the self-healing branch already there — no parallel bugfixer path was added. `did not finish` and `none` both mean nothing has been checked, so the orchestrator runs the validation itself. An absent line is an incomplete report and never reaches a commit. Step 6 gained the matching exclusion, so a blocked task cannot be marked complete.
+
+**What this is, stated plainly rather than claimed upward: a stronger convention with a reader, not an enforcement.** Nothing here makes an unverified report impossible to write. The report is free text from a model, and a prompt instruction is overridable under task pressure — `CLAUDE.md` "Problem 11" is this project's own worked case of exactly that, and `rules/critical-stance.md` §4 says the same about its `Decidability:` line. Three things did change: the obligation moved into the report's own shape at the point of reporting instead of sitting in a process step upstream of it; the shape has no arrangement in which the omission is silent, because dropping the field yields a report the orchestrator is told to reject rather than a shorter valid one; and a second party reads the field, which is the same kind of enforcement fusion already relies on at the human approval gate.
+
+A real enforcement would need the verification observable outside the executor's own report — the dispatcher capturing the exit code, or a hook recording that a check ran between dispatch and return. Different mechanism, deliberately out of scope here, and named so it is not re-derived later.
+
+The lint (`hooks/lib/__tests__/executor-verification-report-lint.test.ts`, 13 tests) enforces nothing at run time either. It keeps the contract from quietly leaving the three prompts or drifting into two divergent shapes across the executors: a maintenance guarantee. Its two negative cases feed it the pre-fix coder process and a half-fixed shape whose `done` is stated independently of the field, so it is shown to fail on the defect rather than only to pass on the fix.
+
+Session: `shared/history/260810-0241-orchestrator-session.md` (task T8). Executor log: `shared/history/260810-0400-executor-verification-report-contract.md`.

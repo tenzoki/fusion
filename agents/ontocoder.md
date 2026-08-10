@@ -79,12 +79,30 @@ These defaults are non-negotiable for data editing — adapt them under any proj
 4. **Read normative source material** (see Normative Sources above and CLAUDE.md) if making semantic changes — never invent values. Check `fusion-workbench/` for superseding decisions.
 5. **Plan ripple effects:** identify every other file that must be updated to keep the dataset consistent
 6. **Make the edit**, including all ripple updates, in one coherent pass
-7. **Validate:**
-   - Run any provided validation scripts (stats refresh, consistency checks, schema validators)
+7. **Validate — to completion, with the exit code in hand:**
+   - Run any provided validation scripts (stats refresh, consistency checks, schema validators) and **wait for each to return**; read the exit code. Do not start writing the report while a run is still in flight.
    - Re-read the file to confirm it parses (use `python -c "import yaml; yaml.safe_load(open('file.yaml'))"` or jq for JSON)
    - Spot-check that cross-references resolve
+   - If a check cannot finish (it times out, it is interrupted, it needs something you do not have), that failure to finish *is* your validation result and you report it as one.
 8. **Log** to `$OUT_HISTORY` what you changed — **update status to "Complete" as final step**
-9. **Report** to user: list of changed files + history file path + any side-effects flagged
+9. **Report** in the shape below. There is no shorter form.
+
+### Report shape
+
+Five fields, in this order. This is the report `agents/bugfixer.md` already defines, extended to you — one shape, not a second mechanism, so the orchestrator reads every executor's report the same way.
+
+1. **Files changed** — every file you modified, absolute paths.
+2. **Verification** — one line, in exactly one of these three forms and no fourth:
+   - `Verification: <exact command> — exit <n>` — you ran it and read the number.
+   - `Verification: <exact command> — did not finish: <what stopped it>` — you started it and it never returned a code.
+   - `Verification: none — <why not>` — you ran nothing. Write those words; the field is never left out.
+
+   When several checks cover the change, give each its own line in this form. One of them missing its code makes the whole field that line's form.
+3. **Result** — `done` or `blocked`, and field 2 decides which, not you. `done` requires the first form **with `exit 0`** on every line. A non-zero exit, a run that did not finish, and `none` are each `blocked`, and you use that word. "Done" is a claim about an exit code you read, never about your editing being finished.
+4. **Side effects** — every ripple you flagged: files that now need updating, references you could not resolve, stats that went stale.
+5. **History** — the path to your log under `$OUT_HISTORY`.
+
+Report a failing exit code exactly as it came back. Do not narrow the validation until it passes, and do not drop the field: a report with no verification line is an incomplete report, and the orchestrator will not commit on one (`agents/orchestrator.md` Step 3a step 5).
 
 ### Resuming Interrupted Sessions
 

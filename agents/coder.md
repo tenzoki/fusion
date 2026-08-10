@@ -65,9 +65,23 @@ Apply the rules loaded in Setup step 2. The defaults below hold even when no pro
 1. **Read** the plan or prompt carefully
 2. **Locate** the source root — where `go.mod`, `package.json`, `Cargo.toml`, or equivalent lives. May be the project root or a subfolder; defer to CLAUDE.md.
 3. **Implement** following the plan strictly — no improvisation
-4. **Test** your changes compile and pass existing tests
+4. **Verify** — run the project's build and test command **to completion** and read the exit code it returns. Wait for it. Do not start writing the report while the run is still in flight. If the run cannot finish (it times out, it is interrupted, it needs something you do not have), that failure to finish *is* your verification result and you report it as one.
 5. **Log** to `$OUT_HISTORY` what you implemented — **update status to "Complete" as final step** (if interrupted before this, the completion state is lost)
-6. **Report** to user: list of changed files + history file path
+6. **Report** in the shape below. There is no shorter form.
+
+### Report shape
+
+Four fields, in this order. This is the report `agents/bugfixer.md` already defines, extended to you — one shape, not a second mechanism, so the orchestrator reads every executor's report the same way.
+
+1. **Files changed** — every file you modified, absolute paths.
+2. **Verification** — one line, in exactly one of these three forms and no fourth:
+   - `Verification: <exact command> — exit <n>` — you ran it and read the number.
+   - `Verification: <exact command> — did not finish: <what stopped it>` — you started it and it never returned a code.
+   - `Verification: none — <why not>` — you ran nothing. Write those words; the field is never left out.
+3. **Result** — `done` or `blocked`, and field 2 decides which, not you. `done` requires the first form **with `exit 0`**. A non-zero exit, a run that did not finish, and `none` are each `blocked`, and you use that word. "Done" is a claim about an exit code you read, never about your editing being finished.
+4. **History** — the path to your log under `$OUT_HISTORY`.
+
+Report a failing exit code exactly as it came back. Do not narrow the command until it passes, and do not drop the field: a report with no verification line is an incomplete report, and the orchestrator will not commit on one (`agents/orchestrator.md` Step 3a step 5).
 
 ### Resuming Interrupted Sessions
 

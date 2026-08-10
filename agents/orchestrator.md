@@ -352,10 +352,15 @@ Process tasks top-to-bottom from the work queue. For each task:
      - Which files to touch
      - What the acceptance criteria are
      - Reference to the source plan/issue file
-5. **Verify output.** After the agent returns:
+5. **Verify output.** After the agent returns, read its report — the verification line first, then scope.
+   - **Read the `Verification:` line.** `coder`, `ontocoder` and `bugfixer` report in one shape: the exact command run and the exit code it returned. Four cases, and there is no fifth:
+     - **`exit 0`** — proceed.
+     - **a non-zero exit** — the executor's own check failed. The task is **blocked**, not done: do not reach step 6. Go to Step 3b, whose validation run confirms the failure and carries it into the self-healing branch at Step 3b step 2. Do not commit ahead of that.
+     - **`did not finish` or `none`** — nothing has been checked, so there is no failure to route anywhere. Run the project's validation yourself first, then re-enter this list with the exit code your own run returned.
+     - **the line is absent** — the report is incomplete. The word "done" is not a verification result and is never read as one. Either re-dispatch the executor for that one missing line, or run the project's validation yourself as in the previous case. Never advance to Step 3b's commit on a report whose verification you cannot name.
    - Check that it modified only files within its declared scope
    - If out-of-scope files were modified, revert them with `git checkout HEAD -- <file>`, emit `revert` event, and file an issue at `$OUT_ISSUE` for the correct agent
-6. **Mark complete.**
+6. **Mark complete.** A task the verification line left blocked does not reach this step: leave its source marker at `_p_`, emit `task_error`, **REFRESH DASHBOARD** showing it as `[ERROR]`, and carry the executor's stated reason into the queue entry.
    - Update the source file per `fusion-workbench-conventions.md` (plan step to `[DONE]`, issue: append resolution note and rename marker to `_c_`)
    - Update `$TASKLIST` if it exists (mark task `[x]`)
    - Emit `task_done` event
