@@ -299,7 +299,9 @@ A map write can also fail to land: a read-only mount, a full disk, a workbench y
 longer have write access to. When the replacement fails, the command names the file on
 stderr, prints **no** `STATUS: migrated` or `STATUS: forgotten` line, and exits 1. Take
 that at face value — the map on disk is exactly as it was before, and the entry count a
-successful run would have reported was never true.
+successful run would have reported was never true. (`map --rebuild` reports the same
+failure differently: it prints `STATUS: failed (0 rebuilt)` and exits 1, because every one
+of its outcomes ends on a status line. Same fact, said rather than withheld.)
 
 The split matters because the fold can cost you a UUID. The old scheme could record one
 record **twice**, once per state it was pushed in, which means two Plane issues. Both
@@ -319,9 +321,22 @@ bin/fusion-plane map --rebuild
 
 That reads `GET issues/` once, reads the embedded `fusion-key:` back out of each issue
 body, and replaces `.plane-map.json`. It writes **only** the map — it creates and updates
-nothing on the board — but it is not free of the wire and it needs the API key. If the
-key is absent or Plane is unreachable it changes nothing and exits 10: a rebuild from an
-unanswered request would empty your map.
+nothing on the board — but it is not free of the wire and it needs the API key. It acts on
+the whole map and takes no key: `map --rebuild <some-key>` is refused as a usage error
+rather than read as a request to rebuild that one entry.
+
+It ends on one of three `STATUS:` lines, and **both failures leave the map exactly as it
+was** — a rebuild from an answer you did not get would empty it:
+
+| Line | Exit | What happened |
+|---|---|---|
+| `STATUS: rebuilt (<n> entries)` | 0 | The map was replaced from the board. |
+| `STATUS: deferred (0 rebuilt) — …` | 10 | Plane could not be read: the API key is absent, the instance is unreachable, it answered with a non-2xx, or the answer was empty or would not parse. |
+| `STATUS: failed (0 rebuilt) — …` | 1 | Something local: the config is missing or still unfilled, a `--fixture` path is not there, or the map could not be written (read-only mount, full disk). |
+
+The split is the same one `map --prune` makes. A "we could not tell" answer from Plane is
+deferred, never reported as your config being wrong, so a script that branches on the exit
+code is sent to look at the right side of the wire.
 
 To see what a push would do *after* a rebuild, run the two commands one after the other:
 
@@ -336,6 +351,13 @@ leaving you looking at no output and no reason for it. Run the first, read what 
 reports, then run the second. (`push --rebuild-map` performs the same rebuild and then
 goes on to reconcile, which writes to the board. Use it when you want the push; use
 `map --rebuild` when you want the map.)
+
+`push --rebuild-map` stops if that rebuild fails, and pushes nothing. You reached for it
+because the map is stale, and the reconcile reads exactly that map to decide per artifact
+whether to update an existing Plane issue or create a new one — so running it on a map the
+rebuild could not replace creates duplicates of issues already on your board. It exits with
+the rebuild's own status, says on stderr that the reconcile did not run, and leaves both
+the map and the board untouched. Fix what the rebuild reported, then run the push again.
 
 A rebuild folds legacy keys the same way `map --migrate` does and, since it reads the
 keys back out of Plane's own issue bodies, can meet the same duplicate pair there. It

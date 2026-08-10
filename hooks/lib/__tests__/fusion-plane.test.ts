@@ -1,5 +1,7 @@
 import { describe, it, expect, afterEach } from "vitest";
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
+import { createServer, type Server } from "node:http";
+import type { Socket } from "node:net";
 import {
   mkdtempSync,
   mkdirSync,
@@ -985,6 +987,76 @@ describe("fusion-plane push --rebuild-map: a collision is decided, not raced", (
     expect(r.stderr, "but it is still reported").toContain("SKIPPED");
   });
 
+  it("an id-less entry the current map holds is diagnosed once, and not as an orphan", () => {
+    // The guard that drops id-less entries at extraction computes `orphans` from
+    // what SURVIVED it, so a key it dropped — and that the current map holds —
+    // landed in both sets: once as SKIPPED, and once on the orphan line, whose text
+    // asserts the entry "carries no fusion-key in Plane". False for this one: the
+    // key is how the rebuild found the issue at all. One entry, two reports, one of
+    // them untrue (issue 260810-1032).
+    const wb = freshWorkbench();
+    const key = issueKey(OPEN_ISSUE);
+    writeFileSync(
+      join(wb, ".plane-map.json"),
+      JSON.stringify({
+        [key]: {
+          plane_id: "OLD-UUID",
+          kind: "fusion-issue",
+          last_state: "Todo",
+          last_pushed: "2026-07-19T00:00:00Z",
+          origin: "seed",
+        },
+      }),
+    );
+    const fixture = join(wb, "issues.json");
+    writeFileSync(
+      fixture,
+      JSON.stringify({
+        results: [{ updated_at: "2026-08-01T00:00:00Z", description_html: `<p>fusion-key: ${key}<br></p>` }],
+      }),
+    );
+    const r = run(wb, "map", "--rebuild", "--fixture", fixture);
+
+    expect(r.stderr, "the reason it was dropped is still reported").toContain("SKIPPED");
+    expect(r.stderr, "and the untrue second reason is not").not.toContain("carries no fusion-key");
+    // For a seed-origin entry the false line costs more than a duplicate: it also
+    // prints the re-bind, blaming a `fusion-key:` that is in fact present.
+    expect(r.stderr, "so no re-bind is offered for a binding that was never lost that way").not.toContain(
+      "seed --record-origin",
+    );
+  });
+
+  it("an entry the rebuild genuinely could not see is still reported as an orphan", () => {
+    // The over-application control for the subtraction above: only the SKIPPED
+    // keys come out of the orphan set. A map entry whose Plane issue really does
+    // carry no embedded key — a seed binding, the case the orphan line was written
+    // for — must still be named, with the way back.
+    const wb = freshWorkbench();
+    writeFileSync(
+      join(wb, ".plane-map.json"),
+      JSON.stringify({
+        [CIRCLE]: {
+          plane_id: "plane-uuid-humans-story",
+          kind: "circle",
+          last_state: "Todo",
+          last_pushed: "2026-07-19T00:00:00Z",
+          origin: "seed",
+        },
+      }),
+    );
+    const fixture = join(wb, "issues.json");
+    writeFileSync(
+      fixture,
+      JSON.stringify({
+        results: [{ id: "plane-uuid-other", description_html: `<p>fusion-key: ${LEGACY_OPEN}<br></p>` }],
+      }),
+    );
+    const r = run(wb, "map", "--rebuild", "--fixture", fixture);
+    expect(r.stderr).toContain("carries no fusion-key");
+    expect(r.stderr).toContain("plane-uuid-humans-story");
+    expect(r.stderr).toContain("seed --record-origin");
+  });
+
   it("a genuine two-issue collision is untouched by the id guard", () => {
     // The over-application failure for this fix, pinned: both issues carry real
     // UUIDs, so nothing is skipped and the collision reports in full.
@@ -1085,6 +1157,10 @@ describe("fusion-plane map --rebuild: the rebuild without the reconcile", () => 
     expect(r.status).toBe(EXIT_DEFERRED);
     expect(readFileSync(mapPath(wb), "utf-8"), "an outage must never cost map entries").toBe(before);
     expect(r.stdout + r.stderr).toContain("map not changed");
+    expect(
+      r.stdout,
+      "the outcome the doc DOES name still arrived without the status line its siblings print",
+    ).toContain("STATUS: deferred (0 rebuilt)");
   });
 
   it("reads the fixture from FUSION_PLANE_ISSUES_FIXTURE too", () => {
@@ -1110,6 +1186,62 @@ describe("fusion-plane map --rebuild: the rebuild without the reconcile", () => 
     const r = run(freshWorkbench(), "map", "--fixture", "/nonexistent.json");
     expect(r.status).toBe(EXIT_USAGE);
     expect(r.stderr).toContain("--fixture");
+  });
+
+  it("a key beside a whole-map mutator is refused, not accepted and ignored", () => {
+    // `map --forget <key>` takes a key and bare `map <key>` prints one, so
+    // `map --rebuild <key>` reads like a scoped rebuild. It is the opposite — a
+    // whole-map replacement — and in the reviewer's run the named key was the one
+    // entry it destroyed, with no usage error and exit 0. The refusal comes before
+    // any work, so nothing is written on the way to it.
+    const wb = freshWorkbench();
+    writeFileSync(mapPath(wb), JSON.stringify(collidingLegacyMap, null, 2) + "\n");
+    const before = readFileSync(mapPath(wb), "utf-8");
+
+    const r = run(wb, "map", "--rebuild", "--fixture", fixtureFor(wb), "b::issues/2");
+
+    expect(r.status).toBe(EXIT_USAGE);
+    expect(r.stderr, "the ignored argument is named back at the operator").toContain("b::issues/2");
+    expect(readFileSync(mapPath(wb), "utf-8"), "and nothing was rebuilt on the way out").toBe(before);
+
+    // All three mutators, not just the newest: --prune and --migrate share the
+    // shape, and the check is placed where it reaches every one of them.
+    expect(run(wb, "map", "--prune", "b::issues/2").status).toBe(EXIT_USAGE);
+    expect(run(wb, "map", "--migrate", "b::issues/2").status).toBe(EXIT_USAGE);
+    // And the two forms that legitimately carry a key still work.
+    expect(run(wb, "map", "b::issues/2").status, "bare `map <key>` is inspection").toBe(0);
+    expect(
+      run(wb, "map", "--forget", issueKey(OPEN_ISSUE)).status,
+      "--forget takes its key through the flag, so it is untouched",
+    ).toBe(0);
+  });
+
+  it("every outcome ends on a STATUS line, and a local fault is not reported as a deferral", () => {
+    // Four failure paths inside rebuild_map returned through `|| return "$?"`
+    // before the STATUS printf, so the run ended on an err line and stdout was
+    // empty — and they all returned EXIT_CONFIG, telling a script branching on the
+    // code that the local config was broken when the fault was Plane's answer.
+    // Here: a fixture that is not there IS local, so it stays exit 1, and it says so.
+    const wb = freshWorkbench();
+    const r = run(wb, "map", "--rebuild", "--fixture", join(wb, "not-there.json"));
+    expect(r.status, "a missing fixture is the operator's own input — a local fault").toBe(1);
+    expect(r.stdout, "and the run still ends on a status line").toContain("STATUS: failed (0 rebuilt)");
+    expect(r.stderr).toContain("fixture not found");
+  });
+
+  it("an unfilled config ends on a STATUS line too, rather than on stderr alone", () => {
+    const wb = freshWorkbench();
+    const cfg = join(wb, "plane.config.yaml");
+    writeFileSync(
+      cfg,
+      readFileSync(cfg, "utf-8").replace(
+        /^project_id:.*$/m,
+        'project_id: "00000000-0000-0000-0000-000000000000"',
+      ),
+    );
+    const r = run(wb, "map", "--rebuild");
+    expect(r.status).toBe(1);
+    expect(r.stdout).toContain("STATUS: failed (0 rebuilt)");
   });
 
   it("--rebuild is mutually exclusive with the other mutators", () => {
@@ -1151,6 +1283,281 @@ describe("fusion-plane map --rebuild: the rebuild without the reconcile", () => 
     expect(readFileSync(mapPath(wb), "utf-8"), "and the plan wrote nothing").toBe(afterRebuild);
     expect(existsSync(outbox(wb)), "neither half touched the board").toBe(false);
   });
+});
+
+// ===========================================================================
+// 2e. The live rebuild, against a Plane that ANSWERS
+//     (issue 260810-1032 …push-rebuild-map-swallows-a-failed-rebuild-and-
+//      reconciles-against-the-stale-map).
+//
+//     Every live-path case above drives the unroutable `.test` host, so the run
+//     dies at its first curl and no branch behind that curl is ever reached.
+//     That is exactly why the defect below was invisible to this suite for as
+//     long as it existed: with Plane unreachable the rebuild fails, `fetch_states`
+//     fails immediately after it, and the push defers for its OWN reason — exit 10
+//     whether or not the rebuild's status was propagated or discarded.
+//
+//     The defect only shows against a Plane that answers: one whose `GET issues/`
+//     answers in a way `rebuild_map` refuses (HTTP 200, empty body) while `states/`,
+//     `labels/` and the writes all work. So these cases run a real HTTP server on
+//     127.0.0.1 and point the fixture config's base_url at it. Nothing in the
+//     helper is stubbed: `plane_curl`'s whole chain runs — `zsh -ic`, the API-key
+//     header, curl, the status/body split. zsh and curl are declared dependencies
+//     of `bin/fusion-plane`; where one is missing the reachability assertion in the
+//     positive control fails by name rather than skipping the coverage.
+// ===========================================================================
+describe("fusion-plane: the live rebuild, against a reachable Plane", () => {
+  interface MockPlane {
+    port: number;
+    requests: string[];
+    /** POSTs that create an issue on the board — the writes a rebuild exists to prevent. */
+    creates: () => string[];
+    close: () => Promise<void>;
+  }
+
+  /**
+   * A mock Plane. `issues` decides only what `GET issues/?per_page=100` answers,
+   * which is the one request `rebuild_map` makes:
+   *   "empty"     — HTTP 200 with an EMPTY body. `rebuild_map:1516` refuses it
+   *                 ("the issues response was empty — map not changed"), which is
+   *                 a failed rebuild against a perfectly reachable Plane.
+   *   "one-issue" — a normal response carrying one embedded fusion-key.
+   * Every other endpoint answers normally in both cases, so the two runs differ in
+   * the rebuild's outcome and in nothing else.
+   */
+  async function startMockPlane(issues: "empty" | "one-issue"): Promise<MockPlane> {
+    const requests: string[] = [];
+    const sockets = new Set<Socket>();
+    const states = {
+      results: ["Backlog", "Todo", "In Progress", "Done", "Cancelled"].map((name, i) => ({
+        id: `state-uuid-${i}`,
+        name,
+      })),
+    };
+    const server: Server = createServer((req, res) => {
+      const path = (req.url ?? "").split("?")[0];
+      requests.push(`${req.method} ${path}`);
+      const send = (code: number, body?: unknown) => {
+        res.writeHead(code, { "Content-Type": "application/json" });
+        res.end(body === undefined ? "" : JSON.stringify(body));
+      };
+      req.resume();
+      req.on("end", () => {
+        if (req.method === "GET" && path.endsWith("/issues/")) {
+          if (issues === "empty") return send(200);
+          return send(200, {
+            results: [
+              {
+                id: "already-on-board",
+                updated_at: "2026-08-01T00:00:00Z",
+                description_html: `<p>fusion-key: ${issueKey(OPEN_ISSUE)}<br></p>`,
+              },
+            ],
+          });
+        }
+        if (req.method === "GET" && path.endsWith("/states/")) return send(200, states);
+        if (req.method === "GET" && path.endsWith("/labels/")) return send(200, { results: [] });
+        if (req.method === "POST" && path.endsWith("/labels/")) return send(201, { id: "label-uuid" });
+        if (req.method === "POST" && path.endsWith("/issues/")) return send(201, { id: "posted-uuid" });
+        if (req.method === "PATCH") return send(200, { id: "patched-uuid" });
+        return send(200, {});
+      });
+    });
+    server.on("connection", (s) => {
+      sockets.add(s);
+      s.on("close", () => sockets.delete(s));
+    });
+    await new Promise<void>((r) => server.listen(0, "127.0.0.1", () => r()));
+    const port = (server.address() as { port: number }).port;
+    return {
+      port,
+      requests,
+      // `POST …/issues/` and nothing else: `…/issues/<id>/links/` is an attach and
+      // `…/labels/` is metadata, neither of which creates a mirrored artifact.
+      creates: () => requests.filter((q) => q.startsWith("POST ") && q.endsWith("/issues/")),
+      close: () =>
+        new Promise<void>((r) => {
+          sockets.forEach((s) => s.destroy());
+          server.close(() => r());
+        }),
+    };
+  }
+
+  /** A fixture workbench whose base_url points at the mock, holding a STALE map. */
+  function workbenchAt(port: number): string {
+    const wb = freshWorkbench();
+    const cfg = join(wb, "plane.config.yaml");
+    writeFileSync(
+      cfg,
+      readFileSync(cfg, "utf-8").replace(/^base_url:.*$/m, `base_url: "http://127.0.0.1:${port}"`),
+    );
+    // One entry, of six artifacts — a map that is out of date, which is the
+    // premise of typing --rebuild-map at all.
+    writeFileSync(
+      join(wb, ".plane-map.json"),
+      JSON.stringify(
+        {
+          [issueKey(OPEN_ISSUE)]: {
+            plane_id: "already-on-board",
+            kind: "fusion-issue",
+            last_state: "Backlog",
+            last_pushed: "2026-08-01T00:00:00Z",
+          },
+        },
+        null,
+        2,
+      ) + "\n",
+    );
+    return wb;
+  }
+
+  /**
+   * Async, unlike `run()` above, and it has to be: the mock server lives in THIS
+   * process, so a `spawnSync` would block the event loop that has to answer the
+   * helper's curl — the run and the server would deadlock rather than fail.
+   *
+   * PLANE_API_KEY is exported so `plane_key_present`'s `zsh -ic` sees a non-empty
+   * value and the live gate opens. The value is a literal, never a credential:
+   * the mock does not read the header.
+   */
+  function runLive(workbench: string, ...args: string[]): Promise<RunResult> {
+    return new Promise((resolve) => {
+      const child = spawn(fusionPlane, args, {
+        env: {
+          ...process.env,
+          FUSION_PLANE_WORKBENCH: workbench,
+          PLANE_API_KEY: "mock-key-not-a-secret",
+        },
+      });
+      let stdout = "";
+      let stderr = "";
+      child.stdout.on("data", (d) => (stdout += d));
+      child.stderr.on("data", (d) => (stderr += d));
+      child.on("close", (status) => resolve({ status: status ?? -1, stdout, stderr }));
+    });
+  }
+
+  const mapPath = (wb: string) => join(wb, ".plane-map.json");
+
+  it(
+    "the positive control: a rebuild that reaches Plane lands, and the push then reconciles",
+    async () => {
+      // This case exists so the failure case below cannot pass for the wrong
+      // reason. It proves the mock is genuinely reachable through the real
+      // plane_curl chain: the rebuild reads `GET issues/`, binds the returned
+      // UUID, and the reconcile that follows writes to the board.
+      const mock = await startMockPlane("one-issue");
+      try {
+        const wb = workbenchAt(mock.port);
+        const r = await runLive(wb, "push", "--circle", CIRCLE, "--rebuild-map");
+
+        expect(
+          mock.requests.some((q) => q.endsWith("/issues/") && q.startsWith("GET")),
+          "the rebuild must reach the mock — if it did not, zsh or curl is missing and nothing below is measuring the helper",
+        ).toBe(true);
+        expect(r.stderr, "the rebuild wrote the map it read off the board").toContain(
+          "rebuild-map: wrote",
+        );
+        expect(r.status).toBe(0);
+        expect(r.stdout).toContain("STATUS: ok");
+        expect(mock.creates().length, "the reconcile ran and created the unmapped artifacts").toBeGreaterThan(0);
+      } finally {
+        await mock.close();
+      }
+    },
+    120_000,
+  );
+
+  it(
+    "a failed rebuild cancels the reconcile: nothing reaches the board, and it does not report ok",
+    async () => {
+      // The defect, measured. Plane answers `GET issues/` with HTTP 200 and an
+      // empty body, so the rebuild refuses and the map is untouched — while
+      // `states/`, `labels/` and the writes all work, so the push COULD proceed.
+      // Before the fix it did: `rebuild_map || true` discarded the status, the
+      // reconcile ran against the map the rebuild had been asked to replace, five
+      // artifacts it did not know about were POSTed as new Plane issues, and the
+      // run printed `STATUS: ok (6 pushed)` and exited 0.
+      const mock = await startMockPlane("empty");
+      try {
+        const wb = workbenchAt(mock.port);
+        const before = readFileSync(mapPath(wb), "utf-8");
+        const r = await runLive(wb, "push", "--circle", CIRCLE, "--rebuild-map");
+
+        expect(r.stderr, "the rebuild really did run and really did refuse").toContain(
+          "the issues response was empty",
+        );
+        expect(r.status, "a push whose rebuild failed must not exit 0").not.toBe(0);
+        expect(r.stdout, "and must not claim a successful push").not.toContain("STATUS: ok");
+        expect(
+          mock.creates(),
+          "not one artifact may be created against the map the rebuild was asked to replace",
+        ).toEqual([]);
+        expect(readFileSync(mapPath(wb), "utf-8"), "and the stale map is left exactly as it was").toBe(
+          before,
+        );
+        expect(r.stderr, "the operator is told the reconcile did not run").toContain(
+          "the reconcile did NOT run",
+        );
+        expect(
+          existsSync(join(wb, ".plane-outbox.jsonl")),
+          "nor are the stale map's create/update answers queued for a human to execute",
+        ).toBe(false);
+      } finally {
+        await mock.close();
+      }
+    },
+    120_000,
+  );
+
+  it(
+    "the two spellings of one rebuild agree on a failure",
+    async () => {
+      // The divergence class itself. `map --rebuild` and `push --rebuild-map` end
+      // in the same `rebuild_map`, and the comment above it claimed there was "no
+      // second implementation to keep in step" — while one caller propagated the
+      // failure and the other discarded it. Both are pinned here against the same
+      // answering Plane, so a caller that starts swallowing again fails this.
+      const mock = await startMockPlane("empty");
+      try {
+        const mapRun = await runLive(workbenchAt(mock.port), "map", "--rebuild");
+        const pushRun = await runLive(workbenchAt(mock.port), "push", "--circle", CIRCLE, "--rebuild-map");
+
+        expect(mapRun.status, "map --rebuild stops on a failed rebuild").not.toBe(0);
+        expect(pushRun.status, "and so does push --rebuild-map").not.toBe(0);
+        expect(mock.creates(), "neither of them wrote to the board").toEqual([]);
+      } finally {
+        await mock.close();
+      }
+    },
+    120_000,
+  );
+
+  it(
+    "a Plane answer it could not read is DEFERRED, not reported as a broken local config",
+    async () => {
+      // `EXIT_CONFIG` is defined in the helper's own table as "missing/invalid
+      // config, bad usage of a live command". A 2xx with an empty body is none of
+      // those: the config is fine, the invocation is fine, and Plane answered —
+      // just not in a way the rebuild could use. `map_prune`'s C4 doctrine one
+      // function above already settles that class ("every 'we could not tell'
+      // answer leaves the entry alone and returns EXIT_DEFERRED), and it is the
+      // same question asked of the same board (issue 260810-1032).
+      const mock = await startMockPlane("empty");
+      try {
+        const r = await runLive(workbenchAt(mock.port), "map", "--rebuild");
+        expect(r.status, "a Plane-side condition is a deferral, not a config error").toBe(
+          EXIT_DEFERRED,
+        );
+        expect(r.stdout, "and it ends on a status line like every sibling map command").toContain(
+          "STATUS: deferred (0 rebuilt)",
+        );
+      } finally {
+        await mock.close();
+      }
+    },
+    120_000,
+  );
 });
 
 // ===========================================================================

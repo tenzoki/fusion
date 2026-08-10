@@ -1419,6 +1419,20 @@ emit_plan() {
 # The losers are returned in `.collisions` and reported by the caller; `.orphans`
 # carries the entries the CURRENT map has that this rebuild did not find, because
 # a rebuild replaces the map wholesale (see rebuild_map).
+#
+# `.orphans` SUBTRACTS `.skipped` as well as the usable keys, and that second
+# subtraction is what keeps the two diagnostics from contradicting each other. It
+# is computed from `$usable`, i.e. from what survived the id guard, so without it a
+# key the guard dropped — and that the current map holds — lands in both sets: once
+# as SKIPPED ("an issue the response does not identify"), and once on the orphan
+# line, whose text asserts the entry "carries no fusion-key in Plane". That second
+# statement is false for it. The key is precisely how the rebuild found the issue at
+# all; it was dropped for the missing id, which the line above already said. For a
+# seed-origin entry the contradiction costs more than a duplicate line: the orphan
+# branch also prints the `seed --record-origin` re-bind, telling the operator their
+# story's binding was lost to a missing `fusion-key:` that is in fact present
+# (issue 260810-1032). Subtracted, not suppressed: the SKIPPED line still names
+# every one of those keys, so the entry is diagnosed once and truthfully.
 JQ_REBUILD_MAP="$JQ_STABLE_KEY"'
   ($cur // {}) as $current
   | (.results? // .) as $issues
@@ -1448,7 +1462,7 @@ JQ_REBUILD_MAP="$JQ_STABLE_KEY"'
       collisions: ( map(select((.lost|length) > 0)
                         | {key: .key, kept: .win.id, dropped: .lost}) ),
       skipped: $skipped,
-      orphans: ( ( ($current|keys) - map(.key) )
+      orphans: ( ( ($current|keys) - map(.key) - ($skipped | map(.key)) )
                  | map({ key: ., plane_id: $current[.].plane_id,
                          origin: ($current[.].origin // "fusion") }) ) }'
 
@@ -1472,9 +1486,18 @@ JQ_REBUILD_REPORT='
 # seam; no curl, no key needed).
 #
 # TWO commands end here and share this body exactly: `map --rebuild`, which stops
-# when this returns, and `push --rebuild-map`, which continues into the reconcile.
-# One rebuild, two things done with it — there is no second implementation to keep
-# in step (issue 260810-0939).
+# when this returns, and `push --rebuild-map`, which continues into the reconcile
+# ONLY IF IT RETURNED 0. One rebuild, two things done with it — there is no second
+# implementation to keep in step (issue 260810-0939).
+#
+# That last clause was written before it was true. The body was shared; the one
+# branch where a failure is decided was not — `map_rebuild` propagated the status
+# and `cmd_push` discarded it with `|| true`, so the same failed rebuild stopped
+# one command and let the other reconcile against the very map the rebuild had
+# been asked to replace, reporting `STATUS: ok` (issue 260810-1032). Both callers
+# now propagate. A shared body is not a shared contract unless the callers agree
+# on what a non-zero return means, and the comment claiming they did is what let
+# the divergence sit unread.
 #
 # A rebuild REPLACES the map; it does not merge into it. What Plane's issue bodies
 # carry is the whole of what a rebuild can know, and an entry the rebuild cannot
@@ -1488,6 +1511,18 @@ JQ_REBUILD_REPORT='
 # rebuild-from-Plane the recovery path is documented as.
 rebuild_map() {
   local fixture="${1:-}" issues_json tmp
+  # A failure to READ the issues payload is classified by where the payload came
+  # from, and this function is the only place that knows. A fixture is a local
+  # file the operator named, so an unreadable one is EXIT_CONFIG. Plane's answer
+  # is a remote one we could not interpret, so an empty or unparseable body is
+  # EXIT_DEFERRED — `map_prune`'s C4 doctrine ("every 'we could not tell' answer
+  # leaves the entry alone and returns EXIT_DEFERRED") asked of the same question
+  # one function further out. Both of them leave the map exactly as it was; what
+  # differs is who the code sends the operator to look at. Reporting a 2xx with an
+  # empty body as EXIT_CONFIG told a script branching on the exit code that the
+  # local config was broken when nothing local was (issue 260810-1032).
+  local read_fail="$EXIT_DEFERRED"
+  [ -z "$fixture" ] || read_fail="$EXIT_CONFIG"
   if [ -n "$fixture" ]; then
     [ -f "$fixture" ] || { err "rebuild-map: fixture not found: $fixture"; return "$EXIT_CONFIG"; }
     info "rebuilding .plane-map.json from fixture $fixture (embedded fusion-key)…"
@@ -1508,7 +1543,7 @@ rebuild_map() {
   [ -f "$MAP_VIEW" ] && current="$(cat "$MAP_VIEW")"
   tmp="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-rebuild.XXXXXX")"
   printf '%s' "$issues_json" | jq --argjson cur "$current" "$JQ_REBUILD_MAP" > "$tmp" 2>/dev/null \
-    || { err "rebuild-map: could not parse issues"; rm -f "$tmp"; return "$EXIT_CONFIG"; }
+    || { err "rebuild-map: could not parse issues — map not changed"; rm -f "$tmp"; return "$read_fail"; }
   # jq exits 0 on EMPTY input and writes nothing, so the status above does not say
   # the response arrived. An empty $issues_json (an empty 2xx body, an unreadable
   # fixture) would walk this whole function reporting nothing and end by replacing
@@ -1516,7 +1551,7 @@ rebuild_map() {
   if [ ! -s "$tmp" ]; then
     err "rebuild-map: the issues response was empty — map not changed"
     rm -f "$tmp"
-    return "$EXIT_CONFIG"
+    return "$read_fail"
   fi
 
   # Never silent, and named rather than counted: a UUID this rebuild does not
@@ -1535,8 +1570,11 @@ rebuild_map() {
 
   local out
   out="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-rebuild.XXXXXX")"
+  # A local fault whatever the payload's origin: `$tmp` is this function's own
+  # output, already parsed once above, so a failure here is the temp file or the
+  # filesystem under it — never Plane's answer. EXIT_CONFIG in both directions.
   jq -S '.map' "$tmp" > "$out" 2>/dev/null \
-    || { err "rebuild-map: could not parse issues"; rm -f "$tmp" "$out"; return "$EXIT_CONFIG"; }
+    || { err "rebuild-map: could not read back the rebuilt map — map not changed"; rm -f "$tmp" "$out"; return "$EXIT_CONFIG"; }
   rm -f "$tmp"
   map_put "$out" || return "$EXIT_CONFIG"
   info "rebuild-map: wrote $(jq 'length' "$MAP") entries"
@@ -1638,8 +1676,34 @@ cmd_push() {
       emit_manual_only "$want_all" "$target" "PLANE_API_KEY absent"
       return "$EXIT_DEFERRED"
     fi
+    # A FAILED REBUILD CANCELS THE RECONCILE — it does not warn and continue.
+    #
+    # The premise of `--rebuild-map` is that .plane-map.json is stale; that is the
+    # whole reason an operator types it. The reconcile below reads exactly that map
+    # to decide create-versus-update per artifact, so on a stale map every artifact
+    # it does not know about is POSTed as a NEW Plane issue — duplicating issues
+    # that already exist on the board, which is the outcome the rebuild exists to
+    # prevent. A warning does not undo a POST, so continuing-with-a-warning leaves
+    # the damage and only annotates it; not running the reconcile is the only thing
+    # that prevents it (issue 260810-1032).
+    #
+    # And it does NOT fall through to emit_manual_only either, though the two
+    # branches around it do. Those notes are computed from the map — `_manual_defer`
+    # asks `map_get_id` whether to tell the operator "update <URL>" or "create" — so
+    # writing them here would put the stale map's answers in the outbox for a human
+    # to execute by hand. Same falsehood, slower channel. The status propagates, the
+    # reason is already on stderr from rebuild_map, and nothing is queued.
     if [ "$rebuild" -eq 1 ]; then
-      rebuild_map || true
+      # Captured through `|| rc=$?`, not read after `if ! rebuild_map`: `!` inverts
+      # the pipeline, so inside that branch `$?` is 0 and the propagation would
+      # hand back success — the defect above, re-entered from the shell side.
+      local rebuild_rc=0
+      rebuild_map || rebuild_rc=$?
+      if [ "$rebuild_rc" -ne 0 ]; then
+        err "push: the rebuild did not replace the map, so the reconcile did NOT run — nothing was pushed."
+        err "push:   the map on disk is the one you asked to replace; pushing against it would create duplicates of issues already on the board."
+        return "$rebuild_rc"
+      fi
     fi
     if ! fetch_states; then
       err "states/ unreachable — deferring this push (C4)."
@@ -1857,23 +1921,47 @@ PRUNE_KEYS
 # Never a rebuild "from nothing", which would empty the map on an outage. The
 # fixture path needs neither key nor network (test seam), so it runs ahead of both
 # checks.
+#
+# THREE OUTCOMES, and every one of them ends on a STATUS line. Each branch sets a
+# status and falls through to ONE tail, rather than returning where it stands: the
+# `|| return "$?"` spelling this replaces let four failure paths inside rebuild_map
+# leave the run on an `err` line and nothing on stdout, so a consumer reading stdout
+# for a status read an empty stream (issue 260810-1032). A fifth failure path added
+# below cannot skip the tail either, because there is no `return` between the
+# branches and it.
+#
+#   STATUS: rebuilt   exit 0
+#   STATUS: deferred  exit 10 — Plane could not be read; the map is untouched
+#   STATUS: failed    exit 1  — a local fault; the map is untouched
+#
+# Both failures leave the map exactly as it was, which is why "0 rebuilt" is the
+# honest count on either.
 map_rebuild() {
-  local fixture="${1:-}"
+  local fixture="${1:-}" rc=0 reason="map not changed" src=""
+  [ -z "$fixture" ] || src=", from fixture $fixture"
+
   if [ -n "$fixture" ]; then
-    rebuild_map "$fixture" || return "$?"
-    printf 'STATUS: rebuilt (%s entries, from fixture %s)\n' "$(jq 'length' "$MAP")" "$fixture"
-    return "$EXIT_OK"
+    rebuild_map "$fixture" || rc=$?
+  elif ! cfg_load; then
+    rc="$EXIT_CONFIG"; reason="config could not be read"
+  else
+    build_base
+    if ! config_valid; then
+      rc="$EXIT_CONFIG"; reason="config incomplete — see the config: lines above"
+    elif ! plane_key_present; then
+      err "map --rebuild: PLANE_API_KEY absent — a rebuild reads the board and nothing was read; map not changed"
+      rc="$EXIT_DEFERRED"; reason="key absent"
+    else
+      rebuild_map || rc=$?
+    fi
   fi
-  cfg_load     || return "$EXIT_CONFIG"
-  build_base
-  config_valid || return "$EXIT_CONFIG"
-  if ! plane_key_present; then
-    err "map --rebuild: PLANE_API_KEY absent — a rebuild reads the board and nothing was read; map not changed"
-    printf 'STATUS: deferred (0 rebuilt) — key absent\n'
-    return "$EXIT_DEFERRED"
-  fi
-  rebuild_map || return "$?"
-  printf 'STATUS: rebuilt (%s entries)\n' "$(jq 'length' "$MAP")"
+
+  case "$rc" in
+    0)                printf 'STATUS: rebuilt (%s entries%s)\n' "$(jq 'length' "$MAP")" "$src" ;;
+    "$EXIT_DEFERRED") printf 'STATUS: deferred (0 rebuilt) — %s\n' "$reason" ;;
+    *)                printf 'STATUS: failed (0 rebuilt) — %s\n' "$reason" ;;
+  esac
+  return "$rc"
 }
 
 cmd_map() {
@@ -1906,6 +1994,21 @@ cmd_map() {
   # otherwise dump the map and exit 0, reporting a rebuild that never ran.
   if [ -n "$fixture" ] && [ "$want_rebuild" -eq 0 ]; then
     err "map: --fixture belongs to --rebuild"
+    return "$EXIT_USAGE"
+  fi
+  # A KEY BESIDE A MUTATOR IS REFUSED, not accepted and ignored. The dispatch below
+  # reads `$key` only in the two inspection branches, so a key typed beside a
+  # mutator was swallowed without a word — and `map` is the one command family here
+  # where a natural key IS an argument (`map --forget <key>` takes one, bare
+  # `map <key>` prints one), so `map --rebuild <key>` reads like a scoped rebuild to
+  # anyone who has used those two. It is the opposite: a whole-map replacement, and
+  # in the measured case the named key was the single entry it destroyed
+  # (issue 260810-1032). Refused here, with the other argument checks and before
+  # `resolve_workbench`, so the refusal costs nothing and covers all three mutators
+  # rather than the newest one. `--forget` is unaffected — its key arrives through
+  # the flag, never as a bare positional.
+  if [ -n "$key" ] && [ "$mutators" -gt 0 ]; then
+    err "map: unexpected key '$key' — --prune, --migrate and --rebuild act on the whole map and take no key; --forget takes its key through the flag"
     return "$EXIT_USAGE"
   fi
   # The env twin is read only where it means something, so exporting it cannot
@@ -2173,7 +2276,13 @@ Subcommands:
                                    reading the embedded fusion-key back out of
                                    description_stripped / _html / description,
                                    THEN reconcile (a live run: it writes to the
-                                   board). --fixture <json> rebuilds from a
+                                   board). A rebuild that FAILS cancels the
+                                   reconcile: nothing is pushed, nothing is
+                                   queued, and the rebuild's own exit code comes
+                                   back. Pushing against the map the rebuild was
+                                   asked to replace would create duplicates of
+                                   issues already on the board.
+                                   --fixture <json> rebuilds from a
                                    captured `GET issues/` response instead of the
                                    wire (test seam); the reconcile still follows.
                                    NOT combinable with --plan: a rebuild replaces
@@ -2207,11 +2316,23 @@ Subcommands:
                         `push --rebuild-map` performs, without the reconcile that
                         follows it there, so a plan can be computed against a
                         rebuilt map without writing to the board. Reads Plane
-                        (GET issues/), writes only the map: it needs the key, and
-                        an unreachable Plane or an absent key changes NOTHING and
-                        exits 10. --fixture <json> rebuilds from a captured
-                        `GET issues/` response instead (test seam: no key, no
-                        call). Every dropped, skipped and orphaned entry is named.
+                        (GET issues/), writes only the map, and takes NO key: it
+                        acts on the whole map, so a key beside it is a usage
+                        error (2) rather than a scoped rebuild. Three outcomes,
+                        each on its own STATUS line, and both failures leave the
+                        map exactly as it was:
+                          STATUS: rebuilt  (exit 0)
+                          STATUS: deferred (exit 10) Plane could not be read —
+                            absent key, unreachable, non-2xx, or a response that
+                            was empty or would not parse.
+                          STATUS: failed   (exit 1) a local fault — config
+                            missing or unfilled, --fixture path not there, or the
+                            map could not be written.
+                        --fixture <json> rebuilds from a captured `GET issues/`
+                        response instead (test seam: no key, no call); a fixture
+                        that is missing, empty or unparseable is a local fault
+                        (exit 1), not a deferral, because no Plane was asked.
+                        Every dropped, skipped and orphaned entry is named.
   states                Resolve+print canonical → instance → UUID states.
   doctor                Report key presence, config validity, states/ reach.
 
