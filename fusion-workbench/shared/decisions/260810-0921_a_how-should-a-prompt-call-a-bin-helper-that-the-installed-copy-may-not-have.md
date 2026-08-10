@@ -2,9 +2,9 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** answered
 **Filed by:** orchestrator (session `260810-0844`, Turn 1 — triage of a defect record that names three things to decide, not one)
-**Cross-references:** `shared/issues/260810-0352_o_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` (the instance); `shared/issues/260810-0508_o_fifteen-commits-landed-with-no-plugin-version-bump.md` (the other half of the same gap); commit `2910cf6` (the call site); `CLAUDE.md` `## Conventions` (the work-tree preference and its stated residual)
+**Cross-references:** `shared/issues/260810-0352_o_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` (the instance); `shared/issues/260810-0508_*_fifteen-commits-landed-with-no-plugin-version-bump.md` (the other half of the same gap); commit `2910cf6` (the call site); `CLAUDE.md` `## Conventions` (the work-tree preference and its stated residual)
 
 ---
 
@@ -100,3 +100,33 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+---
+Reconciliation 260810-1205 (reconciler, domain `code`) — **stays `_o_`; awaiting the user.**
+
+Two citations in the header were re-pointed, not rewritten: `260810-0508` moved `_o_` → `_c_` in `ed87d87` and `260810-0939` (in the sibling record `260810-1010`) moved `_o_` → `_c_` in `7ddacbc`, so both are wildcarded to `_*_` on the precedent of `260807-0158_a_how-is-a-unique-record-filename-obtained.md`. The general problem is filed as `shared/issues/260808-0030_o_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`.
+
+The half of the gap that `260810-0508` covered is closed — v7.1.0 shipped, and `git ls-tree v7.1.0 bin/` now contains `fusion-count-sources`, absent from `v7.0.0`. The half this decision covers is untouched: `agents/orchestrator.md` Setup Step 5 still calls the helper through `$FUSION_PLUGIN_ROOT` with no branch for its absence, so the recommendation in this record (report the absence in the cascade's own `counted_by=none` vocabulary) has not been taken.
+
+---
+
+## Answer (user, session 260810-0844)
+
+**(a1) Tolerate and report.** Setup Step 5 catches the absence and reports it in the vocabulary
+the cascade already has: no measurement was taken, `counted_by=none`, the domain falls back to
+`code`, and the reason is stated in the Setup summary. That branch exists already — commit
+`31d8bb3` put it at the top of the cascade for exactly this shape — and the defect is that the
+call site emits the shell's 127 instead of reaching it.
+
+**(b) and (c) stay open.** Whether prompt-called helpers get a uniform guarded-call convention,
+and whether the work-tree preference should extend to helper resolution, both change a documented
+convention and were deliberately not settled inside a defect-fixing session. The `CLAUDE.md` line
+that the hooks do **not** get the work-tree treatment stays as it is.
+
+This answer covers the immediate case only, and is worth taking now because it makes the instance
+harmless while the class is still undecided. Note that the instance was never reproduced in this
+session: the workaround had already been applied by hand before Setup ran, which the reconciler
+measured at `ed87d87`.
+
+---
+Answered: shared/history/260810-0844-orchestrator-session.md `## Grounding revision` — recorded at the Rebalance gate, session 260810-0844. Not yet realised in code; the defect record it unblocks stays open until a commit implements it.

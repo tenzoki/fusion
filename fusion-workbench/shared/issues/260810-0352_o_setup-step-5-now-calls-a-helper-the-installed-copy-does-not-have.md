@@ -26,3 +26,16 @@ This is a different shape. The helper does not exist in the installed copy at al
 
 ---
 Decision filed: `shared/decisions/260810-0921_o_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` — the three questions this record names are on the record with options. The decision recommends taking the immediate case now (report the absence in the cascade's own `counted_by=none` vocabulary rather than emitting a shell 127) and leaving the class questions open.
+
+---
+Reconciliation 260810-1205 (reconciler, domain `code`) — **stays `_o_`; the instance no longer reproduces, the class does.**
+
+Measured at `ed87d87`:
+
+- `git ls-tree v7.0.0 bin/` does **not** contain `fusion-count-sources`; `git ls-tree v7.1.0 bin/` does. The release this session shipped is what puts the helper into an installed copy for anyone who installs or updates from here on.
+- `2910cf6` is **not** an ancestor of `v7.0.0` — confirming this record's premise rather than the guess that 7.0.0 had already shipped it.
+- The local installed copy `~/.fusion` still reports `"version": "7.0.0"` and yet already holds `bin/fusion-count-sources`, mtime `Aug 10 08:43` — one minute before this session's Setup at `08:44`. So the workaround this record names was taken by hand before the session began, which is why Setup Step 5 did not fail here.
+
+**Why it does not close.** The record's three named questions are all about the mechanism, not the instance, and all three are on the record as `shared/decisions/260810-0921_o_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`. Question 1 — does Setup Step 5 tolerate a missing helper or halt? — is unchanged in code: `agents/orchestrator.md` still names the helper through `$FUSION_PLUGIN_ROOT` with no absence branch, so the next helper added between releases reproduces this exactly. The release removed today's instance and left the shape that produced it.
+
+Closing this would also orphan the decision, which cites this record as *the instance*.

@@ -1084,3 +1084,5 @@
 {"ts":"2026-08-10T08:20:45","event":"turn_end","turn":3,"detail":"3 tasks resolved (T11 T14 T7), 4 commits, 5 records closed, 2 issues filed, 1 decision filed"}
 {"ts":"2026-08-10T08:20:45","event":"review_start","turn":3,"agent":"coderev","detail":"7f617b1..7ddacbc"}
 {"ts":"2026-08-10T08:20:45","event":"gate_hit","turn":3,"task":"T8","detail":"natural key design choice: version field vs anchored stable_key"}
+{"ts":"2026-08-10T11:57:40","event":"reconciliation","detail":"9 discrepancies; verdict review-needed; recommendation revise Grounding"}
+{"ts":"2026-08-10T11:57:40","event":"rebalance_grounding","detail":"3 decisions answered _o_ to _a_: 260810-0920 churn key, 260810-0921 helper resolution, 260810-1010 extension set"}

@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** answered
+**Status:** implemented
 **Filed by:** orchestrator (at the user's challenge, Rebalance / revise Grounding)
 **Cross-references:** `circles/260804-1205-shell-reachability-model/decisions/260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md` (the precedent, and the binding decision `rules/critical-stance.md` §4 was written from); `shared/issues/260809-2300_o_the-arithmetic-command-span-is-recognised-only-after-a-blank-so-if-and-for-defeat-it.md`; `shared/issues/260809-2044_c_...`, `260809-1110_c_...`, `260809-1111_c_...`, `260809-1548_c_...`, `260809-1226_c_...` (the five patches of session 260809-1725); `shared/issues/260809-2255_o_the-branch-policy-verification-left-an-active-halt-...`
 
@@ -123,6 +123,6 @@ Consequences accepted with it, stated so nobody has to rediscover them:
   allowed now — it was the one thing the policy had to be argued into permitting.
 - `260809-2300` (the seventh entrance) and the five patches of session 260809-1725 are moot: the
   code they corrected no longer exists.
-Implemented: <set when status moves to _i_>
+Implemented: 7598073 — `feat(hooks)!: the branch policy is deleted, and skill files stop being protected` (2026-08-09 23:51) removes `hooks/lib/git-branch-guard.ts`, `hooks/lib/shell-parse.ts`, `hooks/lib/command-word.ts` and their four test/fixture files. Verified at `ed87d87`: none of the three source files exists, and `git log --diff-filter=D` names 7598073 as the deleting commit.
 Deferred: <set when status moves to _d_>
 Superseded by: <set when status moves to _s_>

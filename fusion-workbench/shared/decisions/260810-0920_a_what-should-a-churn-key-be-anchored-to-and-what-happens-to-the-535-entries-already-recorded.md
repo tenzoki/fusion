@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** answered
 **Filed by:** orchestrator (session `260810-0844`, Turn 1 — triage of a defect record that states a decision precedes the fix)
 **Cross-references:** `shared/issues/260809-2023_o_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md` (the measurement); `shared/decisions/260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md` (measurement 7 saw one entry of this and called it a missing boundary); `hooks/tracker.ts` (the normalisation), `hooks/lib/churn.ts` (the map), `agents/orchestrator.md` and `skills/setup/SKILL.md` (the reader)
 
@@ -101,3 +101,39 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+---
+Reconciliation 260810-1205 (reconciler, domain `code`) — **stays `_o_`; awaiting the user. One number in the title has moved.**
+
+`fusion-workbench/.guard-state/churn.json` now holds **588** entries under `files`, against the **535** this record's title names. Read with `python3 -c "import json; print(len(json.load(open('fusion-workbench/.guard-state/churn.json'))['files']))"` at `ed87d87`.
+
+The title is not wrong — it was right when written, and the growth is the measurement this decision exists to settle rather than a defect in the record. It is noted here so the answer is not scoped to a number that will have moved again by the time it is given: whatever is decided about the entries already recorded has to name a rule, not a count.
+
+`shared/issues/260809-2023_o_...` (the measurement) is unchanged and correctly still `_o_` — no code moved this session, by design.
+
+---
+
+## Answer (user, session 260810-0844)
+
+**(a) The key is anchored to the workbench root.** `hooks/lib/workbench-root.ts` already resolves
+it and `hooks/lib/project-relative.ts` already does this shape of work for the guard, so the two
+subsystems stop disagreeing about what a path is.
+
+**(b) Migrate what can be rewritten.** The workbench-relative and this-checkout keys are rewritten
+to the new anchor; the entries naming other roots are dropped. This keeps the lifetime counts that
+make the Setup ranking worth reading, which clearing would have destroyed along with the evidence
+for the defect. The merge rule for two spellings of one file is left to the implementer and must
+be stated in the commit.
+
+**(c) Keep every entry, and exclude absent files from the ranking the reader sees.** The check
+moves to the read path, which runs once per Setup rather than once per write, so a deleted file
+keeps its churn history while the ranking stops being led by files nobody can open. Cost accepted:
+one `stat` per entry per Setup, and a file that still grows without bound. That growth is a
+separate question this answer does not settle.
+
+**The count is not part of the answer.** The record's title says 535, the file held 588 at
+`ed87d87`, and it will have moved again by the time this is built. The migration must be written
+against a rule, not a number.
+
+---
+Answered: shared/history/260810-0844-orchestrator-session.md `## Grounding revision` — recorded at the Rebalance gate, session 260810-0844. Not yet realised in code; the defect record it unblocks stays open until a commit implements it.

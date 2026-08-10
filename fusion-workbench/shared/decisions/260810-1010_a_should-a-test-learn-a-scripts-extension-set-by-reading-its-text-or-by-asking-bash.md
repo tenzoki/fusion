@@ -2,9 +2,9 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** answered
 **Filed by:** orchestrator (session `260810-0844`, Turn 3 — from a residual the T14 executor measured and correctly declined to patch)
-**Cross-references:** `shared/issues/260810-0749_c_the-extension-parse-guards-against-matching-nothing-but-not-against-matching-less.md` (round 1, closed by `38fe341`); `shared/issues/260810-0939_o_the-declared-but-not-parsed-guard-is-anchored-like-the-regex-so-two-drift-shapes-still-cover-less.md` (round 2, closed by `c546ef0`); `hooks/lib/__tests__/fusion-count-sources.test.ts`; `bin/fusion-count-sources`; `rules/critical-stance.md` §4
+**Cross-references:** `shared/issues/260810-0749_c_the-extension-parse-guards-against-matching-nothing-but-not-against-matching-less.md` (round 1, closed by `38fe341`); `shared/issues/260810-0939_*_the-declared-but-not-parsed-guard-is-anchored-like-the-regex-so-two-drift-shapes-still-cover-less.md` (round 2, closed by `c546ef0`); `hooks/lib/__tests__/fusion-count-sources.test.ts`; `bin/fusion-count-sources`; `rules/critical-stance.md` §4
 
 ---
 
@@ -101,3 +101,28 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+---
+
+## Answer (user, session 260810-0844)
+
+**Option 3: the script emits its own extension set.** `bin/fusion-count-sources` gains a
+documented mode whose output the test consumes, and the text parsing goes away entirely.
+
+This is the mechanism change `rules/critical-stance.md` §4 asks for, rather than a fourth anchor.
+Three rounds of tighter regex landed in one day — a magic floor, a left-anchored filter, a wider
+filter — and the fourth was already measured before the third was committed: `export`, `declare`,
+a leading separator and `printf -v` all escape, and the generalisation is that any declaration
+whose variable name is not the first token on the line escapes. Widening again starts matching the
+script's own *uses* of the variable, so the next anchor is not merely wider but wrong in a new
+direction.
+
+Sourcing the script (option 2) was rejected for the reason the record gives: its cost is
+concentrated in exactly the place that has failed three times, because running the assignments
+without the script's work reintroduces an assumption about the text.
+
+The property that closed round 1 must survive: the test may not carry a copy of the list. Consuming
+the script's own output satisfies that, since the script computes the value by running.
+
+---
+Answered: shared/history/260810-0844-orchestrator-session.md `## Grounding revision` — recorded at the Rebalance gate, session 260810-0844. Not yet realised in code; the defect record it unblocks stays open until a commit implements it.
