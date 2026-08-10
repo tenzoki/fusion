@@ -157,10 +157,13 @@ Remaining setup (after step 1 is resolved):
    - Count anticipated/active Circles (used as a hint surface; never gates execution). **The marker sits on the Circle record, not on the directory** — a Circle is `$SCAN_CIRCLES/<YYMMDD-HHMM>-<slug>/`, and its state lives in `_a_circle.md` / `_t_circle.md` inside it. Enumerate the records and read the marker from the name — one pass, no bracket expression, no glob per state:
 
      ```bash
+     [ -n "$WORKBENCH" ] && [ -n "$SCAN_CIRCLES" ] || { echo "fusion bug: WORKBENCH or SCAN_CIRCLES empty — Circle count not taken" >&2; exit 1; }
      find "$WORKBENCH/$SCAN_CIRCLES" -mindepth 2 -maxdepth 2 -name '*_circle.md' 2>/dev/null | while IFS= read -r f; do basename "$f" | sed -nE 's/^_([a-z])_.*/\1/p'; done | sort | uniq -c
      ```
 
      Substitute the `WORKBENCH` and `SCAN_CIRCLES` values from Step 2. Output is one `<count> <marker>` line per state (`2 a`, `1 t`); no Circles prints nothing. `circles_anticipated` is the `a` line's count, `circles_active` the `t` line's. `find` drives the loop so a missing or empty `circles/` yields no input and the count is zero — no unmatched glob to abort under zsh, no unexpanded pattern to miscount.
+
+     The assertion in front is the conventions file's empty-key rule (`## Path Resolution` → *Where the call belongs*) at a read site: an unsubstituted pair makes the `find` read `find "/" -mindepth 2 -maxdepth 2`, which returns nothing, and *nothing* here is indistinguishable from a workbench with no Circles — the hint is then silently withheld from a user who has a portfolio. A count that could not be taken is reported as a fusion bug, never as a zero.
 
      **The underscore marker is inert as a glob.** `_a_circle.md` matches literally — no character-class surprise, no escaping — so the enumeration above (and any per-state glob such as `*/_a_circle.md`) resolves correctly, and `find -name '_a_circle.md'` needs no special handling. The enumeration form is still preferred: it reads the marker as data in one pass. See `rules/fusion-workbench-conventions.md` `## Marker globs`.
 
@@ -565,13 +568,21 @@ After reconciler returns and any Rebalance gate is resolved, run this step if a 
    G=$(grep -m1 '^\*\*Active Circle:\*\*' "$Q" 2>/dev/null | grep -oE 'circles/[A-Za-z0-9._-]+|`[A-Za-z0-9._-]+`' | head -1 | tr -d '`' | sed 's|^circles/||')
    if [ -n "$G" ] && [ "$G" = "$(basename "$DIR")" ]; then
      P=$("$FUSION_PLUGIN_ROOT/bin/fusion-paths" orchestrator | sed -n 's/^OUT_PLAN=//p')
-     mkdir -p "$WORKBENCH/$P"
-     mv "$Q" "$WORKBENCH/$P/$(date +%y%m%d-%H%M)_c_retired-tasklist.md"
+     if [ -n "$WORKBENCH" ] && [ -n "$P" ]; then
+       mkdir -p "$WORKBENCH/$P"
+       mv "$Q" "$WORKBENCH/$P/$(date +%y%m%d-%H%M)_c_retired-tasklist.md"
+     else
+       echo "fusion bug: WORKBENCH or OUT_PLAN empty — queue not retired, left at $Q" >&2
+     fi
    fi
    rm -f fusion-workbench/.active-circle
    ```
 
    `$OUT_PLAN` is re-resolved here rather than reused from Setup, for the reason step 1 gives about the pointer: a Circle activated mid-session is not reflected in a `fusion-paths` call that ran before the activation. The re-resolution runs while the pointer still names the closing Circle, so it lands in that Circle's own plan store — which is where the queue belongs by the Origin Rule, since it was built to execute that Circle's Directive.
+
+   **Nothing is written through a key that came back empty** (`rules/fusion-workbench-conventions.md` `## Path Resolution` → *Where the call belongs*). `fusion-paths` exiting 3 or 4 prints nothing, so `sed -n 's/^OUT_PLAN=//p'` yields the empty string; an unguarded `mkdir -p "$WORKBENCH/$P"` then reads as `mkdir -p "$WORKBENCH/"`, succeeds, and the `mv` lands the queue at the **workbench root** under a `_c_` marker no scan expects. An unsubstituted `$WORKBENCH` beside it aims the same `mv` at `/`. The check repeats Setup step 2's because it has to: the Bash tool gives every call its own shell, so no value Setup resolved survives to here. It is the same assertion, in the same spelling, that `/fusion:cadence` step 8 carries for the same reason.
+
+   **The empty key skips the retirement; it does not skip the clear.** Naming the key and leaving the queue where it is costs nothing — the file is still at the root, and the next read reports it stale under row 2 of the table below. Exiting before `rm -f` would leave a renamed `_c_` record beside a live pointer, which is a closure that did not close. So the assertion sits inside the `if`, not in front of the whole command. If it fires, report it to the user as a fusion bug in the session report, in place of the retirement note.
 
    Plain `mv`, never `rm`: the queue is authored text with reasoning and acceptance wording, which is why a tracked workbench tracks it. Append two lines to the head of the moved file naming the closure that retired it and this session's history file. **The queue is retired only when its own head names the closing Circle** — a queue that names no Circle was not built on this ground and is left where it is; retiring it would destroy a valid backlog. If the retirement fired, say so in the session report: the entries that were not this Circle's are re-derivable from the records, which are the authority, but the queue's prose is not, and it is now at the path you moved it to.
 
@@ -626,13 +637,13 @@ Row 3's ordering test is the weaker one. `find -newer` compares modification tim
 
 | Site | What happens to the queue |
 |---|---|
-| Phase 4 step 4 — the pointer is cleared at closure | **Retired** in the same command, when its head names the closing Circle. See step 4. |
+| Phase 4 step 4 — the pointer is cleared at closure | **Retired** in the same command, when its head names the closing Circle *and* the keys the move writes through resolved. See step 4. |
 | `/fusion:next` step 6.3 — the pointer is written at activation | Left alone, and **said out loud** in the same command: a queue already at the root was built with no Circle active, so it is a backlog rather than this Circle's work. Retiring it would destroy a valid queue. |
 | The `_a_`→`_t_` pointer write this prompt performs directly (see **You may**) | Same as 6.3, and for the same reason. The next read of the queue reports it under row 3. |
 
 #### What this is, honestly
 
-**A convention, not an enforcement**, with one contingent exception. Nothing executes the two tables above; they are prompt text, and prompt text loses to task pressure — this project's own worked case is "Problem 11" in `CLAUDE.md`, where a "MUST" in this prompt was skipped under the urgency of a user request (`rules/critical-stance.md` §2). The exception is the retirement: *when it is performed*, the stale queue stops existing at the root, so there is nothing left to misread. That is prevention in effect, conditional on the step running at all.
+**A convention, not an enforcement**, with one contingent exception. Nothing executes the two tables above; they are prompt text, and prompt text loses to task pressure — this project's own worked case is "Problem 11" in `CLAUDE.md`, where a "MUST" in this prompt was skipped under the urgency of a user request (`rules/critical-stance.md` §2). The exception is the retirement: *when it is performed*, the stale queue stops existing at the root, so there is nothing left to misread. That is prevention in effect, conditional on the step running at all — and on the two keys it writes through resolving, since an empty one now skips the move rather than misdirecting it.
 
 **The prevention half is incomplete, and its gap is in the producer.** Retirement fires only for a queue whose head names its Circle, and `agents/taskplanner.md` does not mandate that line — the queue measured on 260807 carried it, the one built on 260810 does not. A queue that never recorded its ground cannot have it recovered: which Circle a queue was *built for* is not decidable from its text, only from a stamp the producer chose to write (`rules/critical-stance.md` §4 — when the question is undecidable from the available inputs, the mechanism changes, not the approximation). Filed as `260810-0431_o_the-work-queue-does-not-record-the-ground-it-was-built-on.md` in `$SCAN_ISSUES`. Until that lands, rows 3 and 4 carry the headerless case with the weaker ordering test, and this section says so rather than reading as coverage it does not have.
 
@@ -829,7 +840,7 @@ Overwrite `agentstate.yaml` at each of these transitions (same cadence as the li
 
 Two records did **not** freeze in any of the four. `orchestrator-events.jsonl` kept up every time, because emitting an event is a call that either happens or visibly does not; and git kept up, because a commit is the work itself rather than a note about it. The drift check reads those two and prints each bookkeeping surface next to the record that can contradict it.
 
-**Run it in the same command as every boundary event emission** — `turn_start` (Phase 2), `turn_end` (Step 3e) and `session_end` (Cleanup) — and once more at Setup Step 1 when a prior session's state file is found. Riding those emissions is the design, not a convenience: a *separate* obligation at the Turn boundary is precisely what got skipped four times, so the check is attached instead to the one call that empirically never was. Run it from the workbench root, with `WORKBENCH` and `SCAN_CIRCLES` as Step 2 resolved them:
+**Run it in the same command as every boundary event emission** — `turn_start` (Phase 2), `turn_end` (Step 3e) and `session_end` (Cleanup) — and once more at Setup Step 1 when a prior session's state file is found. Riding those emissions is the design, not a convenience: a *separate* obligation at the Turn boundary is precisely what got skipped four times, so the check is attached instead to the one call that empirically never was. Run it from the workbench root, with `WORKBENCH` and `SCAN_CIRCLES` as Step 2 resolved them. If either came back empty the Circle row is **named as unchecked** rather than dropped: a drift check that exists to catch a silent skip must not perform one (`rules/fusion-workbench-conventions.md` `## Path Resolution` → *Where the call belongs*).
 
 ```bash
 S=fusion-workbench/agentstate.yaml
@@ -842,7 +853,13 @@ row() { printf '  %-22s surface=%-16s record=%s\n' "$1" "$2" "$3"; }
 H0=$(y git_head_at_start); HF=$(y history_file); CIRC=$(cat fusion-workbench/.active-circle 2>/dev/null)
 FROM=$(grep -n '"event":"session_start"' "$E" 2>/dev/null | tail -1 | cut -d: -f1)
 TURNS=$(tail -n "+${FROM:-1}" "$E" 2>/dev/null | grep -c '"event":"turn_start"')
-[ -n "$CIRC" ] && REC=$(find "$WORKBENCH/$SCAN_CIRCLES/$CIRC" -maxdepth 1 -name '*_circle.md' 2>/dev/null | head -1)
+if [ -n "$CIRC" ]; then
+  if [ -n "$WORKBENCH" ] && [ -n "$SCAN_CIRCLES" ]; then
+    REC=$(find "$WORKBENCH/$SCAN_CIRCLES/$CIRC" -maxdepth 1 -name '*_circle.md' 2>/dev/null | head -1)
+  else
+    echo "fusion bug: WORKBENCH or SCAN_CIRCLES empty — Circle Turn log row not checked" >&2
+  fi
+fi
 
 row "progress.commits" "$(y commits)" "$(git rev-list --count "$H0..HEAD" 2>/dev/null || echo '?') (git $H0..HEAD)"
 row "progress.turn" "$(y turn)" "$TURNS (turn_start events this session)"
