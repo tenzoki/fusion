@@ -13,6 +13,8 @@ The user invoked `/fusion:circle-stash [reason]`. This skill freezes the complet
 
 The shared store is the deliberate exception: it belongs to no Circle and is never captured (`rules/workbench-stash-and-lock.md` `## Stashes` → What stash does NOT touch). Step 4 surfaces this when the Circle's record cites a spec or plan that lives there.
 
+**Two captures, two jobs.** The workbench is captured by copy and by move into the stash directory; the git stash captures the user's uncommitted source changes and nothing from the workbench (Step 7.6). One thing is never taken twice, and `--include-untracked` never reaches the stash directory this skill just wrote.
+
 The skill writes nothing outside the stash directory, the workbench root files it relocates, and a single `circle_stashed` event line. Every mutation is gated by an explicit user confirmation in Step 6.
 
 **Invocation forms:**
@@ -43,7 +45,10 @@ Derive the git root. The workbench is anchored to the directory setup ran in; ev
 ```bash
 PROJECT_ROOT="$(dirname "$WORKBENCH")"
 STASH_STORE="$WORKBENCH/stashes"
+WB_NAME="$(basename "$WORKBENCH")"
 ```
+
+`WB_NAME` is the workbench directory's own name, and it is derived rather than written out because the git commands below have to exclude the workbench from the git stash (Step 7.6). Read relative to `$PROJECT_ROOT`, which is where every git command in this skill runs, that name is exactly the pathspec git needs.
 
 ## Step 2 — Pre-flight: an active Circle must exist
 
@@ -127,12 +132,14 @@ Gather the facts to show the user before any mutation runs. None of these reads 
   fi
   ```
 
-- **Git status.**
+- **Git status.** Counted with the workbench excluded, because the workbench is excluded from the git stash (Step 7.6) — a count that included it would promise the user that lines are travelling which are not.
 
   ```bash
-  GIT_DIRTY_LINES="$(cd "$PROJECT_ROOT" && git status --porcelain 2>/dev/null | wc -l | tr -d ' ')"
+  GIT_DIRTY_LINES="$(cd "$PROJECT_ROOT" && git status --porcelain -- ':/' ":(exclude)$WB_NAME" 2>/dev/null | wc -l | tr -d ' ')"
   HEAD_SHORT="$(cd "$PROJECT_ROOT" && git rev-parse --short HEAD 2>/dev/null)"
   ```
+
+  `git status` accepts this pathspec in every workbench configuration, including an ignored workbench — unlike the stash push below, which is why only that one needs a branch.
 
 - **Stash id.** The Circle directory is named `YYMMDD-HHMM-<slug>`; the stash id is `YYMMDD-HHMM-<slug>` with the **current** time, so multiple stashes of the same Circle stay distinguishable.
 
@@ -164,7 +171,7 @@ Present the preview block, action-first:
 > - **Directive:** `<DIRECTIVE_LINE>`
 > - **Turn:** `<TURN_N>/<TURN_MAX>` (oder "keine Sitzung im Flug", wenn `HAS_AGENTSTATE=false`)
 > - **Wandert mit:** das ganze Circle-Verzeichnis samt Spec, Plan, Issues, Entscheidungen, Protokollen, Reviews und Analysen. Dazu `agentstate.yaml` (falls vorhanden), die Aufgabenliste (falls vorhanden) und der Stand des Dashboards.
-> - **Arbeitsbaum:** `<GIT_DIRTY_LINES>` nicht committete Zeile(n), gesichert per `git stash push --include-untracked`.
+> - **Arbeitsbaum:** `<GIT_DIRTY_LINES>` nicht committete Zeile(n) außerhalb der workbench, gesichert per `git stash push --include-untracked`. Die workbench selbst wandert nicht in den git-Stash: was von ihr gebraucht wird, liegt kopiert im Stash-Verzeichnis. Nicht committete Änderungen an workbench-Dateien bleiben also liegen, wo sie sind.
 > - **Stash-Kennung:** `<STASH_ID>`
 
 Add these two lines only when they apply:
@@ -264,13 +271,19 @@ rm -f "$WORKBENCH/.active-circle"
 
 Its content is already captured in `CIRCLE_DIRNAME` for the manifest.
 
-### 7.6 — Stash the git working tree
+### 7.6 — Stash the git working tree, workbench excluded
 
-Capture the stash-stack depth before and after the push so we can tell whether `git stash push` actually created an entry — the "no local changes" branch is detected by an unchanged count, not by parsing stdout (which varies by git version).
+**The git stash carries the user's source changes. It never carries the workbench.** Everything this skill needs from the workbench it has already taken by copy or by move (7.2, 7.4), so a second capture through git would be a duplicate — and a destructive one: `--include-untracked` sweeps untracked files away, and the stash directory written moments ago in 7.0/7.4 is untracked in every configuration where the workbench is not ignored. That is how the rescue tool used to destroy the artifact it exists to produce — the defect record is `260717-0030_*_git-stash-include-untracked-can-sweep-the-stash-directory.md` in the shared issue store.
+
+Two spellings are needed, and which one applies is asked rather than assumed. The stash-stack depth is captured before and after the push, as before, so that "did an entry get created" is read off the count rather than parsed out of stdout (which varies by git version) — and so a push that failed is never mistaken for one that saved something:
 
 ```bash
 STASH_COUNT_BEFORE="$(cd "$PROJECT_ROOT" && git stash list 2>/dev/null | wc -l | tr -d ' ')"
-cd "$PROJECT_ROOT" && git stash push --include-untracked -m "fusion:circle-stash $STASH_ID" || true
+if (cd "$PROJECT_ROOT" && git add --dry-run --all -- ':/' ":(exclude)$WB_NAME" >/dev/null 2>&1); then
+  cd "$PROJECT_ROOT" && git stash push --include-untracked -m "fusion:circle-stash $STASH_ID" -- ':/' ":(exclude)$WB_NAME" || true
+else
+  cd "$PROJECT_ROOT" && git stash push --include-untracked -m "fusion:circle-stash $STASH_ID" || true
+fi
 STASH_COUNT_AFTER="$(cd "$PROJECT_ROOT" && git stash list 2>/dev/null | wc -l | tr -d ' ')"
 HEAD_SHORT="$(cd "$PROJECT_ROOT" && git rev-parse --short HEAD 2>/dev/null)"
 echo "$HEAD_SHORT" > "$STASH_DIR/git/head"
@@ -283,6 +296,12 @@ else
   GIT_STASH_SHA="$(cd "$PROJECT_ROOT" && git rev-parse stash@{0} 2>/dev/null)"
 fi
 ```
+
+**Why the branch, and why that probe.** `git stash push <pathspec>` with `--include-untracked` runs `git add --all -- <pathspec>` internally to clear the paths it saved, and `git add --all` **refuses** — exit 1, message "The following paths are ignored by one of your .gitignore files" — when a pathspec names an ignored path, negative pathspecs included. A workbench the project gitignores is exactly that path, so the pathspec spelling breaks precisely in the one configuration that never had the defect: measured, the entry is created, the working tree is left untouched, and `|| true` would have swallowed it and reported a freeze that did not happen. The `git add --dry-run` line asks git the same question git will ask itself, changes nothing, and is the only reliable predictor found — `git check-ignore` on the workbench is not, since it answers "not ignored" for an ignored directory that contains a tracked file.
+
+The fallback is safe by the same fact that forces it: it is taken only when git already excludes the workbench's untracked content from `--include-untracked`, which is what makes the stash directory unsweepable there.
+
+**One residual, stated rather than discovered.** A workbench directory that is gitignored *and* carries force-added tracked files (`git add -f` inside an ignored directory) takes the fallback, and those tracked files' uncommitted modifications do travel in the git stash — `git stash apply` at pop time puts them back. The stash directory itself survives, because it is untracked and ignored. Nothing else about the workbench travels in any configuration.
 
 Two refs are captured intentionally:
 
@@ -436,6 +455,7 @@ Exit. Do not chain into another command.
 
 - The skill never writes outside the stash directory, the workbench root files it relocates (`.active-circle`, `agentstate.yaml`, the task queue, `orchestrator-live.md`), the Circle directory it moves out of the Circle store, the event log it appends to, and (when found) the session history file it annotates before the move.
 - The skill never touches the shared store. A spec or plan the Circle cites there is named in the preview and left alone.
+- The git stash the skill takes covers the project's source. The workbench never travels in it — it is captured by copy and by move into the stash directory instead, and the one residual is named in Step 7.6.
 - The skill never touches `.guard-state/` or truncates the event log — both are root-anchored and project-wide.
 - The skill is safe to invoke in any directory inside a fusion workbench tree — `fusion-paths` resolves the root.
 - The skill is NOT safe to run concurrently with another orchestrator session against the same workbench. Step 3 catches the most common collision (a running task), but the active-session marker is advisory; the user is responsible for sequencing.

@@ -18,6 +18,17 @@ A stash is a self-contained, frozen snapshot of an active Circle's complete stat
 
 The container layout simplifies this: a Circle's spec, plan, issues, decisions and history are all *inside* the Circle directory, so capturing the Circle captures them. There is no separate hunt through type directories for files the Circle happens to reference.
 
+### Two captures, two jobs
+
+The stash directory and the git stash divide the work, and the division is what keeps the tool from destroying its own output:
+
+- **The stash directory captures the workbench** — the Circle directory (moved), the root-anchored session files (copied), the manifest and README.
+- **The git stash captures the project's source** — the user's uncommitted changes *outside* the workbench, tracked and untracked. The workbench is excluded from it. `/fusion:circle-stash` already holds everything it needs from the workbench by copy, so a second capture through git would add nothing, and `--include-untracked` would sweep the freshly written stash directory away wherever the workbench is not gitignored (`shared/issues/260717-0030_*_git-stash-include-untracked-can-sweep-the-stash-directory.md`). Two of the three workbench configurations the record measured lost exactly the Circle the user invoked the rescue tool to save.
+
+The exclusion is a pathspec on the push, with one branch: a gitignored workbench makes `git stash push <pathspec> --include-untracked` refuse (it runs `git add --all` internally, which rejects a pathspec naming an ignored path), and there the plain push is already correct because git skips ignored content anyway. The mechanism, its probe and its one residual are in `skills/circle-stash/SKILL.md` Step 7.6; the ignore-vs-sweep fact behind it is in `rules/fusion-workbench-conventions.md` `## Which of them a tracked workbench tracks`.
+
+The consequence for the user: uncommitted changes to workbench files stay in the working tree during the interruption instead of being carried in the git stash. `/fusion:circle-pop` restores the workbench from the stash directory, never from the git stash.
+
 ### Opt-in
 
 Stash behaviour activates only when `fusion-workbench/stashes/` exists. The directory is created by `/fusion:circle-stash` on first invocation; it is NOT created by `/fusion:setup`. Workbenches that never stash never grow a `stashes/` directory.
