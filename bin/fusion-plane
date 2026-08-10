@@ -76,6 +76,33 @@
 #   correctness is restored by the next reconcile (a pure function of files).
 #   The outbox is drained (cleared) for a Circle once its reconcile succeeds.
 #
+# ── THE NATURAL KEY CARRIES NO STATE ─────────────────────────────────────────
+#   A record's natural key is its IDENTITY, and identity must survive every state
+#   transition — a transition is precisely the event this mirror exists to push.
+#   So the key is built from the parts of a filename that never change:
+#
+#       <circle-dir | "shared">::issues|decisions/YYMMDD-HHMM_<slug>.md
+#
+#   with the single-char underscore state marker REMOVED. The marker is state and
+#   lives in the map's `last_state`, where it already did. fusion made this call
+#   correctly once before, for Circle directories (the marker sits on
+#   `_t_circle.md`, never on the directory name), which is why a Circle's own key
+#   is just its directory name and needs no stripping.
+#
+#   Built in exactly ONE place — `natural_key()`. It used to be built at six call
+#   sites straight off `basename`, each of them embedding the marker, so every
+#   transition presented a key the map had never seen, `map_get_id` (an exact
+#   string match) missed, and the push CREATED A SECOND PLANE ISSUE while the
+#   first stayed at its old state forever (issue 260807-1939). A test lints for a
+#   seventh site.
+#
+#   LEGACY MAPS: an entry written under the old marker-bearing form is re-keyed to
+#   the stable form by `map_migrate_keys`, once per run, before any lookup. Where
+#   the old scheme already produced two entries for one record, the one pushed
+#   most recently wins and the collision is reported. `rebuild_map` normalises the
+#   same way, because the `fusion-key:` embedded in an already-created Plane issue
+#   is whatever key was current when that issue was POSTed.
+#
 # Runtime state (workbench-root, gitignored with the rest of fusion-workbench/):
 #   plane.config.yaml   consumer-filled config (base_url, slugs, state names)
 #   .plane-map.json     natural key → { plane_id, kind, last_state, last_pushed,
@@ -536,6 +563,26 @@ marker_from_filename() {
   printf '%s' "$m"
 }
 
+# stable_basename — the IDENTITY half of the same filename: the basename with the
+# state marker segment removed, so `YYMMDD-HHMM_<m>_<slug>.md` becomes
+# `YYMMDD-HHMM_<slug>.md`. Exactly the inverse concern of
+# marker_from_filename above, and the two are deliberately adjacent: what that one
+# extracts is what this one drops. A name that carries no marker is returned
+# unchanged, so the transform is idempotent and safe to apply to an already-stable
+# name.
+stable_basename() {
+  printf '%s' "$1" | sed -E 's/^([0-9]{6}-[0-9]{4})_[a-z]_/\1_/'
+}
+
+# natural_key <scope> <subdir> <file> — THE one place a record's natural key is
+# built. <scope> is a Circle directory name or the literal "shared"; <subdir> is
+# `issues` or `decisions`. Never construct a key from a raw basename anywhere
+# else: that is how the marker got into the key (see the header), and a test
+# fails if a second construction site appears.
+natural_key() {
+  printf '%s::%s/%s' "$1" "$2" "$(stable_basename "$(basename "$3")")"
+}
+
 # artifact_title — first markdown H1, falling back to the natural key. Truncated
 # to keep Plane titles sane and deterministic.
 artifact_title() {
@@ -546,7 +593,60 @@ artifact_title() {
 }
 
 # ── Natural-key → Plane map (jq-backed; helper-owned) ────────────────────────
-map_ensure() { [ -f "$MAP" ] || printf '{}\n' > "$MAP"; }
+#
+# JQ_STABLE_KEY — the key normalisation, as a jq definition, shared by the map
+# migration and the rebuild. It is the jq twin of `stable_basename` above: drop
+# the `_<m>_` marker segment from the filename part of a natural key. It matches
+# only inside `::issues/` and `::decisions/` after a YYMMDD-HHMM stamp, so a
+# Circle key (a bare directory name, no `::`) passes through untouched.
+JQ_STABLE_KEY='def stable_key: sub("(?<p>::(issues|decisions)/[0-9]{6}-[0-9]{4})_[a-z]_"; .p + "_");'
+
+# JQ_MIGRATE_MAP — re-key a whole map to the stable form.
+#
+# COLLISION RULE: the old marker-bearing scheme could record ONE record twice —
+# once per state it was pushed in — which is the duplicate-issue defect itself. On
+# a collision the entry pushed most recently wins, because that is the Plane issue
+# the board has been tracking; the loser is reported by the caller, never dropped
+# silently, since it means a stray duplicate exists in Plane for a human to close.
+JQ_MIGRATE_MAP="$JQ_STABLE_KEY"'
+  reduce (to_entries[]) as $e ({};
+    ($e.key | stable_key) as $k
+    | if (has($k) and ((.[$k].last_pushed // "") >= ($e.value.last_pushed // "")))
+      then . else .[$k] = $e.value end)'
+
+MAP_MIGRATED=0
+# map_migrate_keys — bring a map written under the old marker-bearing key scheme
+# onto the stable keys, ONCE per run, before anything reads it. A map that is
+# already stable normalises to itself, so this is a no-op that writes nothing:
+# the file is only replaced when the content actually changed.
+map_migrate_keys() {
+  local tmp before after
+  [ "$MAP_MIGRATED" -eq 0 ] || return 0
+  MAP_MIGRATED=1
+  [ -f "$MAP" ] || return 0
+  tmp="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-migrate.XXXXXX")"
+  if ! jq -S "$JQ_MIGRATE_MAP" "$MAP" > "$tmp" 2>/dev/null; then
+    err "map: could not parse $MAP — keys left as they are"
+    rm -f "$tmp"
+    return 0
+  fi
+  before="$(jq -S '.' "$MAP" 2>/dev/null || printf '')"
+  after="$(cat "$tmp")"
+  if [ "$before" = "$after" ]; then
+    rm -f "$tmp"
+    return 0
+  fi
+  local n_before n_after
+  n_before="$(jq 'length' "$MAP")"
+  n_after="$(jq 'length' "$tmp")"
+  mv "$tmp" "$MAP"
+  info "map: migrated to marker-free natural keys ($n_before entries → $n_after)"
+  if [ "$n_after" -lt "$n_before" ]; then
+    info "map: $((n_before - n_after)) entry/entries collided — the old scheme had mirrored one record under two markers, so a duplicate Plane issue exists for each; the most recently pushed one was kept. Close the strays in Plane."
+  fi
+}
+
+map_ensure() { [ -f "$MAP" ] || printf '{}\n' > "$MAP"; map_migrate_keys; }
 map_get_id()    { [ -f "$MAP" ] || { printf ''; return; }; jq -r --arg k "$1" '.[$k].plane_id  // empty' "$MAP"; }
 map_get_state() { [ -f "$MAP" ] || { printf ''; return; }; jq -r --arg k "$1" '.[$k].last_state // empty' "$MAP"; }
 
@@ -931,12 +1031,12 @@ reconcile_circle() {
   process_artifact circle "$record" "$name" ""
   if [ -d "$dir/issues" ]; then
     while IFS= read -r f; do
-      [ -n "$f" ] && process_artifact fusion-issue "$f" "$name::issues/$(basename "$f")" "$name"
+      [ -n "$f" ] && process_artifact fusion-issue "$f" "$(natural_key "$name" issues "$f")" "$name"
     done < <(ls "$dir"/issues/*.md 2>/dev/null | LC_ALL=C sort)
   fi
   if [ -d "$dir/decisions" ]; then
     while IFS= read -r f; do
-      [ -n "$f" ] && process_artifact decision "$f" "$name::decisions/$(basename "$f")" "$name"
+      [ -n "$f" ] && process_artifact decision "$f" "$(natural_key "$name" decisions "$f")" "$name"
     done < <(ls "$dir"/decisions/*.md 2>/dev/null | LC_ALL=C sort)
   fi
   # Drain the outbox for this Circle only when its reconcile fully succeeded
@@ -951,12 +1051,12 @@ reconcile_shared() {
   local f
   if [ -d "$WORKBENCH/shared/issues" ]; then
     while IFS= read -r f; do
-      [ -n "$f" ] && process_artifact fusion-issue "$f" "shared::issues/$(basename "$f")" ""
+      [ -n "$f" ] && process_artifact fusion-issue "$f" "$(natural_key shared issues "$f")" ""
     done < <(ls "$WORKBENCH"/shared/issues/*.md 2>/dev/null | LC_ALL=C sort)
   fi
   if [ -d "$WORKBENCH/shared/decisions" ]; then
     while IFS= read -r f; do
-      [ -n "$f" ] && process_artifact decision "$f" "shared::decisions/$(basename "$f")" ""
+      [ -n "$f" ] && process_artifact decision "$f" "$(natural_key shared decisions "$f")" ""
     done < <(ls "$WORKBENCH"/shared/decisions/*.md 2>/dev/null | LC_ALL=C sort)
   fi
 }
@@ -995,14 +1095,22 @@ emit_plan() {
 # ProseMirror document (an object) on some builds, and `capture` errors on a
 # non-string input — which the caller's `2>/dev/null` would have turned into a
 # bare "could not parse issues".
-JQ_REBUILD_MAP='
+#
+# `stable_key` is load-bearing too, and for a reason the rest of this file cannot
+# reach: what sits in an already-created Plane issue's description is the key that
+# was current when fusion POSTed it, and before issue 260807-1939 that key carried
+# the state marker. Read back verbatim, a rebuild would restore exactly the
+# marker-bearing mapping the next transition invalidates — which is why
+# `--rebuild-map` was no recovery path for that defect. Normalising on the way in
+# makes it one.
+JQ_REBUILD_MAP="$JQ_STABLE_KEY"'
   (.results? // .) as $issues
   | reduce $issues[] as $i ({};
       ( [$i.description_stripped, $i.description_html, $i.description]
         | map(select(type == "string"))
         | map(capture("fusion-key: (?<k>[^\n<]+)").k)
         | (.[0] // "") ) as $key
-      | if $key == "" then . else .[$key|ltrimstr(" ")|rtrimstr(" ")] =
+      | if $key == "" then . else .[$key|ltrimstr(" ")|rtrimstr(" ")|stable_key] =
           {plane_id:$i.id, kind:"unknown", last_state:"", last_pushed:""} end)'
 
 # push --rebuild-map: reconstruct .plane-map.json from Plane by reading the
@@ -1155,10 +1263,10 @@ emit_manual_only() {
     record="$(ls "$dir"/*_circle.md 2>/dev/null | head -n1 || true)"
     if [ -n "$record" ]; then _manual_defer circle "$name" "$record"; fi
     for f in "$dir"/issues/*.md; do
-      if [ -e "$f" ]; then _manual_defer fusion-issue "$name::issues/$(basename "$f")" "$f"; fi
+      if [ -e "$f" ]; then _manual_defer fusion-issue "$(natural_key "$name" issues "$f")" "$f"; fi
     done
     for f in "$dir"/decisions/*.md; do
-      if [ -e "$f" ]; then _manual_defer decision "$name::decisions/$(basename "$f")" "$f"; fi
+      if [ -e "$f" ]; then _manual_defer decision "$(natural_key "$name" decisions "$f")" "$f"; fi
     done
   }
   if [ "$want_all" -eq 1 ]; then

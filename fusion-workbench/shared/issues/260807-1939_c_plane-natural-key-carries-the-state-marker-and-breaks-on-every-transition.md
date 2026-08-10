@@ -119,3 +119,18 @@ Found while verifying a report from a consuming project which claimed fusion ide
 records by timestamp alone. The claim was false: the filename carries the slug and is
 unique. The verification did lead to the one place in the system where a filename genuinely
 serves as a key, and there sits a real defect, just not the one that was reported.
+
+---
+Resolved: the key is built in one place, and that place drops the marker.
+
+`natural_key` now sits on `stable_basename` — the record's basename with the `_<m>_` marker segment removed — and all six construction sites call it. Circles were already correct, because their key is the directory name; that was the precedent this record cited, and the record kinds now follow it. The marker did not disappear, it went where it already belonged: `last_state`.
+
+**Migration, rather than a tolerant lookup.** `map_migrate_keys` re-keys a legacy map once per run from `map_ensure`, before any lookup. A map already in the stable form normalises to itself and is not rewritten. Where the old scheme recorded one record under two keys — the duplicate this defect produces — the more recently pushed entry wins and the discard is named on stderr, because a dropped UUID is a stray Plane issue somebody has to close by hand. A permanent tolerant lookup was rejected deliberately: it keeps the wrong key form alive indefinitely inside the helper whose whole purpose is that the form was wrong.
+
+`--rebuild-map` is a recovery path again. It was not one before: the `fusion-key:` line inside an already-created Plane issue holds whatever key fusion used when it POSTed, so a verbatim rebuild restored precisely the mapping a state transition had invalidated. It now normalises on read.
+
+**Verified three ways, not one.** The test file carries 69 passing tests, six of them new behavioural cases plus a three-test lint guard that fails if a seventh site ever composes a key from a raw basename — the guard was shown firing against an injected violation rather than assumed. Outside vitest, the record's own reproduction was run against a scratch copy of the fixture workbench: push at `_o_` created, rename to `_c_`, push again **updated the same `plane_id` under the same key** instead of creating a second issue. A legacy two-marker map was migrated the same way: two entries collapsed to one, the collision named, the newer UUID kept.
+
+`.plane-map.json` needed no migration in this workbench — still `{}`, as the record predicted. The 29 legacy keys in `.plane-outbox.jsonl` are deliberately untouched: it is a human-readable record rather than a correctness queue, and its drain matches on the Circle-name prefix.
+
+Session: `shared/history/260810-0241-orchestrator-session.md` (task T4). Executor log: `shared/history/260810-0338-coder-plane-natural-key-marker.md`.

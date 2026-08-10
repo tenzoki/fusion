@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
-import { execFileSync } from "node:child_process";
-import { mkdtempSync, cpSync, writeFileSync, readFileSync, rmSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { mkdtempSync, cpSync, writeFileSync, readFileSync, renameSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, join } from "node:path";
@@ -51,22 +51,26 @@ interface RunResult {
   stderr: string;
 }
 
-/** Run fusion-plane with a fixture workbench. Never throws (exit 10 is normal). */
+/**
+ * Run fusion-plane with a fixture workbench. Never throws (exit 10 is normal).
+ *
+ * `spawnSync`, not `execFileSync`, for one reason: the helper reports on stderr
+ * at every severity, including notices from runs that succeed — the map-migration
+ * collision report is one. `execFileSync` hands stderr back only on a throw, so a
+ * successful run's diagnostics were unobservable and a test could not tell a
+ * reported condition from a silent one.
+ */
 function run(workbench: string, ...args: string[]): RunResult {
-  try {
-    const stdout = execFileSync(fusionPlane, args, {
-      encoding: "utf-8",
-      stdio: ["ignore", "pipe", "pipe"],
-      env: { ...process.env, FUSION_PLANE_WORKBENCH: workbench },
-    });
-    return { status: 0, stdout, stderr: "" };
-  } catch (err: any) {
-    return {
-      status: err.status ?? -1,
-      stdout: err.stdout?.toString() ?? "",
-      stderr: err.stderr?.toString() ?? "",
-    };
-  }
+  const r = spawnSync(fusionPlane, args, {
+    encoding: "utf-8",
+    stdio: ["ignore", "pipe", "pipe"],
+    env: { ...process.env, FUSION_PLANE_WORKBENCH: workbench },
+  });
+  return {
+    status: r.status ?? -1,
+    stdout: r.stdout?.toString() ?? "",
+    stderr: r.stderr?.toString() ?? "",
+  };
 }
 
 // --- Throwaway fixture-workbench copies, cleaned up after each test ----------
@@ -116,8 +120,24 @@ function opFor(ops: any[], key: string): any {
   return ops.find((o) => o.natural_key === key);
 }
 
-const issueKey = (f: string) => `${CIRCLE}::issues/${f}`;
-const decisionKey = (f: string) => `${CIRCLE}::decisions/${f}`;
+/**
+ * The natural key of a record, built the way `bin/fusion-plane`'s `natural_key`
+ * builds it — `<scope>::<subdir>/<basename with the state marker removed>`.
+ *
+ * Every call site below passes the record's REAL filename, marker and all, so the
+ * tests keep naming the files that exist on disk while asserting on the key those
+ * files resolve to. That gap is the whole point of issue 260807-1939: the marker
+ * is state, the key is identity, and a key that carried the marker changed on
+ * every transition — so the map missed and the push created a second Plane issue
+ * instead of moving the first.
+ */
+const stableBasename = (f: string) => f.replace(/^(\d{6}-\d{4})_[a-z]_/, "$1_");
+const artifactKey = (scope: string, subdir: "issues" | "decisions", f: string) =>
+  `${scope}::${subdir}/${stableBasename(f)}`;
+const issueKey = (f: string) => artifactKey(CIRCLE, "issues", f);
+const decisionKey = (f: string) => artifactKey(CIRCLE, "decisions", f);
+const sharedIssueKey = (f: string) => artifactKey("shared", "issues", f);
+const sharedDecisionKey = (f: string) => artifactKey("shared", "decisions", f);
 
 // ===========================================================================
 // 1. Mapping + attach — the pure reconcile core (Step 3, agenda items 1–2)
@@ -136,8 +156,8 @@ describe("fusion-plane push --plan: artifact→Plane mapping and attach", () => 
     expect(opFor(ops, CIRCLE).kind).toBe("circle");
     expect(opFor(ops, issueKey("260719-1600_o_open-issue.md")).kind).toBe("fusion-issue");
     expect(opFor(ops, decisionKey("260719-1603_a_answered.md")).kind).toBe("decision");
-    expect(opFor(ops, "shared::issues/260719-1700_o_shared-issue.md").kind).toBe("fusion-issue");
-    expect(opFor(ops, "shared::decisions/260719-1701_o_shared-decision.md").kind).toBe("decision");
+    expect(opFor(ops, sharedIssueKey("260719-1700_o_shared-issue.md")).kind).toBe("fusion-issue");
+    expect(opFor(ops, sharedDecisionKey("260719-1701_o_shared-decision.md")).kind).toBe("decision");
   });
 
   it("plans the configured kind label for every fusion-owned artifact", () => {
@@ -154,8 +174,8 @@ describe("fusion-plane push --plan: artifact→Plane mapping and attach", () => 
     expect(opFor(ops, issueKey("260719-1600_o_open-issue.md")).label).toBe("Fusion Issue");
     expect(opFor(ops, decisionKey("260719-1603_a_answered.md")).label).toBe("Entscheidung");
     // shared/ artifacts are top-level but still labelled by kind.
-    expect(opFor(ops, "shared::issues/260719-1700_o_shared-issue.md").label).toBe("Fusion Issue");
-    expect(opFor(ops, "shared::decisions/260719-1701_o_shared-decision.md").label).toBe("Entscheidung");
+    expect(opFor(ops, sharedIssueKey("260719-1700_o_shared-issue.md")).label).toBe("Fusion Issue");
+    expect(opFor(ops, sharedDecisionKey("260719-1701_o_shared-decision.md")).label).toBe("Entscheidung");
   });
 
   it("gives every artifact a label — no fusion-created artifact goes unlabelled", () => {
@@ -206,8 +226,8 @@ describe("fusion-plane push --plan: artifact→Plane mapping and attach", () => 
   it("gives shared/ artifacts a null parent — they are top-level Plane issues", () => {
     const { ops } = plan(run(freshWorkbench(), "push", "--all", "--plan").stdout);
     for (const key of [
-      "shared::issues/260719-1700_o_shared-issue.md",
-      "shared::decisions/260719-1701_o_shared-decision.md",
+      sharedIssueKey("260719-1700_o_shared-issue.md"),
+      sharedDecisionKey("260719-1701_o_shared-decision.md"),
     ]) {
       const op = opFor(ops, key);
       expect(op.parent_key, `${key} is shared → no parent`).toBeNull();
@@ -222,7 +242,7 @@ describe("fusion-plane push --plan: artifact→Plane mapping and attach", () => 
     // pins the meaningful path, not the cosmetic join artifact.
     const norm = (s: string) => s.replace(/\/+/g, "/");
     expect(norm(opFor(ops, CIRCLE).source)).toBe(`circles/${CIRCLE}/_t_circle.md`);
-    expect(norm(opFor(ops, "shared::issues/260719-1700_o_shared-issue.md").source)).toBe(
+    expect(norm(opFor(ops, sharedIssueKey("260719-1700_o_shared-issue.md")).source)).toBe(
       "shared/issues/260719-1700_o_shared-issue.md",
     );
   });
@@ -238,7 +258,14 @@ describe("fusion-plane push --plan: artifact→Plane mapping and attach", () => 
 // 2. Idempotency — a synced map yields zero creates (Step 3 acceptance)
 // ===========================================================================
 describe("fusion-plane push --plan: idempotency", () => {
-  /** A fresh workbench with the committed in-sync map dropped in. */
+  /**
+   * A fresh workbench with the committed in-sync map dropped in.
+   *
+   * That committed map is written in the OLD marker-bearing key form, and is left
+   * that way on purpose: it is a real legacy map, so every assertion below also
+   * proves the migration in `map_migrate_keys` puts those entries where the
+   * reconcile now looks for them. Rewriting the fixture would delete that proof.
+   */
   function syncedWorkbench(): string {
     const wb = freshWorkbench();
     cpSync(join(fixtureRoot, "map-synced.json"), join(wb, ".plane-map.json"));
@@ -272,6 +299,188 @@ describe("fusion-plane push --plan: idempotency", () => {
     expect(circleOp.op).toBe("update");
     expect(circleOp.plane_id).toBe("plane-existing");
     expect(circleOp.state).toBe("In Progress");
+  });
+});
+
+// ===========================================================================
+// 2b. The natural key survives a state transition
+//     (issue 260807-1939 …plane-natural-key-carries-the-state-marker-and-breaks-
+//      on-every-transition).
+//
+//     The key used to be the record's full basename, marker included. The marker
+//     changes on exactly the event the mirror exists to push, so every transition
+//     presented a key the map had never seen: `map_get_id` (an exact string
+//     match) missed, the push CREATED A SECOND Plane issue, and the first stayed
+//     at its old state forever. `--rebuild-map` could not recover it either — it
+//     reads the key back out of the Plane issue's description, where the OLD key
+//     was embedded at creation time.
+//
+//     The record's reproduction, run as a test: push, rename, push again. It
+//     asserted `op=create` twice; it must now assert one key and `op=update`.
+// ===========================================================================
+describe("fusion-plane: the natural key does not carry the state marker", () => {
+  const OPEN_ISSUE = "260719-1600_o_open-issue.md";
+  const CLOSED_ISSUE = "260719-1600_c_open-issue.md";
+  const issuePath = (wb: string, f: string) => join(wb, "circles", CIRCLE, "issues", f);
+
+  /** The planned op for the demo Circle's first issue, whatever its key is. */
+  function issueOp(wb: string, sourceFile: string): any {
+    const { ops } = plan(run(wb, "push", "--circle", CIRCLE, "--plan").stdout);
+    return ops.find((o: any) => (o.source ?? "").endsWith(sourceFile));
+  }
+
+  it("a record keeps ONE key across a state transition", () => {
+    // Deliberately keyless assertion: it reads the key the helper itself chose
+    // before and after the rename rather than naming a form. What is under test
+    // is that the two are equal, not what they spell.
+    const wb = freshWorkbench();
+    const before = issueOp(wb, OPEN_ISSUE);
+    expect(before.marker).toBe("o");
+    renameSync(issuePath(wb, OPEN_ISSUE), issuePath(wb, CLOSED_ISSUE));
+    const after = issueOp(wb, CLOSED_ISSUE);
+    expect(after.marker, "the file's marker did change — that is the transition").toBe("c");
+    expect(
+      after.natural_key,
+      "identity must survive the transition the mirror exists to push",
+    ).toBe(before.natural_key);
+    // And it is marker-free, so no future marker can move it either.
+    expect(after.natural_key).not.toMatch(/_[a-z]_/);
+  });
+
+  it("the record's reproduction inverts: the second push is an update, not a create", () => {
+    const wb = freshWorkbench();
+    // Simulate the first push having landed: record what it would have recorded,
+    // under the key the helper itself planned.
+    const first = issueOp(wb, OPEN_ISSUE);
+    expect(first.op).toBe("create");
+    writeFileSync(
+      join(wb, ".plane-map.json"),
+      JSON.stringify({
+        [first.natural_key]: {
+          plane_id: "plane-issue-0001",
+          kind: "fusion-issue",
+          last_state: "Todo",
+          last_pushed: "2026-07-19T00:00:00Z",
+        },
+      }),
+    );
+    // Close it and push again.
+    renameSync(issuePath(wb, OPEN_ISSUE), issuePath(wb, CLOSED_ISSUE));
+    const second = issueOp(wb, CLOSED_ISSUE);
+    expect(second.op, "a transition must MOVE the issue, never mirror a second one").toBe("update");
+    expect(second.plane_id, "the update must target the issue already on the board").toBe(
+      "plane-issue-0001",
+    );
+    expect(second.state).toBe("Done");
+  });
+
+  it("a legacy marker-bearing map entry is migrated and still resolves", () => {
+    // A map written before this fix. It must not be stranded: the record it names
+    // has since moved from _o_ to _c_, and the entry has to follow it rather than
+    // leave the push POSTing a duplicate.
+    const wb = freshWorkbench();
+    const legacyKey = `${CIRCLE}::issues/${OPEN_ISSUE}`;
+    writeFileSync(
+      join(wb, ".plane-map.json"),
+      JSON.stringify({
+        [legacyKey]: {
+          plane_id: "plane-issue-legacy",
+          kind: "fusion-issue",
+          last_state: "Todo",
+          last_pushed: "2026-07-19T00:00:00Z",
+          origin: "seed",
+        },
+      }),
+    );
+    renameSync(issuePath(wb, OPEN_ISSUE), issuePath(wb, CLOSED_ISSUE));
+    const op = issueOp(wb, CLOSED_ISSUE);
+    expect(op.op).toBe("update");
+    expect(op.plane_id).toBe("plane-issue-legacy");
+    // The entry was re-keyed on disk, not merely tolerated at lookup time — the
+    // old form is gone, and the rest of the entry (here: origin=seed, which
+    // governs whether a human's story body gets overwritten) rode along intact.
+    const map = JSON.parse(readFileSync(join(wb, ".plane-map.json"), "utf-8"));
+    expect(Object.keys(map)).toEqual([issueKey(OPEN_ISSUE)]);
+    expect(map[issueKey(OPEN_ISSUE)]).toMatchObject({
+      plane_id: "plane-issue-legacy",
+      origin: "seed",
+    });
+  });
+
+  it("a legacy map that mirrored one record twice collapses to the newest, and says so", () => {
+    // The duplicate this defect produced, arriving as input: the same record
+    // recorded under two markers, i.e. two Plane issues. The map cannot keep both
+    // under one key, so it keeps the one pushed most recently — the issue the
+    // board has been tracking — and reports the collision rather than dropping a
+    // UUID in silence.
+    const wb = freshWorkbench();
+    writeFileSync(
+      join(wb, ".plane-map.json"),
+      JSON.stringify({
+        [`${CIRCLE}::issues/${OPEN_ISSUE}`]: {
+          plane_id: "plane-issue-first",
+          kind: "fusion-issue",
+          last_state: "Todo",
+          last_pushed: "2026-07-19T00:00:00Z",
+        },
+        [`${CIRCLE}::issues/${CLOSED_ISSUE}`]: {
+          plane_id: "plane-issue-duplicate",
+          kind: "fusion-issue",
+          last_state: "Done",
+          last_pushed: "2026-07-20T00:00:00Z",
+        },
+      }),
+    );
+    const r = run(wb, "map");
+    const map = JSON.parse(r.stdout);
+    expect(Object.keys(map)).toEqual([issueKey(OPEN_ISSUE)]);
+    expect(map[issueKey(OPEN_ISSUE)].plane_id).toBe("plane-issue-duplicate");
+    expect(r.stderr, "a dropped UUID means a stray Plane issue — never silent").toContain(
+      "collided",
+    );
+  });
+
+  it("an already-migrated map is left byte-identical (the migration is idempotent)", () => {
+    const wb = freshWorkbench();
+    const stable = {
+      [issueKey(OPEN_ISSUE)]: {
+        plane_id: "plane-issue-0001",
+        kind: "fusion-issue",
+        last_state: "Todo",
+        last_pushed: "2026-07-19T00:00:00Z",
+        origin: "fusion",
+      },
+    };
+    const mapPath = join(wb, ".plane-map.json");
+    writeFileSync(mapPath, JSON.stringify(stable, null, 2) + "\n");
+    const before = readFileSync(mapPath, "utf-8");
+    run(wb, "map");
+    expect(readFileSync(mapPath, "utf-8"), "nothing to migrate → nothing rewritten").toBe(before);
+  });
+
+  it("--rebuild-map normalises a key embedded in an issue created before the fix", () => {
+    // The reason `--rebuild-map` was no recovery path: the `fusion-key:` sitting
+    // in an already-created Plane issue's description is whatever key was current
+    // when fusion POSTed it. Read back verbatim, a rebuild restores exactly the
+    // mapping the next transition invalidates. It must normalise on the way in.
+    const wb = freshWorkbench();
+    const legacyKey = `${CIRCLE}::issues/${OPEN_ISSUE}`;
+    const fixture = join(wb, "legacy-issues.json");
+    writeFileSync(
+      fixture,
+      JSON.stringify({
+        results: [
+          {
+            id: "plane-uuid-legacy",
+            description_html: `<p>Mirrored fusion fusion-issue.<br>fusion-key: ${legacyKey}<br></p>`,
+          },
+        ],
+      }),
+    );
+    run(wb, "push", "--circle", CIRCLE, "--rebuild-map", "--fixture", fixture);
+    const map = JSON.parse(readFileSync(join(wb, ".plane-map.json"), "utf-8"));
+    expect(Object.keys(map)).toEqual([issueKey(OPEN_ISSUE)]);
+    expect(map[issueKey(OPEN_ISSUE)]).toMatchObject({ plane_id: "plane-uuid-legacy" });
   });
 });
 
@@ -470,7 +679,7 @@ describe("fusion-plane map --forget / --prune", () => {
       join(wb, ".plane-map.json"),
       JSON.stringify({
         [CIRCLE]: { plane_id: "plane-deleted-in-ui", kind: "circle", last_state: "In Progress" },
-        "shared::issues/260719-1700_o_shared-issue.md": {
+        [sharedIssueKey("260719-1700_o_shared-issue.md")]: {
           plane_id: "plane-still-alive",
           kind: "fusion-issue",
           last_state: "Todo",
@@ -488,9 +697,9 @@ describe("fusion-plane map --forget / --prune", () => {
     expect(r.status).toBe(0);
     expect(r.stdout).toContain("forgotten");
     const map = readMap(wb);
-    expect(Object.keys(map)).toEqual(["shared::issues/260719-1700_o_shared-issue.md"]);
+    expect(Object.keys(map)).toEqual([sharedIssueKey("260719-1700_o_shared-issue.md")]);
     // The surviving entry is untouched, not merely present.
-    expect(map["shared::issues/260719-1700_o_shared-issue.md"]).toMatchObject({
+    expect(map[sharedIssueKey("260719-1700_o_shared-issue.md")]).toMatchObject({
       plane_id: "plane-still-alive",
       last_state: "Todo",
     });
@@ -707,6 +916,56 @@ describe("fusion-plane lint guards: no hardcoded state UUID in the helper", () =
     const hits = uuidHits(copy.join("\n"));
     expect(hits.length).toBeGreaterThan(0);
     expect(hits.find((h) => h.line === injectAt + 1)?.literal).toBe("a935e1f0-fc7c-4392-8b93-2f4551e0254f");
+  });
+});
+
+describe("fusion-plane lint guards: the natural key is built in exactly one place", () => {
+  // Issue 260807-1939 was not one bad line — it was SIX, each independently
+  // composing `<scope>::<subdir>/$(basename …)` and each independently embedding
+  // the state marker. Consolidating them into `natural_key()` fixes the six; this
+  // guard is what stops a seventh, because a new call site written in the old
+  // shape reintroduces the whole defect for whichever artifact kind it walks.
+  //
+  // The signature it forbids is narrow and exact: composing the `::` key
+  // separator together with a `basename` in one line. That is what every one of
+  // the six did and what `natural_key` now does once. Comment lines are exempt —
+  // the header documents the key form in prose and must stay free to.
+  const KEY_COMPOSITION = /::/;
+
+  function compositionSites(text: string): { line: number; text: string }[] {
+    return text
+      .split("\n")
+      .map((text, i) => ({ line: i + 1, text }))
+      .filter((l) => !/^\s*#/.test(l.text) && KEY_COMPOSITION.test(l.text) && /basename/.test(l.text));
+  }
+
+  it("only natural_key() composes a key out of a basename", () => {
+    const src = readFileSync(fusionPlane, "utf-8");
+    const sites = compositionSites(src);
+    expect(
+      sites.length,
+      `every natural key must come from natural_key(); these lines build one themselves:\n` +
+        sites.map((s) => `  bin/fusion-plane:${s.line}  ${s.text.trim()}`).join("\n"),
+    ).toBe(1);
+    expect(sites[0].text, "the one site is natural_key's own printf").toContain("stable_basename");
+  });
+
+  it("natural_key strips the marker rather than passing the basename through", () => {
+    // The consolidation is worth nothing if the single site keeps the marker. The
+    // behavioural tests above prove this end to end; this pins the mechanism so a
+    // refactor cannot quietly drop it.
+    const src = readFileSync(fusionPlane, "utf-8");
+    expect(src).toMatch(/^stable_basename\(\) \{/m);
+    expect(src, "the marker segment is what stable_basename removes").toMatch(
+      /sed -E 's\/\^\(\[0-9\]\{6\}-\[0-9\]\{4\}\)_\[a-z\]_\/\\1_\//,
+    );
+  });
+
+  it("the guard fires loudly if a seventh site is introduced", () => {
+    const src = readFileSync(fusionPlane, "utf-8").split("\n");
+    const copy = [...src];
+    copy.splice(60, 0, '  process_artifact decision "$f" "$name::decisions/$(basename "$f")" "$name"');
+    expect(compositionSites(copy.join("\n")).length).toBe(2);
   });
 });
 
