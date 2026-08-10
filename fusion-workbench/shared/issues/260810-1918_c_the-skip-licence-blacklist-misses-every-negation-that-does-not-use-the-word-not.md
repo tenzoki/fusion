@@ -54,3 +54,42 @@ checks-and-one-negative-control-is-a-duplicate.md`;
 (the other named remainder of the same rewrite).
 
 **Filed by:** coderev, review of session `260810-1646` Turn 1, range `5ef92eb..940d522`.
+
+---
+
+**Resolved, route 1, and the class is still open** — session `260810-1646` Turn 2,
+`hooks/lib/__tests__/state-drift-detection-lint.test.ts`.
+
+Eleven patterns added for the eight forms in the table above (two contraction families,
+`not required|needed|necessary|mandatory`, `no longer`, `except when|where|if|for`,
+`provid(ed|ing) that`, `as time allows|permits`, `best effort`, `where|when|if practical`,
+`drop(s|ped|ping)`, `sparingly`, `at most`); `skip`, `defer` and `omit` widened to their `s`/`ing`
+forms. Each of the eleven was spliced one at a time into the Step 3e sentence of a **scratch copy**
+of `agents/orchestrator.md` (never the real one — decision `260810-1820`): all eleven pass the
+pre-change lint and fail the changed one.
+
+The header's standing instruction became structural rather than a sentence. `SKIP_LICENCES` is now
+`{ re, example }` pairs, and a control requires each entry to be the *first* in the list that matches
+its own example and that example to be rejected in an otherwise bound sentence. A pattern cannot be
+declared without a witness, and a subsumed pattern fails rather than sitting dead — which found two
+dead entries on the first run: `\bdon't\b` (covered by the contraction family) and
+`\bmay be skipped\b` (covered by `\bskip…\b`). Both removed; neither removal narrows what is
+rejected.
+
+**The structural gap in §"One structural gap alongside the vocabulary one" is NOT closed, and
+widening the sentence scope is not the cheap half it looked like.** Measured: the Setup Step 1 act
+window in the real prompt carries "**Skip steps 2-6**" (`:84`) and "skip already-completed tasks"
+(`:95`), both legitimate, both matching `\bskip…\b` — so a window-wide scan fails on the current
+prompt on the day it lands. The narrow scope is what holds the blacklist's false-positive rate at
+zero; the two approximations prop each other up. Appending "This is optional for a Turn that produced
+no commit." as a following sentence still leaves the scratch prompt at 16 passed.
+
+**Proposal, not filed as a fix.** What would close the vocabulary class is a change of mechanism
+(`rules/critical-stance.md` §4), not a longer list: pin the check-mentioning sentences of each act
+window, whitespace-normalised, against a baseline literal held in the test, making the decided
+question "is this the text a human last approved?" rather than "does this prose permit skipping?".
+About forty lines, plus a re-approval on every legitimate rewording of those four sentences. Not
+taken here for sequencing: a queued task in the same session rewrites the drift-check prose in
+`agents/orchestrator.md`, and a pin landed first would hand that executor a red suite in a file it
+does not own. Recorded in the test file's header. History:
+`shared/history/260810-2029-coder-drift-lint-residuals.md`.

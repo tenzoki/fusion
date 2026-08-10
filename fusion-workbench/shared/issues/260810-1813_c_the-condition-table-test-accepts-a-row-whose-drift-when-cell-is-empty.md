@@ -27,3 +27,15 @@ is non-empty, and give the assertion a message naming the row. Treat that as the
 not as a measurement.
 
 **Filed by:** orchestrator, session `260810-1646`, on the drift-lint executor's report.
+
+---
+
+**Resolved** — session `260810-1646` Turn 2, `hooks/lib/__tests__/state-drift-detection-lint.test.ts`.
+The condition-table check is factored into `assertEveryRowHasACondition()`, which reads the row's
+second cell and rejects it when nothing but dashes, an en/em dash or whitespace remains; the failure
+message quotes the offending row. Controls: a complete stub table is accepted, and each of the five
+rows emptied in turn against each of the three filler shapes (nothing, a space, an em-dash) is
+rejected naming its own surface. Falsified end-to-end on a scratch copy of `agents/orchestrator.md`
+— blanking the `progress.commits` cell fails the changed test and passes the pre-change one.
+`npm test` from `hooks/`: exit 0, 1113 tests. History:
+`shared/history/260810-2029-coder-drift-lint-residuals.md`.

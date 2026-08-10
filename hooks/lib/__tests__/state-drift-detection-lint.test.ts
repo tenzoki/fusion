@@ -57,11 +57,53 @@ import { dirname, resolve, join } from "node:path";
 // closed list of skip licences ("do not", "optional", "unless", "only if", …)
 // in any sentence that mentions the check. That list is a blacklist and is
 // therefore incomplete by construction: a phrasing nobody has thought of will
-// pass. It closes the measured hole — the four inversions in issue
-// 260810-0502's reconciliation table, reproduced verbatim as a control below —
-// and it does not close the class. Add to `SKIP_LICENCES` when a new one is
-// found; do not read the absence of a failure as proof the prompt commands
+// pass. It closes the measured holes — the four inversions in issue
+// 260810-0502's reconciliation table and the eight phrasings in issue
+// 260810-1918's, each reproduced as a control below — and it does not close
+// the class. Do not read the absence of a failure as proof the prompt commands
 // anything.
+//
+// ---------------------------------------------------------------------------
+// Two consequences of that limit, both mechanism rather than exhortation.
+//
+// **Declaring a licence now costs a demonstration.** "Add to `SKIP_LICENCES`
+// when a new one is found" used to be a sentence in this header, which is the
+// same kind of obligation the drift check itself exists to distrust. A licence
+// is now a `{ re, example }` pair, and the control below requires each declared
+// `re` to be the FIRST entry in the list that matches its own `example`, and
+// that example to be rejected when placed in an otherwise bound sentence. So a
+// pattern cannot arrive without a phrasing that witnesses it, and a pattern
+// subsumed by an earlier one fails loudly instead of sitting dead in the list.
+// Two entries died exactly that way when this gate went in: `\bdon't\b` (the
+// contraction family covers it) and `\bmay be skipped\b` (`\bskip…\b` covers
+// it). Neither removal narrows what the list rejects.
+//
+// **The scan stays sentence-scoped, and that is now measured rather than
+// merely inherited.** Issue 260810-1918 calls widening it to the whole act
+// window "the cheaper of the two to close". It is not closeable at all while
+// the vocabulary is a blacklist: the Setup Step 1 window in the real prompt
+// carries "**Skip steps 2-6**" and "skip already-completed tasks", both
+// legitimate, both matching `\bskip…\b`. The narrow scope is what holds the
+// blacklist's false-positive rate at zero — the two approximations prop each
+// other up. The consequence is that a licence in the sentence AFTER a bound one
+// stays invisible, and no entry added to the list below changes that.
+//
+// **What would close the vocabulary class, and why it is not here yet.** The
+// question this gate asks — "does this prose permit skipping?" — is undecidable
+// from its inputs, so `rules/critical-stance.md` §4 says the mechanism changes
+// rather than the approximation getting longer. The available change is the one
+// the write guard already made when it stopped classifying shell commands: stop
+// predicting and start comparing. Pin the check-mentioning sentences of each
+// act window, whitespace-normalised, against a baseline literal held here; then
+// the decided question is "is this the text a human last approved?" and every
+// softening fails regardless of vocabulary, forcing the old and new wording
+// into one diff hunk where the human gate already looks. It costs about forty
+// lines, plus a re-approval on every legitimate rewording of those four
+// sentences. It is not taken in this commit for a sequencing reason and not a
+// design one: a queued task in this same session rewrites the drift-check prose
+// in `agents/orchestrator.md`, and a pin landed first would hand that executor
+// a red suite in a file it does not own. It closes the vocabulary half only —
+// the sentence-scope gap above survives it unchanged.
 //
 // A guard, not a fixer: it reads and asserts, it never rewrites a prompt.
 // ---------------------------------------------------------------------------
@@ -148,24 +190,58 @@ const CALL_POINTS: CallPoint[] = [
  * Wordings that turn an instruction into a permission. Incomplete by
  * construction — see the header. Matched against markdown-stripped text so
  * `**do not**` reads as "do not".
+ *
+ * Each entry carries the phrasing that witnesses it. `example` is a clause, not
+ * a sentence: the control below splices it into a bound `session_end` line, so
+ * it must contain no sentence-ending punctuation of its own. The control also
+ * requires the entry to be the FIRST in this list that matches its own example,
+ * which is what makes a subsumed pattern fail instead of sitting dead — order
+ * therefore matters, and a new entry goes wherever its example is not claimed
+ * by an earlier one.
+ *
+ * The eight forms from issue 260810-1918 are the contraction families,
+ * `not required`, `no longer`, `except when`, `provided that`, `as time
+ * allows`, `best effort`, `where practical`, `drop`, `sparingly` and `at most`.
+ * The rest predate it.
  */
-const SKIP_LICENCES: RegExp[] = [
-  /\bdo(?:es)? not\b/i,
-  /\bdon't\b/i,
-  /\bnot run\b/i,
-  /\bnever run\b/i,
-  /\bno need\b/i,
-  /\boptional(?:ly)?\b/i,
-  /\bskip(?:ped|ping)?\b/i,
-  /\bdeferred?\b/i,
-  /\bomit(?:ted)?\b/i,
-  /\bonly if\b/i,
-  /\bif you have time\b/i,
-  /\bwhere time permits\b/i,
-  /\bunless\b/i,
-  /\bat your discretion\b/i,
-  /\bwhen convenient\b/i,
-  /\bmay be skipped\b/i,
+type SkipLicence = { re: RegExp; example: string };
+
+const SKIP_LICENCES: SkipLicence[] = [
+  { re: /\bdo(?:es)? not\b/i, example: "the check does not apply to a single-Turn session" },
+  // Contracted negation, which is how ordinary English writes the two forms
+  // above and below. Split in two because "won't"/"can't" are not
+  // auxiliary + n't.
+  {
+    re: /\b(?:is|are|was|were|do|does|did|has|have|had|would|could|should|might|must|need)n['’]t\b/i,
+    example: "it isn't run at this call point",
+  },
+  { re: /\b(?:won|can|shan)['’]t\b/i, example: "you won't need it when the session ran a single Turn" },
+  { re: /\bnot run\b/i, example: "at Cleanup it is not run when the queue converged" },
+  { re: /\bnever run\b/i, example: "on a resumed session it is never run" },
+  {
+    re: /\bnot (?:required|needed|necessary|mandatory)\b/i,
+    example: "this is not required when the Turn produced no commit",
+  },
+  { re: /\bno need\b/i, example: "there is no need to repeat it when Turn 1 was the only Turn" },
+  { re: /\bno longer\b/i, example: "it is no longer needed once Turn 2 starts" },
+  { re: /\boptional(?:ly)?\b/i, example: "this last run is optional" },
+  { re: /\bskip(?:s|ped|ping)?\b/i, example: "skipping it is acceptable when nothing changed" },
+  { re: /\bdefer(?:s|red|ring)?\b/i, example: "it may be deferred to the next session" },
+  { re: /\bomit(?:s|ted|ting)?\b/i, example: "omit it when the state file was just created" },
+  { re: /\bdrop(?:s|ped|ping)?\b/i, example: "this can be dropped for a single-Turn session" },
+  { re: /\bonly if\b/i, example: "only if a prior session left state behind" },
+  { re: /\bunless\b/i, example: "unless the Turn produced no commit" },
+  { re: /\bexcept (?:when|where|if|for)\b/i, example: "except when the Turn produced no commit" },
+  { re: /\bprovid(?:ed|ing) that\b/i, example: "provided that the event log is fresh" },
+  { re: /\bif you have time\b/i, example: "if you have time" },
+  { re: /\bwhere time permits\b/i, example: "where time permits" },
+  { re: /\bas time (?:allows|permits)\b/i, example: "as time allows" },
+  { re: /\bbest[ -]effort\b/i, example: "treat it as best effort" },
+  { re: /\b(?:where|when|if) practical\b/i, example: "where practical" },
+  { re: /\bat your discretion\b/i, example: "at your discretion" },
+  { re: /\bwhen convenient\b/i, example: "when convenient" },
+  { re: /\bsparingly\b/i, example: "run it sparingly" },
+  { re: /\bat most\b/i, example: "at most once per session" },
 ];
 
 /** Markdown emphasis and code ticks removed, so a phrase split by `**` still reads as one. */
@@ -230,7 +306,7 @@ function assertRidesAnAct(text: string): void {
     ).toMatch(/drift check/i);
 
     for (const sentence of sentences(scope).filter((s) => /drift check/i.test(s))) {
-      for (const licence of SKIP_LICENCES) {
+      for (const { re: licence } of SKIP_LICENCES) {
         expect(
           licence.test(sentence),
           `${cp.what}: the drift check is worded here as something the session may skip — ` +
@@ -285,6 +361,54 @@ function assertReadsUnfreezableRecords(section: string): void {
   ).toMatch(/orchestrator-events\.jsonl/);
 }
 
+/**
+ * The rows of the `| Row | Drift when |` table, in source order. Everything
+ * from the header line to the end of the section, minus the prose.
+ */
+function conditionRows(section: string): string[] {
+  const table = section.split(/^\| Row \| Drift when \|$/m)[1];
+  expect(table, "the drift check has no `| Row | Drift when |` condition table").toBeDefined();
+  return table
+    .split(/^##+ /m)[0]
+    .split("\n")
+    .filter((l) => /^\|/.test(l));
+}
+
+/**
+ * Every surface has a row, and every row says something.
+ *
+ * The second half is the part issue 260810-1813 was filed for: `| progress.
+ * commits | |` used to pass, and an empty `Drift when` cell is the whole table
+ * gone — the cell is what tells a reader when a difference is a *fault*. Two of
+ * the five conditions are not derivable from the row name at all (commits
+ * tolerate a difference of one for the commit in flight; the history-Directive
+ * row explicitly does not count differing wording as drift), so a reader who
+ * loses them reports two false faults per check.
+ *
+ * A cell of nothing but dashes or an em-dash counts as empty: it is a
+ * placeholder, not a condition.
+ */
+function assertEveryRowHasACondition(section: string): void {
+  const rows = conditionRows(section);
+  for (const { what, re } of SURFACES) {
+    const hits = rows.filter((r) => re.test(r));
+    expect(
+      hits.length,
+      `${what} is printed but has no drift condition. A row with no condition is a number ` +
+        `on a screen: every value looks equally like a fault, so none is read as one.`,
+    ).toBe(1);
+
+    const cells = hits[0].split("|");
+    const condition = cells.slice(2, Math.max(2, cells.length - 1)).join("|").trim();
+    expect(
+      condition.replace(/[-–—\s]/g, ""),
+      `${what}: the row is there but its \`Drift when\` cell is empty — "${hits[0].trim()}". ` +
+        `The row name is already three paragraphs above; the cell is the only place that says ` +
+        `when a difference is a fault rather than the expected value (issue 260810-1813).`,
+    ).not.toBe("");
+  }
+}
+
 describe("orchestrator drift check", () => {
   it("reads the two records that cannot silently freeze", () => {
     assertReadsUnfreezableRecords(driftSection(orchestrator()));
@@ -298,17 +422,7 @@ describe("orchestrator drift check", () => {
   });
 
   it("gives every surface a drift condition rather than a bare printout", () => {
-    const section = driftSection(orchestrator());
-    const table = section.split(/^\| Row \| Drift when \|$/m)[1];
-    expect(table, "the drift check has no `| Row | Drift when |` condition table").toBeDefined();
-    const rows = table.split(/^##+ /m)[0].split("\n").filter((l) => /^\|/.test(l));
-    for (const { what, re } of SURFACES) {
-      expect(
-        rows.filter((r) => re.test(r)).length,
-        `${what} is printed but has no drift condition. A row with no condition is a number ` +
-          `on a screen: every value looks equally like a fault, so none is read as one.`,
-      ).toBe(1);
-    }
+    assertEveryRowHasACondition(driftSection(orchestrator()));
   });
 
   it("stays attached to the boundary acts at all four call points", () => {
@@ -400,6 +514,48 @@ function stubPrompt(over: Partial<typeof BOUND> = {}): string {
   return Object.entries({ ...BOUND, ...over })
     .map(([name, body]) => `## ${name}\n\n${body}`)
     .join("\n\n");
+}
+
+/**
+ * A bound `session_end` line with one clause spliced in. Everything the gate
+ * needs to accept it survives — the mention, the binding phrase — so whatever
+ * the clause does, it does alone.
+ */
+function licensedSessionEnd(clause: string): string {
+  return (
+    "- Emit `session_end` event — and, **in the same command**, run the drift check " +
+    `one last time, ${clause}.`
+  );
+}
+
+/**
+ * The condition table, CONSTRUCTED for the same reason `BOUND` is: a fixture
+ * copied out of the file under test passes by being the same text rather than
+ * by being the right shape. The conditions here are paraphrases of the five in
+ * `agents/orchestrator.md`, deliberately shorter. `blank` renders one row's
+ * `Drift when` cell as the named filler — `""` for the empty cell issue
+ * 260810-1813 measured.
+ */
+const STUB_TABLE: [string, string][] = [
+  ["`progress.commits`", "the two numbers differ by more than one"],
+  ["`progress.turn`", "the two numbers differ at all"],
+  ["`session.history_file`", "the named file is absent from disk"],
+  ["history Directive", "the history file's line is a placeholder while the state file has one"],
+  ["Circle Turn log", "the record carries fewer entries than Turns run"],
+];
+
+function stubSection(blank?: { row: number; as: string }): string {
+  return [
+    "### Drift check",
+    "",
+    "| Row | Drift when |",
+    "|---|---|",
+    ...STUB_TABLE.map(
+      ([row, cond], i) => `| ${row} | ${blank && blank.row === i ? blank.as : cond} |`,
+    ),
+    "",
+    "## Next section",
+  ].join("\n");
 }
 
 describe("the gate catches the defect it exists for", () => {
@@ -515,5 +671,55 @@ describe("the gate catches the defect it exists for", () => {
     expect(() => assertReadsUnfreezableRecords(driftSection(selfComparing))).toThrow(
       /compares the frozen surface with itself/,
     );
+  });
+
+  it("rejects every declared skip licence on a phrasing of its own", () => {
+    // The structural half of the header's standing instruction: a licence
+    // cannot be declared without a clause that witnesses it, and the clause has
+    // to be rejected by THAT entry rather than carried by a neighbour's match.
+    // A pattern subsumed by an earlier one fails here instead of sitting dead
+    // in the list — which is how `\bdon't\b` and `\bmay be skipped\b` were
+    // found to be covered already.
+    for (const licence of SKIP_LICENCES) {
+      const line = licensedSessionEnd(licence.example);
+      const sentence = sentences(line).find((s) => /drift check/i.test(s));
+      expect(
+        sentence,
+        `${licence.re}: its example does not survive as one sentence mentioning the check — ` +
+          `"${licence.example}" must be a clause with no sentence-ending punctuation`,
+      ).toBeDefined();
+
+      expect(
+        SKIP_LICENCES.find((l) => l.re.test(sentence as string))?.re,
+        `${licence.re}: an earlier entry claims its own example "${licence.example}" first, ` +
+          `so this entry is never the reason anything is rejected. Either the example does not ` +
+          `witness it or the pattern is subsumed and should go.`,
+      ).toBe(licence.re);
+
+      expect(
+        () => assertRidesAnAct(stubPrompt({ sessionEnd: line })),
+        `${licence.re}: the phrasing "${licence.example}" is accepted`,
+      ).toThrow(
+        /Cleanup session_end emission: the drift check is worded here as something the session may skip/,
+      );
+    }
+  });
+
+  it("accepts the condition table when every row states a condition", () => {
+    expect(() => assertEveryRowHasACondition(driftSection(stubSection()))).not.toThrow();
+  });
+
+  it("rejects a row whose `Drift when` cell says nothing, naming that row", () => {
+    // Issue 260810-1813. Each row is emptied on its own, so no one of them is
+    // carried by another's failure, and each of the three filler shapes a
+    // placeholder actually takes is checked: nothing, a space, an em-dash.
+    for (const filler of ["", " ", " — "]) {
+      for (const [i, { what }] of SURFACES.entries()) {
+        expect(
+          () => assertEveryRowHasACondition(driftSection(stubSection({ row: i, as: filler }))),
+          `${what}: a \`Drift when\` cell of "${filler}" is accepted`,
+        ).toThrow(new RegExp(`${what.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}: the row is there but`));
+      }
+    }
   });
 });
