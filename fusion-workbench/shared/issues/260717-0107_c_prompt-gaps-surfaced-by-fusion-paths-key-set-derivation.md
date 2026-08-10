@@ -98,3 +98,16 @@ Four rows confirmed against the resolver's actual output, not against a grep of 
 `analyst` → `$SCAN_ANALYSES`, the fifth row, was not exercised this session and is unchanged.
 
 The two rows the previous pass struck (`coderev`/`ontorev` → `$OUT_HISTORY` and `$OUT_DECISION`) stay struck. Nothing this session touched `agents/`; `git diff --name-only e8988d9..b568ad9 -- agents/` returns nothing.
+
+---
+Resolved: all five rows closed, plus a sixth found during the audit.
+
+The five in the record, each re-measured by running `bin/fusion-paths` at HEAD rather than by reading the prompts: `planner` was missing `OUT_ISSUE`, `OUT_DECISION` and `SCAN_ANALYSES`; `shaper` was missing `SCAN_PLANS`; `analyst` was missing `SCAN_ANALYSES`. The set had not moved since filing.
+
+The sixth: `agents/analyst.md` instructs the agent to "check existing issues, plans, reviews, and history for related work" while never naming `SCAN_REVIEWS`, so the reviews half of that sentence had no resolved path. Same defect class, same file, closed with the others. It is recorded here because neither this record nor the queue entry named it.
+
+One judgement call the record left open, and the reasoning for it. `planner` → `$OUT_DECISION` is called a "probable gap" above. The key was added, on the ground that `rules/fusion-workbench-conventions.md` § "Issue and Decision Filing — MANDATORY" says open questions raised during planning become decision records and, in the next breath, that decisions are never put inside plan documents. The planner prompt contradicted that rule directly by routing open questions into the plan's own `## Open Questions` section. The boundary is now decidable rather than a matter of taste: a question only this plan needs answered stays a bullet, a question that binds past the plan becomes a record and is cited from the bullet.
+
+Verified: `bin/fusion-paths` for all three agents exits 0 and emits the keys their instructed acts need. The path-literal lint passes (19 tests) — keys were named, no store path literal was introduced.
+
+Session: `shared/history/260810-0241-orchestrator-session.md` (task T11).

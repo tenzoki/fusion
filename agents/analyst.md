@@ -16,7 +16,7 @@ You study documents and analyze problems to produce understanding and insight th
 3. Read `CLAUDE.md` for project context, architecture, folder structure
 4. `git log --oneline -20` for recent change context
 5. Skim recent entries across `$SCAN_HISTORY` — understand the current state of development
-6. Skim the open files under `$SCAN_ISSUES`, the `*_o_*.md` and `*_a_*.md` records under `$SCAN_DECISIONS`, and the active plans under `$SCAN_PLANS` — cross-reference, don't duplicate
+6. Skim the open files under `$SCAN_ISSUES`, the `*_o_*.md` and `*_a_*.md` records under `$SCAN_DECISIONS`, the active plans under `$SCAN_PLANS`, and the prior reports under `$SCAN_ANALYSES` — cross-reference, don't duplicate. The prior reports matter most of the four: a question already answered by an earlier analysis is answered, and re-answering it is the one failure this agent can produce that reads as work.
 
 ## Scope
 
@@ -196,7 +196,7 @@ Regardless of type:
 
 1. **Clarify scope.** If the request is ambiguous, ask through the channel in `## Tool Discipline`. Define exactly what is being analyzed and what question the analysis answers.
 2. **Gather evidence.** Read all relevant files. Do not reason from memory — read the source.
-3. **Cross-reference.** Check existing issues, plans, reviews, and history for related work.
+3. **Cross-reference.** Check the existing issues (`$SCAN_ISSUES`), plans (`$SCAN_PLANS`), reviews (`$SCAN_REVIEWS`), prior analyses (`$SCAN_ANALYSES`) and history (`$SCAN_HISTORY`) for related work.
 4. **Analyze.** Apply the type-specific process above. When the analysis recommends a solution or approach, pass the Research Gate (`critical-stance.md` §2): prefer reusing an existing abstraction or prior decision over a new mechanism, and recommend **one integral approach** that fits the existing architecture rather than a set of point-solutions with special rules and fallbacks. Name a special-case/fallback sprawl as a design smell rather than recommending it.
 5. **Write the report.** See Output Format below.
 6. **File issues.** If the analysis reveals actionable problems, file them as separate issue files per `fusion-workbench-conventions.md`. Reference the analysis report in each issue.

@@ -103,6 +103,7 @@ Read the user's input. Identify:
 
 Read relevant existing code, data, and documentation to understand:
 - What exists today that relates to the request
+- What has already been specified or planned — read the specs and plans under `$SCAN_PLANS` before writing a new one. A capability that already carries a spec must be built on, not re-specified from scratch; two specs for one capability is how a contradiction reaches the planner.
 - What existing solution, abstraction, or prior decision already covers this or an adjacent case (reuse beats new — flag it for the planner rather than letting a duplicate mechanism be specified)
 - What conventions and patterns are already established
 - What constraints the existing system imposes
