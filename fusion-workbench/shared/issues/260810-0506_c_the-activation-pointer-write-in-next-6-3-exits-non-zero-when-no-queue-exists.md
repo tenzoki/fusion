@@ -54,3 +54,6 @@ fi
 ```
 
 and add `$TASKLIST` to the prompt so the resolver emits it.
+
+---
+Resolved: ac68437 — fixed with 260810-0710 as one class, which that record asked for. Also names $TASKLIST instead of the literal, so the resolver derives the key: fusion-paths next emitted three keys before, four after.

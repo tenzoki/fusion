@@ -69,3 +69,6 @@ Capture the push's exit code instead of discarding it, and treat a non-zero exit
 report it to the user and do not write the manifest as though the working tree were saved. The
 before/after count stays useful for the "no local changes" branch; it just cannot be the only check.
 Correct the `--all` wording while there.
+
+---
+Resolved: 72b798e — the push exit code is captured and a non-zero exit halts the freeze before the manifest is written. Both checks kept, and they fail in opposite directions: the exit code catches a push git refused (indistinguishable from success to the count), the count catches a push git accepted that saved nothing (exit 0, needs the sentinel pop reads). Driven against five scratch repositories including a forced probe misprediction and an unmerged index. The --all wording corrected at both places, with the measurement that git add -n -u is the one spelling that disagrees.

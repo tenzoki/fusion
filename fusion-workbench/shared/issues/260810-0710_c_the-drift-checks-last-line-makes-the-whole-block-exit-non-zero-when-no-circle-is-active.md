@@ -23,3 +23,6 @@ The shape is: a conditional written as `[ test ] && action` in final position, w
 1. Fix this site. Mechanically small: an explicit `if`, or a trailing `true`, or reordering so the guard is not final.
 2. Fix `260810-0506` the same way, or decide the two are genuinely separate.
 3. Decide whether the shape earns a check. `hooks/lib/__tests__/` now holds several lints that parse prompt and skill bash blocks; a guard in final position is a syntactic property those extractors could already see. Against it: the corpus has enough prose-parsing lints of doubtful value (`260810-0502`, `260810-0510`), and adding one more without deciding whether that whole cohort earns its keep is the rim of special cases `rules/critical-stance.md` §2 names.
+
+---
+Resolved: ac68437 — explicit if at both sites. Measured by extracting each block from its own file and running it: drift check 1 to 0 with no Circle active, /fusion:next 6.3 1 to 0 with no queue, and 0 to 0 in both applicable cases with their output intact. A trailing true was rejected as broader than the defect. No lint added; the third question this record raises stays open.

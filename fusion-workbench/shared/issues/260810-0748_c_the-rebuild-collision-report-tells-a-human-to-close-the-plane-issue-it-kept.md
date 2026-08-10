@@ -42,3 +42,6 @@ choice.
 Deduplicate by `.id` inside each group before ranking (`group_by(.key) | map(unique_by(.id))`),
 or subtract the winner's id from `dropped` when composing `.collisions`. Either makes an
 identical-issue duplicate a no-op instead of a false instruction.
+
+---
+Resolved: a7c2b03 — the winner's id is subtracted from the losers when composing `.collisions`. `unique_by(.id)` before ranking was rejected: it keeps whichever copy sorts first, an input-order artifact for equal ids, which would reintroduce the API-result-order dependence the third tiebreak removes. A group reaches `.collisions` only if a loser survives, so a repeated issue is not counted as a resolved collision either. Reproduced against a byte-identical two-element fixture before and after; three properties pinned against the operator-facing stderr.

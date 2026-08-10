@@ -1073,3 +1073,7 @@
 {"ts":"2026-08-10T06:56:42","event":"scope_resolved","detail":"mode=issues, narrowed to real code defects in bin/ and hooks/ + release question; 10 tasks; agents: coder, orchestrator; 2 human gates expected"}
 {"ts":"2026-08-10T06:56:42","event":"queue_built","detail":"10 tasks, 0 blocked, 2 gated (T8 design choice, T10 release decision)"}
 {"ts":"2026-08-10T06:56:42","event":"turn_start","turn":1,"detail":"3 ready tasks: T1 T2 T3 (bin/fusion-plane + its test)"}
+{"ts":"2026-08-10T07:28:37","event":"turn_end","turn":1,"detail":"4 tasks resolved (T1 T2 T3 T9), 4 commits, 4 issue records closed, 2 issues filed, 2 decisions filed, 0 errors"}
+{"ts":"2026-08-10T07:28:37","event":"review_start","turn":1,"agent":"coderev","detail":"4 changed files in 18b6094..a7c2b03"}
+{"ts":"2026-08-10T07:28:37","event":"turn_start","turn":2,"detail":"3 ready tasks: T4 T5 (trailing-guard class), T6 (swallowed push exit code)"}
+{"ts":"2026-08-10T07:42:50","event":"review_done","turn":1,"agent":"coderev","detail":"4 issues filed (0 critical, 0 high, 2 medium, 2 low); all four are consequences of Turn 1's own fixes; review at shared/reviews/260810-0939-coderev-turn-3-range-18b6094-to-a7c2b03.md"}
