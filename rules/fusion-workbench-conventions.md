@@ -68,6 +68,17 @@ They are root-anchored because none of them belongs to a unit of work. `agentsta
 
 The list is exhaustive as written, and it is a list rather than a count on purpose: a count goes stale on the next helper that needs project-wide state, and this one already had. When a `bin/` helper or a hook adds a root-anchored surface, it lands in this tree in the same commit — this document is the definition, and an incomplete tree invites exactly the reasoning-by-omission it exists to prevent.
 
+### Which of them a tracked workbench tracks
+
+Whether the workbench is under version control at all is the project's decision — fusion ships no `.gitignore` rule for it, so a consuming project's workbench may be tracked, ignored, or neither. Where it *is* tracked, the root-anchored surfaces still split in two, by whether a past version answers anything:
+
+- **Records — track them.** `orchestrator-events.jsonl` (append-only across all sessions, read cross-session), `tasklist.md` and `portfolio.md` (authored text, not machine-refreshed).
+- **Live state — do not track it.** `agentstate.yaml`, `orchestrator-live.md`, `.guard-state/`, `.commit-lock/`, `.session-marker` and `.active-circle` each describe *now* and are overwritten or removed; a committed version is noise in every diff and, restored by a checkout, a statement about a session that has ended. `monitor` is a verbatim copy of the shipped `bin/monitor` that `/fusion:setup` re-creates.
+
+Two consequences the lifecycle skills depend on. **Nothing in the second group survives a fresh clone**, so no skill may promise that git holds its bytes — that promise is available only for the first group, and only where the project tracks the workbench. And **an ignored path is skipped by `git stash --include-untracked`, but not by `git stash --all` or `git clean -xdf`** — ignoring a transient protects it from the first and from nothing else.
+
+This repository applies exactly that split; see its `.gitignore`.
+
 **`shared/` mirrors the Circle's artifact kinds, plus three of its own.** Every kind a Circle can hold has a shared counterpart, because any of them can be produced with no Circle active and must still have a home. `investigations/`, `consult/` and `memos/` exist only in `shared/`: an investigation studies a failure capture, a consultation answers a question, and a memo records a note — none of the three is produced by executing a Directive, so none can originate in a Circle.
 
 **The three review types collapse into one `reviews/`.** codereview, ontoreview and conceptreview differ by sender, not by kind. The sender is in the filename (`YYMMDD-HHMM-<sender>-<topic>.md`) and in the document header. Inside one Circle they do not earn a directory each.

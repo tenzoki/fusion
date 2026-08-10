@@ -47,8 +47,22 @@ credentials.json
 .claude/settings.local.json
 .claude/.needs-reanchor
 
-# fusion-workbench is a runtime artifact created by agents in the consuming project
-## fusion-workbench/
+# fusion-workbench. In THIS repository it is deliberately tracked (a consuming project
+# decides for itself; fusion ships no rule for it). Tracked does not mean all of it:
+# the root-anchored surfaces split into records, which are kept, and live state, which
+# only ever produces diff noise and — restored by a checkout — a lie about a session
+# that ended. The split and its two consequences for the lifecycle skills are stated in
+# rules/fusion-workbench-conventions.md, "Which of them a tracked workbench tracks".
+# KEPT: orchestrator-events.jsonl, tasklist.md, portfolio.md.
+# Directory entries use `dir/*`, not `dir/`, so a later `!path` exception still works.
+fusion-workbench/agentstate.yaml
+fusion-workbench/orchestrator-live.md
+fusion-workbench/.session-marker
+fusion-workbench/.active-circle
+fusion-workbench/.guard-state/*
+fusion-workbench/.commit-lock/*
+# Verbatim copy of the tracked bin/monitor, re-created by /fusion:setup.
+fusion-workbench/monitor
 
 # .fusion/ is the fusion install directory (install.sh default: ~/.fusion, overridable
 # via FUSION_HOME). Runtime artifact, never source.
