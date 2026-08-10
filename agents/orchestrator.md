@@ -81,19 +81,21 @@ Read `fusion-workbench/agentstate.yaml`. This is the FIRST thing you do after th
      b. Use `AskUserQuestion` with a **single option**: **Restart** (delete `agentstate.yaml` and proceed with fresh setup).
      c. STOP and WAIT for the user's response.
      d. On Restart: `rm fusion-workbench/agentstate.yaml`, then continue to "Remaining setup" below.
-     e. **Skip steps 2-5** — they are for valid resumable snapshots only.
+     e. **Skip steps 2-6** — they are for valid resumable snapshots only.
   2. Read the file contents completely.
-  3. Present the saved state to the user as a summary:
+  3. **Run the drift check** (see **Persistent State File → Drift check**). The saved state is what you are about to replay, and a frozen one describes a session that got much further than it says it did. Run the check before you summarise, not after: a `progress.commits` of 0 against twelve real commits changes the answer to "Continue or Restart?", and the user cannot weigh that if you present the file's own numbers as fact.
+  4. Present the saved state to the user as a summary:
      - Session Directive and mode
      - How far the session got (Turn number, tasks completed vs total)
      - Which task was active when the session stopped
      - Which tasks remain (with their status)
      - The plan file and user directive, if any
-  4. Ask the user what to do (use AskUserQuestion — do NOT skip this):
+     - **Every diverging row from step 3**, each naming the surface, what it says, and the record that contradicts it. If nothing diverged, say that too — the user is deciding whether to trust the file.
+  5. Ask the user what to do (use AskUserQuestion — do NOT skip this):
      - **Continue** — resume from where the prior session left off. Use the saved work queue, skip already-completed tasks, pick up from the next unfinished task.
      - **Restart** — discard prior state and start fresh. Delete `agentstate.yaml` and proceed with normal setup.
      - **Modify** — the user provides updated instructions or changes scope before resuming.
-  5. **STOP and WAIT for the user's response. Do not proceed until the user has answered.**
+  6. **STOP and WAIT for the user's response. Do not proceed until the user has answered.**
 
 Remaining setup (after step 1 is resolved):
 
@@ -327,7 +329,7 @@ When in doubt, prefer the agent whose primary domain matches the file's role in 
 Maximum 5 Turns (numbered 1 through 5). Each Turn starts by:
 
 1. Recording `progress.turn_start_head` in `agentstate.yaml` with `git rev-parse --short HEAD` (the value `<turn-start-HEAD>` referenced by Step 3c and Step 3c-bis below sources from this field).
-2. Emitting a `turn_start` event.
+2. Emitting a `turn_start` event — and, **in the same command**, running the drift check (see **Persistent State File → Drift check**). It rides the emission rather than standing next to it, because a Turn-boundary obligation standing on its own is the one that froze.
 3. **REFRESHING DASHBOARD** — set `**Turn:** <N>/5` to the current Turn number, reset "This Turn" section to show the Turn's tasks as `[QUEUED]`.
 
 When the Turn ends (via Step 3e convergence/refresh, Step 3d circuit breaker, or Step 3c-bis early exit), clear `progress.turn_start_head` so the next Turn records a fresh anchor.
@@ -460,6 +462,8 @@ If all tasks in the queue are `[x] done` or `_d_ deferred`, the loop converges. 
 
 Otherwise, emit `turn_end` event with Turn stats, refresh the queue (incorporate new issues from reviews, remove completed tasks), refresh the active-session marker (`"$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" heartbeat` — keeps a parallel `/fusion:setup` from treating this session as stale), and start the next Turn. **If issues or decisions changed this Turn and Plane is configured, run the end-of-Turn Plane push now** (see **Plane mirror**, call point 2) — a side-effect, never a gate; a `deferred` result (exit 10) is surfaced, never blocking.
 
+**Run the drift check in the same command as that `turn_end` emission** (see **Persistent State File → Drift check**). This is the boundary where a freeze is already measurable — the counters have moved and the Turn's commits have landed, neither of which was true yet at `turn_start`. A session that converges or exits early never reaches this emission at all; for those, the `session_end` call point in Cleanup is the one that fires, and two of the four measured freezes were single-Turn sessions of exactly that shape.
+
 **Early-exit note (Coherence gate).** If the per-Turn Coherence gate at Step 3c-bis returned "Rebalance" and the user chose anything other than **Revise Artifact**, the loop **exits here without emitting `turn_end`**. The chosen option's `rebalance_*` event (or `bounded_closure_proposed`) was already emitted at the gate; the orchestrator now proceeds directly to Phase 3 with that verdict in hand. Revise Artifact is the only option that re-enters Phase 2 with a new queue entry — the others terminate the Turn.
 
 ## Phase 3: Final Reconciliation
@@ -562,9 +566,9 @@ After reconciler returns and any Rebalance gate is resolved, run this step if a 
 
 ### Cleanup
 
-- Emit `session_end` event
+- Emit `session_end` event — and, **in the same command**, run the drift check one last time (see **Persistent State File → Drift check**). This is the last moment at which the session's own numbers can be compared with anything: the state file is deleted two bullets below, and after that there is nothing left to contradict. A single-Turn session reaches this call point and no other.
 - Update live dashboard to show final status with `**Session:** Complete` or `**Session:** Circuit breaker: <reason>`
-- **Delete `fusion-workbench/agentstate.yaml`** — a clean exit means there is nothing to resume. The file's absence signals no interrupted session.
+- **Delete `fusion-workbench/agentstate.yaml`** — a clean exit means there is nothing to resume. The file's absence signals no interrupted session. If the drift check above found anything, emit its `state_drift` event **before** this delete; the event log outlives the state file, and an unrecorded drift disappears with the file that carried the evidence.
 - **Clear the active-session marker:** `"$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" clear`. After this, a new orchestrator session can start without a concurrency warning.
 - The live dashboard and event log persist after the session — the user may review them later or use them for tooling. Do not delete them.
 
@@ -747,6 +751,54 @@ Overwrite `agentstate.yaml` at each of these transitions (same cadence as the li
 
 **The file exists only while a session is in progress.** Its presence signals an incomplete session. On normal completion (Phase 4 cleanup), delete the file. This makes the resumption check in Setup unambiguous: file exists = interrupted session.
 
+### Drift check
+
+`agentstate.yaml`, the active Circle's record and this session's history file are all written at boundaries a session can pass **without** writing them. Nothing breaks when the write is skipped, so the skip is silent — and it has been measured four times in four separate sessions (`260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`): the state file said `commits: 0` while git counted 7, then 8, then 6; a Circle record said `Status: anticipated` with an empty Turn log while that Circle had been active for days; a history file said `Directive: (not yet stated)` while the Directive was set and eight hours of work followed. Resume is the feature this breaks, because the state file is authoritative in exactly the situation where the session that wrote it is gone and cannot be asked.
+
+Two records did **not** freeze in any of the four. `orchestrator-events.jsonl` kept up every time, because emitting an event is a call that either happens or visibly does not; and git kept up, because a commit is the work itself rather than a note about it. The drift check reads those two and prints each bookkeeping surface next to the record that can contradict it.
+
+**Run it in the same command as every boundary event emission** — `turn_start` (Phase 2), `turn_end` (Step 3e) and `session_end` (Cleanup) — and once more at Setup Step 1 when a prior session's state file is found. Riding those emissions is the design, not a convenience: a *separate* obligation at the Turn boundary is precisely what got skipped four times, so the check is attached instead to the one call that empirically never was. Run it from the workbench root, with `WORKBENCH` and `SCAN_CIRCLES` as Step 2 resolved them:
+
+```bash
+S=fusion-workbench/agentstate.yaml
+E=fusion-workbench/orchestrator-events.jsonl
+[ -f "$S" ] || { echo "drift: no agentstate.yaml — no session state to compare"; exit 0; }
+
+y() { sed -nE "s/^[[:space:]]*$1:[[:space:]]*\"?([^\"]*)\"?[[:space:]]*$/\1/p" "$S" | head -1; }
+row() { printf '  %-22s surface=%-16s record=%s\n' "$1" "$2" "$3"; }
+
+H0=$(y git_head_at_start); HF=$(y history_file); CIRC=$(cat fusion-workbench/.active-circle 2>/dev/null)
+FROM=$(grep -n '"event":"session_start"' "$E" 2>/dev/null | tail -1 | cut -d: -f1)
+TURNS=$(tail -n "+${FROM:-1}" "$E" 2>/dev/null | grep -c '"event":"turn_start"')
+[ -n "$CIRC" ] && REC=$(find "$WORKBENCH/$SCAN_CIRCLES/$CIRC" -maxdepth 1 -name '*_circle.md' 2>/dev/null | head -1)
+
+row "progress.commits" "$(y commits)" "$(git rev-list --count "$H0..HEAD" 2>/dev/null || echo '?') (git $H0..HEAD)"
+row "progress.turn" "$(y turn)" "$TURNS (turn_start events this session)"
+row "session.history_file" "${HF:-(unset)}" "$([ -n "$HF" ] && [ -f "fusion-workbench/$HF" ] && echo present || echo MISSING) (on disk)"
+row "history Directive" "$(grep -m1 '^\*\*Directive:\*\*' "fusion-workbench/$HF" 2>/dev/null | cut -c15-44)" "$(y directive | cut -c1-30)"
+[ -n "$REC" ] && row "Circle Turn log" "$(sed -n '/^## Turn log/,/^## [A-Z]/p' "$REC" | grep -c '^- Turn') entries" "$TURNS turns run"
+```
+
+**Read the rows against these conditions.** Each row pairs one surface with the one record that can contradict it, and a row is drift only under its own condition — a value that legitimately differs is not a fault to report:
+
+| Row | Drift when |
+|---|---|
+| `progress.commits` | the two numbers differ by more than one (the one allows the commit currently in flight) |
+| `progress.turn` | the two numbers differ at all |
+| `session.history_file` | the named file is not on disk — the resume anchor points at nothing |
+| history Directive | the history file's line is a placeholder (`(not yet …)`) while `agentstate.yaml` carries a Directive. Different **wording** is not drift: the two are written at different moments and neither is the other's source. |
+| Circle Turn log | the record carries fewer entries than Turns run |
+
+**When any row drifts:**
+
+1. **Emit a `state_drift` event** naming the diverging rows, both values, and the record each value came from. Do this first. The event log is the surface that survives, `agentstate.yaml` is deleted at Cleanup, and a drift that was noticed but never recorded disappears with the file that held the evidence.
+2. **Tell the user in one line**, naming what diverged and from what — e.g. `Session state stale: agentstate.yaml says 0 commits, git counts 12 since 8960e1a.` Do not fold it into the Turn report's body, where it reads as a statistic rather than as a warning about the numbers around it.
+3. **Bring the surfaces current** by performing the writes Write Points already required — the state file, the Circle's Turn-log entry, the history file's Per-Turn Log. You are the sole writer of all three, so this is not a second writer repairing them; it is the skipped write, done late. The `state_drift` event stays in the log regardless, so correcting the surfaces does not erase the fact that they froze.
+
+**The mid-session Circle supersession case.** When the active Circle changes mid-session — activated, superseded, closed — `$OUT_HISTORY` re-resolves to a different store. That is not a licence to re-point `session.history_file`: a session keeps **one** history file for its whole life, and that field names the file the session actually writes, wherever it was created. In the third measured instance the anchor was rewritten to a path under the successor Circle that the session never created, so a resuming orchestrator would have found neither the Turn state nor the log it named. The `session.history_file` row above is what catches that, and it is the only row whose failure mode is a dangling pointer rather than a stale number.
+
+**What this is, honestly.** A convention, not an enforcement. Nothing executes it — it is prompt text, and prompt text is overridable under task pressure (`rules/critical-stance.md` §2; this project's own worked case is "Problem 11" in `CLAUDE.md`, where a "MUST" in this prompt lost to the urgency of a user request). What it buys over the prescription it replaces is threefold: the freeze becomes **visible from evidence** instead of merely forbidden; the evidence is the one record measured never to freeze across four instances; and the check costs one command at a boundary the session already stops at, so it is not a new thing to remember. An enforcement would have to sit where something runs without being asked — a hook, or a helper that `/fusion:setup` and the monitor call — and none of that is built here. Do not read this section as a guarantee.
+
 ### Write mechanics
 
 Use the Write tool to overwrite the entire file on each update. The file is small and the overwrite is atomic from the orchestrator's perspective. Obtain the timestamp for the `# Updated:` comment from `date +%y%m%d-%H%M`.
@@ -865,6 +917,7 @@ Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit
 | `review_done` | Review complete | Issues filed count |
 | `circuit_breaker` | Circuit breaker tripped | Condition name |
 | `turn_end` | End of Turn | Tasks resolved, issues created |
+| `state_drift` | The drift check found a bookkeeping surface contradicted by git or by this log — run at `turn_start`, `turn_end`, `session_end` and at Setup Step 1 (see **Persistent State File → Drift check**) | One entry per diverging row: the surface, what it says, what the record says, and which record. Emitted **before** `agentstate.yaml` is deleted at Cleanup, because this log is what outlives it. |
 | `coherence_review` | Phase 2 step 3c-bis (per-Turn Coherence gate fired); also Phase 3 step 3 defensive fallback when the reconciler's `## Coherence` section is malformed | `verdict` (ok \| review-needed \| skipped-no-commits \| skipped-no-directive \| skipped-no-anchor) + three-edge summary lines (Artifact↔Grounding, Artifact↔Directive, Grounding↔Directive). The `bounded-closure-proposed` verdict is NOT emitted here — that case has its own dedicated `bounded_closure_proposed` event row below, fired by the per-Circle reconciler verdict, not by this per-Turn gate. |
 | `rebalance_artifact` | Rebalance gate, user chose Revise Artifact | Re-tried task ID or new task description |
 | `rebalance_grounding` | Rebalance gate, user chose Revise Grounding | Decision-record file path created or superseded |

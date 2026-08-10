@@ -101,3 +101,22 @@ Session `shared/history/260808-0920-orchestrator-session.md`, HEAD at start `451
 **One surface improved.** `session.history_file` names `shared/history/260808-0920-orchestrator-session.md`, which exists. The dangling resume anchor recorded in the third instance did not recur; that instance's cause was a mid-session Circle supersession, which did not happen here.
 
 **Not repaired here**, same reason as the three instances above: this record's own candidate 3.
+
+---
+
+**Partially addressed 260810-0410 (coder, task T6) — stays `_o_`. Candidate 2 built, on the orchestrator side only. Candidate 1 not built.**
+
+`agents/orchestrator.md` now carries a **Drift check** (under `## Persistent State File`) and calls it at four points. It reads the two records this issue identifies as un-freezable — `orchestrator-events.jsonl` and git — and prints each bookkeeping surface beside the record that can contradict it: `progress.commits` against `git rev-list --count <git_head_at_start>..HEAD`, `progress.turn` against the count of `turn_start` events since the last `session_start`, `session.history_file` against the disk, the history file's `**Directive:**` line against the state file's, and the Circle record's `## Turn log` entry count against the Turns run. Each row has its own drift condition, so a value that legitimately differs is not reported as a fault. On drift the orchestrator emits a new `state_drift` event **before** `agentstate.yaml` is deleted at Cleanup, tells the user in one line naming what diverged and from what, then performs the writes Write Points already required.
+
+**The call points ride event emissions rather than standing beside them.** `turn_start` (Phase 2), `turn_end` (Step 3e), `session_end` (Cleanup), plus the resume path at Setup Step 1. That is this record's own diagnostic turned into the mechanism: a separate end-of-Turn obligation is the shape that was skipped four times, so the check was attached to the one call that empirically never was. `session_end` matters on its own — two of the four instances were single-Turn sessions, which reach no second `turn_start` and, on convergence, no `turn_end` either.
+
+**A fifth instance, measured live while this was being written.** Session `shared/history/260810-0241-orchestrator-session.md`, HEAD at start `8960e1a`. `agentstate.yaml` read `# Updated: 260810-0243`, `progress.turn: 0`, `commits: 0` while `git rev-list --count 8960e1a..HEAD` returned 12 and the event log carried one `turn_start` and three `commit` events. Divergence 12, against the stated threshold of "more than one". The snippet was run against this workbench and printed exactly those rows, so the check is demonstrated on live drift rather than only argued.
+
+**What it honestly is: a convention.** Nothing executes it. It is prompt text, and prompt text is overridable under task pressure — the section says so in its own closing paragraph, and `hooks/lib/__tests__/state-drift-detection-lint.test.ts` pins that admission along with the surfaces, the drift conditions, the `state_drift` event row, and the attachment to all four emissions. That gate keeps the contract in the prompt; it cannot make a session run it. An enforcement would have to sit where something runs unasked — a PostToolUse hook, or a `bin/` helper that `/fusion:setup`, the monitor and the reconciler all call — and none of that was in this task's scope.
+
+**What remains open, and why the marker stays `_o_`:**
+
+- **Candidate 1 (prevention) is not built.** The Turn-boundary write still stands as its own obligation; it does not ride the commit.
+- **`/fusion:setup` does not compute the divergence.** The orchestrator's inlined Setup Step 1 does, but `skills/setup/SKILL.md` carries the same steps for the user-triggered path and was out of scope. Until it is mirrored there, the resume-time detection exists only on the self-initiated path.
+- **The monitor does not compute it either.** `bin/monitor` is on the guard's protected-path list and a monitor change carries its own release consequence.
+- The mid-session Circle supersession case is now **named** in the Drift check (the `session.history_file` row is what catches it, and the section states that a session keeps one history file for its whole life), but nothing prevents the anchor being re-pointed.
