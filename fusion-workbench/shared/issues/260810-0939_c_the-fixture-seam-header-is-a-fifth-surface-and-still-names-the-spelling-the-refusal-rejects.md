@@ -45,3 +45,6 @@ no key is present). Drop the `seed --plan --fixture` analogy or qualify it. Add 
 change is implied.
 
 Found in code review of `18b6094..a7c2b03`, commit `4bf509e`.
+
+---
+Resolved: 98c8b3f — written against the code as it stands after map --rebuild landed, not against this record's quotes. The seed --plan --fixture analogy is gone and the two rebuild spellings are described by what each does. FUSION_PLANE_DRYRUN carries the --rebuild-map exception at both sites, and the push synopsis gains --fixture in the header and in usage().

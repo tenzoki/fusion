@@ -67,3 +67,10 @@ today, so it is the more expensive of the two.
       or reported, never silently dropped with a success line.
 - [ ] The ordinary path — nothing concurrent — still prints
       "Halt cleared. Guard will resume normal operation." and exits 0.
+
+---
+Resolved: e39b3fe — clear-halt re-reads the state after saving and compares the halt-level events there against the ones it was holding; anything it never showed is named on stderr and the run exits 2 instead of printing success. The merge rule in escalation.ts is untouched, as this record argues it should be.
+
+Reproduced before the change at 7f617b1, at module level and by spawning the compiled script with the second halt injected between its load and its save: exit 0, empty stderr, success line printed. After: exit 2, no success line, the halt named with its file.
+
+Both acceptance criteria met. Three guards were added against the worse defect of refusing where it currently succeeds: the comparison is against the state as loaded rather than the five lines printed, the re-read is wrapped so a throw costs the check and not the clear, and nothing is re-raised or refused.

@@ -55,3 +55,6 @@ it hands the operator instead.
 skill invokes `--rebuild-map`, so nothing in the plugin's own wiring is broken by it.
 
 Found in code review of `18b6094..a7c2b03`, commit `4bf509e`.
+
+---
+Resolved: 98c8b3f — map --rebuild is now its own non-reconciling command, in the shape --migrate already had. Measured against a scratch workbench on an unroutable TLD: the fixture path needs no key and no config, the live path answers an absent key with exit 10 and an unchanged map, and push --rebuild-map on the same input exits 10 having also deferred 6 transitions to the outbox, which is the reconcile map --rebuild omits. The refusal prints two lines with no && at all, closing the secondary defect where EXIT_DEFERRED swallowed the second step; a test asserts the absence. The recipe moved out of the zero-risk section into a heading that promises nothing. push --rebuild-map stays and delegates, since both spellings already end in the one rebuild_map().

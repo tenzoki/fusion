@@ -57,3 +57,8 @@ Add the two mutations above to the existing permanent test in the same file
 is correct as it stands; this is a test-integrity defect, not a counting defect.
 
 Found in code review of `18b6094..a7c2b03`, commit `38fe341`.
+
+---
+Resolved: c546ef0 — the declared filter is now its own pattern, wider than the match it guards. Both cited mutations throw and the deletion case still does not, asserted relative to the unmutated count rather than a literal. The record's `+=` fixture doubles the value at run time; the value-preserving form without the prefix is the actual defect and is what the test mutates.
+
+A fourth round of this class was measured and deliberately not patched: `export`, `declare`, a leading separator and `printf -v` all escape both filters, and the generalisation is that a declaration whose variable name is not the first token on the line escapes. Widening again would start matching the script's own uses of the variable. Filed as `shared/decisions/260810-1010_o_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md`.

@@ -51,3 +51,6 @@ real UUIDs — where it is provably correct.
 **Scope:** `bin/fusion-plane`, `JQ_REBUILD_MAP` only.
 
 Found in code review of `18b6094..a7c2b03`, commit `a7c2b03`.
+
+---
+Resolved: 98c8b3f — the select at extraction, as directed. Beyond the direction: the dropped entries return as a SKIPPED report line with a count per key, because a bare select would have satisfied no-plane_id-null while removing the last diagnostic, which is what this record was about. Pinned both ways — two id-less entries produce the skip line, a genuine two-issue collision emits no SKIPPED and still reports kept, dropped and the close-it-by-hand instruction in full.

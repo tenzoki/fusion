@@ -1077,3 +1077,7 @@
 {"ts":"2026-08-10T07:28:37","event":"review_start","turn":1,"agent":"coderev","detail":"4 changed files in 18b6094..a7c2b03"}
 {"ts":"2026-08-10T07:28:37","event":"turn_start","turn":2,"detail":"3 ready tasks: T4 T5 (trailing-guard class), T6 (swallowed push exit code)"}
 {"ts":"2026-08-10T07:42:50","event":"review_done","turn":1,"agent":"coderev","detail":"4 issues filed (0 critical, 0 high, 2 medium, 2 low); all four are consequences of Turn 1's own fixes; review at shared/reviews/260810-0939-coderev-turn-3-range-18b6094-to-a7c2b03.md"}
+{"ts":"2026-08-10T07:59:39","event":"coherence_review","turn":2,"detail":"verdict=ok; Artifact<->Grounding: 4 issues filed by Turn 1 review, all consequences of Turn 1 fixes; Artifact<->Directive: 7 commits, 7 records closed, moves toward the stated Directive; Grounding<->Directive: 2 open decisions filed, 0 answered decisions touched"}
+{"ts":"2026-08-10T07:59:39","event":"gate_response","turn":2,"detail":"user chose: build map --rebuild as its own non-reconciling command; continue as planned"}
+{"ts":"2026-08-10T07:59:39","event":"turn_end","turn":2,"detail":"3 tasks resolved (T4 T5 T6), 3 commits, 3 records closed, 5 issues filed"}
+{"ts":"2026-08-10T07:59:39","event":"turn_start","turn":3,"detail":"3 ready tasks: T11 (map --rebuild + two plane findings), T14 (declared filter anchor), T7 (clear-halt)"}
