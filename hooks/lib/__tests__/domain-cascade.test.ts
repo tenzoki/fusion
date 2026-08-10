@@ -9,6 +9,11 @@ import {
   countsFromHelperOutput,
   cascadeBlocks,
   findCascadeStatements,
+  statementUnits,
+  inputsNamedIn,
+  describeReach,
+  DOMAINS,
+  REACH,
   type Branch,
   type CascadeStatement,
   type Counts,
@@ -500,40 +505,79 @@ describe("the gate catches the four edits that defeated its predecessor", () => 
 // Reach: exactly one consumer states the cascade (issue 260810-1918).
 //
 // Everything above measures the definition. This measures how far the gate
-// reaches, which is what the previous round got wrong: both gates read
-// `agents/orchestrator.md` and nothing else, while `skills/cleanup/SKILL.md`
-// carried the cascade as one prose sentence — in the pre-fix order, with no
-// `counted_by == "none"` case. A project reached `code` at Setup and
-// `strategic` at cleanup in the same session, and under `strategic` the
-// reconciler runs no code tests.
+// reaches, which is what the previous two rounds got wrong — in the same place,
+// twice:
 //
-// The file set is the CONSUMER set: every agent prompt and every skill body —
-// the files an agent executes. It carries no exemptions, deliberately.
-// `path-literal-lint.test.ts` scans the same two directories and exempts
-// `setup` and `migrate` because their subject IS the layout; nothing makes a
-// skill a legitimate second home for this decision, so nothing is exempt here.
+//   Round 1 asserted a second definition was unrepresentable. One existed:
+//   `skills/cleanup/SKILL.md` carried the cascade as one prose sentence, in the
+//   pre-fix order, with no `counted_by == "none"` case. A project reached `code`
+//   at Setup and `strategic` at cleanup inside one session, and under
+//   `strategic` the reconciler runs no code tests.
+//
+//   Round 2 replaced that with a scoped measurement naming three holes. A review
+//   measured a fourth against the shipped build (issues 260810-2110): a domain
+//   name outside backticks or double quotes was invisible, so the plainest
+//   possible second copy walked past. It also found the detector line-scoped
+//   while this repository's prose is hard-wrapped, and the file set justified as
+//   "the files an agent executes" while `rules/` is that too.
+//
+// Both times the gate was sound and the SENTENCE next to it was broader. So the
+// sentence is gone: `REACH` in `hooks/lib/domain-cascade.ts` holds the file set,
+// what is caught, what is missed and what is not scanned, each line carrying
+// probes this file runs. The `README-hooks.md` paragraph is rendered from the
+// same object and compared byte-for-byte. A claim that outruns the gate now
+// fails here rather than being found by the next reviewer.
+//
+// The file set is the CONSUMER set and it carries no exemptions, deliberately.
+// `path-literal-lint.test.ts` scans agents and skills and exempts `setup` and
+// `migrate` because their subject IS the layout; nothing makes a second home for
+// this decision legitimate, so nothing is exempt here.
 //
 // Two shapes are detected, because two are representable: a fenced block that
 // would actually run (`cascadeBlocks`) and a prose sentence that a reader
-// executes (`findCascadeStatements`). Both live in `hooks/lib/domain-cascade.ts`
-// with their limits written at the code, and the limits are real — a paraphrase
-// spread across a table's rows is not caught. This is a floor, not a proof.
+// executes (`findCascadeStatements`). This is a floor whose height is written
+// down and checked, not a proof.
 // ---------------------------------------------------------------------------
 
 /** The single file allowed to state the cascade: Setup Step 5 lives here. */
 const DEFINITION_SITE = "agents/orchestrator.md";
 
-/** Every agent prompt plus every skill body. No exemptions — see the header. */
+/**
+ * Expand one entry of `REACH.fileSet` (or of `REACH.excluded`). Three shapes
+ * are understood and an unknown one throws rather than quietly expanding to
+ * nothing — a file set that silently shrinks is the exact failure this whole
+ * block exists to catch.
+ */
+function expandGlob(glob: string): { rel: string; abs: string }[] {
+  const dirStar = /^([A-Za-z0-9._-]+)\/\*\.md$/.exec(glob);
+  if (dirStar) {
+    const dir = dirStar[1];
+    return readdirSync(join(pluginRoot, dir))
+      .filter((f) => f.endsWith(".md"))
+      .sort()
+      .map((f) => ({ rel: `${dir}/${f}`, abs: join(pluginRoot, dir, f) }));
+  }
+  const dirStarFile = /^([A-Za-z0-9._-]+)\/\*\/([A-Za-z0-9._-]+)$/.exec(glob);
+  if (dirStarFile) {
+    const [, dir, name] = dirStarFile;
+    return readdirSync(join(pluginRoot, dir))
+      .sort()
+      .map((d) => ({ rel: `${dir}/${d}/${name}`, abs: join(pluginRoot, dir, d, name) }))
+      .filter(({ abs }) => existsSync(abs));
+  }
+  if (/^[A-Za-z0-9._-]+$/.test(glob)) {
+    const abs = join(pluginRoot, glob);
+    return existsSync(abs) ? [{ rel: glob, abs }] : [];
+  }
+  throw new Error(
+    `expandGlob does not understand \`${glob}\`. Teach it the shape or the gate scans ` +
+      `fewer files than REACH.fileSet claims.`,
+  );
+}
+
+/** The scanned set, derived from `REACH.fileSet` rather than restated here. */
 function consumerFiles(): { rel: string; abs: string }[] {
-  const files: { rel: string; abs: string }[] = [];
-  for (const f of readdirSync(join(pluginRoot, "agents"))) {
-    if (f.endsWith(".md")) files.push({ rel: `agents/${f}`, abs: join(pluginRoot, "agents", f) });
-  }
-  for (const d of readdirSync(join(pluginRoot, "skills"))) {
-    const abs = join(pluginRoot, "skills", d, "SKILL.md");
-    if (existsSync(abs)) files.push({ rel: `skills/${d}/SKILL.md`, abs });
-  }
-  return files;
+  return REACH.fileSet.flatMap(expandGlob);
 }
 
 /** HYG-NO-SILENT-FAIL: file, line, what was matched, and what to do instead. */
@@ -633,6 +677,51 @@ describe("the reach gate catches the copy it was written for", () => {
     expect(msg).toContain("agentstate.yaml");
   });
 
+  it("catches a statement spliced into a RULE file, which the old file set could not read", () => {
+    // The file-set widening, demonstrated end to end rather than argued.
+    // `rules/**` is a consumer by the project's own rules-loading contract —
+    // `rules/agent-setup.md` says "read every path it emits, none is optional"
+    // — so a rule file is as good a second home for this decision as a skill
+    // body was. Until this Turn the gate did not read one (issue 260810-2110).
+    // In-memory copy; nothing in the working tree is mutated (decision
+    // 260810-1820).
+    const rel = "rules/agent-setup.md";
+    expect(
+      consumerFiles().map((f) => f.rel),
+      "the widened file set must actually enumerate rule files",
+    ).toContain(rel);
+
+    const original = readFileSync(join(pluginRoot, rel), "utf-8").split("\n");
+    expect(
+      findCascadeStatements(original.join("\n")),
+      "precondition: the shipped rule file must be clean before the splice",
+    ).toEqual([]);
+
+    const copy = [...original];
+    copy.splice(
+      12,
+      0,
+      "Detect the domain the orchestrator detected: `strategic` if open decisions outnumber " +
+        "open issues, `knowledge` if analyses exist with no source, otherwise `code`.",
+    );
+    const found = findCascadeStatements(copy.join("\n"));
+    expect(found.map((s) => s.line)).toEqual([13]);
+    expect(reportStatements(rel, found)).toContain(`${rel}:13`);
+  });
+
+  it("catches a statement a hard wrap split in two, and reports both lines", () => {
+    // The line-scope widening (issue 260810-2110). The same sentence on one
+    // line already fired; split by a 78-column wrap it did not.
+    const wrapped =
+      "Pick `strategic` when open decisions outnumber open issues,\n" +
+      "and `code` otherwise (measured on decisions_count and issues_count).";
+    const found = findCascadeStatements(wrapped);
+    expect(found.length).toBe(1);
+    expect(found[0].line).toBe(1);
+    expect(found[0].span, "a wrapped statement is reported as the two lines it occupies").toBe(2);
+    expect(found[0].text).toContain("and `code` otherwise");
+  });
+
   it("catches the cascade re-fenced into a second file", () => {
     // The other representable copy: not prose but a block that would run.
     expect(cascadeBlocks(fence(PRE_FIX)).length).toBe(1);
@@ -692,6 +781,25 @@ describe("the reach gate catches the copy it was written for", () => {
       "next/SKILL.md:72 — naming the value set",
       "`<detected-domain>` ∈ `{code, data, strategic, knowledge}` for the remainder of this skill.",
     ],
+    // The two the continuation window costs if it joins across blocks instead
+    // of only to a wrap. Both are adjacent bullets of a legitimate per-domain
+    // list, and an unconditional two-line window selects both — measured on the
+    // shipped tree before the block rule went in.
+    [
+      "playmaker.md:111-112 — two bullets of the per-domain signal list",
+      "  - `data`: count of pending issues (`_o_` and `_p_` files under `$SCAN_ISSUES`) that " +
+        "mention ontology/manifest paths cited in the Circle's `Grounding snapshot`.\n" +
+        "  - `strategic`: count of open `_o_` decisions cited in the Circle's `## Directive` " +
+        "(decisions the Circle would realise).",
+    ],
+    [
+      "reconciler.md:135-136 — two bullets of the edge list",
+      "- **Artifact↔Grounding edge** — already implicit in the `code`/`data` protocol output " +
+        "(claims-vs-disk + reviewer-issues count). For `strategic`/`knowledge` domains, restate " +
+        "using their protocol's outputs.\n" +
+        "- **Artifact↔Directive edge** — read the session history's `**Directive:**` line and " +
+        "walk the commits from `git log <session-start-HEAD>..HEAD`.",
+    ],
   ];
 
   for (const [label, text] of MUST_NOT_FIRE) {
@@ -699,4 +807,147 @@ describe("the reach gate catches the copy it was written for", () => {
       expect(findCascadeStatements(text)).toEqual([]);
     });
   }
+});
+
+// ---------------------------------------------------------------------------
+// The reach CLAIM, measured (issues 260810-2110).
+//
+// Two commits in a row shipped a prose claim about this gate that was broader
+// than the gate. The repair is not a wider regex, it is that the claim stopped
+// being prose: `REACH` holds it, every line carries probes, and the three
+// describes below run them. A widening that closes a hole fails here until the
+// hole leaves the list; a narrowing that opens one fails here too.
+// ---------------------------------------------------------------------------
+
+describe("the reach claim is asserted, not written", () => {
+  describe("what REACH says is caught, is caught", () => {
+    for (const [i, c] of REACH.covered.entries()) {
+      for (const [j, probe] of c.probes.entries()) {
+        it(`covered[${i}] probe ${j + 1}: ${c.claim.slice(0, 60)}…`, () => {
+          expect(
+            findCascadeStatements(probe).length,
+            `REACH.covered[${i}] claims this is caught and it is not:\n  ${probe}`,
+          ).toBeGreaterThan(0);
+        });
+      }
+    }
+  });
+
+  describe("what REACH says is missed, is still missed", () => {
+    for (const [i, c] of REACH.holes.entries()) {
+      for (const [j, probe] of c.probes.entries()) {
+        it(`holes[${i}] probe ${j + 1}: ${c.claim.slice(0, 60)}…`, () => {
+          expect(
+            findCascadeStatements(probe),
+            `REACH.holes[${i}] is named as a hole and the gate now catches it. That is good ` +
+              `news and a stale claim: move the case from REACH.holes to REACH.covered, ` +
+              `re-measure the false-positive cost over the consumer set, and regenerate the ` +
+              `README block.\n  ${probe}`,
+          ).toEqual([]);
+        });
+      }
+    }
+  });
+
+  describe("what REACH says about the files it does not read, holds", () => {
+    for (const e of REACH.excluded) {
+      it(`${e.glob} measures "${e.measured}"`, () => {
+        const files = expandGlob(e.glob);
+        expect(files.length, `REACH.excluded names \`${e.glob}\`, which matches no file`).toBeGreaterThan(0);
+        const hits = files.flatMap(({ rel, abs }) =>
+          findCascadeStatements(readFileSync(abs, "utf-8")).map((s) => `${rel}:${s.line}`),
+        );
+        expect(
+          hits.length > 0 ? "fires" : "clean",
+          `REACH.excluded says \`${e.glob}\` measures "${e.measured}". Selected: ` +
+            `${hits.join(", ") || "nothing"}. A file called clean that is not clean is an ` +
+            `unstated second definition; a file called firing that no longer fires means the ` +
+            `reason for excluding it has expired.`,
+        ).toBe(e.measured);
+      });
+    }
+  });
+
+  describe("the cost a hole is left open on, re-measured", () => {
+    // The reason bare words are not matched is a number, and a number is the
+    // one part of a claim that can be checked mechanically. This project's
+    // commit messages have miscounted three times in two Turns while every
+    // prose claim in them held, so the number is measured here rather than
+    // remembered. The widening is spelled out in full: `domainLiteralsIn` with
+    // `\b<domain>\b` in place of the markup requirement, everything else — the
+    // two-domain rule, the two-input rule, the unit splitting — unchanged, so
+    // the module's own `statementUnits` and `inputsNamedIn` are reused rather
+    // than restated.
+    const bareDomainsIn = (text: string): Set<string> =>
+      new Set(DOMAINS.filter((d) => new RegExp(`\\b${d}\\b`).test(text)));
+
+    const bareWordCost = (withWindow: boolean): string[] => {
+      const selected: string[] = [];
+      for (const { rel, abs } of consumerFiles()) {
+        if (rel === DEFINITION_SITE) continue;
+        const reported = new Set<number>();
+        for (const u of statementUnits(readFileSync(abs, "utf-8"))) {
+          if (!withWindow && u.span > 1) continue;
+          if (reported.has(u.line)) continue;
+          if (u.span > 1 && reported.has(u.line + 1)) continue;
+          if (bareDomainsIn(u.text).size < 2) continue;
+          if (inputsNamedIn(u.text).size < 2) continue;
+          reported.add(u.line);
+          selected.push(`${rel}:${u.line}`);
+        }
+      }
+      return selected;
+    };
+
+    for (const [where, cases] of [
+      ["covered", REACH.covered],
+      ["holes", REACH.holes],
+    ] as const) {
+      for (const [i, c] of cases.entries()) {
+        if (!c.cost) continue;
+        it(`${where}[${i}] — ${c.cost.widening} still costs what it says`, () => {
+          const single = bareWordCost(false);
+          const windowed = bareWordCost(true);
+          expect(
+            { singleLine: single.length, withWindow: windowed.length },
+            `REACH.${where}[${i}].cost is stale. Measured now:\n` +
+              `  single lines (${single.length}): ${single.join(", ")}\n` +
+              `  with window  (${windowed.length}): ${windowed.join(", ")}\n` +
+              `Update the numbers and regenerate the README block — they are the whole reason ` +
+              `this hole is left open.`,
+          ).toEqual({ singleLine: c.cost.singleLine, withWindow: c.cost.withWindow });
+        });
+      }
+    }
+  });
+
+  it("the scanned set is exactly what REACH.fileSet names", () => {
+    // `consumerFiles()` is derived from `REACH.fileSet`, so this cannot fail by
+    // drift — it fails when a glob shape stops matching anything, which is how
+    // a file set silently shrinks.
+    const byGlob = REACH.fileSet.map((g) => [g, expandGlob(g).length] as const);
+    for (const [glob, n] of byGlob) {
+      expect(n, `\`${glob}\` in REACH.fileSet matches no file`).toBeGreaterThan(0);
+    }
+    expect(consumerFiles().map((f) => f.rel)).toContain(DEFINITION_SITE);
+  });
+
+  it("README-hooks.md carries the generated claim verbatim", () => {
+    const readme = readFileSync(join(pluginRoot, "README-hooks.md"), "utf-8");
+    const begin = "<!-- BEGIN generated: domain-cascade reach -->";
+    const end = "<!-- END generated: domain-cascade reach -->";
+    const from = readme.indexOf(begin);
+    const to = readme.indexOf(end);
+    expect(from, `README-hooks.md has no ${begin} marker`).toBeGreaterThan(-1);
+    expect(to, `README-hooks.md has no ${end} marker`).toBeGreaterThan(from);
+
+    const block = readme.slice(from + begin.length, to).trim();
+    expect(
+      block,
+      "the reach paragraph in README-hooks.md is rendered from REACH by describeReach(). It " +
+        "has drifted. Replace the text between the markers with the output of:\n" +
+        "  node -e \"import('./hooks/dist/lib/domain-cascade.js').then(m => " +
+        'console.log(m.describeReach()))"',
+    ).toBe(describeReach().trim());
+  });
 });

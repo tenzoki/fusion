@@ -90,13 +90,127 @@ export declare function variablesRead(e: Expr | null): Set<CountName>;
  * helper's own header forbids.
  */
 export declare function countsFromHelperOutput(stdout: string): Pick<Counts, "code_files" | "data_files" | "counted_by">;
+/** The cascade inputs a line names, by variable name or by prose spelling. */
+export declare function inputsNamedIn(line: string): Set<CountName>;
 export interface CascadeStatement {
-    /** 1-based line number. */
+    /** 1-based line number of the unit's FIRST line. */
     line: number;
-    /** The line as written, trimmed. */
+    /** How many source lines the unit covers: 1, or 2 for a wrapped sentence. */
+    span: number;
+    /** The unit as written, trimmed; a 2-line unit is joined with one space. */
     text: string;
     domains: Domain[];
     inputs: CountName[];
 }
-/** Every line of `markdown` that states the cascade rather than consuming it. */
+export interface StatementUnit {
+    line: number;
+    span: number;
+    text: string;
+}
+/**
+ * The units a statement is looked for in: every line on its own, then every
+ * line joined to its continuation. Fenced regions are joined by nobody — a
+ * fenced copy is `cascadeBlocks()`'s job and joining two branch lines there
+ * would report the same block twice.
+ */
+export declare function statementUnits(markdown: string): StatementUnit[];
+/**
+ * Every unit of `markdown` that states the cascade rather than consuming it.
+ *
+ * Single lines are considered before wrapped pairs, and a pair is dropped when
+ * either of its two lines already reported on its own. So a statement that fits
+ * on one line is reported once — never again as the head of the pair below it,
+ * and never again as the tail of the pair above it.
+ */
 export declare function findCascadeStatements(markdown: string): CascadeStatement[];
+/** One line of the reach claim, with the probes that keep it true. */
+export interface ReachCase {
+    /** The claim as a reader meets it, in `README-hooks.md` and here. */
+    claim: string;
+    /** Texts the claim is asserted against. Covered probes fire; holes do not. */
+    probes: readonly string[];
+    /**
+     * For a hole left open on cost: what closing it would select across the
+     * scanned set, outside the definition site. Both numbers are re-measured by
+     * the suite and rendered into the README by `describeReach()`, because a
+     * count is the one part of a claim that can be checked mechanically and this
+     * project's counts are where its claims have slipped.
+     */
+    cost?: {
+        readonly widening: string;
+        readonly singleLine: number;
+        readonly withWindow: number;
+    };
+}
+/** A path the gate does not read, and what reading it would yield today. */
+export interface ReachExclusion {
+    /** Path or glob, relative to the plugin root. */
+    glob: string;
+    /** Measured, not assumed: does the gate select anything in these files? */
+    measured: "clean" | "fires";
+    /** Why it is out of the scanned set, in terms the measurement supports. */
+    note: string;
+}
+/**
+ * What the reach gate scans, catches, misses, and leaves out — the single
+ * authoring home for all four. Every field is checked in
+ * `domain-cascade.test.ts`: `fileSet` is what the gate actually enumerates,
+ * each `covered` probe must fire, each `holes` probe must not, each `excluded`
+ * glob must measure what it claims, and `README-hooks.md` must carry
+ * `describeReach()` verbatim.
+ */
+export declare const REACH: {
+    readonly fileSet: readonly ["agents/*.md", "skills/*/SKILL.md", "rules/*.md"];
+    readonly covered: readonly [{
+        readonly claim: string;
+        readonly probes: readonly ["Use `strategic` when open decisions outnumber open issues, otherwise `code`.", "Use \"strategic\" when open decisions outnumber open issues, otherwise \"code\".", "Use 'strategic' when open decisions outnumber open issues, otherwise 'code'.", "Use **strategic** when open decisions outnumber open issues, otherwise **code**."];
+    }, {
+        readonly claim: string;
+        readonly probes: readonly [string];
+    }, {
+        readonly claim: "A paraphrase written with the cascade's own variable names.";
+        readonly probes: readonly [string];
+    }, {
+        readonly claim: string;
+        readonly probes: readonly ["Use `strategic` if the workbench has more open decisions than issues; otherwise `code`."];
+    }, {
+        readonly claim: string;
+        readonly probes: readonly [string];
+    }];
+    readonly holes: readonly [{
+        readonly claim: string;
+        readonly probes: readonly [string];
+        readonly cost: {
+            readonly widening: "matching bare words";
+            readonly singleLine: 14;
+            readonly withWindow: 14;
+        };
+    }, {
+        readonly claim: string;
+        readonly probes: readonly [string, "Pick `strategic` when open decisions\noutnumber open issues, and otherwise\nfall back to `code`."];
+    }, {
+        readonly claim: string;
+        readonly probes: readonly ["`strategic` for planning work, else `code`."];
+    }, {
+        readonly claim: string;
+        readonly probes: readonly ["`strategic` when open questions outnumber defects, otherwise `code`."];
+    }];
+    readonly excluded: readonly [{
+        readonly glob: "docs/*.md";
+        readonly measured: "fires";
+        readonly note: string;
+    }, {
+        readonly glob: "CLAUDE.md";
+        readonly measured: "clean";
+        readonly note: string;
+    }, {
+        readonly glob: "README-hooks.md";
+        readonly measured: "clean";
+        readonly note: string;
+    }];
+};
+/**
+ * The reach claim rendered as the markdown block `README-hooks.md` carries.
+ * The test compares the file against this, so the two cannot drift.
+ */
+export declare function describeReach(): string;

@@ -176,8 +176,48 @@ refusal *before* the write.
 | `lib/churn.ts` | Churn heatmap tracker. Keys are relative to the **workbench root** — the same coordinate space the protected-path measurement uses, resolved by the same two helpers — so one file has one counter whatever directory the session started in, and a state file written under the old cwd-relative key is migrated once on load. Nothing is ever deleted from the map; the ranking is where absent files are left out | Yes |
 | `lib/workbench-root.ts` | Walks up from cwd to find `fusion-workbench/.fusion-setup` (single source of truth for workbench presence in TS) | Yes |
 | `lib/self-detect.ts` | Detects the fusion plugin's own repo so the **write** guard stands down — the write tools and the protected-path measurement alike, since the protected paths are what a fusion developer edits here. Two entry points, on purpose: `isFusionPluginCwd()` asks about cwd for the write tools, `isFusionPluginRoot(dir)` asks about a named directory so the measurement can ask about the workbench root it walked up to | Yes |
-| `lib/domain-cascade.ts` | Parses the domain cascade out of `agents/orchestrator.md` Setup Step 5 and **executes** it. No hook calls it — the gates do, so what they measure is the verdict a real project reaches rather than the layout of the prompt's branch lines. There is deliberately no second copy of the cascade in TypeScript: the interpreter runs the prompt's own block. That keeps *this file* from drifting and nothing else, which is where the claim used to overreach — a second copy shipped in `skills/cleanup/SKILL.md` in the pre-fix order while both gates read the orchestrator prompt alone (issue 260810-1918). The module now also *finds* a statement of the cascade, fenced or prose, and `domain-cascade.test.ts` runs that over every `agents/*.md` and `skills/*/SKILL.md`, allowing exactly one. A paraphrase spread across a table's rows, and anything outside those two directories, is still outside its reach | Yes |
+| `lib/domain-cascade.ts` | Parses the domain cascade out of `agents/orchestrator.md` Setup Step 5 and **executes** it. No hook calls it — the gates do, so what they measure is the verdict a real project reaches rather than the layout of the prompt's branch lines. There is deliberately no second copy of the cascade in TypeScript: the interpreter runs the prompt's own block. That keeps *this file* from drifting and nothing else, which is where the claim used to overreach — a second copy shipped in `skills/cleanup/SKILL.md` in the pre-fix order while both gates read the orchestrator prompt alone (issue 260810-1918). The module now also *finds* a statement of the cascade, fenced or prose, and `domain-cascade.test.ts` runs that over the file set, allowing exactly one. How far that reaches is not described here and not described in the module either — it is the `REACH` object at the foot of the module, and [the section below](#how-far-the-domain-cascade-reach-gate-reaches) is rendered from it | Yes |
 | `package.json` | Dev dependencies (tsx, typescript, vitest) | Yes |
+
+### How far the domain-cascade reach gate reaches
+
+One decision — which domain a workbench is — is stated in one place, `agents/orchestrator.md` Setup Step 5. A gate in `domain-cascade.test.ts` reads the plugin's own prompts, skill bodies and rule files and fails if a second one states it too.
+
+**The paragraph below is generated.** It is rendered from the `REACH` object in `hooks/lib/domain-cascade.ts` by `describeReach()`, and the test suite compares this file against that output byte-for-byte. Editing it by hand fails the suite. That is the point: the claim about this gate has twice been broader than the gate itself — once asserting a second definition was impossible while one was shipping, once naming three holes when there were four — and a sentence generated from the thing that measures cannot say more than the measurement does. Each line below carries probes the suite runs, so a hole that gets closed and a claim that gets stale both turn the suite red.
+
+Regenerate after changing `REACH`:
+
+```bash
+cd hooks && npm run build && cd .. \
+  && node -e "import('./hooks/dist/lib/domain-cascade.js').then(m => console.log(m.describeReach()))"
+```
+
+<!-- BEGIN generated: domain-cascade reach -->
+
+**Scanned:** `agents/*.md`, `skills/*/SKILL.md`, `rules/*.md` — every agent prompt, every skill body, every rule file. Exactly one of them may state the cascade.
+
+**Caught.** Each line is asserted against probes in `domain-cascade.test.ts`:
+
+- A domain name in backticks, double quotes, single quotes or asterisk bold. Four spellings, because the second copy that shipped backticked its four by its author's habit and nothing in this project requires that; `agents/taskplanner.md:127` writes them bare.
+- A paraphrase naming the counts in prose — decisions, issues, analyses, commits, code files, data files — rather than by variable name.
+- A paraphrase written with the cascade's own variable names.
+- A two-branch fragment. Two outcomes and two of the counts they are decided from is already a decision procedure, whether or not all four domains appear.
+- One sentence hard-wrapped across two lines. A line and its continuation are scanned joined, which is the shape this repository's own 78-column prose produces by default.
+
+**Not caught.** Each line is asserted to still be a miss, so closing one of these turns the suite red until this list is corrected:
+
+- A domain name written as a plain word, with no markup around it. This is the plainest second copy anyone would write and it is NOT caught. Matching bare words was measured over the scanned set and rejected on cost, because `code` and `data` are ordinary English words in these files and `code files` is both a domain name and an input phrase. Measured cost of matching bare words, across the scanned set and outside the definition site: 14 lines of honest prose selected on single lines, 14 with the continuation window. The suite re-measures both numbers.
+- A paraphrase spread across the rows of a table, or across three or more wrapped lines. A table row and a list item each open a block and are never joined to the line above them, and the window is two lines wide.
+- A paraphrase naming no input. It names no evidence, so it restates less than the cascade decides.
+- A paraphrase naming its inputs in words the prose list does not carry. The list is six spellings, not a synonym set.
+
+**Not scanned**, with what running the gate over it yields today:
+
+- `docs/*.md` — fires. `docs/philosophy.md:19` says what each domain PRIORITISES, in a line shape-identical to a paraphrase. Scanning `docs/` means either that false positive or an exemption list, so it is left out on a measured cost rather than on a definition of who a consumer is.
+- `CLAUDE.md` — clean. A consumer by the same contract that puts `rules/` in the file set, and it is not scanned. That is an uncovered file, not a justified exclusion: it is clean today and nothing keeps it clean.
+- `README-hooks.md` — clean. Documentation about the gate, including this block. Not scanned, and it would be wrong to scan the file whose job is to quote the claim.
+
+<!-- END generated: domain-cascade reach -->
 
 ## Usage
 

@@ -40,3 +40,31 @@ covering it.
 `shared/issues/260810-1918_c_the-cleanup-skill-carries-a-second-domain-cascade-in-the-pre-fix-order-and-no-gate-reads-it.md`.
 
 **Filed by:** coderev, review of session `260810-1646` Turn 2, range `da8c9db..b3cc034`.
+
+---
+Resolved: the detector now scans a line and its CONTINUATION joined, and the tables stay unflagged.
+
+`statementUnits()` (`hooks/lib/domain-cascade.ts`) yields every line on its own and then every line
+joined to the line below it — but only where that second line does not OPEN a markdown block. A
+heading, a list item, a table row, a blockquote, a fence, an HTML tag and a link definition each
+open one; a hard wrap never does. That is the cut this record asked for, and it is a different cut
+from "not a table row", which is what the record proposed.
+
+**Why the record's own proposal was not enough, measured.** An unconditional two-line window
+excluding only table rows selects two extra lines in the shipped tree: `agents/playmaker.md:111`
+and `agents/reconciler.md:135`. Both are adjacent bullets of a legitimate per-domain list — the
+same shape as the tables, spelled as a list. The continuation rule selects neither. Both are now
+fixtures in `MUST_NOT_FIRE`, so the cost of loosening the rule shows up there rather than in a red
+suite nobody can read.
+
+This record's two-line probe went from **passes** to **caught** against the pre-change build. Over
+the whole scanned set the window costs nothing: 45 files, still exactly
+`agents/orchestrator.md:168,170,172`.
+
+A wrapped statement is reported once, as its first line with `span: 2`. A pair whose own line
+already reported is dropped, so one statement never appears twice.
+
+**Not closed: three or more wrapped lines.** The window is two lines wide. That is
+`REACH.holes[1]`, sharing the entry with the tabular paraphrase, and it carries a three-line probe
+the suite asserts still passes — so if a future widening catches it, the claim fails until it is
+corrected.

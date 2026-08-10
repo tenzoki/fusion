@@ -44,9 +44,10 @@
 // The claim is therefore a measurement now, not an argument.
 // `findCascadeStatements()` and `cascadeBlocks()` below detect a statement of
 // the cascade in a consumer's text, and `domain-cascade.test.ts` runs both over
-// every `agents/*.md` and every `skills/*/SKILL.md`, allowing exactly one file
-// to state it. What that reaches and what it cannot is written at those
-// functions, in the terms they actually measure — not promised here.
+// the file set `REACH.fileSet` names, allowing exactly one file to state it.
+// How far that reaches is not promised here and not written in prose anywhere:
+// it is `REACH` at the foot of this file, every line of it carrying probes the
+// suite runs.
 //
 // What that costs is strictness, and it is deliberate: anything the grammar
 // below cannot read raises `CascadeError` rather than being skipped. A renamed
@@ -541,40 +542,61 @@ export function countsFromHelperOutput(stdout) {
 // actually shipped was not fenced — it was one sentence of prose, and this is
 // what finds that shape.
 //
-// What a statement of the cascade IS, measurably: a line naming at least two of
-// the four DOMAINS as literals AND at least two of the cascade's own INPUTS.
-// Two outcomes plus two of the counts they are decided from is a decision
-// procedure; anything less is a consumer talking about a domain it was handed.
-// That split was measured, not assumed. Over every `agents/*.md` and
-// `skills/*/SKILL.md` in the tree the only lines it selects are the three
-// prose lines of Setup Step 5 itself and the cleanup sentence this was written
-// for — while the per-domain priority tables in `reconciler`, `taskplanner` and
-// `playmaker`, which name four domains each, are left alone because they name
-// no inputs.
+// What a statement of the cascade IS, measurably: a unit of text naming at
+// least two of the four DOMAINS as literals AND at least two of the cascade's
+// own INPUTS. Two outcomes plus two of the counts they are decided from is a
+// decision procedure; anything less is a consumer talking about a domain it was
+// handed. That split was measured, not assumed: it leaves the per-domain
+// priority tables in `reconciler`, `taskplanner` and `playmaker` alone, which
+// name four domains each and no input.
 //
-// What it does not reach, stated rather than hoped:
-//   - A paraphrase spread across the ROWS of a table. Scoped to a paragraph the
-//     detector would find it — and would also find those three legitimate
-//     tables, five false positives measured. Per line is the cut that separates
-//     them; a tabular paraphrase is a hole in it.
-//   - A paraphrase naming no input ("`strategic` for planning work, else
-//     `code`"). It names no evidence, so it restates less than the cascade.
-//   - Anything outside `agents/` and `skills/`. `docs/philosophy.md` says what
-//     each domain PRIORITISES, in a line shape-identical to a paraphrase, so
-//     widening the file set means either noise or an exemption list. The gate's
-//     file set is the consumer set: the files an agent executes.
-//   - A consuming project's own files. Nothing here is shipped as a check that
-//     runs there.
-/** The four domain names as a consumer writes one: `code` or "code". */
+// ---------------------------------------------------------------------------
+// HOW FAR THIS REACHES IS NOT WRITTEN IN THIS COMMENT
+//
+// It is `REACH` below, and `REACH` is data rather than prose for a specific
+// reason: the claim about this gate has now been broader than the gate twice in
+// a row. The first version said a second definition was unrepresentable while
+// one sat in `skills/cleanup/SKILL.md` (issue 260810-1918). The second replaced
+// that with a scoped measurement naming three holes, and a review measured a
+// fourth against the shipped build — a domain name outside backticks or double
+// quotes was invisible, which is the plainest second copy anyone would write
+// (issues 260810-2110, three of them).
+//
+// So every line of the claim now carries probes, and `domain-cascade.test.ts`
+// runs them: each `covered` probe must fire, each `holes` probe must NOT fire,
+// and each `excluded` path must measure what it says it measures. Closing a
+// hole without correcting this list turns the suite red. The paragraph in
+// `README-hooks.md` is rendered from the same object by `describeReach()` and
+// compared byte-for-byte, so the sentence a reader meets and the behaviour a
+// project gets cannot disagree.
+//
+// What that is still not: a proof. It is a floor whose exact height is written
+// down and checked. `rules/critical-stance.md` §4 applies in full — "does this
+// prose restate the decision?" is not decidable from a line of text, and no
+// widening below pretends otherwise. What the probes buy is that the answer
+// stops being an argument.
+// ---------------------------------------------------------------------------
+/**
+ * A domain name in one of the four inline markups a markdown author reaches
+ * for: `code`, "code", 'code', **code**.
+ *
+ * The delimiters must bracket the name itself, not merely contain it. That is
+ * deliberate and it is not the general "span whose content is a domain" it
+ * replaced: a corpus this full of `code_files` and `_o_` markers turns a
+ * generic `_..._` or `'...'` span into something that swallows the rest of the
+ * line, and measured that way the detector LOST the definition site's own
+ * `counted_by` line. Bracketing the name has no such failure mode.
+ *
+ * Bare words are deliberately not matched — see `REACH.holes` for the measured
+ * cost of matching them.
+ */
+const DOMAIN_LITERAL_RE = new RegExp(`(\`|"|')(${DOMAINS.join("|")})\\1|\\*\\*(${DOMAINS.join("|")})\\*\\*`, "g");
 function domainLiteralsIn(line) {
     const out = new Set();
-    const re = /`([^`]+)`|"([^"]+)"/g;
+    DOMAIN_LITERAL_RE.lastIndex = 0;
     let m;
-    while ((m = re.exec(line)) !== null) {
-        const v = (m[1] ?? m[2]).trim();
-        if (DOMAINS.includes(v))
-            out.add(v);
-    }
+    while ((m = DOMAIN_LITERAL_RE.exec(line)) !== null)
+        out.add((m[2] ?? m[3]));
     return out;
 }
 /**
@@ -591,7 +613,7 @@ const INPUT_PROSE = [
     [/\bdata[ -]files?\b/i, "data_files"],
 ];
 /** The cascade inputs a line names, by variable name or by prose spelling. */
-function inputsNamedIn(line) {
+export function inputsNamedIn(line) {
     const out = new Set();
     for (const name of COUNT_NAMES) {
         if (new RegExp(`(?<![A-Za-z0-9_])${name}(?![A-Za-z0-9_])`).test(line))
@@ -602,22 +624,229 @@ function inputsNamedIn(line) {
             out.add(name);
     return out;
 }
-/** Every line of `markdown` that states the cascade rather than consuming it. */
+/**
+ * A line that OPENS a markdown block: a heading, a list item, a table row, a
+ * blockquote, a fence, an HTML tag or comment, a link definition.
+ *
+ * A hard wrap never produces one, which is what makes this the cut between the
+ * two cases. Joining a line to its continuation finds a sentence a 78-column
+ * wrap split in half; joining a line to the next BLOCK would re-admit exactly
+ * the per-domain lists and tables the two-input rule was chosen to leave alone
+ * — measured on this tree, an unconditional two-line window selects
+ * `agents/playmaker.md:111` and `agents/reconciler.md:135`, both of them
+ * adjacent bullets of a legitimate per-domain list, and the continuation rule
+ * selects neither.
+ */
+const BLOCK_START = /^\s*(?:#{1,6}\s|[-*+]\s|\d+[.)]\s|\||>|```|~~~|<!--|<[A-Za-z/]|\[[^\]]+\]:)/;
+const FENCE_LINE = /^\s*(?:```|~~~)/;
+/**
+ * The units a statement is looked for in: every line on its own, then every
+ * line joined to its continuation. Fenced regions are joined by nobody — a
+ * fenced copy is `cascadeBlocks()`'s job and joining two branch lines there
+ * would report the same block twice.
+ */
+export function statementUnits(markdown) {
+    const lines = markdown.split("\n");
+    const out = lines.map((text, i) => ({ line: i + 1, span: 1, text }));
+    let inFence = false;
+    const fenced = lines.map((l) => {
+        if (FENCE_LINE.test(l)) {
+            inFence = !inFence;
+            return true;
+        }
+        return inFence;
+    });
+    for (let i = 0; i + 1 < lines.length; i++) {
+        const a = lines[i];
+        const b = lines[i + 1];
+        if (fenced[i] || fenced[i + 1])
+            continue;
+        if (!a.trim() || !b.trim())
+            continue;
+        if (/^\s*\|/.test(a))
+            continue;
+        if (BLOCK_START.test(b))
+            continue;
+        out.push({ line: i + 1, span: 2, text: `${a} ${b}` });
+    }
+    return out;
+}
+/**
+ * Every unit of `markdown` that states the cascade rather than consuming it.
+ *
+ * Single lines are considered before wrapped pairs, and a pair is dropped when
+ * either of its two lines already reported on its own. So a statement that fits
+ * on one line is reported once — never again as the head of the pair below it,
+ * and never again as the tail of the pair above it.
+ */
 export function findCascadeStatements(markdown) {
     const out = [];
-    markdown.split("\n").forEach((line, i) => {
-        const domains = domainLiteralsIn(line);
+    const reported = new Set();
+    for (const u of statementUnits(markdown)) {
+        if (reported.has(u.line))
+            continue;
+        if (u.span > 1 && reported.has(u.line + 1))
+            continue;
+        const domains = domainLiteralsIn(u.text);
         if (domains.size < 2)
-            return;
-        const inputs = inputsNamedIn(line);
+            continue;
+        const inputs = inputsNamedIn(u.text);
         if (inputs.size < 2)
-            return;
+            continue;
+        reported.add(u.line);
         out.push({
-            line: i + 1,
-            text: line.trim(),
+            line: u.line,
+            span: u.span,
+            text: u.text.trim(),
             domains: [...domains],
             inputs: [...inputs],
         });
-    });
-    return out;
+    }
+    return out.sort((x, y) => x.line - y.line);
+}
+/**
+ * What the reach gate scans, catches, misses, and leaves out — the single
+ * authoring home for all four. Every field is checked in
+ * `domain-cascade.test.ts`: `fileSet` is what the gate actually enumerates,
+ * each `covered` probe must fire, each `holes` probe must not, each `excluded`
+ * glob must measure what it claims, and `README-hooks.md` must carry
+ * `describeReach()` verbatim.
+ */
+export const REACH = {
+    fileSet: ["agents/*.md", "skills/*/SKILL.md", "rules/*.md"],
+    covered: [
+        {
+            claim: "A domain name in backticks, double quotes, single quotes or asterisk bold. Four " +
+                "spellings, because the second copy that shipped backticked its four by its author's " +
+                "habit and nothing in this project requires that; `agents/taskplanner.md:127` writes " +
+                "them bare.",
+            probes: [
+                "Use `strategic` when open decisions outnumber open issues, otherwise `code`.",
+                'Use "strategic" when open decisions outnumber open issues, otherwise "code".',
+                "Use 'strategic' when open decisions outnumber open issues, otherwise 'code'.",
+                "Use **strategic** when open decisions outnumber open issues, otherwise **code**.",
+            ],
+        },
+        {
+            claim: "A paraphrase naming the counts in prose — decisions, issues, analyses, commits, code " +
+                "files, data files — rather than by variable name.",
+            probes: [
+                "Pick `strategic` when open decisions outnumber open issues, `knowledge` when analyses " +
+                    "exist without source, `data` when data files dominate, otherwise `code`.",
+            ],
+        },
+        {
+            claim: "A paraphrase written with the cascade's own variable names.",
+            probes: [
+                "`strategic` if decisions_count >= issues_count, else `knowledge` if analyses_count > 0 " +
+                    "and code_files == 0, else `code`.",
+            ],
+        },
+        {
+            claim: "A two-branch fragment. Two outcomes and two of the counts they are decided from is " +
+                "already a decision procedure, whether or not all four domains appear.",
+            probes: [
+                "Use `strategic` if the workbench has more open decisions than issues; otherwise `code`.",
+            ],
+        },
+        {
+            claim: "One sentence hard-wrapped across two lines. A line and its continuation are scanned " +
+                "joined, which is the shape this repository's own 78-column prose produces by default.",
+            probes: [
+                "Pick `strategic` when open decisions outnumber open issues,\n" +
+                    "and `code` otherwise (measured on decisions_count and issues_count).",
+            ],
+        },
+    ],
+    holes: [
+        {
+            claim: "A domain name written as a plain word, with no markup around it. This is the plainest " +
+                "second copy anyone would write and it is NOT caught. Matching bare words was measured " +
+                "over the scanned set and rejected on cost, because `code` and `data` are ordinary " +
+                "English words in these files and `code files` is both a domain name and an input " +
+                "phrase.",
+            probes: [
+                "Detect the workbench domain: strategic if decisions dominate, knowledge if analyses " +
+                    "exist with no code, data if data files dominate, else code.",
+            ],
+            cost: { widening: "matching bare words", singleLine: 14, withWindow: 14 },
+        },
+        {
+            claim: "A paraphrase spread across the rows of a table, or across three or more wrapped lines. " +
+                "A table row and a list item each open a block and are never joined to the line above " +
+                "them, and the window is two lines wide.",
+            probes: [
+                "| domain | when |\n|---|---|\n| `strategic` | open decisions outnumber open issues |\n" +
+                    "| `code` | the tree holds source files |",
+                "Pick `strategic` when open decisions\noutnumber open issues, and otherwise\nfall back to `code`.",
+            ],
+        },
+        {
+            claim: "A paraphrase naming no input. It names no evidence, so it restates less than the " +
+                "cascade decides.",
+            probes: ["`strategic` for planning work, else `code`."],
+        },
+        {
+            claim: "A paraphrase naming its inputs in words the prose list does not carry. The list is six " +
+                "spellings, not a synonym set.",
+            probes: ["`strategic` when open questions outnumber defects, otherwise `code`."],
+        },
+    ],
+    excluded: [
+        {
+            glob: "docs/*.md",
+            measured: "fires",
+            note: "`docs/philosophy.md:19` says what each domain PRIORITISES, in a line shape-identical " +
+                "to a paraphrase. Scanning `docs/` means either that false positive or an exemption " +
+                "list, so it is left out on a measured cost rather than on a definition of who a " +
+                "consumer is.",
+        },
+        {
+            glob: "CLAUDE.md",
+            measured: "clean",
+            note: "A consumer by the same contract that puts `rules/` in the file set, and it is not " +
+                "scanned. That is an uncovered file, not a justified exclusion: it is clean today and " +
+                "nothing keeps it clean.",
+        },
+        {
+            glob: "README-hooks.md",
+            measured: "clean",
+            note: "Documentation about the gate, including this block. Not scanned, and it would be " +
+                "wrong to scan the file whose job is to quote the claim.",
+        },
+    ],
+};
+/**
+ * The reach claim rendered as the markdown block `README-hooks.md` carries.
+ * The test compares the file against this, so the two cannot drift.
+ */
+export function describeReach() {
+    const bullets = (cases) => cases
+        .map((c) => {
+        const cost = c.cost
+            ? ` Measured cost of ${c.cost.widening}, across the scanned set and outside the ` +
+                `definition site: ${c.cost.singleLine} lines of honest prose selected on single ` +
+                `lines, ${c.cost.withWindow} with the continuation window. The suite re-measures ` +
+                `both numbers.`
+            : "";
+        return `- ${c.claim}${cost}`;
+    })
+        .join("\n");
+    return [
+        `**Scanned:** ${REACH.fileSet.map((g) => `\`${g}\``).join(", ")} — every agent prompt, ` +
+            `every skill body, every rule file. Exactly one of them may state the cascade.`,
+        "",
+        "**Caught.** Each line is asserted against probes in `domain-cascade.test.ts`:",
+        "",
+        bullets(REACH.covered),
+        "",
+        "**Not caught.** Each line is asserted to still be a miss, so closing one of these turns " +
+            "the suite red until this list is corrected:",
+        "",
+        bullets(REACH.holes),
+        "",
+        "**Not scanned**, with what running the gate over it yields today:",
+        "",
+        REACH.excluded.map((e) => `- \`${e.glob}\` — ${e.measured}. ${e.note}`).join("\n"),
+    ].join("\n");
 }

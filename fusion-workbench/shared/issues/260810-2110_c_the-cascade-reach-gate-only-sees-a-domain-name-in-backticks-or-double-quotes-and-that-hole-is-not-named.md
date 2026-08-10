@@ -58,3 +58,34 @@ that it is complete about what is *not* checked.
 `shared/issues/260810-1918_c_the-cleanup-skill-carries-a-second-domain-cascade-in-the-pre-fix-order-and-no-gate-reads-it.md`.
 
 **Filed by:** coderev, review of session `260810-1646` Turn 2, range `da8c9db..b3cc034`.
+
+---
+Resolved: partly by widening, partly by naming — and the split is the honest part.
+
+`domainLiteralsIn` (`hooks/lib/domain-cascade.ts`) now matches a domain name bracketed by any of
+four inline markups: backticks, double quotes, single quotes, asterisk bold. Measured against the
+pre-change build, two of this record's three probes changed verdict: the single-quoted spelling and
+the bold spelling both went from **passes** to **caught**. Over the whole scanned set the widening
+costs nothing — the gate still selects exactly `agents/orchestrator.md:168,170,172` and no other
+line in 45 files.
+
+The bracketing is deliberate and is not the "span whose content is a domain" it replaced. A generic
+span rule was measured first and rejected: in a corpus this full of `code_files` and `_o_` markers,
+`_..._` and `'...'` spans swallow the rest of the line, and that variant LOST the definition site's
+own `counted_by` line (3 selections down to 2).
+
+**The bare-word probe is not closed, and is now named rather than left silent.** Matching
+`\b(code|data|strategic|knowledge)\b` was measured over the scanned set: 14 lines of honest
+consumer prose select, in `agents/coder.md`, `agents/editor.md`, `agents/planner.md` (3),
+`agents/playmaker.md` (3), `agents/reconciler.md` (3), `skills/cleanup/SKILL.md` and
+`rules/fusion-workbench-conventions.md` (2). `code` and `data` are ordinary English in these files
+and `code files` is both a domain name and an input phrase, so the two-input rule does not carry the
+discrimination. It is `REACH.holes[0]`, with the probe from this record and both cost numbers, and
+the suite re-measures the numbers on every run.
+
+The input-side gap this record raised second — inputs named in words `INPUT_PROSE` does not carry,
+"open questions outnumber defects" — is also not closed and is now `REACH.holes[3]` with its probe.
+
+The record's own requirement is met: the list of named holes is complete about what is not checked,
+and it is no longer a list — it is `REACH` in `hooks/lib/domain-cascade.ts`, every line carrying
+probes the suite runs, rendered into `README-hooks.md` and compared byte-for-byte.
