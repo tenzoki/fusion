@@ -1216,8 +1216,32 @@ trap 'kill $SERVER_PID 2>/dev/null; wait $SERVER_PID 2>/dev/null; exit 0' INT TE
 #
 # MONITOR_NO_BROWSER is the second, independent gate: a person at a terminal
 # who wants the server without the tab. Any non-empty value suppresses.
+#
+# The launcher never decides the wrapper's lifetime. This script runs under
+# `set -e`, and a failing command inside an `if` body is not exempt from it —
+# only the condition is. So a missing `open` (Linux, or a macOS whose PATH is
+# narrowed) used to exit 127 as the wrapper's own status before `wait
+# $SERVER_PID` was ever reached: the forked python server was left orphaned,
+# still holding the port, with the INT/TERM trap dead along with the shell
+# that installed it. `|| true` is the load-bearing half of the fix — every
+# launcher can fail for reasons that are none of the server's business (no
+# display, no registered handler, a browser that refuses to start).
+#
+# The platform dispatch is the other half, and it earns its three lines twice:
+# it makes the tab actually open on Linux, where `open` does not exist, and it
+# avoids the trap that a bare `command -v open` walks into there — on many
+# Linux distributions `/usr/bin/open` is util-linux's `openvt`, which switches
+# virtual terminals and has nothing to do with a URL. Darwin gets `open`,
+# everything else gets `xdg-open`; if the chosen launcher is absent the server
+# simply runs without a tab, exactly as under MONITOR_NO_BROWSER.
 if [[ -t 1 && -z "${MONITOR_NO_BROWSER:-}" ]]; then
-  sleep 0.5
-  open "http://localhost:${PORT}"
+  case "$(uname -s)" in
+    Darwin) BROWSER_LAUNCHER=open ;;
+    *)      BROWSER_LAUNCHER=xdg-open ;;
+  esac
+  if command -v "$BROWSER_LAUNCHER" >/dev/null 2>&1; then
+    sleep 0.5
+    "$BROWSER_LAUNCHER" "http://localhost:${PORT}" || true
+  fi
 fi
 wait $SERVER_PID

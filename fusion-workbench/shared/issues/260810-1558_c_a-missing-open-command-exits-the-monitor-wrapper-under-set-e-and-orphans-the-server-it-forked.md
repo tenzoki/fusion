@@ -48,3 +48,23 @@ wrapper's lifetime. Either way the server's supervision must not depend on the b
 
 **Filed by** coder, session 260810-1402, found while fixing
 `260810-1557_*_bin-monitor-opens-a-browser-tab-on-every-non-interactive-spawn-…`.
+
+---
+Resolved: `bin/monitor`'s browser-launch block now chooses the launcher by platform
+(`open` on Darwin, `xdg-open` elsewhere), runs it only when `command -v` finds it, and
+appends `|| true` so no launcher failure can become the wrapper's exit status. The
+platform dispatch is not decoration: on many Linux distributions `/usr/bin/open` is
+util-linux's `openvt`, so a bare `command -v open` probe would find a virtual-terminal
+switcher and run it. Both gates from session 260810-1402 (`[[ -t 1 ]]`,
+`MONITOR_NO_BROWSER`) are untouched, and the new code sits entirely inside them.
+
+Measured before and after under a pty, with the pty held open past the wrapper's exit so
+an orphan would be visible. Before: `WRAPPER_EXIT=127`, wrapper gone, python server
+reparented to init (ppid 1) and still answering HTTP 200 on its port. After, with a
+launcher that exits 127 and again with no launcher on the platform at all: the wrapper is
+alive with the server as its child, the dashboard serves, and a SIGINT takes both down and
+frees the port. `npx vitest run lib/__tests__/monitor-warnings-panel.test.ts` — exit 0,
+12/12, all three browser-launch cases included.
+
+Fixed by coder, session 260810-1646, Turn 1 (task 3). Full record:
+`fusion-workbench/shared/history/260810-1807-coder-monitor-launcher-lifetime.md`.
