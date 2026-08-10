@@ -141,3 +141,32 @@ den Mechanismus bereits richtig benannt
 (`circles/260802-0842-krk-mac-dateimanager-editor-git/history/260806-2257-orchestrator-session.md:31`:
 "weil sie höchstens eine Unterverzeichnisebene tief sieht und die Rust-Quellen unter `crates/*/src/`
 liegen"); die spätere Sitzung ersetzte diese Erklärung durch die falsche und meldete sie so weiter.
+
+---
+Resolved: both axes fixed by one mechanism, in a helper of its own — `bin/fusion-count-sources`.
+
+Counting is now `git ls-files --others --exclude-standard`, per the answered decision `shared/decisions/260809-1731_a_how-should-the-domain-heuristic-count-a-projects-source-files.md`. There is no depth bound left to get wrong and no prune list to maintain, because `.gitignore` already excludes build output and vendored dependencies. Breadth moved with it: `code_files` from 7 extensions to 61, `data_files` from 5 under four fixed directory names to 19 across the whole tree, the RDF family included. Both sides now come from one list under one set of rules, which is what the record's second half asked for.
+
+Measured, not inferred:
+
+| Fixture | Old depth-2 walk | Helper |
+|---|---|---|
+| Cargo workspace, `crates/<c>/src/{,ablage/,operation/}*.rs`, 500 `.rs` under `target/` | 0 | 27 |
+| Go, `internal/<pkg>/handler/*.go`, 300 `.go` under `vendor/` | 0 | 19 |
+| Frontend, `src/components/<C>/*.tsx` plus `.vue`/`.svelte`, 400 `.js` under `node_modules/`, 50 under `dist/` | 50 | 11 |
+| this repository | 4 | 88 |
+| the consuming project KRK | 0 | 108 |
+
+The frontend row is the sharper finding and was not what the record predicted. The old walk did not merely undercount there: it returned 50, and every one of them was `dist/` build output counted as project source. So the ratio branch was being fed inverted values, not just small ones.
+
+Cost: 0.143s on a synthetic 10 000-file repository, 0.047s here.
+
+**The no-git case is audible, as the decision required.** Exit 2, both values `unavailable`, and a new `counted_by == "none"` branch keeps that missing number out of the cascade rather than letting a zero flow through it as though it had been measured.
+
+**The open question the decision handed forward is answered with evidence: the `data_files > code_files * 2` branch stays.** It fires, and it fires correctly — an ontology tree (2 source files, 30 data files) trips it, this repository (88/21) and KRK (108/11) do not. It looked unreachable only because of the asymmetry underneath it: no depth bound on the left but four fixed directory names, depth 2 on the right. With both sides on the same list the branch is dimensionally sound and worth keeping.
+
+Three choices inside the answer, each argued in the helper's own header rather than left implicit: `--others --exclude-standard` (picks up a source tree not yet `git add`ed, which the decision named as a Con, without introducing a second mechanism); the `capped at 1000` limit is gone (it was a cost ceiling for the `find` walk, and keeping it would now distort the very ratio branch the same decision wants sound); and `fusion-workbench/` is excluded from both counts.
+
+`skills/setup/SKILL.md` needed no edit: it points at Setup Step 5 rather than repeating the heuristic, so there was no duplicate to keep in step.
+
+Session: `shared/history/260810-0241-orchestrator-session.md` (task T2). Executor log: `shared/history/260810-0337-coder-count-source-files-by-depth-and-breadth.md`.

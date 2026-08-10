@@ -26,6 +26,7 @@ bin/*
 !bin/fusion-paths
 !bin/fusion-plane
 !bin/fusion-plugin-cwd
+!bin/fusion-count-sources
 *.exe
 # Generated protobuf (rebuild from .proto)
 *.pb.go

@@ -1,0 +1,144 @@
+#!/usr/bin/env bash
+# fusion-count-sources — count a project's source files and structured-data
+# files, for the workbench-domain heuristic in agents/orchestrator.md Setup
+# Step 5 (`code_files`, `data_files`).
+#
+# Usage:
+#   fusion-count-sources [<project-root>]     # default: cwd
+#
+# Output on stdout, one KEY=value per line, in the shape bin/fusion-paths uses:
+#
+#   code_files=87                  # integer, or the literal `unavailable`
+#   data_files=21                  # integer, or the literal `unavailable`
+#   counted_by=git-ls-files        # or `none` when no count could be taken
+#
+# Exit codes:
+#   0  counted; both values are integers
+#   2  <project-root> is not inside a git work tree, so NO count was taken.
+#      Both values are `unavailable` and `counted_by=none`. This is a real
+#      answer, not a failure to report as an error — see "The absent count"
+#      below.
+#   1  usage error: <project-root> does not exist or is not a directory.
+#
+# ---------------------------------------------------------------------------
+# Why git ls-files
+#
+# Decision: fusion-workbench/shared/decisions/260809-1731_*_how-should-the-
+# domain-heuristic-count-a-projects-source-files.md — option 2, chosen by the
+# user. The mechanism it replaced was a `find` walk bounded to "top-level + 1
+# subdir deep", which counted structurally zero for every project that groups
+# its sources into named units: a Cargo workspace (crates/<name>/src/*.rs),
+# Go with internal/<pkg>/, a src/components/<thing>/ frontend, a src/<pkg>/
+# <mod>/ Python layout. Measured in this repository, that walk returned 4
+# against the 87 counted here; measured in the consuming project KRK, 0
+# against 106 real .rs files.
+#
+# Lifting the depth bound off a `find` walk would have required pruning
+# node_modules/, target/, vendor/, dist/, build/ and .venv/ by hand, or the
+# count picks up dependency and build output as project source and inverts the
+# very ratio it feeds. That prune list is an open set that grows per ecosystem.
+# git ls-files needs none of it: what .gitignore excludes never appears.
+#
+# The decision also settled what NOT to do, and both are load-bearing here:
+#   - No `find` fallback. The layered form was offered and declined, so there
+#     is exactly ONE counting mechanism in this file.
+#   - No domain declaration read out of CLAUDE.md. That was proposed in the
+#     record's recommendation, was not the question the user answered, and is
+#     not authorised.
+#
+# ---------------------------------------------------------------------------
+# The absent count
+#
+# A project with no git repository is reported as `unavailable`, never as 0.
+# The two are not the same fact and the heuristic's branches cannot tell them
+# apart: `analyses_count > 0 and code_files == 0` reads a zero as "this project
+# has no source", and `data_files > code_files * 2` reads it as a right-hand
+# side of zero, which every project with a single data file then exceeds. A
+# silent zero is therefore worse than no number at all. The caller's contract
+# is in agents/orchestrator.md Setup Step 5: skip every branch that reads these
+# counts, fall back to domain `code`, and say so in the session log.
+#
+# ---------------------------------------------------------------------------
+# Untracked files
+#
+# The listing is --cached plus --others --exclude-standard: tracked files, plus
+# files present and not ignored. .gitignore still decides what is invisible, so
+# build output and vendored dependencies stay out — that property is the whole
+# reason this mechanism was chosen and it is not weakened here. What --others
+# adds is the source tree somebody has not run `git add` on yet, named as a Con
+# in the decision record. Measured delta in this repository and in KRK: zero
+# files either way.
+#
+# ---------------------------------------------------------------------------
+# No truncation
+#
+# The mechanism this replaced was "capped at 1000", a cost bound on an
+# unbounded filesystem walk. This one is a single indexed read, so the cap buys
+# no measurable time here, and it would cost correctness: capping both counts
+# at 1000 makes a project with 1200 source and 3000 data files compare 1000
+# against 1000 instead of 3000 against 1200, and the data branch that should
+# fire does not. The requirement the cap served — the check runs at every Setup,
+# so it stays cheap — is met by the mechanism itself.
+#
+# ---------------------------------------------------------------------------
+# The two extension lists
+#
+# These are DATA, not design. Adding a language is one word in CODE_EXT; being
+# wrong about one under-counts that language and nothing else. That is the
+# opposite of the prune list above, where each missing entry silently inverted
+# the result. Matching is case-insensitive and anchored at the end of the path.
+#
+# fusion-workbench/ is excluded from both counts. It is fusion's own
+# bookkeeping, not the project's source or data, and in this repository it is
+# git-tracked (in most consuming projects it is ignored and never appears).
+# This is one closed directory that fusion itself defines, not an open prune
+# list.
+
+set -eu
+
+root="${1:-$(pwd -P)}"
+
+if [ ! -d "$root" ]; then
+  printf 'fusion-count-sources: not a directory: %s\n' "$root" >&2
+  exit 1
+fi
+
+# Source files, by language. Grouped for review, matched as one alternation.
+CODE_EXT="go|rs|zig|dart|nim"
+CODE_EXT="$CODE_EXT|py|pyi"
+CODE_EXT="$CODE_EXT|java|kt|kts|scala|groovy|clj|cljs|cljc"
+CODE_EXT="$CODE_EXT|ts|tsx|mts|cts|js|jsx|mjs|cjs|vue|svelte|astro"
+CODE_EXT="$CODE_EXT|c|h|cc|cpp|cxx|hh|hpp|hxx"
+CODE_EXT="$CODE_EXT|cs|fs|fsx|vb"
+CODE_EXT="$CODE_EXT|swift|m|mm"
+CODE_EXT="$CODE_EXT|rb|rake|php|pl|pm|lua"
+CODE_EXT="$CODE_EXT|ex|exs|erl|hrl"
+CODE_EXT="$CODE_EXT|hs|ml|mli|jl|r"
+CODE_EXT="$CODE_EXT|sh|bash|zsh|sql"
+
+# Structured data, manifests, schemas, and the RDF/ontology family — the
+# project shapes the `data` domain and the ontocoder/ontorev agents exist for.
+DATA_EXT="yaml|yml|json|jsonl|ndjson|toml|csv|tsv|xml"
+DATA_EXT="$DATA_EXT|xsd|avsc"
+DATA_EXT="$DATA_EXT|ttl|owl|rdf|jsonld|nt|n3|nq|trig"
+
+if ! git -C "$root" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  printf 'code_files=unavailable\n'
+  printf 'data_files=unavailable\n'
+  printf 'counted_by=none\n'
+  exit 2
+fi
+
+# One listing, filtered twice. Pathspecs are relative to <project-root>, so a
+# project nested inside a larger repository counts its own subtree only.
+listing="$(git -C "$root" ls-files --cached --others --exclude-standard \
+             -- . ':(exclude)fusion-workbench' 2>/dev/null | sort -u)"
+
+# grep exits 1 on no match, which `set -e` would take as a failure; `|| true`
+# keeps a legitimate zero a zero.
+code_files="$(printf '%s\n' "$listing" | grep -Eic "\.($CODE_EXT)\$" || true)"
+data_files="$(printf '%s\n' "$listing" | grep -Eic "\.($DATA_EXT)\$" || true)"
+
+printf 'code_files=%s\n' "$code_files"
+printf 'data_files=%s\n' "$data_files"
+printf 'counted_by=git-ls-files\n'

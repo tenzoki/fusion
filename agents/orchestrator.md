@@ -113,22 +113,30 @@ Remaining setup (after step 1 is resolved):
    - **Guard check:** Read `fusion-workbench/.guard-state/escalation.json` (if it exists). If `haltActive` is true, warn the user immediately: the Compliance Guard is halted and all write operations are blocked. Offer to clear it or proceed with the halt active. Also read `fusion-workbench/.guard-state/churn.json` to note any files with high thrashing scores.
    - **Detect workbench domain** (used as the default `domain` parameter for `taskplanner`, `reconciler`, and `planner` dispatches in this session — the user may override at any individual dispatch):
 
-     Each `*_count` below sums across **every** path in the named `SCAN_*` value, not just the first:
+     Each `*_count` below sums across **every** path in the named `SCAN_*` value, not just the first. The two file counts are **not** yours to improvise — run the helper once, from the project root you are already in:
+
+     ```bash
+     "$FUSION_PLUGIN_ROOT/bin/fusion-count-sources"
+     ```
+
+     It prints `code_files=`, `data_files=` and `counted_by=`, one `KEY=value` per line. It counts with `git ls-files`, so it sees the whole source tree at any depth and needs no `node_modules/`, `target/` or `vendor/` exclusion list — whatever `.gitignore` excludes never appears in the listing. Exit 2 with `counted_by=none` means the project is not in a git repository, so **no count was taken** and both values read `unavailable`.
 
      ```
      commits        = git rev-list --count HEAD -- fusion-workbench/ 2>/dev/null || 0
      analyses_count = count of *.md across $SCAN_ANALYSES
      issues_count   = count of *_o_*.md across $SCAN_ISSUES
      decisions_count = count of *_o_*.md across $SCAN_DECISIONS  (treat as 0 if a directory is absent)
-     code_files     = count of project files matching *.go, *.ts, *.tsx, *.py, *.js, *.rs, *.java (top-level + 1 subdir deep, capped at 1000)
-     data_files     = count of *.yaml, *.yml, *.json, *.toml, *.csv (under ontology/, manifests/, schemas/, or data/)
+     code_files, data_files, counted_by = bin/fusion-count-sources
 
      if decisions_count > 0 and decisions_count >= issues_count: domain = "strategic"
      elif analyses_count > 0 and commits == 0:                   domain = "strategic"
+     elif counted_by == "none":                                  domain = "code"   # counts unavailable
      elif analyses_count > 0 and code_files == 0:                domain = "knowledge"
      elif data_files > code_files * 2:                           domain = "data"
      else:                                                       domain = "code"   # fallback
      ```
+
+     **An absent count is not a zero, and the `counted_by == "none"` line is what keeps the two apart.** Its position in the cascade is load-bearing: it must come before every branch that reads `code_files` or `data_files`, so if the branch order is ever changed it moves with them. Without it a project outside git counts zero, and a zero is indistinguishable from a real measurement to both `analyses_count > 0 and code_files == 0` (which then reads "no source here") and `data_files > code_files * 2` (whose right-hand side becomes zero, so a single data file flips the domain). When `counted_by` is `none`, say so plainly to the user and in the history file: the source count could not be taken because the project is not under git, so the domain falls back to `code`. There is no second counting mechanism to reach for: that was settled by the decision record `260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md` (under `$SCAN_DECISIONS`), and the reasoning is repeated in the helper's own header.
 
      Cite the inputs and the chosen domain in the Setup-complete summary and in the snapshot section of the history file. Pass this domain as the `domain` parameter to `taskplanner` (Phase 1) and `reconciler` (Phase 3) dispatches by default; pass it as the `executors` selection cue to `planner` (e.g. `executors=[coder, ontocoder, analyst]` when domain is `strategic` or `knowledge`).
    - Count anticipated/active Circles (used as a hint surface; never gates execution). **The marker sits on the Circle record, not on the directory** — a Circle is `$SCAN_CIRCLES/<YYMMDD-HHMM>-<slug>/`, and its state lives in `_a_circle.md` / `_t_circle.md` inside it. Enumerate the records and read the marker from the name — one pass, no bracket expression, no glob per state:
