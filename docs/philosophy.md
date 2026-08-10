@@ -49,4 +49,3 @@ A unit of work is a **Circle**. Most sessions run one Circle implicitly. When yo
 - `CLAUDE.md` — layout, release process, troubleshooting (for plugin developers).
 - `rules/fusion-workbench-conventions.md` — workbench layout, issue/planning and decision marker vocabularies; `rules/circle-records.md` — the Circle state vocabulary and the Circle record template.
 - Run `/fusion:help` inside Claude Code for an interactive explainer.
-</content>

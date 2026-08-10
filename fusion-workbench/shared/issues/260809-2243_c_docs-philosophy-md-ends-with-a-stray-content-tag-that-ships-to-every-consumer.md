@@ -27,9 +27,9 @@ Delete the line. Nothing else in the file refers to it.
 
 ## Acceptance criteria
 
-- [ ] `docs/philosophy.md` ends with the `/fusion:help` bullet and no markup token
+- [x] `docs/philosophy.md` ends with the `/fusion:help` bullet and no markup token
       after it.
-- [ ] `grep -rn "</content>" docs/ skills/ agents/ rules/ README*.md` finds nothing.
+- [x] `grep -rn "</content>" docs/ skills/ agents/ rules/ README*.md` finds nothing.
 
 ---
 **Reconciliation 260809-2252 (reconciler, domain `code`) — stays `_o_`, and the scope is one
@@ -47,3 +47,16 @@ README*.md finds nothing`), so the criterion is satisfiable only by two edits, n
 `README.md` is the more consequential of the two: it is the first surface a user reads.
 
 Whole-tree check: those two lines are the only occurrences outside `fusion-workbench/`.
+
+---
+Resolved: deleted the stray `</content>` line from both documents — `docs/philosophy.md:52` and
+`README.md:150`, the two sites the reconciliation note above names, and the only two in the tree
+outside `fusion-workbench/`. The diff is exactly one deleted line per file (`git diff --stat`:
+`2 files changed, 2 deletions(-)`); nothing else in either document was touched, and both still end
+with a trailing newline after their own final content line. All three acceptance criteria re-checked
+after the edit: `docs/philosophy.md` now ends with the `/fusion:help` bullet, `README.md` with its
+`/fusion:cadence` paragraph, and `grep -rn "</content>" docs/ skills/ agents/ rules/ README*.md`
+returns nothing (exit 1). Verification: `cd hooks && npm test` — exit 0, 39 files / 1040 tests, the
+`430d73a` baseline unchanged, as expected for a change that touches no code.
+Session `260810-1402`, task `I:260809-2243-stray-tag`; history at
+`fusion-workbench/shared/history/260810-1508-stray-content-tag-removal.md`.
