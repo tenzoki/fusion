@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** implemented
 **Filed by:** orchestrator
 **Cross-references:** shared/issues/260807-1951_o_die-tiefenschranke-der-codezaehlung-sieht-keinen-cargo-workspace.md (the depth defect, with the measured Cargo-workspace evidence, and the record that explicitly asked for this decision); shared/issues/260807-1942_o_die-domaenenerkennung-entscheidet-vor-der-codezaehlung-und-erreicht-code-nie.md (the branch-order defect from the same review, fixable independently); circles/260801-1244-guard-rules-write/issues/260805-1830_o_die-domaenenheuristik-meldet-strategic-trotz-cargo-workspace-mit-laufenden-tests.md (the original consuming-project report); shared/issues/260809-1729_c_... (closed as a duplicate of 260807-1951)
 
@@ -94,7 +94,20 @@ cannot fire correctly after the counting is sound, the honest fix is to remove i
 tune the ratio until it fires.
 
 ---
-Answered: <set when status moves to _a_>
-Implemented: <set when status moves to _i_>
+Answered: shared/history/260810-0241-orchestrator-session.md § "Human gates — the twelve answers" — **option 2, `git ls-files`**, chosen by the user at the pre-dispatch gate batch of session 260810-0241.
+
+Two things the answer settles narrowly, recorded so the implementation does not widen them:
+
+- **Option 2 plain, not option 2 with a `find` fallback.** The user was offered the layered form ("`git ls-files`, falling back to `find`") as a separate choice and did not take it. So the non-git project is not handled by a second counting mechanism. It must therefore be handled *audibly*: a project with no git repository reports that the count could not be taken, rather than counting zero and letting a zero flow into the branches as though it were a measurement. A silent zero here is the failure the record's own Cons paragraph predicts, and it is worse than an absent number because the branches cannot tell the two apart.
+- **Option 3 was not layered over it.** The recommendation paragraph above proposes reading a declared domain from `CLAUDE.md` first. That was not part of the question the user answered and is not authorised by this record. If it is still wanted, it is a separate decision.
+
+The constraint block still binds: `data_files` is fixed by the same mechanism in the same pass. And the last paragraph's warning stands as a live question for the implementation — if the `data_files > code_files * 2` branch cannot fire correctly once the counting is sound, the honest fix is to remove the branch rather than tune the ratio until it fires.
+Implemented: 2910cf6 — `bin/fusion-count-sources` counts via `git ls-files --others --exclude-standard`; `agents/orchestrator.md` Setup Step 5 calls it for both `code_files` and `data_files`.
+
+Both narrowings in the `Answered:` block above were honoured. No `find` fallback was added: a project without a git repository exits 2 with both values `unavailable`, and a new `counted_by == "none"` branch keeps that missing number out of the cascade rather than letting a zero read as a measurement. No `CLAUDE.md` domain declaration was implemented.
+
+The forward question in the last paragraph is answered with evidence rather than a hunch: the `data_files > code_files * 2` branch **stays**. It fires correctly once both sides are counted the same way — an ontology tree (2 source files, 30 data files) trips it, this repository (88/21) and the consuming project KRK (108/11) do not. It read as unreachable only because of the asymmetry underneath it.
+
+Measured against the mechanism it replaces: Cargo workspace 0 to 27, Go `internal/` tree 0 to 19, frontend 50 to 11 (the old 50 were all `dist/` build output counted as project source), this repository 4 to 88, KRK 0 to 108. Cost 0.143s on a synthetic 10 000-file repository.
 Deferred: <set when status moves to _d_>
 Superseded by: <set when status moves to _s_>

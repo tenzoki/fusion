@@ -145,3 +145,34 @@ aus der anschließenden Prüfung. Der Unterschied ist nicht kosmetisch: ohne sie
 immer noch, Zweig 1 oder Zweig 2 könne gegriffen haben, und die Tiefenschranke sei ein
 Nebenbefund von offener Wirkung. Gemessen hat Zweig 1 gegriffen, und die Tiefenschranke ist
 ein eigener Defekt mit eigener Akte.
+
+---
+
+Resolved: the code count is read first, and `strategic`/`knowledge` now sit below it.
+
+The cascade in `agents/orchestrator.md` Setup Step 5 was reordered into three regions. `counted_by == "none"` stands at the top, so no branch ever reads a number that was never taken. Then the project tree: `code_files > 0 and data_files > code_files * 2 → data`, `code_files > 0 → code`. Only below those, where `code_files == 0` already holds, do the artifact counts decide between `strategic`, `knowledge` and a sourceless `data`.
+
+The record's own closing section said the obvious correction might not be the right *form*. What it is, in the end, is not a new rule but the removal of a duplicated one: `strategic` and `knowledge` are both claims that the workbench governs no build, and the `knowledge` branch already carried `and code_files == 0` as a conjunct. Hoisting that conjunct into a region guard states it once, for both claims, and the `knowledge` branch no longer repeats it.
+
+Measured against the values `bin/fusion-count-sources` returns since `2910cf6`, old cascade against new:
+
+| project | inputs | before | after |
+|---|---|---|---|
+| KRK, the reported case | commits 0, analyses 0, issues 1, decisions 3, code 108, data 11 | `strategic` | **`code`** |
+| this repository | commits 158, analyses 9, issues 29, decisions 3, code 88, data 21 | `code` | `code` |
+| ontology tree | code 2, data 30, no open decisions | `data` | `data` |
+| ontology tree with 2 open decisions against 0 open issues | code 2, data 30 | `strategic` | **`data`** |
+| no git repository | `counted_by=none` | `code` | `code` |
+| strategy workbench | code 0, data 0, decisions 6, issues 0 | `strategic` | `strategic` |
+| knowledge project | code 0, data 0, analyses 9, issues 4, decisions 1, commits 12 | `knowledge` | `knowledge` |
+
+Two rows change and both are the defect. All four domains stay reachable, and each is now reachable on evidence a project of a different shape cannot trip incidentally.
+
+Two things settled while fixing it, written into the prompt rather than left here:
+
+- **`data_files > code_files * 2` carries no information when its denominator is zero** — it degenerates to `data_files > 0`. So the sourceless case gets its own `data_files > 0` line at the *bottom* of the cascade rather than reusing the ratio at the top, where a single CI `.yml` in a documents-only repository would have claimed it for `data`. That residual is named in the prompt; it is a deliberate choice of which false positive to keep, not an oversight.
+- **The absent count resolves to `code` and does not fall through to the artifact branches.** Falling through would hand a `strategic` verdict to a project whose code volume is precisely what nobody could measure — this defect with the evidence removed. `code` is also the cascade's own no-evidence fallback, so an unmeasurable project takes the same default as an unremarkable one rather than a verdict of its own, and the orchestrator says out loud that the count could not be taken.
+
+A gate holds the order: `hooks/lib/__tests__/domain-cascade-order-lint.test.ts` parses the cascade out of the prompt and fails if any `strategic`/`knowledge` branch rises above the first branch reading `code_files`, or if the `counted_by == "none"` branch sinks below one that reads a count. It is fed the pre-fix cascade as a negative case, so it is shown to fail on the defect rather than only to pass on the fix.
+
+Session: `shared/history/260810-0241-orchestrator-session.md` (task T3). Executor log: `shared/history/260810-0349-coder-domain-cascade-branch-order.md`.
