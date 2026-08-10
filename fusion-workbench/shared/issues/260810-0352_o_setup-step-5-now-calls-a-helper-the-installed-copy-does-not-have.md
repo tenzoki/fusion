@@ -39,3 +39,20 @@ Measured at `ed87d87`:
 **Why it does not close.** The record's three named questions are all about the mechanism, not the instance, and all three are on the record as `shared/decisions/260810-0921_o_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`. Question 1 — does Setup Step 5 tolerate a missing helper or halt? — is unchanged in code: `agents/orchestrator.md` still names the helper through `$FUSION_PLUGIN_ROOT` with no absence branch, so the next helper added between releases reproduces this exactly. The release removed today's instance and left the shape that produced it.
 
 Closing this would also orphan the decision, which cites this record as *the instance*.
+
+---
+Resolved 260810-1511 (coder, task `I:260810-0352-helper-absence`, session `260810-1402`) — **question 1 answered in code; the marker is the orchestrator's to move after the commit lands.**
+
+`agents/orchestrator.md` Setup Step 5 no longer calls the helper bare. The invocation is now an `[ -x ]` test whose else branch prints the helper's own absent-count shape (`code_files=unavailable`, `data_files=unavailable`, `counted_by=none`) plus one stderr line naming the reason, and exits 0. That is decision `260810-0921` option **(a1) tolerate and report**, taken as the user answered it: the absence is reported in the vocabulary the cascade already has instead of as the shell's 127.
+
+`-x` rather than `-f` deliberately: a present-but-non-executable helper is exit 126, the same class of failure with a different number, and the same guard should catch it.
+
+**No cascade branch was added.** The `counted_by == "none"` line that `31d8bb3` put at the top is unmoved and unchanged, and the added prose says explicitly not to give the absent helper a branch of its own — the three routes into an absent count differ in their *reason*, and the reason is reported, not branched on. The prose that described the absent count was widened from one reason to three (not under git; count attempted and failed; helper absent from the installed plugin, for which the stated remedy is `fusion --update` and restart); it had already been incomplete against the helper's own header, which names two causes for exit 2.
+
+`skills/setup/SKILL.md` needed no matching word. Its Step-5 line delegates the heuristic to `agents/orchestrator.md` by citation and carries no helper call of its own, so the guard arrives with the block it cites. Checked rather than assumed.
+
+Verified: the guard run against a scratch plugin root with an empty `bin/` exits 0 and emits the three lines plus the reason; against a mode-644 helper it also exits 0; against this repository's own `bin/` it returns the real count unchanged (`code_files=95 data_files=21 counted_by=git-ls-files`). `cd hooks && npm test` — exit 0, 39 files, 1040 tests, including `domain-cascade-order-lint.test.ts`, which parses this exact fenced block.
+
+**What this does not close.** Questions 2 and 3 of this record — the general case for any future prompt-called helper, and whether the work-tree preference should extend to helper resolution — are parts (b) and (c) of `shared/decisions/260810-0921_*_...`, both still open by the user's own answer. The `CLAUDE.md` line that the hooks do not get the work-tree treatment stands untouched. The class is narrowed to one instance handled, not closed.
+
+History: `shared/history/260810-1511-setup-step-5-guarded-helper-call.md`

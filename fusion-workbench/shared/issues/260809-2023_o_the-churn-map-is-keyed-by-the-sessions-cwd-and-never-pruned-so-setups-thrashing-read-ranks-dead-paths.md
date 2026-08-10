@@ -115,3 +115,22 @@ see);
 
 ---
 Decision filed: `shared/decisions/260810-0920_o_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md` — this record states that a decision precedes the fix and names three parts. They are now on the record as an open question with options and constraints. No code change until it is answered.
+
+---
+Resolved 260810-1526 (coder, task `I:260809-2023-churn-key`, session `260810-1402`) — **all three parts of the answer are in code; the marker is the orchestrator's to move after the commit lands.**
+
+Decision `260810-0920_*_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md`, realised part by part:
+
+**(a) The key is anchored to the workbench root.** `churnKey()` in `hooks/lib/churn.ts` runs `resolve(cwd, raw)` and then `projectRelative(absolute, root)` — the same two steps `narrowingTarget` in `hooks/tracker.ts` already ran for the protected-path measurement, using the two helpers the answer named (`workbench-root.ts`, `project-relative.ts`). The heatmap and the guard now read one path the same way. A path landing outside the root is **not tracked** rather than stored absolute: storing it is what produced the second spelling, and a file outside the project is not evidence about churn in it. It is still observed — the `tracker_record` event says `not tracked`.
+
+**(b) Migrated, with the merge rule stated.** `migrateChurnKeys()` runs on load, once per state file (a `keyAnchor: "workbench-root"` stamp is written on save and skips it afterwards), and is idempotent independently of the stamp. The rule reads no count: an absolute key inside the root becomes root-relative and outside it is dropped; a relative key is probed against the root and then against `fusion-workbench/`, the two directories that can have been the unrecorded cwd, and the reading that names a file on disk wins; a relative key that resolves under neither is left as written, since it cannot be re-anchored from the key alone and the ranking excludes it anyway. **Merge rule for two spellings of one file: the counters are summed** (each spelling is an independent counter under-reporting the same file, so the sum is what would have been recorded had the anchor been right); `lastChange` is the later of the two; `thrashingScore` is **recomputed** from the merged counters rather than combined, because it is derived and any arithmetic over two derived values invents a number the formula could not produce.
+
+**(c) Every entry kept, absent files excluded from the ranking.** `rankThrashing()` is the read path, called by `hooks/churn-rank.ts` through the new `bin/fusion-churn-rank`, which `agents/orchestrator.md` Setup Step 5 and `skills/setup/SKILL.md` Step 3 now run instead of reading `churn.json` by eye. Nothing deletes from the map; the helper reports `entries=` and `absent=` alongside the ranking, and is read-only — it does not persist the migration it may have run in memory.
+
+The call site carries the same `[ -x ]` guard as `bin/fusion-count-sources` one block above it, per `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` option (a1) — this helper is new, so every session running against an older install would otherwise take exit 127 at Setup. Churn is advisory and has no substitute value to print, so the absent branch reports the reason on stderr and says nothing about high-thrash files.
+
+Measured against this repository's own live map, which the ranking reads without rewriting: 590 entries in, 414 after re-anchoring (171 naming other roots dropped, 5 pairs merged), 191 of those absent from disk and excluded, and the top ten are files that all exist. Before the change the top four were led by three files that were not there and one path on a machine this checkout is not on. The live `churn.json` is unchanged on disk: the tracker's churn half stands down when cwd is this repository, so the first save that persists the migration will come from a session working below the root or from a consuming project.
+
+Nothing is enforced off `churn.json` and nothing here changes that — `analyzeChurn` is untouched, and no new caller reads the map for a decision.
+
+History: `shared/history/260810-1526-churn-key-anchored-to-workbench-root.md`

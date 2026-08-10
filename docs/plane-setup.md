@@ -268,10 +268,15 @@ bin/fusion-plane map --forget <circle-dir>
 ```
 
 Run it once per stale entry. Circle sub-artifacts are keyed
-`<circle-dir>::issues/<file>.md` and `<circle-dir>::decisions/<file>.md` — a
-`bin/fusion-plane map` dump lists them all. Forgetting a key that is not in the map
-reports `not found` and exits 1 rather than pretending to succeed, so a typo is
-visible.
+`<circle-dir>::issues/<stamp>_<slug>.md` and `<circle-dir>::decisions/<stamp>_<slug>.md`,
+where `<stamp>` is the filename's `YYMMDD-HHMM` and `shared` stands in for `<circle-dir>`
+for an artifact that belongs to no Circle. The key
+is **not** the on-disk filename: the state marker is dropped from it, so that the key
+survives the state transitions this mirror exists to push. A file named
+`<stamp>_o_open-issue.md` is therefore keyed `<circle-dir>::issues/<stamp>_open-issue.md`.
+A `bin/fusion-plane map` dump lists them all, already in that form. Forgetting a key that
+is not in the map reports `not found` and exits 1 rather than pretending to succeed, so a
+typo is visible.
 
 If you deleted several issues and would rather not name each one,
 `bin/fusion-plane map --prune` drops every entry whose Plane issue returns a 404. It

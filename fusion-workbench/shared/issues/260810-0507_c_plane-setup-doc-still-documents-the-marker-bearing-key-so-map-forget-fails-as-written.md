@@ -38,3 +38,13 @@ among the exempt surfaces), so this is user-facing documentation rather than an 
 Update the key shape in that line to the marker-free form, and say in one clause that the marker is
 deliberately absent so the key survives a state transition — that sentence is the whole point of
 `f320db2` and it is the thing a user is most likely to get wrong when hand-composing a key.
+
+---
+Resolved: `docs/plane-setup.md`, the `map --forget` paragraph under `#### The procedure` (step 5,
+"Clean up" — the paragraph opening "Run it once per stale entry"), now documents the marker-free key
+`<circle-dir>::issues/<stamp>_<slug>.md`, states in one clause that the marker is dropped "so that the
+key survives the state transitions this mirror exists to push", names `shared` as the no-Circle scope,
+and shows the transform on a placeholder filename. Shape verified against `natural_key()` +
+`stable_basename()` in `bin/fusion-plane`, not against this record; `bin/fusion-plane` unchanged. The
+example uses `<stamp>` rather than a fabricated timestamp because the reference-resolution lint reads a
+stamped filename in shipped text as a record citation and fails on it.
