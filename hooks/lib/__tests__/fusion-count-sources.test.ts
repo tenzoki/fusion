@@ -75,14 +75,41 @@ function run(cwd: string, ...args: string[]): Counts {
  * script's header explicitly invites ("Adding a language is one word in
  * CODE_EXT") — and the coverage test below would keep passing while covering
  * less. Read from the source, it covers whatever the source currently lists.
+ *
+ * Reading has its own drift, one step quieter, and it arrives in two shapes.
+ * A line given a trailing comment or wrapped stops matching the regex and
+ * contributes nothing, so every line that DECLARES the variable must also parse
+ * — a line that declares it and does not match is the parse breaking, not the
+ * script shrinking. The floors this replaced (>50, >15) only caught a parse
+ * matching nothing: `CODE_EXT`'s eleven lines average 5.5 extensions, so two
+ * could fall out under a floor of 50 while the test kept asserting coverage over
+ * the smaller set. Issue: shared/issues/260810-0749_*_the-extension-parse-
+ * guards-against-matching-nothing-but-not-against-matching-less.md.
+ *
+ * The second shape is why the line count is not the whole guard. The
+ * continuation prefix is optional in the regex, so a line rewritten to
+ * `CODE_EXT="${CODE_EXT}|c|h|…"` still matches — and captures `${CODE_EXT}` as
+ * an extension. The line count is unchanged and the list is longer, not shorter,
+ * so neither a floor nor a line-count assertion sees it. Every token therefore
+ * has to look like an extension.
+ *
+ * `src` is a parameter so the guard itself is testable against a mutated source.
  */
-function extensions(varName: string): string[] {
-  const src = readFileSync(script, "utf-8");
+function extensions(varName: string, src: string = readFileSync(script, "utf-8")): string[] {
   const assignment = new RegExp(`^${varName}="(?:\\$${varName}\\|)?(.+)"$`);
+  const declared = src.split("\n").filter((l) => l.startsWith(`${varName}=`));
+  if (declared.length === 0) throw new Error(`${varName}: no assignment lines found in ${script}`);
+
   const found: string[] = [];
-  for (const line of src.split("\n")) {
+  for (const line of declared) {
     const m = line.match(assignment);
-    if (m) found.push(...m[1].split("|"));
+    if (!m) throw new Error(`${varName}: assignment line declared but not parsed: ${line.trim()}`);
+    for (const ext of m[1].split("|")) {
+      if (!/^[A-Za-z0-9]+$/.test(ext)) {
+        throw new Error(`${varName}: parsed token is not an extension: ${JSON.stringify(ext)}`);
+      }
+      found.push(ext);
+    }
   }
   return found;
 }
@@ -254,14 +281,10 @@ describe("fusion-count-sources", () => {
   });
 
   it("counts every extension both lists name, so a language added to one is covered here too", () => {
-    for (const [varName, other, floor] of [
-      ["CODE_EXT", "DATA_EXT", 50],
-      ["DATA_EXT", "CODE_EXT", 15],
-    ] as const) {
+    for (const varName of ["CODE_EXT", "DATA_EXT"] as const) {
+      // extensions() throws if any declared line failed to parse, so this list
+      // is every extension the script ships or the test does not get here.
       const exts = extensions(varName);
-      // Guards the parse itself: an empty or tiny list would make the
-      // assertions below vacuously true.
-      expect(exts.length).toBeGreaterThan(floor);
       expect(new Set(exts).size).toBe(exts.length);
 
       const root = project(exts.map((e, i) => `src/unit${i}/f${i}.${e}`));
@@ -275,6 +298,37 @@ describe("fusion-count-sources", () => {
       // anything.
       expect(Number(shouldBeZero)).toBe(0);
     }
+  });
+
+  it("fails the parse when a declared assignment line stops matching, instead of covering less", () => {
+    // The drift the coverage test above cannot see from its own result. Each
+    // mutation below leaves the script shipping exactly the extensions it ships
+    // now, and each one used to leave this file asserting coverage over a
+    // different set while still passing its floor.
+    const src = readFileSync(script, "utf-8");
+    const mutate = (from: string, to: string): string => {
+      const out = src.replace(from, to);
+      expect(out).not.toBe(src); // the line the fixture rewrites still exists
+      return out;
+    };
+
+    // A trailing comment: the line no longer matches and its 8 extensions are
+    // subtracted silently. 60 - 8 = 52, which cleared the old floor of 50.
+    expect(() =>
+      extensions("CODE_EXT", mutate('|cc|cpp|cxx|hh|hpp|hxx"', '|cc|cpp|cxx|hh|hpp|hxx"  # C family')),
+    ).toThrow(/declared but not parsed/);
+    expect(() => extensions("DATA_EXT", mutate('|xsd|avsc"', '|xsd|avsc"  # schemas'))).toThrow(
+      /declared but not parsed/,
+    );
+
+    // The braced rewrite: still matches, because the continuation prefix is
+    // optional, and `${CODE_EXT}` arrives as an extension. A line-count check
+    // alone passes this one.
+    expect(() => extensions("CODE_EXT", mutate('CODE_EXT="$CODE_EXT|c|h|', 'CODE_EXT="${CODE_EXT}|c|h|'))).toThrow(
+      /not an extension/,
+    );
+
+    expect(() => extensions("NO_SUCH_EXT", src)).toThrow(/no assignment lines/);
   });
 
   it("matches extensions case-insensitively, as the header says it does", () => {
