@@ -40,3 +40,26 @@ drop the fractional argument. The first is the smallest and matches the treatmen
 already has.
 
 **Filed by:** coderev, review of session `260810-1646` Turn 1, range `5ef92eb..940d522`.
+
+---
+Resolved: `bin/monitor` now runs `sleep 0.5 2>/dev/null || sleep 1 || true`. The fast path keeps
+0.5s where the fractional operand is supported; the whole-second fallback keeps the delay where it
+is not, rather than dropping it (the delay is what stops the tab reaching a port the forked server
+has not bound yet, and the rejecting platforms are not the fast ones); `2>/dev/null` drops the
+`sleep: invalid number '0.5'` line the user cannot act on; the trailing `|| true` covers a `sleep`
+missing outright. The record's own first option (`|| true` alone) was not taken for those two
+reasons — it satisfies the lifetime requirement and nothing else.
+
+The whole path between the `trap` and `wait $SERVER_PID` was re-checked command by command, not
+only the diff: `case "$(uname -s)"` was **measured** rather than assumed (a failing command
+substitution in the case word does not trigger `errexit`), and the new `echo` carries `|| true`
+because a write to a closed stderr really does return non-zero.
+
+Measured in a scratch copy, not in the working tree: `script(1)` for the pty, the pty held open by
+an outer shell so the teardown does not collect the orphan under test, a `sleep` shim rejecting any
+fractional operand, and a harness-only `/bin/sleep 2` after the fork so python is bound before the
+block runs. Before: `WRAPPER-EXIT=1`, `wait` never reached, python still serving on the port with
+**ppid 1**. After: wrapper alive in `wait`, server's parent is the wrapper, no error line, tab still
+opened. `npm test` from `hooks/` — exit 0, 1113 tests.
+
+History: `fusion-workbench/shared/history/260810-2026-coder-monitor-sleep-and-launcher-gap.md`.

@@ -39,3 +39,31 @@ Keep both non-fatal.
 defect). `HYG-NO-SILENT-FAIL`.
 
 **Filed by:** coderev, review of session `260810-1646` Turn 1, range `5ef92eb..940d522`.
+
+---
+Resolved: `bin/monitor` records the reason in `BROWSER_GAP` on both paths — `no <launcher> on PATH`
+where `command -v` fails, `<launcher> could not open a browser` where it exits non-zero — and prints
+one stderr line when the variable is non-empty:
+
+```
+monitor: <reason>. Open http://localhost:<port> yourself; set MONITOR_NO_BROWSER=1 to silence this.
+```
+
+One report site with the reason as data, rather than a second branch of output, which is the shape
+`agents/orchestrator.md:126` already uses for the two `bin/` helpers. The `|| true` on the launcher
+became `|| BROWSER_GAP=…`, so nothing about the wrapper's lifetime changed. The launcher's own
+stderr is deliberately not redirected: a launcher that explains itself still does, with the
+monitor's line after it. Non-interactive callers and `MONITOR_NO_BROWSER` stay silent by
+construction — neither reaches the block, and a gap is only a gap for someone who wanted the tab.
+The `:1234` comment that claimed the absent case behaves "exactly as under `MONITOR_NO_BROWSER`" was
+rewritten, since that is what the record showed to be the wrong equivalence.
+
+Both paths measured on a scratch copy under a pty, wrapper alive and serving in each: a `uname` shim
+printing `Linux` selects the absent `xdg-open`, and an `open` shim exiting 1 gives the failing case.
+`npm test` from `hooks/` — exit 0; the three `bin/monitor — the browser launch` cases still pass.
+
+The new line has no executable gate; that is filed as
+`260810-2027_o_the-monitors-browser-gap-line-has-no-executable-gate.md` rather than fixed here,
+because the test file belongs to queued task `I:260810-1632-pty-case` this session.
+
+History: `fusion-workbench/shared/history/260810-2026-coder-monitor-sleep-and-launcher-gap.md`.

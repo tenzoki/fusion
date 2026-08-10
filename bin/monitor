@@ -1232,16 +1232,42 @@ trap 'kill $SERVER_PID 2>/dev/null; wait $SERVER_PID 2>/dev/null; exit 0' INT TE
 # avoids the trap that a bare `command -v open` walks into there — on many
 # Linux distributions `/usr/bin/open` is util-linux's `openvt`, which switches
 # virtual terminals and has nothing to do with a URL. Darwin gets `open`,
-# everything else gets `xdg-open`; if the chosen launcher is absent the server
-# simply runs without a tab, exactly as under MONITOR_NO_BROWSER.
+# everything else gets `xdg-open`.
+#
+# `sleep` is a command like any other: it sits in the `if` body, so it is under
+# `set -e` exactly as the launcher is, and it was the one command in this block
+# left unguarded. The fractional argument is a GNU/BSD extension — POSIX
+# specifies an integer operand, and BusyBox built without FEATURE_FANCY_SLEEP,
+# Solaris `sleep` and AIX `sleep` reject it non-zero. Those are the same
+# platforms the `*)` arm exists for, so the dispatch that made the tab work on
+# Linux is what brought this line within reach of the machines it breaks on.
+# The whole-second fallback keeps the delay rather than dropping it, because
+# the delay is what stops the tab reaching a port the forked server has not
+# bound yet; `2>/dev/null` keeps the rejected fractional call from printing an
+# error a user can do nothing about; and the final `|| true` means even a
+# `sleep` missing outright cannot decide the wrapper's lifetime.
+#
+# Whichever way the tab fails to appear, one line on stderr says so and names
+# the URL. In silence a person who was promised a tab cannot tell an absent
+# launcher from a launcher that refused from a server that never started, and
+# the remedy is one line away. MONITOR_NO_BROWSER is exempt by construction,
+# and so is every non-interactive caller: neither reaches this block, and the
+# gap is only a gap for someone who wanted the tab.
 if [[ -t 1 && -z "${MONITOR_NO_BROWSER:-}" ]]; then
   case "$(uname -s)" in
     Darwin) BROWSER_LAUNCHER=open ;;
     *)      BROWSER_LAUNCHER=xdg-open ;;
   esac
+  BROWSER_GAP=""
   if command -v "$BROWSER_LAUNCHER" >/dev/null 2>&1; then
-    sleep 0.5
-    "$BROWSER_LAUNCHER" "http://localhost:${PORT}" || true
+    sleep 0.5 2>/dev/null || sleep 1 || true
+    "$BROWSER_LAUNCHER" "http://localhost:${PORT}" ||
+      BROWSER_GAP="$BROWSER_LAUNCHER could not open a browser"
+  else
+    BROWSER_GAP="no $BROWSER_LAUNCHER on PATH"
+  fi
+  if [[ -n "$BROWSER_GAP" ]]; then
+    echo "monitor: ${BROWSER_GAP}. Open http://localhost:${PORT} yourself; set MONITOR_NO_BROWSER=1 to silence this." >&2 || true
   fi
 fi
 wait $SERVER_PID
