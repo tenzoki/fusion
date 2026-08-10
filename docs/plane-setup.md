@@ -295,6 +295,24 @@ That is the one command whose whole job is the fold. Anything that already write
 map — `map --forget`, `map --prune`, `map --rebuild`, a live `push` — folds it in
 passing; `map`, `push --plan` and `plan` never do.
 
+**It runs once per map, and the map is what remembers that.** Every entry a write
+produces carries `key_format: 2`, meaning "this key is marker-free and was derived from
+the filename exactly once", and an entry carrying it is read back verbatim. Without
+that record the fold would be recomputed on every read, over keys it had already
+stripped — which for a slug that opens with a marker-shaped segment
+(`<stamp>_o_a_b-thing.md`) removes one segment too many, so the lookup key and the
+stored key stop meeting and every push creates a new Plane issue instead of moving the
+old one. So `map --migrate` on a map that predates the field writes the field, reports
+`STATUS: migrated`, and every run after that reports `STATUS: already at key format 2`
+and writes nothing. You do not have to run it: the next command that writes the map
+does the same thing in passing.
+
+One case it cannot repair, because nothing can decide it from a key alone: an entry
+written after the key went marker-free but before the format was recorded looks exactly
+like a legacy one, so it is folded once. For every filename fusion's naming convention
+produces that fold changes nothing — a kebab-case slug has no second `_<letter>_`
+segment — and the pathological shape above is the only one it costs, once.
+
 A map write can also fail to land: a read-only mount, a full disk, a workbench you no
 longer have write access to. When the replacement fails, the command names the file on
 stderr, prints **no** `STATUS: migrated` or `STATUS: forgotten` line, and exits 1. Take

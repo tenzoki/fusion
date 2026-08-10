@@ -513,6 +513,172 @@ describe("fusion-plane: the natural key does not carry the state marker", () => 
 });
 
 // ===========================================================================
+// 2b-bis. The key has ONE derivation, and the map records which entries have had
+//     it (issue 260810-0458 …the-natural-key-has-two-derivations-and-they-
+//     disagree-on-a-second-marker-shaped-segment).
+//
+//     `stable_basename` drops the FIRST `_<letter>_` segment after the stamp.
+//     Applied once, to a file's own name, that is the marker. Applied to its own
+//     output it eats a slug segment. The map side used to apply it AGAIN on every
+//     invocation, over keys the file side had already stripped, so for a name
+//     shaped `<stamp>_<m>_<letter>_<rest>.md` the lookup key and the stored key
+//     never met: `map_get_id` missed, `process_artifact` routed to create, and a
+//     new Plane issue was minted on every push for the life of the map. That is
+//     the duplicate-issue defect the marker-free key exists to close, arriving
+//     through the migration instead of through the marker.
+//
+//     "Has this key already been stripped?" is not decidable from the key text, so
+//     the fix records the answer rather than recomputing it: every entry `map_put`
+//     writes carries `key_format`, and an entry at the current format is read back
+//     verbatim. The fold is thereby a one-shot over the entries that predate the
+//     stamp.
+// ===========================================================================
+const TRAP_ISSUE = "260719-1600_o_a_b-thing.md"; // <stamp>_<marker>_<letter>_<rest>
+const TRAP_STABLE = "260719-1600_a_b-thing.md"; // one strip, and only one
+const TRAP_KEY = `${CIRCLE}::issues/${TRAP_STABLE}`;
+
+describe("fusion-plane: the natural key has one derivation, recorded in the map", () => {
+  /** A workbench holding an artifact whose slug opens with a marker-shaped segment. */
+  function trapWorkbench(): string {
+    const wb = freshWorkbench();
+    writeFileSync(
+      join(wb, "circles", CIRCLE, "issues", TRAP_ISSUE),
+      "# a slug that opens with a second marker-shaped segment\n",
+    );
+    return wb;
+  }
+
+  /** The op planned for that artifact, whatever key the helper chose for it. */
+  function trapOp(wb: string, binary = fusionPlane): any {
+    const r = spawnSync(binary, ["push", "--circle", CIRCLE, "--plan"], {
+      encoding: "utf-8",
+      stdio: ["ignore", "pipe", "pipe"],
+      env: { ...process.env, FUSION_PLANE_WORKBENCH: wb },
+    });
+    return plan(r.stdout ?? "").ops.find((o: any) => (o.source ?? "").endsWith(TRAP_ISSUE));
+  }
+
+  it("the two sides agree on the key, and keep agreeing across three consecutive runs", () => {
+    // The record's reproduction, inverted. The map is written through the helper's
+    // OWN write path — `seed --record-origin` is a pure map write, no network — so
+    // what the three runs read back is the file the helper actually produces, not a
+    // shape this test invented.
+    const wb = trapWorkbench();
+    expect(trapOp(wb).natural_key, "the file side strips exactly one marker").toBe(TRAP_KEY);
+    expect(run(wb, "seed", "--record-origin", TRAP_KEY, "plane-issue-0001").status).toBe(0);
+
+    for (const runNo of [1, 2, 3]) {
+      const op = trapOp(wb);
+      expect(op.op, `run ${runNo} must move the issue already on the board`).toBe("update");
+      expect(op.plane_id, `run ${runNo} must target that issue`).toBe("plane-issue-0001");
+      expect(op.natural_key, `run ${runNo} must resolve the stored key`).toBe(TRAP_KEY);
+    }
+  });
+
+  it("the control: the pre-fix helper plans a create on every one of those runs", () => {
+    // The defect driven against the ACTUAL pre-fix text out of git, not a
+    // re-implementation of it. Measured at df75004: create, create, create — the
+    // stored key folds to `…_b-thing.md` on every read while the lookup asks for
+    // `…_a_b-thing.md`, so a live push would mint a second Plane issue each time.
+    const show = spawnSync("git", ["-C", pluginRoot, "show", "df75004:bin/fusion-plane"], {
+      encoding: "utf-8",
+    });
+    // An installed copy or a shallow clone has no such commit. Skipping is visible
+    // in the reporter; inventing the pre-fix text would not be a control.
+    if (show.status !== 0) return;
+    const root = mkdtempSync(join(tmpdir(), "fusion-plane-prefix-"));
+    scratch.push(root);
+    const bin = join(root, "fusion-plane-prefix");
+    writeFileSync(bin, show.stdout, { mode: 0o755 });
+
+    const wb = trapWorkbench();
+    spawnSync(bin, ["seed", "--record-origin", TRAP_KEY, "plane-issue-0001"], {
+      encoding: "utf-8",
+      stdio: ["ignore", "pipe", "pipe"],
+      env: { ...process.env, FUSION_PLANE_WORKBENCH: wb },
+    });
+    expect(
+      [1, 2, 3].map(() => trapOp(wb, bin)?.op),
+      "the pre-fix helper never finds the entry it wrote itself",
+    ).toEqual(["create", "create", "create"]);
+  });
+
+  it("a map written before the format field is migrated exactly once", () => {
+    const wb = trapWorkbench();
+    const legacyKey = `${CIRCLE}::issues/${TRAP_ISSUE}`; // the marker still in it
+    const mapPath = join(wb, ".plane-map.json");
+    writeFileSync(
+      mapPath,
+      JSON.stringify(
+        {
+          [legacyKey]: {
+            plane_id: "plane-legacy-0001",
+            kind: "fusion-issue",
+            last_state: "Todo",
+            last_pushed: "2026-07-19T00:00:00Z",
+          },
+        },
+        null,
+        2,
+      ) + "\n",
+    );
+
+    const first = run(wb, "map", "--migrate");
+    expect(first.status).toBe(0);
+    expect(first.stdout).toContain("STATUS: migrated");
+    const migrated = JSON.parse(readFileSync(mapPath, "utf-8"));
+    expect(Object.keys(migrated), "one strip, onto the key the file side builds").toEqual([
+      TRAP_KEY,
+    ]);
+    expect(migrated[TRAP_KEY].key_format, "and the file now says so").toBe(2);
+
+    // The whole point of the field: nothing derives that key a second time —
+    // neither the migration re-run…
+    const after = readFileSync(mapPath, "utf-8");
+    const second = run(wb, "map", "--migrate");
+    expect(second.stdout).toContain("already at key format 2");
+    expect(readFileSync(mapPath, "utf-8"), "a migrated map is not migrated again").toBe(after);
+    // …nor an unrelated command that DOES write the file. Pre-fix, this one write
+    // silently re-keyed the entry to `…_b-thing.md` and stranded its UUID.
+    expect(run(wb, "seed", "--record-origin", "260719-1536-other-circle", "plane-other-1").status).toBe(0);
+    expect(Object.keys(JSON.parse(readFileSync(mapPath, "utf-8")))).toContain(TRAP_KEY);
+
+    // And the migrated entry still follows the record across a transition, which is
+    // what a mapping is for.
+    renameSync(
+      join(wb, "circles", CIRCLE, "issues", TRAP_ISSUE),
+      join(wb, "circles", CIRCLE, "issues", "260719-1600_c_a_b-thing.md"),
+    );
+    expect(trapOp(wb)).toBeUndefined(); // the source filename changed with it
+    const { ops } = plan(run(wb, "push", "--circle", CIRCLE, "--plan").stdout);
+    const op = ops.find((o: any) => (o.source ?? "").endsWith("260719-1600_c_a_b-thing.md"));
+    expect(op).toMatchObject({ op: "update", plane_id: "plane-legacy-0001", state: "Done" });
+  });
+
+  it("every command that writes the map records the format it wrote", () => {
+    // The stamp lives in `map_put`, the single place `.plane-map.json` is replaced,
+    // so a writer added later cannot put the map back a format by forgetting it.
+    const wb = freshWorkbench();
+    writeFileSync(
+      join(wb, ".plane-map.json"),
+      JSON.stringify(collidingLegacyMap, null, 2) + "\n",
+    );
+    for (const args of [
+      ["seed", "--record-origin", CIRCLE, "origin-uuid-0042"],
+      ["map", "--forget", issueKey(OPEN_ISSUE)],
+    ]) {
+      expect(run(wb, ...args).status, args.join(" ")).toBe(0);
+      const entries = Object.values(JSON.parse(readFileSync(join(wb, ".plane-map.json"), "utf-8")));
+      expect(entries.length, `${args.join(" ")} must leave entries to check`).toBeGreaterThan(0);
+      expect(
+        entries.every((e: any) => e.key_format === 2),
+        `${args.join(" ")} must leave every entry stamped`,
+      ).toBe(true);
+    }
+  });
+});
+
+// ===========================================================================
 // 2c. Reading the map never writes it, and no fold loses a UUID unannounced
 //     (issues 260810-0456 …dry-run-rewrites-the-map… and
 //      260810-0457 …rebuild-map-drops-a-colliding-plane-uuid-silently…).
@@ -673,7 +839,14 @@ describe("fusion-plane: reads never write .plane-map.json", () => {
     ).toContain("plane-issue-first");
   });
 
-  it("`map --migrate` on an already-folded map writes nothing and still succeeds", () => {
+  it("`map --migrate` stamps a map that is stable but predates the format field", () => {
+    // This used to report "already marker-free" and write nothing, on the test
+    // "folding would produce the same bytes". That is a different question: a map
+    // carrying no recorded format is not KNOWN to be folded — which is the whole
+    // reason the field exists (issue 260810-0458) — and leaving it unrecorded means
+    // every later read derives its keys again. The command whose entire job is that
+    // migration performs it: the keys do not move, and the file now says they are
+    // settled. Reads are unaffected and still write nothing; the test above pins it.
     const wb = freshWorkbench();
     const stable = {
       [issueKey(OPEN_ISSUE)]: {
@@ -685,11 +858,23 @@ describe("fusion-plane: reads never write .plane-map.json", () => {
       },
     };
     writeFileSync(mapPath(wb), JSON.stringify(stable, null, 2) + "\n");
-    const before = readFileSync(mapPath(wb), "utf-8");
     const r = run(wb, "map", "--migrate");
     expect(r.status).toBe(0);
-    expect(r.stdout).toContain("already marker-free");
-    expect(readFileSync(mapPath(wb), "utf-8")).toBe(before);
+    expect(r.stdout).toContain("STATUS: migrated");
+    const map = JSON.parse(readFileSync(mapPath(wb), "utf-8"));
+    expect(Object.keys(map), "stamping must not move a key").toEqual([issueKey(OPEN_ISSUE)]);
+    expect(map[issueKey(OPEN_ISSUE)]).toMatchObject({
+      plane_id: "plane-issue-0001",
+      origin: "fusion",
+      key_format: 2,
+    });
+
+    // And then it is a fixed point: the second run writes nothing at all.
+    const after = readFileSync(mapPath(wb), "utf-8");
+    const again = run(wb, "map", "--migrate");
+    expect(again.status).toBe(0);
+    expect(again.stdout).toContain("already at key format 2");
+    expect(readFileSync(mapPath(wb), "utf-8")).toBe(after);
   });
 
   it("a command that WAS asked to write folds the file as it writes", () => {
@@ -1890,11 +2075,14 @@ describe("fusion-plane push --rebuild-map: embedded-key field fallback", () => {
   });
 
   it("rebuilt entries carry the documented placeholder shape", () => {
+    // `key_format` is not a placeholder: a rebuild normalises the embedded key on
+    // the way in, so what it writes is settled and says so, like every other write.
     expect(rebuiltMap()["260719-1536-html-circle"]).toEqual({
       plane_id: "plane-uuid-html",
       kind: "unknown",
       last_state: "",
       last_pushed: "",
+      key_format: 2,
     });
   });
 });
@@ -2026,15 +2214,35 @@ describe("fusion-plane lint guards: the natural key is built in exactly one plac
     expect(sites[0].text, "the one site is natural_key's own printf").toContain("stable_basename");
   });
 
-  it("natural_key strips the marker rather than passing the basename through", () => {
-    // The consolidation is worth nothing if the single site keeps the marker. The
-    // behavioural tests above prove this end to end; this pins the mechanism so a
-    // refactor cannot quietly drop it.
-    const src = readFileSync(fusionPlane, "utf-8");
-    expect(src).toMatch(/^stable_basename\(\) \{/m);
-    expect(src, "the marker segment is what stable_basename removes").toMatch(
-      /sed -E 's\/\^\(\[0-9\]\{6\}-\[0-9\]\{4\}\)_\[a-z\]_\/\\1_\//,
-    );
+  it("the one site strips exactly one marker off the file's own basename", () => {
+    // The consolidation is worth nothing if the single site keeps the marker. This
+    // replaces an assertion on the literal `sed` spelling, which pinned the
+    // mechanism's TEXT: a correct change to the mechanism failed it for no
+    // behavioural reason, and — worse for a guard — it would have passed a
+    // derivation that stripped the marker twice, which is what issue 260810-0458
+    // turned out to be. The property is what matters: the key the helper plans for
+    // a file is that file's basename with the first `_<letter>_` segment after the
+    // stamp removed, and nothing else removed.
+    const wb = freshWorkbench();
+    const cases: [string, string][] = [
+      ["260719-1900_o_ordinary-name.md", "260719-1900_ordinary-name.md"],
+      // The shape the literal assertion could not distinguish: a slug that opens
+      // with a second marker-shaped segment. One strip is right; two is the defect.
+      ["260719-1901_o_a_b-thing.md", "260719-1901_a_b-thing.md"],
+      // A marker is one letter between underscores. A longer segment is slug.
+      ["260719-1902_o_ab_c-thing.md", "260719-1902_ab_c-thing.md"],
+    ];
+    for (const [file] of cases) {
+      writeFileSync(join(wb, "circles", CIRCLE, "issues", file), `# ${file}\n`);
+    }
+    const { ops } = plan(run(wb, "push", "--circle", CIRCLE, "--plan").stdout);
+    for (const [file, stable] of cases) {
+      const op = ops.find((o: any) => (o.source ?? "").endsWith(file));
+      expect(op, `${file} must be planned at all`).toBeDefined();
+      expect(op.natural_key, `${file}: the basename minus exactly one marker`).toBe(
+        `${CIRCLE}::issues/${stable}`,
+      );
+    }
   });
 
   it("the guard fires loudly if a seventh site is introduced", () => {

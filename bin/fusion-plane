@@ -109,8 +109,18 @@
 #   first stayed at its old state forever (issue 260807-1939). A test lints for a
 #   seventh site.
 #
-#   LEGACY MAPS: an entry written under the old marker-bearing form is FOLDED onto
-#   the stable form. The fold is computed for every lookup and WRITTEN by nothing
+#   ONE DERIVATION, AND THE MAP SAYS WHICH ENTRIES HAVE HAD IT. The marker is
+#   stripped exactly once, by `stable_basename`, off the on-disk filename. Every
+#   entry the map writes is stamped `key_format: 2` (MAP_KEY_FORMAT) and is then
+#   read back verbatim, because stripping the first `_<letter>_` a second time
+#   removes a segment of the slug: for a name shaped `<stamp>_<m>_<letter>_<rest>`
+#   the map side used to answer differently from the file side and every push
+#   created a new Plane issue (issue 260810-0458). The stamp is what turns the fold
+#   below from a transform re-applied forever into a one-shot.
+#
+#   LEGACY MAPS: an entry written under the old marker-bearing form — and any entry
+#   written before the stamp existed — is FOLDED onto the stable form. The fold is
+#   computed for every lookup and WRITTEN by nothing
 #   that only reads: `map_view` produces it in memory, and only a command that was
 #   asked to write the map (`map --migrate`, `map --forget`, `map --prune`,
 #   `map --rebuild`, a live push) puts it on disk. So `map`, `push --plan` and `plan` resolve through the
@@ -136,12 +146,15 @@
 # Runtime state (workbench-root, gitignored with the rest of fusion-workbench/):
 #   plane.config.yaml   consumer-filled config (base_url, slugs, state names)
 #   .plane-map.json     natural key → { plane_id, kind, last_state, last_pushed,
-#                       origin } where origin is "fusion" (fusion POSTed the
-#                       issue and owns its body → full mirror on push) or "seed"
-#                       (the issue is a human's pre-existing Plane story, bound
-#                       via `seed --record-origin` → push writes STATE ONLY, never
-#                       the title/description). Absent origin == "fusion" (legacy
-#                       maps keep their existing behaviour).
+#                       origin, key_format } where origin is "fusion" (fusion
+#                       POSTed the issue and owns its body → full mirror on push)
+#                       or "seed" (the issue is a human's pre-existing Plane story,
+#                       bound via `seed --record-origin` → push writes STATE ONLY,
+#                       never the title/description). Absent origin == "fusion"
+#                       (legacy maps keep their existing behaviour). key_format is
+#                       the encoding of the KEY this entry is filed under; absent
+#                       means "written before the format was recorded, so the key
+#                       may still carry a marker" and costs the entry one fold.
 #   .plane-outbox.jsonl deferred-transition notes { ts, natural_key, ... }
 #
 # Test seam: FUSION_PLANE_WORKBENCH=<dir> overrides workbench resolution so the
@@ -614,9 +627,23 @@ marker_from_filename() {
 # state marker segment removed, so `YYMMDD-HHMM_<m>_<slug>.md` becomes
 # `YYMMDD-HHMM_<slug>.md`. Exactly the inverse concern of
 # marker_from_filename above, and the two are deliberately adjacent: what that one
-# extracts is what this one drops. A name that carries no marker is returned
-# unchanged, so the transform is idempotent and safe to apply to an already-stable
-# name.
+# extracts is what this one drops.
+#
+# IT DROPS THE FIRST `_<letter>_` AFTER THE STAMP, AND IT IS NOT IDEMPOTENT. This
+# comment used to claim it was — "a name that carries no marker is returned
+# unchanged, so the transform is safe to apply to an already-stable name" — which
+# holds only for the names the convention actually produces: a kebab-case slug
+# carries no underscores, so a stable name has no second `_<letter>_` for a second
+# application to find. For a name shaped `<stamp>_<m>_<letter>_<rest>.md` the claim
+# is false — `<stamp>_a_b.md` becomes `<stamp>_b.md` — and the map side used
+# to lean on exactly the idempotence that is not there: it re-derived this
+# transform on every invocation over keys this one had already stripped, the two
+# sides settled on different keys, and every push minted a new Plane issue
+# (issue 260810-0458).
+#
+# Nothing leans on it now. This runs ONCE per record, on the raw on-disk basename,
+# and the map records the format of the keys it holds (`MAP_KEY_FORMAT` below) so
+# that no second application is ever computed over the result.
 stable_basename() {
   printf '%s' "$1" | sed -E 's/^([0-9]{6}-[0-9]{4})_[a-z]_/\1_/'
 }
@@ -680,12 +707,59 @@ artifact_title() {
 # A read path added tomorrow gets `map_view` and has no way to write; that is the
 # property bought here, rather than two guarded call sites waiting for a third.
 #
-# JQ_STABLE_KEY — the key normalisation, as a jq definition, shared by the fold
-# and the rebuild. It is the jq twin of `stable_basename` above: drop the `_<m>_`
-# marker segment from the filename part of a natural key. It matches only inside
-# `::issues/` and `::decisions/` after a YYMMDD-HHMM stamp, so a Circle key (a
-# bare directory name, no `::`) passes through untouched.
-JQ_STABLE_KEY='def stable_key: sub("(?<p>::(issues|decisions)/[0-9]{6}-[0-9]{4})_[a-z]_"; .p + "_");'
+# THE MAP RECORDS THE FORMAT OF ITS OWN KEYS, AND THAT IS WHAT MAKES THE FOLD A
+# ONE-SHOT. MAP_KEY_FORMAT is the key encoding this version of the helper writes,
+# stamped onto every entry as `key_format`:
+#
+#   (absent)  an entry written before the format was recorded. Its key MAY still
+#             carry the state marker, and nothing about the key text says whether
+#             it does.
+#   2         the key is marker-free: derived ONCE by `stable_basename` from the
+#             on-disk filename, or normalised once on the way in by a rebuild.
+#
+# It exists because "has this key already had its marker stripped?" is not
+# decidable from the key. Both derivations strip the FIRST `_<letter>_` after the
+# stamp — right applied once, wrong applied twice — and the map side used to apply
+# it again on EVERY invocation, over keys the file side had already stripped. For a
+# name shaped `<stamp>_<m>_<letter>_<rest>.md` the two sides then settled on
+# different keys, `map_get_id` missed, and every push created a second Plane issue:
+# the very defect the marker-free key exists to close, arriving through the
+# migration instead of through the marker (issue 260810-0458). Recording the answer
+# is the change of mechanism the undecidable question calls for; a cleverer regex
+# was the other candidate and does not answer it.
+#
+# So the fold is now a ONE-SHOT migration of the entries that predate the stamp,
+# not a transform re-applied for the life of the map. `map_put` stamps everything
+# it writes; `settled_key` below passes a stamped entry through untouched.
+#
+# WHAT IT DOES NOT REPAIR, said here rather than left to be met: an entry written
+# after the key went marker-free but BEFORE the stamp existed carries no format, so
+# it is indistinguishable from a legacy one and is folded once. For every filename
+# the convention produces that fold is the identity — a kebab-case slug has no
+# second `_<letter>_` segment, and all 348 issue and decision names in fusion's own
+# workbench were checked against it — so the cost is confined to the pathological
+# shape, where it is one wrong key, once, on the first write after the upgrade.
+# `map --migrate` is the command that performs that one-shot deliberately.
+MAP_KEY_FORMAT=2
+
+# JQ_STABLE_KEY — the key normalisation, as jq definitions, shared by the fold and
+# the rebuild.
+#
+# `stable_key` is the jq twin of `stable_basename` above: drop the `_<m>_` marker
+# segment from the filename part of a natural key. It matches only inside
+# `::issues/` and `::decisions/` after a YYMMDD-HHMM stamp, so a Circle key (a bare
+# directory name, no `::`) passes through untouched. It is a DERIVATION and carries
+# that transform's one-application-only property with it.
+#
+# `settled_key` is the one every map-side caller must use, and the reason the two
+# are not one function: it reads the entry's recorded `key_format` first and
+# derives only for an entry that predates the stamp. Both places that map an
+# existing map entry onto its stable key go through it — the fold and the loser
+# report — so they cannot answer differently. The rebuild uses bare `stable_key`
+# because what it normalises is not a map entry but a key read back out of a Plane
+# issue body, which carries no format (see JQ_REBUILD_MAP).
+JQ_STABLE_KEY='def stable_key: sub("(?<p>::(issues|decisions)/[0-9]{6}-[0-9]{4})_[a-z]_"; .p + "_");
+def settled_key($e): if (($e.value.key_format? // 0) >= '"$MAP_KEY_FORMAT"') then $e.key else ($e.key | stable_key) end;'
 
 # JQ_MIGRATE_MAP — re-key a whole map to the stable form.
 #
@@ -697,7 +771,7 @@ JQ_STABLE_KEY='def stable_key: sub("(?<p>::(issues|decisions)/[0-9]{6}-[0-9]{4})
 # Plane for a human to close.
 JQ_MIGRATE_MAP="$JQ_STABLE_KEY"'
   reduce (to_entries[]) as $e ({};
-    ($e.key | stable_key) as $k
+    settled_key($e) as $k
     | if (has($k) and ((.[$k].last_pushed // "") >= ($e.value.last_pushed // "")))
       then . else .[$k] = $e.value end)'
 
@@ -707,7 +781,7 @@ JQ_MIGRATE_MAP="$JQ_STABLE_KEY"'
 JQ_FOLD_LOSERS="$JQ_STABLE_KEY"'
   . as $orig | $v[0] as $folded
   | [ $orig | to_entries[]
-      | select($folded[(.key | stable_key)].plane_id != .value.plane_id)
+      | select($folded[settled_key(.)].plane_id != .value.plane_id)
       | "\(.key) → \(.value.plane_id)" ]
   | .[]'
 
@@ -792,14 +866,33 @@ map_report_fold() {
 # means a created issue's UUID never reaches the map and the next push POSTs a
 # SECOND Plane issue, which is the defect this whole mirror exists to close.
 #
-# On success the view is set to $MAP rather than cleared: what was just written is
-# by construction already in the stable key form (map_write derives it from the
-# folded view, rebuild_map normalises through stable_key), so the new file IS a
-# valid view and the next lookup needs no second fold.
+# STAMPING THE KEY FORMAT IS PART OF REPLACING, and it belongs here for the same
+# reason the refresh does: this is the one place $MAP is replaced, so no entry can
+# reach the file without it. What arrives here is in the stable key form by
+# construction — map_write derives it from the folded view, rebuild_map normalises
+# through stable_key — and the stamp is that fact written down, so the NEXT run
+# does not re-derive it and arrive somewhere else (issue 260810-0458). Written at
+# one chokepoint rather than inside each jq program, because a program added
+# tomorrow that forgot the stamp would silently put the map back a format.
+#
+# On success the view is set to $MAP rather than cleared: the new file is stable
+# and now says so, which makes it a valid view, and the next lookup needs no fold
+# at all.
 map_put() {
-  if ! mv "$1" "$MAP"; then
+  local src="$1" stamped
+  stamped="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-stamp.XXXXXX")"
+  # jq exits 0 on empty input having written nothing, the same trap map_write
+  # guards one function up, so the size is checked rather than the status alone.
+  if ! jq -S --argjson v "$MAP_KEY_FORMAT" 'with_entries(.value.key_format = $v)' "$src" > "$stamped" 2>/dev/null \
+     || [ ! -s "$stamped" ]; then
+    err "map: could not record the key format in $MAP — file left unchanged"
+    rm -f "$src" "$stamped"
+    return 1
+  fi
+  rm -f "$src"
+  if ! mv "$stamped" "$MAP"; then
     err "map: could not replace $MAP — file left unchanged"
-    rm -f "$1"
+    rm -f "$stamped"
     return 1
   fi
   [ -z "$MAP_VIEW_TMP" ] || rm -f "$MAP_VIEW_TMP"
@@ -1828,19 +1921,29 @@ map_forget() {
   printf 'STATUS: forgotten (%s) — %s entries remain\n' "$nk" "$(jq 'length' "$MAP")"
 }
 
-# map_migrate — fold the file onto the marker-free keys DELIBERATELY. The fold is
+# map_migrate — bring the file to the current key format DELIBERATELY. The fold is
 # reachable this way, and only this way, from a command that does nothing else, so
 # an operator repairing a legacy board performs the collapse (and reads the dropped
 # UUIDs) as the act they asked for. It used to happen as a side effect of any
 # lookup, including `map` and `push --plan` (issue 260810-0456).
+#
+# THE CONDITION IS THE RECORDED FORMAT, NOT WHETHER THE FOLD WOULD CHANGE ANYTHING.
+# It used to be `MAP_VIEW = MAP` — "folding would produce the same bytes" — which
+# is a different question and answers this one wrong in both directions. A stable
+# map that predates the stamp passes that test and is left unstamped, so every
+# later read re-derives its keys and the ambiguity the stamp exists to close stays
+# open. This is the command whose whole job is that migration, so it performs it:
+# every entry not at the current format goes through the fold once and comes out
+# stamped, after which the map is a fixed point and this branch says so.
 map_migrate() {
   map_view
   if [ ! -f "$MAP" ]; then
     printf 'STATUS: nothing to migrate (no map at %s)\n' "$MAP"
     return "$EXIT_OK"
   fi
-  if [ "$MAP_VIEW" = "$MAP" ]; then
-    printf 'STATUS: already marker-free (%s entries) — nothing written\n' "$(jq 'length' "$MAP")"
+  if [ "$(jq -r "all(.[]; (.key_format? // 0) >= $MAP_KEY_FORMAT)" "$MAP" 2>/dev/null)" = "true" ]; then
+    printf 'STATUS: already at key format %s (%s entries) — nothing written\n' \
+      "$MAP_KEY_FORMAT" "$(jq 'length' "$MAP")"
     return "$EXIT_OK"
   fi
   map_write '.' || return "$EXIT_CONFIG"
