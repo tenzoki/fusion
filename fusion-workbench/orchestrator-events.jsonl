@@ -1069,3 +1069,7 @@
 {"ts":"2026-08-10T06:36:17","event":"coherence_review","turn":3,"detail":"verdict=review-needed; recommendation=revise Directive"}
 {"ts":"2026-08-10T06:36:17","event":"bounded_closure_proposed","turn":3,"detail":"user accepted; Directive closed 11 of 34; the measured account of the repair work is the Artifact"}
 {"ts":"2026-08-10T06:36:17","event":"session_end","detail":"3 turns, 23 commits, 20 records closed, 34 filed, suite 898->1001 green, Bounded Closure"}
+{"ts":"2026-08-10T06:45:06","event":"session_start","detail":"Setup complete; no Directive stated yet; mode unresolved; domain=code"}
+{"ts":"2026-08-10T06:56:42","event":"scope_resolved","detail":"mode=issues, narrowed to real code defects in bin/ and hooks/ + release question; 10 tasks; agents: coder, orchestrator; 2 human gates expected"}
+{"ts":"2026-08-10T06:56:42","event":"queue_built","detail":"10 tasks, 0 blocked, 2 gated (T8 design choice, T10 release decision)"}
+{"ts":"2026-08-10T06:56:42","event":"turn_start","turn":1,"detail":"3 ready tasks: T1 T2 T3 (bin/fusion-plane + its test)"}

@@ -112,3 +112,6 @@ see);
 (the thresholds defect, resolved separately);
 `agents/orchestrator.md:113`, `skills/setup/SKILL.md:226` (the reader);
 `hooks/tracker.ts` (the normalisation), `hooks/lib/churn.ts` (the map).
+
+---
+Decision filed: `shared/decisions/260810-0920_o_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md` — this record states that a decision precedes the fix and names three parts. They are now on the record as an open question with options and constraints. No code change until it is answered.

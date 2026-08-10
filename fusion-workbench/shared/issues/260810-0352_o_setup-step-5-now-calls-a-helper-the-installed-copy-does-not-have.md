@@ -23,3 +23,6 @@ This is a different shape. The helper does not exist in the installed copy at al
 **Not a defect in T2 or T3.** Both were dispatched against the work tree and verified against it. The gap is between the work tree and the installed copy, which no task in this session owned.
 
 **Workaround that works today:** `fusion --update` and restart the session.
+
+---
+Decision filed: `shared/decisions/260810-0921_o_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` — the three questions this record names are on the record with options. The decision recommends taking the immediate case now (report the absence in the cascade's own `counted_by=none` vocabulary rather than emitting a shell 127) and leaving the class questions open.

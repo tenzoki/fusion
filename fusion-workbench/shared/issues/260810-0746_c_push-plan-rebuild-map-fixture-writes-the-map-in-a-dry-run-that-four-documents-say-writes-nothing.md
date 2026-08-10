@@ -59,3 +59,6 @@ Either refuse the combination (`--plan` with `--rebuild-map`: usage error, since
 mutation and a plan is not), or run the fixture rebuild inside the `DRYRUN -eq 0` branch beside
 the live one and let `--plan --rebuild-map` report that it planned no rebuild. Add the spelling
 to the `reads never write` loop either way.
+
+---
+Resolved: 4bf509e — `cmd_push` refuses `--rebuild-map` under any dry run (flag `--plan` or env `FUSION_PLANE_DRYRUN=1`), keyed on the flag and placed after the env fold. Reporting a planned rebuild was rejected: `--plan` emits ops computed from the map, so a truthful plan for a rebuilt map requires performing the rebuild. Header, fold note, `usage()` and `docs/plane-setup.md` extended; the reads-never-write suite gained the fifth spelling.

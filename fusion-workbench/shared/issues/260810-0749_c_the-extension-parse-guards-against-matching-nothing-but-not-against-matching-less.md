@@ -47,3 +47,6 @@ expect(matchedLines).toBe(declared);
 
 That makes the guard structural rather than a magic number, and it removes the two floors, which
 themselves have to be re-tuned by hand every time a language is added.
+
+---
+Resolved: 38fe341 — `extensions()` now requires every `VAR=` line to match, the variable to carry at least one line, and every parsed token to look like an extension. Both magic floors removed. The token-shape check was added beyond the filed direction: measured, the `${CODE_EXT}` rewrite the record cites does NOT stop matching (the continuation prefix is optional), so it grows the list instead of shrinking it and neither guard would have seen it. A permanent test mutates copies of the source string and asserts each mutation throws.
