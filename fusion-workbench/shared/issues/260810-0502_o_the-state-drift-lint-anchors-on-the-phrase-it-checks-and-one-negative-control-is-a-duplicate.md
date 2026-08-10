@@ -85,3 +85,35 @@ Anchor `CALL_POINTS[1]` and `[3]` on the acts (`turn_end` emission text; Setup S
 rather than on the drift sentence. Give `standaloneObligation` a first line that satisfies
 `CALL_POINTS[0]` so the test reaches the case it is named for. Correct or drop the two invented fixture
 lines, and say plainly in the comment which lines are historical and which are constructed.
+
+---
+
+## Reconciliation — `260810-0819`, session `260810-0241` Phase 3
+
+**Still accurate, and understated.** `hooks/lib/__tests__/state-drift-detection-lint.test.ts` has not
+been touched since `9bad4d6`; every line number cited above still lands on the text it describes.
+Each of the six claims was re-checked and each holds, including the duplicate negative control
+(`:205-211` and the test above it both trip `CALL_POINTS[0]` first, so the standalone line at `:192`
+is never reached) and the invented fixture lines (`git show 9bad4d6^:agents/orchestrator.md` contains
+zero occurrences of "drift check").
+
+The one correction is in this record's own framing, which grants `CALL_POINTS[0]` and `[2]` as
+genuine. **All four call points are defeatable.** The follow-up assertion is `toMatch(/drift check/i)`
+against the anchored line, so a line that mentions the check *while forbidding it* satisfies the gate.
+Verified by running `assertRidesAnEmission` against a copy of the prompt with all four inverted — it
+passed:
+
+| Line | Mutation the lint does not catch |
+|---|---|
+| `agents/orchestrator.md:335` | `2. Emitting a \`turn_start\` event. The drift check is NOT run here; it is deferred to Cleanup.` |
+| `:468` | `**Do not run the drift check in the same command as that \`turn_end\` emission** — run it once, at Cleanup.` |
+| `:652` | `- Emit \`session_end\` event — the drift check is optional and may be skipped under time pressure.` |
+| `:86` | `  3. **Run the drift check** only if you have time; otherwise present the saved state as fact.` |
+
+The other five tests read only `### Drift check` (`:837-891`) and the event table (`:1009`), and all
+four mutated lines sit outside both. So `npm test` stays green with the check disabled at every call
+point it exists to hold.
+
+Add to the fix direction: the assertion has to be about the *act*, not about the phrase — and the
+negative controls must assert on distinct messages, which `:201` does and `:209` then discards by
+matching a bare prefix.

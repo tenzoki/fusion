@@ -78,3 +78,38 @@ directly and expect a throw — which means factoring the table check out of the
 into a named helper first, the way `assertKeysOnThePointer` already is. Correct the fixture comment in
 `executor-verification-report-lint.test.ts` to say the heading is supplied so the parser can reach the
 assertion under test.
+
+---
+
+## Reconciliation — `260810-0819`, session `260810-0241` Phase 3
+
+**Still accurate.** Neither `queue-ground-lint.test.ts` (introduced by `ff70d3a`) nor
+`executor-verification-report-lint.test.ts` (introduced by `1f2faaf`) has been touched since; every
+line range cited above is unchanged.
+
+The two controls still re-implement rather than call: `:223-234` calls `uniqueLine` only and never
+`assertRidesTheAct`, and `:236-256` copies the split-and-count from `:149-155` verbatim at `:253-254`.
+The third control (`:258-269`, `assertKeysOnThePointer`) is genuine.
+
+**Measured consequence:** replace the body of `assertRidesTheAct` (`:130-140`) with an empty block and
+nothing in the file fails — `:223-234` never called it, and its only real caller at `:184` then
+trivially passes. The whole four-call-point enforcement is deletable with the negative control
+untouched. The same holds for the table check.
+
+One structural note the fix direction should absorb: `assertRidesTheAct` is declared at `:130` as
+`function assertRidesTheAct(): void` with **no parameter** — it closes over `orchestrator()`,
+`nextSkill()` and `setupSkill()`, which read the real files. A fixture cannot be handed to it, so the
+control had nowhere to go but a copy. The factoring the fix direction already asks for is a
+precondition, not a tidy-up.
+
+Worth stating so the title is not read too harshly: the *positive* tests here are real gates.
+`:183-185` runs `assertRidesTheAct` against the live `agents/orchestrator.md:564`,
+`skills/next/SKILL.md:104` and `:160`, and `skills/setup/SKILL.md:240`; `:147-164` counts the real
+table's rows. What is decorative is the negative-control block, which is exactly what this record
+claims.
+
+**Part 2 (the executor fixture) is overstated by slightly more than the record says.** Against
+`git show 1f2faaf^:agents/coder.md`, the fixture at `:180-182` diverges three ways, not two: step 2
+(`**Locate** the source root`) is omitted; `### Report shape` is prepended and appears nowhere in the
+pre-fix file; and step 5 is truncated at `:189`, keeping only the first clause of `**update status to
+"Complete" as final step**`.

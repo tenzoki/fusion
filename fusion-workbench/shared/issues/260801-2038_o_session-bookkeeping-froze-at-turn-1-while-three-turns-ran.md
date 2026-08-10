@@ -120,3 +120,40 @@ Session `shared/history/260808-0920-orchestrator-session.md`, HEAD at start `451
 - **`/fusion:setup` does not compute the divergence.** The orchestrator's inlined Setup Step 1 does, but `skills/setup/SKILL.md` carries the same steps for the user-triggered path and was out of scope. Until it is mirrored there, the resume-time detection exists only on the self-initiated path.
 - **The monitor does not compute it either.** `bin/monitor` is on the guard's protected-path list and a monitor change carries its own release consequence.
 - The mid-session Circle supersession case is now **named** in the Drift check (the `session.history_file` row is what catches it, and the section states that a session keeps one history file for its whole life), but nothing prevents the anchor being re-pointed.
+
+---
+
+## Reconciliation — `260810-0819`, session `260810-0241` Phase 3
+
+The note above is accurate on every claim I checked. Two things it does not carry, both measured at
+HEAD `dd50efd`.
+
+**1. The defect recurred during the session that partially fixed it, at four surfaces, not one.**
+
+| Surface | Frozen at | Ground truth |
+|---|---|---|
+| `agentstate.yaml` | `turn: 1`, `tasks_done: 9`, `commits: 12`, `# Updated: 260810-0415` | 3 Turns, 22 commits |
+| `orchestrator-live.md` | Turn 2, `17/32`, `Commits: 21`, coderev shown `[RUNNING]` | Turn 3 ran and closed |
+| `shared/history/260810-0241-orchestrator-session.md` | `## Per-Turn Log` reads `(Turn 1 starting)`; `**Status:** In progress` | 3 Turns completed; **file is untracked in git** |
+| `tasklist.md` | 3 of 31 tasks marked `[x] done` | 11 tasks resolved; **never committed — git's copy is the 260809 queue from `c353196`** |
+
+`grep -c state_drift fusion-workbench/orchestrator-events.jsonl` → **0**. The check never fired.
+
+**2. The reason it never fired is a mechanism this record does not name.** The note explains
+non-firing as prompt text being overridable under task pressure. That is not what happened. `9bad4d6`
+landed at 04:15; the `turn_end`/`turn_start` call points at `agents/orchestrator.md:335` and `:468`
+were both reached at 06:55, 2h40m later, and neither fired. **An agent prompt is loaded at session
+start, so a fix written into `agents/orchestrator.md` cannot reach the session that writes it.** A
+prompt-only fix has zero effect on its own session, by construction. That is a distinct failure mode
+from task pressure, it is not overridable, and it is what produced this instance.
+
+**3. Three defects are already filed against what `9bad4d6` shipped**, none cross-referenced from
+here: `260810-0710_o_` (the check's last line makes the whole block exit non-zero when no Circle is
+active — and `.active-circle` is absent right now, so that is this workbench's ordinary state),
+`260810-0509_o_` (the prompt text `9bad4d6` wrote contradicts Phase 2), and `260810-0502_o_` (the
+lint that guards it is defeatable at all four call points — see the reconciliation note on that
+record).
+
+The `_o_` marker is right and the note's own honesty is not in question. The gap is one notch wider
+than admitted: the detection exists, is unreachable in-session by construction, exits non-zero on the
+common path, and has now failed once against live drift.

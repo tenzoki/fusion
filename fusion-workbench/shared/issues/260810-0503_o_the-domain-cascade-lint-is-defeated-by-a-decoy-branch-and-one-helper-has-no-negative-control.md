@@ -73,3 +73,33 @@ Two options, and the second is the one worth the effort.
    worked precedent for extracting executable logic out of a prompt body and running it.
 
 Either way, add the missing negative control for `assertAbsentCountFirst`.
+
+---
+
+## Reconciliation — `260810-0819`, session `260810-0241` Phase 3
+
+**Still accurate. All three defeats reproduce, and there is a fourth.**
+`hooks/lib/__tests__/domain-cascade-order-lint.test.ts` has not been touched since `31d8bb3`;
+`firstIndex` (`:67`) still asks whether a branch line *mentions* `code_files`, not whether it can
+fire. Both production helpers were loaded out of the test file and run against mutated cascades in
+memory:
+
+| Cascade | `assertCodeCountFirst` | `assertAbsentCountFirst` |
+|---|---|---|
+| HEAD (`agents/orchestrator.md:133-147`) | PASS | PASS |
+| Decoy `elif code_files < 0` above the pre-fix order | **PASS** | **PASS** |
+| Inverted `elif code_files == 0` in the `> 0` slot | **PASS** | **PASS** |
+| Dead threshold `elif code_files > 100000` | **PASS** | **PASS** |
+| Token only in a trailing comment | **PASS** | **PASS** |
+
+The last row is new: `branchesFrom` (`:58-61`) keeps the whole line including its trailing comment,
+and the cascade in the prompt is comment-heavy, so `elif issues_count < 0: domain = "code"   #
+code_files not read` satisfies the order assertion. "Can still reach all four domains" (`:115-122`)
+passes in every case too, because all four `domain = "..."` assignments survive.
+
+So the decisive answer is yes: **`260807-1942` can be reinstated in full with the suite green.**
+
+`:143-145` remains a second positive assertion (`.not.toThrow()` on `assertAbsentCountFirst`);
+nothing in the file demonstrates that helper rejecting anything. The record's own concession also
+still holds — the fixture at `:127-136` is a faithful copy of the `2910cf6` cascade, which is more
+than the sibling lint can say.
