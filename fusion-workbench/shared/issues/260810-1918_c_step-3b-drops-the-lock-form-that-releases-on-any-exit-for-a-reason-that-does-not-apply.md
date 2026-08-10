@@ -55,3 +55,35 @@ Whichever is chosen, `rules/workbench-stash-and-lock.md` `## Commit lock` moves 
 commit; it is the authoring home and currently disagrees.
 
 **Filed by:** coderev, review of session `260810-1646` Turn 1, range `5ef92eb..940d522`.
+
+---
+
+**Resolved:** fix direction (a). `agents/orchestrator.md` step 5 is one held command again —
+`with orchestrator -- bash -c 'git add … && git commit -F /tmp/fusion-commit-msg-<task-id>.txt'` —
+and the prose obligation at the old line 427 is gone because the helper's `trap EXIT INT TERM` now
+does the release.
+
+The criterion is restated so it does not have to be re-derived, and it is now the single criterion
+the authoring home gives: depart from `with` only when the region that must stay held contains
+internal control-flow `with` cannot express. This region has none. The second criterion the old
+text added — "an argument the session did not author as a literal" — is deleted, together with its
+premise: the message is not in the command, and has not been since step 3 moved it into a file. The
+`260810-1535` constraint is untouched — nothing inside the `bash -c` string is prose.
+
+Measured in a scratch repository, not in the working tree:
+
+- `with … -- bash -c 'git add does-not-exist.txt && git commit -F …'` → the command exits 128 and
+  the helper prints `released commit lock`; `fusion-commit-lock check` reports `not held`.
+- The four-command form this replaces, same failure: `git add` exits 128, the agent stops there, and
+  `check` reports `held by orchestrator/pid … since …`. A parallel `with commit -- true` was still
+  blocked 3 s later, waiting out the 60 s threshold — the failure scenario above, reproduced.
+- The same command with a message file containing `'`, backtick, `$` and `%`: committed, and the
+  commit body diffs identical to the source file.
+
+**Residual, not fixed here — `rules/workbench-stash-and-lock.md:135` is read-only for this task.**
+The rule's criterion is right and the prompt now matches it, but its worked example is not: it
+names "retry after bugfixer in orchestrator Phase 2 Step 3b" as the case for the explicit form, and
+that retry sits at Step 3b step 2, outside the held region, which now begins at step 5. Step 3b no
+longer uses the explicit form at all, so the rule's one example points at a site that contradicts
+it. Proposal: replace the parenthetical, or drop it and keep the criterion bare. Raised as a
+proposal to the orchestrator.

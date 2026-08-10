@@ -29,3 +29,10 @@ commit lock is most likely (see `260810-1918_o_step-3b-drops-the-lock-form…`).
 at step 4)". One line.
 
 **Filed by:** coderev, review of session `260810-1646` Turn 1, range `5ef92eb..940d522`.
+
+---
+
+**Resolved:** `agents/orchestrator.md:402` now reads "proceed to step 3 (write the message; staging
+and committing follow at steps 4 and 5)". The numbering it points into shifted by one in the same
+change — staging is now its own step 4 and the locked stage+commit is step 5 — so the pointer names
+both rather than the single step the old parenthetical claimed.

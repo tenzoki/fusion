@@ -79,13 +79,21 @@ When the user invokes `/fusion:commit`, help them commit their changes with a we
 
    Write the scratch file with a **quoted** heredoc delimiter, so the shell
    expands nothing in the message — a body written under a bare `<<EOF` still
-   substitutes `$var` and runs backtick commands:
+   substitutes `$var` and runs backtick commands.
 
-   ```bash
-   cat > <msg-file> <<'FUSION_MSG_EOF'
-   <the confirmed message, verbatim>
-   FUSION_MSG_EOF
-   ```
+The block below sits at column 0 deliberately, and a copy of it must too. A
+here-document opened with `<<` ends only at a terminator that is the whole
+line, at column 0, with nothing before it — `<<-` strips leading **tabs**
+only, never spaces, so there is no operator that rescues an indented copy.
+An indented terminator is never matched and the heredoc runs to EOF; an
+indented body line puts those same leading spaces on that line of the commit
+message, subject line included.
+
+```bash
+cat > <msg-file> <<'FUSION_MSG_EOF'
+<the confirmed message, verbatim>
+FUSION_MSG_EOF
+```
 
    The message reaches `git` only as `-F <msg-file>`. It is never an argument
    on a command line, so apostrophes in it cannot end a quoted string.

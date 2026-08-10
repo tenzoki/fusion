@@ -51,3 +51,29 @@ argument, no glob.* That form is checkable by the executor before it runs the co
 `shared/issues/260810-050{1,2,3}_c_*`.
 
 **Filed by:** coderev, review of session `260810-1646` Turn 1, range `5ef92eb..940d522`.
+
+---
+
+**Resolved:** as the fix direction asks, on both halves.
+
+*Standing.* The instruction is a numbered step again — `agents/orchestrator.md` step 4, "Assemble
+the staging list". It sits before the locked command rather than inside it, because staging must
+stay in the same acquisition as the commit (a path staged outside the lock can be absorbed by a
+parallel committer). So the step produces the list and step 5 runs it: the obligation rides an act
+the prompt asks for, not a comment beside a placeholder.
+
+*Shape rather than flag.* "Never `git add -A`" is replaced by *every path passed to `git add` is one
+you wrote out yourself — no `-A`, no `-u`, no directory argument, no glob, no `.`*, which an
+executor can check against its own command before running it. A rename is called out as two paths,
+since marker renames are the orchestrator's most frequent write. `f38f37d` is cited as the
+measurement, with the reading the review corrected: `-A` is one instance of the hazard, the
+directory argument is the hazard.
+
+Reproduced in a scratch repository: `git add -u <dir>` after renaming a record inside it stages
+`D <old>` and leaves the successor untracked; `git add <old> <new>` stages
+`R <old> -> <new>`.
+
+Note for the next author: the commit that caused this could not be quoted verbatim in the prompt.
+`path-literal-lint.test.ts` rejects a store-path literal in `agents/*.md`, and it caught the first
+draft of that bullet (`agents/orchestrator.md:421`, literal `issues/`). The command is described
+rather than shown.

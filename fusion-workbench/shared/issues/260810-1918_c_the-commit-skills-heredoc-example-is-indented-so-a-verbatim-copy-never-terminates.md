@@ -49,3 +49,14 @@ message-containing-an-apostrophe.md`; `agents/orchestrator.md:405` (the orchestr
 avoids this entirely by using `Write`).
 
 **Filed by:** coderev, review of session `260810-1646` Turn 1, range `5ef92eb..940d522`.
+
+---
+
+**Resolved:** the block in `skills/commit/SKILL.md` step 6 is at column 0, and the sentence the fix
+direction asks for is there — with the reason attached, so the next author does not re-indent it to
+match the list. It states that the terminator must be the whole line at column 0 with nothing
+before it, that `<<-` strips tabs only and so rescues nothing, and that an indented body line puts
+those spaces on that line of the commit message, subject line included.
+
+The dedent is announced in the preceding sentence ("The block below sits at column 0 deliberately,
+and a copy of it must too") rather than left to look like a formatting slip.
