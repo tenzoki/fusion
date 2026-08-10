@@ -50,3 +50,25 @@ practised beside the unsafe one in the same session. Whatever is written should 
 precedent rather than invent a procedure.
 
 **Filed by:** orchestrator, session `260810-1646`, on the task-6 executor's own report of the risk.
+
+---
+**Chosen: option 1, a scratch copy of the repository.** User decision, session `260810-1646`
+(`shared/history/260810-1646-orchestrator-session.md`). A destructive verification copies the tree,
+or the single file it needs, into a temporary directory, mutates there, and points the gate at the
+copy. The live working tree is never written by a verification step.
+
+The precedent to cite rather than invent: in the same Turn, the executor of `I:260810-0502-drift-lint`
+verified four inversions against mutated copies in a scratch area and never touched the real prompt.
+The safe technique was already being practised beside the unsafe one, in the same session.
+
+Options 2 and 3 were offered alongside and not taken. Recording that plainly, because option 3 in
+particular was argued in this record as worth doing whichever of the others was chosen — it is the
+line in the dispatch fence that makes an executor look for the scratch copy in the first place.
+Without it, option 1 is a technique that exists and is not asked for. Whoever implements this should
+weigh that once more and either add the fence line or say why it is unnecessary; it is not being
+reopened as a question, only carried forward as a known gap in the chosen option.
+
+**Where the rule belongs is still open** and is the implementer's first call. The candidates are the
+executor prompts (`agents/coder.md`, `agents/ontocoder.md`, `agents/bugfixer.md`, which is where a
+verification obligation already lives) or a rule file emitted to them. Prefer whichever avoids
+stating the same procedure in three prompts — `rules/critical-stance.md` §2.

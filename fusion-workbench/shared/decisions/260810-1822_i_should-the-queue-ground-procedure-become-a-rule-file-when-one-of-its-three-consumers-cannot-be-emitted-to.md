@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** implemented
 **Filed by:** orchestrator (on the executor of `I:260810-0501-citation-root`)
 **Cross-references:** `shared/issues/260810-0501_c_two-skills-cite-a-prompt-section-they-have-no-documented-route-to-read.md`; `shared/issues/260810-0511_o_the-queue-head-parser-is-written-twice-in-one-file-that-calls-itself-the-canonical-implementation.md`; `rules/fusion-workbench-conventions.md` header table (the four topics already partitioned out)
 
@@ -79,3 +79,26 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+---
+Answered: user decision, session `260810-1646` (`shared/history/260810-1646-orchestrator-session.md`)
+— **option 1, leave the procedure in the prompt.** The rooted citations plus the runtime presence
+check are the end state, not a stopgap. The section stays in `agents/orchestrator.md`, the two skills
+reach it through `$FUSION_PLUGIN_ROOT`, and a consuming project whose install lacks the section is
+told so rather than silently skipping the step.
+
+Options 2 and 3 were both declined. The reasoning that decided it: neither removes the cross-file
+citation for all three consumers without also reversing the documented split between
+`bin/fusion-rules` (agent names, rule-file patterns as an authored fact about an agent) and
+`bin/fusion-paths` (agents and skills in one namespace). Option 2 relocates the citation one
+directory over; option 3 pays for its removal by contradicting that split. Neither price buys enough
+over what already shipped.
+
+**One consequence, recorded so it is not discovered later as a surprise.** This record proposed that
+whichever option was chosen should settle `260810-0511` in the same change — the queue-head parser
+written twice inside the section that calls itself the canonical implementation. Option 1 does not
+settle it. That defect stands on its own and stays queued as task 16; it is a duplication inside one
+file and does not depend on where that file lives.
+
+Implemented: 89b13f1 — the rooted citations and the presence check are on disk; option 1 requires no
+further change, so the answer and its realisation are the same commit.
