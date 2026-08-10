@@ -20,15 +20,23 @@ import { dirname, resolve, join } from "node:path";
 // already captures by copy everything it needs from it. The git stash's job is
 // the user's uncommitted SOURCE changes.
 //
-// This test does not restate the fix — it EXTRACTS the bash block from Step 7.6
-// of the skill body and runs it against throwaway repositories, one per
-// workbench configuration. A regression in the skill's own text fails here.
+// This test does not restate the fix — it EXTRACTS the first ```bash block
+// after Step 7.6's heading in the skill body and runs it against throwaway
+// repositories, one per workbench configuration. A regression in the skill's
+// own text fails here.
 // ---------------------------------------------------------------------------
 
 const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const skillPath = join(pluginRoot, "skills", "circle-stash", "SKILL.md");
 
-/** The first ```bash block after the given heading prefix in the skill body. */
+/**
+ * The first ```bash block after the given heading prefix in the skill body.
+ *
+ * "First" is a coupling the skill body has to honour, not an incidental choice:
+ * Step 7.6 has to stay ONE bash block. Split it and everything after the first
+ * closing fence is silently dropped here, so the four configuration cases run a
+ * truncated script and fail on assertions that look unrelated to the split.
+ */
 function extractBashBlock(md: string, headingPrefix: string): string {
   const lines = md.split("\n");
   const at = lines.findIndex((l) => l.startsWith(headingPrefix));
@@ -173,9 +181,22 @@ describe("circle-stash Step 7.6 — the workbench never travels in the git stash
 
   it("the unbranched pathspec form is what makes the branch necessary (ignored workbench)", () => {
     // The reason Step 7.6 branches instead of always passing the pathspec:
-    // `git stash push --include-untracked <pathspec>` runs `git add --all`
-    // internally, and `git add --all` refuses a pathspec naming an ignored
-    // path. Measured here so the branch is never "simplified" away.
+    // `git stash push --include-untracked <pathspec>` runs a bare
+    // `git add -- <pathspec>` internally to clear the paths it saved — not
+    // `git add --all`; the `-u` form is the one git uses *without*
+    // `--include-untracked`. That `git add` refuses a pathspec naming an
+    // ignored path, negative pathspecs included, and a gitignored workbench is
+    // exactly such a path.
+    //
+    // The skill's probe spells it `--all`, and that it answers the same
+    // question holds only under the current flag. Measured on an ignored
+    // workbench against `':/' ":(exclude)$WB_NAME"`: `git add -n --all` exits 1
+    // and the bare `git add -n` exits 1 — probe and internal command agree —
+    // while `git add -n -u` on that same pathspec exits 0. That third spelling
+    // is the single case where the three disagree, so the probe tracks git only
+    // for as long as this command passes `--include-untracked`.
+    //
+    // Measured here so the branch is never "simplified" away.
     const p = makeProject("ignored");
     try {
       const r = spawnSync(
@@ -185,8 +206,10 @@ describe("circle-stash Step 7.6 — the workbench never travels in the git stash
       );
       expect(r.status).not.toBe(0);
       expect(r.stderr + r.stdout).toMatch(/ignored by one of your \.gitignore files/);
-      // and the damage it would do while `|| true` swallowed the exit code:
-      // an entry created, the working tree not freed.
+      // and the shape of the failure: git creates an entry and still leaves the
+      // working tree unchanged. The stack depth alone reads that as a save, so
+      // it is `PUSH_RC` that catches it — Step 7.6 captures the exit code and
+      // takes its failure branch rather than continuing.
       expect(readFileSync(join(p.projectRoot, "src.txt"), "utf-8")).toBe("uncommitted-source-change\n");
     } finally {
       rmSync(p.projectRoot, { recursive: true, force: true });
