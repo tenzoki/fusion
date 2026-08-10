@@ -43,3 +43,6 @@ Rewrite both comments against the code as it now stands, taking the wording from
 While there: the file extracts the *first* bash block after its heading, which is what forced
 step 7.6 to remain a single block during the `72b798e` work. That coupling is undocumented in
 the test. A sentence naming it would save the next author the same discovery.
+
+---
+Resolved: 8796ade — both comments rewritten from the skill body as it now stands, with the measurement that git add -n -u is the one spelling that disagrees. The first-block extraction coupling is documented on extractBashBlock, which was discovered the hard way during 72b798e and written down nowhere. No assertion changed.

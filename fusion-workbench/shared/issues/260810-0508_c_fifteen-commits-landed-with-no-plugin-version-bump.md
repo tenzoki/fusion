@@ -45,3 +45,10 @@ session should expect these changes to be live, which is what `260810-0352` says
 **Do not bump before `npm test` is green** — see
 `260810-0455_o_npm-test-is-red-at-head-because-the-rules-emission-golden-was-never-regenerated.md`.
 Step 0 of the release process is "Validate first."
+
+---
+Resolved: the range became a release. plugin.json, the marketplace clone's marketplace.json, the install.sh header example and the README pin example all move 7.0.0 to 7.1.0 — minor rather than patch, because map --rebuild is a new command. The release gate ran first as the process requires: claude plugin validate passed (one pre-existing warning about CLAUDE.md at the plugin root), and the smoke test resolved fusion:orchestrator and answered.
+
+The guard-adjacent caution in the release process is satisfied: this range changes hooks/clear-halt.ts, and both e39b3fe and 49e5b1d verify it by spawning the compiled script in throwaway projects rather than against this repository, where the stand-down would make the test unrepresentative.
+
+This also closes the other half of shared/issues/260810-0352_o_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md, whose workaround was exactly this release.
