@@ -758,6 +758,17 @@ describe("fusion-plane push --rebuild-map: a collision is decided, not raced", (
 
   const survivor = (m: Record<string, any>) => m[issueKey(OPEN_ISSUE)]?.plane_id;
 
+  /**
+   * The collision line the report emits for one key, split into the UUID it kept
+   * and the UUIDs it told the operator to close. Read off the operator-facing
+   * string rather than the jq structure: the instruction is what a human acts on,
+   * so that is the surface the kept-is-never-dropped property has to hold at.
+   */
+  function collisionLine(stderr: string): { kept: string; dropped: string[] } | undefined {
+    const m = /kept ([^,]+), DROPPED ([^.]+)\./.exec(stderr);
+    return m ? { kept: m[1], dropped: m[2].split(", ") } : undefined;
+  }
+
   it("the winner does not depend on the order Plane returned the issues in", () => {
     // THE regression. `JQ_REBUILD_MAP` assigned without a guard, so the last
     // write won and reversing the response reversed the surviving UUID.
@@ -780,6 +791,71 @@ describe("fusion-plane push --rebuild-map: a collision is decided, not raced", (
     expect(stderr, "and the key it collided on, so the pair is identifiable").toContain(
       issueKey(OPEN_ISSUE),
     );
+    // A genuine collision between two DISTINCT issues reports in full, and keeps
+    // reporting in full: the duplicate-suppression below must not be over-applied
+    // into silencing this. The loser is a second Plane issue that really is still
+    // on the board, and the instruction is the only thing that gets it closed.
+    expect(stderr, "the instruction is what makes the UUID actionable").toContain(
+      "close it by hand",
+    );
+    const line = collisionLine(stderr);
+    expect(line, "the collision line itself must be there, not just the word DROPPED")
+      .toBeDefined();
+    expect(line!.dropped).toEqual(["plane-uuid-FIRST"]);
+    expect(line!.kept).toBe("plane-uuid-SECOND");
+  });
+
+  it("the same issue returned twice is no collision at all", () => {
+    // Issue 260810-0748. One Plane issue can appear twice in ONE `GET issues/`
+    // response — pagination overlap, a retried page, a fixture assembled from two
+    // captures. The group was ranked over ENTRIES rather than over distinct
+    // issues, so that UUID landed in both the kept and the dropped position and
+    // the report told the operator to close by hand the live issue the rebuild
+    // had just bound. A repeated issue is a no-op: no line, no dropped UUID, and
+    // not a resolved collision either (reporting the count would be the same
+    // wrong statement, quieter).
+    const wb = freshWorkbench();
+    const issue = {
+      id: "plane-uuid-SAME",
+      updated_at: "2026-07-19T00:00:00Z",
+      description_html: `<p>fusion-key: ${LEGACY_OPEN}<br></p>`,
+    };
+    const fixture = join(wb, "issues.json");
+    writeFileSync(fixture, JSON.stringify({ results: [issue, { ...issue }] }));
+    const r = run(wb, "push", "--circle", CIRCLE, "--rebuild-map", "--fixture", fixture);
+    const map = JSON.parse(readFileSync(join(wb, ".plane-map.json"), "utf-8"));
+    expect(survivor(map), "the duplicated issue still binds its key").toBe("plane-uuid-SAME");
+    expect(collisionLine(r.stderr), "no collision line for a repeated issue").toBeUndefined();
+    expect(r.stderr).not.toContain("DROPPED");
+    expect(r.stderr, "nothing may tell a human to close the issue just bound").not.toContain(
+      "close it by hand",
+    );
+  });
+
+  it("a duplicated winner beside a real loser reports the loser and only the loser", () => {
+    // Where the two cases above meet: three entries, two of them the same issue.
+    // The collision is real (a second Plane issue carries the key), so the line
+    // stays — but the UUID the rebuild kept must not appear in it, which is the
+    // property the duplicate case and the genuine case share.
+    const wb = freshWorkbench();
+    const winner = {
+      id: "plane-uuid-WIN",
+      updated_at: "2026-07-20T00:00:00Z",
+      description_html: `<p>fusion-key: ${LEGACY_OPEN}<br></p>`,
+    };
+    const loser = {
+      id: "plane-uuid-LOSER",
+      updated_at: "2026-07-19T00:00:00Z",
+      description_html: `<p>fusion-key: ${LEGACY_CLOSED}<br></p>`,
+    };
+    const fixture = join(wb, "issues.json");
+    writeFileSync(fixture, JSON.stringify({ results: [winner, { ...winner }, loser] }));
+    const r = run(wb, "push", "--circle", CIRCLE, "--rebuild-map", "--fixture", fixture);
+    const line = collisionLine(r.stderr);
+    expect(line, "a real second issue still collides").toBeDefined();
+    expect(line!.kept).toBe("plane-uuid-WIN");
+    expect(line!.dropped).toEqual(["plane-uuid-LOSER"]);
+    expect(line!.dropped, "the report never names the UUID it kept").not.toContain(line!.kept);
   });
 
   it("the most recently updated issue wins — the migration's rule, in the data a rebuild has", () => {

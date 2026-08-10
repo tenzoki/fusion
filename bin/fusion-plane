@@ -1368,6 +1368,20 @@ emit_plan() {
 #      off Plane, since a rebuilt entry has no `last_pushed` to compare.
 #   3. the UUID string, so a tie never resolves by API result order.
 #
+# A GROUP IS RANKED OVER ENTRIES, A COLLISION IS OVER DISTINCT ISSUES (issue
+# 260810-0748). One Plane issue can appear twice in the SAME `GET issues/`
+# response — pagination overlap, a retried page, a fixture assembled from two
+# captures — and then it lands in both `win` and `lost`, and the report tells the
+# operator to close by hand the very issue the rebuild just bound. So the winner's
+# id is SUBTRACTED from the losers, the remainder is deduplicated, and the group is
+# reported only if something is left: a repeated issue is a no-op, not a collision
+# resolved. Subtracted after the ranking rather than deduplicated before it, on
+# purpose — `unique_by(.id)` would keep whichever copy the input happened to sort
+# first and rank the issue by that copy's `updated_at`, so a stale copy arriving
+# first could hand the key to a distinct issue that merely looks newer, which is
+# the API-result-order dependence rule 3 exists to remove. Ranking all entries and
+# subtracting afterwards represents a repeated issue by its freshest copy.
+#
 # The losers are returned in `.collisions` and reported by the caller; `.orphans`
 # carries the entries the CURRENT map has that this rebuild did not find, because
 # a rebuild replaces the map wholesale (see rebuild_map).
@@ -1387,11 +1401,13 @@ JQ_REBUILD_MAP="$JQ_STABLE_KEY"'
   | map( .[0].key as $k
        | ( sort_by([ (if .id == ($current[$k].plane_id // "") then 1 else 0 end),
                      .updated, .id ]) ) as $ranked
-       | { key: $k, win: ($ranked | last), lost: $ranked[:-1] } )
+       | ( $ranked | last ) as $win
+       | { key: $k, win: $win,
+           lost: ( ( [ $ranked[:-1][].id ] - [ $win.id ] ) | unique ) } )
   | { map: ( ( map({ (.key): {plane_id: .win.id, kind:"unknown", last_state:"", last_pushed:""} })
                | add ) // {} ),
       collisions: ( map(select((.lost|length) > 0)
-                        | {key: .key, kept: .win.id, dropped: [.lost[].id]}) ),
+                        | {key: .key, kept: .win.id, dropped: .lost}) ),
       orphans: ( ( ($current|keys) - map(.key) )
                  | map({ key: ., plane_id: $current[.].plane_id,
                          origin: ($current[.].origin // "fusion") }) ) }'
