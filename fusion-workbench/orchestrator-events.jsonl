@@ -991,3 +991,81 @@
 {"ts":"2026-08-09T20:47:58","event":"turn_end","turn":2,"detail":"3 tasks resolved closing 6 records; 3 commits; 1 issue created; second coderev pass not run"}
 {"ts":"2026-08-09T21:14:30","event":"rebalance_grounding","turn":2,"detail":"filed 260809-2310: should the branch policy be measured rather than predicted"}
 {"ts":"2026-08-09T21:15:38","event":"session_end","detail":"2 turns, 16 records closed, 20 commits, verdict review-needed, closed via revise Grounding"}
+{"ts":"2026-08-10T00:41:29","event":"session_start","detail":"directive not yet given; setup via /fusion:setup; domain=code; no active Circle"}
+{"ts":"2026-08-10T00:43:13","event":"scope_resolved","detail":"mode=issues; 34 open issues in shared/issues; executors coder+ontocoder; ontocoder tasks gated"}
+{"ts":"2026-08-10T00:58:59","event":"queue_built","detail":"31 execution tasks, 3 close-without-work, 12 human-gated, 15 dependency edges"}
+{"ts":"2026-08-10T01:16:44","event":"gate_hit","turn":1,"task":"T1","detail":"pre-dispatch batch gate"}
+{"ts":"2026-08-10T01:16:44","event":"gate_response","turn":1,"task":"T1","detail":"proceed with user-chosen option"}
+{"ts":"2026-08-10T01:16:44","event":"gate_hit","turn":1,"task":"T2","detail":"pre-dispatch batch gate"}
+{"ts":"2026-08-10T01:16:44","event":"gate_response","turn":1,"task":"T2","detail":"proceed with user-chosen option"}
+{"ts":"2026-08-10T01:16:44","event":"gate_hit","turn":1,"task":"T5","detail":"pre-dispatch batch gate"}
+{"ts":"2026-08-10T01:16:44","event":"gate_response","turn":1,"task":"T5","detail":"proceed with user-chosen option"}
+{"ts":"2026-08-10T01:16:44","event":"gate_hit","turn":1,"task":"T18","detail":"pre-dispatch batch gate"}
+{"ts":"2026-08-10T01:16:44","event":"gate_response","turn":1,"task":"T18","detail":"proceed with user-chosen option"}
+{"ts":"2026-08-10T01:16:44","event":"gate_hit","turn":1,"task":"T23","detail":"pre-dispatch batch gate"}
+{"ts":"2026-08-10T01:16:44","event":"gate_response","turn":1,"task":"T23","detail":"proceed with user-chosen option"}
+{"ts":"2026-08-10T01:16:44","event":"gate_hit","turn":1,"task":"T24","detail":"pre-dispatch batch gate"}
+{"ts":"2026-08-10T01:16:44","event":"gate_response","turn":1,"task":"T24","detail":"proceed with user-chosen option"}
+{"ts":"2026-08-10T01:16:44","event":"gate_hit","turn":1,"task":"T25","detail":"pre-dispatch batch gate"}
+{"ts":"2026-08-10T01:16:44","event":"gate_response","turn":1,"task":"T25","detail":"proceed with user-chosen option"}
+{"ts":"2026-08-10T01:16:44","event":"gate_hit","turn":1,"task":"T26","detail":"pre-dispatch batch gate"}
+{"ts":"2026-08-10T01:16:44","event":"gate_response","turn":1,"task":"T26","detail":"proceed with user-chosen option"}
+{"ts":"2026-08-10T01:16:44","event":"gate_hit","turn":1,"task":"T27","detail":"pre-dispatch batch gate"}
+{"ts":"2026-08-10T01:16:44","event":"gate_response","turn":1,"task":"T27","detail":"proceed with user-chosen option"}
+{"ts":"2026-08-10T01:16:44","event":"gate_hit","turn":1,"task":"T28","detail":"pre-dispatch batch gate"}
+{"ts":"2026-08-10T01:16:44","event":"gate_response","turn":1,"task":"T28","detail":"proceed with user-chosen option"}
+{"ts":"2026-08-10T01:16:44","event":"gate_hit","turn":1,"task":"T29","detail":"pre-dispatch batch gate"}
+{"ts":"2026-08-10T01:16:44","event":"gate_response","turn":1,"task":"T29","detail":"proceed with user-chosen option"}
+{"ts":"2026-08-10T01:16:44","event":"gate_hit","turn":1,"task":"T31","detail":"pre-dispatch batch gate"}
+{"ts":"2026-08-10T01:16:44","event":"gate_response","turn":1,"task":"T31","detail":"proceed with user-chosen option"}
+{"ts":"2026-08-10T01:16:44","event":"turn_start","turn":1,"detail":"head=8960e1a; 11 high-priority tasks queued"}
+{"ts":"2026-08-10T01:20:10","event":"task_start","turn":1,"task":"T1","agent":"ontocoder","detail":"settings.json"}
+{"ts":"2026-08-10T01:20:10","event":"task_start","turn":1,"task":"T4","agent":"coder","detail":"bin/fusion-plane"}
+{"ts":"2026-08-10T01:20:10","event":"task_start","turn":1,"task":"T9","agent":"coder","detail":"skills/cadence/SKILL.md"}
+{"ts":"2026-08-10T01:20:10","event":"task_start","turn":1,"task":"T11","agent":"coder","detail":"agents/planner.md"}
+{"ts":"2026-08-10T01:24:36","event":"task_done","turn":1,"task":"T9","agent":"coder","detail":"f90309d"}
+{"ts":"2026-08-10T01:24:36","event":"commit","turn":1,"task":"T9","detail":"f90309d fix(skills): the churn unit is a commit day"}
+{"ts":"2026-08-10T01:28:41","event":"task_done","turn":1,"task":"T11","agent":"coder","detail":"fb0a5c6; sixth row found in audit and closed with the five"}
+{"ts":"2026-08-10T01:28:41","event":"commit","turn":1,"task":"T11","detail":"fb0a5c6 fix(agents): three prompts name the keys for the acts they already instruct"}
+{"ts":"2026-08-10T01:29:52","event":"task_done","turn":1,"task":"T1","agent":"ontocoder","detail":"2df2b73; measurement inverted the record premise; settings.json untouched; follow-up defect filed"}
+{"ts":"2026-08-10T01:29:52","event":"commit","turn":1,"task":"T1","detail":"2df2b73 docs: the parity claim is measured"}
+{"ts":"2026-08-10T01:32:38","event":"commit","turn":1,"task":"T10","detail":"6a69717 fix(skills): an empty resolver key stops cadence; record stays open, second half split out as T10b"}
+{"ts":"2026-08-10T01:32:38","event":"task_start","turn":1,"task":"T10b","agent":"coder","detail":"rules/fusion-workbench-conventions.md — consumer-side half of the exit-4 rule"}
+{"ts":"2026-08-10T01:38:33","event":"task_done","turn":1,"task":"T10b","agent":"coder","detail":"e99f0ef; closes the T10 record, both halves"}
+{"ts":"2026-08-10T01:38:33","event":"commit","turn":1,"task":"T10b","detail":"e99f0ef docs(rules): the resolver refusal grows its consumer-side end"}
+{"ts":"2026-08-10T01:41:17","event":"task_done","turn":1,"task":"T4","agent":"coder","detail":"f320db2"}
+{"ts":"2026-08-10T01:41:17","event":"commit","turn":1,"task":"T4","detail":"f320db2"}
+{"ts":"2026-08-10T01:41:17","event":"task_done","turn":1,"task":"T2","agent":"coder","detail":"2910cf6"}
+{"ts":"2026-08-10T01:41:17","event":"commit","turn":1,"task":"T2","detail":"2910cf6"}
+{"ts":"2026-08-10T01:41:17","event":"task_start","turn":1,"task":"T3","agent":"coder","detail":"agents/orchestrator.md Setup Step 5 branch order"}
+{"ts":"2026-08-10T02:40:40","event":"task_done","turn":1,"task":"T6","agent":"coder","detail":"9bad4d6"}
+{"ts":"2026-08-10T02:40:40","event":"commit","turn":1,"task":"T6","detail":"9bad4d6"}
+{"ts":"2026-08-10T02:40:40","event":"task_done","turn":1,"task":"T5","agent":"coder","detail":"b6bbae7"}
+{"ts":"2026-08-10T02:40:40","event":"commit","turn":1,"task":"T5","detail":"b6bbae7"}
+{"ts":"2026-08-10T02:40:40","event":"task_done","turn":1,"task":"T7","agent":"coder","detail":"ff70d3a"}
+{"ts":"2026-08-10T02:40:40","event":"commit","turn":1,"task":"T7","detail":"ff70d3a"}
+{"ts":"2026-08-10T02:40:40","event":"task_done","turn":1,"task":"T15","agent":"coder","detail":"65f7c3b"}
+{"ts":"2026-08-10T02:40:40","event":"commit","turn":1,"task":"T15","detail":"65f7c3b"}
+{"ts":"2026-08-10T02:40:40","event":"task_done","turn":1,"task":"T8","agent":"coder","detail":"1f2faaf"}
+{"ts":"2026-08-10T02:40:40","event":"commit","turn":1,"task":"T8","detail":"1f2faaf"}
+{"ts":"2026-08-10T02:40:40","event":"review_start","turn":1,"agent":"coderev","detail":"range 8960e1a..HEAD, 23 files, 15 commits; carries the T31 diagnosis question"}
+{"ts":"2026-08-10T04:55:49","event":"review_done","turn":1,"agent":"coderev","detail":"14 issues filed (3 high, 6 medium, 5 low); diagnosis answered: the review-file obligation is not unambiguous"}
+{"ts":"2026-08-10T04:55:49","event":"coherence_review","turn":1,"detail":"verdict=review-needed; Artifact<->Grounding: 14 issues filed, 3 high, all introduced by this Turn; Artifact<->Directive: 12 records closed but 22 filed, open count 34->44; Grounding<->Directive: 1 decision _o_->_a_->_i_, consistent"}
+{"ts":"2026-08-10T04:55:49","event":"turn_end","turn":1,"detail":"13 tasks resolved, 15 commits, 22 issues created"}
+{"ts":"2026-08-10T04:55:49","event":"turn_start","turn":2,"detail":"head=ff70d3a; user chose: repair this Turn's own damage first"}
+{"ts":"2026-08-10T05:30:46","event":"task_done","turn":2,"task":"F1","agent":"coder","detail":"2d103be"}
+{"ts":"2026-08-10T05:30:46","event":"commit","turn":2,"task":"F1","detail":"2d103be"}
+{"ts":"2026-08-10T05:30:46","event":"task_done","turn":2,"task":"F5","agent":"coder","detail":"ea492e6"}
+{"ts":"2026-08-10T05:30:46","event":"commit","turn":2,"task":"F5","detail":"ea492e6"}
+{"ts":"2026-08-10T05:30:46","event":"task_done","turn":2,"task":"F6","agent":"coder","detail":"3df0c17"}
+{"ts":"2026-08-10T05:30:46","event":"commit","turn":2,"task":"F6","detail":"3df0c17"}
+{"ts":"2026-08-10T05:30:46","event":"task_done","turn":2,"task":"F2F3","agent":"coder","detail":"c923935"}
+{"ts":"2026-08-10T05:30:46","event":"commit","turn":2,"task":"F2F3","detail":"c923935"}
+{"ts":"2026-08-10T05:30:46","event":"review_start","turn":2,"agent":"coderev","detail":"range ff70d3a..HEAD, 6 commits, all repairs of Turn 1 findings"}
+{"ts":"2026-08-10T06:36:17","event":"review_done","turn":2,"agent":"coderev","detail":"9 findings, 1 high, one against the orchestrator's own commit"}
+{"ts":"2026-08-10T06:36:17","event":"task_done","turn":3,"task":"R4","agent":"coder","detail":"dd50efd; 6 sites fixed, 11 examined and left"}
+{"ts":"2026-08-10T06:36:17","event":"turn_end","turn":3,"detail":"1 task resolved, 2 orchestrator errors corrected"}
+{"ts":"2026-08-10T06:36:17","event":"reconciliation","turn":3,"agent":"reconciler","detail":"20/20 closures verified; 5 counting defects found, 4 in artifacts this session wrote; 2 new records filed"}
+{"ts":"2026-08-10T06:36:17","event":"coherence_review","turn":3,"detail":"verdict=review-needed; recommendation=revise Directive"}
+{"ts":"2026-08-10T06:36:17","event":"bounded_closure_proposed","turn":3,"detail":"user accepted; Directive closed 11 of 34; the measured account of the repair work is the Artifact"}
+{"ts":"2026-08-10T06:36:17","event":"session_end","detail":"3 turns, 23 commits, 20 records closed, 34 filed, suite 898->1001 green, Bounded Closure"}
