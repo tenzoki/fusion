@@ -10,7 +10,16 @@ The user invoked `/fusion:next`. This skill is the user-facing surface for the C
 
 The skill writes nothing on the briefing path. The only writes it performs are part of the activation branch (Step 6): the `_a_→_t_` record rename, the `.active-circle` write, and a dashboard placeholder write. All writes are gated by an explicit user confirmation.
 
-**A path into a file the plugin ships carries the `$FUSION_PLUGIN_ROOT` root.** Where a step below sends you to an agent prompt or another skill's body, open it at that root — nothing the plugin ships exists at a consuming project's root, so a bare `agents/…` or `skills/…` path resolves to nothing there. `skills/cleanup/SKILL.md:11` takes that route for skill bodies and states the reason; it is not repeated at each site here.
+**A path into a file the plugin ships carries the `$FUSION_SRC` root.** Where a step below sends you to an agent prompt or another skill's body, open it at that root — nothing the plugin ships exists at a consuming project's root, so a bare `agents/…` or `skills/…` path resolves to nothing there. Resolve the root once, before the first step that cites one:
+
+```bash
+if "$FUSION_PLUGIN_ROOT/bin/fusion-plugin-cwd" 2>/dev/null; then FUSION_SRC="$PWD"; else FUSION_SRC="$FUSION_PLUGIN_ROOT"; fi
+echo "source root: $FUSION_SRC"
+```
+
+Hold the printed path and use it wherever a step below writes `$FUSION_SRC/…`. Each shell call gets a fresh shell, so the one executable check in this file re-resolves those same two lines rather than relying on the variable surviving.
+
+**Why the branch.** `$FUSION_PLUGIN_ROOT` names the installed copy and is pinned for the whole session. Inside the fusion plugin's own source repository that is the wrong copy: `bin/fusion-rules` and `bin/fusion-paths` read the work tree there on purpose, so a citation left on the install would hand you rules and paths from the checkout and a cited prompt section from the install — two versions of one file, differing in silence. `bin/fusion-plugin-cwd` is the criterion those two helpers already use, so this is the same answer and not a second one. It tests the working directory and never walks up: from a subdirectory of that repository it answers no, deliberately, and every branch here then behaves as it does in a consuming project. An install too old to carry the helper also falls to `$FUSION_PLUGIN_ROOT`, which is the behaviour that preceded this rule. `skills/cleanup/SKILL.md:11` takes the plugin-root route for skill bodies and states the reason; it is not repeated at each site here.
 
 **A Circle is a directory, and the state marker sits on the record inside it** — `circles/<dirname>/_a_circle.md` → `_t_circle.md`. The directory name never changes. See `rules/circle-records.md` `## State Markers — circles`.
 
@@ -103,13 +112,14 @@ Extract and present three things from the portfolio file:
 
 3. **Warnings** — quote (verbatim or summarised) any content in the `## Warnings` section: `dependency-cycle-detected`, `MULTIPLE-ACTIVE`, `STALE-POINTER`, `POINTER-MISMATCH`, `MISSING-POINTER`, parent-grounding-stale cross-references. If it reads `(none)`, omit this part.
 
-4. **The work queue's ground** — run the check from `$FUSION_PLUGIN_ROOT/agents/orchestrator.md` `### The queue's ground` → `#### Reading a queue`. That section is the canonical implementation and carries the four-row verdict table; do not restate the branches here. `/fusion:next` is one of the two surfaces that reads the queue's standing out loud, and it is the one a user reaches when deciding what to work on next, which is the moment a queue built for a Circle that has since closed does the most damage. Render one line only on the **stale** and **not scoped** verdicts, naming the Circle the queue was built for and the Circle that is active (or that none is). On **current**, **unaffiliated backlog**, or no queue at the root, print nothing — the briefing is about the portfolio, and a queue in good standing is not news.
+4. **The work queue's ground** — run the check from `$FUSION_SRC/agents/orchestrator.md` `### The queue's ground` → `#### Reading a queue`. That section is the canonical implementation and carries the four-row verdict table; do not restate the branches here. `/fusion:next` is one of the two surfaces that reads the queue's standing out loud, and it is the one a user reaches when deciding what to work on next, which is the moment a queue built for a Circle that has since closed does the most damage. Render one line only on the **stale** and **not scoped** verdicts, naming the Circle the queue was built for and the Circle that is active (or that none is). On **current**, **unaffiliated backlog**, or no queue at the root, print nothing — the briefing is about the portfolio, and a queue in good standing is not news.
 
-   Confirm the section is there before you run it. This citation carries no inline fallback, so an install older than the section resolves the path to a file that has no such heading and the check is skipped in silence:
+   Confirm the section is there before you run it. This citation carries no inline fallback, so a source root whose copy predates the section resolves the path to a file that has no such heading and the check is skipped in silence:
 
    ```bash
-   SEC="$FUSION_PLUGIN_ROOT/agents/orchestrator.md"
-   grep -q '^#### Reading a queue' "$SEC" 2>/dev/null || echo "queue-check: UNAVAILABLE — $SEC carries no '#### Reading a queue' section. This install predates it (or FUSION_PLUGIN_ROOT is unset). Run 'fusion --update' and restart the session."
+   if "$FUSION_PLUGIN_ROOT/bin/fusion-plugin-cwd" 2>/dev/null; then FUSION_SRC="$PWD"; else FUSION_SRC="$FUSION_PLUGIN_ROOT"; fi
+   SEC="$FUSION_SRC/agents/orchestrator.md"
+   grep -q '^#### Reading a queue' "$SEC" 2>/dev/null || echo "queue-check: UNAVAILABLE — $SEC carries no '#### Reading a queue' section. The path names the copy actually in use: an install that predates the section (run 'fusion --update' and restart the session), a work tree that does not carry it, or nothing at all when FUSION_PLUGIN_ROOT is unset."
    ```
 
    If that line prints, render it in the briefing and say the queue's standing was not established. This is the one case where the briefing speaks about a queue it has not judged: printing nothing here would read as a queue in good standing, which is the silence the check exists to break.
@@ -172,7 +182,7 @@ fi
 
 `$TASKLIST` is the queue's name as Step 2 resolved it; do not spell the filename here. **The note is guarded by an `if`, not by a trailing `[ -f … ] && echo …`.** A guard in final position hands its own status to the whole block, so the `&&` form made this block exit non-zero whenever no queue was at the root, which is the ordinary case for a fresh workbench. The failing command would then be the pointer write itself, the single most consequential write in this skill, and nothing in the status distinguishes "the pointer write failed" from "there was no queue to mention". Keep the `if` when editing this block.
 
-**The pointer write moves the ground, and the queue at the root does not move with it** (`$FUSION_PLUGIN_ROOT/agents/orchestrator.md` `### The queue's ground`). Say so in the same command as the write rather than as a step of its own, because a step of its own is the shape that gets skipped. Do **not** retire or delete the queue here: the activation gate above guarantees no Circle was active a moment ago, so any queue present was built over `shared/` and is a valid backlog — the 260810 queue covering 34 shared defect records is exactly that file. What changed is its *standing*, not its content. If the queue exists, add one line to the activation message in Step 6.5:
+**The pointer write moves the ground, and the queue at the root does not move with it** (`$FUSION_SRC/agents/orchestrator.md` `### The queue's ground`). Say so in the same command as the write rather than as a step of its own, because a step of its own is the shape that gets skipped. Do **not** retire or delete the queue here: the activation gate above guarantees no Circle was active a moment ago, so any queue present was built over `shared/` and is a valid backlog — the 260810 queue covering 34 shared defect records is exactly that file. What changed is its *standing*, not its content. If the queue exists, add one line to the activation message in Step 6.5:
 
 > *Die Warteschlange `tasklist.md` stammt von vor dieser Aktivierung und beschreibt keine Arbeit dieses Circles. Der Orchestrator baut in Phase 1 eine neue; bis dahin ist die alte ein Rückstands-Stapel, keine Aufgabenliste für `<candidate-dirname>`.*
 

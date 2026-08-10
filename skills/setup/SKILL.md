@@ -9,7 +9,16 @@ The active agent MUST be `fusion:orchestrator`. This skill inlines the full Setu
 
 Execute every step below in order. Do not begin the user's task work until Setup is complete and any Step 1 decision has been resolved.
 
-**A path into a file the plugin ships carries the `$FUSION_PLUGIN_ROOT` root.** Where a step below sends you to an agent prompt or another skill's body, open it at that root — nothing the plugin ships exists at a consuming project's root, so a bare `agents/…` or `skills/…` path resolves to nothing there. `skills/cleanup/SKILL.md:11` takes that route for skill bodies and states the reason; it is not repeated at each site here.
+**A path into a file the plugin ships carries the `$FUSION_SRC` root.** Where a step below sends you to an agent prompt or another skill's body, open it at that root — nothing the plugin ships exists at a consuming project's root, so a bare `agents/…` or `skills/…` path resolves to nothing there. Resolve the root once, before the first step that cites one:
+
+```bash
+if "$FUSION_PLUGIN_ROOT/bin/fusion-plugin-cwd" 2>/dev/null; then FUSION_SRC="$PWD"; else FUSION_SRC="$FUSION_PLUGIN_ROOT"; fi
+echo "source root: $FUSION_SRC"
+```
+
+Hold the printed path and use it wherever a step below writes `$FUSION_SRC/…`. Each shell call gets a fresh shell, so the one executable check in this file re-resolves those same two lines rather than relying on the variable surviving.
+
+**Why the branch.** `$FUSION_PLUGIN_ROOT` names the installed copy and is pinned for the whole session. Inside the fusion plugin's own source repository that is the wrong copy: `bin/fusion-rules` and `bin/fusion-paths` read the work tree there on purpose, so a citation left on the install would hand you rules and paths from the checkout and a cited prompt section from the install — two versions of one file, differing in silence. `bin/fusion-plugin-cwd` is the criterion those two helpers already use, so this is the same answer and not a second one. It tests the working directory and never walks up: from a subdirectory of that repository it answers no, deliberately, and every branch here then behaves as it does in a consuming project. An install too old to carry the helper also falls to `$FUSION_PLUGIN_ROOT`, which is the behaviour that preceded this rule. `skills/cleanup/SKILL.md:11` takes the plugin-root route for skill bodies and states the reason; it is not repeated at each site here.
 
 ## CRITICAL — Setup is the ONLY place a workbench is created
 
@@ -208,7 +217,7 @@ Read every path `fusion-rules` emits. The helper emits `fusion-workbench-convent
 
 `fusion-paths` resolves where this session writes and searches, and prints `KEY=value` lines (`OUT_HISTORY`, `OUT_ISSUE`, `SCAN_ISSUES`, …).
 
-**Pass `orchestrator`, not `setup`.** Every other skill passes its own name, because `fusion-paths` reads a consumer's key set out of its prompt and each skill is its own consumer (`rules/fusion-workbench-conventions.md` `## Path Resolution`). This skill is the exception: it *is* the orchestrator's Setup, and the values resolved here are held by the **orchestrator** for the whole session — including steps that live in `$FUSION_PLUGIN_ROOT/agents/orchestrator.md` and not in this file. Passing `setup` would yield only the keys this file happens to name, and the orchestrator would be short the rest.
+**Pass `orchestrator`, not `setup`.** Every other skill passes its own name, because `fusion-paths` reads a consumer's key set out of its prompt and each skill is its own consumer (`rules/fusion-workbench-conventions.md` `## Path Resolution`). This skill is the exception: it *is* the orchestrator's Setup, and the values resolved here are held by the **orchestrator** for the whole session — including steps that live in `$FUSION_SRC/agents/orchestrator.md` and not in this file. Passing `setup` would yield only the keys this file happens to name, and the orchestrator would be short the rest.
 
 Hold these values for the rest of the session and use them wherever a later step names a `$OUT_*` or `$SCAN_*` value — they are the only correct answer to "where does this go". Never guess a path when the resolver fails; stop and report.
 
@@ -226,8 +235,8 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
   - Open plan steps: for each path in `$SCAN_PLANS`, skim `*_o_*.md` and `*_p_*.md`.
   - Current git HEAD (if git repo)
 - Guard check: read `./fusion-workbench/.guard-state/escalation.json` (if present). If `haltActive: true`, warn the user immediately — all write operations are blocked. Offer to clear or proceed with the halt active.
-- High-thrash files: run the `bin/fusion-churn-rank` block from `$FUSION_PLUGIN_ROOT/agents/orchestrator.md` Setup Step 5 — the `[ -x ]` guard is part of it — and note what it names. Not a direct read of `./fusion-workbench/.guard-state/churn.json`: the map keeps every file it has ever seen, deleted ones included, and the helper is what leaves the absent ones out of the ranking.
-- Workbench-domain detection: run the heuristic in `$FUSION_PLUGIN_ROOT/agents/orchestrator.md` Setup Step 5 (the `decisions_count`/`analyses_count`/`code_files`/`data_files` block). Report the detected domain in the Setup-complete summary. The orchestrator passes this domain as the default `domain` parameter to `taskplanner` and `reconciler` dispatches; the user may override at any individual dispatch.
+- High-thrash files: run the `bin/fusion-churn-rank` block from `$FUSION_SRC/agents/orchestrator.md` Setup Step 5 — the `[ -x ]` guard is part of it — and note what it names. Not a direct read of `./fusion-workbench/.guard-state/churn.json`: the map keeps every file it has ever seen, deleted ones included, and the helper is what leaves the absent ones out of the ranking.
+- Workbench-domain detection: run the heuristic in `$FUSION_SRC/agents/orchestrator.md` Setup Step 5 (the `decisions_count`/`analyses_count`/`code_files`/`data_files` block). Report the detected domain in the Setup-complete summary. The orchestrator passes this domain as the default `domain` parameter to `taskplanner` and `reconciler` dispatches; the user may override at any individual dispatch.
 - **Circle-count snapshot and hint:** count Circles under `$SCAN_CIRCLES` by the marker on their record, not on the directory. Enumerate the records and read the marker from the name — one pass, no bracket expression, no glob per state:
 
   ```bash
@@ -242,13 +251,14 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
 
 - **The work queue's ground.** `./fusion-workbench/tasklist.md` is built once against the workbench as it stood that minute, and it outlives the Circle it was built for — measured on 260807, where the active Circle was superseded mid-session and eleven entries of the queue went on describing work a commit had already made pointless. Setup is the last step before the orchestrator reads that file as its work queue in Phase 1, so the queue's standing is settled here, in front of the consumer, not only at the boundary where it went stale.
 
-  Run the check from `$FUSION_PLUGIN_ROOT/agents/orchestrator.md` `### The queue's ground` → `#### Reading a queue`. That section is the canonical implementation and carries the four-row verdict table; do not restate the branches here.
+  Run the check from `$FUSION_SRC/agents/orchestrator.md` `### The queue's ground` → `#### Reading a queue`. That section is the canonical implementation and carries the four-row verdict table; do not restate the branches here.
 
-  Confirm the section is there before you run it. This is the one citation in this file with no inline fallback, so an install older than the section resolves the path to a file that carries no such heading and the step is skipped in silence — the file is found, the branches are not:
+  Confirm the section is there before you run it. This is the one citation in this file with no inline fallback, so a source root whose copy predates the section resolves the path to a file that carries no such heading and the step is skipped in silence — the file is found, the branches are not:
 
   ```bash
-  SEC="$FUSION_PLUGIN_ROOT/agents/orchestrator.md"
-  grep -q '^#### Reading a queue' "$SEC" 2>/dev/null && echo "queue-check: canonical section found in $SEC" || echo "queue-check: UNAVAILABLE — $SEC carries no '#### Reading a queue' section. This install predates it (or FUSION_PLUGIN_ROOT is unset). Run 'fusion --update' and restart the session."
+  if "$FUSION_PLUGIN_ROOT/bin/fusion-plugin-cwd" 2>/dev/null; then FUSION_SRC="$PWD"; else FUSION_SRC="$FUSION_PLUGIN_ROOT"; fi
+  SEC="$FUSION_SRC/agents/orchestrator.md"
+  grep -q '^#### Reading a queue' "$SEC" 2>/dev/null && echo "queue-check: canonical section found in $SEC" || echo "queue-check: UNAVAILABLE — $SEC carries no '#### Reading a queue' section. The path names the copy actually in use: an install that predates the section (run 'fusion --update' and restart the session), a work tree that does not carry it, or nothing at all when FUSION_PLUGIN_ROOT is unset."
   ```
 
   Report the verdict in the Setup-complete summary, in one line, and say what it means for the session:

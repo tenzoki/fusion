@@ -45,3 +45,17 @@ patched:
 row in `## Layout`. Decision `260806-0015_*` behaviour rule (a).
 
 **Filed by:** coderev, review of session `260810-1646` Turn 1, range `5ef92eb..940d522`.
+
+---
+Resolved: fix direction (a). `skills/setup/SKILL.md` and `skills/next/SKILL.md` now resolve a source
+root `$FUSION_SRC` through `bin/fusion-plugin-cwd` — the work tree when cwd is the plugin's own
+repository, `$FUSION_PLUGIN_ROOT` otherwise — and all seven citations of `agents/orchestrator.md`
+across the two skills carry that root instead of `$FUSION_PLUGIN_ROOT`. The criterion is reused, not
+re-derived, so the skills now answer the question the same way `bin/fusion-rules` and
+`bin/fusion-paths` do. The check stays at the working directory with no upward walk. The two
+`queue-check` presence checks re-resolve the root inline (each shell call is a fresh shell) and their
+`UNAVAILABLE` message now names the resolved path as the copy in use, so it reads correctly whether
+that copy is an install, a checkout, or nothing at all when `FUSION_PLUGIN_ROOT` is unset.
+Demonstrated against a scratch fixture and read-only against this repository: inside it the citation
+resolves to the checkout, from `$HOME` to `~/.fusion`, and from a subdirectory of the repository to
+`~/.fusion` as the no-upward-walk rule intends. `npm test` from `hooks/`: 41 files, 1113 tests, exit 0.
