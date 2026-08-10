@@ -88,7 +88,7 @@ This commits the user's actual changes (code, data, docs) **plus** the issues fi
 
 1. `git status --short` and `git diff --stat` to see everything unstaged/untracked.
 2. **Group changes into logical commits.** Split by concern, not by file count. Heuristics: separate code (`coder` domain) from data/ontology (`ontocoder` domain) from docs from workbench-tracking. Separate unrelated features/fixes. A good split lets each commit's message be a single honest sentence.
-3. For each group: write the commit message to a scratch file first (HEREDOC), then run stage and commit as one pair under the project's commit lock — it serialises access to the shared git index against any parallel session's agents (`rules/workbench-stash-and-lock.md` `## Commit lock`; the `with` form acquires, runs, and releases on any exit):
+3. For each group: write the commit message to a scratch file first — with the `Write` tool, or via a **quoted** heredoc delimiter (`cat > <msg-file> <<'FUSION_MSG_EOF'`), never a bare `<<EOF`, which still expands `$var` and runs backticks in the message body. The message then reaches `git` only as `-F <msg-file>`, never as an argument on a command line, so an apostrophe in it cannot end a quoted string. Then run stage and commit as one pair under the project's commit lock — it serialises access to the shared git index against any parallel session's agents (`rules/workbench-stash-and-lock.md` `## Commit lock`; the `with` form acquires, runs, and releases on any exit):
    ```bash
    "$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with cleanup -- bash -c 'git add <path> <path> && git commit -F <msg-file>'
    ```

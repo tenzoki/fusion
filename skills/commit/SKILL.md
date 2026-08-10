@@ -69,13 +69,26 @@ When the user invokes `/fusion:commit`, help them commit their changes with a we
 
 6. **Stage and commit as one held pair**
 
-   Write the confirmed message to a scratch file (HEREDOC), then run stage and
+   Write the confirmed message to a scratch file, then run stage and
    commit as a single command under the project's commit lock — it serialises
    access to the shared git index against any parallel session's agents
    (`rules/workbench-stash-and-lock.md` `## Commit lock`; the `with` form
    acquires, runs, and releases on any exit). The pair must be held together:
    the lock only defends against commit absorption if no path is staged
    outside it.
+
+   Write the scratch file with a **quoted** heredoc delimiter, so the shell
+   expands nothing in the message — a body written under a bare `<<EOF` still
+   substitutes `$var` and runs backtick commands:
+
+   ```bash
+   cat > <msg-file> <<'FUSION_MSG_EOF'
+   <the confirmed message, verbatim>
+   FUSION_MSG_EOF
+   ```
+
+   The message reaches `git` only as `-F <msg-file>`. It is never an argument
+   on a command line, so apostrophes in it cannot end a quoted string.
 
    ```bash
    "$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with commit -- bash -c 'git add <path> <path> && git commit -F <msg-file>'

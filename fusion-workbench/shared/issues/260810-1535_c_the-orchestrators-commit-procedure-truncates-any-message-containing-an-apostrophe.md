@@ -57,3 +57,25 @@ concluding this is one site.
 
 **Filed by:** orchestrator, session `260810-1402`, after hitting it on its own second commit
 of the session.
+
+---
+Resolved: Option 1, the message is written to a file and committed with `git commit -F`, so no
+character in it is ever seen by a shell. Phase 2 Step 3b of `agents/orchestrator.md` now uses the
+explicit `acquire` / commit / `release` lock form and says which of the two lock forms belongs to a
+command carrying free text. The explicit form was chosen over keeping `with … -- bash -c` because
+after `-F` the remaining exposure is a *path* containing an apostrophe inside the single-quoted
+argument, which is the identical defect one layer down; the price is that `release` must run on every
+exit path, and the prompt says so.
+
+`/fusion:commit` and `/fusion:cleanup` did not carry the nesting — their `bash -c` passes only paths.
+Both carried a smaller member of the same class: each said "HEREDOC" without naming a delimiter, and
+an unquoted `<<EOF` still expands variables and runs backticks inside the message body. Both now name
+`<<'FUSION_MSG_EOF'`.
+
+Demonstrated in a scratch repository with the real lock running: a message containing `orchestrator's`,
+`project's`, `doesn't`, a backticked `bash -c` and a literal `$HOME` round-tripped byte-identical
+(`git log -1 --format=%B` diffed against the source file, empty). The old form only reproduced when the
+command was written to a script file the way the prompt emits it; typed from an interactive shell the
+input itself forces the escaping the orchestrator would never have written.
+
+Commit: see the commit carrying this record's rename.

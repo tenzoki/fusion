@@ -402,9 +402,7 @@ After each completed task:
    c. If bugfixer reports success (verification passes): proceed to step 3 (stage + commit). Emit `bugfix_success` event.
    d. If bugfixer reports failure (unable to fix or verification still fails): revert all task changes with `git checkout HEAD -- <files>`. Emit `bugfix_failure` and `revert` events. Mark the task as errored in the history log. **REFRESH DASHBOARD** — overwrite `orchestrator-live.md` showing this task as `[ERROR]`. Continue to the next task.
    e. **Budget:** One bugfixer attempt per task. No retries.
-3. **Acquire the commit lock.** Before any `git add` / `git commit` for this task, run `"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with orchestrator -- bash -c "git add <files>; git commit ..."` — OR use explicit `acquire orchestrator` / `release` if the commit sequence has internal control-flow (e.g. retry after bugfixer). The lock prevents the cross-agent staging race where two parallel committers race on `git add` / the shared git index. See `rules/workbench-stash-and-lock.md` `## Commit lock` for the full protocol and for the closed issue that this protocol answers.
-4. **Stage files:** Add only task-relevant files + fusion-workbench tracking updates. Never `git add -A`. Be explicit.
-5. **Commit message format:**
+3. **Write the commit message to a file — the shell never sees the message.** Use the `Write` tool (not `echo`, not a heredoc, not a `-m` flag) to write the full message to `/tmp/fusion-commit-msg-<task-id>.txt`. The message is prose, so it will contain apostrophes and may contain backticks, `$` and quotes; every one of those changes what a shell parses if the message reaches a command line. `Write` keeps the shell out of the message path entirely, so no character in the message can be special.
    ```
    <type>(<scope>): <summary>
 
@@ -417,8 +415,19 @@ After each completed task:
    - `<type>`: `fix`, `feat`, `refactor`, `docs`, `chore`, `test` — conventional commits
    - `<scope>`: affected package or area (e.g., `ai`, `ontology`, `ui`, `pptx`)
    - Always create a new commit. Never amend.
-6. **Use HEREDOC** for commit messages to ensure correct formatting.
-7. **Emit** a `commit` event with the short hash and message summary.
+   - **Why this is a rule and not a preference.** Measured in this repository: commit `045a14f` landed cut off mid-sentence at the apostrophe in `project's`, and the three message lines after it were executed as shell commands (`command not found: be`, `folder`, `were`). `git commit` still exited 0 and the commit's *content* was correct — the destroyed message is visible only to someone who reads the commit back. It was repaired as `4f16c60`. The record is issue `260810-1535` (`...-truncates-any-message-containing-an-apostrophe`), in `$SCAN_ISSUES`.
+4. **Then take the lock, stage, commit, release — four plain commands, no `bash -c` wrapper:**
+   ```bash
+   "$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" acquire orchestrator
+   git add <file> <file>          # explicit paths only — task-relevant files
+                                  # + fusion-workbench tracking updates. Never `git add -A`.
+   git commit -F /tmp/fusion-commit-msg-<task-id>.txt
+   "$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" release
+   ```
+   Run `release` on **every** exit path, a failed `git add` or `git commit` included — releasing by hand is exactly what the explicit form costs you, and a leaked lock blocks every other committer until the 60s stale detector reaps it. The lock prevents the cross-agent staging race where two parallel committers race on `git add` / the shared git index. See `rules/workbench-stash-and-lock.md` `## Commit lock` for the full protocol and for the closed issue that this protocol answers.
+
+   **Which lock form belongs to which case.** `with <tag> -- <cmd...>` is canonical in that rule, and it stays correct for any command whose arguments are all fixed literals you write out yourself — paths, flags, refs. Use the explicit `acquire` / `release` form when the sequence has internal control-flow (the bugfixer retry in step 2c above) **or** when any argument is text the session did not author as a literal — a commit message above all. A commit is that second case, which is why this step does not use `with`. Never reach for `with` here on the grounds that it is labelled canonical: the message would have to travel inside its `--` argument, and that is the defect above.
+5. **Emit** a `commit` event with the short hash and message summary.
 
 ### Step 3c: Incremental Review
 
