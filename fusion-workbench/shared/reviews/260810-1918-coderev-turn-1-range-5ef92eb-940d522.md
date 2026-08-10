@@ -1,0 +1,153 @@
+# Code review — session `260810-1646` Turn 1, range `5ef92eb..940d522`
+
+**Sender:** coderev
+**Scope:** the plugin's own source across all 7 commits of the range. Workbench records and history
+files excluded per the dispatch.
+**Suite state at review time:** `npx vitest run` over the three touched test files — 38 passed,
+0 failed. `hooks/dist/` matches a fresh `tsc` byte for byte.
+
+---
+
+## Summary
+
+The five substantive changes do what their messages say, and three of the four measurements the
+messages assert were verified against the artifacts they cite. The heaviest change — executing the
+domain cascade instead of reading it — is sound, and its central claim ("there is no second copy")
+is false for one reason nobody looked at: `/fusion:cleanup` carries a prose copy of the cascade in
+the pre-fix order. The commit-message change fixes the shell-quoting defect and pays for it with a
+lock that is released only by good intention, on a justification that does not hold.
+
+## Totals
+
+| Severity | Count |
+|---|---|
+| Critical | 0 |
+| High | 2 |
+| Medium | 3 |
+| Low | 5 |
+
+Ten findings, ten records filed under `shared/issues/260810-1918_o_*`.
+
+## Verified claims
+
+- `hooks/dist/lib/domain-cascade.js` contains no `require`, no `import`, no external reference —
+  self-contained as `CLAUDE.md` requires. The whole of `hooks/dist/` reproduces byte-identically
+  from a clean `tsc` into a scratch outDir, so no committed build output is stale.
+- `045a14f` really is truncated at the apostrophe in `project's` ("…so a consuming projects"), and
+  `4f16c60` really carries the repaired message. The Step 3b rationale is measured, not asserted.
+- `/fusion:commit` has no `Write` tool (`allowed-tools: [Bash, Read, Glob, AskUserQuestion]`), so
+  the heredoc route is correct there, and both skills' `<<'FUSION_MSG_EOF'` delimiter is properly
+  quoted.
+- `f38f37d` restored all three records; the range contains zero deletions with no successor, and the
+  three appear at HEAD as `260810-050{1,2,3}_c_*`.
+- `agents/orchestrator.md` in the range carries exactly one hunk, in Step 3b. The four-minute live
+  mutation left no residue: Setup Step 5 (`:144-174`) is coherent and the cascade parses, evaluates,
+  and passes both gates.
+- The monitor `case` is disjoint, total, and `set -u`-safe; both pre-existing gates are byte-identical.
+- The drift lint's header is honest about what it buys. Every limit it states holds against the code.
+
+## Findings by theme
+
+### One decision, two definitions
+
+- **H1 — `skills/cleanup/SKILL.md:114` carries a second domain cascade in the pre-fix order, and no
+  gate reads it.** `hooks/lib/domain-cascade.ts:19-31` and `README-hooks.md:179` both claim drift is
+  "unrepresentable". Both new gates read only `agents/orchestrator.md`. KRK reaches `code` at Setup
+  and `strategic` at cleanup, in the same session.
+  → `260810-1918_o_the-cleanup-skill-carries-a-second-domain-cascade-in-the-pre-fix-order-and-no-gate-reads-it.md`
+
+- **M3 — `agents/orchestrator.md:429` adds a second criterion for choosing the lock form that
+  `rules/workbench-stash-and-lock.md:135`, the authoring home, does not carry.** Folded into H2.
+
+### The commit path
+
+- **H2 — Step 3b drops `with` for a reason that does not apply, and the replacement releases the
+  lock only in prose.** After step 3 the message is in a file and reaches git as `-F <literal path>`
+  — the case line 429 says `with` stays correct for. The two skills prove it. The four-command block
+  at `:419-426` has no `trap` and no `||`; a failed `git add` holds the lock for 60s.
+  → `260810-1918_o_step-3b-drops-the-lock-form-that-releases-on-any-exit-for-a-reason-that-does-not-apply.md`
+
+- **M1 — `agents/orchestrator.md:402` still sends the bugfixer-success path to "step 3 (stage +
+  commit)"**, which is now "write the commit message".
+  → `260810-1918_o_the-bugfixer-success-path-still-points-at-step-3-which-is-no-longer-stage-and-commit.md`
+
+- **M2 — the staging instruction became a shell comment**, and `f38f37d`'s claim that Step 3b
+  "already forbids in substance" a directory-wide `-u` does not hold: the surviving text names only
+  `-A`.
+  → `260810-1918_o_the-explicit-staging-instruction-became-a-shell-comment-and-still-does-not-forbid-add-u.md`
+
+- **L5 — `skills/commit/SKILL.md:84-88` shows the heredoc indented inside a list**, where a verbatim
+  copy indents the message and puts the terminator off column 0.
+  → `260810-1918_o_the-commit-skills-heredoc-example-is-indented-so-a-verbatim-copy-never-terminates.md`
+
+### Silence where the same range chose to speak
+
+- **M3 — `bin/monitor:1244` `sleep 0.5` is the one command left unguarded before `wait`.** Non-
+  fractional `sleep` (BusyBox without `FEATURE_FANCY_SLEEP`, Solaris, AIX) exits 1 under `set -e` —
+  the same orphaned-server symptom as `260810-1558`, one line further down.
+  → `260810-1918_o_sleep-0-5-is-the-remaining-command-that-can-exit-the-monitor-wrapper-before-wait.md`
+
+- **L1 — the monitor launcher swallows both "absent" and "failed" without a word**, while
+  `skills/setup/SKILL.md:251` and `agents/orchestrator.md:126,142` establish the opposite convention
+  in the same range.
+  → `260810-1918_o_the-monitor-launcher-goes-silent-where-the-same-session-established-naming-the-gap.md`
+
+### Citation rooting
+
+- **L2 — the rooting reached two of three skills**, and the paragraph announcing the rule ends with
+  a bare `skills/cleanup/SKILL.md:11`.
+  → `260810-1918_o_the-citation-rooting-reached-two-of-three-skills-and-its-own-example-is-unrooted.md`
+
+- **L3 — inside this repository the rooted citations now read the installed copy**, reversing the
+  work-tree preference `bin/fusion-rules` / `bin/fusion-paths` were given for exactly this reason.
+  Correct for consumers; a regression here. Currently masked by both copies being 7.2.0.
+  → `260810-1918_o_the-rooted-citations-read-the-installed-copy-inside-the-plugins-own-repo-where-the-helpers-do-not.md`
+
+### Gates
+
+- **L4 — `domain-cascade.test.ts:321-335` asserts a git checkout**, not a property of the code.
+  `bin/fusion-count-sources` exits 2 by design outside a work tree; the test reads that as failure.
+  → `260810-1918_o_the-live-cascade-test-asserts-a-git-checkout-and-fails-in-any-tree-without-one.md`
+
+- **L6 — `SKIP_LICENCES` misses every negation that does not spell "not"** — "isn't", "not
+  required", "except when", "as time allows", "no longer needed", "dropped", "sparingly", "provided
+  that". Filed as the header's own standing instruction asks.
+  → `260810-1918_o_the-skip-licence-blacklist-misses-every-negation-that-does-not-use-the-word-not.md`
+
+## Cross-cutting observations
+
+**The strongest work in this range is the executed cascade, and the weakest is what surrounds it.**
+`hooks/lib/domain-cascade.ts` is the right answer to the "two definitions of one decision" problem —
+fail-loud on every unanticipated construct, no truthiness, the absent count modelled as the string
+it is, short-circuit matching Python. It is defeated not by anything in its grammar but by the gate's
+*reach*: it reads one file, and the decision is stated in two. The same reach question decides H1,
+L2 and the already-filed decision `260810-1822` about the queue-ground procedure. A gate that reads
+`agents/*.md` and `skills/*/SKILL.md` — the file set `path-literal-lint.test.ts` already
+enumerates — would cover all three.
+
+**Two obligations were converted from mechanism to prose in one commit, in a project whose own
+design rule is that prose obligations get skipped.** The lock release (H2) and the staging
+instruction (M2) each moved from something the shell does to something the agent is asked to
+remember, in the same edit. The drift-check design one file over says why that does not hold, and
+`f38f37d` — the same session, three hours earlier — is the demonstration.
+
+**Blast radius of an unnoticed prompt edit is now asymmetric.** The domain cascade has a runnable
+gate; the commit sequence, the staging rule and the browser launcher do not. That is the right
+priority order (the cascade decides whether tests run at all), but it means H2 and M2 will only ever
+be caught by review.
+
+## Recommended sequencing
+
+**Before the next release tag:** H1 and H2. H1 makes two surfaces of one session disagree about
+whether a project has code; H2 can wedge a parallel committer for a minute and does so most often on
+the bugfix path, which is already the degraded one. M1 and M2 are one-line and one-paragraph
+respectively and belong in the same commit as H2 — all three are Step 3b.
+
+**Next cleanup pass:** M3 (`sleep 0.5`) — one `|| true`. L1, L2, L4, L5, L6.
+
+**Needs a decision, not a fix:** L3. Both options change something the project chose deliberately,
+and neither is obviously right.
+
+---
+
+**Filed by:** coderev, session `260810-1646`.
