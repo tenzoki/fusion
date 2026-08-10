@@ -117,8 +117,25 @@ export function sessionStartEntry(): GuardEntry {
   return hookEntry("session-start");
 }
 
-/** Shared resolution for all three hook entry points. See `guardEntry`. */
-function hookEntry(name: "guard" | "tracker" | "session-start"): GuardEntry {
+/**
+ * How to spawn the churn-ranking reader.
+ *
+ * Not a hook — `bin/fusion-churn-rank` runs it at Setup — but it shares the one
+ * property that makes the tsx default matter here rather than being a
+ * convenience: its whole subject is a working directory and the workbench root
+ * above it, so every case is a subprocess. Spawning the SOURCE by default also
+ * keeps the suite independent of whether `dist/` happens to exist at that
+ * instant, which `npm run build` deletes and rebuilds — a second session
+ * running the suite in the same checkout has been observed wiping it mid-run.
+ */
+export function churnRankEntry(): GuardEntry {
+  return hookEntry("churn-rank");
+}
+
+/** Shared resolution for all four entry points. See `guardEntry`. */
+function hookEntry(
+  name: "guard" | "tracker" | "session-start" | "churn-rank",
+): GuardEntry {
   const mode = process.env.FUSION_GUARD_ENTRY ?? "tsx";
 
   if (mode === "dist") {

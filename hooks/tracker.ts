@@ -45,8 +45,14 @@
  * `hookSpecificOutput.additionalContext` envelope when something was restored.
  */
 
-import { resolve, relative, isAbsolute } from "node:path";
-import { loadChurn, saveChurn, recordChange, analyzeChurn } from "./lib/churn.js";
+import { resolve } from "node:path";
+import {
+  analyzeChurn,
+  churnKey,
+  loadChurn,
+  recordChange,
+  saveChurn,
+} from "./lib/churn.js";
 import { loadConfig, projectDeclaredProtectedPaths } from "./lib/config.js";
 import type { GuardConfig } from "./lib/config.js";
 import { matchesAny } from "./lib/paths.js";
@@ -70,6 +76,7 @@ import {
 import type { ProtectedChange } from "./lib/protected-snapshot.js";
 import { preserveObserved } from "./lib/reverted-copy.js";
 import { projectRelative } from "./lib/project-relative.js";
+import { findWorkbenchRoot } from "./lib/workbench-root.js";
 import { foldCase } from "./lib/paths.js";
 import {
   isObservedRulePath,
@@ -661,14 +668,28 @@ function trackChurn(input: HookInput): void {
     return;
   }
 
-  // Normalize absolute paths to relative for consistent churn tracking
-  const filePath = isAbsolute(rawFilePath)
-    ? (() => {
-        const cwd = process.cwd();
-        const resolved = resolve(rawFilePath);
-        return resolved.startsWith(cwd + "/") ? relative(cwd, resolved) : rawFilePath;
-      })()
-    : rawFilePath;
+  // The key is anchored to the WORKBENCH ROOT, not to the session's working
+  // directory. It used to be cwd-relative when the path fell inside cwd and raw
+  // absolute otherwise, so one file collected one counter per directory a
+  // session was ever started in — and the workbench-relative spelling that
+  // produced never matched `TRACKER_NOISE_FILES` either, which is how
+  // `tasklist.md` and `agentstate.yaml` came to be tracked as churn. `churnKey`
+  // runs the same two steps as `narrowingTarget` above, so the heatmap and the
+  // protected-path measurement read one path the same way (issue `260809-2023`,
+  // decision `260810-0920`).
+  const filePath = churnKey(rawFilePath, process.cwd(), findWorkbenchRoot());
+  if (filePath === null) {
+    // No workbench, or a path outside the root — a scratchpad, another clone.
+    // Recorded as an observation, counted under no key: there is no spelling
+    // for it under this anchor, and inventing one is what the anchor ended.
+    emitEvent(
+      "tracker_record",
+      input.tool_name,
+      rawFilePath,
+      "File change recorded (outside the workbench root, not tracked)",
+    );
+    return;
+  }
 
   // Skip workbench dashboard/state files — designed to be continuously rewritten.
   if (matchesAny(filePath, TRACKER_NOISE_FILES)) {

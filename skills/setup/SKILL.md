@@ -223,7 +223,8 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
   - Open issues: for each path in `$SCAN_ISSUES`, count `*_o_*` and `*_p_*` files.
   - Open plan steps: for each path in `$SCAN_PLANS`, skim `*_o_*.md` and `*_p_*.md`.
   - Current git HEAD (if git repo)
-- Guard check: read `./fusion-workbench/.guard-state/escalation.json` (if present). If `haltActive: true`, warn the user immediately — all write operations are blocked. Offer to clear or proceed with the halt active. Also read `./fusion-workbench/.guard-state/churn.json` to note high-thrash files.
+- Guard check: read `./fusion-workbench/.guard-state/escalation.json` (if present). If `haltActive: true`, warn the user immediately — all write operations are blocked. Offer to clear or proceed with the halt active.
+- High-thrash files: run the `bin/fusion-churn-rank` block from `agents/orchestrator.md` Setup Step 5 — the `[ -x ]` guard is part of it — and note what it names. Not a direct read of `./fusion-workbench/.guard-state/churn.json`: the map keeps every file it has ever seen, deleted ones included, and the helper is what leaves the absent ones out of the ranking.
 - Workbench-domain detection: run the heuristic in `agents/orchestrator.md` Setup Step 5 (the `decisions_count`/`analyses_count`/`code_files`/`data_files` block). Report the detected domain in the Setup-complete summary. The orchestrator passes this domain as the default `domain` parameter to `taskplanner` and `reconciler` dispatches; the user may override at any individual dispatch.
 - **Circle-count snapshot and hint:** count Circles under `$SCAN_CIRCLES` by the marker on their record, not on the directory. Enumerate the records and read the marker from the name — one pass, no bracket expression, no glob per state:
 

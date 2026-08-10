@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# fusion-churn-rank — the churn heatmap's ranking, with the files that no longer
+# exist left out. Read at Setup (agents/orchestrator.md Step 5,
+# skills/setup/SKILL.md Step 3) in place of reading
+# fusion-workbench/.guard-state/churn.json by hand.
+#
+# Usage:
+#   fusion-churn-rank [--limit <n>]      # default 10; --limit 0 prints all
+#
+# Output on stdout, one KEY=value per line, then one line per ranked file:
+#
+#   anchor=workbench-root
+#   entries=590                # every key in the map, ranked or not
+#   absent=367                 # keys whose file is not on disk — kept in the
+#                              # map, kept out of the ranking
+#   ranked=10
+#   score=53 total=147 session=0 path=hooks/lib/churn.ts
+#
+# Exit codes:
+#   0  ranked. An empty ranking is a ranking (a project with no churn yet).
+#   1  usage error.
+#   2  no fusion workbench above the working directory; nothing to rank.
+#   3  the plugin's compiled hooks are missing, so nothing could be asked. Its
+#      own code and not 2: "there is no state to rank" is an answer about the
+#      project, and a broken install must never be reported as one.
+#
+# ---------------------------------------------------------------------------
+# Why the ranking is computed rather than eyeballed
+#
+# The churn map never forgets: recordChange only adds, and resetSession keeps
+# totalChanges on purpose, so a key outlives the deletion, rename or move of the
+# file it names. A reader looking at churn.json directly is therefore led by
+# files nobody can open — three of the top four entries in fusion's own map
+# named files that were not there (issue 260809-2023). Decision 260810-0920
+# part (c) keeps every entry, so the history survives, and excludes the absent
+# ones from the ranking here, on the read path, which runs once per Setup rather
+# than once per tool call.
+#
+# The work is hooks/dist/churn-rank.js, resolved relative to this script rather
+# than through $FUSION_PLUGIN_ROOT, so an install copy and a work tree each run
+# their own build. node is already a hard requirement — the guard hooks are node
+# programs (hooks/hooks.json).
+
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+entry="$here/../hooks/dist/churn-rank.js"
+
+if [ ! -f "$entry" ]; then
+  echo "fusion-churn-rank: $entry is missing — the plugin's compiled hooks are not installed." >&2
+  exit 3
+fi
+
+exec node "$entry" "$@"

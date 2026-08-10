@@ -27,6 +27,7 @@ bin/*
 !bin/fusion-plane
 !bin/fusion-plugin-cwd
 !bin/fusion-count-sources
+!bin/fusion-churn-rank
 *.exe
 # Generated protobuf (rebuild from .proto)
 *.pb.go
