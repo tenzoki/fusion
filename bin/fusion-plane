@@ -511,7 +511,13 @@ comment_id_for_marker() {
 # resolve_kind_label uses around label_skip.
 upsert_spec_comment() {
   local file="$1" nk="$2" issue_id="$3" body cid
-  body="$(build_comment_body "$file" "$nk")"
+  # Read the body builder's status: `jq -Rs … "$file"` fails on an unreadable
+  # record, and an empty $body would be PATCHed or POSTed in place of the record —
+  # the outcome comment_skip exists for (issue 260810-0750, the live half).
+  if ! body="$(build_comment_body "$file" "$nk")"; then
+    comment_skip "record unreadable: $file"
+    return 0
+  fi
   if ! plane_curl GET "$BASE/issues/${issue_id}/comments/?per_page=100"; then
     comment_skip "comments/ unreachable (curl rc $PLANE_CURL_RC)"
     return 0
@@ -624,15 +630,29 @@ artifact_title() {
 # repository, paid by a command the user ran to LOOK at something. Issues
 # 260810-0456 and 260810-0457.
 #
-# The three functions below are the answer, and it is structural rather than a
+# The four functions below are the answer, and it is structural rather than a
 # guard at each call site:
 #
 #   map_view   folds in memory and sets $MAP_VIEW to a path holding the folded
-#              form. It NEVER writes $MAP. EVERY read goes through it.
+#              form. It NEVER writes $MAP. EVERY read resolves through it.
 #   map_write  applies a jq program to that folded form and replaces $MAP. Every
 #              caller of it is a command that was asked to write.
 #   map_put    the ONE place $MAP is replaced (map_write and rebuild_map both end
-#              here), so invalidating the view can never be forgotten.
+#              here), so refreshing the view can never be forgotten, and the ONE
+#              place a failed replacement is turned into a non-zero status.
+#   map_view_required  the read side of the same split: it asserts the view was
+#              built and never builds one, because every getter runs in a subshell.
+#
+# BUILDING THE VIEW AND READING IT ARE ALSO SEPARATE, FOR A MECHANICAL REASON.
+# Each getter below (map_json, map_get_id, map_get_state, map_get_origin) is
+# invoked as `$(…)`, and a command substitution is a subshell: every variable the
+# fold sets there dies with it, and bash resets an inherited EXIT trap in a
+# subshell, so the temp file the fold created is never removed. When the getters
+# built the view themselves, one `push --plan --all` against a legacy map
+# recomputed the fold 24 times, left 24 temp files behind, and printed the
+# once-per-run report 24 times (issue 260810-0744). So the BUILD is the parent's
+# job — each subcommand calls `map_view` once, before any lookup — and a getter
+# only READS $MAP_VIEW, refusing loudly if nobody built it.
 #
 # A read path added tomorrow gets `map_view` and has no way to write; that is the
 # property bought here, rather than two guarded call sites waiting for a third.
@@ -683,6 +703,10 @@ trap map_view_cleanup EXIT
 # substitution would run it in a subshell and lose the cached fold, the temp-file
 # handle and the once-per-run report with it.
 #
+# THAT SAME SUBSHELL RULE BINDS THE CALLER: this must be invoked from the shell
+# that will do the reading, never from inside `$(…)` — which is why no getter
+# calls it and every subcommand calls it once, up front (see the section header).
+#
 # $MAP_VIEW may name a file that does not exist (no map yet). Callers check.
 map_view() {
   [ "$MAP_VIEW_READY" -eq 0 ] || return 0
@@ -721,7 +745,12 @@ map_report_fold() {
   info "map: nothing has been folded on disk. Commands that WRITE the map fold it (map --migrate, map --forget, map --prune, a live push); reads do not (map, push --plan, plan)."
   [ "$n_after" -lt "$n_before" ] || return 0
   info "map: folding drops $((n_before - n_after)) mapping(s). Each names a Plane issue that stays on the board unreferenced — close it by hand:"
-  losers="$(jq -r --slurpfile v "$MAP_VIEW" "$JQ_FOLD_LOSERS" "$MAP" 2>/dev/null || printf '')"
+  # The list is the whole point of the line above, so a failure to produce it is
+  # said out loud rather than flattened into "no losers to name".
+  if ! losers="$(jq -r --slurpfile v "$MAP_VIEW" "$JQ_FOLD_LOSERS" "$MAP" 2>/dev/null)"; then
+    info "map:   could not list them (jq failed on $MAP) — the count above stands, the UUIDs are in the file."
+    return 0
+  fi
   printf '%s\n' "$losers" | while IFS= read -r line; do
     [ -z "$line" ] || info "map:   $line"
   done
@@ -729,13 +758,31 @@ map_report_fold() {
 }
 
 # map_put <file> — THE ONE place $MAP is replaced. Every writer ends here, so the
-# read view is invalidated in exactly one place and cannot go stale behind a write.
+# read view is refreshed in exactly one place and cannot go stale behind a write.
+#
+# THE REPLACEMENT'S STATUS IS READ, and that is what this function is for as much
+# as the refresh is. `mv` fails on an unwritable workbench, a full disk, a
+# read-only mount; when its status was discarded, map_write returned 0, `map_set`
+# returned 0, and every caller's `|| return "$EXIT_CONFIG"` guard was dead code —
+# `map --migrate` printed "STATUS: migrated (1 entries)" and exited 0 over an
+# unchanged file (issue 260810-0743). On the live push path the same lost write
+# means a created issue's UUID never reaches the map and the next push POSTs a
+# SECOND Plane issue, which is the defect this whole mirror exists to close.
+#
+# On success the view is set to $MAP rather than cleared: what was just written is
+# by construction already in the stable key form (map_write derives it from the
+# folded view, rebuild_map normalises through stable_key), so the new file IS a
+# valid view and the next lookup needs no second fold.
 map_put() {
-  mv "$1" "$MAP"
+  if ! mv "$1" "$MAP"; then
+    err "map: could not replace $MAP — file left unchanged"
+    rm -f "$1"
+    return 1
+  fi
   [ -z "$MAP_VIEW_TMP" ] || rm -f "$MAP_VIEW_TMP"
   MAP_VIEW_TMP=""
-  MAP_VIEW=""
-  MAP_VIEW_READY=0
+  MAP_VIEW="$MAP"
+  MAP_VIEW_READY=1
 }
 
 # map_write <jq-program> [<jq-arg>…] — apply a jq program to the FOLDED map and
@@ -756,15 +803,37 @@ map_write() {
     rm -f "$tmp"
     return 1
   fi
+  # jq exits 0 on EMPTY input and produces nothing, so rc=0 does not mean the
+  # program ran: an empty (truncated, half-written) $MAP_VIEW yields an empty $tmp
+  # and would replace the map with a zero-byte file — every entry lost, reported as
+  # a successful write. No legitimate program here produces empty output; `.` and
+  # `del(…)` and `.[$k] = …` all emit at least `{}`.
+  if [ ! -s "$tmp" ]; then
+    err "map: refusing to replace $MAP with an empty file (jq read no input from $MAP_VIEW) — file left unchanged"
+    rm -f "$tmp"
+    return 1
+  fi
   map_put "$tmp"
+}
+
+# map_view_required — the read side of the build/read split. The getters below
+# NEVER build the view: every one of them is invoked as `$(…)`, and a fold built in
+# that subshell dies with it (issue 260810-0744). Building is the caller's job,
+# once, in the parent. A lookup that arrives before that build is a bug in this
+# file, not a user error, so it is loud and fails closed — an empty answer here
+# would read as "not mapped yet" and make the next push create a duplicate issue.
+map_view_required() {
+  [ "$MAP_VIEW_READY" -eq 1 ] && return 0
+  err "internal: map lookup before map_view — the subcommand must build the view in the parent shell first"
+  return 1
 }
 
 # map_json — the map's content in the stable key form on stdout, `{}` when there
 # is no map yet. The display half of map_view.
-map_json() { map_view; if [ -f "$MAP_VIEW" ]; then cat "$MAP_VIEW"; else printf '{}\n'; fi; }
+map_json() { map_view_required || return 1; if [ -f "$MAP_VIEW" ]; then cat "$MAP_VIEW"; else printf '{}\n'; fi; }
 
-map_get_id()    { map_view; [ -f "$MAP_VIEW" ] || { printf ''; return; }; jq -r --arg k "$1" '.[$k].plane_id  // empty' "$MAP_VIEW"; }
-map_get_state() { map_view; [ -f "$MAP_VIEW" ] || { printf ''; return; }; jq -r --arg k "$1" '.[$k].last_state // empty' "$MAP_VIEW"; }
+map_get_id()    { map_view_required || return 1; [ -f "$MAP_VIEW" ] || { printf ''; return; }; jq -r --arg k "$1" '.[$k].plane_id  // empty' "$MAP_VIEW"; }
+map_get_state() { map_view_required || return 1; [ -f "$MAP_VIEW" ] || { printf ''; return; }; jq -r --arg k "$1" '.[$k].last_state // empty' "$MAP_VIEW"; }
 
 # map_get_origin <natural-key> — WHO AUTHORED the Plane issue behind this key:
 #   "seed"   the issue pre-existed in Plane (a human's story); fusion bound it to
@@ -775,7 +844,7 @@ map_get_state() { map_view; [ -f "$MAP_VIEW" ] || { printf ''; return; }; jq -r 
 # entry from `push --rebuild-map`) has no `origin` and defaults to "fusion" —
 # exactly the behaviour those maps already had.
 map_get_origin() {
-  map_view
+  map_view_required || return 1
   [ -f "$MAP_VIEW" ] || { printf 'fusion'; return; }
   jq -r --arg k "$1" '.[$k].origin // "fusion"' "$MAP_VIEW"
 }
@@ -787,7 +856,12 @@ map_set() {
   # seed-origin entry as fusion-owned — that would re-enable the destructive
   # full-body write on the next run.
   local nk="$1" pid="$2" kind="$3" st="$4" origin="${5:-}"
-  [ -n "$origin" ] || origin="$(map_get_origin "$nk")"
+  # Read the lookup's status: an origin silently defaulted to empty would relabel a
+  # seed-origin entry, which is the destructive full-body write decision 260719-2313
+  # exists to prevent.
+  if [ -z "$origin" ]; then
+    origin="$(map_get_origin "$nk")" || return 1
+  fi
   map_write '.[$k] = {plane_id:$id, kind:$kind, last_state:$st, last_pushed:$t, origin:$o}' \
     --arg k "$nk" --arg id "$pid" --arg kind "$kind" --arg st "$st" \
     --arg o "$origin" --arg t "$(now_utc)"
@@ -796,21 +870,48 @@ map_set() {
 # ── Outbox (C4 never-silent) ─────────────────────────────────────────────────
 outbox_append() {
   # outbox_append <natural-key> <intended-state> <reason> <manual-hint>
-  jq -cn --arg ts "$(now_utc)" --arg nk "$1" --arg st "$2" --arg r "$3" --arg mh "$4" \
-    '{ts:$ts, natural_key:$nk, intended_state:$st, reason:$r, manual_hint:$mh}' >> "$OUTBOX"
+  #
+  # A failed append is REPORTED and not fatal. `>>` fails on an unwritable
+  # workbench — which is precisely the condition several of the deferrals reaching
+  # this function describe — and letting that status out would abort the run under
+  # `set -e`, contradicting the C4 doctrine at the top of this file ("never a
+  # crash"). Nothing is swallowed: the deferral is still counted by `defer`, still
+  # named on stderr, and still moves the exit code to EXIT_DEFERRED; only the
+  # persistent note is lost, and that loss says so.
+  if ! jq -cn --arg ts "$(now_utc)" --arg nk "$1" --arg st "$2" --arg r "$3" --arg mh "$4" \
+       '{ts:$ts, natural_key:$nk, intended_state:$st, reason:$r, manual_hint:$mh}' >> "$OUTBOX"; then
+    err "outbox: could not append to $OUTBOX — this deferral is on stderr and in the exit status only, not in the file."
+  fi
+  return 0
 }
 
 # outbox_drain_circle <circle-dir-name> — remove outbox lines whose natural_key
 # is this Circle or a sub-artifact of it (called once its reconcile succeeds).
+# The filter's status is read before the result replaces the file. With `|| true`
+# there, a jq failure (a half-written line, a hand-edited outbox) left an empty
+# $tmp that was moved over the outbox and then deleted for being empty — a
+# READ-AND-REPAIR path destroying the human record it was walking, which is the
+# same shape as issue 260810-0456. Neither failure is fatal: the outbox is a human
+# record, not a correctness queue (the file header says so), so a drain that could
+# not run leaves stale notes behind and says which.
 outbox_drain_circle() {
   local name="$1" tmp
   [ -f "$OUTBOX" ] || return 0
   tmp="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-outbox.XXXXXX")"
-  jq -c --arg d "$name" \
-    'select((.natural_key==$d or (.natural_key|startswith($d+"::")))|not)' \
-    "$OUTBOX" > "$tmp" 2>/dev/null || true
-  mv "$tmp" "$OUTBOX"
-  [ -s "$OUTBOX" ] || rm -f "$OUTBOX"
+  if ! jq -c --arg d "$name" \
+       'select((.natural_key==$d or (.natural_key|startswith($d+"::")))|not)' \
+       "$OUTBOX" > "$tmp" 2>/dev/null; then
+    err "outbox: could not read $OUTBOX — left unchanged, so its notes for $name remain."
+    rm -f "$tmp"
+    return 0
+  fi
+  if ! mv "$tmp" "$OUTBOX"; then
+    err "outbox: could not replace $OUTBOX — left unchanged, so its notes for $name remain."
+    rm -f "$tmp"
+    return 0
+  fi
+  [ -s "$OUTBOX" ] || rm -f "$OUTBOX" 2>/dev/null || true
+  return 0
 }
 
 # Web URL for a Plane issue (best-effort; used as the DR-1 links fallback body).
@@ -957,17 +1058,27 @@ process_artifact() {
     # comments fixture (a captured GET issues/<id>/comments/): a marker match →
     # PATCH + that comment_id, otherwise POST; with no fixture the method is POST.
     if [ "$kind" = circle ] && spec_comment_enabled; then
-      local comment_html cmethod="POST" cid=""
-      comment_html="$(build_comment_body "$file" "$nk" | jq -r '.comment_html')"
-      if [ -n "$COMMENTS_FIXTURE" ] && [ -f "$COMMENTS_FIXTURE" ]; then
-        cid="$(comment_id_for_marker "$(cat "$COMMENTS_FIXTURE")" "$nk" || true)"
-        [ -n "$cid" ] && cmethod="PATCH"
+      local comment_html cmethod="POST" cid="" cbody
+      # The build is a SEPARATE statement from the `.comment_html` extraction. As
+      # one pipe, only the second jq's status survived, and that one succeeds on
+      # what an unreadable record leaves behind — measured at c923935, the op
+      # carried `<!-- fusion-spec-comment:… -->\n<pre></pre>`, the marker with the
+      # record body gone, and the live path would have pushed it over the brief
+      # (issue 260810-0750). There is no `pipefail` in this file to catch that.
+      if ! cbody="$(build_comment_body "$file" "$nk")"; then
+        comment_skip "record unreadable: $file" || true
+      else
+        comment_html="$(printf '%s' "$cbody" | jq -r '.comment_html')"
+        if [ -n "$COMMENTS_FIXTURE" ] && [ -f "$COMMENTS_FIXTURE" ]; then
+          cid="$(comment_id_for_marker "$(cat "$COMMENTS_FIXTURE")" "$nk" || true)"
+          [ -n "$cid" ] && cmethod="PATCH"
+        fi
+        OPS+=("$(jq -cn --arg op "spec-comment" --arg nk "$nk" --arg marker "$marker" \
+          --arg html "$comment_html" --arg method "$cmethod" --arg cid "$cid" \
+          '{op:$op, natural_key:$nk, kind:"circle", marker:$marker,
+            comment_html:$html, method:$method}
+           + (if $cid=="" then {} else {comment_id:$cid} end)')")
       fi
-      OPS+=("$(jq -cn --arg op "spec-comment" --arg nk "$nk" --arg marker "$marker" \
-        --arg html "$comment_html" --arg method "$cmethod" --arg cid "$cid" \
-        '{op:$op, natural_key:$nk, kind:"circle", marker:$marker,
-          comment_html:$html, method:$method}
-         + (if $cid=="" then {} else {comment_id:$cid} end)')")
     fi
     return 0
   fi
@@ -1036,11 +1147,29 @@ process_artifact() {
             return 0
           fi
           # fusion POSTed this issue, so fusion owns its body — record that.
-          map_set "$nk" "$new_id" "$kind" "$canonical" fusion
+          #
+          # THE MAP WRITE IS PART OF THE PUSH, not bookkeeping after it. The issue
+          # now exists in Plane; if its UUID does not reach the map, the next push
+          # finds no mapping and POSTs a SECOND issue for the same record — issue
+          # 260807-1939, which this mirror exists to close, re-entered from the
+          # write side. So a failed write is deferred like any other incomplete
+          # transition, with the UUID in the note so the operator holds the handle.
+          if ! map_set "$nk" "$new_id" "$kind" "$canonical" fusion; then
+            defer "$nk" "$canonical" "Plane issue $new_id was created but the map write failed" \
+              "The issue EXISTS at $(issue_web_url "$new_id") — do not create another. Restore write access to $MAP and re-run the push; until its UUID is recorded, the next push creates a duplicate for $nk."
+            return 0
+          fi
           existing_id="$new_id"
         else
-          # Update: origin omitted => preserved (a seed entry stays seed).
-          map_set "$nk" "$existing_id" "$kind" "$canonical"
+          # Update: origin omitted => preserved (a seed entry stays seed). A failed
+          # write here costs no duplicate (the mapping survives), only a stale
+          # last_state that makes the next push repeat this PATCH — but the run
+          # still did not record what it did, so it defers rather than reports ok.
+          if ! map_set "$nk" "$existing_id" "$kind" "$canonical"; then
+            defer "$nk" "$canonical" "the state was written in Plane but the map write failed" \
+              "$(manual_hint update "$nk" "$canonical" "$existing_id")"
+            return 0
+          fi
         fi
         # DR-1 attach — single call site.
         if [ -n "$parent_id" ]; then
@@ -1312,12 +1441,26 @@ rebuild_map() {
   tmp="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-rebuild.XXXXXX")"
   printf '%s' "$issues_json" | jq --argjson cur "$current" "$JQ_REBUILD_MAP" > "$tmp" 2>/dev/null \
     || { err "rebuild-map: could not parse issues"; rm -f "$tmp"; return "$EXIT_CONFIG"; }
+  # jq exits 0 on EMPTY input and writes nothing, so the status above does not say
+  # the response arrived. An empty $issues_json (an empty 2xx body, an unreadable
+  # fixture) would walk this whole function reporting nothing and end by replacing
+  # the map with a zero-byte file — every mapping lost, exit 0.
+  if [ ! -s "$tmp" ]; then
+    err "rebuild-map: the issues response was empty — map not changed"
+    rm -f "$tmp"
+    return "$EXIT_CONFIG"
+  fi
 
   # Never silent, and named rather than counted: a UUID this rebuild does not
   # carry into the new map is a Plane issue that stays on the board with nothing
-  # pointing at it, and that string is the only handle a human has on it.
-  local line
-  printf '%s\n' "$(jq -r "$JQ_REBUILD_REPORT" "$tmp" 2>/dev/null || printf '')" \
+  # pointing at it, and that string is the only handle a human has on it. A report
+  # that could not be produced says so rather than reading as "nothing was lost".
+  local line report
+  if ! report="$(jq -r "$JQ_REBUILD_REPORT" "$tmp" 2>/dev/null)"; then
+    err "rebuild-map: could not list the mappings this rebuild drops — proceeding, but no UUID below names them"
+    report=""
+  fi
+  printf '%s\n' "$report" \
     | while IFS= read -r line; do
         [ -z "$line" ] || err "rebuild-map: $line"
       done
@@ -1327,7 +1470,7 @@ rebuild_map() {
   jq -S '.map' "$tmp" > "$out" 2>/dev/null \
     || { err "rebuild-map: could not parse issues"; rm -f "$tmp" "$out"; return "$EXIT_CONFIG"; }
   rm -f "$tmp"
-  map_put "$out"
+  map_put "$out" || return "$EXIT_CONFIG"
   info "rebuild-map: wrote $(jq 'length' "$MAP") entries"
 }
 
@@ -1373,6 +1516,13 @@ cmd_push() {
   # `map_ensure` rewrote the file — destroying a Plane UUID on exactly the legacy
   # map it existed to repair (issue 260810-0456). Lookups fold through `map_view`
   # instead; the file is written only where this function actually writes it.
+  #
+  # map_view IS called here, though, and this is the only place in a push that
+  # calls it: the read view is built ONCE, in this shell, because every lookup that
+  # follows runs inside a command substitution and a fold built there dies with the
+  # subshell (issue 260810-0744). It reads $MAP and writes nothing, so the dry-run
+  # property above is untouched.
+  map_view
 
   # A fixture-driven rebuild needs neither key nor network, so it runs ahead of
   # the live gate below (and clears the flag, leaving that branch untouched).
@@ -1412,7 +1562,9 @@ cmd_push() {
   fi
 
   if [ "$DRYRUN" -eq 1 ]; then
-    emit_plan
+    # The op list IS the dry run's whole output, and its consumers parse it: an
+    # unemitted plan must not leave exit 0 behind for them to read as "no ops".
+    emit_plan || { err "push --plan: could not emit the op list"; return "$EXIT_CONFIG"; }
     return "$EXIT_OK"
   fi
 
@@ -1611,6 +1763,9 @@ cmd_map() {
   fi
 
   resolve_workbench || return "$EXIT_CONFIG"
+  # Build the read view once, in this shell, before any branch below looks the map
+  # up through a command substitution or a pipe (both subshells — 260810-0744).
+  map_view
 
   # Bare `map` and `map <key>` are INSPECTION and write nothing — not the file's
   # bytes, not even an empty map where none exists. They read the folded view, so
@@ -1775,7 +1930,12 @@ cmd_seed() {
     # origin=seed is the DURABLE discriminator: this issue is a human's story,
     # so every future push writes its state only and never its body. (last_state
     # ""  is not a substitute — it disappears after the first push.)
-    map_set "$record_dir" "$record_pid" circle "" seed
+    map_view   # built here, in the parent: map_set looks the origin up in a subshell
+    if ! map_set "$record_dir" "$record_pid" circle "" seed; then
+      err "seed --record-origin: the origin UUID was NOT recorded. Fix $MAP and re-run; until then a push against $record_dir may overwrite that human's story."
+      printf 'STATUS: not recorded (%s → %s)\n' "$record_dir" "$record_pid"
+      return "$EXIT_CONFIG"
+    fi
     info "recorded origin: $record_dir → $record_pid (kind=circle, origin=seed — pushes write state only). Next 'push --circle $record_dir' syncs its state."
     printf 'STATUS: origin recorded (%s → %s)\n' "$record_dir" "$record_pid"
     return "$EXIT_OK"

@@ -2,9 +2,12 @@ import { describe, it, expect, afterEach } from "vitest";
 import { spawnSync } from "node:child_process";
 import {
   mkdtempSync,
+  mkdirSync,
+  chmodSync,
   cpSync,
   writeFileSync,
   readFileSync,
+  readdirSync,
   renameSync,
   rmSync,
   existsSync,
@@ -1570,5 +1573,263 @@ describe("fusion-plane push --plan: spec-comment", () => {
     const r = run(wb, "push", "--all");
     expect(r.status).toBe(EXIT_DEFERRED);
     expect(r.stderr + r.stdout).toContain("deferred");
+  });
+});
+
+// ===========================================================================
+// 7. A failed write is reported as a failure; the read view is built once
+//    (issues 260810-0743 and 260810-0744).
+//
+//    Two defects with one root: an operation whose status nobody read.
+//
+//    `map_put` is the single place `.plane-map.json` is replaced, and it dropped
+//    `mv`'s status — so `map --migrate` printed "STATUS: migrated (1 entries)"
+//    and exited 0 over a file it had not touched, and every caller's
+//    `|| return "$EXIT_CONFIG"` guard was dead code. On the live push path the
+//    same lost write means a created issue's UUID never reaches the map and the
+//    next push POSTs a second Plane issue for one record — the defect the whole
+//    natural-key line of work exists to close.
+//
+//    `map_view` cached its fold in shell variables and handed its temp file to an
+//    EXIT trap, while every getter that called it ran inside a command
+//    substitution. A subshell keeps neither: measured against `c923935`, one
+//    `push --plan --all` over a legacy map recomputed the fold 24 times, left 24
+//    temp files behind, and printed the once-per-run report 24 times.
+//
+//    The function's header already named that hazard, for the return value only.
+//    The code moved to the header rather than the reverse: building the view is
+//    the parent's job (one `map_view` per subcommand) and a getter only reads it.
+// ===========================================================================
+
+/** Run fusion-plane with extra environment on top of the fixture workbench. */
+function runEnv(
+  workbench: string,
+  extraEnv: Record<string, string>,
+  ...args: string[]
+): RunResult {
+  const r = spawnSync(fusionPlane, args, {
+    encoding: "utf-8",
+    stdio: ["ignore", "pipe", "pipe"],
+    env: { ...process.env, FUSION_PLANE_WORKBENCH: workbench, ...extraEnv },
+  });
+  return {
+    status: r.status ?? -1,
+    stdout: r.stdout?.toString() ?? "",
+    stderr: r.stderr?.toString() ?? "",
+  };
+}
+
+/** A map still in the legacy marker-bearing form — what the fold exists for. */
+const LEGACY_MAP = {
+  [`${CIRCLE}::issues/260719-1600_o_open-issue.md`]: {
+    plane_id: "UUID-OPEN",
+    kind: "fusion-issue",
+    last_state: "Todo",
+    last_pushed: "2026-08-01T00:00:00Z",
+  },
+};
+
+describe("fusion-plane: a failed map write is reported as a failure", () => {
+  const mapPath = (wb: string) => join(wb, ".plane-map.json");
+
+  /**
+   * Make the workbench directory unwritable for the duration of one run, so the
+   * `mv` inside `map_put` fails the way it does on a read-only mount or a full
+   * disk. The mode is restored before the assertions so `afterEach` can clean up.
+   */
+  function runUnwritable(wb: string, ...args: string[]): RunResult {
+    chmodSync(wb, 0o555);
+    try {
+      return run(wb, ...args);
+    } finally {
+      chmodSync(wb, 0o755);
+    }
+  }
+
+  it("`map --migrate` over an unwritable workbench exits non-zero and claims nothing", () => {
+    const wb = freshWorkbench();
+    writeFileSync(mapPath(wb), JSON.stringify(LEGACY_MAP));
+    const before = readFileSync(mapPath(wb), "utf-8");
+
+    const r = runUnwritable(wb, "map", "--migrate");
+
+    expect(r.status, "a migration that did not happen must not exit 0").not.toBe(0);
+    expect(r.stdout).not.toContain("STATUS: migrated");
+    expect(r.stderr).toContain("could not replace");
+    expect(readFileSync(mapPath(wb), "utf-8")).toBe(before);
+  });
+
+  it("`map --forget` over an unwritable workbench does not report the key forgotten", () => {
+    // The same chain one function further out: map_forget ends in
+    // `map_write … || return "$EXIT_CONFIG"`, a guard that could never fire while
+    // map_put returned 0. Its "%s entries remain" count was read back out of the
+    // unchanged file, so the report was self-consistent and wrong.
+    const wb = freshWorkbench();
+    const key = `${CIRCLE}::issues/260719-1600_open-issue.md`;
+    writeFileSync(mapPath(wb), JSON.stringify({ [key]: { plane_id: "UUID-OPEN", kind: "fusion-issue", last_state: "Todo", last_pushed: "2026-08-01T00:00:00Z" } }));
+    const before = readFileSync(mapPath(wb), "utf-8");
+
+    const r = runUnwritable(wb, "map", "--forget", key);
+
+    expect(r.status).not.toBe(0);
+    expect(r.stdout).not.toContain("STATUS: forgotten");
+    expect(readFileSync(mapPath(wb), "utf-8")).toBe(before);
+  });
+
+  it("the positive control: the same migration on a writable workbench succeeds", () => {
+    // Without this the two tests above could pass because the fixture never
+    // reaches the write at all. It does: the identical map, one permission bit
+    // apart, migrates and reports it.
+    const wb = freshWorkbench();
+    writeFileSync(mapPath(wb), JSON.stringify(LEGACY_MAP));
+
+    const r = run(wb, "map", "--migrate");
+
+    expect(r.status).toBe(0);
+    expect(r.stdout).toContain("STATUS: migrated");
+    expect(Object.keys(JSON.parse(readFileSync(mapPath(wb), "utf-8")))).toEqual([
+      `${CIRCLE}::issues/260719-1600_open-issue.md`,
+    ]);
+  });
+
+  it("refuses to replace the map with an empty file when jq read no input", () => {
+    // The sibling of the same trap on the other side of the pipe: `jq` exits 0 on
+    // EMPTY input and produces nothing, so a zero-status jq does not mean the
+    // program ran. Over a truncated (zero-byte) map, `.[$k] = {…}` yields nothing,
+    // and the empty result would have been moved over the map — the new entry
+    // lost, every existing one with it, exit 0 and "STATUS: origin recorded".
+    const wb = freshWorkbench();
+    writeFileSync(mapPath(wb), "");
+
+    const r = run(wb, "seed", "--record-origin", CIRCLE, "origin-uuid-1");
+
+    expect(r.status).not.toBe(0);
+    expect(r.stdout).not.toContain("STATUS: origin recorded");
+    expect(r.stderr).toContain("empty file");
+  });
+});
+
+describe("fusion-plane: the map view is built once, in the parent shell", () => {
+  /**
+   * One `push --plan --all` over a legacy map, with TMPDIR pointed at a private
+   * empty directory so every temp file the run creates is countable.
+   */
+  function measure(binary: string): { files: number; foldReports: number } {
+    const root = mkdtempSync(join(tmpdir(), "fusion-plane-tmpdir-"));
+    scratch.push(root);
+    const wb = join(root, "workbench");
+    cpSync(fixtureWorkbench, wb, { recursive: true });
+    writeFileSync(join(wb, ".plane-map.json"), JSON.stringify(LEGACY_MAP));
+    const td = join(root, "tmp");
+    mkdirSync(td);
+
+    const r = spawnSync(binary, ["push", "--plan", "--all"], {
+      encoding: "utf-8",
+      stdio: ["ignore", "pipe", "pipe"],
+      env: { ...process.env, FUSION_PLANE_WORKBENCH: wb, TMPDIR: td },
+    });
+    const stderr = r.stderr?.toString() ?? "";
+    return {
+      files: readdirSync(td).length,
+      foldReports: stderr.split("\n").filter((l) => l.includes("still carries the old marker-bearing keys")).length,
+    };
+  }
+
+  it("leaves no temp file behind and reports the fold once, not once per lookup", () => {
+    const { files, foldReports } = measure(fusionPlane);
+    expect(files, "every temp file the fold creates must be removed at exit").toBe(0);
+    expect(foldReports, "the once-per-run report must arrive once").toBe(1);
+  });
+
+  it("the control: the pre-fix binary from git leaks a file and repeats the report", () => {
+    // The negative control runs the ACTUAL pre-fix text, read out of git and
+    // driven through the identical path — not a re-implementation of the leak.
+    // Measured at c923935: 24 temp files, 24 fold reports. The assertions are on
+    // the property (more than one of each), not on the constant, because the count
+    // is the number of map lookups the fixture happens to make.
+    const show = spawnSync("git", ["-C", pluginRoot, "show", "c923935:bin/fusion-plane"], {
+      encoding: "utf-8",
+    });
+    if (show.status !== 0) {
+      // An installed copy or a shallow clone has no such commit. Skipping is
+      // visible in the reporter; inventing the pre-fix text would not be a control.
+      return;
+    }
+    const root = mkdtempSync(join(tmpdir(), "fusion-plane-prefix-"));
+    scratch.push(root);
+    const bin = join(root, "fusion-plane-prefix");
+    writeFileSync(bin, show.stdout, { mode: 0o755 });
+
+    const { files, foldReports } = measure(bin);
+    expect(files, "the pre-fix binary is expected to leak").toBeGreaterThan(1);
+    expect(foldReports, "the pre-fix binary is expected to repeat the report").toBeGreaterThan(1);
+  });
+
+  it("no map getter builds the view — each one only reads it", () => {
+    // The structural half of the same fix. A getter that calls `map_view` is a
+    // getter that builds the fold in a subshell, which is how the leak came back
+    // into a file whose header had already named the hazard.
+    const src = readFileSync(fusionPlane, "utf-8");
+    for (const name of ["map_json", "map_get_id", "map_get_state", "map_get_origin"]) {
+      const body = bashFunctionBody(src, name);
+      expect(body, `${name}() must be defined in bin/fusion-plane`).toBeTruthy();
+      expect(body, `${name}() must assert the view, not build it`).toContain("map_view_required");
+      // `map_view_required` contains the string `map_view`, so the check is on a
+      // call to `map_view` as a whole word followed by a terminator, not a prefix.
+      expect(
+        /\bmap_view(\s|;|$)/.test(body!),
+        `${name}() must not call map_view itself — it runs in a subshell`,
+      ).toBe(false);
+    }
+  });
+});
+
+/**
+ * The text of a bash function body, from `name() {` to the closing brace.
+ * Handles the one-line getters (`f() { …; }`) and the multi-line ones alike.
+ * Returns undefined when no such definition exists, so a renamed function fails
+ * the assertion above rather than passing over a body it never found.
+ */
+function bashFunctionBody(src: string, name: string): string | undefined {
+  const lines = src.split("\n");
+  const open = new RegExp(`^${name}\\(\\)\\s*\\{`);
+  const start = lines.findIndex((l) => open.test(l));
+  if (start === -1) return undefined;
+  if (lines[start].trimEnd().endsWith("}")) return lines[start];
+  const out: string[] = [];
+  for (let i = start; i < lines.length; i++) {
+    out.push(lines[i]);
+    if (i > start && lines[i] === "}") return out.join("\n");
+  }
+  return undefined;
+}
+
+describe("fusion-plane: an unreadable record skips the spec-comment", () => {
+  it("plans no spec-comment op and says why, instead of planning an empty one", () => {
+    // Issue 260810-0750. The body was built through a pipe —
+    // `build_comment_body … | jq -r '.comment_html'` — and only the second jq's
+    // status survived. Measured against c923935 with this exact scenario, the op
+    // came out carrying `<!-- fusion-spec-comment:… -->\n<pre></pre>`: the marker
+    // intact and the record body gone, which the live path would have pushed over
+    // the Circle brief. (The filed record predicted `comment_html: ""`; the
+    // mechanism is the one it names, the surviving string is the marker.)
+    // `comment_skip` exists for exactly this outcome and was unreachable here.
+    const wb = freshWorkbench();
+    const cfg = join(wb, "plane.config.yaml");
+    writeFileSync(cfg, readFileSync(cfg, "utf-8") + "\nspec_comment: true\n");
+    const record = join(wb, "circles", CIRCLE, "_t_circle.md");
+    chmodSync(record, 0o000);
+
+    const r = run(wb, "push", "--circle", CIRCLE, "--plan");
+    chmodSync(record, 0o644);
+
+    const ops = plan(r.stdout).ops;
+    expect(ops.some((o) => o.op === "spec-comment"), "no comment is better than an empty one").toBe(false);
+    expect(r.stderr).toContain("spec-comment unavailable");
+    expect(r.stderr).toContain("record unreadable");
+    // Auxiliary, so it never costs the state transition: the Circle's own op is
+    // still planned and the dry run still exits 0.
+    expect(opFor(ops, CIRCLE)).toBeDefined();
+    expect(r.status).toBe(0);
   });
 });

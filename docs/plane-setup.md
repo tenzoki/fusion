@@ -282,6 +282,12 @@ That is the one command whose whole job is the fold. Anything that already write
 map — `map --forget`, `map --prune`, a live `push` — folds it in passing; `map`,
 `push --plan` and `plan` never do.
 
+A map write can also fail to land: a read-only mount, a full disk, a workbench you no
+longer have write access to. When the replacement fails, the command names the file on
+stderr, prints **no** `STATUS: migrated` or `STATUS: forgotten` line, and exits 1. Take
+that at face value — the map on disk is exactly as it was before, and the entry count a
+successful run would have reported was never true.
+
 The split matters because the fold can cost you a UUID. The old scheme could record one
 record **twice**, once per state it was pushed in, which means two Plane issues. Both
 fold onto one key, so one of the two mappings is discarded — and a discarded UUID is not
