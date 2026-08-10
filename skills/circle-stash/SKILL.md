@@ -275,29 +275,64 @@ Its content is already captured in `CIRCLE_DIRNAME` for the manifest.
 
 **The git stash carries the user's source changes. It never carries the workbench.** Everything this skill needs from the workbench it has already taken by copy or by move (7.2, 7.4), so a second capture through git would be a duplicate — and a destructive one: `--include-untracked` sweeps untracked files away, and the stash directory written moments ago in 7.0/7.4 is untracked in every configuration where the workbench is not ignored. That is how the rescue tool used to destroy the artifact it exists to produce — the defect record is `260717-0030_*_git-stash-include-untracked-can-sweep-the-stash-directory.md` in the shared issue store.
 
-Two spellings are needed, and which one applies is asked rather than assumed. The stash-stack depth is captured before and after the push, as before, so that "did an entry get created" is read off the count rather than parsed out of stdout (which varies by git version) — and so a push that failed is never mistaken for one that saved something:
+Two spellings are needed, and which one applies is asked rather than assumed. The push is measured two ways, because neither measurement sees what the other sees: its **exit code** says whether git accepted the operation, and the stash-stack **depth before and after** says whether an entry was created (read off the count rather than parsed out of stdout, which varies by git version). What each one catches is spelled out below the block.
 
 ```bash
 STASH_COUNT_BEFORE="$(cd "$PROJECT_ROOT" && git stash list 2>/dev/null | wc -l | tr -d ' ')"
 if (cd "$PROJECT_ROOT" && git add --dry-run --all -- ':/' ":(exclude)$WB_NAME" >/dev/null 2>&1); then
-  cd "$PROJECT_ROOT" && git stash push --include-untracked -m "fusion:circle-stash $STASH_ID" -- ':/' ":(exclude)$WB_NAME" || true
+  PUSH_OUT="$(cd "$PROJECT_ROOT" && git stash push --include-untracked -m "fusion:circle-stash $STASH_ID" -- ':/' ":(exclude)$WB_NAME" 2>&1)"; PUSH_RC=$?
 else
-  cd "$PROJECT_ROOT" && git stash push --include-untracked -m "fusion:circle-stash $STASH_ID" || true
+  PUSH_OUT="$(cd "$PROJECT_ROOT" && git stash push --include-untracked -m "fusion:circle-stash $STASH_ID" 2>&1)"; PUSH_RC=$?
 fi
 STASH_COUNT_AFTER="$(cd "$PROJECT_ROOT" && git stash list 2>/dev/null | wc -l | tr -d ' ')"
-HEAD_SHORT="$(cd "$PROJECT_ROOT" && git rev-parse --short HEAD 2>/dev/null)"
-echo "$HEAD_SHORT" > "$STASH_DIR/git/head"
-if [ "$STASH_COUNT_AFTER" = "$STASH_COUNT_BEFORE" ]; then
-  GIT_STASH_REF="(no changes)"; GIT_STASH_SHA=""; echo "(no changes)" > "$STASH_DIR/git/stash-ref"
+if [ "$PUSH_RC" -ne 0 ]; then
+  PUSH_FAILED=true
 else
-  STASH_REF_LINE="$(cd "$PROJECT_ROOT" && git stash list | head -1)"
-  echo "$STASH_REF_LINE" > "$STASH_DIR/git/stash-ref"
-  GIT_STASH_REF="$(printf '%s' "$STASH_REF_LINE" | sed -E 's/^(stash@\{[0-9]+\}).*/\1/')"
-  GIT_STASH_SHA="$(cd "$PROJECT_ROOT" && git rev-parse stash@{0} 2>/dev/null)"
+  PUSH_FAILED=false
+  HEAD_SHORT="$(cd "$PROJECT_ROOT" && git rev-parse --short HEAD 2>/dev/null)"
+  echo "$HEAD_SHORT" > "$STASH_DIR/git/head"
+  if [ "$STASH_COUNT_AFTER" = "$STASH_COUNT_BEFORE" ]; then
+    GIT_STASH_REF="(no changes)"; GIT_STASH_SHA=""; echo "(no changes)" > "$STASH_DIR/git/stash-ref"
+  else
+    STASH_REF_LINE="$(cd "$PROJECT_ROOT" && git stash list | head -1)"
+    echo "$STASH_REF_LINE" > "$STASH_DIR/git/stash-ref"
+    GIT_STASH_REF="$(printf '%s' "$STASH_REF_LINE" | sed -E 's/^(stash@\{[0-9]+\}).*/\1/')"
+    GIT_STASH_SHA="$(cd "$PROJECT_ROOT" && git rev-parse stash@{0} 2>/dev/null)"
+  fi
 fi
 ```
 
-**Why the branch, and why that probe.** `git stash push <pathspec>` with `--include-untracked` runs `git add --all -- <pathspec>` internally to clear the paths it saved, and `git add --all` **refuses** — exit 1, message "The following paths are ignored by one of your .gitignore files" — when a pathspec names an ignored path, negative pathspecs included. A workbench the project gitignores is exactly that path, so the pathspec spelling breaks precisely in the one configuration that never had the defect: measured, the entry is created, the working tree is left untouched, and `|| true` would have swallowed it and reported a freeze that did not happen. The `git add --dry-run` line asks git the same question git will ask itself, changes nothing, and is the only reliable predictor found — `git check-ignore` on the workbench is not, since it answers "not ignored" for an ignored directory that contains a tracked file.
+Nothing is written into `$STASH_DIR` on the failing branch — not `git/head`, not `git/stash-ref` — because every one of those files is an assertion that the working tree was saved.
+
+`PUSH_RC=$?` sits on the same line as the assignment on purpose. `VAR="$(cmd)"` carries `cmd`'s exit status, but any command in between — an `echo`, the next assignment — overwrites `$?` before it can be read.
+
+**`PUSH_FAILED=true` is a failed freeze. Stop at this sub-step; do not run 7.7 and beyond.** The working tree was not saved, so nothing may be written that says it was: not the manifest (7.11 *is* that statement), not the deletion of the originals (7.7), not the dashboard notice (7.8). `STASH_IN_PROGRESS` stays where 7.1 put it, and that is what makes `/fusion:circle-pop` refuse this directory instead of restoring half a freeze.
+
+A failed push does not imply an unchanged stack, and both shapes are measured. git can create the entry and still exit 1 with the working tree untouched — the pathspec spelling against an ignored workbench, where `STASH_COUNT_AFTER` comes back one higher and reads exactly like a success. It can also exit 1 having created nothing — a repository with unmerged paths, `error: could not write index`. Report whichever happened, and do not drop, apply, or otherwise touch an entry git created; the user decides what becomes of it.
+
+Report and exit:
+
+> **Der Arbeitsbaum wurde nicht gesichert. Wechsle jetzt keinen Branch** — deine nicht committeten Änderungen liegen unverändert da, wo sie vorher lagen. `git stash push` ist mit Exit-Code `<PUSH_RC>` fehlgeschlagen.
+>
+> **Zustand:**
+> - Stash-Verzeichnis `<STASH_DIR>` — unvollständig und per `STASH_IN_PROGRESS` gesperrt; `/fusion:circle-pop` verweigert es.
+> - Der Circle liegt vollständig unter `<STASH_DIR>/circle`, der Zeiger `.active-circle` ist gelöscht.
+> - git meldet: `<PUSH_OUT>`
+>
+> **Zurück auf Anfang:** `mv "<STASH_DIR>/circle" "$WORKBENCH/<CIRCLE_DIRNAME>"`, dann `printf '%s\n' "<CIRCLE_DIRNAME>" > "$WORKBENCH/.active-circle"`, dann `rm -rf "<STASH_DIR>"`. Was 7.2 mitgenommen hat, sind Kopien — die Originale liegen noch am Platz.
+
+Add this line only when `STASH_COUNT_AFTER` is greater than `STASH_COUNT_BEFORE`:
+
+> - git hat trotzdem einen Eintrag angelegt: `<erste Zeile von git stash list>`. Der Arbeitsbaum wurde davon nicht geleert, dieselben Änderungen liegen also doppelt vor. Lass den Eintrag stehen, bis du entschieden hast, was damit passieren soll.
+
+**What each check catches**, measured with git 2.49.0:
+
+- **The exit code catches a push git refused.** The pathspec spelling against an ignored workbench exits 1 while the stack grows by one and the tree keeps its changes — to the count that is indistinguishable from a save, which is the failure this whole sub-step exists to prevent. An unmerged index exits 1 with no entry at all, where the count alone would have written the `(no changes)` sentinel and told the user the tree had been clean.
+- **The count catches a push git accepted that saved nothing.** A tree with nothing to save exits **0** and prints `No local changes to save`, leaving the stack unchanged. The exit code cannot tell that from a successful save, and the sentinel is what pop needs in order to skip its apply step.
+
+**Why the branch, and why that probe.** `git stash push <pathspec>` with `--include-untracked` runs `git add -- <pathspec>` internally to clear the paths it saved — a bare `git add`, not `git add --all`; the `-u` form is the one it uses *without* `--include-untracked`. That `git add` **refuses** — exit 1, message "The following paths are ignored by one of your .gitignore files" — when a pathspec names an ignored path, negative pathspecs included. A workbench the project gitignores is exactly that path, so the pathspec spelling breaks precisely in the one configuration that never had the defect: measured, the entry is created and the working tree is left untouched. The `git add --dry-run` line asks git the same question git will ask itself, changes nothing, and is the only reliable predictor found — `git check-ignore` on the workbench is not, since it answers "not ignored" for an ignored directory that contains a tracked file.
+
+**The probe spells it `--all`, and that it answers the same question is a property of the current form rather than a fact about `git add`.** Against `':/' ":(exclude)$WB_NAME"` with the workbench ignored, `git add -n --all` and the bare `git add -n` both exit 1 — probe and internal command agree — while `git add -n -u` on that same pathspec exits **0**. The equivalence therefore holds only for as long as this block passes `--include-untracked`. Drop that flag and git's internal spelling becomes the `-u` one: the probe would keep predicting a refusal that no longer happens, divert to the fallback for no reason, and stop tracking what git actually does. If `--include-untracked` ever leaves this command, re-measure the probe against whatever spelling replaces it.
 
 The fallback is safe by the same fact that forces it: it is taken only when git already excludes the workbench's untracked content from `--include-untracked`, which is what makes the stash directory unsweepable there.
 
