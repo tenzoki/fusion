@@ -1,7 +1,14 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { spawn, type ChildProcess } from "node:child_process";
 import { createServer } from "node:net";
-import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import {
+  mkdtempSync,
+  mkdirSync,
+  writeFileSync,
+  chmodSync,
+  existsSync,
+  readFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, join } from "node:path";
@@ -93,9 +100,60 @@ function freePort(): Promise<number> {
 
 const running: ChildProcess[] = [];
 
+/**
+ * A `python3` wrapper that runs its argv with a pseudo-terminal on stdin,
+ * stdout and stderr, so the child's `[ -t 1 ]` is true.
+ *
+ * Needed because the browser-launch gate keys on stdout being a terminal, and
+ * `child_process.spawn` cannot hand a child one: every stdio mode Node offers
+ * is a pipe, a file, an fd or /dev/null. python3 is already a hard requirement
+ * of `bin/monitor` (the server is a python heredoc inside it), so driving the
+ * interactive case through it adds no dependency this suite did not already
+ * have. The reader thread exists so the pty buffer cannot fill and wedge the
+ * monitor mid-banner; nothing asserts on what it reads.
+ */
+const PTY_RUNNER = `
+import os, subprocess, sys, threading
+
+master, slave = os.openpty()
+proc = subprocess.Popen(sys.argv[1:], stdin=slave, stdout=slave, stderr=slave,
+                        close_fds=True)
+os.close(slave)
+
+def drain():
+    while True:
+        try:
+            if not os.read(master, 4096):
+                return
+        except OSError:
+            return
+
+threading.Thread(target=drain, daemon=True).start()
+sys.exit(proc.wait())
+`;
+
+let ptyRunnerPath: string | undefined;
+function ptyRunner(): string {
+  if (ptyRunnerPath === undefined) {
+    const dir = mkdtempSync(join(tmpdir(), "fusion-pty-"));
+    ptyRunnerPath = join(dir, "pty-runner.py");
+    writeFileSync(ptyRunnerPath, PTY_RUNNER);
+  }
+  return ptyRunnerPath;
+}
+
+interface MonitorOpts {
+  /** Extra environment for the monitor process (merged over process.env). */
+  env?: Record<string, string>;
+  /** Give the monitor a pseudo-terminal, so its `[ -t 1 ]` gate is true. */
+  tty?: boolean;
+}
+
 /** Start the real monitor against `wb` and return the port it answers on. */
-async function startMonitor(wb: string): Promise<number> {
+async function startMonitor(wb: string, opts: MonitorOpts = {}): Promise<number> {
   const port = await freePort();
+  const argv = [monitorBin, "test", String(port), "-d", wb];
+  const [cmd, ...args] = opts.tty === true ? ["python3", ptyRunner(), ...argv] : argv;
   // MONITOR_BIND=127.0.0.1: the monitor's default bind is 0.0.0.0 (LAN
   // dashboard), but macOS Local Network privacy parks a non-loopback listener
   // of an unauthorized process in CLOSED state (netstat shows CLOSED, never
@@ -103,10 +161,10 @@ async function startMonitor(wb: string): Promise<number> {
   // poll below times out whenever the terminal app's Local Network permission
   // is absent or revoked. A loopback bind is exempt from that filtering,
   // which makes the suite deterministic regardless of TCC state.
-  const proc = spawn(monitorBin, ["test", String(port), "-d", wb], {
+  const proc = spawn(cmd, args, {
     stdio: "ignore",
     detached: true,
-    env: { ...process.env, MONITOR_BIND: "127.0.0.1" },
+    env: { ...process.env, MONITOR_BIND: "127.0.0.1", ...opts.env },
   });
   running.push(proc);
   const deadline = Date.now() + 15000;
@@ -460,6 +518,117 @@ describe("bin/monitor — the fail-open row", () => {
       expect(cssBody(page, ".warning-row.advisory")).toContain("var(--cyan)");
       // The level badge is red too — the border alone is easy to miss.
       expect(page).toContain(`.warning-row.${failopen.levelClass} .warning-level`);
+    },
+    30000,
+  );
+});
+
+// ---------------------------------------------------------------------------
+// The browser launch.
+//
+// `bin/monitor` ended with an unconditional `open http://localhost:$PORT`. The
+// suite above spawns it eleven times, each on a throwaway free port whose
+// server afterEach kills seconds later, so one `npm test` run opened eleven
+// browser tabs on eleven ports that answer nothing, each stealing focus as it
+// arrived. Run repeatedly, and at one point by five agents in parallel, that
+// rendered the machine close to unusable. The tabs surfaced wherever the user
+// happened to be working, so the flood was first reported against a consuming
+// project; every process involved was this repository's own test harness.
+//
+// The fix is a gate on `[ -t 1 ]` plus an independent MONITOR_NO_BROWSER
+// opt-out, and the cases below are why the gate rather than the opt-out is
+// what closes it: the harness sets no variable, and neither does the next
+// non-interactive caller nobody has written yet.
+//
+// HOW THESE MEASURE IT. A fake `open` is placed first on PATH and appends its
+// argv to a marker file, so "a tab was opened" is a file that exists rather
+// than a token found in the script's text. A lint that greps `bin/monitor`
+// for `-t 1` would pass on a decoy in a comment and on a gate that is present
+// but unreachable; this asserts on what the running script does.
+// ---------------------------------------------------------------------------
+
+/** A directory holding a fake `open` that records its argv instead of opening. */
+function fakeOpen(): { dir: string; marker: string } {
+  const dir = mkdtempSync(join(tmpdir(), "fusion-fakeopen-"));
+  const marker = join(dir, "opened.txt");
+  const script = join(dir, "open");
+  writeFileSync(script, `#!/bin/sh\nprintf '%s\\n' "$@" >> '${marker}'\n`);
+  chmodSync(script, 0o755);
+  return { dir, marker };
+}
+
+function pathWith(dir: string): string {
+  return `${dir}:${process.env.PATH ?? ""}`;
+}
+
+/** Poll for `file` to appear, up to `ms`. */
+async function waitForFile(file: string, ms: number): Promise<boolean> {
+  const deadline = Date.now() + ms;
+  for (;;) {
+    if (existsSync(file)) return true;
+    if (Date.now() > deadline) return false;
+    await new Promise((r) => setTimeout(r, 100));
+  }
+}
+
+// The launch sits behind a 0.5s sleep that starts once the server is forked,
+// so the server answering is not yet evidence the launch was skipped. Every
+// negative case waits well past that window before reading the marker.
+const PAST_THE_LAUNCH_WINDOW = 2500;
+
+describe("bin/monitor — the browser launch", () => {
+  it(
+    "a spawn with no terminal on stdout opens nothing, and still serves",
+    async () => {
+      const { dir, marker } = fakeOpen();
+      const port = await startMonitor(seedWorkbench([]), {
+        env: { PATH: pathWith(dir) },
+      });
+
+      await new Promise((r) => setTimeout(r, PAST_THE_LAUNCH_WINDOW));
+
+      // The whole point: this is exactly how the suite above spawns it.
+      expect(existsSync(marker)).toBe(false);
+      // And suppressing the tab must not have suppressed the dashboard.
+      const r = await fetch(`http://127.0.0.1:${port}/api/dashboard`);
+      expect(r.ok).toBe(true);
+    },
+    30000,
+  );
+
+  it(
+    "a terminal on stdout still gets the dashboard opened for it",
+    async () => {
+      const { dir, marker } = fakeOpen();
+      const port = await startMonitor(seedWorkbench([]), {
+        tty: true,
+        env: { PATH: pathWith(dir) },
+      });
+
+      // Fails if the gate is too tight — a fix that made the monitor silent
+      // for the human who started it would be a different defect.
+      expect(await waitForFile(marker, 10000)).toBe(true);
+      expect(readFileSync(marker, "utf8").trim()).toBe(
+        `http://localhost:${port}`,
+      );
+    },
+    30000,
+  );
+
+  it(
+    "MONITOR_NO_BROWSER suppresses the launch on a terminal too",
+    async () => {
+      const { dir, marker } = fakeOpen();
+      const port = await startMonitor(seedWorkbench([]), {
+        tty: true,
+        env: { PATH: pathWith(dir), MONITOR_NO_BROWSER: "1" },
+      });
+
+      await new Promise((r) => setTimeout(r, PAST_THE_LAUNCH_WINDOW));
+
+      expect(existsSync(marker)).toBe(false);
+      const r = await fetch(`http://127.0.0.1:${port}/api/dashboard`);
+      expect(r.ok).toBe(true);
     },
     30000,
   );
