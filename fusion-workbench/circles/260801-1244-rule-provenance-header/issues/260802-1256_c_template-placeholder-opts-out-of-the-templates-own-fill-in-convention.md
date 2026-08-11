@@ -42,3 +42,6 @@ angle brackets finds it.
 (`gatedFiles()` reads `rules/` only), which is correct: a template is not a rule file, and
 its header is an instruction rather than a citation. Nothing here argues for widening the
 gate.
+
+---
+Resolved: the placeholder is a bracketed placeholder now, and the patch sentence is gone (260811). `templates/investigator-capture-layout.md:3` reads `**Provenance:** <the record, Circle, or commit that motivated your project's capture layout>`, so the lede's own instruction — fill in every `<bracketed placeholder>` — reaches it, and a copier sweeping for angle brackets finds it. The sentence at `:7` that documented the hazard, and its `>` separator at `:8`, were deleted; the lede and the halt note are unchanged. Wording checked against `rules/rule-file-provenance.md`: the three legitimate citation forms are a decision record, a Circle directory, or the admission plus introducing commit, and "record, Circle, or commit" names all three without pushing a consuming project toward fusion's own path shapes. `hooks/lib/__tests__/provenance-header-lint.test.ts` has nothing to say about templates — `gatedFiles()` reads the plugin's own `rules/` only (`:117-118`) — so no test constrains the wording, and none had to be added: the file this template becomes lands in a consuming project's `./rules/`, which is in no test set fusion controls.

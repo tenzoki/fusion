@@ -1150,3 +1150,34 @@
 {"ts":"2026-08-11T02:42:16","event":"state_drift","detail":"final check: progress.commits surface=18, git 5ef92eb..HEAD=21 — three closing commits (60f47c2, e2a34f0, 90cd8b2) landed after the last state write; agentstate.yaml is deleted at cleanup, so this event is the surviving record"}
 {"ts":"2026-08-11T02:42:16","event":"reconciliation","detail":"verdict review-needed; 3 discrepancies filed; resolved by committing the queue rebuild"}
 {"ts":"2026-08-11T02:42:16","event":"session_end","detail":"3 Turns, 21 commits, 28 records closed, 33 filed, 2 decisions answered; circuit breaker tripped once"}
+{"ts":"2026-08-11T05:52:24","event":"session_start","detail":"Setup complete; domain=code; no active Circle; directive not yet stated"}
+{"ts":"2026-08-11T06:52:36","event":"scope_resolved","detail":"mode=issues; 69 open defect records (53 shared + 16 in five closed Circles); agents: taskplanner, coder, ontocoder, coderev, ontorev, bugfixer, reconciler; 9 open decisions deferred to gates"}
+{"ts":"2026-08-11T07:33:42","event":"queue_built","detail":"69 records inventoried; 68 queued (38 dispatchable, 28 gated, 2 need the user at a machine), 2 close without work; suite red at HEAD with 1 failure"}
+{"ts":"2026-08-11T07:33:42","event":"turn_start","turn":1,"detail":"turn_start_head=7785330; 38 dispatchable tasks, task 1 first (red baseline)"}
+{"ts":"2026-08-11T07:33:58","event":"task_start","turn":1,"task":"X:260811-0901-red-baseline","agent":"coder","detail":"skills/setup/SKILL.md:45 stale marker citation"}
+{"ts":"2026-08-11T07:40:17","event":"task_done","turn":1,"task":"X:260811-0901-red-baseline","agent":"coder","detail":"d8e38d5"}
+{"ts":"2026-08-11T07:40:17","event":"commit","turn":1,"task":"X:260811-0901-red-baseline","detail":"d8e38d5 fix(skills): a record citation names the marker position"}
+{"ts":"2026-08-11T08:12:12","event":"task_done","turn":1,"task":"I:260801-2038-frozen-state","agent":"coder","detail":"8a49fd5"}
+{"ts":"2026-08-11T08:12:12","event":"commit","turn":1,"task":"I:260801-2038-frozen-state","detail":"8a49fd5 feat(hooks): state-drift prevention half"}
+{"ts":"2026-08-11T08:19:45","event":"gate_response","turn":1,"detail":"user set execution order high>low>normal and chose run-through with gate-only stops"}
+{"ts":"2026-08-11T08:19:45","event":"task_start","turn":1,"task":"I:260810-0431-queue-ground","agent":"coder"}
+{"ts":"2026-08-11T08:36:29","event":"task_done","turn":1,"task":"I:260810-0431-queue-ground","agent":"coder","detail":"b4eb4db"}
+{"ts":"2026-08-11T08:36:29","event":"commit","turn":1,"task":"I:260810-0431-queue-ground","detail":"b4eb4db feat(prompts): queue producer names its ground; message repaired after a quoting error truncated it"}
+{"ts":"2026-08-11T08:36:29","event":"task_start","turn":1,"task":"I:260810-1205-review-coverage","agent":"coder"}
+{"ts":"2026-08-11T09:01:44","event":"task_done","turn":1,"task":"I:260810-1205-review-coverage","agent":"coder","detail":"afd7c2e"}
+{"ts":"2026-08-11T09:01:44","event":"commit","turn":1,"task":"I:260810-1205-review-coverage","detail":"afd7c2e feat(hooks): review coverage measured against the session range"}
+{"ts":"2026-08-11T09:01:44","event":"task_start","turn":1,"task":"I:260811-0114-uncommitted-queue","agent":"coder"}
+{"ts":"2026-08-11T09:29:38","event":"task_done","turn":1,"task":"I:260811-0114-uncommitted-queue","agent":"coder","detail":"cac41ef"}
+{"ts":"2026-08-11T09:29:38","event":"commit","turn":1,"task":"I:260811-0114-uncommitted-queue","detail":"cac41ef feat(hooks): staging drift measured, queue rebuild has an owner"}
+{"ts":"2026-08-11T09:29:38","event":"review_start","turn":1,"agent":"coderev","detail":"range 7785330..cac41ef"}
+{"ts":"2026-08-11T09:49:12","event":"review_done","turn":1,"agent":"coderev","detail":"8 issues filed (1 high, 4 medium, 3 low) + 1 decision; range 7785330..cac41ef covered"}
+{"ts":"2026-08-11T09:49:46","event":"coherence_review","turn":1,"detail":"verdict=review-needed; Artifact<->Grounding: 8 issues + 1 decision filed by coderev, one High regression introduced this Turn; Artifact<->Directive: commits move toward the Directive in kind but the open count rose from 69 to 73, so the Turn is net-negative against a clean-state Directive; Grounding<->Directive: 1 new open decision, no conflict with answered decisions. Gate not presented interactively per the user's run-through instruction; surfaced in the Turn report instead."}
+{"ts":"2026-08-11T09:49:46","event":"turn_end","turn":1,"detail":"5 tasks resolved, 5 commits, 8 issues + 1 decision created, 0 errors, 0 gates hit"}
+{"ts":"2026-08-11T10:20:14","event":"gate_response","turn":2,"detail":"user: fix the Turn-1 regression first, then the 14 low-priority corrections; measurement-family chassis decision deferred"}
+{"ts":"2026-08-11T10:20:14","event":"turn_start","turn":2,"detail":"turn_start_head=270c566; regression fix then 14 low-priority tasks"}
+{"ts":"2026-08-11T10:20:14","event":"task_start","turn":2,"task":"CR:260811-1141-commit-message-misclassification","agent":"coder"}
+{"ts":"2026-08-11T10:31:30","event":"task_done","turn":2,"task":"CR:260811-1141-commit-message-misclassification","agent":"coder","detail":"337c01b"}
+{"ts":"2026-08-11T10:31:30","event":"commit","turn":2,"task":"CR:260811-1141-commit-message-misclassification","detail":"337c01b fix(hooks): staging check decides by place first"}
+{"ts":"2026-08-11T10:52:33","event":"task_done","turn":2,"task":"I:260810-0509-cleanup-wording","agent":"coder","detail":"7749845"}
+{"ts":"2026-08-11T10:52:33","event":"task_done","turn":2,"task":"I:260810-1205-session-counts","agent":"coder","detail":"7749845"}
+{"ts":"2026-08-11T10:52:33","event":"task_done","turn":2,"task":"I:260810-1632-churnrank-exit3","agent":"coder","detail":"7749845"}

@@ -1311,12 +1311,12 @@ Nothing from here to task 38 needs a user answer. Task 1 comes first for the rea
 ### 30. Trim the cadence skill's frontmatter to what routing needs
 
 - **ID:** `I:260731-2246-cadence-frontmatter`
-- **Source:** `fusion-workbench/shared/issues/260731-2246_o_cadence-frontmatter-unused-tools-and-oversized-description.md`
+- **Source:** `fusion-workbench/shared/issues/260731-2246_c_cadence-frontmatter-unused-tools-and-oversized-description.md`
 - **Executor:** `coder` — **routing note below**
 - **Files:** `skills/cadence/SKILL.md` frontmatter (`description` at `:2`, `allowed-tools` at `:4`)
 - **Depends on:** none
 - **Priority:** low
-- **Status:** [ ] open
+- **Status:** [x] done
 - **Detail:** Two hygiene findings, no functional failure.
   **(1)** `allowed-tools` lists `Glob` and `Grep` and the body prescribes neither — it does discovery
   with `find` (and the comment beside it argues explicitly for `find` over globbing, because it
@@ -1419,13 +1419,13 @@ Nothing from here to task 38 needs a user answer. Task 1 comes first for the rea
 ### 33. Correct the cleanup skill's claim about the cascade gate's reach
 
 - **ID:** `I:260810-2200-cascade-reach-sentence`
-- **Source:** `fusion-workbench/shared/issues/260810-2200_o_the-cleanup-skill-says-the-cascade-gate-scans-prompts-and-skill-bodies-and-it-now-scans-rules-too.md`
+- **Source:** `fusion-workbench/shared/issues/260810-2200_c_the-cleanup-skill-says-the-cascade-gate-scans-prompts-and-skill-bodies-and-it-now-scans-rules-too.md`
 - **Executor:** `coder`
 - **Files:** `skills/cleanup/SKILL.md:125`; `hooks/lib/domain-cascade.ts` `REACH` (read-only, the
   rendered description to cite)
 - **Depends on:** none
 - **Priority:** low
-- **Status:** [ ] open
+- **Status:** [x] done
 - **Detail:** The skill describes the single-definition gate as scanning "every agent prompt and every
   skill body". Turn 3 added `rules/**` to the scanned set, so the sentence is one third short. The
   reason for adding it is the reason the sentence needs updating: `rules/agent-setup.md` makes reading
@@ -1485,12 +1485,12 @@ Nothing from here to task 38 needs a user answer. Task 1 comes first for the rea
 ### 35. Name Rust in the coder's description and settle the `Cargo.toml` boundary
 
 - **ID:** `I:260805-1830-coder-rust`
-- **Source:** `fusion-workbench/circles/260801-1244-guard-rules-write/issues/260805-1830_o_die-coder-beschreibung-nennt-rust-nicht-die-sprache-des-groessten-beobachteten-einsatzes.md`
+- **Source:** `fusion-workbench/circles/260801-1244-guard-rules-write/issues/260805-1830_c_die-coder-beschreibung-nennt-rust-nicht-die-sprache-des-groessten-beobachteten-einsatzes.md`
 - **Executor:** `coder`
 - **Files:** `agents/coder.md:2` (the frontmatter `description`), `README-agents.md` (the coder row)
 - **Depends on:** none
 - **Priority:** low
-- **Status:** [ ] open
+- **Status:** [x] done
 - **Detail:** **Half of this has landed and must not be redone.** `agents/coder.md:19` now owns
   `.rs` and `.java` in the Scope list. The frontmatter `description` — the line the orchestrator reads
   when it decides where to dispatch — still says "(Go, TypeScript, React, Python). Owns `.go`, `.ts`,
@@ -1577,13 +1577,13 @@ Nothing from here to task 38 needs a user answer. Task 1 comes first for the rea
 ### 38. Bring the template's provenance placeholder under the template's own convention
 
 - **ID:** `I:260802-1256-template-placeholder`
-- **Source:** `fusion-workbench/circles/260801-1244-rule-provenance-header/issues/260802-1256_o_template-placeholder-opts-out-of-the-templates-own-fill-in-convention.md`
+- **Source:** `fusion-workbench/circles/260801-1244-rule-provenance-header/issues/260802-1256_c_template-placeholder-opts-out-of-the-templates-own-fill-in-convention.md`
 - **Executor:** `coder`
 - **Files:** `templates/investigator-capture-layout.md:3` (the placeholder) and `:7-8` (the patch
   sentence and its separator)
 - **Depends on:** none
 - **Priority:** low
-- **Status:** [ ] open
+- **Status:** [x] done
 - **Detail:** The file's own instruction is "fill in every `<bracketed placeholder>`". The provenance
   line is the one placeholder in the file that is **not** bracketed, so the instruction does not reach
   it — and a second sentence was added to patch that gap, whose own wording states the defect as a

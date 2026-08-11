@@ -1,7 +1,7 @@
 ---
-description: Analyse this project's session logs, activity log, and git history to surface the work cadence — three ranked topic lists written to the workbench's shared memo store as cadence-<user>.md. List 1 is the topics touched since yesterday (and on Mondays, Friday+Saturday+Sunday collapsed together) up to now; list 2 is the topics of the last 7 days; list 3 is the recurring themes across the whole project history, ranked by churn (how many distinct sessions each theme keeps reappearing in). Reads the fusion session histories (both the active Circle's and the shared store, via bin/fusion-paths), the shared activity-log-<user>.md (checked in both the project root and the workbench), and git commits. Use when the user asks "what have I been working on", "what did I do yesterday", "what are the recurring themes", "show my cadence", or wants a dated digest of recent and persistent topics.
+description: Digest the project's session logs, activity log, and git history into ranked lists of recent and recurring topics. Use when the user asks "what have I been working on", "what did I do yesterday", "what are the recurring themes", or "show my cadence".
 argument-hint: ""
-allowed-tools: [Bash, Read, Glob, Grep, Write]
+allowed-tools: [Bash, Read, Write]
 ---
 
 # /fusion:cadence — analyse logs and report the work cadence
