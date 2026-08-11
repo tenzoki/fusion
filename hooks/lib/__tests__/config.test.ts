@@ -187,6 +187,28 @@ function loadConfigAsOfStep5(path: string): object {
   };
 }
 
+/**
+ * The settings the GUARD itself reads — `effective()` minus the one container
+ * no hook consults.
+ *
+ * The reference above is a transcription of the loader as it stood before the
+ * project layer existed, and the property it pins is that no path protected
+ * today becomes unprotected. `orchestrator.maxTurns` arrived later (issue
+ * `260811-1712`): it is read once per session by `bin/fusion-turn-budget` and
+ * by nothing in `guard.ts` or `tracker.ts`, so it cannot move that measurement
+ * in either direction — but it does change the object's shape, and a byte
+ * comparison would then fail for a reason that has nothing to do with
+ * protection.
+ *
+ * The exclusion is BY NAME, one key, and not a filter over "things that look
+ * non-guard". A second name appearing here is a claim that a second setting
+ * sits outside the guard, and that claim should cost an edit and a reader.
+ */
+function guardSurface(config: GuardConfig): object {
+  const { orchestrator: _notTheGuards, ...rest } = effective(config);
+  return rest;
+}
+
 describe("a project with no fusion-guard.json is byte-identical to before step 6", () => {
   it("with no project root at all", () => {
     const actual = loadConfig({
@@ -194,7 +216,7 @@ describe("a project with no fusion-guard.json is byte-identical to before step 6
       projectRoot: null,
     });
 
-    expect(JSON.stringify(effective(actual))).toBe(
+    expect(JSON.stringify(guardSurface(actual))).toBe(
       JSON.stringify(loadConfigAsOfStep5(SHIPPED_PLUGIN_CONFIG)),
     );
     expect(actual.diagnostics).toEqual([]);
@@ -208,7 +230,7 @@ describe("a project with no fusion-guard.json is byte-identical to before step 6
       projectRoot: tmp(),
     });
 
-    expect(JSON.stringify(effective(actual))).toBe(
+    expect(JSON.stringify(guardSurface(actual))).toBe(
       JSON.stringify(loadConfigAsOfStep5(SHIPPED_PLUGIN_CONFIG)),
     );
     expect(actual.diagnostics).toEqual([]);
@@ -1181,6 +1203,99 @@ describe("diagnostics — a dropped source is named, never silent", () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// The Turn budget — issue `260811-1712`.
+//
+// The one setting in this file that is not the guard's. It reaches the
+// orchestrator through `bin/fusion-turn-budget` at Setup, not through a hook,
+// and it is here because `fusion-guard.json` is the per-project surface a
+// project already has. What the cases below pin is that it takes the SAME leaf
+// walk as everything else — declared wins, omitted inherits, unusable is
+// dropped and named and then inherits — because the whole argument for reusing
+// this loader was that a project owner would not have to learn a second rule.
+//
+// The default's uniqueness is pinned elsewhere, in
+// `turn-budget-lint.test.ts`: it is a claim about where the number is WRITTEN,
+// which is a text question, not a merge question.
+// ---------------------------------------------------------------------------
+
+describe("the orchestrator's Turn budget merges like every other leaf", () => {
+  it("falls to the built-in default when neither layer declares it", () => {
+    // The plugin's own config.json deliberately carries no `orchestrator`
+    // section, so the shipped path really is the DEFAULTS path.
+    const config = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: null,
+    });
+
+    expect(config.orchestrator.maxTurns).toBe(5);
+    expect(config.diagnostics).toEqual([]);
+  });
+
+  it("takes a project's declared budget exactly as written", () => {
+    const config = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: projectWith({ orchestrator: { maxTurns: 12 } }),
+    });
+
+    expect(config.orchestrator.maxTurns).toBe(12);
+    expect(config.diagnostics).toEqual([]);
+  });
+
+  it("lets the project layer override a plugin-declared budget", () => {
+    const config = loadConfig({
+      pluginConfigPath: pluginConfig({ orchestrator: { maxTurns: 7 } }),
+      projectRoot: projectWith({ orchestrator: { maxTurns: 3 } }),
+    });
+
+    expect(config.orchestrator.maxTurns).toBe(3);
+  });
+
+  it("inherits the plugin's budget when the project declares none", () => {
+    const config = loadConfig({
+      pluginConfigPath: pluginConfig({ orchestrator: { maxTurns: 7 } }),
+      projectRoot: projectWith({ guard: { defaultSensitivity: "high" } }),
+    });
+
+    expect(config.orchestrator.maxTurns).toBe(7);
+  });
+
+  it.each([
+    ["zero", 0, "a session that could never run a Turn"],
+    ["a negative", -3, "not a count of anything"],
+    ["a decimal", 2.5, "not a number of Turns"],
+    ["a string", "many", "not a number at all"],
+    ["null-ish text", "5", "a number's spelling, not a number"],
+  ])("drops %s and inherits the default", (_name, value, _why) => {
+    const config = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: projectWith({ orchestrator: { maxTurns: value } }),
+    });
+
+    // Drop, NAME, inherit — the same three things an unusable value has cost
+    // everywhere else in this loader since `260804-1630`. A budget silently
+    // replaced by the default is a project running a bound it did not choose
+    // and believes it did.
+    expect(config.orchestrator.maxTurns).toBe(5);
+    expect(config.diagnostics).toHaveLength(1);
+    expect(config.diagnostics[0]).toContain("orchestrator.maxTurns");
+    expect(config.diagnostics[0]).toContain("a whole number of 1 or more");
+  });
+
+  it("accepts a large budget — there is no ceiling", () => {
+    // Deliberate, and the same choice `escalation.blocksBeforeHalt` made: a
+    // project that wants 60 Turns has said so in a git-tracked file, and a
+    // ceiling invented here would be a policy nobody asked for.
+    const config = loadConfig({
+      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      projectRoot: projectWith({ orchestrator: { maxTurns: 60 } }),
+    });
+
+    expect(config.orchestrator.maxTurns).toBe(60);
+    expect(config.diagnostics).toEqual([]);
+  });
+});
+
 describe("the cache is keyed on the resolved source pair", () => {
   it("two successive loads with DIFFERENT sources return different configs", () => {
     // The defect this replaces: a cache keyed on nothing returned the first
@@ -1259,7 +1374,7 @@ describe("the cache is keyed on the resolved source pair", () => {
 // `templates/fusion-guard.json` is what `/fusion:setup` copies into a consuming
 // project. It declares inheritance and lists NO paths: it carries only
 // underscore-prefixed documentation keys, which this loader never reads because
-// `RawConfig` names five top-level keys and nothing else looks at the rest.
+// `RawConfig` names six top-level keys and nothing else looks at the rest.
 //
 // "Inherits and lists nothing" is a claim about the MERGE, not about the file's
 // text, so it is measured through `loadConfig` rather than by grepping the file.
@@ -1321,9 +1436,10 @@ describe("the seeded template declares inheritance and lists nothing", () => {
   it("inherits every top-level key, including paths added to the plugin later", () => {
     // Each key below is deliberately DISTINCT from DEFAULTS, so "the template
     // declared this key" and "the template stayed silent" have different
-    // answers for all five. Against the shipped config alone they would not:
-    // its escalation and churn both equal DEFAULTS, so a template
-    // that restated them would pass the case above unnoticed.
+    // answers for all six. Against the shipped config alone they would not:
+    // its escalation and churn both equal DEFAULTS, and it declares no
+    // `orchestrator` section at all, so a template that restated any of the
+    // three would pass the case above unnoticed.
     const pluginConfigPath = pluginConfig({
       guard: {
         enabled: false,
@@ -1338,6 +1454,7 @@ describe("the seeded template declares inheritance and lists nothing", () => {
         changesPerSessionWarning: 91,
         changesPerSessionCritical: 92,
       },
+      orchestrator: { maxTurns: 93 },
     });
 
     const root = projectSeededWithTemplate();

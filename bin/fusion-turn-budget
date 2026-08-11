@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# fusion-turn-budget — the orchestrator's Phase-2 Turn budget, resolved from
+# configuration. Read once at Setup (agents/orchestrator.md Setup Step 2,
+# skills/setup/SKILL.md Step 2) instead of the number being written into the
+# prompt.
+#
+# Usage:
+#   fusion-turn-budget
+#
+# Output on stdout, one KEY=value line:
+#
+#   max_turns=5
+#
+# Anything the configuration loader had to drop goes to stderr, one line each,
+# naming the key and why — the loader's standing drop-and-advise behaviour, at
+# the one call that reads this value.
+#
+# Exit codes:
+#   0  resolved.
+#   1  usage error.
+#   2  no fusion workbench above the working directory, so there is no project
+#      layer to merge and a project that declared its own budget would be told
+#      the plugin's. No budget is printed; the caller reports it unresolved.
+#   3  the plugin's compiled hooks are missing, so nothing could be asked. Its
+#      own code and not 2: "this project configures no budget" is an answer
+#      about the project, and a broken install must never be reported as one.
+#
+# ---------------------------------------------------------------------------
+# Why the budget is read rather than stated
+#
+# It was stated: `5`, in seven places in agents/orchestrator.md, in four
+# spellings, one of which already called it a "default" while no source could
+# override it (issue 260811-1712). Seven copies of one fact go stale together
+# and no project could change any of them.
+#
+# The value now lives in hooks/lib/config.ts DEFAULTS — once — and is overridden
+# per project through the file that already exists for per-project settings:
+#
+#   fusion-guard.json   {"orchestrator": {"maxTurns": 12}}
+#
+# merged per leaf over the plugin's hooks/config.json and then the defaults, the
+# same walk every guard setting takes.
+#
+# The work is hooks/dist/turn-budget.js, resolved relative to this script rather
+# than through $FUSION_PLUGIN_ROOT, so an install copy and a work tree each run
+# their own build. node is already a hard requirement — the guard hooks are node
+# programs (hooks/hooks.json).
+
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+entry="$here/../hooks/dist/turn-budget.js"
+
+if [ ! -f "$entry" ]; then
+  echo "fusion-turn-budget: $entry is missing — the plugin's compiled hooks are not installed." >&2
+  exit 3
+fi
+
+exec node "$entry" "$@"

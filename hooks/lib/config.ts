@@ -39,6 +39,27 @@
  * than four per-key rules. (A fifth, `crossFile`, was closed the same way until
  * the ping-back tracker was removed with decision `260809-2004`.)
  *
+ * ## The one setting here that is not the guard's
+ *
+ * `orchestrator.maxTurns` is the Turn budget of the orchestrator's Phase-2 loop.
+ * It is not a guard setting and no hook reads it — `bin/fusion-turn-budget` does,
+ * once per Setup, and the orchestrator carries the answer in `agentstate.yaml`.
+ * It lives here because `fusion-guard.json` is the per-project configuration
+ * surface a project already has: git-tracked, merged per leaf, wrong values
+ * dropped and named. A second configuration file for one integer would be a
+ * second mechanism answering the same question (issue `260811-1712`).
+ *
+ * The budget had been prose in `agents/orchestrator.md`, written out as `5` in
+ * seven places and four spellings, with one of them already calling it a
+ * "default" — a word that was false, because no source could override it.
+ *
+ * THE DEFAULT IS DEFINED ONCE, in `DEFAULTS` below, and deliberately NOT
+ * restated in the plugin's `hooks/config.json`. Every other leaf is spelled in
+ * both, and the paragraph above about `escalation` and `churn` is the standing
+ * complaint that nothing keeps the two copies agreeing. One copy cannot
+ * disagree with itself. A project that wants a different budget declares
+ * `{"orchestrator":{"maxTurns":12}}` and the leaf walk does the rest.
+ *
  * ## The one key a project may not set
  *
  * `guard.enabled` is read from the plugin layer and `DEFAULTS` only. It sits
@@ -193,6 +214,14 @@ export interface GuardSettings {
     changesPerSessionWarning: number;
     changesPerSessionCritical: number;
   };
+  /**
+   * The orchestrator's Phase-2 Turn budget. Read by `bin/fusion-turn-budget`
+   * at Setup, not by any hook — see the module docstring for why a non-guard
+   * setting lives in the guard's configuration file.
+   */
+  orchestrator: {
+    maxTurns: number;
+  };
 }
 
 /** Which of the three layers a value came from. */
@@ -269,6 +298,7 @@ interface RawConfig {
   decisions?: Decision[];
   escalation?: Partial<GuardSettings["escalation"]>;
   churn?: Partial<GuardSettings["churn"]>;
+  orchestrator?: Partial<GuardSettings["orchestrator"]>;
 }
 
 const DEFAULTS: GuardSettings = {
@@ -286,6 +316,13 @@ const DEFAULTS: GuardSettings = {
   churn: {
     changesPerSessionWarning: 5,
     changesPerSessionCritical: 10,
+  },
+  // THE TURN BUDGET'S ONE DEFINITION. Not restated in the plugin's
+  // `hooks/config.json`, and not in `agents/orchestrator.md` — the prompt reads
+  // it through `bin/fusion-turn-budget` at Setup and names the resolved value
+  // everywhere it used to write a number. See the module docstring.
+  orchestrator: {
+    maxTurns: 5,
   },
 };
 
@@ -423,6 +460,16 @@ function isRecordOf(check: (v: unknown) => boolean): (v: unknown) => boolean {
  * getting the strictest one there is. There is no upper bound, deliberately: a
  * large value is a defensible project choice, and inventing a ceiling here would
  * be a policy nobody asked for.
+ *
+ * `orchestrator.maxTurns` takes the same shape and for the same reason, which
+ * is why it reuses this check rather than getting one of its own. A budget of
+ * `0` is a session that can never run a Turn — a project writing it almost
+ * certainly means "no limit" and would get the tightest limit there is; a
+ * negative one is not a count; `2.5` is not a number of Turns. All three are
+ * out of range, all three are dropped, named in an advisory, and inherit the
+ * default, because that is the one behaviour an absent, an unusable and an
+ * unwritten key are all required to share. And there is no ceiling: a project
+ * that wants 60 Turns has said so in a git-tracked file.
  */
 function isPositiveInteger(value: unknown): boolean {
   return typeof value === "number" && Number.isInteger(value) && value >= 1;
@@ -490,6 +537,12 @@ const CONTAINER_LEAF_RULES: Record<string, Record<string, LeafRule>> = {
   churn: {
     changesPerSessionWarning: { check: isThreshold, expected: "a number" },
     changesPerSessionCritical: { check: isThreshold, expected: "a number" },
+  },
+  orchestrator: {
+    maxTurns: {
+      check: isPositiveInteger,
+      expected: "a whole number of 1 or more",
+    },
   },
 };
 
@@ -651,6 +704,13 @@ export function loadConfig(sources?: ConfigSources): GuardConfig {
   ): GuardSettings["churn"][K] =>
     project.raw.churn?.[key] ?? plugin.raw.churn?.[key] ?? DEFAULTS.churn[key];
 
+  const pickOrchestrator = <K extends keyof GuardSettings["orchestrator"]>(
+    key: K,
+  ): GuardSettings["orchestrator"][K] =>
+    project.raw.orchestrator?.[key] ??
+    plugin.raw.orchestrator?.[key] ??
+    DEFAULTS.orchestrator[key];
+
   // Which layer the protected list came from, recorded before the floor makes
   // the answer unreadable off the list itself. See `GuardConfig`.
   const protectedPathsSource: ConfigLayer =
@@ -709,6 +769,9 @@ export function loadConfig(sources?: ConfigSources): GuardConfig {
     churn: {
       changesPerSessionWarning: pickChurn("changesPerSessionWarning"),
       changesPerSessionCritical: pickChurn("changesPerSessionCritical"),
+    },
+    orchestrator: {
+      maxTurns: pickOrchestrator("maxTurns"),
     },
     diagnostics,
     protectedPathsSource,

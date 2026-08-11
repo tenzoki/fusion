@@ -312,11 +312,11 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 ### 10. Make the Turn budget configurable per project instead of stating it in seven places
 
 - **ID:** `I:260811-1734c`
-- **Source:** `shared/issues/260811-1712_o_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`
+- **Source:** `shared/issues/260811-1712_c_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** high
-- **Status:** [ ] open
+- **Status:** [x] done
 - **Detail:** User request, filed via orchestrator. The value `5` is written into `agents/orchestrator.md` at `:362`, `:366`, `:685`, `:847`, `:849`, `:922` and `:1073`, in four different spellings, plus the circuit-breaker table row at Step 3d. `:847` already calls it a *default*, which implies a source that can override it; none exists, so that word is currently false. **Do not invent a configuration mechanism:** `fusion-guard.json` at the project root is the established per-project surface, git-tracked, merged per **leaf** key by `hooks/lib/config.ts` over the plugin's `hooks/config.json` and then over built-in defaults, with a wrong-typed value dropped and named in an advisory. Reuse it. One consumer already treats the budget as data — `skills/circle-stash/SKILL.md:126,131` reads `progress.max_turns` from `agentstate.yaml` — so the value is data at one site and prose at seven.
 - **Acceptance:** the budget is declarable per project through the existing per-leaf merge; the orchestrator obtains it at Setup and carries it in `agentstate.yaml` where `progress.max_turns` already has a home; **no site in the prompt states the number**, the dashboard's `<N>/<max>` included; a default is defined once in the configuration layer; the out-of-range and wrong-type cases are decided (the guard loader's drop-and-advise is the precedent); a gate pins that no bare Turn-budget literal returns.
 - **Scope bound from the record:** whether the *other* fixed budgets move with it — the Directive-revisions cap of 1, the one-bugfixer-attempt rule, the three-errors-per-Turn threshold — is deliberately **not** decided. Decide it when this lands; widening now would be a guess.

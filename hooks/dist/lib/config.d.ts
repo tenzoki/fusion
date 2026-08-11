@@ -39,6 +39,27 @@
  * than four per-key rules. (A fifth, `crossFile`, was closed the same way until
  * the ping-back tracker was removed with decision `260809-2004`.)
  *
+ * ## The one setting here that is not the guard's
+ *
+ * `orchestrator.maxTurns` is the Turn budget of the orchestrator's Phase-2 loop.
+ * It is not a guard setting and no hook reads it — `bin/fusion-turn-budget` does,
+ * once per Setup, and the orchestrator carries the answer in `agentstate.yaml`.
+ * It lives here because `fusion-guard.json` is the per-project configuration
+ * surface a project already has: git-tracked, merged per leaf, wrong values
+ * dropped and named. A second configuration file for one integer would be a
+ * second mechanism answering the same question (issue `260811-1712`).
+ *
+ * The budget had been prose in `agents/orchestrator.md`, written out as `5` in
+ * seven places and four spellings, with one of them already calling it a
+ * "default" — a word that was false, because no source could override it.
+ *
+ * THE DEFAULT IS DEFINED ONCE, in `DEFAULTS` below, and deliberately NOT
+ * restated in the plugin's `hooks/config.json`. Every other leaf is spelled in
+ * both, and the paragraph above about `escalation` and `churn` is the standing
+ * complaint that nothing keeps the two copies agreeing. One copy cannot
+ * disagree with itself. A project that wants a different budget declares
+ * `{"orchestrator":{"maxTurns":12}}` and the leaf walk does the rest.
+ *
  * ## The one key a project may not set
  *
  * `guard.enabled` is read from the plugin layer and `DEFAULTS` only. It sits
@@ -158,6 +179,14 @@ export interface GuardSettings {
     churn: {
         changesPerSessionWarning: number;
         changesPerSessionCritical: number;
+    };
+    /**
+     * The orchestrator's Phase-2 Turn budget. Read by `bin/fusion-turn-budget`
+     * at Setup, not by any hook — see the module docstring for why a non-guard
+     * setting lives in the guard's configuration file.
+     */
+    orchestrator: {
+        maxTurns: number;
     };
 }
 /** Which of the three layers a value came from. */

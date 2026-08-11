@@ -79,3 +79,54 @@ Whether the *other* fixed budgets should move with it — the Directive-revision
 three-errors-per-Turn cascade threshold — is deliberately not decided here. They are the same
 shape and a single mechanism could carry all four, but widening this record without measuring the
 other three would be a guess. Decide it when this lands.
+
+---
+
+## Resolved — 260811, coder, task `I:260811-1734c`
+
+The budget is now `orchestrator.maxTurns`, resolved through the loader that already
+merges per leaf. Every acceptance line, with where it landed:
+
+- **Declarable per project through the existing merge.** `hooks/lib/config.ts` gained one
+  container, `orchestrator`, with one leaf. A project declares
+  `{"orchestrator": {"maxTurns": 12}}` in its own `fusion-guard.json` and the same walk
+  every guard setting takes does the rest — project, then plugin, then defaults. No second
+  configuration file, no second rule for a project owner to learn.
+- **Obtained at Setup, carried in `agentstate.yaml`.** `bin/fusion-turn-budget` →
+  `hooks/turn-budget.ts` prints one line, `max_turns=<n>`. The orchestrator calls it at
+  Setup Step 2, behind the same `[ -x ]` guard the churn ranking and the source count
+  carry, and holds the value as `<max-turns>` for the session.
+  `progress.max_turns` keeps its home, which is where `/fusion:circle-stash` was already
+  reading it as data.
+- **No site in the prompt states the number.** All eight are gone — the seven listed above
+  and the Step 3d table row. Measured: the eight patterns in
+  `hooks/lib/__tests__/turn-budget-lint.test.ts` find all eight sites in the pre-fix file
+  at `bb9d66d` and none in the current one.
+- **The default is defined once.** `DEFAULTS.orchestrator.maxTurns` in `hooks/lib/config.ts`,
+  and deliberately **not** restated in the plugin's `hooks/config.json`. Every other leaf is
+  spelled in both files, and that module's own docstring is the standing complaint that
+  nothing keeps the two copies agreeing. `:847`'s word *default* is now true.
+- **Out-of-range and wrong-type are decided, on the stated precedent.** The budget reuses
+  `isPositiveInteger` — the check `escalation.blocksBeforeHalt` already uses, for the same
+  reason. A `0`, a negative, a decimal, a string: dropped, named in an advisory, inherits
+  the default, which is the one behaviour an absent, an unusable and an unwritten key are
+  all required to share. No upper bound, deliberately: a project that wants 60 Turns has
+  said so in a git-tracked file.
+- **The gate.** `hooks/lib/__tests__/turn-budget-lint.test.ts`, in the shape of the prompt
+  lints beside it. Its failure message names the two legitimate routes — declare the key in
+  a project's `fusion-guard.json`, or change `DEFAULTS` — so the next person who wants a
+  different number takes one of them instead of writing a literal back into the prose.
+
+**One case decided that the record left open: what happens when the read fails.** Three
+routes reach it — the helper absent from an older install, exit 2 (no workbench), exit 3
+(compiled hooks missing). They take one branch, and that branch is a *state*, not a
+substituted number: the budget is UNRESOLVED, Setup says so and names the remedy,
+`progress.max_turns` is **omitted** from `agentstate.yaml` (a word there would be read as a
+garbled number by `/fusion:circle-stash`, while an absent key is a case it already handles),
+the dashboard shows `--` on the right of the slash, and the Max-Turns row of the
+circuit-breaker table is not evaluated. The loop is still bounded by the other five
+conditions and by convergence — but not by a count, and the session is told so.
+
+**The scope bound held.** The Directive-revisions cap of 1, the one-bugfixer-attempt rule
+and the three-errors-per-Turn threshold were not touched. What deciding them would need is
+recorded in the session history beside this note.

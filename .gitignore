@@ -32,6 +32,7 @@ bin/*
 !bin/fusion-state-drift
 !bin/fusion-review-coverage
 !bin/fusion-staging-drift
+!bin/fusion-turn-budget
 *.exe
 # Generated protobuf (rebuild from .proto)
 *.pb.go
