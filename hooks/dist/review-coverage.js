@@ -49,7 +49,7 @@
  * `260810-0710`), and a check whose status is ignored is the failure it exists
  * to catch arriving one level up. Nor is it a release gate — whether a release
  * may go out over an uncovered range is an unfiled decision belonging beside
- * `shared/decisions/260810-0710_o_…`, and this program blocks nothing.
+ * `shared/decisions/260810-0710_*_…`, and this program blocks nothing.
  */
 import { measureReviewCoverage, renderReview, renderUncovered, } from "./lib/review-coverage.js";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";

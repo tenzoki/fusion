@@ -75,7 +75,7 @@
  *
  * It is also not a release gate. Whether a release may go out over an
  * uncovered range is a decision and is not filed; it belongs beside
- * `shared/decisions/260810-0710_o_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`.
+ * `shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`.
  * This module reports; nothing here blocks anything.
  *
  * ## Its callers, and the one it deliberately is not on

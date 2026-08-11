@@ -208,7 +208,7 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 - **Executor:** coder
 - **Depends on:** none
 - **Priority:** critical
-- **Status:** [ ] open
+- **Status:** [x] done — three citations rewritten to the wildcard form (`hooks/lib/reverted-copy.ts:32`, `hooks/lib/review-coverage.ts:78`, and a third the gate could not see, `hooks/review-coverage.ts:52`); `cd hooks && npm test` exit 0, 1284 passed. The recurrence is recorded at `shared/issues/260811-1755_o_stale-marker-citations-recur-and-the-lint-does-not-read-the-hook-entrypoints-where-one-was-hiding.md`, which also carries the measured surface gap.
 - **Detail:** `cd hooks && npm test` fails one case at HEAD `f70cb07`. Two shipped source files cite decision records by a marker that commit `1064fec` moved: `hooks/lib/reverted-copy.ts:32` names `circles/260807-0923-guard-misst-statt-orakelt/decisions/260807-0945_o_integritaet-des-eskalationsspeichers.md` (now `_a_`), and `hooks/lib/review-coverage.ts:78` names `shared/decisions/260810-0710_o_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md` (now `_d_`). Rewrite both in the ratified wildcard form — `260807-0945_*_…`, `260810-0710_*_…` — which is what the lint's own fix message asks for and what survives the next transition. Then re-run the suite and confirm 1284 pass. **No defect record covers this**; it is the queue's own measured ground, and it is the same class as the closed `260805-1839_c_acht-zitate-tragen-verfallene-decision-marker…`. File a record for it if the recurrence matters.
 
 ### 2. Move the three throttle stores onto the existing guard-state seam and extract one git wrapper

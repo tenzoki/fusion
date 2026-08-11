@@ -29,7 +29,7 @@
  * an agent can delete `.guard-state/`, so these copies protect against accident,
  * not against an agent that means to lose them. The general form of that is the
  * open decision on the integrity of the escalation store
- * (`circles/260807-0923-guard-misst-statt-orakelt/decisions/260807-0945_o_integritaet-des-eskalationsspeichers.md`),
+ * (`circles/260807-0923-guard-misst-statt-orakelt/decisions/260807-0945_*_integritaet-des-eskalationsspeichers.md`),
  * which this module does not attempt to answer. Accident is the case
  * `260809-1107` actually describes.
  *
