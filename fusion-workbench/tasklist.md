@@ -337,11 +337,11 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 ### 12. Print the record counts that need no git, instead of reporting the whole read as unmeasurable
 
 - **ID:** `I:260811-1610`
-- **Source:** `shared/issues/260811-1610_o_the-unmeasured-branches-discard-the-filed-count-which-needs-no-git-and-a-test-now-pins-the-discard.md`
+- **Source:** `shared/issues/260811-1610_c_the-unmeasured-branches-discard-the-filed-count-which-needs-no-git-and-a-test-now-pins-the-discard.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** high
-- **Status:** [ ] open
+- **Status:** [x] done — the block computes the cause once (`WHY=`) and then splits on `$T`: absent stays `records=unmeasured why=no-anchor-in-agentstate` with nothing printed; present runs the find loop, prints its `filed` lines and suppresses the `now_` probe with `[ -n "$WHY" ] ||`, under a `records=partial why=<cause>` header. The closing prose is now a bullet per header line saying which cells take a measured value. The `toEqual({})` at `record-counts-measurement.test.ts:271` was replaced with `toEqual(EXPECTED.filedOnly)` plus a `noNowCounts` helper, asserted in both shells. `cd hooks && npm test` exit 0, 1301 passed. Issue `260811-1610` `_o_` → `_c_`. History: `shared/history/260811-2005-coder-tasks1213-record-counts-partial-and-cause-list.md`.
 - **Detail:** The only High finding in the Turn-3 review. `agents/orchestrator.md:620-628` has two `records=unmeasured` branches; both print the cause and nothing else. But the loop produces two kinds of line, and only one needs the anchor: `now_<marker> <kind>` asks git whether a name existed at the anchor, while `filed <kind>` compares the record's own filename stamp against `session.started` — filenames and `T`, no git. The prompt's own prose at `:648` says so. `:649` then instructs the model to "write `unmeasured` into those four cells verbatim", and one of the four (`Issues created`) was measurable in both branches. The reach is wider than the defect it repaired: this fires for **every session in a project that does not track its workbench**. Split the condition on what each half needs — `T` for `filed`, `A` for `now_` — rather than on one combined gate: `T` present with an unusable anchor prints the `filed` lines then `records=partial why=workbench-not-in-anchor-commit`; `T` absent stays `records=unmeasured why=no-anchor-in-agentstate`. Note the branch-1 test is `[ -z "$A" ] || [ -z "$T" ]`, so it also fires when only the anchor is missing.
 - **A green-suite trap, named so the fix is not read as a regression:** `hooks/lib/__tests__/record-counts-measurement.test.ts:271` asserts `expect(v.counts).toEqual({})` — correct about today's behaviour, and it must be **replaced**, not deleted.
 - **Acceptance:** with the workbench untracked and `session.started` present, the block prints the `filed` counts; the closing paragraph says which cells take a measured value and which take `unmeasured`, per cause; a case asserts the filed counts over an untracked workbench in **both shells**; suite exits 0.
@@ -349,11 +349,11 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 ### 13. Make the `unmeasured` cause list correspond to the branch that emits each value
 
 - **ID:** `I:260811-1616`
-- **Source:** `shared/issues/260811-1616_o_the-unmeasured-cause-list-assigns-a-project-outside-git-to-the-branch-that-cannot-reach-it.md`
+- **Source:** `shared/issues/260811-1616_c_the-unmeasured-cause-list-assigns-a-project-outside-git-to-the-branch-that-cannot-reach-it.md`
 - **Executor:** coder
 - **Depends on:** `I:260811-1610` (same paragraph, same file — land them in that order)
 - **Priority:** normal
-- **Status:** [ ] open
+- **Status:** [x] done — "a project outside git" moved to `no-anchor-in-agentstate` with its reason (Setup Step 5 records a HEAD only in a git repository), `workbench-not-in-anchor-commit` left with the two causes it can reach, and the conjunction replaced by "missing either `git_head_at_start` or `started`". Gated twice: a no-`.git` fixture in both anchor states in both shells, and a prose case pinning "outside git" between the two backticked cause names. `cd hooks && npm test` exit 0, 1301 passed. Issue `260811-1616` `_o_` → `_c_`. Same history file as task 12.
 - **Detail:** `agents/orchestrator.md:649` lists "a project outside git" under `workbench-not-in-anchor-commit`. Measured: Setup Step 5 records the anchor conditionally ("Note current git HEAD (if git repo)"), so a project outside git writes no `git_head_at_start`, `[ -z "$A" ]` is true, and **branch 1** fires with `why=no-anchor-in-agentstate`. Branch 2 reaches "outside git" only when a valid anchor was recorded and the repository disappeared mid-session, which is not what a reader pictures. Second mismatch: branch 1's prose reads as a conjunction ("carries no `git_head_at_start` **and** `started`") where the code is `||`. Move "a project outside git" to branch 1 with its reason, leave branch 2 with the two causes it can reach, and change the prose to "missing either `git_head_at_start` or `started`". This is `260811-1406`'s defect one layer up: a stated cause list that does not match the branch that fires.
 - **Acceptance:** every cause named under a `why=` value is reachable by the branch emitting it; branch 1's description matches its `||`; cases in `record-counts-measurement.test.ts` cover a project outside git in both anchor states.
 

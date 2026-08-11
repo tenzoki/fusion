@@ -62,3 +62,24 @@ repository), leave branch 2 with the two causes it can actually reach, and chang
 - [ ] Every cause named under a `why=` value is reachable by the branch that emits that value.
 - [ ] Branch 1's description matches its `||`.
 - [ ] Cases in `record-counts-measurement.test.ts` cover a project outside git in both anchor states.
+
+
+---
+
+Resolved: The cause list now matches the branches. `no-anchor-in-agentstate` reads "`agentstate.yaml`
+is missing or unreadable, or is missing either `git_head_at_start` or `started` — either one alone is
+enough, and a project outside git belongs here rather than below, because Setup Step 5 records the
+anchor only in a git repository, so no `git_head_at_start` is written at all";
+`workbench-not-in-anchor-commit` keeps the two causes it can reach, an untracked workbench and an
+anchor that has left this repository's history. The conjunction is gone.
+
+Landed on top of `260811-1610`, which split the block's gate, so the branch a project outside git
+reaches now also prints its filed counts.
+
+Gated twice in `hooks/lib/__tests__/record-counts-measurement.test.ts`. Behaviour: a fixture with no
+`.git` anywhere, run in both shells in both anchor states — nothing recorded (the shape Setup
+actually leaves outside git) reports `no-anchor-in-agentstate`, a recorded hash with the repository
+gone reports `workbench-not-in-anchor-commit`. Prose: one case asserts "outside git" falls between
+the two backticked cause names in the section (so it cannot drift back under the branch that cannot
+reach it), one asserts the disjunction wording and the absence of the old conjunction.
+`cd hooks && npm test` — 50 files, 1301 passed, exit 0.

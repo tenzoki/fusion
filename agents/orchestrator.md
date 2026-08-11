@@ -624,12 +624,21 @@ SCAN_DECISIONS=$(printf '%s\n' "$R" | sed -n 's/^SCAN_DECISIONS=//p')
 [ -n "$WORKBENCH" ] && [ -n "$SCAN_ISSUES" ] && [ -n "$SCAN_DECISIONS" ] || { echo "record counts not taken: fusion-paths exited $X and gave no value for WORKBENCH, SCAN_ISSUES or SCAN_DECISIONS" >&2; exit 1; }
 A=$(sed -n 's/.*git_head_at_start: *"\([^"]*\)".*/\1/p' "$WORKBENCH/agentstate.yaml" 2>/dev/null)
 T=$(sed -n 's/.*started: *"\([^"]*\)".*/\1/p' "$WORKBENCH/agentstate.yaml" 2>/dev/null)
-if [ -z "$A" ] || [ -z "$T" ]; then
-  echo "records=unmeasured why=no-anchor-in-agentstate anchor=${A:-none} start=${T:-none}"
+if [ -z "$A" ]; then
+  WHY=no-anchor-in-agentstate
 elif ! git -C "$WORKBENCH" cat-file -e "$A:./" 2>/dev/null; then
-  echo "records=unmeasured why=workbench-not-in-anchor-commit anchor=$A start=$T"
+  WHY=workbench-not-in-anchor-commit
 else
-  echo "records anchor=$A start=$T"
+  WHY=
+fi
+if [ -z "$T" ]; then
+  echo "records=unmeasured why=no-anchor-in-agentstate anchor=${A:-none} start=none"
+else
+  if [ -n "$WHY" ]; then
+    echo "records=partial why=$WHY anchor=${A:-none} start=$T"
+  else
+    echo "records anchor=$A start=$T"
+  fi
   { printf '%s\n' "$SCAN_ISSUES"    | tr ' ' '\n' | sed 's|^|issue |'
     printf '%s\n' "$SCAN_DECISIONS" | tr ' ' '\n' | sed 's|^|decision |'
   } | while read -r kind d; do
@@ -638,17 +647,25 @@ else
           b=${f##*/}
           case "$b" in [0-9][0-9][0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]_?_*) ;; *) continue ;; esac
           t=${b%%_*}; [ "${t//-/}" -ge "${T//-/}" ] && echo "filed $kind"
-          git -C "$WORKBENCH" cat-file -e "$A:./$d/$b" 2>/dev/null || echo "now_$(printf %s "$b" | cut -c13) $kind"
+          [ -n "$WHY" ] || git -C "$WORKBENCH" cat-file -e "$A:./$d/$b" 2>/dev/null || echo "now_$(printf %s "$b" | cut -c13) $kind"
         done
       done | sort | uniq -c
 fi
 ```
 
-It prints one `<count> filed <kind>` line and one `<count> now_<marker> <kind>` line per marker present. The table's rows are those counts, unaltered: `Issues created` is `filed issue`, `Issues resolved` is `now_c issue`, `Decisions answered` is `now_a decision`, `Decisions implemented` is `now_i decision`. Put the same figures in the user report; a number you did not take from this read is a number nothing checked.
+It prints a header line — `records anchor=… start=…` when both halves were measured, `records=partial why=… anchor=… start=…` when only the filed half could be, `records=unmeasured why=…` when neither could — then one `<count> filed <kind>` line and, where the anchor was usable, one `<count> now_<marker> <kind>` line per marker present. The table's rows are those counts, unaltered: `Issues created` is `filed issue`, `Issues resolved` is `now_c issue`, `Decisions answered` is `now_a decision`, `Decisions implemented` is `now_i decision`. Put the same figures in the user report; a number you did not take from this read is a number nothing checked.
 
 **Two rules, and the second is the one that was missing.** A record was **filed** this session when its own filename stamp is at or after `session.started` — the stamp is in the name, so this holds whether or not a commit carries the file yet. A record **reached a marker** this session when the name it carries now did not exist at `session.git_head_at_start` — a question about the name, never about a git rename. That difference is the whole defect: five records were filed by a review and closed before anything was committed, so their `_o_` names never reached the index at all. A count watching renames misses them from the closed side, a count watching new open records misses them from the filed side, and that is exactly the −2 / −2 that was measured. This rule counts them on both.
 
-**Two bounds, stated rather than left to be discovered.** A record that was already closed at the anchor and then *moved* to another store reads as closed again, because its new path did not exist at the anchor; moving a closed record is rare, and the alternative is the rename detection this rule exists to avoid depending on. And where git cannot see the workbench at the session anchor, no path exists at the anchor and every record reads as having reached its marker this session — the `git cat-file -e` probe is what turns that into `records=unmeasured` rather than a large wrong number. **It asks for the workbench tree, not for a store.** Git tracks no empty directory, and `bin/fusion-paths` puts the active Circle's store first, so a probe on the first store reported a fully tracked workbench as unmeasurable for every Circle that had filed no committed record by the session anchor — 4 of this repository's own 12 Circle directories hold no committed record in their issue store at all, and the other eight were in that state early on. The block names the cause it found in a `why=` field, the way `bin/fusion-review-coverage` does below: `no-anchor-in-agentstate` when the state file is missing or carries no `git_head_at_start` and `started`, and `workbench-not-in-anchor-commit` when the anchor resolves to no workbench tree — an untracked workbench, a project outside git, or an anchor that has left this repository's history. Copy that field through: write `unmeasured` into those four cells verbatim and name the cause the block reported, never one you inferred. A figure that could not be taken is never reported as a zero.
+**Two bounds, stated rather than left to be discovered.** A record that was already closed at the anchor and then *moved* to another store reads as closed again, because its new path did not exist at the anchor; moving a closed record is rare, and the alternative is the rename detection this rule exists to avoid depending on. And where git cannot see the workbench at the session anchor, no path exists at the anchor and every record reads as having reached its marker this session — the `git cat-file -e` probe is what withholds those counts rather than printing a large wrong number. **It asks for the workbench tree, not for a store.** Git tracks no empty directory, and `bin/fusion-paths` puts the active Circle's store first, so a probe on the first store reported a fully tracked workbench as unmeasurable for every Circle that had filed no committed record by the session anchor — 4 of this repository's own 12 Circle directories hold no committed record in their issue store at all, and the other eight were in that state early on.
+
+**The two halves fail separately, so they are gated separately.** `filed <kind>` compares a record's own filename stamp against `session.started` — filenames and `T`, no git at all — while `now_<marker> <kind>` asks git whether a name existed at the anchor. A usable anchor is required for the second half only, so the block gates each half on what that half needs instead of on one combined test: the combined gate threw away a filed count that was sitting on the disk in every project that does not track its workbench. What goes into the four cells follows the header line the block printed:
+
+- `records anchor=… start=…` — all four cells take the measured counts.
+- `records=partial why=…` — `Issues created` takes the `filed issue` count from the read; `Issues resolved`, `Decisions answered` and `Decisions implemented` take `unmeasured`, because each of those three is a `now_` count and the anchor was unusable.
+- `records=unmeasured why=…` — nothing was measurable; all four cells take `unmeasured` verbatim.
+
+The `why=` field names the cause the block found, the way `bin/fusion-review-coverage` does below. `no-anchor-in-agentstate`: `agentstate.yaml` is missing or unreadable, or is missing either `git_head_at_start` or `started` — either one alone is enough, and a project outside git belongs here rather than below, because Setup Step 5 records the anchor only in a git repository, so no `git_head_at_start` is written at all. `workbench-not-in-anchor-commit`: an anchor was recorded, and it resolves to no workbench tree — an untracked workbench, or an anchor that has left this repository's history. Copy that field through and name the cause the block reported, never one you inferred. A figure that could not be taken is never reported as a zero, and a figure that could be taken is never reported as unmeasurable.
 
 ### The review-coverage section is computed, not recalled
 

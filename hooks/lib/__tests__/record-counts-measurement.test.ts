@@ -12,8 +12,8 @@ import { extractBashBlock } from "./helpers/prompt-blocks.js";
 // (`agents/orchestrator.md` `### The record counts are computed, not tallied`).
 //
 // The block replaced a hand-kept tally that had drifted by two in both
-// directions (`shared/issues/260810-1205_*`). It then shipped with three faults
-// of its own, all three found by extracting it and running it, none of them
+// directions (`shared/issues/260810-1205_*`). It then shipped with four faults
+// of its own, all four found by extracting it and running it, none of them
 // visible to a reader:
 //
 //   1. Its untracked-workbench probe asked git for `${SCAN_ISSUES%% *}` — the
@@ -28,6 +28,14 @@ import { extractBashBlock } from "./helpers/prompt-blocks.js";
 //   3. It justified its store-list handling with "the Bash tool runs zsh", which
 //      is a property of the author's machine, not of the tool
 //      (`shared/issues/260811-1412_*`, `rules/critical-stance.md` §3).
+//   4. Both of its `unmeasured` branches threw away the `filed` counts along
+//      with the `now_` ones. `filed` compares a filename stamp against
+//      `session.started` and touches no git, so it stayed measurable in exactly
+//      the cases the block declared unmeasurable — every project that does not
+//      track its workbench (`shared/issues/260811-1610_*`). The prose taxonomy of
+//      the two causes had drifted from the branches too: "a project outside git"
+//      was listed under the branch that cannot reach it
+//      (`shared/issues/260811-1616_*`).
 //
 // So this gate does three things, in the order the faults came:
 //
@@ -51,7 +59,7 @@ const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const orchestrator = () => readFileSync(join(pluginRoot, "agents", "orchestrator.md"), "utf-8");
 
 const HEADING = "### The record counts are computed, not tallied";
-/** The commit that introduced the block, with all three faults in it. */
+/** The commit that introduced the block, with the first three faults in it. */
 const PRE_FIX_COMMIT = "7749845";
 
 /** Both shells, because Claude Code starts the user's login shell, not bash. */
@@ -70,6 +78,10 @@ interface Shape {
   activeCircle?: boolean;
   /** `agentstate.yaml` written, so the block has an anchor and a start stamp */
   state?: boolean;
+  /** no `.git` anywhere — Setup Step 5 records a HEAD only in a git repository */
+  outsideGit?: boolean;
+  /** override what `git_head_at_start` records: a string is written verbatim, `null` omits the field */
+  anchor?: string | null;
 }
 
 /**
@@ -79,7 +91,7 @@ interface Shape {
  * are stated once and asserted against whatever the block prints.
  */
 function makeProject(shape: Shape = {}): string {
-  const { tracked = true, circleAtAnchor = false, activeCircle = true, state = true } = shape;
+  const { tracked = true, circleAtAnchor = false, activeCircle = true, state = true, outsideGit = false } = shape;
   const root = mkdtempSync(join(tmpdir(), "fusion-record-counts-"));
   const wb = join(root, "fusion-workbench");
   const circleIssues = join(wb, "circles", CIRCLE, "issues");
@@ -121,13 +133,20 @@ function makeProject(shape: Shape = {}): string {
     });
     if (r.status !== 0) throw new Error(`harness git ${args.join(" ")} failed`);
   };
-  git("init", "-q", ".");
-  git("add", "-A");
-  git("commit", "-qm", "anchor");
-  const anchor = spawnSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf-8" }).stdout.trim();
+  let anchor = "";
+  if (!outsideGit) {
+    git("init", "-q", ".");
+    git("add", "-A");
+    git("commit", "-qm", "anchor");
+    anchor = spawnSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf-8" }).stdout.trim();
+  }
 
   if (state) {
-    put("agentstate.yaml", `session:\n  started: "260811-1000"\n  git_head_at_start: "${anchor}"\n`);
+    // `undefined` means "whatever this fixture's git says", which outside git is
+    // nothing at all — the shape Setup Step 5 actually leaves behind there.
+    const recorded = shape.anchor === undefined ? anchor : shape.anchor;
+    const anchorLine = recorded ? `  git_head_at_start: "${recorded}"\n` : "";
+    put("agentstate.yaml", `session:\n  started: "260811-1000"\n${anchorLine}`);
   }
 
   // after the anchor: one issue closed, one decision answered, one issue filed
@@ -149,6 +168,8 @@ function makeProject(shape: Shape = {}): string {
 const EXPECTED = {
   twoStores: { "filed issue": 2, "now_c issue": 1, "now_o issue": 2, "now_a decision": 1 },
   sharedOnly: { "filed issue": 1, "now_c issue": 1, "now_o issue": 1, "now_a decision": 1 },
+  /** what stays measurable when the anchor is unusable: the filed half needs no git */
+  filedOnly: { "filed issue": 2 },
 } as const;
 
 interface Reading {
@@ -157,6 +178,8 @@ interface Reading {
   status: number | null;
   /** the `why=` field when the block reported `records=unmeasured`, else null */
   unmeasured: string | null;
+  /** the `why=` field when the block reported `records=partial`, else null */
+  partial: string | null;
   counts: Record<string, number>;
 }
 
@@ -184,8 +207,16 @@ function run(snippet: string, root: string, shell: Shell, opts: { cwd?: string; 
     const m = /^\s*(\d+)\s+(\S.*)$/.exec(line);
     if (m) counts[m[2].trim()] = Number(m[1]);
   }
-  const why = /records=unmeasured(?:\s+why=(\S+))?/.exec(raw);
-  return { raw, stderr: r.stderr ?? "", status: r.status, unmeasured: why ? (why[1] ?? "(no why= field)") : null, counts };
+  const why = /records=(unmeasured|partial)(?:\s+why=(\S+))?/.exec(raw);
+  const cause = why ? (why[2] ?? "(no why= field)") : null;
+  return {
+    raw,
+    stderr: r.stderr ?? "",
+    status: r.status,
+    unmeasured: why?.[1] === "unmeasured" ? cause : null,
+    partial: why?.[1] === "partial" ? cause : null,
+    counts,
+  };
 }
 
 function git(...args: string[]) {
@@ -263,24 +294,69 @@ describe("the record counts are measured off the stores", () => {
   }
 });
 
-describe("unmeasured stays reachable, and names the cause it found", () => {
+describe("each half is gated on what that half needs, and the cause is named", () => {
+  const noNowCounts = (v: Reading) =>
+    expect(
+      Object.keys(v.counts).filter((k) => k.startsWith("now_")),
+      "a `now_` count was printed without a usable anchor. Every record's path is absent " +
+        "from the anchor there, so every record would read as having reached its marker " +
+        "this session — a large wrong number in place of an honest gap.",
+    ).toEqual([]);
+
   for (const shell of shells) {
-    it(`reports an untracked workbench, and says which cause (${shell})`, () => {
+    it(`keeps the filed counts over an untracked workbench (${shell})`, () => {
       const v = run(snippet, makeProject({ tracked: false }), shell);
       expect(v.status).toBe(0);
-      expect(
-        v.unmeasured,
-        "an untracked workbench measured as if it were tracked. Every record's path is " +
-          "absent from the anchor there, so every record would read as having reached its " +
-          "marker this session — a large wrong number in place of an honest gap.",
-      ).toBe("workbench-not-in-anchor-commit");
-      expect(v.counts, "counts were printed alongside `unmeasured`").toEqual({});
+      expect(v.partial, `an untracked workbench did not report itself as partial:\n${v.raw}`).toBe(
+        "workbench-not-in-anchor-commit",
+      );
+      expect(v.unmeasured, "the whole read was declared unmeasurable while half of it was on the disk").toBeNull();
+      // The assertion this replaces required `{}` here, and was right about the
+      // block as it then stood: both branches printed the cause and nothing else.
+      // The filed half needs no git, so an unusable anchor never touched it
+      // (`shared/issues/260811-1610_*`).
+      expect(v.counts, "the filed counts went down with the git-dependent ones").toEqual(EXPECTED.filedOnly);
+      noNowCounts(v);
     });
 
-    it(`reports a missing anchor as its own cause (${shell})`, () => {
+    it(`reports a missing start stamp as unmeasured, with nothing measured (${shell})`, () => {
+      // No `session.started`, so not even the filed half has a bound to compare
+      // against — this is the one shape where all four cells are unmeasurable.
       const v = run(snippet, makeProject({ state: false }), shell);
       expect(v.unmeasured).toBe("no-anchor-in-agentstate");
       expect(v.raw).toMatch(/anchor=none/);
+      expect(v.counts, "counts were printed alongside `unmeasured`").toEqual({});
+    });
+
+    it(`keeps the filed counts when only the anchor is missing (${shell})`, () => {
+      // `[ -z "$A" ] || [ -z "$T" ]` fired here too, discarding a filed count
+      // that a present `session.started` made fully computable.
+      const v = run(snippet, makeProject({ anchor: null }), shell);
+      expect(v.partial).toBe("no-anchor-in-agentstate");
+      expect(v.counts).toEqual(EXPECTED.filedOnly);
+      noNowCounts(v);
+    });
+
+    it(`puts a project outside git on the cause its own branch emits (${shell})`, () => {
+      // Setup Step 5 records a HEAD only in a git repository, so outside git the
+      // state file carries `started` and no `git_head_at_start` — the no-anchor
+      // branch, not the probe (`shared/issues/260811-1616_*`).
+      const recordedNothing = run(snippet, makeProject({ outsideGit: true }), shell);
+      expect(recordedNothing.partial, `outside git, anchor never recorded:\n${recordedNothing.raw}`).toBe(
+        "no-anchor-in-agentstate",
+      );
+      expect(recordedNothing.counts).toEqual(EXPECTED.filedOnly);
+      noNowCounts(recordedNothing);
+
+      // The other anchor state: a hash was recorded and the repository is gone.
+      // That one the probe answers, and it is the only way branch 2 sees a
+      // project outside git.
+      const recordedAnchor = run(snippet, makeProject({ outsideGit: true, anchor: "0".repeat(40) }), shell);
+      expect(recordedAnchor.partial, `outside git, anchor recorded:\n${recordedAnchor.raw}`).toBe(
+        "workbench-not-in-anchor-commit",
+      );
+      expect(recordedAnchor.counts).toEqual(EXPECTED.filedOnly);
+      noNowCounts(recordedAnchor);
     });
 
     it(`names the resolver's exit code when a key comes back empty (${shell})`, () => {
@@ -315,6 +391,37 @@ describe("the justification is about the code, not about a machine", () => {
     const s = section(orchestrator());
     expect(s).toMatch(/under bash/);
     expect(s).toMatch(/under zsh/);
+  });
+});
+
+describe("the cause list matches the branch that emits it", () => {
+  it("lists a project outside git under the cause it actually gets", () => {
+    // The prose is the one place the two `why=` values are explained, and a
+    // session diagnosing `no-anchor-in-agentstate` outside git must find that
+    // case listed under the value it got (`shared/issues/260811-1616_*`).
+    const s = section(orchestrator());
+    const noAnchor = s.lastIndexOf("`no-anchor-in-agentstate`");
+    const notInCommit = s.lastIndexOf("`workbench-not-in-anchor-commit`");
+    const outsideGit = s.lastIndexOf("outside git");
+    expect(noAnchor, "the section explains neither cause").toBeGreaterThan(-1);
+    expect(notInCommit, "the section explains `workbench-not-in-anchor-commit` before the other cause").toBeGreaterThan(
+      noAnchor,
+    );
+    expect(outsideGit, "the section names no project outside git at all").toBeGreaterThan(-1);
+    expect(
+      outsideGit > noAnchor && outsideGit < notInCommit,
+      "'a project outside git' is listed under `workbench-not-in-anchor-commit`, which cannot " +
+        "reach it: Setup Step 5 records a HEAD only in a git repository, so `git_head_at_start` " +
+        "is empty and the no-anchor branch is the one that fires.",
+    ).toBe(true);
+  });
+
+  it("describes the no-anchor branch as the disjunction it is", () => {
+    const s = section(orchestrator());
+    expect(s, "the branch is described as a conjunction; the code fires on either field alone").not.toMatch(
+      /carries no `git_head_at_start` and `started`/,
+    );
+    expect(s).toMatch(/missing either `git_head_at_start` or `started`/);
   });
 });
 

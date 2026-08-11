@@ -111,3 +111,31 @@ of on one combined gate, which is `rules/critical-stance.md` §4's ask.
       workbench in both shells, and the `toEqual({})` assertion at `:271` is replaced rather than
       deleted.
 - [ ] `cd hooks && npm test` exits 0.
+
+
+---
+
+Resolved: The block no longer gates both halves on one test. It computes the cause once —
+`WHY=no-anchor-in-agentstate` when `$A` is empty, `WHY=workbench-not-in-anchor-commit` when the
+`git cat-file -e "$A:./"` probe fails, empty otherwise — and then splits on `$T`: absent, nothing is
+measurable and the header stays `records=unmeasured why=no-anchor-in-agentstate`; present, the find
+loop runs and prints its `filed` lines, with the `now_` probe suppressed by `[ -n "$WHY" ] ||` when
+the anchor is unusable. The header for that case is `records=partial why=<cause>`, so the two `why=`
+values stay reachable and each names the branch that produced it.
+
+The closing prose was rewritten with it: a bullet per header line saying which cells take a measured
+value (`records` — all four; `records=partial` — `Issues created` from `filed issue`, the three
+`now_` cells `unmeasured`; `records=unmeasured` — all four `unmeasured`), in place of "those four
+cells".
+
+Measured, block extracted verbatim and run in `/bin/bash` and `/bin/zsh` over throwaway projects:
+untracked workbench with `session.started` present — `records=partial
+why=workbench-not-in-anchor-commit` plus `2 filed issue`, and no `now_` line; anchor recorded but
+absent from `agentstate.yaml` — `records=partial why=no-anchor-in-agentstate` plus the same
+`2 filed issue`; no `agentstate.yaml` at all — `records=unmeasured why=no-anchor-in-agentstate
+anchor=none start=none` and no counts; tracked workbench — unchanged from before, all four counts.
+
+The `toEqual({})` assertion at `record-counts-measurement.test.ts:271` was **replaced**, not deleted:
+the same case now asserts `toEqual(EXPECTED.filedOnly)` plus a shared `noNowCounts` helper that fails
+if any `now_` line appears without a usable anchor. `cd hooks && npm test` — 50 files, 1301 passed,
+exit 0.
