@@ -17,9 +17,9 @@
  *     afterwards by the measurement.
  *   - `isFusionPluginCwd()` (`lib/self-detect.ts`) and its shell half
  *     `bin/fusion-plugin-cwd`, both of which test cwd with no upward walk, so
- *     `bin/fusion-rules` and `bin/fusion-paths` read the installed plugin copy
- *     instead of the work tree when a session in fusion's own repository starts
- *     one directory down.
+ *     `bin/fusion-rules`, `bin/fusion-paths` and `bin/fusion-source-root` read
+ *     the installed plugin copy instead of the work tree when a session in
+ *     fusion's own repository starts one directory down.
  *
  * Each of those could be taught to walk up on its own. That would be four
  * special cases with four chances to disagree. This warning fixes none of them

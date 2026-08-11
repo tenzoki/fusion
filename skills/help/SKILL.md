@@ -14,15 +14,35 @@ If no specific topic is identifiable, give a one-paragraph overview of fusion + 
 
 If a question goes beyond what the docs cover, **say so** — do not invent.
 
+**A path into a file the plugin ships carries the `$FUSION_SRC` root.** Every topic below sends you to a shipped doc, README or rule file; nothing the plugin ships exists at a consuming project's root, so a bare `docs/…` or `rules/…` path resolves to nothing there. Resolve the root once, before reading the first one:
+
+```bash
+if [ -x "${FUSION_PLUGIN_ROOT:-}/bin/fusion-source-root" ]; then
+  FUSION_SRC="$("$FUSION_PLUGIN_ROOT/bin/fusion-source-root")"
+elif [ -n "${FUSION_PLUGIN_ROOT:-}" ]; then
+  echo "fusion: no bin/fusion-source-root in the installed plugin at $FUSION_PLUGIN_ROOT — the source root falls back to that install copy" >&2
+  FUSION_SRC="$FUSION_PLUGIN_ROOT"
+else
+  FUSION_SRC=""
+fi
+echo "source root: ${FUSION_SRC:-UNRESOLVED (FUSION_PLUGIN_ROOT is unset)}"
+```
+
+`bin/fusion-source-root` owns the criterion and its header states it in full; this file does not restate it. In one line: `$FUSION_PLUGIN_ROOT` names the installed copy and is pinned for the whole session, and inside the fusion plugin's own source repository that is the wrong copy, so an answer given from the install would describe a version of the docs the reader is not editing. The `[ -x ]` guard is the one every prompt-called `bin/` helper carries: a helper added between releases is absent from an older install and a bare call is exit 127.
+
+**`UNRESOLVED` is not a path, and no topic below is answered through it.** With `FUSION_PLUGIN_ROOT` unset the variable holds the empty string and every `$FUSION_SRC/…` read resolves from `/`, finding nothing. Say so plainly, tell the user to restart the session so the SessionStart hook exports the variable, and answer only from what you can actually open. **Never** paraphrase a shipped doc you could not read — this skill's whole value is that it quotes the source rather than the model's memory of it.
+
+**What the root does *not* cover.** `$FUSION_PLUGIN_ROOT/bin/fusion-paths` below is run, not read, and `$FUSION_PLUGIN_ROOT/templates/…` is copied — both stay on the install root. Whether the work-tree preference reaches helper resolution is part (c) of decision `260810-1544` and is unanswered. The split is by what you do with the path: read shipped text → `$FUSION_SRC`; run or copy an installed artefact → `$FUSION_PLUGIN_ROOT`.
+
 ---
 
 ## Topics
 
 ### 1. Philosophy — *why fusion exists*
 
-Read `$FUSION_PLUGIN_ROOT/docs/philosophy.md`. It covers the five "Why it's built this way" pillars — specialization beats generalists, coordination through files (not shared memory), traceability as a first-class output, compliance over speed, and one framework across many project shapes — the last being the domain-parameter design that lets the same plumbing serve `code | data | strategic | knowledge` projects.
+Read `$FUSION_SRC/docs/philosophy.md`. It covers the five "Why it's built this way" pillars — specialization beats generalists, coordination through files (not shared memory), traceability as a first-class output, compliance over speed, and one framework across many project shapes — the last being the domain-parameter design that lets the same plumbing serve `code | data | strategic | knowledge` projects.
 
-For *how the machinery actually runs* — the Circle lifecycle, the spec-driven flow, the gates, and the compliance guard end to end — point the user at `$FUSION_PLUGIN_ROOT/docs/working-model.md` (the operational companion to this "why" doc).
+For *how the machinery actually runs* — the Circle lifecycle, the spec-driven flow, the gates, and the compliance guard end to end — point the user at `$FUSION_SRC/docs/working-model.md` (the operational companion to this "why" doc).
 
 If the user wants a fast answer, summarize the pillars in a few sentences. If they want to go deep, walk them through the doc.
 
@@ -46,17 +66,17 @@ Once `/fusion:setup` has run in a project, the day-to-day flow is:
 
 3. **The workbench is the project's cross-session memory.** `fusion-workbench/` holds one directory per unit of work under `circles/` — each with its own plans, issues, decisions, history, reviews and analyses — plus a `shared/` store for everything that belongs to no unit of work, and `tasklist.md` at the root. Which artifact lands where is the Origin Rule: it belongs to the Circle whose Directive caused it, and to `shared/` when no Circle was active. The kinds are distinguished by what resolves them — plans ("here's the approach"), defects ("go fix it") in issues, open questions ("decide and record") in decisions.
 
-   The layout is defined once, in `$FUSION_PLUGIN_ROOT/rules/fusion-workbench-conventions.md` (`## fusion-workbench Layout`, `## Origin Rule`). Read it there and cite it rather than reciting paths from memory — agents themselves do not hard-code these paths either; they resolve them at run time via `$FUSION_PLUGIN_ROOT/bin/fusion-paths <name>`. If the user wants to know where a given artifact will land in *their* project, run that resolver and show them, rather than guessing from the layout.
+   The layout is defined once, in `$FUSION_SRC/rules/fusion-workbench-conventions.md` (`## fusion-workbench Layout`, `## Origin Rule`). Read it there and cite it rather than reciting paths from memory — agents themselves do not hard-code these paths either; they resolve them at run time via `$FUSION_PLUGIN_ROOT/bin/fusion-paths <name>`. If the user wants to know where a given artifact will land in *their* project, run that resolver and show them, rather than guessing from the layout.
 
 4. **Watch the dashboard.** In a second terminal, run `./fusion-workbench/monitor "<session-name>" <port>` (e.g. `./fusion-workbench/monitor "F03-fusion" 8099`) from the project root. The monitor is an executable bash script that serves an HTTP dashboard — open `http://localhost:<port>` in a browser. It auto-refreshes from `fusion-workbench/orchestrator-live.md`, `orchestrator-events.jsonl`, and `agentstate.yaml`.
 
 5. **Recovering after a crash:** re-run `/fusion:setup`. It reads `fusion-workbench/agentstate.yaml`, surfaces interrupted tasks, and offers to resume.
 
-For the full agent reference (scope, inputs, outputs, exact dispatch criteria), point the user at `$FUSION_PLUGIN_ROOT/README-agents.md`. For the working model behind the day-to-day flow — the Circle lifecycle, spec-driven flow, the gates, and the compliance guard walked end to end — point them at `$FUSION_PLUGIN_ROOT/docs/working-model.md`.
+For the full agent reference (scope, inputs, outputs, exact dispatch criteria), point the user at `$FUSION_SRC/README-agents.md`. For the working model behind the day-to-day flow — the Circle lifecycle, spec-driven flow, the gates, and the compliance guard walked end to end — point them at `$FUSION_SRC/docs/working-model.md`.
 
 ### 3. Install — *getting fusion into a project*
 
-Read `$FUSION_PLUGIN_ROOT/README.md`. Two paths:
+Read `$FUSION_SRC/README.md`. Two paths:
 
 - **Recommended — HTTPS installer:** `curl -fsSL https://raw.githubusercontent.com/tenzoki/fusion/main/install.sh | bash`. It downloads over plain HTTPS into `~/.fusion` and adds a `fusion` launcher (no git, no SSH, no marketplace cache — it sidesteps the common `Permission denied (publickey)` clone failure). Then run `/fusion:setup` in the project directory.
 - **Alternative — Claude Code marketplace:** `/plugin install fusion@tenzoki-plugins` from a Claude Code session, then `/fusion:setup` in the project. If the user is setting up the marketplace itself for the first time, walk them through adding the marketplace before the install.
@@ -81,11 +101,11 @@ For the maintainer-side release flow (bumping `plugin.json` + `marketplace.json`
 
 Three things to configure:
 
-- **Compliance guard:** `$FUSION_PLUGIN_ROOT/README-hooks.md` and `$FUSION_PLUGIN_ROOT/hooks/config.example.json`. Categories, protected paths, churn thresholds, escalation behavior.
-- **Project rules:** read `$FUSION_PLUGIN_ROOT/bin/fusion-rules` (the header comment is the spec). Two project-side rule locations:
+- **Compliance guard:** `$FUSION_SRC/README-hooks.md` and `$FUSION_SRC/hooks/config.example.json`. Categories, protected paths, churn thresholds, escalation behavior.
+- **Project rules:** read `$FUSION_SRC/bin/fusion-rules` (the header comment is the spec). Two project-side rule locations:
   - `./rules/` — fusion-agent-specific rules (e.g. `investigator-capture-layout.md`, `taskplanner-priorities.md`) that have no meaning outside a fusion context.
   - `.claude/rules/` — project-wide rules every Claude session should respect (coding/ontology/normative/verb guidelines).
-  Both are loaded by `bin/fusion-rules` per agent-name pattern. For large knowledge bodies you don't want loaded on every run, a project may also ship `./rules/context-manifest.yaml` — it registers topic-scoped loadable units (each a rule file or a `skill:<name>` pointer), pulled only when the agent **and** the active topic match (`bin/fusion-rules <agent> [<topic>]`). This lets `CLAUDE.md` stay a lean index rather than carrying everything inline. The mechanism is authored in `$FUSION_PLUGIN_ROOT/rules/context-manifest.md` (and the lean-`CLAUDE.md` convention in `rules/context-lean-claude-md.md`); absent the manifest, loading is byte-identical to before.
+  Both are loaded by `bin/fusion-rules` per agent-name pattern. For large knowledge bodies you don't want loaded on every run, a project may also ship `./rules/context-manifest.yaml` — it registers topic-scoped loadable units (each a rule file or a `skill:<name>` pointer), pulled only when the agent **and** the active topic match (`bin/fusion-rules <agent> [<topic>]`). This lets `CLAUDE.md` stay a lean index rather than carrying everything inline. The mechanism is authored in `$FUSION_SRC/rules/context-manifest.md` (and the lean-`CLAUDE.md` convention in `rules/context-lean-claude-md.md`); absent the manifest, loading is byte-identical to before.
 - **Investigator capture layout:** if the project has an evidence-locker (failed runs captured for forensic analysis), copy `$FUSION_PLUGIN_ROOT/templates/investigator-capture-layout.md` to `./rules/investigator-capture-layout.md` and fill it in. Without this, the `investigator` agent halts at Setup.
 
 ---

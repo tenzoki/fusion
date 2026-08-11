@@ -72,8 +72,12 @@ The list is exhaustive as written, and it is a list rather than a count on purpo
 
 Whether the workbench is under version control at all is the project's decision — fusion ships no `.gitignore` rule for it, so a consuming project's workbench may be tracked, ignored, or neither. Where it *is* tracked, the root-anchored surfaces still split in two, by whether a past version answers anything:
 
-- **Records — track them.** `orchestrator-events.jsonl` (append-only across all sessions, read cross-session), `tasklist.md` and `portfolio.md` (authored text, not machine-refreshed).
-- **Live state — do not track it.** `agentstate.yaml`, `orchestrator-live.md`, `.guard-state/`, `.commit-lock/`, `.session-marker` and `.active-circle` each describe *now* and are overwritten or removed; a committed version is noise in every diff and, restored by a checkout, a statement about a session that has ended. `monitor` is a verbatim copy of the shipped `bin/monitor` that `/fusion:setup` re-creates.
+- **Records — track them.** `orchestrator-events.jsonl` (append-only across all sessions, read cross-session), `.guard-state/events.jsonl` (the guard's own append-only log — see below), `tasklist.md` and `portfolio.md` (authored text, not machine-refreshed).
+- **Live state — do not track it.** `agentstate.yaml`, `orchestrator-live.md`, `.guard-state/` **apart from `events.jsonl`**, `.commit-lock/`, `.session-marker` and `.active-circle` each describe *now* and are overwritten or removed; a committed version is noise in every diff and, restored by a checkout, a statement about a session that has ended. `monitor` is a verbatim copy of the shipped `bin/monitor` that `/fusion:setup` re-creates.
+
+**`.guard-state/` is not one thing, and the directory is the wrong unit to classify.** The counters and throttle stores in it — `churn.json`, `escalation.json` and their siblings — are rewritten in place and a past version of them answers nothing, so they are live state. `events.jsonl` beside them is appended to and never rewritten, and a past version answers a great deal: which tool call the guard blocked, when it halted, when a human cleared the halt. It is classified by what it is rather than by the directory it sits in, and it is a **record** (decision `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`).
+
+**What preserves that record is `/fusion:archive`, not a ceiling and not tracking the live file.** The log has no line or byte limit anywhere, deliberately: every such limit discards the oldest lines first, and the oldest lines are the block, halt and clear events, which are the only ones recording the guard enforcing anything. `/fusion:archive` rolls the live log into the archive store under a dated name and starts a fresh empty one, so the rolled copies are ordinary archived files and are kept wherever the archive store is kept. A project may therefore leave the live log untracked and still hold the evidence, paying no diff on every tool call — the record side of the split is satisfied by the rolled copies. That is the one entry above where "track them" reads as "keep what the roll produces", and it is the configuration this repository runs.
 
 Two consequences the lifecycle skills depend on. **Nothing in the second group survives a fresh clone**, so no skill may promise that git holds its bytes — that promise is available only for the first group, and only where the project tracks the workbench. And **an ignored path is skipped by `git stash --include-untracked`, but not by `git stash --all` or `git clean -xdf`** — ignoring a transient protects it from the first and from nothing else.
 
@@ -188,11 +192,18 @@ Always obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`. LLMs have no clock — nev
 
 ## Project language
 
-**The surface decides.** Not the length of the text, not who reads it, not which agent wrote it. Every piece of output falls into exactly one of three cases:
+**The surface decides.** Not the length of the text, not who reads it, not which agent wrote it. Every piece of output falls into exactly one of four cases:
 
 - Output the user reads in the terminal — gate prompts, `AskUserQuestion` text, status reports, chat replies — is written in the **chat language**.
-- Output that persists as a file — specs and plans, defect and decision records, session histories, reviews, analyses, memos, the portfolio and the task queue — is written in the **artifact language**.
+- Output that persists as a file **for the project's own use** — specs and plans, defect and decision records, session histories, reviews, analyses, memos, the portfolio and the task queue — is written in the **artifact language**.
+- Output that persists as a file **for a reader outside the project** — a customer deliverable: the Markdown documents and branded decks `agents/editor.md` produces, and its translations of them — is written in the language **the dispatching task names**. There is no default and no fallback, and the editor **halts** when the task names none.
 - Text that ships to consuming projects is **English**, whatever either declaration says. The exempt surfaces are listed below.
+
+**The two persisted cases are cut by who the file is for, and that keeps the split disjoint.** A deliverable is a file that persists, so under the earlier three-way split it fell into the artifact-language case by silence — and it fell there wrongly. The artifact language exists for the project's internal record-keeping; a deliverable's language follows its reader, and the two have no reason to agree. Every persisted file is now in exactly one of the two: written for the project, or written for someone outside it. Nothing else moved — the deliverable is the only output whose reader is outside the project, and every other persisted file stays where it always was.
+
+**Why the source is the dispatch and not a third declaration.** A deliverable's language is not a per-project constant: the same consultancy writes for a German client one week and an English one the next, so any project-wide default is wrong a large share of the time. A default that is wrong in the common case is a defect that hides until someone forgets — and what it produces is a *finished* document in the wrong language, found by the customer rather than by a stop. So the obligation sits on the dispatch, per deliverable, and the failure is loud by design: `agents/editor.md` `## Deliverable language` halts and names what to pass. That loudness is the substance of the answer, not politeness around it (decision `260807-2131_*_which-language-governs-a-customer-deliverable.md`, option 3).
+
+**A single-declaration project is unchanged in the other three cases, and is not exempt from this one.** Where chat and artifacts share one language, the first, second and fourth cases collapse to today's behaviour. The deliverable case does not collapse with them: the project's declaration says nothing about a reader outside the project, so the dispatch still names the language, even there.
 
 A project names its two languages in `CLAUDE.md`, on two lines:
 
@@ -209,6 +220,8 @@ A project names its two languages in `CLAUDE.md`, on two lines:
 
 - **`chat-voice-<lang>.yaml`** — the short-form chat profile, resolved from the **chat** language and applied by **every** agent to its short-form user-facing output (gate prompts, `AskUserQuestion` text, status reports, chat replies). See `rules/user-facing-output.md` `## Style anti-patterns apply to everything`.
 - **`default-voice-<lang>.yaml`** — the long-form writing profile, resolved from the **artifact** language and applied by the nine long-form-prose agents to their narrative outputs (session summary bodies, consultant reports, analysis reports, investigator timelines, playmaker briefings, prose sections of specs and plans).
+
+The writing profile follows its surface's language, not the artifact declaration as such, so **a customer deliverable's prose takes the writing profile of the language the dispatch named** — `default-voice-de.yaml` for a German deliverable in a project whose artifact language is `en`, and the target language's profile on a translation. That is the third case above applied to the profile family, not an exception to it: each family resolves from the language of the surface it governs, and for one surface that language comes from the dispatch.
 
 `bin/fusion-rules` emits the chat profile path for every agent and the writing profile path only for long-form-prose agents. The two paths may name different languages; for a project whose chat and artifacts differ that is the intended configuration, not a fault to report or work around.
 

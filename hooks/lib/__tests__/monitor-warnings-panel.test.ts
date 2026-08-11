@@ -416,6 +416,79 @@ describe("bin/monitor — warnings panel capacity", () => {
 });
 
 // ---------------------------------------------------------------------------
+// The archive roll. `/fusion:archive` bounds the guard event log by MOVING it
+// into the archive store and starting a fresh empty one — there is no line or
+// byte ceiling anywhere, because every ceiling drops the oldest lines and the
+// oldest lines are the guard_block / guard_halt / halt_cleared events (decision
+// `260811-1534_*_does-the-guard-event-log-get-an-upper-bound…`).
+//
+// That leaves the monitor reading a file the roll just emptied, and a moment
+// where `mv` has run and the re-create has not. Both are states the panel meets
+// in normal operation, not edge cases, so both are pinned here: the dashboard
+// answers, with no rows and no error, and refills from whatever is appended
+// next.
+// ---------------------------------------------------------------------------
+
+/** A workbench whose .guard-state/events.jsonl is present and byte-empty. */
+function seedRolledWorkbench(): string {
+  const wb = mkdtempSync(join(tmpdir(), "fusion-monitor-"));
+  mkdirSync(join(wb, ".guard-state"), { recursive: true });
+  writeFileSync(join(wb, ".guard-state", "events.jsonl"), "");
+  return wb;
+}
+
+/** A workbench with a .guard-state/ but no events.jsonl at all. */
+function seedUnrolledGapWorkbench(): string {
+  const wb = mkdtempSync(join(tmpdir(), "fusion-monitor-"));
+  mkdirSync(join(wb, ".guard-state"), { recursive: true });
+  return wb;
+}
+
+describe("bin/monitor — a rolled guard event log", () => {
+  it(
+    "returns an empty panel for the byte-empty log a roll leaves behind",
+    async () => {
+      const { warnings } = await dashboard(seedRolledWorkbench());
+      expect(warnings).toEqual([]);
+    },
+    30000,
+  );
+
+  it(
+    "returns an empty panel in the window between the mv and the re-create",
+    async () => {
+      const { warnings } = await dashboard(seedUnrolledGapWorkbench());
+      expect(warnings).toEqual([]);
+    },
+    30000,
+  );
+
+  it(
+    "renders the events appended after a roll, and only those",
+    async () => {
+      // The post-roll log holds nothing but what emitEvent has written since.
+      // The panel must show them rather than staying empty because the file is
+      // short — the roll is a truncation of the READ, not of the record.
+      const ts = makeClock();
+      const wb = seedRolledWorkbench();
+      writeFileSync(
+        join(wb, ".guard-state", "events.jsonl"),
+        [
+          { ts: ts(), event: "guard_block", tool: "Edit", file: "rules/a.md", detail: "after the roll" },
+          { ts: ts(), event: "guard_allow", tool: "Bash", detail: "still filtered out" },
+        ]
+          .map((e) => JSON.stringify(e))
+          .join("\n") + "\n",
+      );
+
+      const { warnings } = await dashboard(wb);
+      expect(warnings.map((w) => w.detail)).toEqual(["after the roll"]);
+    },
+    30000,
+  );
+});
+
+// ---------------------------------------------------------------------------
 // guard_error — the fail-open row.
 //
 // Both hooks catch an unexpected exception, allow the call, and record

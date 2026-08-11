@@ -106,3 +106,15 @@ because it produces a finished document in the wrong language rather than a stop
 language` in `rules/fusion-workbench-conventions.md` gains a customer-deliverable case that names
 the dispatch as the source, and `agents/editor.md:16,62` change accordingly. The failure must be
 loud: silently falling back to either declaration reintroduces the defect this answer rejects.
+
+---
+Implemented: `agents/editor.md` `## Deliverable language` (the dispatch is the only source, the
+agent halts without one, no fallback exists, and the prompt no longer names either declaration
+token — Setup step 3, Tool Discipline and Production step 2 all moved with it),
+`rules/fusion-workbench-conventions.md` `## Project language` (four cases, the two persisted
+ones cut by who the file is for, plus the writing-profile consequence), and
+`hooks/lib/__tests__/deliverable-language-lint.test.ts` (6 cases pinning the contract's presence
+and the absence of a default). Siblings: the `editor` rows in `agents/orchestrator.md`'s routing
+and dispatch tables, `CLAUDE.md`'s dispatch-parameter bullet, and `README-agents.md`. Suite
+green, 1293 passed. The per-task override the record required to survive is now the *only*
+route, which is option 3 rather than a change to it.

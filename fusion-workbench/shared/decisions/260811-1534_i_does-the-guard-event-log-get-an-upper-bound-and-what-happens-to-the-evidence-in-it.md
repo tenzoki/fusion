@@ -138,3 +138,15 @@ block, halt and clear events first, and those are the only lines that record the
 anything. The log is therefore classified as **evidence**, not telemetry, which also settles the
 conventions file's records-versus-live-state split for it. Option 4, dropping `guard_allow`, was
 offered alongside and not taken in this answer; it stays available as a separate, smaller call.
+
+---
+Implemented: `skills/archive/SKILL.md` (safety filter 1 narrowed, `### Rolling the guard event
+log`, the Tier 1 row, the Step 5 proposal line, the Step 7 roll, the manifest section, the
+guardrail), `rules/fusion-workbench-conventions.md` `### Which of them a tracked workbench
+tracks` (the log on the records side, `.guard-state/` narrowed on the live-state side, and the
+archive roll named as what preserves it), `hooks/lib/events.ts` (a doc comment forbidding a
+ceiling — none was added), `.gitignore` (the same note beside its `.guard-state/*` line), and
+`hooks/lib/__tests__/monitor-warnings-panel.test.ts` (three cases pinning that the panel reads a
+rolled log correctly, including the empty file a roll leaves and the window before it is
+re-created). Suite green, 1293 passed. Option 4, dropping `guard_allow`, was not taken here and
+is not folded in; issue `260805-1859`'s remaining half stays available as its own smaller call.

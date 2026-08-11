@@ -89,7 +89,8 @@ These are non-negotiable defaults. The user can override them at the `refine` st
 1. **Reserved — never archive.** The root-anchored surfaces, because their consumers read them at fixed paths and none has a fallback (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`):
    - `$WORKBENCH/agentstate.yaml`, `$WORKBENCH/orchestrator-live.md`, `$WORKBENCH/orchestrator-events.jsonl`
    - `$WORKBENCH/$TASKLIST`, `$WORKBENCH/$PORTFOLIO`
-   - `$WORKBENCH/.guard-state/`, `$WORKBENCH/.commit-lock/`, `$WORKBENCH/.session-marker`, `$WORKBENCH/.active-circle`, `$WORKBENCH/.fusion-setup`
+   - `$WORKBENCH/.guard-state/` **apart from `events.jsonl`** — the counters and throttle stores in there (`churn.json`, `escalation.json` and their siblings) each describe *now* and are rewritten in place. The append-only `events.jsonl` beside them is not a state file and has its own case; see *Rolling the guard event log* below.
+   - `$WORKBENCH/.commit-lock/`, `$WORKBENCH/.session-marker`, `$WORKBENCH/.active-circle`, `$WORKBENCH/.fusion-setup`
    - `$WORKBENCH/monitor`, `$WORKBENCH/stilwerk/`, `$WORKBENCH/stashes/`
    - Anything already under the archive store.
 
@@ -119,6 +120,23 @@ Each tier is **additive**: tier-2 includes tier-1, tier-3 includes tier-2. The d
 | `$SHARED_PLANS` | `*_c_*.md` | closed plan, terminal |
 | `$SHARED_DECISIONS` | `*_i_*.md` | implemented decision, terminal |
 | `$SHARED_DECISIONS` | `*_s_*.md` | superseded decision, terminal |
+| `$WORKBENCH/.guard-state/events.jsonl` | the live log, whenever it is non-empty | append-only evidence — **rolled**, not selected. See *Rolling the guard event log* below |
+
+### Rolling the guard event log
+
+`$WORKBENCH/.guard-state/events.jsonl` is the guard's append-only record: every block, halt, cleared halt, advisory override, churn warning and fail-open the hooks have emitted, across every session, in every Circle. It is classified as **evidence, not telemetry** (`rules/fusion-workbench-conventions.md` `### Which of them a tracked workbench tracks`, and decision `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` under `$SCAN_DECISIONS`), and this roll is the **only** thing that bounds its size.
+
+**There is no line or byte ceiling anywhere, and none may be added** — not here, not in `hooks/lib/events.ts`. Every ceiling expressible in lines or bytes discards the oldest lines first, and the oldest lines are the `guard_block`, `guard_halt` and `halt_cleared` events: 0.6 % of the file when it was measured, and the only lines that record the guard ever enforcing anything. A guard that forgets it halted is a strange guard.
+
+**It is the one target that is rolled rather than selected.** It carries no state marker, it has no age (its lines do, the file does not), it is never terminal, and no tier survey finds it. So it is not a candidate the marker and age passes produce — it is included whenever the live log exists and is non-empty, and skipped **silently** when it is absent or empty, because there is nothing to preserve and an archived empty log is noise. It is still listed in the proposal and still waits for the Step 6 confirmation, like everything else.
+
+The destination preserves the original path relative to `$WORKBENCH`, and the filename carries the archive folder's stamp so a log lifted out of its folder still says when it was rolled:
+
+```
+<archive store>/<YYMMDD-HHMM>-<slug>/.guard-state/events-<YYMMDD-HHMM>.jsonl
+```
+
+The `.guard-state/` entry in safety filter 1 covers the state files beside the log and **not** the log itself. That is the whole distinction: `churn.json` and `escalation.json` describe *now* and a past version of them answers nothing; `events.jsonl` is append-only and a past version answers when the guard stopped somebody.
 
 ### Tier 2 — Tier 1 + aged shared reviews
 
@@ -167,6 +185,7 @@ Adds `$SHARED_HISTORY/*.md` whose filename date prefix is older than the thresho
    - Resolved slug + target archive path.
    - Per-bucket counts. Name the Circles individually — a Circle is a large, meaningful unit and the user should see which ones by name, with their Directive line, not just a count. Files may be counted in bulk.
    - Total file count and total bytes.
+   - **The guard event log**, on its own line: whether it will be rolled, and its current line count and size. Say nothing when the live log is absent or empty — a skipped roll is not news.
    - Anything dropped by the safety filters, with a one-line summary.
    - In natural-language mode, list `[ACTIVE]`-flagged hits explicitly.
 
@@ -183,6 +202,23 @@ Adds `$SHARED_HISTORY/*.md` whose filename date prefix is older than the thresho
    - For each shared file: recreate its parent path under the archive folder and `mv` it.
    - Move only — never copy.
    - **A collision never overwrites.** If a destination exists, leave the source in place, say so on stderr, and count it. Losing an artifact to a silent clobber is the one outcome this skill must never produce (`HYG-NO-SILENT-FAIL`).
+   - **Roll the guard event log** (all tiers, and natural-language mode when the description asks for it), after the moves above. `STAMP` and `SLUG` below are the two values already resolved for this invocation's archive folder name — the `date +%y%m%d-%H%M` reading and the kebab-case label from *Where archives go*. Do **not** take a second `date` reading: the folder and the file inside it would then disagree about when the roll happened.
+
+     ```bash
+     ARCHIVE_DIR="$WORKBENCH/archive/$STAMP-$SLUG"
+     EV="$WORKBENCH/.guard-state/events.jsonl"
+     if [ -s "$EV" ]; then
+       mkdir -p "$ARCHIVE_DIR/.guard-state"
+       if [ -e "$ARCHIVE_DIR/.guard-state/events-$STAMP.jsonl" ]; then
+         echo "collision: $ARCHIVE_DIR/.guard-state/events-$STAMP.jsonl exists — the event log was left in place, not rolled" >&2
+       else
+         mv "$EV" "$ARCHIVE_DIR/.guard-state/events-$STAMP.jsonl" && : > "$EV"
+       fi
+     fi
+     ```
+
+     `mv` then truncate, never copy then truncate: the move is what guarantees no line exists in two places. `emitEvent` (`hooks/lib/events.ts`) opens, appends and closes on every call rather than holding the file open, so nothing keeps writing into the moved inode; an event emitted in the microseconds between the two commands lands in the **archived** log, where it is still readable. `: > "$EV"` re-creates the live log at once, and `emitEvent` would re-create it on its next write anyway. `bin/monitor`'s warnings panel treats an absent file and an empty one identically — `_read_warnings` returns no rows for either — so no ordering of these two commands can break the dashboard, and the panel simply refills as new events arrive.
+
    - Write the manifest (next step).
 
 8. **Write `MANIFEST.md`** at `<archive store>/<YYMMDD-HHMM>-<slug>/MANIFEST.md`:
@@ -201,6 +237,10 @@ Adds `$SHARED_HISTORY/*.md` whose filename date prefix is older than the thresho
    ## Files archived
 
    <one path per line, original location relative to the workbench root>
+
+   ## Guard event log
+
+   <"rolled: .guard-state/events.jsonl -> .guard-state/events-<stamp>.jsonl, <N> lines, <bytes>" — or "not rolled: live log was empty" — or "not rolled: <collision path> already existed">
 
    ## Counts
 
@@ -226,5 +266,6 @@ Adds `$SHARED_HISTORY/*.md` whose filename date prefix is older than the thresho
 - **Never delete the archive folder.** This skill only creates and adds.
 - **Never touch git.** No `git add`, no `git commit`. The user decides whether to commit the archive.
 - **Never modify content of what's being archived.** Move only; do not rewrite, reformat, or "tidy".
+- **Never truncate the guard event log without archiving it first**, and never add a line or byte ceiling to it — not here, and not in `emitEvent` (`hooks/lib/events.ts`). The roll above is the only sanctioned way the file gets shorter. Any ceiling drops the oldest lines, which are the guard's block, halt and clear events (decision `260811-1534_*_does-the-guard-event-log-get-an-upper-bound…` under `$SCAN_DECISIONS`).
 - **If the survey returns zero matches:** report that and stop. Do not invent candidates. Do not broaden the search without re-asking.
 - **The CLAUDE.md citation check is a hard exclusion** — do not surface cited files even with `[ACTIVE]` flags. To archive something cited from CLAUDE.md, the user updates CLAUDE.md first.

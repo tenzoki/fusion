@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+# fusion-source-root — the root a citation of a plugin-shipped FILE resolves
+# against. Read at a skill's first step (skills/setup, skills/next,
+# skills/cleanup, skills/help) in place of restating the branch inline.
+#
+# Usage:
+#   fusion-source-root
+#
+# Output on stdout: exactly one line, the directory that a citation of
+# `agents/…`, `skills/…`, `rules/…`, `docs/…` or a shipped `README*.md` is
+# opened relative to.
+#
+#   $PWD                  when bin/fusion-plugin-cwd says the working directory
+#                         IS the fusion plugin's own source repository
+#   $FUSION_PLUGIN_ROOT   otherwise — the installed copy the SessionStart hook
+#                         exported, which is what every consuming project sees
+#
+# Exit codes:
+#   0  a root was resolved and printed.
+#   1  usage error.
+#   2  there is no root to print: FUSION_PLUGIN_ROOT is unset or empty AND the
+#      working directory is not the plugin's own repository, so there is
+#      nothing to fall to. Nothing on stdout, the reason on stderr. A caller
+#      reports the root as UNRESOLVED and reads NOTHING through it — an empty
+#      value resolves every citation from `/`, which finds nothing and says
+#      nothing about why.
+#
+# ---------------------------------------------------------------------------
+# Why this is one helper and not a line in each skill body
+#
+# The criterion below lived in four executable copies across two skill bodies
+# (an announcing block and an inline re-resolution in each, because a later
+# shell call is a fresh shell). A correction to one fact then had to be written
+# into every copy, and getting it wrong in one was invisible: `63deec1` moved
+# two skills onto the resolved root and left two more citing the install copy,
+# which is issue 260811-0109. Repeated prose drifts in meaning; repeated shell
+# drifts in behaviour. Decision 260810-2145, option 1.
+#
+# Why the branch at all. $FUSION_PLUGIN_ROOT names the installed copy and is
+# pinned for the whole session. Inside the plugin's own source repository that
+# is the wrong copy: bin/fusion-rules and bin/fusion-paths read the work tree
+# there on purpose, so a citation left on the install would hand a reader rules
+# and paths from the checkout and a cited prompt section from the install — two
+# versions of one file, differing in silence.
+#
+# The no-upward-walk bound is inherited, not re-decided. bin/fusion-plugin-cwd
+# tests the working directory and never walks up, congruent with
+# hooks/lib/self-detect.ts by design, so from a SUBDIRECTORY of that repository
+# the answer is the install and every consumer then behaves as it does in a
+# consuming project. This script adds no walk of its own.
+#
+# What this helper does NOT root. A `bin/` executable is always run from
+# $FUSION_PLUGIN_ROOT, and so is an asset a skill copies (templates/, stilwerk/,
+# bin/monitor, .claude-plugin/plugin.json). Whether the work-tree preference
+# extends to helper resolution is part (c) of decision 260810-1544 and is
+# explicitly UNANSWERED; it must not be assumed here. The split is by what the
+# caller does with the path: read shipped text -> this root; run or copy an
+# installed artefact -> $FUSION_PLUGIN_ROOT.
+#
+# Resolution of its own sibling. bin/fusion-plugin-cwd is found relative to THIS
+# script rather than through $FUSION_PLUGIN_ROOT, the way bin/fusion-churn-rank
+# resolves its own entry point, so an install copy and a work tree each ask
+# their own criterion. Called the documented way — through
+# "$FUSION_PLUGIN_ROOT/bin/fusion-source-root" — the two are the same directory.
+#
+# One documented difference from the inline snippet this replaces. That snippet
+# tested `-z FUSION_PLUGIN_ROOT` FIRST, so an unset variable produced the empty
+# root even inside the plugin's own repository. This script answers the
+# plugin-cwd branch first, because that answer needs no install to be true. The
+# difference is unreachable from the documented call sites: their guard is
+# `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-source-root" ]`, which an unset variable
+# already fails, so they never reach this script to see it.
+
+set -eu
+
+if [ "$#" -ne 0 ]; then
+  echo "usage: fusion-source-root" >&2
+  exit 1
+fi
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [ -x "$here/fusion-plugin-cwd" ] && "$here/fusion-plugin-cwd"; then
+  printf '%s\n' "$PWD"
+  exit 0
+fi
+
+if [ -n "${FUSION_PLUGIN_ROOT:-}" ]; then
+  printf '%s\n' "$FUSION_PLUGIN_ROOT"
+  exit 0
+fi
+
+echo "fusion-source-root: FUSION_PLUGIN_ROOT is unset and the working directory is not the fusion plugin's own source repository — there is no source root to print." >&2
+exit 2

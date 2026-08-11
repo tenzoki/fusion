@@ -8,7 +8,27 @@ allowed-tools: [Bash, Read, Write, Edit, Glob, Grep, AskUserQuestion, Agent(fusi
 
 The user invoked `/fusion:cleanup`. This is a one-shot, mostly-autonomous pipeline that closes out a work session: it captures unfinished work as issues, commits and pushes the real changes in meaningful splits, runs reconciliation, archives stale workbench files with safe defaults, revises `CLAUDE.md`, regenerates the activity log, then commits and pushes the housekeeping artifacts those last steps produced.
 
-**Skills cannot invoke other slash commands.** Where a step corresponds to another fusion skill, read that skill's body from `$FUSION_PLUGIN_ROOT/skills/<name>/SKILL.md` and execute its procedure inline. Do not tell the user to type the slash command — perform the work. The reconcile step dispatches the `reconciler` agent directly. **That root is not specific to skill bodies: every path into a file the plugin ships carries `$FUSION_PLUGIN_ROOT`** — an agent prompt at `$FUSION_PLUGIN_ROOT/agents/<name>.md` exactly as much as a skill body — because nothing the plugin ships exists at a consuming project's root, where a bare `agents/…` or `skills/…` path resolves to nothing. Rule files are the exception in form only: an agent receives them from `"$FUSION_PLUGIN_ROOT/bin/fusion-rules"`, which prints absolute paths, so a `rules/…` name below identifies the file that governs and is not a path to open by hand.
+**Skills cannot invoke other slash commands.** Where a step corresponds to another fusion skill, read that skill's body from `$FUSION_SRC/skills/<name>/SKILL.md` and execute its procedure inline. Do not tell the user to type the slash command — perform the work. The reconcile step dispatches the `reconciler` agent directly. **That root is not specific to skill bodies: every path into a file the plugin ships carries `$FUSION_SRC`** — an agent prompt at `$FUSION_SRC/agents/<name>.md` exactly as much as a skill body — because nothing the plugin ships exists at a consuming project's root, where a bare `agents/…` or `skills/…` path resolves to nothing. Rule files are the exception in form only: an agent receives them from `"$FUSION_PLUGIN_ROOT/bin/fusion-rules"`, which prints absolute paths, so a `rules/…` name below identifies the file that governs and is not a path to open by hand.
+
+Resolve that root once, before the first step that cites one:
+
+```bash
+if [ -x "${FUSION_PLUGIN_ROOT:-}/bin/fusion-source-root" ]; then
+  FUSION_SRC="$("$FUSION_PLUGIN_ROOT/bin/fusion-source-root")"
+elif [ -n "${FUSION_PLUGIN_ROOT:-}" ]; then
+  echo "fusion: no bin/fusion-source-root in the installed plugin at $FUSION_PLUGIN_ROOT — the source root falls back to that install copy" >&2
+  FUSION_SRC="$FUSION_PLUGIN_ROOT"
+else
+  FUSION_SRC=""
+fi
+echo "source root: ${FUSION_SRC:-UNRESOLVED (FUSION_PLUGIN_ROOT is unset)}"
+```
+
+`bin/fusion-source-root` owns the criterion and its header states it in full; this file does not restate it. In one line: `$FUSION_PLUGIN_ROOT` names the installed copy and is pinned for the whole session, and inside the fusion plugin's own source repository that is the wrong copy, because `bin/fusion-rules` and `bin/fusion-paths` read the work tree there on purpose. The `[ -x ]` guard is the one every prompt-called `bin/` helper carries: a helper added between releases is absent from an older install and a bare call is exit 127.
+
+**`UNRESOLVED` is not a path, and no step below reads through it.** With `FUSION_PLUGIN_ROOT` unset the variable holds the empty string and every `$FUSION_SRC/…` citation resolves from `/`, finding nothing and saying nothing about why. Three steps here are behaviour rather than reading and would fail silently: Step 3 reads the domain cascade's one authoring home, and Steps 4–6 read three other skill bodies to execute their procedures inline. When it prints `UNRESOLVED`, stop before those steps, name them in the final report, and tell the user to restart the session so the SessionStart hook exports the variable. Do not improvise the content of a procedure you could not open.
+
+**What the root does *not* cover.** A `bin/` helper is always run from `$FUSION_PLUGIN_ROOT` — `fusion-workbench-root`, `fusion-paths`, `fusion-session-mark`, `fusion-commit-lock` below. Whether the work-tree preference reaches helper resolution is part (c) of decision `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention…` and is **unanswered**; do not assume it. The split is by what you do with the path: read shipped text → `$FUSION_SRC`; run an installed executable → `$FUSION_PLUGIN_ROOT`.
 
 ## Arguments
 
@@ -114,7 +134,7 @@ This commits the user's actual changes (code, data, docs) **plus** the issues fi
    `<type>` ∈ `fix|feat|refactor|docs|chore|test`. Never amend; always new commits.
 4. When the working tree is clean, **push** (unless `--no-push`): plain `git push`. If the branch has no upstream, set it (`git push -u origin <branch>`). If push is rejected, stop and report — do not force.
 
-For the commit-message craft and staging discipline, the procedure in `$FUSION_PLUGIN_ROOT/skills/commit/SKILL.md` is the reference; apply it per split.
+For the commit-message craft and staging discipline, the procedure in `$FUSION_SRC/skills/commit/SKILL.md` is the reference; apply it per split.
 
 Report: the list of commits created (hash + summary) and push result.
 
@@ -122,7 +142,7 @@ Report: the list of commits created (hash + summary) and push result.
 
 Dispatch the reconciler to bring tracking files in line with ground truth.
 
-- Use the `$DOMAIN` captured in Step 1. **This skill obtains the domain; it never decides one.** The decision is made in exactly one place — Setup Step 5 of `$FUSION_PLUGIN_ROOT/agents/orchestrator.md` — and `agentstate.yaml` carries the verdict that run produced. A second statement of that heuristic anywhere else drifts from the first and the two then disagree inside a single session, which is what the plugin's own `domain-cascade.test.ts` now fails on: it scans the file set `REACH.fileSet` names in `hooks/lib/domain-cascade.ts`, whose reach `describeReach()` renders into `README-hooks.md` and the suite compares byte-for-byte, and only the orchestrator's prompt may state the cascade. Read the reach off that rendered block rather than from a copy here, which is how the claim in this file went one file set short of the gate once already.
+- Use the `$DOMAIN` captured in Step 1. **This skill obtains the domain; it never decides one.** The decision is made in exactly one place — Setup Step 5 of `$FUSION_SRC/agents/orchestrator.md` — and `agentstate.yaml` carries the verdict that run produced. A second statement of that heuristic anywhere else drifts from the first and the two then disagree inside a single session, which is what the plugin's own `domain-cascade.test.ts` now fails on: it scans the file set `REACH.fileSet` names in `hooks/lib/domain-cascade.ts`, whose reach `describeReach()` renders into `README-hooks.md` and the suite compares byte-for-byte, and only the orchestrator's prompt may state the cascade. Read the reach off that rendered block rather than from a copy here, which is how the claim in this file went one file set short of the gate once already.
 - With no `agentstate.yaml` (a cleanup run outside an orchestrator session), `$DOMAIN` is `code` — the same fallback `/fusion:next`, `/fusion:direct` and `/fusion:seed-from-plane` take, and the cascade's own no-evidence exit. Report which of the two applied, never just the value.
 - `Agent(fusion:reconciler)` with the dispatch prompt prefixed by `**Domain:** $DOMAIN` on its own line.
 - Read the reconciler's returned summary; note any discrepancies it fixed or flagged.
@@ -131,19 +151,19 @@ If `--dry-run`, skip the dispatch and report `$DOMAIN` with its `$DOMAIN_SOURCE`
 
 ## Step 4 — Archive with safe defaults
 
-Read `$FUSION_PLUGIN_ROOT/skills/archive/SKILL.md` and execute its **tier-1** procedure (the safest tier) autonomously — no confirmation gate, since tier-1 is defined as safe-by-construction. Archive *moves* files; it never deletes. Take the tier definition, the survey and the destination from that skill body rather than assuming them here — it owns them, and restating them here would give the two files two chances to disagree. If tier-1 finds nothing to archive, report "nothing to archive" and continue.
+Read `$FUSION_SRC/skills/archive/SKILL.md` and execute its **tier-1** procedure (the safest tier) autonomously — no confirmation gate, since tier-1 is defined as safe-by-construction. Archive *moves* files; it never deletes. Take the tier definition, the survey and the destination from that skill body rather than assuming them here — it owns them, and restating them here would give the two files two chances to disagree. If tier-1 finds nothing to archive, report "nothing to archive" and continue.
 
 If `--dry-run`, report the tier-1 survey (what would move) without moving anything.
 
 ## Step 5 — Revise CLAUDE.md
 
-Read `$FUSION_PLUGIN_ROOT/skills/revise-claude-md/SKILL.md` and execute its full three-pass procedure (add → update → prune) against this session's learnings. Report the diff summary.
+Read `$FUSION_SRC/skills/revise-claude-md/SKILL.md` and execute its full three-pass procedure (add → update → prune) against this session's learnings. Report the diff summary.
 
 If `--dry-run`, run the survey passes but make no edits.
 
 ## Step 6 — Log activity
 
-Read `$FUSION_PLUGIN_ROOT/skills/log-activity/SKILL.md` and execute its procedure to regenerate/update the activity log.
+Read `$FUSION_SRC/skills/log-activity/SKILL.md` and execute its procedure to regenerate/update the activity log.
 
 If `--dry-run`, report what it would write without writing.
 

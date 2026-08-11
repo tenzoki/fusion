@@ -21,9 +21,11 @@
 # Change one, change the other.
 #
 # Consumers: bin/fusion-rules (work-tree rules preference + the guard-internals
-# emission gate) and bin/fusion-paths (work-tree prompt preference), per
-# decision 260806-0015_*_veraltete-regeln-im-eigenen-repo-melden-oder-umgehen
-# (option c) in the textschicht Circle.
+# emission gate), bin/fusion-paths (work-tree prompt preference), and
+# bin/fusion-source-root (which root a skill body's citation of a shipped FILE
+# resolves against), per decision
+# 260806-0015_*_veraltete-regeln-im-eigenen-repo-melden-oder-umgehen (option c)
+# in the textschicht Circle. A new consumer adds itself here.
 set -eu
 manifest=".claude-plugin/plugin.json"
 [ -f "$manifest" ] || exit 1

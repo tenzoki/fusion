@@ -43,3 +43,9 @@ is not the count but the class: this is the second duplicated-criterion finding 
 the first one shipped a false claim that no second copy could exist.
 
 **Filed by:** orchestrator, session `260810-1646`, on the rooted-citations executor's proposal.
+
+---
+Resolved: the single home is `bin/fusion-source-root`. The criterion is stated once, in that
+script's header and body; every consumer calls it under the `[ -x ]` guard convention. Closed
+together with `260811-1733`, which realised decision `260810-2145` option 1 — see that record's
+`Resolved:` note for the call-site count and the siblings that moved with it.

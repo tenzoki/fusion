@@ -107,3 +107,26 @@ and this session paid for exactly that failure once, when a correction reached t
 two standing. Option 2's second half, a helper or documented home for the domain capture, is a
 separate call to be made once the first has proved itself; the record's reasoning for treating it
 as the weaker case (short, read-only, fallback stated at every site) stands.
+
+---
+Implemented (option 1 only — **the marker stays `_a_`, deliberately**): `bin/fusion-source-root`
+now owns the source-root criterion; the four executable copies across `skills/setup/SKILL.md`
+and `skills/next/SKILL.md` are guarded calls to it, and `skills/cleanup/SKILL.md` and
+`skills/help/SKILL.md` were moved onto the same root in the same change, closing
+`shared/issues/260811-1733_*_…` and `shared/issues/260811-0109_*_…`. `grep -rn
+'fusion-plugin-cwd' agents/ skills/ rules/` is empty. Suite green, 1293 passed.
+
+**Why this record is not `_i_`.** It bundles two questions, and only the first is answered.
+Option 2's second half — a helper or a documented home for the **domain capture** — is held in
+reserve by this very answer ("a separate call to be made once the first has proved itself"), and
+it is still carried by `shared/issues/260810-2110_o_the-domain-capture-one-liner-is-now-copied-
+into-a-fourth-skill-body-and-the-copying-is-the-stated-justification.md` and by `tasklist.md`
+task 41. `_i_` is terminal, so marking it would close a record whose second half nobody has
+decided.
+
+That is the reasoning `shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-
+guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` was written out of,
+applied to itself: a decision record bundling separable questions cannot be tracked, because its
+state is not a single value, and the repair is to split rather than to pick a marker that lies
+in one direction. When the domain-capture call is taken up, split this record — file that half
+as its own decision, and move this one to `_i_` on the source-root half alone.

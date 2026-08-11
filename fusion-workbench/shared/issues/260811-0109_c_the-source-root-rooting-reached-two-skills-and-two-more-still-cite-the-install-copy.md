@@ -61,3 +61,24 @@ consumers, not two.
 `CLAUDE.md` `## Conventions` → *Rules loading* (the work-tree preference and its exact bound).
 
 **Filed by:** reconciler, final reconciliation of session `260810-1646`, at HEAD `e2a34f0`.
+
+---
+Resolved: the record's own preferred order was taken — `260810-2030` was resolved first with a
+`bin/` helper, and all four bodies were rooted through it in one change rather than the two-line
+branch being copied into two more files.
+
+`skills/cleanup/SKILL.md` — the opening paragraph, the commit reference at `:117`, the domain
+cascade at `:125` (the behavioural one, which now reads Setup Step 5 from the copy the session is
+actually editing), and the three inline-procedure reads at `:134`, `:140`, `:146` are all on
+`$FUSION_SRC`. Its four `bin/` invocations deliberately stay on `$FUSION_PLUGIN_ROOT`: an
+executable is run, not read, and part (c) of `260810-1544` is unanswered.
+`skills/help/SKILL.md` — the five doc citations plus `README-hooks.md`,
+`hooks/config.example.json` and the `bin/fusion-rules` header-as-spec read moved with them;
+`bin/fusion-paths` (run) and `templates/investigator-capture-layout.md` (copied) stay on the
+install root.
+
+Both files gained the `UNRESOLVED` report the record noted existed only in setup and next, so the
+failure scenario it describes — a developer running `/fusion:cleanup` against a stale install and
+getting the previous release's cascade — is now either correct or audible.
+
+`grep -rl 'FUSION_SRC' skills/` returns all four bodies.

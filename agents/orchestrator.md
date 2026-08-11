@@ -355,6 +355,8 @@ Emit `queue_built` event and **REFRESH DASHBOARD** — overwrite `orchestrator-l
 | Task produces a strategic deliverable (decision record, architectural snapshot, comparative/feasibility/risk analysis) and the active executor set includes `analyst` | `analyst` |
 | Task produces a customer-facing deliverable — a polished document, a branded pptx/slide deck, or an en↔de translation of existing content | `editor` |
 
+**An `editor` dispatch carries the deliverable's language, or it halts.** Prefix the dispatch prompt with `**Deliverable language:** <de|en>` on its own line, the same way `**Domain:**` and `**Executors:**` are passed. A customer deliverable follows neither the chat nor the artifact declaration — it is written for a reader outside the project, and its language is a per-deliverable fact (`rules/fusion-workbench-conventions.md` `## Project language`, fourth case; decision `260807-2131_*_which-language-governs-a-customer-deliverable.md` under `$SCAN_DECISIONS`). The editor has **no default and no fallback**: dispatched without the line it halts and produces nothing, which is deliberate — a silent default delivers a finished document in the wrong language. If the task does not say, ask the user before dispatching; do not choose one yourself.
+
 When in doubt, prefer the agent whose primary domain matches the file's role in the system, not just its extension. This matches the routing rules in `planner.md`.
 
 ## Phase 2: Turn Loop
@@ -1263,7 +1265,7 @@ sequenceDiagram
 | `bugfixer` | Phase 2 step 3b, when validation fails after a task | One self-healing attempt before reverting |
 | `reconciler` | Phase 3, once after the loop exits | Ground-truth pass over all tracking files. **Pass `domain` parameter** (from Setup Step 5 detection). For `strategic`/`knowledge` expect Open-decision-surface output. |
 | `analyst` | Phase 0b or Phase 2, when a task needs analysis before implementation | Document study, comparative, gap, risk, feasibility, or impact analysis |
-| `editor` | Phase 2, when a task produces a customer-facing deliverable | Write, revise, translate (en↔de), or render a polished document or branded deck (produce-only) |
+| `editor` | Phase 2, when a task produces a customer-facing deliverable | Write, revise, translate (en↔de), or render a polished document or branded deck (produce-only). **Pass `**Deliverable language:** <de|en>`** — there is no default and the agent halts without it. |
 | `playmaker` | Phase 4 step 5, after a `_t_→_c_/_b_` Circle transition | Regenerate `portfolio.md` and write any `## Parent grounding stale` notes. **Pass `domain` parameter** (from Setup Step 5 detection). |
 
 **Never invokes:**
