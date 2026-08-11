@@ -40,6 +40,7 @@ export type GuardEventType =
   | "churn_critical"
   | "state_drift"
   | "review_coverage"
+  | "staging_drift"
   | "tracker_record";
 
 export interface GuardEvent {

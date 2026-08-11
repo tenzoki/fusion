@@ -148,7 +148,19 @@ export function reviewCoverageEntry(): GuardEntry {
   return hookEntry("review-coverage");
 }
 
-/** Shared resolution for all six entry points. See `guardEntry`. */
+/**
+ * How to spawn the staging-drift reader.
+ *
+ * Same class as the two above: `bin/fusion-staging-drift` runs it, and
+ * `hooks/tracker.ts` runs the same computation in-process on the tool call
+ * where HEAD moved. Its subject is a working directory, a workbench root above
+ * it and a git repository around both, so every case is a subprocess.
+ */
+export function stagingDriftEntry(): GuardEntry {
+  return hookEntry("staging-drift");
+}
+
+/** Shared resolution for all seven entry points. See `guardEntry`. */
 function hookEntry(
   name:
     | "guard"
@@ -156,7 +168,8 @@ function hookEntry(
     | "session-start"
     | "churn-rank"
     | "state-drift"
-    | "review-coverage",
+    | "review-coverage"
+    | "staging-drift",
 ): GuardEntry {
   const mode = process.env.FUSION_GUARD_ENTRY ?? "tsx";
 

@@ -21,6 +21,17 @@
  *      a check that fires on its commonest path is one its reader learns to
  *      ignore. See lib/review-coverage.ts and `measureReviewCoverageForModel`.
  *
+ *   0c. STAGING DRIFT, on one measured trigger: HEAD is not where it was on the
+ *      previous tool call. It reads `git status --porcelain` over the workbench
+ *      and names the authored records — and any commit-message file that landed
+ *      inside the workbench — that the commit just made did not carry. Like 0b
+ *      it is not on the every-tool-call path: an unstaged record mid-Turn is the
+ *      normal state, and the moment a missed record becomes a missed record is
+ *      the commit. The trigger is READ FROM THE REPOSITORY, never from the
+ *      command's text — deciding from a shell string whether it will move HEAD
+ *      is the question the deleted branch policy answered wrong 24 times. See
+ *      lib/staging-drift.ts and `measureStagingDriftForModel`.
+ *
  *   1. MEASURE THE PROTECTED PATHS. Take a second fingerprint of every path on
  *      `guard.protectedPaths` and compare it with the one `guard.ts` recorded
  *      before the tool ran. Anything that changed is written back to what the

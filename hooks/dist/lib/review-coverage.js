@@ -100,8 +100,9 @@
  * drift check's verdict is a line of output rather than an exit code.
  */
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { readStateFile, stateField } from "./state-drift.js";
 /* ------------------------------------------------------------------ *
  * Layout — root-anchored, exactly as `lib/state-drift.ts` reads it
  * ------------------------------------------------------------------ */
@@ -284,19 +285,18 @@ function expand(root, from, to) {
 }
 /** The session anchor `agentstate.yaml` records, or "" with nothing recorded. */
 export function sessionAnchor(root) {
-    const path = resolve(root, STATE_REL);
-    if (!existsSync(path)) {
-        return { since: "", why: `${STATE_REL} is absent — no session in progress to measure a range for` };
+    // The read goes through `lib/state-drift.ts`, which owns the flat
+    // `agentstate.yaml` read. It used to be a second copy of the same six lines
+    // here; a third copy in `lib/staging-drift.ts` is what made one shared reader
+    // the cheaper option. The phrasing stays local, because only this caller
+    // knows what the anchor is FOR.
+    const read = readStateFile(root);
+    if (!read.ok) {
+        return read.missing
+            ? { since: "", why: `${STATE_REL} is absent — no session in progress to measure a range for` }
+            : { since: "", why: `${STATE_REL} is unreadable` };
     }
-    let text;
-    try {
-        text = readFileSync(path, "utf-8");
-    }
-    catch {
-        return { since: "", why: `${STATE_REL} is unreadable` };
-    }
-    const hit = /^[ \t]*git_head_at_start:[ \t]*(.*)$/m.exec(text);
-    const value = (hit?.[1] ?? "").trim().replace(/^["']/, "").replace(/["']$/, "").trim();
+    const value = stateField(read.text, "git_head_at_start");
     if (value === "")
         return { since: "", why: "session.git_head_at_start is unset" };
     return { since: value, why: "" };

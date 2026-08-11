@@ -106,6 +106,34 @@ const GIT_TIMEOUT_MS = 5_000;
  * Reading the surfaces
  * ------------------------------------------------------------------ */
 /**
+ * The session state file, read once.
+ *
+ * Exported, and paired with `stateField` below, because three modules now ask
+ * `agentstate.yaml` questions — this one, `lib/review-coverage.ts` for the
+ * session anchor, and `lib/staging-drift.ts` for the session's own history file
+ * — and a fourth copy of the same six lines is how a flat read starts
+ * disagreeing with itself about what "absent" means. The split into a file read
+ * and a field read is not decoration: `measureStateDrift` asks five questions of
+ * one file and runs on every guarded tool call, so a per-field read would be
+ * five file reads a call.
+ *
+ * `missing` distinguishes "there is no session in progress" from "there is one
+ * and its state file will not open". Both leave the caller without a value, and
+ * only the caller knows which sentence to say about it, so this reports the
+ * fact and phrases nothing.
+ */
+export function readStateFile(root) {
+    const path = resolve(root, STATE_REL);
+    if (!existsSync(path))
+        return { ok: false, missing: true };
+    try {
+        return { ok: true, text: readFileSync(path, "utf-8") };
+    }
+    catch {
+        return { ok: false, missing: false };
+    }
+}
+/**
  * First value for `key` anywhere in the state file, quotes stripped.
  *
  * Deliberately flat rather than a YAML parse, and deliberately first-match:
@@ -115,7 +143,7 @@ const GIT_TIMEOUT_MS = 5_000;
  * `history_file`, `directive`) occurs first at the place it means; `work_queue`
  * entries carry `commit`, which is a different key from `commits`.
  */
-function field(state, key) {
+export function stateField(state, key) {
     const re = new RegExp(`^[ \\t]*${key}:[ \\t]*(.*)$`, "m");
     const hit = re.exec(state);
     if (!hit)
@@ -295,21 +323,15 @@ function row(surface, says, record, verdict, why) {
  * placeholder, never different wording.
  */
 export function measureStateDrift(root) {
-    const statePath = resolve(root, STATE_REL);
-    if (!existsSync(statePath)) {
+    const read = readStateFile(root);
+    if (!read.ok) {
         return { root, statePresent: false, rows: [], drifted: [], signature: "" };
     }
-    let state;
-    try {
-        state = readFileSync(statePath, "utf-8");
-    }
-    catch {
-        return { root, statePresent: false, rows: [], drifted: [], signature: "" };
-    }
+    const state = read.text;
     const rows = [];
     // 1. progress.commits against git — the row that measured 6, 7, 8 and 12.
-    const head = field(state, "git_head_at_start");
-    const claimed = Number.parseInt(field(state, "commits"), 10);
+    const head = stateField(state, "git_head_at_start");
+    const claimed = Number.parseInt(stateField(state, "commits"), 10);
     const real = commitsSince(root, head);
     if (real.count === null || !Number.isFinite(claimed)) {
         rows.push(row("progress.commits", Number.isFinite(claimed) ? String(claimed) : "(unset)", real.count === null ? "?" : String(real.count), "unchecked", real.count === null ? real.why : "progress.commits is unset or not a number"));
@@ -319,7 +341,7 @@ export function measureStateDrift(root) {
     }
     // 2. progress.turn against the event log — never against itself.
     const turns = turnsRun(root);
-    const claimedTurn = Number.parseInt(field(state, "turn"), 10);
+    const claimedTurn = Number.parseInt(stateField(state, "turn"), 10);
     if (turns.count === null || !Number.isFinite(claimedTurn)) {
         rows.push(row("progress.turn", Number.isFinite(claimedTurn) ? String(claimedTurn) : "(unset)", turns.count === null ? "?" : String(turns.count), "unchecked", turns.count === null ? turns.why : "progress.turn is unset or not a number"));
     }
@@ -327,7 +349,7 @@ export function measureStateDrift(root) {
         rows.push(row("progress.turn", String(claimedTurn), `${turns.count} (turn_start events this session)`, turns.count !== claimedTurn ? "drift" : "ok"));
     }
     // 3. session.history_file against the disk — the dangling resume anchor.
-    const historyRel = field(state, "history_file");
+    const historyRel = stateField(state, "history_file");
     const historyPath = historyRel === "" ? null : resolve(root, WB, historyRel);
     if (historyRel === "") {
         rows.push(row("session.history_file", "(unset)", "-", "unchecked", "session.history_file is unset"));
@@ -337,7 +359,7 @@ export function measureStateDrift(root) {
         rows.push(row("session.history_file", historyRel, present ? "present (on disk)" : "MISSING (on disk)", present ? "ok" : "drift"));
     }
     // 4. The history file's Directive line against the state file's.
-    const directive = field(state, "directive");
+    const directive = stateField(state, "directive");
     const line = historyPath === null ? null : directiveLine(historyPath);
     if (line === null || directive === "") {
         rows.push(row("history Directive", line === null ? "(unreadable)" : line.text.slice(0, 40), directive === "" ? "(unset)" : directive.slice(0, 40), "unchecked", line === null ? "the history file has no **Directive:** line" : "session.directive is unset"));

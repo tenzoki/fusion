@@ -490,7 +490,7 @@ Nothing from here to task 38 needs a user answer. Task 1 comes first for the rea
   boundary); `agents/taskplanner.md` (which writes `tasklist.md` and does not commit)
 - **Depends on:** none
 - **Priority:** high
-- **Status:** [ ] open
+- **Status:** [x] done — commit pending in this Turn
 - **Detail:** **The immediate state is already repaired and must not be redone.** Commit `60f47c2`
   committed `fusion-workbench/tasklist.md` and `shared/history/260810-1723-tasklist-update.md`, and
   `fusion-workbench/.commit-msg-tmp` no longer exists. What the record itself says about that: *"That

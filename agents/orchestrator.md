@@ -310,8 +310,20 @@ After approval, the plan file becomes the input for Phase 1 (treat it as mode `p
 **Broad scope (mode `all` or `issues`):**
 1. Check if `$TASKLIST` exists and is recent (generated today)
 2. If stale or missing, invoke `taskplanner` to build it. **Pass the detected workbench domain** (from Setup Step 5) as the `domain` parameter — prefix the dispatch prompt with `**Domain:** <code|data|strategic|knowledge>` on its own line so the agent's Setup picks it up.
-3. Read the generated tasklist as your work queue. **Handle the "no routable tasks" case:** if the taskplanner returns a structured "no routable tasks" result (per its Step 1.5), emit a `queue_empty` event, **REFRESH DASHBOARD** with `[QUEUE EMPTY] orchestrator -> No routable tasks; <N> open items reported to user`, list the open items to the user with file paths, and skip Phase 2 entirely. Proceed to Phase 4 with a session summary.
-4. **Surface open `_o_` decisions before finalising the queue.** Open decisions — the `*_o_*.md` files across **every** path in `$SCAN_DECISIONS`, the active Circle's store and the shared one alike — are user-input gates, not executor work. List them to the user in the dashboard and Phase 4 summary. The user may answer them inline (you record the answer + transition `_o_`→`_a_`), defer them, or proceed without (the queue runs without realisation work for those decisions).
+3. **Commit the rebuild before Phase 2 starts — you are its owner.** `$TASKLIST` and the history entry beside it are `taskplanner`'s alone to *write* and yours alone to *commit*: `taskplanner` does not commit, and you dispatched it outside the Turn loop, where Step 3b's staging list does not exist. Neither party owned the handoff, and the cost is measured — the queue session `260810-1646` worked from, 2128 lines and 1409 insertions against the committed copy, was uncommitted for eighteen commits, and its history entry was untracked the whole time (`260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md` in `$SCAN_ISSUES`).
+
+   Take the paths from the `**Files written:**` field of taskplanner's report — `agents/taskplanner.md` Step 6 mandates it on every run, absolute, one per line — and run **the Step 3b shape unchanged** over them: `Write` the message to `/tmp/fusion-commit-msg-queue-<stamp>.txt`, then
+
+   ```bash
+   "$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with orchestrator -- bash -c 'git add <absolute-path> <absolute-path> && git commit -F /tmp/fusion-commit-msg-queue-<stamp>.txt'
+   ```
+
+   Every path written out in full and absolute, exactly as Step 3b step 4 requires. Nothing here widens that rule — it applies it at a point that previously had no staging list at all, which is why the omission was invisible rather than wrong. A recorded `**Files written:** none` is an answer, not an omission — it is what the routability case at step 4 produces, and there is nothing to commit. If the report carries no `**Files written:**` field at all, the report is incomplete: re-dispatch for that one line, or read the two paths off disk and write them out yourself. **Do not reach for a directory argument, `-A` or `-u`** — that is the opposite defect (`f38f37d`, three records out of HEAD) and it is forbidden here for the same reason it is forbidden there.
+
+   **This holds for every `taskplanner` dispatch, not only this one.** The Rebalance gate's *Revise Artifact* option and the Phase-3 post-verdict dispatch both rebuild the queue and both produce the same two files with the same exposure.
+
+4. Read the generated tasklist as your work queue. **Handle the "no routable tasks" case:** if the taskplanner returns a structured "no routable tasks" result (per its Step 1.5), emit a `queue_empty` event, **REFRESH DASHBOARD** with `[QUEUE EMPTY] orchestrator -> No routable tasks; <N> open items reported to user`, list the open items to the user with file paths, and skip Phase 2 entirely. Proceed to Phase 4 with a session summary.
+5. **Surface open `_o_` decisions before finalising the queue.** Open decisions — the `*_o_*.md` files across **every** path in `$SCAN_DECISIONS`, the active Circle's store and the shared one alike — are user-input gates, not executor work. List them to the user in the dashboard and Phase 4 summary. The user may answer them inline (you record the answer + transition `_o_`→`_a_`), defer them, or proceed without (the queue runs without realisation work for those decisions).
 
 **Targeted scope (mode `plan`, `bundle`, `custom`):**
 1. Read the source file(s) directly
@@ -403,6 +415,7 @@ After each completed task:
    d. If bugfixer reports failure (unable to fix or verification still fails): revert all task changes with `git checkout HEAD -- <files>`. Emit `bugfix_failure` and `revert` events. Mark the task as errored in the history log. **REFRESH DASHBOARD** — overwrite `orchestrator-live.md` showing this task as `[ERROR]`. Continue to the next task.
    e. **Budget:** One bugfixer attempt per task. No retries.
 3. **Write the commit message to a file — the shell never sees the message.** Use the `Write` tool (not `echo`, not a heredoc, not a `-m` flag) to write the full message to `/tmp/fusion-commit-msg-<task-id>.txt`. The message is prose, so it will contain apostrophes and may contain backticks, `$` and quotes; every one of those changes what a shell parses if the message reaches a command line. `Write` keeps the shell out of the message path entirely, so no character in the message can be special.
+   - **The path is `/tmp/…`, and that half is enforced too.** `/tmp` is swept; `fusion-workbench/` is not, and `fusion-workbench/` is the tree `git status` reports on. A message file written inside the workbench becomes a leftover on the next `git status`, a root-anchored surface the layout never enumerated, and — if a staging list ever names a directory — content in a commit. Measured: `fusion-workbench/.commit-msg-tmp`, holding the message of `d169b0d`, written to a path improvised at commit time; `grep -rn commit-msg-tmp` over `agents/`, `skills/`, `bin/` and `hooks/` returned nothing, so no helper put it there. `hooks/lib/staging-drift.ts` now reads any commit-message-shaped file under the workbench as a fault of its own class and names this path back to you (see **Staging check**), and `commit-message-path.test.ts` fails `npm test` if this line stops naming a `/tmp` path or if the two spellings drift apart.
    ```
    <type>(<scope>): <summary>
 
@@ -515,6 +528,8 @@ When a circuit breaker trips, emit a `circuit_breaker` event, update the live da
 If all tasks in the queue are `[x] done` or `_d_ deferred`, the loop converges. Exit to Phase 4.
 
 Otherwise, emit `turn_end` event with Turn stats, refresh the queue (incorporate new issues from reviews, remove completed tasks), refresh the active-session marker (`"$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" heartbeat` — keeps a parallel `/fusion:setup` from treating this session as stale), and start the next Turn. **If issues or decisions changed this Turn and Plane is configured, run the end-of-Turn Plane push now** (see **Plane mirror**, call point 2) — a side-effect, never a gate; a `deferred` result (exit 10) is surfaced, never blocking.
+
+**Run the staging check in the same command as that `turn_end` emission too** (see **Staging check**). This is the Turn boundary the acceptance for issue `260811-0114` names: a Turn that ends with an authored record under `fusion-workbench/` that no commit carries says so before the Turn closes. It rides the same emission as the drift check, and for the same reason: a Turn-boundary obligation standing on its own is the one that goes unrun.
 
 **Run the drift check in the same command as that `turn_end` emission** (see **Persistent State File → Drift check**). This is the boundary where a freeze is already measurable — the counters have moved and the Turn's commits have landed, neither of which was true yet at `turn_start`. A session that converges or exits early never reaches this emission at all; for those, the `session_end` call point in Cleanup is the one that fires, and two of the four measured freezes were single-Turn sessions of exactly that shape.
 
@@ -729,6 +744,7 @@ A queue carrying no `**Active Circle:**` line at all is not a row here, because 
 ### Cleanup
 
 - Emit `session_end` event — and, **in the same command**, run the drift check one last time (see **Persistent State File → Drift check**). This is the last moment at which the session's own numbers can be compared with anything: the state file is deleted two bullets below, and after that there is nothing left to contradict. A single-Turn session reaches this call point and no other.
+- **Run the staging check one last time** (see **Staging check**), before the report below. This is the last boundary at which a record left out of every staging list can still be committed by this session; after it, the miss belongs to whoever opens the tree next. Name any `record` row to the user and commit it with the housekeeping split.
 - Update live dashboard to show final status with `**Session:** Complete` or `**Session:** Circuit breaker: <reason>`
 - **Delete `fusion-workbench/agentstate.yaml`** — a clean exit means there is nothing to resume. The file's absence signals no interrupted session. If the drift check above found anything, emit its `state_drift` event **before** this delete; the event log outlives the state file, and an unrecorded drift disappears with the file that carried the evidence.
 - **Clear the active-session marker:** `"$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" clear`. After this, a new orchestrator session can start without a concurrency warning.
@@ -739,6 +755,7 @@ A queue carrying no `**Active Circle:**` line at all is not a row here, because 
 - How many tasks resolved vs remaining
 - How many commits created
 - **Which commits in the session's range no review opened** — the hashes, from the `## Review coverage` section, not a count. `none` when the range is tiled. This is the statement issue `260810-1205` was filed about; the session that filed it reported one where there were seven.
+- **Which records under `fusion-workbench/` no commit carries** — the paths, from the Cleanup staging check's `record` rows, not a count. `none` when the tree is clean of them.
 - Whether any circuit breakers tripped
 - Path to the history file
 - Mention that the live dashboard and event log are available for review
@@ -962,6 +979,45 @@ It prints `anchor=`, `state=`, `rows=`, `drift=` and `verdict=`, then one line p
 
 Use the Write tool to overwrite the entire file on each update. The file is small and the overwrite is atomic from the orchestrator's perspective. Obtain the timestamp for the `# Updated:` comment from `date +%y%m%d-%H%M`.
 
+## Staging check
+
+Every record this session authors lands under `fusion-workbench/`, and a record survives the session only if a commit carries it. Step 3b step 4 states the staging rule as a **shape** — every path passed to `git add` is one you wrote out yourself — and that shape is what makes over-staging impossible. It is also what makes under-staging invisible: **a file nobody names is a file nobody commits.**
+
+Measured here. The queue rebuild of session `260810-1646` and its history entry sat in the working tree for eighteen commits. Nothing lost them, and nothing would have noticed if something had: `git checkout -- fusion-workbench/` restores an older queue over a newer one, `git clean -xdf` takes an untracked history file, and both are ordinary commands. The rebuild had run forty-three minutes before the range's first commit, so no task's staging list had a reason to name it — which is why this is a gap in the mechanism and not carelessness. The record is `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md` in `$SCAN_ISSUES`.
+
+**Do not answer it by widening `git add`.** The opposite defect is measured here too: a `git add -u` given the directory a batch of records had just been renamed inside staged three deletions and added nothing, and three `_o_` records left HEAD until the repair commit `f38f37d`. The shape stays exactly as Step 3b step 4 states it — no `-A`, no `-u`, no directory argument, no glob, no `.`. What changes is that the **result** is now measured, which is the move the guard itself made when it stopped predicting writes from a command's text and started fingerprinting paths (`circles/260807-0923-guard-misst-statt-orakelt`).
+
+**Run the helper at three points** — Phase 1 after a queue rebuild is committed, Step 3e in the same command as the `turn_end` emission, and Cleanup before the report:
+
+```bash
+if [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-staging-drift" ]; then
+  "$FUSION_PLUGIN_ROOT/bin/fusion-staging-drift"
+else
+  echo "fusion: no bin/fusion-staging-drift in the installed plugin at $FUSION_PLUGIN_ROOT — no staging read taken" >&2
+fi
+```
+
+The `[ -x ]` guard is the one the drift check and the coverage read carry, for the same reason: `$FUSION_PLUGIN_ROOT` is the installed copy, pinned for the whole session, so a helper added between releases is simply absent there and a bare call is exit 127.
+
+It prints `anchor=`, `head=`, `rows=`, `unstaged=` and `verdict=`, then **one line per entry under the workbench, in four classes**. Two of them are yours to act on and two are deliberately not:
+
+| Class | What it is | What you do |
+|---|---|---|
+| `record` | an authored artifact no commit carries — `tasklist.md`, `portfolio.md`, a Circle record, or anything under an artifact store | add it to the next Step 3b staging list, written out in full and absolute |
+| `commit-message` | a commit-message file inside the workbench | delete it, and write the next message to the `/tmp` path Step 3b step 3 names |
+| `in-flight` | live state and the machine-written surfaces — the dashboard, the event log, `.guard-state/`, the setup marker, this session's own history file | **nothing.** These are in flight by construction; a report about them would fire on every commit and mean nothing |
+| `unclassified` | anything else under the workbench — a user's own note file, a stash snapshot | **nothing, and do not file an issue about it.** The helper names it and says in the same line that it is not a record store and nothing is claimed about it |
+
+The complete listing and the narrow alarm are one design, not a compromise. A check silent about a file leaves you to discover it some other way, which is the shape of the defect; a check that shouts about every file is one you learn to read past, which is issue `260810-0710` arriving here. Only `record` and `commit-message` rows reach `verdict=`.
+
+**`verdict=unstaged` is a line of output, never an exit code and never a blocker** — exit 0 means the check ran, exit 2 means there is no workbench, exit 3 means the installed plugin has no compiled hooks.
+
+**When a `record` row appears at a Turn boundary:** name it to the user in one line, and carry it into the next commit's staging list. A record left over from an *earlier* Turn appearing here is a miss, not old news — the eighteen-commit case looked exactly like this at every one of the eighteen, and the reason it was never acted on is that nobody was looking.
+
+**What runs whether or not you read this section.** `hooks/tracker.ts` runs the same measurement on the tool call where **HEAD moved** — the commit itself — names the missed records back to you in the tool result, and records a `staging_drift` event under `.guard-state/`, which you do not need to emit a second time. The trigger is read out of the repository with `git rev-parse`, never out of the command's text: deciding from a shell string whether it will move HEAD is the undecidable question the write-path classifier answered until v6.0.0 and the git branch policy answered wrong 24 consecutive times before it was deleted. It is not on the every-tool-call path either, and for the reason **Step 3c** gives about review coverage: an unstaged record *mid-Turn* is the normal and correct state, so the commit is the first moment at which it is a fault. It reports once per miss; a miss that grows speaks again.
+
+**What this is, honestly.** The measurement is executed and the staging is not, and that split is deliberate rather than unfinished. Nothing here adds a path to the index on your behalf, because a mechanism that did would be a second author of the staging list — and the shape's whole value is that every path in it was written out by the party who knows why it belongs there. So this makes a missed record impossible not to notice; it cannot commit it. That step is yours, and skipping it now leaves a `staging_drift` event in a log that outlives your session.
+
 ## Observability
 
 Three mechanisms give the human real-time and retrospective visibility into what the orchestrator is doing. All three are mandatory — emit at every transition point listed below.
@@ -1157,7 +1213,7 @@ sequenceDiagram
 | `shaper` | Phase 0b, when a custom request needs specification | Turn brittle input into a precise spec (with user involvement) |
 | `planner` | Phase 0b, after shaping or when a clear request needs an implementation plan | Design the implementation approach. Pass `executors=[coder, ontocoder, analyst]` when domain is `strategic` or `knowledge`; otherwise default `[coder, ontocoder]` is implicit. |
 | `conceptrev` | Phase 0b, after shaper/planner produce a spec/plan that contains Mermaid diagrams, before the human gate | Evaluate the design diagrams' structural coherence (node/edge counts, fan-out, cycles, layering, orphans). Returns an advisory verdict (clean/acceptable/tangled) + findings, surfaced at the gate. Read-only; files nothing, fixes nothing. |
-| `taskplanner` | Phase 1, if scope is broad and no fresh tasklist exists | Build the dependency-ordered work queue. **Pass `domain` parameter** (from Setup Step 5 detection). May return "no routable tasks" — handle per Phase 1 step 3. |
+| `taskplanner` | Phase 1, if scope is broad and no fresh tasklist exists | Build the dependency-ordered work queue. **Pass `domain` parameter** (from Setup Step 5 detection). May return "no routable tasks" — handle per Phase 1 step 4. Its `**Files written:**` report field is what Phase 1 step 3 stages. |
 | `coder` | Phase 2, when a task routes to application code | Implement code changes |
 | `ontocoder` | Phase 2, when a task routes to data/ontology (after human gate) | Implement data/ontology changes |
 | `coderev` | Phase 2 step 3c, after code changes land in a Turn | Review changed code files |

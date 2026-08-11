@@ -81,6 +81,16 @@ shared git index against any parallel session's agents
 runs, and releases on any exit). The pair must be held together: the lock only
 defends against commit absorption if no path is staged outside it.
 
+**`<msg-file>` is a path under `/tmp`** — write it as
+`/tmp/fusion-commit-msg-<something-unique>.txt` and nowhere else. Never inside
+`fusion-workbench/`: `/tmp` is swept and the workbench is not, and the workbench
+is the tree `git status` reports on, so a message file written there survives as
+a leftover. Measured — `fusion-workbench/.commit-msg-tmp`, holding one commit's
+message, at a path no helper in `agents/`, `skills/`, `bin/` or `hooks/` names
+(`260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`).
+`hooks/lib/staging-drift.ts` reads any commit-message-shaped file under the
+workbench as a fault and says so.
+
 Write the scratch file with a **quoted** heredoc delimiter, so the shell expands
 nothing in the message — a body written under a bare `<<EOF` still substitutes
 `$var` and runs backtick commands.

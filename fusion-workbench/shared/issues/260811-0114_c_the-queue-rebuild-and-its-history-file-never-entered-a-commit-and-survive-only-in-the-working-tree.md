@@ -94,3 +94,18 @@ defensible and one of them belongs to `taskplanner`:
 `## Which of them a tracked workbench tracks`; `agents/orchestrator.md:419-422`.
 
 **Filed by:** reconciler, final reconciliation of session `260810-1646`, at HEAD `e2a34f0`.
+
+---
+Resolved: the durable half of the record, all three questions. (1) `agents/taskplanner.md` Step 6
+mandates a `**Files written:**` field with absolute paths or the recorded word `none`, and
+`agents/orchestrator.md` Phase 1 step 3 stages exactly those paths and commits before Phase 2 starts;
+taskplanner still does not commit, the field is the handoff. (2) `hooks/lib/staging-drift.ts` measures
+the index against the record stores, triggered by HEAD having moved since the previous tool call
+rather than by reading a command's text — the classifier v6.0.0 deleted is not reintroduced, and
+measuring HEAD is right across a commit, an alias, a rebase and a reset alike. (3) The commit-message
+path is enforced at run time (a commit-message-shaped file under the workbench is its own fault class)
+and at test time (`commit-message-path.test.ts` pins Step 3b to `/tmp` and fails if any shipped prompt
+prescribes a path inside `fusion-workbench/`). The staging shape is not weakened:
+`queue-commit-ownership-lint.test.ts` asserts no `git add` in any fenced block of the orchestrator
+prompt carries `-A`, `-u`, `--all`, a bare `.` or a directory argument. The immediate half was already
+discharged by `60f47c2` and was not redone. Task 5 of the 260811-0903 queue.

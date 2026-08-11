@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+# fusion-staging-drift — name what the workbench is holding that no commit carries.
+#
+# Usage:
+#   fusion-staging-drift
+#
+# Output on stdout, one KEY=value per line, then one line per entry:
+#
+#   anchor=workbench-root
+#   head=5ef92eb
+#   rows=4
+#   unstaged=2
+#   verdict=unstaged            # or clean, or unchecked
+#     record          M tasklist.md  UNSTAGED  (the work queue — …)
+#     in-flight       M orchestrator-events.jsonl  (append-only — …)
+#     unclassified   ?? shared/backlogs/…  (not a record store — nothing is claimed about it)
+#
+# Every entry under fusion-workbench/ is printed, in four classes: `record` and
+# `commit-message` are the fault classes and are the only ones that reach
+# `verdict=`; `in-flight` is the live-state and machine-written set, which is
+# never a fault; `unclassified` is everything else, named with the statement
+# that nothing is claimed about it. A complete listing with a narrow alarm is
+# the point — a check that is silent about a file leaves the reader to discover
+# it some other way, and a check that shouts about every file teaches the reader
+# to ignore it.
+#
+# Exit codes:
+#   0  the check ran. `verdict=` says what it found. Finding an unstaged record
+#      is NOT a non-zero exit, deliberately — same reason bin/fusion-state-drift
+#      and bin/fusion-review-coverage give (issue 260810-0710).
+#   1  usage error.
+#   2  no fusion workbench above the working directory; nothing to check.
+#   3  the plugin's compiled hooks are missing, so nothing could be asked. Its
+#      own code and not 2: "there is nothing to check" is an answer about the
+#      project, and a broken install must never be reported as one.
+#
+# ---------------------------------------------------------------------------
+# Why this exists
+#
+# Issue 260811-0114: the queue rebuild session 260810-1646 worked from — 2128
+# lines, 1409 insertions against the committed copy — and its companion history
+# file never entered a commit. They survived eighteen commits in the working
+# tree alone, where an ordinary `git checkout -- fusion-workbench/` would have
+# taken them.
+#
+# The staging rule at agents/orchestrator.md Step 3b step 4 is a SHAPE: every
+# path passed to `git add` is one you wrote out yourself. That makes
+# over-staging impossible and under-staging invisible — a file nobody names is a
+# file nobody commits, and the rebuild ran forty-three minutes before the range's
+# first commit, so no task's staging list had a reason to name it. The answer is
+# therefore not a broader `git add`; loosening the shape re-opens f38f37d, where
+# a `git add -u` over a directory took three records out of HEAD. The answer is
+# to measure the result, which is the move the guard already made when it
+# stopped predicting writes and started fingerprinting paths.
+#
+# It reports. It never stages, never commits, and never writes a workbench
+# record — a mechanism that staged on its own behalf would be a second author of
+# the staging list, and the shape's whole value is that every path in it was
+# written out by the party that knows why.
+#
+# The work is hooks/dist/staging-drift.js, resolved relative to this script
+# rather than through $FUSION_PLUGIN_ROOT, so an install copy and a work tree
+# each run their own build. node is already a hard requirement — the guard hooks
+# are node programs (hooks/hooks.json).
+
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+entry="$here/../hooks/dist/staging-drift.js"
+
+if [ ! -f "$entry" ]; then
+  echo "fusion-staging-drift: $entry is missing — the plugin's compiled hooks are not installed." >&2
+  exit 3
+fi
+
+exec node "$entry" "$@"

@@ -21,6 +21,17 @@
  *      a check that fires on its commonest path is one its reader learns to
  *      ignore. See lib/review-coverage.ts and `measureReviewCoverageForModel`.
  *
+ *   0c. STAGING DRIFT, on one measured trigger: HEAD is not where it was on the
+ *      previous tool call. It reads `git status --porcelain` over the workbench
+ *      and names the authored records — and any commit-message file that landed
+ *      inside the workbench — that the commit just made did not carry. Like 0b
+ *      it is not on the every-tool-call path: an unstaged record mid-Turn is the
+ *      normal state, and the moment a missed record becomes a missed record is
+ *      the commit. The trigger is READ FROM THE REPOSITORY, never from the
+ *      command's text — deciding from a shell string whether it will move HEAD
+ *      is the question the deleted branch policy answered wrong 24 times. See
+ *      lib/staging-drift.ts and `measureStagingDriftForModel`.
+ *
  *   1. MEASURE THE PROTECTED PATHS. Take a second fingerprint of every path on
  *      `guard.protectedPaths` and compare it with the one `guard.ts` recorded
  *      before the tool ran. Anything that changed is written back to what the
@@ -113,6 +124,13 @@ import {
   measureReviewCoverage,
   recordReportedCoverage,
 } from "./lib/review-coverage.js";
+import {
+  headMoved,
+  measureStagingDrift,
+  readStagingState,
+  stagingSentence,
+  writeStagingState,
+} from "./lib/staging-drift.js";
 
 /**
  * The four tools whose payload NAMES the path they write.
@@ -907,6 +925,88 @@ function measureReviewCoverageForModel(input: HookInput): string | null {
   return sentence;
 }
 
+/**
+ * Staging drift, measured when HEAD moves — issue `260811-0114`.
+ *
+ * ## The trigger is read, not predicted, and that is the whole of it
+ *
+ * This fires on one condition: `git rev-parse HEAD` differs from what the
+ * previous tool call recorded. Two alternatives were available and both are
+ * mistakes this codebase has already paid for.
+ *
+ * Firing on **every tool call** — where the state-drift measurement sits —
+ * would report the commonest correct state as a fault. A coder writes an issue
+ * file and Step 3b stages it minutes later; in between, the record is unstaged
+ * and nothing is wrong. `measureReviewCoverageForModel` above declines the
+ * every-call path for the same reason, and issue `260810-0710` is where that
+ * reasoning was first paid for.
+ *
+ * Reading the **`Bash` command's text** for `git commit` would be the
+ * classifier again. Deciding from a shell string what a command will do to the
+ * repository is the undecidable question the write-path classifier answered
+ * until v6.0.0 and the git branch policy answered until it was deleted on
+ * 260809 after 24 consecutive false blocks against the agents' own verification
+ * commands. Nothing about a command is read here; the repository is asked
+ * instead, which is correct across `git commit`, an alias, a script, a rebase
+ * and a reset alike.
+ *
+ * ## Why the commit is the right moment
+ *
+ * The staging list has just been assembled and used. Whatever authored record
+ * is still sitting in the working tree is one no list named — which is exactly
+ * the defect: the 17:23 queue rebuild ran forty-three minutes before the range's
+ * first commit, so no task had a reason to name it, and it stayed there for
+ * eighteen commits. Reporting at this moment makes the omission arrive attached
+ * to the act that should have carried it.
+ *
+ * ## The same three properties as its two siblings
+ *
+ * It writes nothing but its own throttle record; it reports once per miss
+ * rather than once per commit, and a miss that grows speaks again; and it is
+ * anchored at the workbench root rather than at cwd, so it is NOT stood down in
+ * fusion's own repository — which is where issue `260811-0114` was measured.
+ */
+function measureStagingDriftForModel(): string | null {
+  const root = findWorkbenchRoot();
+  if (root === null) return null;
+
+  // One read of the throttle record for the whole call: it holds both the HEAD
+  // the previous call saw and the signature last reported, and this runs on
+  // every guarded tool call.
+  const state = readStagingState(root);
+  const { moved, head } = headMoved(root, state.head);
+
+  if (!moved) {
+    // Arm the next call's comparison. `headMoved` states why the first sighting
+    // of a HEAD is recorded rather than reported.
+    if (head !== "" && state.head !== head) {
+      bestEffort("tracker", () => writeStagingState(root, { ...state, head }));
+    }
+    return null;
+  }
+
+  const report = measureStagingDrift(root);
+  if (report.why !== "") {
+    // No git to ask, so nothing is known about staging. Record the head anyway
+    // so the trigger does not re-fire on the same commit.
+    bestEffort("tracker", () => writeStagingState(root, { head, reported: "" }));
+    return null;
+  }
+
+  const seen = state.reported;
+  bestEffort("tracker", () => writeStagingState(root, { head, reported: report.signature }));
+
+  if (report.signature === "" || report.signature === seen) return null;
+
+  const sentence = stagingSentence(report);
+  if (sentence === "") return null;
+
+  const detail = report.faults.map((r) => `${r.code.trim() || "M"} ${r.path}`).join("; ");
+  bestEffort("tracker", () => emitEvent("staging_drift", undefined, undefined, detail));
+
+  return sentence;
+}
+
 async function main(): Promise<void> {
   // Read hook input from stdin
   const chunks: Buffer[] = [];
@@ -948,6 +1048,15 @@ async function main(): Promise<void> {
     coverage = measureReviewCoverageForModel(input);
   });
 
+  // Staging drift, on the measured trigger of HEAD having moved. Same anchoring
+  // and the same reason for not standing down in fusion's own repository; see
+  // `measureStagingDriftForModel` for why the trigger is read out of the
+  // repository rather than out of the command that moved it.
+  let staging: string | null = null;
+  bestEffort("tracker", () => {
+    staging = measureStagingDriftForModel();
+  });
+
   // Self-detect: cwd is fusion's own repo, so CHURN stands down — plugin
   // development edits are not meaningful churn signal.
   //
@@ -961,7 +1070,7 @@ async function main(): Promise<void> {
   // and the measurement would have reverted a fusion developer's own edits to
   // `rules/` and `agents/` once its root moved up.
   if (isFusionPluginCwd()) {
-    const sentences: (string | null)[] = [drift, coverage];
+    const sentences: (string | null)[] = [drift, coverage, staging];
     const standDown = sentences.filter((t): t is string => t !== null).join(" ");
     respond(standDown === "" ? undefined : standDown);
     return;
@@ -985,7 +1094,7 @@ async function main(): Promise<void> {
   // reports a file that was written back and a halt the user has to clear, the
   // other reports a number that is stale. Joined rather than chosen between,
   // because dropping either would be a silence.
-  const parts: (string | null)[] = [measured, drift, coverage];
+  const parts: (string | null)[] = [measured, drift, coverage, staging];
   const context = parts.filter((s): s is string => s !== null).join(" ");
 
   answer(

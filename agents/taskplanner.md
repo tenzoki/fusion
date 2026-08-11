@@ -188,6 +188,21 @@ Write `$OUT_HISTORY/YYMMDD-HHMM-tasklist-update.md`:
 
 Obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`.
 
+### Step 6: Name the files you wrote, so someone can commit them
+
+End your report with this field, on its own line, on **every** run:
+
+```
+**Files written:** /abs/path/to/tasklist.md, /abs/path/to/history-entry.md
+**Files written:** none
+```
+
+**Absolute paths, and the field is mandatory even when the answer is `none`.** A recorded `none` is a fact the dispatcher can act on; an omitted line is indistinguishable from a run that forgot, and the dispatcher then has to guess or go looking.
+
+**Why a report field and not a commit.** You do not commit — that is not an omission to be fixed here, it is the boundary that keeps one party writing the queue and one party moving the index. But the two files you produce are exactly as real as any executor's, and until 260811 nothing carried them across that boundary: the orchestrator dispatches you outside its Turn loop, where its staging list does not exist, so the files you wrote were named by nobody. The cost was measured in this project — a 2128-line queue rebuild and its history entry sat uncommitted for eighteen commits while the whole session worked from them, and an ordinary `git checkout` would have silently restored a three-hour-old queue over the live one (`260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md` in `$SCAN_ISSUES`).
+
+This field is the handoff. `agents/orchestrator.md` Phase 1 step 3 stages exactly these paths and commits them before Phase 2 starts, writing every one of them out in full — which is why they must be **absolute** and why you must not hand over a directory: the orchestrator's staging rule forbids passing a directory to `git add`, so a directory here is a path it cannot use.
+
 ## Rules
 
 1. **Do not create a planning file.** The tasklist IS the output.
@@ -197,6 +212,7 @@ Obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`.
 5. **Be concrete.** Each task must be actionable without re-reading the full source file. Include enough context in the `Detail` line.
 6. **Cite sources.** Every task traces back to a specific file. The executor agent needs to know where the full spec lives.
 7. **Timestamps from the clock.** Use `date` for all timestamps — never guess.
+8. **Report the files you wrote.** Every run ends with the `**Files written:**` field of Step 6, `none` included. You do not commit; the dispatcher does, and it can only stage a path something named.
 
 ## Output Style
 

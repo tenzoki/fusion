@@ -102,6 +102,41 @@ export interface DriftReport {
     signature: string;
 }
 /**
+ * The session state file, read once.
+ *
+ * Exported, and paired with `stateField` below, because three modules now ask
+ * `agentstate.yaml` questions — this one, `lib/review-coverage.ts` for the
+ * session anchor, and `lib/staging-drift.ts` for the session's own history file
+ * — and a fourth copy of the same six lines is how a flat read starts
+ * disagreeing with itself about what "absent" means. The split into a file read
+ * and a field read is not decoration: `measureStateDrift` asks five questions of
+ * one file and runs on every guarded tool call, so a per-field read would be
+ * five file reads a call.
+ *
+ * `missing` distinguishes "there is no session in progress" from "there is one
+ * and its state file will not open". Both leave the caller without a value, and
+ * only the caller knows which sentence to say about it, so this reports the
+ * fact and phrases nothing.
+ */
+export declare function readStateFile(root: string): {
+    ok: true;
+    text: string;
+} | {
+    ok: false;
+    missing: boolean;
+};
+/**
+ * First value for `key` anywhere in the state file, quotes stripped.
+ *
+ * Deliberately flat rather than a YAML parse, and deliberately first-match:
+ * this is the same reading `agents/orchestrator.md` documented as a `sed`
+ * one-liner, so the program and the prompt cannot disagree about what a field
+ * says. Every key it is asked for (`commits`, `turn`, `git_head_at_start`,
+ * `history_file`, `directive`) occurs first at the place it means; `work_queue`
+ * entries carry `commit`, which is a different key from `commits`.
+ */
+export declare function stateField(state: string, key: string): string;
+/**
  * Compare every bookkeeping surface with the record that can contradict it.
  *
  * The five rows and their conditions are the ones `agents/orchestrator.md`
