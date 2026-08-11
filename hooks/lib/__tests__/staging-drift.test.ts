@@ -22,6 +22,9 @@
  *
  * 1. **It reproduces the measured defect.** A modified `tasklist.md`, an
  *    untracked history entry and a `.commit-msg-tmp` are three faults, named.
+ * 1b. **It classifies by location before it classifies by name.** An authored
+ *    record whose topic slug says "commit message" is a `record` — the control
+ *    this suite lacked, and the defect it let through (issue `260811-1141`).
  * 2. **It does not cry wolf.** The live example is `shared/backlogs/`, a user's
  *    own note file: it must be REPORTED and must not be a fault. The same for
  *    the machine-written surfaces and for this session's own history file.
@@ -191,6 +194,69 @@ describe("staging drift: the defect it was built for", () => {
         // The prescribed path is quoted, not described — the whole point of the
         // commit-message class is to say where the file belongs instead.
         expect(res.stdout).toContain("/tmp/fusion-commit-msg-<task-id>.txt");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "an authored record whose own name says \"commit message\" is a record, not a message file",
+    () => {
+      withWorkbench((project) => {
+        // The control the suite was missing. Its commit-message case above uses
+        // `.commit-msg-tmp`, the genuine leftover, so nothing here distinguished
+        // "the name matches" from "the file is one". `COMMIT_MESSAGE` used to run
+        // ahead of the store test, and these three real filenames — every one of
+        // them an artifact this workbench actually holds, not a strawman — came
+        // back as `commit-message`, whereupon the model was told to delete them.
+        // The middle one is the record reporting that defect. Issue 260811-1141.
+        const authored = [
+          "shared/history/260810-1810-coder-commit-message-out-of-the-shell.md",
+          "shared/issues/260811-1141_o_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md",
+          "shared/issues/260811-1149_o_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md",
+        ];
+        for (const rel of authored) write(project.root, `fusion-workbench/${rel}`, "an authored record\n");
+
+        const res = runStagingDrift(project.root);
+        expect(res.status).toBe(0);
+
+        const k = keys(res.stdout);
+        expect(k.verdict).toBe("unstaged");
+        expect(k.unstaged).toBe("3");
+
+        for (const rel of authored) {
+          const line = row(res.stdout, rel);
+          expect(line, `no row for ${rel}`).toBeDefined();
+          expect(line).toMatch(/^ {2}record\s+\?\? .*UNSTAGED/);
+        }
+        // Not one of them entered the class that says "delete".
+        expect(res.stdout).not.toContain("commit-message ");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "and the record fault it really is reaches the model, instead of being suppressed",
+    () => {
+      withWorkbench((project) => {
+        // The second half of 260811-1141, and the one that hides the first: the
+        // classes are exclusive, so a record misfiled as `commit-message` never
+        // reached the `record` list and never reached the sentence that asks for
+        // it to be staged. Asserting the class alone would leave that open.
+        const rel = "shared/history/260810-1810-coder-commit-message-out-of-the-shell.md";
+        write(project.root, `fusion-workbench/${rel}`, "an authored record\n");
+        runTracker(project.root, "Bash", { command: "ls" });
+
+        commit(project.root, 1);
+        const after = runTracker(project.root, "Bash", { command: "git commit" });
+
+        const said = after.hookSpecificOutput?.additionalContext ?? "";
+        expect(said).toContain(rel);
+        expect(said).toContain("record(s) under fusion-workbench/ are still uncommitted");
+        expect(said).toContain("260811-0114");
+        // And it is not being handed the destructive sentence for it.
+        expect(said).not.toMatch(/delete it/i);
       });
     },
     CASE_TIMEOUT,

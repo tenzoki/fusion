@@ -23,8 +23,9 @@
  *
  *   0c. STAGING DRIFT, on one measured trigger: HEAD is not where it was on the
  *      previous tool call. It reads `git status --porcelain` over the workbench
- *      and names the authored records — and any commit-message file that landed
- *      inside the workbench — that the commit just made did not carry. Like 0b
+ *      and names the authored records — and any commit-message-shaped file that
+ *      landed inside the workbench where no artifact store owns it — that the
+ *      commit just made did not carry. Like 0b
  *      it is not on the every-tool-call path: an unstaged record mid-Turn is the
  *      normal state, and the moment a missed record becomes a missed record is
  *      the commit. The trigger is READ FROM THE REPOSITORY, never from the

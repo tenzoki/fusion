@@ -21,11 +21,14 @@
  *
  * ## The two halves of the enforcement, and what each can prove
  *
- * **Run time** — `lib/staging-drift.ts` reads any commit-message-shaped file
- * under the workbench as a fault of its own class, whatever its spelling, and
- * names the prescribed path back to the model. That is exercised against real
- * project roots in `staging-drift.test.ts`; here it is asserted only that the
- * classifier and the prompts agree on the path.
+ * **Run time** — `lib/staging-drift.ts` reads a commit-message-shaped file
+ * under the workbench as a fault of its own class, whatever its spelling, so
+ * long as no artifact store owns the path, and names the prescribed path back
+ * to the model. The store scoping is issue `260811-1141`: unscoped, the same
+ * name test claimed authored records whose topic slug says "commit message" and
+ * the model was told to delete them. That is exercised against real project
+ * roots in `staging-drift.test.ts`; here it is asserted only that the classifier
+ * and the prompts agree on the path.
  *
  * **Test time** — this file. It pins the prescription: the prompts must name a
  * `/tmp` path, the module constant must be that same path, and no shipped
@@ -59,11 +62,23 @@ function tmpPaths(text: string): string[] {
 }
 
 /**
- * Every commit-message-shaped path a text names that sits inside the workbench.
+ * Every commit-message-shaped path a text names that sits inside the workbench
+ * where no artifact store owns it.
  *
  * The name pattern is the module's own — `COMMIT_MESSAGE` in
  * `lib/staging-drift.ts` — reached through `classify` rather than transcribed,
  * so the gate and the classifier cannot disagree about what counts as one.
+ *
+ * Reaching through `classify` means this inherits `classify`'s scoping, and
+ * since issue `260811-1141` that scoping is narrower: the name test runs last,
+ * over only what the stores decline to claim. So a prompt line naming
+ * `fusion-workbench/shared/issues/…commit-message….md` is no longer flagged.
+ * That is the intended reading and not a hole — such a path IS an artifact
+ * store's own, a prompt naming one is naming a record, and the over-match it
+ * replaces is what told the model to delete three real records. What this gate
+ * exists to catch is a prompt PRESCRIBING a message file inside the workbench,
+ * and the place a prescription puts one is where no store owns it. Both
+ * controls at the bottom of this file are pinned against that boundary.
  */
 function workbenchMessagePaths(text: string): string[] {
   const out: string[] = [];
@@ -162,5 +177,22 @@ describe("commit-message path: no shipped prompt names one inside the workbench"
   it("negative control: a fixture prescribing the path fails the same check", () => {
     const fixture = "Write the message to `fusion-workbench/commit-message.txt` before committing.";
     expect(workbenchMessagePaths(fixture)).toEqual(["fusion-workbench/commit-message.txt"]);
+  });
+
+  it("positive control: a record ABOUT commit messages is not one, so a prompt may cite it", () => {
+    // The over-match this file inherited (issue `260811-1141`). Every path below
+    // is a real artifact of this workbench; under the old ordering each was a
+    // `commit-message`, so a prompt citing the issue record by name would have
+    // been reported as prescribing a message file inside the workbench.
+    const cited = [
+      "fusion-workbench/shared/history/260810-1810-coder-commit-message-out-of-the-shell.md",
+      "fusion-workbench/shared/issues/260811-1149_o_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md",
+    ];
+    for (const path of cited) {
+      expect(workbenchMessagePaths(`see \`${path}\` for the record`), path).toEqual([]);
+      expect(classify(path.slice("fusion-workbench/".length), "").klass, path).toBe("record");
+    }
+    // And the boundary holds in the other direction: same slug, no store.
+    expect(classify("commit-message-notes.md", "").klass).toBe("commit-message");
   });
 });

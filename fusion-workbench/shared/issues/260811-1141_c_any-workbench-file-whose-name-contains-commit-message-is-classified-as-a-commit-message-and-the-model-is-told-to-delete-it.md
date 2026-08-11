@@ -96,3 +96,21 @@ it inherits the same over-match: `workbenchMessagePaths()` would flag a prompt l
 `staging-drift.test.ts` has no fixture whose record name matches the pattern. Its
 commit-message case (`:163`) uses `.commit-msg-tmp`, the genuine leftover. Add a control with an
 authored record named `…-commit-message-….md` under a store and assert it classifies as `record`.
+
+---
+Resolved: `classify()` in `hooks/lib/staging-drift.ts` now runs the `COMMIT_MESSAGE` name test
+**last**, over only what `LIVE_STATE`, `stashes/`, `ROOT_RECORDS` and `STORES` have all declined to
+claim — the record's first cut ("scope the pattern"), taken over the filename-shape cut because
+every other class here is already decided by location and the store-shape convention has exceptions
+the date-stamp pattern does not cover. The three real records named in the Evidence section now
+classify as `record` and reach the unstaged-record fault list, closing both halves: the destructive
+instruction and the suppression behind it. Stated cost, carried in the code: a commit message
+genuinely dropped inside a store is read as an unstaged `record`, so the model stages it rather than
+deleting it and the `/tmp` sentence is not printed for it — a misread in the safe direction.
+`stagingSentence()` no longer says "Delete it" unconditionally; it says read the file first, and why.
+`agents/orchestrator.md` `## Staging check` class table carries the same wording, and the prose at
+`agents/orchestrator.md:418`, `skills/commit/SKILL.md` and `hooks/tracker.ts` was narrowed to match.
+Tests: `staging-drift.test.ts` gains the missing control (all three real filenames, asserted
+`record`) plus a tracker case asserting the suppressed record fault now reaches the model;
+`commit-message-path.test.ts` gains a control pinning the boundary in both directions and documents
+the narrowing its `workbenchMessagePaths()` inherits. `cd hooks && npm test` — 1246 passed, exit 0.

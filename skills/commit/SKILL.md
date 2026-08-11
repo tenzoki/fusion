@@ -88,8 +88,9 @@ is the tree `git status` reports on, so a message file written there survives as
 a leftover. Measured — `fusion-workbench/.commit-msg-tmp`, holding one commit's
 message, at a path no helper in `agents/`, `skills/`, `bin/` or `hooks/` names
 (`260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`).
-`hooks/lib/staging-drift.ts` reads any commit-message-shaped file under the
-workbench as a fault and says so.
+`hooks/lib/staging-drift.ts` reads a commit-message-shaped file under the
+workbench as a fault and says so — scoped to what no artifact store owns, so a
+record you authored *about* commit messages is not mistaken for one.
 
 Write the scratch file with a **quoted** heredoc delimiter, so the shell expands
 nothing in the message — a body written under a bare `<<EOF` still substitutes

@@ -64,11 +64,13 @@
  *
  * So every entry is classified and every entry is printed, with the reason:
  *
- *   - `commit-message` — a file whose name says it holds a commit message. A
- *     fault of its own kind: Step 3b prescribes
+ *   - `commit-message` — a file whose name says it holds a commit message AND
+ *     that no artifact store owns. A fault of its own kind: Step 3b prescribes
  *     `/tmp/fusion-commit-msg-<task-id>.txt` because `/tmp` is swept and the
  *     workbench is not, and `.commit-msg-tmp` is what improvising instead
- *     leaves behind.
+ *     leaves behind. The store scoping is not a detail — without it the class
+ *     also claimed every authored record whose topic slug says "commit
+ *     message", and told the model to delete it (issue `260811-1141`).
  *   - `record` — an authored artifact: the root-anchored `tasklist.md` and
  *     `portfolio.md`, a Circle's `*_circle.md`, or anything under an artifact
  *     store. These are what a staging list is supposed to name.
@@ -194,6 +196,12 @@ const ROOT_RECORDS = [
  * over `agents/`, `skills/`, `bin/` and `hooks/` returned nothing at the time
  * the file appeared — no helper put it there, so no helper's spelling bounds
  * what to look for.
+ *
+ * Broad is right for finding the next improvisation and wrong as a sole
+ * discriminator, so this is NOT one: `classify` applies it last, over only what
+ * `LIVE_STATE`, `stashes/`, `ROOT_RECORDS` and `STORES` have all declined to
+ * claim. See the ordering contract on `classify` for why, and for what the
+ * scoping gives up.
  */
 const COMMIT_MESSAGE = /commit[-._]?(msg|message)/i;
 /* ------------------------------------------------------------------ *
@@ -238,22 +246,47 @@ function unquote(raw) {
 /**
  * Which class a workbench-relative path falls in, and why.
  *
- * The order is the contract. `commit-message` runs first so a message file
- * dropped inside a store is still read as one; live state runs before the store
- * test so the session's own history file is not reported as a record it has not
- * finished writing; `stashes/` runs before it too, because a stash snapshot is
- * a frozen copy owned by `/fusion:circle-stash` rather than a record this
- * session authored.
+ * The order is the contract, and the contract is one sentence: **every location
+ * judgment runs first, the name test runs last.** Live state runs before the
+ * store test so the session's own history file is not reported as a record it
+ * has not finished writing; `stashes/` runs before it too, because a stash
+ * snapshot is a frozen copy owned by `/fusion:circle-stash` rather than a
+ * record this session authored; and `commit-message` runs at the end, claiming
+ * only what no store owns and `ROOT_RECORDS` does not name.
+ *
+ * ## Why `commit-message` no longer runs first
+ *
+ * It did, so that a message file dropped inside a store was still read as one.
+ * `COMMIT_MESSAGE` has no directory scope, so running it first also claimed
+ * every authored record whose topic slug happens to say "commit message" —
+ * three such records existed in this workbench the day it was filed, one of
+ * them the record reporting this very defect — and `stagingSentence` then told
+ * the model to delete them. Two failures in one, because the classes are
+ * exclusive: the destructive instruction, and the silent suppression of the
+ * unstaged `record` fault that same file actually was. Issue `260811-1141`.
+ *
+ * The distinguishing fact was never the name. A leftover message file is one no
+ * store owns; an authored record is one a store does. That is a question about
+ * location, which is how every other class here is already decided — so the fix
+ * is ordering, not a second name pattern.
+ *
+ * ## What the scoping gives up, stated rather than glossed
+ *
+ * A commit message genuinely written into `shared/issues/` or a Circle's
+ * `planning/` is no longer read as a message file. It comes back as an unstaged
+ * `record`: the model is told to stage it, not to delete it, so the leftover
+ * enters a commit instead of being swept, and the sentence naming
+ * `PRESCRIBED_MESSAGE_PATH` is not printed for it. That case is real. It is also
+ * the weaker of the two, on two counts — the misread runs in the safe direction
+ * (stage, never delete), and the improvisation this class exists to catch is
+ * `.commit-msg-tmp` at the workbench root, which the scoping still catches,
+ * along with any other spelling anywhere the stores do not reach. The ordering
+ * it replaces misread authored records in the destructive direction, and did so
+ * demonstrably, three times over, before anything hypothetical was weighed.
  */
 export function classify(rel, sessionHistory) {
     const segments = rel.split("/");
     const name = basename(rel);
-    if (COMMIT_MESSAGE.test(name)) {
-        return {
-            klass: "commit-message",
-            why: `a commit message inside the workbench — Step 3b prescribes ${PRESCRIBED_MESSAGE_PATH}`,
-        };
-    }
     for (const live of LIVE_STATE) {
         if (rel === live.path)
             return { klass: "in-flight", why: live.why };
@@ -285,6 +318,14 @@ export function classify(rel, sessionHistory) {
         if (segments.includes(store)) {
             return { klass: "record", why: `an authored record under the ${store} store` };
         }
+    }
+    // Last, and only over what nothing above claimed.
+    if (COMMIT_MESSAGE.test(name)) {
+        return {
+            klass: "commit-message",
+            why: "a commit-message-shaped name that no artifact store owns — Step 3b prescribes " +
+                PRESCRIBED_MESSAGE_PATH,
+        };
     }
     return {
         klass: "unclassified",
@@ -446,9 +487,15 @@ export function stagingSentence(report) {
             ". No staging list named them, so no commit could carry them.");
     }
     if (messages.length > 0) {
-        parts.push(`A commit-message file is sitting in the workbench: ${messages.map((r) => r.path).join(", ")}. ` +
+        parts.push(`A commit-message-shaped file that no artifact store owns is sitting in the workbench: ` +
+            `${messages.map((r) => r.path).join(", ")}. ` +
             `Step 3b writes the message to ${PRESCRIBED_MESSAGE_PATH} — /tmp is swept and the workbench is not, ` +
-            "and the workbench is the tree git status reports on. Delete it and use the prescribed path.");
+            "and the workbench is the tree git status reports on. Read the file before you act on it: if it is a " +
+            "leftover commit message, delete it and write the next one to the prescribed path; if it is something " +
+            "a session authored, name it to the user and stage it instead. This class is decided by the file's " +
+            "NAME once every store has declined to claim it, so a false positive can enter it, and deleting an " +
+            "authored file on a name match is not recoverable — issue 260811-1141 is what that cost when the " +
+            "instruction was unconditional.");
     }
     parts.push("This is issue 260811-0114: a queue rebuild and its history file sat in the working tree for eighteen " +
         "commits because the rebuild ran before the first task and no task's staging list had a reason to name " +
