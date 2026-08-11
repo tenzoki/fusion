@@ -109,3 +109,40 @@ filed almost as many as the work closed, which is the honest shape of a cleanup 
 first Turn built three new mechanisms.
 
 Suite green at 1284 tests. Drift check clean, staging check clean, working tree committed.
+
+## Resumed — 260811-1900
+
+The session was interrupted during Turn 4 and resumed at the user's choice ("Fortsetzen ab
+Turn 4"). It keeps this history file rather than opening a second one: a session holds one
+history file for its whole life, and `session.history_file` in `agentstate.yaml` is the resume
+anchor that names it.
+
+**State at resume.** Turn 4 in flight, 24 commits over `7785330..9f84254`, 74-entry queue built
+at 15:57 from 72 open records. Six entries had landed (`c79b9a9` task 1, `36984d7` task 2,
+`9f84254` tasks 3 to 6), leaving 68 outstanding of which 22 are blocked: 20 need a human answer
+and 2 need the user at a machine this session cannot reach. Open records: 66, being 56 in
+`shared/issues/` and 10 inside already-closed Circles.
+
+**Drift check at resume: clean.** All four rows agree — `progress.commits` 24 against git's 24
+over `7785330..HEAD`, `progress.turn` 4 against 4 `turn_start` events, `session.history_file`
+present on disk, and the Directive line matching the state file. No Circle is active, so the
+Turn-log row did not apply.
+
+**The event log froze again in Turn 4, and the drift check did not see it.** Nothing was emitted
+after `turn_start` for Turn 4 while `36984d7` and `9f84254` landed, closing five queue entries.
+This is the third instance in this session of the defect filed as `260811-1614`, and it confirms
+that record's substance: the drift check counts `turn_start` events, so a Turn that commits
+without recording what it committed reads as clean throughout. Queue entry 16 is the fix for
+exactly this and is still outstanding.
+
+**Setup snapshot at resume.** Plugin 7.2.0, HEAD `9f84254`, guard not halted
+(`haltActive: false`), domain `code` from `code_files=134`, `data_files=21`,
+`counted_by=git-ls-files`. Churn ranking: 451 entries, 213 for files no longer on disk and
+excluded by design, 10 ranked, top `hooks/lib/__tests__/rules-emission-golden.test.ts` at 51.
+Circles: 1 anticipated, 10 closed, 1 superseded, none active, so the portfolio hint was printed.
+
+**The queue's ground: unaffiliated backlog, current.** `tasklist.md` names no Circle and none is
+active, which is row 4 of the ground table. The check as written in `agents/orchestrator.md`
+misreports it as stale, because its second regex alternative matches any backtick-quoted token in
+the head line and picks up the prose word `.active-circle` as if it were a Circle name. Filed
+against the prompt rather than worked around here.

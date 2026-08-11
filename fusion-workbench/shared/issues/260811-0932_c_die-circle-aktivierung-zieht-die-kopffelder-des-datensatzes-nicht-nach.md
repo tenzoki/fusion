@@ -83,3 +83,40 @@ records to open here.
 
 The record enters this queue at its original stamp rather than at the transfer time, so its age
 is the age of the finding.
+
+---
+
+## Resolved (260811-2115) — option 1, the orchestrator owns the head fields
+
+Decided by the user at a gate on 260811-2050: option 1 of **Denkbare Wege**. Options 2 and 3
+were not implemented and the shaper's `portfolio-activation` mode stays unreachable by an
+agent.
+
+**The permission.** `agents/orchestrator.md` `## Scope` no longer says the Closure note is the
+only Circle-record content write. It enumerates three: the Closure note, the `## Turn log`
+entry, and the three head fields. The Turn-log entry was already required elsewhere in the
+same prompt (`### Drift check` measures the orchestrator against it, and queue entry 60 names
+the same write), so the word "only" was false before this change as well as after it.
+
+**Where the permission is exercised** — a new section `## Circle head fields` in
+`agents/orchestrator.md` states when each field is written and defers the field semantics to
+`rules/circle-records.md` `## Circle record template` rather than restating them. Four acts
+carry the write, each in the same command as the act rather than beside it: the `_a_`→`_t_`
+activation, Setup step 6 (the session-history file it creates), Step 0b.2 step 3 (the plan the
+planner returns), and Phase 4 step 3 (`**Status:**` to match the closing marker).
+
+**`/fusion:next` cites rather than restates.** Its Step 6.2 sets `**Status:** active` in the
+same shell call as the rename and points at the orchestrator section for everything else. It
+leaves `**Active session history:**` at `(none yet)` — no session is running the Circle at
+that moment, and Setup step 6 of the session that follows fills it — and leaves
+`**Active spec/plan:**` untouched, because the skill has no way to find the right file and a
+wrong path is worse than an empty one. Its `## Boundaries` paragraph was corrected in the same
+change; it claimed the skill "never writes Circle *content*".
+
+**On the `**Status:**` field.** Nothing about queue entry 58 is decided here and the field is
+not deleted. It is now set at both ends of a Circle's life instead of one, which is what keeps
+this change from producing the inverse contradiction the entry already measured (a record
+reading `active` under a `_c_` marker). The live specimens were not hand-corrected.
+
+Marker `_o_` → `_c_`. Verification: `cd hooks && npm test` — exit 0, 52 files, 1335 tests.
+History: `shared/history/260811-2115-coder-circle-head-fields-at-activation.md`.
