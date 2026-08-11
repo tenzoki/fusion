@@ -12,6 +12,15 @@
  *      most of all. It writes nothing but its own throttle record. See
  *      lib/state-drift.ts and `measureStateDriftForModel` below.
  *
+ *   0b. REVIEW COVERAGE, on one narrow trigger: a review file landing under a
+ *      `reviews/` store. It tiles the review files' declared ranges against the
+ *      session's commit range and names, commit by commit, what no reviewer has
+ *      opened — plus the files the last pass declared it did not open, which are
+ *      the next dispatch's scope. It is deliberately NOT on the every-tool-call
+ *      path job 0 sits on: an uncovered range mid-Turn is the normal state, and
+ *      a check that fires on its commonest path is one its reader learns to
+ *      ignore. See lib/review-coverage.ts and `measureReviewCoverageForModel`.
+ *
  *   1. MEASURE THE PROTECTED PATHS. Take a second fingerprint of every path on
  *      `guard.protectedPaths` and compare it with the one `guard.ts` recorded
  *      before the tool ran. Anything that changed is written back to what the

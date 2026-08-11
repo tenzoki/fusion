@@ -439,11 +439,30 @@ After each completed task:
 After all tasks in the Turn are processed:
 
 1. **Determine what changed this Turn.** Use `git diff <turn-start-HEAD>..HEAD --name-only` to list changed files.
-2. **Route reviews:**
-   - Code files changed (`.go`, `.ts`, `.tsx`, `.py`, `.js`, `.rs`, `.java`, build files) → emit `review_start` event, invoke `coderev` scoped to only the changed files, emit `review_done`
-   - Ontology/data files changed (`.yaml`, `.json`, `.toml`, `.csv` in `ontology/` or `manifests/`) → emit `review_start` event, invoke `ontorev` scoped to only the changed files, emit `review_done`
-   - No changes → skip review
-3. **Collect review findings.** New issues filed by reviewers enter the next Turn's work queue. Update the live dashboard with review results.
+2. **Ask what the previous pass left behind, before you write the dispatch prompt.** Run:
+
+   ```bash
+   if [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-review-coverage" ]; then
+     "$FUSION_PLUGIN_ROOT/bin/fusion-review-coverage"
+   else
+     echo "fusion: no bin/fusion-review-coverage in the installed plugin at $FUSION_PLUGIN_ROOT — no coverage read taken" >&2
+   fi
+   ```
+
+   Two of its lines change what you dispatch, and neither is advisory:
+
+   - **`carried=`** — the files the last review declared, in its own `**Not-opened:**` field, that it did not open. **Add every one of them to this dispatch's scope**, on top of the Turn's own changed files. This is an obligation, not a footnote: the review that produced issue `260810-1205` named three files it had not opened because concurrent tasks held them, those were exactly the files two of the seven unreviewed commits changed, and nothing downstream re-queued them. If a file on that list has since been reviewed, the reviewer will say so cheaply; skipping it is what has already cost a release. `carried=(not recorded)` means no review carried the field — say so in the dispatch rather than reading it as `none`.
+   - **`uncovered N`** followed by one `uncovered <hash> <subject>` line per commit — commits in this session's range that no review's declared range contains. **Name those commits in the dispatch prompt.** A commit from an earlier Turn appearing here is a hole in the tiling, not old news.
+
+   The `[ -x ]` guard is the one the drift check and Setup Step 5's churn ranking carry, for the same reason: `$FUSION_PLUGIN_ROOT` is the installed copy, pinned for the whole session, so a helper added between releases is simply absent there and a bare call is exit 127. **`verdict=uncovered` is a line of output, never an exit code and never a blocker** — whether a release may go out over an uncovered range is a decision nobody has filed, and this step does not pre-empt it.
+
+3. **Route reviews:**
+   - Code files changed (`.go`, `.ts`, `.tsx`, `.py`, `.js`, `.rs`, `.java`, build files) → emit `review_start` event, invoke `coderev` scoped to the changed files **plus the carried `**Not-opened:**` list from step 2**, emit `review_done`
+   - Ontology/data files changed (`.yaml`, `.json`, `.toml`, `.csv` in `ontology/` or `manifests/`) → emit `review_start` event, invoke `ontorev` scoped to the changed files **plus the carried list**, emit `review_done`
+   - No changes **and** an empty carried list → skip review. A Turn that changed nothing but inherited unopened files from the previous pass is **not** a skip: dispatch on the carried list alone.
+4. **Collect review findings.** New issues filed by reviewers enter the next Turn's work queue. Update the live dashboard with review results.
+
+**What runs whether or not you read this step.** `hooks/tracker.ts` runs the same measurement when a review file lands under a reviews store, and names the uncovered commits and the carried list back to you in the tool result. It is on that one trigger and not on every tool call, because an uncovered range *mid-Turn* is the normal state and a check that fires on its commonest path is one you learn to read past (`### Drift check`, and issue `260810-0710` behind it). So the reminder arrives at the moment the next dispatch's scope is being decided — but it reports, and only you can widen the scope.
 
 ### Step 3c-bis: Coherence Gate (per-Turn)
 
@@ -556,6 +575,13 @@ Update the history file `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` (the 
 <!-- RECONCILER-OWNED — appended at Phase 3 step 3. Format defined in agents/reconciler.md Step 4. Do not overwrite or modify. -->
 (Section appended by reconciler in Phase 3. Format defined in `agents/reconciler.md` Step 4. Contains: aggregate verdict, three-edge summary, Rebalance recommendation.)
 
+## Review coverage
+
+**Range:** `<session-start>..<HEAD>` — <N> commits
+**Covered by:** <one line per review file, with its `**Reviewed-range:**`>
+**Not covered:** <`none`, or one line per commit: `<short hash> <subject>`>
+**Carried out-of-scope files:** <the last review's `**Not-opened:**` list, or `none`, or `(not recorded)`>
+
 ## Remaining Work
 
 <List of tasks still open, with blocking reasons>
@@ -566,6 +592,28 @@ Update the history file `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` (the 
 |------|---------|------|
 | <short hash> | <summary> | <task ID> |
 ```
+
+### The review-coverage section is computed, not recalled
+
+Fill `## Review coverage` from `bin/fusion-review-coverage`, run before the Cleanup step deletes `agentstate.yaml` (the helper reads `session.git_head_at_start` from it for the range's start):
+
+```bash
+if [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-review-coverage" ]; then
+  "$FUSION_PLUGIN_ROOT/bin/fusion-review-coverage"
+else
+  echo "fusion: no bin/fusion-review-coverage in the installed plugin at $FUSION_PLUGIN_ROOT — no coverage read taken" >&2
+fi
+```
+
+Three properties of that section are the acceptance criteria of issue `260810-1205`, and each of them is a thing the session that filed it did wrong:
+
+1. **It is measured against the session's whole range, not against the last Turn.** That session wrote *"Turn 5's own commit has had no review pass"* — one commit — while seven commits across three Turns had reached HEAD and a pushed tag unread. It did not hide the gap; it measured the gap against the wrong thing.
+2. **An uncovered range is named commit by commit, never counted.** Copy the helper's `uncovered <hash> <subject>` lines through verbatim. A count is what let seven read as one; a list of seven hashes cannot.
+3. **It is derived from the review files' own `**Reviewed-range:**` fields**, which is why those are mandated in `agents/coderev.md` and `agents/ontorev.md`. A review the helper reports `UNUSABLE (...)` contributes no coverage — carry that line into the section too rather than dropping it, because a review that ran and cannot be tiled is a different fact from a range nobody reviewed, and the fix for it is a reviewer prompt rather than another pass.
+
+If the helper reports `verdict=unchecked`, write its `why=` line into the section verbatim. An unmeasurable range is reported as unmeasurable and never as a clean one.
+
+**No field for this goes into `agentstate.yaml`, deliberately.** Issue `260810-1205` names the state file as carrying no review-coverage marker, and it stays that way. A `reviewed_through` field would be a fifth surface a session can pass a boundary without writing — the exact class issue `260801-2038` measured freezing in six sessions out of six — answering a question the review files already answer unfreezably. Writing the review file *is* the review, the way a commit is the work rather than a note about it, so the review files are the record and the range is recomputed from them. The one field the helper does read from the state file, `session.git_head_at_start`, was already there for the drift check.
 
 ### Sequence Diagram
 
@@ -690,6 +738,7 @@ A queue carrying no `**Active Circle:**` line at all is not a row here, because 
 
 - How many tasks resolved vs remaining
 - How many commits created
+- **Which commits in the session's range no review opened** — the hashes, from the `## Review coverage` section, not a count. `none` when the range is tiled. This is the statement issue `260810-1205` was filed about; the session that filed it reported one where there were seven.
 - Whether any circuit breakers tripped
 - Path to the history file
 - Mention that the live dashboard and event log are available for review

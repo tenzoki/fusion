@@ -47,5 +47,42 @@ The release process in `CLAUDE.md` has a validate gate, a smoke test and a guard
 
 ## Acceptance criteria
 
-- [ ] The session-end summary's review-coverage statement is computed from the review files' ranges, and a range not covered is named commit by commit.
-- [ ] A reviewer's declared out-of-scope file list is carried into the next review dispatch's scope.
+- [x] The session-end summary's review-coverage statement is computed from the review files' ranges, and a range not covered is named commit by commit.
+- [x] A reviewer's declared out-of-scope file list is carried into the next review dispatch's scope.
+
+---
+
+**Resolved:** task `I:260810-1205-review-coverage`, coder, 260811-1058. History:
+`shared/history/260811-1058-review-coverage-measured-against-the-range.md`.
+
+Both in-scope pieces landed. Piece 3 — whether a release may go out over an uncovered range
+— was **not built**, as the record and the queue entry both required; it remains an unfiled
+decision belonging beside `shared/decisions/260810-0710_o_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`.
+
+**One finding the fix had to close before it could start.** This record says the data needed
+to tile the range is on disk "in the filenames", and it is — but not in a form a program can
+read. Ten `coderev` files carried four spellings of the range (`**Range:**`, `**Scope:**`,
+`**Scope reviewed:**`, `**Scope as dispatched:**`), several carried none, and two filenames
+ended in `-to-head`, which names a different commit every day it is read. A computation over
+a format nobody mandated returns nothing and calls it coverage. So the range is now a
+mandated header field — `**Reviewed-range:**` (two resolved short hashes) and
+`**Not-opened:**` (a backticked list or the bare word `none`) — in `agents/coderev.md` and
+`agents/ontorev.md`, gated by `hooks/lib/__tests__/review-coverage-mandate.test.ts`. The ten
+files already on disk stay unusable and are reported by name with the reason; their ranges
+are not recoverable from their text.
+
+**What reads it.** `hooks/lib/review-coverage.ts` expands every declared range with
+`git rev-list`, unions them, and subtracts from `git rev-list <session-start>..HEAD` — a set
+difference over commits, so the gap comes back as commits and not as a count.
+`bin/fusion-review-coverage` prints it for `agents/orchestrator.md` Step 3c (which adds the
+carried `**Not-opened:**` list to the next dispatch's scope) and Phase 4 (which names the gap
+commit by commit in a new `## Review coverage` section). `hooks/tracker.ts` runs the same
+measurement unasked when a review file lands, so the carried list arrives at the moment the
+next dispatch's scope is decided rather than sitting in a file nobody reopens.
+
+**`agentstate.yaml` deliberately gained no field**, contrary to what this record's *Affects*
+line anticipates. A `reviewed_through` marker would be a fifth surface a session can pass a
+boundary without writing — the class issue `260801-2038` measured freezing in six sessions
+out of six — answering a question the review files already answer unfreezably: writing the
+review file *is* the review. The one field the measurement reads,
+`session.git_head_at_start`, was already there for the drift check.

@@ -12,6 +12,15 @@
  *      most of all. It writes nothing but its own throttle record. See
  *      lib/state-drift.ts and `measureStateDriftForModel` below.
  *
+ *   0b. REVIEW COVERAGE, on one narrow trigger: a review file landing under a
+ *      `reviews/` store. It tiles the review files' declared ranges against the
+ *      session's commit range and names, commit by commit, what no reviewer has
+ *      opened — plus the files the last pass declared it did not open, which are
+ *      the next dispatch's scope. It is deliberately NOT on the every-tool-call
+ *      path job 0 sits on: an uncovered range mid-Turn is the normal state, and
+ *      a check that fires on its commonest path is one its reader learns to
+ *      ignore. See lib/review-coverage.ts and `measureReviewCoverageForModel`.
+ *
  *   1. MEASURE THE PROTECTED PATHS. Take a second fingerprint of every path on
  *      `guard.protectedPaths` and compare it with the one `guard.ts` recorded
  *      before the tool ran. Anything that changed is written back to what the
@@ -53,7 +62,7 @@
  * Protocol: reads JSON from stdin, writes {} to stdout, or a
  * `hookSpecificOutput.additionalContext` envelope when something was restored.
  */
-import { resolve } from "node:path";
+import { resolve, sep } from "node:path";
 import { analyzeChurn, churnKey, loadChurn, recordChange, saveChurn, } from "./lib/churn.js";
 import { loadConfig, projectDeclaredProtectedPaths } from "./lib/config.js";
 import { matchesAny } from "./lib/paths.js";
@@ -68,6 +77,7 @@ import { findWorkbenchRoot } from "./lib/workbench-root.js";
 import { foldCase } from "./lib/paths.js";
 import { isObservedRulePath, rulesWriteDetail, rulesWriteExemptionActive, } from "./lib/rules-write-exemption.js";
 import { driftSentence, lastReported, measureStateDrift, recordReported, } from "./lib/state-drift.js";
+import { coverageSentence, lastReportedCoverage, measureReviewCoverage, recordReportedCoverage, } from "./lib/review-coverage.js";
 /**
  * The four tools whose payload NAMES the path they write.
  *
@@ -666,6 +676,70 @@ function measureStateDriftForModel() {
     bestEffort("tracker", () => emitEvent("state_drift", undefined, undefined, detail));
     return driftSentence(report);
 }
+/**
+ * Review coverage, measured when a review file lands — issue `260810-1205`.
+ *
+ * ## The trigger is the whole design
+ *
+ * This runs on ONE condition: a write tool just wrote a `.md` file under a
+ * `reviews/` store inside the workbench. It is not on the every-tool-call path
+ * the state-drift measurement sits on, and the asymmetry is deliberate rather
+ * than an omission.
+ *
+ * A stale `agentstate.yaml` is a fault at every moment after the commit that
+ * outdated it, so measuring it on every call reports a fault only when there is
+ * one. An uncovered commit range mid-Turn is the **normal and correct** state —
+ * review runs at Step 3c, after the Turn's tasks have landed — so the same
+ * cadence here would report a fault on the commonest path, and a check that
+ * cries wolf on its commonest path teaches its reader to ignore it. That is
+ * issue `260810-0710` arriving one level up.
+ *
+ * A review file landing is the moment the answer is actionable and the moment
+ * it is a fault to ignore: the range is now as tiled as this pass is going to
+ * make it, and the next dispatch's scope is being decided. Which is the point —
+ * the defect was not that the previous pass's declared exclusions were unknown,
+ * it was that they sat in a file nobody reopened. Reporting them here makes the
+ * carried list an obligation that arrives rather than a footnote.
+ *
+ * Like `measureStateDriftForModel`, it writes nothing but its own throttle
+ * record, it reports once per gap rather than once per file, and it is anchored
+ * at the workbench root — so it is NOT stood down in fusion's own repository,
+ * which is where issue `260810-1205` was measured.
+ */
+function measureReviewCoverageForModel(input) {
+    if (!WRITE_TOOLS.includes(input.tool_name))
+        return null;
+    const written = extractFilePath(input.tool_input);
+    if (written === null)
+        return null;
+    const root = findWorkbenchRoot();
+    if (root === null)
+        return null;
+    // Case-folded on the same helper the protected-path measurement uses, so a
+    // case-insensitive file system does not decide whether this fires.
+    const abs = foldCase(resolve(process.cwd(), written));
+    const store = foldCase(resolve(root, "fusion-workbench"));
+    if (!abs.startsWith(store + sep))
+        return null;
+    if (!abs.endsWith(".md"))
+        return null;
+    if (!abs.includes(sep + "reviews" + sep))
+        return null;
+    const report = measureReviewCoverage(root);
+    if (report.why !== "")
+        return null; // no session window to measure against
+    const seen = lastReportedCoverage(root);
+    if (report.signature === seen)
+        return null;
+    bestEffort("tracker", () => recordReportedCoverage(root, report.signature));
+    const sentence = coverageSentence(report);
+    if (sentence === "")
+        return null;
+    const detail = `uncovered=${report.uncovered.map((c) => c.short).join(",") || "none"}; ` +
+        `carried=${report.carried.join(",") || "none"}`;
+    bestEffort("tracker", () => emitEvent("review_coverage", input.tool_name, written, detail));
+    return sentence;
+}
 async function main() {
     // Read hook input from stdin
     const chunks = [];
@@ -695,6 +769,14 @@ async function main() {
     bestEffort("tracker", () => {
         drift = measureStateDriftForModel();
     });
+    // Review coverage, on the narrow trigger of a review file landing. Same
+    // anchoring and the same reason for not standing down in fusion's own
+    // repository; see `measureReviewCoverageForModel` for why its trigger is a
+    // single act rather than every tool call.
+    let coverage = null;
+    bestEffort("tracker", () => {
+        coverage = measureReviewCoverageForModel(input);
+    });
     // Self-detect: cwd is fusion's own repo, so CHURN stands down — plugin
     // development edits are not meaningful churn signal.
     //
@@ -708,7 +790,9 @@ async function main() {
     // and the measurement would have reverted a fusion developer's own edits to
     // `rules/` and `agents/` once its root moved up.
     if (isFusionPluginCwd()) {
-        respond(drift ?? undefined);
+        const sentences = [drift, coverage];
+        const standDown = sentences.filter((t) => t !== null).join(" ");
+        respond(standDown === "" ? undefined : standDown);
         return;
     }
     // The measurement runs on EVERY guarded tool call — Bash included, and before
@@ -728,7 +812,8 @@ async function main() {
     // reports a file that was written back and a halt the user has to clear, the
     // other reports a number that is stale. Joined rather than chosen between,
     // because dropping either would be a silence.
-    const context = [measured, drift].filter((s) => s !== null).join(" ");
+    const parts = [measured, drift, coverage];
+    const context = parts.filter((s) => s !== null).join(" ");
     answer("tracker", () => respond(context === "" ? undefined : context), () => trackChurn(input));
 }
 main().catch((err) => {

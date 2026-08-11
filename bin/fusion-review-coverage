@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+# fusion-review-coverage — tile the review files' declared ranges against the
+# session's commit range, and name what no reviewer opened.
+#
+# Usage:
+#   fusion-review-coverage [--since <ref>] [--head <ref>]
+#
+# `--since` defaults to `session.git_head_at_start` in
+# fusion-workbench/agentstate.yaml — the session's own anchor, already recorded
+# for the drift check and for Step 3c's `git diff`, so review coverage needs no
+# field of its own. `--head` defaults to HEAD.
+#
+# Output on stdout, one KEY=value per line, then one line per uncovered commit
+# and one per review considered:
+#
+#   anchor=workbench-root
+#   since=8a49fd5
+#   head=HEAD
+#   commits=22
+#   reviews=3
+#   unusable=1
+#   uncovered=7
+#   verdict=uncovered
+#     uncovered 7785330 chore(workbench): the reconciler's annotations land
+#     review shared/reviews/260810-2110-….md range=da8c9db..b3cc034 not-opened=none covers=5
+#   carried=agents/orchestrator.md, skills/next/SKILL.md
+#   carried-from=shared/reviews/260810-2110-….md
+#
+# Exit codes:
+#   0  the check ran. `verdict=` says what it found. Finding an uncovered range
+#      is NOT a non-zero exit, deliberately — same reason bin/fusion-state-drift
+#      gives (issue 260810-0710): a check that hands its verdict to an exit code
+#      teaches its reader to ignore that code.
+#   1  usage error.
+#   2  no fusion workbench above the working directory; nothing to check.
+#   3  the plugin's compiled hooks are missing, so nothing could be asked. Its
+#      own code and not 2: "there is no session to check" is an answer about the
+#      project, and a broken install must never be reported as one.
+#
+# ---------------------------------------------------------------------------
+# Why this exists
+#
+# Issue 260810-1205: sixteen commits landed in 18b6094..ed87d87, two coderev
+# passes ran, their ranges did not tile the range, and seven code-bearing
+# commits reached HEAD and a pushed tag with nobody having opened them. The
+# session's own report said ONE unreviewed commit, because it measured the gap
+# against the last Turn instead of against the range. Turn 2's omission was
+# declared rather than missed — the first pass named three files it did not open
+# because concurrent tasks held them, and those are exactly the files two of the
+# unreviewed commits changed. Nothing downstream read that sentence.
+#
+# The data was already on disk, in the review files, in four different spellings
+# with two of the filenames ending in `-to-head`. So the range is now a mandated
+# header field in agents/coderev.md and agents/ontorev.md, and this reads it.
+#
+# It reports. It is not a release gate — whether a release may go out over an
+# uncovered range is an unfiled decision, and building the gate ahead of it was
+# explicitly out of scope.
+#
+# The work is hooks/dist/review-coverage.js, resolved relative to this script
+# rather than through $FUSION_PLUGIN_ROOT, so an install copy and a work tree
+# each run their own build. node is already a hard requirement — the guard hooks
+# are node programs (hooks/hooks.json).
+
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+entry="$here/../hooks/dist/review-coverage.js"
+
+if [ ! -f "$entry" ]; then
+  echo "fusion-review-coverage: $entry is missing — the plugin's compiled hooks are not installed." >&2
+  exit 3
+fi
+
+exec node "$entry" "$@"

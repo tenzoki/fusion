@@ -444,14 +444,18 @@ Nothing from here to task 38 needs a user answer. Task 1 comes first for the rea
 ### 4. Measure review coverage against the range, not against the last Turn
 
 - **ID:** `I:260810-1205-review-coverage`
-- **Source:** `fusion-workbench/shared/issues/260810-1205_o_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md`
+- **Source:** `fusion-workbench/shared/issues/260810-1205_c_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md`
 - **Executor:** `coder`
 - **Files:** `agents/orchestrator.md` (the Turn loop's review dispatch, and the session-end summary);
   `fusion-workbench/agentstate.yaml` (which carries no review-coverage field)
 - **Depends on:** task 2 — both add an obligation to the orchestrator's session bookkeeping, in the
   same file; land the freeze fix first so this one rides the mechanism rather than inventing a second.
 - **Priority:** high
-- **Status:** [ ] open
+- **Status:** [x] done — `hooks/lib/review-coverage.ts` + `bin/fusion-review-coverage`, the two mandated
+  review-header fields in `agents/coderev.md` / `agents/ontorev.md`, Step 3c's widened dispatch scope and
+  Phase 4's `## Review coverage` section. History:
+  `shared/history/260811-1058-review-coverage-measured-against-the-range.md`. The release gate (piece 3)
+  was **not** built, as required. Source record renamed `_o_` → `_c_`.
 - **Detail:** Sixteen commits landed in `18b6094..ed87d87`. Two `coderev` passes ran, their ranges do
   not tile the session's range, and the untiled part was never noticed: seven code-bearing commits
   reached HEAD and a **pushed tag** with no reviewer having opened them. Turn 2's omission was

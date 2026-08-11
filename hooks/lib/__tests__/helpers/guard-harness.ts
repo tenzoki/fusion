@@ -144,9 +144,19 @@ export function stateDriftEntry(): GuardEntry {
   return hookEntry("state-drift");
 }
 
-/** Shared resolution for all five entry points. See `guardEntry`. */
+export function reviewCoverageEntry(): GuardEntry {
+  return hookEntry("review-coverage");
+}
+
+/** Shared resolution for all six entry points. See `guardEntry`. */
 function hookEntry(
-  name: "guard" | "tracker" | "session-start" | "churn-rank" | "state-drift",
+  name:
+    | "guard"
+    | "tracker"
+    | "session-start"
+    | "churn-rank"
+    | "state-drift"
+    | "review-coverage",
 ): GuardEntry {
   const mode = process.env.FUSION_GUARD_ENTRY ?? "tsx";
 

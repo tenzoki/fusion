@@ -17,7 +17,7 @@
  * its warnings panel and the orchestrator log for its event list, so a drift is
  * visible in the panel whichever caller measured it.
  */
-export type GuardEventType = "guard_allow" | "guard_block" | "guard_halt" | "guard_advisory" | "guard_error" | "halt_cleared" | "churn_warning" | "churn_critical" | "state_drift" | "tracker_record";
+export type GuardEventType = "guard_allow" | "guard_block" | "guard_halt" | "guard_advisory" | "guard_error" | "halt_cleared" | "churn_warning" | "churn_critical" | "state_drift" | "review_coverage" | "tracker_record";
 export interface GuardEvent {
     ts: string;
     event: GuardEventType;
