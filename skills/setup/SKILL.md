@@ -279,7 +279,7 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
 
   - **current** or **unaffiliated backlog** — nothing to say beyond the line itself.
   - **stale** — name the Circle the queue was built for and the one that is active (or that none is). Tell the user plainly that Phase 1 should rebuild the queue before it is worked, and that the file's entries were chosen for ground that has moved.
-  - **not scoped** — the queue predates the active Circle, so it is a backlog rather than this Circle's work. Not a fault; say which it is so the user does not read it as the Circle's task list.
+  - **no ground recorded** — the queue carries no `**Active Circle:**` line at all, so it was written before the producer mandated one and which Circle it was built for is not recoverable. Say that plainly and say that Phase 1 should rebuild it; do not infer its ground from its contents.
   - **`queue-check: UNAVAILABLE`** — say that in the summary in place of a verdict, and say plainly that the queue's standing was not established and why. Do not improvise the branches: the verdict table is exactly what is missing, and a guessed verdict is worse than a stated gap.
 
 ## Step 4 — History file

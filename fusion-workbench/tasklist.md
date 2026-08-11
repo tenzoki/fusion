@@ -417,12 +417,12 @@ Nothing from here to task 38 needs a user answer. Task 1 comes first for the rea
 ### 3. Make the work queue record the ground it was built on
 
 - **ID:** `I:260810-0431-queue-ground`
-- **Source:** `fusion-workbench/shared/issues/260810-0431_o_the-work-queue-does-not-record-the-ground-it-was-built-on.md`
+- **Source:** `fusion-workbench/shared/issues/260810-0431_c_the-work-queue-does-not-record-the-ground-it-was-built-on.md`
 - **Executor:** `coder`
 - **Files:** `agents/taskplanner.md` Step 4 (the mandated tasklist header)
 - **Depends on:** none
 - **Priority:** high
-- **Status:** [ ] open
+- **Status:** [x] done
 - **Detail:** `agents/taskplanner.md` Step 4 mandates a four-line header — `**Generated:**`,
   `**Domain:**`, `**Open tasks:**`, `**Blocked:**` — and none of them says which Circle the queue was
   built for. A run that follows the specification to the letter produces a queue that cannot

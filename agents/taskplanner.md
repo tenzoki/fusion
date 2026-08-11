@@ -125,6 +125,7 @@ Write (or update) `$TASKLIST`:
 
 **Generated:** YYYY-MM-DD HH:MM
 **Domain:** code | data | strategic | knowledge
+**Active Circle:** `circles/<dirname>`
 **Open tasks:** <count>
 **Blocked:** <count>
 
@@ -152,6 +153,17 @@ flowchart TD
 ### 2. ...
 ```
 
+**The `**Active Circle:**` line is mandatory, on every run, including the run where no Circle is active.** It records the ground the queue was built on. Write one of exactly these two spellings, first token after the field name:
+
+```
+**Active Circle:** `circles/260804-1205-shell-reachability-model`
+**Active Circle:** none
+```
+
+The value is the `CIRCLE` key `fusion-paths` printed at Setup step 2 — that key is emitted unconditionally when a Circle is active and omitted when none is, so its presence is the whole decision: emitted → the backticked `circles/<dirname>` form, omitted → the bare word `none`. Use the value Setup resolved rather than re-reading the pointer at write time: it is the value that decided which stores Step 1 scanned, and the ground a queue was built on is the ground it was *scanned* against. Anything after the value on the line is free commentary — the consumer cuts at the first space — so say why the ground is what it is when that helps a reader.
+
+**Never omit the line, and never leave it blank.** Which Circle a queue was built *for* is not recoverable from its task list: the `**Source:**` paths do not answer it, because unaffiliated backlog records live wherever they were filed and a queue built for one Circle routinely draws from several. An omitted line is indistinguishable from a queue written before this field existed, and an explicit `none` is what makes "this queue is unaffiliated" a recorded fact rather than an omission. The consumer side reads this line at `agents/orchestrator.md` `### The queue's ground` — it settles the queue as current or stale by comparing this string against `fusion-workbench/.active-circle`, and the closure in Phase 4 step 4 decides from it whether the queue is retired.
+
 **Ordering rules:**
 - Tasks with no unresolved dependencies come first
 - Within the same dependency tier, higher priority first
@@ -163,6 +175,7 @@ flowchart TD
 - Remove tasks whose source file marker is now `_c_` or `_d_`
 - Add new tasks discovered since the last run
 - Re-sort based on current dependency state
+- Rewrite the header from **this** run's values, `**Active Circle:**` included. It records the ground this build stood on, so carrying the previous run's line forward would stamp a rebuild with ground it was not built on — the exact confusion the field exists to prevent
 - Note what changed in a `## Changelog` section at the bottom (added/removed/reordered tasks with date)
 
 ### Step 5: Write history entry

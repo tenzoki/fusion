@@ -12,6 +12,9 @@ import {
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, join } from "node:path";
+// The block is taken whole and executed, so nothing here can drift away from
+// what the orchestrator would actually run.
+import { extractBashBlock } from "./helpers/prompt-blocks.js";
 
 // ---------------------------------------------------------------------------
 // The Phase 4 queue retirement must not write through an empty resolver value.
@@ -59,22 +62,6 @@ const PRE_FIX_COMMIT = "ff70d3a";
 const RETIREMENT_ANCHOR = "**Retire the queue in the same command as that clear**";
 const CIRCLE_DIR = "260810-0241-demo-circle";
 const RETIRED_RE = /_c_retired-tasklist\.md$/;
-
-/**
- * The first ```bash block after the line carrying `anchor`. Not a regex over
- * the snippet: the block is taken whole and executed, so nothing here can drift
- * away from what the orchestrator would actually run.
- */
-function extractBashBlock(md: string, anchor: string): string {
-  const lines = md.split("\n");
-  const at = lines.findIndex((l) => l.includes(anchor));
-  if (at < 0) throw new Error(`anchor not found in orchestrator.md: ${anchor}`);
-  const open = lines.findIndex((l, i) => i > at && l.trim() === "```bash");
-  if (open < 0) throw new Error(`no bash block after: ${anchor}`);
-  const close = lines.findIndex((l, i) => i > open && l.trim() === "```");
-  if (close < 0) throw new Error(`unterminated bash block after: ${anchor}`);
-  return lines.slice(open + 1, close).join("\n");
-}
 
 function git(...args: string[]) {
   const r = spawnSync("git", args, { cwd: pluginRoot, encoding: "utf-8" });

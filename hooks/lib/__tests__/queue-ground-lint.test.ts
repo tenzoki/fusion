@@ -34,9 +34,11 @@ import { dirname, resolve, join } from "node:path";
 // does not run the check and cannot — nothing here executes at session time.
 // One assertion pins the prompt's own admission of that, because a section that
 // quietly starts reading as a guarantee is how a convention gets mistaken for
-// an enforcement. A second pins the admission that the prevention half is
-// incomplete in the producer (`agents/taskplanner.md` mandates no ground field),
-// which is filed separately and must not silently disappear from the text.
+// an enforcement. A second pins the same admission about the producer half:
+// `agents/taskplanner.md` Step 4 now mandates the ground field (issue
+// 260810-0431), and `queue-ground-producer.test.ts` gates that mandate — but a
+// gate over the specification's text still cannot make a given session write the
+// line, and the section has to keep saying so.
 //
 // A guard, not a fixer: it reads and asserts, it never rewrites a prompt.
 // ---------------------------------------------------------------------------
@@ -68,17 +70,21 @@ function uniqueLine(text: string, re: RegExp, what: string): string {
 }
 
 /**
- * The four verdicts, one per combination of the two inputs the consumer has:
- * whether the queue's head names a Circle, and whether the pointer holds one.
- * Losing a row is losing a whole case — and the pair that matters most is
- * `stale` (the 260807 defect) and `unaffiliated backlog` (the 260810 queue,
- * which is entirely valid and which a blanket deletion would have destroyed).
+ * The verdicts the section must keep. Two of them are the rows of the table —
+ * one equality between two recorded strings, settled either way — since
+ * `agents/taskplanner.md` Step 4 began mandating the ground on every run
+ * (260810-0431), which is what let the four-case table collapse into two and the
+ * `find -newer` ordering test go. `unaffiliated backlog` is the `none`-on-both-
+ * sides reading of row 1: the 260810 queue is exactly that file, entirely valid,
+ * and a blanket deletion would have destroyed it. `no ground recorded` is not a
+ * row at all — it is the queue written before the mandate, whose ground is not
+ * recoverable and which is now named rather than guessed at.
  */
 const VERDICTS: { what: string; re: RegExp }[] = [
-  { what: "current — the head names the Circle that is active", re: /\bcurrent\b/ },
-  { what: "stale — the head names a Circle that is not the ground any more", re: /\bSTALE\b|\*\*stale\*\*/ },
-  { what: "not scoped — no head, and the file predates the active Circle", re: /NOT SCOPED|\*\*not scoped\*\*/ },
-  { what: "unaffiliated backlog — no head, no pointer", re: /unaffiliated backlog/ },
+  { what: "current — the head names the ground the pointer holds", re: /\bcurrent\b/ },
+  { what: "stale — the head names ground that is not the ground any more", re: /\bSTALE\b|\*\*stale\*\*/ },
+  { what: "unaffiliated backlog — `none` on both sides", re: /unaffiliated backlog/ },
+  { what: "no ground recorded — a queue written before the producer's mandate", re: /NO GROUND RECORDED|\*\*no ground recorded\*\*/ },
 ];
 
 /**
@@ -155,9 +161,11 @@ describe("the work queue's ground", () => {
     const rows = table.split(/^#### /m)[0].split("\n").filter((l) => /^\|/.test(l));
     expect(
       rows.length,
-      "the verdict table does not have four data rows plus its separator. Two booleans make " +
-        "four cases; fewer rows means a queue exists that the table does not classify.",
-    ).toBe(5);
+      "the verdict table does not have two data rows plus its separator. Both inputs are " +
+        "recorded strings now, so the table is one equality settled either way; a third row " +
+        "means a case is being decided by something other than that comparison, and a first " +
+        "missing row means a queue exists that the table does not classify.",
+    ).toBe(3);
     for (const { what, re } of VERDICTS) {
       expect(section, `the section no longer covers the verdict: ${what}`).toMatch(re);
     }
@@ -208,10 +216,12 @@ describe("the work queue's ground", () => {
     ).toMatch(/A convention, not an enforcement/);
     expect(
       section,
-      "the section no longer admits that the prevention half is incomplete in the producer. " +
-        "`agents/taskplanner.md` mandates no ground field, so the exact verdict rows only " +
-        "reach a queue that opted into recording it (filed as 260810-0431).",
-    ).toMatch(/prevention half is incomplete/);
+      "the section no longer says what the producer-side mandate is worth. " +
+        "`agents/taskplanner.md` Step 4 mandates the ground field and " +
+        "`queue-ground-producer.test.ts` gates that mandate, but neither executes at " +
+        "session time — a run that skips the line still produces a queue with no ground, " +
+        "and the section must not read as if the case were closed (260810-0431).",
+    ).toMatch(/A mandate in a prompt is still prompt text/);
   });
 });
 
@@ -234,25 +244,26 @@ describe("the gate catches the defect it exists for", () => {
   });
 
   it("rejects a verdict table that has lost a case", () => {
-    const threeRows = [
+    // The `current` row alone: the shape a table takes when the case that
+    // actually bites — a queue built on ground that has since moved — is the one
+    // dropped. One data row plus the separator, where the table needs three.
+    const oneRow = [
       "### The queue's ground",
       "",
       "`.active-circle` is the condition, not an event list.",
       "",
       "| The queue's head | `.active-circle` | Verdict |",
       "|---|---|---|",
-      "| names a Circle | holds that same Circle | **current** |",
-      "| names a Circle | holds a different one | **stale** |",
-      "| names none | absent | **unaffiliated backlog** |",
+      "| names a Circle, or `none` | holds the same ground | **current** |",
       "",
       "#### Next",
       "",
       "### After",
     ].join("\n");
-    const section = groundSection(threeRows);
+    const section = groundSection(oneRow);
     const table = section.split(/^\| The queue's head \| `\.active-circle` \| Verdict \|$/m)[1];
     const rows = table.split(/^#### /m)[0].split("\n").filter((l) => /^\|/.test(l));
-    expect(rows.length).not.toBe(5);
+    expect(rows.length).not.toBe(3);
   });
 
   it("rejects a rule keyed to the state markers instead of to the pointer", () => {

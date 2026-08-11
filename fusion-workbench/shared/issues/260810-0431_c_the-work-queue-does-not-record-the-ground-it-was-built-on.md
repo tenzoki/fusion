@@ -81,3 +81,29 @@ with what the file carries. This is one line in one producer.
 No Circle was active when it was found. It was found while implementing T7, whose own
 record is in `shared/`, and it is a property of the queue format rather than of that task's
 work — Origin Rule.
+
+---
+Resolved: `agents/taskplanner.md` Step 4 now mandates the `**Active Circle:**` line on every run —
+the field is in the header template, both spellings are shown (backticked `circles/<dirname>`, bare
+`none`), the value is named as the `CIRCLE` key `fusion-paths` emits at Setup step 2, and a rebuild
+must restamp its own ground rather than carry the previous run's forward. With the ground recorded
+on every queue, rows 3 and 4 of the verdict table in `agents/orchestrator.md` `### The queue's
+ground` collapsed into rows 1 and 2 and the `find -newer` ordering test is gone: both inputs are now
+recorded strings and the table is one equality settled either way, with `none` a recorded ground
+like any other. A queue carrying no such line is no longer a row — it is a file written before the
+mandate, and the check reports it as `NO GROUND RECORDED` rather than guessing from a modification
+time. `/fusion:setup` and `/fusion:next` were updated to name the verdicts that now exist.
+
+The mandate is gated by `hooks/lib/__tests__/queue-ground-producer.test.ts` (12 tests): it fails if
+Step 4 drops the field, the `none` spelling, or the obligation wording, and it RUNS the consumer's
+extracted bash block against head lines taken out of the producer's own prompt, so a spelling the
+producer mandates that the consumer cannot read fails at `npm test`. Its negative controls call the
+same helpers with a fixture, and the pre-mandate producer is read out of git at `365b286` rather
+than transcribed. `queue-ground-lint.test.ts` was updated to the two-row table and the new verdict
+set. Suite green: `cd hooks && npm test` → exit 0, 1178 tests.
+
+What this does not do, stated because the section it edits is about exactly this: nothing here
+executes at session time, so the gate proves the specification carries the line and that the two
+sides agree on its format — not that a given taskplanner run wrote it. A run that skips it produces
+a queue reported as `NO GROUND RECORDED`, which is loud instead of quiet. Queues written before the
+mandate keep no ground and cannot have it recovered.

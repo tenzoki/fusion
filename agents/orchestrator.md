@@ -634,34 +634,33 @@ The ground is `fusion-workbench/.active-circle`. It moved on 260807 and the queu
 
 #### Reading a queue
 
-Two inputs decide whether the queue at the root is current: the `**Active Circle:**` line it may carry in its head, and the pointer. Run this before treating the queue as current, from the workbench's parent directory:
+Two inputs decide whether the queue at the root is current: the `**Active Circle:**` line its head carries, and the pointer. The producer writes that line on every run — `agents/taskplanner.md` Step 4 mandates it, in two spellings: a backticked `circles/<dirname>` when a Circle was active, the bare word `none` when none was. Run this before treating the queue as current, from the workbench's parent directory:
 
 ```bash
 Q=fusion-workbench/tasklist.md; P=fusion-workbench/.active-circle
 [ -f "$Q" ] || { echo "queue: none at the root"; exit 0; }
-G=$(grep -m1 '^\*\*Active Circle:\*\*' "$Q" | grep -oE 'circles/[A-Za-z0-9._-]+|`[A-Za-z0-9._-]+`' | head -1 | tr -d '`' | sed 's|^circles/||')
-AC=$(cat "$P" 2>/dev/null)
-if [ -n "$G" ]; then
-  [ "$G" = "$AC" ] && echo "queue: current — built for Circle $G, which is active" \
-                   || echo "queue: STALE — built for Circle $G; active is ${AC:-none}"
-elif [ -n "$AC" ]; then
-  [ -n "$(find "$Q" -newer "$P")" ] && echo "queue: built after Circle $AC became active" \
-                                    || echo "queue: NOT SCOPED — written before Circle $AC became active"
+G=$(grep -m1 '^\*\*Active Circle:\*\*' "$Q" 2>/dev/null | sed -E 's/^\*\*Active Circle:\*\*[[:space:]]*//; s/[[:space:]].*$//; s/`//g; s|^circles/||')
+AC=$(cat "$P" 2>/dev/null); AC=${AC:-none}
+if [ -z "$G" ]; then
+  echo "queue: NO GROUND RECORDED — no '**Active Circle:**' line in its head, so it was written before the producer mandated one. Which Circle it was built for is not recoverable from the file. Rebuild it, or read it as history."
+elif [ "$G" = "$AC" ]; then
+  [ "$G" = none ] && echo "queue: current — unaffiliated backlog, no Circle active and none named" \
+                  || echo "queue: current — built for Circle $G, which is active"
 else
-  echo "queue: unaffiliated backlog — no Circle active, none named"
+  echo "queue: STALE — built for ${G}; active is ${AC}"
 fi
 ```
 
-The four branches are one per combination of the two inputs, so every queue falls in exactly one:
+Both inputs are now strings the two sides recorded, so the comparison is one equality and the table is two rows — one per outcome of it. `none` is a recorded ground like any other, which is what lets the head-says-none cases be compared rather than guessed at:
 
 | The queue's head | `.active-circle` | Verdict |
 |---|---|---|
-| names a Circle | holds that same Circle | **current** |
-| names a Circle | holds a different one, or is absent | **stale** — its entries were chosen for a Circle that is not the ground any more. Do not consume it as current; rebuild or read it as history. |
-| names none | holds a Circle | **not scoped** if the file is older than the pointer: it was written before this Circle became active, so it does not cover this Circle's work. Newer than the pointer means it was built under this ground and is current. |
-| names none | absent | **unaffiliated backlog** — a queue over `shared/` with no Circle to outlive. Current. |
+| names a Circle, or `none` | holds the same ground — that Circle, or nothing where the head says `none` | **current**. With `none` on both sides it is an **unaffiliated backlog**: a queue over `shared/` with no Circle to outlive. |
+| names a Circle, or `none` | holds different ground — another Circle, nothing where the head names one, or a Circle where the head says `none` | **stale** — its entries were chosen against ground that is not the ground any more. Do not consume it as current; rebuild it, or read it as history. |
 
-Row 3's ordering test is the weaker one. `find -newer` compares modification times, and a checkout or a copy resets the queue's, which reads as *newer* and therefore as current. It fails quiet, not loud. Rows 1 and 2 are exact, and they are the rows that catch a closed Circle, because a closed Circle leaves no pointer for an ordering test to use.
+**Stale is a statement about ground, not a verdict on the entries.** A backlog that predates an activation lands in row 2 — it was built with no Circle active, so it was not built for the Circle now active — and its entries can still be perfectly good work. It is not deleted for it: the retirement at closure touches only a queue whose head names the *closing* Circle.
+
+A queue carrying no `**Active Circle:**` line at all is not a row here, because it is not a format the specification can produce. It is a file written before the mandate, and its ground is not recoverable from its text — the `**Source:**` paths do not answer it, since a queue built for one Circle routinely draws records from several (`rules/critical-stance.md` §4). The check reports it as **no ground recorded** and says so loudly. Until the mandate landed, that case was carried by two further table rows that settled it with `find -newer`: an ordering test a checkout or a copy resets in the direction that reads as *current*, so it failed quiet rather than loud. Those rows are gone, and nothing here consults a modification time any more.
 
 `/fusion:setup` Step 3 and `/fusion:next` Step 5 run this, and this section is the canonical implementation both cite.
 
@@ -671,13 +670,13 @@ Row 3's ordering test is the weaker one. `find -newer` compares modification tim
 |---|---|
 | Phase 4 step 4 — the pointer is cleared at closure | **Retired** in the same command, when its head names the closing Circle *and* the keys the move writes through resolved. See step 4. |
 | `/fusion:next` step 6.3 — the pointer is written at activation | Left alone, and **said out loud** in the same command: a queue already at the root was built with no Circle active, so it is a backlog rather than this Circle's work. Retiring it would destroy a valid queue. |
-| The `_a_`→`_t_` pointer write this prompt performs directly (see **You may**) | Same as 6.3, and for the same reason. The next read of the queue reports it under row 3. |
+| The `_a_`→`_t_` pointer write this prompt performs directly (see **You may**) | Same as 6.3, and for the same reason. The next read of the queue reports it **stale** under row 2 — its head says `none`, the pointer now holds a Circle — which is exact, where the ordering test this replaced was not. |
 
 #### What this is, honestly
 
 **A convention, not an enforcement**, with one contingent exception. Nothing executes the two tables above; they are prompt text, and prompt text loses to task pressure — this project's own worked case is "Problem 11" in `CLAUDE.md`, where a "MUST" in this prompt was skipped under the urgency of a user request (`rules/critical-stance.md` §2). The exception is the retirement: *when it is performed*, the stale queue stops existing at the root, so there is nothing left to misread. That is prevention in effect, conditional on the step running at all — and on the two keys it writes through resolving, since an empty one now skips the move rather than misdirecting it.
 
-**The prevention half is incomplete, and its gap is in the producer.** Retirement fires only for a queue whose head names its Circle, and `agents/taskplanner.md` does not mandate that line — the queue measured on 260807 carried it, the one built on 260810 does not. A queue that never recorded its ground cannot have it recovered: which Circle a queue was *built for* is not decidable from its text, only from a stamp the producer chose to write (`rules/critical-stance.md` §4 — when the question is undecidable from the available inputs, the mechanism changes, not the approximation). Filed as `260810-0431_o_the-work-queue-does-not-record-the-ground-it-was-built-on.md` in `$SCAN_ISSUES`. Until that lands, rows 3 and 4 carry the headerless case with the weaker ordering test, and this section says so rather than reading as coverage it does not have.
+**The producer half has landed, and what it buys is narrower than it sounds.** `agents/taskplanner.md` Step 4 now mandates the `**Active Circle:**` line on every run, `none` included, which is what let rows 3 and 4 collapse into rows 1 and 2 and the `find -newer` test go (record `260810-0431_*_the-work-queue-does-not-record-the-ground-it-was-built-on.md` in `$SCAN_ISSUES`). A mandate in a prompt is still prompt text, and this whole section is a worked case of what that is worth. What raises it above the two tables is the gate: `hooks/lib/__tests__/queue-ground-producer.test.ts` fails the suite if Step 4 stops mandating the field or stops showing both spellings, and it feeds the spellings taken out of that prompt through the snippet above, so a producer format this consumer cannot read is caught at `npm test` rather than by a session reading a queue wrong. Read that precisely: the gate proves the **specification** carries the line and that the two sides agree on its format. Nothing executes at session time, so it cannot prove a given taskplanner run wrote it — a run that skips it produces a queue that reports **no ground recorded**, which is loud rather than quiet, and that is the whole of the improvement, not a guarantee the case cannot arise. Queues written before the mandate are in exactly that position permanently: their ground was never recorded, and it is not decidable from their text (`rules/critical-stance.md` §4 — when the question is undecidable from the available inputs, the mechanism changes, not the approximation).
 
 ### Cleanup
 
