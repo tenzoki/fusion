@@ -20,3 +20,17 @@ Relevant beyond this repo: any project that upgrades fusion mid-session hits the
 ---
 Found by the orchestrator while verifying task T3-A.
 Source: fusion-workbench/planning/260716-1910[p]-plan-workbench-umbau-circle-container.md (risk table; steps 4-7 vs step 9 ordering)
+
+---
+Resolved: no longer reproducible, and the general case is gated. This repository's workbench holds
+exactly four top-level directories — `archive/`, `circles/`, `shared/`, `stilwerk/`. Not one pre-v4
+type folder remains, so the two-layout window this record describes is closed here.
+
+The lesson the record drew for other projects is implemented: `skills/setup/SKILL.md:41` carries a
+`### Pre-v4 layout check (CRITICAL — refuse, do not migrate)` that runs **before** the `mkdir`, and
+`:45` cites this very record as the reason the ordering matters. Setup detects and refuses, routing
+the user to `/fusion:migrate`; it never creates the second store beside the first.
+
+Verified by reconciler at HEAD `e2a34f0` by listing the workbench and reading the check, not by
+carrying the previous verdict. Queue entry `C2` of `fusion-workbench/tasklist.md` reached the same
+verdict and left the marker call here.

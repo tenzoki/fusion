@@ -134,3 +134,50 @@ already chosen for the drift check, which makes this its second application rath
 Turn-3 boundary the state file said 13 commits against git's 15, and at Turn end a hand-written
 correction over-counted to 20 against 18. Both recorded as `state_drift` and corrected. The check
 works; the bookkeeping beneath it remains exactly as dependable as the intention behind it.
+
+## Coherence
+
+<!-- RECONCILER-OWNED -->
+
+**Verdict:** review-needed
+
+**Edges:**
+
+- **Artifact↔Grounding:** 26 of 26 closures verified against the working tree and all hold; suite
+  green at 41 files / 1142 tests, matching this file's Turn-3 claim exactly; 3 drift items inside
+  otherwise-correct closures (stale same-session line anchors in `260810-2029_c_`; a closed record
+  whose last paragraph still says "Half 2 (not done)"; a decision note overtaken by `63deec1` four
+  commits later); 3 new defects filed; **22 open `coderev`-filed records** in `shared/issues/`. The
+  flag is not the closures — it is that two Grounding artefacts never reached the Artifact:
+  `fusion-workbench/tasklist.md`'s 17:23 rebuild is uncommitted (last commit touching it is
+  `8b2a206`, the release *before* this session) and `shared/history/260810-1723-tasklist-update.md`
+  is untracked, both across eighteen commits, neither gitignored. Filed as `260811-0114`. The record
+  store itself is intact: all 40 slugs touched in the range exist exactly once at HEAD.
+- **Artifact↔Directive:** the commits move **toward** the Directive, and the raw open count is the
+  wrong measure of it. Every one of the 26 closures is a defect genuinely fixed and independently
+  re-verified; the suite grew 1096 → 1142 tests; the 31 records filed against them were *found*, not
+  created, 22 of them by two `coderev` passes that also falsified four of the range's own commit-
+  message claims. The honest cost: after three Turns the backlog is larger (47 → 52), and the trend
+  only inverted once the user revised the Directive at the net-negative circuit breaker — Turn 1 was
+  5 closed / 11 filed, Turn 2 was 11 closed / 16 filed, Turn 3 was 10 closed / 3 filed. The
+  revision, not the original Directive, is what produced the one Turn that reduced the queue
+  (`c714d8c`, `861e695`, `d169b0d`).
+- **Grounding↔Directive:** 15 active decisions (9 `_o_` + 6 `_a_` across `shared/` and `circles/`),
+  **0 conflicting**. The one that could have conflicted does not: `260810-2032_a_` sequences its own
+  implementation behind the still-open `260801-2038`, and the session honoured that — no pin exists
+  in `state-drift-detection-lint.test.ts`, whose header at `:92-104` records the sequencing as the
+  reason. `260810-1822_i_` is realised on disk as cited. `260810-2030_o_` and `260810-2145_o_` are
+  consistent but understated: both count two call sites where `260811-0109` measures four.
+
+**Rebalance recommendation:** revise Artifact
+
+Only one edge is flagged, and the action it names is narrow and concrete: stage and commit
+`fusion-workbench/tasklist.md` and `shared/history/260810-1723-tasklist-update.md` by name, and
+decide where the commit-message file belongs (`agents/orchestrator.md` Step 3b says `/tmp`;
+`fusion-workbench/.commit-msg-tmp` says otherwise). Neither the Directive nor the Grounding needs
+revising — the Directive was already revised once, by the user, and that revision is what reversed
+the net-negative trend.
+
+**Read alongside this:** `shared/history/260811-0108-reconciliation.md` carries the per-record
+evidence, the queue-accuracy measurement (43 of 45 entries correct; tasks 1 and 5 stale), and the
+open counts across every store.

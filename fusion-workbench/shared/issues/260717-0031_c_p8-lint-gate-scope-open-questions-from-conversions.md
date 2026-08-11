@@ -19,3 +19,19 @@ Note item 4 interacts with the open namespace decision (`decisions/260716-1940[o
 ---
 Collected by the orchestrator from findings reported by `coder` in tasks P-4, P-5, P-6, P-7 and T2-B.
 Source: fusion-workbench/planning/260716-1910[p]-plan-workbench-umbau-circle-container.md step 8
+
+---
+Resolved: all four scope questions are settled in `hooks/lib/__tests__/path-literal-lint.test.ts`,
+each with its reasoning written beside it. Item 1 (frontmatter) — settled the opposite way from the
+record's fear, at `:186` `it("reads the whole file, frontmatter included")` with the decision in the
+comment at `:187-189`. Item 2 (`circles/` glob) — the structural container roots `circles/`,
+`shared/`, `archive/`, `stashes/` are excluded from the type-folder list at `:39-45`, with the reason
+stated and with an artifact-type segment nested inside a circle path still caught. Item 3 (path
+shape) — the gate matches the `<type>/` path form. Item 4 (union with hosted skills) — dissolved once
+`bin/fusion-paths` derived each key set by grepping the prompt that names it; what replaced it is the
+live key-subset check in the same file.
+
+Verified by reconciler at HEAD `e2a34f0`, reading the gate rather than carrying the previous verdict.
+No code change was needed; the marker was the only thing out of date. Queue entry `C1` of
+`fusion-workbench/tasklist.md` (built at `5ef92eb`) reached the same verdict and left the marker call
+here, which is where it belongs.
