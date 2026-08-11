@@ -2,9 +2,9 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** implemented
 **Filed by:** coderev
-**Cross-references:** `shared/issues/260811-1142_o_the-three-measurement-modules-hand-roll-a-guard-state-store-the-seam-built-for-it-already-owns.md`; `shared/issues/260811-1143_o_staging-drift-and-review-coverage-events-are-emitted-into-a-log-nothing-reads.md`; commits `8a49fd5`, `afd7c2e`, `cac41ef`; `hooks/lib/guard-state-file.ts`
+**Cross-references:** `shared/issues/260811-1142_*_the-three-measurement-modules-hand-roll-a-guard-state-store-the-seam-built-for-it-already-owns.md`; `shared/issues/260811-1143_o_staging-drift-and-review-coverage-events-are-emitted-into-a-log-nothing-reads.md`; commits `8a49fd5`, `afd7c2e`, `cac41ef`; `hooks/lib/guard-state-file.ts`
 
 ---
 
@@ -121,7 +121,7 @@ chassis is built first.** Three copies is where this codebase drew the line the 
 
 ---
 Answered: <set when status moves to _a_>
-Implemented: <set when status moves to _i_>
+Implemented: `hooks/lib/git.ts`, `hooks/lib/guard-state-file.ts:103-161`, `hooks/tracker.ts:776-857` — see the block at the foot of this file
 
 ---
 Answered: user, session 260811-0752 (chat) — **Option 2.** Build only the two pieces that already
@@ -130,3 +130,52 @@ have an owner: move the throttle store onto `hooks/lib/guard-state-file.ts`, and
 three CLI mains and the three `bin/` wrappers stay as they are. Option 1, the full chassis, is
 taken at the fourth module, and the trigger is written down as the thing that decides whether a
 new measurement is a sibling at all. This follows the record's own recommendation.
+
+---
+Implemented: coder, session 260811-0752, task 2 of the queue, realising record
+`shared/issues/260811-1730_*_realise-the-measurement-chassis-first-two-pieces-throttle-onto-the-existing-seam-and-one-git-wrapper.md`.
+Cited by path rather than by commit hash: the executor does not commit, the orchestrator does.
+
+**Option 2, both pieces.**
+
+- The throttle store moved onto `hooks/lib/guard-state-file.ts`, widened by one optional
+  `root?: string` on `guardStatePath` / `loadGuardState` / `saveGuardState`. The walk still runs
+  when no root is given, so `escalation.ts` and `churn.ts` are unchanged. The six hand-written
+  functions in `lib/state-drift.ts`, `lib/review-coverage.ts` and `lib/staging-drift.ts` became
+  six calls plus one total coercion each; `staging-drift.ts` keeps its two-field state as its own
+  coercion, with the two fields coerced separately. The two divergences the record measured are
+  closed: all three now write atomically through a `.tmp` and a `rename`, and none can read with
+  an `as` cast.
+- The git wrapper became `hooks/lib/git.ts`, `git(root, args, timeoutMs?)`. `execFileSync` now
+  appears exactly once in the hooks source. The timeout was **not** verbatim across the three —
+  5 s twice, 10 s in `staging-drift.ts` — so the module defaults to a ref read's 5 s and
+  `staging-drift.ts` passes `GIT_STATUS_TIMEOUT_MS` at its one `git status` call, the only call in
+  the family that walks a working tree.
+- **The trigger criterion is written down**, in `hooks/tracker.ts` immediately above the three
+  `measure…ForModel` bodies — the one file a fourth measurement must touch. It names the three
+  existing triggers, gives three checkable questions that decide sibling-hood (a nameable moment
+  where the answer turns from "not yet" to "wrong"; firing there reports **nothing** on the
+  commonest path; the condition is read, never predicted from a command's text), says what each
+  failure means, and carries the trip-wire verbatim — *when a fourth measurement is proposed, the
+  chassis is built first* — together with the constraint that such a chassis must not flatten the
+  three trigger arguments into a flag.
+
+**What stayed as three copies, by this answer:** the tracker's three `measure…ForModel` bodies,
+the three CLI mains under `hooks/`, the three `bin/` wrappers. The `tracker.ts` change is a doc
+block above the section divider; no statement inside any of the three functions moved. The
+`signature` contract named in the record's table is likewise untouched — moving the throttle
+changed only the read's failure mode, not what a signature contains or how it is compared.
+
+**Why this is `_i_` and not still `_a_`.** Everything the answer asked to be **built now** is
+built. The remaining half — option 1 at the fourth module — is a standing condition rather than
+outstanding work, and the only thing that could be done for it, writing the trip-wire and the
+criterion where the next author will read them, is done. If the chassis is later built, it is a
+new decision that supersedes this one, not a continuation of it.
+
+**Verification:** `cd hooks && npm test` — exit 0, 49 files, 1284 passed. Plus a scratch project
+root driven through `dist/tracker.js` over stdin: throttle round-trip, report-once-then-silent,
+the review-coverage trigger firing on its own path alone, all three throttle files corrupted with
+tracker exit 0 and each measurement re-reporting once, and the three `bin/` wrappers unchanged.
+`hooks/dist/**` rebuilt and re-checked self-contained.
+
+**History:** `shared/history/260811-1806-coder-task2-throttle-seam-and-git-wrapper.md`

@@ -99,9 +99,10 @@
  * and `agents/orchestrator.md` `### Drift check` records it as the reason the
  * drift check's verdict is a line of output rather than an exit code.
  */
-import { execFileSync } from "node:child_process";
-import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
 import { resolve } from "node:path";
+import { git } from "./git.js";
+import { isStateObject, loadGuardState, saveGuardState } from "./guard-state-file.js";
 import { readStateFile, stateField } from "./state-drift.js";
 /* ------------------------------------------------------------------ *
  * Layout — root-anchored, exactly as `lib/state-drift.ts` reads it
@@ -121,9 +122,11 @@ const WB = "fusion-workbench";
 const STATE_REL = `${WB}/agentstate.yaml`;
 const SHARED_REVIEWS_REL = `${WB}/shared/reviews`;
 const CIRCLES_REL = `${WB}/circles`;
-const COVERAGE_THROTTLE_REL = `${WB}/.guard-state/review-coverage.json`;
-/** Enough for a local `git rev-list` on any repository this will meet. */
-const GIT_TIMEOUT_MS = 5_000;
+/**
+ * The throttle record's file NAME, not its path: `lib/guard-state-file.ts`
+ * builds the path under `.guard-state/` and this module no longer knows how.
+ */
+const COVERAGE_THROTTLE_FILE = "review-coverage.json";
 /**
  * The mandated header fields. One spelling each, and these two constants are
  * what `review-coverage-mandate.test.ts` asserts the two reviewer prompts still
@@ -243,22 +246,6 @@ function reviewFiles(root) {
         }
     }
     return out;
-}
-/* ------------------------------------------------------------------ *
- * Reading git
- * ------------------------------------------------------------------ */
-function git(root, args) {
-    try {
-        return execFileSync("git", args, {
-            cwd: root,
-            encoding: "utf-8",
-            timeout: GIT_TIMEOUT_MS,
-            stdio: ["ignore", "pipe", "ignore"],
-        });
-    }
-    catch {
-        return null;
-    }
 }
 /** The window's commits, newest first. Null when the range does not resolve. */
 function windowCommits(root, since, head) {
@@ -453,6 +440,19 @@ export function coverageSentence(report) {
  * The throttle
  * ------------------------------------------------------------------ */
 /**
+ * The throttle record's only field, read as a signature.
+ *
+ * Total, as `lib/guard-state-file.ts` requires: an absent file, unreadable
+ * text, a non-object and a `reported` of the wrong type all read as "never
+ * reported", which is the safe direction — the next gap speaks rather than
+ * being silently swallowed by a state nobody can parse.
+ */
+function coerceCoverageThrottle(value) {
+    if (!isStateObject(value))
+        return "";
+    return typeof value.reported === "string" ? value.reported : "";
+}
+/**
  * The signature last reported to the model, or "" when none was.
  *
  * Same contract, same reason, and deliberately the same shape as
@@ -462,18 +462,9 @@ export function coverageSentence(report) {
  * catch, arriving one level up.
  */
 export function lastReportedCoverage(root) {
-    try {
-        const raw = readFileSync(resolve(root, COVERAGE_THROTTLE_REL), "utf-8");
-        const parsed = JSON.parse(raw);
-        return typeof parsed.reported === "string" ? parsed.reported : "";
-    }
-    catch {
-        return "";
-    }
+    return loadGuardState(COVERAGE_THROTTLE_FILE, coerceCoverageThrottle, root);
 }
 /** Record the signature just reported. `""` clears it, so a later gap speaks again. */
 export function recordReportedCoverage(root, signature) {
-    const dir = resolve(root, `${WB}/.guard-state`);
-    mkdirSync(dir, { recursive: true });
-    writeFileSync(resolve(root, COVERAGE_THROTTLE_REL), JSON.stringify({ reported: signature }) + "\n", "utf-8");
+    saveGuardState(COVERAGE_THROTTLE_FILE, { reported: signature }, root);
 }

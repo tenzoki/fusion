@@ -68,3 +68,33 @@ two of them and a superset in the third.
 
 The broader question — whether the family also needs a shared trigger/report chassis — is a decision
 and is filed as such; this record is the narrow one: an existing abstraction was not reused.
+
+---
+
+**Resolved:** coder, session 260811-0752, task 2 of the queue. Subsumed by
+`shared/issues/260811-1730_*_realise-the-measurement-chassis-first-two-pieces-throttle-onto-the-existing-seam-and-one-git-wrapper.md`,
+which realised decision `shared/decisions/260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md`
+option 2. The fix direction this record proposed was followed exactly, including the signature it
+suggested:
+
+```ts
+export function guardStatePath(fileName: string, root?: string): GuardStatePaths | null
+export function loadGuardState<T>(fileName: string, coerce: StateCoercion<T>, root?: string): T
+export function saveGuardState(fileName: string, state: unknown, root?: string): void
+```
+
+`escalation.ts` and `churn.ts` still call it with two arguments and are unaffected — when no root
+is given the walk from the working directory still runs, which is their no-workbench no-op. The
+six hand-written functions became six calls plus one total coercion each (`coerceThrottle`,
+`coerceCoverageThrottle`, `coerceStagingState`), and step 3 was honoured: `staging-drift.ts` keeps
+its two-field `head` + `reported` state as its own coercion, with the two fields coerced
+separately so a corrupt `reported` does not also discard a usable `head`.
+
+Both divergences this record measured are closed. All three throttles now write atomically through
+a `.tmp` and a `rename` where each used a bare `writeFileSync`, and none can read with an `as`
+cast. The three modules no longer know where `.guard-state/` is: each names only its file name and
+the seam builds the path.
+
+**Verification:** `cd hooks && npm test` — exit 0, 49 files, 1284 passed; plus a scratch project
+root exercising the round-trip, the throttling and three corrupted throttle files. Detail in
+`shared/history/260811-1806-coder-task2-throttle-seam-and-git-wrapper.md`.

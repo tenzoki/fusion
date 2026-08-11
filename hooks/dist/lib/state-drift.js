@@ -65,9 +65,10 @@
  * dropped. A drift check that exists to catch a silent skip must not perform
  * one.
  */
-import { execFileSync } from "node:child_process";
-import { closeSync, existsSync, fstatSync, openSync, readFileSync, readSync, readdirSync, writeFileSync, mkdirSync, } from "node:fs";
+import { closeSync, existsSync, fstatSync, openSync, readFileSync, readSync, readdirSync, } from "node:fs";
 import { resolve } from "node:path";
+import { git } from "./git.js";
+import { isStateObject, loadGuardState, saveGuardState } from "./guard-state-file.js";
 /* ------------------------------------------------------------------ *
  * Layout — root-anchored, exactly as every other consumer reads it
  * ------------------------------------------------------------------ */
@@ -86,8 +87,11 @@ const STATE_REL = `${WB}/agentstate.yaml`;
 const EVENTS_REL = `${WB}/orchestrator-events.jsonl`;
 const POINTER_REL = `${WB}/.active-circle`;
 const CIRCLES_REL = `${WB}/circles`;
-const STATE_DIR_REL = `${WB}/.guard-state`;
-const THROTTLE_REL = `${STATE_DIR_REL}/state-drift.json`;
+/**
+ * The throttle record's file NAME, not its path: `lib/guard-state-file.ts`
+ * builds the path under `.guard-state/` and this module no longer knows how.
+ */
+const THROTTLE_FILE = "state-drift.json";
 /**
  * How much of the event log is read, from the end.
  *
@@ -100,8 +104,6 @@ const THROTTLE_REL = `${STATE_DIR_REL}/state-drift.json`;
  * answer and is not one.
  */
 const EVENT_TAIL_BYTES = 1 << 20;
-/** Enough for a local `git rev-list` on any repository this will meet. */
-const GIT_TIMEOUT_MS = 5_000;
 /* ------------------------------------------------------------------ *
  * Reading the surfaces
  * ------------------------------------------------------------------ */
@@ -218,23 +220,16 @@ function turnsRun(root) {
 function commitsSince(root, head) {
     if (head === "")
         return { count: null, why: "session.git_head_at_start is unset" };
-    try {
-        const out = execFileSync("git", ["rev-list", "--count", `${head}..HEAD`], {
-            cwd: root,
-            encoding: "utf-8",
-            timeout: GIT_TIMEOUT_MS,
-            stdio: ["ignore", "pipe", "ignore"],
-        });
-        const n = Number.parseInt(out.trim(), 10);
-        if (!Number.isFinite(n))
-            return { count: null, why: "git printed no count" };
-        return { count: n, why: "" };
-    }
-    catch {
+    const out = git(root, ["rev-list", "--count", `${head}..HEAD`]);
+    if (out === null) {
         // A hash that no longer resolves (a rebase, a fresh clone, a shallow one)
         // is not drift and must not be reported as one.
         return { count: null, why: `git could not count ${head}..HEAD` };
     }
+    const n = Number.parseInt(out.trim(), 10);
+    if (!Number.isFinite(n))
+        return { count: null, why: "git printed no count" };
+    return { count: n, why: "" };
 }
 /** The active Circle's record file, or null with the reason it is not there. */
 function circleRecord(root) {
@@ -392,6 +387,19 @@ export function measureStateDrift(root) {
  * The throttle
  * ------------------------------------------------------------------ */
 /**
+ * The throttle record's only field, read as a signature.
+ *
+ * Total, as `lib/guard-state-file.ts` requires: an absent file, unreadable
+ * text, a non-object and a `reported` of the wrong type all read as "never
+ * reported", which is the safe direction — the next drift speaks rather than
+ * being silently swallowed by a state nobody can parse.
+ */
+function coerceThrottle(value) {
+    if (!isStateObject(value))
+        return "";
+    return typeof value.reported === "string" ? value.reported : "";
+}
+/**
  * The signature last reported to the model, or "" when none was.
  *
  * Without this the hook would repeat itself on every tool call for as long as
@@ -401,20 +409,11 @@ export function measureStateDrift(root) {
  * for the Circle row's `if`).
  */
 export function lastReported(root) {
-    try {
-        const raw = readFileSync(resolve(root, THROTTLE_REL), "utf-8");
-        const parsed = JSON.parse(raw);
-        return typeof parsed.reported === "string" ? parsed.reported : "";
-    }
-    catch {
-        return "";
-    }
+    return loadGuardState(THROTTLE_FILE, coerceThrottle, root);
 }
 /** Record the signature just reported. `""` clears it, so a later drift speaks again. */
 export function recordReported(root, signature) {
-    const dir = resolve(root, STATE_DIR_REL);
-    mkdirSync(dir, { recursive: true });
-    writeFileSync(resolve(root, THROTTLE_REL), JSON.stringify({ reported: signature }) + "\n", "utf-8");
+    saveGuardState(THROTTLE_FILE, { reported: signature }, root);
 }
 /* ------------------------------------------------------------------ *
  * Rendering

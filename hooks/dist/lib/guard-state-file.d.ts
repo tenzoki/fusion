@@ -13,8 +13,18 @@
  * `escalation.json` failed the whole guard open (issue `260802-2334`); the other
  * two kept casting with `as` and threw on the next field access, which discarded
  * the protected-path halt message on the same tool call (issue `260809-1101`).
- * One defect, fixed once, in one of three places. Two modules use the seam
- * today; the ping-back tracker left with decision `260809-2004`.
+ * One defect, fixed once, in one of three places. The ping-back tracker left
+ * with decision `260809-2004`.
+ *
+ * It happened a second time. Three measurement modules — `state-drift.ts`,
+ * `review-coverage.ts`, `staging-drift.ts` — landed in one afternoon, each with
+ * its own twelve-line throttle store written BESIDE this file rather than
+ * through it, and they had already diverged: all three wrote with a bare
+ * `writeFileSync` where this one writes through a `.tmp` and a rename, and all
+ * three read with an `as` cast where this one takes a coercion. Decision
+ * `260811-1146` moved them onto the seam and widened it by one optional `root`,
+ * which is the only thing they needed and did not have. Five modules use it
+ * today.
  *
  * So the seam is a parameter rather than a pattern to reproduce:
  * `loadGuardState` takes the coercion, and a state module that wants to persist
@@ -66,16 +76,39 @@ export interface GuardStatePaths {
  * working directory, which makes every state operation a silent no-op. That is
  * what keeps a plain Claude session in a non-fusion directory from bootstrapping
  * a stray workbench.
+ *
+ * ## The optional root, and why it is optional rather than required
+ *
+ * `escalation.ts` and `churn.ts` run inside the hooks and have no root of their
+ * own, so they let this walk up from the working directory — that walk is the
+ * no-workbench no-op above, and it must stay their default.
+ *
+ * The three measurement modules are the other case. Each is handed a workbench
+ * root by its caller (the tracker resolves it once per tool call; the `bin/`
+ * CLIs resolve it once at startup) and each is deliberately anchored there
+ * rather than at cwd — a hook's `process.cwd()` is whatever directory the
+ * session happens to sit in. Passing that root through is what let them use
+ * this seam at all; before it existed they forked three copies of it instead,
+ * which is the failure this module's header already describes.
+ *
+ * A caller that passes a root gets no null: it has already answered the
+ * question the walk asks. The walk runs only when no root is given.
  */
-export declare function guardStatePath(fileName: string): GuardStatePaths | null;
+export declare function guardStatePath(fileName: string, root?: string): GuardStatePaths | null;
 /**
  * Turn an arbitrary parsed JSON value — or `undefined`, for a file that is
  * absent, unreadable or unparseable — into a state of the caller's own type.
  * It must be total: every input has an answer, and none of them throws.
  */
 export type StateCoercion<T> = (value: unknown) => T;
-/** Read one state file and coerce whatever it holds into a usable state. */
-export declare function loadGuardState<T>(fileName: string, coerce: StateCoercion<T>): T;
+/**
+ * Read one state file and coerce whatever it holds into a usable state.
+ *
+ * `root` is optional for the reason `guardStatePath` gives: omit it and the
+ * workbench is found by walking up from the working directory; pass it and that
+ * root is used verbatim.
+ */
+export declare function loadGuardState<T>(fileName: string, coerce: StateCoercion<T>, root?: string): T;
 /**
  * Write one state file atomically. No-op when no workbench is set up.
  *
@@ -84,7 +117,7 @@ export declare function loadGuardState<T>(fileName: string, coerce: StateCoercio
  * failure is a separate question with its own queued task; this module is not
  * the place to answer it by accident.
  */
-export declare function saveGuardState(fileName: string, state: unknown): void;
+export declare function saveGuardState(fileName: string, state: unknown, root?: string): void;
 /**
  * Is this value a JSON object a state can be read out of?
  *

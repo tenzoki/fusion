@@ -608,6 +608,86 @@ function trackChurn(input) {
     saveChurn(churn);
 }
 /* ------------------------------------------------------------------ *
+ * The measurement family — read this before adding a fourth
+ * ------------------------------------------------------------------ */
+/**
+ * THE TRIGGER IS WHAT DECIDES WHETHER A NEW MEASUREMENT IS A SIBLING.
+ *
+ * Three measurements hang below this line, and each argued in its own review
+ * that it was a SIBLING of the others rather than an extension of one. That
+ * argument was accepted, and the reason is one property and not a matter of
+ * taste: **the three fire on three different conditions.** Decision
+ * `fusion-workbench/shared/decisions/260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md`
+ * records it as the criterion, so it is written here rather than remembered.
+ *
+ * The three, in the order they appear below:
+ *
+ *   - `measureStateDriftForModel` — **every guarded tool call.** A stale
+ *     `agentstate.yaml` is a fault at every moment after the commit that
+ *     outdated it, so measuring always reports a fault only when there is one.
+ *   - `measureReviewCoverageForModel` — **a review file lands** under a
+ *     `reviews/` store. An uncovered commit range mid-Turn is the normal and
+ *     correct state; the review landing is the moment the gap becomes both
+ *     answerable and a fault to ignore.
+ *   - `measureStagingDriftForModel` — **HEAD has moved** since the previous
+ *     tool call. An unstaged record mid-Turn is the normal state; the commit is
+ *     the moment a missed record becomes a missed record.
+ *
+ * ## What "a distinct trigger" has to mean, concretely
+ *
+ * A proposed measurement is a sibling when all three of these hold. They are
+ * questions with checkable answers, not a feeling about subject matter:
+ *
+ *   1. **There is a moment at which its answer changes from "not yet" to
+ *      "wrong".** Name that moment. If the answer is "it is wrong from the
+ *      commit that broke it onward", the trigger is every call. If it is "it is
+ *      only wrong once X has happened", X is the trigger.
+ *   2. **On the commonest path, firing at that moment reports NOTHING.** This
+ *      is the disqualifying test, and it is the one issue `260810-0710` was
+ *      paid for: a check that speaks on its commonest path is one its reader
+ *      learns to read past, which destroys the other measurements' credibility
+ *      along with its own. If the proposed trigger would fire during ordinary
+ *      correct work, it is the wrong trigger — not a reason to soften the
+ *      sentence.
+ *   3. **The condition is READ, never predicted.** Ask the repository, the file
+ *      system or the hook input for a fact. Do not decide from a `Bash`
+ *      command's text what it is about to do: that is the classifier the write
+ *      guard shed in v6.0.0 and the branch policy that was deleted on 260809
+ *      after 24 consecutive false blocks. `headMoved` is the worked example —
+ *      it asks `git rev-parse HEAD` rather than reading the command that moved
+ *      it, which is correct across `git commit`, an alias, a script, a rebase
+ *      and a reset alike.
+ *
+ * A proposal that fails (1) has no moment and belongs inside an existing
+ * measurement's report. One that fails (2) has a trigger that is too wide, not
+ * a message that is too loud. One that fails (3) is not a measurement at all.
+ *
+ * Two triggers that come out identical are NOT siblings: same moment, same
+ * throttle, same sentence — that is one measurement with two rows, and it goes
+ * into the existing module's report rather than beside it.
+ *
+ * ## The trip-wire, and it is deliberately here
+ *
+ * **When a fourth measurement is proposed, the chassis is built first.** The
+ * same decision takes option 2 for the third — the throttle store onto
+ * `lib/guard-state-file.ts`, the git wrapper into `lib/git.ts`, both of which
+ * already had an owner — and leaves the rest as three copies: the three
+ * `measure…ForModel` bodies below, the three CLI mains under `hooks/`, and the
+ * three `bin/` wrappers. Three copies is where this codebase drew the line the
+ * last time (`lib/guard-state-file.ts`'s own header), and drawing it in the
+ * same place twice is a decision rather than a coincidence. A fourth copy of
+ * the boilerplate is the signal that the chassis is now cheaper than the
+ * copies, and `bin/monitor` not rendering two of the three emitted events is
+ * what the omission looks like when it is not.
+ *
+ * What a chassis must NOT do, when it is built: flatten the three trigger
+ * arguments into a flag. The reasoning in each measurement's doc comment below,
+ * and in `lib/review-coverage.ts` and `lib/staging-drift.ts`, is the most
+ * load-bearing text in the family — it is why each is not on the every-call
+ * path. A registry that reduced it to `fires: "on-commit"` would lose exactly
+ * the part worth keeping.
+ */
+/* ------------------------------------------------------------------ *
  * Session-state drift
  * ------------------------------------------------------------------ */
 /**

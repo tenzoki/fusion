@@ -107,9 +107,9 @@
  *      Cleanup.
  */
 
-import { execFileSync } from "node:child_process";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, resolve, relative, sep } from "node:path";
+import { git } from "./git.js";
+import { isStateObject, loadGuardState, saveGuardState } from "./guard-state-file.js";
 import { readStateFile, stateField } from "./state-drift.js";
 
 /* ------------------------------------------------------------------ *
@@ -117,10 +117,20 @@ import { readStateFile, stateField } from "./state-drift.js";
  * ------------------------------------------------------------------ */
 
 const WB = "fusion-workbench";
-const THROTTLE_REL = `${WB}/.guard-state/staging-drift.json`;
 
-/** Enough for a local `git status` on any repository this will meet. */
-const GIT_TIMEOUT_MS = 10_000;
+/**
+ * The throttle record's file NAME, not its path: `lib/guard-state-file.ts`
+ * builds the path under `.guard-state/` and this module no longer knows how.
+ */
+const THROTTLE_FILE = "staging-drift.json";
+
+/**
+ * `git status --untracked-files=all` over a whole workbench is the one call in
+ * this family that walks a working tree rather than reading refs, so it gets
+ * twice the default budget `lib/git.ts` sets. The two `rev-parse` calls here
+ * take the default, because they are ref reads like every other caller's.
+ */
+const GIT_STATUS_TIMEOUT_MS = 10_000;
 
 /**
  * The path Step 3b prescribes for a commit message, named here so the sentence
@@ -297,23 +307,6 @@ export interface StagingReport {
   signature: string;
 }
 
-/* ------------------------------------------------------------------ *
- * git
- * ------------------------------------------------------------------ */
-
-function git(root: string, args: string[]): string | null {
-  try {
-    return execFileSync("git", args, {
-      cwd: root,
-      encoding: "utf-8",
-      timeout: GIT_TIMEOUT_MS,
-      stdio: ["ignore", "pipe", "ignore"],
-    });
-  } catch {
-    return null;
-  }
-}
-
 /**
  * Unquote a porcelain path.
  *
@@ -468,7 +461,11 @@ export function measureStagingDrift(root: string): StagingReport {
   }
   const toplevel = toplevelOut.trim();
 
-  const statusOut = git(root, ["status", "--porcelain", "--untracked-files=all", "--", wbAbs]);
+  const statusOut = git(
+    root,
+    ["status", "--porcelain", "--untracked-files=all", "--", wbAbs],
+    GIT_STATUS_TIMEOUT_MS,
+  );
   if (statusOut === null) {
     return EMPTY(root, `git status could not read ${WB}`);
   }
@@ -525,24 +522,31 @@ interface StagingState {
   reported: string;
 }
 
+/**
+ * The throttle record, read as two independent fields.
+ *
+ * Total, as `lib/guard-state-file.ts` requires, and the two fields are coerced
+ * separately on purpose: a record whose `reported` is corrupt still has a
+ * usable `head`, and dropping both would re-arm the trigger as well as the
+ * report. `""` for `head` is the first-sighting case, which `headMoved` states
+ * is deliberately not a move.
+ */
+function coerceStagingState(value: unknown): StagingState {
+  if (!isStateObject(value)) return { head: "", reported: "" };
+  return {
+    head: typeof value.head === "string" ? value.head : "",
+    reported: typeof value.reported === "string" ? value.reported : "",
+  };
+}
+
 /** The throttle record, or an empty one when there is none to read. */
 export function readStagingState(root: string): StagingState {
-  try {
-    const raw = readFileSync(resolve(root, THROTTLE_REL), "utf-8");
-    const parsed = JSON.parse(raw) as { head?: unknown; reported?: unknown };
-    return {
-      head: typeof parsed.head === "string" ? parsed.head : "",
-      reported: typeof parsed.reported === "string" ? parsed.reported : "",
-    };
-  } catch {
-    return { head: "", reported: "" };
-  }
+  return loadGuardState(THROTTLE_FILE, coerceStagingState, root);
 }
 
 /** Write the throttle record. `reported: ""` clears it, so a later miss speaks again. */
 export function writeStagingState(root: string, state: StagingState): void {
-  mkdirSync(resolve(root, `${WB}/.guard-state`), { recursive: true });
-  writeFileSync(resolve(root, THROTTLE_REL), JSON.stringify(state) + "\n", "utf-8");
+  saveGuardState(THROTTLE_FILE, state, root);
 }
 
 /** HEAD right now, or "" when git will not say (no repository, no commits yet). */
