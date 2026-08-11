@@ -92,3 +92,22 @@ held by other executors this Turn (Turn-2 dispatch: stay out of `skills/setup/SK
 `skills/next/SKILL.md`), so the edit was not made. It is one substitution per file, to
 `$FUSION_PLUGIN_ROOT/skills/cleanup/SKILL.md:11`, and the cited content at that line is still
 correct after half 1.
+
+---
+**Reconciliation note — reconciler, 260811-0108, at HEAD `e2a34f0`. The closure holds; the record's
+own last paragraph contradicts it.**
+
+The closure is correct, verified against the tree rather than against the notes. Half 1:
+`skills/cleanup/SKILL.md:11` carries the blanket rooting rule, extended in place. Half 2:
+`skills/setup/SKILL.md:23` and `skills/next/SKILL.md:24` each end the announcing paragraph with
+`$FUSION_SRC/skills/cleanup/SKILL.md:11`, and line 11 of `skills/cleanup/SKILL.md` still carries the
+rooting instruction, so the anchor those two cite resolves. `_c_` is right.
+
+**The defect is in the record's layout.** The Turn-3 resolution note ("Resolved — half 2 done") was
+appended *above* the Turn-2 note's closing paragraph rather than at the end of the file, so the last
+words of a closed record are "**Half 2 (not done).**" — a statement that was true in Turn 2 and is
+false now. A reader who scans to the bottom of this record, which is where the resolution convention
+in `rules/fusion-workbench-conventions.md` `## Inline State Tracking` puts it, reads the stale half.
+The stale paragraph also prescribes `$FUSION_PLUGIN_ROOT/skills/cleanup/SKILL.md:11` where Turn 3
+deliberately wrote `$FUSION_SRC/…`, with its reason stated. Nothing was rewritten here — the
+paragraph is preserved and this note is what dates it.

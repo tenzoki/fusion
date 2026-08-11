@@ -1103,3 +1103,50 @@
 {"ts":"2026-08-10T14:29:42","event":"session_end","turn":1,"detail":"1 turn, 7 commits, 6 tasks resolved, 5 records closed, 4 filed, 2 decisions implemented; v7.2.0 tagged and pushed; closed early at user request; coderev over the range still running at tag time"}
 {"ts":"2026-08-10T14:29:55","event":"state_drift","turn":1,"detail":"progress.commits: agentstate.yaml says 0, git counts 7 since 430d73a. The Turn-boundary write was never performed during the Turn; the counter stayed at its Phase-1 value for the whole session. This is a live reproduction of record 260801-2038 (task 5 in this session's own queue, unreached). Recorded here because agentstate.yaml is deleted at Cleanup and this log outlives it."}
 {"ts":"2026-08-10T14:36:46","event":"review_done","turn":1,"agent":"coderev","detail":"range 430d73a..HEAD; verdict ship, nothing held back; 4 issues filed (1 medium, 3 low); suite green 40 files 1072 tests 82s; committed dist diffs identical against a fresh tsc build"}
+{"ts":"2026-08-10T14:46:53","event":"session_start","detail":"setup complete; directive not yet stated; domain=code"}
+{"ts":"2026-08-10T15:16:50","event":"scope_resolved","detail":"mode=issues; 47 open defect records; queue rebuild via taskplanner (domain=code); ungated tasks first, 15 human gates batched after"}
+{"ts":"2026-08-10T15:47:20","event":"queue_built","turn":1,"detail":"45 tasks queued (25 ungated, 20 human-gate); 0 blocked; 5 dropped as resolved by commits since 430d73a; 2 close without work"}
+{"ts":"2026-08-10T15:47:20","event":"turn_start","turn":1,"detail":"6 ungated tasks with disjoint file scopes: 1,3,4,5,6,7; turn_start_head=5ef92eb"}
+{"ts":"2026-08-10T15:47:55","event":"task_start","turn":1,"task":"I:260810-1535-commit-apostrophe","agent":"coder","detail":"agents/orchestrator.md"}
+{"ts":"2026-08-10T15:47:55","event":"task_start","turn":1,"task":"I:260810-1558-monitor-orphan","agent":"coder","detail":"bin/monitor"}
+{"ts":"2026-08-10T15:47:55","event":"task_start","turn":1,"task":"I:260810-0501-citation-root","agent":"coder","detail":"skills/setup+next"}
+{"ts":"2026-08-10T15:47:55","event":"task_start","turn":1,"task":"I:260810-0503-cascade-lint","agent":"coder","detail":"domain-cascade-order-lint.test.ts"}
+{"ts":"2026-08-10T15:47:55","event":"task_start","turn":1,"task":"I:260810-0502-drift-lint","agent":"coder","detail":"state-drift-detection-lint.test.ts"}
+{"ts":"2026-08-10T16:03:47","event":"task_error","turn":1,"task":"I:260810-0501-citation-root","agent":"coder","detail":"work complete, files changed; verification npm test exit 1 — all four failures are other coders' in-flight files (derivable-enumerations, domain-cascade, fusion-commit-lock, monitor-warnings-panel); three skill-reading lints passed; commit deferred to end-of-batch validation"}
+{"ts":"2026-08-10T16:07:32","event":"task_error","turn":1,"task":"I:260810-1535-commit-apostrophe","agent":"coder","detail":"work complete; verification npm test exit 1 — sole failure is derivable-enumerations-lint naming hooks/lib/domain-cascade.ts, another coder's new file missing from the README-hooks.md lib table; rest 40 files/1088 tests green; commit deferred to end-of-batch validation"}
+{"ts":"2026-08-10T16:13:03","event":"commit","turn":1,"task":"I:260810-1558-monitor-orphan","detail":"e7b48a1 monitor browser launch no longer kills the wrapper"}
+{"ts":"2026-08-10T16:13:03","event":"task_done","turn":1,"task":"I:260810-1558-monitor-orphan","agent":"coder","detail":"e7b48a1; verification npm test exit 0, 41 files green"}
+{"ts":"2026-08-10T16:13:03","event":"commit","turn":1,"task":"I:260810-1535-commit-apostrophe","detail":"a7d02da commit message leaves the shell"}
+{"ts":"2026-08-10T16:13:03","event":"task_done","turn":1,"task":"I:260810-1535-commit-apostrophe","agent":"coder","detail":"a7d02da"}
+{"ts":"2026-08-10T16:13:03","event":"revert","turn":1,"detail":"orchestrator error: git add -u over shared/issues staged three _o_ deletions whose _p_ successors were untracked; restored in a follow-up commit, no working-tree loss"}
+{"ts":"2026-08-10T16:14:30","event":"commit","turn":1,"task":"I:260810-0502-drift-lint","detail":"drift lint anchors on acts"}
+{"ts":"2026-08-10T16:14:30","event":"task_done","turn":1,"task":"I:260810-0502-drift-lint","agent":"coder","detail":"npm test exit 0, 41 files/1096 tests; remainder filed as 260810-1813"}
+{"ts":"2026-08-10T16:19:19","event":"commit","turn":1,"task":"I:260810-0503-cascade-lint","detail":"5d0ee05 domain cascade executed"}
+{"ts":"2026-08-10T16:19:19","event":"task_done","turn":1,"task":"I:260810-0503-cascade-lint","agent":"coder","detail":"5d0ee05; all four defeats now fail"}
+{"ts":"2026-08-10T16:19:19","event":"commit","turn":1,"task":"I:260810-0501-citation-root","detail":"citation rooted through FUSION_PLUGIN_ROOT"}
+{"ts":"2026-08-10T16:19:19","event":"task_done","turn":1,"task":"I:260810-0501-citation-root","agent":"coder","detail":"route 1; route 2 filed as decision 260810-1822"}
+{"ts":"2026-08-10T16:41:40","event":"gate_response","turn":1,"detail":"user answered 260810-1820 (option 1, scratch copy) and decision 260810-1822 (option 1, leave the procedure in the prompt)"}
+{"ts":"2026-08-10T16:41:40","event":"commit","turn":1,"detail":"decision 260810-1822 -> _i_, defect 260810-1820 answer recorded"}
+{"ts":"2026-08-10T17:10:27","event":"review_start","turn":1,"agent":"coderev","detail":"range 5ef92eb..940d522, 7 commits, 8 non-workbench files"}
+{"ts":"2026-08-10T17:24:01","event":"review_done","turn":1,"agent":"coderev","detail":"11 findings filed; 2 release-blocking; 2 commit-message claims in the range falsified"}
+{"ts":"2026-08-10T18:07:55","event":"turn_end","turn":1,"detail":"5 tasks resolved, 8 commits, 11 issues filed by review, 1 decision answered+implemented"}
+{"ts":"2026-08-10T18:07:55","event":"turn_start","turn":2,"detail":"5 tasks grouped by file: cascade duplication, commit procedure, monitor, drift lint, citation root in own repo; turn_start_head=da8c9db"}
+{"ts":"2026-08-10T18:31:06","event":"task_done","turn":2,"task":"R:260810-1918-commit-procedure","agent":"coder","detail":"npm test exit 0, 1113 tests"}
+{"ts":"2026-08-10T18:31:06","event":"task_done","turn":2,"task":"R:260810-1918-rooted-in-own-repo","agent":"coder","detail":"npm test exit 0, 1113 tests"}
+{"ts":"2026-08-10T18:31:06","event":"task_done","turn":2,"task":"R:260810-1918-monitor-residuals","agent":"coder","detail":"npm test exit 0, 1113 tests"}
+{"ts":"2026-08-10T18:33:10","event":"task_done","turn":2,"task":"R:260810-1918-drift-lint-residuals","agent":"coder","detail":"npm test exit 0; reformulation costed and filed as decision 260810-2032"}
+{"ts":"2026-08-10T19:16:56","event":"review_done","turn":2,"agent":"coderev","detail":"11 findings; 2 high; two counts falsified; the cascade reach gate misses a backtick-free paraphrase"}
+{"ts":"2026-08-10T19:16:56","event":"turn_end","turn":2,"detail":"10 records closed, 16 filed"}
+{"ts":"2026-08-10T19:16:56","event":"circuit_breaker","turn":2,"detail":"net-negative progress: Turn 1 closed 5 filed 13, Turn 2 closed 10 filed 16 — two consecutive Turns with issues_created > tasks_resolved"}
+{"ts":"2026-08-10T19:27:30","event":"turn_start","turn":3,"detail":"user directed the root pattern after the circuit breaker; 3 executors; skip-licence permission gap held behind the approved baseline pin"}
+{"ts":"2026-08-10T19:27:45","event":"state_drift","turn":3,"detail":"progress.commits surface=13, git 5ef92eb..HEAD=15 — the decision-answer commit 6932e06 and the Turn-2 review commit 1beefd5 were made without updating agentstate.yaml; corrected to 15. progress.turn surface=3 matches 3 turn_start events this session; an earlier count of 70 was an unanchored grep over all sessions, not drift."}
+{"ts":"2026-08-10T19:49:02","event":"task_done","turn":3,"task":"P:turn-2-residuals","agent":"coder","detail":"npm test exit 0, 1139 tests; staging directory measured; 2 proposals filed"}
+{"ts":"2026-08-10T20:00:58","event":"task_done","turn":3,"task":"P:cascade-reach","agent":"coder","detail":"861e695; reach is data with probes; bare-word hole left open with measured cost 14/14"}
+{"ts":"2026-08-10T20:00:58","event":"task_done","turn":3,"task":"P:silent-skip","agent":"coder","detail":"unclassified root variable is now a violation; count corrected to 8"}
+{"ts":"2026-08-10T20:00:58","event":"turn_end","turn":3,"detail":"3 tasks resolved, 10 records closed, 3 filed; suite 1142 green"}
+{"ts":"2026-08-10T20:01:39","event":"state_drift","turn":3,"detail":"progress.commits surface=20, git 5ef92eb..HEAD=18 — the orchestrator over-counted when updating by hand, in the opposite direction to the Turn-3 boundary drift; corrected to 18"}
+{"ts":"2026-08-11T02:40:27","event":"coherence_review","turn":3,"detail":"reconciler verdict review-needed; flagged edge Artifact<->Grounding; cause: tasklist rebuild and its history file never committed"}
+{"ts":"2026-08-11T02:40:27","event":"rebalance_artifact","turn":3,"detail":"user chose to commit both files and close; one commit, not a new Turn"}
+{"ts":"2026-08-11T02:42:16","event":"state_drift","detail":"final check: progress.commits surface=18, git 5ef92eb..HEAD=21 — three closing commits (60f47c2, e2a34f0, 90cd8b2) landed after the last state write; agentstate.yaml is deleted at cleanup, so this event is the surviving record"}
+{"ts":"2026-08-11T02:42:16","event":"reconciliation","detail":"verdict review-needed; 3 discrepancies filed; resolved by committing the queue rebuild"}
+{"ts":"2026-08-11T02:42:16","event":"session_end","detail":"3 Turns, 21 commits, 28 records closed, 33 filed, 2 decisions answered; circuit breaker tripped once"}

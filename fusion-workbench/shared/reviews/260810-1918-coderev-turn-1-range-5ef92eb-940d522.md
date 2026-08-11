@@ -151,3 +151,21 @@ and neither is obviously right.
 ---
 
 **Filed by:** coderev, session `260810-1646`.
+
+---
+
+## Reconciliation annotation — reconciler, 260811-0108, at HEAD `e2a34f0`
+
+Findings are not rewritten here. Two facts about this document, both measured:
+
+**All eleven records this review filed are closed and their closures hold.** `H1`, `H2`, `M1`, `M2`,
+`M3` (monitor `sleep 0.5`), `L1`–`L6` each carry `_c_` under `shared/issues/260810-1918_c_*`, and
+each was re-verified against the working tree rather than against its own resolution note. `M3`
+(`agents/orchestrator.md:429`) was folded into `H2` by this review and correctly filed no record of
+its own.
+
+**The Totals table undercounts by one and reuses a label.** Low is 6 (`L1`–`L6`), not 5, so the table
+sums to 11 and the sentence "Ten findings, ten records filed" is short by one against the eleven
+records on disk. `M3` names two different findings. Filed as
+`shared/issues/260811-0109_o_the-turn-1-reviews-totals-say-ten-findings-and-it-carries-eleven.md`;
+same class as queued task 37.

@@ -83,3 +83,15 @@ Re-measured independently here: `skills/setup/SKILL.md:220,238,239,254,260` and
 `skills/next/SKILL.md:115,121,185`, and the root-variable token count over the whole surface moves
 from 140 to 148 when `FUSION_SRC` is classified. The filename keeps the superseded number because a
 record's topic is immutable and three live texts cite this slug.
+
+---
+**Reconciliation note — reconciler, 260811-0108, at HEAD `e2a34f0`.** The closure holds and the
+corrected count of eight is right. The *line anchors* have already gone stale inside the same
+session: this record and its sibling `260810-2110_*_…seven-citations…-and-there-are-eight.md` both
+cite `skills/setup/SKILL.md:220,238,239,254,260` and `skills/next/SKILL.md:115,121,185`. At HEAD the
+eight `$FUSION_SRC`-rooted citations of `agents/orchestrator.md` sit at `skills/setup/SKILL.md:222,
+240,241,256,262` and `skills/next/SKILL.md:117,122,187` — every anchor moved two lines when `c714d8c`
+landed, four commits after the measurement. Five plus three is still eight and the claim is intact;
+only the anchors are wrong. This is the class the open record
+`260808-0030_o_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md` is about,
+now with a same-session instance.

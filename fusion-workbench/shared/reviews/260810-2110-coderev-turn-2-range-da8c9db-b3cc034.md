@@ -221,3 +221,28 @@ four skill bodies is a thicker case for one `bin/` helper than either was alone.
 ---
 
 **Filed by:** coderev, session `260810-1646`, Turn 2.
+
+---
+
+## Reconciliation annotation — reconciler, 260811-0108, at HEAD `e2a34f0`
+
+Findings are not rewritten here.
+
+**Totals confirmed.** Eleven findings, eleven records filed under `shared/issues/260810-2110_*`, and
+the severity table sums to eleven. Counted against `git log --name-status` for `1beefd5` and against
+the marker inventory.
+
+**Eight of the eleven closed and their closures hold**, re-verified against the tree: the
+`$FUSION_SRC` empty-string report, the `git add` working-directory statement, the cascade gate's file
+set (`REACH.fileSet` now carries `rules/*.md`; 13 rule files, 0 false positives), the two-line
+continuation window, the four-spelling bracketing, the corrected count of eight citations, the
+Cleanup Step-1-item-4 citation, and the heredoc at column 0.
+
+**Three remain open and are accurate as filed**: the domain-capture one-liner copied into a fourth
+skill body, the skip-licence count discrepancy, and the missing `permission` pattern. The last is
+deliberately held — decision `shared/decisions/260810-2032_a_*` sequences the baseline pin that
+subsumes the whole licence vocabulary behind `260801-2038`, which is still `_o_`.
+
+**One anchor in this document has already gone stale**: the citation line numbers it quotes for
+`skills/setup/SKILL.md` and `skills/next/SKILL.md` moved two lines when `c714d8c` landed. The count
+of eight is unaffected. Annotated on `shared/issues/260810-2029_c_*`.

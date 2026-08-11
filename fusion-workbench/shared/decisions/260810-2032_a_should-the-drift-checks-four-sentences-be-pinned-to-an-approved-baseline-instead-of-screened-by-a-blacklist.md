@@ -105,3 +105,23 @@ covers rather than in advance.
    predict what counts as "the same sentence" cannot predict when re-approval is due.
 
 Implemented:
+
+---
+**Reconciliation note — reconciler, 260811-0108, at HEAD `e2a34f0`. `_a_` is correct and is
+deliberately not advanced.**
+
+Checked, because the sequencing constraint is the whole point of this record. The prerequisite is
+open: `shared/issues/260801-2038_o_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`
+carries `_o_` on disk and is queued as task 2 of `fusion-workbench/tasklist.md`. No pin exists in
+`hooks/lib/__tests__/state-drift-detection-lint.test.ts` — the file's header at `:92-104` states the
+undecidability, names the pin as the answer, and records why it has not landed: it would hand the
+executor of that prompt task a red suite in a file it does not own. That is the record's own
+constraint, honoured in the code rather than only in the record.
+
+The blacklist that shipped instead is present and measured: 27 `SKIP_LICENCES` entries at
+`:210-236`, each carrying its own witness `example`. So the state on disk is exactly what `_a_`
+means — the answer is recorded, the realisation is not, and the reason it is not is a stated
+sequencing decision rather than an omission.
+
+`_a_` → `_i_` is not available until `260801-2038` lands and the pin is written against the text
+that task leaves behind.

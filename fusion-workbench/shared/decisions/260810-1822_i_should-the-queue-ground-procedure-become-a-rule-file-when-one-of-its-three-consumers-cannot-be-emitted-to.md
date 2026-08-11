@@ -102,3 +102,25 @@ file and does not depend on where that file lives.
 
 Implemented: 89b13f1 — the rooted citations and the presence check are on disk; option 1 requires no
 further change, so the answer and its realisation are the same commit.
+
+---
+**Reconciliation note — reconciler, 260811-0108, at HEAD `e2a34f0`. `_i_` confirmed; one sentence of
+the Answered note was overtaken later in the same session.**
+
+The implementation cited is on disk. The section `#### Reading a queue` is at
+`agents/orchestrator.md:632`, and both runtime presence checks exist and name the copy they resolved:
+`skills/setup/SKILL.md:263` (which also reports the healthy case) and `skills/next/SKILL.md:124`.
+Option 1 required no further change, so `Implemented: 89b13f1` is accurate and the marker is right.
+`_i_` is terminal and nothing here reopens it.
+
+**What is now stale in the Answered note.** It says "the two skills reach it through
+`$FUSION_PLUGIN_ROOT`". They no longer do. `63deec1`, four commits later in this same session,
+re-rooted both through `$FUSION_SRC` — the work tree inside the plugin's own repository, the install
+elsewhere — closing
+`shared/issues/260810-1918_c_the-rooted-citations-read-the-installed-copy-inside-the-plugins-own-repo-where-the-helpers-do-not.md`.
+The decision the note records is unaffected: option 1 was "leave the procedure in the prompt", and it
+is still in the prompt. Only the root variable named in passing changed.
+
+**The consequence the note recorded still stands.** `260810-0511` (the queue-head parser written
+twice inside the section that calls itself canonical) is not settled by option 1 and is open on disk
+as queued task 16.
