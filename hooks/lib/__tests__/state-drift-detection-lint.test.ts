@@ -247,10 +247,22 @@ const CALL_POINTS: CallPoint[] = [
  * therefore matters, and a new entry goes wherever its example is not claimed
  * by an earlier one.
  *
- * The eight forms from issue 260810-1918 are the contraction families,
+ * The entries issue 260810-1918 brought are the two contraction families,
  * `not required`, `no longer`, `except when`, `provided that`, `as time
  * allows`, `best effort`, `where practical`, `drop`, `sparingly` and `at most`.
  * The rest predate it.
+ *
+ * That enumeration carries no count, and neither does this list, deliberately.
+ * The sentence above used to open "The eight forms from issue 260810-1918 are",
+ * which equated the number eight with an enumeration of twelve patterns: eight
+ * was the row count of that issue's table, eleven the phrasings those rows name,
+ * and twelve the entries added here, because the contraction family needs two
+ * regexes ("won't"/"can't" are not auxiliary + n't). Three numbers for one thing,
+ * two of them in the same sentence (issue 260810-2110). Nothing derives a count
+ * from this array, so a count written beside it is a second source of truth for
+ * its length; the control "rejects every declared skip licence on a phrasing of
+ * its own" witnesses every entry one at a time, which is what a count was
+ * standing in for.
  */
 type SkipLicence = { re: RegExp; example: string };
 

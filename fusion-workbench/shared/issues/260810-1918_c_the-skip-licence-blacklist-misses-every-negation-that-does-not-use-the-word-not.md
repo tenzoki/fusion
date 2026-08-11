@@ -93,3 +93,16 @@ taken here for sequencing: a queued task in the same session rewrites the drift-
 `agents/orchestrator.md`, and a pin landed first would hand that executor a red suite in a file it
 does not own. Recorded in the test file's header. History:
 `shared/history/260810-2029-coder-drift-lint-residuals.md`.
+
+---
+**Correction to the resolution note above — issue 260810-2110, session `260811-1315`.**
+
+"Eleven patterns added" and "each of the eleven was spliced one at a time" are both one short.
+**Twelve** entries were added, and the enumeration in that same sentence names twelve: the
+contraction family occupies two entries in `SKIP_LICENCES`, because `won't`/`can't` are not
+auxiliary + n't, and the control requires each to be the first entry matching its **own** example,
+so both are separately witnessed. Twelve, not eleven, pass the pre-change lint and fail the
+changed one. The commit subject of `45d76f0` ("eleven more licences are closed with witnesses")
+carries the same error and cannot be edited. The docstring in
+`hooks/lib/__tests__/state-drift-detection-lint.test.ts` no longer states any count at all — see
+issue 260810-2110 for why deriving beat correcting there.

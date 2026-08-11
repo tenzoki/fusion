@@ -68,6 +68,17 @@ const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 // that file a header below the lede would sit at line 12). Widening the window
 // would let a header drift out of a reader's first glance; the fix for a file
 // that cannot fit is to put the header above the lede, as all ten now do.
+//
+// CHANGING THIS NUMBER BREAKS TESTS ON PURPOSE. The behavioural tests read the
+// constant (a fixture at `HEADER_WINDOW + 1` is the boundary wherever the
+// boundary is), but the tests asserting on the failure MESSAGE spell the ten out
+// as a literal. Five of them once interpolated this constant on both sides of
+// the comparison, so they passed for any value: set it to 3 and the gate
+// narrowed to three lines, the message truthfully advertised the wrong rule, and
+// all five stayed green (issue 260802-1255). The point of those assertions is
+// that a human reading the failure learns the window size, so a change here has
+// to force a deliberate edit of the literal in `report()` and in the five
+// assertions that pin it.
 const HEADER_WINDOW = 10;
 
 // The spec's regex, verbatim — not re-derived here. Anchored (so the keyword
@@ -265,7 +276,6 @@ describe("provenance-header lint: the window is exactly the first ten lines", ()
     const text = fileWithHeaderAt(HEADER_WINDOW + 1);
     expect(text.split("\n")[HEADER_WINDOW]).toBe(CANONICAL_HEADER); // it really is at line 11
     expect(headerLine(text)).toBeNull();
-    expect(report(["rules/fixture.md"])).toContain(`first ${HEADER_WINDOW} lines`);
   });
 });
 
@@ -346,7 +356,7 @@ describe("provenance-header lint: the three negative fixtures fail, with an acti
 
     const msg = report(["rules/a-rule-without-provenance.md"]);
     expect(msg).toContain("rules/a-rule-without-provenance.md");
-    expect(msg).toContain(`no 'Provenance:' line in the first ${HEADER_WINDOW} lines`);
+    expect(msg).toContain("no 'Provenance:' line in the first 10 lines");
     expect(msg).toContain("**Provenance:** shared/decisions/<record>.md");
     expect(msg).toContain("**Provenance:** circles/<circle-directory>");
     expect(msg).toContain("No motivating record recoverable; introduced in `git:<short-hash>`.");
@@ -360,7 +370,7 @@ describe("provenance-header lint: the three negative fixtures fail, with an acti
 
     const msg = report(["rules/late-header.md"]);
     expect(msg).toContain("rules/late-header.md");
-    expect(msg).toContain(`first ${HEADER_WINDOW} lines`);
+    expect(msg).toContain("first 10 lines");
     expect(msg).toContain("directly under the H1");
   });
 
@@ -381,7 +391,7 @@ describe("provenance-header lint: the three negative fixtures fail, with an acti
 
     const msg = report(["rules/adjacent-vocabulary.md"]);
     expect(msg).toContain("rules/adjacent-vocabulary.md");
-    expect(msg).toContain(`no 'Provenance:' line in the first ${HEADER_WINDOW} lines`);
+    expect(msg).toContain("no 'Provenance:' line in the first 10 lines");
   });
 });
 
@@ -402,7 +412,7 @@ describe("provenance-header lint: a real rule file stripped of its header fails"
 
     const msg = report([rel]);
     expect(msg).toContain(rel);
-    expect(msg).toContain(`first ${HEADER_WINDOW} lines`);
+    expect(msg).toContain("first 10 lines");
     expect(msg).toContain("No motivating record recoverable; introduced in");
   });
 });

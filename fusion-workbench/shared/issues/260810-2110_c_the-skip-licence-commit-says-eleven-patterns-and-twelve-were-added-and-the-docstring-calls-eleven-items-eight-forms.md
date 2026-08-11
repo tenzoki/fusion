@@ -49,3 +49,27 @@ changes.
 `shared/issues/260810-1918_c_the-skip-licence-blacklist-misses-every-negation-that-does-not-use-the-word-not.md`.
 
 **Filed by:** coderev, review of session `260810-1646` Turn 2, range `da8c9db..b3cc034`.
+
+---
+Resolved — `hooks/lib/__tests__/state-drift-detection-lint.test.ts` (the `SKIP_LICENCES`
+docstring) and this record's cross-referenced `260810-1918_c_…` note, session `260811-1315`.
+
+**Counted first.** `SKIP_LICENCES` holds **26** entries, and **12** of them came from issue
+260810-1918 — the enumeration in the docstring, with the contraction family occupying two entries
+because `won't`/`can't` are not auxiliary + n't. That agrees with this record's measurement
+(16 → 26 across the range, twelve genuinely new).
+
+**Then dropped rather than corrected**, which is the second half of the task. The docstring's
+enumeration stays and both numerals go: nothing in the file derives a count from the array, so a
+number written beside it is a second source of truth for the array's length, and this defect is
+what that costs. The control "rejects every declared skip licence on a phrasing of its own"
+already witnesses every entry one at a time, which is what a count was standing in for. The
+paragraph now says what the three numbers were (eight rows of the issue's table, eleven phrasings
+those rows name, twelve entries here) so the next reader does not re-derive the confusion, and
+cites this record.
+
+The record at `shared/issues/260810-1918_c_the-skip-licence-blacklist-misses-every-negation-that-does-not-use-the-word-not.md`
+carries a correction line appended to its resolution note. The commit subject of `45d76f0` is
+immutable and stays wrong; the correction names it.
+
+Verification: `cd hooks && npm test` → exit 0, 1246 tests. Nothing executable changed.

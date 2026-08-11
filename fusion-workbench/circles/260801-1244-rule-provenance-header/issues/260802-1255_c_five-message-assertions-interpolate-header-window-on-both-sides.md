@@ -53,3 +53,29 @@ which is exactly what a message test is for.
 2. Move `:161` out of the `describe` block titled "the window is exactly the first ten
    lines". It asserts nothing about the fixture that block builds, and `:246-255` already
    makes the identical assertion where it belongs.
+
+---
+Resolved — `hooks/lib/__tests__/provenance-header-lint.test.ts`, session `260811-1315`.
+Closed in place: this Circle is closed, and the Origin Rule places the record where the Directive
+that caused it ran.
+
+**The five assertions now test the message.** Four of them carry plain literals, as the three
+sibling gates do: `"no 'Provenance:' line in the first 10 lines"` at the two full-message sites and
+`"first 10 lines"` at the two window-only sites. Set `HEADER_WINDOW = 3` and each of the four fails,
+which is the property they lacked — a human reading the failure learns the window size, and that is
+now something a wrong window can break.
+
+**The fifth was removed rather than rewritten.** It sat in the `describe` block titled "the window
+is exactly the first ten lines", asserted nothing about the fixture that block builds, and the
+negative-fixture case "negative 2: the only header sits at line 11" already makes the identical
+assertion where message assertions belong. Moving it there would have duplicated it, so it is gone
+and its counterpart stands.
+
+**The reasoning lives at the constant, not at the assertions.** `HEADER_WINDOW = 10` now carries a
+`CHANGING THIS NUMBER BREAKS TESTS ON PURPOSE` note: the behavioural tests read the constant (a
+fixture at `HEADER_WINDOW + 1` is the boundary wherever the boundary is), the message tests spell
+the ten out, and the note says why, citing this record. That is the one place someone editing the
+window will look.
+
+Verification: `cd hooks && npm test` → exit 0, 1246 tests, unchanged from HEAD `619dfb7` (an
+assertion is not a case, so removing one moves no count).

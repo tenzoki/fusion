@@ -81,3 +81,39 @@ timeout message, so a pty failure reads as a pty failure.
 - `fusion-workbench/shared/issues/260810-1557_c_bin-monitor-opens-a-browser-tab-on-every-non-interactive-spawn-and-the-test-suite-spawns-it-eleven-times.md` — the defect these cases were written for
 - `fusion-workbench/shared/issues/260810-1558_o_a-missing-open-command-exits-the-monitor-wrapper-under-set-e-and-orphans-the-server-it-forked.md` — the still-open residual on the same gate
 - Filed by `coderev`, review `shared/reviews/260810-1632-coderev-turn-1-range-430d73a-to-head.md`
+
+---
+Resolved — `hooks/lib/__tests__/monitor-warnings-panel.test.ts`, session `260811-1315`.
+
+**A pty failure now reads as a pty failure, and it fails rather than skips.** `ptyAvailable()`
+probes once with the same interpreter and the same `os.openpty()` call `PTY_RUNNER` makes, memoised
+for the run. `startMonitor` consults it before the `tty: true` spawn and throws
+`this case needs a pseudo-terminal and this machine cannot allocate one: <reason>. bin/monitor is
+not implicated: it is never started.` The reason distinguishes three causes: python3 not runnable
+(the `spawnSync` error), python3 killed by a signal, and `os.openpty()` raising (the last stderr
+line, so the `OSError` reaches the report).
+
+**Why a failure and not a skip**, recorded in the probe's own docstring so the next reader meets it
+where the branch is: the two `tty: true` cases are the only executable coverage of the
+browser-launch gate, fusion has no CI, and under vitest 2.1 a programmatic `ctx.skip()` carries no
+reason into the summary at all (the note argument arrives in vitest 3.1). A green run on a machine
+that never exercised the gate claims coverage it does not have, which is the failure mode
+`shared/issues/260810-2149_o_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md`
+is open about. The cost is one red case in a pty-less container, with the cause in the first line
+of the message.
+
+**The case cannot vanish where the pty works.** The probe fails only on those three conditions;
+every other way of not coming up still reaches the poll and fails there. On this machine both
+`tty: true` cases ran and passed — `cd hooks && npm test` → exit 0, 1246 tests, the count unchanged
+from HEAD `619dfb7`.
+
+**The second failure mode is closed too.** `startMonitor` now attaches `error` and `exit` listeners,
+so a child that never execs is reported as this case failing instead of as an unhandled vitest
+error, and an exit before the first answer is reported immediately with its status rather than
+after the 15-second deadline. The timeout message now names the port and says the process is still
+running, so "monitor did not come up" is no longer the only thing a reader gets.
+
+**Measured, both branches** (neither is reachable on this machine, so each was provoked):
+python3 removed from `PATH` → `python3 could not be run: spawnSync python3 ENOENT`, in 13 ms;
+a `python3` shim exiting non-zero with an `OSError` traceback →
+`os.openpty() failed: OSError: [Errno 2] No such file or directory: '/dev/ptmx'`.

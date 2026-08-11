@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from "vitest";
-import { spawn, type ChildProcess } from "node:child_process";
+import { spawn, spawnSync, type ChildProcess } from "node:child_process";
 import { createServer } from "node:net";
 import {
   mkdtempSync,
@@ -142,6 +142,54 @@ function ptyRunner(): string {
   return ptyRunnerPath;
 }
 
+type PtyProbe = { ok: true } | { ok: false; reason: string };
+
+let ptyProbe: PtyProbe | undefined;
+
+/**
+ * Whether this machine can hand a child a pseudo-terminal, and when it cannot,
+ * why not. The probe runs the same interpreter and the same `os.openpty()` call
+ * PTY_RUNNER does, so a negative answer here is the runner's own failure taken
+ * one step earlier, where it can still be named.
+ *
+ * WHY A FAILURE AND NOT A SKIP. The two `tty: true` cases below are the only
+ * executable coverage of the browser-launch gate, the defect that once opened
+ * eleven tabs per `npm test` run. fusion has no CI, so nothing but a human
+ * reading the summary observes a skip — and under vitest 2.1 a programmatic
+ * `ctx.skip()` carries no reason into that summary at all (the note argument
+ * arrives in vitest 3.1). A green run on a machine that never exercised the
+ * gate claims coverage it does not have, which is the failure mode
+ * `shared/issues/260810-2149_*_a-coverage-floor-cannot-see-coverage-leave-…`
+ * is open about. So the case fails, and the message says the pty is missing and
+ * that `bin/monitor` is not implicated. One line of triage, no false green.
+ *
+ * The probe is deliberately narrow: it fails only where `python3` cannot be run
+ * or `os.openpty()` itself raises. Any other way of not coming up still reaches
+ * the poll in `startMonitor` and fails there, so a machine whose pty works
+ * cannot take this branch.
+ */
+function ptyAvailable(): PtyProbe {
+  if (ptyProbe === undefined) {
+    const r = spawnSync(
+      "python3",
+      ["-c", "import os; m, s = os.openpty(); os.close(m); os.close(s)"],
+      { encoding: "utf8" },
+    );
+    if (r.error != null) {
+      ptyProbe = { ok: false, reason: `python3 could not be run: ${r.error.message}` };
+    } else if (r.signal != null) {
+      ptyProbe = { ok: false, reason: `python3 was killed by ${r.signal} while opening a pty` };
+    } else if (r.status !== 0) {
+      const last = (r.stderr ?? "").trim().split("\n").pop() ?? "";
+      const detail = last.length > 0 ? last : `python3 exited with status ${r.status}`;
+      ptyProbe = { ok: false, reason: `os.openpty() failed: ${detail}` };
+    } else {
+      ptyProbe = { ok: true };
+    }
+  }
+  return ptyProbe;
+}
+
 interface MonitorOpts {
   /** Extra environment for the monitor process (merged over process.env). */
   env?: Record<string, string>;
@@ -153,6 +201,16 @@ interface MonitorOpts {
 async function startMonitor(wb: string, opts: MonitorOpts = {}): Promise<number> {
   const port = await freePort();
   const argv = [monitorBin, "test", String(port), "-d", wb];
+  if (opts.tty === true) {
+    const pty = ptyAvailable();
+    if (!pty.ok) {
+      throw new Error(
+        `this case needs a pseudo-terminal and this machine cannot allocate one: ` +
+          `${pty.reason}. bin/monitor is not implicated: it is never started. ` +
+          `See ptyAvailable() for why this fails rather than skipping.`,
+      );
+    }
+  }
   const [cmd, ...args] = opts.tty === true ? ["python3", ptyRunner(), ...argv] : argv;
   // MONITOR_BIND=127.0.0.1: the monitor's default bind is 0.0.0.0 (LAN
   // dashboard), but macOS Local Network privacy parks a non-loopback listener
@@ -167,6 +225,21 @@ async function startMonitor(wb: string, opts: MonitorOpts = {}): Promise<number>
     env: { ...process.env, MONITOR_BIND: "127.0.0.1", ...opts.env },
   });
   running.push(proc);
+  // A child that never execs — python3 gone from PATH, bin/monitor not
+  // executable — emits `error` on a spawn nobody listens to, and Node re-raises
+  // that as an uncaught exception, which vitest reports beside the run rather
+  // than as this case failing. Both listeners exist to keep the cause attached
+  // to the case that provoked it.
+  let spawnFailure: string | undefined;
+  proc.on("error", (e) => {
+    spawnFailure ??= `${cmd} could not be started: ${e.message}`;
+  });
+  proc.on("exit", (code, signal) => {
+    spawnFailure ??=
+      signal !== null
+        ? `${cmd} was killed by ${signal} before the server answered`
+        : `${cmd} exited with status ${code} before the server answered`;
+  });
   const deadline = Date.now() + 15000;
   for (;;) {
     try {
@@ -175,7 +248,19 @@ async function startMonitor(wb: string, opts: MonitorOpts = {}): Promise<number>
     } catch {
       // not listening yet
     }
-    if (Date.now() > deadline) throw new Error("monitor did not come up");
+    // `bin/monitor` ends in `wait $SERVER_PID` and the pty runner in
+    // `proc.wait()`, so whatever we spawned outlives the server it forked. Its
+    // exit before the first answer is terminal: report it now, with its status,
+    // instead of waiting out the deadline to blame a monitor that never ran.
+    if (spawnFailure !== undefined) {
+      throw new Error(`monitor did not come up: ${spawnFailure}`);
+    }
+    if (Date.now() > deadline) {
+      throw new Error(
+        `monitor did not come up: no answer from 127.0.0.1:${port} within 15s, ` +
+          `and ${cmd} is still running`,
+      );
+    }
     await new Promise((r) => setTimeout(r, 100));
   }
 }

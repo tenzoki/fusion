@@ -1134,7 +1134,7 @@ Nothing from here to task 38 needs a user answer. Task 1 comes first for the rea
   No shipped code.
 - **Depends on:** task 1
 - **Priority:** low
-- **Status:** [ ] open
+- **Status:** [x] done — the pty probe fails the two `tty: true` cases with the pty named; `cd hooks && npm test` exits 0 (1246 tests, both cases ran here)
 - **Detail:** The suite drives the interactive browser-launch case through a `python3`
   pseudo-terminal wrapper. `os.openpty()` is called unguarded and the spawn has no `error` listener,
   so on a machine that cannot allocate a pty the case does not skip and does not name the pty — it
@@ -1393,7 +1393,7 @@ Nothing from here to task 38 needs a user answer. Task 1 comes first for the rea
   (its resolution note)
 - **Depends on:** none
 - **Priority:** low
-- **Status:** [ ] open
+- **Status:** [x] done — both numerals dropped from the docstring, the 1918 record corrected; `cd hooks && npm test` exits 0 (1246 tests)
 - **Detail:** Two count claims around `45d76f0` do not survive being counted. **(1)** The commit
   subject says *"eleven more licences are closed with witnesses"* and the record's resolution note
   says *"Eleven patterns added"* and *"Each of the eleven was spliced one at a time"*. **Twelve** new
@@ -1550,7 +1550,7 @@ Nothing from here to task 38 needs a user answer. Task 1 comes first for the rea
   `:268`, `:349`, `:363`, `:384`, `:405`
 - **Depends on:** task 1
 - **Priority:** low
-- **Status:** [ ] open
+- **Status:** [x] done — four assertions take literals, the fifth removed as a duplicate; `cd hooks && npm test` exits 0 (1246 tests)
 - **Detail:** `report()` builds its message with `HEADER_WINDOW` interpolated, and five assertions then
   check for the same interpolation — each compares a template literal against its own substring. Set
   `HEADER_WINDOW = 3` and all five still pass while the gate silently narrows to three lines and the
