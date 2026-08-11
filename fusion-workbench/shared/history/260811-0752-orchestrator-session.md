@@ -308,3 +308,64 @@ Of the 69 records the Directive named, 24 are closed. The open total rose from 6
 29 records were filed and left open and twelve of those are defects in this session's own commits,
 found by reviews whose ranges are entirely this session's work. The reconciler's verdict and its
 reading of that number are in `## Coherence` below.
+
+## Session Flow
+
+Built from `orchestrator-events.jsonl`, from the resume at 19:00 local (the log's stamps are UTC).
+Turns 1 to 3 ran before the resume and are in the per-Turn log above.
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant O as Orchestrator
+    participant C as Coder
+    participant CR as Coderev
+    participant R as Reconciler
+
+    Note over O: Resume into Turn 4 (in flight)
+    O->>U: interrupted session — continue, restart, modify?
+    U-->>O: continue from Turn 4
+
+    Note over O: Turn 4 — batch of four, disjoint source files
+    O->>C: queue 12,13 record counts
+    O->>C: queue 7,28 CLAUDE.md claims
+    O->>C: queue 17 boundedList suffix
+    O->>C: queue 14,15 commit-message allow-list
+    C-->>O: done (29d62e2)
+    C-->>O: BLOCKED — suite red, three different failing pairs
+    C-->>O: done (9c58c4d)
+    Note over O: quiet-tree rerun green — the red was the batch racing on hooks/dist
+    O->>O: queue 7,28 committed (a0bd3fb); concurrency filed as a decision
+    U-->>O: three findings transferred from another project
+    O->>O: two filed, one merged as a second witness (bb9d66d)
+    U-->>O: do queue 10 next
+    O->>C: queue 10 Turn budget becomes configurable
+    C-->>O: done (61bd21f)
+    O->>C: transferred 260810-1730 portfolio star form
+    O->>U: GATE — three routes for the unowned Circle head fields
+    U-->>O: the orchestrator may write them
+    C-->>O: done (b53c7dd)
+    O->>C: transferred 260811-0932 head fields at activation
+    C-->>O: done (282ef42)
+    Note over O: a resolution note missed its commit — recovered (951c809)
+    O->>CR: review b261d83..951c809
+    CR-->>O: 10 issues, 2 High — both in this session's own machinery
+    O->>U: Coherence review-needed — how to spend Turn 5?
+    U-->>O: the two High findings first
+
+    Note over O: Turn 5
+    O->>C: 2142 unresolved budget claims a bound it lacks
+    C-->>O: done (500f51f)
+    O->>C: 2143+2144 two session anchors in one report
+    C-->>O: done (e61e24a)
+    O->>C: 2145, 2149, 2151 three small ones
+    C-->>O: done (a6b4928)
+    O->>CR: review e3da397..a6b4928
+    CR-->>O: 8 issues, none High — range cleared for release
+    Note over O: Circuit breaker: Max Turns reached (5/5)
+
+    O->>R: final reconciliation
+    R-->>O: review-needed; revise Directive; 53 closures verified, one finding of ours corrected
+    O->>U: Rebalance gate
+    U-->>O: close the session, bind the Directive for the next one
+```
