@@ -276,11 +276,11 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 
 - **ID:** `I:260811-1734a`
 - **Source:** `shared/issues/260811-1734_o_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md` (first named instance)
-- **Closes:** `shared/issues/260811-1612_o_claude-md-is-the-fifth-surface-of-the-churn-rank-output-contract-and-was-left-on-the-old-one.md`
+- **Closes:** `shared/issues/260811-1612_c_claude-md-is-the-fifth-surface-of-the-churn-rank-output-contract-and-was-left-on-the-old-one.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** high
-- **Status:** [ ] open
+- **Status:** [x] done — the row cites `bin/fusion-churn-rank`'s own header as the authoritative usage block instead of restating the keys, and says so in the row, so a change to the output reaches one surface. What it keeps is behaviour: the map never prunes, and two classes of key stay in the map and out of the ranking, counted apart. Grep after the edit finds the keys in `bin/fusion-churn-rank`, `hooks/churn-rank.ts` and `agents/orchestrator.md:126` only — one contract. Issue `260811-1612` `_o_` → `_c_`. History: `shared/history/260811-1936-coder-two-claude-md-corrections.md`.
 - **Detail:** Commit `adaa545` added a `noise=` line to `bin/fusion-churn-rank`'s output and carried the new contract to four surfaces plus two `README-hooks.md` rows. **Verified still wrong at HEAD:** `CLAUDE.md:33` says the helper prints `anchor=`/`entries=`/`absent=`/`ranked=` and that one exclusion runs on the read path. Both halves are false — five keys, two exclusions. It survived the sweep because it spells the keys inline in backticks, so the `grep -rn "absent="` the sweep used misses it. Fix the row, and while there make it **cite** `bin/fusion-churn-rank`'s own header usage block rather than restate it, so a sixth surface cannot appear. That citation-not-restatement move is the whole point of the parent record.
 - **Acceptance:** a grep for the output keys across `CLAUDE.md`, `README*.md`, `bin/`, `hooks/`, `agents/` and `skills/` returns one contract, not two.
 
@@ -510,11 +510,11 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 ### 28. Correct the `CLAUDE.md` troubleshooting row that says the measurement stands down on cwd
 
 - **ID:** `I:260811-1345`
-- **Source:** `shared/issues/260811-1345_o_claude-md-says-the-measurement-stands-down-on-cwd-and-it-has-asked-the-workbench-root-since-v6-0-1.md`
+- **Source:** `shared/issues/260811-1345_c_claude-md-says-the-measurement-stands-down-on-cwd-and-it-has-asked-the-workbench-root-since-v6-0-1.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** normal
-- **Status:** [ ] open
+- **Status:** [x] done — all three gates read at HEAD first: the write-tool deny asks cwd, the protected-path measurement and the tracker's churn/event stand-down both ask the workbench root (the latter moved by `1d5eed6`). The row now names the measurement's root, points at the opening paragraph as the owner of the split instead of restating it, and says a halt here means the root walked up to is not this repository. Issue `260811-1345` `_o_` → `_c_`. Same history file as task 7.
 - **Detail:** **Verified still live at HEAD:** `CLAUDE.md:127` ends "In this repo the measurement stands down entirely, so seeing it here means the cwd was not the plugin root." The second clause has been false since v6.0.1 — the measurement's stand-down asks the **workbench root** it walks up to, through `isFusionPluginRoot(root)` folded into `measurementRoot()`. `CLAUDE.md`'s own opening paragraph says exactly that two hundred lines earlier, so the file contradicts itself, and the row a reader consults *while debugging a halt* is the wrong half. State which half asks which root, or point the row at the opening paragraph rather than restating it — restating is what let them drift. **Check all three gates when writing the correction, not two:** commit `1d5eed6` moved the tracker's churn and event stand-down onto the workbench root as well (that is the fix behind the resolved record listed above), so at HEAD the write-tool deny is the only one that still asks cwd.
 
 ### 29. State the queue-head derivation once, and have the retirement cite it

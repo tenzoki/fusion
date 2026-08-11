@@ -73,3 +73,16 @@ asks about the neighbouring table.
 - [ ] `CLAUDE.md:33` names `noise=` and states that two exclusions run on the read path.
 - [ ] A grep for the output keys across `CLAUDE.md`, `README*.md`, `bin/`, `hooks/`, `agents/` and
       `skills/` returns one contract, not two.
+
+---
+Resolved: The row no longer restates the key list at all. It cites `bin/fusion-churn-rank`'s own
+header as the authoritative usage block for the `KEY=value` lines and the exit-code table, and
+says in the row itself that it deliberately does not restate them — so a change to the output has
+one surface to reach instead of two. What the row keeps is behaviour rather than contract: the map
+never prunes, and two classes of key are held in the map and left out of the ranking (the file is
+gone; the path names a workbench surface the tracker refuses to count as churn), each counted on
+its own line so "deleted" and "not evidence" stay distinguishable. Verified after the edit that
+the output keys are named in `bin/fusion-churn-rank` and `hooks/churn-rank.ts` only, plus
+`agents/orchestrator.md:126`, which was already on the five-key contract. Suite green on a quiet
+tree: 50 files, 1301 tests, exit 0. Commit: see the Turn-4 log in
+`shared/history/260811-0752-orchestrator-session.md`.

@@ -41,3 +41,14 @@ Note that commit `1d5eed6` (task 36, this session) moved the **tracker's churn a
 stand-down** onto the workbench root as well, so at the time of filing two of the three now agree
 and the write-tool deny is the one that still asks cwd. Check all three when writing the correction
 rather than trusting this paragraph.
+
+---
+Resolved: All three gates were read at HEAD before the sentence was written. The write-tool deny
+asks cwd (`hooks/guard.ts`, `isFusionPluginCwd()`); the protected-path measurement asks the
+workbench root (`hooks/guard.ts` and `hooks/tracker.ts` through `measurementRoot()`); the
+tracker's churn and event stand-down asks the workbench root too, moved there by `1d5eed6`. So the
+write-tool deny is the only one still keyed to cwd. The troubleshooting row now says the
+measurement asks the workbench root, points at the file's opening paragraph as the owner of that
+split rather than restating it — restating is what let the two drift — and ends on what a halt
+tells a debugger: the root walked up to is not this repository, and nothing about cwd. Suite green
+on a quiet tree: 50 files, 1301 tests, exit 0.
