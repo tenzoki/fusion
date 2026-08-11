@@ -150,3 +150,33 @@ records to open here.
 
 The record enters this queue at its original stamp rather than at the transfer time, so its age
 is the age of the finding.
+
+---
+Resolved: Both named sites fixed in the plugin's own sources, 260811-2105.
+
+1. `rules/circle-records.md` gained `### Citation form in the portfolio` at the end of the
+   portfolio template: every path citation in the portfolio carries `_*_` at the marker
+   position, with the reason on the page (the file is regenerated on every run, so a
+   spelled-out marker dies at its target's first transition and a hand correction is written
+   back over by the next run). The section also carries the distinction this record insisted
+   on — a **pointer to a file** is starred, the **naming of a marker** keeps its letter,
+   because there the letter is the statement — so the next correction pass does not star the
+   transition warnings.
+2. `agents/playmaker.md`: both citation examples moved to `260510-0930_*_token-format.md`
+   (process step 3 as this record named, and the same example repeated in `## Output Style`,
+   which the record did not measure), and `## Output — the portfolio` gained a short pointer
+   at the rule with the pointer-versus-naming distinction restated.
+
+A gate now holds the generator to it: `hooks/lib/__tests__/portfolio-citation-form-lint.test.ts`
+fails `npm test` on any `YYMMDD-HHMM_<letter>_` token in `agents/playmaker.md`. The stamp in
+the pattern is what encodes the distinction — it fires on a pointer to a file and never on a
+marker being named.
+
+The `speculation:` about Circle records was measured rather than fixed, and is filed as
+`shared/issues/260811-2105_*_circle-records-carry-the-same-silent-citation-form-and-a-third-of-their-citations-are-stale.md`.
+Its conclusion differs from this record's in one respect: Circle records are append-only, so a
+hand correction there does hold — but 21 of their 60 literal citations are already stale, and
+the two `**Active …:**` fields are machine-read, so the star form is not free everywhere.
+
+Verified: `cd hooks && npm test` — 52 files, 1335 tests, exit 0.
+Committed by the orchestrator, not by this agent.

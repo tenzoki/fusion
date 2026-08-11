@@ -98,3 +98,28 @@ section, because the current text presents the whole log as the unfreezable reco
       commits in git and no `task_done` / `commit` events for that turn.
 - [ ] A case in the state-drift suite constructs that state and asserts the row.
 - [ ] `cd hooks && npm test` exits 0.
+
+---
+Also seen: twice more since filing, which takes this from one measured Turn to four across two
+projects.
+
+- **260810-1945, KRK project**, reported by the user on 260811-2030: the orchestrator emitted no
+  task event at all across **three** consecutive Turns. Not transferred as a record of its own —
+  same defect, and the reporting project cannot fix it.
+- **Turn 4 of this session, 260811-2000 onward**: the log carries `turn_start` for Turn 4 and then
+  nothing, while `36984d7` and `9f84254` landed and closed five queue entries. Measured at the
+  resume drift check at 260811-1915, which reported **clean** on all four rows while this was true.
+
+The pattern across all four instances is one thing, and it is the thing this record proposes to
+fix: `turn_start` is emitted at a boundary the orchestrator stops at anyway, while the per-task
+events sit beside work that has its own momentum, so the boundary event survives every lapse the
+others do not. A row that counts only the surviving event cannot see the lapse. The fifth row
+proposed here — commits in the log against `git rev-list --count <turn_start_head>..HEAD` — is
+keyed to the record that never freezes, which is the same reasoning the drift check itself uses
+for its other four rows.
+
+One consequence worth stating for whoever builds it: in three of the four instances the missing
+events were emitted **late**, after a reviewer or the check caught the gap, carrying a note saying
+so. A row comparing counts will read a late emission as compliance. That is acceptable — the row
+exists to make the gap visible while the session can still act, not to prove it never happened —
+but the row's failure message should not claim more than it measures.

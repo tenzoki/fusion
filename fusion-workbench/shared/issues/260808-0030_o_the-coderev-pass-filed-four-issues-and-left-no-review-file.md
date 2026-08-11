@@ -67,3 +67,25 @@ record, not a missing review.
 
 Option 3 first, then 1 or 2. Editing `agents/coderev.md` on a single instance would be a fix
 applied ahead of a diagnosis.
+
+---
+Also seen: 260810-1907 in the KRK project, reported by the user on 260811-2030 — a coderev pass
+over that project's Turn 2 likewise filed its findings and left no review document. Not transferred
+as a record of its own: it is the same defect, and what it changes here is the **count**.
+
+That matters more than a second data point usually would, because this record's chosen procedure
+is keyed to the count. It asks for option 3 first — ask why the step was skipped, before writing
+anything — on the stated ground that "one instance is not a pattern, and nothing establishes
+whether the obligation is unclear in the prompt, the dispatch omitted it, or the pass ran out of
+turn". Two instances, in two projects, against two different prompts' worth of dispatch wording,
+narrows that: whatever is at fault is not local to one dispatch, because the two dispatches were
+written months apart by different sessions. The remaining candidates are the obligation's own
+wording in `agents/coderev.md` and the conditions under which a pass runs at all.
+
+The diagnosis-first order still holds — it is now cheaper to satisfy, not less necessary. What has
+changed is that "accept it as an instance" (option 2) is no longer available: an instance that
+repeats across projects is a pattern, and the record should be worked rather than closed as a
+one-off.
+
+Second witness's detail, as reported: the reporting project also observed the asymmetry this
+record names — an ontorev pass the same night wrote exactly the document the coderev pass did not.

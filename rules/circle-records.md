@@ -133,3 +133,27 @@ A path resolves in both cases; a bare filename resolves only in the first, and f
 
 <Dependency-cycle warnings, parent-grounding-stale notes (cross-references), MULTIPLE-ACTIVE conditions, etc.>
 ```
+
+### Citation form in the portfolio
+
+**Every path citation in `$PORTFOLIO` carries `_*_` at the marker position** — write
+`YYMMDD-HHMM_*_<slug>.md`, never the letter the target carries today. The reason is the
+regeneration: playmaker overwrites the whole file on every run, and between two runs its
+targets move on (`_o_ → _p_ → _c_`, `_o_ → _a_ → _i_`), so a spelled-out marker is a pointer
+that dies at its target's first transition — and correcting one by hand buys nothing, because
+the next run writes the same form back over the correction. The wildcard costs the reader
+nothing: they resolve it against the store and read the current marker off the resolved
+filename.
+
+**Star a pointer to a file; leave the letter on a marker that is being named.** The two look
+alike and mean opposite things. In a Circle's entry the letter is noise that ages. In a
+warning whose subject *is* a transition (`_t_circle.md` → `_b_circle.md`), or in the
+`## Recently closed (_c_ / _b_)` heading, the letter is the statement, and starring it deletes
+the statement. The test is what a star would cost: a pointer loses nothing, a statement loses
+its content.
+
+Binding decision: `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md`.
+Measured elsewhere and transferred here as
+`shared/issues/260810-1730_*_die-erzeugung-von-portfolio-md-schreibt-den-zustandsmarker-aus-und-macht-jede-handkorrektur-zunichte.md`:
+five citations in one generated portfolio, two pointing at nothing on the day of filing and a
+third two hours later.

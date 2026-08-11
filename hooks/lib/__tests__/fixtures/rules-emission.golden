@@ -113,9 +113,9 @@
   user-facing-output.md 16784
   critical-stance.md 9837
   protected-path-discipline.md 10541
-  circle-records.md 9305
+  circle-records.md 10894
   workbench-stash-and-lock.md 12957
-  total 113347
+  total 114936
 
 [planner]
   agent-setup.md 3513
@@ -134,8 +134,8 @@
   user-facing-output.md 16784
   critical-stance.md 9837
   protected-path-discipline.md 10541
-  circle-records.md 9305
-  total 100390
+  circle-records.md 10894
+  total 101979
 
 [reconciler]
   agent-setup.md 3513
@@ -154,8 +154,8 @@
   critical-stance.md 9837
   protected-path-discipline.md 10541
   design-diagrams.md 5673
-  circle-records.md 9305
-  total 106063
+  circle-records.md 10894
+  total 107652
 
 [taskplanner]
   agent-setup.md 3513

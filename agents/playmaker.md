@@ -112,7 +112,7 @@ Apply the domain-biased heuristic from the Domain Parameter table above. For eac
   - `strategic`: count of open `_o_` decisions cited in the Circle's `## Directive` (decisions the Circle would realise).
   - `knowledge`: ratio of `$SCAN_ANALYSES` files already on disk vs cited-but-absent in the Circle's `Grounding snapshot`.
 
-Produce a ranked list. The top-ranked Circle gets a one-paragraph rationale citing file paths (e.g. Circle `260511-1100-rebuild-auth` — three dependencies all `_c_`, one open decision `260510-0930_o_token-format.md` cited). Lower-ranked Circles get a single-sentence rationale.
+Produce a ranked list. The top-ranked Circle gets a one-paragraph rationale citing file paths (e.g. Circle `260511-1100-rebuild-auth` — three dependencies all `_c_`, one open decision `260510-0930_*_token-format.md` cited). Lower-ranked Circles get a single-sentence rationale.
 
 ### Step 4: Detect dependency cycles
 
@@ -143,6 +143,14 @@ Regenerate `$PORTFOLIO` in full on every run (overwrite). Conform to the portfol
 5. `## Warnings` — all warnings from Steps 1, 4, and 5: pointer mismatches (`STALE-POINTER`, `POINTER-MISMATCH`, `MISSING-POINTER`), `MULTIPLE-ACTIVE`, every `dependency-cycle-detected` line, every parent-grounding-stale cross-reference. If no warnings, the section reads `(none)`.
 
 The header carries `**Generated:** YYMMDD-HHMM (by playmaker session <id>)` and `**Domain bias:** <domain>`. Do not duplicate the conventions-doc template content here — your job is to fill it out per project state.
+
+**Wildcard the marker position in every path you cite here.** You overwrite this file in full
+on every run, and between two runs the records you cited move on, so a citation that spells its
+target's marker out is dead at the target's first transition. Star what is a **pointer to a
+file** (`YYMMDD-HHMM_*_<slug>.md`); leave the letter standing where you are **naming a marker**
+— a warning about a `_t_circle.md` → `_b_circle.md` transition, or the
+`## Recently closed (_c_ / _b_)` heading — because there the letter is the statement. Defined
+in `rules/circle-records.md` `## Citation form in the portfolio`.
 
 ## Activation proposals — never auto-rename
 
@@ -189,7 +197,7 @@ User-facing output (portfolio content, the briefing summary returned to the disp
 
 In addition, for portfolio outputs:
 
-- File:line citations in rationales (e.g. decision `260510-0930_o_token-format.md`, Circle `260511-1100-rebuild-auth`)
+- File:line citations in rationales (e.g. decision `260510-0930_*_token-format.md`, Circle `260511-1100-rebuild-auth`)
 - Plain prose for the Anticipated rationale paragraph — not a verbose table
 - Markdown, properly structured
 
