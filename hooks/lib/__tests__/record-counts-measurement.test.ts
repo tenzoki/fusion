@@ -36,6 +36,11 @@ import { extractBashBlock } from "./helpers/prompt-blocks.js";
 //      the two causes had drifted from the branches too: "a project outside git"
 //      was listed under the branch that cannot reach it
 //      (`shared/issues/260811-1616_*`).
+//   5. The fix for 4 was applied in one direction only. A missing
+//      `session.started` still took BOTH halves down, anchor and all, and the
+//      case below asserting that was the untouched leg of the old combined gate
+//      rather than a considered decision (`shared/issues/260811-2149_*`). Each
+//      half is now gated on its own input, which is four cases, not two.
 //
 // So this gate does three things, in the order the faults came:
 //
@@ -82,6 +87,8 @@ interface Shape {
   outsideGit?: boolean;
   /** override what `git_head_at_start` records: a string is written verbatim, `null` omits the field */
   anchor?: string | null;
+  /** override what `started` records: a string is written verbatim, `null` omits the field */
+  start?: string | null;
 }
 
 /**
@@ -146,7 +153,11 @@ function makeProject(shape: Shape = {}): string {
     // nothing at all — the shape Setup Step 5 actually leaves behind there.
     const recorded = shape.anchor === undefined ? anchor : shape.anchor;
     const anchorLine = recorded ? `  git_head_at_start: "${recorded}"\n` : "";
-    put("agentstate.yaml", `session:\n  started: "260811-1000"\n${anchorLine}`);
+    // `start: null` omits `started` while keeping the anchor — the shape that
+    // leaves the now_ half measurable and the filed half without a bound.
+    const started = shape.start === undefined ? "260811-1000" : shape.start;
+    const startLine = started ? `  started: "${started}"\n` : "";
+    put("agentstate.yaml", `session:\n${startLine}${anchorLine}`);
   }
 
   // after the anchor: one issue closed, one decision answered, one issue filed
@@ -170,6 +181,8 @@ const EXPECTED = {
   sharedOnly: { "filed issue": 1, "now_c issue": 1, "now_o issue": 1, "now_a decision": 1 },
   /** what stays measurable when the anchor is unusable: the filed half needs no git */
   filedOnly: { "filed issue": 2 },
+  /** what stays measurable when `session.started` is absent: the now_ half needs no start stamp */
+  nowOnly: { "now_c issue": 1, "now_o issue": 2, "now_a decision": 1 },
 } as const;
 
 interface Reading {
@@ -303,6 +316,14 @@ describe("each half is gated on what that half needs, and the cause is named", (
         "this session — a large wrong number in place of an honest gap.",
     ).toEqual([]);
 
+  const noFiledCounts = (v: Reading) =>
+    expect(
+      Object.keys(v.counts).filter((k) => k.startsWith("filed")),
+      "a `filed` count was printed with no `session.started` to compare against. Every " +
+        "record's stamp would pass an empty bound, so every record would read as filed " +
+        "this session — the same shape of wrong number, from the other input.",
+    ).toEqual([]);
+
   for (const shell of shells) {
     it(`keeps the filed counts over an untracked workbench (${shell})`, () => {
       const v = run(snippet, makeProject({ tracked: false }), shell);
@@ -319,13 +340,39 @@ describe("each half is gated on what that half needs, and the cause is named", (
       noNowCounts(v);
     });
 
-    it(`reports a missing start stamp as unmeasured, with nothing measured (${shell})`, () => {
-      // No `session.started`, so not even the filed half has a bound to compare
-      // against — this is the one shape where all four cells are unmeasurable.
+    it(`reports both causes when neither input is present, and measures nothing (${shell})`, () => {
+      // No `agentstate.yaml` at all, so neither half has its input: no bound for
+      // the filed half and no anchor for the now_ half. This is the one shape
+      // left where all four cells are unmeasurable.
+      //
+      // The assertion this replaces required `why=no-anchor-in-agentstate`
+      // alone, and was right about the block as it then stood — a missing start
+      // stamp took BOTH halves down, under the anchor's name, so the name was
+      // the whole story of that branch. Each half is now gated on its own input
+      // (`shared/issues/260811-2149_*`), which leaves this branch reachable only
+      // when both inputs are missing, and then both causes are true. Naming one
+      // would send a session diagnosing it to look at half the state file.
       const v = run(snippet, makeProject({ state: false }), shell);
-      expect(v.unmeasured).toBe("no-anchor-in-agentstate");
+      expect(v.unmeasured).toBe("no-anchor-in-agentstate,no-session-start");
       expect(v.raw).toMatch(/anchor=none/);
+      expect(v.raw).toMatch(/start=none/);
       expect(v.counts, "counts were printed alongside `unmeasured`").toEqual({});
+    });
+
+    it(`keeps the now_ counts when only the start stamp is missing (${shell})`, () => {
+      // The mirror of the case the untracked-workbench test covers, and the leg
+      // of the old combined gate that was left standing when the other was fixed
+      // (`shared/issues/260811-2149_*`). `session.started` is absent while the
+      // anchor is present and its probe passes. The now_ half asks git whether a
+      // name existed at the anchor — a question the start stamp plays no part in
+      // — so it stays measurable and is taken.
+      const v = run(snippet, makeProject({ start: null }), shell);
+      expect(v.status).toBe(0);
+      expect(v.partial, `a missing start stamp did not report itself as partial:\n${v.raw}`).toBe("no-session-start");
+      expect(v.unmeasured, "the whole read was declared unmeasurable while the git half was measurable").toBeNull();
+      expect(v.raw).toMatch(/start=none/);
+      expect(v.counts, "the now_ counts went down with the start-stamp-dependent one").toEqual(EXPECTED.nowOnly);
+      noFiledCounts(v);
     });
 
     it(`keeps the filed counts when only the anchor is missing (${shell})`, () => {
@@ -416,12 +463,24 @@ describe("the cause list matches the branch that emits it", () => {
     ).toBe(true);
   });
 
-  it("describes the no-anchor branch as the disjunction it is", () => {
+  it("describes the no-anchor branch as reading the anchor field alone", () => {
     const s = section(orchestrator());
-    expect(s, "the branch is described as a conjunction; the code fires on either field alone").not.toMatch(
-      /carries no `git_head_at_start` and `started`/,
+    // What this replaces asserted the branch was described as a DISJUNCTION —
+    // "missing either `git_head_at_start` or `started`" — and that was an
+    // accurate description of the combined gate, which fired on either field.
+    // The gate is now per input (`shared/issues/260811-2149_*`): a missing
+    // `started` has its own cause, so the old sentence would now describe a
+    // branch the code cannot take, and the disjunction is replaced rather than
+    // dropped.
+    expect(
+      s,
+      "the no-anchor cause is still described as firing on a missing `started` too. " +
+        "It does not: that field has its own cause now, and a session reading this " +
+        "would look for an anchor that is present.",
+    ).not.toMatch(/missing either `git_head_at_start` or `started`/);
+    expect(s, "the section names no `no-session-start` cause, so one of the three `why=` values is undocumented").toMatch(
+      /`no-session-start`/,
     );
-    expect(s).toMatch(/missing either `git_head_at_start` or `started`/);
   });
 });
 

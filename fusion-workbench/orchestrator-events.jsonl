@@ -1248,3 +1248,6 @@
 {"ts":"2026-08-11T20:07:38","event":"task_done","turn":5,"task":"I:260811-2142 (Turn-4 review, High)","agent":"coder","detail":"500f51f — unresolved-budget check-in at each Turn boundary; four sites that claimed the bound corrected"}
 {"ts":"2026-08-11T20:07:38","event":"commit","turn":5,"detail":"500f51f — an unread Turn budget asks the user instead of claiming a bound it does not have"}
 {"ts":"2026-08-11T20:07:38","event":"task_start","turn":5,"task":"I:260811-2143 + I:260811-2144 (Turn-4 review, High)","agent":"coder","detail":"the drift check's two session anchors, and the resume that emits no turn_start"}
+{"ts":"2026-08-11T20:32:58","event":"task_done","turn":5,"task":"I:260811-2143 + I:260811-2144","agent":"coder","detail":"e61e24a — session_start carries history_file; both rows share one window; the row now catches a post-resume freeze it could not see"}
+{"ts":"2026-08-11T20:32:58","event":"commit","turn":5,"detail":"e61e24a — the two drift rows share one notion of this session"}
+{"ts":"2026-08-11T20:32:58","event":"task_start","turn":5,"task":"I:260811-2145 + 2149 + 2151","agent":"coder","detail":"the ordinal citation, the last combined gate in the record-counts block, the missing layout row"}
