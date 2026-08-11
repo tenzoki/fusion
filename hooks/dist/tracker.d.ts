@@ -1,7 +1,16 @@
 /**
  * Compliance Guard — PostToolUse hook for Claude Code.
  *
- * Two jobs, in this order:
+ * Three jobs, in this order:
+ *
+ *   0. SESSION-STATE DRIFT. Compare `agentstate.yaml`, the active Circle's Turn
+ *      log and this session's history file with the two records that cannot
+ *      silently freeze — git, and `orchestrator-events.jsonl`. A surface that
+ *      has stopped being written is named back to the model. It runs first and
+ *      ahead of the plugin-repo stand-down, because unlike the other two it is
+ *      anchored at the workbench root and is needed in fusion's own repository
+ *      most of all. It writes nothing but its own throttle record. See
+ *      lib/state-drift.ts and `measureStateDriftForModel` below.
  *
  *   1. MEASURE THE PROTECTED PATHS. Take a second fingerprint of every path on
  *      `guard.protectedPaths` and compare it with the one `guard.ts` recorded

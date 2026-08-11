@@ -196,17 +196,29 @@ Read `./fusion-workbench/agentstate.yaml`.
 - **If it exists:** a prior session was interrupted. You MUST do ALL of:
   0a. **Schema check (v2.9.0).** If the saved `agentstate.yaml` contains the legacy fields `cycle:` or `goal:` (instead of the current `turn:` / `directive:`), it is a pre-v2.9.0 snapshot that cannot be replayed against v2.9.0 fields. The schema rename is a hard break — there is no soft alias. Tell the user "schema mismatch — please restart", offer **Restart only** (delete `agentstate.yaml` and proceed with fresh setup), and do not attempt to resume. Skip the remaining sub-steps once Restart is chosen.
   1. Read the file completely.
-  2. Present a summary to the user:
+  2. **Run the drift check before you summarise, not after.** The saved state is what you are about to replay, and a frozen one describes a session that got much further than it says it did — measured six times, with `agentstate.yaml` saying `commits: 0` while git counted 6, 7, 8 and 12 (issue `260801-2038`). A divergence of that size changes the answer to "Continue or Restart?", and the user cannot weigh it if you present the file's own numbers as fact.
+
+     ```bash
+     if [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-state-drift" ]; then
+       "$FUSION_PLUGIN_ROOT/bin/fusion-state-drift"
+     else
+       echo "fusion: no bin/fusion-state-drift in the installed plugin at $FUSION_PLUGIN_ROOT — no drift check taken" >&2
+     fi
+     ```
+
+     It prints `anchor=`, `state=`, `rows=`, `drift=` and `verdict=`, then one line per surface: what the surface says, what the record that can contradict it says, and `DRIFT` or `UNCHECKED (<reason>)` where either applies. `verdict=drift` is **a line of output, not an exit code** — exit 0 means the check ran, exit 2 means no workbench, exit 3 means the installed plugin carries no compiled hooks. The `[ -x ]` guard is the one Step 3's churn ranking carries, for the same reason: `$FUSION_PLUGIN_ROOT` is the installed copy, pinned for the whole session, so a helper added between releases is absent there and a bare call is exit 127. Do not re-implement the comparison by hand; the same computation runs in `hooks/tracker.ts` after every tool call, and two spellings of it would be free to disagree.
+  3. Present a summary to the user:
      - Session Directive and mode
      - Progress (Turn number, tasks completed vs total)
      - The task that was active when the session stopped
      - Remaining tasks (with their status)
      - Plan file and user directive, if any
-  3. Use `AskUserQuestion` to offer:
+     - **Every diverging row from step 2**, each naming the surface, what it says, and the record that contradicts it. If nothing diverged, say that too — the user is deciding whether to trust the file.
+  4. Use `AskUserQuestion` to offer:
      - **Continue** — resume from the saved queue, skipping completed tasks
      - **Restart** — discard state, delete `agentstate.yaml`, fresh setup
      - **Modify** — user provides updated instructions before resuming
-  4. **STOP. Do not proceed until the user has chosen.** Even if the user's original prompt implied resuming a specific task, the choice must be explicit.
+  5. **STOP. Do not proceed until the user has chosen.** Even if the user's original prompt implied resuming a specific task, the choice must be explicit.
 
 ## Step 2 — Rules check
 

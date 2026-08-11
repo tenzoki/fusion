@@ -103,6 +103,16 @@ GUARD_EVENTS_JSONL = os.path.join(BASE_DIR, ".guard-state", "events.jsonl")
 #     protecting you", so a panel that omits it shows a guard protecting
 #     nothing as normal operation. Rendered at the loudest level the panel
 #     has — see renderWarnings().
+#   - Stale session state (state_drift) reports that the numbers the dashboard
+#     itself is drawing have stopped being written. hooks/tracker.ts measures
+#     agentstate.yaml, the active Circle's Turn log and the session history
+#     against git and orchestrator-events.jsonl on every guarded tool call, and
+#     emits one of these when a surface has frozen (issue 260801-2038, measured
+#     six times). This panel is where it belongs rather than in the event list:
+#     a monitor that keeps rendering "Commits: 4" from a frozen file while git
+#     holds 16 is not merely missing a row, it is reporting a wrong number as a
+#     right one. The divergence is NOT recomputed here — one measurement, in
+#     the hook, surfaced by its event.
 #
 # Everything else a guard hook writes (guard_allow, tracker_record, clears)
 # is bookkeeping: it records the ordinary path, nobody asked to be told
@@ -112,6 +122,7 @@ WARNING_EVENT_TYPES = {
     "guard_block", "guard_halt",
     "guard_advisory",
     "guard_error",
+    "state_drift",
 }
 
 # Subsets of WARNING_EVENT_TYPES, carved out so each can be capped separately.
@@ -119,6 +130,7 @@ WARNING_EVENT_TYPES = {
 # budget a row is charged to.
 ADVISORY_EVENT_TYPES = {"guard_advisory"}
 ERROR_EVENT_TYPES = {"guard_error"}
+DRIFT_EVENT_TYPES = {"state_drift"}
 
 # INDEPENDENT CAPS, NOT ONE SHARED BUDGET.
 #
@@ -159,9 +171,19 @@ ERROR_EVENT_TYPES = {"guard_error"}
 # repeats one detail string, which renderWarnings() collapses to a single
 # visible row, so what the budget buys is the VARIETY of errors — two emitters,
 # with room for their exception texts to differ.
+#
+# 8 for stale-state rows, and again for a measured rate rather than for
+# symmetry. hooks/tracker.ts throttles state_drift on the drift SIGNATURE, so a
+# divergence that merely persists across a hundred tool calls emits once — but a
+# divergence that GROWS emits again, and a session that commits sixteen times
+# without ever bringing agentstate.yaml current produces a row per commit. Left
+# in the warning class those sixteen would push every guard_block and
+# churn_critical off the panel, which is the advisory burst exactly. Eight is
+# enough to show the divergence widening, which is the part a reader acts on.
 MAX_WARNINGS_RETURNED = 30
 MAX_ADVISORIES_RETURNED = 8
 MAX_ERRORS_RETURNED = 8
+MAX_DRIFTS_RETURNED = 8
 
 # The carve-outs, in the order a row is charged against them. A row matching
 # none of them is charged to the warning class, which is the default and the
@@ -170,6 +192,7 @@ MAX_ERRORS_RETURNED = 8
 SUBSET_BUDGETS = (
     (ADVISORY_EVENT_TYPES, MAX_ADVISORIES_RETURNED),
     (ERROR_EVENT_TYPES, MAX_ERRORS_RETURNED),
+    (DRIFT_EVENT_TYPES, MAX_DRIFTS_RETURNED),
 )
 
 HTML_PAGE = r"""<!DOCTYPE html>
@@ -530,6 +553,12 @@ HTML_PAGE = r"""<!DOCTYPE html>
       // "<X> error (fail-open): ...", so the label names the half they share
       // and the detail beside it says which hook.
       else if (w.event === 'guard_error') { levelClass = 'failopen'; levelLabel = 'Fail-open'; }
+      // Stale session state. It keeps the amber warning level — something IS
+      // wrong — but not the label: "Warning" beside a row reading
+      // "progress.commits: surface=0 record=12" invites the reader to treat it
+      // as one more guard event, when what it says is that the counters in the
+      // header above are no longer being written. The label names that.
+      else if (w.event === 'state_drift') { levelClass = 'warning'; levelLabel = 'Stale state'; }
       var ts = formatLocalTime(w.ts || '', 'date');
       var key = warningKey(w);
       html += '<div class="warning-row ' + levelClass + '">' +

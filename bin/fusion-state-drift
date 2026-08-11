@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# fusion-state-drift — compare the session's bookkeeping surfaces with the two
+# records that cannot silently freeze (git, and orchestrator-events.jsonl).
+#
+# Usage:
+#   fusion-state-drift
+#
+# Output on stdout, one KEY=value per line, then one line per row:
+#
+#   anchor=workbench-root
+#   state=present              # or absent — no session in progress
+#   rows=5
+#   drift=2
+#   verdict=drift              # or clean, or no-session-state
+#     progress.commits       surface=0        record=12 (git 8960e1a..HEAD)  DRIFT
+#
+# Exit codes:
+#   0  the check ran. `verdict=` says what it found — finding drift is NOT a
+#      non-zero exit, deliberately; see hooks/state-drift.ts for the defect that
+#      taught that (issue 260810-0710).
+#   1  usage error.
+#   2  no fusion workbench above the working directory; nothing to check.
+#   3  the plugin's compiled hooks are missing, so nothing could be asked. Its
+#      own code and not 2: "there is no session to check" is an answer about the
+#      project, and a broken install must never be reported as one.
+#
+# ---------------------------------------------------------------------------
+# Why this exists
+#
+# Issue 260801-2038: three of the four session-state surfaces stop being written
+# after Turn 1 while the session runs on — measured six times across six
+# sessions, with agentstate.yaml saying `commits: 0` while git counted 6, 7, 8
+# and 12. The check for it lived as a shell snippet inside agents/
+# orchestrator.md, and its own reconciliation measured what that bought:
+# nothing. An agent prompt is loaded at session start, so a check written into a
+# prompt cannot reach the session that writes it.
+#
+# So the computation moved into hooks/lib/state-drift.ts, where three callers
+# share it and none of them is the session that installed it: the PostToolUse
+# hook (hooks/tracker.ts, invoked by Claude Code on every guarded tool call),
+# this CLI (read by /fusion:setup Step 1 and agents/orchestrator.md), and
+# bin/monitor (which surfaces the emitted state_drift events).
+#
+# It reports. It never writes agentstate.yaml, a Circle record or a session
+# history file — candidate 3 of that issue is rejected there and stays rejected,
+# because a second writer on the session-state surfaces is worse than a stale
+# number.
+#
+# The work is hooks/dist/state-drift.js, resolved relative to this script rather
+# than through $FUSION_PLUGIN_ROOT, so an install copy and a work tree each run
+# their own build. node is already a hard requirement — the guard hooks are node
+# programs (hooks/hooks.json).
+
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+entry="$here/../hooks/dist/state-drift.js"
+
+if [ ! -f "$entry" ]; then
+  echo "fusion-state-drift: $entry is missing — the plugin's compiled hooks are not installed." >&2
+  exit 3
+fi
+
+exec node "$entry" "$@"

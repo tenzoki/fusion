@@ -132,9 +132,21 @@ export function churnRankEntry(): GuardEntry {
   return hookEntry("churn-rank");
 }
 
-/** Shared resolution for all four entry points. See `guardEntry`. */
+/**
+ * How to spawn the session-state drift reader.
+ *
+ * Not a hook either — `bin/fusion-state-drift` runs it, and `hooks/tracker.ts`
+ * runs the same computation in-process on every guarded tool call. It is here
+ * for the same reason `churnRankEntry` is: its whole subject is a working
+ * directory and the workbench root above it, so every case is a subprocess.
+ */
+export function stateDriftEntry(): GuardEntry {
+  return hookEntry("state-drift");
+}
+
+/** Shared resolution for all five entry points. See `guardEntry`. */
 function hookEntry(
-  name: "guard" | "tracker" | "session-start" | "churn-rank",
+  name: "guard" | "tracker" | "session-start" | "churn-rank" | "state-drift",
 ): GuardEntry {
   const mode = process.env.FUSION_GUARD_ENTRY ?? "tsx";
 

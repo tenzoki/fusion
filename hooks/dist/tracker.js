@@ -1,7 +1,16 @@
 /**
  * Compliance Guard — PostToolUse hook for Claude Code.
  *
- * Two jobs, in this order:
+ * Three jobs, in this order:
+ *
+ *   0. SESSION-STATE DRIFT. Compare `agentstate.yaml`, the active Circle's Turn
+ *      log and this session's history file with the two records that cannot
+ *      silently freeze — git, and `orchestrator-events.jsonl`. A surface that
+ *      has stopped being written is named back to the model. It runs first and
+ *      ahead of the plugin-repo stand-down, because unlike the other two it is
+ *      anchored at the workbench root and is needed in fusion's own repository
+ *      most of all. It writes nothing but its own throttle record. See
+ *      lib/state-drift.ts and `measureStateDriftForModel` below.
  *
  *   1. MEASURE THE PROTECTED PATHS. Take a second fingerprint of every path on
  *      `guard.protectedPaths` and compare it with the one `guard.ts` recorded
@@ -58,6 +67,7 @@ import { projectRelative } from "./lib/project-relative.js";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 import { foldCase } from "./lib/paths.js";
 import { isObservedRulePath, rulesWriteDetail, rulesWriteExemptionActive, } from "./lib/rules-write-exemption.js";
+import { driftSentence, lastReported, measureStateDrift, recordReported, } from "./lib/state-drift.js";
 /**
  * The four tools whose payload NAMES the path they write.
  *
@@ -592,6 +602,70 @@ function trackChurn(input) {
     // Save updated churn state
     saveChurn(churn);
 }
+/* ------------------------------------------------------------------ *
+ * Session-state drift
+ * ------------------------------------------------------------------ */
+/**
+ * Measure the session's bookkeeping surfaces against the two records that
+ * cannot silently freeze, and hand the model a sentence when one has drifted.
+ *
+ * ## Why this lives in a hook at all
+ *
+ * Issue `260801-2038` measured the freeze six times and its own reconciliation
+ * measured why the first fix did not take: the check was written into
+ * `agents/orchestrator.md`, an agent prompt is loaded at session start, and so
+ * the session that installed it was never the session that could run it. That
+ * is construction rather than task pressure, and no firmer sentence closes it.
+ * A PostToolUse hook is invoked by Claude Code from `hooks/hooks.json`, per tool
+ * call, reading `hooks/dist/tracker.js` off disk each time — it needs no
+ * cooperation from the session and is not something a session can decline.
+ *
+ * ## Why here rather than as its own end-of-Turn step
+ *
+ * A commit is what moves `git rev-list --count` past what `agentstate.yaml`
+ * claims, and a commit is a `Bash` tool call, so this fires on the very call
+ * that produced the divergence. That is the issue's own candidate 1 — the
+ * bookkeeping obligation riding an obligation the session already holds —
+ * mechanised rather than prescribed.
+ *
+ * ## Three properties worth stating plainly
+ *
+ * 1. **It writes nothing but its own throttle record.** Candidate 3 of the
+ *    issue, letting something other than the orchestrator repair the surfaces,
+ *    is rejected there and stays rejected: a second writer racing the
+ *    orchestrator's own overwrite is worse than a stale number. So this makes a
+ *    skipped write impossible not to notice; it cannot make the write happen.
+ * 2. **It runs BEFORE the plugin-repo stand-down in `main`, and is anchored at
+ *    the workbench root rather than at cwd.** The stand-down exists so a fusion
+ *    developer's own edits are not counted as churn and not reverted as
+ *    protected-path changes. Neither applies here: fusion's own repository is a
+ *    fusion consumer with a live workbench, and every one of the six measured
+ *    instances happened in it. Standing this down there would switch it off in
+ *    the only project where it is known to be needed.
+ * 3. **It reports once per divergence, not once per tool call.** The throttle
+ *    compares the drift signature with the last one reported; a divergence that
+ *    grows speaks again, one that merely persists stays quiet.
+ */
+function measureStateDriftForModel() {
+    const root = findWorkbenchRoot();
+    if (root === null)
+        return null;
+    const report = measureStateDrift(root);
+    const seen = lastReported(root);
+    if (report.signature === seen)
+        return null;
+    // Cleared as readily as it is set: when the orchestrator brings the surfaces
+    // current the signature becomes "", the record is emptied, and a later drift
+    // is reported afresh rather than being mistaken for the one already told.
+    bestEffort("tracker", () => recordReported(root, report.signature));
+    if (report.drifted.length === 0)
+        return null;
+    const detail = report.drifted
+        .map((r) => `${r.surface}: surface=${r.says} record=${r.record}`)
+        .join("; ");
+    bestEffort("tracker", () => emitEvent("state_drift", undefined, undefined, detail));
+    return driftSentence(report);
+}
 async function main() {
     // Read hook input from stdin
     const chunks = [];
@@ -611,6 +685,16 @@ async function main() {
         respond();
         return;
     }
+    // The session-state drift measurement, ahead of the stand-down below and
+    // anchored at the workbench root rather than at cwd. Its own header says why
+    // it is not stood down in fusion's own repository: that repository is a
+    // fusion consumer, and all six measured instances of the freeze happened
+    // there. `bestEffort` because a bookkeeping report may never cost the
+    // protected-path sentence that follows it.
+    let drift = null;
+    bestEffort("tracker", () => {
+        drift = measureStateDriftForModel();
+    });
     // Self-detect: cwd is fusion's own repo, so CHURN stands down — plugin
     // development edits are not meaningful churn signal.
     //
@@ -624,7 +708,7 @@ async function main() {
     // and the measurement would have reverted a fusion developer's own edits to
     // `rules/` and `agents/` once its root moved up.
     if (isFusionPluginCwd()) {
-        respond();
+        respond(drift ?? undefined);
         return;
     }
     // The measurement runs on EVERY guarded tool call — Bash included, and before
@@ -640,7 +724,12 @@ async function main() {
     // file reverted, `haltActive: true`, and the agent told nothing
     // (`260809-2045`). The tracker's header calls the explaining refusal a
     // constraint, and a revert the model never hears about violates it.
-    answer("tracker", () => respond(measured ?? undefined), () => trackChurn(input));
+    // The protected-path sentence goes first when both have something to say: one
+    // reports a file that was written back and a halt the user has to clear, the
+    // other reports a number that is stale. Joined rather than chosen between,
+    // because dropping either would be a silence.
+    const context = [measured, drift].filter((s) => s !== null).join(" ");
+    answer("tracker", () => respond(context === "" ? undefined : context), () => trackChurn(input));
 }
 main().catch((err) => {
     // Fail open — PostToolUse must not interfere with the agent.

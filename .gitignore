@@ -28,6 +28,7 @@ bin/*
 !bin/fusion-plugin-cwd
 !bin/fusion-count-sources
 !bin/fusion-churn-rank
+!bin/fusion-state-drift
 *.exe
 # Generated protobuf (rebuild from .proto)
 *.pb.go

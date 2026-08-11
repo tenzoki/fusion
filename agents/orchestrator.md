@@ -430,6 +430,9 @@ After each completed task:
 
    **The commit message is not a criterion, because it is not in this command.** Step 3 wrote it to a file and `git commit -F <path>` names that file, so everything inside the `bash -c` string is a path or a flag you authored as a literal. That is precisely what makes the wrapper safe: a single-quoted shell string ends at the first apostrophe, and prose has apostrophes — the defect at step 3. An earlier revision of this step dropped `with` on the reasoning that the message would have to travel inside the `--` argument. It does not, and has not since the message moved into a file; `/fusion:commit` and `/fusion:cleanup` run this same shape for this same reason. One thing to check before you send it: no path in your staging list contains a `'`. fusion's own filenames are slug-cased and never do; a path that did would be a Human Gate matter, not something to quote your way around.
 6. **Emit** a `commit` event with the short hash and message summary.
+7. **Write `agentstate.yaml` before you start the next task** — the task's status to `done` with this commit's hash, and `progress.commits` incremented. The Write Points table already required this at "Task completes"; it is named *here*, inside the commit step, because that is the obligation it rides. The instant step 5 lands, `progress.commits` is wrong, and it is wrong in the direction that breaks resume: a session killed now would replay a task that is already in history. This is the write that has been skipped six times (issue `260801-2038`), and it is the cheapest one in this file — one `Write` call to a file you are already holding in mind.
+
+   You will not be trusted to remember it and you do not have to be. `hooks/tracker.ts` measures `agentstate.yaml` against `git rev-list --count` after every tool call, including the `Bash` call at step 5 that just committed, so a skipped write here comes back to you as a named divergence on your next tool call rather than as silence four hours later. See **Persistent State File → Drift check**.
 
 ### Step 3c: Incremental Review
 
@@ -865,41 +868,23 @@ Overwrite `agentstate.yaml` at each of these transitions (same cadence as the li
 
 ### Drift check
 
-`agentstate.yaml`, the active Circle's record and this session's history file are all written at boundaries a session can pass **without** writing them. Nothing breaks when the write is skipped, so the skip is silent — and it has been measured four times in four separate sessions (`260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`): the state file said `commits: 0` while git counted 7, then 8, then 6; a Circle record said `Status: anticipated` with an empty Turn log while that Circle had been active for days; a history file said `Directive: (not yet stated)` while the Directive was set and eight hours of work followed. Resume is the feature this breaks, because the state file is authoritative in exactly the situation where the session that wrote it is gone and cannot be asked.
+`agentstate.yaml`, the active Circle's record and this session's history file are all written at boundaries a session can pass **without** writing them. Nothing breaks when the write is skipped, so the skip is silent — and it has been measured six times in six separate sessions (`260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`): the state file said `commits: 0` while git counted 7, then 8, then 6; a Circle record said `Status: anticipated` with an empty Turn log while that Circle had been active for days; a history file said `Directive: (not yet stated)` while the Directive was set and eight hours of work followed. Resume is the feature this breaks, because the state file is authoritative in exactly the situation where the session that wrote it is gone and cannot be asked.
 
-Two records did **not** freeze in any of the four. `orchestrator-events.jsonl` kept up every time, because emitting an event is a call that either happens or visibly does not; and git kept up, because a commit is the work itself rather than a note about it. The drift check reads those two and prints each bookkeeping surface next to the record that can contradict it.
+Two records did **not** freeze in any of the six. `orchestrator-events.jsonl` kept up every time, because emitting an event is a call that either happens or visibly does not; and git kept up, because a commit is the work itself rather than a note about it. The drift check reads those two and prints each bookkeeping surface next to the record that can contradict it.
 
-**Run it in the same command as every boundary event emission** — `turn_start` (Phase 2), `turn_end` (Step 3e) and `session_end` (Cleanup) — and once more at Setup Step 1 when a prior session's state file is found. Riding those emissions is the design, not a convenience: a *separate* obligation at the Turn boundary is precisely what got skipped four times, so the check is attached instead to the one call that empirically never was. Run it from the workbench root, with `WORKBENCH` and `SCAN_CIRCLES` as Step 2 resolved them. If either came back empty the Circle row is **named as unchecked** rather than dropped: a drift check that exists to catch a silent skip must not perform one (`rules/fusion-workbench-conventions.md` `## Path Resolution` → *Where the call belongs*).
+**Run it in the same command as every boundary event emission** — `turn_start` (Phase 2), `turn_end` (Step 3e) and `session_end` (Cleanup) — and once more at Setup Step 1 when a prior session's state file is found. Riding those emissions is the design, not a convenience: a *separate* obligation at the Turn boundary is precisely what got skipped six times, so the check is attached instead to the one call that empirically never was. Run it from the workbench root; the helper resolves everything else itself, including the active Circle, so there is no `WORKBENCH` or `SCAN_CIRCLES` to pass and nothing that goes wrong when you are somewhere else in the tree. Any row it cannot decide comes back **named as unchecked**, never dropped: a drift check that exists to catch a silent skip must not perform one (`rules/fusion-workbench-conventions.md` `## Path Resolution` → *Where the call belongs*).
 
-**The Circle row is guarded by an `if`, not by a trailing `[ -n "$REC" ] && row …`.** A guard in final position hands its own status to the whole block, so the `&&` form reported failure on the ordinary session that has no Circle active — the session in which nothing is wrong. A check that cries wolf on its commonest path teaches its reader to ignore its status, which is the failure this check exists to catch, arriving one level up. Keep the `if` when editing this block, and do not compress it back.
+**Run the helper; do not re-implement it.** The check used to be twenty lines of shell inlined here, and two things went wrong with that. Its last line handed the whole block's exit status to a guard that was false on the ordinary session with no Circle active, so it reported failure in the situation where nothing is wrong (issue `260810-0710`) — and a check that cries wolf on its commonest path teaches its reader to ignore its status, which is this section's own failure arriving one level up. More decisively, prose in this file cannot reach the session that wrote it, so a snippet here was never going to be what runs. Both are closed by the computation living in `hooks/lib/state-drift.ts`, which this helper prints and which the PostToolUse hook runs on every guarded tool call without being asked:
 
 ```bash
-S=fusion-workbench/agentstate.yaml
-E=fusion-workbench/orchestrator-events.jsonl
-[ -f "$S" ] || { echo "drift: no agentstate.yaml — no session state to compare"; exit 0; }
-
-y() { sed -nE "s/^[[:space:]]*$1:[[:space:]]*\"?([^\"]*)\"?[[:space:]]*$/\1/p" "$S" | head -1; }
-row() { printf '  %-22s surface=%-16s record=%s\n' "$1" "$2" "$3"; }
-
-H0=$(y git_head_at_start); HF=$(y history_file); CIRC=$(cat fusion-workbench/.active-circle 2>/dev/null)
-FROM=$(grep -n '"event":"session_start"' "$E" 2>/dev/null | tail -1 | cut -d: -f1)
-TURNS=$(tail -n "+${FROM:-1}" "$E" 2>/dev/null | grep -c '"event":"turn_start"')
-if [ -n "$CIRC" ]; then
-  if [ -n "$WORKBENCH" ] && [ -n "$SCAN_CIRCLES" ]; then
-    REC=$(find "$WORKBENCH/$SCAN_CIRCLES/$CIRC" -maxdepth 1 -name '*_circle.md' 2>/dev/null | head -1)
-  else
-    echo "fusion bug: WORKBENCH or SCAN_CIRCLES empty — Circle Turn log row not checked" >&2
-  fi
-fi
-
-row "progress.commits" "$(y commits)" "$(git rev-list --count "$H0..HEAD" 2>/dev/null || echo '?') (git $H0..HEAD)"
-row "progress.turn" "$(y turn)" "$TURNS (turn_start events this session)"
-row "session.history_file" "${HF:-(unset)}" "$([ -n "$HF" ] && [ -f "fusion-workbench/$HF" ] && echo present || echo MISSING) (on disk)"
-row "history Directive" "$(grep -m1 '^\*\*Directive:\*\*' "fusion-workbench/$HF" 2>/dev/null | cut -c15-44)" "$(y directive | cut -c1-30)"
-if [ -n "$REC" ]; then
-  row "Circle Turn log" "$(sed -n '/^## Turn log/,/^## [A-Z]/p' "$REC" | grep -c '^- Turn') entries" "$TURNS turns run"
+if [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-state-drift" ]; then
+  "$FUSION_PLUGIN_ROOT/bin/fusion-state-drift"
+else
+  echo "fusion: no bin/fusion-state-drift in the installed plugin at $FUSION_PLUGIN_ROOT — no drift check taken" >&2
 fi
 ```
+
+It prints `anchor=`, `state=`, `rows=`, `drift=` and `verdict=`, then one line per surface: the value the surface holds, the value the un-freezable record holds, and `DRIFT` or `UNCHECKED (<reason>)` where either applies. **`verdict=drift` is a line of output, not an exit code** — exit 0 means the check ran, exit 2 means there is no workbench, exit 3 means the installed plugin has no compiled hooks. The `[ -x ]` guard is the one Setup Step 5's churn ranking carries, for the same reason: `$FUSION_PLUGIN_ROOT` is the installed copy, pinned for the whole session, so a helper added between releases is simply absent there and a bare call is exit 127.
 
 **Read the rows against these conditions.** Each row pairs one surface with the one record that can contradict it, and a row is drift only under its own condition — a value that legitimately differs is not a fault to report:
 
@@ -919,7 +904,11 @@ fi
 
 **The mid-session Circle supersession case.** When the active Circle changes mid-session — activated, superseded, closed — `$OUT_HISTORY` re-resolves to a different store. That is not a licence to re-point `session.history_file`: a session keeps **one** history file for its whole life, and that field names the file the session actually writes, wherever it was created. In the third measured instance the anchor was rewritten to a path under the successor Circle that the session never created, so a resuming orchestrator would have found neither the Turn state nor the log it named. The `session.history_file` row above is what catches that, and it is the only row whose failure mode is a dangling pointer rather than a stale number.
 
-**What this is, honestly.** A convention, not an enforcement. Nothing executes it — it is prompt text, and prompt text is overridable under task pressure (`rules/critical-stance.md` §2; this project's own worked case is "Problem 11" in `CLAUDE.md`, where a "MUST" in this prompt lost to the urgency of a user request). What it buys over the prescription it replaces is threefold: the freeze becomes **visible from evidence** instead of merely forbidden; the evidence is the one record measured never to freeze across four instances; and the check costs one command at a boundary the session already stops at, so it is not a new thing to remember. An enforcement would have to sit where something runs without being asked — a hook, or a helper that `/fusion:setup` and the monitor call — and none of that is built here. Do not read this section as a guarantee.
+**What runs without being asked.** The measurement above is also wired into `hooks/tracker.ts`, the PostToolUse hook Claude Code invokes after every `Write`, `Edit`, `MultiEdit`, `NotebookEdit` and `Bash` call. It reads the same `hooks/lib/state-drift.ts`, it is anchored at the workbench root rather than at your working directory, and when a surface has drifted it names the diverging rows back to you in the tool result and records a `state_drift` event under `.guard-state/`, which `bin/monitor` surfaces as a **Stale state** row. It reports once per divergence rather than once per tool call: a divergence that merely persists stays quiet, one that grows speaks again.
+
+**That is where the Turn-boundary write finally rides an obligation you already hold.** A commit is what moves `git rev-list --count` past what `agentstate.yaml` claims, a commit is a `Bash` tool call, and the hook fires on that very call — so the demand for the bookkeeping write arrives attached to the act that made it necessary, without anything having to remember it. This section's four call points remain: they are how *you* read the rows deliberately, at a boundary, and they cover the surfaces the hook reports on but is not permitted to touch.
+
+**What this is, honestly.** Half of it is now an enforcement and half of it is still a convention, and the halves are worth telling apart. The **measurement** is executed: nothing about it depends on this file being read, which is what closes the failure that produced this section — an agent prompt is loaded at session start, so the session that installed the earlier version of this check was, by construction, never the session that could run it (issue `260801-2038`, reconciliation `260810-0819`). The **repair write** is not executed and deliberately never will be: `agentstate.yaml`, the Circle record and the session history have exactly one writer, and putting a second one on them is candidate 3 of that issue, rejected there and still rejected. So the mechanism makes a skipped write impossible not to notice; it cannot make the write happen. That last step is yours, and it is still prompt text (`rules/critical-stance.md` §2; this project's own worked case is "Problem 11" in `CLAUDE.md`). Read this section as a measurement you cannot dodge and a write you can still skip — and know that skipping it now leaves a `state_drift` event in a log that outlives your session.
 
 ### Write mechanics
 

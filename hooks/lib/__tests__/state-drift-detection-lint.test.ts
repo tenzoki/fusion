@@ -21,22 +21,49 @@ import { dirname, resolve, join } from "node:path";
 // writes a session can skip with nothing breaking. Git is the second such
 // record — a commit is the work itself, not a note about it.
 //
-// So the fix is not a firmer sentence. `agents/orchestrator.md` now carries a
-// Drift check that reads those two un-freezable records and prints each
-// bookkeeping surface beside the one that can contradict it, and the check is
-// attached to the boundary EVENT EMISSIONS (`turn_start`, `turn_end`,
-// `session_end`) plus the resume path at Setup Step 1 — riding the obligation
-// that survived rather than standing next to it as a fifth one of its own.
+// So the fix is not a firmer sentence. `agents/orchestrator.md` carries a Drift
+// check that reads those two un-freezable records and prints each bookkeeping
+// surface beside the one that can contradict it, and the check is attached to
+// the boundary EVENT EMISSIONS (`turn_start`, `turn_end`, `session_end`) plus
+// the resume path at Setup Step 1 — riding the obligation that survived rather
+// than standing next to it as a fifth one of its own.
+//
+// ---------------------------------------------------------------------------
+// The second half, and why this file's subject changed under it.
+//
+// That version was still prose, and its own reconciliation (`260810-0819`)
+// measured what prose bought: the check landed at 04:15, both of its call
+// points were reached at 06:55, and neither fired. Not task pressure — **an
+// agent prompt is loaded at session start, so a fix written into a prompt
+// cannot reach the session that writes it.** That is construction, and no
+// wording closes it.
+//
+// The computation therefore moved into `hooks/lib/state-drift.ts`, where three
+// callers share it and none is the session that installed it: the PostToolUse
+// hook on every guarded tool call, `bin/fusion-state-drift` behind
+// `/fusion:setup` Step 1, and `bin/monitor` by way of the emitted `state_drift`
+// events. `state-drift.test.ts` is where that machinery is exercised against
+// real project roots.
+//
+// Three of this file's assertions moved with it — the ones asking whether the
+// check reads git and the event log now read the MODULE rather than the
+// paragraph, which is a strengthening: they used to ask whether prose described
+// the reading. What stays here is the contract (surfaces, drift conditions,
+// call points, the response) plus one new assertion that something outside the
+// prompt is wired to run it.
 //
 // ---------------------------------------------------------------------------
 // What this gate is, honestly (rules/critical-stance.md §2, §4).
 //
-// It checks that the DETECTION IS PRESENT IN THE PROMPT and stays attached to
-// those acts. It does not run the check, and it cannot — nothing here executes
-// at session time. The prompt itself says as much in its own closing paragraph,
-// and one assertion below pins that admission in place, because a section that
-// quietly starts reading as a guarantee is how a convention gets mistaken for
-// an enforcement.
+// It checks that the CONTRACT IS PRESENT IN THE PROMPT, stays attached to those
+// acts, and is wired to a program. It does not check that the program is
+// RIGHT — it reads text, and `state-drift.test.ts` is what spawns subprocesses.
+// Nor does it make the orchestrator perform the repair write: nothing can, and
+// deliberately, because the session-state surfaces have exactly one writer and
+// candidate 3 of the issue (a second one) is rejected. The prompt says both
+// halves plainly in its closing paragraph and two assertions below pin that
+// admission, because a section that quietly starts reading as a guarantee is
+// how half an enforcement gets mistaken for a whole one.
 //
 // Three things it does buy, each demonstrated by a control in the second
 // `describe` block rather than asserted here:
@@ -99,11 +126,15 @@ import { dirname, resolve, join } from "node:path";
 // softening fails regardless of vocabulary, forcing the old and new wording
 // into one diff hunk where the human gate already looks. It costs about forty
 // lines, plus a re-approval on every legitimate rewording of those four
-// sentences. It is not taken in this commit for a sequencing reason and not a
-// design one: a queued task in this same session rewrites the drift-check prose
-// in `agents/orchestrator.md`, and a pin landed first would hand that executor
-// a red suite in a file it does not own. It closes the vocabulary half only —
-// the sentence-scope gap above survives it unchanged.
+// sentences.
+//
+// The sequencing reason that deferred it has expired: the queued task that was
+// going to rewrite the drift-check prose is the one that added the module and
+// the wiring assertion, and it left the four call-point sentences untouched. So
+// the pin is available and is simply not taken here — it sat outside that task's
+// acceptance clause, and bolting an unrequested gate onto a file whose own
+// header warns against accretion would be the wrong order. It closes the
+// vocabulary half only; the sentence-scope gap above survives it unchanged.
 //
 // A guard, not a fixer: it reads and asserts, it never rewrites a prompt.
 // ---------------------------------------------------------------------------
@@ -111,6 +142,23 @@ import { dirname, resolve, join } from "node:path";
 const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const orchestrator = () =>
   readFileSync(join(pluginRoot, "agents", "orchestrator.md"), "utf-8");
+
+/**
+ * The check itself, now that it is a program rather than a shell snippet inside
+ * the prompt.
+ *
+ * The three record-reading assertions moved here with it, and that is a
+ * strengthening rather than a relocation: they used to ask whether a paragraph
+ * *described* reading git and the event log, and they now ask whether the code
+ * that runs on every tool call *does*. What stayed in the prompt is the
+ * contract — which surfaces, under which conditions, and what to do when a row
+ * diverges — because that is the part a human approves and an agent acts on.
+ */
+const stateDriftLib = () =>
+  readFileSync(join(pluginRoot, "hooks", "lib", "state-drift.ts"), "utf-8");
+const trackerSource = () => readFileSync(join(pluginRoot, "hooks", "tracker.ts"), "utf-8");
+const setupSkill = () =>
+  readFileSync(join(pluginRoot, "skills", "setup", "SKILL.md"), "utf-8");
 
 /**
  * The `### Drift check` section: from its heading to the next heading of any
@@ -342,23 +390,71 @@ const SURFACES: { what: string; re: RegExp }[] = [
   { what: "the Circle record's Turn log", re: /Circle Turn log/ },
 ];
 
-function assertReadsUnfreezableRecords(section: string): void {
+function assertReadsUnfreezableRecords(source: string): void {
   expect(
-    section,
+    source,
     "the drift check does not count `turn_start` events out of the event log. Reading the " +
       "turn number from `agentstate.yaml` alone compares the frozen surface with itself — " +
       "issue 260801-2038 exactly.",
-  ).toMatch(/grep -c '"event":"turn_start"'/);
+  ).toMatch(/"event":"turn_start"/);
   expect(
-    section,
+    source,
     "the drift check does not count commits with git. `agentstate.yaml` said `commits: 0` " +
-      "in all four measured instances; only git ever said 7, 8 and 6.",
-  ).toMatch(/git rev-list --count/);
+      "in all six measured instances; only git ever said 6, 7, 8 and 12.",
+  ).toMatch(/"rev-list", *"--count"/);
+  expect(
+    source,
+    "the drift check does not read `orchestrator-events.jsonl`, the one surface that kept " +
+      "up in all six instances",
+  ).toMatch(/orchestrator-events\.jsonl/);
+}
+
+/**
+ * The property issue 260801-2038's reconciliation `260810-0819` identified as
+ * the reason the first fix did not take, expressed as a check.
+ *
+ * "An agent prompt is loaded at session start, so a fix written into
+ * `agents/orchestrator.md` cannot reach the session that writes it." That is
+ * construction, not task pressure, and it is why the acceptance clause reads
+ * *whatever is built, the session that installs it is not the session expected
+ * to run it*. Three things have to hold together for that, and each is one
+ * assertion below: the computation is a module, something invoked by the
+ * harness rather than by the prompt calls it, and the prompt delegates to it
+ * instead of carrying a second copy.
+ *
+ * What this does NOT assert, stated because the distinction is the whole point
+ * of this file's header: that the hook is *correct*. That is what
+ * `state-drift.test.ts` spawns real subprocesses for. This one asserts the
+ * wiring, which is the part a prose edit can silently undo.
+ */
+function assertSomethingRunsItUnasked(): void {
+  expect(
+    trackerSource(),
+    "hooks/tracker.ts no longer reads lib/state-drift.js. The PostToolUse hook is the only " +
+      "caller that runs without the session's cooperation; without it the check is prompt " +
+      "text again, which is exactly the state issue 260801-2038 measured six times.",
+  ).toMatch(/from "\.\/lib\/state-drift\.js"/);
+
+  const wiring = readFileSync(join(pluginRoot, "hooks", "hooks.json"), "utf-8");
+  expect(
+    wiring,
+    "hooks/hooks.json no longer wires tracker.js as a PostToolUse hook, so nothing invokes " +
+      "the drift measurement per tool call",
+  ).toMatch(/"PostToolUse"[\s\S]*dist\/tracker\.js/);
+
+  const section = driftSection(orchestrator());
   expect(
     section,
-    "the drift check does not read `orchestrator-events.jsonl`, the one surface that kept " +
-      "up in all four instances",
-  ).toMatch(/orchestrator-events\.jsonl/);
+    "the drift check no longer names `bin/fusion-state-drift`. A section that describes the " +
+      "comparison without naming the program invites the reader to re-derive it in shell, " +
+      "and two spellings of one computation are free to disagree.",
+  ).toMatch(/bin\/fusion-state-drift/);
+  expect(
+    setupSkill(),
+    "skills/setup/SKILL.md does not compute the divergence. The orchestrator's inlined Setup " +
+      "carries it and this skill carries the same steps for the USER-triggered path; while " +
+      "only one of them has it, resume-time detection exists on one path of two.",
+  ).toMatch(/bin\/fusion-state-drift/);
 }
 
 /**
@@ -411,7 +507,11 @@ function assertEveryRowHasACondition(section: string): void {
 
 describe("orchestrator drift check", () => {
   it("reads the two records that cannot silently freeze", () => {
-    assertReadsUnfreezableRecords(driftSection(orchestrator()));
+    assertReadsUnfreezableRecords(stateDriftLib());
+  });
+
+  it("is run by something that is not the session that installed it", () => {
+    assertSomethingRunsItUnasked();
   });
 
   it("names every surface the issue measured, and the record contradicting it", () => {
@@ -442,14 +542,27 @@ describe("orchestrator drift check", () => {
     ).toMatch(/state_drift/);
   });
 
-  it("still says plainly that it is a convention, not an enforcement", () => {
+  it("still says plainly which half is enforced and which half is not", () => {
     const section = driftSection(orchestrator());
+    // The admission changed when the mechanism did, and it had to: "a
+    // convention, not an enforcement" became false the moment `hooks/tracker.ts`
+    // started running the measurement unasked. What did NOT become false is the
+    // other half — nothing writes `agentstate.yaml`, the Circle record or the
+    // session history except the orchestrator, because candidate 3 of issue
+    // 260801-2038 is rejected there and stays rejected. A reader who takes the
+    // executed half for the whole builds on a promise the mechanism cannot keep
+    // (rules/critical-stance.md §3), so the split itself is what is pinned.
     expect(
       section,
-      "the drift check no longer states what it is. Nothing executes this section; a reader " +
-        "who takes it for a guarantee will build on a promise the prompt cannot keep " +
-        "(rules/critical-stance.md §3).",
-    ).toMatch(/A convention, not an enforcement/);
+      "the drift check no longer states which of its halves is executed. Say it plainly: " +
+        "the measurement runs without being asked, the repair write does not and never will.",
+    ).toMatch(/Half of it is now an enforcement and half of it is still a convention/);
+    expect(
+      section,
+      "the drift check no longer admits that it cannot make the write happen. It reports a " +
+        "skipped write; it does not perform one, and a section that stops saying so reads " +
+        "as a guarantee against the very failure it only detects.",
+    ).toMatch(/cannot make the write happen/);
   });
 });
 
@@ -658,19 +771,28 @@ describe("the gate catches the defect it exists for", () => {
   });
 
   it("rejects a check that reads the turn number from the frozen surface itself", () => {
+    // The stub is a fragment of the SHAPE the module would have if someone
+    // replaced the event-log count with a second read of `agentstate.yaml` —
+    // the mistake that makes the whole check vacuous, because it then compares
+    // the frozen surface with itself. It reads git and the event log's PATH, so
+    // only the turn assertion can be what rejects it.
     const selfComparing = [
-      "### Drift check",
-      "",
-      "```bash",
-      'H0=$(y git_head_at_start)',
-      'row "progress.turn" "$(y turn)" "$(y turn) (agentstate.yaml)"',
-      "```",
-      "",
-      "## Next section",
+      'const events = resolve(root, "fusion-workbench/orchestrator-events.jsonl");',
+      'execFileSync("git", ["rev-list", "--count", `${head}..HEAD`]);',
+      'rows.push(row("progress.turn", field(state, "turn"), field(state, "turn")));',
     ].join("\n");
-    expect(() => assertReadsUnfreezableRecords(driftSection(selfComparing))).toThrow(
+    expect(() => assertReadsUnfreezableRecords(selfComparing)).toThrow(
       /compares the frozen surface with itself/,
     );
+  });
+
+  it("rejects a module that stops counting commits with git", () => {
+    const noGit = [
+      'const events = resolve(root, "fusion-workbench/orchestrator-events.jsonl");',
+      'if (line.includes(\'"event":"turn_start"\')) count++;',
+      'rows.push(row("progress.commits", field(state, "commits"), field(state, "commits")));',
+    ].join("\n");
+    expect(() => assertReadsUnfreezableRecords(noGit)).toThrow(/only git ever said/);
   });
 
   it("rejects every declared skip licence on a phrasing of its own", () => {

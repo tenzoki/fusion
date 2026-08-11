@@ -372,13 +372,18 @@ Nothing from here to task 38 needs a user answer. Task 1 comes first for the rea
 ### 2. Stop the session's own bookkeeping freezing
 
 - **ID:** `I:260801-2038-frozen-state`
-- **Source:** `fusion-workbench/shared/issues/260801-2038_o_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`
+- **Source:** `fusion-workbench/shared/issues/260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`
 - **Executor:** `coder`
 - **Files:** `agents/orchestrator.md` (the Turn-boundary write, `### Drift check`, Phase 4),
   `skills/setup/SKILL.md` (the interrupted-session check), `bin/monitor`
 - **Depends on:** task 1
 - **Priority:** high
-- **Status:** [ ] open
+- **Status:** [x] done — `cd hooks && npm test` exits 0 (42 files, 1166 tests). The measurement moved
+  into `hooks/lib/state-drift.ts` with three callers, none of them the session that installs it: the
+  PostToolUse hook on every guarded tool call, `bin/fusion-state-drift` behind `/fusion:setup` Step 1
+  and the orchestrator's Drift check, and `bin/monitor` surfacing the emitted `state_drift` events.
+  Named residual: it makes a skipped write impossible not to notice, and cannot make the write
+  happen — the repair stays the orchestrator's, because candidate 3 stays rejected.
 - **Detail:** Three of the four session-state surfaces stop being updated after Turn 1 while the
   session runs on. Measured **six times** across six sessions: `agentstate.yaml` said `commits: 0`
   while `git rev-list --count` said 6, 7, 8, then 12; a Circle record said `Status: anticipated` with

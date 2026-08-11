@@ -19,6 +19,16 @@ function getEventsPath(): { stateDir: string; eventsPath: string } | null {
   return { stateDir, eventsPath: resolve(stateDir, "events.jsonl") };
 }
 
+/**
+ * `state_drift` is the one entry here that is also emitted by something other
+ * than a hook. `agents/orchestrator.md` emits it into
+ * `fusion-workbench/orchestrator-events.jsonl` when its own Drift check finds a
+ * diverging row; `hooks/tracker.ts` emits it here, into
+ * `.guard-state/events.jsonl`, when the same measurement fires without being
+ * asked. One concept, one name, two logs — the monitor reads the guard log for
+ * its warnings panel and the orchestrator log for its event list, so a drift is
+ * visible in the panel whichever caller measured it.
+ */
 export type GuardEventType =
   | "guard_allow"
   | "guard_block"
@@ -28,6 +38,7 @@ export type GuardEventType =
   | "halt_cleared"
   | "churn_warning"
   | "churn_critical"
+  | "state_drift"
   | "tracker_record";
 
 export interface GuardEvent {

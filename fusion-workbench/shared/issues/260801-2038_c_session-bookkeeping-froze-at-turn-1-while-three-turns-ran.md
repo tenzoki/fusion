@@ -157,3 +157,68 @@ record).
 The `_o_` marker is right and the note's own honesty is not in question. The gap is one notch wider
 than admitted: the detection exists, is unreachable in-session by construction, exits non-zero on the
 common path, and has now failed once against live drift.
+
+---
+
+**Resolved 260811-1005 (coder, task `I:260801-2038-frozen-state`) — `_o_` → `_c_`. The measurement
+left the prompt and became a program. The repair write did not, and never will.**
+
+## What was built
+
+One computation, `hooks/lib/state-drift.ts`, with three callers and **not one of them the session
+that installed it** — which is the acceptance clause this record's own reconciliation `260810-0819`
+wrote after measuring why the first fix did nothing:
+
+| Caller | When it runs | What it does |
+|---|---|---|
+| `hooks/tracker.ts` (PostToolUse) | every `Write`/`Edit`/`MultiEdit`/`NotebookEdit`/`Bash` call, invoked by Claude Code from `hooks/hooks.json` | names the diverging rows back to the model as `additionalContext`, emits a `state_drift` event under `.guard-state/` |
+| `bin/fusion-state-drift` → `hooks/state-drift.js` | `/fusion:setup` Step 1, `agents/orchestrator.md` `### Drift check`, any human at a terminal | prints `anchor=`/`state=`/`rows=`/`drift=`/`verdict=` and one line per surface |
+| `bin/monitor` | the dashboard's warnings panel | renders the emitted events as a **Stale state** row. It does *not* recompute the divergence — one measurement, surfaced |
+
+**Candidate 1 is what the hook is.** A commit is what moves `git rev-list --count` past what
+`agentstate.yaml` claims; a commit is a `Bash` tool call; the tracker fires on that very call. So the
+demand for the bookkeeping write arrives attached to the act that made it necessary, with nothing to
+remember. `agents/orchestrator.md` Step 3b gained step 7 saying the same thing in the place the
+orchestrator reads it, and the prompt's Drift check now calls the helper instead of carrying twenty
+lines of shell that a second reader was free to spell differently.
+
+**Candidate 2 now runs on both paths.** `skills/setup/SKILL.md` Step 1 computes the divergence before
+it summarises, which is the user-triggered half that was out of scope when detection landed.
+
+**Candidate 3 stays rejected, and is now enforced by a test rather than by intent.**
+`state-drift.test.ts` asserts byte-equality of `agentstate.yaml` across a tool call that reported
+drift on it. Nothing but the throttle record under `.guard-state/` is ever written.
+
+**The mid-session Circle supersession case stays named** — the paragraph in `### Drift check` is
+unchanged, and `session.history_file` pointing at a file that does not exist is now one of the five
+measured rows, with a case of its own.
+
+**`agents/reconciler.md` was not touched.** It still reports drift and still does not repair it.
+
+## The residual, stated rather than left to be found
+
+**This makes a skipped write impossible not to notice. It cannot make the write happen.** The
+session-state surfaces have exactly one writer by design, so the last step — writing `agentstate.yaml`,
+the Circle's Turn-log entry, the history file's Per-Turn Log — is still the orchestrator's, and still
+prompt text. What changed is that skipping it now leaves a `state_drift` event in a log that outlives
+the session, and a sentence in the orchestrator's own tool result at the moment it happens.
+
+Two smaller limits, both deliberate:
+
+- **The monitor surfaces rather than computes.** The monitor's copy lives at `fusion-workbench/monitor`
+  with no path back to `hooks/dist/`, and a second implementation of the comparison would be free to
+  disagree with the first. It reads the events the one measurement emits.
+- **`additionalContext` reaching the model is a prior measurement, not a fresh one.** `hooks/tracker.ts`'s
+  header records it against Claude Code 2.1.224; this task asserts the hook's envelope, not the host's
+  handling of it.
+
+## Verification
+
+`cd hooks && npm test` — 42 files, **1166 tests, exit 0** (1142 at `d8e38d5`, plus 22 integration
+cases in `lib/__tests__/state-drift.test.ts` and 2 in the existing lint). The new suite spawns real
+subprocesses against real git repositories and covers: the five rows and their conditions, the
+difference-of-one tolerance, Turn counting scoped to the last `session_start`, undecidable rows
+reported as `UNCHECKED` rather than dropped, the throttle in all three directions (repeat, growth,
+repair), non-repair of the surfaces, the CLI's exit codes, and — the one that would otherwise have
+been assumed — that the check does **not** stand down in fusion's own repository, where all six
+measured instances happened.
