@@ -146,3 +146,45 @@ active, which is row 4 of the ground table. The check as written in `agents/orch
 misreports it as stale, because its second regex alternative matches any backtick-quoted token in
 the head line and picks up the prose word `.active-circle` as if it were a Circle name. Filed
 against the prompt rather than worked around here.
+
+### Turn 4 (resumed session, 260811-1900 to 2200)
+
+Ten commits, sixteen queue entries closed, fifteen records created, no executor error.
+
+- **Batch of four, on disjoint source files** (`29d62e2`, `9c58c4d`, `a0bd3fb`): the record-counts
+  block split on what each half needs, `boundedList`'s false truncation suffix, the
+  commit-message lint's keyword screen replaced by a one-path allow-list, and two false claims in
+  `CLAUDE.md`. One executor reported `blocked` on a red suite; three full runs had produced three
+  *different* failing pairs, none of them reading the file it had edited. Held uncommitted, run
+  again on a quiet tree, green, committed.
+- **The batching itself was the defect.** Disjoint source files do not make the runs disjoint:
+  every `npm test` deletes and rebuilds `hooks/dist/`, so a lint reading the tree mid-rebuild
+  reported eleven files missing. The two other pairs were the already-recorded load-sensitive
+  cases, queue entries 37 and 38. Filed as a decision rather than a third symptom record —
+  `shared/decisions/260811-2009_o_…` — and dispatching went serial for the rest of the Turn.
+- **Three findings arrived from a consuming project** (`bb9d66d`), transferred by the user because
+  all three are in the plugin's sources. Two entered the shared store at their original stamps and
+  were both worked in this Turn (`b53c7dd`, `282ef42`). The third was the same defect this session
+  had filed six hours later, so it was merged into `260811-1915` as a second and stronger witness
+  rather than filed twice.
+- **The user asked for queue entry 10 by name** (`61bd21f`): the Turn budget became an
+  `orchestrator.maxTurns` leaf on the existing per-leaf merge, with `bin/fusion-turn-budget`, and
+  a lint that was measured non-vacuous against the previous commit.
+- **Two further observations the user relayed** were recorded as second witnesses rather than new
+  records. The one about a review pass leaving no review file changes that record's procedure: two
+  instances in two projects, against dispatch wording written months apart, removes "accept it as
+  an instance" from its options.
+- **One staging failure, the orchestrator's own** (`951c809`). An executor renamed a record with
+  `git mv` and appended its resolution note afterwards; `git status` said `RM`; the orchestrator
+  staged from the executor's file list instead of the index and committed the rename without the
+  note. Recovered in the next commit and emitted as a `staging_drift` event. The explicit-paths
+  rule was not the weak point — reading the wrong source was.
+- **coderev over `b261d83..951c809`** filed ten records, two of them High, and confirmed rather
+  than accepted the five things it was asked to check. Both High findings are about this session's
+  own machinery: the unresolved-Turn-budget branch left the Phase 2 loop with no monotone bound
+  while the prompt beside it still called the loop bounded, and the drift check has been reporting
+  a false `progress.turn` divergence on every tool call since the resume, because its two rows
+  anchor on two different notions of "this session".
+- **Coherence verdict: review-needed.** The open-record count rose from 52 to 60 across the Turn,
+  against a Directive whose target is a clean state. The user chose to continue into Turn 5 with
+  the two High findings first.

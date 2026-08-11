@@ -112,6 +112,20 @@ const BUDGET_LITERALS: { name: string; pattern: RegExp; why: string }[] = [
     pattern: /\b(?:max_turns|maxTurns)`?[^.\n]{0,12}?\(default\s+\d+\)/g,
     why: 'the word "default" made concrete, as in "`max_turns` (default 5)" — the word was false while no source could override it, and a number beside it makes it false again',
   },
+  {
+    // The only forward-looking entry: unlike the seven above, this one never
+    // matched the pre-fix prompt, because the surface it guards did not exist
+    // yet. It guards the unresolved-budget check-in (issue 260811-2142), whose
+    // interval is one Turn precisely so that no number has to be written. A
+    // future author who wants the gate to nag less will reach for "ask again
+    // every 3 Turns", which is a bound stated as a figure in the one branch
+    // built to refuse one. Its detection is measured directly, below, since
+    // the prompt scan cannot measure a pattern that finds nothing.
+    name: "a check-in interval stated as a count of Turns",
+    pattern:
+      /\b(?:every|another|a further|a further set of)\s+\d+\s+Turns?\b|\b\d+\s+(?:more|further|additional)\s+Turns?\b/g,
+    why: 'the unresolved-budget check-in given a hardcoded interval, as in "ask again every 3 Turns". The interval is one Turn and is widened by the USER at the gate, not by a figure here',
+  },
 ];
 
 /** Every line of `text` that any budget-literal pattern matches. */
@@ -270,5 +284,91 @@ describe("the default is defined once, in the configuration layer", () => {
       ).toContain("maxTurns");
       expect(note).toContain(HELPER);
     }
+  });
+});
+
+describe("the unresolved branch claims only the bound it actually has", () => {
+  // Regression guard for issue 260811-2142, filed against 61bd21f — the commit
+  // that made the budget configurable. That change correctly refused to
+  // substitute a number when the read fails, and then wrote beside the refusal
+  // that "the loop is still bounded — the other five conditions and the Step 3e
+  // convergence check all still exit it". Read against the table it pointed at,
+  // that was false. `Max Turns reached` was the only MONOTONE row: the other
+  // five need `created > resolved`, both counts at zero, agent errors, a
+  // blocking graph, or a guard halt, and Step 3e needs an empty queue. A
+  // session resolving one task and filing one issue per Turn satisfies none of
+  // them and never shortens the queue, so it runs forever. The prompt stated a
+  // safety property the mechanism did not have, in the file the property lives
+  // in — and the branch it stated it in is the one EVERY consumer meets until
+  // it next runs `fusion --update`, since that is the population that cannot
+  // yet have bin/fusion-turn-budget.
+  //
+  // Non-vacuity, measured rather than asserted: against agents/orchestrator.md
+  // as 61bd21f left it, CLAIM matched two lines (the Setup unresolved bullet
+  // and the Phase-2 head) and ANCHOR appeared nowhere, so both cases below fail
+  // against the text they were written against.
+  //
+  // Only the orchestrator is scanned. skills/setup/SKILL.md would produce zero
+  // hits before and after — it cites Setup Step 2 rather than restating it, and
+  // a case above already pins that citation. A second file in the loop here
+  // would measure nothing, which is the standing complaint about the
+  // setup-skill literal case and not a shape to copy.
+
+  /** The claim, in the shape it took and the near ones it could return in. */
+  const CLAIM = /\bloop is (?:still |nonetheless |nevertheless )?bounded\b/i;
+
+  /** The name every site that points at the gate refers to it by. */
+  const ANCHOR = "Unresolved-budget check-in";
+
+  it("never states that the Phase-2 loop is bounded", () => {
+    const offending = read(ORCHESTRATOR)
+      .split("\n")
+      .map((line, i) => `${i + 1}: ${line.trim()}`)
+      .filter((line) => CLAIM.test(line));
+    expect(
+      offending,
+      `${ORCHESTRATOR} states that the Phase-2 loop is bounded. Whether that holds depends on ` +
+        `the Turn budget resolving: unresolved, the Max-Turns row is not evaluated, and it was ` +
+        `the only row in the Step 3d table guaranteed to arrive from the passage of Turns. What ` +
+        `bounds that branch is the ${ANCHOR} gate, not the remaining conditions — say that, or ` +
+        `say the residual is accepted. Do not say bounded. Issue 260811-2142.`,
+    ).toEqual([]);
+  });
+
+  it("gives the branch the check-in gate in place of the claim", () => {
+    const text = read(ORCHESTRATOR);
+    expect(
+      text.includes(`#### ${ANCHOR}`),
+      `${ORCHESTRATOR} must define the ${ANCHOR} gate under Step 3d. Deleting the false claim ` +
+        `without putting a bound where it stood leaves the unresolved branch with no exit that ` +
+        `is guaranteed to arrive — the defect, minus its description. Issue 260811-2142.`,
+    ).toBe(true);
+    expect(
+      text.includes("AskUserQuestion"),
+      `${ORCHESTRATOR} must put the question through AskUserQuestion, the way every other human ` +
+        `gate in this prompt reaches the user. The count configuration could not supply is asked ` +
+        `for, not invented.`,
+    ).toBe(true);
+    expect(
+      text.split(ANCHOR).length - 1,
+      `${ORCHESTRATOR} names the ${ANCHOR} once. Setup Step 2 is where the unresolved state is ` +
+        `decided and must point at the gate; Step 3d is where it is defined. One mention means ` +
+        `one of those two is missing, and a session that learns of the gate only after it needed ` +
+        `it is the same defect one step later.`,
+    ).toBeGreaterThan(1);
+  });
+
+  it("detects a hardcoded check-in interval, the shape the number would return in", () => {
+    // The prompt scan cannot measure the interval pattern — it correctly finds
+    // nothing today, and a pattern whose only evidence is an empty result is
+    // indistinguishable from a broken one. So measure the detector on the
+    // sentences it exists to catch, and on the counts the prompt legitimately
+    // states, which it must leave alone.
+    expect(budgetLiteralHits("ask again every 3 Turns unless the user says otherwise")).not.toEqual(
+      [],
+    );
+    expect(budgetLiteralHits("continue for 4 more Turns before asking again")).not.toEqual([]);
+    expect(budgetLiteralHits("emit turn_start at Turn 1, then again at Turn 2")).toEqual([]);
+    expect(budgetLiteralHits("| Error cascade | 3+ agent errors in a single Turn |")).toEqual([]);
   });
 });

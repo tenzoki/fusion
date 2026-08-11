@@ -124,7 +124,10 @@ Remaining setup (after step 1 is resolved):
      - Say so in the Setup-complete summary, naming which of the three reasons applies and its remedy.
      - **Omit `progress.max_turns` from `agentstate.yaml` entirely.** Do not write a placeholder there: `/fusion:circle-stash` reads that key as a number, and an absent key is a case it already handles while a word is not.
      - Show the dashboard's Turn field as `<current>/--` for the whole session.
-     - Treat the **Max Turns reached** row of the circuit-breaker table (Step 3d) as not evaluable, and say so once when the loop starts. The loop is still bounded — the other five conditions and the Step 3e convergence check all still exit it — but the count-based bound is not among them, so watch the Turn count yourself and stop and ask the user if the session runs long.
+     - Treat the **Max Turns reached** row of the circuit-breaker table (Step 3d) as not evaluable, and say so once when the loop starts. **Never describe the loop as bounded while the budget is unresolved.** That row was the only condition in the table that arrives from the passage of Turns alone; every other exit is contingent on the work taking a particular shape, and a Turn that resolves one task and files one issue meets none of them. Step 3d states which and why.
+     - Run the **Unresolved-budget check-in** instead (Step 3d). It is what bounds the loop in this branch: at each Turn boundary the session stops and asks the user whether to continue, and the user may widen the interval or state that they accept an unbounded loop. Say at the loop's start that this — and not a count — is what will end the session.
+
+       **The check-in interval is deliberately not a configuration leaf.** It would have to be read the same way `orchestrator.maxTurns` is, through `bin/fusion-turn-budget`, which is the read whose failure defines this branch: a fallback stored behind the mechanism it is a fallback for is absent in exactly the case it is needed. Nor is it a number this prompt states — that is what the branch refuses. It is one Turn, the only interval statable without inventing a count, and the user widens it at the first question.
 3. Read `CLAUDE.md` for project context, folder structure, architecture
 4. `git log --oneline -20` for recent change context (skip if not a git repository)
 5. Snapshot open state, using the values `fusion-paths` gave you in Step 2. Every `SCAN_*` may name **two** directories (the active Circle's and the shared one) — count across all of them, or the snapshot silently under-reports:
@@ -433,7 +436,7 @@ When in doubt, prefer the agent whose primary domain matches the file's role in 
 
 ## Phase 2: Turn Loop
 
-At most `<max-turns>` Turns — the Turn budget resolved at Setup Step 2 — numbered from 1 upward. When the budget is unresolved, the count-based bound does not apply and the loop is bounded by the other circuit-breaker conditions alone; Setup says which case this session is in. Each Turn starts by:
+At most `<max-turns>` Turns — the Turn budget resolved at Setup Step 2 — numbered from 1 upward. When the budget is unresolved there is no count to run out, and the remaining circuit-breaker conditions do not bound the loop on their own (Step 3d says why); the **Unresolved-budget check-in** at Step 3d bounds it instead, by putting the question to the user at each Turn boundary. Setup says which case this session is in. Each Turn starts by:
 
 1. Recording `progress.turn_start_head` in `agentstate.yaml` with `git rev-parse --short HEAD` (the value `<turn-start-HEAD>` referenced by Step 3c and Step 3c-bis below sources from this field).
 2. Emitting a `turn_start` event — and, **in the same command**, running the drift check (see **Persistent State File → Drift check**). It rides the emission rather than standing next to it, because a Turn-boundary obligation standing on its own is the one that froze. This fires in **every** Turn, Turn 1 included; at Turn 1 it runs before the session has a commit or a completed Turn of its own, so what it takes there is the baseline the later call points are read against.
@@ -596,6 +599,31 @@ Evaluate after each Turn. If any condition is met, **exit the loop immediately**
 | Guard halt | `fusion-workbench/.guard-state/escalation.json` has `haltActive: true` | Stop, report guard halt. Show recent block events from escalation state. User must clear halt before work can continue. |
 
 When a circuit breaker trips, emit a `circuit_breaker` event, update the live dashboard, log the reason in the history file, and report it to the user with full context.
+
+#### Unresolved-budget check-in
+
+**Fires only when the Turn budget came back unresolved at Setup Step 2.** When it resolved, the *Max Turns reached* row above is doing this work and this gate does not fire at all.
+
+*Max Turns reached* was the only row in the table above guaranteed to arrive. The other five are contingent on the work taking a particular shape, and so is Step 3e:
+
+| Remaining exit | What it needs before it can fire |
+|---|---|
+| Net-negative progress | `issues_created > tasks_resolved`, twice running |
+| Zero progress | both counts at zero in one Turn |
+| Error cascade | agent errors |
+| All blocked | a blocking dependency graph |
+| Guard halt | a guard halt, which is unrelated to Turn count |
+| Step 3e convergence | the queue to empty |
+
+A Turn that resolves one task and files one issue satisfies none of them and leaves the queue no shorter, so a session in that steady state runs forever. Removing the count-based row removes termination, not one exit among six. The count that configuration could not supply is therefore **asked for, not invented**.
+
+At the end of every Turn, after the circuit-breaker table has been evaluated and before Step 3e, emit `gate_hit` with reason `unresolved Turn budget` and ask with `AskUserQuestion`:
+
+- **Continue** (default) — run another Turn, and ask again at the next Turn boundary. If the user's answer names a count of further Turns, ask again after that many instead. That count is the user's; never supply one for them, and never carry it into `progress.max_turns`, which stays omitted.
+- **Stop here** — exit the loop now and report remaining work, exactly as *Max Turns reached* would have. Emit `circuit_breaker` with condition `unresolved Turn budget: user stopped`, then proceed to Phase 4.
+- **Continue without check-ins** — the user accepts a Phase-2 loop with no count-based exit for the rest of the session. Stop asking. Record the acceptance in the session history and repeat it in the final summary, and do not call the loop bounded from that point on: an accepted residual is stated, not described away.
+
+Emit `gate_response` with the choice either way. The interval starts at one Turn because that is the only interval this prompt can state without inventing a number; the first question is where the user makes it longer or turns it off.
 
 ### Step 3e: Convergence Check
 
@@ -905,6 +933,7 @@ The orchestrator **must stop and ask the user** before proceeding when any of th
 | Destructive operations (file deletion, feature removal, data removal) | Safety | Design principle |
 | Plan step explicitly flagged as requiring approval | Planner's judgment | Plan metadata |
 | Task would modify files outside the project tree | Safety | Design principle |
+| Turn boundary reached and the Turn budget came back unresolved at Setup (Phase 2 step 3d) | No count-based exit exists, so whether to run another Turn is the user's call and nothing else's | Unresolved-budget check-in |
 | Per-Turn Coherence gate returned "Rebalance" (Phase 2 step 3c-bis) | User opted into mid-Turn Rebalance |
 | Per-Circle reconciler verdict is `review-needed` (Phase 3) | Aggregate Coherence not achieved |
 | Per-Circle reconciler verdict is `bounded-closure-proposed` (Phase 3) | Directive judged unreachable |
@@ -935,9 +964,9 @@ The Rebalance gate is reachable from Phase 2 step 3c-bis (per-Turn user opt-in) 
 
 Each option has bounded post-action mechanics. No option is allowed to loop unboundedly.
 
-- **Revise Artifact re-entries count against the existing Max-Turns circuit breaker.** Each Revise Artifact choice creates a new Turn — the orchestrator increments the Turn counter and re-enters Phase 2 with the new queue entry. When the Turn counter reaches `progress.max_turns` — the budget resolved at Setup Step 2 — the next per-Turn or per-Circle gate forces Bounded Closure with reason `"Turn limit reached after Rebalance retries."`. This piggybacks on the existing circuit breaker; no new infrastructure needed. A session whose budget came back unresolved has no count to reach, so this bound does not apply to it and the retries are bounded only by the user's judgement at the gate — Setup has already said which case the session is in.
+- **Revise Artifact re-entries count against the existing Max-Turns circuit breaker.** Each Revise Artifact choice creates a new Turn — the orchestrator increments the Turn counter and re-enters Phase 2 with the new queue entry. When the Turn counter reaches `progress.max_turns` — the budget resolved at Setup Step 2 — the next per-Turn or per-Circle gate forces Bounded Closure with reason `"Turn limit reached after Rebalance retries."`. This piggybacks on the existing circuit breaker; no new infrastructure needed. A session whose budget came back unresolved has no count to reach, so this bound does not apply to it. Each Revise Artifact choice still creates a Turn, and every Turn boundary in such a session runs the **Unresolved-budget check-in** (Step 3d) — that is what bounds the retries, and it is where the user ends them. Setup has already said which case the session is in.
 
-  **At Phase 3 (post-verdict dispatch):** Re-enter Phase 2 with a fresh Turn (Turn counter increments; treated as a new Turn even though the previous Phase-2 loop exited). The orchestrator dispatches `taskplanner` to refresh the queue based on what the reconciler's verdict flagged. If the Turn counter has already reached `progress.max_turns`, Phase 2 is bypassed and the gate forces Bounded Closure with reason `"max-Turns exceeded; Rebalance from Phase 3 cannot create a new Turn."`.
+  **At Phase 3 (post-verdict dispatch):** Re-enter Phase 2 with a fresh Turn (Turn counter increments; treated as a new Turn even though the previous Phase-2 loop exited). The orchestrator dispatches `taskplanner` to refresh the queue based on what the reconciler's verdict flagged. If the Turn counter has already reached `progress.max_turns`, Phase 2 is bypassed and the gate forces Bounded Closure with reason `"max-Turns exceeded; Rebalance from Phase 3 cannot create a new Turn."`. When the budget is unresolved there is no counter to compare against and this bypass never fires; the fresh Turn runs and meets the **Unresolved-budget check-in** at its own boundary instead.
 
 - **Revise Directive is limited to once per session.** The orchestrator increments the persisted counter `progress.directive_revisions_this_session` in `agentstate.yaml` (initialised to 0 at session start; persisted so the cap holds across session interruption). The first Revise Directive choice re-enters Step 0b.1 (shaper), regenerating spec + plan + queue. A second Revise Directive in the same session is rejected; the gate instead forces Bounded Closure with reason `"Directive revised twice without convergence."`. Rationale: re-shaping more than once per session usually means the project itself needs to step back, not the current Circle.
 

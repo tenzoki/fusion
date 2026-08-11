@@ -53,3 +53,23 @@ If the user prefers to accept an unterminating loop in this branch, that is a le
 - `agents/orchestrator.md` no longer claims the loop is bounded when the budget is unresolved.
 - Either a stop-and-ask interval is prescribed for that branch, or the absence of a bound is stated as an accepted residual with its reason.
 - `hooks/lib/__tests__/turn-budget-lint.test.ts` gains a case pinning whichever sentence is chosen, so it cannot revert to the current claim.
+
+---
+
+**Resolved:** 260811-2205 — `agents/orchestrator.md` no longer claims the loop is bounded when
+the budget is unresolved. Step 3d gained the **Unresolved-budget check-in**: at each Turn
+boundary the session emits `gate_hit`, asks with `AskUserQuestion` (Continue / Stop here /
+Continue without check-ins), and emits `gate_response`. The interval is one Turn and is
+widened or switched off by the user — it is deliberately **not** a configuration leaf, because
+it would be read through `bin/fusion-turn-budget`, the read whose failure defines this branch;
+a fallback stored behind the mechanism it is a fallback for is absent exactly when needed. The
+third option is this record's "state the residual as accepted", offered as a user choice rather
+than as a default. Fix direction (1) and (2) both taken; no residual accepted silently.
+
+Three cases added to `hooks/lib/__tests__/turn-budget-lint.test.ts`, non-vacuity measured
+against the pre-fix text: the bounded-claim scan found 2 lines before and 0 after, the gate
+anchor was absent before and is named 6 times after, and the ninth `BUDGET_LITERALS` pattern
+(a check-in interval written as a figure) is measured on its own exemplars because it correctly
+finds nothing in either prompt.
+
+History: `shared/history/260811-2205-coder-unresolved-turn-budget-check-in.md`
