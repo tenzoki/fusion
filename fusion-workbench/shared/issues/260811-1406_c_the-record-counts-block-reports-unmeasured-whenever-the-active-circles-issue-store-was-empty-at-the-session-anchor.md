@@ -73,3 +73,33 @@ the first one. Two shapes are available:
 
 Either way the `unmeasured` sentence at `:644` should name the cause it actually detects, so a
 model does not report a tracked workbench as untracked.
+
+---
+Resolved: The probe no longer asks about a store. `agents/orchestrator.md` now runs
+`git -C "$WORKBENCH" cat-file -e "$A:./"` — the **workbench tree** at the anchor — which is the
+condition the bound was written for ("the project does not track its workbench") rather than a proxy
+that git answers `false` for every empty directory. Neither of the two fix directions in this record
+was taken as written: probing `shared/issues` (option 1) still misses a workbench whose shared store
+holds no committed record yet, and probing every store (option 2) answers the same question one
+`cat-file` per store more expensively while inheriting the same weakness. The tree probe is the
+decided form of the question the block was already trying to ask.
+
+`records=unmeasured` stays reachable and now carries the cause in a `why=` field, the way
+`bin/fusion-review-coverage` reports its own: `why=no-anchor-in-agentstate` when `agentstate.yaml` is
+missing or holds no `git_head_at_start`/`started`, `why=workbench-not-in-anchor-commit` when the
+anchor resolves to no workbench tree (untracked workbench, project outside git, or an anchor that has
+left the repository's history). The sentence at the end of `## Two bounds` was rewritten to name
+those two causes and to instruct that the reported cause is copied through rather than inferred.
+
+Measured, block extracted verbatim and run in `/bin/bash` and `/bin/zsh` over throwaway projects:
+Circle active with its issue store empty at the anchor and a record filed into it this session —
+`2 filed issue`, `1 now_c issue`, `2 now_o issue`, `1 now_a decision`, identical in both shells and
+identical to the same tree with the Circle store populated at the anchor. Untracked workbench —
+`records=unmeasured why=workbench-not-in-anchor-commit`. No `agentstate.yaml` —
+`records=unmeasured why=no-anchor-in-agentstate anchor=none start=none`.
+
+Gated by `hooks/lib/__tests__/record-counts-measurement.test.ts`, which extracts the block through
+the shared `helpers/prompt-blocks.ts` extractor and runs it in both shells over fixtures it builds;
+its control runs the block **as it shipped** (read out of commit `7749845`, never transcribed) over
+the same fixture and asserts it reports `unmeasured` there. `cd hooks && npm test` — 1270 passed,
+exit 0.

@@ -61,3 +61,35 @@ eval "$("$FUSION_PLUGIN_ROOT/bin/fusion-paths" orchestrator | sed -n 's/^\(WORKB
 or three `sed -n 's/^KEY=//p'` reads. Whichever is chosen, the failure text should distinguish
 "the resolver returned an empty key" (a fusion bug) from "the value was never substituted into
 this shell" (a prompt-following error), because the remedies are opposite.
+
+---
+Resolved: The block resolves the three keys itself, the way the queue retirement at Phase 4 resolves
+`OUT_PLAN`, rather than relying on a substitution sentence a reader has to act on:
+
+```sh
+R=$("$FUSION_PLUGIN_ROOT/bin/fusion-paths" orchestrator); X=$?
+WORKBENCH=$(printf '%s\n' "$R" | sed -n 's/^WORKBENCH=//p')
+SCAN_ISSUES=$(printf '%s\n' "$R" | sed -n 's/^SCAN_ISSUES=//p')
+SCAN_DECISIONS=$(printf '%s\n' "$R" | sed -n 's/^SCAN_DECISIONS=//p')
+```
+
+The re-resolution was chosen over the sibling block's substitution sentence for the reason this
+record gives: the block is long enough that a model pastes it rather than retypes it. `agentstate.yaml`
+is now read through `$WORKBENCH` too, so the block no longer depends on the working directory being
+the project root — verified by running it from `fusion-workbench/shared/`.
+
+The assertion is kept, per `rules/fusion-workbench-conventions.md` `## Path Resolution` → *Where the
+call belongs*, and now has real values to assert on. Its message stops calling the failure a fusion
+bug: it prints `record counts not taken: fusion-paths exited $X and gave no value for WORKBENCH,
+SCAN_ISSUES or SCAN_DECISIONS`, and the prose points at the resolver's exit-code table, where 3 is
+the user's own `.active-circle` and 4 is a fusion bug. That is the distinction this record asked for;
+the third possibility it named — a value never substituted into the shell — can no longer occur,
+because nothing is substituted any more.
+
+Measured: the block run in `/bin/bash` and `/bin/zsh` with `WORKBENCH`, `SCAN_ISSUES` and
+`SCAN_DECISIONS` deleted from the environment exits 0 and prints the counts. With
+`FUSION_PLUGIN_ROOT` pointed at a nonexistent directory it exits 1 with the message above and does
+not say "fusion bug". Both cases are asserted in
+`hooks/lib/__tests__/record-counts-measurement.test.ts`, whose runner deletes the three keys from the
+environment on every run; its control shows the shipped block (commit `7749845`) exiting 1 with
+`fusion bug` over the same fixture. `cd hooks && npm test` — 1270 passed, exit 0.

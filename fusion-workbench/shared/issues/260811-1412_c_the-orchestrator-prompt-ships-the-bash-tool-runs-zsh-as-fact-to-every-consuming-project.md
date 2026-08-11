@@ -44,3 +44,23 @@ State the property rather than the platform:
 > single-path `find`. The store list is turned into lines instead, which is the same in both.
 
 Same length, no machine-specific claim, and it names the property an agent would actually reuse.
+
+---
+Resolved: The sentence now states the property instead of the platform, close to the wording this
+record proposed: *"that loop splits an unquoted parameter on spaces under bash and does not under
+zsh, so it is one shell's correct code and the other's silent `find` on a single path made of two,
+failing into `2>/dev/null` and reporting the Circle's records as absent. Lines read the same in
+both."* The code is untouched — `printf | tr ' ' '\n' | while read` was right in both shells and
+stays.
+
+`hooks/lib/__tests__/record-counts-measurement.test.ts` gates the section against
+`/Bash tool runs\s+(?:zsh|bash|sh)\b/` and asserts the replacement names both shells; a third control
+reads the section out of commit `7749845` and asserts the claim was there, so the gate is not
+vacuous.
+
+Not fixed, and out of this record's scope: the same generalisation appears in a source comment at
+`hooks/lib/__tests__/glob-nomatch-lint.test.ts:9` ("The Bash tool runs zsh 5.9 with `nomatch` on by
+default"). That text does not ship to consuming projects, which is the harm this record is about, but
+it is the same false claim and a reader of that lint will take it the same way.
+
+`cd hooks && npm test` — 1270 passed, exit 0.
