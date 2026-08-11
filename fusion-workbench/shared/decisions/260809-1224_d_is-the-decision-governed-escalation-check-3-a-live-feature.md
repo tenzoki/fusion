@@ -88,3 +88,18 @@ Superseded by:
 Searched for an answer across `shared/analyses/`, `shared/planning/`, `shared/decisions/` and the six commits `451a07e..fb262d8`. The support-layer analysis that raised the question states the same constraint the record does — no consuming project's configuration is visible from this tree — and the defect round touched none of the four files the question is about: `hooks/lib/config.ts`, `hooks/config.json` and `hooks/lib/paths.ts` are absent from the diff, and the configuration surface (`findRelevantDecisions`, `sensitivityLevel`, `guard.categoryPaths`, `guard.categorySensitivity`, `guard.defaultSensitivity`, `decisions`) is unchanged and still inert on shipped defaults.
 
 The blocking step is unchanged and is not a code step: read `fusion-guard.json` from each consuming project the user has, `unite` first. Recommendation C5 of `shared/analyses/260809-1101-guard-support-layer.md` stays blocked behind it.
+
+---
+Deferred: until someone measures whether any reachable consuming project has populated the check's
+configuration surface. User, session 260811-0752 (chat).
+
+**Trigger, so this is a deferral and not a shelf.** Re-open when a measurement exists over the
+consuming projects this developer can reach: does any of them populate `decisions` or the rest of
+CHECK 3's configuration? A non-zero answer settles it as live (option 2, keep it and give it tests
+that fire it); a zero answer settles it as retired (option 1, remove the check and its
+configuration surface). The record already establishes that the user's own answer at the gate was
+"do not know, check first", which rules both out as immediate actions — the deferral records that
+state rather than leaving the question looking unasked.
+
+Nothing is blocked meanwhile: the check is inert either way, and its cost is the configuration
+surface it advertises, not any behaviour.

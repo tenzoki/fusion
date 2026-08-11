@@ -128,3 +128,13 @@ Answered: <set when status moves to _a_>
 Implemented: <set when status moves to _i_>
 Deferred: <set when status moves to _d_>
 Superseded by: <set when status moves to _s_>
+
+---
+Answered: user, session 260811-0752 (chat) — **Option 1, archive rather than truncate.**
+`.guard-state/events.jsonl` gets its own case in `skills/archive/SKILL.md`: the log is rolled into
+the archive store under a dated name and a fresh empty log is started, the way terminal records are
+already moved. No line or byte ceiling is added, because every such ceiling discards the 99
+block, halt and clear events first, and those are the only lines that record the guard enforcing
+anything. The log is therefore classified as **evidence**, not telemetry, which also settles the
+conventions file's records-versus-live-state split for it. Option 4, dropping `guard_allow`, was
+offered alongside and not taken in this answer; it stays available as a separate, smaller call.

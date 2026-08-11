@@ -98,3 +98,12 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+---
+Answered: user, session 260811-0752 (chat) — **Option 1.** `bin/fusion-source-root` prints the
+source root and the four skill-body copies become four calls. Follows the record's recommendation:
+the executable duplicate is the one that can diverge in behaviour without anyone reading the files,
+and this session paid for exactly that failure once, when a correction reached two copies and left
+two standing. Option 2's second half, a helper or documented home for the domain capture, is a
+separate call to be made once the first has proved itself; the record's reasoning for treating it
+as the weaker case (short, read-only, fallback stated at every site) stands.

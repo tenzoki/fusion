@@ -122,3 +122,11 @@ chassis is built first.** Three copies is where this codebase drew the line the 
 ---
 Answered: <set when status moves to _a_>
 Implemented: <set when status moves to _i_>
+
+---
+Answered: user, session 260811-0752 (chat) — **Option 2.** Build only the two pieces that already
+have an owner: move the throttle store onto `hooks/lib/guard-state-file.ts`, and extract one
+`lib/git.ts` for the `execFileSync` wrapper. The tracker's three `measure…ForModel` bodies, the
+three CLI mains and the three `bin/` wrappers stay as they are. Option 1, the full chassis, is
+taken at the fourth module, and the trigger is written down as the thing that decides whether a
+new measurement is a sibling at all. This follows the record's own recommendation.

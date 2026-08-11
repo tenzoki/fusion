@@ -95,3 +95,14 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+---
+Answered: user, session 260811-0752 (chat) — **Option 3, a per-deliverable declaration with no
+project default.** The `editor` requires the dispatching task to name the target language and fails
+loudly when none is given. Chosen on the ground the record itself said only the user could supply:
+this project's customer deliverables are not reliably in one language, so any project-wide default
+would be wrong a large share of the time, and a wrong default is worse than a demanded answer
+because it produces a finished document in the wrong language rather than a stop. `## Project
+language` in `rules/fusion-workbench-conventions.md` gains a customer-deliverable case that names
+the dispatch as the source, and `agents/editor.md:16,62` change accordingly. The failure must be
+loud: silently falling back to either declaration reintroduces the defect this answer rejects.

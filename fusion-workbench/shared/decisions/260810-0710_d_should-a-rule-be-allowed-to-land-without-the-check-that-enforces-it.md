@@ -53,3 +53,11 @@ Answered: <set when status moves to _a_>
 Implemented: <set when status moves to _i_>
 Deferred: <set when status moves to _d_>
 Superseded by: <set when status moves to _s_>
+
+---
+Deferred: until the lint cohort's own fate is settled — `shared/issues/260810-0502`, `260810-0503`
+and `260810-0510`. User, session 260811-0752 (chat). The record's own closing paragraph asks for
+exactly this ordering: option 1 is worth taking only if this project can tell a real gate from a
+decorative one, and on the day this record was filed it produced four lints and got two right.
+Re-open when those three are answered; the instance that motivated the record is already fixed at
+`3df0c17`, so nothing is blocked by the deferral.

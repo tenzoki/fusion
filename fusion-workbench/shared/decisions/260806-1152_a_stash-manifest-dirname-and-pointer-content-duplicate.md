@@ -24,3 +24,12 @@ The stash manifest carries both `original_circle_dirname` and `active_circle_con
 ## Constraints
 
 Old stashes must stay poppable either way (the `has_spec_plan` precedent: readers ignore unknown fields).
+
+---
+Answered: user, session 260811-0752 (chat) — **Option 1, keep both fields.** They answer different
+questions: `original_circle_dirname` says where the restored directory belongs,
+`active_circle_content` says what `.active-circle` literally held. They agree on every healthy
+workbench, and the case the manifest exists for is not a healthy one: on a corrupt or
+half-restored workbench their divergence is the diagnosis, and a nine-field schema would have
+discarded it to save a line. No schema change. Record the reason in the manifest schema
+documentation so the next reader does not re-file the duplication as redundancy.

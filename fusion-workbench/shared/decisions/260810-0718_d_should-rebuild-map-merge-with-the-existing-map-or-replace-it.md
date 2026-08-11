@@ -49,3 +49,17 @@ Answered: <set when status moves to _a_>
 Implemented: <set when status moves to _i_>
 Deferred: <set when status moves to _d_>
 Superseded by: <set when status moves to _s_>
+
+---
+Deferred: until the first real recovery is run against a workbench that has seeded from Plane.
+User, session 260811-0752 (chat).
+
+**Trigger.** Re-open the first time `fusion-plane push --rebuild-map` is run in anger against a
+workbench holding entries that Plane cannot reconstruct. That event supplies the one input the
+record says is missing: how often a rebuild meets a map carrying knowledge only the map has. Until
+then option 1 is what ships and the record itself calls it adequate — a rebuild is a reconstruction
+from the remote, it says so plainly, and it tells the operator exactly what was discarded and how
+to restore each item.
+
+This is a deferral on evidence, not on effort. The Plane bridge has not been used in anger, so
+answering now would be choosing between two designs on a usage pattern nobody has observed.

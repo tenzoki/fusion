@@ -82,3 +82,17 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+---
+Answered: user, session 260811-0752 (chat) — **Option 1, generate every row from its module.** Each
+`hooks/lib/*.ts` exports a one-line description and the table is generated from them, the way
+`describeReach()` already pins the domain-cascade paragraph. Drift becomes impossible rather than
+detectable.
+
+The record is explicit that the retrofit across roughly 25 rows was not measured, and that stands
+as the known cost of this answer rather than being argued away. This choice is consistent with the
+answer given to `260810-1635` in the same sitting: the general rule adopted there is that a claim
+lives in one place and is cited from the others, and generating this table from the modules is that
+rule applied to the surface where the drift was actually measured twice. Option 3, pinning only the
+rows that restate a code decision, would have left the boundary between pinned and unpinned rows as
+a judgement call renewed at every edit.

@@ -34,3 +34,17 @@ The record they came from could not carry them any longer. A decision record has
 ## Recommendation
 
 None yet. Part (b) is the more consequential of the two and is the one that will keep costing a session per new helper; part (c) is narrower and only affects this repository's own development. They could be answered separately, and if they are, this record splits again rather than being marked half-implemented — which is the failure this record was created out of.
+
+---
+Answered: user, session 260811-0752 (chat) — **Option 3 for part (b): state the convention in
+prose, enforce nothing.** A prompt calling a `bin/` helper guards the call and reports the absence
+in the fixed vocabulary; no lint is added. The record names the honest cost and it is accepted
+rather than argued away: a convention in prompt text can lose to task pressure, and it does not
+reach the session that installs it. It was preferred over the lint because three gates of exactly
+that shape (matching on text rather than behaviour) are themselves open defect records right now,
+so a fourth would be built on a mechanism currently under repair. Reconsider if the class recurs
+after the convention is written down.
+
+Part (c), whether the work-tree preference extends to helper resolution, is **not** answered here.
+Per this record's own closing paragraph the record splits rather than being marked half
+implemented: file part (c) as its own decision when it is taken up.

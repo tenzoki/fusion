@@ -37,3 +37,19 @@ The instances are not one kind of artefact, which is what makes this a design qu
 ## Recommendation
 
 None. The honest observation is that options 1 and 2 are both instructions that lose to task pressure, option 3 asks a question a diff cannot answer, and option 4 concedes. That combination is itself the signal `rules/critical-stance.md` §4 describes: when no cut is clean, the question is probably posed wrong, and the useful move is to ask which *different* question is answerable from inputs a mechanism actually has. One candidate worth exploring before choosing: rather than detecting stale prose, reduce the surface — a claim stated once and cited from the other sites cannot go stale in four places at once, which is the partition `rules/fusion-workbench-conventions.md` already applied to four of its own topics.
+
+---
+Answered: user, session 260811-0752 (chat) — **none of the four options; the question is re-cut, as
+the record's own Recommendation proposes.** The obligation is not placed on a reviewer, an executor
+or a gate. Instead the surface is reduced: a claim is stated once and cited from every other site,
+so it cannot go stale in four places at once. This is the partition
+`rules/fusion-workbench-conventions.md` already applied to four of its own topics, and it answers a
+question a mechanism can actually act on (is this claim stated twice?) in place of one a diff
+cannot (which artefact explains this behaviour?). `rules/critical-stance.md` §4 is the governing
+rule: where no cut is clean, the mechanism changes rather than the approximation.
+
+Consequences to realise, none of which is an instruction to be more careful: identify the claims
+currently stated in more than one shipped surface, pick the authoring home for each, replace the
+rest with citations, and let the existing duplication gates carry what remains. The five instances
+this record counted are the working list to start from. Options 1 and 2 remain available as
+supplements later, but they are not the answer and must not be recorded as one.

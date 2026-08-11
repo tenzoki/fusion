@@ -76,3 +76,29 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+---
+Answered: user, session 260811-0752 (chat) — **the threat model is settled first, and it decides
+the rest: the halt acts against an agent that is not looking for a way around it.**
+
+That answers the record's own precondition. Against an agent that slips — repeated blocks, a task
+it cannot complete cleanly, a loop it does not notice — today's arrangement already holds: the halt
+raises, the write tools stop, and the agent is told to report to a human. Against an agent that
+actively seeks the bypass, the record states plainly that none of the four options holds while the
+agent has a shell, so building one would buy the appearance of a guarantee rather than the
+guarantee.
+
+**Chosen: option 4.** The exposure is accepted as permanent and written down rather than mitigated.
+The halt stays clearable, `.guard-state/` stays off the protected list (the measurement's
+self-reference is what closed that route, and that has not changed), and enforcement rests with the
+human who reads the events. Options 1, 2 and 3 — relocating the state outside the writable area,
+signing it, or reconstructing the halt from the append-only event stream — are not taken and are
+not left implied as future work.
+
+To realise: the text layer says openly that an agent can clear its own halt, at the site where the
+halt is explained to agents (`rules/protected-path-discipline.md` `### What a halt costs you`) and
+in `README-hooks.md` where it is explained to users. It must read as a stated boundary of the
+mechanism, not as an oversight, because that is what it now is.
+
+This also removes the last argument for putting `.guard-state/` back on the protected list, and it
+should be cited by anything that proposes it again.
