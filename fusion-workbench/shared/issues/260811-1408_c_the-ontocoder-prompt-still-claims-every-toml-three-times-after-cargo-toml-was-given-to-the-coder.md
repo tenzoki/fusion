@@ -52,3 +52,24 @@ The record for the orchestrator half was filed; this half was not.
 Make the three ontocoder lines say what `README-agents.md` already says: `.toml` except build
 manifests. `:2` is the load-bearing one. Keep the phrasing to the same role-not-extension rule
 `agents/coder.md:24` states, so a fourth build manifest needs no fourth edit.
+
+---
+Resolved: All three `agents/ontocoder.md` lines now state the rule the record asked for — role,
+not extension — rather than an exception list, so a fourth build manifest needs no fourth edit.
+`:3` (the frontmatter `description`, the load-bearing one a dispatcher reads) and `:8` (the body
+lede) both name build manifests and build configuration as the `coder`'s whatever their extension;
+`:24` scopes the owned structured-data extensions to "where they carry data" and cites
+`agents/orchestrator.md` `## Agent Routing Table` as the authority. The `**You may NOT edit:**`
+entry that said "`package.json` scripts" — a partial claim on a file the coder owns whole — now
+names build manifests, build configuration and build scripts as one class.
+
+Frontmatter verified after the edit: the `description` value carries no colon, and a parse over all
+16 agent prompts returns `["name","description"]` for `ontocoder.md` (`orchestrator.md` keeps its
+third key). `claude plugin validate .` passes with the one pre-existing CLAUDE.md warning.
+
+Two siblings the closing grep found were fixed with it rather than left for a fifth review:
+`agents/planner.md:32-33` and `:45` (the executor table and its tiebreaker, which gave `ontocoder`
+every `.toml` and `.json` and omitted `Cargo.toml` from `coder`), and the two `README-agents.md`
+rows, whose exception clause was replaced by one statement of the rule below the table so neither
+row restates it. `agents/orchestrator.md:346` was left alone: it is already filed as
+`260811-1301`, and it is a gap in the coder row rather than a competing claim.

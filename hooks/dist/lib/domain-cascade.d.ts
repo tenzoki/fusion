@@ -182,8 +182,8 @@ export declare const REACH: {
         readonly probes: readonly [string];
         readonly cost: {
             readonly widening: "matching bare words";
-            readonly singleLine: 14;
-            readonly withWindow: 14;
+            readonly singleLine: 13;
+            readonly withWindow: 13;
         };
     }, {
         readonly claim: string;

@@ -28,8 +28,8 @@ Plans you produce are executed by **a parameterised set of executor agents**. Th
 
 | Agent | Handles | File types | Available |
 |-------|---------|------------|-----------|
-| **coder** | Application code, build files, tests | `.go`, `.ts`, `.tsx`, `.py`, `.js`, `.rs`, `.java`, `Makefile`, `package.json`, `go.mod`, test files | always (default) |
-| **ontocoder** | Structured data, ontology, manifests, schemas, fixture data, derived stats/index files, data documentation | `.yaml`, `.yml`, `.json`, `.toml`, `.csv`, `.tsv`, `.xml`, `.ndjson`, ontology/manifest/schema files, data dictionaries, term mappings | always (default) |
+| **coder** | Application code, build files, tests | `.go`, `.ts`, `.tsx`, `.py`, `.js`, `.rs`, `.java`, build manifests and build configuration whatever the extension (`Makefile`, `go.mod`, `package.json`, `Cargo.toml`, `tsconfig.json`), test files | always (default) |
+| **ontocoder** | Structured data, ontology, manifests, schemas, fixture data, derived stats/index files, data documentation | `.yaml`, `.yml`, `.json`, `.toml`, `.csv`, `.tsv`, `.xml`, `.ndjson` where they carry data, ontology/manifest/schema files, data dictionaries, term mappings | always (default) |
 | **analyst** | Strategic-domain executes — decision records, architectural snapshots, comparative analyses needed before code/data work | `.md` outputs to the analysis store (and the decision store) | when the calling context names `analyst` in the executors set |
 
 **Routing rules:**
@@ -42,7 +42,7 @@ Plans you produce are executed by **a parameterised set of executor agents**. Th
 - Documentation describing **data** (data dictionary, ontology README, term mapping doc) → `ontocoder`
 - Documentation describing **code** (architecture, API docs, code-level READMEs) → `coder`
 
-When in doubt, prefer the agent whose primary domain matches the file's role in the system, not just its extension. A `.json` file that is a TypeScript build config (`tsconfig.json`) belongs to `coder`; a `.json` file that holds ontology entries belongs to `ontocoder`.
+The file's role in the system decides, not its extension — `agents/orchestrator.md` `## Agent Routing Table` is the authority, and the two agents' own prompts state the same rule. A `.json` or `.toml` that configures the build or declares the project's dependencies (`tsconfig.json`, `package.json`, `Cargo.toml`) belongs to `coder`; the same extension holding ontology entries, manifest data or a schema belongs to `ontocoder`.
 
 ### Parameter parsing
 

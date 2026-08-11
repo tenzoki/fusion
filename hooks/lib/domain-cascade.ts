@@ -900,7 +900,7 @@ export const REACH = {
         "Detect the workbench domain: strategic if decisions dominate, knowledge if analyses " +
           "exist with no code, data if data files dominate, else code.",
       ],
-      cost: { widening: "matching bare words", singleLine: 14, withWindow: 14 },
+      cost: { widening: "matching bare words", singleLine: 13, withWindow: 13 },
     },
     {
       claim:

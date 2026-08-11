@@ -204,6 +204,41 @@ const ROOT_RECORDS = [
  * scoping gives up.
  */
 const COMMIT_MESSAGE = /commit[-._]?(msg|message)/i;
+/**
+ * Whether a workbench-relative path's **filename** is commit-message-shaped.
+ *
+ * This is `COMMIT_MESSAGE` applied to the basename and nothing else — no
+ * location test of any kind. It is exported because two callers need the name
+ * question and only one of them wants `classify`'s answer to it:
+ *
+ *   - **`classify`** asks *"is this file on disk a leftover commit message?"*
+ *     and answers location-first, so this test runs last, over only what
+ *     `LIVE_STATE`, `stashes/`, `ROOT_RECORDS` and `STORES` all declined to
+ *     claim. Issue `260811-1141` is why: unscoped, the class swallowed authored
+ *     records whose topic slug says "commit message" and the model was told to
+ *     delete them.
+ *   - **`commit-message-path.test.ts`** asks *"does a shipped prompt PRESCRIBE
+ *     a message file inside the workbench?"* That is a question about an
+ *     instruction, not about a file, and a prescription pointing into a store
+ *     is precisely the case the location test forgives.
+ *
+ * That gate reached the pattern through `classify` and so inherited the
+ * scoping, silently losing the in-a-store case (issue `260811-1410`). The cheap
+ * repair — transcribing the regex into the test — would put two spellings of
+ * one concept in the tree, which is the trap `260810-0510` was filed about and
+ * the reason the gate reached through `classify` to begin with. So the name
+ * question becomes its own export instead: **one pattern, and each caller
+ * composes the scoping its own question needs.** Nothing here can drift from
+ * `classify`, because `classify` calls it.
+ *
+ * The asymmetry that makes the two scopings both correct, rather than one of
+ * them a compromise: a false positive in `classify` told the model to delete an
+ * authored record, and a false positive in the gate costs a developer one
+ * exemption entry at test time. Same predicate, incomparable consequences.
+ */
+export function hasCommitMessageName(rel) {
+    return COMMIT_MESSAGE.test(basename(rel));
+}
 /* ------------------------------------------------------------------ *
  * git
  * ------------------------------------------------------------------ */
@@ -319,8 +354,10 @@ export function classify(rel, sessionHistory) {
             return { klass: "record", why: `an authored record under the ${store} store` };
         }
     }
-    // Last, and only over what nothing above claimed.
-    if (COMMIT_MESSAGE.test(name)) {
+    // Last, and only over what nothing above claimed. The name question itself
+    // is `hasCommitMessageName`, shared with the prompt gate that asks it without
+    // this scoping (see that function for why the two scopings differ).
+    if (hasCommitMessageName(rel)) {
         return {
             klass: "commit-message",
             why: "a commit-message-shaped name that no artifact store owns — Step 3b prescribes " +

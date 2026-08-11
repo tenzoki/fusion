@@ -1181,3 +1181,8 @@
 {"ts":"2026-08-11T10:52:33","event":"task_done","turn":2,"task":"I:260810-0509-cleanup-wording","agent":"coder","detail":"7749845"}
 {"ts":"2026-08-11T10:52:33","event":"task_done","turn":2,"task":"I:260810-1205-session-counts","agent":"coder","detail":"7749845"}
 {"ts":"2026-08-11T10:52:33","event":"task_done","turn":2,"task":"I:260810-1632-churnrank-exit3","agent":"coder","detail":"7749845"}
+{"ts":"2026-08-11T11:41:08","event":"review_start","turn":2,"agent":"coderev","detail":"range 270c566..1d5eed6"}
+{"ts":"2026-08-11T12:12:08","event":"review_done","turn":2,"agent":"coderev","detail":"8 issues filed (1 high, 3 medium, 4 low); range 270c566..1d5eed6 covered"}
+{"ts":"2026-08-11T12:12:08","event":"coherence_review","turn":2,"detail":"verdict=ok; Artifact<->Grounding: 8 issues filed, 1 High regression in this Turn's own shell block; Artifact<->Directive: 15 records closed against 9 filed, open count fell 73 to 60, the Turn moves toward the clean-state Directive; Grounding<->Directive: no answered decision touched. Gate not presented interactively per the user's run-through instruction."}
+{"ts":"2026-08-11T12:12:08","event":"turn_end","turn":2,"detail":"15 tasks resolved, 6 commits, 9 issues created, 0 errors"}
+{"ts":"2026-08-11T12:48:11","event":"turn_start","turn":3,"detail":"turn_start_head=7d9efc8; High finding, three sibling contradictions, then normal-priority tasks"}

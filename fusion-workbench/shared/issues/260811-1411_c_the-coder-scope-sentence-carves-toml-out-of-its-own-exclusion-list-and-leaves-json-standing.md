@@ -49,3 +49,24 @@ One edit: apply the principle to the extension list rather than to one extension
 
 That is the same rule `README-agents.md`'s ontocoder row now states for `.toml`, and it makes a
 fourth manifest need no further edit.
+
+---
+Resolved: The sentence now states the rule instead of the exception, and takes its formulation from
+`agents/orchestrator.md` `## Agent Routing Table` rather than inventing a third one. `agents/coder.md:24`
+reads: what the coder does not edit is ontology, manifest, schema or fixture data — the `.yaml`,
+`.json`, `.toml` and `.csv` files that carry it, wherever they live — and **what decides is the
+file's role, not its extension**, with `package.json` / `Cargo.toml` / `tsconfig.json` named as the
+build side and "the same extension holding ontology entries or manifest data" as the ontocoder's.
+No extension is now both claimed and excluded. `tsconfig.json` joined the ownership list two lines
+above, since the sentence had been citing it as precedent without the file listing it.
+
+The frontmatter `description` at `:3` carried the identical asymmetry (`.json` excluded, `.toml`
+carved out) and was corrected with it — the record scoped itself to `:19-24`, but leaving the
+description in the old shape would have been the fifth instance this dispatch exists to prevent.
+
+One measured side effect, not a defect: the pinned false-positive count in
+`hooks/lib/domain-cascade.ts` `REACH.holes[0].cost` moved 14 → 13, and the generated paragraph in
+`README-hooks.md` was regenerated to match. The old sentence contained the adjacent words "data
+files", which made it one of the honest-prose lines a bare-word widening of the domain-cascade gate
+would falsely select; the new wording separates them. `domain-cascade.test.ts` re-measures both
+numbers, which is how the change announced itself.

@@ -50,3 +50,37 @@ a workbench path, with no store scoping, exported from `lib/staging-drift.ts` be
 so the two still cannot disagree about *what counts as a commit-message name* while disagreeing
 about what to do with one. The positive control at `:182-197` then keeps asserting `classify()`'s
 narrower answer, which is what it is actually about.
+
+---
+Resolved: `lib/staging-drift.ts` now exports the name question itself —
+`hasCommitMessageName(rel)`, which is `COMMIT_MESSAGE` applied to the basename and no location test
+of any kind — and `classify()` calls it for its own last branch. The gate in
+`commit-message-path.test.ts` reaches that predicate instead of `classify()`, so it flags a
+commit-message-shaped path anywhere inside the workbench, stores included.
+
+**Why this shape and not the other.** The cheap repair was to give the gate its own regex, and it
+was rejected: two spellings of one concept, free to drift apart, is the `260810-0510` trap and the
+reason the gate reached through `classify()` in the first place. Exporting the shared sub-question
+keeps that property — there is still exactly one `COMMIT_MESSAGE` in the tree, and nothing in the
+gate can disagree with the classifier about what a commit-message name is — while letting each
+caller compose the scoping its own question needs. The cost of the rejected option was not
+hypothetical: a later change to the pattern (adding `commitmsg`, say) would land in one spelling
+and leave the gate silently matching the old one, with no test able to notice, because the two
+would agree about every string anyone thought to write a fixture for.
+
+**What the widening costs, measured rather than assumed.** A prompt citing a workbench record whose
+topic slug says "commit message" is flagged again. Across `agents/*.md` and `skills/*/SKILL.md`
+there are exactly two such lines today and both carry a defect word, so the `finds none` assertion
+passes unchanged (1271 tests, `npm test` exit 0). What the widening does is shift load onto that
+line-level keyword exemption, whose breadth is already filed as `260811-1149`; the positive control
+now asserts that dependency explicitly rather than leaving it latent, so whoever answers `1149`
+meets it instead of discovering it.
+
+**What was deliberately not widened.** `classify()` keeps its store scoping. The two callers' false
+positives are not comparable: one costs a developer an exemption entry at test time, the other told
+the model to delete three authored records (`260811-1141`). The new
+`negative control: a prescription INSIDE a store fails it too` pins both directions in one test —
+the gate flags `fusion-workbench/shared/consult/commit-message.txt`, and `classify()` still reads
+the same path on disk as an unstaged `record`.
+
+Verified: `cd hooks && npm test` — exit 0, 1271 tests, 49 files.
