@@ -1262,3 +1262,4 @@
 {"ts":"2026-08-11T21:48:18","event":"reconciliation","turn":5,"detail":"verdict=review-needed, recommendation=revise Directive; 53 closures verified against the session base, one record filed, one of this session's own findings corrected"}
 {"ts":"2026-08-11T21:48:18","event":"gate_hit","turn":5,"detail":"Rebalance gate on the review-needed verdict"}
 {"ts":"2026-08-11T21:48:18","event":"gate_response","turn":5,"detail":"user chose to close the session and bind the Directive to the fixed set of 69 for the next one"}
+{"ts":"2026-08-11T21:48:48","event":"session_end","detail":"5 Turns, 53 records closed, 58 filed, 39 commits, 0 agent errors, 5 human gates, 1 staging failure recovered; exited on Max Turns; Directive to be bound to the fixed set of 69 next session"}
