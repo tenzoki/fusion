@@ -70,3 +70,42 @@ No fallback taken.
   `Directive: (not yet stated)` while `agentstate.yaml` held the real Directive. That is the
   seventh measured instance of the defect task 2 addresses, produced by the orchestrator writing
   this file. Corrected here rather than left as evidence.
+
+### Turn 2
+- The Turn-1 regression first: the staging check's commit-message class scoped so it decides by
+  place, not by name (`337c01b`). Then all 14 low-priority corrections in four batches grouped by
+  file so no two executors shared a file: `7749845`, `619dfb7`, `f2d9905`, `1d5eed6`.
+- 15 records closed, 9 filed. The open count fell from 73 to 60, so the balance turned.
+- coderev over `270c566..1d5eed6` filed 8 findings. The batching damage had one shape, repeated
+  three times: a claim corrected in the dispatched file and left standing in its neighbour.
+
+### Turn 3
+- The High finding against Turn 2's own record-counts block, with its two siblings, fixed as one
+  unit (`41d8e2b`). The four neighbour contradictions (`3b30f5e`). Four tracker-clustered records
+  (`adaa545`).
+- 11 records closed, 10 filed plus 2 decisions.
+- coderev over `7d9efc8..adaa545` filed 8 findings and caught a bookkeeping failure in the
+  orchestrator itself: the event log froze after `turn_start` for the whole of Turn 3 while three
+  commits closed eleven tasks, because the counters were updated in `agentstate.yaml` and the
+  emissions skipped. The drift check counts `turn_start` events, so it reported clean throughout.
+  Filed as `260811-1614`. The missing events were emitted late and marked as such.
+
+## Session result
+
+**Status:** Turn 3 closed. Phase 3 reconciliation not run.
+
+| Metric | Count |
+|--------|-------|
+| Turns | 3 |
+| Records closed | 31 |
+| Records filed by reviewers | 28 |
+| Decisions filed | 3 |
+| Commits | 16 |
+| Agent errors | 0 |
+| Human gates hit | 3 |
+
+Open records: 69 at session start, 66 now (56 shared, 10 inside closed Circles). The reviews
+filed almost as many as the work closed, which is the honest shape of a cleanup session whose
+first Turn built three new mechanisms.
+
+Suite green at 1284 tests. Drift check clean, staging check clean, working tree committed.
