@@ -9,11 +9,14 @@
  * field is "fusion", that directory is the fusion plugin's own source tree and
  * the guard should stand down for it.
  *
- * ## Two entry points, because two callers ask about two different directories
+ * ## Two entry points, because callers ask about two different directories
  *
- * `isFusionPluginCwd()` asks about `process.cwd()`, with NO upward walk. That is
- * the question the write-tool branch and the churn heatmap ask, because both
- * work in the coordinate space of the process's own working directory.
+ * `isFusionPluginCwd()` asks about `process.cwd()`, with NO upward walk. One
+ * caller is left for it: the write-tool branch of `guard.ts`, whose own
+ * coordinate space is the process's working directory (`normalizeToRelative`).
+ * The churn heatmap asked it too until its keys moved to the workbench root; it
+ * now asks `isFusionPluginRoot` about that root, like everything else that walks
+ * up.
  *
  * `isFusionPluginRoot(dir)` asks about a directory the caller names. The
  * protected-path MEASUREMENT needs this one: since it anchors at the workbench
@@ -22,11 +25,18 @@
  * whose session started in a subdirectory of this repository — `fusion-workbench/`
  * is the everyday case — with their own edits to `rules/` and `agents/` reverted
  * on the next tool call. Measured, not inferred; see
- * `lib/__tests__/protected-snapshot-subdirectory.test.ts`.
+ * `lib/__tests__/protected-snapshot-subdirectory.test.ts`. The churn stand-down
+ * in `tracker.ts` asks it of the same root, since `25c5454` moved churn's own
+ * keys there; the cost of leaving that one at cwd was measured too, in
+ * `lib/__tests__/churn-key-anchor.test.ts`.
  *
  * The two must move together. A root-anchored measurement with a cwd-anchored
  * stand-down is the defect above; a cwd-anchored measurement with a
- * root-anchored stand-down is the subdirectory hole that change closed.
+ * root-anchored stand-down is the subdirectory hole that change closed. The
+ * churn heatmap repeated the first half on its own gate and was moved for the
+ * same reason (issues `260805-1839`, `260810-1632`): whichever directory a
+ * caller keys its state by, the stand-down is evaluated where that key is
+ * anchored.
  */
 import { resolve } from "node:path";
 import { existsSync, readFileSync } from "node:fs";

@@ -10,7 +10,7 @@ The drift check added in commit `9bad4d6` (`agents/orchestrator.md`, `### Drift 
 
 **Why it matters more than an exit code usually does.** The drift check exists to detect a bookkeeping step that silently stopped happening. A check that reports failure on its own most common path teaches its reader to ignore its status, which is the failure mode it was built to catch, arriving one level up. The session where nothing is wrong is exactly the session in which the check cries wolf.
 
-**It is the third instance of one shape tonight**, and that is the reason to read the three together rather than patch each:
+**It is the second instance of one shape tonight**, and that is the reason to read the two together rather than patch each:
 
 - `260810-0506` — the activation pointer write in `/fusion:next` step 6.3 exits non-zero when no queue exists.
 - This record — the drift check's trailing guard, `agents/orchestrator.md`.
@@ -25,4 +25,6 @@ The shape is: a conditional written as `[ test ] && action` in final position, w
 3. Decide whether the shape earns a check. `hooks/lib/__tests__/` now holds several lints that parse prompt and skill bash blocks; a guard in final position is a syntactic property those extractors could already see. Against it: the corpus has enough prose-parsing lints of doubtful value (`260810-0502`, `260810-0510`), and adding one more without deciding whether that whole cohort earns its keep is the rim of special cases `rules/critical-stance.md` §2 names.
 
 ---
+Corrected 260811 (issue `260810-0751`): the opening read "third instance" and "the three" while the list under it carries two bullets, the sentence after it says "Both", and `8d66265`'s message says "second". Counted against the tree: two sites (`agents/orchestrator.md` drift check, `/fusion:next` step 6.3), two records, one fix commit `ac68437` touching exactly those two files, and no third record of the shape filed in that range. The number is two, and the text now says so once. The record stays closed; the corpus-wide count the third question below would need is a different question and is still open.
+
 Resolved: ac68437 — explicit if at both sites. Measured by extracting each block from its own file and running it: drift check 1 to 0 with no Circle active, /fusion:next 6.3 1 to 0 with no queue, and 0 to 0 in both applicable cases with their output intact. A trailing true was rejected as broader than the defect. No lint added; the third question this record raises stays open.

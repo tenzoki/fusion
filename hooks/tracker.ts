@@ -86,7 +86,7 @@ import {
 import { loadConfig, projectDeclaredProtectedPaths } from "./lib/config.js";
 import type { GuardConfig } from "./lib/config.js";
 import { matchesAny } from "./lib/paths.js";
-import { isFusionPluginCwd } from "./lib/self-detect.js";
+import { isFusionPluginRoot } from "./lib/self-detect.js";
 import { emitEvent } from "./lib/events.js";
 import { answer, bestEffort, failOpen } from "./lib/fail-open.js";
 import {
@@ -1058,19 +1058,43 @@ async function main(): Promise<void> {
     staging = measureStagingDriftForModel();
   });
 
-  // Self-detect: cwd is fusion's own repo, so CHURN stands down — plugin
-  // development edits are not meaningful churn signal.
+  // Self-detect: the workbench root is fusion's own repository, so CHURN stands
+  // down — plugin development edits are not meaningful churn signal.
   //
-  // This gate is no longer what stands the MEASUREMENT down, and the two are
-  // separated on purpose. Churn is keyed on paths relativized against
-  // `process.cwd()`, so cwd is the directory it must ask about. The measurement
-  // is anchored at the workbench root, so it has to ask about THAT directory,
-  // and it does — `measurementRoot()` folds its own plugin-repo stand-down in.
-  // While one gate served both, a session started in a subdirectory of this
-  // repository passed it (no `.claude-plugin/plugin.json` in `fusion-workbench/`)
-  // and the measurement would have reverted a fusion developer's own edits to
-  // `rules/` and `agents/` once its root moved up.
-  if (isFusionPluginCwd()) {
+  // ## The question is asked of the ROOT, not of cwd
+  //
+  // This gate is not what stands the MEASUREMENT down — `measurementRoot()`
+  // folds its own plugin-repo stand-down in, and has asked it of the workbench
+  // root since the measurement root moved up. What is left here is churn, and it
+  // asks the same directory the same way.
+  //
+  // It used to ask `process.cwd()`, on the stated ground that churn keys were
+  // relativized against cwd. `25c5454` moved that anchor to the workbench root
+  // in this same file — `churnKey(rawFilePath, process.cwd(), findWorkbenchRoot())`
+  // — which left the gate resting on a premise the line above it contradicted
+  // (issue `260810-1632`). The behavioural half is the defect that anchor move
+  // was closing, arriving one gate later: `isFusionPluginCwd()` does no upward
+  // walk, so in this repository a session started at the root recorded no churn
+  // at all while a session started in `fusion-workbench/` — CLAUDE.md calls it
+  // the ordinary case — recorded churn AND ran the on-disk key migration over
+  // `churn.json`. What gets counted must not depend on which directory the
+  // session happened to start in (issue `260805-1839`).
+  //
+  // ## A null root is not a stand-down
+  //
+  // Without a workbench there is nothing here to stand down: `churnKey` returns
+  // null, `emitEvent` writes nowhere, and the measurement above has already
+  // returned on the same null. Folding the two causes into one null — the shape
+  // `measurementRoot()` takes, where both mean "do not measure" — would answer
+  // "fusion's own repository" for any directory that never ran `/fusion:setup`.
+  //
+  // ## The three reports above run ahead of this deliberately
+  //
+  // Their placement is load-bearing in EVERY session in this repository now, not
+  // only in root-started ones: this gate no longer misses the subdirectory case,
+  // so a report moved below it would fall silent exactly where each was measured.
+  const workbenchRoot = findWorkbenchRoot();
+  if (workbenchRoot !== null && isFusionPluginRoot(workbenchRoot)) {
     const sentences: (string | null)[] = [drift, coverage, staging];
     const standDown = sentences.filter((t): t is string => t !== null).join(" ");
     respond(standDown === "" ? undefined : standDown);

@@ -19,6 +19,7 @@ import {
   churnRankEntry,
   readEvents,
   runTracker,
+  withPluginProject,
   withProject,
 } from "./helpers/guard-harness.js";
 import type { ChurnState } from "../churn.js";
@@ -345,4 +346,67 @@ describe("bin/fusion-churn-rank, the wrapper", () => {
       rmSync(base, { recursive: true, force: true });
     }
   });
+});
+
+/**
+ * The stand-down that decides whether the heatmap runs at all, asked of the same
+ * directory the key is anchored to.
+ *
+ * ## What was measured before the gate moved
+ *
+ * `isFusionPluginCwd()` reads `process.cwd()` with no upward walk, so in the
+ * plugin's own repository it answered true only for a session started exactly at
+ * the root. From `fusion-workbench/` — CLAUDE.md's ordinary case here — it
+ * answered false, the heatmap ran, and it also migrated `churn.json` on disk:
+ * measured against the live file at the time, 592 entries in, 415 out. So what
+ * got counted depended on which directory the session started in, which is the
+ * defect the key anchor above had just closed one line earlier
+ * (issues `260805-1839`, `260810-1632`).
+ *
+ * ## The control is the first case in this file
+ *
+ * "counts one file once, whichever directory the session started in" runs the
+ * tracker from `fusion-workbench/` of a NON-plugin project and asserts the churn
+ * it recorded. Any stand-down that reached a consuming project would take that
+ * case down with it, so the cases here assert only the plugin side and the
+ * pairing carries the rest.
+ */
+describe("the churn stand-down is anchored to the workbench root", () => {
+  it(
+    "stands down in the plugin's own repository when the session started below its root",
+    () => {
+      withPluginProject((project) => {
+        const below = resolve(project.root, "fusion-workbench");
+
+        runTracker(below, "Edit", {
+          file_path: resolve(project.root, "notes.txt"),
+        });
+
+        // No heatmap at all — not an empty one, which is what a run that
+        // recorded nothing would leave behind.
+        expect(readChurn(project.root)).toBeNull();
+        expect(
+          readEvents(project.root).filter((e) => e.event === "tracker_record"),
+        ).toEqual([]);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "stands down from the plugin root as it always did",
+    () => {
+      // The half that already worked, pinned beside the half that did not: a
+      // gate that moved and took this with it would be a trade, not a fix.
+      withPluginProject((project) => {
+        runTracker(project.root, "Edit", { file_path: "notes.txt" });
+
+        expect(readChurn(project.root)).toBeNull();
+        expect(
+          readEvents(project.root).filter((e) => e.event === "tracker_record"),
+        ).toEqual([]);
+      });
+    },
+    CASE_TIMEOUT,
+  );
 });

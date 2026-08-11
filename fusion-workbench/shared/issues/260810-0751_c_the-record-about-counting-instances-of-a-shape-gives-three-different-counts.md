@@ -42,3 +42,10 @@ third site was found in this range.
 
 One word. Change "third" to "second" and "the three" to "the two", or add the third instance if
 one exists that this reviewer did not find.
+---
+
+Resolved: the target record now says "second" and "the two" in its opening, which is what its list, its "Both" and `8d66265`'s message already said. A dated correction note was appended above the existing `Resolved:` line rather than editing the record silently; the record stays closed.
+
+Counted against the tree rather than taken from this record: `ac68437` touches exactly two prompt files, `agents/orchestrator.md` and `skills/next/SKILL.md`, replacing one trailing guard in each with an explicit `if`; two records were filed for the shape that night (`260810-0506` and `260810-0710`) and a search of every issue store for the shape's own vocabulary returns those two and this one. No third instance was filed in that range, so the number is two.
+
+One thing this correction did not do, because it would change what the record counts: the corpus-wide count is a different question. A scan of `agents/*.md` and `skills/*/SKILL.md` for a guard in final position finds further live sites today, at least three of them genuine (`skills/circle-stash/SKILL.md` 7.2 and 7.7, `skills/circle-pop/SKILL.md` 7.4). That is evidence for the record's still-open third question and is reported to the orchestrator as an adjacent finding, not folded into a count scoped to one Turn.

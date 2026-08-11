@@ -33,3 +33,8 @@ Add both spellings to the `push` synopsis in the header and in `usage()`, matchi
 `98c8b3f` used for `--fixture`. Check at the same time whether any other flag the file accepts
 is missing from those two lists — the same question was asked once per seam here, and asking it
 once for all of them would end the series.
+---
+
+Resolved: `--comments-fixture` and `FUSION_PLANE_COMMENTS_FIXTURE` are now documented at the four surfaces `--fixture` already occupied — the `push` synopsis in the file header, the header's test-seam paragraph, the `push` block in `usage()`, and the `Env:` list in `usage()`. The description says what the capture is (a `GET issues/<id>/comments/` response, not the rebuild's `GET issues/`), that it replaces no map, and one thing `98c8b3f`'s `--fixture` text did not have to say: the seam is read on the `--plan` path only and behind the `spec_comment` opt-in, because a live push does its own `GET issues/<id>/comments/` at `:570` and never consults the capture. Verified at `bin/fusion-plane:1202`, inside the `if [ "$DRYRUN" -eq 1 ]` branch that starts at `:1176`.
+
+The record's second question, asked once for all of them: every flag the file accepts was enumerated from the `case` arms of `cmd_push`, `cmd_map` and `cmd_seed` and every `FUSION_PLANE_*` name from the source, then checked against the two lists. `--comments-fixture` and its env twin were the only omissions; `push`'s other six flags, `map`'s five, `seed`'s three and the other four env vars were all present. The series ends here rather than at the next seam.

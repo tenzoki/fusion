@@ -24,9 +24,9 @@ lock that is released only by good intention, on a justification that does not h
 | Critical | 0 |
 | High | 2 |
 | Medium | 3 |
-| Low | 5 |
+| Low | 6 |
 
-Ten findings, ten records filed under `shared/issues/260810-1918_o_*`.
+Eleven findings, eleven records filed under `shared/issues/260810-1918_o_*`.
 
 ## Verified claims
 
@@ -169,3 +169,23 @@ sums to 11 and the sentence "Ten findings, ten records filed" is short by one ag
 records on disk. `M3` names two different findings. Filed as
 `shared/issues/260811-0109_o_the-turn-1-reviews-totals-say-ten-findings-and-it-carries-eleven.md`;
 same class as queued task 37.
+
+---
+
+## Correction — 260811, against issue `260810-1918`'s successor `260811-0109`
+
+The Totals table above now reads Low 6 and the sentence under it reads eleven, which is what the
+annotation directly above this asked for. That annotation is left exactly as the reconciler wrote it:
+it describes the document at `e2a34f0`, and rewriting it would remove the only record of what the
+table said when the count was taken.
+
+Counted again here, off the body rather than off the annotation: twelve labelled bullets under
+`## Findings by theme` — `H1`, `H2`, `M1`, `M2`, `M3` twice, `L1`–`L6` — of which the `M3` at
+`agents/orchestrator.md:429` is marked folded into `H2` and filed no record. That leaves eleven
+findings with a record each, and `ls shared/issues/260810-1918_?_*.md | wc -l` answers 11.
+
+Two things this correction deliberately does not do. The duplicate `M3` label is left standing,
+because the eleven filed records cite these labels and renaming one would break the citation to fix
+a typo. And no `**Reviewed-range:**` / `**Not-opened:**` header is added: this file predates the
+mandate `afd7c2e` introduced, `bin/fusion-review-coverage` is right to report it as unusable, and a
+hand-written header here would make a range nobody re-opened look covered.

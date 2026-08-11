@@ -1196,13 +1196,13 @@ Nothing from here to task 38 needs a user answer. Task 1 comes first for the rea
 ### 26. Document the second `bin/fusion-plane` test seam, the way the first one was
 
 - **ID:** `I:260810-1030-comments-fixture`
-- **Source:** `fusion-workbench/shared/issues/260810-1030_o_the-comments-fixture-seam-is-undocumented-in-usage-the-way-fixture-was.md`
+- **Source:** `fusion-workbench/shared/issues/260810-1030_c_the-comments-fixture-seam-is-undocumented-in-usage-the-way-fixture-was.md`
 - **Executor:** `coder`
 - **Files:** `bin/fusion-plane` — the `push` synopsis in the file header (`:16`) and in `usage()`
   (`:2374`)
 - **Depends on:** task 1
 - **Priority:** low
-- **Status:** [ ] open
+- **Status:** [x] done — `--comments-fixture` and `FUSION_PLANE_COMMENTS_FIXTURE` documented at all four surfaces `--fixture` occupies; every other flag and env var enumerated and already present; `bash -n bin/fusion-plane` clean, `cd hooks && npm test` exits 0 (1248 tests)
 - **Detail:** `--comments-fixture` and its env twin `FUSION_PLANE_COMMENTS_FIXTURE` appear nowhere in
   the `push` synopsis, in the file header or in `usage()`. That is the same omission commit `98c8b3f`
   just corrected for `--fixture`, in the same two places, left standing because the review that found
@@ -1284,12 +1284,12 @@ Nothing from here to task 38 needs a user answer. Task 1 comes first for the rea
 ### 29. Make the record about counting instances give one count
 
 - **ID:** `I:260810-0751-three-counts`
-- **Source:** `fusion-workbench/shared/issues/260810-0751_o_the-record-about-counting-instances-of-a-shape-gives-three-different-counts.md`
+- **Source:** `fusion-workbench/shared/issues/260810-0751_c_the-record-about-counting-instances-of-a-shape-gives-three-different-counts.md`
 - **Executor:** `coder`
 - **Files:** `fusion-workbench/shared/issues/260810-0710_c_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md:13`
 - **Depends on:** none
 - **Priority:** low
-- **Status:** [ ] open
+- **Status:** [x] done — the opening reads "second"/"the two", counted against the tree (two sites, two records, one fix commit `ac68437`, no third in range); dated correction note appended, record stays closed
 - **Detail:** The target record's own argument is that two instances of one shell-idiom hazard in one
   Turn are worth reading together rather than patching separately. It then states the count three ways
   within seven lines: *"It is the **third** instance of one shape tonight … the reason to read the
@@ -1451,13 +1451,13 @@ Nothing from here to task 38 needs a user answer. Task 1 comes first for the rea
 ### 34. Make the 19:18 review's totals match the findings it carries
 
 - **ID:** `I:260811-0109-review-totals-ten`
-- **Source:** `fusion-workbench/shared/issues/260811-0109_o_the-turn-1-reviews-totals-say-ten-findings-and-it-carries-eleven.md`
+- **Source:** `fusion-workbench/shared/issues/260811-0109_c_the-turn-1-reviews-totals-say-ten-findings-and-it-carries-eleven.md`
 - **Executor:** `coder`
 - **Files:** `fusion-workbench/shared/reviews/260810-1918-coderev-turn-1-range-5ef92eb-940d522.md`
   (the totals table, the sentence under it, and the duplicated `M3` label)
 - **Depends on:** none
 - **Priority:** low
-- **Status:** [ ] open
+- **Status:** [x] done — Low 6 and "Eleven findings, eleven records filed", counted off the body against the 11 filed records; duplicate `M3` and the missing review header both deliberately left alone
 - **Detail:** The review's totals read Critical 0 / High 2 / Medium 3 / Low 5, followed by "Ten
   findings, ten records filed under `shared/issues/260810-1918_o_*`". **Eleven** records were filed
   under that stamp, all eleven in `da8c9db`, and all eleven now carry `_c_`. The body carries eleven
@@ -1511,14 +1511,14 @@ Nothing from here to task 38 needs a user answer. Task 1 comes first for the rea
 ### 36. Make the tracker's stand-down ask the workbench root
 
 - **ID:** `I:260805-1839-tracker-standdown`
-- **Source:** `fusion-workbench/circles/260801-1244-guard-rules-write/issues/260805-1839_o_der-tracker-steht-im-plugin-repo-nur-dann-still-wenn-cwd-exakt-die-repo-wurzel-ist.md`
+- **Source:** `fusion-workbench/circles/260801-1244-guard-rules-write/issues/260805-1839_c_der-tracker-steht-im-plugin-repo-nur-dann-still-wenn-cwd-exakt-die-repo-wurzel-ist.md`
 - **Executor:** `coder`
 - **Files:** `hooks/tracker.ts:778` (the `isFusionPluginCwd()` gate); `hooks/lib/self-detect.ts`
   (`isFusionPluginRoot(dir)` is the parameterised form already used by `measurementRoot()`);
   `hooks/dist/` (rebuild)
 - **Depends on:** task 1
 - **Priority:** low
-- **Status:** [ ] open
+- **Status:** [x] done — the gate asks `isFusionPluginRoot(findWorkbenchRoot())`, the same directory `measurementRoot()` asks; two harness cases added against a spawned plugin root, with the file's existing non-plugin case as the control; the subdirectory case fails at `f2d9905` and passes after; `hooks/dist/` rebuilt; `cd hooks && npm test` exits 0 (1248 tests)
 - **Detail:** `hooks/tracker.ts` exits via `isFusionPluginCwd()` before logging anything, and yet
   `fusion-workbench/.guard-state/events.jsonl` carries fresh `tracker_record` lines — 2 420 of the
   contentless Bash kind at the time of filing. The explanation is derived from verified premises:

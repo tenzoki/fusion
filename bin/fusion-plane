@@ -14,7 +14,7 @@
 #
 # Subcommands:
 #   push [--circle <dir>|--all] [--plan] [--rebuild-map [--fixture <json>]]
-#        [--closure]
+#        [--comments-fixture <json>] [--closure]
 #                     Reconcile one Circle (or all) into Plane. --plan is the
 #                     dry-run seam (JSON op list, no curl). --rebuild-map
 #                     reconstructs .plane-map.json from Plane before reconcile —
@@ -24,6 +24,15 @@
 #                     nothing, so the pair is a usage error (EXIT_USAGE) rather
 #                     than a run that honours one of them. To plan against a
 #                     rebuilt map, run `map --rebuild` and then `plan`.
+#                     --comments-fixture is the OTHER test seam and belongs to a
+#                     different call: a captured `GET issues/<id>/comments/`
+#                     response, which drives the spec-comment PATCH-vs-POST
+#                     branch offline. Env twin FUSION_PLANE_COMMENTS_FIXTURE. It
+#                     is NOT the rebuild `--fixture` (a captured `GET issues/`),
+#                     and the two are read independently: either, both, neither.
+#                     Read on the --plan path only, and only with the
+#                     `spec_comment` opt-in on; a live push resolves the comment
+#                     id from Plane itself and the flag is inert there.
 #   plan  --circle <dir>|--all
 #                     Alias for `push --plan ...` (dry-run; emits JSON, no curl).
 #   seed  <seq>       Bounded one-shot read: resolve a Plane sequence_id, GET the
@@ -175,6 +184,15 @@
 #   into the live branch — config, key, fetch_states, reconcile — so with no key it
 #   ends at EXIT_DEFERRED (10) after the map has already been replaced.
 # FUSION_PLANE_ISSUES_FIXTURE is the env twin of `--fixture` for both.
+#
+# THE COMMENTS FIXTURE SEAM, which is a different call and a different response:
+#   `push --plan --comments-fixture <captured GET issues/<id>/comments/ JSON>`
+#   resolves an existing spec comment's id off the capture instead of the wire,
+#   so the PATCH-vs-POST branch of the spec-comment op can be planned offline. It
+#   reads nothing the rebuild fixture reads and replaces no map. It is read on
+#   the dry-run path only, behind the `spec_comment` opt-in — the live push does
+#   its own `GET issues/<id>/comments/` and never consults the capture.
+# FUSION_PLANE_COMMENTS_FIXTURE is its env twin.
 #
 # Dependencies: bash, zsh (login profile exports the key), curl, jq, awk, sed,
 # date, mktemp, sort. jq is required (JSON map/plan); config YAML is parsed by a
@@ -2372,7 +2390,7 @@ Usage: fusion-plane <subcommand> [args]
 
 Subcommands:
   push [--circle <dir>|--all] [--plan] [--rebuild-map [--fixture <json>]]
-       [--closure]
+       [--comments-fixture <json>] [--closure]
                         Reconcile a Circle (or all) into Plane.
                         --plan      dry-run: emit the JSON op list, no curl.
                         --rebuild-map  rebuild .plane-map.json from Plane first,
@@ -2393,6 +2411,16 @@ Subcommands:
                                    against a rebuilt map use `map --rebuild`,
                                    which rebuilds without reconciling, and then
                                    `plan` — two commands, not chained with &&.
+                        --comments-fixture <json>  the OTHER test seam: a
+                                   captured `GET issues/<id>/comments/` response,
+                                   read to resolve an existing spec comment's id
+                                   so the PATCH-vs-POST branch runs offline. NOT
+                                   the rebuild --fixture (a captured
+                                   `GET issues/`) and it replaces no map. Read on
+                                   the --plan path only, and only with the
+                                   `spec_comment` opt-in on: a live push asks
+                                   Plane for the comment list itself, so the flag
+                                   is accepted and inert there.
   plan --circle <dir>|--all
                         Dry-run alias for `push --plan`.
   seed <seq>            Bounded one-shot read: resolve sequence_id, GET the
@@ -2448,6 +2476,8 @@ Env:
   FUSION_PLANE_SEED_FIXTURE  captured `GET issues/` JSON for `seed --plan` (test seam).
   FUSION_PLANE_ISSUES_FIXTURE  captured `GET issues/` JSON for `map --rebuild` /
                            `push --rebuild-map` (test seam).
+  FUSION_PLANE_COMMENTS_FIXTURE  captured `GET issues/<id>/comments/` JSON for
+                           `push --comments-fixture` (test seam).
 EOF
 }
 

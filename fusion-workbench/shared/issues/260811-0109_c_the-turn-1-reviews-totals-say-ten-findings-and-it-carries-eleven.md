@@ -56,3 +56,12 @@ they are not guaranteed to be.
 11, and is right).
 
 **Filed by:** reconciler, final reconciliation of session `260810-1646`, at HEAD `e2a34f0`.
+---
+
+Resolved: the review's table reads Low 6 and the sentence under it reads "Eleven findings, eleven records filed". Counted off the body: twelve labelled bullets under `## Findings by theme` — `H1`, `H2`, `M1`, `M2`, `M3` twice, `L1`–`L6` — of which the `M3` at `agents/orchestrator.md:429` is marked folded into `H2` and filed no record, leaving eleven findings with a record each. `ls fusion-workbench/shared/issues/260810-1918_?_*.md | wc -l` → 11, all `_c_`.
+
+A dated correction section was appended below the reconciler's annotation, and that annotation was left exactly as written: it describes the document at `e2a34f0` and is the only record of what the table said when the count was taken.
+
+Two things deliberately not done. The duplicate `M3` label stays — the eleven filed records cite these labels, and renaming one to fix a typo would break a citation. And no `**Reviewed-range:**` / `**Not-opened:**` header was added: this file predates `afd7c2e`'s mandate, `bin/fusion-review-coverage` is right to report it as unusable, and a hand-written header would make a range nobody re-opened look covered.
+
+The record's own point stands and is untouched by this: correcting one table closes nothing. Task 37's answer — derive the totals from the findings, or assert them against the filed record count — is what makes the next review's table trustworthy.
