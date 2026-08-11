@@ -50,3 +50,6 @@ Say what is meant rather than what is claimed. In Cleanup: *"in a single-Turn se
 call point at which anything can have drifted — Turn 1's `turn_start` runs before any Turn has
 completed."* Adjust the Step 3e sentence the same way: `session_end` is the point that **finds** the
 drift, not the only point that fires.
+
+---
+Resolved: `agents/orchestrator.md` now says what is true at all three sites instead of what was claimed, and keeps the reason each sentence carried. Cleanup: *"A single-Turn session reaches Turn 1's `turn_start` and then this call point, with nothing in between: at `turn_start` it had no commit and no completed Turn of its own, so this is the first point at which a freeze in its own numbers can show up at all."* Step 3e: the `session_end` point is now the one at which a freeze can first be **found**, not the only one that fires, and the sentence says why (Turn 1's `turn_start` ran, before the session had anything of its own to diverge from). Phase 2 step 2 gained the positive statement the other two are read against — the check fires in every Turn, Turn 1 included, and what it takes there is a baseline. The four-call-point statement is contradicted by none of the three. Verified: `cd hooks && npm test` → 48 files, 1246 tests, exit 0; `state-drift-detection-lint.test.ts` passes, including its skip-licence scan over each call point's window.

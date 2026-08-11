@@ -1222,13 +1222,13 @@ Nothing from here to task 38 needs a user answer. Task 1 comes first for the rea
 ### 27. Say what the Cleanup drift call point means instead of what it claims
 
 - **ID:** `I:260810-0509-cleanup-wording`
-- **Source:** `fusion-workbench/shared/issues/260810-0509_o_the-cleanup-drift-call-point-claims-a-single-turn-session-reaches-no-other-which-phase-2-contradicts.md`
+- **Source:** `fusion-workbench/shared/issues/260810-0509_c_the-cleanup-drift-call-point-claims-a-single-turn-session-reaches-no-other-which-phase-2-contradicts.md`
 - **Executor:** `coder`
 - **Files:** `agents/orchestrator.md` — Phase 2 step 2, Step 3e (`:497`), Cleanup (`:681`)
 - **Depends on:** task 2 — both edit the drift-check call points in the same file; land the mechanism
   work first so this prose fix is not written twice.
 - **Priority:** low
-- **Status:** [ ] open
+- **Status:** [x] done
 - **Detail:** Three sections written in one commit disagree about which drift-check call points a
   short session reaches. Phase 2 attaches the check to **every** Turn's opening emission. Step 3e then
   says of `turn_end` that "a session that converges or exits early never reaches this emission at all;
@@ -1252,14 +1252,14 @@ Nothing from here to task 38 needs a user answer. Task 1 comes first for the rea
 ### 28. Derive the session's closed and filed counts instead of tallying them by hand
 
 - **ID:** `I:260810-1205-session-counts`
-- **Source:** `fusion-workbench/shared/issues/260810-1205_o_the-session-closure-and-filing-counts-are-hand-maintained-and-both-drifted-by-two-against-the-disk.md`
+- **Source:** `fusion-workbench/shared/issues/260810-1205_c_the-session-closure-and-filing-counts-are-hand-maintained-and-both-drifted-by-two-against-the-disk.md`
 - **Executor:** `coder`
 - **Files:** `agents/orchestrator.md` (the Turn-loop bookkeeping that produces the `## Session result`
   lines); `fusion-workbench/orchestrator-live.md` (the surface, regenerated each session)
 - **Depends on:** task 2 — both change what the orchestrator writes about its own session, in the same
   file.
 - **Priority:** low
-- **Status:** [ ] open
+- **Status:** [x] done
 - **Detail:** A session's `## Session result` reported "18 defect records closed, 13 filed"; measured
   from disk and git it was **20 closed and 15 filed**. **The arithmetic is self-consistent and still
   wrong:** `48 − 20 + 15 = 43` and `48 − 18 + 13 = 43` both land on the observed endpoint, so the
@@ -1349,13 +1349,13 @@ Nothing from here to task 38 needs a user answer. Task 1 comes first for the rea
 ### 31. Teach Setup what the churn helper's exit 3 means
 
 - **ID:** `I:260810-1632-churnrank-exit3`
-- **Source:** `fusion-workbench/shared/issues/260810-1632_o_setup-documents-churn-rank-exit-2-and-not-the-exit-3-that-this-repos-own-build-cycle-produces.md`
+- **Source:** `fusion-workbench/shared/issues/260810-1632_c_setup-documents-churn-rank-exit-2-and-not-the-exit-3-that-this-repos-own-build-cycle-produces.md`
 - **Executor:** `coder`
 - **Files:** `agents/orchestrator.md` Setup Step 5 (the `bin/fusion-churn-rank` paragraph);
   `skills/setup/SKILL.md` inherits it by pointing at that block
 - **Depends on:** none
 - **Priority:** low
-- **Status:** [ ] open
+- **Status:** [x] done
 - **Detail:** Setup Step 5 wraps `bin/fusion-churn-rank` in an `[ -x ]` guard and explains exit 2. It
   never mentions **exit 3**, which the wrapper raises when `hooks/dist/churn-rank.js` is absent — and
   the `[ -x ]` guard does not cover that case, because the wrapper is present and executable while the

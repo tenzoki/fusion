@@ -123,7 +123,7 @@ Remaining setup (after step 1 is resolved):
      fi
      ```
 
-     It prints `anchor=`, `entries=`, `absent=` and `ranked=`, then one `score=… total=… session=… path=…` line per file. `absent` is how many entries the map holds for files that are no longer on disk; they stay in the map and stay out of the ranking, by design. **The `[ -x ]` guard is the same one the source count below carries, for the same reason** — `$FUSION_PLUGIN_ROOT` is the installed copy, pinned for the session, so a helper added between releases is simply absent there and a bare call is exit 127. Churn is advisory and has no substitute value to print, so the absent branch says so on stderr and nothing about high-thrash files reaches the user: report a ranking you did not take and it reads as a project with no churn. Exit 2 is the same silence for a different reason — the project has no churn state yet.
+     It prints `anchor=`, `entries=`, `absent=` and `ranked=`, then one `score=… total=… session=… path=…` line per file. `absent` is how many entries the map holds for files that are no longer on disk; they stay in the map and stay out of the ranking, by design. **The `[ -x ]` guard is the same one the source count below carries, for the same reason** — `$FUSION_PLUGIN_ROOT` is the installed copy, pinned for the session, so a helper added between releases is simply absent there and a bare call is exit 127. Churn is advisory and has no substitute value to print, so the absent branch says so on stderr and nothing about high-thrash files reaches the user: report a ranking you did not take and it reads as a project with no churn. **The two non-zero exits mean different things, and the `[ -x ]` guard catches neither** — `bin/fusion-churn-rank` carries the authoritative table, and these are the two a Setup run can meet. **Exit 2** is *no workbench above the working directory*; Step 0 already `cd`-ed to the workbench root, so meeting it here says the ground moved under the session. **Exit 3** is *the plugin's compiled hooks are missing*: the wrapper is present and executable, so `[ -x ]` passes, and what is absent is `hooks/dist/churn-rank.js` one directory over — the remedy is `fusion --update` for an installed copy, or `cd hooks && npm run build` in the plugin's own work tree, which is where this is routinely reachable because that build deletes and rebuilds `dist/`. A project that simply has no churn yet is **exit 0** with `ranked=0`, never exit 2. All three take the absent-helper branch's outcome — no ranking reaches the user — with the reason named in the Setup-complete summary rather than branched on (decision `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` under `$SCAN_DECISIONS`).
    - **Detect workbench domain** (used as the default `domain` parameter for `taskplanner`, `reconciler`, and `planner` dispatches in this session — the user may override at any individual dispatch):
 
      Each `*_count` below sums across **every** path in the named `SCAN_*` value, not just the first. The two file counts are **not** yours to improvise — run the helper once, from the project root you are already in:
@@ -362,7 +362,7 @@ When in doubt, prefer the agent whose primary domain matches the file's role in 
 Maximum 5 Turns (numbered 1 through 5). Each Turn starts by:
 
 1. Recording `progress.turn_start_head` in `agentstate.yaml` with `git rev-parse --short HEAD` (the value `<turn-start-HEAD>` referenced by Step 3c and Step 3c-bis below sources from this field).
-2. Emitting a `turn_start` event — and, **in the same command**, running the drift check (see **Persistent State File → Drift check**). It rides the emission rather than standing next to it, because a Turn-boundary obligation standing on its own is the one that froze.
+2. Emitting a `turn_start` event — and, **in the same command**, running the drift check (see **Persistent State File → Drift check**). It rides the emission rather than standing next to it, because a Turn-boundary obligation standing on its own is the one that froze. This fires in **every** Turn, Turn 1 included; at Turn 1 it runs before the session has a commit or a completed Turn of its own, so what it takes there is the baseline the later call points are read against.
 3. **REFRESHING DASHBOARD** — set `**Turn:** <N>/5` to the current Turn number, reset "This Turn" section to show the Turn's tasks as `[QUEUED]`.
 
 When the Turn ends (via Step 3e convergence/refresh, Step 3d circuit breaker, or Step 3c-bis early exit), clear `progress.turn_start_head` so the next Turn records a fresh anchor.
@@ -531,7 +531,7 @@ Otherwise, emit `turn_end` event with Turn stats, refresh the queue (incorporate
 
 **Run the staging check in the same command as that `turn_end` emission too** (see **Staging check**). This is the Turn boundary the acceptance for issue `260811-0114` names: a Turn that ends with an authored record under `fusion-workbench/` that no commit carries says so before the Turn closes. It rides the same emission as the drift check, and for the same reason: a Turn-boundary obligation standing on its own is the one that goes unrun.
 
-**Run the drift check in the same command as that `turn_end` emission** (see **Persistent State File → Drift check**). This is the boundary where a freeze is already measurable — the counters have moved and the Turn's commits have landed, neither of which was true yet at `turn_start`. A session that converges or exits early never reaches this emission at all; for those, the `session_end` call point in Cleanup is the one that fires, and two of the four measured freezes were single-Turn sessions of exactly that shape.
+**Run the drift check in the same command as that `turn_end` emission** (see **Persistent State File → Drift check**). This is the boundary where a freeze is already measurable — the counters have moved and the Turn's commits have landed, neither of which was true yet at `turn_start`. A session that converges or exits early never reaches this emission at all. It has still run the check once, at Turn 1's `turn_start`, at a moment when it had no commit and no completed Turn of its own to diverge from. So for those sessions `session_end` in Cleanup is the call point at which a freeze can first be *found*, and two of the four measured freezes were single-Turn sessions of exactly that shape.
 
 **Early-exit note (Coherence gate).** If the per-Turn Coherence gate at Step 3c-bis returned "Rebalance" and the user chose anything other than **Revise Artifact**, the loop **exits here without emitting `turn_end`**. The chosen option's `rebalance_*` event (or `bounded_closure_proposed`) was already emitted at the gate; the orchestrator now proceeds directly to Phase 3 with that verdict in hand. Revise Artifact is the only option that re-enters Phase 2 with a new queue entry — the others terminate the Turn.
 
@@ -607,6 +607,40 @@ Update the history file `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` (the 
 |------|---------|------|
 | <short hash> | <summary> | <task ID> |
 ```
+
+### The record counts are computed, not tallied
+
+Four rows of that budget table count records rather than tasks — `Issues created`, `Issues resolved`, `Decisions answered`, `Decisions implemented` — and they are read off the stores at write time, never accumulated across Turns in your head. Measured: a session reported *"18 defect records closed, 13 filed"* where the stores held **20 and 15**. The endpoint check that would normally catch a miscount passed on both pairs, because `48 − 20 + 15` and `48 − 18 + 13` both land on the 43 open records the session actually ended with; two compensating errors of the same size are invisible to the one invariant a hand-kept count has. The record is `260810-1205_*_the-session-closure-and-filing-counts-are-hand-maintained-and-both-drifted-by-two-against-the-disk.md` in `$SCAN_ISSUES`.
+
+Run this alongside the coverage read below, and for the same reason: both read `agentstate.yaml`, which Cleanup deletes. `$WORKBENCH`, `$SCAN_ISSUES` and `$SCAN_DECISIONS` are the values Setup step 2 resolved, and each `SCAN_*` may name **two** stores — which is why the store list is turned into lines and read, rather than iterated as `for d in $SCAN_ISSUES`. The Bash tool runs zsh, and zsh does not split an unquoted parameter on spaces: that loop would hand `find` one path made of two, which fails into `2>/dev/null` and reports the Circle's records as absent. Verified in both shells, single-store and two-store.
+
+```bash
+A=$(sed -n 's/.*git_head_at_start: *"\([^"]*\)".*/\1/p' fusion-workbench/agentstate.yaml)
+T=$(sed -n 's/.*started: *"\([^"]*\)".*/\1/p' fusion-workbench/agentstate.yaml)
+[ -n "$WORKBENCH" ] && [ -n "$SCAN_ISSUES" ] && [ -n "$SCAN_DECISIONS" ] || { echo "fusion bug: a resolver key is empty — record counts not taken" >&2; exit 1; }
+if [ -z "$A" ] || [ -z "$T" ] || ! git -C "$WORKBENCH" cat-file -e "$A:./${SCAN_ISSUES%% *}" 2>/dev/null; then
+  echo "records=unmeasured anchor=${A:-none} start=${T:-none}"
+else
+  echo "records anchor=$A start=$T"
+  { printf '%s\n' "$SCAN_ISSUES"    | tr ' ' '\n' | sed 's|^|issue |'
+    printf '%s\n' "$SCAN_DECISIONS" | tr ' ' '\n' | sed 's|^|decision |'
+  } | while read -r kind d; do
+        [ -n "$d" ] || continue
+        find "$WORKBENCH/$d" -name '*.md' 2>/dev/null | while IFS= read -r f; do
+          b=${f##*/}
+          case "$b" in [0-9][0-9][0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]_?_*) ;; *) continue ;; esac
+          t=${b%%_*}; [ "${t//-/}" -ge "${T//-/}" ] && echo "filed $kind"
+          git -C "$WORKBENCH" cat-file -e "$A:./$d/$b" 2>/dev/null || echo "now_$(printf %s "$b" | cut -c13) $kind"
+        done
+      done | sort | uniq -c
+fi
+```
+
+It prints one `<count> filed <kind>` line and one `<count> now_<marker> <kind>` line per marker present. The table's rows are those counts, unaltered: `Issues created` is `filed issue`, `Issues resolved` is `now_c issue`, `Decisions answered` is `now_a decision`, `Decisions implemented` is `now_i decision`. Put the same figures in the user report; a number you did not take from this read is a number nothing checked.
+
+**Two rules, and the second is the one that was missing.** A record was **filed** this session when its own filename stamp is at or after `session.started` — the stamp is in the name, so this holds whether or not a commit carries the file yet. A record **reached a marker** this session when the name it carries now did not exist at `session.git_head_at_start` — a question about the name, never about a git rename. That difference is the whole defect: five records were filed by a review and closed before anything was committed, so their `_o_` names never reached the index at all. A count watching renames misses them from the closed side, a count watching new open records misses them from the filed side, and that is exactly the −2 / −2 that was measured. This rule counts them on both.
+
+**Two bounds, stated rather than left to be discovered.** A record that was already closed at the anchor and then *moved* to another store reads as closed again, because its new path did not exist at the anchor; moving a closed record is rare, and the alternative is the rename detection this rule exists to avoid depending on. And where the project does not track its workbench, no path exists at the anchor and every record would read as closed this session — the `git cat-file -e` probe on the first store is what turns that into `records=unmeasured` rather than a large wrong number. When it fires, write `unmeasured` into those four cells verbatim and say which of the two causes applies. A figure that could not be taken is never reported as a zero.
 
 ### The review-coverage section is computed, not recalled
 
@@ -743,7 +777,7 @@ A queue carrying no `**Active Circle:**` line at all is not a row here, because 
 
 ### Cleanup
 
-- Emit `session_end` event — and, **in the same command**, run the drift check one last time (see **Persistent State File → Drift check**). This is the last moment at which the session's own numbers can be compared with anything: the state file is deleted two bullets below, and after that there is nothing left to contradict. A single-Turn session reaches this call point and no other.
+- Emit `session_end` event — and, **in the same command**, run the drift check one last time (see **Persistent State File → Drift check**). This is the last moment at which the session's own numbers can be compared with anything: the state file is deleted two bullets below, and after that there is nothing left to contradict. A single-Turn session reaches Turn 1's `turn_start` and then this call point, with nothing in between: at `turn_start` it had no commit and no completed Turn of its own, so this is the first point at which a freeze in its own numbers can show up at all.
 - **Run the staging check one last time** (see **Staging check**), before the report below. This is the last boundary at which a record left out of every staging list can still be committed by this session; after it, the miss belongs to whoever opens the tree next. Name any `record` row to the user and commit it with the housekeeping split.
 - Update live dashboard to show final status with `**Session:** Complete` or `**Session:** Circuit breaker: <reason>`
 - **Delete `fusion-workbench/agentstate.yaml`** — a clean exit means there is nothing to resume. The file's absence signals no interrupted session. If the drift check above found anything, emit its `state_drift` event **before** this delete; the event log outlives the state file, and an unrecorded drift disappears with the file that carried the evidence.
@@ -851,6 +885,8 @@ Each option has bounded post-action mechanics. No option is allowed to loop unbo
 - `commits_made` — number of successful commits
 - `directive_revisions_this_session` — count of Revise Directive choices accepted at the Rebalance gate this session (initialised to 0; capped at 1 — see Rebalance bounding). **Persisted in `agentstate.yaml` (`progress.directive_revisions_this_session`)** so the cap holds across session interruption.
 - `agent_errors` — count of agent failures (no output, wrong scope, etc.)
+
+The four record counters above — `issues_created`, `issues_resolved`, `decisions_answered`, `decisions_implemented` — are the ones **not** trusted to the tally at Phase 4. Keep them if they help you narrate a Turn; the figures that reach the budget table and the user report are the derived ones (see **Phase 4 → The record counts are computed, not tallied**).
 - `human_gates_hit` — number of times the orchestrator stopped for user input
 
 **Durable state:** The history file at `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` is updated incrementally after each Turn, not just at session end. If the session is interrupted, the history file preserves progress through the last completed Turn.
