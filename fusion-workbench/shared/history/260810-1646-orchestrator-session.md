@@ -1,11 +1,13 @@
 # Orchestrator Session — 260810-1646
 
 **Directive:** "wir fixen weiterhin erst die defekte" — work the open defect records in
-`shared/issues/` before anything else. Stated by the user immediately after Setup; revised once
-mid-session, after the net-negative circuit breaker, to aim Turn 3 at the root pattern behind the
-findings rather than at the next individual records.
+`shared/issues/` before anything else. Stated by the user immediately after Setup and **not revised**
+— what changed mid-session, after the net-negative circuit breaker, was which defects Turn 3 went at,
+not what the session was for. `progress.directive_revisions_this_session` correctly stayed 0; the
+reconciler flagged an inconsistency here and the loose word was in this header, not in the counter.
 **Mode:** issues
-**Status:** In progress
+**Status:** Complete — circuit breaker tripped once (net-negative progress after Turn 2), reviewed
+with the user, and the loop continued under a narrowed scope rather than a revised Directive.
 
 ## Setup snapshot
 
@@ -181,3 +183,147 @@ the net-negative trend.
 **Read alongside this:** `shared/history/260811-0108-reconciliation.md` carries the per-record
 evidence, the queue-accuracy measurement (43 of 45 entries correct; tasks 1 and 5 stale), and the
 open counts across every store.
+
+## Budget
+
+| Metric | Count |
+|--------|-------|
+| Turns | 3 |
+| Tasks resolved | 13 |
+| Defect records closed | 28 |
+| Records filed during the session | 33 (22 by two `coderev` passes, 8 by executors reporting on themselves, 3 by the reconciler) |
+| Decisions answered (`_o_`→`_a_`) | 2 |
+| Decisions implemented (`_a_`→`_i_`) | 1 |
+| Decisions filed | 3 |
+| Commits | 20 |
+| Agent errors | 0 |
+| Human gates hit | 5 |
+| Circuit breakers tripped | 1 (net-negative progress, after Turn 2) |
+
+Open at close: 53 defect records, 8 open decisions, 5 answered, 1 open plan. Suite 41 files,
+1142 tests, green.
+
+**The open count went up, from 47 to 53, and that is the honest headline.** 28 records were closed
+and 33 were filed. Nothing regressed to produce them: two review passes and the executors themselves
+read a surface that had never been read this closely, and reading it produced more than three Turns
+could close. The per-Turn split is what carries the signal — Turn 1 closed 5 and filed 13, Turn 2
+closed 10 and filed 16, Turn 3 closed 10 and filed 3.
+
+## What this session actually found
+
+The defects were the task. The finding was a pattern behind them, and it is worth stating separately
+because it recurred four times and was three times self-inflicted.
+
+**A gate was built, a claim was written beside it, and the claim was broader than the gate.** Turn 1
+built the domain-cascade check and asserted a second definition was unrepresentable; one already sat
+in `skills/cleanup/SKILL.md`, in the order from before the fix, diverging behaviourally where nobody
+could see it. Turn 2 corrected that to a measurement naming three holes; the review measured a fourth
+against the shipped build. The reference gate lost eight citations from its existence check with the
+suite green throughout, because a floor cannot see coverage leave. And the drift lint's skip-licence
+screen, twice widened, still has no pattern for permission at all.
+
+Two answers came out of it, and both are the same move.
+
+**Stop describing a gate's reach and make the description the gate's output.** The cascade gate's
+reach is now data carrying probes the suite runs, with the documentation rendered from it and
+compared byte-for-byte. It caught its own author twice before the work was finished.
+
+**Stop screening for what might be wrong and pin what is right.** The user approved this for the
+drift check's four sentences (`260810-2032`), and the second executor arrived at it independently for
+coverage counts (`260810-2149`). Whether it becomes a convention for every counting gate is filed as
+an open question rather than assumed.
+
+## Remaining work
+
+- **53 open defect records.** 22 are `coderev` findings from this session's two review passes, none
+  critical. The queue at `fusion-workbench/tasklist.md` is 20 commits old and two of its entries are
+  known to be overtaken; the next `taskplanner` run is where that is corrected.
+- **`I:260801-2038-frozen-state`** is the one to take next. It is high priority in its own right, and
+  it blocks the approved baseline pin (`260810-2032`), which cannot land until it rewrites the four
+  sentences the pin would hold.
+- **`260810-2145`** asks the user whether a repeated skill-body snippet becomes a `bin/` helper. It
+  became concrete when one factual change had to be written into four executable copies across two
+  files.
+- **`260810-1820`** has its answer (a scratch copy for destructive verification) and nothing built
+  yet; the record names the dispatch-fence line as a known gap in the chosen option.
+
+## Commits
+
+| Hash | What it did |
+|------|-------------|
+| e7b48a1 | A browser that will not launch stops taking the monitor's server with it |
+| a7d02da | The commit message stops passing through a shell that can end it early |
+| f38f37d | Three records return to the index the previous commit dropped them from |
+| e5cda49 | The drift lint anchors on acts that predate the check it guards |
+| 5d0ee05 | The domain cascade is executed instead of read |
+| 89b13f1 | A citation into a plugin file carries the root that resolves it |
+| 940d522 | Two questions from Turn 1 get their answers |
+| da8c9db | The review of Turn 1 lands, and falsifies two of the range's own claims |
+| 3016020 | The commit sequence takes back the lock form that releases on any exit |
+| 63deec1 | A citation resolves to the copy the helpers themselves read |
+| e3aa768 | The monitor delay survives a rejecting shell, and a missing browser says so |
+| 45d76f0 | Every condition row must say something; eleven more licences closed with witnesses |
+| b3cc034 | The cleanup skill obtains the domain instead of deciding it a second time |
+| 6932e06 | The drift check gets a baseline pin, after the task that rewrites its sentences |
+| 1beefd5 | The review of Turn 2 lands, and falsifies two counts and one claimed hole list |
+| c714d8c | A staging path says which directory it is relative to, and an unresolved root says so |
+| 861e695 | The cascade gate's reach is data with probes, not a sentence beside it |
+| d169b0d | An unclassified root variable is a violation, not something to skip past |
+| e2a34f0 | The session log carries its Directive and three Turns |
+| 60f47c2 | The queue this session was planned from finally enters a commit |
+
+## Session Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant O as Orchestrator
+    participant TP as Taskplanner
+    participant C as Coder
+    participant CR as Coderev
+    participant R as Reconciler
+
+    O->>TP: rebuild the queue against 5ef92eb
+    TP-->>O: 45 tasks, 25 ungated, 5 already resolved
+
+    Note over O: Turn 1
+    O->>C: commit-message shell path
+    O->>C: monitor launcher lifetime
+    O->>C: skill citation root
+    O->>C: domain-cascade lint
+    O->>C: drift lint anchors
+    C-->>O: 5 done (e7b48a1 a7d02da e5cda49 5d0ee05 89b13f1)
+    O->>U: GATE two questions from the executors
+    U-->>O: scratch copy; leave the procedure in the prompt
+    O->>CR: review 5ef92eb..940d522
+    CR-->>O: 11 findings, 2 claims falsified
+
+    Note over O: Turn 2
+    O->>C: cascade duplicate in skills/cleanup
+    O->>C: commit procedure, lock form
+    O->>C: monitor residuals
+    O->>C: drift lint residuals
+    O->>C: rooted citations in the plugin's own repo
+    C-->>O: 5 done (3016020 63deec1 e3aa768 45d76f0 b3cc034)
+    O->>U: GATE pin the drift check's sentences?
+    U-->>O: yes, after the frozen-state task
+    O->>CR: review da8c9db..b3cc034
+    CR-->>O: 11 findings, 2 counts falsified
+
+    Note over O: Circuit breaker: net-negative progress
+    O->>U: two Turns filed more than they closed
+    U-->>O: go at the root pattern, not the next records
+
+    Note over O: Turn 3
+    O->>C: the cascade gate's reach as data
+    O->>C: a gate that skips the unrecognised
+    O->>C: Turn 2 residuals
+    C-->>O: 3 done, 10 records closed, 3 filed (c714d8c 861e695 d169b0d)
+
+    Note over O: Converged
+    O->>R: final reconciliation
+    R-->>O: review-needed — the queue never entered a commit
+    O->>U: GATE commit it and close?
+    U-->>O: yes
+    O->>O: 60f47c2
+```
