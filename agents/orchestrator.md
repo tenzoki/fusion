@@ -205,7 +205,7 @@ Remaining setup (after step 1 is resolved):
      **The underscore marker is inert as a glob.** `_a_circle.md` matches literally — no character-class surprise, no escaping — so the enumeration above (and any per-state glob such as `*/_a_circle.md`) resolves correctly, and `find -name '_a_circle.md'` needs no special handling. The enumeration form is still preferred: it reads the marker as data in one pass. See `rules/fusion-workbench-conventions.md` `## Marker globs`.
 
    - **Setup hint.** If `circles_anticipated + circles_active > 0`, print to the user: *"You have <N> anticipated and <M> active Circle(s). Consider `/fusion:next` to review the portfolio before starting."* (Substitute `<N>` and `<M>`.) Continue Setup without waiting for user response. If both counts are 0 (or no Circles exist yet), no hint is printed — opt-in behaviour preserved. Record the hint emission (or its absence) in the orchestrator's session history file's snapshot section so post-session analysis can see whether it was printed.
-6. Create history file: `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` (the value `fusion-paths` gave you in Step 2 — the active Circle's history store when one is active, the shared one when none is; obtain the timestamp from `date +%y%m%d-%H%M`)
+6. Create history file: `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` (the value `fusion-paths` gave you in Step 2 — the active Circle's history store when one is active, the shared one when none is; obtain the timestamp from `date +%y%m%d-%H%M`). **When a Circle is active, set that Circle record's `**Active session history:**` field to the file you just created, in the same command** (see **Circle head fields**). This is the only moment the field can be right on a Circle that `/fusion:next` activated: no session existed at that activation, so the field was left honest and empty, and this session is the one it names.
 7. Write initial history entry with snapshot counts and session Directive
 8. Initialize event log and emit session start:
     - **Create if missing, never overwrite.** `fusion-workbench/orchestrator-events.jsonl` is append-only across all sessions. The Phase 4 sequence-diagram generator reads it cross-session for historical context, and `/fusion:monitor-reset` archives it rather than deleting in place. Use a touch-or-append pattern, never a truncating `>` redirect:
@@ -234,7 +234,10 @@ You may:
 - Write to `fusion-workbench/agentstate.yaml` (persistent session state for crash recovery — root-anchored)
 - Rename state markers on files under `$SCAN_ISSUES` and `$SCAN_PLANS` (`_o_` to `_p_`, `_p_` to `_c_`)
 - Rename the Circle record `_t_circle.md` inside an active Circle directory at Phase 4 (`_t_` to `_c_` or `_b_`) per the Rebalance/Coherence verdict. The record carries the marker; the directory name never changes.
-- Append a `## Closure note` section to a Circle record at Phase 4 (the only Circle-record content write the orchestrator performs; full-content edits remain off-limits)
+- Write Circle-record **content** in exactly these three places and nowhere else — every other section, and any full-content rewrite, remains off-limits:
+  - the `## Closure note` section, appended at Phase 4 (Phase 4 step 3);
+  - the `## Turn log` entry for the Turn just ended — the write **Drift check** measures you against, and the one it names when the record freezes;
+  - the three head fields `**Status:**`, `**Active spec/plan:**` and `**Active session history:**` — see **Circle head fields** below for when each is written and what goes in it. Before that section existed the fields belonged to nobody, and a record carried `anticipated` under a `_t_` filename for as long as the Circle ran.
 - Write or delete `fusion-workbench/.active-circle` per the conventions doc (root-anchored pointer). On `_a_`→`_t_` activation, immediately after writing the pointer, run the Plane activation push if Plane is configured (see **Plane mirror**, call point 1).
 
 You may NOT:
@@ -245,6 +248,56 @@ You may NOT:
 - Invoke yourself (no recursion)
 
 Cross-layer edits flow through the correct executor agent, never through you.
+
+## Circle head fields
+
+Three fields sit in the Circle record's head, above its prose: `**Status:**`, `**Active
+spec/plan:**` and `**Active session history:**`. `rules/circle-records.md` `## Circle record
+template` defines them and owns their semantics — read the values off that definition, in
+particular its rule that the two path fields hold **workbench-relative paths, not bare
+filenames**, because a spec written before the Circle existed legitimately lives in another
+store. This section says only *when you write them*, which until now nothing did.
+
+**They were nobody's work, and that is what made them wrong.** Activation renamed the record
+and wrote the pointer while the head kept `anticipated` and two `(none yet)`s, so a record
+read `anticipated` under a `_t_` filename with its spec, its plan and its session all on disk
+(issue `260811-0932_*_die-circle-aktivierung-zieht-die-kopffelder-des-datensatzes-nicht-nach.md`).
+The head is what a reader meets before the prose, and the two path fields have three
+mechanical readers — `/fusion:circle-stash`'s lookup, playmaker's `$PORTFOLIO` rendering, and
+a resume — each of which degrades without announcing it.
+
+**Write each field in the same command as the act that moves it**, never as a step of its
+own. A maintenance step standing beside an action is the shape this project has measured
+being skipped, six times in six sessions (see **Drift check**).
+
+| Act | Field | Value |
+|---|---|---|
+| `_a_`→`_t_` activation, with the record rename | `**Status:**` | `active` |
+| `_a_`→`_t_` activation, with the record rename | `**Active spec/plan:**` | the spec or plan this Circle runs on, if one exists and the record does not already cite it; otherwise leave the field as it stands |
+| `_a_`→`_t_` activation, with the record rename | `**Active session history:**` | your session's history file, if you are the session doing the activating; otherwise leave `(none yet)` |
+| Setup step 6, with the creation of the history file | `**Active session history:**` | the file you just created |
+| Step 0b.2 step 3, with the read of the returned plan | `**Active spec/plan:**` | that plan |
+| Phase 4 step 3, with the Closure note | `**Status:**` | `closed`, `bounded` or `superseded`, matching the new marker |
+
+**`(none yet)` is a value, not a gap.** It is what the template prescribes while the artifact
+does not exist, and the three readers treat it as "nothing is cited" — `/fusion:circle-stash`
+tests for that literal string. So never invent a path for a file that is not on disk: a wrong
+path is read as a real citation and fails silently, where `(none yet)` is at least honest
+about being empty. A Circle activated through `/fusion:next` has no session history at
+activation, because the session that will write one has not started; the field stays
+`(none yet)` and Setup step 6 of that next session fills it.
+
+**The `Status:` head field duplicates the marker, and the marker is the truth** (`rules/circle-records.md`
+`## State Markers — circles`). Where the two disagree, the filename wins and the field is what
+is stale. Keeping the field in step is the cheap half of a question the user has not yet
+answered — whether the field should exist at all is open
+(issue `260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`).
+Two things follow. Write it at **both** ends of the Circle's life or at neither: setting it at
+activation and forgetting it at closure produces a record reading `active` under a `_c_`
+marker, the same contradiction pointing the other way, and one record in this workbench
+already reads that way. And **do not hand-correct the field on a record you are not
+transitioning** — the disagreeing records are the evidence that open question will be decided
+against.
 
 ## Plane mirror (push-only, optional side-effect)
 
@@ -314,7 +367,7 @@ Proceed only after user confirms. Emit `scope_resolved` event and **REFRESH DASH
 
 1. Emit `planner_start` event. **REFRESH DASHBOARD** — show `[PLANNING] <topic>`.
 2. Invoke `planner` with the spec file path (or with the raw request if shaping was skipped). When the detected domain (Setup Step 5) is `strategic` or `knowledge`, prefix the dispatch prompt with `**Executors:** coder, ontocoder, analyst` on its own line so the planner can route steps to `analyst`. For `code` and `data` domains, omit the prefix — planner defaults to `[coder, ontocoder]`.
-3. When the planner returns, read the plan file it produced.
+3. When the planner returns, read the plan file it produced. **When a Circle is active, set its record's `**Active spec/plan:**` field to that plan's workbench-relative path, in the same command** (see **Circle head fields**) — until this moment the field names the spec, or nothing, while the plan the Circle actually runs on is invisible to every reader of the record.
 4. Emit `planner_done` event.
 5. **Evaluate design diagrams (advisory).** If the plan contains any ` ```mermaid ` block, dispatch `conceptrev` on the plan file. Emit `conceptrev_start` then `conceptrev_done` events. Read its verdict (clean / acceptable / tangled) and findings. If the plan has no diagram, skip this step.
 6. **HUMAN GATE: Plan review.** Present the plan summary to the user — and, when step 5 ran, the `conceptrev` verdict and any findings alongside it (advisory: a tangled verdict does not auto-reject the plan, it tells the user where to look). Options:
@@ -730,7 +783,7 @@ After reconciler returns and any Rebalance gate is resolved, run this step if a 
    mv "$DIR/_t_circle.md" "$DIR/_c_circle.md"
    ```
 
-   (or `_b_`). Quote both operands. Unquoted, the shell reads `_t_` as a bracket expression matching the single character `t`; today that happens to fall back to the literal name because nothing matches, but the moment a file named `t-circle.md` exists next to it the `mv` addresses that file instead — silently, and with the record it was meant to rename left untouched. Then append a `## Closure note` section to the renamed record, citing the orchestrator session history file path and the Phase-3 verdict.
+   (or `_b_`). Quote both operands. Unquoted, the shell reads `_t_` as a bracket expression matching the single character `t`; today that happens to fall back to the literal name because nothing matches, but the moment a file named `t-circle.md` exists next to it the `mv` addresses that file instead — silently, and with the record it was meant to rename left untouched. Then append a `## Closure note` section to the renamed record, and in the same edit set that record's `**Status:**` head field to the word matching the new marker — `closed` for `_c_`, `bounded` for `_b_`, `superseded` for `_s_` (see **Circle head fields**). The Closure note cites the orchestrator session history file path and the Phase-3 verdict.
 
 4. **Push closure to Plane, then clear `.active-circle`.** If Plane is configured (`fusion-workbench/plane.config.yaml` present), first run `"$FUSION_PLUGIN_ROOT/bin/fusion-plane" push --circle <dir> --closure` with `<dir>` the Circle directory name from step 1 — this drives the Circle to Done and attaches the closing artifacts. It **must** run while the pointer still exists, so it precedes the clear; a `deferred` result (exit 10) is surfaced in the session report, never blocking (see **Plane mirror**). Then clear the pointer — `rm -f fusion-workbench/.active-circle`. (Use `rm -f`; absence after this point is the canonical "no active Circle" state.)
 

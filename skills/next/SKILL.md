@@ -179,15 +179,27 @@ MARKER="$(basename "$REC" | sed -nE 's/^_([a-z])_.*/\1/p')"
 
 If `$CDIR` is not a directory, `$REC` is empty, or `$MARKER` is not `a`, halt and report the mismatch. Do not rename, do not write the pointer. A directory holding no record, or more than one, is a workbench-state fault the user must resolve — say which it is.
 
-### 6.2 — Rename the record
+### 6.2 — Rename the record and set its `**Status:**`
 
 Only the record is renamed. The directory name never changes; that stability is the whole point of the marker-on-the-record design (`rules/circle-records.md` `## State Markers — circles`).
 
 ```bash
 mv "$CDIR/_a_circle.md" "$CDIR/_t_circle.md"
+REC="$CDIR/_t_circle.md"
+if grep -qE '^\*\*Status:\*\*' "$REC"; then
+  sed -E 's|^\*\*Status:\*\*[[:space:]].*$|**Status:** active|' "$REC" > "$REC.tmp" && mv "$REC.tmp" "$REC"
+else
+  echo "note: $REC carries no **Status:** field, so none was set; the marker on the filename is the state" >&2
+fi
 ```
 
-Both names are literal arguments to `mv`, not globs — the underscore marker needs no escaping and no special handling here. It is only *pattern matching* against marker names that needs care (see `rules/fusion-workbench-conventions.md` `## Marker globs`).
+Both names are literal arguments to `mv`, not globs — the underscore marker needs no escaping and no special handling here. It is only *pattern matching* against marker names that needs care (see `rules/fusion-workbench-conventions.md` `## Marker globs`). The field is rewritten through a temporary file rather than with `sed -i`, whose in-place flag takes an argument on BSD `sed` and none on GNU `sed`; `/fusion:migrate` rewrites record fields the same way for the same reason.
+
+**The head fields are written at the act that moves them, and this is that act for one of the three.** `$FUSION_SRC/agents/orchestrator.md` `## Circle head fields` defines all three — when each is written, what value it takes, and why `(none yet)` is a value rather than a gap. Do not restate it here. What this skill can decide, it decides now; what it cannot, it leaves honest:
+
+- `**Status:**` becomes `active` — the command above, in the same call as the rename, so a rename cannot land without it.
+- `**Active session history:**` stays `(none yet)`. No session is running this Circle yet — the one that will starts at Step 6.5 — so any path written here would name a file that is not on disk, which the field's readers handle worse than the empty value. The orchestrator sets it at its Setup step 6, when it creates the file.
+- `**Active spec/plan:**` is left exactly as it stands. If shaper's portfolio-activation mode already pointed it at a spec, that citation is current; if it reads `(none yet)`, this skill has no way to find the right file and must not guess one.
 
 ### 6.3 — Write `.active-circle`
 
@@ -234,7 +246,7 @@ That message is itself the directive. The orchestrator's own prompt instructs it
 
 ## Boundaries
 
-The skill never writes Circle *content*. Its only writes are the record rename (`_a_`→`_t_`), the `.active-circle` write, and the dashboard placeholder, all in Step 6, all gated by explicit confirmation. The portfolio file is written by playmaker, not by this skill. Safe to invoke during an active orchestrator session — playmaker reads everything and writes only Circle records and the portfolio, so it cannot interfere with the active Turn loop's writes. The Step 6 activation branch is short-circuited when a Circle is already active.
+The skill's writes are the record rename (`_a_`→`_t_`), the `**Status:**` head field on that same record, the `.active-circle` write, and the dashboard placeholder — all in Step 6, all gated by explicit confirmation. **That one field is the whole of the Circle *content* it writes**: no section of the record is touched, and the two path fields in the head are left to the writers Step 6.2 names. The portfolio file is written by playmaker, not by this skill. Safe to invoke during an active orchestrator session — playmaker reads everything and writes only Circle records and the portfolio, so it cannot interfere with the active Turn loop's writes. The Step 6 activation branch is short-circuited when a Circle is already active.
 
 ## Tone
 
