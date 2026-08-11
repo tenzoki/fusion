@@ -1235,3 +1235,8 @@
 {"ts":"2026-08-11T19:11:02","event":"task_done","turn":4,"task":"I:260810-1730 (transferred from KRK)","agent":"coder","detail":"b53c7dd — star form stated with its reason, both playmaker examples corrected, new lint, budget report over by 787 bytes and reported"}
 {"ts":"2026-08-11T19:11:02","event":"commit","turn":4,"detail":"b53c7dd — the portfolio cites in the star form, and the generator stops demonstrating the opposite"}
 {"ts":"2026-08-11T19:11:02","event":"task_start","turn":4,"task":"I:260811-0932 (transferred from KRK)","agent":"coder","detail":"user-chosen route: the orchestrator's content-write exception widens to the head fields"}
+{"ts":"2026-08-11T19:26:50","event":"task_done","turn":4,"task":"I:260811-0932 (transferred from KRK)","agent":"coder","detail":"282ef42 — three boundary sites widened, four write acts, Status set at both ends"}
+{"ts":"2026-08-11T19:26:50","event":"commit","turn":4,"detail":"282ef42 — the Circle head fields get an owner"}
+{"ts":"2026-08-11T19:26:50","event":"staging_drift","turn":4,"detail":"951c809 — the 260811-0932 resolution note missed 282ef42: git mv staged the rename, the note was appended after, and the orchestrator staged from the executor's file list instead of git status (RM). Recovered in the next commit."}
+{"ts":"2026-08-11T19:26:50","event":"commit","turn":4,"detail":"951c809 — the resolution note that missed its commit lands"}
+{"ts":"2026-08-11T19:26:50","event":"review_start","turn":4,"agent":"coderev","detail":"range b261d83..951c809"}
