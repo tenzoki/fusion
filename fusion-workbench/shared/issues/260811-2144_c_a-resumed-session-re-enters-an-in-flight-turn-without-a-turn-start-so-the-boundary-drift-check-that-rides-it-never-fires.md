@@ -58,3 +58,12 @@ Shape 1 also removes half of `260811-2143`'s symptom, but not its cause — that
 - Setup step 1's **Continue** branch names what happens to the in-flight Turn's `turn_start` and drift check.
 - `agents/orchestrator.md:438`'s "every Turn" is either true or corrected.
 - A lint over the prompt pins that the two sentences agree, in the shape `turn-budget-lint.test.ts` uses for the unresolved branch.
+
+---
+Resolved: shape 2, and it turned out to be the true one rather than the cheaper one. `agents/orchestrator.md` Setup step 1 gains **What a resumed session inherits**, which says that a resumed Turn was started by the session that is gone, keeps the `turn_start` that session emitted, and gets no second one — and names step 3's drift check, taken minutes earlier and shown to the user in the resume summary, as that Turn's boundary read. Phase 2 step 2's "This fires in **every** Turn" now reads "every Turn **this session starts**" and points at that paragraph.
+
+Shape 1 (emit a second `turn_start` for the re-entered Turn) is not merely larger, it is wrong under the count that `260811-2143` installed in the same change: the Turn row counts `turn_start` events from the session's own beginning, so a Turn carrying two of them is counted twice and the row reports a freeze that is not there. The two halves have to agree, and this is the shape in which they do — the prompt says a resumed Turn keeps its one start, and the module counts one per Turn.
+
+What is not claimed: the resumed Turn's boundary read is Setup step 1's, not a second one at Phase 2. That is a stronger read, not a weaker one — it is the only call point whose result the *user* sees, in the Continue/Restart summary — but it happens before the branch is chosen rather than at the re-entry, and this record's "the moment the orchestrator was meant to look at drift and act on it" is satisfied by it only in that sense.
+
+Acceptance criteria: the Continue branch names the re-entered Turn's `turn_start` (and the history file it inherits, which is what the count anchors on); "every Turn" is now true as qualified; the lint is `describe("a resumed session's Turn emission and its Turn count agree")` in `hooks/lib/__tests__/state-drift-detection-lint.test.ts`, four cases, each measured to fail against the four files as `500f51f` left them. `cd hooks && npm test` — 52 files, 1347 tests, exit 0.

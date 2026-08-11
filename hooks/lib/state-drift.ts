@@ -241,8 +241,127 @@ function tail(path: string, maxBytes: number): { text: string; truncated: boolea
   }
 }
 
-/** Turns started since the last `session_start` in the event log. */
-function turnsRun(root: string): { count: number | null; why: string } {
+/**
+ * Where THIS session begins in the event log — the anchor the Turn row counts from.
+ *
+ * ## Why the anchor is a question at all
+ *
+ * `commitsSince` below counts from `session.git_head_at_start`, a field of
+ * `agentstate.yaml`. A resume does not rewrite it, and that is correct: a
+ * session's commits are counted from where the *session* began, not from where
+ * the process now reading it began. `progress.turn` is the same kind of number
+ * — the cumulative Turn the session is in, carried across the interruption — so
+ * its record has to be counted over the same window, or two rows of one report
+ * answer "since when?" with two different answers.
+ *
+ * They did. This counted from the LAST `session_start` line, and Setup step 8
+ * emits a fresh one on every resume. Measured in this repository at `951c809`:
+ * the commits row read 32 against 32 while the Turn row read `surface=4
+ * record=0` and said DRIFT, on every guarded tool call for the rest of the
+ * session, with nothing whatever stale (issue `260811-2143`). A row that speaks
+ * on its commonest path is one its reader learns to read past — the trigger
+ * doctrine in `hooks/tracker.ts` calls that shape disqualifying — and this one
+ * was worse than noisy: on a resumed session it reported drift whether or not
+ * any existed, so it carried no information at all.
+ *
+ * ## Why a stamp comparison is not the fix
+ *
+ * `session.started` marks the session's own beginning and survives a resume,
+ * which is the property wanted. It cannot be compared against an event `ts`:
+ * `session.started` is written by `date +%y%m%d-%H%M` (local) and an event by
+ * `date -u +%Y-%m-%dT%H:%M:%S` (UTC), and neither string carries an offset.
+ * Measured in this repository: `session.started: "260811-0752"` against that
+ * same session's `session_start` at `2026-08-11T05:52:24` — two hours apart,
+ * and the error's direction would silently drop the session's first Turns from
+ * the count. `CLAUDE.md` records the same trap for `bin/monitor`.
+ *
+ * ## The anchor, and the input that had to be obtained for it
+ *
+ * The event log carries no session identity, so *which* `session_start` began
+ * the session `agentstate.yaml` describes is not decidable from the log alone.
+ * Every rule over line positions approximates it and each gets some shape
+ * wrong: "the last one" is wrong on a resume, "the first since the last
+ * `session_end`" is wrong on a Restart after a crash. That is the case
+ * `rules/critical-stance.md` §4 names — change the mechanism rather than pick
+ * the approximation whose counter-example is rarer — so the mechanism obtains
+ * the missing input. `session_start` now carries `history_file`, and a session
+ * keeps one history file for its whole life: a resume inherits it, a Restart
+ * creates a new one. It is the identity `session.history_file` already is,
+ * written into the record that cannot freeze.
+ *
+ * Three cases, and every log falls in exactly one:
+ *
+ *  1. **A `session_start` names this session's history file.** The FIRST such
+ *     line is where the session began; a resume's second `session_start` names
+ *     the same file and is passed over. Exact — and independent of whether the
+ *     resume path emits anything at all, which is what keeps this row from
+ *     depending on an emission the resume path may be right not to make.
+ *  2. **No line names it, and exactly one `session_start` follows the last
+ *     `session_end`.** A clean exit ends a session and deletes its state file,
+ *     so a `session_start` after the last one belongs to this session, and a
+ *     single candidate is unambiguous. This is every log written before the
+ *     field existed, for every session that was not resumed: unchanged.
+ *  3. **Anything else is undecided, and says so.** Two or more candidates (a
+ *     pre-field log, resumed) cannot be attributed to a session; a trailing
+ *     `session_end` with no `session_start` after it contradicts the state
+ *     file's existence. Both report `unchecked` with the reason rather than a
+ *     number nobody can trust.
+ */
+function sessionAnchor(
+  lines: string[],
+  truncated: boolean,
+  historyRel: string,
+): { from: number | null; why: string } {
+  const starts: number[] = [];
+  let lastEnd = -1;
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].includes('"event":"session_start"')) starts.push(i);
+    else if (lines[i].includes('"event":"session_end"')) lastEnd = i;
+  }
+
+  // 1. The session's own identity, first occurrence.
+  if (historyRel !== "") {
+    const named = starts.find((i) => lines[i].includes(historyRel));
+    if (named !== undefined) return { from: named, why: "" };
+  }
+
+  // 2. One unambiguous candidate since the last clean exit.
+  const candidates = starts.filter((i) => i > lastEnd);
+  if (candidates.length === 1) return { from: candidates[0], why: "" };
+
+  // 3. Undecided, each with the reason that distinguishes it.
+  if (candidates.length > 1) {
+    const named = historyRel === "" ? "this session's history file" : historyRel;
+    return {
+      from: null,
+      why:
+        `${candidates.length} session_start lines since the last session_end and none names ` +
+        `${named}, so which of them began this session is not decidable`,
+    };
+  }
+  if (starts.length > 0) {
+    return {
+      from: null,
+      why: "the event log's last session boundary is a session_end, so no session_start in it begins this session",
+    };
+  }
+  if (truncated) {
+    // Counting from the start of a window that begins mid-session would report
+    // every Turn of every earlier session in the tail as this session's.
+    return { from: null, why: "no session_start inside the read tail of the event log" };
+  }
+  // A log that has never recorded a session boundary: the whole tail is it.
+  return { from: 0, why: "" };
+}
+
+/**
+ * Turns started since this session began — never since this process did.
+ *
+ * `historyRel` is `session.history_file` as `agentstate.yaml` carries it: the
+ * session's identity, and what makes this count span an interruption exactly as
+ * `commitsSince` already does. `sessionAnchor` above says why it is needed.
+ */
+function turnsRun(root: string, historyRel: string): { count: number | null; why: string } {
   const path = resolve(root, EVENTS_REL);
   if (!existsSync(path)) {
     return { count: null, why: "orchestrator-events.jsonl is absent" };
@@ -251,23 +370,11 @@ function turnsRun(root: string): { count: number | null; why: string } {
   if (read === null) return { count: null, why: "orchestrator-events.jsonl is unreadable" };
 
   const lines = read.text.split("\n");
-  let from = 0;
-  let found = false;
-  for (let i = lines.length - 1; i >= 0; i--) {
-    if (lines[i].includes('"event":"session_start"')) {
-      from = i;
-      found = true;
-      break;
-    }
-  }
-  if (!found && read.truncated) {
-    // Counting from the start of a window that begins mid-session would report
-    // every Turn of every earlier session in the tail as this session's.
-    return { count: null, why: "no session_start inside the read tail of the event log" };
-  }
+  const anchor = sessionAnchor(lines, read.truncated, historyRel);
+  if (anchor.from === null) return { count: null, why: anchor.why };
 
   let count = 0;
-  for (let i = from; i < lines.length; i++) {
+  for (let i = anchor.from; i < lines.length; i++) {
     if (lines[i].includes('"event":"turn_start"')) count++;
   }
   return { count, why: "" };
@@ -384,6 +491,15 @@ export function measureStateDrift(root: string): DriftReport {
 
   const rows: DriftRow[] = [];
 
+  /**
+   * The session's identity, read once and used by two rows.
+   *
+   * Row 3 compares it with the disk. Row 2 uses it to find where this session
+   * begins in the event log, which is what makes the Turn row and the commits
+   * row measure one session rather than two (issue `260811-2143`).
+   */
+  const historyRel = stateField(state, "history_file");
+
   // 1. progress.commits against git — the row that measured 6, 7, 8 and 12.
   const head = stateField(state, "git_head_at_start");
   const claimed = Number.parseInt(stateField(state, "commits"), 10);
@@ -410,7 +526,7 @@ export function measureStateDrift(root: string): DriftReport {
   }
 
   // 2. progress.turn against the event log — never against itself.
-  const turns = turnsRun(root);
+  const turns = turnsRun(root, historyRel);
   const claimedTurn = Number.parseInt(stateField(state, "turn"), 10);
   if (turns.count === null || !Number.isFinite(claimedTurn)) {
     rows.push(
@@ -427,14 +543,13 @@ export function measureStateDrift(root: string): DriftReport {
       row(
         "progress.turn",
         String(claimedTurn),
-        `${turns.count} (turn_start events this session)`,
+        `${turns.count} (turn_start events since this session began)`,
         turns.count !== claimedTurn ? "drift" : "ok",
       ),
     );
   }
 
   // 3. session.history_file against the disk — the dangling resume anchor.
-  const historyRel = stateField(state, "history_file");
   const historyPath = historyRel === "" ? null : resolve(root, WB, historyRel);
   if (historyRel === "") {
     rows.push(row("session.history_file", "(unset)", "-", "unchecked", "session.history_file is unset"));

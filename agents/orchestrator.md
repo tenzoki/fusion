@@ -92,10 +92,14 @@ Read `fusion-workbench/agentstate.yaml`. This is the FIRST thing you do after th
      - The plan file and user directive, if any
      - **Every diverging row from step 3**, each naming the surface, what it says, and the record that contradicts it. If nothing diverged, say that too — the user is deciding whether to trust the file.
   5. Ask the user what to do (use AskUserQuestion — do NOT skip this):
-     - **Continue** — resume from where the prior session left off. Use the saved work queue, skip already-completed tasks, pick up from the next unfinished task.
+     - **Continue** — resume from where the prior session left off. Use the saved work queue, skip already-completed tasks, pick up from the next unfinished task. **What a resumed session inherits** below says what that means for the Turn it re-enters.
      - **Restart** — discard prior state and start fresh. Delete `agentstate.yaml` and proceed with normal setup.
      - **Modify** — the user provides updated instructions or changes scope before resuming.
   6. **STOP and WAIT for the user's response. Do not proceed until the user has answered.**
+
+**What a resumed session inherits.** On **Continue** this is the *same session*, and every field that says so stays as it is: `session.history_file`, `session.git_head_at_start`, `session.started` and `progress.turn` are read, not rewritten. Do not create a second history file — a session keeps one for its whole life, and the `session.history_file` row of the drift check is what catches a session that re-pointed it.
+
+It follows that the Turn named by `progress.turn` was **started by the session that is gone**. You re-enter it mid-flight, at Phase 2 step 3, so no second `turn_start` is emitted for it: the one that session emitted is that Turn's only start, and a second would count the Turn twice in a record whose whole job is to contradict the counters. Step 3 above is that Turn's boundary read of session-state drift, taken minutes earlier and shown to the user in the summary — which is the strongest form the read takes anywhere in this prompt, because the user sees it. Phase 2 step 2 resumes its ordinary rhythm at the **next** Turn.
 
 Remaining setup (after step 1 is resolved):
 
@@ -215,11 +219,12 @@ Remaining setup (after step 1 is resolved):
       ```bash
       [ -f fusion-workbench/orchestrator-events.jsonl ] || touch fusion-workbench/orchestrator-events.jsonl
       ```
-    - Emit a `session_start` event by appending one line (per the "Emitting events" rule below — `>>` only):
+    - Emit a `session_start` event by appending one line (per the "Emitting events" rule below — `>>` only). It carries `history_file`, the workbench-relative path from step 6:
       ```bash
       TS="$(date -u +%Y-%m-%dT%H:%M:%S)"
-      echo "{\"ts\":\"${TS}\",\"event\":\"session_start\"}" >> fusion-workbench/orchestrator-events.jsonl
+      echo "{\"ts\":\"${TS}\",\"event\":\"session_start\",\"history_file\":\"<the step 6 path>\",\"detail\":\"<Directive and mode>\"}" >> fusion-workbench/orchestrator-events.jsonl
       ```
+      **That field is the session's identity, and it is why a resume can be told from a restart.** A resumed session emits this line too — it is a new process — and puts the *same* path in it, because the history file is one of the fields **What a resumed session inherits** keeps. So the log carries two `session_start` lines naming one file, and the drift check's Turn row counts `turn_start` events from the **first** of them, spanning the interruption exactly as `session.git_head_at_start` does. A restarted session creates a new history file at step 6 and therefore names a different one, and its count starts where it should. Nothing else in the log distinguishes those two cases (**Persistent State File → Drift check**).
     - **REFRESH DASHBOARD** — update the dashboard (written in step 0) with session Directive and snapshot counts
 
 ## Scope
@@ -439,7 +444,7 @@ When in doubt, prefer the agent whose primary domain matches the file's role in 
 At most `<max-turns>` Turns — the Turn budget resolved at Setup Step 2 — numbered from 1 upward. When the budget is unresolved there is no count to run out, and the remaining circuit-breaker conditions do not bound the loop on their own (Step 3d says why); the **Unresolved-budget check-in** at Step 3d bounds it instead, by putting the question to the user at each Turn boundary. Setup says which case this session is in. Each Turn starts by:
 
 1. Recording `progress.turn_start_head` in `agentstate.yaml` with `git rev-parse --short HEAD` (the value `<turn-start-HEAD>` referenced by Step 3c and Step 3c-bis below sources from this field).
-2. Emitting a `turn_start` event — and, **in the same command**, running the drift check (see **Persistent State File → Drift check**). It rides the emission rather than standing next to it, because a Turn-boundary obligation standing on its own is the one that froze. This fires in **every** Turn, Turn 1 included; at Turn 1 it runs before the session has a commit or a completed Turn of its own, so what it takes there is the baseline the later call points are read against.
+2. Emitting a `turn_start` event — and, **in the same command**, running the drift check (see **Persistent State File → Drift check**). It rides the emission rather than standing next to it, because a Turn-boundary obligation standing on its own is the one that froze. This fires in **every** Turn this session starts, Turn 1 included; at Turn 1 it runs before the session has a commit or a completed Turn of its own, so what it takes there is the baseline the later call points are read against. A Turn re-entered by a resume is not one this session started — it was started by the session that is gone, it already has its `turn_start`, and Setup step 1's **What a resumed session inherits** says where its boundary read happened instead.
 3. **REFRESHING DASHBOARD** — set `**Turn:** <N>/<max-turns>` to the current Turn number over the resolved budget (`<N>/--` when it is unresolved), reset "This Turn" section to show the Turn's tasks as `[QUEUED]`.
 
 When the Turn ends (via Step 3e convergence/refresh, Step 3d circuit breaker, or Step 3c-bis early exit), clear `progress.turn_start_head` so the next Turn records a fresh anchor.
@@ -1113,12 +1118,14 @@ fi
 
 It prints `anchor=`, `state=`, `rows=`, `drift=` and `verdict=`, then one line per surface: the value the surface holds, the value the un-freezable record holds, and `DRIFT` or `UNCHECKED (<reason>)` where either applies. **`verdict=drift` is a line of output, not an exit code** — exit 0 means the check ran, exit 2 means there is no workbench, exit 3 means the installed plugin has no compiled hooks. The `[ -x ]` guard is the one Setup Step 5's churn ranking carries, for the same reason: `$FUSION_PLUGIN_ROOT` is the installed copy, pinned for the whole session, so a helper added between releases is simply absent there and a bare call is exit 127.
 
+**Both numeric rows measure one session, and it is the session `agentstate.yaml` describes — not the process reading it.** `progress.commits` counts from `session.git_head_at_start`, which a resume does not rewrite. `progress.turn` counts `turn_start` events from the first `session_start` carrying this session's `history_file`, which a resume does not re-point either. So the two rows answer "since when?" with one answer, and a session that resumed inside Turn 4 reads 4 against 4. They did not: the Turn row used to count from the *last* `session_start`, and a resume writes one, so it read 4 against 0 and said DRIFT on every tool call for the rest of every resumed session while nothing was stale (issue `260811-2143`). Where a log predates the `history_file` field **and** carries more than one `session_start` since the last `session_end`, which of them began this session is not decidable from the log, and the row comes back `UNCHECKED` with that reason rather than attributing a difference it cannot place.
+
 **Read the rows against these conditions.** Each row pairs one surface with the one record that can contradict it, and a row is drift only under its own condition — a value that legitimately differs is not a fault to report:
 
 | Row | Drift when |
 |---|---|
 | `progress.commits` | the two numbers differ by more than one (the one allows the commit currently in flight) |
-| `progress.turn` | the two numbers differ at all |
+| `progress.turn` | the two numbers differ at all. The count runs from the first `session_start` naming this session's `history_file`, so a resume does not reset it and the Turns run before the interruption are still counted |
 | `session.history_file` | the named file is not on disk — the resume anchor points at nothing |
 | history Directive | the history file's line is a placeholder (`(not yet …)`) while `agentstate.yaml` carries a Directive. Different **wording** is not drift: the two are written at different moments and neither is the other's source. |
 | Circle Turn log | the record carries fewer entries than Turns run |
@@ -1262,13 +1269,13 @@ Append one JSON line per event. Never overwrite — this is an append-only log. 
 }
 ```
 
-Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit when not applicable (e.g. `session_start` has no `task`).
+Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit when not applicable (e.g. `session_start` has no `task`). `session_start` carries one field of its own, `history_file`: the session's identity in a log where a resume appends a second `session_start` (Setup step 8).
 
 **Event types:**
 
 | Event | When | Detail |
 |-------|------|--------|
-| `session_start` | Setup complete | Directive and mode |
+| `session_start` | Setup complete | `history_file` (the session's identity), Directive and mode |
 | `scope_resolved` | Phase 0 done | Mode, task count, agents involved |
 | `shaper_start` | Phase 0b, shaper invoked | Topic |
 | `shaper_done` | Phase 0b, shaper returned | Spec file path |

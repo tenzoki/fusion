@@ -314,11 +314,12 @@ Create `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` (the value `fusion-pat
   ```bash
   [ -f ./fusion-workbench/orchestrator-events.jsonl ] || touch ./fusion-workbench/orchestrator-events.jsonl
   ```
-- Append a `session_start` event (one line, appended — never overwrite the file):
+- Append a `session_start` event (one line, appended — never overwrite the file). It carries `history_file`, the path from Step 4:
   ```bash
   TS="$(date -u +%Y-%m-%dT%H:%M:%S)"
-  echo "{\"ts\":\"${TS}\",\"event\":\"session_start\"}" >> ./fusion-workbench/orchestrator-events.jsonl
+  echo "{\"ts\":\"${TS}\",\"event\":\"session_start\",\"history_file\":\"<the Step 4 path>\"}" >> ./fusion-workbench/orchestrator-events.jsonl
   ```
+  That field is the session's identity in an append-only log, and the drift check's Turn row counts from the first `session_start` carrying it — which is what lets the count span an interrupted session's resume instead of restarting at zero (`agents/orchestrator.md` **Persistent State File → Drift check**).
 - Overwrite `./fusion-workbench/orchestrator-live.md` with the real session Directive and snapshot counts (replace the placeholder `Initializing` line). The dashboard is now live for the monitor.
 
 ## Done

@@ -33,7 +33,7 @@
 import { describe, it, expect } from "vitest";
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import {
   CASE_TIMEOUT,
   childEnv,
@@ -135,11 +135,29 @@ function writeState(root: string, f: StateFields): void {
   writeFileSync(resolve(root, "fusion-workbench", "agentstate.yaml"), yaml, "utf-8");
 }
 
-/** Append one JSONL line to the orchestrator's event log. */
-function emitOrchestratorEvent(root: string, event: string): void {
+/**
+ * Append one JSONL line to the orchestrator's event log.
+ *
+ * `extra` carries the fields a real event has beyond `ts` and `event` — for
+ * `session_start` that is `history_file`, the session identity the Turn row
+ * anchors on. Passing nothing reproduces a log written before that field
+ * existed, which is a case under test in its own right.
+ */
+function emitOrchestratorEvent(
+  root: string,
+  event: string,
+  extra: Record<string, string> = {},
+): void {
   const path = resolve(root, "fusion-workbench", "orchestrator-events.jsonl");
-  const line = JSON.stringify({ ts: "2026-08-11T09:00:00", event }) + "\n";
+  const line = JSON.stringify({ ts: "2026-08-11T09:00:00", event, ...extra }) + "\n";
   writeFileSync(path, (existsSync(path) ? readFileSync(path, "utf-8") : "") + line, "utf-8");
+}
+
+/** The session history file on disk, so `session.history_file` is not a second drift. */
+function writeHistory(root: string, rel: string, directive = "close the open findings"): void {
+  const path = resolve(root, "fusion-workbench", rel);
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, `# Session\n\n**Directive:** ${directive}\n`, "utf-8");
 }
 
 /**
@@ -243,7 +261,7 @@ describe("session-state drift: the measurement", () => {
         const said = trackerSays(p);
         expect(said, "three turn_start events against a state file stuck at Turn 1 is drift").not.toBeNull();
         expect(said).toMatch(/progress\.turn/);
-        expect(said).toMatch(/3 \(turn_start events this session\)/);
+        expect(said).toMatch(/3 \(turn_start events since this session began\)/);
       });
     },
     CASE_TIMEOUT,
@@ -675,6 +693,167 @@ describe("bin/fusion-state-drift, the program", () => {
         });
         expect(run.status).toBe(1);
         expect(run.stderr).toMatch(/unknown argument/);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+/* ------------------------------------------------------------------ *
+ * 5. A resumed session is the same session
+ * ------------------------------------------------------------------ */
+
+/**
+ * Issue `260811-2143`: the Turn row counted from the LAST `session_start`, and
+ * a resume writes one. `commitsSince` counts from `session.git_head_at_start`,
+ * which a resume does not rewrite. Two rows of one report, two notions of "this
+ * session" — and the Turn row then said DRIFT on every guarded tool call of
+ * every resumed session, with nothing stale.
+ *
+ * The anchor is now the session's own identity: `session_start` carries
+ * `history_file`, a session keeps one for its whole life, and the count runs
+ * from the FIRST `session_start` naming it. So the row does not merely stop
+ * over-reporting — the first two cases below are one shape apart, and the fix
+ * has to separate them where counting from the resume cannot.
+ */
+describe("session-state drift: the Turn row across a resume", () => {
+  const REL = "shared/history/260811-0900-orchestrator-session.md";
+
+  /** The live shape: a prior session ended, this one began, ran Turns, resumed. */
+  function resumedSession(root: string, turnsBefore: number, turnsAfter: number): void {
+    writeHistory(root, REL);
+    emitOrchestratorEvent(root, "session_end");
+    emitOrchestratorEvent(root, "session_start", { history_file: REL });
+    for (let i = 0; i < turnsBefore; i++) emitOrchestratorEvent(root, "turn_start");
+    emitOrchestratorEvent(root, "session_start", { history_file: REL });
+    for (let i = 0; i < turnsAfter; i++) emitOrchestratorEvent(root, "turn_start");
+  }
+
+  it(
+    "counts the Turns the interrupted session ran, not the Turns since the resume",
+    () => {
+      withRepo((p) => {
+        const start = head(p.root);
+        resumedSession(p.root, 4, 0);
+        writeState(p.root, { headAtStart: start, commits: 0, turn: 4, historyFile: REL });
+
+        expect(
+          trackerSays(p),
+          "a resumed session with correct bookkeeping was reported as drifting. This is the " +
+            "live shape of issue 260811-2143: progress.turn carries 4 across the interruption " +
+            "while zero turn_start events follow the resume, so a count anchored on the resume " +
+            "reports 4 against 0 forever. A row that speaks on its commonest path is one its " +
+            "reader learns to read past.",
+        ).toBeNull();
+
+        const cli = runCli(p.root);
+        expect(cli.stdout, cli.stderr).toMatch(/progress\.turn +surface=4 +record=4 /);
+        expect(cli.stdout).toMatch(/^verdict=clean$/m);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "still reports a surface that froze after the resume",
+    () => {
+      withRepo((p) => {
+        const start = head(p.root);
+        // Nine Turns ran; the state file stopped at 5. Counting from the resume
+        // would find exactly 5 and read clean — this is the freeze the old
+        // anchor MISSED, not merely one it reported for the wrong reason.
+        resumedSession(p.root, 4, 5);
+        writeState(p.root, { headAtStart: start, commits: 0, turn: 5, historyFile: REL });
+
+        const said = trackerSays(p);
+        expect(
+          said,
+          "nine Turns ran against a state file stuck at 5 and nothing said so. The row exists " +
+            "for exactly this (issue 260801-2038), and a fix for the false positive that " +
+            "cannot still report a real freeze is worse than the false positive.",
+        ).not.toBeNull();
+        expect(said).toMatch(/progress\.turn/);
+        expect(said).toMatch(/9 \(turn_start events since this session began\)/);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "counts only this session's Turns when a crashed session left no session_end",
+    () => {
+      withRepo((p) => {
+        const start = head(p.root);
+        writeHistory(p.root, REL);
+        // The crashed session: its own history file, three Turns, no clean exit.
+        emitOrchestratorEvent(p.root, "session_start", {
+          history_file: "shared/history/260810-2200-orchestrator-session.md",
+        });
+        for (let i = 0; i < 3; i++) emitOrchestratorEvent(p.root, "turn_start");
+        // The user chose Restart: a new state file, a new history file, Turn 1.
+        emitOrchestratorEvent(p.root, "session_start", { history_file: REL });
+        emitOrchestratorEvent(p.root, "turn_start");
+        writeState(p.root, { headAtStart: start, commits: 0, turn: 1, historyFile: REL });
+
+        expect(
+          trackerSays(p),
+          "the crashed session's three Turns were counted into the session that replaced it. " +
+            "This is why the anchor is the session's identity and not a position in the log: " +
+            "no rule over line positions separates a Restart after a crash from a resume, " +
+            "because both leave two session_start lines with no session_end between them.",
+        ).toBeNull();
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "reports the row unchecked, not drifting, when the log predates the identity",
+    () => {
+      withRepo((p) => {
+        const start = head(p.root);
+        writeHistory(p.root, REL);
+        emitOrchestratorEvent(p.root, "session_end");
+        emitOrchestratorEvent(p.root, "session_start");
+        for (let i = 0; i < 4; i++) emitOrchestratorEvent(p.root, "turn_start");
+        emitOrchestratorEvent(p.root, "session_start");
+        writeState(p.root, { headAtStart: start, commits: 0, turn: 4, historyFile: REL });
+
+        const cli = runCli(p.root);
+        expect(cli.status, cli.stderr).toBe(0);
+        expect(
+          cli.stdout,
+          "a log written before session_start carried the session identity, resumed, so which " +
+            "of its two session_start lines began this session is not decidable from it. The " +
+            "row must say that. Guessing the later one is the defect; guessing the earlier one " +
+            "reports a Restart after a crash as drift.",
+        ).toMatch(/progress\.turn[\s\S]*?UNCHECKED \(2 session_start lines since the last session_end/);
+        expect(cli.stdout, "an undecidable row was counted as a fault").toMatch(/^verdict=clean$/m);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "keeps counting a single-session log that names no history file",
+    () => {
+      withRepo((p) => {
+        const start = head(p.root);
+        writeHistory(p.root, REL);
+        emitOrchestratorEvent(p.root, "session_end");
+        emitOrchestratorEvent(p.root, "session_start");
+        for (let i = 0; i < 3; i++) emitOrchestratorEvent(p.root, "turn_start");
+        writeState(p.root, { headAtStart: start, commits: 0, turn: 1, historyFile: REL });
+
+        const said = trackerSays(p);
+        expect(
+          said,
+          "the ordinary pre-upgrade log — one session_start since the last clean exit, no " +
+            "resume — stopped being counted. One candidate is unambiguous, and turning the row " +
+            "off there would surrender the measurement to every project that has not yet " +
+            "started a session under the new emission.",
+        ).not.toBeNull();
+        expect(said).toMatch(/3 \(turn_start events since this session began\)/);
       });
     },
     CASE_TIMEOUT,

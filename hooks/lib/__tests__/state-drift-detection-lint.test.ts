@@ -857,3 +857,129 @@ describe("the gate catches the defect it exists for", () => {
     }
   });
 });
+
+// ---------------------------------------------------------------------------
+// A resumed Turn, and the count that measures it (issues 260811-2144, 260811-2143).
+//
+// Two halves of one statement, in two files, and they have been out of step:
+//
+//   - `agents/orchestrator.md` Phase 2 step 2 said the drift check "fires in
+//     **every** Turn, Turn 1 included". A resume re-enters a Turn already in
+//     flight — Phase 2 is picked up at step 3, past step 2 — so no `turn_start`
+//     was emitted for it and the check riding that emission did not fire at
+//     that boundary. Measured at 951c809: ten task completions and eight
+//     commits after the resume `session_start`, zero `turn_start`.
+//   - `hooks/lib/state-drift.ts` counted `turn_start` events from the LAST
+//     `session_start`, which a resume writes, while `commitsSince` counted from
+//     `session.git_head_at_start`, which a resume does not rewrite. Two rows of
+//     one report, two notions of "this session".
+//
+// They are settled together, because either one alone breaks the other: if the
+// resume emitted a `turn_start` for the Turn it re-enters, that Turn would be
+// counted twice; if the count anchored on the resume's `session_start`, no
+// emission discipline would make the row read true. So the prompt says a
+// resumed Turn keeps the `turn_start` it already has, and the count anchors on
+// the session's identity — `history_file`, emitted on `session_start`, the one
+// field that a resume carries over and a restart does not.
+//
+// Non-vacuity, measured against the four files as 500f51f left them, not
+// asserted: the unqualified claim matched Phase 2 step 2 verbatim; the Continue
+// branch mentioned neither `turn_start` nor the history file; both Setup halves
+// emitted `session_start` with no `history_file`; and `turnsRun` took only a
+// root and scanned backwards for the last `session_start`. All four cases below
+// fail against that text.
+// ---------------------------------------------------------------------------
+
+describe("a resumed session's Turn emission and its Turn count agree", () => {
+  /** The claim, in the shape it took and the near ones it could return in. */
+  const UNQUALIFIED = /fires in every Turn(?!s? this session starts)/i;
+
+  /** Setup Step 1's Continue branch, from the option to the end of the branch. */
+  function continueBranch(text: string): string {
+    const from = text.indexOf("- **Continue** —");
+    expect(from, "Setup Step 1 no longer offers a Continue option").toBeGreaterThan(-1);
+    const to = text.indexOf("Remaining setup (after step 1 is resolved):", from);
+    expect(to, "Setup Step 1's branch no longer ends at Remaining setup").toBeGreaterThan(from);
+    return text.slice(from, to);
+  }
+
+  it("does not claim the emission fires in a Turn no session starts", () => {
+    const offending = plain(orchestrator())
+      .split("\n")
+      .map((line, i) => `${i + 1}: ${line.trim()}`)
+      .filter((line) => UNQUALIFIED.test(line));
+    expect(
+      offending,
+      `agents/orchestrator.md says the drift check fires in every Turn without qualifying which ` +
+        `Turns this session starts. A Turn re-entered by a resume was started by the session ` +
+        `that is gone and carries its turn_start already, so the emission this check rides ` +
+        `does not come round for it — and a prompt that promises the read happens there sends ` +
+        `nobody looking for it. Either the resumed Turn is named as the exception it is, or ` +
+        `the sentence is false in the one situation the whole check exists for (issue ` +
+        `260811-2144; resume is the feature issue 260801-2038 breaks).`,
+    ).toEqual([]);
+  });
+
+  it("says in the Continue branch what becomes of the re-entered Turn", () => {
+    const branch = continueBranch(orchestrator());
+    expect(
+      branch,
+      `agents/orchestrator.md: the Continue branch does not mention turn_start. It is the one ` +
+        `place a reader learns whether the Turn being re-entered gets a second one — and both ` +
+        `answers have a consequence: a second emission counts the Turn twice in the record the ` +
+        `drift check reads, and no emission means the boundary read has to be somewhere else. ` +
+        `Name which (issue 260811-2144).`,
+    ).toMatch(/turn_start/);
+    expect(
+      branch,
+      `agents/orchestrator.md: the Continue branch does not say that a resumed session keeps the ` +
+        `history file it already has. That path is the session's identity in the event log, ` +
+        `and a resume that creates a second one moves the Turn count's anchor to the resume — ` +
+        `which is the false drift of issue 260811-2143 arriving by another route.`,
+    ).toMatch(/history_file|history file/);
+  });
+
+  it("emits the session identity from both halves of Setup", () => {
+    for (const [rel, text] of [
+      ["agents/orchestrator.md", orchestrator()],
+      ["skills/setup/SKILL.md", setupSkill()],
+    ] as const) {
+      const emission = text
+        .split("\n")
+        .filter((l) => l.includes('\\"event\\":\\"session_start\\"'));
+      expect(
+        emission.length,
+        `${rel} no longer emits a session_start event, or emits it in a shape this gate cannot ` +
+          `see. The Turn row anchors on that line.`,
+      ).toBeGreaterThan(0);
+      for (const line of emission) {
+        expect(
+          line,
+          `${rel} emits session_start without history_file:\n  ${line.trim()}\nThat field is ` +
+            `the session's identity, and without it a log with two session_start lines cannot ` +
+            `say which began the session agentstate.yaml describes — so the Turn row goes ` +
+            `unchecked on exactly the resumed sessions it is needed for (issue 260811-2143). ` +
+            `Both halves of Setup must emit it, or which half ran decides whether the row works.`,
+        ).toMatch(/history_file/);
+      }
+    }
+  });
+
+  it("anchors the count on that identity rather than on a position in the log", () => {
+    const source = stateDriftLib();
+    expect(
+      source,
+      "hooks/lib/state-drift.ts does not read session.history_file when it counts Turns. " +
+        "Every rule over line positions approximates which session_start began this session " +
+        "and each gets a real shape wrong — 'the last one' on a resume, 'the first since the " +
+        "last session_end' on a restart after a crash. The identity is the input that decides " +
+        "it (rules/critical-stance.md §4, issue 260811-2143).",
+    ).toMatch(/turnsRun\([^)]*historyRel/);
+    expect(
+      source,
+      "hooks/lib/state-drift.ts still counts Turns from the last session_start. A resume " +
+        "writes one, so the row reads the cumulative progress.turn against a post-resume " +
+        "count and says DRIFT for the rest of the session with nothing stale.",
+    ).not.toMatch(/for \(let i = lines\.length - 1; i >= 0; i--\)/);
+  });
+});
