@@ -59,7 +59,11 @@ import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, join } from "node:path";
-import { PRESCRIBED_MESSAGE_PATH, classify, hasCommitMessageName } from "../staging-drift.js";
+import {
+  PRESCRIBED_MESSAGE_PATH,
+  classify,
+  hasCommitMessageName,
+} from "../staging-drift.js";
 
 const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const read = (...p: string[]) => readFileSync(join(pluginRoot, ...p), "utf-8");
@@ -104,12 +108,15 @@ function tmpPaths(text: string): string[] {
  *
  * A prompt citing a workbench record whose topic slug says "commit message" is
  * flagged by this helper again. Nothing in `agents/` or `skills/` is affected
- * today (both lines that name the leftover carry a defect word), and the run
- * time half is untouched — `classify` still reads such a record as a `record`,
- * so no model is told to delete anything. The load therefore falls on the
- * line-level exemption in "finds none" below, whose breadth is separately filed
- * as issue `260811-1149`. The positive control at the foot of this file pins
- * both halves of that split so neither can move unnoticed.
+ * today, and the run-time half is untouched: `classify` still reads such a
+ * record as a `record`, so no model is told to delete anything. The load falls
+ * on `NAMEABLE_LEFTOVER` below, one literal path allow-listed by name, with
+ * every other workbench-internal commit-message path flagged unconditionally.
+ * It replaced a keyword exemption read off the surrounding prose (issue
+ * `260811-1149`). The positive control at the foot of this file pins both
+ * halves of the split, that the name test still reaches a real shipped line and
+ * that the allow-list is the only thing sparing it, so neither can move
+ * unnoticed.
  */
 function workbenchMessagePaths(text: string): string[] {
   const out: string[] = [];
@@ -120,6 +127,44 @@ function workbenchMessagePaths(text: string): string[] {
   }
   return out;
 }
+
+/**
+ * The one workbench-internal commit-message path a shipped prompt may name.
+ *
+ * Two lines name it, both as the defect: `agents/orchestrator.md` in Step 3b's
+ * reason for `/tmp`, and `skills/commit/SKILL.md` in the shorter form of the
+ * same sentence. Every other workbench-internal commit-message path is an
+ * offence, with no reading of the prose around it.
+ *
+ * ## What it replaced, and why a word list could not do this job
+ *
+ * Until issue `260811-1149` the sparing was a keyword exemption over the line:
+ * `/Never inside|never inside|leftover|Measured|improvised|fault/`. Three
+ * faults, in order of consequence.
+ *
+ *   1. `fault` is an ordinary word in these prompts — `agents/orchestrator.md`
+ *      uses it throughout its Staging check section — so a line that genuinely
+ *      PRESCRIBED a workbench message path and also said "fault" was exempt, in
+ *      the one prompt this gate exists to watch.
+ *   2. Its cases were spelled by hand and inconsistently: `Never inside` twice
+ *      over for two capitalisations, `Measured` capital-only, three others
+ *      lowercase-only, and no rule saying why they differed.
+ *   3. It was a blacklist standing in for an allow-list. The property it aimed
+ *      at is "this line names the path as a defect, not as an instruction",
+ *      which is prose classification, and not decidable from a keyword set
+ *      (`rules/critical-stance.md` §4). One literal path compared exactly is
+ *      decidable, and widening it is an edit somebody makes on purpose.
+ *
+ * ## What the allow-list gives up, stated rather than glossed
+ *
+ * A prompt that PRESCRIBED writing to this path would now pass the gate. The
+ * keyword form did not really cover that case either: whether such a line
+ * carried the word "leftover" was the author's whim, not a property of the
+ * instruction. And the run-time half does catch the resulting file, by
+ * location, whatever a prompt says about it (`lib/staging-drift.ts`,
+ * `classify`).
+ */
+const NAMEABLE_LEFTOVER = "fusion-workbench/.commit-msg-tmp";
 
 describe("commit-message path: the prescription is pinned", () => {
   it("Step 3b step 3 names a /tmp path, and step 5 reads the same one", () => {
@@ -175,22 +220,44 @@ describe("commit-message path: no shipped prompt names one inside the workbench"
     return files;
   };
 
-  it("finds none", () => {
-    const offenders: string[] = [];
+  /**
+   * Every shipped prompt line the name test flags, with the paths it flagged.
+   *
+   * One scan, two callers composing it differently, the same shape
+   * `workbenchMessagePaths` and `classify` already have. "finds none" subtracts
+   * the allow-list and expects nothing left. The positive control below asserts
+   * the scan is not empty and that `NAMEABLE_LEFTOVER` is the only path in it,
+   * which is the pair of facts that jointly keep "finds none" green.
+   */
+  const flaggedLines = (): { where: string; hits: string[] }[] => {
+    const out: { where: string; hits: string[] }[] = [];
     for (const rel of promptFiles()) {
-      // The prohibition is about a prompt PRESCRIBING such a path. Prose that
-      // names the leftover as the defect is the point of the record, so a line
-      // is only an offence when it does not also say the path is wrong.
-      for (const line of read(rel).split("\n")) {
-        const hits = workbenchMessagePaths(line);
-        if (hits.length === 0) continue;
-        if (/Never inside|never inside|leftover|Measured|improvised|fault/.test(line)) continue;
-        offenders.push(`${rel}: ${hits.join(", ")}`);
-      }
+      read(rel)
+        .split("\n")
+        .forEach((line, i) => {
+          const hits = workbenchMessagePaths(line);
+          if (hits.length > 0) out.push({ where: `${rel}:${i + 1}`, hits });
+        });
     }
+    return out;
+  };
+
+  it("finds none", () => {
+    // The prohibition is about a prompt PRESCRIBING such a path. The one path
+    // the prompts legitimately name is the leftover that actually appeared, and
+    // it is spared by name (`NAMEABLE_LEFTOVER`) rather than by the prose
+    // around it — issue `260811-1149`, and the reason there is no keyword list
+    // here any more.
+    const offenders = flaggedLines()
+      .map((f) => ({
+        where: f.where,
+        hits: f.hits.filter((h) => h !== NAMEABLE_LEFTOVER),
+      }))
+      .filter((f) => f.hits.length > 0)
+      .map((f) => `${f.where}: ${f.hits.join(", ")}`);
     expect(
       offenders,
-      "a shipped prompt names a commit-message file inside fusion-workbench/ without marking it as the defect",
+      `a shipped prompt names a commit-message path inside fusion-workbench/ other than the one allow-listed in \`NAMEABLE_LEFTOVER\` (${NAMEABLE_LEFTOVER}). Either the line prescribes a message file in the workbench and must be reworded, or it cites a workbench record whose slug says "commit message" — which this gate flags by name, deliberately, since issue \`260811-1410\`.`,
     ).toEqual([]);
   });
 
@@ -198,16 +265,21 @@ describe("commit-message path: no shipped prompt names one inside the workbench"
     // `.commit-msg-tmp` is the real file, at the real root. If this returned
     // nothing, the assertion above would be passing because it looks for the
     // wrong thing.
-    expect(workbenchMessagePaths("wrote it to fusion-workbench/.commit-msg-tmp instead")).toEqual([
-      "fusion-workbench/.commit-msg-tmp",
-    ]);
+    expect(
+      workbenchMessagePaths(
+        "wrote it to fusion-workbench/.commit-msg-tmp instead",
+      ),
+    ).toEqual(["fusion-workbench/.commit-msg-tmp"]);
     expect(classify(".commit-msg-tmp", "").klass).toBe("commit-message");
     expect(classify("tasklist.md", "").klass).toBe("record");
   });
 
   it("negative control: a fixture prescribing the path fails the same check", () => {
-    const fixture = "Write the message to `fusion-workbench/commit-message.txt` before committing.";
-    expect(workbenchMessagePaths(fixture)).toEqual(["fusion-workbench/commit-message.txt"]);
+    const fixture =
+      "Write the message to `fusion-workbench/commit-message.txt` before committing.";
+    expect(workbenchMessagePaths(fixture)).toEqual([
+      "fusion-workbench/commit-message.txt",
+    ]);
   });
 
   it("negative control: a prescription INSIDE a store fails it too", () => {
@@ -226,7 +298,9 @@ describe("commit-message path: no shipped prompt names one inside the workbench"
     // The run-time half is deliberately NOT widened with it: the same path on
     // disk is still an unstaged `record`, so the model is told to stage it,
     // never to delete it.
-    expect(classify("shared/consult/commit-message.txt", "").klass).toBe("record");
+    expect(classify("shared/consult/commit-message.txt", "").klass).toBe(
+      "record",
+    );
   });
 
   it("positive control: a record ABOUT commit messages is a `record` to the classifier", () => {
@@ -237,19 +311,56 @@ describe("commit-message path: no shipped prompt names one inside the workbench"
     // and widening this gate did not touch it.
     const cited = [
       "fusion-workbench/shared/history/260810-1810-coder-commit-message-out-of-the-shell.md",
-      "fusion-workbench/shared/issues/260811-1149_o_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md",
+      "fusion-workbench/shared/issues/260811-1149_c_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md",
     ];
     for (const path of cited) {
-      expect(classify(path.slice("fusion-workbench/".length), "").klass, path).toBe("record");
+      expect(
+        classify(path.slice("fusion-workbench/".length), "").klass,
+        path,
+      ).toBe("record");
     }
     // And the boundary holds in the other direction: same slug, no store.
-    expect(classify("commit-message-notes.md", "").klass).toBe("commit-message");
+    expect(classify("commit-message-notes.md", "").klass).toBe(
+      "commit-message",
+    );
 
-    // This gate asks the other question, so it DOES flag such a citation. What
-    // spares a prompt that cites a record by full path is the line-level
-    // exemption in "finds none" above, not the name test — pinned here because
-    // that is now a load-bearing dependency, and because issue `260811-1149` is
-    // open against exactly that exemption's breadth.
-    expect(workbenchMessagePaths(`see \`${cited[1]}\` for the record`)).toEqual([cited[1]]);
+    // This gate asks the other question, so it would flag such a citation by
+    // name. Nothing spares it: the allow-list carries one path and this is not
+    // it. No shipped prompt cites one today, and the control below measures
+    // that rather than asserting it against a fixture (issue `260811-1611`).
+  });
+
+  it("positive control: the allow-list is live, and it is the only thing sparing the shipped lines", () => {
+    // Issue `260811-1611`. Two facts jointly keep "finds none" green, and
+    // neither was read off the shipped files before this test existed:
+    //
+    //   1. `workbenchMessagePaths` flags real lines in `agents/` and
+    //      `skills/`. Reword the two that name the leftover and the gate keeps
+    //      passing while measuring nothing, which is the failure a green test
+    //      cannot report about itself.
+    //   2. What spares those lines is `NAMEABLE_LEFTOVER` and nothing else.
+    //
+    // Both are asserted against the shipped prompts themselves, so a change to
+    // either fails here with the mechanism named rather than surfacing as an
+    // unexplained red in "finds none".
+    //
+    // Measured, so the first assertion is not oversold: narrowing the helper
+    // back to `classify` (the `260811-1410` regression) does NOT make it fail.
+    // Both shipped lines name a root-anchored path no store owns, so `classify`
+    // still calls it a `commit-message`. What catches that narrowing is the
+    // store-prescription negative control above, and that is the division of
+    // labour between the two.
+    const flagged = flaggedLines();
+
+    expect(
+      flagged.map((f) => f.where),
+      "no line in any shipped prompt is flagged by `workbenchMessagePaths`, so `finds none` is green by looking at nothing. Either the two lines naming `fusion-workbench/.commit-msg-tmp` were reworded (in which case `NAMEABLE_LEFTOVER` is now dead and should go with them), or the helper stopped reaching the prompt files at all",
+    ).not.toEqual([]);
+
+    const distinct = [...new Set(flagged.flatMap((f) => f.hits))].sort();
+    expect(
+      distinct,
+      `the set of workbench commit-message paths the shipped prompts name is no longer exactly the one allow-listed in \`NAMEABLE_LEFTOVER\`. Flagged at: ${flagged.map((f) => f.where).join(", ")}`,
+    ).toEqual([NAMEABLE_LEFTOVER]);
   });
 });

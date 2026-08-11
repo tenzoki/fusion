@@ -690,10 +690,16 @@ function boundedList(paths, budget) {
     // none only when the first path alone overruns the budget.
     if (kept === 0)
         kept = 1;
-    // `dropped` is never 0: the whole list overran the budget at the top, so the
-    // loop cannot have kept every entry, and the `(+N more)` below always applies.
+    // The loop cannot keep every entry — the whole list overran the budget at the
+    // top — but the floor on the line above can, and that is the branch a proof
+    // reading only the loop misses (`260811-1615`). A single over-long path
+    // breaks the loop at `i = 0`, the floor puts `kept` back to 1, and `dropped`
+    // is 0 for a list that is complete. `(+N more)` exists to say a short list is
+    // not the whole one, so it is written only when something was actually
+    // dropped; a list of one, printed whole, gets no suffix.
     const dropped = paths.length - kept;
-    return `${paths.slice(0, kept).join(", ")} (+${dropped} more)`;
+    const shown = paths.slice(0, kept).join(", ");
+    return dropped > 0 ? `${shown} (+${dropped} more)` : shown;
 }
 /**
  * The advisory message recorded when the exemption lets a write through — the

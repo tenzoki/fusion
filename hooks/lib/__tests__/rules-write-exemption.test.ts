@@ -1125,5 +1125,22 @@ describe("rulesWriteDetail — the advisory message", () => {
       expect(detail).toContain(long);
       expect(detail).toContain("(+1 more)");
     });
+
+    /**
+     * Finding `260811-1615`. The case above keeps a second path beside the
+     * over-long one, so `dropped` is 1 and the suffix is honest. Alone, the
+     * over-long path is the whole list: the loop keeps none, the floor puts one
+     * back, and the suffix would have claimed a truncation that did not happen.
+     * Both call sites reach a one-path list — `guard.ts` always, `tracker.ts`
+     * whenever a single file changed.
+     */
+    it("writes a lone over-long path with no suffix, because nothing was dropped", () => {
+      const long = `rules/${"deep/".repeat(60)}rule.md`;
+      const detail = rulesWriteDetail([long]);
+      expect(detail).toBe(
+        `Override ${RULES_WRITE_ENV} allowed a normally-denied write to a protected rule path: ${long}`,
+      );
+      expect(detail).not.toContain(" more)");
+    });
   });
 });

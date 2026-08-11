@@ -84,3 +84,43 @@ fails a test whose message says why.
 - [ ] The new assertion is made against lines read from the shipped prompts, not against a fixture
       string built in the test.
 - [ ] `cd hooks && npm test` exits 0.
+
+---
+
+**Resolved:** built, not closed out — the sparing survived task 14 in a different form, so the
+dependency this record is about survived with it. Task 14 replaced the keyword exemption with an
+allow-list constant, `NAMEABLE_LEFTOVER`, which is still the one thing standing between the widened
+helper and a red `it("finds none")`. The record's premise holds; only the mechanism's name changed.
+
+What was built, against the three-part direction filed here:
+
+1. **The scan is lifted out, once.** `flaggedLines()` in the describe block returns every shipped
+   prompt line the name test flags, with `file:line` and the paths hit. `it("finds none")` subtracts
+   the allow-list from it; the new positive control asserts over the same single scan. One loop, two
+   callers composing it differently, which is the shape `workbenchMessagePaths` and `classify`
+   already have in this file.
+2. **The widening is asserted to reach real shipped lines** — `flagged` is asserted non-empty, so a
+   reword of the two lines naming the leftover fails here instead of leaving a gate that passes while
+   measuring nothing.
+3. **The allow-list is asserted to be the only thing sparing them** — the distinct set of flagged
+   paths across `agents/` and `skills/` must equal exactly `[NAMEABLE_LEFTOVER]`. That is stronger
+   than "the exemption matches both lines": a third workbench message path appearing anywhere in the
+   prompts fails it too.
+
+Part (3) of the filed direction (flagged-and-not-exempted is 0) was **not** added as a fourth
+assertion. It is `it("finds none")`, whose failure message now names `NAMEABLE_LEFTOVER` and the
+offending `file:line`, so the acceptance criterion is met there rather than duplicated here.
+
+The two `file:line` anchors were not hard-coded. `agents/orchestrator.md` moved from `:418` to
+`:420` while this record was open, so the control finds the lines by scanning and reports the
+locations it found in its failure message.
+
+**One claim in this record's own framing, corrected by measurement.** A first draft of the control's
+comment said the non-emptiness assertion guards against the helper narrowing back to `classify`.
+Measured by mutation: it does not. Both shipped lines name a root-anchored path no store owns, so
+`classify` still calls it a `commit-message` and the scan stays non-empty. What catches that
+narrowing is the existing store-prescription negative control. The division of labour is now written
+into the comment rather than overstated.
+
+Verified by mutation: breaking the constant's value fails both tests with the mechanism named;
+narrowing the helper to `classify` fails the store-prescription control and nothing else.

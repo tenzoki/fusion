@@ -360,22 +360,22 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 ### 14. Replace the commit-message-path lint's keyword exemption with an explicit path allow-list
 
 - **ID:** `I:260811-1149`
-- **Source:** `shared/issues/260811-1149_o_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md`
+- **Source:** `shared/issues/260811-1149_c_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** normal
-- **Status:** [ ] open
+- **Status:** [x] done — the keyword exemption is replaced by a module-level constant `NAMEABLE_LEFTOVER = "fusion-workbench/.commit-msg-tmp"`, subtracted from the helper's hits per line; every other workbench-internal commit-message path is an offence with no exemption. Line numbers re-measured before use: `agents/orchestrator.md:420` (record said `:418`, it moved today) and `skills/commit/SKILL.md:88`, both naming that one path. Verified by mutation, not by green: changing the constant's value fails `it("finds none")` and the new control, both naming `NAMEABLE_LEFTOVER`. Issue `260811-1149` `_o_` → `_c_`.
 - **Detail:** **Verified at HEAD:** `hooks/lib/__tests__/commit-message-path.test.ts:187` still reads `if (/Never inside|never inside|leftover|Measured|improvised|fault/.test(line)) continue;` (the record cites `:141`; the line has moved to `:187`, the text is unchanged). Three problems in order of consequence: `fault` is a common word in these prompts — `agents/orchestrator.md` uses it repeatedly in the staging-check section, so a line that genuinely *prescribed* a workbench message path and also said "fault" would be exempted, and that prompt is the gate's whole subject; the case handling is inconsistent (`Never inside|never inside` spelled twice, `Measured` capital-only, three others lowercase-only, with no stated rule); and it is a blacklist standing in for an allow-list, which is prose classification and not decidable from a keyword set. **The gate does not need to classify prose.** Both legitimate lines name one literal path, `fusion-workbench/.commit-msg-tmp` — measured, they are `agents/orchestrator.md:418` and `skills/commit/SKILL.md:88`. Allow-list that one path and flag every other workbench-internal commit-message path unconditionally.
 - **Sequencing note:** doing this as filed removes the keyword exemption entirely, which may close task 15 outright rather than requiring it. Read task 15's record before deciding.
 
 ### 15. Assert the exemption dependency over the real prompt lines, not over a fixture string
 
 - **ID:** `I:260811-1611`
-- **Source:** `shared/issues/260811-1611_o_the-positive-control-documents-the-keyword-exemption-dependency-in-a-comment-and-asserts-something-else.md`
+- **Source:** `shared/issues/260811-1611_c_the-positive-control-documents-the-keyword-exemption-dependency-in-a-comment-and-asserts-something-else.md`
 - **Executor:** coder
 - **Depends on:** `I:260811-1149`
 - **Priority:** normal
-- **Status:** [ ] open
+- **Status:** [x] done — **built, not closed out.** Task 14 replaced the exemption rather than deleting the sparing, so the dependency survived in allow-list form. `flaggedLines()` lifts the scan out once; the new positive control asserts over it that the scan is non-empty (the gate is not passing while measuring nothing) and that the distinct set of flagged paths is exactly `[NAMEABLE_LEFTOVER]` (the allow-list is the only thing sparing them). Part (3) of the filed direction is `it("finds none")` itself, whose message now names the constant and the offending `file:line`, so it was not duplicated as a fourth assertion. Anchors are found by scanning, not hard-coded — `agents/orchestrator.md` moved `:418` → `:420` while the record was open. One drafted claim was withdrawn after mutation testing disproved it (non-emptiness does **not** guard against narrowing back to `classify`; the store-prescription control does). Issue `260811-1611` `_o_` → `_c_`.
 - **Detail:** Commit `3b30f5e` widened `workbenchMessagePaths()` to reach `hasCommitMessageName` instead of `classify()` — the right call — at a stated cost: a prompt line citing a record whose slug says "commit message" is now flagged, and only the line-level keyword exemption keeps `it("finds none")` green. The commit message claims the dependency "is now asserted by the positive control instead of sitting latent". It is not: the added assertion builds a fixture carrying none of the six keywords and asserts that the name test flags a record citation — a claim the test one line above already makes. Measured: exactly two shipped lines are flagged-and-spared, both by the single keyword `leftover`. Drop `leftover` and `it("finds none")` turns red while the positive control stays green. Fix: lift the exemption regex into a named constant the control can reach, then assert (1) `workbenchMessagePaths(line)` is non-empty for `agents/orchestrator.md:418` and `skills/commit/SKILL.md:88`, (2) the exemption matches both of those lines, (3) the flagged-and-not-exempted count is 0.
 - **Acceptance:** a test fails, with a message naming the keyword exemption, if the exemption stops matching the lines the widened helper flags; the assertion reads lines from the shipped prompts, not a fixture string; suite exits 0.
 
@@ -394,11 +394,11 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 ### 17. Stop `boundedList` emitting `(+0 more)` for a single over-long path
 
 - **ID:** `I:260811-1615`
-- **Source:** `shared/issues/260811-1615_o_boundedlist-emits-plus-zero-more-for-a-single-over-long-path-against-its-own-stated-invariant.md`
+- **Source:** `shared/issues/260811-1615_c_boundedlist-emits-plus-zero-more-for-a-single-over-long-path-against-its-own-stated-invariant.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** low
-- **Status:** [ ] open
+- **Status:** [x] done — the suffix is now conditional (`return dropped > 0 ? … : shown`) and the comment names the floor at `kept = 1` as the branch its predecessor's loop-only proof missed. One case added beside the existing two-path one, asserting the whole singular-label string for a lone over-long path and `not.toContain(" more)")`. Rebuilt `hooks/dist/` (only `dist/lib/rules-write-exemption.js` changed) and re-measured the record's own reproduction against it: the 163-character path now prints with no suffix. `cd hooks && npm test` exit 0, 50 files, 1301 passed. Three earlier full runs were red on flakes outside this file set — twice `fusion-commit-lock`/`clear-halt-concurrent-halt` poll races under four concurrent agents, once `record-counts-measurement.test.ts` reading `agents/orchestrator.md` mid-edit; each passed in isolation. Issue `260811-1615` `_o_` → `_c_`. History: `shared/history/260811-2009-coder-task17-boundedlist-zero-dropped-suffix.md`.
 - **Detail:** `hooks/lib/rules-write-exemption.ts:790-792` carries a comment proving `dropped` is never 0, and the proof holds for the loop but not for the floor above it. With `paths.length === 1` and that path over budget, the loop breaks at `i = 0` with `kept = 0`, the floor sets `kept = 1`, and `dropped = 0` — so a complete list of one gets a suffix implying truncation. Measured against the shipped `dist`, not the source: a 163-character path yields `… (+0 more)`. Both call sites reach it — `hooks/guard.ts:586` passes exactly one path, `hooks/tracker.ts:526` passes the exempted set, which is one path whenever one file changed. The suite misses it because `rules-write-exemption.test.ts:1117` uses two paths and the integration case uses thirty. Fix: `return dropped > 0 ? \`${shown} (+${dropped} more)\` : shown;` and correct the comment to say the floor is the branch that can produce `dropped === 0`.
 - **Acceptance:** `rulesWriteDetail([<path longer than the budget>])` returns the path with no suffix; a case asserts that shape beside the existing two-path one; the comment no longer claims `dropped` cannot be 0; suite exits 0.
 

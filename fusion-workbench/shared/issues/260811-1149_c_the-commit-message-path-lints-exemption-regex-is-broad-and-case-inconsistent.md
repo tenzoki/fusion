@@ -45,3 +45,27 @@ the path.
 
 Add `/i` if the keyword form is kept for any reason, and drop the duplicated
 `Never inside|never inside`.
+
+---
+
+**Resolved:** the keyword exemption is gone. `hooks/lib/__tests__/commit-message-path.test.ts`
+now carries a module-level constant `NAMEABLE_LEFTOVER = "fusion-workbench/.commit-msg-tmp"`,
+and `it("finds none")` subtracts that one literal path from the helper's hits rather than reading
+the prose around them. Every other workbench-internal commit-message path is an offence with no
+exemption of any kind, so all three defects go at once: no `fault` keyword to be caught by an
+ordinary word in `agents/orchestrator.md`, no hand-spelled case list, and no prose classification
+standing in for a decision.
+
+Re-measured before relying on the record's line numbers, since `agents/orchestrator.md` was being
+edited the same day: the two legitimate lines are `agents/orchestrator.md:420` (the record says
+`:418`) and `skills/commit/SKILL.md:88`, and both name exactly `fusion-workbench/.commit-msg-tmp`
+and nothing else.
+
+What the allow-list gives up is written into the constant's doc comment rather than left implicit:
+a prompt that *prescribed* writing to `.commit-msg-tmp` would now pass this gate. The keyword form
+did not cover that case either (whether such a line carried the word "leftover" was the author's
+whim), and the run-time half catches the resulting file by location whatever a prompt says.
+
+Verified by mutation, not by the suite going green: replacing the constant's value makes both
+`it("finds none")` and the new positive control fail, each with a message naming
+`NAMEABLE_LEFTOVER` and the two file:line locations.

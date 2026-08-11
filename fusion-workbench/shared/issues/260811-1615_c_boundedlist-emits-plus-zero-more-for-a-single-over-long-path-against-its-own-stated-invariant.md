@@ -86,3 +86,15 @@ produce `dropped === 0`, and the exception it serves is a list of one.
 - [ ] A case asserts that shape, beside the existing two-path one.
 - [ ] The comment no longer claims `dropped` cannot be 0.
 - [ ] `cd hooks && npm test` exits 0.
+
+---
+Resolved: `boundedList` writes the `(+N more)` suffix only when `dropped > 0`
+(`hooks/lib/rules-write-exemption.ts`), so a lone over-long path — the one list the bound
+deliberately does not shorten — is printed whole and unadorned. The comment above the return no
+longer claims `dropped` cannot be 0: it names the floor at `kept = 1` as the branch a proof reading
+only the loop misses, and says a complete list of one gets no suffix. A case in
+`hooks/lib/__tests__/rules-write-exemption.test.ts` asserts the whole singular-label string for a
+one-path list and that it contains no `" more)"`, beside the existing two-path case that still
+expects `(+1 more)`. `hooks/dist/` was rebuilt (only `dist/lib/rules-write-exemption.js` changed)
+and the record's own measurement re-run against it: the 163-character path now returns without the
+`(+0 more)`. `cd hooks && npm test` exit 0, 50 files, 1301 passed.
