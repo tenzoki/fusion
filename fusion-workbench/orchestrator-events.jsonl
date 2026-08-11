@@ -1254,3 +1254,8 @@
 {"ts":"2026-08-11T20:53:04","event":"task_done","turn":5,"task":"I:260811-2145 + 2149 + 2151","agent":"coder","detail":"a6b4928 — ordinals removed rather than corrected; four-case split; layout row, with five further gaps filed rather than papered over"}
 {"ts":"2026-08-11T20:53:04","event":"commit","turn":5,"detail":"a6b4928 — a case is cited by what it says, the last combined gate splits, and a helper gets its row"}
 {"ts":"2026-08-11T20:53:04","event":"review_start","turn":5,"agent":"coderev","detail":"range e3da397..a6b4928"}
+{"ts":"2026-08-11T21:11:36","event":"review_done","turn":5,"agent":"coderev","detail":"8 issues filed (3 medium, 5 low, 0 high); range e3da397..a6b4928 cleared for release; all six named checks passed on the executable half"}
+{"ts":"2026-08-11T21:11:36","event":"commit","turn":5,"detail":"31746d1 — the Turn-5 review clears the range for release"}
+{"ts":"2026-08-11T21:11:36","event":"coherence_review","turn":5,"detail":"verdict=review-needed; Artifact<->Grounding: 8 issues filed, none high, the range judged shippable; Artifact<->Directive: 6 records closed against 10 filed, open count 64, so the Turn moved away from the clean-state Directive while repairing two High regressions it had caused; Grounding<->Directive: no decision filed or contradicted this Turn, the suite-concurrency decision from Turn 4 still open"}
+{"ts":"2026-08-11T21:11:36","event":"circuit_breaker","turn":5,"detail":"Max Turns reached (5/5, budget resolved from orchestrator.maxTurns). Exiting the loop with 64 open records; the budget is now a per-project configuration leaf the user can raise."}
+{"ts":"2026-08-11T21:11:36","event":"turn_end","turn":5,"detail":"6 tasks resolved, 4 commits, 10 records created, 0 errors"}

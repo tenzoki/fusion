@@ -128,9 +128,5 @@ Belege: `history/260805-1753-coder-ratchet-wird-budget-mit-meldung.md`.
 
 ---
 Answered: 2026-08-05 — Nutzerentscheid über den Orchestrator; umgesetzt im selben Turn.
-Implemented: <set when status moves to _i_>
-Deferred: <set when status moves to _d_>
-Superseded by: <set when status moves to _s_>
-
 ---
 Implemented: `3163281` — Schwelle 12 000 Byte Luft ueber dem Rollenboden, aus 128 nachgespielten Commits hergeleitet. Bei Ueberschreitung nennt der Lauf die gewachsenen Dateien mit Betrag und faellt nicht. Der Bezugspunkt ist der umgewidmete Handspeicher (`RULE_BASELINE`), kein zweiter. Hart bleiben die Emissionsmenge, die Rollenableitung, die Begruendungspflicht und ein Deckel bei 145 144.

@@ -36,12 +36,6 @@ Ausgelieferte Texte (Regel-Dateien, Agenten-Prompts, READMEs, bin-Header) zitier
 Option (a), wie vom Gesamtreview empfohlen. Verifiziert vor dem Filing: Die 8 Marker-Verfalls-Referenzen brachen genau durch `_o_→_a_→_i_`-Übergänge, nicht aus einem anderen Grund; die Rationale in `rule-file-provenance.md` deckt diese Übergänge nicht ab — die Frage ist also richtig gerahmt. Der zweite Befund schlägt die markerlose Form selbst vor („z. B. `260801-1020_*_slug`, damit `_o_→_a_→_i_`-Übergänge Zitate nicht mehr brechen"). Option (c) scheidet aus meiner Sicht aus, weil sie mit dem Namensmuster markerloser Artefakte kollidiert; Option (b) verlagert die Instabilität in Dauerpflege und schützt konsumierende Projekte nicht.
 
 ---
-Answered: <set when status moves to _a_>
-Implemented: <set when status moves to _i_>
-Deferred: <set when status moves to _d_>
-Superseded by: <set when status moves to _s_>
-
----
 Answered: circles/260805-2005-textschicht-gegen-code-nachziehen/history/260805-2350-orchestrator-session.md — User wählt Option (a): Wildcard-Form `YYMMDD-HHMM_*_<slug>`; überlebt jeden Marker-Übergang, Empfehlung von Review und Planner. (Gate 260806-0027)
 
 ---

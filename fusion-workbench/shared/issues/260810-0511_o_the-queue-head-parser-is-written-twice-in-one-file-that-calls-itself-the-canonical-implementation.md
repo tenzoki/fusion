@@ -62,3 +62,27 @@ duplicate should go in the same change rather than be carried across.
 
 Extend the lint's "one canonical implementation" assertion to count occurrences of the parser inside
 `agents/orchestrator.md` itself, so the file that owns the rule is also held to it.
+
+---
+
+## Reconciliation 260811-2330 — the two copies have now actually diverged, and the divergence cost a false measurement
+
+This record predicted the divergence. It happened, inside one session.
+
+Commit `b4eb4db` (2026-08-11 10:36) replaced the derivation at the `#### Reading a queue` site —
+`agents/orchestrator.md:871` at HEAD `31746d1` — with a `sed` form that reads the value after the
+label and stops at the first word. The Phase 4 step 4 retirement copy at `agents/orchestrator.md:829`
+still carries the two-alternative `grep -oE`. Run against this repository's own queue head, the
+canonical copy returns `none` and the retirement copy returns `.active-circle`.
+
+Nine hours later a review record was filed against "the check" on the strength of the wrong copy —
+`shared/issues/260811-1915_*_the-queue-ground-check-reads-any-backticked-word-in-the-head-line-as-a-circle-name.md`,
+whose first witness reports a `STALE` verdict the canonical snippet could not have produced. That
+record is annotated with the measurement.
+
+So the cost of the duplication is no longer hypothetical: it is one false verdict recorded as
+measured fact, in the same file set the queue is built from. Queue entry 29 asks for the
+derivation to be stated once and cited from Phase 4. Doing that closes `260811-1915` in the same
+edit; patching the Phase 4 copy in place does not.
+
+Reconciled by `reconciler`, `shared/history/260811-2330-reconciliation.md`.

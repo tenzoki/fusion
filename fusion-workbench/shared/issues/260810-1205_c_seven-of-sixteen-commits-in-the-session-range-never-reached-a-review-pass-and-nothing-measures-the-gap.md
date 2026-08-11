@@ -43,7 +43,7 @@ The release process in `CLAUDE.md` has a validate gate, a smoke test and a guard
 
 1. **Report the gap correctly.** Whatever the session summary says about review coverage should be derived from the review files' own ranges against `git rev-list <session-start>..HEAD`, not from which Turn ran last.
 2. **Re-queue a declared out-of-scope file.** When a reviewer names files it did not open because a concurrent task held them, that list is an obligation for the next pass, not a footnote. The next dispatch's scope should be the union of its own Turn and the previous pass's declared exclusions.
-3. **Decide whether a release may go out over an unreviewed range at all.** This is a decision, not a defect, and is not filed here — it belongs beside `shared/decisions/260810-0710_o_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`, which asks the same shape of question about lints.
+3. **Decide whether a release may go out over an unreviewed range at all.** This is a decision, not a defect, and is not filed here — it belongs beside `shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`, which asks the same shape of question about lints.
 
 ## Acceptance criteria
 
@@ -57,7 +57,7 @@ The release process in `CLAUDE.md` has a validate gate, a smoke test and a guard
 
 Both in-scope pieces landed. Piece 3 — whether a release may go out over an uncovered range
 — was **not built**, as the record and the queue entry both required; it remains an unfiled
-decision belonging beside `shared/decisions/260810-0710_o_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`.
+decision belonging beside `shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`.
 
 **One finding the fix had to close before it could start.** This record says the data needed
 to tile the range is on disk "in the filenames", and it is — but not in a form a program can

@@ -82,3 +82,42 @@ shared `dist` is a genuine defect in the build regardless of who runs the suite,
 attribution problem in option 1 is the reason not to adopt it alone. Not proposed as a package
 without the user's call, because option 1 is a real weakening of the executor contract and that is
 the user's trade to make, not the orchestrator's.
+
+---
+
+## Evidence added 260811-2330 — reconciler, final reconciliation of session `260811-0752`
+
+**Marker unchanged (`_o_`).** No answer is recorded here; this adds one measurement that narrows
+the option space.
+
+`cd hooks && npm test` was run twice at HEAD `31746d1`, with **one agent running and nothing else
+in flight** — no parallel executors, no second session, no concurrent build.
+
+- Run 1: `Test Files 51 passed (52)`, `Tests 1335 passed (1349)`, one unhandled error —
+  `Error: Worker exited unexpectedly` from `tinypool`. One file's 14 tests never reported.
+- Run 2, immediately after, same command: `Test Files 52 passed (52)`,
+  `Tests 1349 passed (1349)`, exit 0.
+
+**What this does and does not show.** It does **not** reproduce case 2 of the question above: no
+second `npm test` was deleting `hooks/dist/` underneath this one, so the shared-build-output race
+was not the cause here. What it shows is that at least one instability of this suite survives the
+removal of cross-executor concurrency entirely — vitest runs its own test files in parallel
+workers, so a single invocation is already a concurrent run against one tree.
+
+**The consequence for the options.** Option 4, "dispatch executors one at a time", was already the
+weakest on throughput grounds. This measurement removes its remaining claim: serialising executors
+leaves the suite running concurrently with itself inside each invocation, so the failure observed
+above would still occur, and a red suite would still sometimes mean "load" rather than "your change
+broke something" — which the Constraints section names as the damage to avoid. `inference:` the
+same reasoning weakens option 1 in the same direction, since serialising the *verdict* does not
+serialise the workers inside the one run it keeps; option 1's case rests on the shared-`dist` race
+and on attribution, not on this.
+
+Option 2's first half — give each run its own build output, or build without deleting first — is
+untouched by this and remains the only option that addresses the intra-run case as well.
+
+`speculation:` the crashing worker was not identified. Vitest reported the pool exit rather than a
+file, and run 2 named no slow or failing file, so which of the 52 died is not established from
+these two runs. Whoever takes this up should reproduce with `--pool=forks --no-file-parallelism`
+or `--reporter=verbose` before costing option 2, rather than assuming it is one of the two
+already-recorded timing cases (`260810-1135`, `260811-1409`).

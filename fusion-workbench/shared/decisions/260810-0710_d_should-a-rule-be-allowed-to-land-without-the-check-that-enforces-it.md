@@ -49,12 +49,6 @@ The same Turn produced the counter-argument. Four tasks each added a lint over p
 None yet, deliberately. The instance is fixed (`3df0c17`); this record exists so the pattern is not re-derived from scratch the next time it happens, and so the answer is chosen rather than defaulted into. It should be answered with the lint cohort's own fate (`260810-0502`, `260810-0503`, `260810-0510`) in view, because option 1 is only worth taking if this project can tell a real gate from a decorative one — and tonight it produced four and got two right.
 
 ---
-Answered: <set when status moves to _a_>
-Implemented: <set when status moves to _i_>
-Deferred: <set when status moves to _d_>
-Superseded by: <set when status moves to _s_>
-
----
 Deferred: until the lint cohort's own fate is settled — `shared/issues/260810-0502`, `260810-0503`
 and `260810-0510`. User, session 260811-0752 (chat). The record's own closing paragraph asks for
 exactly this ordering: option 1 is worth taking only if this project can tell a real gate from a

@@ -109,12 +109,6 @@ den Punkt als Befund gemeldet; er stand als Beobachtung im Protokoll
 mit diesem Record erstmals als offene Frage geführt. Der beobachtete Circle liegt im
 konsumierenden Projekt, nicht hier.
 
----
-Answered: <set when status moves to _a_>
-Implemented: <set when status moves to _i_>
-Deferred: <set when status moves to _d_>
-Superseded by: <set when status moves to _s_>
-
 ## Antwort
 
 **Ein absichtlich gelöschter Circle verschwindet vollständig aus der workbench. Es gibt keinen

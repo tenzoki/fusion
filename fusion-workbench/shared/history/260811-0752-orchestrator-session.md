@@ -2,7 +2,7 @@
 
 **Directive:** Close the open defect records to reach a clean state before any new feature or restructuring work begins.
 **Mode:** issues — all 69 open records (53 shared, 16 in five closed Circles); the nine open decisions are answered at gates, not up front
-**Status:** In progress
+**Status:** Complete — exited on the Max-Turns circuit breaker after five Turns
 
 ## Setup snapshot
 
@@ -188,3 +188,123 @@ Ten commits, sixteen queue entries closed, fifteen records created, no executor 
 - **Coherence verdict: review-needed.** The open-record count rose from 52 to 60 across the Turn,
   against a Directive whose target is a clean state. The user chose to continue into Turn 5 with
   the two High findings first.
+
+## Coherence
+
+<!-- RECONCILER-OWNED -->
+
+Per-Circle verdict, computed at Phase 3 by `reconciler` over `7785330..31746d1` (37 commits, five
+Turns, no active Circle). Full working: `shared/history/260811-2330-reconciliation.md`.
+
+**Verdict:** review-needed
+
+**Edges:**
+
+- **Artifact↔Grounding:** 74 queue entries re-checked against disk, **0 contradicting their
+  record**; 53 record closures verified, **all 53 carrying a resolution note** and every commit
+  hash in those notes resolving; suite green at 52 files / 1349 tests. Six drift items found, four
+  repaired here (three stale decision-marker citations rewritten to the wildcard form, 13
+  contradicted template placeholders removed across 9 decision records, 1 empty `Resolved:` stub,
+  and record `260811-1915`'s misattributed first witness annotated). Two left standing on purpose:
+  **29 of 67 live decision records state a `**Status:**` their filename contradicts**
+  (`shared/issues/260811-2146_*_…` — the record forbids hand-correction before the user answers
+  `260802-0920`; the measurement reproduces at 34 by exact equality, of which 5 are formatting
+  variance), and **3 of the work queue's 81 literal-marker citations are dead**, filed as
+  `shared/issues/260811-2330_*_the-work-queue-carries-eighty-one-literal-marker-citations-and-three-are-already-dead.md`.
+  **12 reviewer findings from this session's own two evening passes remain open** (Turn-4 review 4
+  of 10, Turn-5 review 8 of 8). Flagged: the artifact is sound, its Grounding is not fully legible.
+- **Artifact↔Directive:** the commits move **partially toward** the Directive, and the workbench
+  state moves away from it. Both are true of different populations and the split is the finding.
+  **Of the 69 defect records open when the Directive was stated, 24 are closed — a 35 % reduction
+  in the population the Directive named** (`d8e38d5` … `a6b4928`). The total nevertheless rose 69 →
+  74, because 29 records were filed and left open, and **12 of those 29 are defects in this
+  session's own commits**, found by two reviews whose ranges (`b261d83..951c809`,
+  `e3da397..a6b4928`) consist entirely of this session's work. Eight arrived in the last commit of
+  the session (`31746d1`), after the Turn loop had already stopped. That is the mechanism: the
+  Directive was pursued by *building* — three measurement mechanisms in Turn 1 (`8a49fd5`,
+  `afd7c2e`, `cac41ef`), a Turn-budget configuration leaf and `bin/fusion-source-root` in Turn 4
+  (`61bd21f`, `9f84254`), a drift anchor and a check-in gate in Turn 5 (`500f51f`, `e61e24a`) —
+  each closing a filed defect, and each becoming the largest single source of the next Turn's
+  findings. Flagged, and it is the load-bearing edge.
+- **Grounding↔Directive:** **1 open decision, 12 answered, 50 implemented, 4 deferred across every
+  store.** The one open record is
+  `shared/decisions/260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`,
+  and it is a live constraint rather than a loose end: it governs `agents/orchestrator.md` Step 3a
+  batching, Step 3b validation and `agents/coder.md`'s report contract together, so the next
+  session cannot choose a dispatch shape without answering it. Evidence was added to it this pass —
+  a worker crash reproduced with no parallel executors at all, which removes option 4's remaining
+  claim. **No answered or implemented decision conflicts with the Directive.** The 12 answered are
+  unrealised work, not contradiction. Flagged for the one open record's reach, not for
+  inconsistency.
+
+**Rebalance recommendation:** revise Directive
+
+**Why that one, with all three flagged.** The Directive names a moving population: "the open defect
+records". Reviewing the work that closes them files more of them, so the target recedes as it is
+approached — 53 closed against 58 filed, over five Turns, exiting on the Max-Turns circuit breaker
+rather than on an empty queue. That is not a Directive the loop can reach, and no amount of
+revising the Artifact or the Grounding changes it (`rules/critical-stance.md` §4: when the target
+is not reachable from the inputs the mechanism has, the mechanism changes, not the effort).
+
+It is **not** unreachable, so Bounded Closure is not proposed. Binding the Directive to a **fixed**
+population measured at a stated moment makes it monotone and 35 % done: *"close the 69 defect
+records open at 260811-0752; records filed after that moment are the next Directive's."* The
+concrete next step under that reading is the 45 survivors of the original 69, of which 22 are
+blocked on a human answer — so the first Turn of the next session is a decision batch, not a
+dispatch batch.
+
+The recommendation is advisory. The other three options remain available and the user chooses.
+
+### Turn 5 (260811-2200 to 2315)
+
+Four commits, six records closed, ten filed. The Turn was spent entirely on the two High
+findings the Turn-4 review had raised against this session's own machinery, then on three small
+ones.
+
+- **The unresolved-Turn-budget branch** (`500f51f`). The morning's configurability work had
+  correctly refused to substitute a number when the read fails, and had then written beside that
+  branch that the loop was still bounded by the other five circuit-breaker conditions. *Max Turns
+  reached* was the only monotone one among them. Step 3d now carries a check-in that asks at each
+  Turn boundary through the existing gate pair, with three answers, the third of which — continue
+  with no further questions — is an unbounded loop offered as the user's stated choice rather than
+  imposed as a default. The interval is one Turn and deliberately not a configuration leaf: a leaf
+  would be read through the very helper whose failure defines the branch.
+- **The drift check's two session anchors** (`e61e24a`). The commits row anchored on
+  `session.git_head_at_start`, which a resume does not rewrite; the Turn row on the last
+  `session_start` line, which a resume does. One report, two windows, and a false DRIFT on every
+  tool call from 19:00 onward, against a surface that was correct throughout. Both filed
+  directions were rejected with measurements — event stamps and `session.started` are written in
+  different time bases two hours apart, and counting from the last `session_end` folds a crashed
+  session's Turns into its successor after a Restart. The mechanism obtained the missing input
+  instead: `session_start` carries `history_file`, and the window runs from the first line naming
+  it. The row is stronger, not weaker: a Turn count that freezes *after* a resume read clean
+  before and is caught now.
+- **Three small findings** (`a6b4928`). Ordinal citations into a bullet list deleted rather than
+  corrected; the record-counts block's last combined gate split into the four cases its two inputs
+  produce; a layout row written, with five further missing rows filed rather than settled by a
+  convenient one-line answer.
+- **coderev over `e3da397..a6b4928`** filed eight records, none High, and cleared the range for
+  release. Every finding is prose in the orchestrator prompt, and the two Mediums are the same
+  shape as the High this Turn repaired: the mechanism honest, the sentence a paragraph away not.
+- **Exit: Max Turns reached, 5 of 5.** The budget was resolved from `orchestrator.maxTurns`, the
+  leaf this session built at the user's request four hours earlier.
+
+## Session result
+
+**Status:** Complete. Exited on the Max-Turns circuit breaker, not on convergence.
+
+| Metric | Count |
+|--------|-------|
+| Turns | 5 |
+| Records closed | 53 |
+| Records filed | 58 |
+| Decisions filed | 4 |
+| Commits | 37 |
+| Agent errors | 0 |
+| Human gates hit | 5 |
+| Staging failures by the orchestrator | 1, recovered |
+
+Of the 69 records the Directive named, 24 are closed. The open total rose from 69 to 74, because
+29 records were filed and left open and twelve of those are defects in this session's own commits,
+found by reviews whose ranges are entirely this session's work. The reconciler's verdict and its
+reading of that number are in `## Coherence` below.

@@ -108,11 +108,6 @@ sieht sich das mit an.
 Warum im gemeinsamen Speicher und nicht im aktiven Circle: der Defekt sitzt im Werkzeug,
 nicht im Gegenstand einer Runde, und `portfolio.md` gehört keinem Circle.
 
----
-Resolved:
-
----
-
 ## Reconciliation-Vermerk 260810-1907 (Abschluss-Abgleich der Sitzung 260810-1647)
 
 **Der Datensatz bleibt offen, und die Sache trägt.** Die Prüfung an den zwei genannten

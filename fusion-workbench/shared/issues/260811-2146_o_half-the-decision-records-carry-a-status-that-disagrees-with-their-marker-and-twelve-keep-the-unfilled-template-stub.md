@@ -86,3 +86,82 @@ The stub half is repairable either way and independently: the template should be
 - The user has answered whether the decision record's `**Status:**` field is owned or dropped.
 - No live decision record carries an unfilled `<set when status moves to _X_>` line beside a filled `X:` annotation.
 - A test measures the chosen invariant over every record under a `decisions/` store and fails with the record's path when it breaks.
+
+---
+
+## Reconciliation 260811-2330 — measurement reproduced, stub half repaired, the question left open
+
+**The record stays open.** Its first half is a question for the user and this pass did not touch
+it. Its second half was repairable without an answer, and is now repaired.
+
+### The 34 reproduce exactly, and 5 of them are not what the number suggests
+
+Re-measured at HEAD `31746d1` over the same population — 67 live decision records under
+`shared/decisions/` and `circles/*/decisions/`, archive excluded. No decision record was touched
+after the review commit `e3da397`, so nothing has moved:
+
+```
+total=67  mismatched=34  non-open-records-with-an-unfilled-stub=12
+```
+
+The 34 is right for the check as the record ran it, comparing the `**Status:**` field against the
+marker's vocabulary word by **exact equality**. Under a looser reading — the correct word appears
+anywhere in the field — the count is **29**. The 5 in between are records whose field is already
+correct and carries a trailing parenthetical about a past correction:
+
+| Record | `**Status:**` |
+|---|---|
+| `circles/260718-1924-v5x-overhaul/decisions/260718-2150_*_reviewers-history-log-step.md` | `_i_ (implemented — reviewer edits realising the ruling landed in Circle D…)` |
+| `circles/260801-1244-guard-rules-write/decisions/260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md` | `implemented (corrected from `answered` by reconciliation 260804-1021…)` |
+| `circles/260801-1244-guard-rules-write/decisions/260803-1803_*_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set…md` | `implemented (corrected from `open`…)` |
+| `circles/260801-1244-guard-rules-write/decisions/260803-2338_*_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md` | `implemented (corrected from `open`…)` |
+| `shared/decisions/260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md` | `implemented (marker `_i_`; header corrected by the reconciler 260809-2252…)` |
+
+**The substantive disagreement is 29 of 67, not 34 of 67.** This matters for the acceptance
+criterion, not for the decision: a lint written to the exact-equality reading fails these five,
+and each of them is a record a previous reconciliation pass deliberately annotated. Whichever way
+the ownership question is answered, the check that enforces it has to accept a field that states
+the right state and then explains itself, or the sweep it demands will delete five provenance
+notes.
+
+**The 29 were not hand-corrected**, per this record's own instruction and
+`agents/orchestrator.md:288`: the disagreements are the measurement for `260802-0920`.
+
+### The stub half is done — acceptance criterion 2 is met
+
+Thirteen unfilled placeholder lines stood above a filled annotation of the same kind, across
+9 records. All 13 are gone, along with the wholly-unfilled blocks that carried most of them —
+32 placeholder lines removed in total:
+
+| Record | Removed |
+|---|---|
+| `circles/260801-1244-guard-rules-write/decisions/260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md` | whole block (4) |
+| `circles/260801-1244-guard-rules-write/decisions/260805-1559_*_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md` | 3 lines |
+| `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_veraltete-regeln-im-eigenen-repo-melden-oder-umgehen.md` | whole block (4) |
+| `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_wem-gehoert-die-circle-aktivierung.md` | whole block (4) |
+| `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md` | whole block (4) |
+| `shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md` | whole block (4) |
+| `shared/decisions/260810-0718_*_should-rebuild-map-merge-with-the-existing-map-or-replace-it.md` | whole block (4) |
+| `shared/decisions/260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md` | 1 line |
+| `shared/decisions/260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` | whole block (4) |
+
+No record now carries an unfilled `<set when status moves to _X_>` line beside a filled `X:`
+annotation of the same kind. **Three records still carry a placeholder and were left alone on
+purpose** — `shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md`,
+`shared/decisions/260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md`
+and `shared/decisions/260809-2310_*_should-the-branch-policy-fall-the-way-the-write-classifier-fell.md`.
+Their leftovers are `Deferred:` and `Superseded by:` lines on records that were never deferred or
+superseded, so they state nothing false; the criterion is about a placeholder contradicted by an
+answer beside it, and these are not contradicted.
+
+**The same defect had exactly one instance on the issues side**, and it is fixed with them:
+`shared/issues/260810-1730_*_die-erzeugung-von-portfolio-md-schreibt-den-zustandsmarker-aus-…md`
+carried an empty `Resolved:` at line 112 and the real one at 155.
+
+### What is left for the user
+
+Only the first half: whether the decision record's `**Status:**` field is **owned** (a writer, a
+write moment, a one-time sweep of the 29, a lint) or **dropped** (deleted from the template and
+the 67). Nothing this pass did constrains that choice.
+
+Reconciled by `reconciler`, `shared/history/260811-2330-reconciliation.md`.

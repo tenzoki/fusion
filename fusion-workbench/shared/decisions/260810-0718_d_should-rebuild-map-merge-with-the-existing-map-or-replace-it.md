@@ -45,12 +45,6 @@ So the question is whether "loud" is the right final answer, or an interim one.
 None yet. The honest state is that option 1 is shipped and adequate, and that the case for option 2 rests on how often a rebuild is run against a workbench that has seeded from Plane — which nobody has measured, because the Plane bridge has not been used in anger yet. Answer it after the first real recovery, not before.
 
 ---
-Answered: <set when status moves to _a_>
-Implemented: <set when status moves to _i_>
-Deferred: <set when status moves to _d_>
-Superseded by: <set when status moves to _s_>
-
----
 Deferred: until the first real recovery is run against a workbench that has seeded from Plane.
 User, session 260811-0752 (chat).
 

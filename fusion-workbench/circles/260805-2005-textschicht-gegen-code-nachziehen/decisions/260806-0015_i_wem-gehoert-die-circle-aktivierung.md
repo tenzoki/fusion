@@ -53,12 +53,6 @@ Jetzt entscheiden, weil Plan-Schritt 9 (die Realisierung über vier-plus Dateien
 Aktivierung: Option (b), Lock: Unteroption (i). Verifiziert vor dem Filing: `skills/next/SKILL.md:4` führt tatsächlich keinen shaper-Dispatch in `allowed-tools` — die „kein erreichbarer Dispatcher"-Prämisse hält; die Schreiber-Liste oben ist heute gegen den Baum gemessen, nicht aus den Befunden übernommen. (b) macht den Text wahr, ohne funktionierendes, user-gated Verhalten umzubauen; (i) macht die Lock-Regel wahr, statt sie einzugrenzen — die Eingrenzung (ii) würde exakt den Kollisionsfall ausnehmen, den der Lock adressiert. Option (c) ist die sauberste Langform, gehört aber eher in einen eigenen Mechanismus-Circle als in diesen Text-Nachzieh-Circle.
 
 ---
-Answered: <set when status moves to _a_>
-Implemented: <set when status moves to _i_>
-Deferred: <set when status moves to _d_>
-Superseded by: <set when status moves to _s_>
-
----
 Answered: circles/260805-2005-textschicht-gegen-code-nachziehen/history/260805-2350-orchestrator-session.md — User wählt Option (b) + Sub-Option (i): Konventionszeile nennt den echten Schreiber-Kreis (Orchestrator, next, Lifecycle-Skills als benannte Ausnahmen); Shaper-Modus bekommt einen echten Aufrufer oder wird gestrichen; /fusion:commit und /fusion:cleanup holen den Commit-Lock. (Gate 260806-0027)
 Implemented: 2026-08-06 (commit follows via orchestrator) — Option (b) + Sub-Option (i) realisiert über fünf Dateien: `rules/fusion-workbench-conventions.md` (die `.active-circle`-Zeile benennt jetzt den geschlossenen Schreiber-Satz: Orchestrator und `/fusion:next` auf dem Aktivierungsweg, `circle-stash`/`circle-pop`/`migrate`/`cleanup` als benannte Lifecycle-Ausnahmen mit je einer Klausel); `agents/shaper.md` (portfolio-activation-Modus ist ehrlich als direkt user-invoked ausgewiesen, die unerreichbare Dispatcher-Behauptung über playmaker/`/fusion:next` ist entfernt — verifiziert: `skills/next/SKILL.md` führt die Aktivierung selbst aus und dispatcht nur playmaker); `skills/commit/SKILL.md` und `skills/cleanup/SKILL.md` (stage+commit läuft über `bin/fusion-commit-lock with <skillname> --`, Tags `commit`/`cleanup`); `rules/workbench-stash-and-lock.md` (die beiden Skills stehen in „Who acquires" und in den Tag-Konventionen; „Always, when any party is about to commit" ist damit wahr). `skills/next/SKILL.md` und `agents/orchestrator.md` brauchten keine Änderung — ihr Ist-Zustand ist unter (b) der Soll-Zustand. Emission-Golden regeneriert (+693 conventions an alle 16, +433 stash-and-lock an orchestrator); Suite grün (1559).
 

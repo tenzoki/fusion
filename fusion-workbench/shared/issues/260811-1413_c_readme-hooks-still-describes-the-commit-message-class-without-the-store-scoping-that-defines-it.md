@@ -53,5 +53,5 @@ On the record's second half — whether the row's prose should be pinned to the 
 about the whole lib table, not this row: a generated block built for `staging-drift.ts` alone would
 leave the other two dozen rows carrying the same risk while looking like coverage, which is the
 point-solution `rules/critical-stance.md` §2 rules out. Filed as
-`shared/decisions/260811-1522_o_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md`
+`shared/decisions/260811-1522_*_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md`
 with four options and the retrofit cost named as unmeasured.

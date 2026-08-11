@@ -80,3 +80,41 @@ Three things their case adds to the one measured here:
 Their proposed direction agrees with the one above and states it more precisely: bind the match to
 what stands **immediately after** `**Active Circle:**`, and read "keiner" / "none" / an empty
 remainder as "no Circle named". Severity from their filing: medium.
+
+---
+
+## Reconciliation 260811-2330 — the record stands, but one of its two witnesses is misattributed
+
+**The record stays open. The expression it describes is still in the prompt — at one of the two
+call sites, not both.** Re-measured at HEAD `31746d1`:
+
+| Site | Derivation at HEAD | Verdict on this repository's queue |
+|---|---|---|
+| `agents/orchestrator.md:871` — the `#### Reading a queue` snippet, the canonical implementation | `sed -E 's/^\*\*Active Circle:\*\*[[:space:]]*//; s/[[:space:]].*$//; s/`//g; s\|^circles/\|\|'` | `G=none`, pointer absent, so `queue: current — unaffiliated backlog`. **Correct.** |
+| `agents/orchestrator.md:829` — the Phase 4 step 4 retirement block | `grep -oE 'circles/[A-Za-z0-9._-]+\|`[A-Za-z0-9._-]+`' \| head -1` | `G=.active-circle`. **The defect, unchanged.** |
+
+Both commands were run against `fusion-workbench/tasklist.md` as it stands; the outputs above are
+what they printed.
+
+**When the canonical copy was fixed.** Commit `b4eb4db` (2026-08-11 10:36), Turn 1 of this same
+session, replaced the two-alternative `grep -oE` with the `sed` form at the `#### Reading a queue`
+site and left the Phase 4 copy alone. Verified by reading `agents/orchestrator.md` at `9f84254`,
+the HEAD in force at the 19:00 resume: line 747 already carried the `sed` form and line 705 the
+old one.
+
+**So the first witness in this record — "measured at Setup on 260811-1900 … the check prints
+`queue: STALE — built for Circle .active-circle`" — cannot have come from the canonical snippet,
+which had been fixed eight hours earlier.** Either the Phase 4 copy was read at Setup in place of
+the canonical one, or the verdict was reasoned from the prompt text rather than run. The same
+misattribution is repeated in the session history file's `## Resumed` section ("The check as
+written in `agents/orchestrator.md` misreports it as stale"), which is where it entered the record.
+This does not weaken the finding: the KRK witness (`260811-1425`) is against the same expression
+and the Phase 4 copy still carries it. It changes what has to be fixed — one copy, not two.
+
+**And that is exactly the failure `260810-0511` predicted.** That record says the queue-head
+derivation is written twice in one file which calls one of them canonical. The two copies have now
+in fact diverged, and the divergence produced a false measurement in a review record within one
+day. Fixing the surviving copy by *deleting* it in favour of a citation (queue entry 29) closes
+both records; patching it in place leaves the duplication that caused this.
+
+Reconciled by `reconciler`, `shared/history/260811-2330-reconciliation.md`.

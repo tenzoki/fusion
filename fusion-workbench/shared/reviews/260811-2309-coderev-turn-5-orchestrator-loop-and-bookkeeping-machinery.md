@@ -150,3 +150,24 @@ Disjoint and complete over the two booleans, with no fifth branch and no fall-th
 - `./bin/fusion-state-drift` against this repository — output quoted under check 3.
 - `wc -c` on both revisions of `rules/fusion-workbench-conventions.md` — 46119 / 46124.
 - `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" coderev` and `bin/fusion-paths coderev` at Setup — exit 0 both, no active Circle, so every record in this pass went to `shared/`.
+
+---
+
+## Reconciliation 260811-2330 — disposition of the eight findings
+
+All eight are open, and none has been worked: the Phase 2 loop exited on the Max-Turns circuit
+breaker in the same commit that filed them (`31746d1`), so no Turn followed this review. Confirmed
+on disk at HEAD `31746d1` — `shared/issues/260811-2304`, `260811-2305` (×2), `260811-2306` (×3),
+`260811-2307` (×2), each still `_o_`.
+
+Two things this pass confirmed rather than took on trust:
+
+- **The release recommendation holds.** `cd hooks && npm test` at HEAD: 52 files, 1349 tests,
+  exit 0. A first run of the same command aborted one worker (`Error: Worker exited unexpectedly`,
+  51/52 files) and the re-run was clean — the load-sensitive class already recorded as
+  `260810-1135`, `260811-1409` and `260810-0918`, not a new failure.
+- **The findings are the largest single contribution to this session's open-record count.** Filing
+  them took the workbench from 66 open defect records to 74. That is the honest arithmetic and it
+  is not an argument against the review; it is recorded in this session's Coherence verdict.
+
+Reconciled by `reconciler`, `shared/history/260811-2330-reconciliation.md`.

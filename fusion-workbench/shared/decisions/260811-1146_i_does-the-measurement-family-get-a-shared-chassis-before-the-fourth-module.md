@@ -120,7 +120,6 @@ chassis is built first.** Three copies is where this codebase drew the line the 
 (`guard-state-file.ts`), and drawing it in the same place twice is a decision, not a coincidence.
 
 ---
-Answered: <set when status moves to _a_>
 Implemented: `hooks/lib/git.ts`, `hooks/lib/guard-state-file.ts:103-161`, `hooks/tracker.ts:776-857` — see the block at the foot of this file
 
 ---
