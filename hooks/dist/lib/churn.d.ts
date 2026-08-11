@@ -31,6 +31,55 @@
  * is not evidence about churn in the project.
  */
 export declare const KEY_ANCHOR = "workbench-root";
+/**
+ * Workbench dashboard/state files that the orchestrator continuously
+ * rewrites by design. Counting them as churn produces pure noise — exclude
+ * them from the metric.
+ *
+ * ## One metric, two readers
+ *
+ * Churn is the only metric that reads this list, and it reads it at both ends:
+ * `hooks/tracker.ts` never records these keys on the write path, and
+ * `rankThrashing` below never ranks them on the read path. Two readers of one
+ * metric, not two metrics.
+ *
+ * The read path was added because the write-path exclusion cannot reach a score
+ * that is already in the map. Before `25c5454` these files were keyed bare —
+ * `orchestrator-live.md`, `agentstate.yaml` — by sessions started inside the
+ * workbench, and in that spelling they matched nothing here. The key migration
+ * lifted them to the spellings below, which stopped the write path counting
+ * them and left the accumulated score standing: `orchestrator-live.md` ranked
+ * 10th in this repository's map, inside the default `--limit 10` the
+ * orchestrator reads at Setup (issue `260810-1632`).
+ *
+ * ## The list lives HERE, not in the hook that first used it
+ *
+ * `hooks/tracker.ts` is a hook entry point: it runs `main()` at module load, so
+ * `churn.ts` cannot import from it, and a second copy of the list would be two
+ * places for one rule to drift apart. The rule is about churn, so it lives in
+ * the churn module and the hook imports it.
+ *
+ * ## This list is not a protection statement
+ *
+ * The `.guard-state/**` entry below is confirmed deliberately, not carried
+ * along. `fusion-workbench/.guard-state/**` appeared twice in this codebase and
+ * the two occurrences answered different questions; only one of them was
+ * retired.
+ *
+ *   - In `hooks/config.json` it meant "an agent may not write here". That entry
+ *     is GONE. It had to go: the measurement writes its own snapshot, its own
+ *     events and its own escalation counter into that directory, so a protected
+ *     `.guard-state/` would have made every single tool call report the guard's
+ *     own bookkeeping as a violation.
+ *   - HERE it means "changes here are not evidence about the agent's editing
+ *     behaviour". That is still true, and more true than before: `guard.ts` now
+ *     writes a fresh snapshot file into `.guard-state/` on every guarded call.
+ *     Counting those would drown the churn heatmap in the guard's own traffic.
+ *
+ * Deleting this entry because the other one went would break the churn metric
+ * for a reason that has nothing to do with churn.
+ */
+export declare const TRACKER_NOISE_FILES: string[];
 /** Per-file churn statistics. */
 export interface FileChurnStats {
     totalChanges: number;
@@ -200,12 +249,27 @@ export interface RankedFile {
 }
 /** What `rankThrashing` answers: the ranking, and what it left out. */
 export interface ChurnRanking {
-    /** Highest thrashing score first, absent files already excluded. */
+    /** Highest thrashing score first, noise and absent files already excluded. */
     ranked: RankedFile[];
     /** Every key in the map, ranked or not. */
     entries: number;
     /** Keys whose file is not on disk. Kept in the map, kept out of the ranking. */
     absent: number;
+    /**
+     * Keys matching `TRACKER_NOISE_FILES` — the surfaces the write path refuses
+     * to measure. Kept in the map, kept out of the ranking.
+     *
+     * Counted apart from `absent` because the two say different things to a
+     * reader: `absent` is "this file is gone", `noise` is "this file is not
+     * evidence". Collapsing them would report a live dashboard file as deleted.
+     *
+     * The two counts are disjoint by construction — noise is asked first, so a
+     * key that is both noise and missing counts as noise. That order is the
+     * meaningful one: "not evidence" is a statement about the key that holds
+     * whether or not the file happens to be on disk, while "deleted" invites a
+     * reader to care about a history the metric already declined to keep.
+     */
+    noise: number;
 }
 /**
  * The ranking a reader sees, with files that no longer exist left out.
@@ -225,6 +289,19 @@ export interface ChurnRanking {
  * path runs orders of magnitude more often, and the symptom was never about the
  * write path. The file still grows without bound; that is the separate question
  * the decision does not settle.
+ *
+ * ## Why the noise check lives here too
+ *
+ * `TRACKER_NOISE_FILES` names the surfaces the write path declines to count,
+ * because the orchestrator rewrites them continuously by design. That exclusion
+ * only ever applied to writes happening now; the scores those keys accumulated
+ * under the pre-`25c5454` spelling were already in the map when the migration
+ * lifted them into the matching spelling, and the read path had no reason to
+ * drop them. So the ranking the orchestrator reads at Setup could name a file
+ * the tracker deliberately refuses to measure (issue `260810-1632`).
+ *
+ * The entries stay in the map, exactly as the absent ones do: decision
+ * `260810-0920` part (c) chose to keep every key and filter on the read path.
  *
  * `limit` of 0 or less means the whole ranking. `exists` is a parameter for the
  * same reason it is on `migrateChurnKeys`: a test states its own file tree.

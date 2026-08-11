@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { resolve } from "node:path";
+import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   coerceChurnState,
   recordChange,
@@ -549,6 +551,110 @@ describe("rankThrashing", () => {
     expect(ranking.ranked).toEqual([]);
     expect(ranking.absent).toBe(4);
     expect(ranking.entries).toBe(4);
+    expect(ranking.noise).toBe(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// The read path's second exclusion (issue 260810-1632).
+//
+// The write path refuses to count the workbench surfaces the session rewrites
+// continuously. The key migration lifted the scores those surfaces had already
+// accumulated under a bare spelling into the spelling that list matches — so
+// the write-path exclusion started applying and the ranking still showed them.
+// ---------------------------------------------------------------------------
+describe("rankThrashing — the files the tracker refuses to measure", () => {
+  const root = "/proj";
+
+  /** The two spellings this repository's own migrated map actually holds. */
+  const migrated: ChurnState = {
+    files: {
+      "fusion-workbench/orchestrator-live.md": stats({
+        totalChanges: 47,
+        thrashingScore: 15,
+      }),
+      "fusion-workbench/agentstate.yaml": stats({
+        totalChanges: 6,
+        thrashingScore: 2,
+      }),
+      "fusion-workbench/.guard-state/churn.json": stats({
+        totalChanges: 900,
+        thrashingScore: 99,
+      }),
+      "hooks/tracker.ts": stats({ totalChanges: 60, thrashingScore: 10 }),
+    },
+    sessionStart: "2026-08-10T09:00:00.000Z",
+    keyAnchor: KEY_ANCHOR,
+  };
+  const everythingPresent = () => true;
+
+  it("keeps a noise file out of the ranking however high it scores", () => {
+    // The reported symptom: `orchestrator-live.md` occupied the 10th slot of
+    // the default `--limit 10` the orchestrator reads at Setup. The
+    // `.guard-state/**` entry outscores every real file, because `guard.ts`
+    // writes a snapshot there on every guarded call.
+    const ranking = rankThrashing(migrated, root, 0, everythingPresent);
+    expect(ranking.ranked.map((r) => r.path)).toEqual(["hooks/tracker.ts"]);
+    expect(ranking.noise).toBe(3);
+    expect(ranking.absent).toBe(0);
+    expect(ranking.entries).toBe(4);
+  });
+
+  it("leaves the entries in the map, exactly as the absent ones are left", () => {
+    rankThrashing(migrated, root, 0, everythingPresent);
+    expect(
+      migrated.files["fusion-workbench/orchestrator-live.md"].totalChanges,
+    ).toBe(47);
+  });
+
+  it("counts noise apart from absent, so 'not evidence' never reads as 'deleted'", () => {
+    // Disjoint by construction: noise is asked first, so a key that is both a
+    // noise surface and missing counts once, as noise.
+    const ranking = rankThrashing(migrated, root, 0, () => false);
+    expect(ranking.noise).toBe(3);
+    expect(ranking.absent).toBe(1);
+    expect(ranking.noise + ranking.absent + ranking.ranked.length).toBe(
+      ranking.entries,
+    );
+  });
+
+  it("does not exclude a workbench file that is not on the list", () => {
+    // The exclusion is the tracker's list and nothing wider. `tasklist.md` is a
+    // workbench file the session edits as ordinary work, and it is evidence.
+    const state: ChurnState = {
+      files: {
+        "fusion-workbench/tasklist.md": stats({
+          totalChanges: 12,
+          thrashingScore: 4,
+        }),
+      },
+      sessionStart: "2026-08-10T09:00:00.000Z",
+      keyAnchor: KEY_ANCHOR,
+    };
+    const ranking = rankThrashing(state, root, 0, everythingPresent);
+    expect(ranking.ranked.map((r) => r.path)).toEqual([
+      "fusion-workbench/tasklist.md",
+    ]);
+    expect(ranking.noise).toBe(0);
+  });
+
+  it("has one definition of the list, so the two paths cannot disagree", () => {
+    // The write path (`hooks/tracker.ts`) and the read path (here) apply the
+    // same list. A second copy would be two places for one rule to drift, and
+    // the drift would be silent: the ranking would start showing a surface the
+    // tracker stopped counting, which is the defect this exclusion closes.
+    const hooks = resolve(
+      dirname(fileURLToPath(import.meta.url)),
+      "..",
+      "..",
+    );
+    const declarations = ["lib/churn.ts", "tracker.ts", "guard.ts", "churn-rank.ts"]
+      .filter((rel) =>
+        /(?:const|let|var)\s+TRACKER_NOISE_FILES\b/.test(
+          readFileSync(resolve(hooks, rel), "utf-8"),
+        ),
+      );
+    expect(declarations).toEqual(["lib/churn.ts"]);
   });
 });
 

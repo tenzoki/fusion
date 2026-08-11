@@ -21,6 +21,7 @@ import {
   REPO_ROOT,
   runBash,
   runGuard,
+  runToolCall,
   runWrite,
   withPluginProject,
   withProject,
@@ -517,6 +518,61 @@ describe("FUSION_ALLOW_RULES_WRITE and the Bash surface", () => {
     CASE_TIMEOUT,
   );
 
+  it(
+    "bounds the advisory detail when one command exempts thirty rule files",
+    () => {
+      // Issue `260803-1352`, at the site it moved to. The record named two
+      // `hooks/guard.ts` emissions and a `forEvent()` clamp; all three left with
+      // the Bash classifier in v6.0.0. What survived is the shape: the Bash
+      // surface's advisory carries the WHOLE exempted set, so its length is a
+      // function of how many paths one command wrote, and a 30-path detail
+      // rendered fifteen lines in the monitor's warnings panel.
+      //
+      // `sed -i 's/x/y/' rules/*.md` is the case, run here as the effect
+      // between the two hooks because that is the window the measurement
+      // measures.
+      const rules = Array.from({ length: 30 }, (_, i) => `rules/rule-${i + 1}.md`);
+      const seeded = Object.fromEntries(rules.map((p) => [p, "# before\n"]));
+
+      withProject(
+        ({ root }) => {
+          runToolCall(
+            root,
+            "Bash",
+            { command: "sed -i '' 's/before/after/' rules/*.md" },
+            () => {
+              for (const rel of rules) {
+                writeFileSync(resolve(root, rel), "# after\n", "utf-8");
+              }
+            },
+            FLAG_SET,
+          );
+
+          const advisories = readEvents(root).filter(
+            (e) => e.event === "guard_advisory",
+          );
+          expect(advisories).toHaveLength(1);
+          const detail = advisories[0].detail ?? "";
+
+          // The bound, and that it did not buy itself a path nobody can open.
+          expect(detail.length).toBeLessThanOrEqual(200);
+          expect(detail).toMatch(/ \(\+\d+ more\)$/);
+          const shown = detail
+            .slice(detail.indexOf(": ") + 2, detail.lastIndexOf(" (+"))
+            .split(", ");
+          expect(shown.every((p) => rules.includes(p))).toBe(true);
+          const dropped = Number(/\(\+(\d+) more\)$/.exec(detail)?.[1]);
+          expect(shown.length + dropped).toBe(rules.length);
+
+          // Exempted, not reverted: the flag's whole point, unchanged by the
+          // bound. A truncated detail must not be read as a truncated grant.
+          expect(readFileSync(resolve(root, rules[29]), "utf-8")).toBe("# after\n");
+        },
+        { files: seeded },
+      );
+    },
+    CASE_TIMEOUT,
+  );
 });
 
 // ---------------------------------------------------------------------------

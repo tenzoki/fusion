@@ -1076,4 +1076,54 @@ describe("rulesWriteDetail — the advisory message", () => {
   it("is a single line, so one event carries one detail", () => {
     expect(rulesWriteDetail(["rules/x.md", "rules/y.md"])).not.toContain("\n");
   });
+
+  /**
+   * Finding `260803-1352`: the detail's length is a function of how many paths
+   * one command wrote, and nothing bounded it. Measured through `bin/monitor`'s
+   * own stylesheet at a 900px viewport, a 30-path advisory rendered 15 lines
+   * and ~370px — nine ordinary warning rows.
+   *
+   * The record named two `hooks/guard.ts` sites and a `forEvent()` clamp; all
+   * three left with the Bash classifier in v6.0.0. The finding outlived its
+   * coordinates: `tracker.ts` builds the same unbounded list today.
+   */
+  describe("the length bound", () => {
+    /** The flag's worst realistic case: `sed -i 's/x/y/' rules/*.md`. */
+    const many = Array.from({ length: 30 }, (_, i) => `rules/rule-${i + 1}.md`);
+
+    it("bounds a 30-path list to 200 characters", () => {
+      expect(rulesWriteDetail(many).length).toBeLessThanOrEqual(200);
+    });
+
+    it("drops whole entries and says how many, rather than cutting a path", () => {
+      const detail = rulesWriteDetail(many);
+      const list = detail.slice(detail.indexOf(": ") + 2);
+      const [shown, tail] = list.split(" (+");
+      expect(tail).toMatch(/^\d+ more\)$/);
+
+      const kept = shown.split(", ");
+      const dropped = Number(tail.slice(0, tail.indexOf(" ")));
+      expect(kept.length + dropped).toBe(many.length);
+      // Every path that IS shown is shown whole — a truncated path names a file
+      // nobody can find, which is the opposite of what this note is for.
+      expect(kept).toEqual(many.slice(0, kept.length));
+    });
+
+    it("leaves a list that already fits exactly as it was", () => {
+      const detail = rulesWriteDetail(["rules/x.md", "rules/retired/"]);
+      expect(detail).toBe(
+        `Override ${RULES_WRITE_ENV} allowed a normally-denied write to protected rule paths: rules/x.md, rules/retired/`,
+      );
+      expect(detail).not.toContain(" more)");
+    });
+
+    it("writes one over-long path whole rather than a path nobody can open", () => {
+      // The stated exception. A path is bounded by the filesystem; a list is
+      // bounded by nothing, and it was the list that produced the finding.
+      const long = `rules/${"deep/".repeat(60)}rule.md`;
+      const detail = rulesWriteDetail([long, "rules/y.md"]);
+      expect(detail).toContain(long);
+      expect(detail).toContain("(+1 more)");
+    });
+  });
 });

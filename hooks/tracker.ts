@@ -77,6 +77,7 @@
 
 import { resolve, sep } from "node:path";
 import {
+  TRACKER_NOISE_FILES,
   analyzeChurn,
   churnKey,
   loadChurn,
@@ -143,38 +144,6 @@ import {
  * and the disagreement would be a silent change in what the guard reverts.
  */
 const WRITE_TOOLS = ["Write", "Edit", "MultiEdit", "NotebookEdit"];
-
-/**
- * Workbench dashboard/state files that the orchestrator continuously
- * rewrites by design. Tracking them as churn or ping-back produces
- * pure noise — exclude from both metrics.
- *
- * ## This list is not a protection statement
- *
- * The `.guard-state/**` entry below is confirmed deliberately, not carried
- * along. `fusion-workbench/.guard-state/**` appeared twice in this codebase and
- * the two occurrences answered different questions; only one of them was
- * retired.
- *
- *   - In `hooks/config.json` it meant "an agent may not write here". That entry
- *     is GONE (step 1 of this Circle). It had to go: the measurement writes its
- *     own snapshot, its own events and its own escalation counter into that
- *     directory, so a protected `.guard-state/` would have made every single
- *     tool call report the guard's own bookkeeping as a violation.
- *   - HERE it means "changes here are not evidence about the agent's editing
- *     behaviour". That is still true, and more true than before: `guard.ts` now
- *     writes a fresh snapshot file into `.guard-state/` on every guarded call.
- *     Counting those would drown the churn heatmap in the guard's own traffic.
- *
- * Deleting this entry because the other one went would break the churn metric
- * for a reason that has nothing to do with churn.
- */
-const TRACKER_NOISE_FILES = [
-  "fusion-workbench/orchestrator-live.md",
-  "fusion-workbench/orchestrator-events.jsonl",
-  "fusion-workbench/agentstate.yaml",
-  "fusion-workbench/.guard-state/**",
-];
 
 /** Hook input from Claude Code (PostToolUse). */
 interface HookInput {
@@ -703,12 +672,25 @@ function measureProtectedPaths(input: HookInput): string | null {
  * and none of them may cost the sentence explaining a reverted protected path.
  */
 function trackChurn(input: HookInput): void {
-  // Only track write operations for churn
+  // Only write tools produce churn, and only they are recorded.
+  //
+  // A `Bash` call used to emit `{"event":"tracker_record","tool":"Bash",
+  // "detail":"Bash command observed"}` here — no file, no command, no result.
+  // It said that a Bash call happened, which every other line in the log
+  // already implies, and nothing read it: the monitor drops `tracker_record`
+  // before the warnings panel, and no hook, helper or prompt has ever consumed
+  // one. It was 22 % of an 11 142-line log at the time it was measured, and the
+  // log has no rotation, so the cheapest thing that could be done about the
+  // growth was to stop writing the part that carried nothing (issue
+  // `260805-1859`).
+  //
+  // Filling it with content instead was the other half of that choice and was
+  // not taken: the content available here is the command text, and the guard
+  // stopped reading command text in v6.0.0 on purpose. Copying every shell
+  // command into an append-only log would be a new surface, not a fix for this
+  // one. What remains unsettled is the log's upper bound, which discards
+  // evidence whichever way it is set — filed as decision `260811-1534`.
   if (!WRITE_TOOLS.includes(input.tool_name)) {
-    // For Bash, we just emit a tracker_record event and return
-    if (input.tool_name === "Bash") {
-      emitEvent("tracker_record", "Bash", undefined, "Bash command observed");
-    }
     return;
   }
 

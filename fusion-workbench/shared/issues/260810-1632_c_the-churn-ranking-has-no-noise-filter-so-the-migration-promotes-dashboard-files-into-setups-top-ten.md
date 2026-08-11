@@ -75,3 +75,27 @@ that `260809-2252` already has that list open for a separate reason.
 - `fusion-workbench/shared/issues/260809-2252_o_the-tracker-noise-list-still-says-it-excludes-two-metrics-when-only-churn-reads-it.md` — same constant, different defect
 - `fusion-workbench/shared/decisions/260810-0920_i_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md`
 - Filed by `coderev`, review `shared/reviews/260810-1632-coderev-turn-1-range-430d73a-to-head.md`
+
+---
+Resolved: `rankThrashing` now applies `matchesAny(path, TRACKER_NOISE_FILES)` as a second
+exclusion, ahead of the existence check, and reports it as its own count — the shape this
+record recommended. `ChurnRanking` gained `noise: number`; `hooks/churn-rank.ts` prints a
+`noise=` line between `absent=` and `ranked=`; `bin/fusion-churn-rank`'s output contract and
+`agents/orchestrator.md` Setup Step 5 both moved with it, as did `skills/setup/SKILL.md`
+Step 3 and the two `README-hooks.md` rows.
+
+The constant was moved rather than exported: `hooks/tracker.ts` runs `main()` at module load,
+so `lib/churn.ts` could not have imported it, and a second copy is what this fix exists to
+avoid. It now has exactly one definition, in `lib/churn.ts`, pinned by a case in
+`churn.test.ts`.
+
+The two exclusions are disjoint by construction — noise is asked first, so a key that is both
+counts once, as noise. "Not evidence" is a statement about the key that holds whether or not
+the file is on disk; "deleted" is not.
+
+Measured after the change against this repository's live map: `entries=451 absent=209 noise=2
+ranked=10`, and `fusion-workbench/orchestrator-live.md` no longer occupies a slot in the
+default `--limit 10`. Verified end to end against a throwaway project root through the same
+program the orchestrator runs (`churn-key-anchor.test.ts`, "keeps a migrated dashboard key out
+of the ranking, and counts it apart"), plus four unit cases in `churn.test.ts`. The entries
+stay in the map, as decision `260810-0920` part (c) asks.

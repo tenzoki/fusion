@@ -512,8 +512,9 @@ async function main(): Promise<void> {
     // Three properties a later editor must not break:
     //
     //   1. CHECK 1 STAYS ABOVE THIS. A halted guard blocks an exempted write
-    //      like every other write. The flag grants exactly one permission, the
-    //      way the two git overrides do, and lifting a halt is not it. Moving
+    //      like every other write. The flag grants exactly one permission —
+    //      the way the two git overrides did, before the branch policy that
+    //      carried them was deleted — and lifting a halt is not it. Moving
     //      this branch above the halt check — or clearing the halt here — would
     //      turn the flag into a way out of halt.
     //   2. ONE SAVE PER CALL. The note is pushed into the IN-MEMORY escalation

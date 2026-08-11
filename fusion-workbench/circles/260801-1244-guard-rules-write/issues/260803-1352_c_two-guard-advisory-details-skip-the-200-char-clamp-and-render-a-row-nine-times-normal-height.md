@@ -147,3 +147,39 @@ Am Baum nachgeprüft gegen HEAD `e684eae`. Beide ungeklammerten Emissionen stehe
 `EVENT_DETAIL_MAX = 200` steht bei `hooks/guard.ts:235`, `forEvent` bei `:246`, und `forEvent` wird im ganzen Modul genau einmal aufgerufen: bei `:358`, für die Branch-Verweigerung. Die beiden hier beschriebenen Pfade gehen weiter daran vorbei.
 
 **Ein Zusatz, den der Umbau gebracht hat:** `hooks/tracker.ts:289` emittiert seit `327d0b6` ein drittes `guard_advisory`, aus der Messung heraus. Es geht ebenfalls nicht durch `forEvent` — der Klammer-Helfer liegt in `guard.ts` und wird von `tracker.ts` nicht importiert. Wer diesen Befund aufnimmt, sollte den dritten Schreiber mitnehmen und die Klammer dorthin ziehen, wo beide Hooks sie erreichen (etwa nach `hooks/lib/events.ts`), statt sie ein zweites Mal zu schreiben.
+
+---
+Resolved: The bound is back, at the one site that still needs it.
+
+**Every coordinate in this record and in its four reconciliations is stale, and the last
+reconciliation (260807-1515) was the last one that could still find the sites.** Verified at
+HEAD `3b30f5e`: `forEvent` and `EVENT_DETAIL_MAX` no longer exist anywhere under `hooks/`
+outside `dist/`, and both named `hooks/guard.ts` emissions went with the Bash classifier in
+v6.0.0. The third writer that reconciliation added — `hooks/tracker.ts`, the measurement's own
+advisory — is the one the defect moved to, and it is the only unbounded producer left: it
+calls `rulesWriteDetail(exempted)` on a list of arbitrary length. The surviving `guard.ts`
+call (`:585`, `rulesWriteDetail([filePath])`) is the single-path case this record itself
+excluded as fine, and it still is.
+
+What was NOT stale is the finding, and both of the things this record decided about the fix
+still held. The bound is in the producer, not in `bin/monitor`'s CSS. And a list drops whole
+entries with `(+N more)` rather than ending mid-path, which made it a `rulesWriteDetail`
+change.
+
+**Where the bound went, and why not `lib/events.ts`.** The 260807-1515 reconciliation proposed
+pulling a shared clamp into `lib/events.ts` so both hooks could reach it. It went into
+`rulesWriteDetail` (`hooks/lib/rules-write-exemption.ts`) instead, which both hooks already
+import — same property, one module rather than a new one, and it is the only place that knows
+the string is a *list* and can drop whole entries. A character clamp in `emitEvent` could only
+have cut mid-path, which is the outcome this record argued against.
+
+`DETAIL_MAX = 200`, the number the retired `forEvent()` used. Measured after the change: the
+30-path case (`sed -i 's/x/y/' rules/*.md` under the flag) went from 902 characters to 185,
+five paths and `(+25 more)`. One stated exception, deliberate: a single path that alone
+overruns the budget is still written whole, because a path is bounded by the filesystem while
+a list is bounded by nothing, and it was the list that produced this finding.
+
+Verified against a throwaway project root, through both hooks around a real 30-file write
+(`guard-rules-write-integration.test.ts`, "bounds the advisory detail when one command exempts
+thirty rule files"), plus four unit cases in `rules-write-exemption.test.ts`. The write is
+still exempted, not reverted — a truncated detail must not read as a truncated grant.

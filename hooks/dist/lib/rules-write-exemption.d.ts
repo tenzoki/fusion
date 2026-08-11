@@ -562,14 +562,23 @@ export declare function rulesWriteExemptionActive(env: NodeJS.ProcessEnv): boole
  * escalation entry's `message` and the `guard_advisory` event's detail, which
  * are deliberately the same string.
  *
- * Shaped like the git override note (`guard.ts` STEP 3): it names the variable
- * that granted the permission and what the permission let through, so a reader
- * of `events.jsonl` sees the cause and not only the effect.
+ * It names the variable that granted the permission and what the permission let
+ * through, so a reader of `events.jsonl` sees the cause and not only the effect.
  *
  * The ARTICLE travels with the label. A plural label under a fixed "a
  * protected …" read "a protected rule paths: rules/x.md, rules/retired/" for
- * every multi-path write, which is the first sentence a user sees about the new
+ * every multi-path write, which is the first sentence a user sees about the
  * flag: the Bash surface reaches the plural branch on the flag's headline use,
  * `mv rules/x.md rules/retired/`, which exempts the source and the destination.
+ *
+ * ## The bound lives here, and here is where both hooks reach it
+ *
+ * `guard.ts` calls this with exactly one path and `tracker.ts` with the whole
+ * exempted set, so the unbounded case has one producer — but the bound belongs
+ * to the string rather than to either caller, and writing it twice, once per
+ * hook, is two places for one rule to drift apart. It is not in `bin/monitor`'s
+ * CSS either: a CSS clamp would be a second, weaker bound compensating for an
+ * unbounded producer, and it would hide the tail of the list from the one
+ * person who needs it.
  */
 export declare function rulesWriteDetail(paths: string[]): string;

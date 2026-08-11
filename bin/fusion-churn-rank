@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # fusion-churn-rank — the churn heatmap's ranking, with the files that no longer
-# exist left out. Read at Setup (agents/orchestrator.md Step 5,
-# skills/setup/SKILL.md Step 3) in place of reading
-# fusion-workbench/.guard-state/churn.json by hand.
+# exist and the files the tracker refuses to measure left out. Read at Setup
+# (agents/orchestrator.md Step 5, skills/setup/SKILL.md Step 3) in place of
+# reading fusion-workbench/.guard-state/churn.json by hand.
 #
 # Usage:
 #   fusion-churn-rank [--limit <n>]      # default 10; --limit 0 prints all
@@ -13,6 +13,10 @@
 #   entries=590                # every key in the map, ranked or not
 #   absent=367                 # keys whose file is not on disk — kept in the
 #                              # map, kept out of the ranking
+#   noise=2                    # keys naming a workbench surface the tracker
+#                              # refuses to count as churn — same treatment,
+#                              # counted apart so "deleted" and "not evidence"
+#                              # stay distinguishable
 #   ranked=10
 #   score=53 total=147 session=0 path=hooks/lib/churn.ts
 #
@@ -35,6 +39,14 @@
 # part (c) keeps every entry, so the history survives, and excludes the absent
 # ones from the ranking here, on the read path, which runs once per Setup rather
 # than once per tool call.
+#
+# The noise exclusion arrived the same way. The key migration that made those
+# keys resolvable also lifted the workbench dashboard files into the spelling
+# the tracker's noise list matches, which stopped the write path counting them
+# and left their accumulated score in the map — orchestrator-live.md ranked 10th
+# in this repository, inside the default limit the orchestrator reads at Setup
+# (issue 260810-1632). Same treatment as an absent key: kept in the map, kept
+# out of the ranking, counted on its own line.
 #
 # The work is hooks/dist/churn-rank.js, resolved relative to this script rather
 # than through $FUSION_PLUGIN_ROOT, so an install copy and a work tree each run

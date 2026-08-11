@@ -642,25 +642,91 @@ export function rulesWriteExemptionActive(env) {
     return isEnvFlagSet(env[RULES_WRITE_ENV]);
 }
 /**
+ * How long the advisory note may get, in characters.
+ *
+ * 200, which is the number the retired `forEvent()` clamp in `guard.ts` used
+ * for every detail carrying a command or a segment. That clamp and the two
+ * unclamped sites the finding named all left with the Bash classifier in
+ * v6.0.0; the finding did not, because it was never about that clamp. It was
+ * about a `guard_advisory` detail whose length is a function of how many paths
+ * one command wrote, and `tracker.ts` still builds one (issue `260803-1352`).
+ *
+ * Measured through `bin/monitor`'s own stylesheet at a 900px viewport: a
+ * 12-path advisory renders 6 lines and about 150px, a 30-path advisory 15 lines
+ * and about 370px — nine ordinary warning rows of a panel that has room for a
+ * handful. The 30-path case is not contrived; `sed -i 's/x/y/' rules/*.md`
+ * under the flag is one command, the shell expands the glob before the guard
+ * sees it, and fusion ships enough rule files to reach it.
+ */
+const DETAIL_MAX = 200;
+/**
+ * Join the paths, dropping whole entries until the sentence fits.
+ *
+ * Whole entries, never a mid-token ellipsis: a truncated path names a file
+ * nobody can find, and the reader of this note is being told which files the
+ * flag let through. `(+N more)` says what was dropped, so a short list is never
+ * mistaken for the complete one.
+ *
+ * `budget` is what is left after the sentence around the list. One case is left
+ * deliberately unbounded: if even a single path does not fit, that path is
+ * still written whole. A path is bounded by the filesystem (`PATH_MAX`, ~1 KB),
+ * a list is bounded by nothing, and it was the list that produced the finding.
+ */
+function boundedList(paths, budget) {
+    const full = paths.join(", ");
+    if (full.length <= budget)
+        return full;
+    let kept = 0;
+    let length = 0;
+    for (let i = 0; i < paths.length; i++) {
+        const next = length + (i === 0 ? 0 : 2) + paths[i].length;
+        const suffix = ` (+${paths.length - (i + 1)} more)`;
+        if (next + suffix.length > budget)
+            break;
+        length = next;
+        kept = i + 1;
+    }
+    // At least one path, whatever it costs — see the note above. The loop keeps
+    // none only when the first path alone overruns the budget.
+    if (kept === 0)
+        kept = 1;
+    // `dropped` is never 0: the whole list overran the budget at the top, so the
+    // loop cannot have kept every entry, and the `(+N more)` below always applies.
+    const dropped = paths.length - kept;
+    return `${paths.slice(0, kept).join(", ")} (+${dropped} more)`;
+}
+/**
  * The advisory message recorded when the exemption lets a write through — the
  * escalation entry's `message` and the `guard_advisory` event's detail, which
  * are deliberately the same string.
  *
- * Shaped like the git override note (`guard.ts` STEP 3): it names the variable
- * that granted the permission and what the permission let through, so a reader
- * of `events.jsonl` sees the cause and not only the effect.
+ * It names the variable that granted the permission and what the permission let
+ * through, so a reader of `events.jsonl` sees the cause and not only the effect.
  *
  * The ARTICLE travels with the label. A plural label under a fixed "a
  * protected …" read "a protected rule paths: rules/x.md, rules/retired/" for
- * every multi-path write, which is the first sentence a user sees about the new
+ * every multi-path write, which is the first sentence a user sees about the
  * flag: the Bash surface reaches the plural branch on the flag's headline use,
  * `mv rules/x.md rules/retired/`, which exempts the source and the destination.
+ *
+ * ## The bound lives here, and here is where both hooks reach it
+ *
+ * `guard.ts` calls this with exactly one path and `tracker.ts` with the whole
+ * exempted set, so the unbounded case has one producer — but the bound belongs
+ * to the string rather than to either caller, and writing it twice, once per
+ * hook, is two places for one rule to drift apart. It is not in `bin/monitor`'s
+ * CSS either: a CSS clamp would be a second, weaker bound compensating for an
+ * unbounded producer, and it would hide the tail of the list from the one
+ * person who needs it.
  */
 export function rulesWriteDetail(paths) {
     const label = paths.length === 1 ? "a protected rule path" : "protected rule paths";
+    const prefix = `Override ${RULES_WRITE_ENV} allowed a normally-denied write to ${label}: `;
     // Empty is not a case any call site produces — the note is written only for
     // paths that were exempted — but a detail string that silently reads as
     // though nothing happened would be worse than one that says so.
-    const list = paths.length === 0 ? "(none recorded)" : paths.join(", ");
-    return `Override ${RULES_WRITE_ENV} allowed a normally-denied write to ${label}: ${list}`;
+    const list = paths.length === 0
+        ? "(none recorded)"
+        : boundedList(paths, DETAIL_MAX - prefix.length);
+    return prefix + list;
 }

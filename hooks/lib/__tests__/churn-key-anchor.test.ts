@@ -138,6 +138,44 @@ describe("the churn key is anchored to the workbench root", () => {
   );
 
   it(
+    "writes nothing to the event log for a Bash call",
+    () => {
+      // Issue `260805-1859`. The tracker used to record
+      // `{"event":"tracker_record","tool":"Bash","detail":"Bash command
+      // observed"}` for every shell call: no file, no command, no result, and
+      // 22 % of an 11 142-line log that has no rotation. Nothing read it.
+      withProject((project) => {
+        runTracker(project.root, "Bash", { command: "ls -la" });
+
+        expect(readEvents(project.root)).toEqual([]);
+        // And it was never churn either — the map stays untouched.
+        expect(readChurn(project.root)).toBeNull();
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "still records the write-tool events, which carry a file",
+    () => {
+      // The half that must NOT go with it: the three surviving `tracker_record`
+      // details each name a path, which is what made the Bash one the one
+      // carrying nothing.
+      withProject((project) => {
+        writeFileSync(resolve(project.root, "notes.txt"), "n\n", "utf-8");
+        runTracker(project.root, "Edit", { file_path: "notes.txt" });
+
+        const events = readEvents(project.root).filter(
+          (e) => e.event === "tracker_record",
+        );
+        expect(events).toHaveLength(1);
+        expect(events[0].file).toBe("notes.txt");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
     "keys a workbench file under the workbench even from a session started there",
     () => {
       withProject((project) => {
@@ -283,6 +321,57 @@ describe("the churn ranking Setup reads", () => {
         const rank = runRank(project.root, ["--limit", "-3"]);
         expect(rank.status).toBe(1);
         expect(rank.stderr).toContain("--limit");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "keeps a migrated dashboard key out of the ranking, and counts it apart",
+    () => {
+      // Issue `260810-1632`, end to end and through the reader the orchestrator
+      // actually runs. The two keys below are the spellings this repository's
+      // own map holds after the migration lifted them out of their bare form;
+      // in the bare form they matched no noise pattern, which is how they
+      // accumulated a score the write path would refuse to record today.
+      withProject((project) => {
+        writeFileSync(resolve(project.root, "notes.txt"), "n\n", "utf-8");
+        writeFileSync(
+          resolve(project.root, "fusion-workbench", "orchestrator-live.md"),
+          "# live\n",
+          "utf-8",
+        );
+        writeChurn(project.root, {
+          sessionStart: "2026-08-10T09:00:00.000Z",
+          keyAnchor: "workbench-root",
+          files: {
+            "fusion-workbench/orchestrator-live.md": {
+              totalChanges: 47,
+              changesThisSession: 0,
+              lastChange: "",
+              thrashingScore: 15,
+            },
+            "notes.txt": {
+              totalChanges: 30,
+              changesThisSession: 0,
+              lastChange: "",
+              thrashingScore: 10,
+            },
+          },
+        });
+
+        const rank = runRank(project.root);
+        expect(rank.status).toBe(0);
+        expect(rank.rows.map((r) => r.path)).toEqual(["notes.txt"]);
+        expect(rank.value("noise")).toBe("1");
+        // Present on disk, so it is not the absent exclusion doing this work.
+        expect(rank.value("absent")).toBe("0");
+        expect(rank.value("entries")).toBe("2");
+        // Kept in the map, exactly as decision `260810-0920` part (c) asks.
+        expect(
+          readChurn(project.root)?.files["fusion-workbench/orchestrator-live.md"]
+            .totalChanges,
+        ).toBe(47);
       });
     },
     CASE_TIMEOUT,

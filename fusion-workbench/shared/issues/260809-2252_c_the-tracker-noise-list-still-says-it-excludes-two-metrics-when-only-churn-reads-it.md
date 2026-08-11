@@ -54,3 +54,15 @@ the reason given for it.
       is byte-identical to a fresh `tsc` today; keep it so).
 - [ ] `git grep -in 'ping-back\|pingback' -- hooks/ bin/ rules/ agents/ skills/ docs/ README*.md`
       returns only past-tense mentions that name decision `260809-2004`.
+
+---
+Resolved: The header now names one metric and the word "ping-back" does not appear in it. The
+constant also moved: it lives at `hooks/lib/churn.ts` rather than in `hooks/tracker.ts`,
+because task 12 (`260810-1632`) needed the churn READ path to apply the same list and a hook
+entry point cannot be imported from — so the corrected comment travelled with it, exactly as
+the queue entry asked. The header now reads "One metric, two readers" and says which two
+(`tracker.ts` on the write path, `rankThrashing` on the read path); the "This list is not a
+protection statement" argument below it is intact, with only "(step 1 of this Circle)" dropped
+as unresolvable from its new home. `hooks/dist/` rebuilt with `npm run build`, not hand-edited.
+`git grep -in 'ping-back\|pingback' -- hooks/ bin/ rules/ agents/ skills/ docs/ README*.md`
+returns three past-tense mentions naming decision `260809-2004` and nothing else.

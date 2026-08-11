@@ -395,7 +395,17 @@ describe("bin/monitor — warnings panel capacity", () => {
       const { warnings } = await dashboard(
         seedWorkbench([
           { ts: ts(), event: "guard_allow", tool: "Bash", detail: "allowed" },
-          { ts: ts(), event: "tracker_record", tool: "Bash", detail: "Bash command observed" },
+          // A shape the tracker still writes. The contentless Bash
+          // `tracker_record` this line used to carry stopped being emitted with
+          // issue `260805-1859`; pinning it here would test the panel against a
+          // log line nothing produces.
+          {
+            ts: ts(),
+            event: "tracker_record",
+            tool: "Edit",
+            file: "src/a.ts",
+            detail: "File change recorded",
+          },
           { ts: ts(), event: "guard_advisory", tool: "Edit", file: "rules/a.md", detail: "advisory" },
         ]),
       );

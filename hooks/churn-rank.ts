@@ -17,6 +17,13 @@
  * than once per tool call. A read path that has to apply a rule is a program;
  * asking a reader to stat 600 keys by hand is how the rule stops being applied.
  *
+ * `noise` is the second exclusion, on the same read path and for the same
+ * reason: the same key migration that made the keys resolvable also lifted the
+ * workbench dashboard files into the spelling `TRACKER_NOISE_FILES` matches, so
+ * the ranking began showing files the write path deliberately refuses to
+ * measure — `orchestrator-live.md` ranked 10th here, inside the default limit
+ * (issue `260810-1632`).
+ *
  * Read-only. It does not save the migration `loadChurn` may have run in memory —
  * a helper that reports a ranking must not rewrite the state it reports on. The
  * tracker persists it on the next tracked write.
@@ -27,6 +34,7 @@
  *   anchor=workbench-root
  *   entries=590
  *   absent=367
+ *   noise=2
  *   ranked=10
  *   score=53 total=147 session=0 path=hooks/lib/churn.ts
  *
@@ -108,6 +116,7 @@ function main(argv: string[]): number {
     `anchor=${KEY_ANCHOR}`,
     `entries=${ranking.entries}`,
     `absent=${ranking.absent}`,
+    `noise=${ranking.noise}`,
     `ranked=${ranking.ranked.length}`,
     ...ranking.ranked.map(
       ({ path, stats }) =>

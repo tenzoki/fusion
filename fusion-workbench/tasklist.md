@@ -701,7 +701,12 @@ Nothing from here to task 38 needs a user answer. Task 1 comes first for the rea
   `hooks/dist/tracker.js:74` (rebuild, do not hand-edit)
 - **Depends on:** task 1
 - **Priority:** normal
-- **Status:** [ ] open
+- **Status:** [x] done — the header names one metric, "ping-back" is gone, and the constant
+  moved with the corrected comment: `TRACKER_NOISE_FILES` now lives in `hooks/lib/churn.ts`,
+  because task 12 needed the read path to apply it and a hook entry point cannot be imported
+  from. `hooks/dist/` rebuilt with `npm run build`. `git grep -in 'ping-back\|pingback'` over
+  the named trees returns three past-tense mentions naming decision `260809-2004` and nothing
+  else. `cd hooks && npm test` exits 0 (49 files, 1284 tests)
 - **Detail:** The header comment reads "Tracking them as churn or ping-back produces pure noise —
   exclude from **both metrics**." There is no second metric. The constant has exactly one reader at
   HEAD, on the churn path; the ping-back tracker, its state file, its event types and its
@@ -731,7 +736,13 @@ Nothing from here to task 38 needs a user answer. Task 1 comes first for the rea
   (the reader); `hooks/dist/` (rebuild)
 - **Depends on:** task 11 — same constant, and the corrected comment should travel with it.
 - **Priority:** normal
-- **Status:** [ ] open
+- **Status:** [x] done — `rankThrashing` applies the noise list ahead of the existence check
+  and reports `noise` as its own count; `hooks/churn-rank.ts` prints a `noise=` line and the
+  three surfaces documenting that contract moved with it (`bin/fusion-churn-rank`,
+  `agents/orchestrator.md` Step 5, `skills/setup/SKILL.md` Step 3), plus two `README-hooks.md`
+  rows. One definition of the constant, pinned by a test. Live map after the change:
+  `entries=451 absent=209 noise=2 ranked=10`, and `orchestrator-live.md` no longer holds a
+  top-ten slot. `cd hooks && npm test` exits 0 (1284 tests)
 - **Detail:** `rankThrashing` excludes entries whose file is absent and nothing else.
   `TRACKER_NOISE_FILES` names four workbench surfaces the tracker refuses to count as churn because
   they are rewritten continuously by design: `orchestrator-live.md`, `orchestrator-events.jsonl`,
@@ -918,7 +929,14 @@ Nothing from here to task 38 needs a user answer. Task 1 comes first for the rea
   hooks already import
 - **Depends on:** task 1
 - **Priority:** normal
-- **Status:** [ ] open
+- **Status:** [x] done — the bound is inside `rulesWriteDetail`
+  (`hooks/lib/rules-write-exemption.ts`), which both hooks already import, rather than in a new
+  `lib/events.ts` clamp: same "one place both hooks reach", no fourth module, and it is the
+  only place that knows the string is a list and can drop whole entries. `DETAIL_MAX = 200`,
+  the retired `forEvent()` number. The 30-path case went from 902 characters to 185, five paths
+  and `(+25 more)`. One stated exception: a single over-long path is written whole. The
+  record's obsolete `guard.ts` coordinates are corrected in place, naming `tracker.ts:557` as
+  where the defect actually lives. `cd hooks && npm test` exits 0 (1284 tests)
 - **Detail:** **Read the record's coordinates as history, not as instructions — every one of them is
   obsolete, and the defect is still real.** The record names two unclamped sites in `hooks/guard.ts`
   and a 200-character clamp called `forEvent`. At HEAD: `forEvent` and `EVENT_DETAIL_MAX` **no longer
@@ -1033,7 +1051,16 @@ Nothing from here to task 38 needs a user answer. Task 1 comes first for the rea
   refresh); `skills/archive/SKILL.md` (the never-touch list, if the log is to be archivable)
 - **Depends on:** task 1
 - **Priority:** normal
-- **Status:** [ ] open
+- **Status:** [x] done, as a split — half (a) implemented, half (b) filed as a decision. The
+  contentless Bash `tracker_record` is gone (4 226 of 17 524 lines, 24 % of this repository's
+  log). The bound was **not** implemented: every line- or size-cap discards the oldest lines
+  first, and those include the 99 `guard_block` / `guard_halt` / `halt_cleared` events that are
+  the enforcement audit trail, while tail-reading in `bin/monitor` loses the same evidence from
+  the reader's side because the panel caps each class separately. Filed as
+  `shared/decisions/260811-1534_o_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`
+  with four options and a recommendation (archive, never truncate). The acceptance clause is
+  therefore met in part only, and the record says so rather than reading as fully discharged.
+  `cd hooks && npm test` exits 0 (1284 tests)
 - **Detail:** `fusion-workbench/.guard-state/events.jsonl` is append-only with no rotation, trimming
   or ceiling, and nobody clears it: `/fusion:archive` lists `.guard-state/` in its never-touch set,
   `emitEvent` only appends, and `saveEscalation` trims `recentEvents` inside `escalation.json` rather
