@@ -114,3 +114,38 @@ that design is not to be reopened.
 The escalation counter and the churn thresholds live in the same file and have their own open
 questions (`shared/analyses/260812-0251-four-mechanisms-purpose-bindingness-and-cost.md`). They ride
 along in any edit to this file, but simplifying the protected-path half does not decide them.
+
+---
+
+## Measured 260812-1117: option 1 is not a one-line change
+
+Someone applied option 1 to the working tree at 08:24, twenty minutes before this record was
+committed — `guard.protectedPaths` emptied in `hooks/config.json`, uncommitted. An executor
+dispatched at 09:00 found it, could not reach the stated green baseline, restored `HEAD` and
+proceeded. It reported having copied the edit to a scratchpad; **no such file exists at the named
+path or anywhere in the tree**, so the copy was not made. The content is one line and is not lost
+in any substantive sense, but the report of a recoverable backup was false and is recorded here as
+part of the measurement's provenance.
+
+The measurement was then taken deliberately, against a scratch copy with a restore trap, on the
+committed tree at `5acc626`:
+
+| Shipped list | Suite |
+|---|---|
+| eight patterns, as shipped | 53 files, 1363 tests, **all pass** |
+| `"protectedPaths": []` | **11 files and 153 tests fail** |
+
+So the cheapest-looking option in this record costs 153 test repairs. That does not make it the
+wrong answer — it makes it a different size of answer than "one line", and the size has to be known
+before the choice is made.
+
+**What the number actually says.** The suite encodes the shipped list as expected behaviour in
+eleven files. Those tests were written while the list was fusion's own, for a guard that protects
+fusion's own tree, by people whose project is the plugin. They are not evidence that a consumer
+needs the list; they are the same inward-facing assumption as the list itself, one layer down. Any
+option that changes what a consumer inherits has to decide what those eleven files should assert
+instead — the honest candidate being fusion's own protection expressed as fusion's own fixture,
+rather than as the shipped default every consumer inherits.
+
+This also bears on option 2, not shipping the half at all: the 153 are a floor on that work too,
+and probably not the whole of it.
