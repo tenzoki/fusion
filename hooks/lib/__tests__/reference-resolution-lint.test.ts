@@ -1,7 +1,20 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve, join, relative, sep } from "node:path";
+import { join, relative, sep } from "node:path";
+import {
+  pluginRoot,
+  WORKBENCH_PRESENT,
+  isPlaceholder,
+  report,
+  scanRecordCitations,
+  workbenchIndex,
+  circleDirs,
+  RECORD_EXAMPLE_FILES,
+  scanCitationTokens,
+  partition,
+  type Violation,
+  type CitationKind,
+} from "./helpers/citation-scan.js";
 
 // ---------------------------------------------------------------------------
 // Reference-resolution lint gate (Circle 260805-2005-textschicht-gegen-code-
@@ -42,6 +55,15 @@ import { dirname, resolve, join, relative, sep } from "node:path";
 //       marker position to `_*_`. An ellipsis (`…`) in a citation is a
 //       deliberate truncation and matches any infix.
 //
+//       Class (c)'s parser lives in `./helpers/citation-scan.ts`, because a
+//       second caller needs the same grammar over a corpus this gate does not
+//       scan: the workbench itself, where the citations are densest and where
+//       nobody had counted the dangling ones (issue 260812-1720, plan
+//       `shared/planning/260812-1720_*_circle-first-placement-and-the-backlog-store.md`
+//       step 11). The gate's behaviour is unchanged by the move — the helper's
+//       `scanRecordCitations` is the same function under the same name, and the
+//       cases below are the ones that guarded it before.
+//
 // THE WORKBENCH BOUND, stated plainly: class (c) resolves against THIS repo's
 // own `fusion-workbench/` tree. That is correct, not a shortcut — this lint
 // runs only in the plugin's test suite, and the records the shipped texts cite
@@ -77,10 +99,6 @@ import { dirname, resolve, join, relative, sep } from "node:path";
 // This is a guard, not a fixer (rules/critical-stance.md §2): it reads and
 // asserts, it never rewrites a text.
 // ---------------------------------------------------------------------------
-
-const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
-const workbenchRoot = join(pluginRoot, "fusion-workbench");
-const WORKBENCH_PRESENT = existsSync(join(workbenchRoot, ".fusion-setup"));
 
 // --- the scanned surface ---------------------------------------------------
 
@@ -166,26 +184,9 @@ function scannedLines(f: SurfaceFile): { line: number; text: string }[] {
   return out;
 }
 
-// --- shared -----------------------------------------------------------------
-
-interface Violation {
-  file: string;
-  line: number;
-  token: string;
-  problem: string;
-  fix: string;
-}
-
-function report(violations: Violation[]): string {
-  return violations
-    .map((v) => `  ${v.file}:${v.line}  '${v.token}'\n    ${v.problem}\n    -> ${v.fix}`)
-    .join("\n");
-}
-
-/** Placeholder syntax — template tokens are never references. */
-function isPlaceholder(token: string): boolean {
-  return /[<>${}\\]/.test(token);
-}
+// `Violation`, `report()` and `isPlaceholder()` are shared with class (c) and
+// are imported from its helper above, so the three classes cannot drift apart
+// on what a finding looks like.
 
 // --- class (a): plugin-file paths ------------------------------------------
 
@@ -403,245 +404,10 @@ function scanHeadingAnchors(
 }
 
 // --- class (c): workbench-record citations ----------------------------------
-
-const STORES =
-  "planning|issues|decisions|history|reviews|analyses|investigations|consult|memos|backlog";
-
-// Store-prefixed (optionally Circle-/shared-/workbench-rooted) record citation.
-const REC_RE = new RegExp(
-  "(?:fusion-workbench\\/)?" +
-    "(?:(circles\\/[0-9]{6}-[0-9]{4}-[a-z0-9-]+)\\/|(shared)\\/)?" +
-    `(${STORES})\\/` +
-    "([0-9]{6}-[0-9]{4})((?:_[a-zA-Z*]_)?[A-Za-z0-9._…*-]*)",
-  "g",
-);
-
-// Bare record citation — a marker is required, or every plain timestamp and
-// Circle-directory name would fire.
-const BARE_RE = /(?<![\/0-9A-Za-z_-])([0-9]{6}-[0-9]{4})((?:_[a-zA-Z*]_)[A-Za-z0-9._…*-]+)/g;
-
-// Bare Circle-directory citation. A trailing `/` is allowed when nothing
-// path-like follows (the conventions file's layout tree).
-const CIRCLE_RE = /circles\/([0-9]{6}-[0-9]{4}-[a-z0-9-]+)(?:\/(?![A-Za-z0-9_.*<]))?(?![A-Za-z0-9_\/-])/g;
-
-/** Files exempt from class (c) wholesale, with the reason. */
-const RECORD_EXAMPLE_FILES: Record<string, string> = {
-  "rules/decision-record-examples.md":
-    "the worked-example corpus — every record it walks is fabricated by design",
-  "skills/migrate/SKILL.md":
-    "demonstrates the pre-v4 -> v4 layout conversion on fabricated artifacts " +
-    "(260519-0438-coderev-loader-check, 260101-0903-dup, plan-foo)",
-};
-
-/**
- * A class-(c) token inside an open backtick span that begins with a
- * resolution-footer keyword is a footer-TEMPLATE illustration (`Append
- * `Answered: <record> — …``) — the conventions teach the footer syntax on a
- * fabricated record. Real footers live in workbench records, which this gate
- * never scans.
- */
-function inFooterTemplateSpan(before: string): boolean {
-  return /`(?:Answered|Implemented|Deferred|Superseded by|Resolved):[^`]*$/.test(before);
-}
-
-/**
- * A class-(c) token announced as an illustration by `e.g.`: exempt only while
- * the clause the `e.g.` opened is still running. A `)`, a `;` or a sentence
- * end (`. ` after the `e.g.`) between the `e.g.` and the token closes the
- * announcement — without that bound, ANY earlier `e.g.` on the line exempted
- * every later citation, and a dead citation four words behind an unrelated
- * `(e.g. \`en\`)` passed silently (issue 260806-1031, the swallow-a-real-defect
- * shape the exemption-design note above warns against).
- */
-function inAnnouncedIllustration(before: string): boolean {
-  const at = before.lastIndexOf("e.g.");
-  if (at === -1) return false;
-  if (at > 0 && /[A-Za-z0-9_]/.test(before[at - 1])) return false; // word boundary
-  const sinceEg = before.slice(at + "e.g.".length);
-  return !/[);]|\.\s/.test(sinceEg);
-}
-
-interface WorkbenchEntry {
-  relDir: string; // directory relative to the workbench root, "/"-joined
-  base: string;
-}
-
-let wbIndex: WorkbenchEntry[] | null = null;
-function workbenchIndex(): WorkbenchEntry[] {
-  if (wbIndex) return wbIndex;
-  wbIndex = !WORKBENCH_PRESENT
-    ? []
-    : readdirSync(workbenchRoot, { recursive: true, withFileTypes: true })
-        .filter((e) => e.isFile())
-        .map((e) => ({
-          relDir: relative(workbenchRoot, e.parentPath).split(sep).join("/"),
-          base: e.name,
-        }));
-  return wbIndex;
-}
-
-function circleDirs(): Set<string> {
-  const dirs = new Set<string>();
-  const root = join(workbenchRoot, "circles");
-  if (!existsSync(root)) return dirs;
-  for (const e of readdirSync(root, { withFileTypes: true })) {
-    if (e.isDirectory()) dirs.add(e.name);
-  }
-  return dirs;
-}
-
-/**
- * A basename matcher from a cited basename: `_*_` matches any single-letter
- * marker, `…` matches any infix, and a citation that does not end in `.md` is
- * a prefix (truncated citations are everyday in the corpus).
- */
-function basenameMatcher(cited: string): RegExp {
-  const segs = cited.split("…").map((s) =>
-    s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/_\\\*_/g, "_[a-z]_"),
-  );
-  const tail = cited.endsWith(".md") ? "$" : "";
-  return new RegExp("^" + segs.join(".*") + tail);
-}
-
-function findRecord(opts: {
-  circleDir?: string;
-  shared?: boolean;
-  store?: string;
-  citedBase: string;
-}): WorkbenchEntry[] {
-  const re = basenameMatcher(opts.citedBase);
-  return workbenchIndex().filter((e) => {
-    if (!re.test(e.base)) return false;
-    if (opts.circleDir) return e.relDir.startsWith(`circles/${opts.circleDir}/${opts.store}`);
-    if (opts.shared) return e.relDir.startsWith(`shared/${opts.store}`);
-    if (opts.store) return e.relDir.split("/").includes(opts.store);
-    return true;
-  });
-}
-
-function scanRecordCitations(
-  rel: string,
-  lines: { line: number; text: string }[],
-): { violations: Violation[]; resolved: number } {
-  const violations: Violation[] = [];
-  let resolved = 0;
-  if (rel in RECORD_EXAMPLE_FILES) return { violations, resolved };
-
-  for (const { line, text } of lines) {
-    if (/^\s*>/.test(text)) continue; // blockquoted worked examples
-    const covered: [number, number][] = [];
-    const consider = (
-      idx: number,
-      token: string,
-      check: () => { ok: boolean; problem?: string; fix?: string },
-    ) => {
-      if (covered.some(([s, e]) => idx >= s && idx < e)) return;
-      covered.push([idx, idx + token.length]);
-      if (inAnnouncedIllustration(text.slice(0, idx))) return; // clause-bounded — see above
-      if (inFooterTemplateSpan(text.slice(0, idx))) return; // footer-syntax illustration
-      if (isPlaceholder(token)) return;
-      if (token.includes("foo")) return; // fabricated name (plan-foo)
-      // a `*` anywhere but the marker position is a glob, not a citation
-      if (/\*/.test(token.replace(/_\*_/g, ""))) return;
-      if (!WORKBENCH_PRESENT) return; // syntax-only mode: parsed, not resolved
-      const r = check();
-      if (r.ok) resolved++;
-      else violations.push({ file: rel, line, token, problem: r.problem!, fix: r.fix! });
-    };
-
-    REC_RE.lastIndex = 0;
-    let m: RegExpExecArray | null;
-    while ((m = REC_RE.exec(text)) !== null) {
-      const [full, circleDir, shared, store, stamp, restRaw] = m;
-      const rest = restRaw ?? "";
-      const idx = m.index;
-      const citedBase = stamp + rest;
-      const circle = circleDir?.replace(/^circles\//, "");
-      consider(idx, full, () => {
-        const hit = findRecord({ circleDir: circle, shared: shared === "shared", store, citedBase });
-        if (hit.length > 0) return { ok: true };
-        // exact marker that resolves only under another marker = stale marker
-        const markerM = rest.match(/^_([a-z])_/);
-        if (markerM) {
-          const wild = findRecord({
-            circleDir: circle,
-            shared: shared === "shared",
-            store,
-            citedBase: stamp + rest.replace(/^_[a-z]_/, "_*_"),
-          });
-          if (wild.length > 0) {
-            return {
-              ok: false,
-              problem:
-                `stale marker '_${markerM[1]}_': the record now exists as ` +
-                `${wild[0].relDir}/${wild[0].base}`,
-              fix: "cite the marker position as '_*_' (decision 260806-0015, wildcard form)",
-            };
-          }
-        }
-        const anywhere = findRecord({ citedBase });
-        if (anywhere.length > 0) {
-          return {
-            ok: false,
-            problem: `wrong store path: the record lives at ${anywhere[0].relDir}/${anywhere[0].base}`,
-            fix: "correct the cited path to where the record actually is",
-          };
-        }
-        return {
-          ok: false,
-          problem: "no record in the workbench matches this citation",
-          fix:
-            "pull the citation's substance into the text and drop the dead path " +
-            "(decision 260805-0709), or fix the citation",
-        };
-      });
-    }
-
-    BARE_RE.lastIndex = 0;
-    while ((m = BARE_RE.exec(text)) !== null) {
-      const [full, stamp, rest] = m;
-      const idx = m.index;
-      consider(idx, full, () => {
-        if (findRecord({ citedBase: stamp + rest }).length > 0) return { ok: true };
-        const markerM = rest.match(/^_([a-z])_/);
-        if (markerM) {
-          const wild = findRecord({ citedBase: stamp + rest.replace(/^_[a-z]_/, "_*_") });
-          if (wild.length > 0) {
-            return {
-              ok: false,
-              problem:
-                `stale marker '_${markerM[1]}_': the record now exists as ` +
-                `${wild[0].relDir}/${wild[0].base}`,
-              fix: "cite the marker position as '_*_' (decision 260806-0015, wildcard form)",
-            };
-          }
-        }
-        return {
-          ok: false,
-          problem: "no record anywhere in the workbench matches this citation",
-          fix:
-            "pull the citation's substance into the text and drop the dead path " +
-            "(decision 260805-0709), or fix the citation",
-        };
-      });
-    }
-
-    CIRCLE_RE.lastIndex = 0;
-    while ((m = CIRCLE_RE.exec(text)) !== null) {
-      const [full, dir] = m;
-      const idx = m.index;
-      consider(idx, full, () => {
-        if (circleDirs().has(dir)) return { ok: true };
-        return {
-          ok: false,
-          problem: "no such Circle directory under fusion-workbench/circles/",
-          fix: "fix the Circle-directory name (the directory name is stable for a Circle's whole life)",
-        };
-      });
-    }
-  }
-  return { violations, resolved };
-}
+//
+// The parser is `./helpers/citation-scan.ts` (see the header note under class
+// (c)). Imported here rather than defined: `scanRecordCitations`, and, for the
+// fixtures below, `workbenchIndex`, `circleDirs` and `RECORD_EXAMPLE_FILES`.
 
 // --- the gate ---------------------------------------------------------------
 
@@ -989,5 +755,64 @@ describe.runIf(WORKBENCH_PRESENT)("reference-resolution lint: class (c) behaviou
     expect(scanRecordCitations("fixture.md", L(cited)).violations).toEqual([]);
     const prose = "see circles/990101-0101-shape/analyses/990101-0102-D04-arch.md for the answer";
     expect(scanRecordCitations("fixture.md", L(prose)).violations.length).toBeGreaterThan(0);
+  });
+});
+
+describe.runIf(WORKBENCH_PRESENT)("citation scan: the measuring view and the gate view are one parser", () => {
+  const L = (text: string) => [{ line: 1, text }];
+
+  // The extraction gave the class-(c) parser a second caller, and the risk it
+  // introduces is one-directional: a token class added for the MEASUREMENT
+  // reaching the GATE would fail the suite on prose the gate never judged. The
+  // two cases below pin the boundary from each side.
+
+  it("a store-prefixless stamp is a scan token and is invisible to the gate", () => {
+    const line = L("the 260812-1720 plan, and the 990101-0101 stamp that names nothing");
+    expect(scanRecordCitations("fixture.md", line)).toEqual({ violations: [], resolved: 0 });
+    const hits = scanCitationTokens("fixture.md", line);
+    expect(hits.map((h) => h.kind)).toEqual(["stamp-bare", "stamp-bare"]);
+    // the first names a real minute — how many artifacts share it is what the
+    // corpus decides, and the point here is only that the gate never sees it
+    expect(hits[1].status).toBe("dangling");
+  });
+
+  it("a stamp carrying a name resolves in the scan and still never reaches the gate", () => {
+    const anyCircle = [...circleDirs()][0];
+    const line = L(`the ${anyCircle} Circle answered it`);
+    expect(scanCitationTokens("fixture.md", line).map((h) => [h.kind, h.status])).toEqual([
+      ["stamp-name", "resolved"],
+    ]);
+    expect(scanRecordCitations("fixture.md", line)).toEqual({ violations: [], resolved: 0 });
+  });
+
+  it("over the whole shipped surface, the gate's verdict is the scan's, token for token", () => {
+    const GATE: CitationKind[] = ["record", "bare-record", "circle-dir"];
+    let gateResolved = 0;
+    let gateViolations = 0;
+    let scanResolved = 0;
+    let scanFailed = 0;
+    for (const f of surface()) {
+      const lines = scannedLines(f);
+      const g = scanRecordCitations(f.rel, lines);
+      gateResolved += g.resolved;
+      gateViolations += g.violations.length;
+      for (const h of scanCitationTokens(f.rel, lines)) {
+        if (!GATE.includes(h.kind)) continue;
+        if (h.status === "resolved" || h.status === "ambiguous") scanResolved++;
+        else if (h.status !== "exempt" && h.status !== "unresolved-no-workbench") scanFailed++;
+      }
+    }
+    expect([scanResolved, scanFailed]).toEqual([gateResolved, gateViolations]);
+    expect(gateResolved, "not vacuous — the surface still carries record citations").toBeGreaterThan(10);
+  });
+
+  it("the three baseline lists and the unjudged bucket cover every token exactly once", () => {
+    // What the baseline is stated in must be MECE over the tokens
+    // (rules/critical-stance.md §4), or a count moves between lists unnoticed.
+    const hits = surface().flatMap((f) => scanCitationTokens(f.rel, scannedLines(f)));
+    const p = partition(hits);
+    const all = [...p.resolved, ...p.dangling, ...p.undecidable, ...p.exempt];
+    expect(all.length).toBe(hits.length);
+    expect(new Set(all).size).toBe(hits.length);
   });
 });

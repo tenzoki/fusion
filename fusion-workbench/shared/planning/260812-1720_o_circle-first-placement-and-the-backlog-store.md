@@ -439,7 +439,7 @@ than executable behaviour, go to `ontocoder`.
       to its prompt so the resolver derives the key.
     - Dependencies: 7, 8
 
-11. **Build the citation verifier and take the baseline, then stop at the gate**
+11. [DONE] **Build the citation verifier and take the baseline, then stop at the gate**
     - Executor: `coder`
     - Files: `hooks/lib/__tests__/reference-resolution-lint.test.ts`, or a sibling module it
       exports its parser from; `bin/` if a CLI wrapper proves useful
@@ -453,11 +453,18 @@ than executable behaviour, go to `ontocoder`.
       plan's reconciliation log. **The pre-existing dangling count is the number that matters.** A
       migration is only verifiable against a known starting point, and any move that raises that
       count has broken something.
-    - **HUMAN GATE.** Present to the user the verifier's baseline, the seven-file table from
-      `## Current State`, and the single move candidate. The gate exists because the user chose
-      migration over leaving-alone on the premise that twelve Circles' specs and plans sit in
-      `shared/`, and measurement says one file is in question. Ask the two questions in
-      `## Open Questions` and proceed on the answers. Do not move anything before this gate.
+    - **HUMAN GATE — answered before the step ran.** Both questions in `## Open Questions` were
+      put to the user at 260812-2100 and answered, so the step took the baseline and stopped
+      rather than asking again. The move question was answered **leave it**: the single move
+      candidate stays in `shared/planning/`, its promotion out of the Circle having been
+      deliberate, reasoned and recorded, which the Origin Rule tolerates by its own text
+      (`shared/decisions/260812-1720_*_does-the-circle-first-migration-reverse-a-recorded-promotion-out-of-a-circle.md`).
+      The Circle-existence question was answered in favour of the "first write" reading step 8
+      was already written for
+      (`shared/decisions/260812-1720_*_when-exactly-does-the-anticipated-circle-come-into-existence.md`).
+      **Steps 12 and 13 therefore do not run.** The verifier was still built and the baseline
+      still taken, for the reason that survives the answer: nobody had counted the workbench's
+      dangling citations, and that number is worth having on its own.
     - Dependencies: 1
 
 12. **Execute the move, if the gate says move**
@@ -627,3 +634,58 @@ this plan's alone and stays here.
   The gate covers `rules/`, `agents/`, `skills/`, `docs/`, `bin/`, `hooks/lib` comments and the
   READMEs, and excludes `fusion-workbench/`, which holds the great majority of the project's
   record-to-record citations.
+
+## Reconciliation Log
+
+**260812-2136 (coder, step 11) — the citation baseline, taken over the whole workbench.**
+
+Instrument: `hooks/lib/__tests__/helpers/citation-scan.ts`, the class-(c) parser lifted out of
+`hooks/lib/__tests__/reference-resolution-lint.test.ts` unchanged in behaviour. The gate imports
+it and asserts what it asserted before the move; the same parser walked the corpus. Re-take the
+measurement with `cd hooks && npx tsx lib/__tests__/helpers/citation-scan.ts`.
+
+Corpus: 1012 `.md` files under `fusion-workbench/`, 8588 citation tokens.
+
+| Class | Tokens | Resolve to exactly one | Dangling | Ambiguous | Never judged |
+|---|---|---|---|---|---|
+| store-prefixed record citation | 3025 | 1901 | 1003 | 34 | 87 |
+| bare record citation (marker, no store) | 606 | 240 | 333 | 3 | 30 |
+| Circle-directory citation | 329 | 322 | 7 | 0 | 0 |
+| stamp plus name, no store prefix | 554 | 441 | 111 | 0 | 2 |
+| **path-shaped, all four** | **4514** | **2904** | **1454** | **37** | **119** |
+| bare stamp (the residual) | 4074 | — | — | — | 20 |
+
+**The baseline is 1454 dangling path-shaped citations**, and the four causes are not one problem:
+
+| Cause | Count | What it means |
+|---|---|---|
+| stale marker | 1104 | the record exists; the citation names a marker it has moved past |
+| names nothing on disk | 322 | the target is gone or was never there |
+| wrong store | 21 | the record exists, in a different store than the citation says |
+| no such Circle directory | 7 | the Circle name in the citation does not exist |
+
+Three bounds on that number, each measured rather than estimated:
+
+1. **517 of the 1104 stale markers sit in `history/` files**, which record what was true when
+   they were written. Whether an append-only session log is in scope is the first thing the
+   standing-gate question has to answer, and it moves the number by 47 per cent.
+2. **54 of the 322 "names nothing" are the parser's own blind spot**: a citation truncated with
+   ASCII `...` rather than the `…` the grammar knows. Filed as
+   `shared/issues/260812-2136_*_the-citation-grammar-reads-one-ellipsis-and-one-marker-syntax-and-the-workbench-uses-two-of-each.md`.
+3. **171 occurrences of the retired pre-v4 bracket marker** (`260717-1918[o]`) are in the corpus
+   and the grammar has no case for them. Store-prefixed, they resolve by prefix accident with the
+   marker unread; bare, they fall into the residual. Same issue record.
+
+The residual is larger than the plan's Decidability line estimated. It named "roughly eight" bare
+timestamps across the seven planning files; the workbench carries **4074**, of which 2869 happen
+to match exactly one artifact today, 981 match several and 204 match none. A bare stamp that
+matches one artifact does so by the accident that one artifact was written in that minute, so it
+is counted as undecidable whatever it resolves to.
+
+Cross-check of the Decidability line's own measurement, over the workbench alone: the seven
+`shared/planning/` stamps carry 223 tokens here, 141 resolving, 49 stale-marker, 33 otherwise
+unresolved. The line's 184-of-which-91 was taken over the whole repository by hand and by a
+different rule, so this neither confirms nor contradicts it — it is the same order of magnitude
+measured mechanically.
+
+**No citation was rewritten and nothing was moved.** Steps 12 and 13 do not run.
