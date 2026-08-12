@@ -372,31 +372,100 @@ export function makeProject(opts: ProjectOptions = {}): Project {
  * real one.
  */
 function initGitRepo(root: string): void {
-  const git = (...args: string[]): void => {
-    const run = spawnSync("git", args, {
-      cwd: root,
-      encoding: "utf-8",
-      env: {
-        ...process.env,
-        GIT_AUTHOR_NAME: "fusion harness",
-        GIT_AUTHOR_EMAIL: "harness@example.invalid",
-        GIT_COMMITTER_NAME: "fusion harness",
-        GIT_COMMITTER_EMAIL: "harness@example.invalid",
-        GIT_CONFIG_GLOBAL: "/dev/null",
-        GIT_CONFIG_SYSTEM: "/dev/null",
-      },
-    });
-    if (run.status !== 0) {
-      throw new Error(
-        `harness git ${args.join(" ")} failed (${run.status}):\n${run.stderr}`,
-      );
-    }
-  };
-
-  git("init", "--quiet", "--initial-branch=main");
-  git("add", "-A");
-  git("commit", "--quiet", "--no-verify", "-m", "harness baseline");
+  git(root, "init", "--quiet", "--initial-branch=main");
+  git(root, "add", "-A");
+  git(root, "commit", "--quiet", "--no-verify", "-m", "harness baseline");
 }
+
+/**
+ * Run one git command in `root`, with every identity and config setting passed
+ * per invocation. See `initGitRepo` for why none of it is read from the machine.
+ */
+function git(root: string, ...args: string[]): string {
+  const run = spawnSync("git", args, {
+    cwd: root,
+    encoding: "utf-8",
+    env: {
+      ...process.env,
+      GIT_AUTHOR_NAME: "fusion harness",
+      GIT_AUTHOR_EMAIL: "harness@example.invalid",
+      GIT_COMMITTER_NAME: "fusion harness",
+      GIT_COMMITTER_EMAIL: "harness@example.invalid",
+      GIT_CONFIG_GLOBAL: "/dev/null",
+      GIT_CONFIG_SYSTEM: "/dev/null",
+    },
+  });
+  if (run.status !== 0) {
+    throw new Error(
+      `harness git ${args.join(" ")} failed (${run.status}):\n${run.stderr}`,
+    );
+  }
+  return run.stdout.trim();
+}
+
+/**
+ * Make this project's session bookkeeping drift, so the tracker has something
+ * to say on every guarded tool call.
+ *
+ * ## Why a harness capability rather than a fixture in one test file
+ *
+ * Two suites here are not about session state at all. They are about the
+ * PostToolUse reply surviving something — a malformed `churn.json`, an
+ * unwritable one — and each needs the tracker to be carrying SOME report in
+ * order to observe whether it survived. Both used to borrow the protected-path
+ * halt sentence for that, and both had to be re-pointed when it went.
+ *
+ * Of the three surviving tracker reports, state drift is the only one that
+ * fires on every guarded tool call: review coverage needs the payload to be a
+ * `.md` file under a `reviews/` store with a session window to measure against,
+ * and staging drift needs HEAD to have moved since the previous call. Either
+ * would couple a case to a trigger that has nothing to do with its subject.
+ *
+ * ## What it writes, and why so little
+ *
+ * A six-line `agentstate.yaml` and three commits past it. `measureStateDrift`
+ * reports every row it cannot decide as `unchecked` and leaves it out of the
+ * sentence, so the two fields that produce the `progress.commits` row are the
+ * whole fixture — the fuller state files in `state-drift.test.ts` and
+ * `review-coverage.test.ts` exist because those suites assert on the other rows.
+ *
+ * THREE commits, not one: the measurement deliberately allows a difference of
+ * one as the commit currently in flight, so a smaller fixture would report
+ * nothing and every case resting on it would pass vacuously.
+ *
+ * Requires `git: true` on the project — the divergence is measured against the
+ * git history, which is one of the two records the check reads.
+ */
+export function freezeCommitCount(root: string): void {
+  const head = git(root, "rev-parse", "--short", "HEAD");
+  writeFileSync(
+    resolve(root, "fusion-workbench", "agentstate.yaml"),
+    [
+      "session:",
+      `  git_head_at_start: "${head}"`,
+      "",
+      "progress:",
+      "  commits: 0",
+      "",
+    ].join("\n"),
+    "utf-8",
+  );
+  for (const n of [1, 2, 3]) {
+    writeFileSync(resolve(root, `work-${n}.txt`), `work ${n}\n`, "utf-8");
+    git(root, "add", `work-${n}.txt`);
+    git(root, "commit", "--quiet", "--no-verify", "-m", `work ${n}`);
+  }
+}
+
+/**
+ * Everything the drift sentence carries, asserted as one — so the two suites
+ * that use it as a probe cannot disagree about what "the tracker spoke" means.
+ */
+export const DRIFT_SENTENCE_MARKERS = [
+  "session bookkeeping has drifted",
+  "progress.commits",
+  "says 0",
+] as const;
 
 function disposeProject(project: Project): void {
   rmSync(dirname(project.root), { recursive: true, force: true });
@@ -444,6 +513,125 @@ export function withPluginProject<T>(
  */
 export function projectConfig(value: object | string): string {
   return typeof value === "string" ? value : JSON.stringify(value, null, 2) + "\n";
+}
+
+/* ------------------------------------------------------------------ *
+ * A deny that needs no protected path
+ * ------------------------------------------------------------------ */
+
+/**
+ * The decision-governed deny, packaged for the cases that need A deny rather
+ * than a protected-path deny in particular.
+ *
+ * ## Why this exists
+ *
+ * Several suites in this directory are not about protected paths at all. They
+ * are about something else entirely — a malformed `escalation.json` must not
+ * make the guard fail open, a malformed `churn.json` must not swallow the
+ * tracker's reply, an innocuous `Bash` call must not reset the block counter —
+ * and each of them needed A DENY to exist in order to observe its own subject.
+ * The nearest deny to hand was `Edit agents/coder.md`, so that is what they
+ * reached for.
+ *
+ * That made their coverage hostage to a mechanism they never meant to test.
+ * The plan that removes the protected-path half therefore re-points every such
+ * probe here first, before any surgery: the subject of each suite survives the
+ * removal, so its probe has to as well.
+ *
+ * ## What produces the deny
+ *
+ * CHECK 3 in `guard.ts` — a `decisions` entry whose category has a
+ * `categoryPaths` glob matching the written path, at `high` sensitivity. All
+ * three keys are ordinary project-settable leaves, so the whole thing is one
+ * `fusion-guard.json` in the throwaway project and no production change of any
+ * kind.
+ *
+ * ## Two properties that make it a drop-in
+ *
+ *   1. **It goes through `recordBlock`**, exactly as the protected-path deny
+ *      did, so `consecutiveBlocks`, the halt threshold and the `guard_block`
+ *      event behave identically. A case that counted blocks keeps counting.
+ *   2. **`GOVERNED_PATH` is matched by no protected pattern.** It is neither
+ *      under `agents/`, `rules/` nor `.claude/rules/`, and it is none of the
+ *      five literal entries. So a deny on it can only have come from CHECK 3,
+ *      and a case using it cannot pass for the protected-path reason by
+ *      accident — which is the whole point of moving off that reason.
+ */
+
+/** The directory the governing glob covers, for cases that need siblings. */
+export const GOVERNED_DIR = "src/api";
+
+/** The path CHECK 3 governs. Deliberately outside every protected pattern. */
+export const GOVERNED_PATH = `${GOVERNED_DIR}/service.ts`;
+
+/** A sibling of `GOVERNED_PATH` that the same glob does NOT reach. */
+export const UNGOVERNED_PATH = "src/web/page.ts";
+
+/** The category the decision and the glob share. */
+export const GOVERNED_CATEGORY = "api";
+
+/** The decision id, which the deny message quotes back. */
+export const GOVERNED_DECISION_ID = "260812-1232";
+
+/**
+ * The phrase every decision-governed deny opens with, for the cases that assert
+ * WHICH deny they got rather than merely that they got one.
+ */
+export const GOVERNED_DENY_REASON = "affects area governed by";
+
+/** The `fusion-guard.json` object that arms CHECK 3. */
+export const GOVERNED_CONFIG = {
+  decisions: [
+    {
+      id: GOVERNED_DECISION_ID,
+      category: GOVERNED_CATEGORY,
+      statement: "The API surface is governed and changes to it are reviewed.",
+    },
+  ],
+  guard: {
+    categoryPaths: { [GOVERNED_CATEGORY]: [`${GOVERNED_DIR}/**`] },
+    categorySensitivity: { [GOVERNED_CATEGORY]: "high" },
+  },
+};
+
+/**
+ * The project files that arm CHECK 3, merged over anything a case supplies.
+ *
+ * The two source files are seeded as well, so a case can perform a real write
+ * against either without first building the directory.
+ */
+export function governedFiles(
+  extra: Record<string, string> = {},
+): Record<string, string> {
+  return {
+    "fusion-guard.json": projectConfig(GOVERNED_CONFIG),
+    [GOVERNED_PATH]: "// governed\n",
+    [UNGOVERNED_PATH]: "// not governed\n",
+    ...extra,
+  };
+}
+
+/**
+ * `withProject`, with CHECK 3 armed.
+ *
+ * A caller's own `files` are merged OVER the governed set, so a case can still
+ * replace `fusion-guard.json` — which is how the "a project cannot reach this"
+ * cases keep working.
+ */
+export function withGovernedProject<T>(
+  fn: (project: Project) => T,
+  opts: Omit<ProjectOptions, "plugin"> = {},
+): T {
+  return withProject(fn, { ...opts, files: governedFiles(opts.files ?? {}) });
+}
+
+/** One write-tool call against the governed path. Denied by CHECK 3. */
+export function runGovernedWrite(
+  root: string,
+  toolName = "Edit",
+  overrides: Record<string, string> = {},
+): GuardResult {
+  return runWrite(root, GOVERNED_PATH, toolName, overrides);
 }
 
 /* ------------------------------------------------------------------ *

@@ -1,12 +1,11 @@
 /**
- * A shape-valid `churn.json` used to swallow the protected-path halt message.
+ * A shape-valid `churn.json` used to swallow the tracker's reply.
  * (`cross-file.json` carried the identical defect and the identical coverage
  * here until the ping-back tracker was removed with decision `260809-2004`.)
  *
  * ## The mechanism, in the order it runs
  *
- * `tracker.ts` measures the protected paths FIRST and tracks churn afterwards,
- * then writes one reply carrying whatever the measurement had to say. Both state
+ * `tracker.ts` produces its reply first and tracks churn afterwards. Both state
  * loads used to cast the parsed JSON with `as` inside a `try/catch` that handles
  * a MISSING file and UNPARSEABLE text — and nothing else. A file that parses to
  * a valid JSON value of the wrong shape (`{}` is enough) passed that catch and
@@ -14,22 +13,50 @@
  * top-level handler, which calls `respond()` with NO argument, so the reply went
  * out empty. Both state loads: `churn.json` is the one that survives.
  *
- * What that costs is precise. The revert and the halt had already landed and
- * persisted; the sentence naming the changed file and the command that clears
- * the halt is what was lost — the one thing
- * `rules/protected-path-discipline.md` promises the agent it will be told. The
- * state file was never repaired either, because the save sits after the throw,
- * so every later tool call in that project repeated it (issue `260809-1101`).
+ * What that costs is precise. Whatever the measurements before it had to say
+ * was lost — and every one of them is a sentence the model would otherwise have
+ * acted on. The state file was never repaired either, because the save sits
+ * after the throw, so every later tool call in that project repeated it (issue
+ * `260809-1101`).
+ *
+ * ## Which reply the rows use as their probe, and why it changed
+ *
+ * The subject of this file is the CHURN LOAD, not whatever the reply happens to
+ * say. Every row needs the tracker to have SOMETHING to report, so that "the
+ * reply survived the churn half" is observable at all; which report it is was
+ * never the subject.
+ *
+ * It used to be the protected-path halt sentence, because that was the reply
+ * nearest to hand. The plan that removes the protected-path half therefore had
+ * to re-point it, and named two candidates: session-state drift first, review
+ * coverage as the fallback if drift proved awkward to trigger inside the
+ * harness.
+ *
+ * **State drift was chosen — the plan's first choice — and it was not awkward.**
+ * The reason is worth recording rather than re-derived: of the three surviving
+ * tracker reports it is the only one that fires on EVERY guarded tool call.
+ * Review coverage fires only when the tool's own payload is a `.md` file under a
+ * `reviews/` store AND a session window exists to measure against; staging drift
+ * fires only when HEAD moved since the previous call. Both would have coupled
+ * these rows to a second trigger that has nothing to do with `churn.json`, and
+ * the payload constraint in particular would have forced every case to write a
+ * review file instead of the ordinary `notes.txt` edit the defect was measured
+ * on. Drift needs no such coupling: it needs a git repository, a six-line
+ * `agentstate.yaml` and three commits, after which every tool call in the
+ * project reports the same divergence.
+ *
+ * The fixture itself is `freezeCommitCount` in helpers/guard-harness.ts, which
+ * carries the rest of that reasoning and is shared with the one other suite
+ * re-pointed the same way. It is deliberately MINIMAL rather than the full state
+ * file the orchestrator writes: `measureStateDrift` reports each row it cannot
+ * decide as `unchecked` and omits it from the sentence, so the two fields that
+ * produce the `progress.commits` row are all either suite needs.
  *
  * ## Why every case here uses a write tool
  *
  * The churn half returns immediately for `Bash`, so a malformed state file is
  * never even read on that surface. The write tools are where the load happens
- * and therefore where the message could be lost. Each case edits an UNPROTECTED
- * path while a protected one changes inside the same window — a user saving a
- * rule file in their own editor, which is the case the measurement's own header
- * names — so the PreToolUse guard allows the call and the PostToolUse
- * measurement still has something to report.
+ * and therefore where the reply could be lost.
  *
  * ## What proves the fix rather than the absence of the bug
  *
@@ -46,18 +73,18 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import {
   CASE_TIMEOUT,
-  readEscalation,
+  DRIFT_SENTENCE_MARKERS,
+  freezeCommitCount,
   readEvents,
   runToolCall,
   withProject,
+  type Project,
 } from "./helpers/guard-harness.js";
 
 const CHURN_FILE = "fusion-workbench/.guard-state/churn.json";
 
-/** The unprotected file the tool call names. */
+/** The file the tool call names. Unremarkable, and that is the point. */
 const PAYLOAD = "notes.txt";
-/** The protected file that changes inside the same window. */
-const PROTECTED = "rules/x.md";
 
 /** The context sentence the tracker handed back to the model, or "". */
 function context(post: { hookSpecificOutput?: { additionalContext?: string } }): string {
@@ -71,31 +98,40 @@ function readState(root: string, rel: string): Record<string, unknown> | null {
   return JSON.parse(readFileSync(abs, "utf-8")) as Record<string, unknown>;
 }
 
+/* ------------------------------------------------------------------ *
+ * The drift fixture
+ * ------------------------------------------------------------------ */
+
 /**
- * One Edit call on `notes.txt` during which `rules/x.md` also changes.
+ * A project whose bookkeeping has drifted, with `churn.json` seeded verbatim.
  *
- * Returns the tracker's reply. The effect runs between the two hooks, which is
- * the only placement that reproduces what the measurement measures.
+ * `git: true` is not optional here: the drift is measured against the git
+ * history, which is one of the two records the check reads.
  */
-function editWhileARuleFileChanges(root: string): { context: string } {
+function withDrift<T>(churn: string, fn: (project: Project) => T): T {
+  return withProject(
+    (project) => {
+      freezeCommitCount(project.root);
+      return fn(project);
+    },
+    { git: true, files: { [CHURN_FILE]: churn } },
+  );
+}
+
+/** One ordinary Edit on `notes.txt`. Returns the tracker's reply. */
+function ordinaryEdit(root: string): string {
   const { post } = runToolCall(
     root,
     "Edit",
     { file_path: resolve(root, PAYLOAD) },
-    () => {
-      writeFileSync(resolve(root, PAYLOAD), "edited\n", "utf-8");
-      writeFileSync(resolve(root, PROTECTED), "# changed by someone\n", "utf-8");
-    },
+    () => writeFileSync(resolve(root, PAYLOAD), "edited\n", "utf-8"),
   );
-  return { context: context(post) };
+  return context(post);
 }
 
 /** Everything the lost sentence carried, asserted as one. */
-function expectTheHaltSentence(text: string): void {
-  expect(text).toContain("a protected path changed during this tool call");
-  expect(text).toContain(PROTECTED);
-  expect(text).toContain("HALTED");
-  expect(text).toContain("clear-halt.js");
+function expectTheDriftSentence(text: string): void {
+  for (const marker of DRIFT_SENTENCE_MARKERS) expect(text).toContain(marker);
 }
 
 const MALFORMED_ROWS: [string, string][] = [
@@ -107,18 +143,14 @@ const MALFORMED_ROWS: [string, string][] = [
   ["an empty file — the other row the old catch did handle", ""],
 ];
 
-describe("a malformed churn.json no longer swallows the halt message", () => {
+describe("a malformed churn.json no longer swallows the tracker's reply", () => {
   for (const [name, content] of MALFORMED_ROWS) {
     it(
-      `reports the protected-path halt with churn.json = ${name}`,
+      `reports the state drift with churn.json = ${name}`,
       () => {
-        withProject(
-          ({ root }) => {
-            expectTheHaltSentence(editWhileARuleFileChanges(root).context);
-            expect(readEscalation(root)?.haltActive).toBe(true);
-          },
-          { files: { [CHURN_FILE]: content } },
-        );
+        withDrift(content, ({ root }) => {
+          expectTheDriftSentence(ordinaryEdit(root));
+        });
       },
       CASE_TIMEOUT,
     );
@@ -127,51 +159,39 @@ describe("a malformed churn.json no longer swallows the halt message", () => {
 
 describe("the malformed file is repaired, not just survived", () => {
   it(
-    "still reports the halt, and repairs the file instead of failing again",
+    "still reports the drift, and repairs the file instead of failing again",
     () => {
-      withProject(
-        ({ root }) => {
-          expectTheHaltSentence(editWhileARuleFileChanges(root).context);
+      withDrift("{}", ({ root }) => {
+        expectTheDriftSentence(ordinaryEdit(root));
 
-          // The second amplifier in the issue: nothing repaired the file,
-          // because the save sits after the throw, so every later tool call in
-          // the project took the same path until a human deleted it. It now
-          // comes back as a state the next load can read.
-          const churn = readState(root, CHURN_FILE);
-          expect(churn?.files).toMatchObject({ [PAYLOAD]: expect.anything() });
-          expect(typeof churn?.sessionStart).toBe("string");
+        // The second amplifier in the issue: nothing repaired the file,
+        // because the save sits after the throw, so every later tool call in
+        // the project took the same path until a human deleted it. It now
+        // comes back as a state the next load can read.
+        const churn = readState(root, CHURN_FILE);
+        expect(churn?.files).toMatchObject({ [PAYLOAD]: expect.anything() });
+        expect(typeof churn?.sessionStart).toBe("string");
 
-          // And nothing took the fail-open path on the way. `runTracker` throws
-          // on the stderr line; this asserts the event the handler emits, which
-          // is what a reader of the log would have seen.
-          expect(readEvents(root).map((e) => e.event)).not.toContain("guard_error");
-        },
-        { files: { [CHURN_FILE]: "{}" } },
-      );
+        // And nothing took the fail-open path on the way. `runTracker` throws
+        // on the stderr line; this asserts the event the handler emits, which
+        // is what a reader of the log would have seen.
+        expect(readEvents(root).map((e) => e.event)).not.toContain("guard_error");
+      });
     },
     CASE_TIMEOUT,
   );
 
   it(
-    "records the churn of an ordinary write with no protected path involved",
+    "records the churn of an ordinary write with nothing to report",
     () => {
-      // The same malformed file without the halt path, so the repair is shown
-      // to be the load's doing and not something the measurement arranged.
+      // The same malformed file in a project with no drift, so the repair is
+      // shown to be the load's doing and not something a report arranged.
       withProject(
         ({ root }) => {
-          const { post } = runToolCall(
-            root,
-            "Edit",
-            { file_path: resolve(root, PAYLOAD) },
-            () => writeFileSync(resolve(root, PAYLOAD), "edited\n", "utf-8"),
-          );
-          expect(context(post)).toBe("");
+          expect(ordinaryEdit(root)).toBe("");
           expect(readState(root, CHURN_FILE)?.files).toMatchObject({
             [PAYLOAD]: { totalChanges: 1 },
           });
-          // The guard writes escalation.json on the allow path too, so the
-          // assertion is on the flag rather than on the file's absence.
-          expect(readEscalation(root)?.haltActive).toBe(false);
         },
         { files: { [CHURN_FILE]: "{}" } },
       );
@@ -186,12 +206,7 @@ describe("a well-formed state file is carried forward, not emptied", () => {
     () => {
       withProject(
         ({ root }) => {
-          runToolCall(
-            root,
-            "Edit",
-            { file_path: resolve(root, PAYLOAD) },
-            () => writeFileSync(resolve(root, PAYLOAD), "edited\n", "utf-8"),
-          );
+          ordinaryEdit(root);
           const files = readState(root, CHURN_FILE)?.files as Record<
             string,
             { totalChanges: number }

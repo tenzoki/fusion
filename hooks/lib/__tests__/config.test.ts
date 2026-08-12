@@ -100,6 +100,36 @@ function effective(
 }
 
 /**
+ * A plugin layer that disagrees with `DEFAULTS` on every leaf it declares.
+ *
+ * ## Why several cases need one, and why the shipped file used to do
+ *
+ * "Inherited from the plugin layer" and "fell through to DEFAULTS" are
+ * different answers, and a case can only tell them apart against a plugin layer
+ * whose value differs from the default. `guard.protectedPaths` was the one leaf
+ * where the SHIPPED file supplied that difference for free — eight patterns
+ * against an empty default — so every case needing the distinction reached for
+ * it, whatever the case was actually about.
+ *
+ * The removal of that leaf leaves the shipped file agreeing with `DEFAULTS` on
+ * everything, so those cases would stop distinguishing anything while still
+ * passing. They are re-pointed here instead: three leaves, each deliberately
+ * unequal to its default (`"medium"`, `{}` and `3`).
+ */
+const DISTINGUISHING_PLUGIN = {
+  guard: {
+    defaultSensitivity: "high",
+    categoryPaths: { onto: ["ontology/**"] },
+  },
+  escalation: { blocksBeforeHalt: 9 },
+};
+
+/** `DISTINGUISHING_PLUGIN` written to its own path, ready for `loadConfig`. */
+function distinguishingPlugin(): string {
+  return pluginConfig(DISTINGUISHING_PLUGIN);
+}
+
+/**
  * The absolute spelling of a project root's `fusion-guard.json` — the second
  * half of the self-protection floor since `260804-1604`.
  *
@@ -338,19 +368,22 @@ describe("merge — per leaf: project, then plugin, then DEFAULTS", () => {
   });
 
   it("an OMITTED leaf comes from the plugin layer, not from DEFAULTS", () => {
-    // `{"guard":{"defaultSensitivity":"high"}}` — an ordinary edit, and the one
-    // that used to empty the protected list (issue 260804-1601).
-    const root = projectWith({ guard: { defaultSensitivity: "high" } });
+    // `{"guard":{"categorySensitivity":{…}}}` — an ordinary edit naming one
+    // leaf, which is the shape that used to wipe every sibling in the same
+    // object (issue 260804-1601).
+    const root = projectWith({ guard: { categorySensitivity: { onto: "low" } } });
 
-    const { guard, protectedPathsSource } = loadConfig({
-      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+    const { guard, escalation } = loadConfig({
+      pluginConfigPath: distinguishingPlugin(),
       projectRoot: root,
     });
 
+    expect(guard.categorySensitivity).toEqual({ onto: "low" });
+    // The two omitted leaves are the PLUGIN's, where DEFAULTS would have said
+    // "medium" and `{}`, and the omitted top-level object is the plugin's 9.
     expect(guard.defaultSensitivity).toBe("high");
-    expect(guard.protectedPaths).toContain("agents/**");
-    expect(guard.protectedPaths).toContain("rules/**");
-    expect(protectedPathsSource).toBe("plugin");
+    expect(guard.categoryPaths).toEqual({ onto: ["ontology/**"] });
+    expect(escalation.blocksBeforeHalt).toBe(9);
   });
 
   it("mixes the two layers inside one object, leaf by leaf", () => {
@@ -429,30 +462,30 @@ describe("merge — per leaf: project, then plugin, then DEFAULTS", () => {
     // `null` has always meant "nothing configured" here, and it keeps meaning
     // it — it is absent, not wrong, so it inherits and it is diagnosed nowhere.
     const config = loadConfig({
-      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      pluginConfigPath: distinguishingPlugin(),
       projectRoot: projectWith({
-        guard: { protectedPaths: null, defaultSensitivity: null },
+        guard: { categoryPaths: null, defaultSensitivity: null },
         escalation: null,
       }),
     });
 
-    expect(config.guard.protectedPaths).toContain("agents/**");
-    expect(config.guard.defaultSensitivity).toBe("medium");
-    expect(config.escalation.blocksBeforeHalt).toBe(3);
+    expect(config.guard.categoryPaths).toEqual({ onto: ["ontology/**"] });
+    expect(config.guard.defaultSensitivity).toBe("high");
+    expect(config.escalation.blocksBeforeHalt).toBe(9);
     expect(config.diagnostics).toEqual([]);
   });
 
-  it("a project declaring only escalation keeps the plugin's protectedPaths", () => {
+  it("a project declaring only escalation keeps the plugin's guard settings", () => {
     const root = projectWith({ escalation: { blocksBeforeHalt: 7 } });
 
     const config = loadConfig({
-      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      pluginConfigPath: distinguishingPlugin(),
       projectRoot: root,
     });
 
     expect(config.escalation.blocksBeforeHalt).toBe(7);
-    expect(config.guard.protectedPaths).toContain("agents/**");
-    expect(config.guard.protectedPaths).toContain("rules/**");
+    expect(config.guard.defaultSensitivity).toBe("high");
+    expect(config.guard.categoryPaths).toEqual({ onto: ["ontology/**"] });
   });
 
   it("inherits a path added to the plugin default AFTER the project was set up", () => {
@@ -513,17 +546,17 @@ describe("the project layer may not set guard.enabled", () => {
     expect(config.diagnostics[0]).toContain("guard.enabled");
   });
 
-  it("does not empty the protected list on the way past — issue 260804-1601", () => {
+  it("does not empty the rest of guard on the way past — issue 260804-1601", () => {
     // The measured defect in one line: `{"guard":{"enabled":true}}` is the most
-    // ordinary edit there is, and it used to remove every shipped pattern.
+    // ordinary edit there is, and it used to remove every sibling leaf the
+    // project had not written out for itself.
     const { guard } = loadConfig({
-      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      pluginConfigPath: distinguishingPlugin(),
       projectRoot: projectWith({ guard: { enabled: true } }),
     });
 
-    for (const p of ["agents/**", "rules/**", "hooks/config.json"]) {
-      expect(guard.protectedPaths).toContain(p);
-    }
+    expect(guard.defaultSensitivity).toBe("high");
+    expect(guard.categoryPaths).toEqual({ onto: ["ontology/**"] });
   });
 
   it("reports the key ONCE per load, not once per leaf in the object", () => {
@@ -601,30 +634,39 @@ describe("a value that cannot be used is dropped, named, and inherited past", ()
   // element-type cases the same rule covers. Labelled an OPEN set: the rule is
   // "a leaf must have its declared type", and these are the spellings that had
   // been met at the time of writing, not the spellings that exist.
+  //
+  // The rows were measured on `guard.protectedPaths` and are re-pointed at
+  // `guard.categoryPaths` with the spellings unchanged, because the rule they
+  // demonstrate is the leaf walk's and not that leaf's: an object-typed leaf
+  // takes exactly the same four wrong shapes. The plugin layer is the
+  // distinguishing one, so "inherits" is a claim with a witness — against the
+  // shipped file every leaf now equals its default and the row would pass
+  // whether anything was inherited or not.
   const rows: [string, object, string][] = [
-    ["a number", { guard: { protectedPaths: 123 } }, "guard.protectedPaths"],
+    ["a number", { guard: { categoryPaths: 123 } }, "guard.categoryPaths"],
     [
-      "an object",
-      { guard: { protectedPaths: { a: "rules/**" } } },
-      "guard.protectedPaths",
+      "an object of strings rather than of arrays",
+      { guard: { categoryPaths: { a: "ontology/**" } } },
+      "guard.categoryPaths",
     ],
-    ["an array of numbers", { guard: { protectedPaths: [42] } }, "guard.protectedPaths"],
+    ["an array", { guard: { categoryPaths: [42] } }, "guard.categoryPaths"],
     [
       "a bare string — the quiet one that never crashed",
-      { guard: { protectedPaths: "rules/**" } },
-      "guard.protectedPaths",
+      { guard: { categoryPaths: "ontology/**" } },
+      "guard.categoryPaths",
     ],
     ["a non-object guard", { guard: "on" }, "guard"],
-    ["an array guard", { guard: ["rules/**"] }, "guard"],
+    ["an array guard", { guard: ["ontology/**"] }, "guard"],
   ];
 
   for (const [label, value, key] of rows) {
-    it(`drops guard.protectedPaths given ${label}, and inherits the plugin's list`, () => {
-      const config = withValue(value);
+    it(`drops guard.categoryPaths given ${label}, and inherits the plugin's`, () => {
+      const config = loadConfig({
+        pluginConfigPath: distinguishingPlugin(),
+        projectRoot: projectWith(value),
+      });
 
-      expect(config.guard.protectedPaths).toContain("agents/**");
-      expect(config.guard.protectedPaths).toContain("rules/**");
-      expect(config.protectedPathsSource).toBe("plugin");
+      expect(config.guard.categoryPaths).toEqual({ onto: ["ontology/**"] });
       expect(config.diagnostics).toHaveLength(1);
       expect(config.diagnostics[0]).toContain(key);
     });
@@ -1085,15 +1127,15 @@ describe("diagnostics — a dropped source is named, never silent", () => {
     const root = projectWith("{ this is not json ");
 
     const config = loadConfig({
-      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      pluginConfigPath: distinguishingPlugin(),
       projectRoot: root,
     });
 
     expect(config.diagnostics).toHaveLength(1);
     expect(config.diagnostics[0]).toContain(PROJECT_CONFIG_FILENAME);
-    // Fell back rather than failing open to an empty list.
-    expect(config.guard.protectedPaths).toContain("agents/**");
-    expect(config.guard.protectedPaths).toContain("rules/**");
+    // Fell back to the PLUGIN's values rather than through them to DEFAULTS.
+    expect(config.guard.defaultSensitivity).toBe("high");
+    expect(config.escalation.blocksBeforeHalt).toBe(9);
   });
 
   it("names the file that was dropped, so the user knows which one to fix", () => {
@@ -1111,12 +1153,12 @@ describe("diagnostics — a dropped source is named, never silent", () => {
     const root = projectWith("[1, 2, 3]");
 
     const config = loadConfig({
-      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
+      pluginConfigPath: distinguishingPlugin(),
       projectRoot: root,
     });
 
     expect(config.diagnostics).toHaveLength(1);
-    expect(config.guard.protectedPaths).toContain("agents/**");
+    expect(config.guard.defaultSensitivity).toBe("high");
   });
 
   it("says nothing about an ABSENT project file — that is not a problem", () => {

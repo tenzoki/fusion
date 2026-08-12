@@ -2,9 +2,13 @@ import { describe, it, expect } from "vitest";
 import { resolve } from "node:path";
 import {
   CASE_TIMEOUT,
+  GOVERNED_DECISION_ID,
+  GOVERNED_DIR,
+  GOVERNED_PATH,
   readEvents,
   runBash,
   runWrite,
+  withGovernedProject,
   withProject,
 } from "./helpers/guard-harness.js";
 
@@ -28,10 +32,7 @@ import {
 // classifier is retired — "does this command write a file?" is the same
 // undecidable question the protected-path prediction asked, in small — and the
 // user accepted the loss explicitly on 260807-0945
-// (`decisions/260807-1026_*_verlust-des-bash-halts-auf-der-shell.md`). The
-// protected paths are not left to the halt: they are measured after every tool
-// call and restored, halt or no halt
-// (`protected-snapshot-integration.test.ts`).
+// (`decisions/260807-1026_*_verlust-des-bash-halts-auf-der-shell.md`).
 //
 // Five cases about the Bash halt's detail string and one about the Bash
 // protected-path deny's segment went with it. The monitor still renders the old
@@ -49,6 +50,22 @@ import {
 /** A halted project, without the three real denials it would take to reach one. */
 const HALTED = { escalation: { haltActive: true } };
 
+/**
+ * The three writes that trip the threshold, all governed by the same decision.
+ *
+ * Siblings under the one glob rather than one path written three times, so the
+ * `file` field of each row is distinct and the ordering assertion below is
+ * about three separate calls rather than about a repeated one.
+ */
+const THREE_GOVERNED_WRITES = [
+  GOVERNED_PATH,
+  `${GOVERNED_DIR}/model.ts`,
+  `${GOVERNED_DIR}/client.ts`,
+];
+
+/** What CHECK 3 writes into a block row's detail. */
+const GOVERNED_DETAIL = `Decision: ${GOVERNED_DECISION_ID}`;
+
 /** Every guard_halt row's detail, in order. */
 function haltDetails(root: string): string[] {
   return readEvents(root)
@@ -60,13 +77,15 @@ describe("a reader can tell the two guard_halt sources apart", () => {
   it(
     "marks a halted write-tool call as the write surface",
     () => {
+      // The payload is an ordinary file that nothing else in the guard refuses,
+      // so the row under test can only have come from CHECK 1.
       withProject(({ root }) => {
-        expect(runWrite(root, resolve(root, "rules/x.md")).decision).toBe("block");
+        expect(runWrite(root, resolve(root, "notes.txt")).decision).toBe("block");
         const events = readEvents(root).filter((e) => e.event === "guard_halt");
         expect(events).toHaveLength(1);
         expect(events[0].detail).toBe("Halt active — write tool call blocked");
         expect(events[0].tool).toBe("Edit");
-        expect(events[0].file).toBe("rules/x.md");
+        expect(events[0].file).toBe("notes.txt");
       }, HALTED);
     },
     CASE_TIMEOUT,
@@ -80,15 +99,13 @@ describe("a reader can tell the two guard_halt sources apart", () => {
       // the halt was raised here rather than reading like the two above it.
       //
       // All three are write-tool denials. Two of them used to be shell
-      // mutations, which no longer deny.
-      withProject(({ root }) => {
-        expect(runWrite(root, resolve(root, "rules/x.md")).decision).toBe("block");
-        expect(runWrite(root, resolve(root, "agents/coder.md")).decision).toBe(
-          "block",
-        );
-        expect(
-          runWrite(root, resolve(root, ".claude/rules/x.md")).decision,
-        ).toBe("block");
+      // mutations, which no longer deny. All three used to be protected-path
+      // denials; the threshold and the row shapes never depended on which check
+      // produced the block, only that three of them arrived in a row.
+      withGovernedProject(({ root }) => {
+        for (const path of THREE_GOVERNED_WRITES) {
+          expect(runWrite(root, resolve(root, path)).decision).toBe("block");
+        }
 
         const events = readEvents(root);
         expect(events.map((e) => e.event)).toEqual([
@@ -97,14 +114,14 @@ describe("a reader can tell the two guard_halt sources apart", () => {
           "guard_halt",
         ]);
         // The two ordinary blocks read exactly as they always have.
-        expect(events[0].detail).toBe("Protected path");
-        expect(events[1].detail).toBe("Protected path");
+        expect(events[0].detail).toBe(GOVERNED_DETAIL);
+        expect(events[1].detail).toBe(GOVERNED_DETAIL);
         // The third says the halt was raised by it, and still names the cause —
         // on the write surface the cause is the path, and the path is the
         // event's own file field rather than a repetition inside the detail.
         expect(events[2].detail).toContain("Halt raised by this block");
-        expect(events[2].detail).toContain("Protected path");
-        expect(events[2].file).toBe(".claude/rules/x.md");
+        expect(events[2].detail).toContain(GOVERNED_DETAIL);
+        expect(events[2].file).toBe(THREE_GOVERNED_WRITES[2]);
       });
     },
     CASE_TIMEOUT * 2,
@@ -118,8 +135,7 @@ describe("the halt does not reach the shell", () => {
     () => {
       // The cost the user accepted, pinned so it is a decision rather than a
       // regression: under a halt `rm notes.txt` runs, and nothing is written to
-      // the event log about it. The write tools stay blocked (case above), and
-      // the protected paths are measured rather than halted.
+      // the event log about it. The write tools stay blocked (case above).
       withProject(({ root }) => {
         expect(runBash(root, "rm -f notes.txt").decision).toBeUndefined();
         expect(haltDetails(root)).toEqual([]);

@@ -4,11 +4,14 @@ import { existsSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import {
   CASE_TIMEOUT,
+  GOVERNED_PATH,
+  governedFiles,
   guardEntry,
   readEscalation,
   readEvents,
   runBash,
   runWrite,
+  withGovernedProject,
   withPluginProject,
   withProject,
 } from "./helpers/guard-harness.js";
@@ -83,8 +86,8 @@ describe("integration harness — preconditions", () => {
     // no longer a deny anywhere — a stand-down and a retired classifier would
     // now look identical from the shell, which is exactly what a precondition
     // must not do.
-    withProject(({ root }) => {
-      expect(runWrite(root, resolve(root, "rules/x.md")).decision).toBe("block");
+    withGovernedProject(({ root }) => {
+      expect(runWrite(root, resolve(root, GOVERNED_PATH)).decision).toBe("block");
     });
   }, CASE_TIMEOUT);
 });
@@ -93,7 +96,7 @@ describe("integration harness — preconditions", () => {
 // The write path — and the trap that makes it look guarded when it is not.
 // ---------------------------------------------------------------------------
 
-describe("the Edit write path still denies a protected path", () => {
+describe("the Edit write path still denies a governed path", () => {
   it(
     "blocks an absolute file_path under the project root",
     () => {
@@ -101,23 +104,23 @@ describe("the Edit write path still denies a protected path", () => {
       // If the harness were misbuilt — wrong cwd, unresolved root, missing
       // workbench marker — this is the case that catches it, because it depends
       // on all three.
-      withProject(({ root }) => {
-        const res = runWrite(root, resolve(root, "rules/x.md"));
+      withGovernedProject(({ root }) => {
+        const res = runWrite(root, resolve(root, GOVERNED_PATH));
         expect(res.decision).toBe("block");
-        expect(res.reason).toContain("rules/x.md");
+        expect(res.reason).toContain(GOVERNED_PATH);
 
         const state = readEscalation(root);
         expect(state?.consecutiveBlocks).toBe(1);
-        expect(state?.recentEvents[0].trigger).toBe("protected_path");
+        expect(state?.recentEvents[0].trigger).toBe("decision_governed");
       });
     },
     CASE_TIMEOUT,
   );
 
   it(
-    "allows an unprotected file_path, and records the allow",
+    "allows an unguarded file_path, and records the allow",
     () => {
-      withProject(({ root }) => {
+      withGovernedProject(({ root }) => {
         expect(runWrite(root, resolve(root, "notes.txt")).decision).toBeUndefined();
         // The write path — unlike the Bash path — DOES reset the counter and
         // emit guard_allow. Asserting it here is what stops the Bash-side cases
@@ -133,7 +136,7 @@ describe("the macOS realpath trap", () => {
   // The case below asserts that an absolute path reached through an UNRESOLVED
   // alias of the project root is allowed. That is not a bug report; it is the
   // mechanism by which a harness built on a raw `mktemp -d` turns every
-  // protected-path assertion into a vacuous pass. Pinning it here means the
+  // denial assertion into a vacuous pass. Pinning it here means the
   // next person cannot reintroduce it without also deleting a test that
   // explains exactly what they broke.
   //
@@ -143,8 +146,8 @@ describe("the macOS realpath trap", () => {
   it(
     "Edit: an absolute path through an unresolved alias silently ALLOWS",
     () => {
-      withProject(({ root, alias }) => {
-        expect(runWrite(root, resolve(alias, "rules/x.md")).decision).toBeUndefined();
+      withGovernedProject(({ root, alias }) => {
+        expect(runWrite(root, resolve(alias, GOVERNED_PATH)).decision).toBeUndefined();
       });
     },
     CASE_TIMEOUT,
@@ -195,8 +198,8 @@ describe("ordinary work is allowed and writes nothing", () => {
       // this — because the Bash surface has no deny of its own left to open
       // with. The property under test never depended on which policy blocked,
       // only that a block is standing when the innocuous calls run.
-      withProject(({ root }) => {
-        expect(runWrite(root, resolve(root, "rules/x.md")).decision).toBe("block");
+      withGovernedProject(({ root }) => {
+        expect(runWrite(root, resolve(root, GOVERNED_PATH)).decision).toBe("block");
         expect(readEscalation(root)?.consecutiveBlocks).toBe(1);
 
         const innocuous = [
@@ -207,11 +210,11 @@ describe("ordinary work is allowed and writes nothing", () => {
           "mv notes.txt /tmp/",
           "rm -rf build",
           "sed -i '' 's/a/b/' notes.txt",
-          // A protected path in a READ-only operand role: copying out is fine.
-          "cp rules/x.md /tmp/y",
+          // A guarded path in a READ-only operand role: copying out is fine.
+          `cp ${GOVERNED_PATH} /tmp/y`,
           // fusion's own revert strategy. If this ever denies, every agent
           // loses its way to undo a bad edit.
-          "git checkout HEAD -- rules/x.md",
+          `git checkout HEAD -- ${GOVERNED_PATH}`,
           "echo hi 2>&1",
         ];
 
@@ -252,12 +255,15 @@ describe("self-detect stand-down: the write guard yields", () => {
   it(
     "stands the Edit write path down",
     () => {
-      withPluginProject(({ root }) => {
-        expect(runWrite(root, resolve(root, "rules/x.md")).decision).toBeUndefined();
-        const events = readEvents(root);
-        expect(events.map((e) => e.event)).toEqual(["guard_allow"]);
-        expect(events[0].detail).toContain("standing down");
-      });
+      withPluginProject(
+        ({ root }) => {
+          expect(runWrite(root, resolve(root, GOVERNED_PATH)).decision).toBeUndefined();
+          const events = readEvents(root);
+          expect(events.map((e) => e.event)).toEqual(["guard_allow"]);
+          expect(events[0].detail).toContain("standing down");
+        },
+        { files: governedFiles() },
+      );
     },
     CASE_TIMEOUT,
   );
@@ -269,8 +275,8 @@ describe("self-detect stand-down: the write guard yields", () => {
       // ONLY difference between this root and the one above is
       // .claude-plugin/plugin.json. `isFusionPluginCwd()` does no upward walk,
       // so this is the whole of the condition.
-      withProject(({ root }) => {
-        expect(runWrite(root, resolve(root, "rules/x.md")).decision).toBe("block");
+      withGovernedProject(({ root }) => {
+        expect(runWrite(root, resolve(root, GOVERNED_PATH)).decision).toBe("block");
       });
     },
     CASE_TIMEOUT,
@@ -289,10 +295,11 @@ describe("self-detect stand-down: the write guard yields", () => {
 // makes this the case that would notice a third policy arriving on this surface
 // and taking it out.
 //
-// Scope: the PreToolUse VERDICT. If the reverted path is protected, the
-// measurement in `tracker.ts` still puts it back and halts afterwards — that is
-// `rules/protected-path-discipline.md`'s "restoring a protected file is a human
-// act", and it is asserted in `protected-snapshot-integration.test.ts`, not here.
+// Scope: the PreToolUse VERDICT, on ordinary project files. The two paths this
+// used to revert were `rules/x.md` and `agents/coder.md`, chosen when they were
+// the harness's protected fixtures and the case doubled as a statement about
+// what the guard does to a revert of a protected file. Nothing here depended on
+// that, and the fixtures are going, so it reverts unremarkable files instead.
 //
 // The effect side asserts the command really does revert: the working file is
 // dirtied first, and the command has to put it back. An allow asserted without
@@ -302,6 +309,9 @@ describe("self-detect stand-down: the write guard yields", () => {
 
 /** The two shells, because Claude Code starts the user's login shell, not bash. */
 const SHELLS = { bash: "/bin/bash", zsh: "/bin/zsh" } as const;
+
+/** The file the revert puts back. Seeded, tracked, and guarded by nothing. */
+const REVERT_TARGET = "notes.txt";
 
 /**
  * Turn a harness project into a git repository with two commits, so `HEAD~1`
@@ -329,14 +339,13 @@ function initRepo(root: string): void {
   git("init", "-q", ".");
   git("add", "-A");
   git("commit", "-qm", "one");
-  writeFileSync(resolve(root, "rules/x.md"), "# a rule, revised\n", "utf-8");
-  writeFileSync(resolve(root, "agents/coder.md"), "# an agent, revised\n", "utf-8");
+  writeFileSync(resolve(root, REVERT_TARGET), "notes, revised\n", "utf-8");
   writeFileSync(resolve(root, "build/out.js"), "// built, revised\n", "utf-8");
   git("commit", "-qam", "two");
 }
 
 describe("the revert strategy is allowed, and it reverts", () => {
-  for (const form of ["git checkout HEAD -- rules/x.md", "git checkout HEAD -- ."]) {
+  for (const form of [`git checkout HEAD -- ${REVERT_TARGET}`, "git checkout HEAD -- ."]) {
     for (const shell of ["bash", "zsh"] as const) {
       it(
         `allows and reverts (${shell}): ${form}`,
@@ -349,7 +358,7 @@ describe("the revert strategy is allowed, and it reverts", () => {
 
           withProject(({ root }) => {
             initRepo(root);
-            const target = resolve(root, "rules/x.md");
+            const target = resolve(root, REVERT_TARGET);
             const committed = readFileSync(target, "utf-8");
             writeFileSync(target, "# an agent's out-of-scope edit\n", "utf-8");
             spawnSync(SHELLS[shell], ["-c", form], { cwd: root, stdio: "ignore" });
@@ -368,11 +377,11 @@ describe("the revert strategy is allowed, and it reverts", () => {
       // the file, which would satisfy a content comparison against nothing.
       withProject(({ root }) => {
         initRepo(root);
-        spawnSync(SHELLS.bash, ["-c", "git checkout HEAD -- rules/x.md"], {
+        spawnSync(SHELLS.bash, ["-c", `git checkout HEAD -- ${REVERT_TARGET}`], {
           cwd: root,
           stdio: "ignore",
         });
-        expect(existsSync(resolve(root, "rules/x.md"))).toBe(true);
+        expect(existsSync(resolve(root, REVERT_TARGET))).toBe(true);
       });
     },
     CASE_TIMEOUT,

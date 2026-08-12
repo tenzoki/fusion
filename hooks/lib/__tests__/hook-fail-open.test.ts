@@ -13,9 +13,11 @@
  * fail-open verdict is not a fallback but a loss: a deny the guard reached from
  * the config and the path, replaced by an allow because a counter could not be
  * written. Four such sites were measured
- * (`shared/issues/260809-1825_*`, `…2046_*`, `…2045_*`), and
- * `describe("a verdict the hook already reached survives its own bookkeeping")`
- * below drives each of them through the real hook subprocess.
+ * (`shared/issues/260809-1825_*`, `…2046_*`, `…2045_*`); three of them remain,
+ * the fourth having collapsed into its neighbour when the protected-path deny it
+ * was reached through was removed. `describe("a verdict the hook already reached
+ * survives its own bookkeeping")` below drives each survivor through the real
+ * hook subprocess.
  *
  * Both halves are one rule, and `lib/fail-open.ts` states it: the verdict is
  * written first, everything that records it runs after, guarded.
@@ -59,15 +61,16 @@
 
 import { describe, expect, it, vi } from "vitest";
 import { spawnSync } from "node:child_process";
-import { chmodSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { chmodSync, mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { answer, bestEffort, failOpen } from "../fail-open.js";
 import {
   CASE_TIMEOUT,
+  DRIFT_SENTENCE_MARKERS,
   childEnv,
+  freezeCommitCount,
   guardEntry,
   projectConfig,
-  readEscalation,
   trackerEntry,
   withProject,
 } from "./helpers/guard-harness.js";
@@ -194,8 +197,8 @@ describe("an unwritable .guard-state/ does not cost a hook its verdict", () => {
 });
 
 /**
- * The four sites where the guard had already decided, and the record of the
- * decision stood in front of it.
+ * The sites where the hook had already decided, and the record of the decision
+ * stood in front of it.
  *
  * Each case makes the guard's own bookkeeping fail and then asserts the verdict
  * anyway. They are written as SUBPROCESS runs rather than unit calls for the
@@ -208,27 +211,6 @@ describe("an unwritable .guard-state/ does not cost a hook its verdict", () => {
  * deny arrives for the ordinary reason, proving nothing about the ordering.
  */
 describe("a verdict the hook already reached survives its own bookkeeping", () => {
-  it(
-    "denies a protected path with the state directory unwritable (260809-1825)",
-    () => {
-      // This case used to assert the opposite, under the name "fails open on a
-      // protected path too", and its comment named the record whose landing
-      // should flip it. That record is this change.
-      withUnwritableStateDir((root) => {
-        const run = runRaw(guardEntry(), root, "PreToolUse", "Edit", {
-          file_path: resolve(root, "rules/x.md"),
-        });
-
-        expect(run.stderr).toContain("[guard] Error:");
-        const verdict = verdictOf(run, "guard");
-        expect(verdict.decision).toBe("block");
-        expect(String(verdict.reason)).toContain("rules/x.md");
-        expect(run.status).toBe(0);
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
   it(
     "denies a write in a HALTED project with the state directory unwritable",
     () => {
@@ -252,11 +234,21 @@ describe("a verdict the hook already reached survives its own bookkeeping", () =
   );
 
   it(
-    "denies a decision-governed path with the state directory unwritable",
+    "denies a decision-governed path with the state directory unwritable (260809-1825)",
     () => {
-      // CHECK 3. `notes.txt` is not on the protected list, so the only thing
-      // that can refuse this call is the decision-governed escalation the
-      // project's own config declares.
+      // CHECK 3, and the `saveEscalation`-after-a-deny site that record names.
+      //
+      // A second case stood beside this one and made the identical assertion
+      // through CHECK 2 — the same failing writer, the same verdict, a deny from
+      // the plugin's inherited protected list rather than from the project's own
+      // declaration. When the protected-path half was removed the two collapsed
+      // into one, so the duplicate went and this case inherited the citation.
+      // The site is unchanged: a deny the guard has already reached, with the
+      // record of it standing in front of the verdict.
+      //
+      // `notes.txt` is refused by nothing else in the guard, so what refuses
+      // this call can only be the decision-governed escalation the project's
+      // own config declares.
       withUnwritableStateDir(
         (root) => {
           const run = runRaw(guardEntry(), root, "PreToolUse", "Edit", {
@@ -288,52 +280,56 @@ describe("a verdict the hook already reached survives its own bookkeeping", () =
   );
 
   it(
-    "delivers the protected-path sentence with churn.json unwritable (260809-2045)",
+    "delivers the tracker's report with churn.json unwritable (260809-2045)",
     () => {
-      // The PostToolUse side of the same shape. `measureProtectedPaths` has
-      // already reverted the file and raised the halt by the time the churn
-      // heatmap runs; the only thing left to deliver is the sentence, and it used
-      // to be held until an advisory metric had finished.
+      // The PostToolUse side of the same shape. The reports run first and the
+      // heatmap after them; the only thing left to deliver by then is the
+      // sentence, and it used to be held until an advisory metric had finished.
+      //
+      // The probe is the state-drift report. It was the protected-path halt
+      // sentence, which is the reply that went away with the mechanism; drift is
+      // the one surviving report that fires on every guarded tool call, so it is
+      // the only one that leaves this case's own subject — the ORDERING — as the
+      // single thing under test. `freezeCommitCount` in the harness carries the
+      // rest of that reasoning.
       //
       // `churn.json` is replaced by a NON-EMPTY directory rather than the whole
-      // state directory being made unwritable: the guard has to be able to write
-      // its before-fingerprint, or there is no measurement to report and the case
-      // would pass for the wrong reason.
-      withProject(({ root }) => {
-        const rule = resolve(root, "rules/x.md");
-        const stateDir = resolve(root, "fusion-workbench", ".guard-state");
+      // state directory being made unwritable: the drift report writes its own
+      // throttle record under `.guard-state/`, and a directory nothing can write
+      // would take the report out along with the churn save the case is aiming
+      // at.
+      withProject(
+        ({ root }) => {
+          freezeCommitCount(root);
 
-        // PreToolUse takes the before-picture.
-        runRaw(guardEntry(), root, "PreToolUse", "Write", { file_path: rule });
+          const payload = resolve(root, PAYLOAD);
+          const stateDir = resolve(root, "fusion-workbench", ".guard-state");
 
-        // The tool runs: a protected path changes.
-        writeFileSync(rule, "# tampered\n", "utf-8");
+          writeFileSync(payload, "edited\n", "utf-8");
 
-        // `saveChurn`'s rename cannot land on a non-empty directory.
-        mkdirSync(resolve(stateDir, "churn.json", "occupied"), {
-          recursive: true,
-        });
-        writeFileSync(resolve(stateDir, "churn.json", "occupied", "f"), "x\n");
+          // `saveChurn`'s rename cannot land on a non-empty directory.
+          mkdirSync(resolve(stateDir, "churn.json", "occupied"), {
+            recursive: true,
+          });
+          writeFileSync(resolve(stateDir, "churn.json", "occupied", "f"), "x\n");
 
-        const run = runRaw(trackerEntry(), root, "PostToolUse", "Write", {
-          file_path: rule,
-        });
+          const run = runRaw(trackerEntry(), root, "PostToolUse", "Write", {
+            file_path: payload,
+          });
 
-        expect(run.stderr).toContain("[tracker] Error:");
-        expect(run.status).toBe(0);
+          expect(run.stderr).toContain("[tracker] Error:");
+          expect(run.status).toBe(0);
 
-        const body = verdictOf(run, "tracker") as {
-          hookSpecificOutput?: { additionalContext?: string };
-        };
-        const sentence = body.hookSpecificOutput?.additionalContext ?? "";
-        expect(sentence).toContain("rules/x.md");
-        expect(sentence).toContain("clear-halt.js");
-
-        // And the enforcement the sentence describes really happened, so the
-        // case cannot pass on a message about nothing.
-        expect(readFileSync(rule, "utf-8")).toBe("# a rule\n");
-        expect(readEscalation(root)?.haltActive).toBe(true);
-      });
+          const body = verdictOf(run, "tracker") as {
+            hookSpecificOutput?: { additionalContext?: string };
+          };
+          const sentence = body.hookSpecificOutput?.additionalContext ?? "";
+          for (const marker of DRIFT_SENTENCE_MARKERS) {
+            expect(sentence).toContain(marker);
+          }
+        },
+        { git: true },
+      );
     },
     CASE_TIMEOUT,
   );
