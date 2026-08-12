@@ -202,6 +202,119 @@ describe("bin/fusion-paths", () => {
     });
   });
 
+  describe("target Circle argument", () => {
+    // `fusion-paths <name> [<circle-dir>]`. The second argument makes a Circle
+    // the Circle IN SCOPE without making it active — which is the whole point:
+    // the caller is a shaper or planner working an ANTICIPATED Circle, and
+    // anticipated is not active. .active-circle is neither read for the
+    // substitution nor written.
+    const OTHER = "260812-1720-circle-first-placement";
+
+    beforeEach(() => {
+      mkdirSync(join(workbench, "circles", OTHER), { recursive: true });
+    });
+
+    it("points every OUT_* into the target when no Circle is active", () => {
+      const r = run(project, "shaper", OTHER);
+      expect(r.status).toBe(0);
+      const p = parse(r.stdout);
+      expect(p.OUT_PLAN).toBe(`circles/${OTHER}/planning`);
+      expect(p.OUT_HISTORY).toBe(`circles/${OTHER}/history`);
+      expect(p.OUT_ISSUE).toBe(`circles/${OTHER}/issues`);
+      expect(p.OUT_DECISION).toBe(`circles/${OTHER}/decisions`);
+    });
+
+    it("emits no CIRCLE for a target, because the target is not active", () => {
+      // CIRCLE answers "which Circle is active", and a target does not make
+      // one active. A caller that needs the target already holds it.
+      const p = parse(run(project, "shaper", OTHER).stdout);
+      expect(p.CIRCLE).toBeUndefined();
+    });
+
+    it("displaces a DIFFERENT active Circle from OUT_* and from SCAN_*", () => {
+      activate();
+      const r = run(project, "reconciler", OTHER);
+      expect(r.status).toBe(0);
+      const p = parse(r.stdout);
+
+      // CIRCLE still reports the active one — the pointer was not consulted
+      // for the substitution and was certainly not rewritten.
+      expect(p.CIRCLE).toBe(`circles/${CIRCLE_NAME}`);
+      expect(readFileSync(join(workbench, ".active-circle"), "utf-8").trim()).toBe(CIRCLE_NAME);
+
+      for (const key of [
+        "SCAN_PLANS",
+        "SCAN_ISSUES",
+        "SCAN_DECISIONS",
+        "SCAN_HISTORY",
+        "SCAN_REVIEWS",
+        "SCAN_ANALYSES",
+      ]) {
+        const parts = p[key].split(" ");
+        // Invariant 2 still holds and still means two stores: the Circle in
+        // scope and the shared one. The active Circle is not a third.
+        expect(parts, `${key} must carry exactly two stores`).toHaveLength(2);
+        expect(parts[0]).toBe(`circles/${OTHER}/${parts[1].slice("shared/".length)}`);
+        expect(parts[1]).toMatch(/^shared\//);
+        expect(p[key], `${key} must not name the active Circle`).not.toContain(CIRCLE_NAME);
+      }
+    });
+
+    it("keeps the unconditionally-shared kinds shared", () => {
+      expect(parse(run(project, "investigator", OTHER).stdout).OUT_INVESTIGATION).toBe(
+        "shared/investigations",
+      );
+      expect(parse(run(project, "consultant", OTHER).stdout).OUT_CONSULT).toBe("shared/consult");
+      expect(parse(run(project, "memo", OTHER).stdout).OUT_MEMO).toBe("shared/memos");
+    });
+
+    it("exits 1 when the target names no such Circle directory", () => {
+      // 1, not 3 and not 4. Exit 3 would send the user to fix an .active-circle
+      // that is intact; exit 4 would claim a fusion bug when the caller may be
+      // a person mistyping `/fusion:direct`. The argument came from the caller.
+      const r = run(project, "shaper", "260101-0000-no-such-circle");
+      expect(r.status).toBe(1);
+      expect(r.stderr).toContain("260101-0000-no-such-circle");
+      expect(r.stdout).toBe("");
+    });
+
+    it("exits 1 on a target that could escape circles/", () => {
+      // The target is interpolated into a path, so this is a safety property.
+      for (const bad of ["..", `../circles/${OTHER}`, `circles/${OTHER}`]) {
+        const r = run(project, "shaper", bad);
+        expect(r.status, `target '${bad}' must not resolve`).toBe(1);
+        expect(r.stdout).toBe("");
+      }
+    });
+
+    it("still exits 3 for an orphaned pointer, target or no target", () => {
+      // The pointer is not consulted for the substitution, but it is still
+      // read and still validated: a workbench in an inconsistent state stops
+      // the run whichever Circle the caller asked to write into.
+      activate("260101-0000-does-not-exist");
+      const r = run(project, "shaper", OTHER);
+      expect(r.status).toBe(3);
+      expect(r.stdout).toBe("");
+    });
+
+    it("is a no-op when the target IS the active Circle", () => {
+      // The strongest available form of "the argument is additive": with the
+      // substitution resolving to what was already in scope, the output must be
+      // byte-identical. The no-target path itself is regression-covered by
+      // every other test in this file, which passes no second argument.
+      activate();
+      for (const name of ["shaper", "reconciler", "planner", "orchestrator"]) {
+        expect(run(project, name, CIRCLE_NAME).stdout, name).toBe(run(project, name).stdout);
+      }
+    });
+
+    it("exits 1 on a third argument", () => {
+      const r = run(project, "shaper", OTHER, "extra");
+      expect(r.status).toBe(1);
+      expect(r.stderr).toContain("at most two arguments");
+    });
+  });
+
   describe("orphaned pointer", () => {
     it("errors with a non-zero exit and never falls back to shared/", () => {
       activate("260101-0000-does-not-exist");

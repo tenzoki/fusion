@@ -1,11 +1,22 @@
 #!/usr/bin/env bash
 # fusion-paths — resolve a consumer's workbench write and search targets
 #
-# Usage: fusion-paths <name>
+# Usage: fusion-paths <name> [<circle-dir>]
 #
 # <name> is an agent (agents/<name>.md) or a skill (skills/<name>/SKILL.md).
 # The two share one flat namespace: each consumer asks for its own keys under
 # its own name — `fusion-paths coder`, `fusion-paths memo`.
+#
+# <circle-dir> is optional: the bare directory name of an EXISTING Circle under
+# circles/. When given, that Circle is the Circle in scope — it replaces the
+# active one for the OUT_* base and for the Circle half of every SCAN_*.
+# Nothing else changes. .active-circle is neither read for the substitution nor
+# written (its writer set is closed and enumerated in the conventions), and the
+# emitted CIRCLE key still names the ACTIVE Circle, or is absent when none is
+# active. That is deliberate: the usual caller is working an ANTICIPATED Circle,
+# which is not active, and a caller that needs the target already holds it — it
+# passed it. A name that is not an existing Circle directory exits 1: it is a
+# usage error by the caller, not a fault in the workbench.
 #
 # Prints one KEY=value line per emitted key on stdout. The single resolution
 # point for the workbench layout: no agent prompt and no skill body hard-codes
@@ -32,7 +43,8 @@
 # Exit codes (0/1/2 are the shape of bin/fusion-rules; 3 and 4 are this
 # resolver's own). Callers key on the code, so no code carries two meanings:
 #   0  success
-#   1  usage error, or no workbench found above pwd
+#   1  usage error (missing name, too many arguments, or a <circle-dir> that
+#      names no existing Circle directory), or no workbench found above pwd
 #   2  unknown name (no such agent and no such skill)
 #   3  .active-circle is corrupt or orphaned (points at a missing directory)
 #      — a workbench-STATE fault. The user fixes the pointer.
@@ -43,14 +55,17 @@
 #      "## Path Resolution" → Exit codes).
 #
 # Resolution rules (from the conventions' "## Path Resolution"):
-#   - Active Circle   → every OUT_* points into circles/<name>/
-#   - No .active-circle → every OUT_* points into shared/. This is not an error
-#     state: work outside Circles is routine and has a defined home.
+#   - Circle in scope → every OUT_* points into circles/<name>/. The Circle in
+#     scope is the <circle-dir> argument when one is given, and the active
+#     Circle otherwise.
+#   - No Circle in scope → every OUT_* points into shared/. This is not an
+#     error state: work outside Circles is routine and has a defined home.
 #   - OUT_INVESTIGATION / OUT_CONSULT / OUT_MEMO are unconditionally shared.
 #     None of the three arises from executing a Directive, so none can
 #     originate in a Circle.
-#   - Every SCAN_* carries BOTH stores when a Circle is active, and collapses
-#     to the shared store alone when none is. Searching must cover both.
+#   - Every SCAN_* carries BOTH stores when a Circle is in scope — that Circle
+#     and the shared one — and collapses to the shared store alone when none
+#     is. Searching must cover both.
 #     SCAN_CONSULT and SCAN_INVESTIGATIONS are the two exceptions, and only
 #     apparently so: their kinds exist solely in shared/, so "both stores"
 #     collapses to one. The rule is not weakened — it has nothing to range over.
@@ -100,7 +115,8 @@
 # to derive from: an agent's prompt does not name the rule-file patterns that
 # apply to it, so its mapping is a genuine authored fact. This resolver's key
 # set is not a fact — it is a restatement of the prompt. The two scripts stay
-# symmetric where symmetry was the point (one argument, KEY=value on stdout,
+# symmetric where symmetry was the point (a required name argument, KEY=value
+# on stdout,
 # same Setup step, same 0/1/2 exit shape); only the internal table differs,
 # because only one of them has a source of truth to read.
 #
@@ -131,14 +147,17 @@ set -eu
 
 NAME="${1:-}"
 if [ -z "$NAME" ]; then
-  echo "Usage: $0 <name>   # an agent (agents/<name>.md) or a skill (skills/<name>/SKILL.md)" >&2
+  echo "Usage: $0 <name> [<circle-dir>]   # <name> is an agent (agents/<name>.md) or a skill (skills/<name>/SKILL.md); <circle-dir> is an existing Circle directory name that becomes the Circle in scope" >&2
   exit 1
 fi
 
-if [ "$#" -gt 1 ]; then
-  echo "fusion-paths: expected exactly one argument, got $#" >&2
+if [ "$#" -gt 2 ]; then
+  echo "fusion-paths: expected at most two arguments (<name> [<circle-dir>]), got $#" >&2
   exit 1
 fi
+
+# The optional target Circle. Validated below, once the workbench is located.
+TARGET="${2:-}"
 
 # ---------------------------------------------------------------------------
 # 1. Resolve the name to exactly one prompt file, and derive its key set.
@@ -251,21 +270,54 @@ if [ -f "$POINTER" ]; then
 fi
 
 # ---------------------------------------------------------------------------
+# 3b. The Circle in scope. It is the <circle-dir> argument when one is given,
+#     and the active Circle otherwise. The pointer above is still read and
+#     still validated — an orphaned one exits 3 whether a target was passed or
+#     not — it is simply not what the substitution consults.
+#
+#     A bad target exits 1, not 3 and not 4. Exit 3 would send the user to fix
+#     an .active-circle that is intact, and exit 4 would claim a fusion bug
+#     when the caller may well be a person mistyping `/fusion:direct`. The
+#     argument came from the caller, so the caller is who the code addresses
+#     (see rules/fusion-workbench-conventions.md "## Path Resolution" → Exit
+#     codes: whose fault each code is).
+# ---------------------------------------------------------------------------
+SCOPE="$CIRCLE"
+if [ -n "$TARGET" ]; then
+  # The same safety property as the name guard above: the target is
+  # interpolated into a path, so a separator or a dot segment could reach a
+  # directory outside circles/ that happens to exist.
+  case "$TARGET" in
+    */*|.|..)
+      echo "fusion-paths: target Circle '$TARGET' must be a bare directory name — no path separators, no 'circles/' prefix, no '.md' suffix." >&2
+      exit 1
+      ;;
+  esac
+
+  if [ ! -d "$WORKBENCH/circles/$TARGET" ]; then
+    echo "fusion-paths: target Circle 'circles/$TARGET' does not exist. The second argument must name a Circle directory that is already there. This is a usage error in the call, not a fault in your workbench — your .active-circle is not involved." >&2
+    exit 1
+  fi
+
+  SCOPE="circles/$TARGET"
+fi
+
+# ---------------------------------------------------------------------------
 # 4. Resolve values.
 # ---------------------------------------------------------------------------
 
-# OUT_* base: the active Circle when there is one, the shared store when not.
-if [ -n "$CIRCLE" ]; then
-  OUT_BASE="$CIRCLE"
+# OUT_* base: the Circle in scope when there is one, the shared store when not.
+if [ -n "$SCOPE" ]; then
+  OUT_BASE="$SCOPE"
 else
   OUT_BASE="shared"
 fi
 
 scan_value() {
-  # $1 = artifact subdirectory name. Always both stores when a Circle is
-  # active; the shared store alone when none is.
-  if [ -n "$CIRCLE" ]; then
-    printf '%s %s' "$CIRCLE/$1" "shared/$1"
+  # $1 = artifact subdirectory name. Always both stores when a Circle is in
+  # scope; the shared store alone when none is.
+  if [ -n "$SCOPE" ]; then
+    printf '%s %s' "$SCOPE/$1" "shared/$1"
   else
     printf '%s' "shared/$1"
   fi
@@ -363,8 +415,10 @@ done
 # WORKBENCH is always emitted, and is the only absolute path.
 OUT="$(printf 'WORKBENCH=%s\n' "$WORKBENCH")"
 
-# CIRCLE is emitted only when a Circle is active. Its absence is how a caller
-# tells "no Circle" from "Circle active".
+# CIRCLE is emitted only when a Circle is ACTIVE, and always names the active
+# one — never the <circle-dir> target. Its absence is how a caller tells "no
+# Circle active" from "Circle active", and that answer must stay true when the
+# caller is working an anticipated Circle, which is not active.
 if [ -n "$CIRCLE" ]; then
   OUT="$OUT
 $(printf 'CIRCLE=%s' "$CIRCLE")"

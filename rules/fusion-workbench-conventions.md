@@ -42,7 +42,8 @@ fusion-workbench/
 │   ├── investigations/                # investigations are always shared — see below
 │   ├── consult/                       # consultations are always shared — see below
 │   ├── history/
-│   └── memos/                         # memos are always shared — see below
+│   ├── memos/                         # memos are always shared — see below
+│   └── backlog/                       # ideas not yet units of work — always shared, see below
 ├── archive/                           # /fusion:archive target
 ├── stashes/                           # /fusion:circle-stash target (opt-in; created on first stash)
 ├── stilwerk/                          # stylometric profiles
@@ -83,7 +84,7 @@ Two consequences the lifecycle skills depend on. **Nothing in the second group s
 
 This repository applies exactly that split; see its `.gitignore`.
 
-**`shared/` mirrors the Circle's artifact kinds, plus three of its own.** Every kind a Circle can hold has a shared counterpart, because any of them can be produced with no Circle active and must still have a home. `investigations/`, `consult/` and `memos/` exist only in `shared/`: an investigation studies a failure capture, a consultation answers a question, and a memo records a note — none of the three is produced by executing a Directive, so none can originate in a Circle.
+**`shared/` mirrors the Circle's artifact kinds, plus four of its own.** Every kind a Circle can hold has a shared counterpart, because any of them can be produced with no Circle active and must still have a home. `investigations/`, `consult/`, `memos/` and `backlog/` exist only in `shared/`: an investigation studies a failure capture, a consultation answers a question, a memo records a note, and a backlog entry precedes every Directive by construction. None of the four is produced by executing a Directive, so none can originate in a Circle.
 
 **The three review types collapse into one `reviews/`.** codereview, ontoreview and conceptreview differ by sender, not by kind. The sender is in the filename (`YYMMDD-HHMM-<sender>-<topic>.md`) and in the document header. Inside one Circle they do not earn a directory each.
 
@@ -130,32 +131,36 @@ prompt, or change `bin/fusion-paths` itself. `bin/fusion-rules` emits it to no a
 
 In **Setup step 2**, alongside `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" <agent>`. That step is demonstrably executed by every agent on every run — it is the step that loads the rules the agent then obeys. A per-write call would be a new obligation with a new miss rate; a Setup-step call rides an obligation that already holds. Resolve once at Setup, use the values for the rest of the session. A skill resolves at its own first step, for the same reason.
 
+**One second resolution is permitted, and only one.** A consumer that *creates* a Circle mid-run resolves once more immediately after creating it, passing the new directory as `<circle-dir>`, and holds those values for the rest of the run. The shaper's anticipated-circle mode is the case: the Circle does not exist when Setup runs, and every write after its creation belongs inside it. The exception is conditional on a fact rather than on judgement, namely *did this run create a Circle*, which is why it can be written down without widening into "re-resolve whenever it seems useful". The reason is recorded here beside the rule on purpose: without it, the next audit reads a consumer's two calls as drift and removes one. Binding decision: `shared/decisions/260812-1720_*_when-exactly-does-the-anticipated-circle-come-into-existence.md`.
+
 **And what a consumer does with a key it cannot use: it stops and names that key.** An empty or unset value is never a default, a fallback, or an empty result — nothing is scanned through it, nothing written through it, and the run halts naming the key. This is the consumer-side end of the exit-4 rule under *Failure behaviour*, not a second rule beside it: the resolver refuses to emit `KEY=` for a reason that holds just as well one step later, where a held value is interpolated into a shell block, a glob or a path join and can go missing long after the resolver exited 0. An empty expansion is silent, so a consumer that does not check reports it as a finding.
 
-`fusion-rules` still takes an **agent** name only. The two helpers stand side by side in the same step with different namespaces, and that is deliberate: `fusion-rules` maps an agent to rule-file patterns, which is an authored fact about an agent and has no meaning for a skill. Their symmetry is the interface (one argument, output on stdout, the shared `0/1/2` exit core), not the argument domain.
+`fusion-rules` still takes an **agent** name only. The two helpers stand side by side in the same step with different namespaces, and that is deliberate: `fusion-rules` maps an agent to rule-file patterns, which is an authored fact about an agent and has no meaning for a skill. Their symmetry is the interface (a required name argument, output on stdout, the shared `0/1/2` exit core), not the argument domain.
 
 ### Contract
 
-Signature `fusion-paths <name>`. Output: one `KEY=value` line per emitted key on stdout. Paths are workbench-relative except `WORKBENCH` itself, which is absolute. Multi-value keys are space-separated.
+Signature `fusion-paths <name> [<circle-dir>]`. Output: one `KEY=value` line per emitted key on stdout. Paths are workbench-relative except `WORKBENCH` itself, which is absolute. Multi-value keys are space-separated.
+
+The optional `<circle-dir>` is the bare directory name of an **existing** Circle, and it makes that Circle the **Circle in scope**: it replaces the active Circle as the `OUT_*` base and as the Circle half of every `SCAN_*`, and changes nothing else. `.active-circle` is neither read for the substitution nor written, and the emitted `CIRCLE` key still names the *active* Circle, or is absent when none is active. A target Circle is in scope, not active.
 
 #### Exit codes
 
 | Code | Meaning | Shared with `bin/fusion-rules`? |
 |---|---|---|
 | 0 | Success | yes |
-| 1 | Usage error, or no workbench found above `pwd` | yes |
+| 1 | Usage error, including a `<circle-dir>` that names no existing Circle directory, or no workbench found above `pwd` | yes |
 | 2 | Unknown name — no such agent and no such skill | yes |
 | 3 | `.active-circle` is corrupt or orphaned — a **workbench-state** fault | code collides — see below |
 | 4 | Internal error: a prompt names a key the resolver cannot order or value, or one name is both an agent and a skill — a **fusion bug** | no |
 
 The `0/1/2` core is shared with `bin/fusion-rules`; 3 and 4 are this resolver's own — and 3 **collides**: `fusion-rules` also exits 3, for a malformed `rules/context-manifest.yaml`. Read exit 3 against the helper that returned it; interpreting a `fusion-rules` 3 by this table sends the user to fix an intact `.active-circle`.
 
-**3 and 4 must never be merged.** They address different people. Exit 3 is the user's to fix: their pointer is stale, and the advice "fix `.active-circle` before continuing" is right. Exit 4 is not fixable from the workbench at all, and a caller that keys on the code would hand the user that same advice about a pointer that is perfectly fine. Distinguishing them only in the stderr text is not enough — prompts key on the code.
+**3 and 4 must never be merged.** They address different people. Exit 3 is the user's to fix: their pointer is stale, and the advice "fix `.active-circle` before continuing" is right. Exit 4 is not fixable from the workbench at all, and a caller that keys on the code would hand the user that same advice about a pointer that is perfectly fine. Distinguishing them only in the stderr text is not enough — prompts key on the code. A bad `<circle-dir>` takes 1 by the same question of whose fault it is: the argument came from the caller, so a consumer that meets it must report neither a broken pointer nor a fusion bug.
 
 ### Two invariants
 
-1. **With no active Circle, every `OUT_*` points into `shared/`.** There is no error state and no refusal for "no Circle active" — work happens outside Circles routinely, and it has a defined home. This is the Origin Rule's "unknown origin means `shared/`" expressed executably.
-2. **Every `SCAN_*` always carries both stores** — the Circle's and the shared one — even when a Circle is active. An agent searching for open decisions must see the Circle's *and* the project's. With no active Circle, a `SCAN_*` collapses to the shared store alone.
+1. **With no Circle in scope, every `OUT_*` points into `shared/`.** The **Circle in scope** is the `<circle-dir>` argument when one is given, and the active Circle otherwise. There is no error state and no refusal for "no Circle active" — work happens outside Circles routinely, and it has a defined home. This is the Origin Rule's "unknown origin means `shared/`" expressed executably.
+2. **Every `SCAN_*` always carries both stores** — the Circle in scope and the shared one — even when a Circle is active. An agent searching for open decisions must see the Circle's *and* the project's. With no Circle in scope, a `SCAN_*` collapses to the shared store alone.
 
    `SCAN_INVESTIGATIONS` and `SCAN_CONSULT` look like exceptions and are not. Their kinds exist only in `shared/` (an investigation and a consultation cannot originate in a Circle — see `## fusion-workbench Layout`), so "both stores" has nothing to range over and collapses to one. The invariant is not weakened for them; it is satisfied vacuously. The asymmetry is intentional, and it follows from the layout rather than sitting beside it.
 
@@ -185,6 +190,21 @@ A **defect** belongs in `issues/`. A **decision** belongs in `decisions/`. The d
 A **Circle** is a directory under `$OUT_CIRCLE`. Distinct from defect and choice point: a Circle is a unit of work bounded by a Directive + its Grounding + its Artifact (foundation V3 §2.1). When the resolution is "execute this Directive to closure," it's a Circle; when the resolution is "go fix it," it's an issue; when the resolution is "decide and record," it's a decision.
 
 This three-way distinction is about **what kind of thing** an artifact is. It is orthogonal to the Origin Rule, which decides **where** it goes. A defect is an issue whether it lands in `$OUT_ISSUE` or in `shared/issues/`.
+
+## Backlog entries
+
+A **backlog entry** is an idea that is not yet a unit of work: worth considering, not yet worth planning. It has no Circle affiliation by construction, so it lives in `shared/backlog/` (`$OUT_BACKLOG`), one file per entry.
+
+It carries the issues/planning marker vocabulary below, read for this kind as: `_o_` an idea worth considering, `_p_` recommended for promotion and not yet acted on, `_c_` no longer live, with the body citing the Circle it became or the reason it was dropped, `_d_` pushed out, with the body citing the target. `_c_` here is that vocabulary's second reading, "user decided to close", and not "the fix landed".
+
+**Minimum content is a title and one paragraph** saying what the idea is and why it might matter. `**Domain:**`, `**Filed by:**` and `**Related:**` are optional; there is no Options, Constraints or Recommendation section. The cheapness is the design. When the cheapest structured surface on offer was a decision record, the user filed a 12 KB text file instead, and an entry more expensive to write than a note is an entry nobody writes.
+
+Two bounds:
+
+- **No agent files a backlog entry.** A defect an agent finds is an issue and a choice point is a decision record, exactly as before. The backlog is written by the user and consolidated by the playmaker, and by nobody else.
+- **The backlog is not the work queue.** It holds ideas, not tasks. Whether `taskplanner` and `tasklist.md` retire into it is open (option 4 of the backlog decision, which the user left undecided), and nothing here answers it in either direction.
+
+Binding decisions: `shared/decisions/260812-0254_*_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md` (the store and its maintainer) and `shared/decisions/260812-0254_*_where-do-a-circles-spec-and-plan-belong-when-the-circle-exists-before-them.md` (the Circle-first placement it feeds).
 
 ## Timestamps
 
@@ -261,6 +281,7 @@ Patterns attach to the **kind of artifact**, not to a directory. The same kind c
 | Investigation | `$OUT_INVESTIGATION` | `YYMMDD-HHMM-<topic>.md` | no |
 | Consultation | `$OUT_CONSULT` | `YYMMDD-HHMM-<topic>.md` | no |
 | Memo | `$OUT_MEMO` | `memos-<username>.md` / `tasks-<username>.md` | no |
+| Backlog entry | `$OUT_BACKLOG` | `YYMMDD-HHMM_S_<topic>.md` | yes (issues/planning vocabulary) |
 | Cadence digest | `$OUT_MEMO` | `cadence-<username>.md` | no |
 | Portfolio | `$PORTFOLIO` | fixed | — |
 | Task queue | `$TASKLIST` | fixed | — |

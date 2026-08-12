@@ -284,7 +284,7 @@ used throughout: files that govern behaviour (`rules/*.md`, `agents/*.md`, `skil
 `bin/*`, `hooks/**`) go to `coder`, and workbench records, which are data about the project rather
 than executable behaviour, go to `ontocoder`.
 
-1. **Define the backlog store, its entry shape and its marker vocabulary**
+1. [DONE] **Define the backlog store, its entry shape and its marker vocabulary**
    - Executor: `coder`
    - Files: `rules/fusion-workbench-conventions.md`
    - Changes: add `backlog/` to the layout tree under `shared/`, in the group with
@@ -300,7 +300,7 @@ than executable behaviour, go to `ontocoder`.
      records.
    - Dependencies: none
 
-2. **Add the optional target-Circle argument to the resolver**
+2. [DONE] **Add the optional target-Circle argument to the resolver**
    - Executor: `coder`
    - Files: `bin/fusion-paths`, `hooks/lib/__tests__/fusion-paths.test.ts`
    - Changes: accept an optional second argument. When present it must name a directory that
@@ -316,7 +316,7 @@ than executable behaviour, go to `ontocoder`.
      byte-identical to today.
    - Dependencies: none
 
-3. **Document the second argument where the resolver is authored**
+3. [DONE] **Document the second argument where the resolver is authored**
    - Executor: `coder`
    - Files: `rules/workbench-path-resolution.md`, `rules/fusion-workbench-conventions.md`
    - Changes: in the authoring file, add the argument to `## The name namespace` and state the
