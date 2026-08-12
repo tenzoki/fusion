@@ -412,7 +412,7 @@ than executable behaviour, go to `ontocoder`.
      the Circle in scope, or into `shared/` when there is none.
    - Dependencies: 2, 4, 6
 
-9. **Give the planner a `**Circle:**` parameter**
+9. [DONE] **Give the planner a `**Circle:**` parameter**
    - Executor: `coder`
    - Files: `agents/planner.md`
    - Changes: accept an optional `**Circle:** <directory-name>` line in the dispatch prompt's
@@ -423,7 +423,7 @@ than executable behaviour, go to `ontocoder`.
      work inside it".
    - Dependencies: 2
 
-10. **Wire the three user surfaces**
+10. [DONE] **Wire the three user surfaces**
     - Executor: `coder`
     - Files: `skills/direct/SKILL.md`, `skills/next/SKILL.md`, `skills/memo/SKILL.md`
     - Changes: `/fusion:direct` accepts a backlog entry path as its draft argument and passes it

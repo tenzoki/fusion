@@ -113,9 +113,14 @@ const CALL_POINTS: { what: string; file: () => string; anchor: RegExp; needs: Re
     needs: /queue/i,
   },
   {
+    // The list position is not part of the anchor. This item was 4 until the
+    // backlog render joined the briefing ahead of it, and pinning the digit
+    // made an ordinary insertion look like the carrier had gone — the failure
+    // the anchor exists to raise. `\d+` still matches exactly one line, which
+    // `uniqueLine` asserts, so nothing is loosened beyond the number.
     what: "Step 5 briefing render (/fusion:next)",
     file: nextSkill,
-    anchor: /^4\. \*\*The work queue's ground\*\*/,
+    anchor: /^\d+\. \*\*The work queue's ground\*\*/,
     needs: /queue/i,
   },
 ];

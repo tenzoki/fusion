@@ -377,7 +377,14 @@ describe("bin/fusion-paths", () => {
     it("emits neither to a shipped prompt that names neither", () => {
       // Emission stays per-consumer: adding a key to the resolver gives it to
       // nobody until a prompt asks for it.
-      for (const name of ["coder", "orchestrator", "planner", "memo"]) {
+      //
+      // `direct` and `next` are here on purpose, not by accident of not having
+      // been thought about. Both are user surfaces onto the backlog and
+      // neither touches the store: `/fusion:direct` passes an entry path to
+      // the shaper verbatim without opening it, and `/fusion:next` renders the
+      // ranking out of `portfolio.md`, which playmaker already wrote. Holding
+      // no key is what makes those two statements mechanical.
+      for (const name of ["coder", "orchestrator", "planner", "direct", "next"]) {
         const p = parse(run(project, name).stdout);
         expect(p.OUT_BACKLOG, name).toBeUndefined();
         expect(p.SCAN_BACKLOG, name).toBeUndefined();
@@ -405,6 +412,19 @@ describe("bin/fusion-paths", () => {
       const p = parse(run(project, "shaper").stdout);
       expect(p.SCAN_BACKLOG).toBe("shared/backlog");
       expect(p.OUT_BACKLOG).toBeUndefined();
+    });
+
+    it("gives memo the write key and withholds the read key", () => {
+      // The third shipped consumer, and the asymmetry runs the other way for
+      // the first time. `/fusion:memo` is the one surface where the store is
+      // WRITTEN — by the user, which is what the "no agent files an entry"
+      // bound leaves open — and it files one entry per invocation without ever
+      // listing, re-reading or consolidating the store. Consolidation is the
+      // playmaker's job, so a run here that set out to do it has no resolved
+      // path to read from, exactly as playmaker has none to write to.
+      const p = parse(run(project, "memo").stdout);
+      expect(p.OUT_BACKLOG).toBe("shared/backlog");
+      expect(p.SCAN_BACKLOG).toBeUndefined();
     });
   });
 

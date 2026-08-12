@@ -1,6 +1,6 @@
 ---
 description: Draft a Directive — shaper refines a one-line draft via clarifying questions and writes an anticipated Circle. Use when you want to capture a goal as a portfolio-anticipated Circle without starting a Turn loop.
-argument-hint: <draft Directive>
+argument-hint: <draft Directive, or the path to a backlog entry>
 allowed-tools: [Bash, Read, Write, Edit, Agent(fusion:shaper)]
 ---
 
@@ -34,7 +34,7 @@ Then:
 
 - **No draft argument provided**: halt with:
 
-  > *So geht's: `/fusion:direct <Entwurf>` — gib in einer Zeile an, was du festhalten willst. Der shaper schärft es mit dir und legt den geplanten Circle an.*
+  > *So geht's: `/fusion:direct <Entwurf>` — gib in einer Zeile an, was du festhalten willst, oder den Pfad zu einem Backlog-Eintrag. Der shaper schärft es mit dir und legt den geplanten Circle an.*
 
   Exit cleanly.
 
@@ -74,7 +74,9 @@ Prompt body:
 
 The `**Draft:**` value may span multiple lines if the user passed multi-line input; shaper reads it as everything between `**Draft:**` and the next `**<Keyword>:**` line (or end of prompt).
 
-Do **not** pass shaper a path. It resolves its own write targets at its Setup, the same way this skill did in Step 1 — that is the whole point of having one resolution point.
+**A backlog entry's path is a valid draft, and it goes through verbatim.** When the user's argument is a path to an entry in the backlog store rather than prose, copy it into `**Draft:**` exactly as typed — do not open the file, do not resolve or normalise the path, do not summarise its contents into a draft. Shaper's anticipated-circle mode resolves the path against its own read key and reads the entry itself, however the caller spelled it. This skill resolves no key into that store, so it cannot read or write an entry at all — the same omission that keeps every other consumer of the backlog inside its scope (`rules/fusion-workbench-conventions.md` `## Backlog entries`).
+
+Do **not** pass shaper a write target. It resolves its own at its Setup, the same way this skill did in Step 1 — that is the whole point of having one resolution point. The entry path above is an input to read, not a place to write.
 
 Shaper will then:
 
@@ -83,9 +85,10 @@ Shaper will then:
 - Derive a `<directive-slug>` from the refined Directive (kebab-case, ≤6 words, lowercased, articles dropped)
 - Create the Circle directory `YYMMDD-HHMM-<directive-slug>/`, its record `_a_circle.md`, and the six artifact subdirectories
 - Write its own history file
+- Close the source backlog entry, when the draft was one and the Circle took it whole
 - Return with the Circle directory name
 
-Note where the spec lands, if shaper writes one: with no Circle active, every `OUT_*` points into the shared store, so a spec written *before* the Circle exists is a shared artifact and the record's `**Active spec/plan:**` field cites it there. That is correct and expected, not a migration defect — see `rules/circle-records.md` `## Circle record template`.
+**Whether the entry is closed is shaper's call, not this skill's, and it is not always yes.** A Circle takes an entry whole or not at all: promoting a one-idea entry closes it (marker `_c_`, plus one appended `Promoted:` line), and an entry carrying several ideas is left exactly as it is, with shaper's first clarification round asking which of them the Circle is. Shaper's report says which happened. Do not close, rename or annotate an entry from here under any circumstances — this skill's writes are the two named at the top of this file.
 
 Wait for shaper to complete. The clarification flow may take several rounds — that's the whole point of using shaper instead of stashing the draft verbatim.
 
@@ -95,7 +98,8 @@ When shaper returns, report:
 
 1. **The new Circle's directory name and path** — copy-pasteable.
 2. **One-line summary of the refined Directive** — extract from the record's `## Directive` section (first non-empty paragraph).
-3. **Follow-up hint** — print:
+3. **The source entry's state**, and only when the draft was a backlog entry — closed, or left open with what is still in it. Take it from shaper's report; do not open the entry to check. One line, because the answer decides whether the user still has something to file.
+4. **Follow-up hint** — print:
 
    > *Weiter:*
    > - *`/fusion:next` zeigt dir diesen Circle im Portfolio neben den anderen geplanten, mit Aktivierungs-Abfrage.*
