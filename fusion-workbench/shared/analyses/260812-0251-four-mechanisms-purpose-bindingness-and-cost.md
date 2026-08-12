@@ -145,22 +145,29 @@ class. That surface is exactly what the philosophy document describes, and it is
 the apparatus aimed at the moment the signal could be acted on.
 
 ```mermaid
-flowchart LR
-  subgraph LIVE["While the session runs: where the signal is actionable"]
-    direction TB
-    W["Write to a file"] --> A["analyzeChurn, 5/10 per 2h window"]
-    A --> M["bin/monitor warnings panel"]
-    M -.->|"readership never measured"| H["Human intervenes with more context"]
+flowchart TD
+  W["Write to a file"]
+  A["analyzeChurn: 5 and 10 changes per 2h window"]
+  W --> A
+  subgraph LIVE["Read while the session runs, where the signal could be acted on"]
+    direction LR
+    M["bin/monitor warnings panel"]
+    H["Human intervenes with more context"]
+    M -.->|"readership never measured"| H
   end
-  subgraph AFTER["After the session: where the signal is read"]
-    direction TB
-    A2["analyzeChurn"] --> E["churn events to events.jsonl:<br/>16,105 events, 7.39 MB, 43% of the log"]
-    A2 --> S["churn.json lifetime map:<br/>847 entries, 228 KB"]
-    S --> R["bin/fusion-churn-rank at next Setup"]
-    R --> N["One line in a history file"]
-    N -.->|"0 issues, 0 decisions, 0 changes of approach"| X["No action"]
+  subgraph AFTER["Read after the session, where the only instructed reader sits"]
+    direction LR
+    E["churn events appended to events.jsonl:<br/>16,105 events, 7.39 MB, 43 percent of the log"]
+    S["churn.json lifetime map:<br/>847 entries, 228 KB"]
+    R["bin/fusion-churn-rank at the next Setup"]
+    N["One line in a history file"]
+    X["No action"]
+    S --> R --> N
+    N -.->|"0 issues, 0 decisions, 0 changes of approach"| X
   end
-  A --> A2
+  A -->|"every write"| M
+  A -->|"every write"| E
+  A -->|"every write"| S
 ```
 
 The graph carries one deliberate asymmetry, and it is the finding. The branch with an instructed
@@ -683,7 +690,8 @@ subject is the *text* of a markdown prompt total **5,148 lines**:
 | `domain-cascade-order-lint` | 193 |
 
 The project has built a compiler for its own prompt, complete with a shared extraction helper
-(`hooks/lib/__tests__/helpers/prompt-blocks.ts`, 28 lines, exporting `extractBashBlock`). The
+(`hooks/lib/__tests__/helpers/prompt-blocks.ts`, 28 lines, exporting `extractBashBlock`). Three
+tests import it and a fourth carries its own copy (`circle-stash-git-exclusion.test.ts:40`). The
 `record-counts-measurement` test's own header states what that bought:
 
 > It then shipped with four faults of its own, **all four found by extracting it and running it**,
@@ -743,7 +751,8 @@ Concretely:
 
 1. **Extract exactly two blocks.** `bin/fusion-record-counts` from `L724-760` and
    `bin/fusion-queue-ground` from `L868-881`. Both are self-contained, both already have a test
-   extracting and running them (`record-counts-measurement.test.ts`, `queue-ground-lint.test.ts`),
+   that extracts them from the markdown and runs them (`record-counts-measurement.test.ts:253`,
+   `queue-ground-producer.test.ts:189`),
    and the second has three call sites paying 4,309 bytes to cite it. Convert both tests to ordinary
    script tests, the way `fusion-count-sources.test.ts` already is.
 2. **Delete the prose the programs carried, not just the programs.** This is the step the six prior
@@ -755,8 +764,8 @@ Concretely:
    once in `rules/`, cited at every call site. Six sites already carry a hand-written copy of it at
    about 250 bytes each. A convention plus a lint asserting every `$FUSION_PLUGIN_ROOT/bin/` call is
    guarded costs less than the seventh copy.
-4. **Add `bin/**` to `guard.protectedPaths`** before moving anything into it, or the extraction is a
-   net loss of protection.
+4. **Protect the destination.** Add `bin/**` to `guard.protectedPaths` before moving anything into
+   it, or the extraction is a net loss of protection.
 5. **Add one test asserting every file in `bin/` is git-tracked.** Roughly ten lines against
    `git ls-files bin/`. It closes the `.gitignore` hole permanently and costs nothing.
 6. **Cap what may be added back.** No new fenced block longer than three lines in any agent prompt.
