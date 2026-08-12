@@ -53,3 +53,29 @@ Option 3 for the store, option 2 for the maintenance, and treat option 4 as the 
 replaces. That combination adds one directory and one paragraph to an existing agent, and it is the
 only combination that answers the user's request without adding an agent. Decide it together with
 the placement question filed alongside — they are one design.
+
+---
+
+## Answer, 260812-1620, by the user
+
+**Option 2: `shared/backlog/` as a store, with the playmaker consolidating.** No seventeenth agent.
+The playmaker already reads everything, ranks and proposes activation; extending it from "which
+Circle next" to "which idea becomes a Circle" is the same job one step earlier, and it removes its
+present oddity of having nothing to do when no anticipated Circle exists.
+
+Option 3 — anticipated Circles as the backlog with no store at all — was not taken. It was the
+cheaper answer and the record recommended it, but it loads the portfolio with things nobody
+intends to work. A backlog entry and an anticipated Circle are different claims: one says "worth
+considering", the other says "this is a unit of work whose Directive is provisional". Keeping them
+apart is what the user chose to pay a directory for.
+
+Option 4 is not decided here. Whether `taskplanner` and the persisted queue retire into this store
+stays open; the backlog is a home for ideas, not for a work queue, and folding the two together
+would answer a removal question by the back door.
+
+This decision is answered together with `260812-0254_a_where-do-a-circles-spec-and-plan-belong-…`;
+they are one design and neither is implementable alone.
+
+---
+Answered: this record `## Answer, 260812-1620` — a `shared/backlog/` store, maintained by the
+playmaker, with no new agent.

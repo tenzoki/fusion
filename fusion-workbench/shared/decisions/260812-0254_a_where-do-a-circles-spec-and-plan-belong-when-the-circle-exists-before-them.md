@@ -64,3 +64,29 @@ Circle should be in the Circle.
 Option 1, because it dissolves the problem rather than patching it, and because the anticipated
 Circle state already exists and is under-used. But it is the larger change and it needs the backlog
 question below answered first — they are one design, not two.
+
+---
+
+## Answer, 260812-1620, by the user
+
+**Option 1: the Circle comes first.** A Circle exists as anticipated before the shaper runs, and
+shaper and planner work inside it. No artifact ever moves at creation time, and the Origin Rule is
+untouched, because by the time anything is written the origin genuinely is the Circle.
+
+The cost the option carried is accepted with it: you must know that a thing is a Circle before you
+know what it is. The answer to that objection was already in the record — the anticipated state
+means precisely "provisional Directive, no Grounding yet", so nothing new is being asked of the
+user that the state does not already offer.
+
+**The existing twelve Circles are migrated**, not left. The user chose the fuller option over the
+recommendation. That makes path citations the substance of the work rather than a footnote: every
+session history, decision record and review that cites a spec or plan in `shared/planning/` has to
+move with it, or the migration trades one broken container for a field of dangling references. Ten
+of the twelve are closed, which does not make their citations less real.
+
+This decision is answered together with `260812-0254_a_does-fusion-need-a-backlog-store-…`; they are
+one design and neither is implementable alone.
+
+---
+Answered: this record `## Answer, 260812-1620` — the Circle is created before the shaper, and the
+twelve existing Circles are migrated with their citations.
