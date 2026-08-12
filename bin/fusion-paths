@@ -60,15 +60,18 @@
 #     Circle otherwise.
 #   - No Circle in scope → every OUT_* points into shared/. This is not an
 #     error state: work outside Circles is routine and has a defined home.
-#   - OUT_INVESTIGATION / OUT_CONSULT / OUT_MEMO are unconditionally shared.
-#     None of the three arises from executing a Directive, so none can
-#     originate in a Circle.
+#   - OUT_INVESTIGATION / OUT_CONSULT / OUT_MEMO / OUT_BACKLOG are
+#     unconditionally shared. None of the four arises from executing a
+#     Directive, so none can originate in a Circle — and OUT_BACKLOG stays
+#     shared under a <circle-dir> target too: a backlog entry PRECEDES every
+#     Directive, so there is no Circle it could belong to, target or not.
 #   - Every SCAN_* carries BOTH stores when a Circle is in scope — that Circle
 #     and the shared one — and collapses to the shared store alone when none
 #     is. Searching must cover both.
-#     SCAN_CONSULT and SCAN_INVESTIGATIONS are the two exceptions, and only
-#     apparently so: their kinds exist solely in shared/, so "both stores"
-#     collapses to one. The rule is not weakened — it has nothing to range over.
+#     SCAN_CONSULT, SCAN_INVESTIGATIONS and SCAN_BACKLOG are the three
+#     exceptions, and only apparently so: their kinds exist solely in shared/,
+#     so "both stores" collapses to one. The rule is not weakened — it has
+#     nothing to range over.
 #   - An orphaned .active-circle is an error: stderr + non-zero exit, no silent
 #     fall back to shared/ (HYG-NO-SILENT-FAIL). A stale pointer means the
 #     workbench's state is inconsistent, and quietly writing to the wrong store
@@ -335,6 +338,7 @@ value_for() {
     OUT_INVESTIGATION)  printf '%s' "shared/investigations" ;;
     OUT_CONSULT)        printf '%s' "shared/consult" ;;
     OUT_MEMO)           printf '%s' "shared/memos" ;;
+    OUT_BACKLOG)        printf '%s' "shared/backlog" ;;
     OUT_CIRCLE)         printf '%s' "circles" ;;
     SCAN_PLANS)         scan_value "planning" ;;
     SCAN_ISSUES)        scan_value "issues" ;;
@@ -347,6 +351,7 @@ value_for() {
     # counterpart to carry.
     SCAN_INVESTIGATIONS) printf '%s' "shared/investigations" ;;
     SCAN_CONSULT)       printf '%s' "shared/consult" ;;
+    SCAN_BACKLOG)       printf '%s' "shared/backlog" ;;
     SCAN_CIRCLES)       printf '%s' "circles" ;;
     PORTFOLIO)          printf '%s' "portfolio.md" ;;
     TASKLIST)           printf '%s' "tasklist.md" ;;
@@ -369,9 +374,9 @@ value_for() {
 # 5. Emit. Canonical order, filtered by the derived key set.
 # ---------------------------------------------------------------------------
 ORDER="OUT_PLAN OUT_HISTORY OUT_ISSUE OUT_DECISION OUT_REVIEW OUT_ANALYSIS
-       OUT_INVESTIGATION OUT_CONSULT OUT_MEMO OUT_CIRCLE
+       OUT_INVESTIGATION OUT_CONSULT OUT_MEMO OUT_BACKLOG OUT_CIRCLE
        SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_REVIEWS
-       SCAN_ANALYSES SCAN_INVESTIGATIONS SCAN_CONSULT SCAN_CIRCLES
+       SCAN_ANALYSES SCAN_INVESTIGATIONS SCAN_CONSULT SCAN_BACKLOG SCAN_CIRCLES
        PORTFOLIO TASKLIST"
 
 has_key() {

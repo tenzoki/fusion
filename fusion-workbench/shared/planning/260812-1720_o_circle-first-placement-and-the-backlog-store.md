@@ -329,7 +329,7 @@ than executable behaviour, go to `ontocoder`.
      that the ground genuinely moves once at a known point, so it does not read as drift.
    - Dependencies: 2
 
-4. **Add the backlog keys to the resolver**
+4. [DONE] **Add the backlog keys to the resolver**
    - Executor: `coder`
    - Files: `bin/fusion-paths`, `rules/workbench-path-resolution.md`,
      `hooks/lib/__tests__/fusion-paths.test.ts`
@@ -342,7 +342,7 @@ than executable behaviour, go to `ontocoder`.
      target Circle is passed.
    - Dependencies: 2
 
-5. **Teach the store enumerations about the new store**
+5. [DONE] **Teach the store enumerations about the new store**
    - Executor: `coder`
    - Files: `skills/setup/SKILL.md`, `hooks/lib/staging-drift.ts`,
      `hooks/lib/__tests__/path-literal-lint.test.ts`, `skills/archive/SKILL.md`,
@@ -356,7 +356,7 @@ than executable behaviour, go to `ontocoder`.
      that path no longer exists and the docstring is the one place it is named in code.
    - Dependencies: 1, 4
 
-6. **Move the existing hand-made backlog file into the declared store**
+6. [DONE] **Move the existing hand-made backlog file into the declared store**
    - Executor: `ontocoder`
    - Files: `fusion-workbench/shared/backlogs/260811-0826_observations.txt` becomes
      `fusion-workbench/shared/backlog/260811-0826_o_observations.md`

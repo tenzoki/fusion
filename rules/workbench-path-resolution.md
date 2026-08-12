@@ -60,6 +60,7 @@ In the Value column, `A → B` means: `A` when a Circle is in scope, `B` when no
 | `OUT_INVESTIGATION` | `shared/investigations` | Always shared — never Circle-bound. |
 | `OUT_CONSULT` | `shared/consult` | Always shared — never Circle-bound. |
 | `OUT_MEMO` | `shared/memos` | Always shared — never Circle-bound. |
+| `OUT_BACKLOG` | `shared/backlog` | Always shared — never Circle-bound, and never target-bound either. |
 | `OUT_CIRCLE` | `circles` | Where new Circle directories are created (shaper, playmaker). |
 | `SCAN_PLANS` | `<circle>/planning shared/planning` | Read/search targets. |
 | `SCAN_ISSUES` | `<circle>/issues shared/issues` | |
@@ -69,9 +70,18 @@ In the Value column, `A → B` means: `A` when a Circle is in scope, `B` when no
 | `SCAN_ANALYSES` | `<circle>/analyses shared/analyses` | |
 | `SCAN_INVESTIGATIONS` | `shared/investigations` | Read counterpart of `OUT_INVESTIGATION`. Shared-only — see invariant 2. |
 | `SCAN_CONSULT` | `shared/consult` | Read counterpart of `OUT_CONSULT`. Shared-only — see invariant 2. |
+| `SCAN_BACKLOG` | `shared/backlog` | Read counterpart of `OUT_BACKLOG`. Shared-only — see invariant 2. |
 | `SCAN_CIRCLES` | `circles` | Portfolio-wide scans (playmaker, `/fusion:next`). |
 | `PORTFOLIO` | `portfolio.md` | |
 | `TASKLIST` | `tasklist.md` | |
+
+### The four unconditionally-shared kinds, and the one that meets the target argument
+
+`OUT_INVESTIGATION`, `OUT_CONSULT`, `OUT_MEMO` and `OUT_BACKLOG` never point into a Circle, and they are one rule rather than four exemptions: none of the four kinds arises from *executing* a Directive, so none of them can originate in a Circle under the Origin Rule. Their read counterparts — `SCAN_INVESTIGATIONS`, `SCAN_CONSULT`, `SCAN_BACKLOG`; `memos` has none, because nothing reads memos — satisfy invariant 2 **vacuously**. The invariant says a `SCAN_*` carries both stores, and for these kinds the Circle store does not exist, so "both" has nothing to range over. That is a collapse, not an exception: no weakening of the rule is involved and none should be written into a prompt.
+
+`OUT_BACKLOG` is where that reasoning has to be stated rather than inherited, because it is the first key of its class to exist alongside the `<circle-dir>` argument, and the argument is a second way for a Circle to reach a key. It does not reach this one. The substitution replaces the Circle in scope, and a backlog entry has no Circle in scope to replace: it **precedes** every Directive by construction — that is what makes it a backlog entry rather than an issue or a plan — so the target names a Circle the entry cannot belong to any more than the active one could. A caller that passes a target *and* writes an entry writes it to `shared/backlog` both times, and `hooks/lib/__tests__/fusion-paths.test.ts` `the backlog keys` asserts exactly that, under a target with and without a Circle active.
+
+The general form, for whoever adds the fifth such kind: an unconditionally-shared value is written as a literal in `value_for`, not routed through `scan_value` or `$OUT_BASE`, and it is therefore immune to both the pointer and the argument by construction rather than by a condition somebody has to maintain. Keep it that way.
 
 ## Emission is per-consumer, and derived from the prompt
 

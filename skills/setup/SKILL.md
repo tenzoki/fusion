@@ -79,13 +79,13 @@ WB=./fusion-workbench; OLD=0; if [ -d "$WB" ]; then for d in planning issues dec
 Only when `OLD=0`:
 
 ```bash
-mkdir -p ./fusion-workbench/circles ./fusion-workbench/shared/planning ./fusion-workbench/shared/issues ./fusion-workbench/shared/decisions ./fusion-workbench/shared/analyses ./fusion-workbench/shared/reviews ./fusion-workbench/shared/investigations ./fusion-workbench/shared/consult ./fusion-workbench/shared/history ./fusion-workbench/shared/memos ./fusion-workbench/archive ./fusion-workbench/.guard-state
+mkdir -p ./fusion-workbench/circles ./fusion-workbench/shared/planning ./fusion-workbench/shared/issues ./fusion-workbench/shared/decisions ./fusion-workbench/shared/analyses ./fusion-workbench/shared/reviews ./fusion-workbench/shared/investigations ./fusion-workbench/shared/consult ./fusion-workbench/shared/history ./fusion-workbench/shared/memos ./fusion-workbench/shared/backlog ./fusion-workbench/archive ./fusion-workbench/.guard-state
 ```
 
 This is the Circle-container layout defined in `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`. Three things about it are worth knowing here:
 
 - **A Circle is a directory, not a file.** `circles/` starts empty; each unit of work later gets `circles/<YYMMDD-HHMM>-<slug>/` with its own `planning/`, `issues/`, `decisions/`, `history/`, `reviews/` and `analyses/`. Setup does not create any Circle.
-- **`shared/` is the home for everything with no Circle affiliation** — the Origin Rule's "unknown origin means shared". `investigations/`, `consult/` and `memos/` exist only there, because none of the three is produced by executing a Directive.
+- **`shared/` is the home for everything with no Circle affiliation** — the Origin Rule's "unknown origin means shared". `investigations/`, `consult/`, `memos/` and `backlog/` exist only there, because none of the four is produced by executing a Directive — and a backlog entry, being an idea that is not yet a unit of work, precedes every Directive there is.
 - **The root-anchored surfaces stay at the root.** `agentstate.yaml`, `orchestrator-live.md`, `orchestrator-events.jsonl` and `.guard-state/` are read at fixed root-relative paths by `hooks/tracker.ts:33-36` and `bin/monitor:72-75`; `.commit-lock/` by `bin/fusion-commit-lock` and `.session-marker` by `bin/fusion-session-mark`. Never create them anywhere else; none of these consumers has a fallback path. Only `.guard-state/` is pre-created above — the rest appear when their consumer first writes them. The full list is in `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`.
 
 Write the setup marker (this is the file every agent and hook looks for to confirm fusion is set up here):

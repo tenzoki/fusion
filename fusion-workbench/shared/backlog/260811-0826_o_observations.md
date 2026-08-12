@@ -1,3 +1,5 @@
+# Raw observations, hand-written by the user: about a dozen distinct ideas in one dump, awaiting consolidation by the playmaker
+
  fusion-workbench/circles/260801-1244-curator/_a_circle.md
 
 

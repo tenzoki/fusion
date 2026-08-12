@@ -13,7 +13,7 @@
 #   verdict=unstaged            # or clean, or unchecked
 #     record          M tasklist.md  UNSTAGED  (the work queue — …)
 #     in-flight       M orchestrator-events.jsonl  (append-only — …)
-#     unclassified   ?? shared/backlogs/…  (not a record store — nothing is claimed about it)
+#     unclassified   ?? stilwerk/…  (not a record store — nothing is claimed about it)
 #
 # Every entry under fusion-workbench/ is printed, in four classes: `record` and
 # `commit-message` are the fault classes and are the only ones that reach

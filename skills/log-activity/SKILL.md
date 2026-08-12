@@ -60,6 +60,7 @@ Collect timestamped activity from git and from the whole workbench tree. For eac
 | `a` | analyses |
 | `n` | investigations |
 | `t` | consultations |
+| `b` | backlog entries |
 | `k` | Circle records |
 | `w` | workbench root-level files |
 

@@ -25,9 +25,13 @@
  * 1b. **It classifies by location before it classifies by name.** An authored
  *    record whose topic slug says "commit message" is a `record` — the control
  *    this suite lacked, and the defect it let through (issue `260811-1141`).
- * 2. **It does not cry wolf.** The live example is `shared/backlogs/`, a user's
- *    own note file: it must be REPORTED and must not be a fault. The same for
- *    the machine-written surfaces and for this session's own history file.
+ * 2. **It does not cry wolf.** The live example is `stilwerk/`, the voice
+ *    profiles `/fusion:setup` copies in: hand-edited configuration that must be
+ *    REPORTED and must not be a fault. The same for the machine-written
+ *    surfaces and for this session's own history file. (It was
+ *    `shared/backlogs/` until the backlog became a declared store, at which
+ *    point that file correctly became a `record` — see the `unclassified`
+ *    entry in `lib/staging-drift.ts`'s header.)
  * 3. **The trigger is HEAD moving, read from the repository.** The tracker is
  *    silent while a record sits unstaged mid-Turn — the normal state — and
  *    speaks on the tool call that committed.
@@ -284,16 +288,16 @@ describe("staging drift: the defect it was built for", () => {
 
 describe("staging drift: what it reports without raising an alarm", () => {
   it(
-    "names an untracked non-record file and calls the tree clean — the live shared/backlogs case",
+    "names an untracked non-record file and calls the tree clean — the live stilwerk case",
     () => {
       withWorkbench((project) => {
-        // The worked example from this session's own tree: a user note that has
-        // been untracked under the workbench since before Turn 1, and is not a
-        // record. It has to appear in a complete reading and must not be a fault.
+        // The worked example from this session's own tree: a hand-edited voice
+        // profile under the workbench that is not a record. It has to appear in
+        // a complete reading and must not be a fault.
         write(
           project.root,
-          "fusion-workbench/shared/backlogs/260811-0826_observations.txt",
-          "a user's own note\n",
+          "fusion-workbench/stilwerk/chat-voice-de.yaml",
+          "# a project's own voice profile\n",
         );
 
         const res = runStagingDrift(project.root);
@@ -301,7 +305,7 @@ describe("staging drift: what it reports without raising an alarm", () => {
         expect(k.verdict).toBe("clean");
         expect(k.unstaged).toBe("0");
 
-        const line = row(res.stdout, "shared/backlogs/260811-0826_observations.txt");
+        const line = row(res.stdout, "stilwerk/chat-voice-de.yaml");
         expect(line).toBeDefined();
         expect(line).toMatch(/^ {2}unclassified/);
         expect(line).not.toContain("UNSTAGED");
@@ -373,6 +377,31 @@ describe("staging drift: what it reports without raising an alarm", () => {
         expect(row(res.stdout, "shared/history/260811-0300-coder.md")).toMatch(
           /^ {2}record\s+\?\? .*UNSTAGED/,
         );
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "reads a backlog entry as a record, not as the user note it used to be",
+    () => {
+      withWorkbench((project) => {
+        // `shared/backlog/` is a declared store since the Circle-first plan, so
+        // an entry left uncommitted is an unstaged RECORD — the model is told
+        // to stage it. Before the store existed the same bytes sat in
+        // `shared/backlogs/` and came back `unclassified`, with nothing
+        // claimed about them, which is what naming a store buys.
+        write(
+          project.root,
+          "fusion-workbench/shared/backlog/260811-0826_o_observations.md",
+          "# Raw observations\n\nawaits consolidation\n",
+        );
+
+        const res = runStagingDrift(project.root);
+        expect(keys(res.stdout).unstaged).toBe("1");
+        const line = row(res.stdout, "shared/backlog/260811-0826_o_observations.md");
+        expect(line).toMatch(/^ {2}record\s+\?\? .*UNSTAGED/);
+        expect(line).toContain("backlog store");
       });
     },
     CASE_TIMEOUT,
@@ -502,13 +531,13 @@ describe("staging drift: the trigger is HEAD moving", () => {
     "stays silent when the only thing left behind is unclassified",
     () => {
       withWorkbench((project) => {
-        write(project.root, "fusion-workbench/shared/backlogs/notes.txt", "a user note\n");
+        write(project.root, "fusion-workbench/stilwerk/notes.yaml", "# a hand-edited profile\n");
         runTracker(project.root, "Bash", { command: "ls" });
         commit(project.root, 1);
         const after = runTracker(project.root, "Bash", { command: "git commit" });
         // The CLI prints it. The interrupting sentence is for obligations only,
         // and there is no obligation attached to a file that is not a record.
-        expect(after.hookSpecificOutput?.additionalContext ?? "").not.toContain("backlogs");
+        expect(after.hookSpecificOutput?.additionalContext ?? "").not.toContain("stilwerk");
       });
     },
     CASE_TIMEOUT,

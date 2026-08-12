@@ -80,8 +80,17 @@
  *     history file. Never a fault.
  *   - `unclassified` — everything else under the workbench. Named, with the
  *     statement that it is **not** a record store and that nothing is claimed
- *     about it. The worked case is `shared/backlogs/`, a user's own note file:
- *     it must appear in a complete reading and must not raise an alarm.
+ *     about it. The worked case is `stilwerk/`, the four voice profiles
+ *     `/fusion:setup` copies in, and `plane.config.yaml` beside them: hand-
+ *     edited project configuration that must appear in a complete reading and
+ *     must not raise an alarm.
+ *
+ *     The example used to be `shared/backlogs/`, a user's own note file, and
+ *     it stopped being one when the backlog became a declared store — the
+ *     class working exactly as intended. The file did not change; its home was
+ *     named, `backlog` joined `STORES`, and it is a `record` now. An
+ *     unclassified entry is a file the layout has not yet decided about, and
+ *     the honest thing to do with one is print it and claim nothing.
  *
  * Only `record` and `commit-message` rows that are not fully staged enter the
  * verdict, the signature, and the sentence handed to the model. The CLI prints
@@ -190,6 +199,7 @@ const STORES = [
     "investigations",
     "consult",
     "memos",
+    "backlog",
 ];
 /** The root-anchored records: authored text, not machine-refreshed. */
 const ROOT_RECORDS = [

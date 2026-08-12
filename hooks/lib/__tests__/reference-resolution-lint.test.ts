@@ -405,7 +405,7 @@ function scanHeadingAnchors(
 // --- class (c): workbench-record citations ----------------------------------
 
 const STORES =
-  "planning|issues|decisions|history|reviews|analyses|investigations|consult|memos";
+  "planning|issues|decisions|history|reviews|analyses|investigations|consult|memos|backlog";
 
 // Store-prefixed (optionally Circle-/shared-/workbench-rooted) record citation.
 const REC_RE = new RegExp(

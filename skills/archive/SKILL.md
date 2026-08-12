@@ -59,6 +59,8 @@ done
 
 This derives the shared store from the invariant, not from the order the resolver happens to print the two paths in. Do not take "the last field" — that ordering is not part of the contract.
 
+**Three kinds need no derivation, and `$SCAN_BACKLOG` is one of them.** `SCAN_BACKLOG`, `SCAN_CONSULT` and `SCAN_INVESTIGATIONS` name a kind that exists only in the shared store, so their value *is* the shared store and invariant 2 collapses to one path (`rules/workbench-path-resolution.md` `### The four unconditionally-shared kinds`). Do not run them through `shared_of` — it would be a no-op that reads as a real derivation and invite the empty-result check below to fire on a kind that never had two halves. Only `$SCAN_BACKLOG` is used by a tier; the other two are out of tier scope by safety filter 4.
+
 **An empty derivation is an error, never an empty result.** Invariant 2 guarantees every `SCAN_*` value contains the shared store, so `shared_of` coming back empty means the derivation or the workbench state is broken — not that there is nothing to archive. The check above halts on it (`HYG-NO-SILENT-FAIL`); when it trips, report the failing kind to the user and stop. Do not proceed to a survey that would silently skip a whole store and report "nothing to archive".
 
 ## Argument modes
@@ -97,8 +99,8 @@ These are non-negotiable defaults. The user can override them at the `refine` st
 2. **Active markers — never archive in tier modes:**
    - The **active Circle** (`$CIRCLE`) and any anticipated (`_a_`) or active (`_t_`) Circle — live work.
    - `_d_` Circles — *deferred ≠ done*; the user may want to revisit. Terminal, but excluded by default.
-   - `_o_` (open) and `_p_` (in-progress) defects and plans — live work.
-   - `_d_` defects and plans — same reasoning as `_d_` Circles.
+   - `_o_` (open) and `_p_` (in-progress) defects, plans and backlog entries — live work. A `_p_` backlog entry is an idea the playmaker has recommended for promotion and the user has not yet acted on, which is as live as an idea gets.
+   - `_d_` defects, plans and backlog entries — same reasoning as `_d_` Circles. A deferred backlog entry is the one record in the workbench that can come back: `_d_ → _o_` is a permitted transition for this kind, because a deferred idea is not a recorded commitment. Archiving one would take away the thing the user deferred rather than dropped.
    - `_a_` decisions — answer recorded but not yet realised in code/data. Archiving breaks decision↔implementation traceability. Promote to `_i_` when implementation lands; do not bulk-archive `_a_`.
 
 3. **CLAUDE.md citation check:** if a file is referenced from `CLAUDE.md` (by relative path or filename), exclude it from the proposal regardless of tier or marker. CLAUDE.md is auto-loaded into every Claude session — its references must remain resolvable. For a Circle directory, check its directory name and its record.
@@ -120,6 +122,7 @@ Each tier is **additive**: tier-2 includes tier-1, tier-3 includes tier-2. The d
 | `$SHARED_PLANS` | `*_c_*.md` | closed plan, terminal |
 | `$SHARED_DECISIONS` | `*_i_*.md` | implemented decision, terminal |
 | `$SHARED_DECISIONS` | `*_s_*.md` | superseded decision, terminal |
+| `$SCAN_BACKLOG` | `*_c_*.md` | closed backlog entry, terminal — its body already cites the Circle it became, or why it was dropped |
 | `$WORKBENCH/.guard-state/events.jsonl` | the live log, whenever it is non-empty | append-only evidence — **rolled**, not selected. See *Rolling the guard event log* below |
 
 ### Rolling the guard event log

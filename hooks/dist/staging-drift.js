@@ -23,7 +23,7 @@
  *     record          M tasklist.md  UNSTAGED  (the work queue — …)
  *     record         ?? shared/history/260810-1723-tasklist-update.md  UNSTAGED  (…)
  *     in-flight       M orchestrator-events.jsonl  (append-only — …)
- *     unclassified   ?? shared/backlogs/260811-0826_observations.txt  (not a record store …)
+ *     unclassified   ?? stilwerk/chat-voice-de.yaml  (not a record store …)
  *
  * **Every entry is printed, in all four classes.** The Turn-boundary read is
  * deliberate, and a deliberate read should be complete: a file this check is

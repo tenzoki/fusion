@@ -54,6 +54,7 @@ const TYPE_FOLDERS = [
   "consult",
   "investigations",
   "memos",
+  "backlog",
   "codereview",
   "ontoreview",
   "conceptreview",
@@ -212,6 +213,7 @@ describe("path-literal lint: the shape rule matches paths, not prose", () => {
     ["taskplanner.md:171", "- How many plans/issues/reviews scanned"],
     ["taskplanner.md:71", "Skip files with terminal markers — issues/planning `[c]`/`[d]` — entirely."],
     ["log-activity legend", "defects go in issues, decisions record open questions, analyses study."],
+    ["log-activity legend, backlog row", "| b | backlog entries |"],
     ["help layout sentence", "one directory per unit of work under circles/, plus a shared/ store."],
   ];
 
@@ -229,6 +231,7 @@ describe("path-literal lint: the shape rule matches paths, not prose", () => {
     ["type folder + placeholder", "playmaker writes history/<own>.md"],
     ["retired review folder", "put the review in codereview/latest.md"],
     ["artifact segment nested in a circle path", "read circles/260716-x/reviews/y.md"],
+    ["the backlog store", "file the idea at shared/backlog/260812-1720_o_an-idea.md"],
   ];
 
   for (const [label, text] of PATHS_THAT_MUST_FIRE) {

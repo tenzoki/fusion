@@ -315,6 +315,76 @@ describe("bin/fusion-paths", () => {
     });
   });
 
+  describe("the backlog keys", () => {
+    // OUT_BACKLOG and SCAN_BACKLOG are the fourth unconditionally-shared kind,
+    // beside investigations, consultations and memos. A backlog entry PRECEDES
+    // every Directive by construction, so there is no Circle it could belong
+    // to — which is why the target argument does not move it either. That last
+    // case is new: it is the first key set to meet a <circle-dir> target, and
+    // "unconditionally shared" now has two conditions to survive rather than
+    // one.
+    //
+    // No shipped prompt names either key yet (the playmaker and the shaper get
+    // them in later steps of this plan), so the consumer here is a fixture
+    // prompt driven through a staged copy of the script. That is the real
+    // derivation path, not a simulation of it.
+    const OTHER = "260812-1720-circle-first-placement";
+
+    beforeEach(() => {
+      mkdirSync(join(workbench, "circles", OTHER), { recursive: true });
+      stageWithAgent("fixture", "File the idea to $OUT_BACKLOG, and skim $SCAN_BACKLOG.\n");
+    });
+
+    it("emits both keys for a prompt that names them", () => {
+      const r = runStaged("fixture");
+      expect(r.status).toBe(0);
+      const p = parse(r.stdout);
+      expect(p.OUT_BACKLOG).toBe("shared/backlog");
+      expect(p.SCAN_BACKLOG).toBe("shared/backlog");
+    });
+
+    it("keeps both shared with a Circle active", () => {
+      activate();
+      const p = parse(runStaged("fixture").stdout);
+      expect(p.OUT_BACKLOG).toBe("shared/backlog");
+      expect(p.SCAN_BACKLOG).toBe("shared/backlog");
+      // Invariant 2 collapses for SCAN_BACKLOG exactly as it does for
+      // SCAN_CONSULT and SCAN_INVESTIGATIONS: one store, because the kind has
+      // no Circle counterpart to carry.
+      expect(p.SCAN_BACKLOG.split(" ")).toHaveLength(1);
+    });
+
+    it("keeps both shared when a target Circle is passed", () => {
+      // The case no key has had to face before. The target replaces the OUT_*
+      // base for every Circle-bound kind; these two are not Circle-bound, and
+      // must not move.
+      for (const active of [false, true]) {
+        if (active) activate();
+        const p = parse(runStaged("fixture", OTHER).stdout);
+        expect(p.OUT_BACKLOG, `active=${active}`).toBe("shared/backlog");
+        expect(p.SCAN_BACKLOG, `active=${active}`).toBe("shared/backlog");
+        expect(p.SCAN_BACKLOG).not.toContain(OTHER);
+      }
+    });
+
+    it("keeps the target from reaching them even when the target IS active", () => {
+      activate();
+      const p = parse(runStaged("fixture", CIRCLE_NAME).stdout);
+      expect(p.OUT_BACKLOG).toBe("shared/backlog");
+      expect(p.SCAN_BACKLOG).toBe("shared/backlog");
+    });
+
+    it("emits neither to a shipped prompt that names neither", () => {
+      // Emission stays per-consumer: adding a key to the resolver gives it to
+      // nobody until a prompt asks for it.
+      for (const name of ["coder", "orchestrator", "playmaker", "shaper", "memo"]) {
+        const p = parse(run(project, name).stdout);
+        expect(p.OUT_BACKLOG, name).toBeUndefined();
+        expect(p.SCAN_BACKLOG, name).toBeUndefined();
+      }
+    });
+  });
+
   describe("orphaned pointer", () => {
     it("errors with a non-zero exit and never falls back to shared/", () => {
       activate("260101-0000-does-not-exist");
@@ -539,9 +609,9 @@ describe("bin/fusion-paths", () => {
     writeFileSync(join(project, "agents", `${name}.md`), body);
   }
 
-  function runStaged(name: string): RunResult {
+  function runStaged(name: string, ...args: string[]): RunResult {
     try {
-      const stdout = execFileSync(join(project, "bin", "fusion-paths"), [name], {
+      const stdout = execFileSync(join(project, "bin", "fusion-paths"), [name, ...args], {
         cwd: project,
         encoding: "utf-8",
         stdio: ["ignore", "pipe", "pipe"],
