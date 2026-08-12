@@ -220,20 +220,17 @@ export interface Project {
 
 /** Files every throwaway project starts with. Relative paths, root-anchored. */
 const SEED_FILES: Record<string, string> = {
-  // Protected by the shipped config (`rules/**`, `agents/**`).
-  "rules/x.md": "# a rule\n",
-  "agents/coder.md": "# an agent\n",
-  // The retirement destination a rule-file move needs, and the second rule
-  // root — which the shipped config protects as of
-  // `shared/issues/260801-1020_*_guard-protects-rules-but-not-claude-rules.md`,
-  // so `.claude/rules/local.md` belongs to the protected group above and not to
-  // the allow side below. Both exist in every project so a case can name them
+  // Ordinary project files. Nothing here is special to the guard any more: the
+  // protected-path half is gone, so `rules/x.md` and `agents/coder.md` — which
+  // seeded every project purely because the shipped list named `rules/**` and
+  // `agents/**` — went with it. What remains exists so a case can name a file
   // without first having to build the directory it wants to write into.
+  //
+  // `rules/retired/.keep` and `.claude/rules/local.md` are kept for now although
+  // no surviving case reads them; they were the exemption suite's operands and
+  // are candidates for removal alongside the mechanism itself.
   "rules/retired/.keep": "",
   ".claude/rules/local.md": "# a project-wide rule\n",
-  // Unprotected, for the allow side. `skills/demo/SKILL.md` is here rather than
-  // in the protected group above because the user removed `skills/**` from the
-  // shipped list on 260809: skill files are the user's to edit.
   "skills/demo/SKILL.md": "# a skill\n",
   "notes.txt": "notes\n",
   "build/out.js": "// built\n",

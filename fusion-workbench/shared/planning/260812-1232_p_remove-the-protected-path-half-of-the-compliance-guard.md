@@ -205,13 +205,13 @@ Two lint gates make this a single indivisible commit. `reference-resolution-lint
    - Changes: move the four describes that are about the project configuration reaching the guard — "an unparseable project configuration is reported, not swallowed" (`:1713`), "what a project configuration can and cannot reach — measured" (`:1819`), "the project configuration in the plugin's own repo" (`:2141`), and the harness precondition cases at `:47` those three depend on — into the new file, with their probes re-pointed as in step 2. Delete them from the original. The header of the new file states what it covers and why it was carved out.
    - Dependencies: 2
 
-4. **Remove the two prompt call sites for the reporter**
+4. [DONE] **Remove the two prompt call sites for the reporter**
    - Executor: `coder`
    - Files: `agents/orchestrator.md`, `skills/setup/SKILL.md`
    - Changes: delete the "Effective protected paths" bullet and its shell block from orchestrator Setup Step 5, and the pointer bullet at `skills/setup/SKILL.md:265`. Keep the guard halt check in the step immediately above. Grep `CLAUDE.md` for a `bin/fusion-protected-paths` row in the layout table and remove it in the same commit if one is there, because `reference-resolution-lint` will resolve it against a file that step 6 deletes.
    - Dependencies: none
 
-5. [NOTE: not green by construction — the harness seeds it drops are used by guard-bash-integration.test.ts, corrected in steps 1-3] **Delete the tests whose subject is the removed mechanism**
+5. [DONE] [NOTE: not green by construction — the harness seeds it drops are used by guard-bash-integration.test.ts, corrected in steps 1-3] **Delete the tests whose subject is the removed mechanism**
    - Executor: `coder`
    - Files: `hooks/lib/__tests__/guard-case-folding.test.ts`, `protected-snapshot-integration.test.ts`, `protected-snapshot-subdirectory.test.ts`, `rules-write-exemption.test.ts`, `fs-locator.test.ts`, `fusion-protected-paths.test.ts`, `guard-rules-write-integration.test.ts`, `paths.test.ts`, `helpers/guard-harness.ts`
    - Changes: delete the first seven files outright. In `paths.test.ts` delete the `matchesAnyFolded` describe and the `canonicalise` case, keeping `matchesAny`, `matchesPattern`, `foldCase` and `collapseSegments`. In the harness, drop the `rules/x.md` and `agents/coder.md` default fixtures at `:224-225` and any helper that exists only to build a protected-path payload. Deletion cannot make the suite red, so this boundary is green by construction.

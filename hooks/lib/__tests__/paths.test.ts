@@ -2,11 +2,9 @@ import { describe, it, expect } from "vitest";
 import {
   matchesPattern,
   matchesAny,
-  matchesAnyFolded,
   foldCase,
   globToRegex,
   collapseSegments,
-  canonicalise,
 } from "../paths.js";
 
 describe("globToRegex", () => {
@@ -78,24 +76,25 @@ describe("matchesAny", () => {
   it("is CASE-SENSITIVE, and that is the grant side's contract", () => {
     // The exemption matches through this function. Folding here would hand
     // `FUSION_ALLOW_RULES_WRITE` to a spelling `RULE_DIR_PATTERNS` does not
-    // name. The protection side uses `matchesAnyFolded` below instead.
+    // name. The folded variant that used to sit below, and the protected list
+    // it matched for, are gone.
     expect(matchesAny("RULES/x.md", ["rules/**"])).toBe(false);
     expect(matchesAny("rules/x.md", ["rules/**"])).toBe(true);
   });
 });
 
 // ---------------------------------------------------------------------------
-// Case folding — the PROTECTION side only.
+// Case folding.
 //
-// `matchesPattern` compiles a glob to a case-sensitive regex, so before this
-// existed the entire protected list was bypassable by shifting one letter on a
+// `matchesPattern` compiles a glob to a case-sensitive regex, so on a
 // case-insensitive filesystem (APFS in its default configuration, so every
-// stock macOS install). Measured against the real guard:
+// stock macOS install) two spellings of one file match differently. `foldCase`
+// is the locale-independent normalisation that lets a caller ask the question
+// with case taken out of it.
 //
-//   Edit agents/coder.md    DENY        Edit AGENTS/coder.md    allow
-//
-// The end-to-end proof on both write surfaces is in
-// `guard-case-folding.test.ts`; these are the unit-level properties.
+// The folded MATCH — `matchesAnyFolded` — and its end-to-end proof went with
+// the protected-path half of the guard. These are the properties of the fold
+// itself, which the surviving callers still rest on.
 // ---------------------------------------------------------------------------
 
 describe("foldCase", () => {
@@ -122,103 +121,12 @@ describe("foldCase", () => {
   });
 });
 
-describe("matchesAnyFolded", () => {
-  const protectedPaths = [
-    "agents/**",
-    "rules/**",
-    "hooks/config.json",
-    "settings.json",
-    "bin/monitor",
-    "fusion-workbench/.guard-state/**",
-  ];
-
-  it("matches the spelling the list uses", () => {
-    // The baseline: folding must not cost a single denial that already held.
-    expect(matchesAnyFolded("agents/coder.md", protectedPaths)).toBe(true);
-    expect(matchesAnyFolded("hooks/config.json", protectedPaths)).toBe(true);
-    expect(matchesAnyFolded("bin/monitor", protectedPaths)).toBe(true);
-  });
-
-  it("matches a differently-cased spelling of the same file", () => {
-    // Each of these ALSO missed before the fold — asserted alongside, because
-    // without that half the cases would pass against any implementation.
-    for (const path of [
-      "AGENTS/coder.md",
-      "Agents/Coder.md",
-      "RULES/x.md",
-      "HOOKS/config.json",
-      "hooks/Config.JSON",
-      "Settings.json",
-      "BIN/Monitor",
-      "fusion-workbench/.GUARD-STATE/escalation.json",
-    ]) {
-      expect(matchesAnyFolded(path, protectedPaths), path).toBe(true);
-      expect(matchesAny(path, protectedPaths), path).toBe(false);
-    }
-  });
-
-  it("was never the whole story: a `**` tail already swallowed case", () => {
-    // The bound on what the fold bought. `agents/**` compiles to `^agents/.*$`
-    // and `.*` is case-blind, so only the LITERAL segments of a pattern ever
-    // missed. `agents/CODER.MD` was denied at HEAD; `AGENTS/coder.md` was not.
-    // Worth pinning so nobody reads the fix as broader than it is.
-    expect(matchesAny("agents/CODER.MD", protectedPaths)).toBe(true);
-    expect(matchesAnyFolded("agents/CODER.MD", protectedPaths)).toBe(true);
-  });
-
-  it("does not match a path that is merely near the list", () => {
-    for (const path of [
-      "notes.txt",
-      "NOTES.txt",
-      "build/out.js",
-      "BUILD/OUT.JS",
-      "rulesdraft/x.md",
-      "RULESDRAFT/x.md",
-      "agentsmith/x.md",
-      "AGENTSMITH/x.md",
-      "docs/rules.md",
-      "DOCS/RULES.md",
-    ]) {
-      expect(matchesAnyFolded(path, protectedPaths), path).toBe(false);
-    }
-  });
-
-  it("keeps the trailing-separator asymmetry intact", () => {
-    // `rules/**` compiles to `^rules/.*$`, whose `.*` matches the empty
-    // string, so the trailing separator is what makes the bare directory node
-    // protected. Folding is a second, independent dimension and must not
-    // disturb this one.
-    expect(matchesAnyFolded("rules/", protectedPaths)).toBe(true);
-    expect(matchesAnyFolded("RULES/", protectedPaths)).toBe(true);
-    expect(matchesAnyFolded("rules", protectedPaths)).toBe(false);
-    expect(matchesAnyFolded("RULES", protectedPaths)).toBe(false);
-  });
-
-  it("folds the PATTERNS too, so a mixed-case config still matches", () => {
-    // A consuming project writes its own `protectedPaths`. One that names
-    // `Rules/**` protects `rules/x.md` on the filesystem where those are one
-    // file, which is the same property read from the other end.
-    expect(matchesAnyFolded("rules/x.md", ["Rules/**"])).toBe(true);
-    expect(matchesAnyFolded("RULES/x.md", ["Rules/**"])).toBe(true);
-  });
-
-  it("returns false for an empty pattern list", () => {
-    // A project with nothing protected has opted out, and folding must not
-    // invent a match for it.
-    expect(matchesAnyFolded("agents/coder.md", [])).toBe(false);
-  });
-});
-
-describe("collapseSegments and canonicalise — neither folds case", () => {
-  // The fold belongs to the MATCH, not to the normalisation: `canonicalise` is
-  // built on `collapseSegments`, so a fold added down there would fold the
-  // GRANT too and widen a permission. Pinned so the tempting one-line move
-  // fails a test rather than a review.
+describe("collapseSegments — does not fold case", () => {
+  // The fold belongs to the MATCH, not to the normalisation. A fold added down
+  // here would reach every caller of `collapseSegments`, including the ones
+  // that decide a GRANT, and widen a permission. Pinned so the tempting
+  // one-line move fails a test rather than a review.
   it("collapseSegments preserves case", () => {
     expect(collapseSegments("./AGENTS/../Rules/X.md")).toBe("Rules/X.md");
-  });
-
-  it("canonicalise preserves case", () => {
-    expect(canonicalise("RULES/x.md/")).toBe("RULES/x.md");
   });
 });

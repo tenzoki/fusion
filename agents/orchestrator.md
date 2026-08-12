@@ -139,17 +139,6 @@ Remaining setup (after step 1 is resolved):
    - Count open plan steps: for each path in `$SCAN_PLANS`, skim the `*_o_*.md` and `*_p_*.md` files for unmarked / `[IN PROGRESS]` steps
    - Note current git HEAD (if git repo)
    - **Guard check:** Read `fusion-workbench/.guard-state/escalation.json` (if it exists). If `haltActive` is true, warn the user immediately: the Compliance Guard is halted and all write operations are blocked. Offer to clear it or proceed with the halt active.
-   - **Effective protected paths:** run the helper and relay its `summary=` line and its `path=… origin=…` lines to the user. Nothing else says what the guard is protecting here, so a project that is never shown the list finds out by being blocked.
-
-     ```bash
-     if [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-protected-paths" ]; then
-       "$FUSION_PLUGIN_ROOT/bin/fusion-protected-paths"
-     else
-       echo "fusion: no bin/fusion-protected-paths in the installed plugin at $FUSION_PLUGIN_ROOT — no protected-path report taken; the effective list is unknown here, not empty" >&2
-     fi
-     ```
-
-     `bin/fusion-protected-paths` carries its own output shape, origin vocabulary, two-directory enforcement note and exit table in its header; read them there rather than restating them. The `[ -x ]` guard and the non-zero exits are the churn ranking's, for the same reasons (decision `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` under `$SCAN_DECISIONS`). Every one of them means **no report was taken**, which is never the same as nothing being protected — say the first, never the second.
    - **High-thrash files:** run the helper and note what it names. Do **not** read `fusion-workbench/.guard-state/churn.json` yourself for this — the map keeps every file it has ever seen, the deleted, renamed and moved ones included, so a direct read is led by files nobody can open, and three of the top four entries in fusion's own map named files that were not there. The helper is what leaves the absent ones — and the workbench surfaces the tracker never counts as churn — out of the ranking (record `260809-2023_*_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md` under `$SCAN_ISSUES`, answered by `260810-0920_*_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md` under `$SCAN_DECISIONS`).
 
      ```bash
