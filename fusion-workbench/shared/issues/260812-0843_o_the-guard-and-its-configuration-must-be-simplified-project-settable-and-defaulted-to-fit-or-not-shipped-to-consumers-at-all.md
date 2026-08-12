@@ -149,3 +149,40 @@ rather than as the shipped default every consumer inherits.
 
 This also bears on option 2, not shipping the half at all: the 153 are a floor on that work too,
 and probably not the whole of it.
+
+---
+
+## Decided 260812-1230 by the user: option 2, remove the protected-path half
+
+The decision was taken after the corpus was searched for the failure the mechanism exists to
+prevent. Across roughly 450 records in this project and the consumer's, there is **no recorded
+instance** of an agent rewriting a rule to escape it, or weakening a gate instead of satisfying it.
+The fourteen records mentioning a block or a halt are all about the guard's own behaviour.
+
+The argument that settled it is about fusion's own tree rather than a consumer's. The guard has
+stood down here since the first public release, and this is precisely where agents edit `agents/**`
+and `rules/**` daily — about twenty dispatches on the night of 260811 alone. If the risk were real,
+that stand-down would be reckless. It is treated as obviously necessary, because a tool whose core
+may not be touched cannot be developed. Either the risk is not real, or fusion has run it knowingly
+for four months without a single incident, and both readings end in the same place.
+
+The counter-argument was weighed and does not carry: a quiet self-serving rule edit would not be
+filed by the agent that made it, so absence of a record is not absence of occurrence. But `coderev`
+reads every range as a diff, filed 159 of 272 attributed defects, and on 260811 caught a correction
+applied in one file and left standing in its neighbour. The sensor is capable of it and has never
+seen it. Accidental clobbering, the other thing the mechanism covers, is answered by git — while
+the write-back has itself destroyed a human's editor save during a tool call (`260809-1107`).
+
+**Scope of the removal is the protected-path half only.** The escalation counter and the churn
+apparatus live in the same configuration and are separately open
+(`shared/analyses/260812-0251-four-mechanisms-purpose-bindingness-and-cost.md`). They are not
+decided here and must not be swept along.
+
+**What the removal has to establish rather than assume:** whether anything still blocks a tool call
+once protected paths are gone. The escalation counter counts blocks, and if the protected-path deny
+was the only source of one, the escalation half has no input and the question of what remains of
+the guard answers itself. That is a measurement for the plan, not a premise.
+
+One irony to record rather than hide: `bin/fusion-protected-paths`, released in v7.4.0 four hours
+before this decision, reports a list that is about to stop existing. It was the right thing to
+build at the time — it is what made the inheritance visible — and it goes with the rest.
