@@ -1,7 +1,7 @@
 # Implementation Plan: Remove the protected-path half of the compliance guard
 
 **Date:** 2026-08-12
-**Status:** Draft
+**Status:** Complete — all ten steps landed; step 10's acceptance run is `shared/history/260812-1546-coder-acceptance-run-against-a-project-that-is-not-this-repository.md`
 **Spec:** none — planned from a user decision recorded in `shared/issues/260812-0843_o_the-guard-and-its-configuration-must-be-simplified-project-settable-and-defaulted-to-fit-or-not-shipped-to-consumers-at-all.md`, section "Decided 260812-1230 by the user: option 2"
 **Decidability:** The load-bearing question is whether anything still blocks a tool call once the protected-path half is gone. The escalation counter counts blocks toward a halt, so if protected paths were its only input, the guard collapses into churn counting behind a halt nobody can raise. The question is decidable from the inputs this plan has: every `block(...)` site is enumerable in the two hook entry points, and a live consuming project's event log records every block that has actually happened. The answer is that one input survives in code, the decision-governed check at `hooks/guard.ts:604-649`, and it ships with nothing to act on. That answer does not change the mechanism this plan builds; it changes what the *next* decision has to be, and it is filed as one rather than acted on here.
 
@@ -241,9 +241,18 @@ Two lint gates make this a single indivisible commit. `reference-resolution-lint
    - Changes: delete the rule file, its `emit_if_exists` line at `bin/fusion-rules:403` and the comment at `:47`; regenerate the golden with `UPDATE_RULES_GOLDEN=1 npx vitest run lib/__tests__/rules-emission-golden.test.ts` rather than hand-editing it, and drop the budget entry at `:339`; remove every prose citation listed in the inventory. Rewrite, do not delete, the two surviving docstring citations in `churn.ts:214` and `guard-state-file.ts:15`: both describe a real defect class and both must keep saying so without pointing at a rule that is gone. In `README-hooks.md`, `README.md` and `docs/working-model.md` the sentence "three things cause a block" becomes two, naming the halt and the decision-governed path. This commit cannot be split, because `reference-resolution-lint` and `derivable-enumerations-lint` fail on opposite halves of it.
    - Dependencies: 4, 8
 
-10. **Verify against a project that is not this repository**
+10. [DONE] **Verify against a project that is not this repository**
     - Executor: `coder`
     - Files: none in the tree; a session history entry under `$OUT_HISTORY`
+    - Result: all six checks passed from the project root and from a subdirectory, and the four
+      additions were confirmed: the retired-key advisory repeats once per guarded tool call with no
+      cap (428 bytes a row, 418 KiB per 1 000 calls), it fires for a plugin-layer declaration as well
+      as a project one, `fusion-guard.json` is writable by an agent and the write survives the
+      PostToolUse hook, and the decision-governed check denies, raises the halt on the third deny and
+      clears. Two findings were filed, neither a failed check:
+      `shared/issues/260812-1546_o_check-3-the-guards-only-remaining-block-source-allows-from-any-subdirectory-and-nothing-tests-it.md`
+      and `shared/issues/260812-1546_o_the-record-of-the-floors-loss-does-not-say-the-file-it-stopped-defending-arms-the-last-block-source.md`.
+      Measurements: `shared/history/260812-1546-coder-acceptance-run-against-a-project-that-is-not-this-repository.md`.
     - Changes: the release process requires that a guard change be verified against a project root that is not the plugin's own, because the self-detect stand-down makes local testing unrepresentative by construction. Stand up a scratch consuming project with a workbench and confirm, from its root and from a subdirectory: a write to `rules/x.md` is allowed and emits `guard_allow`; a `Bash` call still emits nothing and does not reset the block counter; churn events still land; a handcrafted legacy halt still blocks and still clears; a project declaring `guard.protectedPaths` gets the retired-key advisory and nothing else; and `.guard-state/` grows no `protected-snapshot.json`. Record the measurements in the history entry.
     - Dependencies: 9
 
