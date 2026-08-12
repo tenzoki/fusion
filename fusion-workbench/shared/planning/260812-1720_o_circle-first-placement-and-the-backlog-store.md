@@ -387,7 +387,7 @@ than executable behaviour, go to `ontocoder`.
      the records do.
    - Dependencies: 4, 6
 
-8. **Turn the shaper's anticipated-circle mode Circle-first, and let it close the entry**
+8. [DONE] **Turn the shaper's anticipated-circle mode Circle-first, and let it close the entry**
    - Executor: `coder`
    - Files: `agents/shaper.md`
    - Changes: three changes to mode 4, and one to mode 3.

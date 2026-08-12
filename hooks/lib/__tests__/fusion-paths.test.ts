@@ -324,10 +324,10 @@ describe("bin/fusion-paths", () => {
     // "unconditionally shared" now has two conditions to survive rather than
     // one.
     //
-    // No shipped prompt names either key yet (the playmaker and the shaper get
-    // them in later steps of this plan), so the consumer here is a fixture
-    // prompt driven through a staged copy of the script. That is the real
-    // derivation path, not a simulation of it.
+    // No shipped prompt names OUT_BACKLOG — no agent files an entry — so the
+    // consumer for the write key is a fixture prompt driven through a staged
+    // copy of the script. That is the real derivation path, not a simulation
+    // of it.
     const OTHER = "260812-1720-circle-first-placement";
 
     beforeEach(() => {
@@ -377,7 +377,7 @@ describe("bin/fusion-paths", () => {
     it("emits neither to a shipped prompt that names neither", () => {
       // Emission stays per-consumer: adding a key to the resolver gives it to
       // nobody until a prompt asks for it.
-      for (const name of ["coder", "orchestrator", "shaper", "memo"]) {
+      for (const name of ["coder", "orchestrator", "planner", "memo"]) {
         const p = parse(run(project, name).stdout);
         expect(p.OUT_BACKLOG, name).toBeUndefined();
         expect(p.SCAN_BACKLOG, name).toBeUndefined();
@@ -392,6 +392,17 @@ describe("bin/fusion-paths", () => {
       // mechanical rather than merely stated — a run that tried to write an
       // entry would have no resolved path to write it to.
       const p = parse(run(project, "playmaker").stdout);
+      expect(p.SCAN_BACKLOG).toBe("shared/backlog");
+      expect(p.OUT_BACKLOG).toBeUndefined();
+    });
+
+    it("gives shaper the read key and withholds the write key", () => {
+      // The second shipped consumer, and the same asymmetry for a different
+      // reason: the shaper READS an entry handed to it as a draft and CLOSES
+      // it when the Circle takes it whole. Neither act needs a write target
+      // under the store, so a run that tried to file an entry has no resolved
+      // path to file it to.
+      const p = parse(run(project, "shaper").stdout);
       expect(p.SCAN_BACKLOG).toBe("shared/backlog");
       expect(p.OUT_BACKLOG).toBeUndefined();
     });
