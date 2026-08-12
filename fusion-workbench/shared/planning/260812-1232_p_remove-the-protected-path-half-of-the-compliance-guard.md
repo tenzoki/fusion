@@ -223,13 +223,13 @@ Two lint gates make this a single indivisible commit. `reference-resolution-lint
    - Changes: delete the six modules and the shell wrapper. In `guard.ts` remove the before-fingerprint, CHECK 2, `isExemptRulePath`, `exemptionRefusalNote` and the `fsLocator` constant, and rewrite the file header and the `isFusionPluginCwd()` stand-down comment to name the two checks that remain. In `tracker.ts` remove job 1 and everything reachable only from it. In `paths.ts` remove `matchesAnyFolded` and `canonicalise` and verify by grep that `matchesAny`, `matchesPattern`, `foldCase` and `collapseSegments` each keep a caller. Correct the `session-start.ts` docstring. Run `npm run build` before the suite: a stale `hooks/dist/` will pass a suite that the source no longer supports.
    - Dependencies: 5
 
-7. **Remove the configuration leaf, the floor and the reports, and add the retired-key diagnostic**
+7. [DONE] **Remove the configuration leaf, the floor and the reports, and add the retired-key diagnostic**
    - Executor: `coder`
    - Files: `hooks/lib/config.ts`, `hooks/lib/__tests__/config.test.ts`
    - Changes: remove `protectedPaths` from `GuardSettings`, from `CONTAINER_LEAF_RULES`, from the merge, and remove `floorPaths`, `protectedPathsSource` and `projectDeclaredProtectedPaths` with the floor computation at `:723-754`. Add one diagnostic for a project that still declares `guard.protectedPaths`, in the same shape and with the same loudness as the existing `guard.enabled` refusal at `:625-630`: the key is named, the reason given is that the mechanism was removed, and the advisory repeats on every guarded tool call until the line is taken out of the file. Delete the `protectedPaths` cases from `config.test.ts` and add cases for the new diagnostic in the same commit.
    - Dependencies: 6
 
-8. **Update the configuration data files**
+8. [DONE] [NOTE: the diagnostic's per-guarded-call property is pinned in `guard-project-config-integration.test.ts`, which step 7 does not list; `readLayer`'s absent-plugin-file diagnostic and the template's `_gitTracked` note both named the removed key and were corrected here] **Update the configuration data files**
    - Executor: `ontocoder`
    - Files: `hooks/config.json`, `hooks/config.example.json`, `templates/fusion-guard.json`, `fusion-guard.json`
    - Changes: delete `guard.protectedPaths` from `hooks/config.json` and `hooks/config.example.json`, leaving `escalation` and `churn` exactly as they are. In the template, delete `_inherits`, `_protectsItself` and `_inFusionsOwnSourceTree`, and rewrite `_override` so its worked example uses `defaultSensitivity` rather than the protected list and its inheritance paragraph no longer describes a list. Keep `_what`, `_turnBudget`, `_guardEnabled` and `_gitTracked`. Copy the result byte-identically to the root `fusion-guard.json`, which `config.test.ts` pins.

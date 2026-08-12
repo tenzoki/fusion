@@ -58,6 +58,7 @@ import {
   readEvents,
   runBash,
   runWrite,
+  UNGOVERNED_PATH,
   withGovernedProject,
   withPluginProject,
   withProject,
@@ -265,6 +266,71 @@ describe("an unparseable project configuration is reported, not swallowed", () =
         expect(readEscalation(root)).toBeNull();
         expect(readEvents(root)).toEqual([]);
       });
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+/* ------------------------------------------------------------------ *
+ * A configuration that declares a retired key
+ * ------------------------------------------------------------------ */
+
+describe("a retired key reaches the user, on every guarded call", () => {
+  it(
+    "names guard.protectedPaths and says what to do, without denying anything",
+    () => {
+      // The one thing a consuming project learns from the whole protected-path
+      // removal. `config.test.ts` pins the sentence the loader produces; this
+      // case pins that it leaves the loader at all, as a `guard_advisory` from a
+      // real subprocess, and that it is an advisory and not a verdict — the
+      // write goes through, no block is counted, and the project's own
+      // decision-governed refusal is unaffected by the retired key sitting next
+      // to it.
+      withConfiguredProject(
+        { ...GOVERNED_CONFIG, guard: { ...GOVERNED_CONFIG.guard, protectedPaths: ["agents/**"] } },
+        ({ root }) => {
+          expect(runWrite(root, UNGOVERNED_PATH).decision).toBeUndefined();
+
+          const advisories = readEvents(root).filter(
+            (e) => e.event === "guard_advisory",
+          );
+          expect(advisories).toHaveLength(1);
+          expect(advisories[0]?.detail).toContain('"guard.protectedPaths"');
+          expect(advisories[0]?.detail).toContain("no longer exists");
+          expect(advisories[0]?.detail).toContain("Delete the line");
+
+          const state = readEscalation(root);
+          expect(state?.consecutiveBlocks ?? 0).toBe(0);
+        },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "repeats it on every guarded call, write tool and Bash alike",
+    () => {
+      // "Until the line comes out of the file" is the claim, and a diagnostic
+      // that fired once per session would not carry it. Three guarded calls,
+      // three advisories, one per call — Bash included, which is the same
+      // deliberate departure from the zero-side-effect Bash path that an
+      // unparseable file already makes and that the case above it pins.
+      withConfiguredProject(
+        { guard: { protectedPaths: [] } },
+        ({ root }) => {
+          expect(runWrite(root, UNGOVERNED_PATH).decision).toBeUndefined();
+          expect(runBash(root, "ls -la").decision).toBeUndefined();
+          expect(runWrite(root, UNGOVERNED_PATH, "Write").decision).toBeUndefined();
+
+          const advisories = readEvents(root).filter(
+            (e) => e.event === "guard_advisory",
+          );
+          expect(advisories).toHaveLength(3);
+          for (const a of advisories) {
+            expect(a.detail).toContain('"guard.protectedPaths" no longer exists');
+          }
+        },
+      );
     },
     CASE_TIMEOUT,
   );

@@ -5,17 +5,6 @@
     "enabled": true,
     "defaultSensitivity": "medium",
 
-    "protectedPaths": [
-      "agents/**",
-      "rules/**",
-      ".claude/rules/**",
-      "hooks/config.json",
-      "hooks/hooks.json",
-      "settings.json",
-      "bin/monitor",
-      ".claude-plugin/plugin.json"
-    ],
-
     "categoryPaths": {
       "ontology": [
         "ontology/**",

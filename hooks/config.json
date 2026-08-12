@@ -1,20 +1,9 @@
 {
-  "_comment": "Compliance Guard Configuration. Defines what the guard protects, which decisions govern which paths, and sensitivity levels. Runtime state: fusion-workbench/.guard-state/ (gitignored).",
+  "_comment": "Compliance Guard Configuration. Defines which decisions govern which paths, the sensitivity levels that decide whether a governed write is refused, and the escalation and churn thresholds. Runtime state: fusion-workbench/.guard-state/ (gitignored).",
 
   "guard": {
     "enabled": true,
     "defaultSensitivity": "medium",
-
-    "protectedPaths": [
-      "agents/**",
-      "rules/**",
-      ".claude/rules/**",
-      "hooks/config.json",
-      "hooks/hooks.json",
-      "settings.json",
-      "bin/monitor",
-      ".claude-plugin/plugin.json"
-    ],
 
     "categoryPaths": {},
 

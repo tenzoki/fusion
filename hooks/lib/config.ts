@@ -10,7 +10,7 @@
  * Before this existed there was only (2) and (3), and (2) sits inside the
  * install — `findConfigPath()` walks up from the compiled hook's own directory,
  * so it can never reach a consuming project. Every project on one install
- * therefore shared one `protectedPaths` list, which is the gap C5b closes.
+ * therefore shared one configuration, which is the gap C5b closes.
  *
  * ## Merge: PER LEAF, across all three layers
  *
@@ -20,24 +20,26 @@
  * `DEFAULTS`.* A key the project DOES supply is taken exactly as written.
  *
  * So `{"guard":{"defaultSensitivity":"high"}}` raises the sensitivity and keeps
- * the plugin's nine protected patterns, and `{"guard":{"protectedPaths":[]}}`
- * really does protect nothing. Only OMISSION changed meaning — from "protect
- * nothing" to "inherit". Decision `260804-1630`, answered option 1 at the plan
- * gate on 2026-08-04.
+ * the plugin's `categoryPaths`, and `{"guard":{"categoryPaths":{}}}` really does
+ * govern nothing. Only OMISSION changed meaning — from "the built-in default" to
+ * "inherit". Decision `260804-1630`, answered option 1 at the plan gate on
+ * 2026-08-04.
  *
- * Declaration still wins outright, and that half is not a detail: a union of
- * `protectedPaths` can only ever grow, so narrowing — half of what the
+ * Declaration still wins outright, and that half is not a detail: a union of a
+ * declared container can only ever grow, so narrowing — half of what the
  * project-level configuration was asked for — is expressible only if a declared
- * list replaces rather than merges. What the leaf walk changes is the
+ * value replaces rather than merges. What the leaf walk changes is the
  * granularity at which "declared" is read, from the whole top-level object down
  * to the leaf. Nothing about a declared value moved.
  *
- * The rule is deliberately not scoped to `protectedPaths`. `escalation`,
- * `churn` and `decisions` carry the identical defect, invisible only because
- * the plugin file and `DEFAULTS` happen to agree on every leaf they share and
- * nothing keeps them agreeing (`260804-1633`). One walk closes all four rather
- * than four per-key rules. (A fifth, `crossFile`, was closed the same way until
- * the ping-back tracker was removed with decision `260809-2004`.)
+ * The rule was never scoped to one key. `escalation`, `churn` and `decisions`
+ * carry the identical defect, invisible only because the plugin file and
+ * `DEFAULTS` happen to agree on every leaf they share and nothing keeps them
+ * agreeing (`260804-1633`). One walk closes them all rather than one per-key
+ * rule each. (Two of the leaves it was written for have since gone: `crossFile`
+ * with the ping-back tracker, decision `260809-2004`, and `guard.protectedPaths`
+ * with the mechanism it configured — see `## The leaf that was retired` below,
+ * which is where the argument above used to draw its worked example from.)
  *
  * ## The one setting here that is not the guard's
  *
@@ -64,10 +66,9 @@
  *
  * `guard.enabled` is read from the plugin layer and `DEFAULTS` only. It sits
  * above every check in `guard.ts` — above the Bash dispatch, above the halt,
- * above the before-fingerprint the whole protected-path measurement rests on —
- * so a project that could write it could switch off a guard it
- * is governed by, silently and unrecoverably. Decision `260804-1631`, answered
- * option 1 at the same gate.
+ * above the decision-governed check — so a project that could write it could
+ * switch off a guard it is governed by, silently and unrecoverably. Decision
+ * `260804-1631`, answered option 1 at the same gate.
  *
  * A project that declares the key gets ONE DIAGNOSTIC naming it. That is not a
  * courtesy: it is the only thing standing between this rule and a silently inert
@@ -81,7 +82,9 @@
  * `readLayer` used to cast the parsed JSON to `RawConfig` and check nothing
  * inside it, so `{"guard":{"protectedPaths":123}}` crashed the guard into its
  * fail-open branch on every call, and the subtler `"rules/**"` spread into eight
- * single characters and protected nothing, silently (`260804-1603`).
+ * single characters and protected nothing, silently (`260804-1603`). That leaf
+ * is retired now; the defect it measured is why this table exists, so the
+ * example is kept as the history it is.
  *
  * `validateLayer` gives every leaf this loader reads a declared type. A leaf
  * whose value does not have that type is DROPPED and NAMED, and the leaf walk
@@ -100,36 +103,34 @@
  * is smaller — but `260802-2334` is this Circle's standing proof that "the file
  * is protected" was not enough once already.
  *
- * ## The self-protection floor
+ * ## The leaf that was retired, and the floor that went with it
  *
- * The effective `protectedPaths` always includes `fusion-guard.json` itself
- * WHEN THAT FILE EXISTS ON DISK. Without the floor an agent could unprotect its
- * own guard configuration in one edit.
+ * `guard.protectedPaths` was the largest leaf this loader read until
+ * 2026-08-12, when the protected-path mechanism it configured was removed.
+ * Nothing reads a protected list any more, so the leaf is not merged, not
+ * defaulted and not validated. It is RETIRED, which is a third state beside
+ * "known" and "unknown": a project that still declares it has the value dropped
+ * and gets ONE DIAGNOSTIC naming the key, on every guarded tool call, until the
+ * line comes out of the file. See `RETIRED_CONTAINER_LEAVES` below.
  *
- * TWO SPELLINGS, both of the one file: the bare project-relative name and the
- * absolute path this loader read the layer from. Every other pattern is matched
- * against a path relativised to the guard's WORKING directory, and the project
- * root is wherever `findWorkbenchRoot` walked up to — so the bare name alone
- * defended `<cwd>/fusion-guard.json`, a file that need not exist, while the file
- * actually governing the guard sat out of reach (`260804-1604`). The floor is
- * the only pattern entitled to an absolute form, because it is the only one
- * whose subject has a location the loader already knows; `rules/**` from a
- * subdirectory really does name a different directory. See `THE FLOOR` below
- * for why the bare name stays alongside it.
+ * That loudness is deliberate and it is the loudness `guard.enabled` already
+ * has. Every other unrecognised key is carried through in silence, and rightly
+ * — the seeded template is mostly underscore-prefixed documentation keys. But a
+ * project that declared a protected list declared it on purpose, usually after
+ * something got written that should not have been, and silence would leave it
+ * believing a setting is in force behind a mechanism that no longer exists.
+ * This diagnostic is the only place in the whole removal where a consuming
+ * project learns anything, so it says what happened and what to do about it.
  *
- * The existence condition is not an optimisation, it is the answer to a
- * collision between two things the spec asks for: `/fusion:setup` seeds the
- * file, and an unconditional floor would make that seeding write a write to a
- * protected path, so the file could never be created by the mechanism meant to
- * create it. Decided by the user at the plan gate on 2026-08-02: the
- * self-protection floor applies only once the configuration file exists.
- *
- * The residual is real and is recorded rather than hidden: in a project where
- * the file has never been created, an agent may create one that narrows
- * `protectedPaths`, and the guard honours it from the next tool call onward.
- * What bounds it is that the file is git-tracked, so the creation appears in a
- * diff. What does NOT bound it is the floor — a `rm fusion-guard.json` is
- * blocked only once there is a file to remove.
+ * THE SELF-PROTECTION FLOOR WENT WITH IT, and the loss is real rather than
+ * bookkeeping. The loader used to append `fusion-guard.json` to the effective
+ * list in two spellings — the bare project-relative name and the absolute path
+ * it read the layer from (`260804-1604`) — once the file existed, the existence
+ * condition being what let `/fusion:setup` seed a file an unconditional floor
+ * would have forbidden (`260802-1912`). There is no effective list to append
+ * to now, so nothing in the guard defends this file from an agent. What bounds
+ * that is what always bounded the pre-existence gap the floor never covered:
+ * the file is git-tracked, so a change to it appears in a diff.
  *
  * ## Diagnostics rather than silence
  *
@@ -202,7 +203,6 @@ export interface GuardSettings {
   guard: {
     enabled: boolean;
     defaultSensitivity: Sensitivity;
-    protectedPaths: string[];
     categoryPaths: Record<string, string[]>;
     categorySensitivity: Record<string, Sensitivity>;
   };
@@ -224,7 +224,14 @@ export interface GuardSettings {
   };
 }
 
-/** Which of the three layers a value came from. */
+/**
+ * Which of the three layers a value came from.
+ *
+ * Read by `readLayer` and `validateLayer`, which behave differently for the
+ * project and the plugin file. It stopped being part of `GuardConfig` when
+ * `protectedPathsSource` was removed with the protected-path mechanism: no
+ * setting reports its provenance any more.
+ */
 export type ConfigLayer = "project" | "plugin" | "default";
 
 /** Guard configuration as loaded: the settings, plus a report about the load. */
@@ -236,60 +243,6 @@ export interface GuardConfig extends GuardSettings {
    * configuration changed.
    */
   diagnostics: string[];
-  /**
-   * Which layer supplied `guard.protectedPaths`, BEFORE the self-protection
-   * floor was appended.
-   *
-   * Also a report rather than a setting, and it is here for one caller that does
-   * not exist yet. Decision `260803-1314` option 2 would have the rules-write
-   * exemption stand down for a path the PROJECT ITSELF declared protected, and
-   * "the project itself declared it" is a fact the leaf walk below computes and
-   * then used to throw away. The alternative was for that caller to re-read a
-   * file this loader has already read, which is a second source of truth for the
-   * same bytes. Settled here, in the loader, per the remediation plan's Step 2.
-   *
-   * `"default"` means neither file declared a list, so the effective list is
-   * `DEFAULTS`' empty one plus whatever the floor added.
-   */
-  protectedPathsSource: ConfigLayer;
-  /**
-   * The entries the SELF-PROTECTION FLOOR appended to `guard.protectedPaths` —
-   * empty when the floor did not apply, or when the declared list already named
-   * them.
-   *
-   * A report, like the two fields above. It exists because the floor stopped
-   * being one bare pattern when `260804-1604` was closed: it is now the bare
-   * name and the absolute path, and a caller that wants the entries the PROJECT
-   * declared has to be able to take the floor's back out again. That caller is
-   * `projectDeclaredProtectedPaths` below, and through it the rules-write
-   * exemption. Deriving the floor's entries a second time at the caller would be
-   * the same file described by two functions free to disagree.
-   */
-  floorPaths: string[];
-}
-
-/**
- * The protected entries this project DECLARED for itself — empty for a project
- * that declared none.
- *
- * "Declared, not inherited" is the whole of it, and it is a binding obligation
- * of decision `260803-1314`, not a nicety. That decision has a project's own
- * protected entries outrank `FUSION_ALLOW_RULES_WRITE`; after `260804-1630` an
- * OMITTED `protectedPaths` inherits the plugin's list, and the plugin's list
- * contains `rules/**`. A subtraction that read the effective list would
- * therefore withdraw the exemption from every project on earth, silently, and
- * would look correct while doing it. `protectedPathsSource === "project"` is the
- * exact fact "this project supplied these entries", which is why the loader
- * carries it rather than the exemption inferring it.
- *
- * The floor's entries are taken back out for the same reason: the loader
- * appended them, no project did.
- */
-export function projectDeclaredProtectedPaths(config: GuardConfig): string[] {
-  if (config.protectedPathsSource !== "project") return [];
-  return config.guard.protectedPaths.filter(
-    (p) => !config.floorPaths.includes(p),
-  );
 }
 
 /** Raw shape from JSON (may have missing fields). */
@@ -305,7 +258,6 @@ const DEFAULTS: GuardSettings = {
   guard: {
     enabled: true,
     defaultSensitivity: "medium",
-    protectedPaths: [],
     categoryPaths: {},
     categorySensitivity: {},
   },
@@ -373,15 +325,16 @@ const EMPTY_LAYER: Layer = { raw: {}, diagnostics: [] };
  * never written `fusion-guard.json` would put an advisory on every guarded call
  * of a correctly-behaving project.
  *
- * For the PLUGIN layer, absence is a broken install. The plugin's own
- * `config.json` is the only thing carrying a non-empty `protectedPaths` —
- * `DEFAULTS.guard.protectedPaths` is the empty list, and the seeded template
- * says as much in its own words — so a missing plugin file drops the effective
- * list to nothing while the guard goes on reporting normal operation. That is
- * the one silence in this loader that contradicts the contract the module
- * docstring states, in the direction that removes protection. It gets ONE
- * DIAGNOSTIC naming the path that was searched, which is the same loudness the
- * module already chose for a plugin file that exists but does not parse.
+ * For the PLUGIN layer, absence is a broken install. The diagnostic was won by
+ * `260809-1101`, whose subject was the protected list: the plugin file carried
+ * the only non-empty one, so a missing file dropped it to nothing while the
+ * guard went on reporting normal operation. That list is gone and the
+ * diagnostic stays, with a smaller and stated claim — every leaf the project
+ * has not declared falls through to `DEFAULTS`, which the shipped plugin file
+ * agrees with leaf for leaf, so the measurable cost of the absence today is
+ * nothing and the reason to say so is that a file fusion ships is missing. ONE
+ * DIAGNOSTIC naming the path that was searched, the same loudness the module
+ * already chose for a plugin file that exists but does not parse.
  *
  * A file that EXISTS but cannot be read as a JSON object is dropped and named,
  * because the alternative is a mistyped configuration hiding behind
@@ -394,7 +347,7 @@ function readLayer(path: string, kind: ConfigLayer): Layer {
     return {
       raw: {},
       diagnostics: [
-        `Guard configuration: the plugin's own config.json was not found at ${path}. fusion ships the only non-empty protectedPaths list in that file, so nothing is protected beyond what this project declares in ${PROJECT_CONFIG_FILENAME}. The fusion install is incomplete; reinstall it.`,
+        `Guard configuration: the plugin's own config.json was not found at ${path}. Every guard setting this project has not declared in ${PROJECT_CONFIG_FILENAME} falls through to fusion's built-in defaults. The fusion install is incomplete; reinstall it.`,
       ],
     };
   }
@@ -515,10 +468,6 @@ const CONTAINER_LEAF_RULES: Record<string, Record<string, LeafRule>> = {
       check: isSensitivity,
       expected: 'one of "none", "low", "medium", "high"',
     },
-    protectedPaths: {
-      check: isStringArray,
-      expected: "an array of glob strings",
-    },
     categoryPaths: {
       check: isRecordOf(isStringArray),
       expected: "an object mapping each category to an array of glob strings",
@@ -543,6 +492,33 @@ const CONTAINER_LEAF_RULES: Record<string, Record<string, LeafRule>> = {
       check: isPositiveInteger,
       expected: "a whole number of 1 or more",
     },
+  },
+};
+
+/**
+ * Leaves this loader ONCE READ and no longer does, with the reason a project
+ * that still declares one needs to hear.
+ *
+ * The counterpart of `CONTAINER_LEAF_RULES` above, and the reason it is a table
+ * rather than an `if`: a retired leaf is not a validation failure and not an
+ * unknown key. It is a key that meant something, still looks like a setting to
+ * whoever wrote it, and now does nothing — and the one thing that must not
+ * happen is for it to go through silently as an unknown key, which is what the
+ * validator does with every key it does not recognise.
+ *
+ * The value completes the sentence "… no longer exists — ___". Keep it saying
+ * what happened and what to do; a project reading it has just upgraded and this
+ * is the only notice it gets.
+ *
+ * An entry here is a promise to keep making noise until the line comes out of
+ * the file. Retire a leaf by moving it from the table above into this one; drop
+ * it from this table only when a project could no longer plausibly still be
+ * carrying it.
+ */
+const RETIRED_CONTAINER_LEAVES: Record<string, Record<string, string>> = {
+  guard: {
+    protectedPaths:
+      "fusion removed the protected-path mechanism it configured, so declaring the list protects nothing and nothing reads it.",
   },
 };
 
@@ -629,6 +605,20 @@ function validateLayer(
         continue;
       }
 
+      // A RETIRED leaf, in EITHER layer. Unscoped on purpose, unlike the
+      // project-only refusal above: `guard.enabled` is a key one layer may
+      // legitimately set, whereas a retired leaf is retired for everybody, and
+      // a plugin `config.json` still carrying one is a stale install saying so
+      // rather than a project to nag. The value is dropped, so nothing
+      // downstream can read it back.
+      const retired = RETIRED_CONTAINER_LEAVES[key]?.[leafKey];
+      if (retired !== undefined) {
+        diagnostics.push(
+          `Guard configuration at ${source}: "${key}.${leafKey}" no longer exists — ${retired} The key was ignored; the rest of this file is unaffected. Delete the line to stop this advisory.`,
+        );
+        continue;
+      }
+
       const rule = leafRules[leafKey];
       if (rule === undefined) {
         kept[leafKey] = leafValue;
@@ -711,54 +701,11 @@ export function loadConfig(sources?: ConfigSources): GuardConfig {
     plugin.raw.orchestrator?.[key] ??
     DEFAULTS.orchestrator[key];
 
-  // Which layer the protected list came from, recorded before the floor makes
-  // the answer unreadable off the list itself. See `GuardConfig`.
-  const protectedPathsSource: ConfigLayer =
-    project.raw.guard?.protectedPaths !== undefined
-      ? "project"
-      : plugin.raw.guard?.protectedPaths !== undefined
-        ? "plugin"
-        : "default";
-
-  // THE FLOOR — TWO SPELLINGS OF ONE FILE. A fresh array every time: the chosen
-  // list may be DEFAULTS' own or a raw parsed array, and appending in place
-  // would edit a value someone else is holding.
-  //
-  // The absolute spelling is the one entry in the effective list that names a
-  // location rather than a project-relative shape, and it is here because the
-  // floor is the only pattern whose subject has a location this loader already
-  // knows. Every other pattern is matched relative to the guard's WORKING
-  // directory, which `findWorkbenchRoot` is built to walk up from — so from a
-  // subdirectory, `fusion-guard.json` alone named a file that does not exist
-  // while the file governing the guard sat somewhere no relative pattern could
-  // reach. For `rules/**` that degradation is arguably correct (`sub/rules/`
-  // genuinely is a different directory); for the floor it is the defect
-  // `260804-1604` measured, with all four writes to the loaded file allowed on
-  // both surfaces and no flag.
-  //
-  // The BARE name stays, and not only for the cwd-is-the-root case it already
-  // covered. `globToRegex` reads `*`, `?` and `[` as glob syntax with no escape,
-  // so a project root whose absolute path contains one of those three gets an
-  // absolute pattern that means something other than the literal path — wider
-  // for `*` and `?`, and unusable for an unbalanced `[`. The bare name is the
-  // spelling that still works there, which makes the pair a graceful
-  // degradation rather than a redundancy.
-  const declaredPaths = pickGuard("protectedPaths");
-  const floorApplies =
-    projectConfigPath !== null && existsSync(projectConfigPath);
-  const floorPaths = !floorApplies
-    ? []
-    : [PROJECT_CONFIG_FILENAME, projectConfigPath as string].filter(
-        (p) => !declaredPaths.includes(p),
-      );
-  const protectedPaths = [...declaredPaths, ...floorPaths];
-
   const value: GuardConfig = {
     guard: {
       // The project layer is not consulted. Decision 260804-1631.
       enabled: plugin.raw.guard?.enabled ?? DEFAULTS.guard.enabled,
       defaultSensitivity: pickGuard("defaultSensitivity"),
-      protectedPaths,
       categoryPaths: pickGuard("categoryPaths"),
       categorySensitivity: pickGuard("categorySensitivity"),
     },
@@ -774,8 +721,6 @@ export function loadConfig(sources?: ConfigSources): GuardConfig {
       maxTurns: pickOrchestrator("maxTurns"),
     },
     diagnostics,
-    protectedPathsSource,
-    floorPaths,
   };
 
   cache = { key, value };
