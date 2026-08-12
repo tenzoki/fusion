@@ -44,13 +44,6 @@
 #     three epistemic norms governing reasoning substance (not formatting):
 #     own your errors instead of praising the user, no premature/half-baked
 #     solutions, and calibrated certainty (verified vs inference vs speculation).
-#   - Every agent also reads protected-path-discipline.md (shipped by plugin) —
-#     the protected-path policy: every path in guard.protectedPaths is
-#     fingerprinted before a tool call (hooks/guard.ts) and again after it
-#     (hooks/tracker.ts), and a path that changed is written back to its
-#     pre-call content while the guard halts. It states the rule, why the route
-#     to the file does not matter, the one narrow exemption
-#     (FUSION_ALLOW_RULES_WRITE) and what to do instead (STOP → Human Gate).
 #   - Circle-transitioning agents (orchestrator, playmaker, shaper) additionally
 #     read circle-records.md (shipped by plugin) — the Circle state vocabulary,
 #     its worked transitions, the Circle record template and the portfolio
@@ -400,7 +393,6 @@ emit_if_exists "$PLUGIN_RULES_DIR/fusion-workbench-conventions.md"
 emit_if_exists "$PLUGIN_RULES_DIR/decision-record-examples.md"
 emit_if_exists "$PLUGIN_RULES_DIR/user-facing-output.md"
 emit_if_exists "$PLUGIN_RULES_DIR/critical-stance.md"
-emit_if_exists "$PLUGIN_RULES_DIR/protected-path-discipline.md"
 
 # 1a. Every agent receives the project's chat voice profile (short-form output
 #     style: gate prompts, AskUserQuestion text, status reports, chat replies).

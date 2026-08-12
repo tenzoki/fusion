@@ -12,7 +12,12 @@
  * `escalation.ts` was taught to COERCE the parsed value after a shape-valid
  * `escalation.json` failed the whole guard open (issue `260802-2334`); the other
  * two kept casting with `as` and threw on the next field access, which discarded
- * the protected-path halt message on the same tool call (issue `260809-1101`).
+ * the message the same tool call had already produced (issue `260809-1101`).
+ * Measured on the protected-path halt sentence, which is gone with its half of
+ * the guard; the defect class is not, and is not specific to what the message
+ * said. A throw in a state load takes out whatever the hook was about to tell
+ * the model, and the hook still tells it several things — the churn warning and
+ * the three drift and coverage measurements all leave through the same reply.
  * One defect, fixed once, in one of three places. The ping-back tracker left
  * with decision `260809-2004`.
  *

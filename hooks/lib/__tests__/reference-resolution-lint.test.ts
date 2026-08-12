@@ -193,10 +193,14 @@ function isPlaceholder(token: string): boolean {
 // oddities. Every entry carries its reason, and a test below asserts that no
 // entry exists in the tree — which is what keeps this list unable to swallow a
 // reference to a real file.
+// Three entries left on 2026-08-12 with the protected-path half of the guard:
+// `rules/x.md`, `rules/old.md` and `rules/retired/old.md` were fabricated
+// operands in `rules/protected-path-discipline.md` and in the README-hooks
+// sections that described the exemption, and every citation of them went when
+// those texts did. The "no dead weight" test below is what caught it — an
+// exemption nothing cites is an exemption nobody re-reads before it swallows
+// something real.
 const EXAMPLE_PATHS: Record<string, string> = {
-  "rules/x.md": "the guard docs' canonical fabricated operand (`rm rules/x.md`)",
-  "rules/old.md": "guard-doc fabricated operand (retirement example)",
-  "rules/retired/old.md": "guard-doc fabricated operand (retirement example)",
   "rules/relevant-file.md": "guard-doc fabricated value in an event-JSON example",
   "bin/fu": "removed v3.20.0; CLAUDE.md names it as history, deliberately",
   "rules/context-manifest.yaml":

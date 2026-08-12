@@ -21,10 +21,15 @@ import { dirname, resolve, join } from "node:path";
 // only prior mentions of it in this directory are prose in guard-side tests
 // describing what the monitor *would* render. That was survivable while the
 // panel was a flat "last 30 matching events" slice. It stopped being survivable
-// when guard_advisory joined the panel, because an advisory is emitted once per
-// exempted write and a curation session with FUSION_ALLOW_RULES_WRITE set emits
-// them in bursts — thirty rewritten rule files would push every guard_block,
-// guard_halt and churn_critical off the panel. The fix is
+// when guard_advisory joined the panel, because an advisory is emitted per
+// guarded tool call for as long as its cause stands — a project carrying one
+// wrong-typed or retired key in its `fusion-guard.json` emits an unbounded
+// stream of them, and thirty in a row would push every guard_block, guard_halt
+// and churn_critical off the panel. Measured first on the burst the
+// `FUSION_ALLOW_RULES_WRITE` exemption produced, one advisory per exempted
+// write; that flag went with the protected-path half on 2026-08-12 and the
+// fixture below keeps its rows, because the panel must still render an
+// advisory a consuming project logged before it upgraded. The fix is
 // two independent caps (MAX_WARNINGS_RETURNED for the warning class,
 // MAX_ADVISORIES_RETURNED for the advisory class) merged back by timestamp, and
 // a fix nothing tests is a fix that comes back.
@@ -308,8 +313,10 @@ describe("bin/monitor — warnings panel capacity", () => {
         { ts: ts(), event: "guard_block", tool: "Bash", file: "rules/x.md", detail: "Protected path: rm -rf rules" },
         { ts: ts(), event: "guard_halt", tool: "Bash", file: "rules/x.md", detail: "Halt active — mutating Bash command blocked: rm -rf rules" },
       ];
-      // A curation session: one advisory per exempted write, well past the
-      // 30-row window on its own.
+      // Thirty advisories in a row, well past the 30-row window on its own.
+      // Spelled as the exemption's burst because that is the shape this was
+      // measured on and the shape a pre-2026-08-12 event log holds; a
+      // configuration advisory repeating per tool call reaches the same 30.
       for (let i = 1; i <= 30; i++) {
         events.push({
           ts: ts(),

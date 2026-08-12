@@ -38,10 +38,14 @@ const CHURN_FILE = "churn.json";
  * every consumer assumes (issue `260809-2023`).
  *
  * The workbench root is the anchor because `findWorkbenchRoot()` already
- * resolves it and `projectRelative` already normalises into it for the
- * protected-path measurement. Reusing both is the point rather than the
- * convenience: churn and the guard now read one path the same way instead of
- * disagreeing about what a path is (decision `260810-0920`, part a).
+ * resolves it and `projectRelative` already answers "this path, relative to that
+ * directory" for whoever asks. Reusing both was the point rather than the
+ * convenience: at the time the protected-path measurement was the other caller,
+ * and churn and the guard reading one path the same way was the argument
+ * (decision `260810-0920`, part a). That measurement was removed on 2026-08-12
+ * and the anchor is unaffected — the reason it was chosen was the ROOT, which is
+ * the only directory a counter can be keyed by and mean the same thing across
+ * sessions; agreeing with a second reader was a benefit, not the ground.
  *
  * A path landing OUTSIDE the root — a `/tmp` scratchpad, a second clone — is
  * not tracked at all rather than stored absolute. Storing it would reintroduce
@@ -90,14 +94,16 @@ const WORKBENCH_DIR = "fusion-workbench";
  * retired.
  *
  *   - In `hooks/config.json` it meant "an agent may not write here". That entry
- *     is GONE. It had to go: the measurement writes its own snapshot, its own
- *     events and its own escalation counter into that directory, so a protected
- *     `.guard-state/` would have made every single tool call report the guard's
- *     own bookkeeping as a violation.
+ *     is GONE, and so is the list it was on — the protected-path half of the
+ *     guard was removed on 2026-08-12. It had already had to go before that: the
+ *     guard writes its own events and its own escalation counter into that
+ *     directory, so a protected `.guard-state/` would have made every single
+ *     tool call report the guard's own bookkeeping as a violation.
  *   - HERE it means "changes here are not evidence about the agent's editing
- *     behaviour". That is still true, and more true than before: `guard.ts` now
- *     writes a fresh snapshot file into `.guard-state/` on every guarded call.
- *     Counting those would drown the churn heatmap in the guard's own traffic.
+ *     behaviour". That is still true and is untouched by the removal: the
+ *     escalation counter, the event log and the measurement throttles are all
+ *     written into `.guard-state/` by the hooks themselves, and counting those
+ *     would drown the churn heatmap in the guard's own traffic.
  *
  * Deleting this entry because the other one went would break the churn metric
  * for a reason that has nothing to do with churn.
@@ -136,13 +142,18 @@ function emptyState() {
  * A file that parses to a valid JSON value of the wrong SHAPE — `{}` is enough —
  * passed that catch and threw on the next field access: `state.files[filePath]`
  * on `undefined`. The throw escaped to `tracker.ts`'s top-level handler, which
- * calls `respond()` with no argument and so discarded the protected-path halt
- * sentence the same tool call had already produced. The revert and the halt
- * still landed; what was lost was the only message telling the agent which file
- * changed and how a human clears it, which is precisely the silent-revert
- * failure `rules/protected-path-discipline.md` was written against. Nothing
- * repaired the file either — `saveChurn` sits after the throw — so every later
- * tool call in that project took the same path (issue `260809-1101`).
+ * calls `respond()` with no argument and so discarded whatever sentence the
+ * same tool call had already produced. Measured on the protected-path halt, and
+ * the shape of the loss is what generalises rather than that halt: the action
+ * still landed, and what was lost was the only message telling the agent what
+ * had happened to which file and what a human does about it. An agent that is
+ * acted upon and not told works around the effect, because from inside the
+ * session it looks like nothing happened. Nothing repaired the file either —
+ * `saveChurn` sits after the throw — so every later tool call in that project
+ * took the same path (issue `260809-1101`). The protected-path half was removed
+ * on 2026-08-12; every remaining reporter on this hook — the churn warning, the
+ * three drift and coverage measurements — reaches the model through the same
+ * `respond()` and is lost the same way.
  *
  * This is the same defect `260802-2334` closed for `escalation.json`, and the
  * fix is the same one: coerce rather than trust. A well-formed file round-trips
@@ -194,9 +205,11 @@ export function coerceChurnState(value) {
  *
  * `rawFilePath` arrives as the tool payload spelled it: absolute, or relative to
  * the session's working directory. `resolve` lifts it into the session's
- * absolute space and `projectRelative` puts it into the root's — the same two
- * steps `narrowingTarget` in `tracker.ts` runs for the protected-path
- * measurement, so one tool call reads one path one way.
+ * absolute space and `projectRelative` puts it into the root's. Those two steps
+ * were shared with `narrowingTarget` in `tracker.ts`, which ran them for the
+ * protected-path measurement so that one tool call read one path one way; that
+ * measurement was removed on 2026-08-12 and this is now the only caller that
+ * takes both steps.
  *
  * Null has three causes and they are one answer — there is no key to count
  * under: no workbench (nothing to anchor to), a path outside the root

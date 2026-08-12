@@ -1,6 +1,23 @@
 /**
- * The project-relative spelling of a written path — the coordinate space every
- * protected pattern is matched in.
+ * The project-relative spelling of a written path — the coordinate space its
+ * reader matches in.
+ *
+ * ## Who asks, and against which directory
+ *
+ * Two callers, and they name different directories on purpose:
+ *
+ *   - `guard.ts` passes `process.cwd()`. Its answer is matched against the globs
+ *     in `guard.categoryPaths`, which a project writes relative to where it
+ *     starts its sessions, and CHECK 3's whole verdict is computed in that
+ *     space.
+ *   - `churn.ts` passes the workbench root. Its answer is the churn map's KEY,
+ *     and a counter has to mean the same file whatever directory the session
+ *     started in (`KEY_ANCHOR`, issue `260809-2023`).
+ *
+ * A third caller used to pass cwd as well — the protected-path deny, whose list
+ * was the reason this module says "every pattern" anywhere it still does. That
+ * half of the guard was removed on 2026-08-12. It is named here because the two
+ * defects below were both measured on it, and neither is repaired by its going.
  *
  * ## Why this is its own module
  *
@@ -22,9 +39,9 @@
  *
  * Three inputs, three answers:
  *
- *   - an absolute path INSIDE the working directory → relative to it, so the
- *     relative globs in `guard.protectedPaths` can match it. This is what Claude
- *     Code sends in `tool_input.file_path`.
+ *   - an absolute path INSIDE the named directory → relative to it, so a
+ *     relative glob can match it. An absolute path is what Claude Code sends in
+ *     `tool_input.file_path`, so this is the ordinary case for both callers.
  *   - a relative path → RESOLVED against the working directory first, then read
  *     the same way. An operand that stays inside comes back unchanged, so the
  *     ordinary case is untouched; an operand that walks OUT comes back as the
@@ -36,9 +53,14 @@
  * `../fusion-guard.json` was matched as the literal text `../fusion-guard.json`
  * against a list of patterns none of which can begin with `..`. It therefore
  * matched nothing, whatever the loader had put on the list — including the
- * self-protection floor, which names a file the loader had just read from
+ * self-protection floor, which named a file the loader had just read from
  * exactly there. Resolving first is what lets a pattern that names an absolute
  * location be reached from a working directory that is not the project root.
+ *
+ * The floor, and the list it stood on, went with the protected-path half. The
+ * arithmetic did not: `churnKey` resolves a relative operand for the same reason
+ * and would otherwise key a `../`-spelled path under a string no reader can
+ * resolve, which is the four-spelling failure `KEY_ANCHOR` exists to end.
  *
  * ## The direction this moves the guard, stated because it moves it
  *
@@ -50,19 +72,23 @@
  *     lexical collapse of `x`, and both call sites already applied that collapse
  *     (`collapseSegments` on the write path, `path.normalize` in the mutation
  *     classifier). Nothing about the ordinary case moves.
- *   - An operand that resolves OUT of the working directory used to be a `..`
+ *   - An operand that resolves OUT of the named directory used to be a `..`
  *     string that no relative pattern could match, and is now an absolute path
  *     that no relative pattern can match either. It can match only an ABSOLUTE
- *     pattern, and the effective list holds exactly one — the floor
- *     (`config.ts`, `THE FLOOR`).
+ *     pattern. The effective protected list held exactly one, the self-protection
+ *     floor, and both are gone; `guard.categoryPaths` is written by a project and
+ *     holds no absolute pattern today, though nothing stops one.
  *
- * So the set of paths that match grows by the project configuration file
- * reached from a subdirectory, and by nothing else. Measured as a cross-product
- * rather than left as this paragraph; see the session file for this step.
+ * So the set of paths that match grew by the project configuration file reached
+ * from a subdirectory, and by nothing else. Measured as a cross-product rather
+ * than left as this paragraph; see the session file for that step. With the
+ * floor gone the growth is empty in practice, and the argument is kept because
+ * it is the reason the middle case may resolve at all: resolving can only add
+ * matches, so it can only add denials, and the direction has to be argued rather
+ * than assumed by whoever adds the next caller.
  *
- * There is one further consequence, and it is a fix rather than a cost:
- * `rm ../<project>/rules/x.md` names a protected rule file and used to allow,
- * because its text began with `..`. It now resolves back inside and denies.
+ * For churn there is no such question in either direction — a path outside the
+ * root is not counted at all rather than stored absolute (`churnKey`).
  *
  * PURELY LEXICAL — `resolve` does not touch the filesystem and does not follow
  * symlinks. A path that reaches a different file through a link still reads as
@@ -70,11 +96,16 @@
  */
 import { relative, resolve } from "node:path";
 /**
- * `filePath` as it should be matched against `guard.protectedPaths`, given the
- * working directory the guard is running in.
+ * `filePath` in `cwd`'s coordinate space: relative to it when it lands inside,
+ * absolute when it lands outside.
  *
- * Returns the empty string when the path IS the working directory, which is what
- * `relative` answers and what both call sites normalise to `"."`.
+ * `cwd` is whatever directory the CALLER matches in — the process's working
+ * directory for `guard.categoryPaths`, the workbench root for a churn key — and
+ * is an argument for exactly that reason.
+ *
+ * Returns the empty string when the path IS that directory, which is what
+ * `relative` answers; `guard.ts` normalises it to `"."` and `churnKey` reads it
+ * as "no file named" and counts nothing.
  */
 export function projectRelative(filePath, cwd) {
     // Relative and absolute alike: `resolve` leaves an absolute path alone and
@@ -92,16 +123,15 @@ export function projectRelative(filePath, cwd) {
 /**
  * Put back the trailing separator `resolve` threw away.
  *
- * NOT cosmetic, and measured: `resolve("agents/")` is `"<cwd>/agents"`, and
- * `agents/**` compiles to `^agents/.*$`, whose `.*` matches the empty string —
- * so `agents/` matches and the bare `agents` does not. Without this line
- * `Edit agents/` went from a deny to an allow, which is the one direction this
- * Circle does not move in. `collapseSegments` in `paths.ts` keeps the separator
- * for exactly this reason and states the argument in full.
- *
- * It also carries the flag's headline use: `mv rules/x.md rules/retired/` names
- * a destination DIRECTORY, and dropping its separator changes both what the
- * protected list matches and what the exemption records.
+ * NOT cosmetic, and measured: `resolve("dir/")` is `"<cwd>/dir"`, and a
+ * `dir/**` glob compiles to `^dir/.*$`, whose `.*` matches the empty string — so
+ * `dir/` matches and the bare `dir` does not. Without this line a write naming a
+ * directory went from a deny to an allow, which is the one direction a guard may
+ * not move. Measured on the protected list, which is gone; `guard.categoryPaths`
+ * is written in the same glob dialect by the same compiler, so the asymmetry is
+ * unchanged and so is the direction of the mistake. `collapseSegments` in
+ * `paths.ts` keeps the separator for exactly this reason and states the argument
+ * in full.
  *
  * The one exception is a path that IS the working directory (`./`, `/proj/`),
  * where the relative answer is empty and a bare separator would read as the

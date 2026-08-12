@@ -328,15 +328,40 @@ const DRIFT_CEILING = 145_144;
  *             `protected-path-internals.md` (21 870) and join the core-only
  *             role; the measured high-water mark is now the orchestrator at
  *             109 430. In the plugin repo itself the three still load it.
+ *    80 670 — 2026-08-12, at step 9 of the protected-path removal.
+ *             `protected-path-discipline.md` (10 541 at deletion) was the
+ *             agent-facing statement of a mechanism the plan removed from the
+ *             guard, so the rule went with its subject rather than being cut for
+ *             size. Every one of the sixteen roles drops the same 10 541 and
+ *             gains 121, `critical-stance.md` 9 837 -> 9 958: its worked case
+ *             said in the present tense that the guard "now" compares a
+ *             fingerprint of the protected paths, which the same step made
+ *             false, and correcting a false claim in an always-on rule costs
+ *             what it costs. Net -10 420 per dispatch, on every role. The
+ *             core-only role stands at 80 670 and the measured high-water mark,
+ *             the orchestrator, at 104 521.
+ *
+ *             RULE_BASELINE loses that file's entry and NOTHING ELSE was
+ *             re-cut, which is deliberate and has a visible consequence: the
+ *             baseline sizes below are still the 2026-08-05 ones, the five
+ *             remaining core files have grown 17 016 bytes since, and the
+ *             oversized `protected-path-discipline.md` entry (19 943 against a
+ *             10 541 file) had been masking 9 402 of that. With the mask gone
+ *             the budget report fires for every role. That report is correct and
+ *             is the instrument working: the growth is real, it was never cut,
+ *             and re-baselining here would have absolved it in the same edit
+ *             that removed the thing hiding it.
  */
 const RULE_BASELINE: Record<string, number> = {
-  // The universal core — text all sixteen agents apply. 89 896 bytes.
+  // The universal core — text all sixteen agents apply. 63 654 bytes at the
+  // 2026-08-05 cut, against 80 670 emitted today; the 17 016 difference is the
+  // growth the budget report now names, and it is unbudgeted on purpose (see
+  // the 2026-08-12 entry above).
   "agent-setup.md": 2_792,
   "fusion-workbench-conventions.md": 34_671,
   "decision-record-examples.md": 4_191,
   "user-facing-output.md": 16_683,
   "critical-stance.md": 5_317,
-  "protected-path-discipline.md": 19_943,
   // Role-specific, each loaded by a derived audience rather than a named list.
   "design-diagrams.md": 5_673,
   "circle-records.md": 9_302,
@@ -366,13 +391,15 @@ interface Role {
  * left pointing at a figure the emission moved away from. The comments below say
  * what each role buys and why; the arithmetic is the map's.
  *
- * Five roles as of 2026-08-06, the first four of them below RELEASE_CAP:
+ * Five roles as of 2026-08-12, every one of them below RELEASE_CAP. The figures
+ * are FLOORS — RULE_BASELINE summed over the role's files — not what the role
+ * emits today; the gap between the two is what the budget report prints.
  *
- *   89 896  core only                                      8 agents
- *   95 569  design-diagrams.md                             5 agents
- *   99 198  circle-records.md                              1 agent
- *  104 871  circle-records.md + design-diagrams.md         1 agent
- *  108 448  circle-records.md + workbench-stash-and-lock.md 1 agent
+ *   63 654  core only                                      8 agents
+ *   69 327  design-diagrams.md                             5 agents
+ *   72 956  circle-records.md                              1 agent
+ *   78 629  circle-records.md + design-diagrams.md         1 agent
+ *   82 206  circle-records.md + workbench-stash-and-lock.md 1 agent
  */
 const ROLES: Record<string, Role> = {
   /**
@@ -411,14 +438,20 @@ const ROLES: Record<string, Role> = {
 
   /**
    * Turns a Directive into a Circle record and draws the design diagram that
-   * goes in it, so it pays for both files. 483 bytes under the release cap, so
-   * it is the role that will cross the baseline first and owe a reason for it at
-   * the next re-baseline.
+   * goes in it, so it pays for both files. It used to be the role closest to the
+   * release cap, 483 bytes under it; the 2026-08-12 cut put 26 725 bytes between
+   * them, so the role that would cross first is now a question for whichever
+   * re-baseline comes next.
    */
   "circle-records.md + design-diagrams.md": {},
 
   /**
-   * OVER THE RELEASE CAP by 3 094 bytes.
+   * NO LONGER OVER THE RELEASE CAP. It was, by 3 094 bytes, when this entry was
+   * written; its floor now stands 23 148 under. The `overRelease` reason below
+   * is kept rather than deleted — the justification duty is discharged by prose
+   * and the prose is still true of this role, and a floor that moves back up
+   * would otherwise silently find no reason where one had been written. The
+   * assertion skips it while the floor is under the cap.
    *
    * `circle-records.md` (9 302) is the Circle state vocabulary and the record
    * and portfolio templates. This role writes those transitions — it activates

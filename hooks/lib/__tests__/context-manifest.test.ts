@@ -407,7 +407,6 @@ describe("emit_if_exists: a missing always-on rule file is skipped silently (set
       "fusion-workbench-conventions.md",
       "user-facing-output.md",
       "critical-stance.md",
-      "protected-path-discipline.md",
     ]) {
       expect(out.some((l) => l.endsWith(`/rules/${f}`)), `emits ${f}`).toBe(true);
     }
@@ -418,7 +417,9 @@ describe("emit_if_exists: a missing always-on rule file is skipped silently (set
     const r = runStripped("reconciler");
     expect(r.status).toBe(0);
     const out = lines(r.stdout);
-    expect(out.some((l) => l.endsWith("/rules/protected-path-discipline.md"))).toBe(true);
+    // The LAST always-on emission, so its presence proves the block ran to the
+    // end rather than dying partway after the missing file.
+    expect(out.some((l) => l.endsWith("/rules/critical-stance.md"))).toBe(true);
   });
 });
 

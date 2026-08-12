@@ -135,12 +135,13 @@ DRIFT_EVENT_TYPES = {"state_drift"}
 # INDEPENDENT CAPS, NOT ONE SHARED BUDGET.
 #
 # The classes arrive at very different rates. A block or a churn warning is
-# rare and each one is individually worth reading. An advisory is emitted once
-# per exempted write, so a curation session with FUSION_ALLOW_RULES_WRITE set —
-# the session the flag exists for — emits one per file it rewrites. Under a
-# single shared budget, thirty rewritten rule files are thirty advisory rows and
-# every guard_block, guard_halt and churn_critical older than them is off the
-# panel. That is the failure guard.ts already refuses to
+# rare and each one is individually worth reading. An advisory is emitted per
+# guarded tool call for as long as its cause stands — a project whose
+# fusion-guard.json carries a wrong-typed key, or the retired guard.protectedPaths
+# key, gets one on every single call until the line is edited. Under a single
+# shared budget, one un-fixed configuration line is an unbounded stream of
+# advisory rows and every guard_block, guard_halt and churn_critical older than
+# them is off the panel. That is the failure guard.ts already refuses to
 # cause with guard_allow, arriving through a different door.
 #
 # So the warning class keeps its full 30 whatever the other classes do, and each
@@ -148,10 +149,10 @@ DRIFT_EVENT_TYPES = {"state_drift"}
 # anything; the worst case is a taller panel.
 #
 # 8 for advisories, deliberately a minority of the panel. What an advisory row
-# has to tell the user is "your override is live, and here is what it bought" —
-# one row establishes that, and a handful gives the shape of the burst. Eight
-# shows a small curation session in full and enough of a large one to recognise
-# the pattern, while leaving the panel still legible as a warnings panel at full
+# has to tell the user is "the guard set something aside, and here is what" —
+# one row establishes that, and a handful gives the shape of the repetition.
+# Eight shows a small burst in full and enough of a long one to recognise the
+# pattern, while leaving the panel still legible as a warnings panel at full
 # advisory load. The complete record is in events.jsonl, which is append-only
 # and where an exhaustive audit belongs; the panel is the 30-row window, and the
 # window is the scarce thing.
