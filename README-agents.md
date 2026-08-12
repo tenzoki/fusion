@@ -37,7 +37,7 @@ Since v4.0.0 the **Writes** column names artifact *kinds*, not fixed root paths.
 | `analyst` | Document study and problem analysis — comparative, gap, risk, feasibility, impact | Anything | `analyses/`, `issues/`, `history/` | Analysis report + issue files |
 | `editor` | Produce-only Redakteur — writes, revises, translates (en↔de), and renders **customer-ready deliverables**; branded decks via `dl-brand-pptx` + `pptx`. The dispatch must name the target language (`**Deliverable language:** <de|en>`); there is no default and the agent halts without it | Anything | **Project-side deliverables** (Markdown, branded pptx, translations), `history/` (session log only) | Finished deliverable + history log |
 | `orchestrator` | Automates multi-task work sessions: runs Turns of execution, review, and reconciliation until the Directive converges or a circuit breaker fires | Anything | Dispatches agents, creates commits, writes `history/` | Progress report + commits + updated tracking files |
-| `playmaker` | Circle portfolio management — ranks anticipated Circles, proposes next activation, detects cycles, flags parent-Grounding-stale | All of `fusion-workbench/`, `CLAUDE.md`, codebase | `circles/<stamp>-<slug>/_a_circle.md`, `portfolio.md`, `history/` | Updated Circle records + portfolio brief + history log |
+| `playmaker` | Circle portfolio management — ranks anticipated Circles, proposes next activation, detects cycles, flags parent-Grounding-stale; also consolidates the shared backlog store (names duplicates, tells a defect from an idea, ranks the entries) and recommends which entry should become a Circle | All of `fusion-workbench/`, `CLAUDE.md`, codebase | `circles/<stamp>-<slug>/_a_circle.md`, `portfolio.md`, `history/` | Updated Circle records + portfolio brief + history log |
 
 **What decides the `coder` / `ontocoder` split is the file's role, not its extension.** `agents/orchestrator.md` `## Agent Routing Table` is the authority for it: a `.json` or `.toml` that configures the build or declares the project's dependencies (`package.json`, `Cargo.toml`, `tsconfig.json`) is the `coder`'s, and the same extension holding ontology entries, manifest data or a schema is the `ontocoder`'s. Stated once here rather than as an exception clause in each row, so a new build manifest or a new data format needs no edit to the table.
 
@@ -201,7 +201,7 @@ In a consuming project, drop a markdown file into `./rules/` whose name contains
 | `/fusion:commit` | `skills/commit/SKILL.md` | Stages, generates a conventional-commit message from the diff, asks the user to confirm, then commits |
 | `/fusion:archive` | `skills/archive/SKILL.md` | Archives completed/aged workbench files into `fusion-workbench/archive/<YYMMDD-HHMM>-<slug>/` |
 | `/fusion:log-activity` | `skills/log-activity/SKILL.md` | Scans project activity and generates/updates the activity log |
-| `/fusion:memo` | `skills/memo/SKILL.md` | Appends a memo to the user's personal memo log in `fusion-workbench/shared/memos/` |
+| `/fusion:memo` | `skills/memo/SKILL.md` | Appends a memo to the user's personal memo log or a task to the task list, both in `fusion-workbench/shared/memos/`; or files an idea as a new backlog entry in `fusion-workbench/shared/backlog/` |
 | `/fusion:cadence` | `skills/cadence/SKILL.md` | Digests the session histories, the activity log, and git into three ranked topic lists — since yesterday, last 7 days, and recurring themes by churn — written to `fusion-workbench/shared/memos/cadence-<username>.md` (overwritten each run) |
 | `/fusion:revise-claude-md` | `skills/revise-claude-md/SKILL.md` | Revises `CLAUDE.md` with learnings discovered during the current session (three-pass: add / update / prune) |
 | `/fusion:unlock` | `skills/unlock/SKILL.md` | Writes a permissive `.claude/settings.local.json` so future sessions skip per-tool approval prompts |
@@ -229,7 +229,8 @@ fusion-workbench/
 │   ├── planning/  issues/  decisions/  history/  reviews/  analyses/
 │   ├── investigations/         # investigator output — shared-only
 │   ├── consult/                # consultant reports — shared-only
-│   └── memos/                  # personal memo logs — shared-only
+│   ├── memos/                  # personal memo logs — shared-only
+│   └── backlog/                # ideas not yet units of work — shared-only
 ├── portfolio.md                # playmaker output
 └── tasklist.md                 # taskplanner output (dependency-ordered work queue)
 ```

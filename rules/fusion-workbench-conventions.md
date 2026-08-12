@@ -34,7 +34,7 @@ fusion-workbench/
 │       ├── reviews/                   # codereview + ontoreview + conceptreview, merged
 │       └── analyses/
 ├── shared/                            # everything with no Circle affiliation
-│   ├── planning/                      # specs and plans written with no Circle active
+│   ├── planning/                      # specs and plans written with no Circle in scope
 │   ├── issues/
 │   ├── decisions/
 │   ├── analyses/

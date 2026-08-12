@@ -100,7 +100,7 @@ The directory is `YYMMDD-HHMM-<directive-slug>/` and the record inside it is `_S
 
 **`Active spec/plan:` and `Active session history:` hold workbench-relative paths, not bare filenames.** In the ordinary case the path points inside the Circle (`circles/260716-1847-umbau/planning/260716-1910_p_plan-foo.md`) and looks redundant. It is not, because the cross-store case is real and routine:
 
-- A spec written before the Circle existed lands in `shared/planning/` — every `/fusion:direct` run and every shaper run in anticipated-circle mode produces one, since with no Circle active every `OUT_*` points at `shared/` (invariant 1).
+- A spec written with **no Circle in scope** lands in `shared/planning/`, and a Circle created later adopts it — one shared spec can serve several Circles at once. (Anticipated-circle mode no longer produces one: it creates the Circle first and writes inside it.)
 - A migrated pre-v4 Circle names a plan that the migration moved to `shared/planning/`, correctly: unknown origin means `shared/` (Origin Rule, corollary 1). The file genuinely is not in the Circle, and rewriting the field to claim otherwise would point it at nothing.
 
 A path resolves in both cases; a bare filename resolves only in the first, and fails silently in the second — the consumers (`/fusion:circle-stash`'s best-effort lookup, playmaker's `portfolio.md` rendering, the orchestrator's resume) all degrade without announcing it. This does not weaken the container premise: a Circle still *holds* its artifacts, and the Origin Rule still decides which. The field merely reports where the file is rather than assuming it.

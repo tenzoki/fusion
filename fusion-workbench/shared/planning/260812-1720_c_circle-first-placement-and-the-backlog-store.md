@@ -1,7 +1,7 @@
 # Implementation Plan: the Circle comes first, and the backlog store the playmaker keeps
 
 **Date:** 2026-08-12
-**Status:** Draft
+**Status:** Complete — steps 1–11, 13 and 14 done; step 12 did not run (its gate answered *leave it*, so the migration moves nothing).
 **Spec:** none. Planned from two answered decision records that are one design:
 `shared/decisions/260812-0254_*_where-do-a-circles-spec-and-plan-belong-when-the-circle-exists-before-them.md`
 and `shared/decisions/260812-0254_*_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md`,
@@ -462,12 +462,17 @@ than executable behaviour, go to `ontocoder`.
       The Circle-existence question was answered in favour of the "first write" reading step 8
       was already written for
       (`shared/decisions/260812-1720_*_when-exactly-does-the-anticipated-circle-come-into-existence.md`).
-      **Steps 12 and 13 therefore do not run.** The verifier was still built and the baseline
-      still taken, for the reason that survives the answer: nobody had counted the workbench's
-      dangling citations, and that number is worth having on its own.
+      **Step 12 therefore does not run. Step 13 does, and the answer is why** — this bullet said
+      "steps 12 and 13" and was wrong (see the 260812-2200 reconciliation entry). The move
+      question's answer carries a constraint of its own: *"whatever is chosen must be recorded on
+      the file or the Circle record, not only here"*, and step 13 is the only step that performs
+      that recording. Reading the answer as cancelling both steps would have marked the decision
+      `_i_` against nothing on disk. The verifier was still built and the baseline still taken, for
+      the reason that survives the answer: nobody had counted the workbench's dangling citations,
+      and that number is worth having on its own.
     - Dependencies: 1
 
-12. **Execute the move, if the gate says move**
+12. [NOT RUN — gate answered *leave it*] **Execute the move, if the gate says move**
     - Executor: `ontocoder`
     - Files: `fusion-workbench/shared/planning/260717-1918_c_skill-glob-nomatch-zsh-hardening.md`
       into `fusion-workbench/circles/260716-1847-workbench-umbau/planning/`, plus every file the
@@ -497,7 +502,7 @@ than executable behaviour, go to `ontocoder`.
       manifest missed. The guard is not a factor: the protected-path half was removed earlier
       today and never covered the workbench in any case.
 
-13. **Record what stayed, and why**
+13. [DONE] **Record what stayed, and why**
     - Executor: `ontocoder`
     - Files: the six files in `shared/planning/` that stay, and the two answered decision records
     - Changes: append one line to each staying file's header area naming its measured origin,
@@ -506,9 +511,12 @@ than executable behaviour, go to `ontocoder`.
       recorded reason, so the next reader does not re-open the question. Then walk both decision
       records from `_a_` to `_i_` with `Implemented:` lines citing the commits, per
       `rules/fusion-workbench-conventions.md` `## State Markers — decisions`.
-    - Dependencies: 12
+    - Dependencies: 11 (the gate). **Not** 12: the recording is what the gate's answer requires
+      whichever way it went, and it is the whole of the migration's product when the answer is
+      *leave it*.
+    - **As executed, one note rather than seven** — see the 260812-2200 reconciliation entry.
 
-14. **Bring the surrounding text up to the new placement rule**
+14. [DONE] **Bring the surrounding text up to the new placement rule**
     - Executor: `coder`
     - Files: `rules/circle-records.md`, `CLAUDE.md`, `README-agents.md`,
       `.claude-plugin/plugin.json`
@@ -599,7 +607,7 @@ The suite must be green at every commit boundary (`cd hooks && npm test`).
 Two of these are filed as decision records, because they bind work beyond this plan. The third is
 this plan's alone and stays here.
 
-- [ ] **Does "the Circle exists before the shaper runs" mean before the first question, or before
+- [x] **Does "the Circle exists before the shaper runs" mean before the first question, or before
       the first write?** The decision's literal words say "runs". This plan implements "writes",
       because a slug derived before any clarification is a worse slug, and an abandoned
       clarification would leave an empty Circle directory behind. The two readings differ only in
@@ -607,15 +615,16 @@ this plan's alone and stays here.
       `$OUT_DECISION/260812-1720_o_when-exactly-does-the-anticipated-circle-come-into-existence.md`.
       **Step 8 is written for the "first write" reading and must be revisited if the user chooses
       the other.**
-- [ ] **Does the migration reverse the recorded promotion of the zsh-glob plan out of its
+- [x] **Does the migration reverse the recorded promotion of the zsh-glob plan out of its
       Circle?** `circles/260716-1847-workbench-umbau/_c_circle.md:49` records that the plan was
       lifted to `shared/planning/` at closure, because it declares its own Directive and is
       independent follow-on work. That is a substantive argument, and it is also the only
       promotion step in the workbench, which the Origin Rule tolerates but does not encourage.
       Filed as
       `$OUT_DECISION/260812-1720_o_does-the-circle-first-migration-reverse-a-recorded-promotion-out-of-a-circle.md`.
-      **This is step 11's gate and step 12's only input. Steps 12 and 13 do nothing if the answer
-      is "leave it".**
+      **This is step 11's gate and step 12's only input. Step 12 does nothing if the answer is
+      "leave it"; step 13 still runs, because the answer has to be recorded somewhere a reader
+      looks.** Answered 260812-1745: leave it.
 - [ ] Should the citation verifier from step 11 become a standing gate over the workbench, rather
       than a one-shot migration tool? The reference-resolution lint deliberately excludes
       `fusion-workbench/` today, and that exclusion is the reason 91 of 184 citations to seven
@@ -689,3 +698,61 @@ different rule, so this neither confirms nor contradicts it — it is the same o
 measured mechanically.
 
 **No citation was rewritten and nothing was moved.** Steps 12 and 13 do not run.
+
+**260812-2200 (coder, steps 13 and 14) — one note, not seven, and one justification corrected
+rather than deleted.**
+
+*Step 13.* The plan asks for "one line to each staying file's header area". Six of the seven got
+nothing, deliberately. Their reason is the Origin Rule's ordinary case — no Circle was active, the
+sibling history in `shared/history/` witnesses it — and a rule that already explains a file does not
+need the file to repeat it; seven identical notes would be thoroughness theatre and six of them
+would age into text nobody trusts. The seventh, `260717-1918_*_skill-glob-nomatch-zsh-hardening.md`,
+carries a header paragraph, because its reason existed in two places a reader of *that file* never
+opens: the closed Circle's `## Closure note` and the decision record. It now says where the plan
+came from, that the promotion was deliberate and recorded, that the Circle-first change confirmed
+rather than reversed it, and — in as many words — do not move this file.
+
+Three placements were weighed. The **conventions file's Origin Rule** was rejected twice over: it
+already carries the promotion clause the exception rests on, so it would be restating its own rule,
+and it ships to every consuming project, where one fact about *this* workbench is noise paid
+sixteen times a session. The **Circle record** was rejected because it already answers the question
+at its `## Closure note`; a reader who is there is not the reader who is lost. The **file** was the
+only candidate where the question is asked and the answer is absent.
+
+Both decision records moved `_a_` → `_i_`. `when-exactly-does-the-anticipated-circle-come-into-existence`
+cites `3c6ec4e` (the rule text the answer demanded) and `406ec0d` (the shaper). The promotion record
+cites a `<path>` rather than a hash, which the convention permits and which is the honest form here:
+its realisation is the note, and the note is uncommitted at the time of writing.
+
+*Step 14.* One instruction was not followed. The plan says to **delete** the first justification for
+`Active spec/plan:` holding a path, "since a spec written before its Circle no longer lands
+elsewhere". That premise is false, and the workbench disproves it: four Circle records — `curator`,
+`guard-bash-inspection`, `guard-rules-write`, `rule-provenance-header` — name
+`shared/planning/260801-1122_*_spec-normative-consolidation.md` as their spec, one shared spec
+serving four Circles, none of them a migrated pre-v4 case. What the Circle-first change falsified is
+the bullet's *mechanism* clause ("every `/fusion:direct` run and every shaper run in
+anticipated-circle mode produces one"), not its claim. Deleting the bullet would have left the field
+justified by pre-v4 migration alone, which does not cover those four, and would have orphaned the
+same claim in `agents/orchestrator.md:266`. The bullet was rewritten instead: same reason, current
+mechanism, +25 bytes.
+
+`agents/orchestrator.md:266` was checked rather than inherited, and step 8's executor was right to
+leave it. "A spec written before the Circle existed legitimately lives in another store" is true
+under shaper mode 1 and has four live instances. It stays.
+
+*Corpus.* `rules/fusion-workbench-conventions.md` **+2 bytes** — `shared/planning/`'s tree comment
+read "written with no Circle active", which step 3's own restatement of invariant 1 ("no Circle **in
+scope**") falsified in the same file: under a `<circle-dir>` target a plan lands in a Circle with
+none active. One word. `rules/circle-records.md` +25 bytes across its three agents. Everything else
+went to files no agent loads.
+
+*Beyond the plan's file list.* Both READMEs' workbench trees listed three shared-only kinds and
+omitted `backlog/`; `README.md`'s and `README-agents.md`'s `/fusion:memo` lines named only the memo
+log. Corrected — the enumerations step 5 taught were the code ones, and these two are the prose half
+nobody's step owned.
+
+*Left for the release.* `.claude-plugin/plugin.json` is at `8.1.0`. The other three version surfaces
+`CLAUDE.md` `## Release process` enumerates — the marketplace entry, `install.sh`'s `FUSION_REF`
+header example and `README.md`'s pin example — still read `v8.0.0`, correctly: `v8.1.0` is not
+tagged yet, and pointing a documented pin at a tag nobody pushed is the drift that line warns about.
+They move when the tag does.

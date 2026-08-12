@@ -3,6 +3,20 @@
 **Date:** 2026-07-17
 **Status:** Complete — verified retroactively at HEAD `cde5319`; see Reconciliation Log.
 **Spec:** none — planned from the defect issue `fusion-workbench/shared/issues/260717-1903[o]-skill-shell-scripts-assume-bash-glob-abort-under-zsh.md`
+**Origin — why this plan sits in `shared/planning/` and not in the Circle that caused it.** It was
+written while Circle `260716-1847-workbench-umbau` was active: its sibling planner session history
+is `circles/260716-1847-workbench-umbau/history/260717-1918-planner-session.md`, written by the
+same run under the same resolver call, so by the Origin Rule this plan's origin is that Circle. It
+was **promoted** to `shared/planning/` at the Circle's closure, deliberately and with the reason
+recorded at the time (`circles/260716-1847-workbench-umbau/_*_circle.md` `## Closure note`): it
+declares its own Directive and is independent follow-on work rather than part of the closed
+Circle. That is the Origin Rule's own promotion clause — *"an explicit, recorded move from a Circle
+to `shared/`"* — and this is its only instance in this workbench. The Circle-first placement change
+of 260812 re-examined the promotion and confirmed it rather than reversing it; see
+`shared/decisions/260812-1720_*_does-the-circle-first-migration-reverse-a-recorded-promotion-out-of-a-circle.md`.
+**Do not move this file into the Circle.** Every other file in `shared/planning/` is there because
+no Circle was active when it was written, which its own sibling history in `shared/history/`
+witnesses; this one is the exception, and this paragraph is the reason it is not a mistake.
 
 ## Directive
 

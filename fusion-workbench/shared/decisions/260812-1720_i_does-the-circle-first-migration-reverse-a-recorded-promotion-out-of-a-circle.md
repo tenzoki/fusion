@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** implemented
 **Filed by:** planner
 **Cross-references:** `shared/decisions/260812-0254_*_where-do-a-circles-spec-and-plan-belong-when-the-circle-exists-before-them.md` (the answered decision that ordered the migration); `circles/260716-1847-workbench-umbau/_c_circle.md` line 49 (the recorded promotion); `shared/planning/260717-1918_*_skill-glob-nomatch-zsh-hardening.md` (the file); `rules/fusion-workbench-conventions.md` `## Origin Rule (Herkunftsregel)`, final paragraph
 
@@ -119,3 +119,10 @@ record.
 ---
 Answered: this record `## Answer, 260812-1745` — the file stays, the promotion is recorded as the
 Origin Rule's own tolerated exception, and the migration moves nothing.
+Implemented: `shared/planning/260717-1918_*_skill-glob-nomatch-zsh-hardening.md`, header `**Origin
+— why this plan sits in shared/planning/ …**` — the file stays, and the promotion is now recorded
+on the artifact a reader opens, not only in this record and the closed Circle's `## Closure note`.
+Nothing was moved and no citation was rewritten, so the answer's "the migration moves nothing" is
+realised by an addition and no deletion. The six other files in `shared/planning/` carry no note:
+their sibling histories in `shared/history/` witness that no Circle was active, which is the
+Origin Rule's ordinary case and needs no annotation to be legible.
