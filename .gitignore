@@ -33,6 +33,7 @@ bin/*
 !bin/fusion-review-coverage
 !bin/fusion-staging-drift
 !bin/fusion-turn-budget
+!bin/fusion-protected-paths
 *.exe
 # Generated protobuf (rebuild from .proto)
 *.pb.go
