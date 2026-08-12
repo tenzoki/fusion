@@ -1,0 +1,116 @@
+The guard and its configuration must be simplified, project-settable, and defaulted to fit — or not shipped to consumers at all
+
+---
+User request, 260812, in his words: guards and guard configuration must be simplified and easily
+set per project, the defaults must fit, and it is worth considering **not shipping the mechanism to
+consuming projects at all**, since it appears to matter only for developing the plugin itself.
+
+The evidence below was gathered in one night, most of it by reading the largest consuming project
+for the first time in its 143-day life.
+
+---
+**Witness:** the user, plus measurements in `/Users/k1/Projects/productive/unite-co-creator`
+**Severity:** high — this is the largest measured cost fusion imposes on a consumer
+**Affected:** `hooks/config.json`, `hooks/lib/config.ts`, `templates/fusion-guard.json`,
+`skills/setup/SKILL.md`, `hooks/guard.ts`, `hooks/tracker.ts`, `hooks/lib/protected-snapshot.ts`
+**Cross-references:** `shared/analyses/260812-0303-the-largest-consumer-read-for-the-first-time.md`;
+`shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`;
+`shared/issues/260812-0758_o_a-consuming-projects-guard-config-goes-stale-…`;
+`shared/issues/260812-0758_o_fusion-setup-is-gitignored-in-a-consumer-…`
+
+## The mechanism is enforced only where it is wrong
+
+The shipped list is `agents/**`, `rules/**`, `.claude/rules/**`, `hooks/config.json`,
+`hooks/hooks.json`, `settings.json`, `bin/monitor`, `.claude-plugin/plugin.json`. Every one of those
+patterns names something in **fusion's own repository**. Their purpose there is real and narrow: an
+agent must not edit the prompts and rules that govern it.
+
+In fusion's own repository the guard **stands down**. Both halves: the write-tool deny on
+`isFusionPluginCwd()` (`hooks/guard.ts:405`) and the protected-path measurement on
+`isFusionPluginRoot(workbenchRoot)` (`hooks/tracker.ts:1161`).
+
+So the list is in force everywhere **except** the one tree where its patterns mean what they say.
+In a consuming project `rules/**` matches that project's engineering documentation, `agents/**`
+and `.claude/rules/**` match whatever the project happens to keep there, and the remaining five
+paths do not exist at all.
+
+## What that cost one consumer, measured
+
+- **53 records exist only because agents may not write files the project owns.**
+- An invented task genre for unperformable work: `H:` hand-off, `X:` blocked.
+- A plan deliberately split around a single line of documentation.
+- Four rule-file defects open for over a week, because nobody was permitted to close them.
+- One agent that read `guard.ts` and then wrote through `Bash` instead.
+- One mandated manual paste that **deleted the passage it was sent to repair** — the only place in
+  this record where something is broken rather than merely blocked.
+- **Zero halts in 143 days**, and no recorded case of the guard preventing a mistake.
+
+The per-tool-call cost is real but small and is stated here so it is not mistaken for the damage:
+`protected-snapshot.ts` walks the tree and reads the **content** of every match, twice per tool
+call, before and after. In that project the list matches 15 files and 179,505 bytes, so roughly
+360 KB and 30 file reads per tool call. That is in the same class as the 593 ms all Setup helpers
+together consume. The damage is the 53 records, not the milliseconds.
+
+## The separation the design already provides, and did not use
+
+There are three configuration layers and the built-in one is already correct:
+`DEFAULTS.guard.protectedPaths` in `hooks/lib/config.ts` **is the empty list**. Only the plugin
+layer, `hooks/config.json`, supplies the eight patterns, and that is the layer every consumer
+inherits.
+
+That the per-project fill was the intent is visible one line further down: `categoryPaths` and
+`categorySensitivity` ship **empty**, as placeholders for a project to declare. `protectedPaths` is
+the one placeholder somebody filled with fusion's own values, and it was never emptied again.
+
+## Why no consumer ever narrowed it
+
+The repair is a hand edit to a file the guard itself protects, so no agent can make it. The
+workaround is a hand-off note an agent writes in thirty seconds. When the workaround is cheaper per
+instance than the fix, the workaround becomes the process — and in 143 days it did.
+
+Two further mechanisms keep a consumer from noticing at all. Nothing reports the **effective** list
+at any point; the seeded template deliberately does not restate it, and points at a file inside the
+install. And nothing notifies a project when fusion's default changes — the template presents that
+inheritance as a convenience: *"A path added to that default later protects this project too,
+without this file being touched."*
+
+## The decision this rests on, which must be answered before anything is built
+
+**Does a consuming project inherit any protected paths at all by default?** Three answers, and they
+are not variants of one another:
+
+1. **Empty the plugin layer.** One line. The built-in empty default takes effect, a project declares
+   what it wants, and the machinery stays available. Least disruptive, and it leaves a mechanism
+   that does nothing by default anywhere.
+2. **Do not ship the protected-path half to consumers.** The user's own suggestion. It is defensible
+   on the measurements: zero halts, no recorded prevention, stood down in the only tree where its
+   content is meaningful. What has to be said out loud is that this removes a capability nobody has
+   yet demonstrated a use for, which is a different claim from removing one that has failed.
+3. **Keep it as explicit opt-in**, with Setup asking once and writing the answer into
+   `fusion-guard.json`.
+
+The measurement design itself is **not** what is in question. Measuring what changed instead of
+predicting what a command will write was the right call, it was taken deliberately by the user on
+260807, and it replaced 12,923 lines carrying 21 documented residuals. Whatever is decided here,
+that design is not to be reopened.
+
+## Acceptance
+
+- A freshly set-up consuming project's **effective** protected list is either empty or something the
+  project explicitly chose. No project can end up governed by a list it never saw.
+- Setup **reports the effective list** it is running under, so inheritance is visible rather than
+  silent. This is the cheapest half of the whole record and it holds whichever option is chosen.
+- The seeded configuration cannot go stale in silence: either it carries the plugin version it was
+  seeded from, or its explanatory prose is replaced by a pointer to text that is maintained.
+- Setting the guard for a project is one edit in one file with one shape, and the file says what
+  the current behaviour is rather than what an earlier version's behaviour was.
+- fusion's own need — an agent must not edit the prompts that govern it — is either met where it is
+  actually needed, or dropped with that consequence stated.
+- Nothing in the fix requires an agent to write `fusion-guard.json`. It protects itself by design
+  and that stays.
+
+## Not in scope
+
+The escalation counter and the churn thresholds live in the same file and have their own open
+questions (`shared/analyses/260812-0251-four-mechanisms-purpose-bindingness-and-cost.md`). They ride
+along in any edit to this file, but simplifying the protected-path half does not decide them.
