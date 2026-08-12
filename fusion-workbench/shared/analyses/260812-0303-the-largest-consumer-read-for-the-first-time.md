@@ -1112,6 +1112,46 @@ machine, git-tracked, and unread.
 
 ---
 
+---
+
+## Provenance correction, 260812-1140: this was read on a stale checkout
+
+The user reports that the working copy read for this analysis is **behind his work machine by
+several commits**, and that on the current tree `unite-co-creator/fusion-guard.json` already reads:
+
+```json
+{
+  "guard": {
+    "protectedPaths": []
+  }
+}
+```
+
+Measured here: the local checkout's HEAD is `a460d7fa`, dated **2026-08-09 12:20**, on `main`
+against `origin/main`, so this reading is at least three days old. The file's own history shows one
+commit touching it (`3bb786da`), which is its seeding; the narrowing is newer than this checkout.
+
+**What this changes.** The claim that the list was never narrowed in 143 days is **false as of
+today**. The narrowing exists; it simply postdates the tree this analysis read. Every "as of now"
+statement about that project's configuration in this document must be read as "as of 260809".
+
+**What it does not change.** The 53 records, the invented `H:`/`X:` task genre, the plan split
+around a documentation line, the four rule-file defects, the agent that wrote through `Bash`, and
+the mandated paste that deleted its own target are all **history**, created during the 143 days
+before the narrowing. They happened, they are the cost, and they are why the narrowing happened.
+The zero-halts figure likewise covers a period that has already ended.
+
+**What is newly interesting, and nobody has measured it.** If the narrowing landed on the work
+machine, that project is now the only place where a fusion consumer runs with a declared empty
+list. What that changed for it — whether the make-work stopped, whether anything the guard was
+supposed to prevent then occurred — is exactly the evidence the plugin has never had, and it is one
+analysis away. It cannot be taken from this machine.
+
+**Method note for the next reading of a consuming project.** Record the target's HEAD and its date
+in the Scope section before reading anything, and state the age. This analysis did not, and the
+omission turned a three-day-old snapshot into a claim about the present. The same caveat applies to
+every timing, ratio and count in this document.
+
 ## Confidence and counter-evidence
 
 - The subject classification of 1,411 histories is a keyword rule with a measured 3.1 percent error
