@@ -377,11 +377,23 @@ describe("bin/fusion-paths", () => {
     it("emits neither to a shipped prompt that names neither", () => {
       // Emission stays per-consumer: adding a key to the resolver gives it to
       // nobody until a prompt asks for it.
-      for (const name of ["coder", "orchestrator", "playmaker", "shaper", "memo"]) {
+      for (const name of ["coder", "orchestrator", "shaper", "memo"]) {
         const p = parse(run(project, name).stdout);
         expect(p.OUT_BACKLOG, name).toBeUndefined();
         expect(p.SCAN_BACKLOG, name).toBeUndefined();
       }
+    });
+
+    it("gives playmaker the read key and withholds the write key", () => {
+      // The first shipped consumer of the store, and the asymmetry is the
+      // point: playmaker consolidates the backlog and files no entry, so it
+      // names `$SCAN_BACKLOG` and not `$OUT_BACKLOG`. Key derivation reads that
+      // off the prompt, which makes the write prohibition in `## Scope`
+      // mechanical rather than merely stated — a run that tried to write an
+      // entry would have no resolved path to write it to.
+      const p = parse(run(project, "playmaker").stdout);
+      expect(p.SCAN_BACKLOG).toBe("shared/backlog");
+      expect(p.OUT_BACKLOG).toBeUndefined();
     });
   });
 

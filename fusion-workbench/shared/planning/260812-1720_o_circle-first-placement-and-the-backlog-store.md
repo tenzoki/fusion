@@ -368,7 +368,7 @@ than executable behaviour, go to `ontocoder`.
      head naming what it is and that it awaits consolidation.
    - Dependencies: 5
 
-7. **Give the playmaker the backlog job**
+7. [DONE] **Give the playmaker the backlog job**
    - Executor: `coder`
    - Files: `agents/playmaker.md`
    - Changes: add `$SCAN_BACKLOG` to the read scope, a consolidation step between the current

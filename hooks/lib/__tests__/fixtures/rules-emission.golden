@@ -102,9 +102,9 @@
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9958
-  circle-records.md 10894
+  circle-records.md 11203
   workbench-stash-and-lock.md 12957
-  total 108387
+  total 108696
 
 [planner]
   agent-setup.md 3513
@@ -121,8 +121,8 @@
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9958
-  circle-records.md 10894
-  total 95430
+  circle-records.md 11203
+  total 95739
 
 [reconciler]
   agent-setup.md 3513
@@ -139,8 +139,8 @@
   user-facing-output.md 16784
   critical-stance.md 9958
   design-diagrams.md 5673
-  circle-records.md 10894
-  total 101103
+  circle-records.md 11203
+  total 101412
 
 [taskplanner]
   agent-setup.md 3513

@@ -121,6 +121,10 @@ A path resolves in both cases; a bare filename resolves only in the first, and f
 
 <Ordered list by playmaker rank. Top entry includes a one-paragraph rationale for the recommendation. Each entry: Circle directory name, Directive line, rank, dependencies summary.>
 
+## Backlog — ranked
+
+<Ranked `_o_`/`_p_` backlog entries. First line: `Recommended to shape: <entry path> — <rationale>`, then the `/fusion:direct <entry path>` invocation. Each entry: path, the idea in one line, rank; an entry carrying several ideas lists playmaker's proposed split indented under it.>
+
 ## Recently closed (_c_ / _b_)
 
 <Last 5 closed Circles. Each entry: Circle directory name, marker, Closure note one-liner.>
