@@ -16,7 +16,10 @@ out/
 # Build artifacts — Go (but keep shipped helpers).
 # WARNING: every shipped helper MUST be listed here as `!bin/<name>` or it
 # gets silently dropped from the plugin distribution. New helper added?
-# Add the exception line here AND verify with `git ls-files bin/`.
+# Add the exception line here AND verify with `git ls-files bin/`. Helper
+# REMOVED? Take its line out too — nothing checks that this list matches `bin/`,
+# so a stale exception sits here naming a file that does not exist and reads to
+# the next editor as a helper that failed to ship.
 bin/*
 !bin/monitor
 !bin/fusion-rules
@@ -33,7 +36,6 @@ bin/*
 !bin/fusion-review-coverage
 !bin/fusion-staging-drift
 !bin/fusion-turn-budget
-!bin/fusion-protected-paths
 *.exe
 # Generated protobuf (rebuild from .proto)
 *.pb.go

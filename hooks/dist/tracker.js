@@ -1,7 +1,7 @@
 /**
  * Compliance Guard — PostToolUse hook for Claude Code.
  *
- * Three jobs, in this order:
+ * Four jobs, in this order:
  *
  *   0. SESSION-STATE DRIFT. Compare `agentstate.yaml`, the active Circle's Turn
  *      log and this session's history file with the two records that cannot
@@ -33,16 +33,16 @@
  *      is the question the deleted branch policy answered wrong 24 times. See
  *      lib/staging-drift.ts and `measureStagingDriftForModel`.
  *
- *   1. MEASURE THE PROTECTED PATHS. Take a second fingerprint of every path on
- *      `guard.protectedPaths` and compare it with the one `guard.ts` recorded
- *      before the tool ran. Anything that changed is written back to what the
- *      before-fingerprint holds, the guard is halted, and the model is told
- *      which file and why. This is the guard's actual enforcement of those
- *      paths, and it replaced a classifier that tried to predict, from a shell
- *      command's text, which files the command would write. See
- *      lib/protected-snapshot.ts.
  *   2. CHURN. Record write-tool file mutations in the churn heatmap, emitting
  *      warning/critical events at the configured per-session thresholds.
+ *
+ * A job 1 sat between 0c and 2 until 2026-08-12: a second fingerprint of every path
+ * on `guard.protectedPaths`, compared against the one `guard.ts` took before the
+ * tool ran, with anything that changed written back and the guard halted. It was
+ * the enforcing half of the protected-path mechanism, and the whole mechanism
+ * was removed — see `guard.ts`'s header for the measurement that decided it.
+ * Nothing replaced it: a protected path is not watched, not restored and not
+ * reported, by this hook or any other.
  *
  * ## What a PostToolUse hook can and cannot do
  *
@@ -56,49 +56,47 @@
  * back to the model in a system-reminder reading `PostToolUse:Bash hook
  * additional context: <text>`.
  *
- * That distinction is load-bearing rather than trivia. The binding decision
- * makes the EXPLAINING refusal a constraint, because an agent that meets an
- * unexplained failure works around it, and that failure mode is the reason the
- * rule file exists. A revert the model never hears about would satisfy the
- * mechanism and violate the constraint.
+ * That distinction is load-bearing rather than trivia. It was established for
+ * the removed job 1, where a revert the model never heard about would have
+ * satisfied the mechanism and violated the constraint that an agent must never
+ * meet an unexplained failure. The three measurements that remain say nothing
+ * ELSE tells the model — a frozen `agentstate.yaml`, an unreviewed commit range,
+ * a record the commit did not carry — so the channel is the whole of their
+ * effect rather than an explanation attached to one.
  *
  * ## The reply is written before anything records it
  *
- * The enforcement — the restore — has to happen first; it is what the sentence
- * is about. Everything after that is a report: the `guard_block` rows, the halt
- * record, the churn heatmap. Each goes through `answer` or `bestEffort` from
+ * The reply goes out first and everything after it is a report: the event rows
+ * and the churn heatmap. Each goes through `answer` or `bestEffort` from
  * lib/fail-open.ts, so none of them can discard the sentence on its way out. The
  * churn half used to run ahead of the reply and did exactly that; that module's
  * header carries the class and the measurements.
  *
  * Protocol: reads JSON from stdin, writes {} to stdout, or a
- * `hookSpecificOutput.additionalContext` envelope when something was restored.
+ * `hookSpecificOutput.additionalContext` envelope when a measurement has
+ * something to say.
  */
 import { resolve, sep } from "node:path";
 import { TRACKER_NOISE_FILES, analyzeChurn, churnKey, loadChurn, recordChange, saveChurn, } from "./lib/churn.js";
-import { loadConfig, projectDeclaredProtectedPaths } from "./lib/config.js";
+import { loadConfig } from "./lib/config.js";
 import { matchesAny } from "./lib/paths.js";
 import { isFusionPluginRoot } from "./lib/self-detect.js";
 import { emitEvent } from "./lib/events.js";
 import { answer, bestEffort, failOpen } from "./lib/fail-open.js";
-import { loadEscalation, raiseHalt, saveEscalation, clearHaltCommand, } from "./lib/escalation.js";
-import { ABSENT, consumeSnapshot, diffSnapshots, measurementRoot, restore, takeSnapshot, } from "./lib/protected-snapshot.js";
-import { preserveObserved } from "./lib/reverted-copy.js";
-import { projectRelative } from "./lib/project-relative.js";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 import { foldCase } from "./lib/paths.js";
-import { isObservedRulePath, rulesWriteDetail, rulesWriteExemptionActive, } from "./lib/rules-write-exemption.js";
 import { driftSentence, lastReported, measureStateDrift, recordReported, } from "./lib/state-drift.js";
 import { coverageSentence, lastReportedCoverage, measureReviewCoverage, recordReportedCoverage, } from "./lib/review-coverage.js";
 import { headMoved, measureStagingDrift, readStagingState, stagingSentence, writeStagingState, } from "./lib/staging-drift.js";
 /**
  * The four tools whose payload NAMES the path they write.
  *
- * Two readers, and the second is the reason this is a module-level constant
- * rather than a local list: `trackChurn` uses it to decide what counts as a file
- * mutation, and `narrowingTarget` uses it to decide whether the tool payload can
- * be trusted to name the target at all. Two copies of this list could disagree,
- * and the disagreement would be a silent change in what the guard reverts.
+ * ONE reader now: `trackChurn`, which uses it to decide what counts as a file
+ * mutation. It was module-level because a second reader in the removed job 1
+ * (`narrowingTarget`) had to agree with it about which payloads name their
+ * target, and a disagreement between two copies would have been a silent change
+ * in what the guard reverted. It stays module-level because it is a fact about
+ * Claude Code's tool surface rather than about churn.
  */
 const WRITE_TOOLS = ["Write", "Edit", "MultiEdit", "NotebookEdit"];
 /** Extract file path(s) from tool input. */
@@ -133,401 +131,20 @@ function respond(additionalContext) {
         };
     process.stdout.write(JSON.stringify(body) + "\n");
 }
-/**
- * Put one path back to what it held before this tool call.
- *
- * ## Why git is not involved any more
- *
- * This used to be `git checkout HEAD -- <path>`, and `HEAD` is not the state the
- * measurement measured. The gap between the two produced five branches — in git
- * and clean, in git with the human's work already staged, untracked, created by
- * this very call, no repository at all — of which one discarded human work and
- * three could not restore anything. The fingerprint now carries the content, so
- * there is one branch: write back what was there. See
- * `lib/protected-snapshot.ts` `restore`, which owns it.
- *
- * ## A failure is reported, never swallowed
- *
- * The worst outcome available here is a guard that reports a violation as
- * handled while the modified file stays modified. `restore` throws on any I/O
- * failure — a path that is now a directory, a read-only filesystem — and this is
- * the one place that turns the exception into a sentence the model gets. It is
- * not a fail-open catch: nothing continues as though the restore had worked.
- */
-function restorePath(root, change) {
-    try {
-        restore(root, change);
-        return null;
-    }
-    catch (err) {
-        return err instanceof Error ? err.message : String(err);
-    }
-}
-/**
- * Keep what the path was observed to hold, before anything is written back.
- *
- * The failure is CARRIED rather than thrown, because a copy that could not be
- * made must not stop the revert: the guard's job is still to put the path back,
- * and a preservation failure is one more thing to say in the sentence, not a
- * reason to leave a protected path rewritten. `describe` says which of the three
- * happened — kept, nothing to keep, or keeping failed — so no outcome claims a
- * recoverable revert it cannot back up.
- */
-function preserve(root, rel, observed) {
-    try {
-        return { path: preserveObserved(root, rel, observed), error: null };
-    }
-    catch (err) {
-        return { path: null, error: err instanceof Error ? err.message : String(err) };
-    }
-}
-/**
- * The one path this tool call is known to have written — or null when there is
- * no such knowledge and every changed protected path has to be written back.
- *
- * ## What is decidable here, and what is not
- *
- * The hook cannot tell who changed a protected path: its inputs are two
- * fingerprints, a tool name and a tool payload, and none of them separates the
- * agent's write from the user's editor, a watcher or a second session
- * (`260809-1107`). One narrower question IS decidable. For the four write tools
- * the payload names the file the tool writes, and a write tool has no second
- * write — so a protected path that changed while being something OTHER than the
- * payload's path was moved by something that is not this tool call.
- *
- * The user decided at the plan gate on 2026-08-09 that this evidence travels
- * into the revert and not only into the message
- * (`shared/decisions/260809-1527_*_should-the-revert-narrow-to-the-payload-path-for-the-four-write-tools.md`,
- * option 2). What is not written back is still preserved, still named in the
- * sentence, still recorded as a `guard_block`, and still halts.
- *
- * ## `Bash` is answered with null, and that is the whole of the bound
- *
- * The narrowing rests on the payload naming the target. A `Bash` payload names
- * nothing of the kind — the command's text is exactly the input v6.0.0 stopped
- * reading, because which files a command writes is not decidable from it. So
- * `Bash` keeps the full revert of every changed protected path, and extending
- * this function to it would bring back the undecidable question by the back
- * door. Obligation 4 of that decision record puts a test on this sentence.
- *
- * Null is also the answer when a write tool arrives with no usable path in its
- * payload. That direction is deliberate: an unreadable payload is the absence of
- * evidence, and the absence of evidence must not spare a path from being written
- * back.
- *
- * ## Two coordinate spaces, and the payload is in the wrong one
- *
- * A payload path is absolute or relative to `process.cwd()`; a protected path is
- * relative to the measurement root, which may be an ancestor of it. `resolve`
- * lifts the payload into an absolute path in the session's space and
- * `projectRelative` puts it into the root's — the same normalisation the
- * PreToolUse write-tool check uses, so the two halves of one tool call read one
- * path the same way. A payload landing outside the root comes back absolute,
- * matches no protected path, and therefore spares nothing that was measured.
- */
-function narrowingTarget(input, root) {
-    if (!WRITE_TOOLS.includes(input.tool_name))
-        return null;
-    const raw = extractFilePath(input.tool_input);
-    if (raw === null)
-        return null;
-    return projectRelative(resolve(process.cwd(), raw), root);
-}
-/**
- * One human sentence per outcome, for the model and for the event log.
- *
- * ## What this sentence stopped claiming
- *
- * It used to read "was modified and has been restored to its content from before
- * this tool call", and the second half is still exactly right: the restore target
- * IS the content from before the call. What the surrounding message asserted, and
- * no longer does, is that the AGENT made the change — see `measureProtectedPaths`,
- * which now says in as many words that the guard measures a window and not an
- * author. The wording here is unchanged in that respect on purpose: it describes
- * what was measured and what was done about it, which is all the hook knows.
- *
- * What is added is the copy. A revert that names where the observed content was
- * kept is recoverable; one that does not is destruction, and the difference has
- * to reach the reader of the sentence and of `events.jsonl` alike.
- */
-function describe(outcome, toolName) {
-    const { change, verdict, reason, preserved, sparedBy } = outcome;
-    const what = change.kind === "created"
-        ? "was created"
-        : change.kind === "deleted"
-            ? "was deleted"
-            : "was modified";
-    // For a path that did not exist before, "put back" is a deletion. Saying
-    // "restored" there would describe the file as recovered when it is gone.
-    const undone = change.kind === "created"
-        ? "has been removed again — it did not exist before this tool call"
-        : "has been restored to its content from before this tool call";
-    // Three states, and the empty one is the deleted-path case: there were no
-    // observed bytes to keep, and the revert brought the content back rather than
-    // destroying any.
-    const kept = preserved.path !== null
-        ? ` The content it carried is preserved at ${preserved.path}.`
-        : preserved.error !== null
-            ? ` Its content could NOT be preserved: ${preserved.error}.`
-            : "";
-    if (verdict === "left-in-place") {
-        return (`${change.path} ${what}, and this ${toolName} call names ${sparedBy} — a different path — ` +
-            `so the change was NOT written back and is still on disk.${kept}`);
-    }
-    return verdict === "restored"
-        ? `${change.path} ${what} and ${undone}.${kept}`
-        : `${change.path} ${what} and could NOT be restored: ${reason}. The change is still on disk.${kept}`;
-}
-/**
- * Split the measured changes into the ones `FUSION_ALLOW_RULES_WRITE` covers and
- * the ones it does not.
- *
- * The flag is the one narrow permission in the protected-path policy, and it has
- * to reach the measurement or it stops meaning anything: after the classifier
- * goes, a rule file edited during a curation session is caught HERE, and
- * reverting it would take the flag back with no message saying so.
- *
- * Two arguments to the exemption and both are load-bearing. It is asked only
- * when the user actually set the flag, and the project's DECLARED entries —
- * never the effective list, which inherits the plugin's `rules/**` — decide
- * whether the project took the grant back for itself. See `isObservedRulePath`
- * for which gates apply to a measured path and why the others do not.
- */
-function splitOffExempted(changes, config) {
-    if (!rulesWriteExemptionActive(process.env)) {
-        return { exempted: [], violations: changes };
-    }
-    const declared = projectDeclaredProtectedPaths(config);
-    const exempted = [];
-    const violations = [];
-    for (const change of changes) {
-        if (isObservedRulePath(change.path, declared))
-            exempted.push(change.path);
-        else
-            violations.push(change);
-    }
-    return { exempted, violations };
-}
-/**
- * Compare the protected paths against the fingerprint `guard.ts` took before
- * this tool ran; restore, halt and explain whatever moved.
- *
- * Returns the sentence to hand back to the model, or null when nothing changed
- * and there is nothing to say.
- *
- * ## No before-picture means no measurement
- *
- * A missing snapshot yields null rather than a comparison against `HEAD` or
- * against an empty snapshot. Both of those alternatives would revert changes
- * this tool call did not make — a rule file open in the human's editor is the
- * concrete case — and destroying human work is a far worse failure than missing
- * one violation.
- *
- * Four ways there is none, and "nothing was measured" is the right answer to all
- * four: the guard was disabled, the project has no workbench, this is the
- * plugin's own repository, or `guard.ts` could not write one on this call. The
- * last is the case `260809-1108` measured, and it used to be answered with the
- * PREVIOUS call's picture instead of with silence.
- *
- * ## The picture is CONSUMED, not merely read
- *
- * `consumeSnapshot` unlinks the file as it reads it, so the same before-picture
- * can never serve two measurements. Without that, a PostToolUse with no
- * PreToolUse in front of it measured the tree against a call that had already
- * ended, and reverted whatever had happened since — including work the guard had
- * already seen and accepted.
- *
- * There is no age check to go with it, deliberately. A tool call may legitimately
- * run for minutes, so a "too old" bound would silently skip the measurement for
- * exactly the long calls that change the most; the argument is in
- * `lib/protected-snapshot.ts`'s header.
- *
- * ## The root comes from `measurementRoot()`, and it is checked BEFORE the load
- *
- * The after-snapshot has to be taken in the same coordinate space as the before
- * one, so both halves read the root from the same function rather than each
- * asking `process.cwd()` — see its header for why that is the workbench root.
- *
- * The null check sits ahead of `loadSnapshot()` on purpose. A null root means a
- * stand-down (no workbench, or the plugin's own repository), and a snapshot file
- * left over from an earlier session would otherwise be compared against a
- * project this hook must not touch.
- *
- * ## Known residual: parallel tool calls
- *
- * `guard.ts` writes one snapshot file and `tracker.ts` consumes it. Two tool
- * calls running concurrently interleave those writes, so the picture a call
- * reads may be the one another call wrote. Claude Code offers no per-call
- * correlation key in the hook payload, so this is stated rather than solved.
- *
- * Single use narrows it in one respect and only one: the same picture can no
- * longer serve two measurements, so the second of two interleaved calls finds
- * nothing and measures nothing rather than comparing against a before-state that
- * was never its own. The exposure that remains is under-reporting, which was
- * already the shape of this residual. A change that IS seen is always a real
- * change to a protected path, so the revert is never wrong about the FILE when
- * it fires — only, per `260809-1107`, about who moved it.
- *
- * ## The observed content is kept before anything is written back
- *
- * The guard cannot tell the agent's write from a human editor's save inside the
- * window, so it can and does revert work nobody asked it to revert. That stays
- * true. What changed is that the bytes it wrote over are no longer gone:
- * `lib/reverted-copy.ts` keeps them under `.guard-state/reverted/`, and the name
- * of that copy goes into the sentence the model reads and into the `guard_block`
- * event. A revert that is recoverable is a different failure from one that is
- * not.
- *
- * The bytes come from the after-snapshot this function already took. Reading the
- * file again would be a second answer to a question the comparison has already
- * answered, and the two are free to disagree — the same reason `ProtectedChange`
- * carries `before` instead of looking it up a second time.
- *
- * ## What is written back narrows for the four write tools, and only for them
- *
- * See `narrowingTarget` for the decidable question and for why `Bash` is
- * excluded from it. Here is what follows: a path the narrowing spares is still
- * preserved, still described, still emitted as its own `guard_block`, and still
- * raises the halt. The only thing that changes is whether the bytes on disk are
- * overwritten — never whether the change is reported.
- */
-function measureProtectedPaths(input) {
-    const toolName = input.tool_name;
-    const config = loadConfig();
-    if (!config.guard.enabled)
-        return null;
-    const root = measurementRoot();
-    if (root === null)
-        return null;
-    const before = consumeSnapshot();
-    if (!before)
-        return null;
-    // Held in a name rather than passed straight through, because it is the one
-    // record of what each protected path was OBSERVED to hold during this call.
-    // Anything downstream that needs that value reads it from here; going back to
-    // the file would be a second answer to one question, free to disagree with the
-    // one the comparison used — the same reason `ProtectedChange` carries `before`
-    // instead of looking it up again.
-    const after = takeSnapshot(root, config.guard.protectedPaths);
-    const changes = diffSnapshots(before, after);
-    if (changes.length === 0)
-        return null;
-    const { exempted, violations } = splitOffExempted(changes, config);
-    // The same note the write-tool path records when the flag lets a write
-    // through, from the same function, so `events.jsonl` reads identically
-    // whichever route the write took. No escalation entry is pushed here: for a
-    // write-tool call `guard.ts` already recorded this grant on the PreToolUse
-    // side of the very same call, and a second entry would count one permission
-    // twice.
-    if (exempted.length > 0) {
-        // Best effort, and this one stands AHEAD of the restore: a throw here used
-        // to skip the enforcement entirely, leaving a protected path rewritten with
-        // no revert, no halt and nothing said — a worse outcome than the lost
-        // sentence the same class produces further down.
-        bestEffort("tracker", () => emitEvent("guard_advisory", toolName, exempted.length === 1 ? exempted[0] : undefined, rulesWriteDetail(exempted)));
-    }
-    // Every changed path was one the flag covers: nothing to restore, nothing to
-    // halt, and the advisory above is the whole record.
-    if (violations.length === 0)
-        return null;
-    const spared = narrowingTarget(input, root);
-    const outcomes = violations.map((change) => {
-        // Kept first, and from the after-snapshot rather than from the file: this is
-        // the last moment the observed content still exists anywhere.
-        const preserved = preserve(root, change.path, after.paths[change.path] ?? ABSENT);
-        // Folded, because the protected patterns are matched folded — an unfolded
-        // comparison would spare `RULES/x.md` from a payload naming `rules/x.md` on
-        // a case-insensitive volume, where the two are one file.
-        if (spared !== null && foldCase(change.path) !== foldCase(spared)) {
-            return {
-                change,
-                verdict: "left-in-place",
-                reason: "",
-                preserved,
-                sparedBy: spared,
-            };
-        }
-        const reason = restorePath(root, change);
-        return {
-            change,
-            verdict: reason === null ? "restored" : "restore-failed",
-            reason: reason ?? "",
-            preserved,
-            sparedBy: "",
-        };
-    });
-    // One `guard_block` per changed path, carrying the file and the cause, so a
-    // reader of `events.jsonl` can see WHICH files moved rather than only that
-    // something did. A path the narrowing spared gets one too — obligation 2 of
-    // the decision record: what is not reverted is never passed over in silence.
-    for (const outcome of outcomes) {
-        bestEffort("tracker", () => emitEvent("guard_block", toolName, outcome.change.path, describe(outcome, toolName)));
-    }
-    // The halt is raised outright, not counted toward the three-block threshold.
-    // A protected path was actually written; there is no "two more of these" to
-    // wait for. See `raiseHalt` in lib/escalation.ts.
-    //
-    // It is raised for a spared path exactly as for a reverted one — obligation 3
-    // of the decision record. The narrowing decides what is written back, never
-    // whether a measured change is a change.
-    const summary = outcomes.map((o) => describe(o, toolName)).join(" ");
-    const escalation = loadEscalation();
-    raiseHalt(escalation, "protected_path_measured", `Protected path changed during a ${toolName} call — ${summary}`, toolName, outcomes.length === 1 ? outcomes[0].change.path : undefined);
-    // The one best-effort step whose RESULT is read, and the one report that
-    // legitimately runs before the reply. `260809-2045` asked whether this write
-    // should be best effort at all: yes — an unwritable state directory must cost
-    // the halt record and not the sentence, because the sentence is what stops an
-    // agent working around a change it cannot explain (see this file's header).
-    // But the sentence would then claim a halt that was never written, so the
-    // failure is carried into the wording rather than swallowed under it.
-    const haltError = bestEffort("tracker", () => saveEscalation(escalation));
-    bestEffort("tracker", () => emitEvent("guard_halt", toolName, undefined, `Halt raised by the protected-path measurement (${outcomes.length} path(s) changed)`));
-    // The `cd` is not decoration: the halt was just recorded under `root`, and the
-    // clearing script locates it by walking up from its own working directory. Run
-    // from anywhere else it reports "not halted" and clears nothing — see
-    // `clearHaltCommand` in lib/escalation.ts.
-    //
-    // With no halt on disk there is nothing for that script to clear, so the
-    // second branch names the state directory as the thing to fix instead. What
-    // the agent must DO is identical either way, which is why the two branches
-    // differ only in the two clauses that would otherwise be false.
-    const halt = haltError === null
-        ? "The guard is now HALTED, so all write tools are blocked. "
-        : `The halt could NOT be recorded (${haltError}), so write tools are NOT ` +
-            "blocked and the guard's own state directory is unwritable. Treat this " +
-            "as a stop regardless, and tell the user their guard state is broken. ";
-    const resume = haltError === null
-        ? "To resume afterwards, run this from the project directory — the halt is " +
-            "recorded there and the script finds it by walking up from its working " +
-            `directory: ${clearHaltCommand()}`
-        : "There is no halt to clear.";
-    return ("fusion guard: a protected path changed during this tool call. " +
-        summary +
-        " What the guard measures is the window around the call, not who wrote in " +
-        "it: your own tool call, the user saving in their editor, a file watcher " +
-        "and a second session are indistinguishable here, so this may not have " +
-        "been you. " +
-        halt +
-        "Do not try to reapply the change or route around this. " +
-        "These paths are a human decision: tell the user what you were trying to do " +
-        "and why, and let them make the change or adjust guard.protectedPaths in the " +
-        "project's fusion-guard.json. " +
-        resume);
-}
 /* ------------------------------------------------------------------ *
  * Churn
  * ------------------------------------------------------------------ */
 /**
  * The heatmap half of this hook, unchanged in substance.
  *
- * Split out of `main` so the measurement above can run for EVERY guarded tool
- * call while this part keeps its own early returns. Before the split, every
- * `return` here was also the hook's reply; now the reply is written once, in
- * `main`, and carries whatever the measurement had to say.
+ * Split out of `main` so a measurement can run for EVERY guarded tool call
+ * while this part keeps its own early returns. Before the split, every `return`
+ * here was also the hook's reply; now the reply is written once, in `main`, and
+ * carries whatever the measurements had to say.
  *
  * It runs AFTER that reply, as a guarded report. This is an advisory heatmap:
  * its `loadConfig`, its `emitEvent` calls and its `saveChurn` can each throw,
- * and none of them may cost the sentence explaining a reverted protected path.
+ * and none of them may cost a sentence the model needs.
  */
 function trackChurn(input) {
     // Only write tools produce churn, and only they are recorded.
@@ -560,10 +177,11 @@ function trackChurn(input) {
     // absolute otherwise, so one file collected one counter per directory a
     // session was ever started in — and the workbench-relative spelling that
     // produced never matched `TRACKER_NOISE_FILES` either, which is how
-    // `tasklist.md` and `agentstate.yaml` came to be tracked as churn. `churnKey`
-    // runs the same two steps as `narrowingTarget` above, so the heatmap and the
-    // protected-path measurement read one path the same way (issue `260809-2023`,
-    // decision `260810-0920`).
+    // `tasklist.md` and `agentstate.yaml` came to be tracked as churn. The two
+    // steps `churnKey` runs were shared with `narrowingTarget` in the removed
+    // protected-path measurement, so the heatmap and the measurement read one path
+    // the same way; the heatmap is now the only reader of that spelling (issue
+    // `260809-2023`, decision `260810-0920`).
     const filePath = churnKey(rawFilePath, process.cwd(), findWorkbenchRoot());
     if (filePath === null) {
         // No workbench, or a path outside the root — a scratchpad, another clone.
@@ -722,8 +340,9 @@ function trackChurn(input) {
  *    skipped write impossible not to notice; it cannot make the write happen.
  * 2. **It runs BEFORE the plugin-repo stand-down in `main`, and is anchored at
  *    the workbench root rather than at cwd.** The stand-down exists so a fusion
- *    developer's own edits are not counted as churn and not reverted as
- *    protected-path changes. Neither applies here: fusion's own repository is a
+ *    developer's own edits are not counted as churn — and, until the
+ *    protected-path measurement was removed, not written back either. Neither
+ *    applies here: fusion's own repository is a
  *    fusion consumer with a live workbench, and every one of the six measured
  *    instances happened in it. Standing this down there would switch it off in
  *    the only project where it is known to be needed.
@@ -790,8 +409,9 @@ function measureReviewCoverageForModel(input) {
     const root = findWorkbenchRoot();
     if (root === null)
         return null;
-    // Case-folded on the same helper the protected-path measurement uses, so a
-    // case-insensitive file system does not decide whether this fires.
+    // Case-folded, so a case-insensitive file system does not decide whether this
+    // fires. `foldCase` was shared with the protected-path measurement's match and
+    // is now read here and by the churn noise filter.
     const abs = foldCase(resolve(process.cwd(), written));
     const store = foldCase(resolve(root, "fusion-workbench"));
     if (!abs.startsWith(store + sep))
@@ -914,8 +534,8 @@ async function main() {
     // anchored at the workbench root rather than at cwd. Its own header says why
     // it is not stood down in fusion's own repository: that repository is a
     // fusion consumer, and all six measured instances of the freeze happened
-    // there. `bestEffort` because a bookkeeping report may never cost the
-    // protected-path sentence that follows it.
+    // there. `bestEffort` because one bookkeeping report may never cost the
+    // others, or the churn heatmap that follows them.
     let drift = null;
     bestEffort("tracker", () => {
         drift = measureStateDriftForModel();
@@ -941,10 +561,12 @@ async function main() {
     //
     // ## The question is asked of the ROOT, not of cwd
     //
-    // This gate is not what stands the MEASUREMENT down — `measurementRoot()`
-    // folds its own plugin-repo stand-down in, and has asked it of the workbench
-    // root since the measurement root moved up. What is left here is churn, and it
-    // asks the same directory the same way.
+    // This gate governs CHURN, and nothing else. It had a sibling — the
+    // protected-path measurement folded its own plugin-repo stand-down into
+    // `measurementRoot()` and asked it of this same workbench root — and that
+    // sibling was removed with the measurement on 2026-08-12. The remaining
+    // stand-down in `guard.ts` asks a DIFFERENT directory (cwd, via
+    // `isFusionPluginCwd()`), which is the divergence CLAUDE.md documents.
     //
     // It used to ask `process.cwd()`, on the stated ground that churn keys were
     // relativized against cwd. `25c5454` moved that anchor to the workbench root
@@ -961,10 +583,10 @@ async function main() {
     // ## A null root is not a stand-down
     //
     // Without a workbench there is nothing here to stand down: `churnKey` returns
-    // null, `emitEvent` writes nowhere, and the measurement above has already
-    // returned on the same null. Folding the two causes into one null — the shape
-    // `measurementRoot()` takes, where both mean "do not measure" — would answer
-    // "fusion's own repository" for any directory that never ran `/fusion:setup`.
+    // null and `emitEvent` writes nowhere. Folding the two causes into one null —
+    // the shape the removed `measurementRoot()` took, where both meant "do not
+    // measure" — would answer "fusion's own repository" for any directory that
+    // never ran `/fusion:setup`.
     //
     // ## The three reports above run ahead of this deliberately
     //
@@ -978,24 +600,14 @@ async function main() {
         respond(standDown === "" ? undefined : standDown);
         return;
     }
-    // The measurement runs on EVERY guarded tool call — Bash included, and before
-    // the churn heatmap, which only ever looks at the write tools. A protected
-    // path can change by any route, which is the whole point of measuring rather
-    // than predicting.
-    const measured = measureProtectedPaths(input);
-    // The reply first, the heatmap after it. `measureProtectedPaths` has by now
-    // restored the protected path and raised the halt; the only thing left to
-    // deliver is the sentence naming the file and how a human clears it, and that
-    // sentence used to be held until an advisory metric had finished. Measured
-    // with `churn.json` replaced by a non-empty directory: `{}` on stdout, the
-    // file reverted, `haltActive: true`, and the agent told nothing
-    // (`260809-2045`). The tracker's header calls the explaining refusal a
-    // constraint, and a revert the model never hears about violates it.
-    // The protected-path sentence goes first when both have something to say: one
-    // reports a file that was written back and a halt the user has to clear, the
-    // other reports a number that is stale. Joined rather than chosen between,
-    // because dropping either would be a silence.
-    const parts = [measured, drift, coverage, staging];
+    // The reply first, the heatmap after it. The reply is the only thing this
+    // hook says to the model, and it used to be held until an advisory metric had
+    // finished. Measured with `churn.json` replaced by a non-empty directory: `{}`
+    // on stdout and the agent told nothing (`260809-2045`). What was silenced then
+    // was the protected-path sentence, and that sentence is gone with the
+    // measurement — the three below are what is left to lose, and losing one is
+    // the same defect. Joined rather than chosen between, for the same reason.
+    const parts = [drift, coverage, staging];
     const context = parts.filter((s) => s !== null).join(" ");
     answer("tracker", () => respond(context === "" ? undefined : context), () => trackChurn(input));
 }

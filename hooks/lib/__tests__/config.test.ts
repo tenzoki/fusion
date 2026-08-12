@@ -16,7 +16,6 @@ import {
   PROJECT_CONFIG_FILENAME,
   type GuardConfig,
 } from "../config.js";
-import { RULE_DIR_PATTERNS } from "../rules-write-exemption.js";
 
 // ---------------------------------------------------------------------------
 // The C5b configuration loader — plan step 6.
@@ -298,24 +297,19 @@ describe("a project with no fusion-guard.json is byte-identical to before step 6
     expect(guard.protectedPaths).not.toContain(PROJECT_CONFIG_FILENAME);
   });
 
-  it("protects every rule root the FUSION_ALLOW_RULES_WRITE flag exempts", () => {
-    // Derived rather than restated, because this is the invariant the two lists
-    // drifted apart on. `rules-write-exemption.ts` documents the exemption as
-    // "consulted only for a path that was already protected"; while
-    // `.claude/rules/**` sat on the exempt set and not on the protected one,
-    // that sentence was true only by the exemption being dead code there, and
-    // a write to the heavier of the two rule roots was allowed outright
-    // (`shared/issues/260801-1020_*_guard-protects-rules-but-not-claude-rules.md`).
-    // An exempt pattern with no protected twin means the same inversion again.
-    const { guard } = loadConfig({
-      pluginConfigPath: SHIPPED_PLUGIN_CONFIG,
-      projectRoot: tmp(),
-    });
-
-    for (const pattern of RULE_DIR_PATTERNS) {
-      expect(guard.protectedPaths, pattern).toContain(pattern);
-    }
-  });
+  // A case here derived the protected list's rule roots from `RULE_DIR_PATTERNS`
+  // in `rules-write-exemption.ts` and asserted that every exempt pattern had a
+  // protected twin — the invariant the two lists had drifted apart on, leaving
+  // `.claude/rules/**` exempt but unprotected and so writable outright
+  // (`shared/issues/260801-1020_*_guard-protects-rules-but-not-claude-rules.md`).
+  //
+  // It is deleted HERE, in step 6 rather than step 7, and not by choice: step 6
+  // deletes `rules-write-exemption.ts`, so the import at the top of this file
+  // stopped resolving and the whole suite failed to load. The plan filed this
+  // case with the other `protectedPaths` cases for step 7; it is not one of them,
+  // because its subject is the exemption and not the loader. The two that ARE
+  // step 7's — the shipped list's contents, and `projectDeclaredProtectedPaths` —
+  // are untouched and still pass.
 });
 
 // ---------------------------------------------------------------------------

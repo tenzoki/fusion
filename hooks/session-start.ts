@@ -9,24 +9,33 @@
  * subdirectory they inspect a directory that is not the project's. Two are
  * known and documented:
  *
- *   - the PreToolUse write-tool deny (`lib/project-relative.ts`), which matches
- *     `guard.protectedPaths` against the working directory. Measured from a
- *     subdirectory in
- *     `lib/__tests__/protected-snapshot-subdirectory.test.ts`: an `Edit` of a
- *     genuinely protected path is ALLOWED by the pre-check and only caught
- *     afterwards by the measurement.
- *   - `isFusionPluginCwd()` (`lib/self-detect.ts`) and its shell half
- *     `bin/fusion-plugin-cwd`, both of which test cwd with no upward walk, so
- *     `bin/fusion-rules`, `bin/fusion-paths` and `bin/fusion-source-root` read
- *     the installed plugin copy instead of the work tree when a session in
- *     fusion's own repository starts one directory down.
+ *   - the PreToolUse write-tool checks (`lib/project-relative.ts`), which
+ *     compute the project-relative spelling `guard.categoryPaths` is matched
+ *     against from the working directory, and `isFusionPluginCwd()`'s
+ *     stand-down, which asks cwd whether it is fusion's own repository.
+ *   - the shell half of the same question, `bin/fusion-plugin-cwd`, which tests
+ *     cwd with no upward walk, so `bin/fusion-rules`, `bin/fusion-paths` and
+ *     `bin/fusion-source-root` read the installed plugin copy instead of the
+ *     work tree when a session in fusion's own repository starts one directory
+ *     down.
  *
- * Each of those could be taught to walk up on its own. That would be four
- * special cases with four chances to disagree. This warning fixes none of them
- * and is not meant to: it makes the one assumption they share **audible**, at
- * the single moment the session's working directory is chosen and still cheap
- * to change. The residual is tracked in
- * `circles/260801-1244-guard-rules-write/issues/260804-2100_*_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md`.
+ * The sharpest instance of this used to be a third: the protected-path deny
+ * matched `guard.protectedPaths` against the working directory, so from a
+ * subdirectory an `Edit` of a genuinely protected path was allowed by the
+ * pre-check and caught only afterwards by the root-anchored measurement. Both
+ * halves were removed with the protected-path mechanism on 2026-08-12. The issue
+ * that tracked the residual is
+ * `circles/260801-1244-guard-rules-write/issues/260804-2100_*_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md`,
+ * still open at the time of writing and now moot — its subject is gone, and
+ * closing it is a reconciler's act, not this file's. What is left is the same
+ * assumption with milder consequences, which is a reason to keep saying it out
+ * loud, not to stop.
+ *
+ * Each of those could be taught to walk up on its own. That would be several
+ * special cases with several chances to disagree. This warning fixes none of
+ * them and is not meant to: it makes the one assumption they share **audible**,
+ * at the single moment the session's working directory is chosen and still cheap
+ * to change.
  *
  * ## The case split
  *

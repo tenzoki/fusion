@@ -1,7 +1,7 @@
 /**
  * Compliance Guard — PostToolUse hook for Claude Code.
  *
- * Three jobs, in this order:
+ * Four jobs, in this order:
  *
  *   0. SESSION-STATE DRIFT. Compare `agentstate.yaml`, the active Circle's Turn
  *      log and this session's history file with the two records that cannot
@@ -33,16 +33,16 @@
  *      is the question the deleted branch policy answered wrong 24 times. See
  *      lib/staging-drift.ts and `measureStagingDriftForModel`.
  *
- *   1. MEASURE THE PROTECTED PATHS. Take a second fingerprint of every path on
- *      `guard.protectedPaths` and compare it with the one `guard.ts` recorded
- *      before the tool ran. Anything that changed is written back to what the
- *      before-fingerprint holds, the guard is halted, and the model is told
- *      which file and why. This is the guard's actual enforcement of those
- *      paths, and it replaced a classifier that tried to predict, from a shell
- *      command's text, which files the command would write. See
- *      lib/protected-snapshot.ts.
  *   2. CHURN. Record write-tool file mutations in the churn heatmap, emitting
  *      warning/critical events at the configured per-session thresholds.
+ *
+ * A job 1 sat between 0c and 2 until 2026-08-12: a second fingerprint of every path
+ * on `guard.protectedPaths`, compared against the one `guard.ts` took before the
+ * tool ran, with anything that changed written back and the guard halted. It was
+ * the enforcing half of the protected-path mechanism, and the whole mechanism
+ * was removed — see `guard.ts`'s header for the measurement that decided it.
+ * Nothing replaced it: a protected path is not watched, not restored and not
+ * reported, by this hook or any other.
  *
  * ## What a PostToolUse hook can and cannot do
  *
@@ -56,22 +56,24 @@
  * back to the model in a system-reminder reading `PostToolUse:Bash hook
  * additional context: <text>`.
  *
- * That distinction is load-bearing rather than trivia. The binding decision
- * makes the EXPLAINING refusal a constraint, because an agent that meets an
- * unexplained failure works around it, and that failure mode is the reason the
- * rule file exists. A revert the model never hears about would satisfy the
- * mechanism and violate the constraint.
+ * That distinction is load-bearing rather than trivia. It was established for
+ * the removed job 1, where a revert the model never heard about would have
+ * satisfied the mechanism and violated the constraint that an agent must never
+ * meet an unexplained failure. The three measurements that remain say nothing
+ * ELSE tells the model — a frozen `agentstate.yaml`, an unreviewed commit range,
+ * a record the commit did not carry — so the channel is the whole of their
+ * effect rather than an explanation attached to one.
  *
  * ## The reply is written before anything records it
  *
- * The enforcement — the restore — has to happen first; it is what the sentence
- * is about. Everything after that is a report: the `guard_block` rows, the halt
- * record, the churn heatmap. Each goes through `answer` or `bestEffort` from
+ * The reply goes out first and everything after it is a report: the event rows
+ * and the churn heatmap. Each goes through `answer` or `bestEffort` from
  * lib/fail-open.ts, so none of them can discard the sentence on its way out. The
  * churn half used to run ahead of the reply and did exactly that; that module's
  * header carries the class and the measurements.
  *
  * Protocol: reads JSON from stdin, writes {} to stdout, or a
- * `hookSpecificOutput.additionalContext` envelope when something was restored.
+ * `hookSpecificOutput.additionalContext` envelope when a measurement has
+ * something to say.
  */
 export {};

@@ -1,27 +1,33 @@
 /**
  * Glob-based path matching for the Compliance Guard, and the lexical
- * normalisations the two matched sets are computed on.
+ * normalisation the matched set is computed on.
  *
  * Ported from fusion/reactor/pkg/guard/decision_guard.go:73-87.
  * Converts glob patterns to regex: * → [^/]*, ** → .*, ? → .
  *
- * ## Three functions, and the asymmetry between them is load-bearing
+ * ## There used to be two matched sets, and the asymmetry between them shaped
+ * ## this file
  *
- * The guard matches a path against two sets that want opposite things from a
- * spelling, so the normalisation is not shared:
+ * Until 2026-08-12 the guard matched a path against two sets that wanted
+ * opposite things from a spelling, so the normalisation was not shared:
  *
- *   - the PROTECTED set (`guard.protectedPaths`) — widening it denies more,
- *     which is the safe direction. It reads `collapseSegments` and matches
- *     through `matchesAnyFolded`.
- *   - the EXEMPT set (`RULE_DIR_PATTERNS`, `rules-write-exemption.ts`) —
- *     widening it GRANTS more, which is the unsafe direction. It reads
- *     `canonicalise` and matches through the plain `matchesAny`.
+ *   - the PROTECTED set (`guard.protectedPaths`) — widening it denied more,
+ *     which is the safe direction. It read `collapseSegments` and matched
+ *     through `matchesAnyFolded`, which was `matchesAny` plus a case fold.
+ *   - the EXEMPT set (`RULE_DIR_PATTERNS`, in the `FUSION_ALLOW_RULES_WRITE`
+ *     exemption) — widening it GRANTED more, which is the unsafe direction. It
+ *     read `canonicalise`, which was `collapseSegments` plus a trailing-separator
+ *     strip, and matched through the plain `matchesAny`.
  *
- * `canonicalise` is `collapseSegments` plus a trailing-separator strip, and
- * `matchesAnyFolded` is `matchesAny` plus a case fold. Neither extra step may
- * cross to the other side. Unifying the pair has been proposed once already —
- * a Turn 1 review offered it as a one-liner — and it would have removed three
- * denials; the argument is written out at each definition below.
+ * Both sets went with the protected-path half of the guard, and
+ * `matchesAnyFolded` and `canonicalise` went with them. What is left matches ONE
+ * set — `guard.categoryPaths`, read by `findRelevantDecisions` — plus two noise
+ * filters over hardcoded constants.
+ *
+ * The asymmetry is recorded rather than deleted because it explains the shape of
+ * what remains: `collapseSegments` keeps a trailing separator, and the reason is
+ * a set that no longer exists. Anyone re-deriving it from the surviving caller
+ * alone would find no argument either way and could reasonably change it.
  */
 
 import { posix } from "node:path";
@@ -42,7 +48,18 @@ export function globToRegex(pattern: string): RegExp {
   return new RegExp(`^${regexStr}$`);
 }
 
-/** Check if a file path matches a single glob pattern. */
+/**
+ * Check if a file path matches a single glob pattern.
+ *
+ * EXPORTED WITH NO EXTERNAL CALLER, as of 2026-08-12. Its one caller outside
+ * this module was the rules-write exemption's ancestor pass, which was removed
+ * with the protected-path half of the guard; what is left is `matchesAny` just
+ * below, plus `paths.test.ts`, which covers it directly. It is kept exported
+ * rather than made module-private because the unit coverage is worth more than
+ * the narrowed visibility, and because a second caller is the ordinary way this
+ * file grows. Noted so the next reader does not have to re-derive that it is not
+ * dead.
+ */
 export function matchesPattern(filePath: string, pattern: string): boolean {
   try {
     return globToRegex(pattern).test(filePath);
@@ -54,29 +71,25 @@ export function matchesPattern(filePath: string, pattern: string): boolean {
 /**
  * Check if a file path matches any pattern in a list.
  *
- * CASE-SENSITIVE. Three callers, and the case answer is deliberate for the
- * first, unexamined for the other two:
+ * CASE-SENSITIVE, and this is now the ONLY path match in the guard.
  *
- *   - the GRANT side (`rules-write-exemption.ts` gate 1) — folding would widen
- *     a permission, so it must not fold. `matchesAnyFolded` below carries that
- *     argument in full.
- *   - `config.ts findRelevantDecisions` (`guard.categoryPaths`) and
- *     `tracker.ts` (noise filtering). Both are outside `guard.protectedPaths`
- *     and were left as they were, so a differently-cased path escapes a
- *     decision-governed escalation the way it used to escape protection.
- *     `findRelevantDecisions` is REACHABLE: a consuming project's
- *     `fusion-guard.json` can declare `guard.categoryPaths` and `decisions`
- *     since the C5b loader shipped, which falsified the "no per-project config
- *     loader exists yet" this paragraph used to claim (`260804-1432`). Whether
- *     it should therefore fold was raised and DEFERRED by the user
- *     (2026-08-04): behaviour stays case-sensitive until a project reports a
- *     category missing its own file, or path matching is unified elsewhere.
- *     The argument the decision starts from is that the two sides of a
- *     `categoryPaths` match are both authored by the same project, which is not
- *     the situation `protectedPaths` is in. `tracker.ts`'s noise filter reads a
- *     hardcoded constant and stays exactly as unreachable as it was.
+ * Three callers. Two read hardcoded constants and are as unreachable by a
+ * differently-cased path as they ever were: the noise filters in `churn.ts` and
+ * `tracker.ts`. The third is `config.ts findRelevantDecisions`, matching
+ * `guard.categoryPaths`, and it is REACHABLE — a consuming project's
+ * `fusion-guard.json` can declare `guard.categoryPaths` and `decisions`, which
+ * falsified the "no per-project config loader exists yet" this paragraph used to
+ * claim (`260804-1432`).
  *
- * The PROTECTION side calls `matchesAnyFolded`.
+ * Whether that third caller should fold was raised and DEFERRED by the user on
+ * 2026-08-04, on two grounds: the two sides of a `categoryPaths` match are both
+ * authored by the same project, unlike `guard.protectedPaths`; and the deferral
+ * record states that the folded protected match is unaffected either way. THE
+ * SECOND GROUND NO LONGER HOLDS. `matchesAnyFolded` and the list it matched were
+ * removed on 2026-08-12, so this is the only path match left and the comparison
+ * the deferral rested on has no other side. The record is
+ * `circles/260801-1244-guard-rules-write/decisions/260804-1632_d_should-findrelevantdecisions-fold-case-now-that-a-project-can-configure-categorypaths.md`
+ * and it is the user's to re-open; the behaviour is unchanged here.
  */
 export function matchesAny(filePath: string, patterns: string[]): boolean {
   return patterns.some((p) => matchesPattern(filePath, p));
@@ -96,126 +109,52 @@ export function foldCase(path: string): string {
 }
 
 /**
- * `matchesAny` with case folded on BOTH sides — the PROTECTION side's match.
- *
- * ## Why the fold
- *
- * `matchesPattern` compiles a glob to a regex over the path's TEXT, and a regex
- * is case-sensitive, so `agents/**` did not match `AGENTS/coder.md`. On a
- * case-insensitive filesystem — APFS in its default configuration, which is
- * every stock macOS install, and a case-insensitive Windows volume — those two
- * spellings are ONE file. Measured against the real guard before this existed:
- *
- *     Edit agents/coder.md     DENY
- *     Edit AGENTS/coder.md     allow   -> writes agents/coder.md
- *     Edit HOOKS/config.json   allow   -> writes hooks/config.json
- *     rm AGENTS/coder.md       allow
- *
- * That was the whole protected list bypassable by shifting one letter, on both
- * write surfaces, needing no flag.
- *
- * ## Why UNCONDITIONALLY, and not only where the filesystem folds
- *
- * The user decided it on 2026-08-03: the protected-path check folds case on
- * every platform, not only where the filesystem does.
- * A boundary that differs by platform has to be re-stated in every document
- * that describes it, and is then discovered rather than known. Folding
- * everywhere over-blocks on a case-sensitive filesystem, where `AGENTS/coder.md`
- * really is a different file from `agents/coder.md` — a project deliberately
- * keeping both would find one of them unwritable. That is the accepted cost, and
- * over-blocking is the direction the guard already chooses in its fail-closed
- * rule.
- *
- * ## Why the GRANT side does not call this
- *
- * Folding the exempt set would widen a permission: `Edit RULES/x.md` would
- * acquire the `FUSION_ALLOW_RULES_WRITE` grant off a spelling that is not the
- * one `RULE_DIR_PATTERNS` names. The grant side has its own answer to case and
- * it is not textual — `isProjectRulePath` gate 2 resolves through
- * `realpathSync.native`, which applies the platform's OWN folding, so on a
- * case-insensitive filesystem the case question is already settled there by the
- * kernel rather than by this module. Nothing here is the grant's business.
- *
- * The consequence is stated rather than hidden: with the flag set,
- * `Edit RULES/x.md` denies while `Edit rules/x.md` allows, on a filesystem where
- * both name the same file. The protected set widened and the exempt set did not,
- * which is the only direction a guard may move.
- *
- * STILL PURELY TEXTUAL — no filesystem, and no query about how THIS filesystem
- * treats case. A path that reaches a different target through a SYMLINK still
- * reads as this one.
- */
-export function matchesAnyFolded(
-  filePath: string,
-  patterns: readonly string[],
-): boolean {
-  return matchesAny(
-    foldCase(filePath),
-    patterns.map((p) => foldCase(p)),
-  );
-}
-
-/**
  * Collapse `.`, `..` and repeated separators, keeping a trailing separator.
- * This is the spelling BOTH matched sets are computed on.
+ * This is the spelling the guard's one matched set is computed on.
  *
  * ## Why the collapse
  *
  * `matchesAny` compiles a glob to a regex over the path's TEXT, so two
  * spellings of one file are two different answers. `agents/**` compiles to
  * `^agents/.*$`, which `./agents/coder.md` and `x/../agents/coder.md` do not
- * match although both write `agents/coder.md`. Uncollapsed, the entire
- * protected list was bypassable on the write-tool path with a two-character
- * prefix — `normalizeToRelative` returns a relative path untouched.
+ * match although both write `agents/coder.md`. Measured on the protected list,
+ * where uncollapsed it made the entire list bypassable on the write-tool path
+ * with a two-character prefix. That list is gone; `guard.categoryPaths` is
+ * matched by the same `matchesAny` over the same text and has the same property.
  *
  * ## Why the trailing separator STAYS
  *
- * A trailing separator WIDENS whatever set the path is matched against, and
- * the two sets want opposite things from that:
+ * A trailing separator WIDENS whatever set the path is matched against, and the
+ * two sets this file served wanted opposite things from that:
  *
- *   - Against the PROTECTED set, widening is protection. `rules/**` compiles to
- *     `^rules/.*$`, whose `.*` matches the empty string, so `agents/` matches
- *     while `agents` does not. Stripping it here would turn a denied write into
- *     an allowed one, which is the one direction a guard may never move.
- *   - Against the EXEMPT set, widening is a bigger grant. `rm -rf rules/` would
- *     walk straight through the exemption and take the rule directory with it,
- *     while the bare `rm -rf rules` stayed correctly denied through the
+ *   - Against the PROTECTED set, widening was protection. `rules/**` compiles to
+ *     `^rules/.*$`, whose `.*` matches the empty string, so `agents/` matched
+ *     while `agents` did not. Stripping it here would have turned a denied write
+ *     into an allowed one, which is the one direction a guard may never move.
+ *   - Against the EXEMPT set, widening was a bigger grant. `rm -rf rules/` would
+ *     have walked straight through the exemption and taken the rule directory
+ *     with it, while the bare `rm -rf rules` stayed correctly denied through the
  *     ancestor pass.
  *
- * So the shrinking step belongs to the grant alone; `canonicalise` below adds
- * it, and `rules-write-exemption.ts` is the only caller.
+ * Both sets were removed on 2026-08-12, and with them `canonicalise`, which was
+ * this function plus the trailing-separator strip the grant side needed. The
+ * separator is kept ANYWAY, and the argument above is why: the surviving caller
+ * is `guard.categoryPaths`, a deny-side match, where widening is still the safe
+ * direction. Read the paragraphs as history explaining a choice, not as a
+ * description of two live callers.
  *
  * ## CASE is not folded here
  *
- * The protection side matches case-insensitively, and this is not where that
- * happens. `canonicalise` is built on this function, so a fold added here would
- * fold the grant too — the asymmetry above, lost in the other direction. The
- * fold belongs to the MATCH, where the two sides already use different
- * functions: `matchesAnyFolded` for the protected set, plain `matchesAny` for
- * the exempt one.
+ * Nothing in the guard folds case on a path match any more — `matchesAnyFolded`
+ * went with the protected set. A fold added HERE would be worse than one added
+ * at the match: this is a normalisation, so it would silently change the
+ * spelling every future caller reads, whichever direction that caller wants. The
+ * fold belongs to the match.
  *
  * PURELY TEXTUAL — no filesystem. This collapses a path to the target its TEXT
  * names, which closes the `.`/`..`/separator class and nothing else. A path
- * that reaches a different target through a SYMLINK still reads as this one;
- * see `rules-write-exemption.ts` for why the grant side additionally resolves
- * against the real filesystem and the protection side does not.
+ * that reaches a different target through a SYMLINK still reads as this one.
  */
 export function collapseSegments(path: string): string {
   return posix.normalize(path);
-}
-
-/**
- * `collapseSegments` plus the trailing-separator strip — the spelling a
- * permission GRANT is read off.
- *
- * A grant read off a widened spelling grants more than it names, so the exempt
- * set is computed on the narrowest honest reading of the path. See
- * `collapseSegments` for why the protected set is not.
- */
-export function canonicalise(path: string): string {
-  const collapsed = collapseSegments(path);
-  const trimmed = collapsed.replace(/\/+$/, "");
-  // A path that was nothing but separators collapses to the empty string; keep
-  // it non-empty so it cannot accidentally match a pattern.
-  return trimmed.length === 0 ? collapsed : trimmed;
 }

@@ -56,13 +56,18 @@
  *
  * ## What is NOT routed through here, and why
  *
- * `protected-snapshot.ts` does not fit this seam as written: its load answers
- * `null` rather than an empty state (no before-picture must never be read as an
- * empty one), its save removes the stale file when its own write fails, and its
- * read unlinks the file as it goes. Those are three deliberate differences, each
- * with a measured issue behind it, not incidental variation. It remains as
- * recommendation C2 in
- * `fusion-workbench/shared/analyses/260809-1101-guard-support-layer.md`.
+ * Nothing, now. The one file that did not fit this seam was
+ * `protected-snapshot.ts`, whose load answered `null` rather than an empty state
+ * (no before-picture must never be read as an empty one), whose save removed the
+ * stale file when its own write failed, and whose read unlinked the file as it
+ * went — three deliberate differences, each with a measured issue behind it. It
+ * was recommendation C2 in
+ * `fusion-workbench/shared/analyses/260809-1101-guard-support-layer.md`, and it
+ * was deleted with the protected-path half of the guard on 2026-08-12, so the
+ * recommendation is moot rather than done.
+ *
+ * The two files that DO route through here are `escalation.json` and
+ * `churn.json`.
  */
 import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";

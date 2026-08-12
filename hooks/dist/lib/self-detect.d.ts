@@ -1,9 +1,13 @@
 /**
  * Self-detection: is the guard running inside the fusion plugin's own repo?
  *
- * The guard protects agents/**, rules/**, .claude-plugin/plugin.json
- * etc. This is correct for projects USING fusion, but wrong when developing
- * fusion itself — every edit to the plugin's own source would be blocked.
+ * Two things stand down in fusion's own tree: the write-tool branch of the
+ * guard, and the churn heatmap. The reason both were built was the same — the
+ * guard used to protect agents/**, rules/** and .claude-plugin/plugin.json,
+ * which is correct for projects USING fusion and wrong when developing fusion
+ * itself, where every edit to the plugin's own source would have been blocked
+ * and written back. That protection was removed on 2026-08-12 and both
+ * stand-downs outlived it; each call site below says what its own now covers.
  *
  * Heuristic: if a directory contains a .claude-plugin/plugin.json whose "name"
  * field is "fusion", that directory is the fusion plugin's own source tree and
@@ -18,25 +22,26 @@
  * now asks `isFusionPluginRoot` about that root, like everything else that walks
  * up.
  *
- * `isFusionPluginRoot(dir)` asks about a directory the caller names. The
- * protected-path MEASUREMENT needs this one: since it anchors at the workbench
- * root (`findWorkbenchRoot`, which walks up), the stand-down has to be evaluated
- * at that same root. Evaluating it at cwd instead would leave a fusion developer
- * whose session started in a subdirectory of this repository — `fusion-workbench/`
- * is the everyday case — with their own edits to `rules/` and `agents/` reverted
- * on the next tool call. Measured, not inferred; see
- * `lib/__tests__/protected-snapshot-subdirectory.test.ts`. The churn stand-down
- * in `tracker.ts` asks it of the same root, since `25c5454` moved churn's own
- * keys there; the cost of leaving that one at cwd was measured too, in
- * `lib/__tests__/churn-key-anchor.test.ts`.
+ * `isFusionPluginRoot(dir)` asks about a directory the caller names. One caller
+ * is left for it too: the churn stand-down in `tracker.ts`, since `25c5454`
+ * moved churn's keys to the workbench root. The cost of leaving that one at cwd
+ * was measured, in `lib/__tests__/churn-key-anchor.test.ts`.
  *
- * The two must move together. A root-anchored measurement with a cwd-anchored
- * stand-down is the defect above; a cwd-anchored measurement with a
- * root-anchored stand-down is the subdirectory hole that change closed. The
- * churn heatmap repeated the first half on its own gate and was moved for the
- * same reason (issues `260805-1839`, `260810-1632`): whichever directory a
- * caller keys its state by, the stand-down is evaluated where that key is
- * anchored.
+ * ## The rule the two entry points exist to serve
+ *
+ * Whichever directory a caller keys its state by, the stand-down is evaluated
+ * where that key is anchored. A root-anchored mechanism with a cwd-anchored
+ * stand-down misses every session started one directory down; a cwd-anchored
+ * mechanism with a root-anchored stand-down is the reverse hole. Both halves of
+ * that were measured on the protected-path measurement, which anchored at the
+ * workbench root and had its stand-down moved up to match; the measurement was
+ * removed on 2026-08-12 and the rule it established is what survives it. The
+ * churn heatmap repeated the same mistake on its own gate and was moved for the
+ * same reason (issues `260805-1839`, `260810-1632`).
+ *
+ * The two remaining callers therefore ask about DIFFERENT directories, and that
+ * is correct rather than a drift to unify: `guard.ts`'s verdict is computed in
+ * cwd's coordinate space and churn's keys are computed in the root's.
  */
 /**
  * Does `dir` itself carry a fusion plugin manifest?

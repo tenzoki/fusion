@@ -220,17 +220,18 @@ export interface Project {
 
 /** Files every throwaway project starts with. Relative paths, root-anchored. */
 const SEED_FILES: Record<string, string> = {
-  // Ordinary project files. Nothing here is special to the guard any more: the
-  // protected-path half is gone, so `rules/x.md` and `agents/coder.md` — which
-  // seeded every project purely because the shipped list named `rules/**` and
-  // `agents/**` — went with it. What remains exists so a case can name a file
+  // Ordinary project files. Nothing here is special to the guard: the
+  // protected-path half is gone, so `rules/x.md`, `agents/coder.md`,
+  // `rules/retired/.keep` and `.claude/rules/local.md` — which seeded every
+  // project purely because the shipped list named `rules/**` and `agents/**`,
+  // and because the `FUSION_ALLOW_RULES_WRITE` exemption needed rule roots to
+  // grant over — went with it. What remains exists so a case can name a file
   // without first having to build the directory it wants to write into.
   //
-  // `rules/retired/.keep` and `.claude/rules/local.md` are kept for now although
-  // no surviving case reads them; they were the exemption suite's operands and
-  // are candidates for removal alongside the mechanism itself.
-  "rules/retired/.keep": "",
-  ".claude/rules/local.md": "# a project-wide rule\n",
+  // A NOTE FOR WHOEVER ADDS THE NEXT ONE. This map is what every project in the
+  // suite starts with, so a file added here is paid for by ~50 test files. Add
+  // one only when more than one suite needs it; a single case's operand belongs
+  // in that case's own `files` option.
   "skills/demo/SKILL.md": "# a skill\n",
   "notes.txt": "notes\n",
   "build/out.js": "// built\n",
@@ -622,15 +623,6 @@ export function withGovernedProject<T>(
   return withProject(fn, { ...opts, files: governedFiles(opts.files ?? {}) });
 }
 
-/** One write-tool call against the governed path. Denied by CHECK 3. */
-export function runGovernedWrite(
-  root: string,
-  toolName = "Edit",
-  overrides: Record<string, string> = {},
-): GuardResult {
-  return runWrite(root, GOVERNED_PATH, toolName, overrides);
-}
-
 /* ------------------------------------------------------------------ *
  * Running the hook
  * ------------------------------------------------------------------ */
@@ -659,19 +651,28 @@ interface HookInput {
  * failure is invisible — the suite is green on both machines, and only one of
  * them is checking the property.
  *
- * `FUSION_ALLOW_RULES_WRITE` is a PERMISSION: it gates the rules-write
- * exemption, so an exported copy would void the flag-unset half of every
- * criterion that exemption is meant to prove. Two more permission variables
- * stood beside it and gated the git branch policy; they went when it did.
+ * NEITHER OF THE TWO IS READ BY THE GUARD ANY MORE, and both strips stay. The
+ * rule this list follows is that a variable which once moved a verdict is not
+ * handed back to the child on the strength of the mechanism having gone: the
+ * strip costs nothing, and the cost of being wrong is a suite that is green on
+ * two machines while only one of them is checking anything.
+ *
+ * `FUSION_ALLOW_RULES_WRITE` was a PERMISSION: it gated the rules-write
+ * exemption, so an exported copy would have voided the flag-unset half of every
+ * criterion that exemption was meant to prove. The exemption was deleted with
+ * the protected-path half of the guard on 2026-08-12. Two more permission
+ * variables stood beside it and gated the git branch policy; they went when it
+ * did, which is the precedent for taking this one out — and the difference is
+ * that they were removed while the list still had a live entry to justify
+ * itself by.
  *
  * `CDPATH` is not a permission and was stripped for a stronger reason: it moved
  * a verdict in the DENYING direction, because a bare-word `cd` became unknowable
  * to the mutation classifier's working-directory model, and it is a variable
  * real people really do export from a shell profile. Left in place it denied
  * commands on one developer's machine that allowed on everyone else's. The
- * classifier and its directory model are gone, so nothing reads `CDPATH` today;
- * the strip stays because it costs nothing and a variable that once moved a
- * verdict is not one to hand back to the child on the strength of that.
+ * classifier and its directory model are gone, so nothing reads `CDPATH` today
+ * either.
  */
 const STRIPPED_ENV_VARS = ["FUSION_ALLOW_RULES_WRITE", "CDPATH"] as const;
 
