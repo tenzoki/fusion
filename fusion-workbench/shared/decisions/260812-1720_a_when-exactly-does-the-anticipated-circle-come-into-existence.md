@@ -77,3 +77,27 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+---
+
+## Answer, 260812-1745, by the user
+
+**Option 2: before the first write.** The shaper asks its first round of questions, creates the
+Circle as its first write, re-resolves its paths against it, and everything it writes thereafter
+lands inside. One rule, no per-case branch: *nothing this mode writes ever lands outside the
+Circle.*
+
+Two consequences accepted with it. The directory name comes from a Directive that has survived one
+round of clarification, which is the whole reason for not taking the literal reading — the name is
+immutable and a Circle named from a half-formed sentence carries that name for life. And the
+shaper resolves its paths twice in one run, which is a real exception to "resolve once at Setup".
+That exception is **conditional on a fact rather than on judgement** — a consumer that *creates* a
+Circle re-resolves immediately after creating it — and it must be written into the rule text, or
+the next audit reads it as drift.
+
+No empty directory is ever created, because the Circle comes into existence only when something
+needs a home.
+
+---
+Answered: this record `## Answer, 260812-1745` — the Circle is created at the shaper's first write,
+after one round of clarification, and the resolver exception is written into the rule text.

@@ -90,3 +90,32 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+---
+
+## Answer, 260812-1745, by the user
+
+**Option 2: the file stays in `shared/planning/`, and the promotion is recorded as the exception it
+is.** The Origin Rule tolerates a recorded promotion by its own text — *"the answer is a promotion
+step, an explicit, recorded move from a Circle to `shared/`, not a second placement rule"* — this
+is the only instance of it in the workbench, and the reason given at the time is still true: the
+plan declares its own Directive and was executed weeks after its Circle closed.
+
+**This is not the declined leave-them-alone option arriving by the back door, and the difference is
+worth stating because a later reader will suspect it.** What was declined was leaving the
+*placement rule* alone. The rule changes: every Circle created from now on contains its own
+founding documents by construction. What is left standing is one historical file whose placement
+was argued rather than defaulted, and reversing a reasoned decision that has not been shown wrong
+is not what the migration was ordered to do.
+
+The practical consequence is that the migration moves nothing. Six files stay because measurement
+showed the Origin Rule already places them correctly, and the seventh stays because its move out
+was deliberate. All seven reasons are written down rather than left as silence.
+
+The nineteen citations to this file are not rewritten, so the migration carries no citation risk at
+all. The stale-marker defect in eighteen of them is a separate matter and stays open on its own
+record.
+
+---
+Answered: this record `## Answer, 260812-1745` — the file stays, the promotion is recorded as the
+Origin Rule's own tolerated exception, and the migration moves nothing.
