@@ -1327,3 +1327,8 @@
 {"ts":"2026-08-13T17:55:27","event":"task_start","turn":2,"task":"S5","agent":"coder","detail":"README.md configuration section and tuning table"}
 {"ts":"2026-08-13T18:02:08","event":"task_done","turn":2,"task":"S5","agent":"coder","detail":"5d51abd"}
 {"ts":"2026-08-13T18:02:08","event":"commit","turn":2,"task":"S5","detail":"5d51abd"}
+{"ts":"2026-08-13T18:33:30","event":"review_start","turn":2,"agent":"coderev","detail":"3 files in scope"}
+{"ts":"2026-08-13T18:33:30","event":"review_done","turn":2,"agent":"coderev","detail":"5 issues filed, all minor; 5 Turn-1 closures re-verified and hold; range 28f3029..5d51abd"}
+{"ts":"2026-08-13T18:33:30","event":"coherence_review","turn":2,"detail":"verdict=ok | Artifact<->Grounding: 5 issues filed, 5 prior closures verified | Artifact<->Directive: 5 of 10 steps done at Turn 2 of 5 | Grounding<->Directive: 0 answered decisions touched"}
+{"ts":"2026-08-13T18:33:30","event":"turn_end","turn":2,"detail":"2 tasks resolved, 5 issues created, 5 issues closed, 3 commits"}
+{"ts":"2026-08-13T18:33:30","event":"turn_start","turn":3,"detail":"S6 alone: sixteen agent rows plus the dispatch-parameter roster"}

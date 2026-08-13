@@ -39,3 +39,6 @@ Everything else in the rewritten row was checked and holds: the four invocation 
 Add the third write to the cell: in portfolio-activation mode the shaper also sets the record's `**Active spec/plan:**` field to the spec it just wrote. One clause, and it is the write a reader of `/fusion:next` will come looking for.
 
 Filed by: coderev (review of Circle Turn 2, range `28f3029..5d51abd`, commit `9a11254`).
+
+---
+Resolved: The third in-place write is named. The shaper row's Writes cell now reads "the cited Circle record's `## Directive` and `## Grounding snapshot` sections in place, plus its `**Active spec/plan:**` head field" — the wording says *head field* rather than *section* deliberately, because that is the distinction `agents/shaper.md:24` turns on and the one the old cell's section-shaped framing lost. Checked against `agents/shaper.md:53` and the consumer at `skills/next/SKILL.md:250`. Closed in plan step 6 (the sixteen-row pass), which read this row against the prompt independently and reached the same correction.

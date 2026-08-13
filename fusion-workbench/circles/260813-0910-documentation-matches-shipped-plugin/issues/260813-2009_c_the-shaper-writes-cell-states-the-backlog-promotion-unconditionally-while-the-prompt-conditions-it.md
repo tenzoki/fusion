@@ -31,3 +31,6 @@ The neighbouring `playmaker` row (`README-agents.md:40`) states the store's main
 Qualify the clause: the rename and the `Promoted:` line land on the backlog entry the draft came from **when that entry holds one idea**; an entry holding several is left untouched and reported back. Six words, and the row stops promising a write the prompt forbids in a case it explicitly anticipates.
 
 Filed by: coderev (review of Circle Turn 2, range `28f3029..5d51abd`, commit `9a11254`).
+
+---
+Resolved: The clause is qualified. It now reads "plus — only when that entry holds a single idea — the marker rename to closed and the `Promoted:` line on the backlog entry the draft came from; an entry holding several is left untouched and reported back", which states both branches `agents/shaper.md:96-105` defines rather than the first alone. The neighbouring `playmaker` row was rewritten in the same step and now bounds its own backlog writes: the `_o_`/`_p_` rename is autonomous, and a split, merge, close or deferral needs a user confirmation the run holds for that operation.

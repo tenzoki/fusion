@@ -34,4 +34,12 @@
 - Coherence: ok
 
 ### Turn 2
-- In progress: S4, S5 plus five review findings folded in
+- Tasks attempted: S4, S5
+- Tasks completed: S4, S5
+- Commits: 9a11254, 5d51abd, 22f892e
+- Review findings: 5 new issues (all minor); the 5 closures from Turn 1 re-verified and holding
+- Circuit breaker status: OK
+- Coherence: ok
+
+### Turn 3
+- In progress: S6 alone (sixteen agent rows, dispatch-parameter roster)
