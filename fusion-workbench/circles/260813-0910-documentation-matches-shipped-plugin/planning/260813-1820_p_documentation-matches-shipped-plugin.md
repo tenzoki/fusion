@@ -1,7 +1,7 @@
 # Implementation Plan: fusion's documentation agrees with the plugin at v8.1.0
 
 **Date:** 2026-08-13
-**Status:** In progress
+**Status:** Partially Complete
 **Spec:** none — planned from the Circle Directive at `circles/260813-0910-documentation-matches-shipped-plugin/_t_circle.md`, against the bounded finding list in `shared/analyses/260813-0828-documentation-staleness-survey.md` and the acceptance conditions in `shared/issues/260813-0825_o_the-v8-1-0-documentation-step-reached-three-files-and-the-feature-reached-seven-surfaces.md`
 **Decidability:** The load-bearing question is whether a documentation sentence is stale. It is decidable whenever the sentence has an artifact-side referent — a path, a parameter, a write scope, a roster, a configuration key — because the mechanism then holds two texts and compares them. It is not decidable for prose whose referent is a reader's need rather than an artifact, and three surfaces in scope carry such prose: the troubleshooting and rationale passages of `docs/plane-setup.md`, and the arguments in `docs/philosophy.md` and `docs/working-model.md`. For that class the mechanism changes rather than approximates. No step returns a staleness verdict on it: prose with no artifact-side referent is authored (steps 7 to 9), and the one place where silence would be mistaken for coverage states the residual instead (step 10). Two further consequences follow. A match count is not a reading and decides nothing, so the mechanism is reading both sides in every step without exception. And for the sub-class that is decidable *and* decays silently — an inventory, a hand-written count — a corrected line is itself an approximation of a check, so the mechanism moves out of prose into a gate (step 3) or the claim is removed (step 2).
 
@@ -165,11 +165,12 @@ flowchart TD
    - Dependencies: none
    - Completion: item 2 gained two routes and now lists twelve. `/fusion:direct` sits beside the shaper route it shares an agent with, read against `skills/direct/SKILL.md:9` (capture without a Turn loop), `:65-72` (the anticipated-circle dispatch) and `:77` (a backlog entry's path is a valid draft, passed through unopened). `/fusion:memo` sits immediately before the `/fusion:next` route it feeds, read against `skills/memo/SKILL.md:13` and `:37`. Item 3 gained backlog entries as a fourth artifact kind and `portfolio.md` as the root file it is, the latter distinguished from an artifact kind because the playmaker regenerates it whole. **The file's discipline held, and the gate proved it:** the first draft named the backlog store as a path literal and `path-literal-lint.test.ts` failed on `skills/help/SKILL.md:69`; the sentence now says "the shared backlog store" and the full suite is green. The kind's definition is still cited to `rules/fusion-workbench-conventions.md`, not recited.
 
-10. **docs/plane-setup.md — command forms and configuration fields only**
+10. [DEFERRED] **docs/plane-setup.md — command forms and configuration fields only**
     - Executor: `coder`
     - Files: `docs/plane-setup.md`
     - Changes: Extract every command form and every configuration field the 466-line document names, and check each against `bin/fusion-plane`: its header usage block at `:15-56`, its `usage()` function at `:2482`, its `cfg_get` call sites, and `templates/plane.config.yaml`. Correct what disagrees. **The seam is exact and is the user's:** a command form or a configuration field is verified wherever it appears, including inside the troubleshooting blocks; a claim about what a symptom means or what to do about it is not verified. The two passages that are rationale and troubleshooting rather than reference — "Why this is worth doing" at `:395-413` and "If a check fails" at `:414-436` — keep their prose. The step's completion note and the Circle's history entry must **state that residual explicitly**, so a later reader does not mistake this step for a full audit of the document. Verification is by reading the helper; no live Plane instance is required and `fusion-plane doctor` is not part of this step.
     - Dependencies: none
+    - Deferral: **deferred by the user at the Turn 4 gate** (session `260813-1815`), who chose the five open review findings over this step. Not started: `git log 267a65c..HEAD -- docs/plane-setup.md` returns nothing, and the file is absent from the session's diffstat. The inline `[DEFERRED]` marker is not in `rules/fusion-workbench-conventions.md` `## Inline State Tracking`, which defines only `[IN PROGRESS]` and `[DONE]` for steps; it is used here rather than leaving the step unmarked, because an unmarked step and a deferred step are the same glyph and this one was decided. The residual the risk table below requires — the Directive promises this verification and does not get it — **is not filed as an issue at the time of this reconciliation**; see the Reconciliation Log.
 
 ## Data Structures
 
@@ -214,3 +215,72 @@ None. No agent prompt, helper, hook or skill changes behaviour in this Circle. T
 The caveat is stated rather than absorbed: if step 6 needs a second Turn, the five-Turn budget no longer covers step 10, and step 10 is then the item to defer, since it depends on nothing and nothing depends on it. The alternative is to raise the budget to six in `fusion-guard.json`, which is the knob step 5 documents and which this Circle is entitled to use on its own work. What must not happen is step 6 being compressed to fit: the twelve unread rows are the Circle's largest single piece of work by the user's own decision, and a partial pass over them reproduces the sampling that produced the sixteenth defect in the first place.
 
 The sequencing the user indicated is kept unchanged, and reading the material confirmed it rather than contradicting it. Groups A and B land in one Turn with no user gate; running the gate after the mechanical edits gives a green first run; the reference corrections want a reader; the sixteen-prompt pass and the prose rewrites are where the time goes and where a reviewer earns its dispatch.
+
+## Reconciliation Log
+
+**260813-2258 — reconciler, domain `code`, range `267a65c..HEAD` (`c0e4219`), 15 commits.**
+
+Every statement below was reached by opening both sides, per this plan's own method constraint. No
+verdict here rests on a match count; where a count appears it is a count of files I listed, and the
+listing is named.
+
+**Steps 1 to 9 are correctly marked `[DONE]`.** Each step's claimed edit was checked in the working
+tree at HEAD, not in its commit message:
+
+| Step | Verified at HEAD |
+|---|---|
+| 1 | `README-agents.md:294-300` — step 5 now names the two `CLAUDE.md` surfaces that exist (listing bullet, `## Layout` row) plus this README's table; `grep -n 'fusion-workbench/history/' README-agents.md` returns nothing |
+| 2 | All five new `bin/` rows present (`grep -c '^| \`bin/<name>\` |'` = 1 each); `grep -c '612 files' CLAUDE.md` = 0; the playmaker clause at `:51` now reads "**maintains** that store"; `CLAUDE.md:65` carries the stamped historical measurement and no present-tense floor |
+| 3 | `hooks/lib/__tests__/derivable-enumerations-lint.test.ts:435` `describe("enumeration lint: the bin/ helper roster …")`, with the drift assertion at `:487` and the mutation fixture at `:495`. `ls bin \| wc -l` = 15 and `grep -c '^\| \`bin/' CLAUDE.md` = 15 — both directions agree |
+| 4 | `README-agents.md:142` draws `Turn loop … ← Turn budget (see below)`; no digit remains. Shaper and planner rows rewritten (see step 6) |
+| 5 | `README.md:99` states the three layers and the per-leaf merge; the tuning table carries `orchestrator.maxTurns` at `:112` and the retired-key advisory row |
+| 6 | Sixteen rows read; `## Dispatch parameters` present at `:54` with eleven rows plus the two playmaker relay rows added in Turn 4. `CLAUDE.md:16` and `docs/philosophy.md:19` now both read `taskplanner, reconciler, playmaker`. `.claude-plugin/plugin.json` is untouched in the range, which matches the step's own note |
+| 7 | `docs/working-model.md:28` `### How a Circle comes into existence` with three entrances; `:158` the corrected walkthrough-5b premise; §5 is two walkthroughs |
+| 8 | `docs/philosophy.md:15` now names three surfaces including `/fusion:cadence` and the `/fusion:memo` backlog capture |
+| 9 | `skills/help/SKILL.md:58`, `:63` (the two new routes) and `:69` (backlog store + `portfolio.md`) |
+
+The session's diffstat over shipped files is exactly the union of steps 1 to 9's file lists: `CLAUDE.md`,
+`README-agents.md`, `README.md`, `docs/philosophy.md`, `docs/working-model.md`,
+`hooks/lib/__tests__/derivable-enumerations-lint.test.ts`, `skills/help/SKILL.md`. Nothing outside the
+plan was edited.
+
+**Test suite green at HEAD, run rather than cited:** `cd hooks && npx vitest run` — 49 files, 1022 tests
+passed. That is the same figure step 7's completion note records.
+
+**Step 10 is deferred, not incomplete, and is now marked as such.** Header `**Status:**` moved from
+`In progress` to `Partially Complete`. The filename marker stays `_p_`: `rules/fusion-workbench-conventions.md`
+`## Inline State Tracking` ties the `_c_` rename to *all* steps being `[DONE]`, and one is not. Whether the
+Circle closes coherent or bounded is the orchestrator's call at Phase 4, not this pass's.
+
+**Three drift items found in the tracking layer. None is fixed here; each is named with its owner.**
+
+1. **The residual issue this plan's own risk table requires does not exist.** The row at `:197` says: "If
+   it is deferred, the residual must be filed as an issue rather than left in the Circle's prose, because
+   the Directive promises the verification." Searched both issue stores — no record names `docs/plane-setup.md`
+   or the deferral. The newest record in either store is `260813-2214_*`, filed by the Turn 4 review; the
+   deferral happened after it. So the promise is currently carried only by this plan's step-10 note, the
+   Circle record's Turn-5 log line and this log — which is the exact placement the risk row rules out.
+
+2. **Step 6's completion note is wrong about its own outcome, and the reviewer already filed it.** The note
+   says "twelve corrected, four left standing … (`shaper`, `planner`, `bugfixer`, `editor`)". Checked
+   independently here by comparing each `| \`<agent>\` |` row at `22f892e` against `8d87192`: **fifteen rows
+   differ and one is byte-identical (`bugfixer`)**. Three of the four rows the note calls standing —
+   `shaper`, `planner`, `editor` — are in the changed set. Twelve and four are the *input* split (rows
+   unread versus survey-confirmed), reused as an output split. Open issue
+   `issues/260813-2052_o_the-step-6-completion-note-says-twelve-rows-corrected-and-names-three-that-changed.md`
+   holds the correction and is assigned to `coder`; the note is left as written, because rewriting a step's
+   evidence is outside a reconciliation pass.
+
+3. **Both conceptrev recommendations are unapplied, and one of them is load-bearing for the deferral that
+   happened.** `reviews/260813-1831-conceptrev-…` asked for (1) an `S3 -.-> S4` edge in diagram 2 and (2) a
+   correction to the risk row at `:197`, whose justification rests on step 10 being "the only step with no
+   dependency in either direction". Neither landed: diagram 2 at `:96-97` still carries only the two edges
+   into `S6`, and `:197` still reads "the only step". Counted from the plan's own `Dependencies:` lines,
+   steps 1, 5, 8, 9 and 10 each have no dependency, and none of them has a dependent — **five steps share the
+   property, not one.** The deferral choice itself survives this: nothing depends on step 10, so deferring it
+   blocks nothing. What does not survive is the plan's claim that step 10 was the *uniquely* deferrable step.
+   Advisory review, no issue filed.
+
+**Nothing in the plan's Open Questions moved.** The two filed decision records under this Circle's decision
+store are still open and unanswered (both carry empty `Answered:` / `Implemented:` lines); the two
+plan-scoped questions were already answered in the plan text.

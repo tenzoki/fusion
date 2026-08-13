@@ -36,3 +36,6 @@ The "about a third" that follows the figure is the part that carries the meaning
 Drop the byte figure and keep the proportion — the indented lines are conditional emissions, are not part of the floor, and add roughly a third if counted. Or date it the way the sentence above it dates its own measurement ("measured 260813"), so it reads as a past reading rather than a current fact. The first is the better fit with what the line is for.
 
 Filed by: coderev (review of Circle Turn 2, range `28f3029..5d51abd`, commit `9a11254`).
+
+---
+Reconciled: 260813-2258 — Still open, re-verified at HEAD `c0e4219`: `CLAUDE.md:65` (the line moved from `:64` when the five `bin/` rows landed) still reads "counting them too adds 30 588 bytes, about a third", undated, two sentences after the line that bans a stated number.

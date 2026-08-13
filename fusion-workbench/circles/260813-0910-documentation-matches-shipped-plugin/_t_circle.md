@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** active
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** circles/260813-0910-documentation-matches-shipped-plugin/planning/260813-1820_o_documentation-matches-shipped-plugin.md
+**Active spec/plan:** circles/260813-0910-documentation-matches-shipped-plugin/planning/260813-1820_p_documentation-matches-shipped-plugin.md
 **Active session history:** circles/260813-0910-documentation-matches-shipped-plugin/history/260813-1815-orchestrator-session.md
 
 ---
@@ -168,7 +168,7 @@ step split is in the survey under `## Proposed step split` and is not restated h
 - Turn 2 (session 260813-1815): commits 28f3029..22f892e (9a11254, 5d51abd, 22f892e); steps 4-5 done (shaper/planner rows and the Turn-budget diagram, README.md configuration section and tuning table); 5 issues from Turn 1 closed and re-verified as holding; coderev filed 5 new issues, all minor; Coherence verdict coherent
 - Turn 3 (session 260813-1815): commits 22f892e..93388bc (8d87192, 93388bc); step 6 done (sixteen agent rows read against their prompts, twelve corrected, dispatch-parameter table added, the planner's domain claim corrected on three surfaces); 2 issues closed; coderev filed 6 new issues, 1 high 3 medium 2 low, and re-read nine rows independently; Coherence verdict coherent
 - Turn 4 (session 260813-1815): commits 93388bc..22f2353 (a489966, 27af85a, c663a1f, 22f2353); steps 7-9 done (working-model Circle-first flow and second walkthrough, philosophy traceability, help skill entry points), plus the skill-body pass closing 3 roster findings; coderev filed 6 new issues, three of them in the prose this Turn wrote; Coherence verdict coherent
-- Turn 5 (session 260813-1815): IN PROGRESS — started at 22f2353; findings instead of step 10, per the user at the Turn 4 gate. Step 10 (docs/plane-setup.md) is deferred as the plan's named candidate. Coherence verdict pending.
+- Turn 5 (session 260813-1815): commit c0e4219; six findings closed, all of them sentences this Circle's own prose introduced in Turns 3 and 4, each corrected against the artifact it names; step 10 (docs/plane-setup.md) deferred by user choice at the Turn 4 gate; Coherence verdict coherent; Turn budget reached
 
 ## Activation proposal (playmaker run 260813-1623)
 

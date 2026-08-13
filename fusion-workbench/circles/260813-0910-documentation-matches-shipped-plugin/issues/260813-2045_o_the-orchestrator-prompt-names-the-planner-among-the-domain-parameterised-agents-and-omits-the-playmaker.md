@@ -25,3 +25,6 @@ Rewrite `agents/orchestrator.md:153`'s parenthetical to name `taskplanner`, `rec
 ## Not to be confused with the design question
 
 Whether `agents/planner.md` *should* accept a `**Domain:**` parameter is open and filed separately as `decisions/260813-1820_o_should-the-planner-accept-a-domain-parameter-that-three-documented-surfaces-already-promise.md`. This issue is only that the orchestrator prompt describes a mechanism the prompts do not have.
+
+---
+Reconciled: 260813-2258 — Still open, re-verified at HEAD `c0e4219`: `agents/orchestrator.md` still names "`taskplanner`, `reconciler`, and `planner`" in its detect-workbench-domain step. The four in-scope surfaces were corrected — `CLAUDE.md:16` and `docs/philosophy.md:19` both now read `taskplanner, reconciler, playmaker` — so this prompt is the last carrier of the old membership.

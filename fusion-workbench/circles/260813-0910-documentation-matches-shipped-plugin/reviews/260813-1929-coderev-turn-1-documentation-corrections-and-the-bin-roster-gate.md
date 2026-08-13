@@ -147,3 +147,7 @@ Seven issues in `circles/260813-0910-documentation-matches-shipped-plugin/issues
 ## Method note
 
 Every finding and every entry in `## What was verified and holds` rests on opening both sides. Three claims were settled by mutation against a scratch copy of the tree rather than by reading (findings 1 and 6, and the four-probe table), because "the test would catch this" is not decidable by reading a test. No finding in this review rests on a match count.
+
+---
+
+**Reconciled 260813-2258.** Seven findings filed, five closed and two still open. Each of the five closures was re-checked against the artifact at HEAD `c0e4219`, not against its closure note: `README-agents.md:300` (the narrowed lint claim), `CLAUDE.md:42` (the commit-lock row's partial acquirer list dropped), `CLAUDE.md:43` ("authoritative documentation" replacing the self-falsifying absolute), `CLAUDE.md:65` (the **unindented** `emit_if_exists` qualifier), and the plan's `_o_`→`_p_` rename with `**Status:** In progress`. All five hold. The two open findings — the missing `hooks/staging-drift.ts` row and the unanchored `bin/` roster parser — were re-verified as still present.

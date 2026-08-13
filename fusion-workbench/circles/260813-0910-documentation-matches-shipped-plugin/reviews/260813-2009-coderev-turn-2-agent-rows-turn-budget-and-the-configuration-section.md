@@ -160,3 +160,7 @@ closes: both sit in lines this Circle wrote in order to be exact, and both are c
 in one step, which is how a documentation defect earns its cost back. Findings 2, 3 and 4 are
 one-clause edits that can ride along with whichever later step next touches those files — step 6's
 dispatch-parameter table is the natural home for 3 and 4.
+
+---
+
+**Reconciled 260813-2258.** Five findings filed, two closed and three still open. Both closures re-checked at HEAD `c0e4219` in `README-agents.md:25`: the shaper's Writes cell now names the `**Active spec/plan:**` head field, and the backlog-promotion clause now carries the single-idea condition and the untouched-and-reported-back branch. The three open findings (the 30 588-byte figure, the tuning-table preamble, the `orchestrator.maxTurns` row) were each re-verified as still present in `CLAUDE.md:65` and `README.md:104`, `:112`.

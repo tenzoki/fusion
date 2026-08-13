@@ -50,3 +50,6 @@ user-direct, or in-Circle clarification when the orchestrator's dispatch carries
 `**Parent task:**`.
 
 Filed by: coderev (review of Circle Turn 3, range `22f892e..8d87192`, commit `8d87192`).
+
+---
+Reconciled: 260813-2258 — Still open, re-verified at HEAD `c0e4219`: `README-agents.md:65` still reads "falls back to the existing mode-detection heuristic, i.e. user-direct", and the `**Parent task:**` row at `:66`-neighbourhood still names the second absent-line outcome.

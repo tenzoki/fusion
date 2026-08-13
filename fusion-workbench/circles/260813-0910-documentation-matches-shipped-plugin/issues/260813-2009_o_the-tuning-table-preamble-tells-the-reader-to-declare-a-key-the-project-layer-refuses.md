@@ -45,3 +45,6 @@ The old preamble said the rows were "assembled from the fields already in `hooks
 Say where the declaring happens without promising it for every row — most rows are keys you declare in your project's `fusion-guard.json`; the exceptions are named in the rows themselves. Or drop the instruction and let each row carry its own location, which is what `README-hooks.md` does and what the two new rows already do.
 
 Filed by: coderev (review of Circle Turn 2, range `28f3029..5d51abd`, commit `5d51abd`).
+
+---
+Reconciled: 260813-2258 — Still open, re-verified at HEAD `c0e4219`: `README.md:104` (moved from `:105`) still reads "Declare the ones you want in your project's `fusion-guard.json`", and the `guard.enabled` row that follows still states the project layer may not set it.

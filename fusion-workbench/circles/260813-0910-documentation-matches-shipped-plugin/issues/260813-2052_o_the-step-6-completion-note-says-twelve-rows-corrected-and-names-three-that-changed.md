@@ -81,3 +81,6 @@ the input split (twelve unread, four survey-confirmed) separately from the outco
 the two sets of numbers stop being read as one.
 
 Filed by: coderev (review of Circle Turn 3, range `22f892e..8d87192`, commit `8d87192`).
+
+---
+Reconciled: 260813-2258 — Still open, and **independently confirmed** at this reconciliation rather than taken on the reviewer's word: comparing each `| \`<agent>\` |` row of `README-agents.md` at `22f892e` against `8d87192`, fifteen rows differ and `bugfixer` alone is byte-identical. The plan's step-6 completion note and `history/260813-2043-coder-…` both still say "twelve corrected, four left standing". The reconciler left both records as written — correcting a step's evidence belongs to `coder`, per this record's own fix direction — and restated the finding in the plan's `## Reconciliation Log`.

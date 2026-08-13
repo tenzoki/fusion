@@ -229,3 +229,7 @@ digit costs nothing.
 - Issues filed: six, all `260813-2214_o_*` under this Circle's issue store.
 - Out of scope by dispatch and not re-filed: the two Turn 1, three Turn 2 and three Turn 3 findings
   still open.
+
+---
+
+**Reconciled 260813-2258.** Six findings filed, all six closed in Turn 5's commit `c0e4219`, and each closure re-checked against the artifact at HEAD rather than against its note: `docs/working-model.md:28` (no entrance count, `/fusion:seed-from-plane` as item 3, and the orchestrator entrance replaced by "A request you hand the orchestrator creates no Circle"), `:80` (the Origin Rule cited to `## Origin Rule`, `## Path Resolution` kept only for the mid-run resolution), `:158` (the disjointness premise replacing the two-store one), `README-agents.md:54` (the two termination bounds stated separately) and `:61-62` (Step 5b, not Step 3). All six hold. **The commit that closed them is itself unreviewed** — `bin/fusion-review-coverage` reports `c0e4219` uncovered, and it is the only uncovered commit in the range that touches shipped files.

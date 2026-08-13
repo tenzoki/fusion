@@ -1349,3 +1349,6 @@
 {"ts":"2026-08-13T20:44:52","event":"coherence_review","turn":4,"detail":"verdict=ok | Artifact<->Grounding: 6 issues filed, 3 closures verified | Artifact<->Directive: 9 of 10 steps done | Grounding<->Directive: 0 answered decisions touched"}
 {"ts":"2026-08-13T20:44:52","event":"turn_end","turn":4,"detail":"3 tasks resolved (S7,S8,S9), 6 issues created, 3 closed, 4 commits"}
 {"ts":"2026-08-13T20:44:52","event":"turn_start","turn":5,"detail":"five review findings; step 10 deferred by user choice"}
+{"ts":"2026-08-13T20:52:16","event":"coherence_review","turn":5,"detail":"verdict=ok | Artifact<->Grounding: 6 findings closed, each re-verified against its artifact | Artifact<->Directive: 9 of 10 steps; step 10 deferred by user | Grounding<->Directive: 0 answered decisions touched"}
+{"ts":"2026-08-13T20:52:16","event":"turn_end","turn":5,"detail":"6 issues closed, 1 commit"}
+{"ts":"2026-08-13T20:52:16","event":"circuit_breaker","turn":5,"detail":"Max Turns reached (5/5)"}

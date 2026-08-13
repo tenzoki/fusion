@@ -232,3 +232,7 @@ what ships; the same drift reached the record written to prove it had not.
 
 None is a release blocker: nothing here changes agent behaviour, and no shipped mechanism is
 broken.
+
+---
+
+**Reconciled 260813-2258.** Six findings filed, three closed and three still open. The three closures were re-checked at HEAD `c0e4219`: `README-agents.md:61-62` carry the two playmaker relay rows with `/fusion:next` Step 5b as the passer, `:59` and `:65-68` carry the two skill passers the agent-prompt-only reading had missed, and `:64` no longer names the orchestrator as a passer of `**Circle:**`. The three open findings were re-verified as still present, and the third of them — the step-6 completion note — was confirmed independently: fifteen of the sixteen agent rows differ between `22f892e` and `8d87192`, `bugfixer` alone is byte-identical.
