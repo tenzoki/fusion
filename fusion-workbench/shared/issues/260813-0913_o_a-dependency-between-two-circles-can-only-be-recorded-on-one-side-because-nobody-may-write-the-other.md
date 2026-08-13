@@ -91,3 +91,32 @@ record.
 `circles/260813-0858-playmaker-maintains-backlog-store/_a_circle.md` currently names the
 documentation Circle as a relationship in prose without its directory name
 (`260813-0910-documentation-matches-shipped-plugin`). One line, once a writer exists.
+
+---
+
+## Reconciliation 260813-1545 — still true, still open, and one citation has drifted
+
+Each of the three "no party may write it" claims re-read against the working tree at `2a029eb`,
+not carried forward from the record:
+
+- **The shaper.** `agents/shaper.md:28` still reads "**No existing Circle may be modified in
+  anticipated-circle mode**". Unchanged.
+- **The orchestrator.** `agents/orchestrator.md` contains the string `Dependencies` **zero** times.
+  Not merely absent from the write list — absent from the prompt.
+- **The playmaker.** `agents/playmaker.md:10` still enumerates its Circle-record writes as the
+  appended activation-proposal, dependency-warning and stale-Grounding sections. `b995049` widened
+  this agent into the backlog store and did not touch its Circle-record write set.
+
+**One citation has gone stale and is corrected here rather than in the body.** The closing section
+says `circles/260813-0858-playmaker-maintains-backlog-store/_a_circle.md`. That record was
+activated on 260813 at 09:33 and is now `_t_circle.md`; it will be `_c_circle.md` after closure.
+The observation is unaffected — its `## Dependencies` section still names the documentation Circle
+in prose without the directory name `260813-0910-documentation-matches-shipped-plugin`, exactly as
+this record says. Cite the record as `*_circle.md` when this is picked up; the marker will have
+moved again by then.
+
+**The reverse-edge gap is now measurable rather than only argued.** The documentation Circle's
+`_a_circle.md:148-156` states the relationship with both directory names. The playmaker Circle's
+`_t_circle.md` `## Dependencies` still does not. A reader opening the playmaker Circle first sees
+a dependency described in prose with no resolvable target, which is the failure the record
+predicted, now observed on the pair it was filed about.

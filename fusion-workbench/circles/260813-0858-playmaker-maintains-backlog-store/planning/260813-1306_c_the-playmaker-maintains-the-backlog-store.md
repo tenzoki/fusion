@@ -1,7 +1,7 @@
 # Implementation Plan: the playmaker maintains the backlog store
 
 **Date:** 2026-08-13
-**Status:** Approved, revised at the approval gate on 2026-08-13 after the `conceptrev` diagram verdict and the user's two answers
+**Status:** Partially Complete — steps 1–8 landed in `b995049`, step 9 deferred by the user at the Turn-3 release gate. Closed at the user's decision rather than on completion; see `## Reconciliation Log`. (Was: Approved, revised at the approval gate on 2026-08-13 after the `conceptrev` diagram verdict and the user's two answers.)
 **Spec:** none — planned from the Circle's Directive in `circles/260813-0858-playmaker-maintains-backlog-store/_t_circle.md`, which is settled
 **Decidability:** The load-bearing question is *may this run perform a confirm-gated backlog operation, meaning a split, a merge, a close or a deferral?* It is decidable from an input the mechanism holds directly: whether the run has a user confirmation for that specific operation, either obtained inside the run through a question channel the run actually has, or carried into the run by its own dispatch prompt. It is not decided by predicting which dispatcher called the agent. The mandate stated by dispatch path is the reader-facing half; the mechanical gate is confirmation-in-hand, which the run observes rather than infers. The two cannot disagree in the unsafe direction, because a run with neither channel holds no confirmation and performs nothing.
 
@@ -405,7 +405,7 @@ A run that stops at checklist item 1 because it holds no confirmation channel is
 
 ## Open Questions
 
-- [ ] **Release timing.** `CLAUDE.md` `## Release process` names four version surfaces plus a tag and a marketplace bump. Step 9 moves one of them. Whether this Circle ships on its own or waits for `circles/260813-0910-documentation-matches-shipped-plugin/`, which is queued directly behind it and rewrites four passages about this behaviour, is the user's call at closure.
+- [x] **Release timing.** `CLAUDE.md` `## Release process` names four version surfaces plus a tag and a marketplace bump. Step 9 moves one of them. Whether this Circle ships on its own or waits for `circles/260813-0910-documentation-matches-shipped-plugin/`, which is queued directly behind it and rewrites four passages about this behaviour, is the user's call at closure. **Answered 260813 at the Turn-3 release gate: it waits.** One release carries both Circles; step 9 is marked `[DEFERRED]` above with the reason. Recorded in `2a029eb` and in `shared/issues/260813-0825_*` `## Update 260813-1500`.
 - [ ] **The same relay is owed to `/fusion:direct`, and this plan does not build it.** The evidence that settled step 4 also shows that `skills/direct/SKILL.md` documents a shaper clarification flow its own dispatch cannot run, and that skill has no relay step. Filed as `shared/issues/260813-1334_*_fusion-direct-documents-a-shaper-clarification-flow-that-a-dispatched-sub-agent-cannot-run.md`. It is a different skill and a different agent, found nearby rather than caused by this Directive, so it belongs to a later Circle. Step 4's shape is the template for fixing it.
 
 ## Resolved at the approval gate
@@ -416,3 +416,52 @@ Recorded so the revision is legible against the first version rather than silent
 - **The confirmation channel** was the first risk row's open question and is now step 4.
 - **`skills/next/SKILL.md`** was listed as untouched with a caveat. It is touched, by step 4.
 - **The deferral transitions** were incomplete in the state diagram, which `conceptrev` found. They are decided and drawn, with the two absent transitions named and reasoned in `## Approach` and carried into step 1's marker table.
+
+## Reconciliation Log
+
+**260813-1545, reconciler, domain `code`.** Every step verified against the working tree at
+`2a029eb`, not against the plan's own claims.
+
+**Eight steps landed; the ninth is deferred and the marker moves to `_c_` on the user's decision,
+not on completion.**
+
+| Step | Claim | Verified against | Verdict |
+|---|---|---|---|
+| 1 | conventions state the filing/maintenance boundary | `rules/fusion-workbench-conventions.md:196–216` — the boundary sentence at `:204`, the four operations at `:207`, the marker-writer table at `:209–214`, the extended `Binding decisions:` line at `:216` | landed |
+| 2 | playmaker holds the write, the mandate and the gate | `agents/playmaker.md:3` (frontmatter), `:10`, `:48`, `:60`, `:67`, `:112`, `:190` (`## Two mandates, by dispatch path`); and `bin/fusion-paths playmaker` run directly → `OUT_BACKLOG=shared/backlog`, `SCAN_BACKLOG=shared/backlog` | landed; acceptance (a)–(c) met |
+| 3 | portfolio template carries performed and proposed | `rules/circle-records.md:124–132` — both cases in one section, the four operation forms one to a line, the Phase-4 clause at `:132` | landed |
+| 4 | the confirmation relay | `skills/next/SKILL.md:153` `## Step 5b`, sitting between Step 5 (`:118`) and Step 6 activation (`:191`); the parameter block at `:167`–`:172`; `agents/playmaker.md:207–219` carries the same block and the `user-fusion-next-confirmed` trigger. `bin/fusion-paths next` run directly → emits neither backlog key | landed; acceptance (a), (b), (e) met by direct check |
+| 5 | the two skill bodies name the playmaker | `skills/memo/SKILL.md:152`, `skills/direct/SKILL.md:77` | landed |
+| 6 | the resolver assertion inverts | `hooks/lib/__tests__/fusion-paths.test.ts:345–346` asserts both keys | landed |
+| 7 | the mandate lint | `hooks/lib/__tests__/playmaker-backlog-mandate-lint.test.ts`, 18 714 bytes, five cases | landed |
+| 8 | golden regenerated, suite green | `hooks/lib/__tests__/fixtures/rules-emission.golden` last written by `b995049`; full suite re-run by this reconciler → **49 files, 1019 tests, all passing**, which is exactly the prediction in `## Testing Strategy` | landed and re-measured |
+| 9 | version bump | `.claude-plugin/plugin.json:3` still `"8.1.0"` | correctly **not** done — deferred |
+
+**The end-to-end acceptance run was never performed, and that is consistent with this plan rather
+than a deviation from it.** `## Testing Strategy` schedules the run for the user at a Turn boundary
+*after step 9 lands*; step 9 was deferred, so the run went with it. `shared/backlog/` still holds
+exactly one entry, `260811-0826_o_observations.md`, unchanged since `dec40bb` (12 380 bytes,
+last modified 260812-1951). None of the eight checklist items in `## Testing Strategy` has been
+exercised. What is proven is the mechanism — the resolver emits the key, the two mandates are
+stated on both surfaces and pinned by a lint, and the suite is green. What is unproven is the
+capability end to end: no playmaker run has ever written into the backlog store.
+
+**Step 9 had no carrier outside this file, and now has one.** The bump to `8.2.0` is named in
+exactly two places on disk: step 9 above, and one context paragraph in
+`shared/issues/260813-0825_*` `:142` that states the deferral without carrying it as an acceptance
+item. `circles/260813-0910-documentation-matches-shipped-plugin/_a_circle.md` does **not** carry it
+— its `## Directive` says under *What this Circle is not* that "the four version surfaces all read
+8.1.0" is one of three leads that came back clean and that "no step re-verifies them". So closing
+this plan would have retired the only live statement of the obligation. Filed as
+`circles/260813-0858-playmaker-maintains-backlog-store/issues/260813-1545_o_the-deferred-version-bump-has-no-carrier-outside-the-plan-that-is-being-closed.md`.
+
+**Marker: `_p_` → `_c_`.** Not "all steps done" — the convention's second reading, *user decided to
+close*. Leaving it `_p_` would assert an agent is actively working on this plan inside a Circle
+that is closing, which is the false state; `_d_` would say the whole plan was deferred, when one
+step of nine was. `**Status:** Partially Complete` in the head carries the honest count.
+
+**No review covers steps 1–8.** `bin/fusion-review-coverage --since 1c2d555` reports
+`verdict=uncovered`, 6 of 8 commits uncovered, `b995049` among them. This plan's changes to
+`agents/playmaker.md`, three rule and skill bodies and two TypeScript test files were never read by
+`coderev`. Recorded here because a reader of this plan should not infer from eight `[DONE]` markers
+that eight steps were reviewed.

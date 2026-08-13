@@ -1283,3 +1283,9 @@
 {"ts":"2026-08-13T11:52:19","event":"staging_drift","turn":3,"detail":"circles/260813-0858-playmaker-maintains-backlog-store/history/260813-1306-planner-session.md left the plan commit uncarried — the first planner run's log, written before the revision that replaced it in my staging list"}
 {"ts":"2026-08-13T12:47:01","event":"state_drift","turn":3,"detail":"progress.commits read 5 against git's 7; agentstate not written since the plan commit. Written."}
 {"ts":"2026-08-13T12:47:01","event":"commit","turn":3,"detail":"steps 1-8 of the Circle plan; suite 1019/1019 across 49 files"}
+{"ts":"2026-08-13T14:02:29","event":"review_start","turn":3,"detail":"coderev over 7342fdd..HEAD plus 7 carried not-opened paths"}
+{"ts":"2026-08-13T14:02:29","event":"review_done","turn":3,"detail":"11 issues filed, 1 High; coverage now covered, uncovered=0"}
+{"ts":"2026-08-13T14:02:29","event":"reconciliation","turn":3,"detail":"18 discrepancies, 10 corrected, 7 reported to orchestrator, 1 new record"}
+{"ts":"2026-08-13T14:02:29","event":"coherence_review","turn":3,"detail":"verdict review-needed. Artifact-Grounding: 8 of 9 plan steps verified, 13 open reviewer findings. Artifact-Directive: partially — a sixth surface still asserts the old boundary. Grounding-Directive: 19 active decisions, 0 conflicting"}
+{"ts":"2026-08-13T14:02:29","event":"turn_end","turn":3,"detail":"8 plan steps done, 1 deferred; 3 commits"}
+{"ts":"2026-08-13T14:02:29","event":"turn_start","turn":4,"detail":"close the review seams before the Circle closes"}

@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** active
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** circles/260813-0858-playmaker-maintains-backlog-store/planning/260813-1306_p_the-playmaker-maintains-the-backlog-store.md
+**Active spec/plan:** circles/260813-0858-playmaker-maintains-backlog-store/planning/260813-1306_c_the-playmaker-maintains-the-backlog-store.md
 **Active session history:** shared/history/260813-0806-orchestrator-session.md
 
 ---
@@ -126,12 +126,21 @@ plus the closed original.
   previous commit's binary. This Circle's Directive is still untouched and its Grounding
   unchanged; Turn 3 is where its own work begins.
 
-- Turn 3 (session 260813-0806): IN PROGRESS from 3c51bc1; the Circle's own Directive begins; session history: shared/history/260813-0806-orchestrator-session.md
+- Turn 3 (session 260813-0806): commits 3c51bc1..2a029eb; Coherence verdict review-needed (reconciler, recommendation: revise Artifact); session history: shared/history/260813-0806-orchestrator-session.md
 
   Opens by settling the decision the shaper marked as planning-blocking, on whether a
   non-interactive Phase 4 run performs the confirm-gated operations. It has to be answered
   before the plan rather than inside it, because it decides whether a proposal-return path
   is built at all, and that is a shape rather than a detail.
+
+- Turn 4 (session 260813-0806): IN PROGRESS from 2a029eb; closing the seams the review found before the Circle closes; session history: shared/history/260813-0806-orchestrator-session.md
+
+  The Turn-3 review filed eleven findings against this Circle's own delivery, one of them High:
+  the confirmation relay offers a "choose which" option with no continuation, against a store
+  whose only entry carries thirteen ideas partitioned three ways. The reconciler independently
+  found the sixth surface still asserting the old no-write boundary, which is why its
+  Artifact-to-Directive edge reads partially rather than reached. The user chose to close the
+  seams rather than close the Circle over them.
 
 ## Activation proposal (playmaker run 260813-0926)
 

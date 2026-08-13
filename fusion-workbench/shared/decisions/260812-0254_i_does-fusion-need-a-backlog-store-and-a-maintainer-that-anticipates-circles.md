@@ -79,3 +79,5 @@ they are one design and neither is implementable alone.
 ---
 Answered: this record `## Answer, 260812-1620` — a `shared/backlog/` store, maintained by the
 playmaker, with no new agent.
+
+Implemented: `dec40bb` + `3c6ec4e` (the store and its resolver keys, v8.1.0) and `b995049` (the maintainer half). Both clauses of the answer are now on disk: `shared/backlog/` exists as a shared-only store defined in `rules/fusion-workbench-conventions.md` `## Backlog entries`, and the playmaker maintains it under a stated mandate with `OUT_BACKLOG` emitted to it — no seventeenth agent was created, which was the load-bearing half of "with no new agent". Verified by the reconciler at 260813-1545 by running `bin/fusion-paths playmaker` and reading `agents/playmaker.md`; the agent roster is still sixteen.

@@ -94,3 +94,35 @@ Partially resolved, and **re-scoped to what remains**. The marker returns to `_o
 2. **`map_view` at `bin/fusion-plane:850` carries the identical unguarded `mktemp`.** Found while fixing this record, not previously filed. It sits on the rebuild path **before** `plane_curl` runs, so it fails earlier than the defect this record was written about, and the guards just added do not cover it. It is recorded here rather than as a competing record because it is the same defect in the same file, and splitting one pattern across two records is how one of them gets fixed and the other forgotten.
 
 **Acceptance for the remainder:** no `mktemp` in `bin/fusion-plane` is unguarded, and a temp file created by `plane_curl` or `map_view` does not survive an abnormal exit.
+
+---
+
+## Reconciliation 260813-1545 — the remainder is confirmed, and the enumeration undercounts it
+
+Re-measured against `bin/fusion-plane` at `2a029eb` by listing every `mktemp` in the file.
+
+**Two citations have drifted since this record was written.** `d6dd193` moved lines. The three
+guarded `mktemp`s in `plane_curl` are now at `:395`, `:400` and `:409`, not the `:360`/`:363`/`:379`
+in the `**Affects:**` header; `map_view`'s unguarded one is at `:927`, not `:850`. Both guards
+verified present at the new lines in the `if ! tmp="$(mktemp …)"; then` form.
+
+**The residual is larger than point 2 states.** It names `map_view` as the one identical case. The
+file carries **six** unguarded `mktemp` calls, not one:
+
+| Line | Function context |
+|---|---|
+| 927 | `map_view` — the one this record already names |
+| 996 | the stamped-map path |
+| 1024 | `map_write` |
+| 1129 | the outbox writer |
+| 1750 | `--rebuild-map` |
+| 1778 | the same, the `out` temp |
+
+The acceptance criterion this record already carries — *no `mktemp` in `bin/fusion-plane` is
+unguarded* — is the right one and is unchanged by this; it is the enumeration under it that would
+have led a fixer to guard one call and believe the record satisfied. Point 1 (the single EXIT trap
+at `:908` is `map_view_cleanup` and covers none of `plane_curl`'s temp files) is confirmed
+unchanged.
+
+Severity is unchanged at Low: every ordinary path still removes its temp files, and the headline
+defect stays fixed. Suite green at 49 files / 1019 tests.

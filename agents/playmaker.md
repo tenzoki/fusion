@@ -204,7 +204,7 @@ Binding record: `260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-
 
 On the `/fusion:next` path you are a sub-agent, and a sub-agent has no channel to the user: that skill's `AskUserQuestion` grant belongs to the skill body running in the main session and does not travel to you. So there the confirmation arrives the second way, and you run **twice**. The first run ranks, writes its proposals into `$PORTFOLIO` `## Backlog — ranked`, and returns those same lines as report text. The skill puts them to the user. The second run is dispatched with the answer.
 
-A dispatch prompt carrying a `**Confirmed operations:**` block means: perform exactly the operations it lists and no others, propose nothing further, regenerate `$PORTFOLIO` so it records what was performed, and stop. The lines are the first run's own words, copied rather than paraphrased, so act on them as written instead of re-deriving the analysis behind them; `**Proposal source:**` names where that analysis is written down, for a line that needs its context. The block's form:
+A dispatch prompt carrying a `**Confirmed operations:**` block means: perform exactly the operations it lists and no others, propose nothing further, and stop. The lines are the first run's own words, copied rather than paraphrased, so act on them as written instead of re-deriving the analysis behind them; `**Proposal source:**` names where that analysis is written down, for a line that needs its context. What that dispatch checks first, what it does not write, and what it does write are the three paragraphs after the block form. The block's form:
 
 ```
 **Domain:** <detected-domain>
@@ -215,6 +215,12 @@ A dispatch prompt carrying a `**Confirmed operations:**` block means: perform ex
 - defer <entry path> until <target>
 **Proposal source:** <portfolio> `## Backlog — ranked`, generated <stamp from the portfolio header>
 ```
+
+**Read the stamp before you write anything.** Open the portfolio the `**Proposal source:**` line names and compare its header's `**Generated:**` value against the stamp in that line. Equal: the file on disk is the one these operations were proposed against, and you proceed. Different — or the file is gone, or its header carries no `**Generated:**` value — then **perform no operation, write no file at all, and return saying so**, naming both stamps and saying the proposals have to be put to the user again against a fresh run. The window between the two dispatches is the user answering a question, and a Phase 4 dispatch or a second `/fusion:next` landing inside it overwrites the portfolio in full: the entries these lines name may have moved marker, been split already, or stopped existing, and a line copied verbatim from a superseded analysis is the one thing this relay must not act on. Carrying the stamp and not reading it would leave the relay blind to the only failure it was given an instrument for.
+
+**Write no Circle record on this dispatch, and rank nothing.** Steps 3, 4 and 5 do not run here: no `## Activation proposal`, no `## Dependency warning`, no `## Parent grounding stale`. Those three are appended with no idempotence guard, and the first run of this same relay appended them minutes ago — running them again leaves two identical blocks on the very record `/fusion:next` is about to activate. "Propose nothing further" above is about backlog proposals; this is about the appends, and both hold.
+
+**Regenerate `$PORTFOLIO` from the file you just verified.** Carry its Active, Anticipated, Recently-closed, Archived and Warnings sections across verbatim — you have established that they are current, and re-deriving them is precisely what would need Steps 3 to 5. Rewrite the backlog section alone, from the store as it now stands, with the operations you performed listed under `Performed this run:` in the same four forms. Stamp the header with your own `**Generated:**` time and session id, because the file on disk is now yours. That, plus your history log, is the whole of this dispatch's write.
 
 **Log that run under the trigger segment `user-fusion-next-confirmed`.** Both dispatches of one relay can land inside the same minute and the log filename is stamped to the minute, so the shared segment would have the second run overwrite the first's log.
 

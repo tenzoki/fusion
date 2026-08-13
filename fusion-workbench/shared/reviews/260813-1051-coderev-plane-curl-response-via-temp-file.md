@@ -159,3 +159,24 @@ not worth a record of its own, and worth a line if that header is edited for ano
 - **With whichever of those lands:** the `ZDOTDIR` noise fixture, so the regression guard stops
   depending on the developer's own shell.
 - **Cleanup, any time:** `LC_ALL=C` on the test file's shared `git()` helper.
+
+---
+
+## Reconciliation annotation — 260813-1545
+
+Disposition of the five findings, verified against `bin/fusion-plane` at `2a029eb`. The findings
+themselves are not rewritten.
+
+| Finding | Record | State |
+|---|---|---|
+| Quoting and injection at the shell boundary | `shared/issues/260813-1051_c_plane-curl-interpolates-tmpdir-unquoted-into-the-zsh-command-string.md` | **closed** by `d6dd193` — the command string `zsh` parses is now a constant |
+| Unguarded failure that becomes a wrong answer | `shared/issues/260813-1051_o_an-unguarded-mktemp-in-plane-curl-degrades-into-a-wrong-answer-because-every-call-site-suspends-set-e.md` | **open, re-scoped.** `plane_curl`'s three `mktemp`s are guarded at `:395`, `:400`, `:409`. Six unguarded ones remain elsewhere in the file and the EXIT trap still covers only `map_view` — see that record's `## Reconciliation 260813-1545` |
+| A stated absolute that does not hold | `shared/issues/260813-1051_c_the-http-code-is-still-read-from-the-noisy-channel-and-a-zshexit-hook-writes-after-curl.md` | **closed** by `d6dd193` — the status code left the noisy channel |
+| The fix has no test that reproduces its trigger | `shared/issues/260813-1051_o_the-plane-curl-regression-guard-only-fires-on-a-machine-whose-interactive-rc-prints.md` | **open**, unchanged. Medium; the regression guard still depends on the developer's own rc printing |
+| The locale fix is at the leaf, not at the shared helper | `shared/issues/260813-1051_o_lc-all-c-sits-on-the-leaf-git-invocation-not-on-the-test-files-shared-git-helper.md` | **open**, unchanged. Low; `circle-stash-git-exclusion.test.ts:52` is still locale-dependent |
+
+Two of five closed, three open, none blocking. `bin/fusion-plane`'s own suite is green.
+
+**The `**Not-opened:**` list at `:5` was never carried into a later review**, because no later
+review ran in this session. `bin/fusion-review-coverage --since 1c2d555` reports this file as the
+only review covering the session range, `covers=2` of 8 commits.

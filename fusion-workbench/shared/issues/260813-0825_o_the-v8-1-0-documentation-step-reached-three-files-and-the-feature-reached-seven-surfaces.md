@@ -146,3 +146,39 @@ carries both Circles.
 **Do not re-measure these five rows from scratch.** They were read against HEAD at `b995049`,
 both sides, per the method constraint this record already carries under `## Withdrawn claim`: a
 documentation defect is confirmed by reading both sides, never by a match count.
+
+## Reconciliation 260813-1545 — the handoff is real and findable; all four passages re-read at HEAD
+
+Each of the five rows in `## Update 260813-1500` was re-opened against the working tree at
+`2a029eb`, both sides, per this record's own method constraint. All five stand:
+
+- `README-agents.md:40` — the `playmaker` row still reads "also consolidates the shared backlog
+  store (names duplicates, tells a defect from an idea, ranks the entries)". At `b995049` the agent
+  **merges** duplicates into one consolidated entry. Still a contradiction. The Writes column still
+  omits the backlog store while `bin/fusion-paths playmaker` emits `OUT_BACKLOG=shared/backlog`.
+- `CLAUDE.md:51` — the parenthetical "the playmaker consolidates and ranks them, no agent files
+  one" is still present in the `fusion-workbench/` layout row. The second clause remains true.
+- `docs/working-model.md` — the string `backlog` occurs **zero** times, and so does `playmaker`.
+  Silence, confirmed by count rather than asserted.
+- `skills/help/SKILL.md:62` — names the playmaker for `/fusion:next` only. Silence, unchanged.
+
+**The handoff is findable from both ends, which is what was asked.**
+`circles/260813-0910-documentation-matches-shipped-plugin/_a_circle.md:38-59` names the same four
+passages with line ranges under *The four passages that wait on the playmaker Circle*, and its
+`## Dependencies` at `:148-156` names the playmaker Circle's directory. A reader arriving from
+either the issue store or the documentation Circle reaches the same list. The reverse edge is
+absent from the playmaker Circle's own record, which is `shared/issues/260813-0913_*` and not this
+record's defect.
+
+**The withdrawal at `## Withdrawn claim` is intact and is not repeated anywhere else.**
+`README-hooks.md` was re-read at the four cited lines: `:14`, `:238`, `:268` and the section
+heading at `:272` are each past tense or explicitly labelled as removed history. A grep for
+`README-hooks` across `shared/issues`, `shared/analyses`, `shared/history` and both 260813 Circles
+returns 19 other hits, every one of them in a different closed record about a different subject
+(the `commit-message` class, the domain cascade, the churn-rank contract, the lib table). **No live
+record repeats the withdrawn claim.**
+
+**One consequence of this session's closure worth stating here.** The version bump to `8.2.0` that
+`:142` mentions as context is not carried as an acceptance item by any open record: the
+documentation Circle's Directive puts the version surfaces out of its scope explicitly. Filed as
+`circles/260813-0858-playmaker-maintains-backlog-store/issues/260813-1545_o_the-deferred-version-bump-has-no-carrier-outside-the-plan-that-is-being-closed.md`.

@@ -201,7 +201,7 @@ It carries the issues/planning marker vocabulary below, read for this kind as: `
 
 Two bounds:
 
-- **No agent originates a backlog entry.** Filing is originating an idea; maintenance is reshaping ideas the store already holds. A defect an agent finds is an issue and a choice point is a decision record, exactly as before. The user files, by hand or through `/fusion:memo`; the playmaker maintains; nobody else writes here.
+- **No agent files a backlog entry.** Filing is originating an idea; maintenance is reshaping ideas the store already holds. A defect an agent finds is an issue and a choice point is a decision record, exactly as before. The user files, by hand or through `/fusion:memo`; the playmaker maintains; nobody else writes here.
 - **The backlog is not the work queue.** It holds ideas, not tasks. Whether `taskplanner` and `tasklist.md` retire into it is open (option 4 of the backlog decision, which the user left undecided), and nothing here answers it in either direction.
 
 **Maintenance is four operations and a ranking rename.** Splitting one entry's ideas across several files, merging several statements of one idea into one, closing an entry whose idea is no longer live, and deferring one to a named later moment — **four**, each performed only with a user confirmation the run holds for that operation. Renaming between `_o_` and `_p_` states the playmaker's own ranking of a live idea and is autonomous. None of the five adds an idea to the store, which is why the bound survives them: the text a merge writes consolidates statements already filed.

@@ -158,7 +158,11 @@ Playmaker's report from Step 3 may name backlog operations it proposed and could
 
 **1. Read the proposals out of the report**, one operation to a line. The four line forms are fixed by the portfolio template in `rules/circle-records.md` `## Backlog — ranked`, and playmaker returns them in the report exactly as it wrote them into the portfolio.
 
-**2. Ask, once.** One `AskUserQuestion` naming the operations in plain words with their entry paths shown, and three options: perform all of them, choose which, perform none. **Perform none is an ordinary answer**, not a failure — record it in one line and move on. Follow the tone rules in `## Tone` below; the operations are the content, the mechanics of the relay are not.
+**2. Ask, once — and a second time only to narrow.** One `AskUserQuestion` naming the operations in plain words with their entry paths shown, and three options: perform all of them, choose which, perform none. **Perform none is an ordinary answer**, not a failure — record it in one line and move on. Follow the tone rules in `## Tone` below; the operations are the content, the mechanics of the relay are not.
+
+**On "choose which", ask the follow-up and let it answer the whole subset.** One further `AskUserQuestion`, one option per proposed operation in the order the report listed them, `multiSelect` so the user marks everything they approve in a single pass. What comes back marked is the approved set; everything unmarked is declined, and neither needs a third question. Step 6 makes exactly this follow-up on **Andere wählen**, for the same reason — the first question asks how much, the second asks which — so this is that shape rather than a second one. If only one operation was proposed there is nothing to narrow: the option is equivalent to perform-all and you merge the two, the way Step 6 merges its single-entry case. If the follow-up comes back with nothing marked, that is perform-none — record it in one line and dispatch nothing.
+
+**"Once" bounds the shape, not the count.** Two questions at most, the second strictly narrowing the first's answer, and no third. Do not re-put an operation the user has declined, do not ask them to confirm the set they have just marked, and do not open a question about anything other than the operations already on the table. Choosing a subset is the ordinary answer here, not an edge case: the four fixed line forms in `rules/circle-records.md` `## Backlog — ranked` are one operation to a line precisely so a person can approve them one at a time.
 
 **3. Dispatch playmaker a second time** — target `fusion:playmaker`, as in Step 3 — but only when at least one operation was approved. When none was, dispatch nothing at all. The prompt carries the approved lines **verbatim**, copied from the report rather than paraphrased, so the second run matches its instruction to the first run's analysis without re-deriving it:
 
@@ -172,7 +176,7 @@ Playmaker's report from Step 3 may name backlog operations it proposed and could
 **Proposal source:** <portfolio> `## Backlog — ranked`, generated <stamp from the portfolio header>
 ```
 
-List only the approved operations and drop the rest. `<portfolio>` is the portfolio path as Step 1 resolved it and `<stamp>` is the `**Generated:**` value in its header; between them the second run needs to redo none of the first run's reading. `agents/playmaker.md` `## Two mandates, by dispatch path` carries the same block and states what a run does with it.
+List only the approved operations and drop the rest. `<portfolio>` is the portfolio path as Step 1 resolved it and `<stamp>` is the `**Generated:**` value in its header; between them the second run needs to redo none of the first run's reading. `agents/playmaker.md` `## Two mandates, by dispatch path` carries the same block and states what a run does with it. **The stamp is load-bearing, not decoration:** that section tells the second run to compare it against the `**Generated:**` header of the portfolio it finds, and to perform nothing and write nothing when the two disagree. So write nothing into the portfolio yourself between the two dispatches, and do not dispatch anything else that would — the window between them is exactly what the check can see.
 
 **This skill holds no key into the backlog store, and no step here may name one.** `bin/fusion-paths` derives a consumer's key set by one grep over its prompt, so a single write- or read-key token anywhere in this file — a fenced example included — would hand `/fusion:next` a scope it does not need and should not have. The relay carries **text**: entry paths travel as the words playmaker wrote, and nothing in this file resolves a path into the store. Write them as `<entry path>` placeholders.
 
@@ -183,6 +187,8 @@ cat "$WORKBENCH/$PORTFOLIO"
 ```
 
 Report in one line what its `Performed this run:` lines say. If an approved operation is not among them, say which one plainly — that, and not a silent portfolio, is how a broken relay announces itself.
+
+**If the second run reports a stale proposal-source stamp**, it performed nothing and wrote nothing: something regenerated the portfolio while the user was answering. Say that plainly, name the operations that did not happen, and dispatch nothing further. The proposals were made against a portfolio that no longer exists, and re-putting them is a fresh `/fusion:next`, not a retry from here.
 
 Then proceed to Step 6, unchanged.
 
@@ -288,7 +294,7 @@ That message is itself the directive. The orchestrator's own prompt instructs it
 
 ## Boundaries
 
-The skill's writes are the record rename (`_a_`→`_t_`), the `**Status:**` head field on that same record, the `.active-circle` write, and the dashboard placeholder — all in Step 6, all gated by explicit confirmation. **Step 5b adds no write of its own** — it asks and it dispatches; the backlog operations the user approves there are performed by playmaker on the second dispatch, out of the key it holds and this skill does not. **That one field is the whole of the Circle *content* it writes**: no section of the record is touched, and the two path fields in the head are left to the writers Step 6.2 names. The portfolio file is written by playmaker, not by this skill. Safe to invoke during an active orchestrator session — playmaker reads everything and writes only Circle records and the portfolio, so it cannot interfere with the active Turn loop's writes. The Step 6 activation branch is short-circuited when a Circle is already active.
+The skill's writes are the record rename (`_a_`→`_t_`), the `**Status:**` head field on that same record, the `.active-circle` write, and the dashboard placeholder — all in Step 6, all gated by explicit confirmation. **Step 5b adds no write of its own** — it asks and it dispatches; the backlog operations the user approves there are performed by playmaker on the second dispatch, out of the key it holds and this skill does not. **That one field is the whole of the Circle *content* it writes**: no section of the record is touched, and the two path fields in the head are left to the writers Step 6.2 names. The portfolio file is written by playmaker, not by this skill. Safe to invoke during an active orchestrator session — playmaker reads everything, and its writes are four: the three appended sections on Circle records, the portfolio, its own history log, and the backlog store it maintains under `agents/playmaker.md` `## Two mandates, by dispatch path`. The active Turn loop writes none of the four, so it cannot interfere with the Turn loop's writes. The Step 6 activation branch is short-circuited when a Circle is already active.
 
 ## Tone
 

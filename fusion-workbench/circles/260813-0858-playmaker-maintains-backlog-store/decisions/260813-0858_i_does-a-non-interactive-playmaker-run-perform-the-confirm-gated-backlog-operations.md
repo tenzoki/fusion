@@ -71,6 +71,17 @@ Option 2 was declined on the evidence the record itself asked for. It framed the
 Option 1 is this same behaviour left unwritten, and it was rejected for the reason the parent issue record exists: the current defect is precisely a reader inferring a boundary from a tool's absence rather than reading it as a rule. Repeating that shape while fixing an instance of it would be the fix contradicting itself.
 
 **What implementation owes this answer.** The two mandates must be stated in `agents/playmaker.md` in the same words its dispatch description uses, per the parent record's acceptance criteria, and the surfaces list in that record grows by however many places now assert a single mandate. The cost the record names — two mandates for one agent, kept true in several places — is accepted, not avoided.
-Implemented:
+Implemented: b995049 — `agents/playmaker.md:3` (frontmatter description) and `:190` (`## Two mandates, by dispatch path`) state the split in the same words, which is exactly what this answer said implementation owed it. The Phase 4 mandate reads *ranks, regenerates the portfolio and renames backlog markers, and nothing more*; the interactive mandate adds the four confirmed operations. `agents/playmaker.md:67` states the mechanical gate (no confirmation in hand, no confirmed operation) so the two mandates cannot disagree in the unsafe direction. Case 2 of `hooks/lib/__tests__/playmaker-backlog-mandate-lint.test.ts` fails if either surface drops the clause, and case 5 fails loudly if a rewording moves the section it parses. Verified by the reconciler at 260813-1545 against the working tree, suite green at 49 files / 1019 tests.
 Deferred:
 Superseded by:
+
+**Late addition, 260813-1548 — the mandate is stated three times, and the lint holds two.** The
+concurrent `coderev` pass over `b995049` filed
+`circles/260813-0858-playmaker-maintains-backlog-store/issues/260813-1545_o_the-phase-4-mandate-is-stated-a-third-time-in-the-prompt-and-the-new-lint-holds-only-two-of-the-three.md`:
+the Phase 4 sentence also appears verbatim at `agents/playmaker.md:229` under `## Dispatch
+sources`, which no case in the lint reads. **`_i_` still stands** — this record's answer was that
+the mandate be *stated* in the prompt in the description's words, and it is, on all three surfaces.
+The gap is in the guard that keeps them agreeing, which is the accepted cost this record named
+("two mandates for one agent, kept true in several places") arriving one surface earlier than the
+lint was built to cover. Whoever closes that issue widens the lint's corpus rather than reopening
+this decision.
