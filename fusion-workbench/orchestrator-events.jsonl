@@ -1322,3 +1322,6 @@
 {"ts":"2026-08-13T17:44:52","event":"commit","turn":1,"detail":"28f3029 docs(review): Turn 1 reviewed, and the file that promised a gate it does not have"}
 {"ts":"2026-08-13T17:44:52","event":"turn_start","turn":2,"detail":"S4, S5 plus five review findings folded in"}
 {"ts":"2026-08-13T17:45:06","event":"state_drift","turn":2,"detail":"Circle Turn log: surface=1 entries, record=2 turns run. Turn 2 in flight; provisional entry written, finalised at Turn end."}
+{"ts":"2026-08-13T17:55:27","event":"task_done","turn":2,"task":"S4","agent":"coder","detail":"9a11254; 5 review findings closed with it"}
+{"ts":"2026-08-13T17:55:27","event":"commit","turn":2,"task":"S4","detail":"9a11254"}
+{"ts":"2026-08-13T17:55:27","event":"task_start","turn":2,"task":"S5","agent":"coder","detail":"README.md configuration section and tuning table"}
