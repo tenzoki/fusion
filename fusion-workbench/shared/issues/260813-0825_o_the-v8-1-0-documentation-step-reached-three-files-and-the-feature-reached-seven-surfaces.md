@@ -113,3 +113,36 @@ anyone argues about wording.
 
 **Do not re-verify what the existing gates already cover.** The citation lint and the agent/skill
 inventory lints run mechanically; the Circle's job is the surfaces outside them.
+
+---
+
+## Update 260813-1500 — four of these passages changed class, from lagging to wrong
+
+Commit `b995049` landed the playmaker's backlog maintenance capability
+(`circles/260813-0858-playmaker-maintains-backlog-store/`). That Circle's four documentation
+passages were deferred by `circles/260813-0910-documentation-matches-shipped-plugin/` explicitly
+**until this Circle lands**. It has landed, so they are unblocked — and measured against HEAD they
+are no longer merely behind. Two of them now contradict shipped behaviour outright:
+
+| Surface | What it says | What is true at `b995049` |
+|---|---|---|
+| `README-agents.md:40`, description | the playmaker "names duplicates" in the backlog | it **merges** them into one consolidated entry, under a confirmation held in the run |
+| `README-agents.md:40`, **Writes** column | `circles/<stamp>-<slug>/_a_circle.md`, `portfolio.md`, `history/` | the backlog store is missing. `bin/fusion-paths playmaker` emits `OUT_BACKLOG=shared/backlog`. This is a false statement about an agent's write rights, in the table `/fusion:help` offers as the full agent reference |
+| `CLAUDE.md:51` | "the playmaker consolidates and ranks them, no agent files one" | the second clause is still true and still load-bearing. The first understates: consolidating and ranking became maintaining — marker renames `_o_ ↔ _p_` autonomously, plus split, merge, close and defer under confirmation |
+| `docs/working-model.md` | nothing — no mention of the backlog store or the playmaker's role in it | unchanged from the v8.1.0 omission this record already carried. Silence, not contradiction |
+| `skills/help/SKILL.md:62` | names the playmaker for `/fusion:next`, nothing about the backlog | same: silence, not contradiction |
+
+**The user was asked and chose to leave all four to the documentation Circle** rather than folding
+them into the Circle that caused them. Recorded here rather than only in the Circle records,
+because a handoff that lives only in a `## Dependencies` section is a handoff nobody greps for.
+
+**One cost is immediate and does not wait for a release.** `CLAUDE.md` is read by every session in
+this repository, so line 51 misinforms the next session about what the playmaker may do —
+unlike `README-agents.md`, whose damage is bounded by the fact that no version bump, tag or
+marketplace update has happened. Step 9 of the backlog Circle's plan (the bump to `8.2.0`) was
+deferred at the user's release gate precisely so that these four land first and one release
+carries both Circles.
+
+**Do not re-measure these five rows from scratch.** They were read against HEAD at `b995049`,
+both sides, per the method constraint this record already carries under `## Withdrawn claim`: a
+documentation defect is confirmed by reading both sides, never by a match count.

@@ -291,7 +291,27 @@ Every step is assigned to `coder`. The routing was run per file rather than assu
    - Acceptance: `cd hooks && npx vitest run` green; the report names the exact test and file counts, before and after; the golden diff shows movement only in the two rule files this Circle touched.
    - Dependencies: steps 1, 3, 4, 6, 7
 
-9. **Bump the plugin version**
+9. **[DEFERRED] Bump the plugin version**
+
+   **Deferred by the user at the Turn-3 release gate, 260813.** Not skipped and not dropped:
+   the bump happens once, for this Circle and `circles/260813-0910-documentation-matches-shipped-plugin/`
+   together, when that Circle lands. Its four waiting passages in `README-agents.md`,
+   `CLAUDE.md`, `docs/working-model.md` and `skills/help/SKILL.md` describe the behaviour this
+   Circle just replaced, so a release now would ship a plugin whose own documentation
+   contradicts it. `## Open Questions` raised the timing and the user has answered it.
+
+   **The consequence for this Circle, stated rather than left to be noticed.** It closes
+   without step 9, on the ground that its `## Directive` names the capability and never names
+   a release — the resolver key, the five surfaces, and one named writer for the
+   recommended-for-promotion marker are the Directive's own acceptance conditions and are all
+   met. The Circle cannot stay open waiting, because an active Circle blocks the activation of
+   the one it is waiting for.
+
+   **Whoever performs the bump inherits this:** `8.1.0` → `8.2.0` was this step judgement: a minor
+   bump for a behaviour change to a shipped agent and a shipped skill. If the documentation
+   Circle also changes shipped behaviour rather than only prose, re-weigh it rather than
+   carrying the number forward.
+
    - Executor: `coder`
    - Files: `.claude-plugin/plugin.json`
    - Changes: `8.1.0` → `8.2.0`. Behaviour change to a shipped agent and a shipped skill, so a minor bump. `claude plugin validate .` must report passed.
