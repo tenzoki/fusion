@@ -1341,3 +1341,7 @@
 {"ts":"2026-08-13T19:42:23","event":"turn_start","turn":4,"detail":"S7-S9 plus skill-body pass"}
 {"ts":"2026-08-13T19:53:26","event":"task_done","turn":4,"task":"S7","agent":"coder","detail":"docs/working-model.md"}
 {"ts":"2026-08-13T19:53:26","event":"task_start","turn":4,"task":"S8+S9+skills","agent":"coder","detail":"philosophy, help skill, and the skill-body roster pass"}
+{"ts":"2026-08-13T20:05:02","event":"state_drift","turn":4,"detail":"progress.commits said 11, git counted 13 — two commits landed while the state file was not rewritten between them (the split commit 27af85a/c663a1f). Corrected."}
+{"ts":"2026-08-13T20:05:02","event":"task_done","turn":4,"task":"S8","agent":"coder","detail":"c663a1f"}
+{"ts":"2026-08-13T20:05:02","event":"task_done","turn":4,"task":"S9","agent":"coder","detail":"c663a1f"}
+{"ts":"2026-08-13T20:05:02","event":"commit","turn":4,"detail":"27af85a + c663a1f (split: renames landed first, content followed)"}
