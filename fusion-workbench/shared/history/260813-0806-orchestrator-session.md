@@ -76,3 +76,72 @@ watch on the next backlog-shaped request.
 
 **Consequence for the record itself:** answered, not implemented. The realising work is the Circle
 opened in this session; `_a_` to `_i_` follows that Circle's commits.
+
+## Circle activated mid-session
+
+`/fusion:next` activated `circles/260813-0858-playmaker-maintains-backlog-store/` at 09:33. The
+record moved `_a_` to `_t_`, its `**Status:**` head field to `active`, and `.active-circle` now
+holds the directory name. `$OUT_*` therefore re-resolved into that Circle from this point on.
+
+**This session keeps one history file.** This one. `session.history_file` is not re-pointed at the
+Circle's own history store, per `agents/orchestrator.md` **Persistent State File → Drift check**,
+the mid-session Circle supersession case. The Circle's `**Active session history:**` field still
+reads `(none yet)` and is correct to: the Circle was activated by the skill, not by a session's
+Setup, and no session has yet been started *against* it.
+
+**Plane mirror:** 2 transitions deferred at activation, `$PLANE_API_KEY` absent from this shell.
+Recorded in `.plane-outbox.jsonl`; the next reconcile with a key present rebuilds them from files.
+
+## Turn 1 — repairing the red baseline before the Circle's own work
+
+The user chose repair over starting the Circle's Directive, at the activation gate. Three tests
+failed reproducibly at `1c2d555`: 3 failed, 1007 passed, 1010 total across 48 files. Filed as
+`shared/issues/260813-0828_p_three-tests-fail-at-head-in-two-files-and-no-open-record-names-them.md`,
+which the analyst left with three questions unestablished.
+
+Two bugfixers were dispatched in parallel, on the analyst's own advice that the causes are almost
+certainly unrelated. They touch disjoint files.
+
+### Task 1 — the locale dependency (complete)
+
+`circle-stash-git-exclusion.test.ts:208` asserted on git's English refusal text
+`ignored by one of your .gitignore files`. This machine runs `LANG=de_DE.UTF-8` and its git 2.49.0
+is built with gettext, so the identical refusal arrived in German. Nothing under test was broken:
+the exit-code check and the failure-shape check both passed, and `/fusion:circle-stash` reads only
+the exit code and the stash depth, never the message text.
+
+**Fix:** `LC_ALL=C` in the child environment of the one git invocation whose text is asserted. The
+assertion itself is unchanged, word for word.
+
+**Why that and not a locale-independent assertion.** The test's job is to prove git refuses *for
+the ignored-path reason*, not merely that it refuses; git's own sentence naming that reason is the
+strongest available evidence. The `advice.addIgnoredFile` key would be a weaker proxy — a user can
+switch that advice off without changing the refusal. Verified rather than assumed: `LC_ALL=C`,
+`LANG=C` and `LC_MESSAGES=C` each restore the exact English sentence on this machine, every time
+with exit status 1.
+
+**The sweep for the same class found nothing else**, so no further record was filed. All 17 direct
+git invocations in the test tree were read by hand; every other one either builds a fixture or
+reads a machine-readable value git does not translate (commit hash, `rev-list --count`,
+`rev-parse --is-inside-work-tree`, file content from `git show`, the `stash@{N}:` prefix of
+`git stash list`, that last one measured as untranslated under `de_DE.UTF-8`). Mechanically, all
+216 prose-shaped `toContain`/`toMatch` literals were resolved against fusion's own sources; each
+one lands on a fusion operator string, which the exempt-surfaces rule keeps English in every
+project. One near miss worth recording: `staging-drift.test.ts:439` asserts on
+`"not inside a git repository"`, which looks like git's `fatal: not a git repository` and is in
+fact fusion's own sentence from `hooks/lib/staging-drift.ts:470`.
+
+**Verification:** `cd hooks && npx vitest run lib/__tests__/circle-stash-git-exclusion.test.ts`
+→ exit 0, 8/8. Full suite → exit 1, 2 failed, both in `fusion-plane.test.ts` and belonging to
+task 2.
+
+Bugfixer log:
+`circles/260813-0858-playmaker-maintains-backlog-store/history/260813-1031-bugfix-circle-stash-test-locale.md`
+
+### Task 2 — the two Plane rebuild cases (running)
+
+Dispatched with an explicit instruction not to resolve the mismatch by making the assertion match
+whatever the code prints, since the received output satisfies every behavioural claim the tests'
+names make and only one diagnostic's wording differs. The working tree shows `bin/fusion-plane`
+modified, which indicates the bugfixer found a defect in the tool rather than in the tests. Held
+for its report before any commit.

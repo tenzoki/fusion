@@ -335,6 +335,19 @@ config_valid() {
 #   $PLANE_API_KEY stays literal (\$) for zsh; $BASE/URL expand in outer bash.
 #   JSON bodies go through a temp file (--data-binary @file) to avoid quoting
 #   hell inside the zsh -ic string; the temp file holds no secret and is removed.
+#
+#   THE RESPONSE BODY IS READ BACK FROM A FILE, NEVER FROM THAT SHELL'S STDOUT.
+#   `-i` sources the user's interactive rc, and an interactive rc is entitled to
+#   write to stdout — a banner, a version-manager line, or, on stock macOS,
+#   /etc/zshrc_Apple_Terminal's session restore ("Restored session: <date>").
+#   This function read the whole of stdout as `<body>\n<http_code>`, so every one
+#   of those lines was prepended to $PLANE_BODY and EVERY response failed to
+#   parse: `rebuild-map: could not parse issues`, states/ and labels/ unusable,
+#   the whole bridge dead for that operator, with nothing naming the cause. The
+#   zsh's STDERR was already discarded in anticipation of exactly this chatter;
+#   only stdout was left open to it. So curl writes the body to `-o <tmp>` and
+#   the noisy channel carries nothing but `%{http_code}`, still on its own last
+#   line — noise can only ever precede it, never follow it (issue 260813-0828).
 # Sets globals: PLANE_HTTP_CODE, PLANE_BODY, PLANE_CURL_RC (curl transport rc).
 # Returns 0 when curl ran (an HTTP response arrived), non-zero on transport
 # failure (no network / DNS / connection refused / timeout).
@@ -343,8 +356,9 @@ PLANE_BODY=""
 PLANE_CURL_RC=0
 plane_curl() {
   local method="$1" url="$2" body="${3:-}"
-  local tmpbody="" cmd out rc
-  local common="-s -w '\\n%{http_code}' -X ${method} -H \"X-API-Key: \$PLANE_API_KEY\""
+  local tmpbody="" tmpresp cmd out rc
+  tmpresp="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-resp.XXXXXX")"
+  local common="-s -o ${tmpresp} -w '\\n%{http_code}' -X ${method} -H \"X-API-Key: \$PLANE_API_KEY\""
   if [ -n "$body" ]; then
     tmpbody="$(mktemp "${TMPDIR:-/tmp}/fusion-plane.XXXXXX")"
     printf '%s' "$body" > "$tmpbody"
@@ -357,10 +371,14 @@ plane_curl() {
   if [ "$rc" -ne 0 ]; then
     PLANE_HTTP_CODE=""
     PLANE_BODY=""
+    rm -f "$tmpresp"
     return "$rc"
   fi
+  # Last line of the noisy channel, and only ever that: whatever the rc printed
+  # sits before curl's leading \n, so `tail -n1` reads the code and nothing else.
   PLANE_HTTP_CODE="$(printf '%s' "$out" | tail -n1)"
-  PLANE_BODY="$(printf '%s' "$out" | sed '$d')"
+  PLANE_BODY="$(cat "$tmpresp")"
+  rm -f "$tmpresp"
   return 0
 }
 

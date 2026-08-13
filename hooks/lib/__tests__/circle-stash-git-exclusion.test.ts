@@ -202,7 +202,14 @@ describe("circle-stash Step 7.6 — the workbench never travels in the git stash
       const r = spawnSync(
         "git",
         ["stash", "push", "--include-untracked", "-m", "naive", "--", ":/", ":(exclude)fusion-workbench"],
-        { cwd: p.projectRoot, encoding: "utf-8" },
+        // `LC_ALL=C` so git emits its English diagnostics. The assertion below
+        // is the half of this test that pins the *reason* for the refusal
+        // rather than merely its exit code, and git translates that reason:
+        // measured on a `de_DE.UTF-8` machine, the same refusal reads "Die
+        // folgenden Pfade werden durch eine Ihrer \".gitignore\" Dateien
+        // ignoriert". `LC_ALL` outranks `LANG` and every other `LC_*`, so this
+        // holds whatever the developer's environment declares.
+        { cwd: p.projectRoot, encoding: "utf-8", env: { ...process.env, LC_ALL: "C" } },
       );
       expect(r.status).not.toBe(0);
       expect(r.stderr + r.stdout).toMatch(/ignored by one of your \.gitignore files/);

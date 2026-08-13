@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** anticipated
+**Status:** active
 **Filed by:** shaper (anticipated-circle mode)
 **Active spec/plan:** (none yet)
 **Active session history:** (none yet)
@@ -102,3 +102,43 @@ plus the closed original.
   `shared/decisions/260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md`.
 
 ## Turn log
+
+## Activation proposal (playmaker run 260813-0926)
+
+**Proposed for activation.** Run identifier `260813-0926-playmaker-direct-dispatch`;
+proposed activation timestamp `260813-0926`.
+
+**Rationale.** This Circle ranks first of three anticipated Circles under the `code` domain
+bias, and it is the only one of the three that is activatable as written today.
+
+Its `## Dependencies` section names no Circle it waits on. The relation it does record runs
+outward: it blocks `circles/260813-0910-documentation-matches-shipped-plugin/`, whose own
+record cites this directory and states that four passages wait on it. Both records agree on
+the direction, so the ordering is unambiguous and this Circle is the head of it.
+
+Its Grounding snapshot was written today against records that are on disk and current: the
+defect record
+`shared/issues/260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`
+carries the surfaces list with line citations, and the decision
+`shared/decisions/260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md` was
+answered by the user in session `shared/history/260813-0806-orchestrator-session.md`. Four
+scoping questions were settled with the user in one round and are recorded in the Grounding
+rather than left for the planner to rediscover. The Circle directory holds all six artifact
+subdirectories.
+
+One open decision is cited, and it is a plan-shaping question rather than a bar to activation:
+`circles/260813-0858-playmaker-maintains-backlog-store/decisions/260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md`.
+Its own text says it has to be settled before the plan, because it decides whether a
+proposal-return path gets built at all. Answering it is the first thing the activated Circle
+should do.
+
+**One measured argument the ranking rests on, from this run's own backlog pass.** The shared
+backlog holds one entry, `shared/backlog/260811-0826_*_observations.md`, carrying thirteen
+distinct ideas. It has been recommended for splitting by three consecutive playmaker runs and
+has not been split, because no agent holds a write key to the store. This Circle is the one
+that hands over that key. The backlog job is blocked on exactly this Circle and on nothing
+else.
+
+**Nothing was renamed.** The marker on this record is unchanged and `.active-circle` was not
+written. Activation runs through `/fusion:next`, or through the orchestrator after the user
+confirms.

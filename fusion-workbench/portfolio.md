@@ -1,189 +1,237 @@
 # Portfolio
 
-**Generated:** 260813-0007 (by playmaker session 260813-0007-playmaker-direct-dispatch)
+**Generated:** 260813-0926 (by playmaker session 260813-0926-playmaker-direct-dispatch)
 **Domain bias:** code
 
 ## Active (_t_)
 
-(none). No Circle record carries the active marker and the pointer file `.active-circle` is
-absent. That is the ordinary state between two units of work, not a fault. The most recent
-closure was `260807-0923-guard-misst-statt-orakelt` on 260807, shipped as v6.0.0 and v6.0.1;
-six days of work have landed since then without a Circle, most recently the v8.1.0 release on
-260812. Activation runs through `/fusion:next`.
+(none). No Circle record carries the active marker, and the pointer file `.active-circle` is
+absent. Those two agree, so this is the ordinary state between two units of work rather than a
+fault.
+
+The most recent closure was `260807-0923-guard-misst-statt-orakelt` on 260807. Six days of work
+have landed since without a Circle, most recently the v8.1.0 release on 260812 (`1c2d555`). Two
+new anticipated Circles were created on 260813 in session
+`shared/history/260813-0806-orchestrator-session.md`, which is why this section reads differently
+from the previous run's. Activation runs through `/fusion:next`.
 
 ## Anticipated (_a_) — ranked
 
-Recommended next: 260801-1244-curator — the only anticipated Circle, every dependency closed,
-and the one precondition the last run named has since been cleared. It still needs the shaper
-before it can be activated, because its Grounding rests on measurements that have now moved
-twice.
+Recommended next: 260813-0858-playmaker-maintains-backlog-store — it waits on no other Circle,
+its Grounding was written today against records that are on disk, and it is the Circle that
+unblocks the backlog work every recent run has recommended and none has been able to do.
 
-1. **260801-1244-curator** — "The curator reconciles the three normative surfaces, and proves it
-   on fusion's own conventions file."
+### 1. `260813-0858-playmaker-maintains-backlog-store`
 
-   The rank is uncontested and says little, because this is the only anticipated Circle in the
-   portfolio. On the code heuristic the Circle stands clean: its Grounding snapshot cites no open
-   decision record, and all three dependencies are closed coherent. The hard one,
-   `260801-1244-rule-provenance-header`, closed on 260802; the soft one,
-   `260801-1244-guard-rules-write`, closed on 260805; the transitive one,
-   `260801-1244-guard-bash-inspection`, closed on 260801.
+> "The playmaker maintains the backlog store it is charged with."
 
-   **What changed since the last run.** The previous portfolio, generated on 260807, asked for one
-   thing before re-sharpening: an answer to the open decision about how far the project language
-   `de` reaches into the English rule corpus. That record now carries the implemented marker at
-   `shared/decisions/260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`, so
-   the ordering constraint is gone and the shaper can start.
+**Dependencies:** none inbound. Blocks `260813-0910-documentation-matches-shipped-plugin`.
+**Open decisions cited in the Grounding:** one, and it shapes the plan rather than barring
+activation.
 
-   **What has not changed is that the Grounding cannot be activated as written.** Two of its
-   claims were already falsified on 260807, and both are worse now. The Grounding says
-   `rules/fusion-workbench-conventions.md` holds 54 401 bytes across 32 second-level headings.
-   Measured against the working tree at commit `1c2d555` on 260813, the file holds 49 992 bytes
-   across 24 headings. The Grounding also says the shards the closing work would produce do not
-   yet exist; four of them sit in the rule directory today (`circle-records.md`,
-   `workbench-path-resolution.md`, `rule-file-provenance.md`, `workbench-stash-and-lock.md`).
-   The Circle's closing work, capability C9, was carried out by hand by an executor, which the
-   closure note of `260805-2005-textschicht-gegen-code-nachziehen` records, so the Circle has lost
-   both its first real job and the proof that the capability works.
+This Circle ranks first because it is the only one of the three that can be activated as written.
+The domain heuristic asks two things of an anticipated Circle: that its Grounding cite few
+unresolved decisions, and that everything it depends on be closed. This Circle's `## Dependencies`
+section names no Circle it waits on at all, so the second test is satisfied outright. The relation
+it does record runs the other way: it blocks the documentation Circle below it, whose own record
+cites this directory by name and states that four passages wait on it. Both records agree on the
+direction, so the ordering is settled and this Circle is the head of it. Its Grounding snapshot was
+written on 260813 against two records that are current — the defect record
+`shared/issues/260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`,
+which carries the surfaces list with line citations, and the decision
+`shared/decisions/260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md`, which the
+user answered in this week's orchestrator session. Four scoping questions were settled with the
+user in one round and written into the Grounding rather than left for the planner. The directory
+holds all six artifact subdirectories. The one open decision it cites,
+`circles/260813-0858-playmaker-maintains-backlog-store/decisions/260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md`,
+asks whether a run dispatched by the orchestrator performs the operations that need a user
+confirmation. Its own text says it must be settled before the plan, because it decides whether a
+proposal-return path gets built. That is work for the first Turn, not a reason to wait.
 
-   **A new measurement makes the case sharper rather than weaker.** The partition that cut the
-   conventions file from 51 416 to 34 671 bytes on 260805 has been undone. The file regained
-   14 324 bytes over the following six days and now stands 4 KB below where it started. That
-   growth is measured across the twelve commits touching the file since 260805, not inferred.
-   It is the same shape the project's own analysis
-   `shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`
-   found for the shell-classifier deletion, where removal bought four days before the source
-   exceeded its pre-deletion peak. A curator that reconciles and repartitions once, with nothing
-   holding the result, buys about a week.
+There is a second, measured argument, and it comes from this run's own backlog pass. The shared
+backlog holds one entry carrying thirteen distinct ideas. Three consecutive playmaker runs have
+recommended splitting it, and none has split it, because no agent holds a write key to the store.
+This Circle is the one that hands over that key. The backlog job is blocked on this Circle and on
+nothing else.
 
-   **What survives and what the shaper has to do.** Capabilities C1 through C3, C6 and C7 remain
-   a coherent remainder, and the need for them is documented rather than asserted. What the
-   Circle needs before activation is a Directive without the closing work C9, a fresh validation
-   case to replace it, a Grounding resting on a measurement taken this week instead of on
-   260801, and an answer to whether a one-off reconciliation is worth doing at all when the
-   regrowth rate is now measured. Playmaker only names this; the re-sharpening is shaper work and
-   the activation is yours.
+### 2. `260813-0910-documentation-matches-shipped-plugin`
 
-   Dependencies: three, all closed coherent. Open decisions cited in the Grounding: none.
+> "fusion's user-facing documentation agrees with the plugin at v8.1.0."
+
+**Dependencies:** `260813-0858-playmaker-maintains-backlog-store` — interleaved, a partial block on
+four named passages only.
+**Open decisions cited:** none. The record it cites as "cited, not waited on" has since been
+answered.
+
+Second because its dependency is anticipated rather than closed, which is the flag the domain
+heuristic raises, and because the block is genuine even though it is partial. Everything outside
+the four passages that describe the playmaker's backlog role can proceed in parallel, so this
+Circle is a candidate for running alongside the first rather than strictly after it. Its Grounding
+rests on a bounded list already on disk: `shared/analyses/260813-0828-documentation-staleness-survey.md`,
+fifteen findings across four work groups with line citations on both sides of each claim.
+
+### 3. `260801-1244-curator`
+
+> "The curator reconciles the three normative surfaces, and proves it on fusion's own conventions
+> file."
+
+**Dependencies:** all three closed coherent.
+**Open decisions cited in the Grounding:** none.
+
+On the raw domain heuristic this Circle scores best of the three: zero unresolved decisions cited,
+every dependency closed. It ranks last anyway, and the reason is a judgement this run is making
+explicitly rather than hiding inside the score. The heuristic reads the record; it cannot read
+whether the record still holds. This one no longer does. Its Grounding states that
+`rules/fusion-workbench-conventions.md` holds 54 401 bytes across 32 second-level headings.
+Measured today against the working tree, the file holds 49 992 bytes across 24 second-level
+headings. Those two claims have now been falsified at three consecutive playmaker runs, and they
+are load-bearing: the whole scoping argument is sized against them. The Circle directory also holds
+only its record, with none of the six artifact subdirectories the other two have.
+
+The Circle is not stale in its reasoning, which still stands. It is stale in its numbers, and the
+sanctioned repair is a shaper pass in portfolio-activation mode before activation. That path is
+itself the subject of an open decision,
+`shared/decisions/260813-0027_*_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md`,
+which records that a user reading this briefing inside an orchestrator session cannot reach the
+shaper from there.
 
 ## Backlog — ranked
 
 Recommended to split first: `shared/backlog/260811-0826_*_observations.md` — 13 ideas, top one is
-`bounded-dispatches-and-re-injected-context`.
+`bounded-dispatches-and-re-injected-context`
 
-There is no `/fusion:direct` line under that recommendation on purpose. The command promotes an
-entry whole, so running it here would make one Circle of thirteen unrelated ideas and retire the
-lot. File the pieces you want first, then shape one of them.
+No `/fusion:direct` line is written for this entry. That command promotes an entry whole, which
+would make one Circle of all thirteen ideas and retire the lot.
 
-The entry is already largely consumed, and that is the most useful thing to know about it. Seven
-of its thirteen ideas were triaged into records on 260812, six as defect records dated
-`260812-0253` and one as a decision record dated `260812-0254`. Two of its three closing questions
-were answered by analyses on the same night. Do not re-shape those; they are listed under
-Warnings so the double handling is visible.
+**And the split cannot be performed today.** No agent holds a write key to the backlog store. The
+user answered that this should change and gave the write to the playmaker
+(`shared/decisions/260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md`), and the
+Circle that realises it is the top-ranked one above. Until that Circle lands, this recommendation
+is something the user acts on by hand or defers.
 
-**Proposed split of `shared/backlog/260811-0826_*_observations.md`** (13 ideas; the three live ones
-are ranked, the rest are marked with where they already live):
+1. `shared/backlog/260811-0826_*_observations.md` (`_o_`) — "Raw observations, hand-written by the
+   user: about a dozen distinct ideas in one dump, awaiting consolidation by the playmaker." The
+   only entry in the store. Thirteen distinct ideas, of which seven are already carried by a filed
+   record, three are duplicates of another idea in the same entry, and three are live and
+   shapeable. Proposed split, live ideas first:
 
-1. `bounded-dispatches-and-re-injected-context` — agents must not run long operations without
-   returning to the orchestrator, and the working context must be re-sent with each request. Live
-   and shapeable today. It rests entirely on records already on disk: the defect record
-   `shared/issues/260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md` names four
-   competing remedies, and the analysis
-   `shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md` measures that
-   handoff between dispatches costs nothing and that shorter dispatches would cut cost roughly
-   fourfold. Nothing needs fresh analysis before this can be sized.
-2. `rules-as-mechanisms-not-instructions` — a discipline written into `CLAUDE.md` or an agent
-   prompt is not enforced by being written, and the corpus should carry gates where it currently
-   carries prose. Live and shapeable today. The user's own example is in the entry: a reviewer
-   filed four defect records immediately after the discipline was bound and not one carried the
-   required field. The same analysis measures the general case, counting 248 task-completion
-   events against 177 task-start events in the event log, so a third of tasks are announced
-   finished having never been announced started, from two instructions in the same prompt file.
-3. `radical-simplification-of-fusion` — whether fusion has become a token- and time-consuming
-   system that mostly serves itself, and how far it would have to be cut. Live, but portfolio-sized
-   rather than Circle-sized. Two analyses already answer parts of it, listing eight removals with
-   no measured capability lost plus three larger targets they did not name. What is missing is a
-   cut into units of work, which is shaper work on a narrowed question rather than on this idea as
-   stated.
-4. `self-repair-crowds-out-project-work` — near-duplicate of idea 3, stated from the other side.
-   The fullest statement of the pair is the three closing questions at the end of the entry, not
-   this line.
-5. `unverified-claims-relayed-upward` — near-duplicate of the filed defect record
-   `shared/issues/260812-0253_*_the-orchestrators-instructions-to-sub-agents-are-often-wrong.md`,
-   which already carries two corroborating instances from this repository. The fullest statement
-   is the closing paragraph of the entry's first example.
-6. `setup-latency` — already filed as
-   `shared/issues/260812-0253_*_setup-takes-far-too-long-and-nothing-measures-it.md`.
-7. `agent-verbosity` — already filed as
-   `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`.
-8. `rule-decay-mid-session` — already filed as
-   `shared/issues/260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md`.
-9. `eta-not-computed` — already filed as
-   `shared/issues/260812-0253_*_the-monitors-eta-is-not-computed-and-the-user-has-never-seen-one.md`.
-10. `monitor-localhost-unreachable` — already filed as
-    `shared/issues/260812-0253_*_the-monitor-is-no-longer-reachable-on-localhost.md`.
-11. `orchestrator-dispatch-precision` — already filed as
-    `shared/issues/260812-0253_*_the-orchestrators-instructions-to-sub-agents-are-often-wrong.md`.
-12. `absolute-paths-for-cited-artifacts` — already filed as the decision record
-    `shared/decisions/260812-0254_*_should-a-cited-artifact-path-be-absolute-so-an-editor-can-open-it.md`.
-13. `overall-operation-latency` — defect-shaped and only partly filed. It appears as a witness
-    line inside the setup-latency record rather than as a record of its own. See Warnings.
-
-Two fragments in the entry are not ideas and are not counted above: a bare path to the curator
-Circle record, and a three-line note of the top of the churn ranking. Five further blocks are
-transcripts supplied as evidence for ideas 2, 5, 7 and 11.
+   - `bounded-dispatches-and-re-injected-context` — agents must not run long operations without
+     returning to fusion, and the working context must be re-sent with every request. Ranked top
+     because it rests entirely on records already on disk and could be shaped today: the defect
+     record `shared/issues/260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md` names
+     the competing remedies, and
+     `shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md` measures that the
+     handoff between dispatches costs nothing while shorter dispatches would cut cost roughly
+     fourfold.
+   - `radical-simplification-of-fusion` — whether fusion has become a token- and time-consuming
+     system that mostly maintains itself, and what would have to go. Rests on
+     `shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`.
+     Ranked second because the analysis is on disk but the idea is a question rather than a
+     direction, so shaping it means choosing a cut first.
+   - `operations-take-unbearably-long` — every operation, not only Setup. Ranked third because it
+     needs measurement before it could be sized, and because it is defect-shaped (see
+     `## Warnings`).
+   - Seven ideas already carried by a filed record, listed so the split does not re-file them:
+     Setup duration, agent verbosity, rules losing effect mid-session, the missing estimated time
+     of arrival, the monitor unreachable on localhost, the orchestrator's wrong instructions to
+     sub-agents (all six dated `260812-0253` in `shared/issues/`), and absolute artifact paths
+     (`shared/decisions/260812-0254_*_should-a-cited-artifact-path-be-absolute-so-an-editor-can-open-it.md`).
+   - Three duplicate groups, named rather than merged: the bounded-dispatch remedy is stated twice,
+     fullest in the entry's `>>>` line; the self-repair complaint and the radical-simplification
+     question are one idea, fullest in the entry's three closing questions; the observation that
+     unverified claims get relayed upward duplicates
+     `shared/issues/260812-0253_*_the-orchestrators-instructions-to-sub-agents-are-often-wrong.md`.
+   - Two fragments that are not ideas and are excluded from the count: a bare file path, and a note
+     of the three most-changed files from the churn ranking. Five quoted agent transcripts are
+     evidence for the verbosity and unverified-claims ideas, not ideas of their own.
 
 ## Recently closed (_c_ / _b_)
 
 | Circle | Marker | Closure |
 |---|---|---|
-| `260807-0923-guard-misst-statt-orakelt` | `_c_` | Closed coherent 260807-1650. The static shell classifier was removed outright; the guard measured protected files after each tool call instead of predicting writes. Shipped as v6.0.0 and v6.0.1. |
-| `260805-2005-textschicht-gegen-code-nachziehen` | `_c_` | Closed coherent 260806-1105. Four code fixes, the citation-form decision, two new lints landed green, and activation ownership settled once. |
-| `260801-1244-guard-rules-write` | `_c_` | Closed coherent 260805-2359. All twelve acceptance criteria verified with per-criterion test citations after a Rebalance in Turn 3. |
-| `260801-1244-rule-provenance-header` | `_c_` | Closed coherent 260802. Three Turns, eight commits, all eight acceptance criteria checked against the tree rather than against completion markers. |
-| `260801-1244-guard-bash-inspection` | `_c_` | Closed coherent 260801. The prerequisite Circle of the four-Circle body of work; sixteen commits where eight steps were planned. |
+| `260807-0923-guard-misst-statt-orakelt` | `_c_` | Closed coherent 260807-1650. The static classifier is gone; the guard measures what changed instead of predicting what will change. |
+| `260805-2005-textschicht-gegen-code-nachziehen` | `_c_` | Closed coherent 260806-1105. The plugin's text layer says what the code does again, held there by two new lints. |
+| `260801-1244-guard-rules-write` | `_c_` | Closed coherent 260805-2359. A project can permit rule-file writes deliberately, per session, and never silently. |
+| `260801-1244-rule-provenance-header` | `_c_` | Closed coherent 260802. Every rule file states which record motivated it, and a test enforces it. |
+| `260801-1244-guard-bash-inspection` | `_c_` | Closed coherent 260801. The guard checked file-mutating shell commands against the protected paths. |
 
-Five older closed Circles are not listed: `260719-1536-plane-mirror-integration`,
-`260719-1536-brest-unite-co-creator-conversion`, `260718-1924-v5x-overhaul`,
-`260717-1638-marker-format-ohne-glob-metazeichen` and `260716-1847-workbench-umbau`.
+No Circle carries the Bounded Closure marker, in this window or anywhere in the store.
+
+**Worth knowing when reading the two guard closures.** Both delivered mechanisms that have since
+been removed on their own measurement, on 260809 and 260812. The closures were correct; what they
+built was later deleted deliberately. A reader who meets those rows without this note will read
+them as stale.
 
 ## Archived (_s_ / _d_)
 
-- `260804-1205-shell-reachability-model` — superseded (`_s_`) on 260807-0923 by
-  `260807-0923-guard-misst-statt-orakelt`. Neither reached nor abandoned: the user changed the
-  mechanism, from predicting which file a shell command writes to measuring what changed.
+| Circle | Marker | Note |
+|---|---|---|
+| `260804-1205-shell-reachability-model` | `_s_` | Superseded 260807-0923 by `circles/260807-0923-guard-misst-statt-orakelt/`. Not closed and not bounded: the user changed the mechanism, so the Directive stopped being the right one to reach. |
 
-No deferred Circles.
+No Circle carries the deferred marker.
 
 ## Warnings
 
-- `curator-circle-missing-artifact-subdirectories`: `circles/260801-1244-curator/` holds only its
-  record. The six artifact subdirectories the Circle record template requires (`planning/`,
-  `issues/`, `decisions/`, `history/`, `reviews/`, `analyses/`) do not exist, so the first agent
-  dispatched into this Circle has to invent them. Defect-shaped; not filed, because playmaker does
-  not write to the issue store.
-- `curator-grounding-measurements-falsified`: five of the measured claims in the Grounding snapshot
-  of `circles/260801-1244-curator/_*_circle.md` no longer hold, three of them for the second time.
-  This is measurement drift in an anticipated Circle, not the Bounded-Closure propagation case;
-  no Circle carries the bounded marker, so no parent Grounding was flagged stale by this run.
-- `claude-md-always-on-figure-is-four-kilobytes-stale`: `CLAUDE.md` states the always-on rule floor
-  fell to 88 023 bytes per dispatch on 260812, of which 80 670 bytes are shipped rule text.
-  Measured at commit `1c2d555`, the five always-on rule files total 84 538 bytes and the floor is
-  91 891 bytes. The claim was true when written and was overtaken within a day by growth in
-  `rules/fusion-workbench-conventions.md`. Defect-shaped, and it is an instance of the class the
-  curator Circle exists to catch.
-- `backlog-idea-13-only-partly-filed`: the user's observation that every operation takes
-  unbearably long appears only as a witness line inside
-  `shared/issues/260812-0253_*_setup-takes-far-too-long-and-nothing-measures-it.md`, which scopes
-  itself to Setup. The broader claim has no record of its own. Defect-shaped; your call whether it
-  needs one.
-- `backlog-marker-has-no-writer`: the open decision record
-  `shared/decisions/260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md` asks who
-  writes the recommended marker on a backlog entry. Nothing does today, and this run wrote none.
-  The recommendation above therefore lives in this file only, and this file is overwritten on every
-  playmaker run. Decision-shaped and already filed; it is named here because it directly limits
-  what the section above can carry.
+**`curator-grounding-measurements-falsified`** — Two load-bearing measurements in
+`circles/260801-1244-curator/_*_circle.md` no longer hold. The Grounding states that
+`rules/fusion-workbench-conventions.md` holds 54 401 bytes across 32 second-level headings; the
+file holds 49 992 bytes across 24 second-level headings, measured against the working tree this
+run. This is the third consecutive run reporting it. The scoping argument is sized against these
+numbers, so a shaper pass in portfolio-activation mode is required before activation.
 
-No dependency cycles were detected. The dependency graph over non-terminal Circles has one node,
-`260801-1244-curator`, and all three of its edges point at closed Circles. No pointer warnings:
-`.active-circle` is absent and no Circle record carries the active marker, which is the normal
-opt-in state.
+**`curator-circle-missing-artifact-subdirectories`** — `circles/260801-1244-curator/` holds only
+its record. The six artifact subdirectories (`planning/`, `issues/`, `decisions/`, `history/`,
+`reviews/`, `analyses/`) are absent. Both Circles created on 260813 have all six, so this is a
+gap in the older Circle rather than a convention that changed.
+
+**`one-sided-dependency-between-the-two-new-circles`** — The Dependencies section of
+`circles/260813-0858-playmaker-maintains-backlog-store/_*_circle.md` asks for the documentation
+Circle's directory name to be filled in "by the orchestrator once it exists". That Circle now
+exists at `circles/260813-0910-documentation-matches-shipped-plugin/`, and the name is still
+absent, so the relation is visible from one record and invisible from the other. Already filed as
+`shared/issues/260813-0913_*_a-dependency-between-two-circles-can-only-be-recorded-on-one-side-because-nobody-may-write-the-other.md`,
+which establishes that no party may currently perform the write. The playmaker cannot either:
+`## Dependencies` is not among the three sections it may append. Reported, not fixed.
+
+**`three-tests-fail-at-head`** — Three tests fail at `1c2d555` across
+`hooks/lib/__tests__/circle-stash-git-exclusion.test.ts` and
+`hooks/lib/__tests__/fusion-plane.test.ts`, reproducing across runs. Filed as
+`shared/issues/260813-0828_*_three-tests-fail-at-head-in-two-files-and-no-open-record-names-them.md`.
+Surfaced here because a red baseline makes the acceptance evidence of whichever Circle activates
+next harder to read, whichever one that is.
+
+**`claude-md-always-on-figure-is-stale`** — `CLAUDE.md:64` states that each agent receives 88 023
+bytes of always-on rules, of which 80 670 bytes are shipped rule text. Measured today against the
+emission for this agent: 91 891 bytes total. The claim was true when written on 260812 and was
+overtaken within a day. `CLAUDE.md` is in scope for
+`260813-0910-documentation-matches-shipped-plugin`, so this needs no separate filing, but the
+survey that Circle works from does not name this particular figure.
+
+**`backlog-idea-only-partly-filed`** — The observation that every operation takes unbearably long,
+not only Setup, exists on disk only as a witness line inside a record scoped to Setup
+(`shared/issues/260812-0253_*_setup-takes-far-too-long-and-nothing-measures-it.md`). It is
+defect-shaped rather than idea-shaped, so it does not belong in the backlog split above, and it is
+not covered by any open record as stated. The playmaker files no issues; this is here for the user
+to decide.
+
+**`backlog-store-has-no-writer-today`** — The user answered that the playmaker maintains the
+backlog store, including splitting a multi-idea entry
+(`shared/decisions/260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md`,
+answered in `shared/history/260813-0806-orchestrator-session.md`). The answer is not implemented:
+`agents/playmaker.md` still forbids the write and `bin/fusion-paths` withholds the key by
+derivation from that prompt. Nothing was written to the backlog on this run. The realising Circle
+is the top-ranked one.
+
+**Dependency cycles: none.** The graph over the three anticipated Circles has one edge,
+`260813-0910-documentation-matches-shipped-plugin` → `260813-0858-playmaker-maintains-backlog-store`.
+The curator's three edges all point at closed Circles and so leave the non-terminal graph. No
+`## Dependency warning` section was appended to any record.
+
+```
+documentation-matches-shipped-plugin ──> playmaker-maintains-backlog-store
+curator ──> (three closed Circles, outside this graph)
+```
+
+**Parent-grounding-stale events: none.** No Circle record carries the Bounded Closure marker, so
+the propagation scan had no starting point. The curator's falsified measurements are drift inside
+an anticipated Circle and are reported above as an ordinary warning, not as this event.
