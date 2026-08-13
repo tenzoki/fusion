@@ -106,7 +106,7 @@ flowchart TD
    - Changes: At `:268`, replace `fusion-workbench/history/` with the v4.0.0 spelling. The correct layout is stated in `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout` and, forty lines earlier in the same file, at `README-agents.md:225-236`: history lives in `shared/history/` and `circles/<dir>/history/`. At `:262-265`, step 5 of "Adding a new agent" tells the reader to register the agent in a "`CLAUDE.md` folder structure block" and a "`CLAUDE.md` key-documentation table"; `CLAUDE.md` has neither. Open `CLAUDE.md` and name what it actually has: one `## Layout` table, and the agent listing in the prose bullet under `## What this is`. Read both sides of each before editing. Finish with `cd hooks && npx vitest run lib/__tests__/derivable-enumerations-lint.test.ts`.
    - Dependencies: none
 
-2. **CLAUDE.md — the inventory, the deleted count, the playmaker clause, the byte claim**
+2. [DONE] **CLAUDE.md — the inventory, the deleted count, the playmaker clause, the byte claim**
    - Executor: `coder`
    - Files: `CLAUDE.md`
    - Changes: Four edits in one file.
