@@ -1278,3 +1278,4 @@
 {"ts":"2026-08-13T10:07:42","event":"task_done","turn":2,"detail":"plane_curl hardened; 2 records closed, 1 re-scoped and reopened"}
 {"ts":"2026-08-13T10:07:42","event":"commit","turn":2,"detail":"d6dd193 — constant command string, status code off the noisy channel, suite 1014/1014"}
 {"ts":"2026-08-13T10:07:42","event":"turn_end","turn":2,"detail":"3 tasks resolved, 2 issues closed, 1 re-scoped; 1 commit"}
+{"ts":"2026-08-13T10:31:39","event":"turn_start","turn":3,"detail":"the Circle's own work begins: settle the planning-blocking decision, then plan"}

@@ -145,3 +145,18 @@ whatever the code prints, since the received output satisfies every behavioural 
 names make and only one diagnostic's wording differs. The working tree shows `bin/fusion-plane`
 modified, which indicates the bugfixer found a defect in the tool rather than in the tests. Held
 for its report before any commit.
+
+## Decision answered — the Phase 4 mandate is marker renames, and it is written down
+
+**Record:** `circles/260813-0858-playmaker-maintains-backlog-store/decisions/260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md`
+**Chosen:** option 3 — the non-interactive Phase 4 run's mandate is ranking, portfolio regeneration and marker renames, and `agents/playmaker.md` says so as a deliberate rule rather than leaving it to be inferred.
+
+The shaper marked this record as planning-blocking, correctly: it decides whether a proposal-return path is built at all, which is a shape rather than a detail a plan could fill in later.
+
+**The evidence the record asked for, measured before the question was put to the user.** Option 2 hinged on how often a Phase 4 run would meet backlog work worth interrupting a Circle closure for. Ten Circle records carry a closed or bounded marker, so the project has seen roughly ten Phase 4 playmaker dispatches in its life. The backlog store was created on 2026-08-12 in `dec40bb` and holds one entry. Nine of those ten dispatches predate the store's existence, and the tenth has not happened. The measured frequency is zero, from a sample too young to carry much weight either way.
+
+That is a weak basis for building machinery and a sufficient one for declining to. The asymmetry decided it: option 3 costs one prompt paragraph to reverse if Phase 4 runs turn out to meet real work, while a return protocol built now would be maintained through every future change to an agent whose stated value is that it is advisory and cheap.
+
+**Option 1 was the same behaviour left unwritten, and it was rejected on principle rather than on cost.** The defect this Circle exists to fix is a reader inferring a boundary from a tool's absence instead of reading it as a rule. Fixing an instance of that shape by repeating it would be the fix contradicting itself.
+
+**Accepted cost, stated rather than discovered later.** One agent now carries two mandates that differ by dispatch path, and that has to stay true in several places. The surfaces list in `shared/issues/260813-0825_*` grows accordingly.
