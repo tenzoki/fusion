@@ -55,16 +55,18 @@ Once `/fusion:setup` has run in a project, the day-to-day flow is:
 2. **Pick the right entry point** depending on what you're doing:
    - Multi-task batch session → **orchestrator**
    - Vague request that needs scoping → **shaper**, then planner
+   - A goal to capture without starting work on it → `/fusion:direct <draft>` — **shaper** sharpens the draft with you and writes it as an anticipated Circle; no Turn loop runs, and a backlog entry's path is a valid draft
    - Concrete change with a clear ask → **planner** directly
    - One bug to fix → **bugfixer**
    - Forensic look at a captured failed run → **investigator**
    - Customer-ready deliverable, branded deck, or en↔de translation → **editor**
+   - An idea worth keeping but not yet worth planning → `/fusion:memo` files it as its own new entry in the project backlog, where the playmaker ranks it and `/fusion:next` surfaces it
    - "What should I work on next?" → `/fusion:next` for the portfolio briefing + next-Circle activation (**playmaker**); **taskplanner** builds the in-Circle work queue
    - Tracking files feel stale → **reconciler**
    - Strategic advice or second opinion → **consultant**
    - Deep document/problem study before work → **analyst**
 
-3. **The workbench is the project's cross-session memory.** `fusion-workbench/` holds one directory per unit of work under `circles/` — each with its own plans, issues, decisions, history, reviews and analyses — plus a `shared/` store for everything that belongs to no unit of work, and `tasklist.md` at the root. Which artifact lands where is the Origin Rule: it belongs to the Circle whose Directive caused it, and to `shared/` when no Circle was active. The kinds are distinguished by what resolves them — plans ("here's the approach"), defects ("go fix it") in issues, open questions ("decide and record") in decisions.
+3. **The workbench is the project's cross-session memory.** `fusion-workbench/` holds one directory per unit of work under `circles/` — each with its own plans, issues, decisions, history, reviews and analyses — plus a `shared/` store for everything that belongs to no unit of work, and `tasklist.md` and `portfolio.md` at the root. Which artifact lands where is the Origin Rule: it belongs to the Circle whose Directive caused it, and to `shared/` when no Circle was active. The kinds are distinguished by what resolves them — plans ("here's the approach"), defects ("go fix it") in issues, open questions ("decide and record") in decisions, and ideas that are not yet units of work ("worth considering, not yet worth planning") in the shared backlog store, which has no Circle counterpart because an idea precedes every Directive. `portfolio.md` is not an artifact kind: it is the playmaker's regenerated briefing over the anticipated Circles and the backlog, and it is what `/fusion:next` reads back to the user.
 
    The layout is defined once, in `$FUSION_SRC/rules/fusion-workbench-conventions.md` (`## fusion-workbench Layout`, `## Origin Rule`). Read it there and cite it rather than reciting paths from memory — agents themselves do not hard-code these paths either; they resolve them at run time via `$FUSION_PLUGIN_ROOT/bin/fusion-paths <name>`. If the user wants to know where a given artifact will land in *their* project, run that resolver and show them, rather than guessing from the layout.
 

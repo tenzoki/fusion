@@ -64,3 +64,15 @@ against `agents/orchestrator.md`, not in this cell. Do not resolve it by adding 
 the orchestrator prompt as part of a documentation pass.
 
 Filed by: coderev (review of Circle Turn 3, range `22f892e..8d87192`, commit `8d87192`).
+
+---
+
+Resolved: 2026-08-13 — the cell now reads "the user, on a direct planner dispatch, to plan an
+anticipated Circle before it is activated", and states that no agent prompt and no skill body passes
+the line, citing `agents/orchestrator.md:377` as the orchestrator's only planner dispatch and the one
+that passes `**Executors:**` alone. Re-confirmed by grep over `agents/*.md` and `skills/*/SKILL.md`:
+`**Circle:**` occurs at `agents/planner.md:13`, `:53`, `:55`, and at `skills/circle-stash/SKILL.md:170`
+and `:446` as a report field rather than a dispatch; `agents/orchestrator.md` does not contain the
+string. The row's other half was left standing after the reading — value form, absent behaviour and
+the exit-1 halt are `agents/planner.md:53-55` verbatim. Nothing was added to the orchestrator prompt,
+per the issue's own fix direction.

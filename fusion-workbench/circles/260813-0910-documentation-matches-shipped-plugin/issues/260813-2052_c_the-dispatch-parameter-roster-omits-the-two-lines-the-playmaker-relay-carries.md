@@ -84,3 +84,15 @@ kind of thing from a parameter, say so in a note under the table the way the bug
 pre-authorisation is handled, and correct the count. Either resolves it; silence does not.
 
 Filed by: coderev (review of Circle Turn 3, range `22f892e..8d87192`, commit `8d87192`).
+
+---
+
+Resolved: 2026-08-13 — `README-agents.md` `## Dispatch parameters` gained two `playmaker` rows,
+`**Confirmed operations:**` and `**Proposal source:**`, read against `agents/playmaker.md:207-215`,
+`:216` and `:219`, with `skills/next/SKILL.md:167-176` (the block) and `:179` (the caller-side stamp
+contract) as the passer. A note under the table states what the relay is and what the stamp check
+refuses, so the "performs nothing, writes nothing" behaviour is documented where the rows point.
+The roster's form definition was widened by one clause — a value may run past its own line, ending
+at the next `**<Keyword>:**` line — which is what lets a block-valued parameter sit in a table whose
+preamble said "one per line"; `**Draft:**` already had the same shape (`agents/shaper.md:57`).
+The count of six agents is unchanged: both lines belong to `playmaker`, already in the roster.

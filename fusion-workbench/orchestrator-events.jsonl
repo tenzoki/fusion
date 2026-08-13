@@ -1339,3 +1339,5 @@
 {"ts":"2026-08-13T19:42:23","event":"coherence_review","turn":3,"detail":"verdict=ok | Artifact<->Grounding: 6 issues filed, 9-row spot check holds | Artifact<->Directive: 6 of 10 steps at Turn 3 of 5 | Grounding<->Directive: 0 answered decisions touched"}
 {"ts":"2026-08-13T19:42:23","event":"turn_end","turn":3,"detail":"1 task resolved, 6 issues created, 2 closed, 2 commits"}
 {"ts":"2026-08-13T19:42:23","event":"turn_start","turn":4,"detail":"S7-S9 plus skill-body pass"}
+{"ts":"2026-08-13T19:53:26","event":"task_done","turn":4,"task":"S7","agent":"coder","detail":"docs/working-model.md"}
+{"ts":"2026-08-13T19:53:26","event":"task_start","turn":4,"task":"S8+S9+skills","agent":"coder","detail":"philosophy, help skill, and the skill-body roster pass"}

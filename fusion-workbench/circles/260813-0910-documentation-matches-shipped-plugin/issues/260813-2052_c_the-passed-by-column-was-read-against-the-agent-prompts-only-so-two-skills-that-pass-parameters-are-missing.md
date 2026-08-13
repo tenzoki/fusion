@@ -71,3 +71,23 @@ Read the four cells against the skill bodies and add the missing passers. Consid
 has a stated ground truth for that column instead of the agent prompts by default.
 
 Filed by: coderev (review of Circle Turn 3, range `22f892e..8d87192`, commit `8d87192`).
+
+---
+
+Resolved: 2026-08-13 — the `Passed by` column was re-read against all sixteen `skills/*/SKILL.md`
+bodies and the dispatching sections of `agents/*.md`. Four cells gained the missing passer: the
+reconciler's `**Domain:**` gained `/fusion:cleanup` Step 3 (`skills/cleanup/SKILL.md:147`), and the
+shaper's `**Mode:**`, `**Draft:**` and `**Domain:**` each gained `/fusion:seed-from-plane`
+(`skills/seed-from-plane/SKILL.md:92`, `:93`, `:94`, `:97`). Every other cell now cites the line it
+was read against too — `agents/orchestrator.md:377`, `:392`, `:438`, `:649`, `:850`, `:1397`,
+`skills/next/SKILL.md:103`, `skills/direct/SKILL.md:70-72`, `agents/shaper.md:45`, `:47`. The
+section preamble now states this column's own ground truth, so the next pass over the table does
+not inherit the agent prompts by default.
+
+One residual, found in the same reading and deliberately not resolved here: the `shaper` /
+`**Parent task:**` cell names the orchestrator, and `agents/orchestrator.md` contains no such line.
+Unlike the `**Circle:**` case, the attribution has an artifact-side source — the declaring prompt
+itself, `agents/shaper.md:45`, says the orchestrator dispatches with it optionally. The cell now
+cites that source and says the orchestrator's own prompt names no such line, so a reader can see
+which side the claim rests on. Whether the orchestrator should carry the line is a prompt question,
+not a `README-agents.md` one.
