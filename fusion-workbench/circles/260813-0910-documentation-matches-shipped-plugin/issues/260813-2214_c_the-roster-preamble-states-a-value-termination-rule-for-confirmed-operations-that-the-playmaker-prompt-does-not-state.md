@@ -69,3 +69,20 @@ form both sides use (`agents/playmaker.md:209-217`, `skills/next/SKILL.md:167-17
 two citations, no inherited contract.
 
 Filed by: coderev (review of Circle Turn 4, range `93388bc..c663a1f`, commit `c663a1f`).
+
+---
+
+Resolved: 2026-08-13 — the preamble at `README-agents.md:54` no longer attributes the shaper's
+termination rule to the second parameter. It now states the two bounds separately: `**Draft:**` ends
+at the next `**<Keyword>:**` line or at the end of the prompt, cited to `agents/shaper.md:57`, and
+`**Confirmed operations:**` is a block "whose declaring prompt states no termination rule", with the
+form both sides write cited to `agents/playmaker.md:209-217` and `skills/next/SKILL.md:170-176`.
+
+The prompt was read before the wording was chosen, per the task's instruction. `agents/playmaker.md:207`
+declares what the block means ("perform exactly the operations it lists and no others, propose nothing
+further, and stop") and says nothing about where the value ends; the fenced form at `:209-217` places
+`**Proposal source:**` on the line after the four operation lines and states no rule either. Searched
+the whole prompt for a boundary sentence and found none, which is why the preamble now says the rule
+is not stated rather than inventing one. `skills/next/SKILL.md:169-177` carries the identical block
+from the caller side. No prompt was changed: whether the playmaker prompt *should* state a
+termination rule is the open question the issue declined to answer.

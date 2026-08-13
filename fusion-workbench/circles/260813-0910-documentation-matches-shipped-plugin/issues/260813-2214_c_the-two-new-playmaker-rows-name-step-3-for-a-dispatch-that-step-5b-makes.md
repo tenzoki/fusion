@@ -73,3 +73,17 @@ pass: `skills/next/SKILL.md:168` carries `**Domain:**` in the Step 5b block too,
 has two passing sites in the same skill and the cell names one.
 
 Filed by: coderev (review of Circle Turn 4, range `93388bc..c663a1f`, commit `c663a1f`).
+
+---
+
+Resolved: 2026-08-13 — both `Passed by` cells now read "`/fusion:next` Step 5b's dispatch", with the
+line citations kept as they were. Checked against `skills/next/SKILL.md` section headings read in
+order: `:96` `## Step 3 — Dispatch playmaker`, `:153` `## Step 5b — Put the backlog proposals to the
+user, and relay the answer back`, `:167` "**3. Dispatch playmaker a second time**", `:197` `## Step 6`
+— so the cited lines 167-179 sit inside Step 5b, and `skills/next/SKILL.md:106` ("No other
+parameters") is what Step 3 says about its own dispatch.
+
+The `**Domain:**` cell was checked in the same pass and corrected too: it now names Step 5b's second
+dispatch beside Step 3. **One citation in this issue is wrong and was not carried forward** — the
+issue names `skills/next/SKILL.md:168` as the Step 5b block's `**Domain:**` line; the fence opens at
+`:169` and `**Domain:** <detected-domain>` is at `:170`. The cell cites `:170`.

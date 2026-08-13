@@ -90,3 +90,17 @@ Related: entrance 1 of the same list describes a mechanism no prompt has
 (`260813-2214_o_the-first-of-three-entrances-…`).
 
 Filed by: coderev (review of Circle Turn 4, range `93388bc..c663a1f`, commit `a489966`).
+
+---
+
+Resolved: 2026-08-13 — both closed counts are gone. `docs/working-model.md:28` no longer states a
+number: the list is introduced by "these are the commands that reach it" and `/fusion:seed-from-plane`
+is now item 3, checked against `skills/seed-from-plane/SKILL.md:87` (the dispatch is "the exact
+`/fusion:direct`→`shaper` path"), `:92-94` (the three parameter lines `**Mode:** anticipated-circle`,
+`**Draft:**`, `**Domain:**`), `:101` (it creates the Circle directory, the `_a_circle.md` record and
+the six subdirectories) and `:141` ("It produces an **anticipated** (`_a_`) Circle only … Activation
+stays the user's explicit choice via `/fusion:next`"), which is where item 3's activation clause comes
+from. §2 at `:78` now names both dispatchers of anticipated-circle mode, checked against the same
+`skills/seed-from-plane/SKILL.md:92-94` and against `agents/shaper.md:57`, whose detection contract
+is the mode line these two skills pass. The count in §1 was dropped rather than raised to four, per
+the issue's second option: the list now has no digit to go stale against a growing skill set.

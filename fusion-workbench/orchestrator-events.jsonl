@@ -1345,3 +1345,7 @@
 {"ts":"2026-08-13T20:05:02","event":"task_done","turn":4,"task":"S8","agent":"coder","detail":"c663a1f"}
 {"ts":"2026-08-13T20:05:02","event":"task_done","turn":4,"task":"S9","agent":"coder","detail":"c663a1f"}
 {"ts":"2026-08-13T20:05:02","event":"commit","turn":4,"detail":"27af85a + c663a1f (split: renames landed first, content followed)"}
+{"ts":"2026-08-13T20:44:52","event":"review_done","turn":4,"agent":"coderev","detail":"6 issues filed; 3 Turn-3 closures re-verified; range 93388bc..c663a1f"}
+{"ts":"2026-08-13T20:44:52","event":"coherence_review","turn":4,"detail":"verdict=ok | Artifact<->Grounding: 6 issues filed, 3 closures verified | Artifact<->Directive: 9 of 10 steps done | Grounding<->Directive: 0 answered decisions touched"}
+{"ts":"2026-08-13T20:44:52","event":"turn_end","turn":4,"detail":"3 tasks resolved (S7,S8,S9), 6 issues created, 3 closed, 4 commits"}
+{"ts":"2026-08-13T20:44:52","event":"turn_start","turn":5,"detail":"five review findings; step 10 deferred by user choice"}

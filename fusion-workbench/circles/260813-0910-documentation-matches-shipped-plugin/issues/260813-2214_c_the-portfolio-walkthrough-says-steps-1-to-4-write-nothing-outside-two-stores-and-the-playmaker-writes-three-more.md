@@ -84,3 +84,16 @@ sentence. Do not simply add the missing destinations to the current list: the li
 the path safe, and a longer list would suggest it is.
 
 Filed by: coderev (review of Circle Turn 4, range `93388bc..c663a1f`, commit `a489966`).
+
+---
+
+Resolved: 2026-08-13 — the premise was replaced rather than the list extended, per the issue's fix
+direction. `docs/working-model.md:158` now reads "Nothing in steps 1 to 4 writes what an active Turn
+loop writes", names the playmaker's four writes (the appended Circle-record sections, the portfolio,
+its own history log, the backlog store) and cites `skills/next/SKILL.md` `## Boundaries`, which is
+that claim's authoring home. Checked against `skills/next/SKILL.md:297` ("its writes are four: the
+three appended sections on Circle records, the portfolio, its own history log, and the backlog store
+it maintains … The active Turn loop writes none of the four") and against `agents/playmaker.md:10`,
+which enumerates the same four from the agent side, with `:154` (portfolio regenerated in full every
+run), `:182` (the `## Activation proposal` block is appended to the candidate record) and `:239` (the
+history log). The second sentence is unchanged.

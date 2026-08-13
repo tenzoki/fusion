@@ -69,3 +69,15 @@ to the Circle whose Directive caused it", `## Path Resolution` for the Circle-fi
 follows from a mid-run creation. Or split the sentence and give each half its own pointer.
 
 Filed by: coderev (review of Circle Turn 4, range `93388bc..c663a1f`, commit `a489966`).
+
+---
+
+Resolved: 2026-08-13 — taken in the same pass, since it is one citation in a file already being
+edited for the other three findings. `docs/working-model.md:80` now cites
+`rules/fusion-workbench-conventions.md` `## Origin Rule` for the placement claim and names
+`## Path Resolution` only for the extra resolution a mid-run creation is allowed. Checked against
+`rules/fusion-workbench-conventions.md:97-99`, where `## Origin Rule (Herkunftsregel)` states "An
+artifact belongs to the Circle whose Directive caused it to come into existence. With no active
+Circle, it goes to `shared/`", and against the same file's `## Path Resolution (Pfadauflösung)` at
+`:116`, whose *Where the call belongs* half carries the one permitted second resolution — the half
+`agents/shaper.md:76` cites for the same act.

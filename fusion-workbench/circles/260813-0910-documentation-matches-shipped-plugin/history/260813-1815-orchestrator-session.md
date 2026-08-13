@@ -50,4 +50,13 @@
 - Coherence: ok
 
 ### Turn 4
-- In progress: S7, S8, S9 plus a skill-body pass closing three roster findings
+- Tasks attempted: S7, S8, S9
+- Tasks completed: S7, S8, S9
+- Commits: a489966, 27af85a, c663a1f, 22f2353
+- Review findings: 6 new issues, three of them in the prose this Turn wrote; 3 closures from Turn 3 re-verified
+- Circuit breaker status: OK
+- Coherence: ok
+- Note: commit 27af85a's staging list reached only the renames; its content followed in c663a1f, whose message says so.
+
+### Turn 5
+- In progress: findings instead of step 10, chosen by the user at the Turn 4 gate. Step 10 deferred.

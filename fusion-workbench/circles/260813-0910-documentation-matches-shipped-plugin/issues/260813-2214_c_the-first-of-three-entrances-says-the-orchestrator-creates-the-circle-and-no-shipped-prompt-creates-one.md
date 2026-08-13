@@ -100,3 +100,19 @@ Directive.
 Related: the entrance count itself is short by one (`260813-2214_o_the-entrance-count-is-three-…`).
 
 Filed by: coderev (review of Circle Turn 4, range `93388bc..c663a1f`, commit `a489966`).
+
+---
+
+Resolved: 2026-08-13 — `docs/working-model.md` `### How a Circle comes into existence` no longer
+carries the orchestrator entrance. The subsection now opens "Every Circle is created by a command
+you type" and names the one creation site, the shaper in anticipated-circle mode, checked against
+`agents/shaper.md:79` ("Creates the Circle **directory** `$OUT_CIRCLE/YYMMDD-HHMM-<directive-slug>/`
+… the record `_a_circle.md` inside it, and the six artifact subdirectories"). A new paragraph at
+`:34` states what the orchestrator does instead: a request handed to it creates no Circle, runs
+against an already-active one or without one, and its artifacts land in `shared/`. Checked against
+`agents/orchestrator.md:234-249` `## Scope`, whose Circle writes are the Phase-4 record rename
+(`:244`), the three record-content sections (`:245-248`) and the `.active-circle` write (`:249`),
+with no creation among them, and against `agents/orchestrator.md:214` and `:807`, which treat "no
+Circle" as the opt-in ordinary case. The activation sentence cites `/fusion:next <circle-dir>`,
+checked against `agents/shaper.md:47` ("`/fusion:next` performs the `_a_→_t_` record rename and the
+`.active-circle` write itself"). No prompt was changed, per the issue's fix direction.
