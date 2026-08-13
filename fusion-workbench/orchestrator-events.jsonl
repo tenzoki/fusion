@@ -1292,3 +1292,11 @@
 {"ts":"2026-08-13T14:26:40","event":"portfolio_refresh","turn":4,"detail":"playmaker regenerated portfolio after _t_→_c_; recommends 260813-0910-documentation-matches-shipped-plugin next"}
 {"ts":"2026-08-13T14:26:40","event":"plane_push","turn":4,"detail":"closure push: 0 pushed, 15 deferred (PLANE_API_KEY absent)"}
 {"ts":"2026-08-13T14:26:40","event":"turn_end","turn":4,"detail":"5 review findings closed, 1 filed; Circle closed coherent"}
+{"ts":"2026-08-13T14:47:19","event":"session_start","history_file":"shared/history/260813-1647-orchestrator-session.md","detail":"Setup complete; Directive not yet stated; domain=code; no active Circle"}
+{"ts":"2026-08-13T16:15:05","event":"session_start","history_file":"circles/260813-0910-documentation-matches-shipped-plugin/history/260813-1815-orchestrator-session.md","detail":"Circle 260813-0910-documentation-matches-shipped-plugin activated; domain=code"}
+{"ts":"2026-08-13T16:15:05","event":"portfolio_refresh","detail":"playmaker run 260813-1756; portfolio.md regenerated; activation proposal appended"}
+{"ts":"2026-08-13T16:16:12","event":"planner_start","detail":"documentation-matches-shipped-plugin: plan from Directive + staleness survey"}
+{"ts":"2026-08-13T16:27:06","event":"planner_done","detail":"circles/260813-0910-documentation-matches-shipped-plugin/planning/260813-1820_o_documentation-matches-shipped-plugin.md — 10 steps, all coder, 5 Turns; 2 open decisions filed"}
+{"ts":"2026-08-13T16:32:51","event":"conceptrev_start","detail":"plan 260813-1820 — 2 mermaid diagrams"}
+{"ts":"2026-08-13T16:32:51","event":"conceptrev_done","detail":"verdict=acceptable; 2 findings, both factual text in diagram 2"}
+{"ts":"2026-08-13T16:32:51","event":"gate_hit","detail":"plan review (Phase 0b step 6)"}

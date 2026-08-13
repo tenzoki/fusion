@@ -2,10 +2,10 @@
 
 ---
 **Domain:** code
-**Status:** anticipated
+**Status:** active
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** (none yet)
-**Active session history:** (none yet)
+**Active spec/plan:** circles/260813-0910-documentation-matches-shipped-plugin/planning/260813-1820_o_documentation-matches-shipped-plugin.md
+**Active session history:** circles/260813-0910-documentation-matches-shipped-plugin/history/260813-1815-orchestrator-session.md
 
 ---
 
@@ -214,3 +214,29 @@ recorded here only so the two Circles do not both claim it.
 **Proposed order:** activate through `/fusion:next`, run the Circle, then take the deferred version
 bump and the release with it. Playmaker only proposes. The rename of this record and the write of
 `.active-circle` are the user's or the orchestrator's.
+
+## Activation proposal (playmaker run 260813-1756)
+
+**Still recommended for activation. Playmaker run 260813-1756, trigger direct-dispatch, domain
+bias `code`.** This section confirms the proposal appended 90 minutes earlier at run 260813-1623
+rather than restating its argument. Read that section for the case; this one records only what was
+re-checked and what moved.
+
+**Nothing that bears on the ranking moved.** Re-verified against the working tree at HEAD
+`267a65c`: this Circle's one dependency, `circles/260813-0858-playmaker-maintains-backlog-store/`,
+still carries the closed-coherent marker; the Grounding snapshot still cites no unresolved decision
+record; the Circle directory still holds its record plus all six artifact subdirectories; and the
+only other anticipated Circle, `circles/260801-1244-curator/`, still carries the falsified
+Grounding measurements that keep it second. The three commits since the previous run
+(`b995049`, `931338a`, `267a65c`) are the backlog-capability work and its workbench records, none
+of which touches this Circle's inputs.
+
+**The deferred release still waits here.** The version bump to 8.2.0 remains unperformed, so the
+playmaker's backlog capability stays committed and unreleased. The run executing this proposal is
+itself the evidence: it read `OUT_BACKLOG` from the resolver and could not use it, because its
+prompt came from the installed copy. That is recorded in `fusion-workbench/portfolio.md` under
+`## Warnings` as `installed-copy-predates-the-backlog-mandate`.
+
+**Proposed order, unchanged.** Activate through `/fusion:next`, run the Circle, then take the
+deferred version bump and the release with it. Playmaker only proposes. The rename of this record
+and the write of `.active-circle` are the user's or the orchestrator's.
