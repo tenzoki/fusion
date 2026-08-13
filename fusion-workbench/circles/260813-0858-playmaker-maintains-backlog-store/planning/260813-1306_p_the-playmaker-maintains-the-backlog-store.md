@@ -191,7 +191,7 @@ stateDiagram-v2
 
 Every step is assigned to `coder`. The routing was run per file rather than assumed: the change set is rule files, agent and skill prompts, TypeScript tests and one plugin manifest, and none of it is ontology, manifest, schema or fixture **data**. The one near-miss is named in step 8.
 
-1. **State the filing/maintenance boundary in the conventions file**
+1. [DONE] **State the filing/maintenance boundary in the conventions file**
    - Executor: `coder`
    - Files: `rules/fusion-workbench-conventions.md` (`## Backlog entries`, lines 194–207)
    - Source: `shared/decisions/260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md`
@@ -199,7 +199,7 @@ Every step is assigned to `coder`. The routing was run per file rather than assu
    - Acceptance: (a) the section states that filing is originating an idea and maintenance is reshaping ideas already in the store, in one sentence a reader can quote; (b) it names the playmaker as the writer of `_p_`, and that is the only writer named for it; (c) the confirm-gated operations are named as four, and a reader who has just read the merge behaviour in `agents/playmaker.md` finds no statement here it contradicts; (d) the section still fits its neighbours in length and register, because the file is loaded into every agent on every dispatch and step 8 measures what this costs.
    - Dependencies: none
 
-2. **Give the playmaker the write, the mandate and the gate**
+2. [DONE] **Give the playmaker the write, the mandate and the gate**
    - Executor: `coder`
    - Files: `agents/playmaker.md`
    - Source: both binding decisions above
@@ -216,14 +216,14 @@ Every step is assigned to `coder`. The routing was run per file rather than assu
    - Acceptance: (a) `bin/fusion-paths playmaker` emits `OUT_BACKLOG=shared/backlog` alongside `SCAN_BACKLOG`; (b) the two mandates appear in the frontmatter description and in the body in the same words; (c) no sentence in the file still says the agent writes no entry; (d) every entry path cited in new prose wildcards its marker; (e) `npx vitest run lib/__tests__/portfolio-citation-form-lint.test.ts lib/__tests__/path-literal-lint.test.ts lib/__tests__/marker-format-lint.test.ts lib/__tests__/glob-nomatch-lint.test.ts lib/__tests__/reference-resolution-lint.test.ts` is green.
    - Dependencies: step 1 (the prompt cites the conventions boundary rather than restating it)
 
-3. **Bring the portfolio template up to a performed operation**
+3. [DONE] **Bring the portfolio template up to a performed operation**
    - Executor: `coder`
    - Files: `rules/circle-records.md` (the `## Backlog — ranked` placeholder at line 126, inside the portfolio template)
    - Changes: the section carries both cases, what the run performed and what it proposes and could not perform, in one clause rather than a second template. The proposed case is what step 4's relay reads back to the user, so each proposed operation is named in a form a person can approve one at a time: the operation, the entry path or paths, and for a split the pieces it would produce. Keep the two existing first-line forms (`Recommended to shape:` and `Recommended to split first:`) exactly as they are: `skills/next/SKILL.md:124` reads them and re-makes none of that judgement, so changing their spelling would break the briefing.
    - Acceptance: a Phase 4 run and an interactive run both have a form to write; `/fusion:next`'s existing render step needs no change to read either; a proposed operation is individually nameable, so a partial confirmation has something to point at.
    - Dependencies: step 2
 
-4. **Carry the confirmation into `/fusion:next` and back to the agent**
+4. [DONE] **Carry the confirmation into `/fusion:next` and back to the agent**
    - Executor: `coder`
    - Files: `skills/next/SKILL.md` (a new step), `agents/playmaker.md` (one subsection under the mandate section step 2 creates)
    - Source: the Circle's Directive (a confirmation held for the operation this run performs); the channel evidence in `## Current State` → *The confirmation channel*; and `## Approach` → *The confirmation relay is not the proposal-return path that was declined*, which the executor should read before touching either file, because the distinction is the whole reason this step is allowed to exist.
@@ -256,21 +256,21 @@ Every step is assigned to `coder`. The routing was run per file rather than assu
    - Acceptance: (a) `bin/fusion-paths next` emits neither `OUT_BACKLOG` nor `SCAN_BACKLOG`; (b) the parameter block appears in the same form in both files, and its four operation words are the same four the mandate section uses; (c) the skill asks nothing and prints nothing when the report carries no proposals; (d) a perform-none answer dispatches nothing a second time; (e) the new step sits before the activation step in the file; (f) `cd hooks && npx vitest run lib/__tests__/fusion-paths.test.ts lib/__tests__/path-literal-lint.test.ts lib/__tests__/reference-resolution-lint.test.ts lib/__tests__/glob-nomatch-lint.test.ts lib/__tests__/marker-format-lint.test.ts` is green.
    - Dependencies: steps 2 and 3
 
-5. **Correct the two skill bodies that state the old writer set**
+5. [DONE] **Correct the two skill bodies that state the old writer set**
    - Executor: `coder`
    - Files: `skills/memo/SKILL.md` (guardrail at line 152), `skills/direct/SKILL.md` (line 77)
    - Changes: in `memo`, add the playmaker to the enumeration of who moves a backlog marker, and leave the surrounding guardrails untouched, particularly `:153`, "never file an entry on an agent's behalf", which this change strengthens rather than weakens. In `direct`, correct the clause claiming that a missing key is what keeps every consumer of the store in scope; it stays true of that skill, of the shaper, and of `/fusion:next`, which after step 4 relays a confirmation without ever resolving a key into the store, and it is not true of the playmaker.
    - Acceptance: no shipped skill body states a writer set that omits the playmaker; `skills/archive/SKILL.md` is untouched.
    - Dependencies: step 1
 
-6. **Invert the resolver's playmaker assertion**
+6. [DONE] **Invert the resolver's playmaker assertion**
    - Executor: `coder`
    - Files: `hooks/lib/__tests__/fusion-paths.test.ts` (the `the backlog keys` block, lines 317–425)
    - Changes: rename and rewrite *gives playmaker the read key and withholds the write key* so it asserts both keys, with `OUT_BACKLOG === "shared/backlog"`. Rewrite its comment: the asymmetry it argued is gone, and what replaces it is that the playmaker is the first shipped consumer holding both, while `shaper`, `memo`, `next` and `direct` keep the shapes the neighbouring cases pin. Also update the comment on *emits neither to a shipped prompt that names neither*, whose justification for `next` ("renders the ranking out of `portfolio.md`, which playmaker already wrote") stops describing everything that skill does once step 4 lands. **The assertion itself does not change and must stay green**, and saying why is the point of the edit: the relay carries text, not a path into the store. Leave the other five cases in the block untouched, since the fixture-prompt case, the two target-Circle cases, the shaper case and the memo case all still hold.
    - Acceptance: `cd hooks && npx vitest run lib/__tests__/fusion-paths.test.ts` green; the file's test count is unchanged.
    - Dependencies: steps 2 and 4
 
-7. **Add the lint that keeps the mandate stated on both surfaces**
+7. [DONE] **Add the lint that keeps the mandate stated on both surfaces**
    - Executor: `coder`
    - Files: `hooks/lib/__tests__/playmaker-backlog-mandate-lint.test.ts` (new)
    - Source: `circles/260813-0858-playmaker-maintains-backlog-store/decisions/260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md`, which accepts "two mandates for one agent, kept true in several places" as a cost rather than avoiding it. This step is what makes that cost payable.
@@ -284,7 +284,7 @@ Every step is assigned to `coder`. The routing was run per file rather than assu
    - Dependencies: steps 2, 3
    - Not in scope, and stated so the omission is a decision rather than an oversight: this lint does not pin step 4's dispatch-parameter contract. `## Testing Strategy` gives the reasoning.
 
-8. **Regenerate the emission golden and run the suite**
+8. [DONE] **Regenerate the emission golden and run the suite**
    - Executor: `coder`. The `.golden` fixture is derived byte-size data, which is the one file in this plan with a claim on `ontocoder`. It goes to `coder` because its role is a test fixture regenerated by a `vitest` command in the TypeScript suite, and because the obligation attached to it, read the diff, is an obligation about rule text and not about data.
    - Files: `hooks/lib/__tests__/fixtures/rules-emission.golden`
    - Changes: `cd hooks && UPDATE_RULES_GOLDEN=1 npx vitest run lib/__tests__/rules-emission-golden.test.ts`, then a second run without the flag. That run fails on purpose; the second is the real one. Review the diff and report the byte movement on `fusion-workbench-conventions.md` and `circle-records.md`, and the resulting per-agent totals. Do **not** move `RULE_BASELINE`; it moves only after a cleanup, and this is growth. If the budget report prints, quote it in the step's verification rather than cutting anyone's prose to silence it.

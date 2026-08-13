@@ -15,138 +15,138 @@
 
 [analyst]
   agent-setup.md 3513
-  fusion-workbench-conventions.md 49992
+  fusion-workbench-conventions.md 51925
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9958
   design-diagrams.md 5673
-  total 90211
+  total 92144
 
 [bugfixer]
   agent-setup.md 3513
-  fusion-workbench-conventions.md 49992
+  fusion-workbench-conventions.md 51925
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9958
-  total 84538
+  total 86471
 
 [coder]
   agent-setup.md 3513
-  fusion-workbench-conventions.md 49992
+  fusion-workbench-conventions.md 51925
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9958
-  total 84538
+  total 86471
 
 [coderev]
   agent-setup.md 3513
-  fusion-workbench-conventions.md 49992
+  fusion-workbench-conventions.md 51925
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9958
-  total 84538
+  total 86471
 
 [conceptrev]
   agent-setup.md 3513
-  fusion-workbench-conventions.md 49992
+  fusion-workbench-conventions.md 51925
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9958
   design-diagrams.md 5673
-  total 90211
+  total 92144
 
 [consultant]
   agent-setup.md 3513
-  fusion-workbench-conventions.md 49992
+  fusion-workbench-conventions.md 51925
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9958
-  total 84538
+  total 86471
 
 [editor]
   agent-setup.md 3513
-  fusion-workbench-conventions.md 49992
+  fusion-workbench-conventions.md 51925
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9958
-  total 84538
+  total 86471
 
 [investigator]
   agent-setup.md 3513
-  fusion-workbench-conventions.md 49992
+  fusion-workbench-conventions.md 51925
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9958
   design-diagrams.md 5673
-  total 90211
+  total 92144
 
 [ontocoder]
   agent-setup.md 3513
-  fusion-workbench-conventions.md 49992
+  fusion-workbench-conventions.md 51925
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9958
-  total 84538
+  total 86471
 
 [ontorev]
   agent-setup.md 3513
-  fusion-workbench-conventions.md 49992
+  fusion-workbench-conventions.md 51925
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9958
-  total 84538
+  total 86471
 
 [orchestrator]
   agent-setup.md 3513
-  fusion-workbench-conventions.md 49992
+  fusion-workbench-conventions.md 51925
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9958
-  circle-records.md 11228
+  circle-records.md 11958
   workbench-stash-and-lock.md 12957
-  total 108723
+  total 111386
 
 [planner]
   agent-setup.md 3513
-  fusion-workbench-conventions.md 49992
+  fusion-workbench-conventions.md 51925
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9958
   design-diagrams.md 5673
-  total 90211
+  total 92144
 
 [playmaker]
   agent-setup.md 3513
-  fusion-workbench-conventions.md 49992
+  fusion-workbench-conventions.md 51925
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9958
-  circle-records.md 11228
-  total 95766
+  circle-records.md 11958
+  total 98429
 
 [reconciler]
   agent-setup.md 3513
-  fusion-workbench-conventions.md 49992
+  fusion-workbench-conventions.md 51925
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9958
-  total 84538
+  total 86471
 
 [shaper]
   agent-setup.md 3513
-  fusion-workbench-conventions.md 49992
+  fusion-workbench-conventions.md 51925
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9958
   design-diagrams.md 5673
-  circle-records.md 11228
-  total 101439
+  circle-records.md 11958
+  total 104102
 
 [taskplanner]
   agent-setup.md 3513
-  fusion-workbench-conventions.md 49992
+  fusion-workbench-conventions.md 51925
   decision-record-examples.md 4291
   user-facing-output.md 16784
   critical-stance.md 9958
   design-diagrams.md 5673
-  total 90211
+  total 92144

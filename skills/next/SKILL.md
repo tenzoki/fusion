@@ -148,7 +148,45 @@ Present the following, in this order. Items 1 to 4 come from the portfolio file;
 
    If that line prints, render it in the briefing and say the queue's standing was not established. This is the one case where the briefing speaks about a queue it has not judged: printing nothing here would read as a queue in good standing, which is the silence the check exists to break.
 
-After rendering the briefing, proceed to Step 6.
+After rendering the briefing, proceed to Step 5b.
+
+## Step 5b — Put the backlog proposals to the user, and relay the answer back
+
+Playmaker's report from Step 3 may name backlog operations it proposed and could not perform — a split, a merge, a close, a deferral. It could not perform them because it had no way to ask: the `AskUserQuestion` grant in this skill's frontmatter belongs to the skill body running in the main session, and it does not travel to a sub-agent the skill dispatches. So the skill asks, and a second dispatch performs. That is the whole of this step.
+
+**No proposals, no step.** When the returned report names none, do nothing here — ask nothing, print nothing, go to Step 6. Most runs are that run.
+
+**1. Read the proposals out of the report**, one operation to a line. The four line forms are fixed by the portfolio template in `rules/circle-records.md` `## Backlog — ranked`, and playmaker returns them in the report exactly as it wrote them into the portfolio.
+
+**2. Ask, once.** One `AskUserQuestion` naming the operations in plain words with their entry paths shown, and three options: perform all of them, choose which, perform none. **Perform none is an ordinary answer**, not a failure — record it in one line and move on. Follow the tone rules in `## Tone` below; the operations are the content, the mechanics of the relay are not.
+
+**3. Dispatch playmaker a second time** — target `fusion:playmaker`, as in Step 3 — but only when at least one operation was approved. When none was, dispatch nothing at all. The prompt carries the approved lines **verbatim**, copied from the report rather than paraphrased, so the second run matches its instruction to the first run's analysis without re-deriving it:
+
+```
+**Domain:** <detected-domain>
+**Confirmed operations:**
+- split <entry path> into: <slug> — <title>; <slug> — <title>
+- merge <entry path>, <entry path> into: <slug> — <title>
+- close <entry path> — <reason>
+- defer <entry path> until <target>
+**Proposal source:** <portfolio> `## Backlog — ranked`, generated <stamp from the portfolio header>
+```
+
+List only the approved operations and drop the rest. `<portfolio>` is the portfolio path as Step 1 resolved it and `<stamp>` is the `**Generated:**` value in its header; between them the second run needs to redo none of the first run's reading. `agents/playmaker.md` `## Two mandates, by dispatch path` carries the same block and states what a run does with it.
+
+**This skill holds no key into the backlog store, and no step here may name one.** `bin/fusion-paths` derives a consumer's key set by one grep over its prompt, so a single write- or read-key token anywhere in this file — a fenced example included — would hand `/fusion:next` a scope it does not need and should not have. The relay carries **text**: entry paths travel as the words playmaker wrote, and nothing in this file resolves a path into the store. Write them as `<entry path>` placeholders.
+
+**4. Say what was performed.** Re-read the portfolio, which the second run regenerated:
+
+```bash
+cat "$WORKBENCH/$PORTFOLIO"
+```
+
+Report in one line what its `Performed this run:` lines say. If an approved operation is not among them, say which one plainly — that, and not a silent portfolio, is how a broken relay announces itself.
+
+Then proceed to Step 6, unchanged.
+
+**Why this relay exists and what it is not.** It is not the proposal-return protocol that decision `260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md` (under `$SCAN_DECISIONS`) declined. That was a return path out of an orchestrator's Phase 4 dispatch, with no user present and a Circle closing. This is `/fusion:next`, where the user is already here confirming an activation, and nothing about the Phase 4 path changes. The comparison is drawn once, in that Circle's plan `260813-1306_*_the-playmaker-maintains-the-backlog-store.md` `## Approach`; do not re-argue it here.
 
 ## Step 6 — Interactive activation
 
@@ -250,7 +288,7 @@ That message is itself the directive. The orchestrator's own prompt instructs it
 
 ## Boundaries
 
-The skill's writes are the record rename (`_a_`→`_t_`), the `**Status:**` head field on that same record, the `.active-circle` write, and the dashboard placeholder — all in Step 6, all gated by explicit confirmation. **That one field is the whole of the Circle *content* it writes**: no section of the record is touched, and the two path fields in the head are left to the writers Step 6.2 names. The portfolio file is written by playmaker, not by this skill. Safe to invoke during an active orchestrator session — playmaker reads everything and writes only Circle records and the portfolio, so it cannot interfere with the active Turn loop's writes. The Step 6 activation branch is short-circuited when a Circle is already active.
+The skill's writes are the record rename (`_a_`→`_t_`), the `**Status:**` head field on that same record, the `.active-circle` write, and the dashboard placeholder — all in Step 6, all gated by explicit confirmation. **Step 5b adds no write of its own** — it asks and it dispatches; the backlog operations the user approves there are performed by playmaker on the second dispatch, out of the key it holds and this skill does not. **That one field is the whole of the Circle *content* it writes**: no section of the record is touched, and the two path fields in the head are left to the writers Step 6.2 names. The portfolio file is written by playmaker, not by this skill. Safe to invoke during an active orchestrator session — playmaker reads everything and writes only Circle records and the portfolio, so it cannot interfere with the active Turn loop's writes. The Step 6 activation branch is short-circuited when a Circle is already active.
 
 ## Tone
 

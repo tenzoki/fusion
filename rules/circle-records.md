@@ -123,7 +123,13 @@ A path resolves in both cases; a bare filename resolves only in the first, and f
 
 ## Backlog — ranked
 
-<Ranked `_o_`/`_p_` backlog entries. First line: `Recommended to shape: <entry path> — <rationale>`, then the `/fusion:direct <entry path>` invocation. Each entry: path, the idea in one line, rank; an entry carrying several ideas lists playmaker's proposed split indented under it.>
+<Ranked `_o_`/`_p_` backlog entries. First line: `Recommended to shape: <entry path> — <rationale>` with the `/fusion:direct <entry path>` invocation under it; a multi-idea top entry instead takes `Recommended to split first: <entry path> — <n> ideas, top one is <slug>` and no invocation. Each entry: path, the idea in one line, rank, and indented under it what this run proposed for that entry — a proposed split showing the pieces it would produce.
+Then `Performed this run:` and the operations it performed, whose entries have left the ranking. Both use these four forms, one operation to a line, so a person can approve one at a time and `/fusion:next` can relay the line verbatim into a second dispatch:
+`split <entry path> into: <slug> — <title>; <slug> — <title>`
+`merge <entry path>, <entry path> into: <slug> — <title>`
+`close <entry path> — <reason>`
+`defer <entry path> until <target>`
+A Phase 4 dispatch holds no confirmation: everything is proposed and `Performed this run:` is absent.>
 
 ## Recently closed (_c_ / _b_)
 

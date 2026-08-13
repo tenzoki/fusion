@@ -324,10 +324,13 @@ describe("bin/fusion-paths", () => {
     // "unconditionally shared" now has two conditions to survive rather than
     // one.
     //
-    // No shipped prompt names OUT_BACKLOG — no agent files an entry — so the
-    // consumer for the write key is a fixture prompt driven through a staged
-    // copy of the script. That is the real derivation path, not a simulation
-    // of it.
+    // The staged-fixture cases below drive a prompt written here through a
+    // copy of the script, so they exercise the derivation path itself rather
+    // than whatever a shipped prompt happens to name today. That was once the
+    // only way to reach OUT_BACKLOG at all: no shipped prompt named it,
+    // because no agent wrote into the store. `agents/playmaker.md` names it
+    // now, and the shipped-prompt cases at the end of the block are where each
+    // consumer's actual key set is pinned.
     const OTHER = "260812-1720-circle-first-placement";
 
     beforeEach(() => {
@@ -382,8 +385,15 @@ describe("bin/fusion-paths", () => {
       // been thought about. Both are user surfaces onto the backlog and
       // neither touches the store: `/fusion:direct` passes an entry path to
       // the shaper verbatim without opening it, and `/fusion:next` renders the
-      // ranking out of `portfolio.md`, which playmaker already wrote. Holding
-      // no key is what makes those two statements mechanical.
+      // ranking out of `portfolio.md`, which playmaker already wrote, then
+      // relays the backlog operations that run proposed — it puts them to the
+      // user and passes the answer back on a second dispatch. The relay
+      // carries text copied out of a report, operation words and entry paths,
+      // and never resolves a path into the store. Holding no key is what makes
+      // those statements mechanical, and for `next` it is now a live
+      // constraint rather than an observation: the dispatch-prompt example in
+      // `skills/next/SKILL.md` hands the skill a key the moment it spells
+      // either token, which is why that example writes `<entry path>`.
       for (const name of ["coder", "orchestrator", "planner", "direct", "next"]) {
         const p = parse(run(project, name).stdout);
         expect(p.OUT_BACKLOG, name).toBeUndefined();
@@ -391,16 +401,35 @@ describe("bin/fusion-paths", () => {
       }
     });
 
-    it("gives playmaker the read key and withholds the write key", () => {
-      // The first shipped consumer of the store, and the asymmetry is the
-      // point: playmaker consolidates the backlog and files no entry, so it
-      // names `$SCAN_BACKLOG` and not `$OUT_BACKLOG`. Key derivation reads that
-      // off the prompt, which makes the write prohibition in `## Scope`
-      // mechanical rather than merely stated — a run that tried to write an
-      // entry would have no resolved path to write it to.
+    it("gives playmaker both keys, and says nothing about how the write is bounded", () => {
+      // The first shipped consumer to hold both. The playmaker reads the whole
+      // store and maintains it, and two of the four maintenance operations
+      // create files — a split writes one entry per idea, a merge writes the
+      // consolidated one — which needs a resolved write target.
+      //
+      // This case asserted the opposite until the playmaker took the store
+      // over: SCAN_BACKLOG present, OUT_BACKLOG absent, and the argument was
+      // that the missing key made the "writes no entry" prohibition mechanical
+      // rather than merely stated. That prohibition is gone and the asymmetry
+      // with it. Nothing in the resolver moved to bring the key across: a
+      // consumer's key set is one grep over its own prompt, so naming
+      // `$OUT_BACKLOG` in `agents/playmaker.md` is the whole of the change.
+      // That derivation is what this case proves.
+      //
+      // It is also all it proves, and the difference matters now in a way it
+      // did not before. What bounds the playmaker today is prose: it reshapes
+      // ideas already in the store and originates none, and its four
+      // operations (split, merge, close, defer) run only under a user
+      // confirmation the run holds. Those bounds live in
+      // `rules/fusion-workbench-conventions.md` `## Backlog entries` and in
+      // `agents/playmaker.md` `## Two mandates, by dispatch path`. No
+      // assertion here reaches them — a sibling lint checks that they are
+      // STATED on both surfaces, and nothing in this suite checks that a run
+      // obeys them. Read a green result as "the key is granted", never as "the
+      // write is bounded".
       const p = parse(run(project, "playmaker").stdout);
       expect(p.SCAN_BACKLOG).toBe("shared/backlog");
-      expect(p.OUT_BACKLOG).toBeUndefined();
+      expect(p.OUT_BACKLOG).toBe("shared/backlog");
     });
 
     it("gives shaper the read key and withholds the write key", () => {
