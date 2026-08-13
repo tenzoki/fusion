@@ -1269,3 +1269,9 @@
 {"ts":"2026-08-13T07:14:13","event":"commit","detail":"799fded — three gaps recorded, two Circles opened, one claim withdrawn"}
 {"ts":"2026-08-13T07:33:56","event":"plane_push","detail":"activation of 260813-0858-playmaker-maintains-backlog-store: 0 pushed, 2 deferred (PLANE_API_KEY absent)"}
 {"ts":"2026-08-13T08:25:10","event":"turn_start","turn":1,"detail":"repair the red baseline before the Circle's own work: 3 failing tests in 2 files"}
+{"ts":"2026-08-13T08:43:04","event":"bugfix_success","detail":"circle-stash locale dependency: LC_ALL=C on the asserted git invocation"}
+{"ts":"2026-08-13T08:43:04","event":"bugfix_success","detail":"plane_curl read the body off an interactive zsh stdout; product fix, both tests untouched"}
+{"ts":"2026-08-13T08:43:04","event":"commit","detail":"7342fdd — red baseline repaired, suite 1010/1010"}
+{"ts":"2026-08-13T08:43:04","event":"turn_end","turn":1,"detail":"2 tasks resolved, 1 issue closed, 1 issue filed, 1 commit"}
+{"ts":"2026-08-13T08:56:17","event":"state_drift","turn":1,"detail":"history Directive was a placeholder while agentstate carried the real Directive; Circle Turn log held 0 entries against 1 Turn run. Both were my skipped writes, both now written. Surfaces: shared/history/260813-0806-orchestrator-session.md, circles/260813-0858-playmaker-maintains-backlog-store/_t_circle.md"}
+{"ts":"2026-08-13T09:43:15","event":"turn_start","turn":2,"detail":"harden plane_curl: quoting, mktemp guard, HTTP-code validation, correct the false comment claim"}

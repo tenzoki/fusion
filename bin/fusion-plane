@@ -56,11 +56,16 @@
 #
 # ── KEY HANDLING (verbatim reuse of Martin's verified wrapper) ───────────────
 #   Every Plane HTTP call runs through:
-#       zsh -ic "curl -s -H \"X-API-Key: \$PLANE_API_KEY\" ... \"<url>\""
+#       FUSION_PLANE_URL=<url> ... zsh -ic \
+#         'curl -s -o "$FUSION_PLANE_RESP" -w "%{http_code}" \
+#            -H "X-API-Key: $PLANE_API_KEY" "$FUSION_PLANE_URL" \
+#            > "$FUSION_PLANE_CODE"' >/dev/null 2>&1
 #   because the non-interactive Bash-tool shell does NOT inherit $PLANE_API_KEY
-#   (it lives in ~/.zshrc). The key is NEVER read from a file and NEVER written
-#   anywhere by this script — plane_key_present() reads it via zsh only to test
-#   non-emptiness; its value is never echoed, logged, or persisted.
+#   (it lives in ~/.zshrc). That shell's own stdout carries nothing this script
+#   reads, and the string it parses is a constant — see plane_curl's header for
+#   why each of those two matters. The key is NEVER read from a file and NEVER
+#   written anywhere by this script — plane_key_present() reads it via zsh only
+#   to test non-emptiness; its value is never echoed, logged, or persisted.
 #
 # ── NO HARDCODED STATE UUID ──────────────────────────────────────────────────
 #   State UUIDs are resolved name → UUID at runtime via GET states/ (Martin's
@@ -332,58 +337,130 @@ config_valid() {
 # ── HTTP wrapper — Martin's `zsh -ic` key wrapper, verbatim pattern ──────────
 # plane_curl METHOD URL [JSON_BODY]
 #   Runs curl inside `zsh -ic` so $PLANE_API_KEY (from ~/.zshrc) is in scope.
-#   $PLANE_API_KEY stays literal (\$) for zsh; $BASE/URL expand in outer bash.
 #   JSON bodies go through a temp file (--data-binary @file) to avoid quoting
 #   hell inside the zsh -ic string; the temp file holds no secret and is removed.
 #
-#   THE RESPONSE BODY IS READ BACK FROM A FILE, NEVER FROM THAT SHELL'S STDOUT.
-#   `-i` sources the user's interactive rc, and an interactive rc is entitled to
-#   write to stdout — a banner, a version-manager line, or, on stock macOS,
-#   /etc/zshrc_Apple_Terminal's session restore ("Restored session: <date>").
-#   This function read the whole of stdout as `<body>\n<http_code>`, so every one
-#   of those lines was prepended to $PLANE_BODY and EVERY response failed to
-#   parse: `rebuild-map: could not parse issues`, states/ and labels/ unusable,
-#   the whole bridge dead for that operator, with nothing naming the cause. The
-#   zsh's STDERR was already discarded in anticipation of exactly this chatter;
-#   only stdout was left open to it. So curl writes the body to `-o <tmp>` and
-#   the noisy channel carries nothing but `%{http_code}`, still on its own last
-#   line — noise can only ever precede it, never follow it (issue 260813-0828).
+#   NOTHING STRUCTURAL IS READ FROM THAT SHELL'S STDOUT — not the body, and since
+#   260813 not the status code either. `-i` sources the user's interactive rc, and
+#   an interactive rc is entitled to write to stdout: a banner, a version-manager
+#   line, or, on stock macOS, /etc/zshrc_Apple_Terminal's session restore
+#   ("Restored session: <date>"). This function once read the whole of stdout as
+#   `<body>\n<http_code>`, so every such line was prepended to $PLANE_BODY and
+#   EVERY response failed to parse — `rebuild-map: could not parse issues`, the
+#   whole bridge dead for that operator, nothing naming the cause (260813-0828).
+#   The first fix moved the body to `-o <tmp>` and left the code on stdout,
+#   arguing that noise could only ever PRECEDE it. That was false: zsh runs
+#   `zshexit`/`TRAPEXIT` AFTER the command, so a hook's line arrives last and
+#   `tail -n1` returned the hook, not the code (260813-1051). Measured on
+#   zsh 5.9 while fixing it, because the detail decides whether a test reproduces
+#   anything: a LONE `zshexit` never fires here, since zsh execs the single
+#   external command in its own place; `TRAPEXIT` fires regardless and glued
+#   itself onto the code (`200TRAP-EXIT-LINE`, which a caller's `2*` still
+#   matched); with both defined the exec is skipped and the code read back as the
+#   hook's line alone. So curl's `-w`
+#   output is redirected INSIDE the zsh string to a second temp file, and this
+#   shell's stdout is discarded whole. A plain `>` redirect rather than curl's
+#   `--write-out %output{file}`: that spelling needs curl >= 8.3.0, and this tool
+#   states no curl floor anywhere (README Requirements names Claude Code, node and
+#   python only), so adopting it would impose an undeclared one.
+#
+#   NOTHING IS INTERPOLATED INTO THE COMMAND STRING EITHER. Method, URL and all
+#   three temp paths travel in the environment `zsh -ic` inherits; the string the
+#   second shell parses is a constant. It used to carry `-o ${tmpresp}` and
+#   `--data-binary @${tmpbody}` unquoted, and their common prefix is $TMPDIR — a
+#   value launchd, CI runners and container wrappers set and nobody validates. A
+#   $TMPDIR containing a space split the command and killed every request
+#   silently; one containing backticks executed them (260813-1051).
+#
+#   EVERY LOCAL FAILURE IS NAMED ON STDERR BEFORE IT RETURNS. `set -e` is no help
+#   here: all twelve call sites invoke this function in a condition, which
+#   suspends `-e` for its whole body, so an unchecked `mktemp` did not abort — it
+#   ran on with an empty $tmpresp, curl ate `-w` as `-o`'s operand, no status code
+#   was ever written, and the caller reported a generic HTTP error. Each of the
+#   three ways this can go wrong now costs one sentence naming it instead
+#   (HYG-NO-SILENT-FAIL).
 # Sets globals: PLANE_HTTP_CODE, PLANE_BODY, PLANE_CURL_RC (curl transport rc).
-# Returns 0 when curl ran (an HTTP response arrived), non-zero on transport
-# failure (no network / DNS / connection refused / timeout).
+# Returns 0 when curl ran AND a three-digit status code came back. Non-zero on
+# transport failure (no network / DNS / connection refused / timeout) and on the
+# three local faults, which land on the caller's transport-failure branch — so a
+# caller's follow-up line may say "unreachable" where the diagnostic above it says
+# the request was never made.
 PLANE_HTTP_CODE=""
 PLANE_BODY=""
 PLANE_CURL_RC=0
 plane_curl() {
   local method="$1" url="$2" body="${3:-}"
-  local tmpbody="" tmpresp cmd out rc
-  tmpresp="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-resp.XXXXXX")"
-  local common="-s -o ${tmpresp} -w '\\n%{http_code}' -X ${method} -H \"X-API-Key: \$PLANE_API_KEY\""
-  if [ -n "$body" ]; then
-    tmpbody="$(mktemp "${TMPDIR:-/tmp}/fusion-plane.XXXXXX")"
-    printf '%s' "$body" > "$tmpbody"
-    common="$common -H 'Content-Type: application/json' --data-binary @${tmpbody}"
+  local tmpbody="" tmpresp="" tmpcode="" common cmd rc code resp
+
+  if ! tmpresp="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-resp.XXXXXX")"; then
+    err "plane_curl: could not create the response temp file in ${TMPDIR:-/tmp} — no request was made ($method $url)"
+    PLANE_HTTP_CODE=""; PLANE_BODY=""; PLANE_CURL_RC=1
+    return 1
   fi
-  cmd="curl ${common} \"${url}\""
-  out="$(zsh -ic "$cmd" 2>/dev/null)" && rc=0 || rc=$?
+  if ! tmpcode="$(mktemp "${TMPDIR:-/tmp}/fusion-plane-code.XXXXXX")"; then
+    err "plane_curl: could not create the status-code temp file in ${TMPDIR:-/tmp} — no request was made ($method $url)"
+    rm -f "$tmpresp"
+    PLANE_HTTP_CODE=""; PLANE_BODY=""; PLANE_CURL_RC=1
+    return 1
+  fi
+  # Single-quoted throughout: this is the text zsh parses, and it is a constant.
+  common='-s -o "$FUSION_PLANE_RESP" -w "%{http_code}" -X "$FUSION_PLANE_METHOD" -H "X-API-Key: $PLANE_API_KEY"'
+  if [ -n "$body" ]; then
+    if ! tmpbody="$(mktemp "${TMPDIR:-/tmp}/fusion-plane.XXXXXX")"; then
+      err "plane_curl: could not create the request-body temp file in ${TMPDIR:-/tmp} — no request was made ($method $url)"
+      rm -f "$tmpresp" "$tmpcode"
+      PLANE_HTTP_CODE=""; PLANE_BODY=""; PLANE_CURL_RC=1
+      return 1
+    fi
+    if ! printf '%s' "$body" > "$tmpbody"; then
+      err "plane_curl: could not write the request body to a temp file — no request was made ($method $url)"
+      rm -f "$tmpresp" "$tmpcode" "$tmpbody"
+      PLANE_HTTP_CODE=""; PLANE_BODY=""; PLANE_CURL_RC=1
+      return 1
+    fi
+    common="$common"' -H "Content-Type: application/json" --data-binary @"$FUSION_PLANE_BODY"'
+  fi
+  cmd="curl $common"' "$FUSION_PLANE_URL" > "$FUSION_PLANE_CODE"'
+  FUSION_PLANE_METHOD="$method" FUSION_PLANE_URL="$url" \
+  FUSION_PLANE_RESP="$tmpresp" FUSION_PLANE_CODE="$tmpcode" FUSION_PLANE_BODY="$tmpbody" \
+    zsh -ic "$cmd" >/dev/null 2>&1 && rc=0 || rc=$?
   [ -n "$tmpbody" ] && rm -f "$tmpbody"
   PLANE_CURL_RC=$rc
   if [ "$rc" -ne 0 ]; then
     PLANE_HTTP_CODE=""
     PLANE_BODY=""
-    rm -f "$tmpresp"
+    rm -f "$tmpresp" "$tmpcode"
     return "$rc"
   fi
-  # Last line of the noisy channel, and only ever that: whatever the rc printed
-  # sits before curl's leading \n, so `tail -n1` reads the code and nothing else.
-  PLANE_HTTP_CODE="$(printf '%s' "$out" | tail -n1)"
-  PLANE_BODY="$(cat "$tmpresp")"
-  rm -f "$tmpresp"
+  # The code now comes from its own file, so the channel argument above is what
+  # makes it trustworthy — this check is the second line, not the first. It is
+  # cheap and it is the one place that can still name a curl which exited 0
+  # having written no status at all (an aliased or stubbed curl, a redirect that
+  # failed). Without it that lands on the caller's `2*` case as a generic HTTP
+  # error, which is how all three of 260813-1051's faults used to present.
+  code="$(cat "$tmpcode" 2>/dev/null)" || code=""
+  case "$code" in
+    [0-9][0-9][0-9]) ;;
+    *)
+      err "plane_curl: curl exited 0 but wrote no HTTP status code (got '$code') for $method $url — the response is not trustworthy"
+      PLANE_HTTP_CODE=""; PLANE_BODY=""
+      rm -f "$tmpresp" "$tmpcode"
+      return 1
+      ;;
+  esac
+  # `cat` is checked: an existing empty file is a real answer (HTTP 204, handled
+  # by callers), a missing one is a fault, and the two must not read alike.
+  if ! resp="$(cat "$tmpresp" 2>/dev/null)"; then
+    err "plane_curl: the response file could not be read back (HTTP $code, $method $url) — treating the response as absent"
+    PLANE_HTTP_CODE=""; PLANE_BODY=""
+    rm -f "$tmpresp" "$tmpcode"
+    return 1
+  fi
+  PLANE_HTTP_CODE="$code"
+  PLANE_BODY="$resp"
+  rm -f "$tmpresp" "$tmpcode"
   return 0
 }
-
-# Key presence check — tests $PLANE_API_KEY non-emptiness via zsh's exit code
-# ONLY. The value is never captured, printed, logged, or written anywhere.
 plane_key_present() {
   zsh -ic 'test -n "${PLANE_API_KEY:-}"' >/dev/null 2>&1
 }

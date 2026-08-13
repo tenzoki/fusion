@@ -1606,12 +1606,32 @@ describe("fusion-plane: the live rebuild, against a reachable Plane", () => {
    * the mock does not read the header.
    */
   function runLive(workbench: string, ...args: string[]): Promise<RunResult> {
+    return runLiveWith(workbench, {}, args);
+  }
+
+  /**
+   * `runLive` with the child's environment and working directory under the
+   * test's control — the seam the `plane_curl` hardening cases need. They vary
+   * exactly the three inputs the faults of 260813-1051 travel on: TMPDIR (the
+   * path that used to be interpolated into the string a second shell parses),
+   * ZDOTDIR (what the interactive rc does before and after the command), and
+   * cwd (where an injected payload would land, since a payload smuggled through
+   * a directory NAME cannot contain a "/" and so can only write relatively).
+   */
+  function runLiveWith(
+    workbench: string,
+    extraEnv: Record<string, string>,
+    args: string[],
+    cwd?: string,
+  ): Promise<RunResult> {
     return new Promise((resolve) => {
       const child = spawn(fusionPlane, args, {
+        cwd,
         env: {
           ...process.env,
           FUSION_PLANE_WORKBENCH: workbench,
           PLANE_API_KEY: "mock-key-not-a-secret",
+          ...extraEnv,
         },
       });
       let stdout = "";
@@ -1737,6 +1757,179 @@ describe("fusion-plane: the live rebuild, against a reachable Plane", () => {
         expect(r.stdout, "and it ends on a status line like every sibling map command").toContain(
           "STATUS: deferred (0 rebuilt)",
         );
+      } finally {
+        await mock.close();
+      }
+    },
+    120_000,
+  );
+
+  // -------------------------------------------------------------------------
+  // plane_curl hardening — the three faults of 260813-1051, each driven through
+  // the real helper against the real mock. What they share: before the fix every
+  // one of them arrived at the caller as an indistinguishable HTTP error, which
+  // is why each case asserts on a NAMED string and not merely on a non-zero exit.
+  // -------------------------------------------------------------------------
+
+  it(
+    "an exit hook that prints after curl is not mistaken for the HTTP status code",
+    async () => {
+      // `7342fdd` moved the body off that shell's stdout and left the status code
+      // on it, on the stated ground that noise "can only ever precede" the code.
+      // zsh runs `zshexit`/`TRAPEXIT` AFTER the command, so a hook's line arrives
+      // last: `tail -n1` returned EXIT-HOOK-LINE, PLANE_HTTP_CODE never matched
+      // any caller's `2*`, and a perfectly good rebuild read as an HTTP error.
+      //
+      // BOTH hooks, and the pairing is load-bearing rather than belt-and-braces.
+      // Measured here against the pre-fix function (zsh 5.9, curl 8.7.1): with
+      // ONLY `zshexit` defined the shell execs the single external command and the
+      // hook never runs, so the old code came back `200` and this case would have
+      // passed against the defect. With `TRAPEXIT` alone it fires but curl's `-w`
+      // output carries no trailing newline, so `tail -n1` returned the two glued
+      // together — `200TRAP-EXIT-LINE`, which a caller's `2*` glob still matches.
+      // With both defined the exec is skipped and `tail -n1` returns the hook's
+      // line alone, which is the filed defect exactly.
+      //
+      // Neither rc prints at STARTUP. A banner would turn this into the regression
+      // guard for the ORIGINAL body defect, which is a separate record
+      // (…_o_the-plane-curl-regression-guard-only-fires-on-a-machine-whose-
+      // interactive-rc-prints) and deliberately not this case's job — the two
+      // failures happen at opposite ends of the same shell's life.
+      const zdot = mkdtempSync(join(tmpdir(), "fusion-plane-zdot-"));
+      scratch.push(zdot);
+      writeFileSync(
+        join(zdot, ".zshrc"),
+        'TRAPEXIT() { print "TRAP-EXIT-LINE" }\nzshexit() { print "EXIT-HOOK-LINE" }\n',
+      );
+
+      const mock = await startMockPlane("one-issue");
+      try {
+        const wb = workbenchAt(mock.port);
+        const r = await runLiveWith(wb, { ZDOTDIR: zdot }, [
+          "push",
+          "--circle",
+          CIRCLE,
+          "--rebuild-map",
+        ]);
+
+        expect(
+          r.stderr,
+          "no hook's line may reach a status-code slot — one did, as `HTTP EXIT-HOOK-LINE`",
+        ).not.toContain("EXIT-HOOK-LINE");
+        expect(r.stderr, "nor the other one").not.toContain("TRAP-EXIT-LINE");
+        expect(r.stderr, "and the rebuild it would have killed must complete").toContain(
+          "rebuild-map: wrote",
+        );
+        expect(r.status).toBe(0);
+        expect(r.stdout).toContain("STATUS: ok");
+      } finally {
+        await mock.close();
+      }
+    },
+    120_000,
+  );
+
+  it(
+    "a $TMPDIR with a space and a command substitution in it neither breaks the request nor executes",
+    async () => {
+      // `-o ${tmpresp}` and `--data-binary @${tmpbody}` were interpolated unquoted
+      // into the string `zsh -ic` parses, and their common prefix is $TMPDIR — set
+      // by launchd, CI runners and container wrappers, validated by nobody. Both
+      // halves are asserted here because they are one fault: the space split the
+      // command (every request came back `000` with an empty body and rc 0 — dead,
+      // silently), and the backticks ran.
+      const root = mkdtempSync(join(tmpdir(), "fusion-plane-hostile-"));
+      scratch.push(root);
+      const sentinel = "PWNED-BY-TMPDIR";
+      const hostile = join(root, "has space", "a`touch " + sentinel + "`b");
+      mkdirSync(hostile, { recursive: true });
+
+      const mock = await startMockPlane("one-issue");
+      try {
+        const wb = workbenchAt(mock.port);
+        // cwd is pinned to `root` because that is where the payload would land:
+        // it lives in a directory name, so it cannot contain a "/".
+        const r = await runLiveWith(
+          wb,
+          { TMPDIR: hostile },
+          ["push", "--circle", CIRCLE, "--rebuild-map"],
+          root,
+        );
+
+        expect(
+          existsSync(join(root, sentinel)),
+          "a $TMPDIR must never be executed — this file's existence is the injection",
+        ).toBe(false);
+        expect(r.stderr, "and the request must still be made").toContain("rebuild-map: wrote");
+        expect(r.status).toBe(0);
+        expect(r.stdout).toContain("STATUS: ok");
+        expect(
+          readdirSync(hostile).filter((f) => f.startsWith("fusion-plane-")),
+          "and every temp file it created is removed again",
+        ).toEqual([]);
+      } finally {
+        await mock.close();
+      }
+    },
+    120_000,
+  );
+
+  it(
+    "a $TMPDIR it cannot create a temp file in is named, not reported as an HTTP error",
+    async () => {
+      // The unguarded `mktemp`. `set -eu` at :201 does not save this: all twelve
+      // call sites invoke plane_curl in a condition, which suspends `-e` for the
+      // whole body, so the function ran on with an empty $tmpresp — curl read `-w`
+      // as `-o`'s operand, wrote no status code at all, still exited 0, and the
+      // caller reported a generic HTTP error on the SUCCESS branch.
+      const root = mkdtempSync(join(tmpdir(), "fusion-plane-notmp-"));
+      scratch.push(root);
+
+      const mock = await startMockPlane("one-issue");
+      try {
+        const wb = workbenchAt(mock.port);
+        // `states` rather than a rebuild: a broken $TMPDIR breaks EVERY mktemp in
+        // the file, and `map --rebuild` materialises the map view (:850, its own
+        // unguarded mktemp, outside this function and outside this fix) before it
+        // ever reaches plane_curl. `states` reaches the HTTP wrapper first, so the
+        // case measures the guard rather than the first mktemp on the path.
+        const r = await runLiveWith(wb, { TMPDIR: join(root, "does-not-exist") }, ["states"]);
+
+        expect(r.stderr, "the operator is told which file could not be created").toContain(
+          "could not create the response temp file",
+        );
+        expect(r.stderr, "and that nothing was sent").toContain("no request was made");
+        expect(r.status, "a request that was never made is not a success").not.toBe(0);
+        expect(mock.requests, "nothing reached the board").toEqual([]);
+      } finally {
+        await mock.close();
+      }
+    },
+    120_000,
+  );
+
+  it(
+    "a curl that exits 0 having written no status code is named, not read as an HTTP error",
+    async () => {
+      // The residual after the status code moved off the shared channel: the code
+      // file can still be empty if curl never ran as curl. An rc is entitled to
+      // define a function of that name, which is the cheapest way to produce the
+      // condition; a failed redirect or a curl too old for `-w` would present the
+      // same. The point of the case is the sentence, not the mechanism.
+      const zdot = mkdtempSync(join(tmpdir(), "fusion-plane-stub-"));
+      scratch.push(zdot);
+      writeFileSync(join(zdot, ".zshrc"), "curl() { return 0 }\n");
+
+      const mock = await startMockPlane("one-issue");
+      try {
+        const wb = workbenchAt(mock.port);
+        const r = await runLiveWith(wb, { ZDOTDIR: zdot }, ["map", "--rebuild"]);
+
+        expect(r.stderr, "the empty status code is reported as itself").toContain(
+          "wrote no HTTP status code",
+        );
+        expect(r.status, "and it is not a success").not.toBe(0);
+        expect(mock.requests, "no request ever reached the mock").toEqual([]);
       } finally {
         await mock.close();
       }

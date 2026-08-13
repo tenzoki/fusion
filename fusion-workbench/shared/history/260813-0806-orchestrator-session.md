@@ -1,7 +1,7 @@
 # Orchestrator Session — 260813-0806
 
-**Directive:** (not yet stated — Setup only; awaiting the user's task)
-**Mode:** (not yet resolved)
+**Directive:** File the three named gaps as records, plan two of them as Circles, and check whether `/fusion:help` should become a self-knowledge skill. Extended mid-session by the user at the activation gate: repair the red test baseline before starting the active Circle's own work.
+**Mode:** custom
 **Status:** In progress
 
 ## Setup snapshot

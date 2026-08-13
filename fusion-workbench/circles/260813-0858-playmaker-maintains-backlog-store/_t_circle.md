@@ -103,6 +103,25 @@ plus the closed original.
 
 ## Turn log
 
+- Turn 1 (session 260813-0806): commits 799fded..7342fdd; Coherence verdict not taken — this Turn ran against a shared defect record, not against this Circle's Directive; session history: shared/history/260813-0806-orchestrator-session.md
+
+  The user activated this Circle and then chose, at the same gate, to repair the red test
+  baseline before any of its Directive was started. So Turn 1 belongs to this Circle by clock
+  and not by subject: three tests were failing at `1c2d555`, two bugfixers resolved them, and
+  `bin/fusion-plane` turned out to carry a product defect that had broken the Plane bridge for
+  every operator whose interactive shell writes a greeting to stdout. The suite is green at
+  1010 of 1010. Nothing in this Circle's `## Directive` was touched, and its Grounding is
+  unchanged. A review of the repair filed five follow-on records, none of them blocking.
+
+- Turn 2 (session 260813-0806): IN PROGRESS from 7342fdd; hardening the repair Turn 1 landed, on three review findings against `plane_curl`; session history: shared/history/260813-0806-orchestrator-session.md
+
+  Still not this Circle's Directive. The review of Turn 1's commit found that the fix, while
+  sound, leaves three silent-failure modes on the same function: an unquoted temp path parsed
+  by a second shell, an unguarded `mktemp` whose failure lands on the success branch because
+  `set -e` is suspended at all twelve call sites, and an HTTP status code still read from the
+  channel the whole repair was about. The user chose to close those before the Circle's own
+  work begins.
+
 ## Activation proposal (playmaker run 260813-0926)
 
 **Proposed for activation.** Run identifier `260813-0926-playmaker-direct-dispatch`;
