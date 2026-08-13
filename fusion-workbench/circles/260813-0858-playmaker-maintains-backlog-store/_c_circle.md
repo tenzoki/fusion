@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** active
+**Status:** closed
 **Filed by:** shaper (anticipated-circle mode)
 **Active spec/plan:** circles/260813-0858-playmaker-maintains-backlog-store/planning/260813-1306_c_the-playmaker-maintains-the-backlog-store.md
 **Active session history:** shared/history/260813-0806-orchestrator-session.md
@@ -133,7 +133,7 @@ plus the closed original.
   before the plan rather than inside it, because it decides whether a proposal-return path
   is built at all, and that is a shape rather than a detail.
 
-- Turn 4 (session 260813-0806): IN PROGRESS from 2a029eb; closing the seams the review found before the Circle closes; session history: shared/history/260813-0806-orchestrator-session.md
+- Turn 4 (session 260813-0806): commits 2a029eb..HEAD; closing the seams the review found before the Circle closes; session history: shared/history/260813-0806-orchestrator-session.md
 
   The Turn-3 review filed eleven findings against this Circle's own delivery, one of them High:
   the confirmation relay offers a "choose which" option with no continuation, against a store
@@ -181,3 +181,54 @@ else.
 **Nothing was renamed.** The marker on this record is unchanged and `.active-circle` was not
 written. Activation runs through `/fusion:next`, or through the orchestrator after the user
 confirms.
+
+## Closure note
+
+**Closed coherent on 260813**, after four Turns in session
+`shared/history/260813-0806-orchestrator-session.md`. The reconciler's Phase-3 verdict was
+`review-needed` with the recommendation *revise Artifact*; the user took that recommendation, the
+five findings behind it were closed in Turn 4, and the Circle closes on the revised Artifact rather
+than over the verdict.
+
+**The Directive is met.** `bin/fusion-paths playmaker` emits `OUT_BACKLOG`. The resolver was never
+touched: the key was already in its ORDER list and already valued, and the agent lacked it for one
+reason only, that its prompt never wrote the token. All surfaces that stated the old no-write
+boundary now state the new one — ten in the prompt, plus the sixth surface in
+`skills/next/SKILL.md` that the review and the reconciler both caught, which is what moved the
+Artifact-to-Directive edge from *partially* to met. The recommended-for-promotion marker has
+exactly one named writer.
+
+**Two things this Circle did not do, and neither is a defect in it.**
+
+The end-to-end acceptance run never happened. The plan specified a `/fusion:next` run against
+`shared/backlog/260811-0826_o_observations.md` — propose a split, obtain confirmation, leave one
+entry per idea plus the closed original. It could not be dispatched from inside a Turn loop, the
+plan terminated it after step 9, and step 9 was deferred. So the capability is proven by tests, by
+the resolver, by two lints and by a review that opened every changed file, and it has never been
+exercised whole. That is the largest gap between what was built and what was demonstrated, and the
+first real run is where it gets closed.
+
+Step 9, the version bump to `8.2.0`, is deferred by the user's release decision: one release
+carries this Circle and `circles/260813-0910-documentation-matches-shipped-plugin/` together,
+because that Circle rewrites four passages describing the behaviour this one replaced. Two of those
+four now contradict shipped behaviour outright, recorded under `## Update 260813-1500` in
+`shared/issues/260813-0825_*`. The bump has no carrier outside the plan being closed here, which is
+filed as `issues/260813-1545_o_the-deferred-version-bump-has-no-carrier-outside-the-plan-that-is-being-closed.md`.
+
+**Turns 1 and 2 did not serve this Directive** and their log entries say so. They repaired a red
+test baseline the user chose to clear first, and found a real product defect: `bin/fusion-plane`
+read HTTP response bodies off an interactive shell's stdout, so the Plane bridge was dead for any
+operator whose shell prints a greeting. That is this session's most consequential fix and it has
+nothing to do with the backlog.
+
+**Seven records stay open in this Circle's issue store**, none of them blocking: the split line
+form cannot express a partial split, the relay reads its operation lines out of report prose, the
+Phase 4 mandate is stated a third time where the lint holds two, the explicit form of
+`/fusion:next` skips the relay, the prompt says "originates" where the conventions lead now says
+"files", the deferred bump has no carrier, and a manual command `bin/fusion-plane` prints carries
+the shell-noise shape that was fixed everywhere else.
+
+**Cost, measured rather than estimated.** Always-on rule text grew 1,928 bytes for all sixteen
+agents and 730 more for three. The budget report fires for every role and was not silenced;
+`RULE_BASELINE` was not moved, because this is growth. The shaper's emitted total now sits within
+1,252 bytes of `RELEASE_CAP`, which no assertion reads today.

@@ -163,3 +163,54 @@ step split is in the survey under `## Proposed step split` and is not restated h
   other option.
 
 ## Turn log
+
+## Activation proposal (playmaker run 260813-1623)
+
+**Recommended for activation — playmaker run 260813-1623 (trigger: direct-dispatch, domain bias
+`code`).**
+
+**What changed since the run at 260813-0926, which ranked this Circle second.** Its one dependency,
+`circles/260813-0858-playmaker-maintains-backlog-store/`, closed coherent this afternoon. The
+record now carries `_c_`, so the dependencies-closed test passes outright rather than raising the
+partial-block flag it raised seven hours ago. With it, the four passages this record names as
+waiting are no longer waiting: `README-agents.md:40`, `CLAUDE.md:51`, `docs/working-model.md` §1
+and §5, and `skills/help/SKILL.md` topic 2. The whole Directive is now workable in one pass instead
+of being split across an interleave boundary.
+
+**On the code heuristic this Circle now scores clean.** Every dependency closed, and no unresolved
+decision cited in the Grounding snapshot. The record it cites as "cited, not waited on",
+`shared/decisions/260813-0826_*_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md`,
+carries the answered marker rather than the open one, so it is not a block under the heuristic and
+was never treated as one by this record.
+
+**The argument that is not in the heuristic, and it is the stronger one.** The release is waiting on
+this Circle by the user's own decision. Step 9 of
+`circles/260813-0858-playmaker-maintains-backlog-store/planning/260813-1306_*_the-playmaker-maintains-the-backlog-store.md`,
+the version bump to 8.2.0, was deferred at that Circle's Turn-3 release gate on the ground that one
+release carries both Circles. So the playmaker backlog capability sits committed at HEAD `931338a`
+and unreleased, and this Circle is what unblocks shipping it. Until then every installed copy of
+fusion, including the one this very run is executing, predates the change (see
+`## Warnings` in `fusion-workbench/portfolio.md`, entry `installed-copy-predates-the-backlog-mandate`).
+
+**One input to the Grounding has moved and is worth re-reading before the first Turn.** The record
+lists `shared/issues/260813-0828_*_three-tests-fail-at-head-in-two-files-and-no-open-record-names-them.md`
+under `## Out of Scope` as three tests failing at HEAD. That record now carries the closed marker.
+The out-of-scope statement is unaffected in substance, but the sentence "must not be blocked on it"
+now describes a condition that no longer exists.
+
+**Two updates the Directive's bounded list does not yet carry**, both measured against the working
+tree at HEAD `931338a` this run rather than inferred:
+
+| Surface | State at this run |
+|---|---|
+| `CLAUDE.md:64`, the always-on rule budget | Claims 88 023 bytes per dispatch, of which 80 670 shipped rule text. Measured: 93 819 total, 86 466 shipped, over the five always-on files plus this project's chat profile. |
+| `rules/fusion-workbench-conventions.md` | 51 920 bytes, 24 second-level headings. The file gained 1 928 bytes between 09:26 and 16:23 today. |
+
+Neither is named in `shared/analyses/260813-0828-documentation-staleness-survey.md`, the fifteen-finding
+list this Circle works from. The first is a documentation claim inside a file this Circle already
+edits, so it fits the remit without widening it. The second belongs to `260801-1244-curator` and is
+recorded here only so the two Circles do not both claim it.
+
+**Proposed order:** activate through `/fusion:next`, run the Circle, then take the deferred version
+bump and the release with it. Playmaker only proposes. The rename of this record and the write of
+`.active-circle` are the user's or the orchestrator's.
