@@ -1275,3 +1275,6 @@
 {"ts":"2026-08-13T08:43:04","event":"turn_end","turn":1,"detail":"2 tasks resolved, 1 issue closed, 1 issue filed, 1 commit"}
 {"ts":"2026-08-13T08:56:17","event":"state_drift","turn":1,"detail":"history Directive was a placeholder while agentstate carried the real Directive; Circle Turn log held 0 entries against 1 Turn run. Both were my skipped writes, both now written. Surfaces: shared/history/260813-0806-orchestrator-session.md, circles/260813-0858-playmaker-maintains-backlog-store/_t_circle.md"}
 {"ts":"2026-08-13T09:43:15","event":"turn_start","turn":2,"detail":"harden plane_curl: quoting, mktemp guard, HTTP-code validation, correct the false comment claim"}
+{"ts":"2026-08-13T10:07:42","event":"task_done","turn":2,"detail":"plane_curl hardened; 2 records closed, 1 re-scoped and reopened"}
+{"ts":"2026-08-13T10:07:42","event":"commit","turn":2,"detail":"d6dd193 — constant command string, status code off the noisy channel, suite 1014/1014"}
+{"ts":"2026-08-13T10:07:42","event":"turn_end","turn":2,"detail":"3 tasks resolved, 2 issues closed, 1 re-scoped; 1 commit"}

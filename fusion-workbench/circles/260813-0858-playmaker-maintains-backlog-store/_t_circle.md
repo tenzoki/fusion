@@ -113,14 +113,18 @@ plus the closed original.
   1010 of 1010. Nothing in this Circle's `## Directive` was touched, and its Grounding is
   unchanged. A review of the repair filed five follow-on records, none of them blocking.
 
-- Turn 2 (session 260813-0806): IN PROGRESS from 7342fdd; hardening the repair Turn 1 landed, on three review findings against `plane_curl`; session history: shared/history/260813-0806-orchestrator-session.md
+- Turn 2 (session 260813-0806): commits 7342fdd..d6dd193; Coherence verdict not taken — this Turn ran against shared review findings, not against this Circle's Directive; session history: shared/history/260813-0806-orchestrator-session.md
 
   Still not this Circle's Directive. The review of Turn 1's commit found that the fix, while
   sound, leaves three silent-failure modes on the same function: an unquoted temp path parsed
   by a second shell, an unguarded `mktemp` whose failure lands on the success branch because
   `set -e` is suspended at all twelve call sites, and an HTTP status code still read from the
   channel the whole repair was about. The user chose to close those before the Circle's own
-  work begins.
+  work begins. Two of the three were closed outright, the third re-scoped to what a
+  change confined to one function could not reach. The suite went from 1010 to 1014 tests
+  across the same 48 files, and the four new cases were each verified to fail against the
+  previous commit's binary. This Circle's Directive is still untouched and its Grounding
+  unchanged; Turn 3 is where its own work begins.
 
 ## Activation proposal (playmaker run 260813-0926)
 
