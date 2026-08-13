@@ -30,3 +30,6 @@ Everything else in the row was checked and is accurate: atomic `mkdir` and workb
 Either drop the acquirer clause from the opening sentence, letting the "authored in" pointer carry it whole, or complete it to the four entries. Dropping it is the better fit with the row's own stated policy of not restating the protocol.
 
 Filed by: coderev (review of Circle Turn 1, range `6590cd5..79ec7bb`, commit `0b20859`).
+
+---
+Resolved: The partial acquirer list was dropped, per the issue's preferred direction. The `bin/fusion-commit-lock` row in `CLAUDE.md` now opens "The POSIX mutex around `git add` and `git commit`, acquired by whoever is about to commit." and lets the "authored in `rules/workbench-stash-and-lock.md`" pointer carry the roster whole, which is what the row's own closing sentence already promised. Checked against `rules/workbench-stash-and-lock.md` `### Who acquires`, read in full: four entries, orchestrator / executors-when-they-commit / the two committing skills / everyone else never.

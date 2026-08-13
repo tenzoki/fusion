@@ -22,3 +22,16 @@
 ## Session log
 
 - 260813-1815 Circle activated from anticipated to active; .active-circle written; playmaker portfolio regenerated.
+
+## Per-Turn Log
+
+### Turn 1
+- Tasks attempted: S1, S2, S3
+- Tasks completed: S1, S2, S3
+- Commits: 90037eb, 0b20859, 79ec7bb (plus 6590cd5 activation, 28f3029 review artifacts)
+- Review findings: 7 issues filed by coderev (1 medium, 6 minor), none blocking
+- Circuit breaker status: OK
+- Coherence: ok
+
+### Turn 2
+- In progress: S4, S5 plus five review findings folded in

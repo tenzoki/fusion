@@ -23,3 +23,6 @@ The four sibling rows added in the same edit use a form that does not have this 
 Reword to the sibling form: the script's header is the authoritative documentation and no other file describes the helper, so this row summarises it rather than restating it. Keep the substance; drop the absolute.
 
 Filed by: coderev (review of Circle Turn 1, range `6590cd5..79ec7bb`, commit `0b20859`).
+
+---
+Resolved: The absolute is gone. The `bin/fusion-count-sources` row in `CLAUDE.md`'s Layout table now reads "**Its own header is the authoritative documentation**, and this row summarises it rather than restating it", the sibling form the four rows added in the same edit already use. The substance is unchanged: the one counting mechanism with no fallback, the exit-code table, the `unavailable`-never-`0` rule and the two decisions. Checked against the row as it stood and against `grep -rn 'fusion-count-sources' --include='*.md'`, which now returns the `CLAUDE.md` row plus five call-site lines in `agents/orchestrator.md` (`:158`, `:159`, `:162`, `:175`, `:196`) — a second reason the absolute could not stand.

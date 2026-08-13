@@ -49,3 +49,6 @@ So an agent can ship unnamed in all three surfaces the step lists, as long as th
 Either narrow the sentence to what the gate does — the two `CLAUDE.md` **counts** are checked, so an agent added without bumping them fails the suite — or widen the gate: a per-name check on the listing bullet, and a one-row-per-agent check on README-agents' table, both modelled on section 1's skill-roster checks. Widening is the better fix if the sentence is to stay as written; the parsers already exist one section up.
 
 Filed by: coderev (review of Circle Turn 1, range `6590cd5..79ec7bb`, commit `90037eb`).
+
+---
+Resolved: The sentence at `README-agents.md:268` was narrowed to what the gate checks. It now says the lint holds the digit counts in the two `CLAUDE.md` surfaces to `agents/*.md`, names the three claims it parses, and states plainly that no test enumerates names — not the listing bullet's, not this README's own table rows — so registration is the author's to get right. Checked against `hooks/lib/__tests__/derivable-enumerations-lint.test.ts:146-152` (the `CLAIMS` array, five digit regexes) and against every `agentNames()` call site in that file (`:145`, `:169`, `:263`); the only one outside the count block is the conditional-emission check, which verifies derived agents are real rather than that an agent is registered.

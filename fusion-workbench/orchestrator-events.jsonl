@@ -1319,3 +1319,6 @@
 {"ts":"2026-08-13T17:44:21","event":"review_done","turn":1,"agent":"coderev","detail":"7 issues filed (1 medium, 6 minor); range 6590cd5..79ec7bb recorded"}
 {"ts":"2026-08-13T17:44:21","event":"coherence_review","turn":1,"detail":"verdict=ok | Artifact<->Grounding: 7 issues filed, none blocking | Artifact<->Directive: commits move toward the Directive, steps 1-3 of 10 done | Grounding<->Directive: 0 answered decisions touched this Turn"}
 {"ts":"2026-08-13T17:44:21","event":"turn_end","turn":1,"detail":"3 tasks resolved, 7 issues created, 3 commits (90037eb, 0b20859, 79ec7bb)"}
+{"ts":"2026-08-13T17:44:52","event":"commit","turn":1,"detail":"28f3029 docs(review): Turn 1 reviewed, and the file that promised a gate it does not have"}
+{"ts":"2026-08-13T17:44:52","event":"turn_start","turn":2,"detail":"S4, S5 plus five review findings folded in"}
+{"ts":"2026-08-13T17:45:06","event":"state_drift","turn":2,"detail":"Circle Turn log: surface=1 entries, record=2 turns run. Turn 2 in flight; provisional entry written, finalised at Turn end."}

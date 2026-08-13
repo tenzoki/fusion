@@ -41,3 +41,6 @@ The plan carried the word (`planning/260813-1820_o_…:116`, "the five files tha
 Say "the **unindented** `emit_if_exists` lines in `bin/fusion-rules`", or name the alternative that needs no reading of the script at all: `bin/fusion-rules <any-agent>` prints the emitted set for that agent, one path per line, and `wc -c` over its output is the measurement — which is what the step-2 history actually ran.
 
 Filed by: coderev (review of Circle Turn 1, range `6590cd5..79ec7bb`, commit `0b20859`).
+
+---
+Resolved: The instruction now names the set that produces the figure. `CLAUDE.md` reads "with `wc -c` over the always-on set — the **unindented** `emit_if_exists` lines in `bin/fusion-rules`, plus the project's chat voice profile", says the indented ones are conditional and add 30 588 bytes, and offers `bin/fusion-rules coder | xargs wc -c` as the same measurement in one command. All three figures were measured here, not carried over: `grep -n 'emit_if_exists' bin/fusion-rules` gives five unindented lines (`:391-395`) and three indented (`:421`, `:439`, `:454`); `wc -c` over those three is 30 588; `bin/fusion-rules coder | xargs wc -c` and `wc -c` over the five plus `fusion-workbench/stilwerk/chat-voice-de.yaml` both total 93 819, so the one-command form is exact for `coder` in this repository today.

@@ -38,3 +38,6 @@ One workbench file in this Circle. No shipped file affected.
 `mv` the plan to `260813-1820_p_documentation-matches-shipped-plugin.md` and set `**Status:** In progress` in the header. At the Circle's close, `_p_` → `_c_` and `**Status:** Complete`, per the same section.
 
 Filed by: coderev (review of Circle Turn 1, range `6590cd5..79ec7bb`, commit `0b20859`).
+
+---
+Resolved: The plan file was renamed `planning/260813-1820_o_documentation-matches-shipped-plugin.md` → `planning/260813-1820_p_documentation-matches-shipped-plugin.md` and its header set to `**Status:** In progress`. Step 4 is `[DONE]` in the same edit, so four of ten steps now carry the inline marker and the filename agrees with them. Checked against `rules/fusion-workbench-conventions.md` `## State Markers — issues and planning` (open to in-progress when an agent begins work, in-progress to closed when the work is done) and `## Inline State Tracking` → Planning files (Status Complete and the `_c_` rename belong at the end, not here).

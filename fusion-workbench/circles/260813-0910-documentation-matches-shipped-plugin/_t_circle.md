@@ -165,6 +165,7 @@ step split is in the survey under `## Proposed step split` and is not restated h
 ## Turn log
 
 - Turn 1 (session 260813-1815): commits 6590cd5..79ec7bb (90037eb, 0b20859, 79ec7bb); steps 1-3 done (README-agents dead references, CLAUDE.md inventory/deletion/playmaker clause/byte claim, bin/ roster lint); coderev filed 7 issues, 1 medium 6 minor, none blocking; Coherence verdict coherent; session history: circles/260813-0910-documentation-matches-shipped-plugin/history/260813-1815-orchestrator-session.md
+- Turn 2 (session 260813-1815): IN PROGRESS — started at 28f3029; steps S4-S5 plus five review findings from Turn 1. Coherence verdict pending.
 
 ## Activation proposal (playmaker run 260813-1623)
 

@@ -22,8 +22,8 @@ Since v4.0.0 the **Writes** column names artifact *kinds*, not fixed root paths.
 
 | Agent | Role | Reads | Writes | Output goes to |
 |-------|------|-------|--------|----------------|
-| `shaper` | Turns vague/brittle user requests into precise specs with user involvement | Anything | `planning/` (spec files), `issues/`, `history/` | Spec document with capabilities, acceptance criteria, and user decisions |
-| `planner` | Designs implementation plans from specs or clear requests, no code changes | Anything | `planning/`, `issues/`, `history/` | Markdown plan with explicit step-by-step executor routing |
+| `shaper` | Turns vague/brittle user requests into precise specs with user involvement. Four invocation modes: user-direct, in-Circle clarification, portfolio-activation (re-clarifies an anticipated Circle's Directive before activation), anticipated-circle (captures a draft Directive as a new anticipated Circle) | Anything, including the shared backlog store — a backlog entry is a valid draft | `planning/` (spec files), `decisions/` (decisions the user defers), `issues/`, `history/`. In portfolio-activation mode also the cited Circle record's `## Directive` and `## Grounding snapshot` sections, in place. In anticipated-circle mode a new Circle directory `circles/<stamp>-<slug>/` holding its `_a_circle.md` record and the six artifact subdirectories, plus the marker rename to closed and the `Promoted:` line on the backlog entry the draft came from | Spec document with capabilities, acceptance criteria, and user decisions — or, in anticipated-circle mode, an anticipated Circle record instead of a spec |
+| `planner` | Designs implementation plans from specs or clear requests, no code changes; every plan step names exactly one executor agent | Anything, and specifically the specs and plans under `planning/`, the reports under `analyses/`, and the open and answered records under `decisions/` | `planning/`, `decisions/` (choice points that planning surfaces, cited from the plan rather than held inside it), `issues/`, `history/` | Markdown plan whose head carries the mandatory `**Decidability:**` line and whose every step declares its executor, files, changes and dependencies |
 | `coder` | Implements **application code** per a plan or task | Anything | `.go`, `.rs`, `.ts`, `.tsx`, `.py`, `.js`, `.java`, build manifests and build configuration whatever the extension (`Makefile`, `go.mod`, `package.json`, `Cargo.toml`, `tsconfig.json`), build scripts, tests, `history/`, `issues/` | Code edits + history log |
 | `ontocoder` | Implements **structured-data and ontology** changes per a plan or task | Anything | `.yaml`, `.yml`, `.json`, `.toml`, `.csv` where they carry data, ontology, manifests, schemas, fixture data, derived stats/index files, data documentation, `history/`, `issues/` | Data edits + history log |
 | `coderev` | Reviews Go / TS / Python code, files findings | Anything | `reviews/`, `issues/`, `history/` (`$OUT_REVIEW` etc., resolved per-Circle or `shared/`) | Review report + issue files |
@@ -107,7 +107,7 @@ Since v2.9.0, every Turn closes with a **Coherence Review** (per-Turn gate again
                     └────────┬──────┘
                              │
               ┌──────────────▼──────────────┐
-              │  Turn loop (max 5 Turns)     │
+              │  Turn loop                  │ ← Turn budget (see below)
               │  ┌────────┐  ┌───────────┐  │
               │  │ coder  │  │ ontocoder │  │ ← human gate on ontocoder
               │  └───┬────┘  └─────┬─────┘  │
@@ -130,6 +130,8 @@ Since v2.9.0, every Turn closes with a **Coherence Review** (per-Turn gate again
               │             │ → next Turn   │
               └─────────────┴───────────────┘
 ```
+
+**The Turn budget is configuration, not a constant.** `bin/fusion-turn-budget` resolves it once per session, at the orchestrator's Setup, from `{"orchestrator": {"maxTurns": N}}` in the project's `fusion-guard.json`, merged per leaf over the plugin's `hooks/config.json` and then the built-in default, which is defined once in `hooks/lib/config.ts` `DEFAULTS`. No count is written into the orchestrator prompt or into the diagram above. When the resolution fails, the orchestrator substitutes none: it omits the maximum from `agentstate.yaml`, shows the dashboard's Turn field as `<current>/--`, treats the Max-Turns circuit breaker as not evaluable, and asks the user at every Turn boundary instead.
 
 ### Orchestrator observability
 
@@ -263,7 +265,7 @@ The layout, the Origin Rule, the operative half of the `bin/fusion-paths` resolu
    - The `## Layout` table in `CLAUDE.md` — its `agents/*.md` row states how many prompts ship
    - The agent table at the top of this README
 
-   Both `CLAUDE.md` counts are checked against `agents/*.md` by `hooks/lib/__tests__/derivable-enumerations-lint.test.ts`, so a forgotten registration fails the test suite.
+   `hooks/lib/__tests__/derivable-enumerations-lint.test.ts` checks the **digit counts** in the two `CLAUDE.md` surfaces against `agents/*.md` — the listing bullet's "N specialized agents", and the Layout row's "The N agent prompts" and "the other N inherit" — so an agent added without bumping them fails the test suite. It checks no **names**: nothing enumerates the agents named in the listing bullet, and nothing checks this README's own agent table row by row, so an agent whose name reaches none of the three surfaces still passes as long as the counts agree. The registration is yours to get right; the gate only holds the counts to the tree.
 
 ## Migration note
 
