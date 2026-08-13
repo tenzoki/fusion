@@ -42,4 +42,12 @@
 - Coherence: ok
 
 ### Turn 3
-- In progress: S6 alone (sixteen agent rows, dispatch-parameter roster)
+- Tasks attempted: S6
+- Tasks completed: S6
+- Commits: 8d87192, 93388bc
+- Review findings: 6 new issues (1 high, 3 medium, 2 low); 9 rows re-read independently, all holding
+- Circuit breaker status: OK
+- Coherence: ok
+
+### Turn 4
+- In progress: S7, S8, S9 plus a skill-body pass closing three roster findings

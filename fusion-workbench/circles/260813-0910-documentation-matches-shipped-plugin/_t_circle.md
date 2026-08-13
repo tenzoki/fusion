@@ -166,7 +166,8 @@ step split is in the survey under `## Proposed step split` and is not restated h
 
 - Turn 1 (session 260813-1815): commits 6590cd5..79ec7bb (90037eb, 0b20859, 79ec7bb); steps 1-3 done (README-agents dead references, CLAUDE.md inventory/deletion/playmaker clause/byte claim, bin/ roster lint); coderev filed 7 issues, 1 medium 6 minor, none blocking; Coherence verdict coherent; session history: circles/260813-0910-documentation-matches-shipped-plugin/history/260813-1815-orchestrator-session.md
 - Turn 2 (session 260813-1815): commits 28f3029..22f892e (9a11254, 5d51abd, 22f892e); steps 4-5 done (shaper/planner rows and the Turn-budget diagram, README.md configuration section and tuning table); 5 issues from Turn 1 closed and re-verified as holding; coderev filed 5 new issues, all minor; Coherence verdict coherent
-- Turn 3 (session 260813-1815): IN PROGRESS — started at 22f892e; step 6 alone (sixteen agent rows read against their prompts, dispatch-parameter table). Coherence verdict pending.
+- Turn 3 (session 260813-1815): commits 22f892e..93388bc (8d87192, 93388bc); step 6 done (sixteen agent rows read against their prompts, twelve corrected, dispatch-parameter table added, the planner's domain claim corrected on three surfaces); 2 issues closed; coderev filed 6 new issues, 1 high 3 medium 2 low, and re-read nine rows independently; Coherence verdict coherent
+- Turn 4 (session 260813-1815): IN PROGRESS — started at 93388bc; steps 7-9 (working-model, philosophy, help) plus a pass over the skill bodies that closes three roster findings. Coherence verdict pending.
 
 ## Activation proposal (playmaker run 260813-1623)
 

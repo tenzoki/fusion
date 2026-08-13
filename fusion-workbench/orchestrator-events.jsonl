@@ -1334,3 +1334,8 @@
 {"ts":"2026-08-13T18:33:30","event":"turn_start","turn":3,"detail":"S6 alone: sixteen agent rows plus the dispatch-parameter roster"}
 {"ts":"2026-08-13T18:45:20","event":"task_done","turn":3,"task":"S6","agent":"coder","detail":"8d87192; 16 rows read, 12 corrected, dispatch-parameter table added"}
 {"ts":"2026-08-13T18:45:20","event":"commit","turn":3,"task":"S6","detail":"8d87192"}
+{"ts":"2026-08-13T19:42:23","event":"review_start","turn":3,"agent":"coderev","detail":"3 files; 9-row independent spot check"}
+{"ts":"2026-08-13T19:42:23","event":"review_done","turn":3,"agent":"coderev","detail":"6 issues filed (1 high, 3 medium, 2 low); range 22f892e..8d87192"}
+{"ts":"2026-08-13T19:42:23","event":"coherence_review","turn":3,"detail":"verdict=ok | Artifact<->Grounding: 6 issues filed, 9-row spot check holds | Artifact<->Directive: 6 of 10 steps at Turn 3 of 5 | Grounding<->Directive: 0 answered decisions touched"}
+{"ts":"2026-08-13T19:42:23","event":"turn_end","turn":3,"detail":"1 task resolved, 6 issues created, 2 closed, 2 commits"}
+{"ts":"2026-08-13T19:42:23","event":"turn_start","turn":4,"detail":"S7-S9 plus skill-body pass"}
