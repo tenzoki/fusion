@@ -164,6 +164,8 @@ step split is in the survey under `## Proposed step split` and is not restated h
 
 ## Turn log
 
+- Turn 1 (session 260813-1815): IN PROGRESS — started at 6590cd5; steps S1-S3 (README-agents dead references, CLAUDE.md inventory and deletions, bin/ roster lint). Coherence verdict pending; session history: circles/260813-0910-documentation-matches-shipped-plugin/history/260813-1815-orchestrator-session.md
+
 ## Activation proposal (playmaker run 260813-1623)
 
 **Recommended for activation — playmaker run 260813-1623 (trigger: direct-dispatch, domain bias

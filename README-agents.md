@@ -259,10 +259,12 @@ The layout, the Origin Rule, the operative half of the `bin/fusion-paths` resolu
 3. Setup must confirm that `fusion-workbench-conventions.md` and any other relevant rule files from the plugin's `rules/` directory are present in context (discovered by running `bin/fusion-rules <agent-name>` at Setup — nothing is auto-loaded).
 4. Declare what the agent may read and what it may write — be explicit and exclusive.
 5. Register the agent in:
-   - `CLAUDE.md` folder structure block (if it introduces a new `fusion-workbench/` subfolder)
-   - `CLAUDE.md` key-documentation table
+   - The agent listing bullet under `## What this is` in `CLAUDE.md` — it names every agent and states the count
+   - The `## Layout` table in `CLAUDE.md` — its `agents/*.md` row states how many prompts ship
    - The agent table at the top of this README
+
+   Both `CLAUDE.md` counts are checked against `agents/*.md` by `hooks/lib/__tests__/derivable-enumerations-lint.test.ts`, so a forgotten registration fails the test suite.
 
 ## Migration note
 
-These agents were previously stored as plain prompts in `ccagents/` and later in `.claude/agents/`. Both paths are now legacy. Historical session logs in `fusion-workbench/history/` may reference old paths; those are immutable records.
+These agents were previously stored as plain prompts in `ccagents/` and later in `.claude/agents/`. Both paths are now legacy. Historical session logs — in `shared/history/`, and in each Circle's own `history/` — may reference old paths; those are immutable records.
