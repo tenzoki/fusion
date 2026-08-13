@@ -1357,3 +1357,5 @@
 {"ts":"2026-08-13T21:26:50","event":"gate_response","detail":"user chose Accept Bounded Closure"}
 {"ts":"2026-08-13T21:26:50","event":"bounded_closure_proposed","detail":"Turn budget exhausted at 9 of 10 steps; step 10 deferred and filed; 9 findings open"}
 {"ts":"2026-08-13T21:37:20","event":"portfolio_refresh","detail":"circles/260813-0910-documentation-matches-shipped-plugin/_b_circle.md; playmaker runs 260813-2326 and 260813-2334; the second after the closure note was written"}
+{"ts":"2026-08-13T21:38:39","event":"state_drift","detail":"progress.commits said 15, git counted 17 at the closure commit; the state file was not rewritten between the reconciliation and closure commits. Recorded before agentstate.yaml is deleted."}
+{"ts":"2026-08-13T21:38:39","event":"session_end","detail":"Bounded Closure; 9 of 10 steps; 17 commits; 26 records filed, 16 closed; 1 unreviewed shipped-file commit"}

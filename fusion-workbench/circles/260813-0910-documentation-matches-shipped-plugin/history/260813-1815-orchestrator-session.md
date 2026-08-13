@@ -1,8 +1,8 @@
 # Orchestrator Session — 260813-1815
 
 **Directive:** fusion's user-facing documentation agrees with the plugin at v8.1.0 (Circle 260813-0910-documentation-matches-shipped-plugin)
-**Mode:** (resolving — Phase 0)
-**Status:** In progress
+**Mode:** plan
+**Status:** Bounded Closure: Turn budget spent at 9 of 10 steps; step 10 filed as a record
 
 ## Setup snapshot
 
@@ -86,3 +86,119 @@ one piece of work and its record: verify `docs/plane-setup.md`'s command forms a
 fields against `bin/fusion-plane`, or file the residual issue the plan's risk table requires so the
 unmet promise stops living in prose. Bounded Closure is **not** proposed: nothing about the Directive
 turned out to be unreachable.
+
+## Budget
+
+| Metric | Count |
+|--------|-------|
+| Turns | 5 |
+| Tasks resolved | 9 of 10 plan steps |
+| Tasks skipped/deferred | 1 (step 10, deferred by user at the Turn 4 gate) |
+| Issues created | 26 |
+| Issues resolved | 16 |
+| Decisions answered (`_o_`→`_a_`) | 0 |
+| Decisions implemented (`_a_`→`_i_`) | 0 |
+| Commits | 17 |
+| Agent errors | 0 |
+| Human gates hit | 7 |
+
+The four record counts are read off the Circle's own stores rather than tallied. They
+are taken from `circles/260813-0910-documentation-matches-shipped-plugin/{issues,decisions}/`
+directly, because the Circle closed before this read and the resolver therefore no longer
+scans it: `bin/fusion-paths orchestrator` now returns the shared stores alone. A record was
+filed this session when its filename stamp is at or after `260813-1815`, and reached its
+marker this session when that name did not exist at `267a65c`. Two decision records were
+filed and both remain open. Nothing was filed into the shared stores.
+
+## Review coverage
+
+**Range:** `267a65c..602fa1b` — 17 commits
+**Covered by:** five review files under the Circle's `reviews/`, four coderev passes over Turns 1
+to 4 plus one conceptrev pass on the plan. The conceptrev file records no `**Reviewed-range:**`
+and contributes no coverage; the four coderev files tile `6590cd5..c663a1f`.
+**Not covered:** 8 commits. Seven of them touch no shipped file — the activation commit, the four
+review-artifact commits, the reconciliation commit and the closure commit — checked one by one
+with `git show --name-only`. The eighth is `c0e4219`, Turn 5's correction pass, which changes two
+shipped files and was never reviewed: the Turn budget ended with it.
+**Carried out-of-scope files:** none. Every coderev pass declared `**Not-opened:** none`.
+
+## Session Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant O as Orchestrator
+    participant PM as Playmaker
+    participant P as Planner
+    participant CV as Conceptrev
+    participant C as Coder
+    participant CR as Coderev
+    participant R as Reconciler
+
+    O->>PM: portfolio ranking
+    PM-->>O: 2 anticipated, none active
+    O->>U: GATE activate documentation Circle
+    U-->>O: activate
+    O->>P: plan from Directive + survey
+    P-->>O: 10 steps, 2 decisions filed
+    O->>CV: evaluate 2 plan diagrams
+    CV-->>O: acceptable, 2 findings
+    O->>U: GATE plan review
+    U-->>O: approve
+
+    Note over O: Turn 1
+    O->>C: S1 README-agents dead references
+    C-->>O: done (90037eb)
+    O->>C: S2 CLAUDE.md four corrections
+    C-->>O: done (0b20859)
+    O->>C: S3 bin/ roster lint
+    C-->>O: done (79ec7bb)
+    O->>CR: review Turn 1
+    CR-->>O: 7 issues filed
+    O->>U: GATE Coherence
+    U-->>O: continue
+
+    Note over O: Turn 2
+    O->>C: S4 rows + Turn-budget diagram + 5 findings
+    C-->>O: done (9a11254)
+    O->>C: S5 README.md configuration
+    C-->>O: done (5d51abd)
+    O->>CR: review Turn 2
+    CR-->>O: 5 issues filed
+    O->>U: GATE Coherence
+    U-->>O: continue
+
+    Note over O: Turn 3
+    O->>C: S6 sixteen agent rows + parameter table
+    C-->>O: done (8d87192)
+    O->>CR: review Turn 3
+    CR-->>O: 6 issues filed
+    O->>U: GATE Coherence
+    U-->>O: continue
+
+    Note over O: Turn 4
+    O->>C: S7 working-model prose
+    C-->>O: done (a489966)
+    O->>C: S8+S9 philosophy, help, skill-body pass
+    C-->>O: done (c663a1f)
+    O->>CR: review Turn 4
+    CR-->>O: 6 issues filed
+    O->>U: GATE Coherence
+    U-->>O: continue
+
+    Note over O: Turn 5
+    O->>C: six findings this Circle wrote
+    C-->>O: done (c0e4219)
+    O->>U: GATE Coherence
+    U-->>O: (budget reached)
+
+    Note over O: Circuit breaker: Max Turns reached (5/5)
+    O->>R: final reconciliation
+    R-->>O: review-needed, 1 gap
+    O->>U: GATE Rebalance
+    U-->>O: accept Bounded Closure
+    O->>PM: portfolio refresh
+    PM-->>O: closure note missing
+    O->>PM: portfolio refresh (note written)
+    PM-->>O: portfolio.md regenerated
+```
