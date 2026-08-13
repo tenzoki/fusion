@@ -1325,3 +1325,5 @@
 {"ts":"2026-08-13T17:55:27","event":"task_done","turn":2,"task":"S4","agent":"coder","detail":"9a11254; 5 review findings closed with it"}
 {"ts":"2026-08-13T17:55:27","event":"commit","turn":2,"task":"S4","detail":"9a11254"}
 {"ts":"2026-08-13T17:55:27","event":"task_start","turn":2,"task":"S5","agent":"coder","detail":"README.md configuration section and tuning table"}
+{"ts":"2026-08-13T18:02:08","event":"task_done","turn":2,"task":"S5","agent":"coder","detail":"5d51abd"}
+{"ts":"2026-08-13T18:02:08","event":"commit","turn":2,"task":"S5","detail":"5d51abd"}
