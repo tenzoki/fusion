@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** active
+**Status:** bounded
 **Filed by:** shaper (anticipated-circle mode)
 **Active spec/plan:** circles/260813-0910-documentation-matches-shipped-plugin/planning/260813-1820_p_documentation-matches-shipped-plugin.md
 **Active session history:** circles/260813-0910-documentation-matches-shipped-plugin/history/260813-1815-orchestrator-session.md
@@ -169,6 +169,25 @@ step split is in the survey under `## Proposed step split` and is not restated h
 - Turn 3 (session 260813-1815): commits 22f892e..93388bc (8d87192, 93388bc); step 6 done (sixteen agent rows read against their prompts, twelve corrected, dispatch-parameter table added, the planner's domain claim corrected on three surfaces); 2 issues closed; coderev filed 6 new issues, 1 high 3 medium 2 low, and re-read nine rows independently; Coherence verdict coherent
 - Turn 4 (session 260813-1815): commits 93388bc..22f2353 (a489966, 27af85a, c663a1f, 22f2353); steps 7-9 done (working-model Circle-first flow and second walkthrough, philosophy traceability, help skill entry points), plus the skill-body pass closing 3 roster findings; coderev filed 6 new issues, three of them in the prose this Turn wrote; Coherence verdict coherent
 - Turn 5 (session 260813-1815): commit c0e4219; six findings closed, all of them sentences this Circle's own prose introduced in Turns 3 and 4, each corrected against the artifact it names; step 10 (docs/plane-setup.md) deferred by user choice at the Turn 4 gate; Coherence verdict coherent; Turn budget reached
+
+## Closure note
+
+Closed at Bounded Closure on 260813 by session `circles/260813-0910-documentation-matches-shipped-plugin/history/260813-1815-orchestrator-session.md`, after five Turns and sixteen commits. The Phase 3 verdict was `review-needed` with a recommendation to revise the Artifact, **not** a Bounded Closure proposal. The user chose Bounded Closure at the Rebalance gate because the Turn budget was spent at 5 of 5 and the remaining work is a fresh unit rather than a correction to this one. That reason is recorded here because it exists nowhere else: the reconciler's own verdict says the opposite, and a later reader comparing the two would otherwise find a contradiction with no explanation.
+
+**What the Directive reached.** Nine of the plan's ten steps landed. `README-agents.md` is a table whose sixteen agent rows were each read against their prompt and resolver key set, fifteen of them corrected, and it carries a new dispatch-parameter roster established by reading sixteen prompts and sixteen skill bodies rather than by carrying either earlier count forward. `CLAUDE.md`'s helper inventory is complete and derived from the tree by a gate, so it cannot fall behind again; its tracked-file count is deleted rather than corrected, and its byte budget states a stamped past measurement instead of a present floor. `README.md` describes the three configuration layers that exist. `docs/working-model.md` carries the Circle-first placement rule, the backlog store, and a second walkthrough for the path from an idea to a Circle. `docs/philosophy.md` and `skills/help/SKILL.md` name the two entry points a reader could not previously find.
+
+**What it did not reach, and this is the Bounded Closure Artifact.** Step 10, the verification of `docs/plane-setup.md` against `bin/fusion-plane`, was never begun: `git log 267a65c..HEAD -- docs/plane-setup.md` returns nothing. At the Turn 4 gate the user chose five review findings over it, and the budget ran out. The Directive promises that verification, so the promise is unmet. It is filed as `circles/260813-0910-documentation-matches-shipped-plugin/issues/260813-2305_o_the-directive-promises-plane-setup-verification-and-step-10-was-deferred-with-no-record.md`, which carries the step's scope and the user's seam between a reference claim and a troubleshooting one.
+
+**What was learned that the Directive could not have stated in advance.** Two things, both measured rather than reasoned.
+
+First, the method constraint holds when a step audits someone else's text and slips when a step authors its own. Every one of the six findings closed in Turn 5 was a sentence this Circle had written that hour without checking it against the artifact it described, including a claim that the orchestrator creates a Circle when no shipped prompt creates one. The constraint was written for the auditing case; the authoring case is where it was breached. The orchestrator then breached it once more at this very closure, asserting this note had been written when the edit had silently matched nothing, caught by the playmaker at the portfolio refresh.
+
+Second, a documentation defect found by reading a prompt is a different population from one found by reading a skill body. Step 6 read sixteen agent prompts and no skill body, and every table defect it left behind lay in what a prompt alone cannot answer: who dispatches a parameter. The Turn 3 review diagnosed it and the same omission recurred one Turn later in a different file. A pass over sixteen prompts is not a pass over the plugin.
+
+**What is left standing.** Nine defect records open in this Circle, plus the step-10 record filed at Phase 3. Every one was filed during this session, and the reconciler re-reproduced each at HEAD with a `Reconciled:` line naming what was read. Two decision records open: whether the planner should accept the domain parameter three surfaces promised it, and how fusion's own documentation treats a hand-measured number that decays. One commit, `c0e4219`, is unreviewed; five further commits touch only the workbench.
+
+**Consequence for the release.** The 8.2.0 version bump was deferred at the preceding Circle's release gate so that one release would carry both Circles. This one closes bounded rather than coherent, so whether that release goes out over an unmet Directive promise is the user's call and is not answered here.
+
 
 ## Activation proposal (playmaker run 260813-1623)
 

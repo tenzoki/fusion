@@ -186,3 +186,37 @@ activation is yours.
 record. The six artifact subdirectories the Circle record template requires (`planning/`, `issues/`,
 `decisions/`, `history/`, `reviews/`, `analyses/`) are absent, so the first agent dispatched here
 has to invent them.
+
+## Activation proposal (playmaker run 260813-2326)
+
+**Ranked first and still not proposed for activation. Playmaker run 260813-2326, trigger direct-dispatch, domain bias `code`.** Appended beside the sections from runs 260807-1646 and
+260813-0007 rather than replacing them; the three are successive states of one question.
+
+**What changed is the field, not this Circle.** The other anticipated Circle,
+`circles/260813-0910-documentation-matches-shipped-plugin/`, reached Bounded Closure this evening
+with nine of ten plan steps done. This record is now the only Circle in the portfolio that is
+neither terminal nor active. Ranking it first therefore says nothing about it: there is no second
+candidate to beat.
+
+**Nothing in this record moved, and the falsification is now on its sixth consecutive run.**
+Re-measured against the working tree at HEAD `431805b`, not carried forward from the previous run:
+
+| Claim in the Grounding snapshot | Measured 260813-2326 |
+|---|---|
+| `rules/fusion-workbench-conventions.md` holds 54 401 bytes | 51 920 bytes |
+| The file has 32 second-level headings | 24 |
+| Every agent receives 87 387 bytes of always-on rules | 93 819 over the five always-on files plus this project's chat profile |
+| The shards are produced by the closing work C9 | four already sit in `rules/` |
+| The workbench is neither tracked nor gitignored | tracked since `e8988d9` |
+
+**One ordering constraint named at run 260813-1756 is unchanged.** Reaching the shaper's
+portfolio-activation mode from inside an orchestrator session is the subject of the open record
+`shared/decisions/260813-0027_*_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md`.
+The user can run the shaper directly with the mode contract regardless; the open question is only
+whether the orchestrator may.
+
+**Proposed order, unchanged from the previous two runs.** Put the shaper on this Circle in
+portfolio-activation mode for a Directive without capability C9, a fresh validation case, a
+Grounding measured this week, and an answer on whether the Directive needs a rate-bounding
+component. Then run `/fusion:next`. Playmaker only names this. The re-sharpening is shaper work and
+the activation is yours.
