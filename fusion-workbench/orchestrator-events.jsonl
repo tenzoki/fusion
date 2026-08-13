@@ -1313,3 +1313,9 @@
 {"ts":"2026-08-13T17:16:35","event":"task_done","turn":1,"task":"S2","agent":"coder","detail":"0b20859"}
 {"ts":"2026-08-13T17:16:35","event":"commit","turn":1,"task":"S2","detail":"0b20859 docs(claude-md): five helpers arrive in the inventory"}
 {"ts":"2026-08-13T17:16:35","event":"task_start","turn":1,"task":"S3","agent":"coder","detail":"extend derivable-enumerations-lint with the bin/ roster"}
+{"ts":"2026-08-13T17:20:40","event":"task_done","turn":1,"task":"S3","agent":"coder","detail":"79ec7bb"}
+{"ts":"2026-08-13T17:20:40","event":"commit","turn":1,"task":"S3","detail":"79ec7bb test(enumerations): the bin/ roster is derived from the tree"}
+{"ts":"2026-08-13T17:44:21","event":"review_start","turn":1,"agent":"coderev","detail":"3 files in scope"}
+{"ts":"2026-08-13T17:44:21","event":"review_done","turn":1,"agent":"coderev","detail":"7 issues filed (1 medium, 6 minor); range 6590cd5..79ec7bb recorded"}
+{"ts":"2026-08-13T17:44:21","event":"coherence_review","turn":1,"detail":"verdict=ok | Artifact<->Grounding: 7 issues filed, none blocking | Artifact<->Directive: commits move toward the Directive, steps 1-3 of 10 done | Grounding<->Directive: 0 answered decisions touched this Turn"}
+{"ts":"2026-08-13T17:44:21","event":"turn_end","turn":1,"detail":"3 tasks resolved, 7 issues created, 3 commits (90037eb, 0b20859, 79ec7bb)"}
