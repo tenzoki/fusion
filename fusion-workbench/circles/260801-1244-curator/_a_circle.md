@@ -122,3 +122,67 @@ macht ihn danach ein zweites Mal.
 Vorgeschlagenes Vorgehen: erst die Sprachentscheidung beantworten, dann den shaper auf diesen
 Circle ansetzen, dann `/fusion:next`. Playmaker benennt nur; die Neu-Schärfung ist Shaper-Arbeit
 und die Aktivierung deine.
+
+## Activation proposal (playmaker run 260813-0007)
+
+**Ranked first and still not proposed for activation — playmaker run 260813-0007 (trigger:
+direct-dispatch, domain bias `code`).** This section is appended beside the proposal from run
+260807-1646 rather than replacing it; that one is the earlier state of the same question. It is
+written in English because the artifact language of this project is `en` and a Circle record is a
+persisted file for the project's own use. The 260807 section is German, which was the reading
+before decision `shared/decisions/260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`
+was implemented.
+
+**One thing improved since 260807.** That run asked for the language decision to be answered before
+re-sharpening, because its subject is this Circle's subject. The record now carries the implemented
+marker, so the ordering constraint is discharged and the shaper can start.
+
+**Nothing else improved, and one thing got worse.** Re-measured against the working tree at commit
+`1c2d555` on 260813, not inferred:
+
+| Claim in the Grounding snapshot | Measured 260813 |
+|---|---|
+| `rules/fusion-workbench-conventions.md` holds 54 401 bytes | 49 992 bytes |
+| The file has 32 second-level headings | 24 |
+| Every agent receives 87 387 bytes of always-on rules | 91 891 for the five always-on rule files plus this project's chat profile; the full emission runs from 91 891 for `coder` to 126 514 for `orchestrator` |
+| The shards are produced by the closing work C9 | four already sit in `rules/`: `circle-records.md`, `workbench-path-resolution.md`, `rule-file-provenance.md`, `workbench-stash-and-lock.md` |
+| The workbench is neither tracked nor gitignored, so decision-record edits have no git undo | tracked since `e8988d9` on 260801 |
+
+**The worse thing is the trajectory, and it is new evidence rather than a restatement.** The
+partition that cut the conventions file from 51 416 bytes to 34 671 bytes on 260805 has been
+undone. Measured across the twelve commits that touched the file since then: 35 668 on 260806,
+39 507 on 260807, 41 680 on 260810, 46 124 on 260811, and 49 992 on 260812. The file regained
+14 324 bytes in six days and now sits about 4 KB below where the partition found it. The project's
+own analysis
+`shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md` measured
+the same shape on the largest removal this project ever performed, where the deleted lines were
+back above their pre-deletion peak within four days, and concluded that the binding constraint is
+the rate of addition rather than the size of the system.
+
+That bears directly on this Circle's premise. Its compaction and partition steps are one-off acts.
+If nothing bounds regrowth, a successful run buys about a week. The question the shaper should put
+to the user is whether the Directive needs a rate-bounding component, or whether the reconcile and
+scope capabilities are worth having on their own with regrowth accepted.
+
+**Also unchanged from 260807.** The closing work C9 was carried out by hand by an executor, so this
+Circle has lost both its first real job and its proof of capability
+(`circles/260805-2005-textschicht-gegen-code-nachziehen/_c_circle.md` `## Dependencies`), and
+decision D-g of the spec is void. The defect record the Grounding calls "the strongest available
+argument that the reconcile step is worth doing",
+`shared/issues/260801-1215_*_conventions-file-cites-three-records-that-do-not-resolve.md`, is
+closed.
+
+**What holds.** Capabilities C1 through C3, C6 and C7 remain a coherent remainder. All three
+dependencies are closed coherent: `260801-1244-rule-provenance-header` on 260802,
+`260801-1244-guard-rules-write` on 260805, and transitively `260801-1244-guard-bash-inspection` on
+260801. The Grounding cites no open decision record.
+
+**Proposed order:** put the shaper on this Circle in portfolio-activation mode for a Directive
+without C9, a fresh validation case, a Grounding measured this week, and an answer on rate-bounding.
+Then run `/fusion:next`. Playmaker only names this. The re-sharpening is shaper work and the
+activation is yours.
+
+**Housekeeping noticed while reading this Circle, not acted on.** The directory holds only this
+record. The six artifact subdirectories the Circle record template requires (`planning/`, `issues/`,
+`decisions/`, `history/`, `reviews/`, `analyses/`) are absent, so the first agent dispatched here
+has to invent them.

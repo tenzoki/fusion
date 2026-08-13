@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** answered
 **Filed by:** orchestrator (surfaced by the executor of plan step 7)
 **Cross-references:** `shared/planning/260812-1720_o_circle-first-placement-and-the-backlog-store.md` steps 1, 7 and 8; `shared/decisions/260812-0254_a_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md`
 
@@ -62,3 +62,6 @@ one moment the user is already confirming something. Option 2 should be declined
 it costs the reason the agent was chosen. No recommendation between 1 and 4 without knowing how the
 user expects to work with the store, which is a question a week of using it answers better than an
 argument does.
+
+---
+Answered: shared/history/260813-0806-orchestrator-session.md `## Decision answered — the playmaker maintains the backlog` — option 2, widened: the playmaker gets full maintenance of the backlog store (marker renames across `_o_`/`_p_`/`_c_`/`_d_`, splitting multi-idea entries, merging duplicates, closing dead ones), not the single `_p_` rename this record framed. Filing stays outside it and is not answered here. Answered by the user; the record's own recommendation to decline option 2 was overruled, not met.
