@@ -1427,3 +1427,4 @@
 {"ts":"2026-08-14T13:37:11","event":"task_start","turn":4,"task":"T9","agent":"coder","detail":"conditionalise the two absolute sentences in agents/shaper.md and give agents/orchestrator.md the dispatch contract"}
 {"ts":"2026-08-14T13:47:26","event":"task_done","turn":4,"task":"T9","agent":"coder","detail":"decision 260813-0027 realised across shaper.md and orchestrator.md in one commit bf9553f; npm test exit 0"}
 {"ts":"2026-08-14T13:47:26","event":"commit","turn":4,"task":"T9","detail":"bf9553f feat(shaper): portfolio-activation gets a second route and a reachable caller"}
+{"ts":"2026-08-14T15:32:42","event":"gate_response","turn":4,"agent":"user","detail":"/fusion:next backlog gate: approved the split of 260811-0826 observations into three entries"}

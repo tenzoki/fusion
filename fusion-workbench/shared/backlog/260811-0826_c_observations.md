@@ -131,3 +131,5 @@ Abschnitte ### C1 bis ### C4."
 Ist Fusion ein token- und zeitfressendes Monster geworden, das sich nur noch um sich selbst dreht?
 Wie können wir fusion radikal vereinfachen?
 Wie können wir sicher stellen, dass die innerhalb der Modelle laufenden loops kürzer werden, so dass die Agenten durch immer wieder neu injizierte Regeln und Ziele nicht entgleisen?
+
+Split: became `260814-1733_o_radical-simplification.md`, `260814-1733_o_bounded-executor-dispatches.md` and `260814-1733_o_attach-the-rule-to-the-act.md` (playmaker 260814-1733); its remaining ideas were already carried by filed issue and decision records, were duplicates of these three, or were not ideas.
