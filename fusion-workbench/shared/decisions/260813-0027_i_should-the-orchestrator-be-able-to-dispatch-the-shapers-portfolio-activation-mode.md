@@ -138,3 +138,26 @@ recommendation in front of them, and with the second measured instance — this 
 
 The `_a_→_i_` transition belongs to the commit that lands all three. Until then the two prompts
 still forbid what this record now permits.
+
+---
+Implemented: bf9553f — both absolute statements in `agents/shaper.md` (frontmatter description and
+mode 3) became conditional, and `agents/orchestrator.md` gained
+`## Re-sharpening an anticipated Circle (shaper portfolio-activation)`, the contract it had no
+occurrence of before. All three realisation items above are met and they landed in one commit,
+which is what constraint 2 required and what keeps constraint 3 from being violated in the gap
+between two commits.
+
+The distinguishing rule (item 3) lives inside the orchestrator's contract rather than in a home of
+its own, and it is a test about evidence rather than intent: can you quote the user's own words
+choosing it? A stale Grounding snapshot, a playmaker recommendation or a reconciler verdict are
+inputs to the question you ask, never substitutes for its answer. It has one addressee, because the
+orchestrator is the only agent that dispatches, and the shaper cannot apply it — the shaper sees
+what the prompt says, not who chose. So the two prompts hold disjoint halves: the orchestrator holds
+the rule that makes `**Initiated by:**` true, the shaper holds the check that the line is there and
+halts without it.
+
+Constraint 1 is untouched: the `_a_`→`_t_` rename and the `.active-circle` write stay with
+`/fusion:next` and the orchestrator. Constraint 3 is met from both ends in the same commit — the
+permitted dispatcher now exists and carries a written contract, so no unreachable dispatcher claim
+was reintroduced. Verified `cd hooks && npm test` exit 0, 1030 tests; the always-on growth bound did
+not move, since neither prompt is in that corpus.

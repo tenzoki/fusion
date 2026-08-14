@@ -1423,3 +1423,7 @@
 {"ts":"2026-08-14T12:42:06","event":"turn_end","turn":3,"detail":"3 tasks resolved (T6, T7, T8), 6 issues created, queue empty 8/8"}
 {"ts":"2026-08-14T13:13:35","event":"gate_response","turn":3,"agent":"user","detail":"Rebalance gate: revise Grounding"}
 {"ts":"2026-08-14T13:13:35","event":"rebalance_grounding","turn":3,"detail":"shared/decisions/260813-0027 answered _o_->_a_ with option 2 (narrowly permit orchestrator dispatch of shaper portfolio-activation mode when the user named it at a gate); realisation work named in the record, not done"}
+{"ts":"2026-08-14T13:37:03","event":"turn_start","turn":4,"detail":"T9 — realise decision 260813-0027 across agents/shaper.md and agents/orchestrator.md"}
+{"ts":"2026-08-14T13:37:11","event":"task_start","turn":4,"task":"T9","agent":"coder","detail":"conditionalise the two absolute sentences in agents/shaper.md and give agents/orchestrator.md the dispatch contract"}
+{"ts":"2026-08-14T13:47:26","event":"task_done","turn":4,"task":"T9","agent":"coder","detail":"decision 260813-0027 realised across shaper.md and orchestrator.md in one commit bf9553f; npm test exit 0"}
+{"ts":"2026-08-14T13:47:26","event":"commit","turn":4,"task":"T9","detail":"bf9553f feat(shaper): portfolio-activation gets a second route and a reachable caller"}
