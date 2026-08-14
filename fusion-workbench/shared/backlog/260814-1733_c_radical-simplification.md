@@ -18,3 +18,5 @@ instead of maintaining them — and puts the saving at up to 28 percent of sessi
 out of every orchestrator Setup, and roughly 5 400 lines of drift machinery.
 
 Split from `shared/backlog/260811-0826_*_observations.md`.
+
+Promoted: circles/260815-0007-remove-eight-mechanisms-and-cap-growth — eight unused mechanisms leave the shipped plugin, the eight administrative names collapse to setup, cleanup and cadence, and a failing cap is extended to agents/, skills/ and the hook tests.
