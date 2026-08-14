@@ -1364,3 +1364,11 @@
 {"ts":"2026-08-14T06:13:13","event":"shaper_done","agent":"shaper","detail":"spec circles/260801-1244-curator/planning/260814-0738_o_spec-curator.md; record Directive+Grounding replaced; 1 decision filed"}
 {"ts":"2026-08-14T06:13:13","event":"gate_hit","detail":"5 shaper clarification questions relayed to user"}
 {"ts":"2026-08-14T06:13:13","event":"gate_response","detail":"all five answered as recommended; growth bound armed by one-time re-baseline"}
+{"ts":"2026-08-14T06:36:30","event":"scope_resolved","detail":"mode=plan; Circle 260801-1244-curator; spec 260814-0738_o_spec-curator.md; 7 capabilities; executors coder+ontocoder"}
+{"ts":"2026-08-14T06:36:30","event":"planner_start","agent":"planner","detail":"circles/260801-1244-curator/planning/260814-0738_o_spec-curator.md"}
+{"ts":"2026-08-14T06:36:46","event":"state_drift","detail":"history Directive row: history file said '(not yet stated)' while agentstate.yaml carried the Directive. One row. Corrected in the history file; no other row diverged. Cause: the session ran Setup before the user named a goal, and the Directive arrived at the Circle activation."}
+{"ts":"2026-08-14T07:18:57","event":"planner_done","agent":"planner","detail":"circles/260801-1244-curator/planning/260814-0845_o_plan-curator.md; 5 steps, all coder; 1 decision filed"}
+{"ts":"2026-08-14T07:18:57","event":"conceptrev_start","agent":"conceptrev","detail":"plan 260814-0845_o_plan-curator.md, 3 mermaid blocks"}
+{"ts":"2026-08-14T07:18:57","event":"conceptrev_done","agent":"conceptrev","detail":"verdict=acceptable; 7 findings, 2 substantive, both diagram 1"}
+{"ts":"2026-08-14T07:18:57","event":"gate_hit","detail":"plan gate plus the sixteen-agent-claims decision"}
+{"ts":"2026-08-14T07:18:57","event":"gate_response","detail":"plan approved; decision answered option 2, remove the figure"}
