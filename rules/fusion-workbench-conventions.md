@@ -58,12 +58,12 @@ fusion-workbench/
 ├── agentstate.yaml                     # bin/monitor, hooks/lib/state-drift.ts, hooks/lib/review-coverage.ts, hooks/lib/churn.ts, hooks/lib/staging-drift.ts
 ├── orchestrator-live.md                # bin/monitor, hooks/lib/churn.ts, hooks/lib/staging-drift.ts
 ├── orchestrator-events.jsonl           # bin/monitor, hooks/lib/state-drift.ts, hooks/lib/churn.ts, hooks/lib/staging-drift.ts
-├── .guard-state/                       # bin/monitor, hooks/lib/events.ts, hooks/lib/guard-state-file.ts
-├── .commit-lock/                       # bin/fusion-commit-lock (created and removed per commit)
-├── .session-marker                     # bin/fusion-session-mark
+├── .guard-state/                       # bin/monitor, hooks/lib/events.ts, hooks/lib/guard-state-file.ts, hooks/lib/churn.ts, hooks/lib/staging-drift.ts
+├── .commit-lock/                       # bin/fusion-commit-lock, hooks/lib/staging-drift.ts (created and removed per commit)
+├── .session-marker                     # bin/fusion-session-mark, hooks/lib/staging-drift.ts
 ├── plane.config.yaml                   # bin/fusion-plane (consumer-filled; seeded by /fusion:setup)
-├── .plane-map.json                     # bin/fusion-plane (file ↔ Plane id map)
-└── .plane-outbox.jsonl                 # bin/fusion-plane (deferred pushes; replayed on the next reconcile)
+├── .plane-map.json                     # bin/fusion-plane, hooks/lib/staging-drift.ts (file ↔ Plane id map)
+└── .plane-outbox.jsonl                 # bin/fusion-plane, hooks/lib/staging-drift.ts (deferred pushes; replayed on the next reconcile)
 ```
 
 **The root-anchored surfaces are not negotiable.** Each is bound to a fixed root-relative path by every consumer named beside it in the tree, and none of those consumers has a fallback path — relocating one into a Circle or into `shared/` breaks it silently. The column names a consumer that only *names* the path, in an exclusion or classification list, next to one that reads the file: what breaks on a move is the same dependency either way.
@@ -214,7 +214,7 @@ Two bounds:
 | `_o_` | the user, filing; the playmaker, on a split's new entries and when it drops a recommendation | filing is the user's alone; `_p_`→`_o_` is autonomous |
 | `_p_` | the playmaker | autonomous — a ranking judgement, not a disposition |
 | `_c_` | the playmaker, closing an entry or retiring a split's original; the shaper, promoting an `_o_` or `_p_` entry to a Circle | confirmed for the playmaker; for the shaper it is part of promotion |
-| `_d_` | the playmaker | confirmed. Two transitions deliberately do not exist: `_d_`→`_p_`, because reviving reverses a disposition the user took and a reversal is not a ranking judgement — revival is `_d_`→`_o_`, by the user, by hand; and `_d_`→`_c_` by the shaper, because its promotion path renames `_o_` or `_p_` and nothing else (`agents/shaper.md:87`). |
+| `_d_` | the playmaker | confirmed. Two transitions deliberately do not exist: `_d_`→`_p_`, because reviving reverses a disposition the user took and a reversal is not a ranking judgement — revival is `_d_`→`_o_`, by the user, by hand; and `_d_`→`_c_` by the shaper, because its promotion path renames `_o_` or `_p_` and nothing else (`agents/shaper.md:89`). |
 
 Binding decisions: `shared/decisions/260812-0254_*_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md` (the store and its maintainer), `shared/decisions/260812-0254_*_where-do-a-circles-spec-and-plan-belong-when-the-circle-exists-before-them.md` (the Circle-first placement it feeds), `shared/decisions/260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md` (the playmaker's maintenance mandate) and `circles/260813-0858-playmaker-maintains-backlog-store/decisions/260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md` (which of those writes need a confirmation, and on which dispatch path it can exist).
 
