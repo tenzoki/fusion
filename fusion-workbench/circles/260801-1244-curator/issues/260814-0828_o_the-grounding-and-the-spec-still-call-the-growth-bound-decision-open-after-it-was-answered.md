@@ -11,7 +11,7 @@ answer and still describe the question as open.
 **Where.** Three surfaces, all inside this Circle:
 
 - `_t_circle.md`, `## Grounding snapshot` — describes the arming question as still to be settled.
-- `planning/260814-0738_o_spec-curator.md`, capability C10 and `## User Decisions Pending` — the
+- `planning/260814-0738_*_spec-curator.md`, capability C10 and `## User Decisions Pending` — the
   acceptance criteria for C10 are written against an unmade choice, and the record's own
   recommendation is presented as a recommendation rather than as the answer.
 - `portfolio.md` reports the same lag under `## Warnings` as
@@ -36,3 +36,25 @@ in one line: the bound is armed by re-baselining once at the moment of arming, w
 overshoot written into the file as text so the standing cleanup request survives the number moving.
 
 **Filed by:** orchestrator, session `shared/history/260813-2345-orchestrator-session.md`.
+
+---
+**Reconciliation, 2026-08-14 (reconciler, verified at HEAD `18173e1`). One of the three surfaces is
+now correct; the record stays open on the other two.**
+
+- **The spec surface is fixed.** `planning/260814-0738_*_spec-curator.md` `## User Decisions Pending`
+  now carries a ticked box and an appended paragraph naming the answer, the option chosen, and the
+  decision record's implemented path. Done by this pass, which may write planning files.
+- **The Circle-record surface is unchanged and is not the reconciler's to write.**
+  `_t_circle.md` `## Grounding snapshot` still reads "One question is open and is the user's to
+  answer before the planner plans the growth bound". Writing it is the shaper's in
+  portfolio-activation mode, or the orchestrator's within its three head fields, the Turn log and
+  the closure note. Neither is this pass.
+- **`portfolio.md` is regenerated per playmaker run** and needs no repair here, as this record
+  already says.
+
+**The harm the record named is discharged.** It was filed because "the planner is the next agent to
+read the spec". The planner did read it, filed the choice as
+`decisions/260814-0738_i_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`,
+the user answered option 1 at the plan gate, and step 5 landed at commit `5c843e6` with the
+re-baseline recorded on all four surfaces question 8 of the plan required. Nothing downstream was
+misled. What remains is stale text in one record, not a live risk.

@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** answered
+**Status:** implemented
 **Filed by:** analyst
 **Cross-references:** `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md` (the gap analysis that raised this); `shared/decisions/260801-1020_*_may-any-fusion-writer-touch-rules.md` (the permission question this one depends on); `shared/decisions/260801-1020_*_provenance-header-on-rule-files.md` (the evidence question, independent); `shared/issues/260801-1020_o_scan-keys-never-reach-the-archive-store.md` (constrains any history-grounded option)
 
@@ -65,3 +65,4 @@ Realisation belongs to `circles/260801-1244-curator` (`_a_`), which is the last 
 **Reconciliation 260802-1413 (reconciler, domain `code`) — re-checked, stays `_a_`.**
 
 `agents/curator.md` still does not exist at `b568ad9`; `agents/` holds the same sixteen prompts. Realisation still belongs to `circles/260801-1244-curator` (`_a_`), whose one hard prerequisite — the provenance gate — is now built, so the Circle is activatable. What this session added toward the answer is an input rather than a part of it: every rule file the curator will read now states what caused it to exist, which is the evidence source this decision's chosen agent was specified to work from.
+Implemented: `6ba9d77` (the agent) and `1a36fe4` (its first real run) — `agents/curator.md` is the writing consolidation agent option 3 named. It reads and edits all three normative surfaces behind a user gate: its first run against this repository proposed 28 corrections across `CLAUDE.md`, nineteen shared decision records and three project rule files, the user approved all 28, and the apply pass landed all 28 with nothing stale or failed. Delivered by Circle `260801-1244-curator`; run file `circles/260801-1244-curator/history/260814-1332-curator-run.md`. The manual-application step the recommended option 2 would have required does not exist — the agent applies what it is approved to apply, which is the substance of the choice the user made against the recommendation.

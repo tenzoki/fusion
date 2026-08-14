@@ -43,3 +43,26 @@ and which does reach the agent, at the cost of running outside the orchestrator'
 step the Directive itself names.
 
 **Filed by:** orchestrator, session `shared/history/260813-2345-orchestrator-session.md`.
+
+---
+**Reconciliation, 2026-08-14 (reconciler, verified at HEAD `18173e1`). The instance is cleared; the
+defect this record describes is not.**
+
+**What changed.** `/Users/k1/.fusion/agents/` now holds 17 prompts including `curator.md`, and both
+`.claude-plugin/plugin.json` files read `8.2.0`. The user ran `fusion --update` and restarted, the
+session resumed at 260814-1311, and T7 completed — the survey proposed 28 corrections and the apply
+pass landed all 28 (`1a36fe4`, `0301909`).
+
+**Why it stays open.** The record's own subject is the general shape, not this Circle's blocked
+task: any Circle whose Directive is "build an agent and prove it by running it" cannot finish in one
+session, because the session's agent roster is read at start from the installed copy and pinned for
+its whole life. The record names three candidate answers — a documented two-session pattern, a
+mid-session roster reload, or something else — and settles none. Nothing in the tree settles it
+either: `CLAUDE.md` `## Release process` still states the remedy as "run `fusion --update` and
+restart the session", which is the workaround this instance used, not a fix for the shape.
+
+**One thing the workaround left behind, noticed while verifying this.** The install was updated to
+`8.2.0` at 13:11, and three further commits (`1a36fe4`, `0301909`, `18173e1`) have since changed
+shipped files under the same version number. The installed `8.2.0` and the source `8.2.0` are no
+longer the same bytes. The Turn-3 review names this and declines to file it as belonging to the
+release process rather than to this Circle; recorded here so the observation is not lost.

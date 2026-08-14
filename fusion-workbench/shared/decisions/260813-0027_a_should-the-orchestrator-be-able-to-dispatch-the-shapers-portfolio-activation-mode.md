@@ -82,3 +82,59 @@ the orchestrator dispatch it. That settles today's path and does not answer the 
 choice was operational, made with the contract in front of them, and is consistent with option 1
 without being stated as a general rule. The record stays open. What it now carries that it did not
 before is one measured instance of the friction, and the user's willingness to absorb it once.
+
+---
+**Reconciliation evidence, 2026-08-14 (reconciler, verified at HEAD `18173e1`). Still open, and the
+prohibited path was taken while it was open.**
+
+Session `shared/history/260813-2345-orchestrator-session.md` `## User decisions recorded this
+session` records: "The user directed a shaper run in portfolio-activation mode from inside this
+session. The shaper returned two clarification rounds; the orchestrator relayed both, since a
+**dispatched sub-agent** cannot reach the user." The result landed as commit `f273b9a`, which
+rewrote `circles/260801-1244-curator/_t_circle.md`'s `## Directive` and `## Grounding snapshot` —
+exactly the two sections mode 3 is the sanctioned writer of.
+
+That is the path `agents/shaper.md` forbids in two places: the frontmatter description
+(`agents/shaper.md:3`, "reachable only by the user running shaper directly with the mode contract —
+no skill or agent dispatches it") and mode 3 itself (`agents/shaper.md:47`, "user-invoked directly,
+and only directly … No skill or agent dispatches this mode"). `agents/orchestrator.md` contains no
+occurrence of `portfolio-activation` at all, so the orchestrator was not authorised by its own
+prompt either.
+
+**What this adds to the record.** It is a second measured instance of the case the question was
+filed from, and this time the path was not merely blocked — it was taken, by the user's direction,
+through the orchestrator, and it worked. The outcome is on disk and was reviewed: the re-sharpened
+Grounding is the one the whole Circle then ran against, and the playmaker run at 260814-0823
+recommended activation on the strength of it. So the empirical answer to "is the user-initiated
+path travelling through the orchestrator harmful" is, on one instance, no.
+
+**Nothing here answers the record**, and the reconciler does not. Whether the prohibition should be
+narrowed to automated dispatch, whether the orchestrator needs an explicit relay contract, and what
+`agents/shaper.md`'s two absolute sentences become are the choice this record exists to put to the
+user. What is established is that the corpus now contains one execution of the disallowed path,
+so the question is no longer hypothetical and the two prompts and the practice disagree.
+
+---
+Answered: shared/history/260813-2345-orchestrator-session.md `## Coherence` → Rebalance gate,
+2026-08-14 — **option 2, narrowly.** The orchestrator may dispatch the shaper's
+portfolio-activation mode, but only when the user's answer at a gate named the mode, and the
+dispatch prompt records that the user initiated it. The user chose this at the Rebalance gate that
+followed the reconciler's `review-needed` verdict, with the record's three options and its
+recommendation in front of them, and with the second measured instance — this session's own
+`f273b9a` — already annotated above.
+
+**What realising this answer requires**, none of it done here:
+
+1. `agents/shaper.md:3` (frontmatter description) and `agents/shaper.md:47` (mode 3) both state the
+   prohibition absolutely. Both become conditional, in the same commit, or the next reader gets the
+   version that suits them. The constraint above says this in the record's own words.
+2. `agents/orchestrator.md` contains no occurrence of `portfolio-activation` at all, so permitting
+   the dispatch is not enough: the orchestrator needs the contract that says when it may, what it
+   must carry in the dispatch prompt, and that it relays the shaper's clarification rounds because
+   a dispatched sub-agent cannot reach the user. That relay is what this session did by hand.
+3. The distinguishing rule the record's option 2 names — "the user chose this" against "the
+   orchestrator decided to" — has to be written down, not left to judgement. The gate answer is the
+   evidence, and the dispatch prompt is where it is recorded.
+
+The `_a_→_i_` transition belongs to the commit that lands all three. Until then the two prompts
+still forbid what this record now permits.

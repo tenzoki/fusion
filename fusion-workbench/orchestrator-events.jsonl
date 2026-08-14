@@ -1416,3 +1416,10 @@
 {"ts":"2026-08-14T11:56:10","event":"state_drift","turn":3,"detail":"progress.commits said 15, git counted 17 since d7786eb; the Circle Turn log and the session history had no entry for the resumed part of Turn 3. All three brought current."}
 {"ts":"2026-08-14T12:04:31","event":"session_start","history_file":"shared/history/260813-2345-orchestrator-session.md","detail":"setup re-run mid-session; user chose to continue, session state and queue untouched"}
 {"ts":"2026-08-14T12:06:32","event":"review_start","turn":3,"agent":"coderev","detail":"range 5c843e6..HEAD, 6 commits, 44 files, plus 10 carried not-opened files from the Turn-2 review"}
+{"ts":"2026-08-14T12:27:06","event":"review_done","turn":3,"agent":"coderev","detail":"6 issues filed, none behavioural; corrections verified true; coverage now uncovered=0 over 17 commits"}
+{"ts":"2026-08-14T12:27:06","event":"commit","turn":3,"detail":"18173e1 chore(review): Turn 3 reviewed over the whole uncovered range"}
+{"ts":"2026-08-14T12:42:06","event":"coherence_review","turn":3,"detail":"verdict ok; Artifact<->Grounding 6 issues filed none behavioural; Artifact<->Directive both halves met; Grounding<->Directive 4 answered decisions touched in citation form only, no conflict"}
+{"ts":"2026-08-14T12:42:06","event":"circuit_breaker","turn":3,"detail":"Net-negative progress: issues_created > tasks_resolved for 3 consecutive Turns (7>3, 3>2, 6>3). Threshold is 2. Exiting the Turn loop to Phase 3."}
+{"ts":"2026-08-14T12:42:06","event":"turn_end","turn":3,"detail":"3 tasks resolved (T6, T7, T8), 6 issues created, queue empty 8/8"}
+{"ts":"2026-08-14T13:13:35","event":"gate_response","turn":3,"agent":"user","detail":"Rebalance gate: revise Grounding"}
+{"ts":"2026-08-14T13:13:35","event":"rebalance_grounding","turn":3,"detail":"shared/decisions/260813-0027 answered _o_->_a_ with option 2 (narrowly permit orchestrator dispatch of shaper portfolio-activation mode when the user named it at a gate); realisation work named in the record, not done"}

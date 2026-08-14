@@ -1,8 +1,8 @@
 # Implementation Plan: the curator, and a hard growth bound on the always-on rule set
 
 **Date:** 2026-08-14
-**Status:** Draft
-**Spec:** `circles/260801-1244-curator/planning/260814-0738_o_spec-curator.md`
+**Status:** Complete
+**Spec:** `circles/260801-1244-curator/planning/260814-0738_*_spec-curator.md`
 **Circle:** `260801-1244-curator`
 **Executors:** coder, ontocoder (the active set; every step below resolves to `coder`, and `## Executor routing` says why no step reaches `ontocoder`)
 
@@ -276,5 +276,57 @@ The corpus figures move. The spec measured 82 decision records on 2026-08-14 and
 
 ## Open Questions
 
-- [x] **How the twenty-seven unparsed "sixteen agents" claims are treated.** Five digit claims are re-derived by the enumeration lint and simply have to match the tree. The other twenty-seven are prose in which "sixteen" is a synonym for "every agent", and the project's own derive-over-correct doctrine says a figure a sentence does not need should leave rather than be corrected. Correcting them costs an edit now and the same edit at every future agent addition; removing the figure costs a slightly larger edit now and nothing afterwards. Filed as `circles/260801-1244-curator/decisions/260814-0845_o_are-the-sixteen-agent-claims-corrected-or-derived-away.md`, with the reasoning and a recommendation. Step 2 proceeds with the in-place correction absent an answer, which is the reversible branch. **Answered on 2026-08-14 at the plan gate: option 2.** The five lint-derived claims were corrected to seventeen and the figure was removed from the unasserted occurrences; the cut log's historical measurements were left untouched. Landed in step 2.
+- [x] **How the twenty-seven unparsed "sixteen agents" claims are treated.** Five digit claims are re-derived by the enumeration lint and simply have to match the tree. The other twenty-seven are prose in which "sixteen" is a synonym for "every agent", and the project's own derive-over-correct doctrine says a figure a sentence does not need should leave rather than be corrected. Correcting them costs an edit now and the same edit at every future agent addition; removing the figure costs a slightly larger edit now and nothing afterwards. Filed as `circles/260801-1244-curator/decisions/260814-0845_*_are-the-sixteen-agent-claims-corrected-or-derived-away.md`, with the reasoning and a recommendation. Step 2 proceeds with the in-place correction absent an answer, which is the reversible branch. **Answered on 2026-08-14 at the plan gate: option 2.** The five lint-derived claims were corrected to seventeen and the figure was removed from the unasserted occurrences; the cut log's historical measurements were left untouched. Landed in step 2.
 - [ ] Whether the hard dependency on `260801-1244-rule-provenance-header` survives on grounds other than the retired partition. Issue `260814-0813` raises it and explicitly does not settle it. Nothing in this plan depends on the answer: that Circle has closed, and the provenance headers it produced are available to C2 as evidence source 8 today.
+
+---
+
+## Reconciliation Log
+
+**2026-08-14, reconciler, `code` domain, verified against the working tree at HEAD `18173e1`.**
+
+**Verdict: every one of the five implementation steps is on disk and the inline `[DONE]` marks are
+accurate. Status moved from Draft to Complete and the filename marker from open to closed.** The
+step marks were not trusted; each was re-derived from the tree and from the commit that carries it.
+
+| Step | Verified on disk | Commit |
+|---|---|---|
+| 1. Author the curator agent prompt | `agents/curator.md`, 32 356 bytes, frontmatter `name` + `description` only, no `tools:` line | `6ba9d77` |
+| 2. Register the seventeenth agent across the fleet | `bin/fusion-rules:174` (`PATTERNS=""` arm) and `:185` (`IS_PROSE_AGENT=1` arm) both carry `curator`; `hooks/lib/__tests__/fixtures/rules-emission.golden:66` holds the `[curator]` block; `ls agents/*.md` returns 17 and the five lint-derived digit claims equal it | `6ba9d77` |
+| 3. Add the `/fusion:curate` skill and register it | `skills/curate/SKILL.md`, 12 281 bytes, `allowed-tools: [Bash, Read, AskUserQuestion, Agent(fusion:curator)]` | `44b9967` |
+| 4. Give `/fusion:cleanup` the staleness line | `skills/cleanup/SKILL.md:197-206` reads the most recent curator run file across `$SCAN_HISTORY` and the byte totals of the three surfaces | `5b81f5a` |
+| 5. Arm the growth bound | `hooks/lib/__tests__/rules-emission-golden.test.ts:651` defines `growth()`; `:470-479` holds the five re-set core entries, each with its `// 2026-08-14 arming` comment; `:482` states the three role entries were left untouched | `5c843e6` |
+
+**Acceptance re-run by this pass rather than taken on report:** `cd hooks && npm test` — 49 files,
+1 030 tests, all passing, and no `RULE-TEXT BUDGET` report printed for any role, which is step 5's
+own stated acceptance.
+
+**The decision this plan's `## Open Questions` filed is implemented.**
+`circles/260801-1244-curator/decisions/260814-0845_i_are-the-sixteen-agent-claims-corrected-or-derived-away.md`
+was checked against the tree, not against its own `Implemented:` line. Option 2 landed as claimed:
+`grep -rn 'sixteen'` over `agents/ rules/ skills/ hooks/lib/ CLAUDE.md README*.md docs/
+.claude-plugin/` returns eight hits, of which five are the cut log's historical measurements in
+`rules-emission-golden.test.ts` (lines 308, 360, 369, 377, 395) that the record's constraints
+forbid editing, and three are unrelated "sixteen commits" prose in the review-coverage module and
+its test. No live "sixteen agents" claim survives.
+
+**The plan's second open question is genuinely still open and does not block closure.** Whether the
+hard dependency on `260801-1244-rule-provenance-header` survives on grounds other than the retired
+partition is unanswered; the plan states that nothing in it depends on the answer, and that holds —
+the dependency Circle closed on 2026-08-02 and its provenance headers were available throughout.
+
+**Two things this rename breaks, named rather than left to be discovered.** Renaming this file and
+the spec beside it invalidates every citation that spelled their open markers literally. Three of
+those live in surfaces the reconciler may not write and are the orchestrator's to repoint at
+Phase 4: `fusion-workbench/agentstate.yaml` (`plan_context.plan_file` and
+`current_task.source_file`) and `circles/260801-1244-curator/_t_circle.md`
+(`**Active spec/plan:**`). The rest are enumerated in
+`circles/260801-1244-curator/issues/260814-1450_o_renaming-the-spec-and-plan-to-closed-broke-twenty-citations-that-spelled-the-open-marker.md`.
+
+**Two internal citations of the arming decision, treated differently and deliberately.** The
+`## Open Questions` pointer at the foot of this plan was starred to `_*_` by this pass, because it
+is a pure pointer and the record it names has since moved from `_o_` through `_a_` to `_i_`. The
+citation in `## Current State` above was **left literal at `_a_`**, because its sentence states
+"carries the answered marker", which was true when the plan was written and is a statement rather
+than a pointer. `rules/circle-records.md` `### Citation form in the portfolio` cuts it exactly
+there: a pointer loses nothing by being starred, a statement loses its content.

@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** shaper (portfolio-activation mode)
-**Cross-references:** `circles/260801-1244-curator/planning/260814-0738_o_spec-curator.md` C10; `hooks/lib/__tests__/rules-emission-golden.test.ts`; `shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`
+**Cross-references:** `circles/260801-1244-curator/planning/260814-0738_*_spec-curator.md` C10; `hooks/lib/__tests__/rules-emission-golden.test.ts`; `shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`
 
 ---
 

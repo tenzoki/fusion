@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** active
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** circles/260801-1244-curator/planning/260814-0845_o_plan-curator.md
+**Active spec/plan:** circles/260801-1244-curator/planning/260814-0845_c_plan-curator.md
 **Active session history:** shared/history/260813-2345-orchestrator-session.md
 
 ---

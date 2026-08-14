@@ -1,7 +1,7 @@
 # Spec: the curator, and a bound on the rate the rule corpus grows
 
 **Date:** 2026-08-14
-**Status:** Draft
+**Status:** Complete
 **Activated from Circle:** 260801-1244-curator
 **Source:** The user's original proposal that fusion gain an agent which reads the project's history and the current state of the discussion, judges what must change and what remains, and consolidates the three normative surfaces that drift, contradict each other, and grow into a standing context tax. Re-shaped on 2026-08-14 in the shaper's portfolio-activation mode, after three playmaker runs found the Circle's Grounding falsified and its validation case gone.
 
@@ -382,4 +382,44 @@ This is the shaper's inference, not the user's stated choice, and it is filed as
 
 ## User Decisions Pending
 
-- [ ] **How C10's bound is armed.** The spec specifies a one-time re-baseline at the moment of arming, so the bound governs growth from that point, and it records the 2026-08-14 overshoot as text so the standing cleanup request survives. Two alternatives were considered and rejected in the spec's reasoning: performing an 11 KB cut of the always-on set first, which reintroduces the compaction work the user removed from scope, and arming the bound while the suite is red, which nobody would accept. The specified behaviour overrides a position recorded in `hooks/lib/__tests__/rules-emission-golden.test.ts`, so it is filed for confirmation as `circles/260801-1244-curator/decisions/260814-0738_o_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`. Confirm or redirect before the planner plans C10. Nothing else in the spec depends on the answer.
+- [x] **How C10's bound is armed.** The spec specifies a one-time re-baseline at the moment of arming, so the bound governs growth from that point, and it records the 2026-08-14 overshoot as text so the standing cleanup request survives. Two alternatives were considered and rejected in the spec's reasoning: performing an 11 KB cut of the always-on set first, which reintroduces the compaction work the user removed from scope, and arming the bound while the suite is red, which nobody would accept. The specified behaviour overrides a position recorded in `hooks/lib/__tests__/rules-emission-golden.test.ts`, so it is filed for confirmation as `circles/260801-1244-curator/decisions/260814-0738_o_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`. Confirm or redirect before the planner plans C10. Nothing else in the spec depends on the answer.
+
+**Answered on 2026-08-14 at an orchestrator gate: option 1**, the one-time re-baseline. Recorded in
+`circles/260801-1244-curator/decisions/260814-0738_i_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`,
+which carries both an `Answered:` and an `Implemented:` line and now holds the implemented marker.
+The record's path in the pending item above spells the open marker and no longer resolves; it is
+left as written, because rewriting the citation is prose work outside this pass and the record is
+findable by stamp. Box ticked by the reconciler on 2026-08-14, not by the shaper.
+
+---
+
+## Reconciliation Log
+
+**2026-08-14, reconciler, `code` domain, verified against the working tree at HEAD `18173e1`.**
+
+**Verdict: all seven capabilities are on disk. Status moved from Draft to Complete and the filename
+marker from open to closed.** Every capability was checked against the tree rather than against the
+plan's own step marks or the Turn log.
+
+| Capability | Verified how | Evidence |
+|---|---|---|
+| C1 — the curator agent, its remit and boundaries | file exists, 32 356 bytes, frontmatter is `name` + `description` only | `agents/curator.md`; commit `6ba9d77` |
+| C2 — evidence tiers and derive-over-correct | exercised end to end by the C11 run: 28 tier-1 entries, 13 candidates never offered | `circles/260801-1244-curator/history/260814-1332-curator-run.md`; commit `1a36fe4` |
+| C3 — cross-surface contradiction detection | the one unresolvable contradiction the run met was filed as a decision record, not edited | `circles/260801-1244-curator/decisions/260814-1332_o_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md` |
+| C6 — review gate, revert path, wrong-prune detection | the gate held: 28 proposed, 28 approved, 0 applied without approval, and the staleness check aborted the first apply attempt before writing | run file §8-§9; commit `1a36fe4` |
+| C7 — invocation surface and cadence | all three shapes reachable: top level, `/fusion:curate`, and orchestrator dispatch | `skills/curate/SKILL.md:3`; `agents/orchestrator.md:4`, `:236`, `:1399-1401`; commits `44b9967`, `5a1ec16` |
+| C10 — growth bound on the always-on set | `growth()` extracted, hard assertion armed, the five core baseline entries re-set with an inline `2026-08-14 arming` comment each, the three role entries untouched | `hooks/lib/__tests__/rules-emission-golden.test.ts:470-482`, `:651-653`; commit `5c843e6` |
+| C11 — validation case, the project's own decision corpus | the run completed and answered the Directive's question in its second admissible form | run file; Turn-3 review `## Is the Directive met?` |
+
+**Suite re-run by this pass, not taken on report:** `cd hooks && npm test` — 49 files, 1 030 tests,
+all passing, no `RULE-TEXT BUDGET` report for any role.
+
+**Two items in this document remain open and neither blocks closure.**
+
+- `## Open for Planner` lists ten questions. All ten are settled in the plan's
+  `## Settling the ten questions the spec left open`, which is the document that was obliged to
+  settle them. No edit is made here; the plan is the answer's home.
+- The `## User Decisions Pending` box above is ticked as of this pass. The same lag persists on the
+  Circle record's `## Grounding snapshot`, which the reconciler may not write. That surface is the
+  remaining half of `circles/260801-1244-curator/issues/260814-0828_o_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md`,
+  which therefore stays open.

@@ -6,7 +6,7 @@
 
 **Prior decisions this spec builds on, and does not reopen:**
 
-- **D1** (`shared/decisions/260801-1020_a_where-does-normative-consistency-live.md`) — a writing consolidation agent, not a report-only detector.
+- **D1** (`shared/decisions/260801-1020_*_where-does-normative-consistency-live.md`) — a writing consolidation agent, not a report-only detector.
 - **D2** (`shared/decisions/260801-1020_a_may-any-fusion-writer-touch-rules.md`) — rule-file writes are permitted through an environment-gated exemption, plus project-level guard configuration.
 - **D3** (`shared/decisions/260801-1020_a_provenance-header-on-rule-files.md`) — **answered** by D-e below and walked to anticipated (`_a_`). Full adoption: the convention, the backfill of the plugin's nine rule files, and a lint gate. C8 realises it.
 

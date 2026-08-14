@@ -150,3 +150,22 @@ The qualification is the run's own, and it is in the record rather than glossed:
 5. **Findings 5 and 6**, ordinary cleanup, any time.
 
 One thing I am not filing and will name, because it belongs to the release process rather than to this Circle. `.claude-plugin/plugin.json` reads `8.2.0` and `~/.fusion` was updated to `8.2.0` at 13:11, after which three further commits changed shipped files under the same version number. The installed 8.2.0 and the source 8.2.0 are no longer the same bytes, and nothing in the version surface says so. That is the residual `CLAUDE.md` `## Release process` already documents in its "between releases" paragraph, arriving from the other side.
+
+---
+
+## Reconciliation note (reconciler, 2026-08-14, HEAD `18173e1`)
+
+**All six findings were re-checked against the tree and all six still stand.** No finding is closed
+by this pass. Findings 1 and 2 are unchanged in `rules/fusion-workbench-conventions.md`; finding 3
+was re-measured (`stilwerk/chat-voice-de.yaml` and `chat-voice-en.yaml` both differ from the
+workbench copies, while both `default-voice-*.yaml` are identical); findings 5 and 6 are unchanged
+in their cited files.
+
+**One count in this document contradicts the rest of it.** `## Summary` says "Five findings, none in
+behaviour" and `## Totals` says "Three are filed under `circles/…` and two under `shared/issues/`".
+`## Totals` itself sums to six (4 Medium + 2 Low), `## Cross-cutting observation` says "All six
+findings", `## Findings by theme` numbers six, the commit message of `18173e1` says six, and six
+issue files exist at stamp `260814-1419` — four under `circles/260801-1244-curator/issues/` and two
+under `shared/issues/`. So the split is four and two, not three and two. Filed as
+`circles/260801-1244-curator/issues/260814-1450_o_the-turn-3-review-states-five-findings-and-a-three-two-split-while-carrying-six-and-a-four-two-split.md`.
+Findings are not rewritten by a reconciliation pass; the note is left beside them.

@@ -30,7 +30,27 @@ reads out, so the portfolio will advertise a validation case this Circle no long
 who stops at the title gets the retired scope.
 
 **Not blocking activation.** The Directive and the Grounding are current, and the spec at
-`planning/260814-0738_o_spec-curator.md` is the single source of detail. This is a record that
+`planning/260814-0738_*_spec-curator.md` is the single source of detail. This is a record that
 contradicts itself, not a Circle that is mis-scoped.
 
 **Filed by:** orchestrator, session `shared/history/260813-2345-orchestrator-session.md`.
+
+---
+**Reconciliation, 2026-08-14 (reconciler, verified at HEAD `18173e1`). Still open, both spots
+unchanged.**
+
+`circles/260801-1244-curator/_t_circle.md` line 1 still reads "…and proves it on fusion's own
+conventions file", and `## Dependencies` still justifies the hard dependency on
+`260801-1244-rule-provenance-header` by the shards a partition would produce. The embedded Mermaid
+edge label still carries the same reasoning.
+
+The contradiction is now sharper than when this was filed, because the validation case has actually
+run: `circles/260801-1244-curator/history/260814-1332-curator-run.md` proved the agent on the
+decision corpus, not on the conventions file, and the Turn-3 review judged both halves of the
+Directive met. So the title is not merely lagging a re-shape; it names a proof that a different
+artifact has since delivered.
+
+A Circle record is outside the reconciler's write set. This stays for the orchestrator's Phase-4
+closure write or a shaper pass. The plan's own second open question — whether the hard dependency
+survives on other grounds — is the part this record explicitly declined to settle, and it is still
+unsettled.

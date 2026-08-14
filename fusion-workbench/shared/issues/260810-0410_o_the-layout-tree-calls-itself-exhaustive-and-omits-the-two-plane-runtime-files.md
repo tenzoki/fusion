@@ -21,3 +21,29 @@ Two things are also worth noticing about *what* is missing. The tree's own justi
 3. Is there a check that would have caught this, or does the obligation stay a convention? A lint comparing the root-anchored paths named across `bin/` and `hooks/` against the tree's enumeration is conceivable. Whether it is worth its own maintenance is the open part.
 
 **Not a defect in the Plane bridge or in T15.** The bridge works and its files are documented in `CLAUDE.md`. What failed is the tree's exhaustiveness claim, which is a claim only that file can make good on.
+
+---
+**Reconciliation, 2026-08-14 (reconciler, verified at HEAD `18173e1`). Question 1 half-landed;
+questions 2 and 3 untouched. Stays open.**
+
+Ledger entry L24 of the curator's validation run added all three Plane runtime files —
+`plane.config.yaml`, `.plane-map.json` and `.plane-outbox.jsonl` — to the root-anchored block of
+`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`, at commit `1a36fe4`. Verified
+present in the tree today. The record asked for two files and got three, which is right:
+`bin/fusion-plane` resolves all three at `$WORKBENCH/<name>`.
+
+**What did not land, and it is the harder half of every question this record asks.**
+
+- **Question 1** asked for the entries *with the same per-surface justification the others carry*.
+  The paragraph beginning "They are root-anchored because none of them belongs to a unit of work"
+  names none of the three and still ends by calling the placement "structural rather than promised".
+- **Question 2**, which group each falls into under `### Which of them a tracked workbench tracks`,
+  is unanswered: neither bucket names any of the three, so the section's own case split now has
+  three uncovered entries in its own tree.
+- **Question 3**, whether a lint should compare the root-anchored paths named across `bin/` and
+  `hooks/` against the tree's enumeration, is untouched. Nothing checks the exhaustiveness claim.
+
+**The state is worse than before the addition, not better**, and the successor record says so:
+`circles/260801-1244-curator/issues/260814-1419_o_three-plane-files-entered-the-layout-tree-and-neither-of-the-two-per-surface-arguments-below-it-was-extended.md`.
+That record instructs "do not refile it, this record is the new state". Both are therefore live and
+describe one job; whoever picks it up should close them together.

@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** planner
-**Cross-references:** `circles/260801-1244-curator/planning/260814-0845_o_plan-curator.md` step 2 and `## Open Questions`; `circles/260801-1244-curator/planning/260814-0738_o_spec-curator.md` C2 (the derive-over-correct rule); `hooks/lib/__tests__/derivable-enumerations-lint.test.ts`
+**Cross-references:** `circles/260801-1244-curator/planning/260814-0845_*_plan-curator.md` step 2 and `## Open Questions`; `circles/260801-1244-curator/planning/260814-0738_*_spec-curator.md` C2 (the derive-over-correct rule); `hooks/lib/__tests__/derivable-enumerations-lint.test.ts`
 
 ---
 
