@@ -1399,3 +1399,7 @@
 {"ts":"2026-08-14T09:20:14","event":"review_start","turn":2,"agent":"coderev","detail":"range 249e606..HEAD"}
 {"ts":"2026-08-14T09:35:34","event":"review_done","turn":2,"agent":"coderev","detail":"3 issues filed; arming verified against all five decision conditions; Directive build half met, proof half (C11) not begun"}
 {"ts":"2026-08-14T09:35:34","event":"turn_end","turn":2,"detail":"2 tasks resolved, 3 issues created, 2 task commits plus 1 staging repair"}
+{"ts":"2026-08-14T09:49:02","event":"coherence_review","turn":2,"detail":"verdict=ok; Artifact-Grounding: 3 issues, none behavioural; Artifact-Directive: build half met, proof half not begun; Grounding-Directive: both decisions implemented, 0 conflicting"}
+{"ts":"2026-08-14T09:49:02","event":"turn_start","turn":3,"detail":"2 tasks: the three Turn-2 findings, then the C11 validation run; head 7421f51"}
+{"ts":"2026-08-14T09:49:02","event":"task_start","turn":3,"task":"T6","agent":"coder","detail":"3 findings from 260814-1128"}
+{"ts":"2026-08-14T09:58:50","event":"task_done","turn":3,"task":"T6","agent":"coder","detail":"3 findings closed; npm test exit 0, 1030 tests; net effect on always-on corpus zero"}

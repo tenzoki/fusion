@@ -137,9 +137,9 @@ import { dirname, resolve, join, relative } from "node:path";
 // 2026-08-01 trips the report on the day it begins rather than after it. It is
 // about twenty-four finding-sized additions, so honest work is never what trips
 // it. At the calm rate it comes due every two to three weeks. And the leanest role
-// can spend it whole and still sit under RELEASE_CAP (89 896 + 12 000 = 101 896),
-// so no consuming project pays more than origin/main already charged before the
-// budget is even a question.
+// can spend it whole and still sit under RELEASE_CAP, so no consuming project
+// pays more than origin/main already charged before the budget is even a
+// question.
 //
 // WHY THERE IS STILL A FAR GATE. A gate that never blocks is not a gate, and a
 // gate that blocks on every byte is the ratchet this file gave up. The far one
@@ -152,9 +152,9 @@ import { dirname, resolve, join, relative } from "node:path";
 // file exists to stop.
 //
 // ONE FLOOR PER ROLE rather than one number for the whole fleet, because after
-// the cut the agents no longer carry the same load: they range from 89 896 to
-// 111 766 bytes. A single figure has to sit at the maximum, so it would grant the
-// five leanest agents 21 870 bytes of silent head-room and call that compliance.
+// the cut the agents no longer carry the same load. A single figure has to sit at
+// the maximum, so it would grant the leanest agents thousands of bytes of silent
+// head-room and call that compliance.
 //
 // HOW A ROLE IS DERIVED, AND WHY IT IS NOT A LIST OF NAMES. The universal core
 // is computed as the INTERSECTION of every agent's emission. An agent's role is
@@ -227,10 +227,17 @@ const goldenPath = join(here, "fixtures", "rules-emission.golden");
  *
  * It has never been a ceiling since 2026-08-05, and since the ratchet came out
  * it gates nothing at all. The one job it still does honestly is the BASELINE
- * for the JUSTIFICATION DUTY: a role floor at or below it costs a consuming
- * project nothing it was not already paying, and a role floor above it is a
- * decision to charge that project more, which has to name the file it bought
- * and say why that role applies it. See `justifies …`.
+ * for the JUSTIFICATION DUTY: a role FLOOR above it is a decision to charge a
+ * consuming project more than origin/main already charged, and that decision has
+ * to name the file it bought and say why that role applies it. See `justifies …`.
+ *
+ * READ THAT AS THE FLOOR AND NOT AS THE BILL. A role's floor is RULE_BASELINE
+ * summed over its files; what the role emits is those same files at today's size,
+ * which is the floor plus everything they have grown since the baseline was last
+ * set. So a role can stand under this cap on its floor and over it on what it
+ * actually ships, and the duty stays silent through that — the growth between the
+ * two is the budget report's to raise and the hard bound's to block, never this
+ * one's. Nothing here asserts what any role emits against this number.
  *
  * That duty is about the role's AUDIENCE, not about the size of anybody's prose:
  * it is discharged by writing a reason, never by cutting text, and it can only
@@ -568,7 +575,15 @@ const ROLES: Record<string, Role> = {
    * justification duty is discharged by prose, the prose is still true of this
    * role, and a floor that moves back up would otherwise silently find no reason
    * where one had been written. The assertion skips it while the floor is under
-   * the cap, which on this margin is one core-file edit away from firing.
+   * the cap, and nothing an editor writes to a rule file spends that margin: the
+   * floor is RULE_BASELINE summed over this role's files, so editing one moves
+   * what the role EMITS and not what it stands on, and a newly added always-on
+   * file has no baseline entry, contributes 0 to the floor and counts as growth
+   * in full against the hard bound instead. Two things can move a floor — a
+   * re-baseline at one of the two events in `## Re-baselining`, and an audience
+   * change in `bin/fusion-rules` that hands this role another already-baselined
+   * file. What the next core-file edit meets is the hard bound at
+   * +GROWTH_BUDGET, not this cap.
    *
    * `circle-records.md` (9 302) is the Circle state vocabulary and the record
    * and portfolio templates. This role writes those transitions — it activates

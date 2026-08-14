@@ -51,3 +51,6 @@ gate, …".
 **Scope.** `agents/curator.md` frontmatter. Executor: `coder`.
 
 **Filed by:** coderev, review `circles/260801-1244-curator/reviews/260814-1128-coderev-curator-turn-2.md`.
+
+---
+Resolved: `agents/curator.md:3`, the `description` field, now reads "no existing statement is changed before a user gate" in place of "nothing is written before a user gate" — the suggested wording, one clause changed, matching the qualification `5a1ec16` gave `:16` and `:168`, so all three sites now state the same rule and none contradicts the three ungated writes in `## Scope`. No colon was introduced (the line's only two colons are the YAML key separator and the one inside `/fusion:curate`, both pre-existing and neither followed by a space). `claude plugin validate .` re-run from the repository root after the edit: passed, with the one pre-existing `CLAUDE.md` root-context warning and nothing else. `CLAUDE.md:16` and `README-agents.md:41` were left as they are — the record calls their looser "nothing lands before a user gate" a judgement rather than a defect, and this task's scope named the frontmatter.
