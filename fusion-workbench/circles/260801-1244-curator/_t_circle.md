@@ -74,6 +74,15 @@ flowchart LR
 
 ## Turn log
 
+- Turn 1 (session 260813-2345): commits f273b9a..5b81f5a, of which 6ba9d77, 44b9967 and 5b81f5a
+  carry plan steps 1 to 4; Coherence verdict recorded at the per-Turn gate; session history:
+  shared/history/260813-2345-orchestrator-session.md. Three tasks done, none errored, none skipped.
+  Plan step 5, arming the growth bound, was deliberately held for Turn 2 so that no rule-file edit
+  arising from the Turn-1 review could land above an already-set baseline. `coderev` filed seven
+  defects, all in shipped text and none in behaviour; the severe one is that the curator is absent
+  from the orchestrator's dispatch allowlist, which leaves two of its three invocation shapes
+  unreachable and spec criterion C7 unmet.
+
 ## Activation proposal
 
 **Als nächster Circle gereiht, aber nicht zur Aktivierung vorgeschlagen — playmaker-Lauf

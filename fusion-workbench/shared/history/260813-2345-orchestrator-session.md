@@ -96,3 +96,34 @@ is named in the plan's risks rather than argued away.
 **One cost the spec did not carry.** A seventeenth agent breaks five mechanical checks and
 falsifies 32 sentences. The suite is necessarily red between plan steps 1 and 2, so the two belong
 in one working session.
+
+## Per-Turn Log
+
+### Turn 1
+
+- **Tasks attempted:** T1 (plan steps 1+2), T2 (step 3), T3 (step 4). T4 (step 5) deliberately not
+  started — see below.
+- **Tasks completed:** all three. None errored, none skipped, no bugfixer dispatch.
+- **Commits:** `6ba9d77`, `44b9967`, `5b81f5a`, on top of the four bookkeeping commits `f273b9a`,
+  `55ead50`, `e321a54`, `a2e82cb` that carried the re-sharpening, the activation and the plan.
+- **Validation:** `cd hooks && npm test` run by the orchestrator after each task, exit 0 each time;
+  1023 tests after T1, 1024 after T2 and T3. One worker-crash flake reported by the executor during
+  T1 was not reproducible.
+- **Why T4 was held.** Plan step 5 arms the growth bound by re-baselining on the corpus *as it
+  stands at that moment*. Running it inside Turn 1 would have set the baseline before the Turn's
+  review could surface further rule-file edits, and any such edit would then sit above an
+  already-armed bound. Review first, arm second.
+- **Review findings:** `coderev` over `d7786eb..HEAD`, seven commits, filed seven defects, all in
+  shipped text and none in behaviour. The severe one is
+  `circles/260801-1244-curator/issues/260814-1023_*_the-curator-is-not-in-the-orchestrators-dispatch-allowlist-so-two-of-its-three-invocation-shapes-cannot-be-reached.md`:
+  `agents/orchestrator.md` lists thirteen sub-agents and the curator is not among them, so two of
+  the three invocation shapes the curator's own prompt describes have no possible caller, and spec
+  criterion C7 is unmet. The T1 executor had named this as a plan-level gap at the time and
+  correctly declined to close it.
+- **Review coverage:** `covered`. `bin/fusion-review-coverage` reports 7 commits, 0 uncovered, one
+  review still unusable (the conceptrev diagram evaluation, which carries no `**Reviewed-range:**`
+  and cannot sensibly carry one — filed as `shared/issues/260814-1012_*`). The carried
+  `**Not-opened:**` list holds workbench records only, no shipped source.
+- **Circuit breaker status:** OK. Three tasks resolved against seven issues created, so the
+  net-negative row is armed but not tripped; it needs two consecutive Turns.
+- **Coherence:** recorded at the per-Turn gate.

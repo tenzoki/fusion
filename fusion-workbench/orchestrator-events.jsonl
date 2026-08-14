@@ -1383,3 +1383,6 @@
 {"ts":"2026-08-14T08:02:04","event":"commit","turn":1,"task":"T2","detail":"44b9967 — /fusion:curate skill"}
 {"ts":"2026-08-14T08:02:04","event":"task_start","turn":1,"task":"T3","agent":"coder","detail":"skills/cleanup/SKILL.md staleness line, plan step 4"}
 {"ts":"2026-08-14T08:11:17","event":"task_done","turn":1,"task":"T3","agent":"coder","detail":"npm test exit 0; resolver emits both new keys"}
+{"ts":"2026-08-14T08:29:02","event":"commit","turn":1,"task":"T3","detail":"5b81f5a — cleanup staleness line"}
+{"ts":"2026-08-14T08:29:02","event":"review_start","turn":1,"agent":"coderev","detail":"range d7786eb..HEAD, 7 commits, 0 previously covered"}
+{"ts":"2026-08-14T08:29:02","event":"review_done","turn":1,"agent":"coderev","detail":"7 issues filed; coverage now covered, 0 uncovered"}
