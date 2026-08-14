@@ -57,3 +57,9 @@ point, so the orchestrator relays every round rather than answering on the user'
 caused by no part of its Directive; the Circle's Turn-4 work is what made it visible.
 
 **Filed by:** coderev, review `circles/260801-1244-curator/reviews/260814-1850-coderev-curator-turn-4.md`.
+
+---
+Resolved: 9f4cdac. Phase 0b.1 step 3 of `agents/orchestrator.md` now states the relay and points at
+`## Re-sharpening an anticipated Circle (shaper portfolio-activation)` for the mechanics, carrying
+no second copy of them. The `/fusion:direct` half noted in passing here is untouched and stays with
+its own record, `260813-1334_*`.

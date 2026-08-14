@@ -62,3 +62,14 @@ the corpus. `npm test` is green at HEAD (49 files, 1 030 tests).
 **Scope.** `README-agents.md` only. Executor: `coder`.
 
 **Filed by:** coderev, review `circles/260801-1244-curator/reviews/260814-1850-coderev-curator-turn-4.md`.
+
+---
+Resolved: 9f4cdac. Both cells in `README-agents.md` `## Dispatch parameters` now name the
+orchestrator's permitted dispatch and its condition — the `**Mode:**` row as well as the one this
+record named, which the widened search found carrying the same prohibition in the same table. The
+`**Initiated by:**` row was added between `**Circle file:**` and `**Draft:**`, beside the other
+parameters whose absence halts a run. Six citations were corrected for the two-line slide,
+including `:104`→`:106`, which this record's own table had missed. Everything else mentioning the
+mode claims nothing about who may dispatch it, checked across `README-agents.md`,
+`rules/circle-records.md`, `skills/next/SKILL.md`, `docs/working-model.md` and the orchestrator's
+event and routing tables.

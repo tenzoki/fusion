@@ -40,3 +40,11 @@ const EVENTS_REL = `${WB}/orchestrator-events.jsonl`;
 Adds bytes to an always-on file, so it is charged against the growth bound armed in T4 and needs the golden regenerated in the same commit.
 
 **One judgement the fix has to make, and it should be made explicitly.** `churn.ts` and `staging-drift.ts` name these paths in exclusion and classification lists rather than reading their contents. That is still a fixed root-relative dependency that breaks silently on a move, which is the property the column tracks, so the recommendation above includes them. If the column is meant to name readers only, say so in the column's own prose — do not leave the distinction to be re-derived.
+
+---
+Resolved: 9f4cdac. The three root-anchored rows in `rules/fusion-workbench-conventions.md` name
+their consumers again, in file-only citation form, verified by grep over `hooks/lib/*.ts` at HEAD
+rather than by reading the prior text. The judgement this record asked for is stated in the prose
+under the tree: `churn.ts` and `staging-drift.ts` only name the paths rather than reading them at a
+fixed position, they stay in the column all the same, and what breaks on a move is the same
+dependency either way.

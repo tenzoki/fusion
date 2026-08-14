@@ -73,3 +73,22 @@ into a check. It also fails silently in the dangerous direction: a shaper that w
 second. Executor: `coder` for the first, a user gate for the second.
 
 **Filed by:** coderev, review `circles/260801-1244-curator/reviews/260814-1850-coderev-curator-turn-4.md`.
+
+---
+**Half established, 2026-08-14 (Turn 5).** Two headless probes on Claude Code 2.1.232 returned
+`PARENT_HAS_ASKUSERQUESTION=no`, `CHILD_HAS_ASKUSERQUESTION=no` and
+`TOPLEVEL_SHAPER_HAS_ASKUSERQUESTION=no`. **The discriminator is unsound**, and by a case this
+record did not anticipate: a *top-level* `--agent fusion:shaper` run holds no `AskUserQuestion`
+either, so "if you do not hold it you were dispatched" is false on a case that occurs. The test
+conflates *can I reach the user* with *did a user start this run*.
+
+**The direction this record was filed about is still unmeasured.** Both probes ran headless, where
+the parent holds no `AskUserQuestion`, so the child's `no` is explained by the parent's `no` and
+says nothing about inheritance from an interactive parent. `README-agents.md:97` and `CLAUDE.md:28`
+are therefore untouched: the measurement gives no evidence against them, and editing them would
+have been a guess. What is exposed today is the safe failure — a top-level headless run halting
+noisily. The silent one stands.
+
+The record stays open because its remedy is a contract change, filed as
+`circles/260801-1244-curator/decisions/260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`.
+Answering that decision is what closes this.

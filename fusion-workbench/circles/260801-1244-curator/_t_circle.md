@@ -117,6 +117,20 @@ flowchart LR
   `decisions/260814-1332_o_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`.
   Run file: `circles/260801-1244-curator/history/260814-1332-curator-run.md`.
 
+- Turn 4 (session 260813-2345): commits 18173e1..6d433c2; the Rebalance gate that ended Turn 3 chose
+  to revise Grounding, and this Turn realised what that answer required. T9 conditionalised both
+  absolute statements in `agents/shaper.md` and gave `agents/orchestrator.md` the dispatch contract
+  it had no occurrence of, in one commit `bf9553f`, so no unreachable dispatcher claim could exist
+  between two. Decision `shared/decisions/260813-0027_*` walked open to answered to implemented in
+  the same Turn. `/fusion:next` ran between task and review: no anticipated Circle remains, and the
+  thirteen-idea backlog dump was split into three promotable entries on the user's confirmation.
+  `coderev` filed six defects, two High. The first is a scoping error in how T9 was cut —
+  `README-agents.md`, the roster's single authoring home, still forbids the dispatch and cites the
+  line that now permits it; the decision named two prompt surfaces and the task was scoped to those
+  two. The second is that the shaper's test for whether it was dispatched contradicts the tool
+  inheritance model stated in `README-agents.md` and `CLAUDE.md`, and the halt it guards fails
+  silently in the dangerous direction.
+
 ## Activation proposal
 
 **Als nächster Circle gereiht, aber nicht zur Aktivierung vorgeschlagen — playmaker-Lauf

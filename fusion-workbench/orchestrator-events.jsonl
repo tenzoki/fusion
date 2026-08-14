@@ -1430,3 +1430,6 @@
 {"ts":"2026-08-14T15:32:42","event":"gate_response","turn":4,"agent":"user","detail":"/fusion:next backlog gate: approved the split of 260811-0826 observations into three entries"}
 {"ts":"2026-08-14T16:40:47","event":"review_start","turn":4,"agent":"coderev","detail":"range 0301909..HEAD, 5 commits, 39 files, plus 8 carried not-opened files from the Turn-3 review"}
 {"ts":"2026-08-14T16:56:07","event":"review_done","turn":4,"agent":"coderev","detail":"6 issues filed (2 High); bf9553f meets all three constraints; coverage uncovered=0"}
+{"ts":"2026-08-14T16:56:23","event":"state_drift","turn":4,"detail":"progress.commits said 21, git counted 23 since d7786eb; Circle Turn log had no Turn 4 entry. Both brought current."}
+{"ts":"2026-08-14T17:00:35","event":"turn_start","turn":5,"detail":"T10 — the four coherence findings Turn 4 left: the roster, the discriminator, Phase 0b.1, the layout tree"}
+{"ts":"2026-08-14T17:00:35","event":"task_start","turn":5,"task":"T10","agent":"coder","detail":"close the two High and two Medium findings from the Turn-3 and Turn-4 reviews"}
