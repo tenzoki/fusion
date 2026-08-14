@@ -59,3 +59,27 @@ that corrects 34 headers today leaves the mechanism that produced them intact.
 
 Both are cheap. Option 1 is the one consistent with the reduce-the-surface work already open; this
 record does not choose between them.
+
+---
+**Reconciliation, 2026-08-14 (reconciler, re-measured at HEAD `41c224c`). Stays open, and the
+population grew.**
+
+Re-derived rather than carried forward: a loop over `shared/decisions/*.md` and
+`circles/*/decisions/*.md` reading the marker out of each filename and comparing it against that
+file's `**Status:**` line reports **39 mismatches over 86 records**. Four of those are false
+positives of the naive comparison — records whose header carries the right word followed by a
+parenthetical annotation an earlier reconciliation added, for example
+`shared/decisions/260809-2004_i_*` reading "implemented (marker `_i_`; header corrected by the
+reconciler 260809-2252 …)". Discounting those, the real figure is **35 of 86**, against the 34 of 74
+this record measured on 2026-08-12.
+
+**One new instance was created and corrected inside this session.**
+`shared/decisions/260813-0027_i_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md`
+walked open to answered to implemented across commits `e02f268` and `0b14d03`; both renames moved
+the filename marker and neither touched the header, which still read `open` two transitions later.
+This pass corrected it. That is the mechanism this record describes, caught in the act rather than
+inferred: the rename is a `git mv`, the header is a separate edit, and nothing binds them.
+
+The count in this record's title is left as written. It states what was measured on 2026-08-12 and
+it is a measurement, not a pointer — restating it here is the derive-over-correct form the project
+applies to exactly this class.

@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** implemented
 **Filed by:** orchestrator
 **Cross-references:** circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_wem-gehoert-die-circle-aktivierung.md (the binding decision that made the mode user-direct-only); circles/260801-1244-guard-rules-write/issues/260805-1839_*_der-shaper-portfolio-activation-modus-hat-keinen-erreichbaren-dispatcher-mehr.md (closed by removing the dispatcher claims); agents/shaper.md mode 3; circles/260801-1244-curator (the Circle that surfaced this)
 
@@ -161,3 +161,16 @@ Constraint 1 is untouched: the `_a_`→`_t_` rename and the `.active-circle` wri
 permitted dispatcher now exists and carries a written contract, so no unreachable dispatcher claim
 was reintroduced. Verified `cd hooks && npm test` exit 0, 1030 tests; the always-on growth bound did
 not move, since neither prompt is in that corpus.
+
+---
+**Reconciliation, 2026-08-14 (reconciler, verified at HEAD `41c224c`).** The `**Status:**` header
+read `open` while the filename marker and both footers said implemented; corrected to
+`implemented` by this pass. The marker was right and the header was the lag, so nothing about the
+record's state changed — only the header caught up.
+
+The `Implemented:` footer was re-derived from the tree rather than taken on report.
+`agents/shaper.md:55` and `:57` carry the conditional form and the `**Initiated by:**` halt;
+`agents/orchestrator.md:333-339` carries the dispatch contract with the three parameter lines;
+`README-agents.md:66-68` carries the roster rows that permit the dispatch, which is the surface the
+Turn-4 review found still forbidding it and Turn 5 corrected in `9f4cdac`. All three surfaces agree
+at HEAD.

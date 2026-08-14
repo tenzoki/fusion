@@ -769,3 +769,35 @@ Three of the spec's four Circles have now closed (`-guard-bash-inspection`, `-gu
 What this costs the spec: C5a and C5b landed and C5c's own subject is gone, so the guard half of this spec is settled by a mechanism the spec did not anticipate. **The curator capability itself is untouched by that** — it depends on the rule-write permission being a real control, which it is (`FUSION_ALLOW_RULES_WRITE`, outranked by a project's own `fusion-guard.json` entry), not on how the guard decides what a command writes. The spec's Grounding for the curator work therefore still holds; only its C5 sections describe a world that no longer exists, and they are left as written because they are the record of the state the spec was written against.
 
 Reconciled by `reconciler`, `shared/history/260811-2330-reconciliation.md`.
+
+**260814-2017 — reconciler, domain `code`. Marker stays `_o_`; status stays Final. The reason it
+stayed `_o_` in the three entries above has now expired, and that is the finding.**
+
+Verified at HEAD `41c224c`. **All four of this spec's Circles have delivered.** The fourth,
+`circles/260801-1244-curator`, ran to the end of its plan this session: `agents/curator.md` (32 356
+bytes), `skills/curate/SKILL.md` (12 281 bytes), the seventeenth-agent registration across
+`bin/fusion-rules:174` and `:185` and the golden fixture, the staleness line in
+`skills/cleanup/SKILL.md`, and the armed growth bound at
+`hooks/lib/__tests__/rules-emission-golden.test.ts:994-995`. The agent then ran against this
+project's own three normative surfaces and applied 28 user-approved corrections
+(`circles/260801-1244-curator/history/260814-1332-curator-run.md`, commit `1a36fe4`). The previous
+entry's closing observation — "the agent it specifies does not exist" — is no longer true.
+
+**The marker is not moved, and this entry states why rather than repeating a judgement.** Three of
+this spec's capabilities were not delivered; they were *retired*, each by a recorded user decision
+rather than by being built:
+
+- **C9** (reconcile, compact, partition and scope the conventions file) was performed by hand in
+  Circle `260805-2005-textschicht-gegen-code-nachziehen` and put out of scope by user direction.
+- **C4** (rule-file retirement by relocation, with a tombstone and a version-control check) was
+  retired by user decision on 2026-08-14: a dead rule file is deleted and git holds the bytes.
+- **C5c**'s subject no longer exists. The protected-path half of the guard was removed on
+  2026-08-12, which the entry above already records.
+
+So "all four Circles closed" and "this spec is delivered" are not the same statement, and only the
+first is a fact this pass can establish. Whether a spec whose last Circle closes over three retired
+capabilities is closed (`_c_`), deferred (`_d_`), or stays open as the record of a body of work that
+was re-scoped, is a choice and not a measurement. Filed as
+`shared/decisions/260814-2017_o_does-a-parent-spec-close-when-its-last-circle-does-if-three-of-its-capabilities-were-retired-rather-than-delivered.md`.
+
+Reconciled by `reconciler`, `circles/260801-1244-curator/history/260814-2017-reconciliation.md`.

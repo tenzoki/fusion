@@ -330,3 +330,29 @@ citation in `## Current State` above was **left literal at `_a_`**, because its 
 "carries the answered marker", which was true when the plan was written and is a statement rather
 than a pointer. `rules/circle-records.md` `### Citation form in the portfolio` cuts it exactly
 there: a pointer loses nothing by being starred, a statement loses its content.
+
+---
+
+**Second pass, 2026-08-14 at HEAD `41c224c` (reconciler, `code` domain, session close).** Six
+commits landed after the pass above. Status and marker are unchanged — Complete and `_c_` — and
+this entry records what was re-checked rather than assumed.
+
+- **All five step marks re-derived, all five still true.** `agents/curator.md` 32 356 bytes;
+  `ls agents/*.md` returns 17 and `bin/fusion-rules:174` and `:185` both carry `curator`;
+  `skills/curate/SKILL.md` 12 281 bytes; `skills/cleanup/SKILL.md` carries the staleness line;
+  `hooks/lib/__tests__/rules-emission-golden.test.ts:994-995` holds the hard assertion
+  `expect(g.over, hardBoundMessage(g)).toBe(false)` over the universal-core set, with the five
+  `2026-08-14 arming` baseline entries at `:475-479` and the unit tests at `:1158-1177` proving the
+  assertion fires in both directions.
+- **The bound was re-run, not read.** `npx vitest run lib/__tests__/rules-emission-golden.test.ts`:
+  15 of 15 passing, no `RULE-TEXT BUDGET` report for any role. `9f4cdac` added 415 bytes to
+  `rules/fusion-workbench-conventions.md` and regenerated the fixture; the bound held.
+- **The full suite is green at HEAD and red in the working tree**, for a reason outside this plan:
+  an uncommitted `orchestrator.maxTurns` line in the root `fusion-guard.json` breaks the
+  byte-identity pin in `hooks/lib/__tests__/config.test.ts:1325-1336`. Filed as
+  `circles/260801-1244-curator/issues/260814-2017_o_an-uncommitted-turn-budget-edit-to-fusion-guard-json-makes-the-suite-red-at-the-working-tree-while-head-is-green.md`.
+  `git show HEAD:fusion-guard.json | diff - templates/fusion-guard.json` is empty, so no commit in
+  this plan's range carries the failure.
+- **The second open question is still open** and still does not block closure: whether the hard
+  dependency on `260801-1244-rule-provenance-header` survives on grounds other than the retired
+  partition. Nothing in the six new commits bears on it.

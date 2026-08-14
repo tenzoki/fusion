@@ -423,3 +423,27 @@ all passing, no `RULE-TEXT BUDGET` report for any role.
   Circle record's `## Grounding snapshot`, which the reconciler may not write. That surface is the
   remaining half of `circles/260801-1244-curator/issues/260814-0828_o_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md`,
   which therefore stays open.
+
+---
+
+**Second pass, 2026-08-14 at HEAD `41c224c` (reconciler, `code` domain, session close).** Status
+and marker unchanged — Complete and `_c_`. All seven capabilities re-checked against the tree; all
+seven still hold, and C7 gained a surface it did not have at the first pass.
+
+- **C7 is now complete on the roster as well as in the prompts.** The first pass verified the three
+  invocation shapes in `skills/curate/SKILL.md` and `agents/orchestrator.md`. The Turn-4 review then
+  found `README-agents.md`, the single authoring home of the dispatch-parameter roster, still
+  forbidding the dispatch the prompts permit. `9f4cdac` corrected rows `:66-68` and added the
+  `**Initiated by:**` row. Verified at HEAD.
+- **C10 re-run rather than re-read.** `npx vitest run lib/__tests__/rules-emission-golden.test.ts`
+  passes 15 of 15 with no budget report, and the hard assertion sits at
+  `hooks/lib/__tests__/rules-emission-golden.test.ts:994-995`. The Turn-5 rule-file edit spent 415
+  of the remaining head-room and the bound held.
+- **C11's residual is unchanged and remains a residual, not a defect.** The corpus-wide
+  zero-superseded claim is filed as
+  `circles/260801-1244-curator/decisions/260814-1332_o_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`,
+  still open. That is the spec's own stated second admissible form of the answer.
+- **The `## User Decisions Pending` box stays ticked** and the same lag on the Circle record's
+  `## Grounding snapshot` still stands, so
+  `circles/260801-1244-curator/issues/260814-0828_o_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md`
+  stays open for the orchestrator's Phase-4 write.

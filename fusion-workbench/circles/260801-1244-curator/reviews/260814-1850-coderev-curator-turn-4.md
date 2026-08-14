@@ -243,3 +243,40 @@ truthfully the further the session runs from the moments they describe.
 
 **Not a release blocker anywhere.** Nothing in this range changes behaviour of any shipped
 executable, no test moved, and the always-on rule corpus is untouched.
+
+---
+
+## Reconciliation annotation
+
+**2026-08-14, reconciler, `code` domain, verified against the working tree at HEAD `41c224c`.**
+Findings are annotated, not rewritten. Three of the six are resolved and the evidence was
+re-derived from the tree rather than taken from the closing commit's message.
+
+- **F1 — resolved.** `README-agents.md:66` now names the orchestrator as a permitted dispatcher of
+  `**Mode:** portfolio-activation` and cites `agents/orchestrator.md:337`; `:67` carries the same for
+  `**Circle file:**`; `:68` is the new `**Initiated by:**` row the finding said was missing, with its
+  halt condition and its dispatcher. Landed in `9f4cdac`; record renamed at `41c224c`
+  (`circles/260801-1244-curator/issues/260814-1850_c_the-dispatch-parameter-roster-still-forbids-the-dispatch-and-has-no-row-for-the-new-parameter.md`).
+- **F2 — not resolved, and correctly so.** The finding's own recommendation was to settle the
+  question empirically before editing. Two headless probes were run; they establish that the
+  discriminator is unsound and could not reach the direction the halt depends on, so `agents/shaper.md`
+  was deliberately left untouched. The remedy is a contract change and is filed as
+  `circles/260801-1244-curator/decisions/260814-1915_o_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`.
+  The defect record stays open and cites that decision as its closing condition.
+- **F3 — resolved.** `agents/orchestrator.md:421` (Step 0b.1, item 3) now mandates the relay and
+  points at the `## Re-sharpening an anticipated Circle` contract for the mechanics instead of
+  carrying a second copy. Record closed in the shared store
+  (`shared/issues/260814-1850_c_phase-0b-1-still-tells-the-orchestrator-not-to-intercept-a-dialogue-the-same-file-now-mandates-it-relays.md`).
+- **F4 — open.** `circles/260801-1244-curator/issues/260814-1850_o_the-answered-footer-cites-a-location-that-does-not-hold-the-answer-and-a-trigger-that-postdates-the-gate.md`
+  stands; nothing in `9f4cdac` or `41c224c` touches the footer it names.
+- **F5 — open.** `circles/260801-1244-curator/issues/260814-1850_o_the-final-reconciliation-emitted-no-reconciliation-event-and-the-gate-it-is-recorded-as-triggering-fired-first.md`
+  stands.
+- **F6 — open.** `circles/260801-1244-curator/issues/260814-1850_o_the-new-dispatch-contract-is-reachable-from-no-flow-step-and-no-surface-offers-the-choice-it-waits-for.md`
+  stands. `grep -n 'portfolio-activation' agents/orchestrator.md` still returns no hit inside a
+  numbered flow step.
+
+**One thing this review could not have covered, recorded here so the range is honest.** The
+`**Reviewed-range:**` above ends at `d5b71f1`. Three commits followed it — `6d433c2`, `9f4cdac`,
+`41c224c` — and `bin/fusion-review-coverage` reports them `uncovered`. `9f4cdac` is the commit that
+resolved F1 and F3 above, and it edits an always-on rule file. No review pass has opened it. Filed
+as `circles/260801-1244-curator/issues/260814-2017_o_turn-5-edited-three-shipped-surfaces-including-an-always-on-rule-file-and-no-review-pass-ever-opened-them.md`.

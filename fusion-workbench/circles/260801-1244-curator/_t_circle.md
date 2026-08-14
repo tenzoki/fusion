@@ -131,6 +131,27 @@ flowchart LR
   inheritance model stated in `README-agents.md` and `CLAUDE.md`, and the halt it guards fails
   silently in the dangerous direction.
 
+- Turn 5 (session 260813-2345): commits 9f4cdac..41c224c; session history:
+  shared/history/260813-2345-orchestrator-session.md. One task done, none errored. T10 took the
+  four coherence findings the Turn-3 and Turn-4 reviews left. Three of them closed in `9f4cdac`:
+  the dispatch roster in `README-agents.md` stopped forbidding a dispatch the mechanism permits,
+  the shaper's mode-3 reachability claim in Phase 0b.1 was conditionalised, and the layout tree's
+  consumer column was generalised. The fourth was measured unsound rather than closed, and became
+  `decisions/260814-1915_o_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`;
+  `41c224c` carried the records. The session then stopped without running Step 3c, so this Turn's
+  review and the Phase-3 reconciliation were performed after the resume of 260814-2009. `coderev`
+  reviewed `d5b71f1..41c224c`, which took coverage of the whole session range to complete, cleared
+  all three files the Turn-4 review had declared not-opened, and filed four defects, two High. The
+  first is that this repository cannot set its own Turn budget: `hooks/lib/__tests__/config.test.ts`
+  pins the root `fusion-guard.json` byte-identical to the template whose own text names that file as
+  the only place a project changes the budget, and the suite is red on the uncommitted line this
+  session's budget of 12 comes from. The second is that `9f4cdac`'s repair was scoped to the topic
+  and not to the commit that caused the staleness, so ten of `bf9553f`'s citations still stand,
+  seven of them in the same table the repair corrected. The reconciler verified both halves of the
+  Directive met by re-running the instruments, and returned the aggregate Coherence verdict
+  `review-needed` on the two open High findings. The user chose to revise the Artifact rather than
+  close bounded, which opened Turn 6.
+
 ## Activation proposal
 
 **Als nächster Circle gereiht, aber nicht zur Aktivierung vorgeschlagen — playmaker-Lauf
