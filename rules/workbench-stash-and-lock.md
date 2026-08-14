@@ -7,7 +7,7 @@ Their audience is bounded by a mechanism rather than by a guess about what an ag
 need: the commit lock is taken by the orchestrator, and a stash is created and consumed by
 `/fusion:circle-stash` and `/fusion:circle-pop` — skills, which reach rule text by direct
 citation and are never served by `bin/fusion-rules` at all. So this file is emitted to
-`orchestrator` only. The other fifteen agents reach it through the pointer lines left at
+`orchestrator` only. Every other agent reaches it through the pointer lines left at
 both sites in the conventions file, the three agents that may commit directly carry the
 lock instruction inline in their own prompts, and the two committing skills
 (`/fusion:commit`, `/fusion:cleanup`) carry it in their own bodies.

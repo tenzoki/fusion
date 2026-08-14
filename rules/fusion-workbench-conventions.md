@@ -4,7 +4,7 @@
 
 Shared conventions for all agents operating on `fusion-workbench/`, and for the rule files those agents load. This file is emitted by `bin/fusion-rules` to every agent at Setup step 2; nothing is auto-loaded. Single source of truth for the workbench layout, the origin rule, the operative half of path resolution, the issue/planning and decision marker vocabularies, marker globs, filename patterns, issue and decision filing, inline tracking, history logging, timestamps, and the project's two language declarations.
 
-**This document is the definition** of everything it still states in full. Four topics that were once defined here now have their own authoring homes, each cited at the point where it left, and each emitted to the audience that actually applies it rather than to all sixteen agents:
+**This document is the definition** of everything it still states in full. Four topics that were once defined here now have their own authoring homes, each cited at the point where it left, and each emitted to the audience that actually applies it rather than to every agent:
 
 | Topic | Authoring home | Emitted to |
 |---|---|---|
@@ -248,7 +248,7 @@ A project names its two languages in `CLAUDE.md`, on two lines:
 **The stylometric profiles under `./fusion-workbench/stilwerk/` follow from the boundary above rather than defining it.** Each family governs one of the first two surfaces, so each resolves from that surface's language:
 
 - **`chat-voice-<lang>.yaml`** — the short-form chat profile, resolved from the **chat** language and applied by **every** agent to its short-form user-facing output (gate prompts, `AskUserQuestion` text, status reports, chat replies). See `rules/user-facing-output.md` `## Style anti-patterns apply to everything`.
-- **`default-voice-<lang>.yaml`** — the long-form writing profile, resolved from the **artifact** language and applied by the nine long-form-prose agents to their narrative outputs (session summary bodies, consultant reports, analysis reports, investigator timelines, playmaker briefings, prose sections of specs and plans).
+- **`default-voice-<lang>.yaml`** — the long-form writing profile, resolved from the **artifact** language and applied by the long-form-prose agents to their narrative outputs (session summary bodies, consultant reports, analysis reports, investigator timelines, playmaker briefings, prose sections of specs and plans).
 
 The writing profile follows its surface's language, not the artifact declaration as such, so **a customer deliverable's prose takes the writing profile of the language the dispatch named** — `default-voice-de.yaml` for a German deliverable in a project whose artifact language is `en`, and the target language's profile on a translation. That is the deliverable case above applied to the profile family, not an exception to it: each family resolves from the language of the surface it governs, and for one surface that language comes from the dispatch.
 
@@ -519,8 +519,9 @@ first ten lines, naming the record, Circle, or commit that caused it to exist. T
 legitimate citation forms, the placement rule, what
 `hooks/lib/__tests__/provenance-header-lint.test.ts` checks and what it cannot, and who
 carries the obligation are authored in `rules/rule-file-provenance.md`. Read it before you
-create or edit any file under `rules/`. `bin/fusion-rules` emits it to no agent, because no
-agent's routine work is writing normative rule text.
+create or edit any file under `rules/`. `bin/fusion-rules` emits it to no agent: the one
+agent whose routine work includes writing normative rule text is the `curator`, and
+`agents/curator.md` reaches this definition by citing it at Setup rather than by emission.
 
 ## History Logging
 

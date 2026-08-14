@@ -8,9 +8,10 @@ carries the obligation. No other file may carry a competing or supplementary def
 
 Read it when you are about to **create or edit a file under a `rules/` directory** — the
 plugin's own, a consuming project's `./rules/`, or a project-wide `.claude/rules/`. That is
-the whole trigger, and it is why `bin/fusion-rules` emits this file to no agent: no fusion
-agent has writing normative rule text as its routine job, so loading it into all sixteen on
-every dispatch would buy nothing for fifteen and a half of them. In the plugin's own
+the whole trigger, and it is why `bin/fusion-rules` emits this file to no agent: only the
+`curator` has writing normative rule text as part of its routine job, so loading it into
+every agent on every dispatch would buy nothing for the rest. `agents/curator.md` cites
+this file at Setup, which is how the one agent that needs it gets it. In the plugin's own
 repository `hooks/lib/__tests__/provenance-header-lint.test.ts` catches a missing header;
 everywhere else the pointer in `rules/fusion-workbench-conventions.md` is what brings a
 writer here.

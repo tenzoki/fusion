@@ -32,7 +32,7 @@ import { dirname, resolve, join, relative } from "node:path";
 // measured against, so that "we reduced the context tax" is a diff and not a
 // claim.
 //
-// WHAT IT MEASURES. For each of the 16 agents: the paths `bin/fusion-rules`
+// WHAT IT MEASURES. For each agent: the paths `bin/fusion-rules`
 // emits that live under `<plugin>/rules`, in emission order, each with its byte
 // size, plus the total. Project-side rules (`./rules`, `.claude/rules`) and the
 // stilwerk voice profiles are deliberately out of scope — both vary per
@@ -121,13 +121,13 @@ import { dirname, resolve, join, relative } from "node:path";
 // impossible by construction rather than by attention, which is the failure this
 // file exists to stop.
 //
-// ONE FLOOR PER ROLE rather than one number for all sixteen agents, because after
+// ONE FLOOR PER ROLE rather than one number for the whole fleet, because after
 // the cut the agents no longer carry the same load: they range from 89 896 to
 // 111 766 bytes. A single figure has to sit at the maximum, so it would grant the
 // five leanest agents 21 870 bytes of silent head-room and call that compliance.
 //
 // HOW A ROLE IS DERIVED, AND WHY IT IS NOT A LIST OF NAMES. The universal core
-// is computed as the INTERSECTION of all sixteen emissions. An agent's role is
+// is computed as the INTERSECTION of every agent's emission. An agent's role is
 // what is left over: the sorted set of rule files it loads that not every agent
 // loads. `ROLES` is keyed by that set. Nothing here names an agent, so the
 // day `bin/fusion-rules` moves an agent between audiences, the agent changes
@@ -170,8 +170,7 @@ const goldenPath = join(here, "fixtures", "rules-emission.golden");
 
 /**
  * The release cap from the plan's Erfolgsmaß: the rule-text total that
- * `origin/main` already ships, undifferentiated, to every one of the sixteen
- * agents. It is the tax a consuming project pays today, and a release that
+ * `origin/main` already ships, undifferentiated, to every agent. It is the tax a consuming project pays today, and a release that
  * raises it is a regression however much else the release fixes.
  *
  * It has never been a ceiling since 2026-08-05, and since the ratchet came out
@@ -219,8 +218,8 @@ const GROWTH_BUDGET = 12_000;
 const DRIFT_CEILING = 145_144;
 
 /**
- * THE REFERENCE the budget measures growth from: every rule file the sixteen
- * agents load, at the size it had after the last cleanup. A role's FLOOR is these
+ * THE REFERENCE the budget measures growth from: every rule file the agents
+ * load, at the size it had after the last cleanup. A role's FLOOR is these
  * numbers summed over the files that role actually loads, so the floor and the
  * per-file breakdown in the report are one fact rather than two that can disagree.
  *
@@ -353,7 +352,7 @@ const DRIFT_CEILING = 145_144;
  *             that removed the thing hiding it.
  */
 const RULE_BASELINE: Record<string, number> = {
-  // The universal core — text all sixteen agents apply. 63 654 bytes at the
+  // The universal core — text every agent applies. 63 654 bytes at the
   // 2026-08-05 cut, against 80 670 emitted today; the 17 016 difference is the
   // growth the budget report now names, and it is unbudgeted on purpose (see
   // the 2026-08-12 entry above).
@@ -382,7 +381,7 @@ interface Role {
 
 /**
  * One entry per ROLE, where a role is the sorted set of rule files an agent loads
- * that not all sixteen agents load — see `HOW A ROLE IS DERIVED` in the header.
+ * that not every agent loads — see `HOW A ROLE IS DERIVED` in the header.
  * The key is that set, rendered by `roleKey()`. No agent is named as a key, and
  * membership is never written down: it is measured, and the messages print it.
  *
@@ -468,7 +467,7 @@ const ROLES: Record<string, Role> = {
    *
    * 18 552 bytes of role-specific text, the most of any role, because this is
    * the agent with the most distinct jobs. The overage is not shaveable from
-   * the core, where every remaining byte is text all sixteen agents apply.
+   * the core, where every remaining byte is text every agent applies.
    */
   "circle-records.md + workbench-stash-and-lock.md": {
     overRelease:
@@ -503,7 +502,7 @@ function fmt(n: number): string {
   return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
-/** The files every one of the sixteen agents loads — the intersection. */
+/** The files every agent loads — the intersection. */
 function universalCore(measured: Map<string, Emission>): Set<string> {
   const sets = [...measured.values()].map((e) => new Set(e.files.map((f) => f.rel)));
   const [first, ...rest] = sets;
@@ -620,7 +619,7 @@ const UPDATING = process.env.UPDATE_RULES_GOLDEN === "1";
 describe("rules emission golden", () => {
   let measured: Map<string, Emission>;
   let agents: string[];
-  /** The files all sixteen agents load. */
+  /** The files every agent loads. */
   let core: Set<string>;
   /** Role key -> the agents measured into it. Derived, never written down. */
   let roles: Map<string, string[]>;
@@ -741,7 +740,7 @@ describe("rules emission golden", () => {
   it("assigns every agent a role derived from what it actually loads", () => {
     expect(
       core.size,
-      "No rule file is loaded by all sixteen agents, so there is no universal core " +
+      "No rule file is loaded by every agent, so there is no universal core " +
         "and every agent would be its own role. Either bin/fusion-rules stopped " +
         "emitting an always-on set, or a run failed and returned nothing.",
     ).toBeGreaterThan(0);
@@ -750,7 +749,7 @@ describe("rules emission golden", () => {
     expect(
       unknown.map((k) => `${k} <- ${roles.get(k)!.join(", ")}`),
       "A role appeared that ROLES has no entry for. A role is the set of rule files " +
-        "an agent loads that not all sixteen load, so this means an audience in " +
+        "an agent loads that not every agent loads, so this means an audience in " +
         "bin/fusion-rules changed. Add an entry keyed by that file set, saying what " +
         "the role buys and why — and if its floor is above " +
         `${RELEASE_CAP}, an \`overRelease\` naming the file that carries the overage.`,

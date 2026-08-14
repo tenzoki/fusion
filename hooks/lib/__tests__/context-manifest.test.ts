@@ -27,7 +27,7 @@ const AGENTS = [
   "orchestrator", "coder", "ontocoder", "bugfixer", "coderev",
   "ontorev", "conceptrev", "planner", "shaper", "taskplanner",
   "reconciler", "analyst", "investigator", "consultant", "playmaker",
-  "editor",
+  "editor", "curator",
 ];
 
 interface RunResult {
@@ -148,8 +148,8 @@ describe("context-manifest: HYG-NO-REGRESS — byte-identical when absent", () =
 
 describe("agent-setup.md is emitted always-on, first, for every agent (Circle D Bundle 0)", () => {
   // agent-setup.md is a plugin-shipped always-on framework rule (the sixth), the
-  // single authoring home for the Setup contract. It must be emitted for every one
-  // of the 16 agents, with no manifest, and emitted FIRST — before the detailed
+  // single authoring home for the Setup contract. It must be emitted for every
+  // agent, with no manifest, and emitted FIRST — before the detailed
   // fusion-workbench-conventions.md — so an agent reads "how Setup works" before
   // the conventions. This is an intended extension of the always-on set, NOT a
   // HYG-NO-REGRESS break (that guard protects the manifest-absent==pre-manifest
@@ -157,8 +157,8 @@ describe("agent-setup.md is emitted always-on, first, for every agent (Circle D 
   const setup = "agent-setup.md";
   const conventions = "fusion-workbench-conventions.md";
 
-  it(`emits ${setup} for all 16 agents (no manifest)`, () => {
-    expect(AGENTS.length).toBe(16); // 15 original + editor
+  it(`emits ${setup} for every agent (no manifest)`, () => {
+    expect(AGENTS.length).toBe(17); // 15 original + editor + curator
     for (const agent of AGENTS) {
       const out = lines(run(emptyProject, agent).stdout);
       expect(

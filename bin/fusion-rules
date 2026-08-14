@@ -69,7 +69,7 @@
 #                                   see templates/investigator-capture-layout.md)
 #   - All other agents get workbench-conventions only. The conventions-only
 #     set currently includes: orchestrator, shaper, taskplanner, reconciler,
-#     analyst, consultant, playmaker, conceptrev, editor.
+#     analyst, consultant, playmaker, conceptrev, editor, curator.
 #
 # Optional topic-scoped loading (the context manifest):
 #   A consuming project MAY add ./rules/context-manifest.yaml to load large
@@ -101,7 +101,8 @@
 #       default-voice-<lang>.yaml  — emitted for the long-form-prose agents only
 #                                    (orchestrator, consultant, shaper, planner,
 #                                    analyst, investigator, playmaker,
-#                                    conceptrev, editor), for narrative outputs:
+#                                    conceptrev, editor, curator), for narrative
+#                                    outputs:
 #                                    session summary bodies, consultation
 #                                    replies, analysis reports, investigator
 #                                    timelines, playmaker briefings, prose
@@ -170,7 +171,7 @@ case "$AGENT" in
   ontocoder|ontorev)              PATTERNS="ontology normative verb" ;;
   planner)                        PATTERNS="coding ontology" ;;
   investigator)                   PATTERNS="investigator" ;;
-  orchestrator|shaper|taskplanner|reconciler|analyst|consultant|playmaker|conceptrev|editor)
+  orchestrator|shaper|taskplanner|reconciler|analyst|consultant|playmaker|conceptrev|editor|curator)
                                   PATTERNS="" ;;
   *)
     echo "fusion-rules: unknown agent '$AGENT'" >&2
@@ -178,10 +179,10 @@ case "$AGENT" in
     ;;
 esac
 
-# Prose-agent flag — independent of PATTERNS. The nine agents below produce
+# Prose-agent flag — independent of PATTERNS. The agents below produce
 # long-form narrative output that the stylometric profile governs.
 case "$AGENT" in
-  orchestrator|consultant|shaper|planner|analyst|investigator|playmaker|conceptrev|editor)
+  orchestrator|consultant|shaper|planner|analyst|investigator|playmaker|conceptrev|editor|curator)
                                   IS_PROSE_AGENT=1 ;;
   *)                              IS_PROSE_AGENT=0 ;;
 esac
@@ -208,7 +209,7 @@ esac
 # Circle-scoped key — orchestrator ($SCAN_CIRCLES, $PORTFOLIO), playmaker
 # ($OUT_CIRCLE, $SCAN_CIRCLES, $PORTFOLIO), shaper ($OUT_CIRCLE, $SCAN_CIRCLES).
 # An agent that names no Circle key cannot transition a Circle, so the vocabulary
-# is text it can never act on. The other thirteen reach the file through the
+# is text it can never act on. Every other agent reaches the file through the
 # pointer at `## Circle records` in fusion-workbench-conventions.md; the skills
 # that transition Circles cite it directly, as skills always must (this helper
 # serves agents only and exits 2 on any other name).

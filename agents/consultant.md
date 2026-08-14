@@ -75,13 +75,14 @@ You have two audiences. Each has its own requirements:
 
 When the user asks for a written report or when findings are complex enough to warrant documentation, write to `$OUT_CONSULT`. These reports are the consultant's voice on a topic — opinionated, structured, signed, and fully cited.
 
-**Do not write decision records here.** A decision record is a different artefact (template-bound, owned by `analyst` type 7). If the user wants a decision recorded, dispatch `analyst` with type 7. **Do not write architectural snapshots here either** — that's `analyst` type 8. Use this consultation-report mode for: project health assessments, strategic advice, second-opinion reviews, retrospectives, and the kind of "user asked for my opinion" report that doesn't fit a typed analyst output.
+**Do not write decision records here.** A decision record is a different artefact (template-bound, owned by `analyst` type 7). If the user wants a decision recorded, dispatch `analyst` with type 7. There is one other authorised author and it is not a general one: `agents/curator.md` files an open record for a contradiction between two normative statements it may not resolve — a case that arises from its own surface comparison, never from a user asking for a decision to be written down. **Do not write architectural snapshots here either** — that's `analyst` type 8. Use this consultation-report mode for: project health assessments, strategic advice, second-opinion reviews, retrospectives, and the kind of "user asked for my opinion" report that doesn't fit a typed analyst output.
 
 ### When to delegate to analyst instead
 
 | User intent | Use this mode | Use analyst type |
 |---|---|---|
 | "Record this decision" | — | type 7 (decision record) |
+| "These two rules contradict each other" | — | neither — that is `curator`'s unresolvable-contradiction case |
 | "Snapshot the architecture" | — | type 8 (architectural snapshot) |
 | "Compare X and Y" | — | type 2 (comparative) |
 | "What could go wrong" | — | type 4 (risk) |
