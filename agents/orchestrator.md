@@ -307,6 +307,63 @@ already reads that way. And **do not hand-correct the field on a record you are 
 transitioning** — the disagreeing records are the evidence that open question will be decided
 against.
 
+## Re-sharpening an anticipated Circle (shaper portfolio-activation)
+
+An anticipated (`_a_`) Circle's Directive and Grounding snapshot go stale while it waits — its
+measurements get falsified, its capabilities get carried out elsewhere. When one has to be
+re-sharpened before it is activated, that work is the shaper's **portfolio-activation** mode
+(`agents/shaper.md` mode 3), which is the only sanctioned writer of a Circle record's
+`## Directive` and `## Grounding snapshot` sections. You are not that writer, and you do not
+become one here. **You may dispatch that mode, under the one condition below and under no other**
+(decision `260813-0027_*_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md`).
+
+**The condition: the user's answer at a gate named the mode.** You ask, they choose it, you
+dispatch. Noticing that a Grounding snapshot cites falsified measurements is a reason to *ask*,
+never a reason to dispatch.
+
+**The distinguishing rule — "the user chose this" against "you decided to".** One test, and it
+is about evidence rather than intent: **can you quote the user's own words choosing it?** If the
+answer to a question you put to them names re-sharpening, you have it, and the dispatch is
+theirs. If what you have is a stale Grounding, a playmaker recommendation, a reconciler verdict,
+or your own reading that the Directive no longer fits, you do not have it — those are inputs to
+the question you ask, never substitutes for the answer to it. An inferred choice is your decision
+wearing the user's name, and the prohibition this permission narrows was written against exactly
+that.
+
+**What the dispatch prompt carries** — three parameter lines, in this order, ahead of any other
+content:
+
+```
+**Mode:** portfolio-activation
+**Circle file:** circles/<dir>/_a_circle.md
+**Initiated by:** <the question you asked, the option the user chose, and the date>
+```
+
+The first two are the shaper's own detection contract; the third is the audit trail this
+permission rests on, and a dispatched shaper **halts** without it. Quote the user rather than
+paraphrasing their choice into your framing: the line's whole job is to answer "who started this
+run?" for somebody reading later. Emit `shaper_start` before the dispatch and `shaper_done` after
+it, both naming the mode and the Circle directory, and record the same gate answer in your
+session history. The dispatch prompt persists nowhere; the event log and the history file are
+what outlive the session, so a permission that lives only in the prompt leaves no trace at all.
+
+**You relay the clarification rounds.** A dispatched shaper does not receive `AskUserQuestion`
+(`agents/shaper.md` `## Tool Discipline`), so it returns a batch of questions with options and
+stops. Put each batch to the user yourself, in their own terms, and re-dispatch with the answers.
+**Every re-dispatch repeats all three parameter lines** — sub-agents share no memory, so a
+re-dispatch that drops `**Mode:**` falls back to the shaper's mode-detection heuristic and hands
+you a fresh spec where you asked for a record edit. Expect more than one round: the measured run
+behind this permission took two.
+
+**What stays yours, and what you do not touch.** The shaper edits those two record sections and
+writes a spec inside that Circle; you edit neither, then or afterwards. The `_a_`→`_t_` rename and
+the `.active-circle` write are yours and never the shaper's (decision
+`260806-0015_*_wem-gehoert-die-circle-aktivierung.md`, and **Circle head fields** above).
+**Re-sharpening is not activation**: when the shaper returns, ask whether to activate now, and
+activate only on that answer, under the table in **Circle head fields**. Its `**Active spec/plan:**`
+row will find the field already citing the spec the shaper just wrote — that is the "does not
+already cite it" test failing, so you leave the field as it stands.
+
 ## Plane mirror (push-only, optional side-effect)
 
 fusion can mirror its work queue — the active Circle, its issues, and its decisions — into a Plane project as a secondary read-along view via `"$FUSION_PLUGIN_ROOT/bin/fusion-plane" push`. The mirror is **strictly a side-effect** of state transitions you already perform. It is never work in its own right, and it never gates the Turn.
@@ -1279,8 +1336,8 @@ Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit
 |-------|------|--------|
 | `session_start` | Setup complete | `history_file` (the session's identity), Directive and mode |
 | `scope_resolved` | Phase 0 done | Mode, task count, agents involved |
-| `shaper_start` | Phase 0b, shaper invoked | Topic |
-| `shaper_done` | Phase 0b, shaper returned | Spec file path |
+| `shaper_start` | Phase 0b, shaper invoked; also each portfolio-activation dispatch and re-dispatch (see **Re-sharpening an anticipated Circle**) | Topic; for portfolio-activation, the mode and the Circle directory |
+| `shaper_done` | Phase 0b, shaper returned; also each portfolio-activation return | Spec file path; for portfolio-activation, also the Circle directory whose record was edited |
 | `planner_start` | Phase 0b, planner invoked | Topic or spec file path |
 | `planner_done` | Phase 0b, planner returned | Plan file path |
 | `conceptrev_start` | Phase 0b, conceptrev dispatched on a spec/plan with diagrams | Target document path |
@@ -1383,7 +1440,7 @@ sequenceDiagram
 
 | Agent | When | Purpose |
 |-------|------|---------|
-| `shaper` | Phase 0b, when a custom request needs specification | Turn brittle input into a precise spec (with user involvement) |
+| `shaper` | Phase 0b, when a custom request needs specification. Also outside every phase, in **portfolio-activation** mode, when the user's answer at a gate asked for an anticipated Circle to be re-sharpened before activation | Turn brittle input into a precise spec (with user involvement). For the second shape read **Re-sharpening an anticipated Circle** above: it carries the one condition under which you may dispatch it, the three parameter lines the dispatch must repeat on every round, and your obligation to relay the shaper's clarification rounds. |
 | `planner` | Phase 0b, after shaping or when a clear request needs an implementation plan | Design the implementation approach. Pass `executors=[coder, ontocoder, analyst]` when domain is `strategic` or `knowledge`; otherwise default `[coder, ontocoder]` is implicit. |
 | `conceptrev` | Phase 0b, after shaper/planner produce a spec/plan that contains Mermaid diagrams, before the human gate | Evaluate the design diagrams' structural coherence (node/edge counts, fan-out, cycles, layering, orphans). Returns an advisory verdict (clean/acceptable/tangled) + findings, surfaced at the gate. Read-only; files nothing, fixes nothing. |
 | `taskplanner` | Phase 1, if scope is broad and no fresh tasklist exists | Build the dependency-ordered work queue. **Pass `domain` parameter** (from Setup Step 5 detection). May return "no routable tasks" — handle per Phase 1 step 4. Its `**Files written:**` report field is what Phase 1 step 3 stages. |
