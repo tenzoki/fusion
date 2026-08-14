@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** answered
+**Status:** implemented
 **Filed by:** planner
 **Cross-references:** `circles/260801-1244-curator/planning/260814-0845_o_plan-curator.md` step 2 and `## Open Questions`; `circles/260801-1244-curator/planning/260814-0738_o_spec-curator.md` C2 (the derive-over-correct rule); `hooks/lib/__tests__/derivable-enumerations-lint.test.ts`
 
@@ -51,6 +51,6 @@ Confidence, labelled per `rules/critical-stance.md`: the counts are verified, ob
 
 ---
 Answered: shared/history/260813-2345-orchestrator-session.md § User decisions recorded this session, item 6 — option 2. The five lint-derived digit claims are corrected to the tree; in the twenty-seven unasserted occurrences the figure is removed where the sentence does not need it, so "all sixteen agents" becomes "every agent". Historical measurements in the cut log are not touched. Answered by the user on 2026-08-14 at the plan gate.
-Implemented:
+Implemented: 6ba9d77 — the five lint-derived digit claims now equal the tree at seventeen; in the twenty-seven no parser reads, the figure is removed where the sentence carried it as a synonym for "every agent". Historical measurements in the cut log of rules-emission-golden.test.ts are untouched, as the record's constraints require.
 Deferred:
 Superseded by:

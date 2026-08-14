@@ -18,7 +18,7 @@ Plugin published to the `tenzoki-plugins` marketplace (repo: `tenzoki/claude-plu
 - Real-time HTML monitor dashboard (`bin/monitor`)
 - Pattern-based rule discovery helper (`bin/fusion-rules`)
 - Per-consumer workbench path resolver (`bin/fusion-paths`) — Circle-container layout, v4.0.0+
-- User-invocable skills: `/fusion:setup`, `/fusion:migrate`, `/fusion:help`, `/fusion:cleanup`, `/fusion:memo`, `/fusion:commit`, `/fusion:log-activity`, `/fusion:cadence`, `/fusion:revise-claude-md`, `/fusion:unlock`, `/fusion:archive`, `/fusion:next`, `/fusion:direct`, `/fusion:circle-stash`, `/fusion:circle-pop`, `/fusion:seed-from-plane` — one per directory under `skills/`; that listing is the authoritative set
+- User-invocable skills: `/fusion:setup`, `/fusion:migrate`, `/fusion:help`, `/fusion:cleanup`, `/fusion:memo`, `/fusion:commit`, `/fusion:log-activity`, `/fusion:cadence`, `/fusion:revise-claude-md`, `/fusion:unlock`, `/fusion:archive`, `/fusion:next`, `/fusion:direct`, `/fusion:circle-stash`, `/fusion:circle-pop`, `/fusion:seed-from-plane`, `/fusion:curate` — one per directory under `skills/`; that listing is the authoritative set
 
 ## Layout
 

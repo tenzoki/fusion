@@ -153,7 +153,7 @@ Step 5 is last because the arming baseline is taken from the corpus as this Circ
    - Dependencies: step 1
    - Acceptance: `cd hooks && npm test` passes.
 
-3. **Add the `/fusion:curate` skill and register it**
+3. [DONE] **Add the `/fusion:curate` skill and register it**
    - Executor: `coder`
    - Files: `skills/curate/SKILL.md`, `hooks/lib/__tests__/fusion-paths.test.ts`, `CLAUDE.md`, `README-agents.md`
    - Changes: a new skill body with `allowed-tools: [Bash, Read, AskUserQuestion, Agent(fusion:curator)]`. It resolves the workbench root, runs `fusion-paths curate`, dispatches `Agent(fusion:curator)` with `**Mode:** survey`, reads the run file the agent reports, renders the gate as `## Data Structures` specifies, and dispatches a second time with `**Mode:** apply` plus the ledger path and the approved entry ids. It writes nothing itself. Add `"curate"` to the `SKILLS` array in `fusion-paths.test.ts`, the `/fusion:curate` mention to `CLAUDE.md`'s skill listing, and the table row to `README-agents.md`. Both additions are gated: the roster lint checks the skill list in both directions, and the table parser requires the slash command and the file column to agree.
