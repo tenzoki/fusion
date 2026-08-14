@@ -44,3 +44,27 @@ happened to them.
 **Filed by:** reconciler, session `shared/history/260813-2345-orchestrator-session.md`, Circle
 `260801-1244-curator`. Filed in the Circle's own store per the Origin Rule: the bookkeeping it
 describes is this Circle's Turn log and this session's record of running it.
+
+---
+**Reconciliation, 2026-08-14 21:53, at HEAD `d90b794` — half repaired, and the other half now has
+one more instance. Stays open.**
+
+- **Repaired.** `d270666` added the Turn-5 bullet to `circles/260801-1244-curator/_t_circle.md`
+  `## Turn log`. Verified by reading the section: it now carries six bullets, `Turn 1`, `Turn 2`,
+  `Turn 3`, `Turn 3, continued`, `Turn 4`, `Turn 5`.
+- **Still standing, and unchanged.** `shared/history/260813-2345-orchestrator-session.md`
+  `## Per-Turn Log` carries `### Turn 1`, `### Turn 2` and `### Turn 3, continued (after the
+  resume)` and nothing else — checked with `grep -n '^### Turn'`. Turns 3, 4 and 5 have no section
+  in this file.
+- **New instance.** Turn 6 ran (four commits, `f0d9d60`, `b90ea28`, `d270666`, `d90b794`) and has no
+  entry on either surface: no `- Turn 6` bullet on the Circle record, no `### Turn 6` section in the
+  session history.
+- **The masking held exactly as this record predicts, at a new pair of numbers.**
+  `./bin/fusion-state-drift` reports `Circle Turn log surface=6 entries record=6 turns run`,
+  `drift=0`, `verdict=clean`. Six bullets equal six `turn_start` events by coincidence again: the
+  bullets are Turns 1 to 5 plus one continuation, the events are Turns 1 to 6. Part 2 of the fix is
+  therefore confirmed necessary by a second, independent occurrence rather than by the first one
+  only.
+
+Both surfaces remain the orchestrator's to write. The reconciler may write neither, so this pass
+records the state and changes nothing.

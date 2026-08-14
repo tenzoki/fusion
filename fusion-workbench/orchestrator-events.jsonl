@@ -1433,3 +1433,32 @@
 {"ts":"2026-08-14T16:56:23","event":"state_drift","turn":4,"detail":"progress.commits said 21, git counted 23 since d7786eb; Circle Turn log had no Turn 4 entry. Both brought current."}
 {"ts":"2026-08-14T17:00:35","event":"turn_start","turn":5,"detail":"T10 — the four coherence findings Turn 4 left: the roster, the discriminator, Phase 0b.1, the layout tree"}
 {"ts":"2026-08-14T17:00:35","event":"task_start","turn":5,"task":"T10","agent":"coder","detail":"close the two High and two Medium findings from the Turn-3 and Turn-4 reviews"}
+{"ts":"2026-08-14T17:12:43","event":"task_done","turn":5,"task":"T10","agent":"coder","detail":"three findings closed by 9f4cdac, the fourth measured unsound and filed as decision 260814-1915; npm test exit 0"}
+{"ts":"2026-08-14T17:12:43","event":"state_drift","turn":5,"detail":"progress.commits said 23, git counted 25 since d7786eb. Brought current."}
+{"ts":"2026-08-14T18:09:57","event":"session_start","history_file":"shared/history/260813-2345-orchestrator-session.md","detail":"resumed: Circle 260801-1244-curator, mode plan, all 10 tasks done; re-entering Turn 5 at Phase 3"}
+{"ts":"2026-08-14T18:10:30","event":"scope_resolved","turn":5,"detail":"resume: Phase 3 reconciliation + Phase 4 closure for Circle 260801-1244-curator; no execution work remains"}
+{"ts":"2026-08-14T18:11:27","event":"review_start","turn":5,"agent":"coderev","detail":"range d5b71f1..41c224c, 3 commits uncovered by any prior review, plus 3 carried not-opened files from the Turn 4 review"}
+{"ts":"2026-08-14T18:29:22","event":"review_done","turn":5,"agent":"coderev","detail":"4 findings (2 High, 1 Medium, 1 Low); coverage now uncovered=0, carried=none; 3 carried not-opened files all cleared"}
+{"ts":"2026-08-14T18:29:22","event":"reconciliation","turn":5,"detail":"5 records filed (4 defects, 1 decision); 1 stale Status header corrected; Directive verified met on both halves by re-running the instruments"}
+{"ts":"2026-08-14T18:29:22","event":"coherence_review","turn":5,"detail":"verdict review-needed; Artifact<->Grounding flagged (2 open High, no Turn-5 entry in Circle log); Artifact<->Directive OK; Grounding<->Directive OK (19 active decisions, none conflicting)"}
+{"ts":"2026-08-14T18:29:22","event":"gate_hit","turn":5,"detail":"Rebalance gate: Phase 3 verdict review-needed"}
+{"ts":"2026-08-14T18:54:23","event":"gate_response","turn":5,"detail":"user chose Revise Artifact — one more Turn on the four review findings"}
+{"ts":"2026-08-14T18:54:23","event":"rebalance_artifact","turn":5,"detail":"Turn 6: T11 config.test.ts configurable-leaf exclusion; T12 ten stale citations plus five under-named root-anchored rows. Queue rebuild deliberately NOT dispatched: Phase 4 retires a queue whose head names the closing Circle, so a rebuild now would be archived on the closure commit."}
+{"ts":"2026-08-14T18:54:23","event":"turn_start","turn":6,"detail":"T11 + T12, the two High findings and the Medium, dispatched in parallel on disjoint file sets"}
+{"ts":"2026-08-14T18:56:00","event":"state_drift","turn":6,"detail":"Circle Turn log had 5 entries against 6 turns run — the Turn-5 entry was never written because the prior session stopped after its task commit. Entry written; row now clean. progress.commits and progress.turn were already current."}
+{"ts":"2026-08-14T19:11:32","event":"task_done","turn":6,"task":"T12","agent":"coder","detail":"ten citations repointed, five root-anchored rows renamed by the generalised criterion; +160 bytes against the growth bound, 10903 left; npm test exit 0"}
+{"ts":"2026-08-14T19:19:34","event":"task_done","turn":6,"task":"T11","agent":"coder","detail":"config.test.ts compares with project-configurable keys cut from both sides; verified green with maxTurns 12 and red on four perturbation classes"}
+{"ts":"2026-08-14T19:19:34","event":"commit","turn":6,"task":"T11","detail":"f0d9d60"}
+{"ts":"2026-08-14T19:19:34","event":"commit","turn":6,"task":"T12","detail":"b90ea28"}
+{"ts":"2026-08-14T19:19:34","event":"commit","turn":6,"detail":"Turn 5 review and Phase 3 reconciliation records"}
+{"ts":"2026-08-14T19:19:54","event":"review_start","turn":6,"agent":"coderev","detail":"range 41c224c..d270666, the Rebalance repair itself"}
+{"ts":"2026-08-14T19:32:02","event":"review_done","turn":6,"agent":"coderev","detail":"1 High 2 Low; coverage now verdict=covered uncovered=0 over the whole session; both Turn-6 repairs confirmed to reach every instance, 19 shipped citations swept"}
+{"ts":"2026-08-14T19:32:02","event":"task_start","turn":6,"task":"T13","agent":"coder","detail":"CLAUDE.md:30 byte-identity claim falsified by f0d9d60, plus a closing footer that contradicts its own commit"}
+{"ts":"2026-08-14T19:47:50","event":"task_done","turn":6,"task":"T13","agent":"coder","detail":"CLAUDE.md identity clause corrected, closing footer separated from its own commit; npm test exit 0 twice"}
+{"ts":"2026-08-14T19:47:50","event":"commit","turn":6,"task":"T13","detail":"d90b794"}
+{"ts":"2026-08-14T19:47:50","event":"coherence_review","turn":6,"detail":"verdict ok; Artifact<->Grounding 3 filed 2 closed in-Turn 1 open; Artifact<->Directive all four commits close blockers to closure; Grounding<->Directive 0 answered decisions touched"}
+{"ts":"2026-08-14T19:47:50","event":"gate_response","turn":6,"detail":"user chose Continue at the per-Turn Coherence gate"}
+{"ts":"2026-08-14T19:47:50","event":"turn_end","turn":6,"detail":"3 tasks done (T11 T12 T13), 0 errored; 4 commits; 7 issues filed across the Turn, 5 closed within it"}
+{"ts":"2026-08-14T20:07:25","event":"reconciliation","turn":6,"detail":"second Phase-3 pass: both High findings verified closed against the tree; aggregate verdict coherent, no Rebalance recommended"}
+{"ts":"2026-08-14T20:07:25","event":"coherence_review","turn":6,"detail":"verdict coherent; all three edges OK; 26 Artifact-Grounding claims re-derived, 28 of 29 commits on-Directive, 20 active decisions none conflicting"}
+{"ts":"2026-08-14T20:07:25","event":"portfolio_refresh","turn":6,"detail":"circles/260801-1244-curator/_c_circle.md; playmaker log shared/history/260814-2203-playmaker-orchestrator-phase4.md; portfolio at 0 active 0 anticipated; backlog entry radical-simplification renamed to recommended"}

@@ -78,3 +78,29 @@ Filed: `circles/260801-1244-curator/issues/260814-2128_o_the-turn-budget-records
 **After closure, whenever `config.test.ts` is next opened: F2, F3.** Neither blocks anything. F3 is one sentence in a closed record and the reconciler can carry it.
 
 **No release blocker in this range.** No shipped executable changed behaviour. The three prompt and rule edits are line-number digits and consumer-column names; the one test change is a test; the always-on corpus grew 160 bytes against 10 903 of head-room; and the full suite is green over 1 030 tests.
+
+---
+
+## Reconciliation annotation — 2026-08-14 21:53, at HEAD `d90b794`
+
+Added by `reconciler` on the second Phase-3 pass. Findings are not rewritten; each carries the
+state of its own record, verified against the tree.
+
+| Finding | Record | State at HEAD | Evidence |
+|---|---|---|---|
+| F1 High — `CLAUDE.md:30` still calls the root guard config byte-identical to the template | `circles/260801-1244-curator/issues/260814-2128_c_claude-md-still-calls-the-root-guard-config-byte-identical-to-the-template-after-the-same-turn-made-it-false.md` | **resolved** by `d90b794` | The row now reads "the root copy here equals the template outside the top-level keys a project is meant to set for itself, and that is exactly what `config.test.ts` pins: it cuts the keys named in its `PROJECT_SET_KEYS` out of both sides and holds every remaining byte identical. This repository sets one of them, its own Turn budget (`orchestrator.maxTurns`)." Read at HEAD and checked against the two things it claims: `hooks/lib/__tests__/config.test.ts:1266` declares that constant with exactly `["orchestrator"]`, and `diff fusion-guard.json templates/fusion-guard.json` differs on that one line and nothing else. The review's own recommendation was "before closure"; it landed before closure. |
+| F2 Low — the cut helper is exercised by one input shape | `circles/260801-1244-curator/issues/260814-2128_o_the-drift-checks-cut-helper-is-exercised-by-one-input-shape-and-its-last-entry-branch-by-none.md` | **stands open** | `config.test.ts:1266-1373` still carries the four scanner functions with no case that calls them directly; the coverage is still transitive, through the one comparison, on the one shape the file has. This is a coverage gap in a test helper and not a live defect — the review ran both branches by transcription and found both correct — so it is carried forward rather than treated as a closure blocker. |
+| F3 Low — the Turn-budget record's closing footer | `circles/260801-1244-curator/issues/260814-2128_c_the-turn-budget-records-closing-footer-says-fusion-guard-json-was-not-edited-in-the-commit-that-commits-it.md` | **resolved** by `d90b794` | The `Resolved:` footer of `shared/issues/260814-2022_c_*` now separates the two acts: the task edited neither JSON file, and `f0d9d60` nonetheless commits `fusion-guard.json`, where the working-tree line entered version control. `git show f0d9d60 --stat` lists `fusion-guard.json | 1 +` and no template, which is what the corrected sentence says. |
+
+**The review's "recommended sequencing" was followed exactly.** F1 landed before closure; F2 is
+carried as an open record for the next time `config.test.ts` is opened; F3 was taken in the same
+commit as F1 rather than carried, which is cheaper than carrying it and changes nothing the review
+asked for.
+
+**One thing this review's range could not see, added here rather than as a finding against it.**
+`d90b794`, the commit that closes F1, landed after this review's declared
+`**Reviewed-range:** 41c224c..d270666`, so `bin/fusion-review-coverage` reports `uncovered=1` at
+HEAD. That is the cadence rather than an omission by this pass, and it is filed as
+`circles/260801-1244-curator/issues/260814-2153_o_the-commit-that-closes-the-last-reviews-own-high-finding-is-the-one-commit-no-review-opens.md`.
+This pass read `d90b794` in full and verified its one substantive clause against the tree, which is
+not the same as a reviewer having opened it.

@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** active
+**Status:** closed
 **Filed by:** shaper (anticipated-circle mode)
 **Active spec/plan:** circles/260801-1244-curator/planning/260814-0845_c_plan-curator.md
 **Active session history:** shared/history/260813-2345-orchestrator-session.md
@@ -151,6 +151,30 @@ flowchart LR
   Directive met by re-running the instruments, and returned the aggregate Coherence verdict
   `review-needed` on the two open High findings. The user chose to revise the Artifact rather than
   close bounded, which opened Turn 6.
+
+- Turn 6 (session 260813-2345, resumed 260814-2009): commits f0d9d60..d90b794; Coherence verdict
+  `ok` at the per-Turn gate; session history: shared/history/260813-2345-orchestrator-session.md.
+  Three tasks done, none errored. The Turn exists because the Phase-3 verdict came back
+  `review-needed` on two High findings and the user chose to revise the Artifact rather than close
+  bounded. T11 stopped `hooks/lib/__tests__/config.test.ts` pinning this repository's
+  `fusion-guard.json` byte-identical to the template it is supposed to be able to override: the
+  comparison now cuts the keys named in `PROJECT_SET_KEYS` out of both sides, which keeps the drift
+  check over the prose, the key order and the whitespace while admitting the one key the template
+  itself tells a project to set. Verified in both directions, green with `orchestrator.maxTurns`
+  present and red on four perturbation classes. T12 repointed the ten citations `bf9553f` staled,
+  each re-read at HEAD rather than copied from the record's table, and applied the generalised
+  consumer criterion to the five root-anchored rows `9f4cdac` had left under-named; +160 bytes
+  against the growth bound, 10 903 of head-room left. The Turn-6 `coderev` pass confirmed that both
+  repairs reached every instance, sweeping all nineteen citations in shipped text, and filed one
+  High of its own: `CLAUDE.md:30` still called the root guard config byte-identical to the template
+  after `f0d9d60` had falsified both halves of that sentence an hour earlier. T13 closed it, and
+  with it a closing footer that denied editing a file in the commit that committed it. That is the
+  third instance this session of one shape, a commit repairing a mechanism and leaving the prose
+  describing it standing, each found by the next review rather than by the commit that caused it.
+  Three findings stay open by choice and none blocks closure: test coverage for the new JSON cut
+  helper, the non-deterministic full-run failures of the hooks suite that three agents measured
+  independently on three trees, and the structural gap that the commit closing a review's own
+  finding is the one commit that review cannot open.
 
 ## Activation proposal
 
@@ -359,3 +383,50 @@ agrees: the Directive, the Grounding and the spec are current and consistent wit
 making first, because they are cheap and because the planner is the next agent to read both
 documents. Playmaker only proposes. The rename of this record to the active marker and the
 `.active-circle` pointer are the orchestrator's writes, on your confirmation.
+
+
+---
+
+## Closure note
+
+**Closed coherent (`_c_`) on 260814-2200**, session history
+`shared/history/260813-2345-orchestrator-session.md`, closing commit range
+`d7786eb..d90b794` (29 commits over six Turns).
+
+**Phase-3 verdict: `coherent`**, issued at the third reconciliation pass
+(`history/260814-2153-reconciliation.md`) after the two High findings that produced the
+`review-needed` verdict at the first pass were closed and verified against the tree rather than
+against their markers. All three edges OK: 26 Artifact-vs-Grounding claims re-derived, 28 of 29
+commits aiming at the Directive with the one exception already classified orthogonal at the Turn-3
+gate, and 20 active decisions with none conflicting.
+
+**Both halves of the Directive were met and both were proven by running the instruments, not by
+reading the reports.** The `curator` agent exists as fusion's seventeenth, registered across the
+dispatch surfaces, with all three of its invocation shapes reachable. The hard growth bound on the
+always-on rule corpus is armed, with unit tests proving it fires in both directions, and it held
+through three separate rule-file edits this session. The Directive's proof half — the curator's
+first real run against this project's own normative surfaces — proposed 28 tier-1 corrections, the
+user approved all 28 at the gate, and the apply pass landed all 28 with nothing stale or failed. No
+constraint was removed at any tier. The run's verdict on the question the Directive posed is that no
+living decision record supersedes another and that this is structural rather than an omission,
+recorded as `decisions/260814-1332_o_*`.
+
+**What the Circle carries forward.** 21 open defect records in this Circle's store and two open
+decisions, none of them blocking. The decisions are
+`decisions/260814-1332_o_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`,
+which the curator's own proof run raised, and
+`decisions/260814-1915_o_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`,
+which Turn 5 filed rather than closing a finding it had measured unsound. The defect records are they are the ordinary yield of six review passes over a corpus this
+size. Two are worth naming because they concern the instruments rather than the Artifact. The hooks
+suite fails non-deterministically on repeated full runs including on clean HEAD, measured by three
+agents on three trees with three different failure shapes, one of them a file that never executed
+(`shared/issues/260814-2118_o_*`). And `bin/fusion-review-coverage` reports one uncovered commit,
+`d90b794`, which is the commit that closed the last review's own High finding and therefore lies
+after it by construction; the gap is structural and is filed as
+`issues/260814-2153_o_*` rather than papered over.
+
+**One process failure of this session belongs in the record.** The prior session stopped after
+Turn 5's task commit, before its incremental review ran, and the resume re-entered at Phase 3 and
+dispatched the reconciler without asking whether the Turn it skipped past had been reviewed. Three
+commits were sitting outside every review's declared range at that moment, and only
+`bin/fusion-review-coverage` surfaced it. Filed as `issues/260814-2033_o_*`.

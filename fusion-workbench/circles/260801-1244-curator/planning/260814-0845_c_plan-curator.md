@@ -356,3 +356,30 @@ this entry records what was re-checked rather than assumed.
 - **The second open question is still open** and still does not block closure: whether the hard
   dependency on `260801-1244-rule-provenance-header` survives on grounds other than the retired
   partition. Nothing in the six new commits bears on it.
+
+---
+
+**Third pass, 2026-08-14 at HEAD `d90b794` (reconciler, `code` domain, second Phase-3 pass).** The
+second pass returned `review-needed`, the user chose to revise the Artifact at the Rebalance gate,
+and Turn 6 landed four commits. Status and marker unchanged — Complete and `_c_`. None of the four
+commits carries a plan step; all four repair findings against work the plan already delivered.
+
+- **The one condition the second pass named against this plan is discharged.** That entry recorded
+  the full suite green at HEAD and red in the working tree, on an uncommitted `orchestrator.maxTurns`
+  line. `f0d9d60` admits the key: `hooks/lib/__tests__/config.test.ts:1266` declares
+  `PROJECT_SET_KEYS = ["orchestrator"]` and cuts it from both sides of the comparison, and the same
+  commit commits the line. `git status --short fusion-guard.json` is empty and
+  `cd hooks && npm test` run by this pass is **49 files, 1 030 tests, all passed**. The tree and
+  HEAD now agree.
+- **The bound was re-run a third time rather than carried.**
+  `npx vitest run lib/__tests__/rules-emission-golden.test.ts`: 15 of 15 passing, no `RULE-TEXT
+  BUDGET` report for any role. Turn 6's edit to `rules/fusion-workbench-conventions.md` moved it
+  52 964 → 53 124 bytes and the fixture was regenerated in the same commit (`b90ea28`), leaving
+  10 903 of head-room by the Turn-6 review's arithmetic, which this pass did not re-derive.
+- **The suite's own reliability is a known open record, and one green run is not a claim about
+  every run.** `shared/issues/260814-2118_o_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md`
+  records three agents meeting three different failure shapes under load, on clean HEAD. This pass's
+  run was green; nothing beyond that is asserted from it.
+- **The second open question is still open**, unchanged by all four commits: whether the hard
+  dependency on `260801-1244-rule-provenance-header` survives on grounds other than the retired
+  partition. It still does not block closure.

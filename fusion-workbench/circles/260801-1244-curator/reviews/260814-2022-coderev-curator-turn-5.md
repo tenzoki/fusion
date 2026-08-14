@@ -99,3 +99,25 @@ Sixteen open defect records now stand in the Circle and its shared reach after t
 **Cleanup: F3, F4.** Both are one small edit in an always-on file, so both want the golden regenerated in whatever commit carries them, and they should travel together for that reason.
 
 **Not a release blocker in this range.** Nothing in `d5b71f1..41c224c` changes the behaviour of any shipped executable, no test moved, and the always-on corpus grew 415 bytes against 11 063 of head-room. The red suite is a working-tree condition that predates none of these commits and was caused by none of them.
+
+---
+
+## Reconciliation annotation — 2026-08-14 21:53, at HEAD `d90b794`
+
+Added by `reconciler` on the second Phase-3 pass. Findings are not rewritten; each carries the
+state of its own record, verified against the tree.
+
+| Finding | Record | State at HEAD | Evidence |
+|---|---|---|---|
+| F1 High — ten stale citations | `circles/260801-1244-curator/issues/260814-2022_c_ten-citations-that-bf9553f-staled-still-stand-and-six-of-them-are-in-the-table-the-fix-corrected.md` | **resolved** by `b90ea28` | All ten targets read at HEAD by this pass: `agents/orchestrator.md:434` is the planner dispatch, `:449` the taskplanner dispatch, `:495` the `**Deliverable language:**` halt, `:706` the reconciler dispatch, `:907` the playmaker dispatch, `:1454` the `editor` row of the routing table; `agents/shaper.md:89` is the marker-rename sentence and `:90` the `Promoted:` append. A repo-wide sweep for `agents/(orchestrator\|shaper)\.md:[0-9]` outside the workbench returns 16 citing lines and every one resolves. |
+| F2 High — `config.test.ts` pins the guard config, suite red | `shared/issues/260814-2022_c_this-repository-cannot-set-its-own-turn-budget-because-a-test-pins-fusion-guard-json-to-the-template.md` | **resolved** by `f0d9d60` (option 1 of the three the record named) | `hooks/lib/__tests__/config.test.ts:1266` declares `PROJECT_SET_KEYS = ["orchestrator"]` and `withoutProjectSetKeys` cuts it from both sides of the comparison. `fusion-guard.json` is committed carrying `"orchestrator": { "maxTurns": 12 }` and `git status --short fusion-guard.json` is empty. `diff fusion-guard.json templates/fusion-guard.json` shows that one line and nothing else. `cd hooks && npm test` run by this pass: **49 files, 1 030 tests, all passed**, 71 s. |
+| F3 Medium — five root-anchored rows under-name their consumers | `circles/260801-1244-curator/issues/260814-2022_c_five-of-the-eight-root-anchored-rows-still-under-name-their-consumers-by-the-criterion-the-same-commit-wrote.md` | **resolved** by `b90ea28` | The Turn-6 review re-derived the whole block from `hooks/*.ts`, `hooks/lib/*.ts` and `bin/*` rather than from the record, and reached nine rows against the commit's eight — with `plane.config.yaml` correctly left alone. This pass did not re-run that sweep and does not restate its result as its own. |
+| F4 Low — `**Initiated by:**` has no termination rule | `circles/260801-1244-curator/issues/260814-2022_o_initiated-by-carries-quoted-user-dialogue-and-no-surface-bounds-it-to-one-line.md` | **stands open** | `README-agents.md:55` still enumerates the parameters whose values may run past their own line as a closed set of two, `**Draft:**` and `**Confirmed operations:**`. `**Initiated by:**` is not among them and its row at `:68` carries no span note. Unchanged by all four Turn-6 commits. |
+
+**On the review's own sequencing.** It asked for F2 before the closure commit and F1 before the next
+release; the Rebalance gate took both in one Turn, so neither is carried forward.
+
+**One cross-cutting observation of this review is now measurable and was left standing on purpose.**
+The line-number citation form has produced findings in four consecutive Turns and still has no gate;
+`shared/issues/260808-0030_o_*` remains the class record, and this pass added nothing to it, because
+the class is unchanged and a fifth annotation would not make it truer.

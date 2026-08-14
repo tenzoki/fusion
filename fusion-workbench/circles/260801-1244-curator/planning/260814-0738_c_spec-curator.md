@@ -447,3 +447,24 @@ seven still hold, and C7 gained a surface it did not have at the first pass.
   `## Grounding snapshot` still stands, so
   `circles/260801-1244-curator/issues/260814-0828_o_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md`
   stays open for the orchestrator's Phase-4 write.
+
+---
+
+**Third pass, 2026-08-14 at HEAD `d90b794` (reconciler, `code` domain, second Phase-3 pass).**
+Status and marker unchanged — Complete and `_c_`. Turn 6's four commits touch no capability
+criterion; they repair findings against surfaces the capabilities had already delivered. All seven
+capabilities re-checked, all seven still hold.
+
+- **C10 re-run a third time rather than re-read.**
+  `npx vitest run lib/__tests__/rules-emission-golden.test.ts` passes 15 of 15 with no budget report,
+  and the hard assertion is still at `hooks/lib/__tests__/rules-emission-golden.test.ts:994-995`.
+  Turn 6's own rule-file edit was charged against the bound in the same commit that made it
+  (`b90ea28` regenerates `hooks/lib/__tests__/fixtures/rules-emission.golden` for +160 bytes), which
+  is the behaviour C10 was armed to produce.
+- **C11's residual is unchanged and remains a residual.** The corpus-wide zero-superseded claim is
+  still filed as
+  `circles/260801-1244-curator/decisions/260814-1332_o_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`,
+  still open, still the spec's own second admissible form of the answer.
+- **The `## User Decisions Pending` lag still stands**, so
+  `circles/260801-1244-curator/issues/260814-0828_o_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md`
+  stays open for the orchestrator's Phase-4 write. Nothing in Turn 6 reached either surface.

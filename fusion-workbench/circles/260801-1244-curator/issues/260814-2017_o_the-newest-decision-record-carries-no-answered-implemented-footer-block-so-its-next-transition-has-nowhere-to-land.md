@@ -30,3 +30,14 @@ gives and the three sibling records carry.
 **Filed by:** reconciler, session `shared/history/260813-2345-orchestrator-session.md`, Circle
 `260801-1244-curator`. Filed in the Circle's own store per the Origin Rule: the record it describes
 was filed by this Circle's Turn 5.
+
+---
+**Reconciliation, 2026-08-14 21:53, at HEAD `d90b794` — stands unchanged.**
+
+`circles/260801-1244-curator/decisions/260814-1915_o_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`
+still ends with the last line of its `## Recommendation` paragraph. No `---` separator and no
+`Answered: / Implemented: / Deferred: / Superseded by:` block. Read at HEAD, not inferred.
+
+The contrast case is on disk beside it: `circles/260801-1244-curator/decisions/260814-1332_o_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
+closes with the separator and all four empty lines, which is the shape this record asks for. None of
+the four commits since the record was filed touched either decision file.

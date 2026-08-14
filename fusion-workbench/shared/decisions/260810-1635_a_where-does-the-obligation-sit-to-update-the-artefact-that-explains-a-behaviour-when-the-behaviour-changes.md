@@ -53,3 +53,35 @@ currently stated in more than one shipped surface, pick the authoring home for e
 rest with citations, and let the existing duplication gates carry what remains. The five instances
 this record counted are the working list to start from. Options 1 and 2 remain available as
 supplements later, but they are not the answer and must not be recorded as one.
+
+---
+**Reconciliation evidence, 2026-08-14 21:53, at HEAD `d90b794` (reconciler, Circle
+`260801-1244-curator`). A sixth instance, and one the answer would have caught. Marker unchanged at
+`_a_`: the answer is recorded and not yet realised.**
+
+`f0d9d60` changed how `fusion-guard.json` is pinned against its template and committed a key into
+the repository's copy. `CLAUDE.md:30` went on describing the mechanism that commit replaced,
+word for word — "the root copy here is byte-identical to the template (pinned by
+`config.test.ts`)" — in a Circle whose Directive is that a project's normative surfaces match its
+recorded history. It was caught by the Turn-6 `coderev` pass and repaired by `d90b794`
+(`circles/260801-1244-curator/issues/260814-2128_c_claude-md-still-calls-the-root-guard-config-byte-identical-to-the-template-after-the-same-turn-made-it-false.md`).
+
+Two things this instance adds to the five already counted, neither of which changes the answer:
+
+1. **It is the one artefact kind option 1 was weakest on, caught by option 1 anyway.** The reviewer
+   found it, on the axis "which shipped text describes the mechanism this commit changed", which
+   none of the three preceding passes had asked. That does not promote option 1 — the record's own
+   objection stands, that a review can be outrun — but it is worth recording that the class is
+   findable when the question is asked at the commit rather than at the finding.
+2. **The recorded answer would have prevented it.** The claim "the root guard config equals the
+   template" was stated in `CLAUDE.md` and enforced in `hooks/lib/__tests__/config.test.ts`, which
+   is a claim in two places with no citation between them. Under the answer's rule the test is the
+   authoring home and `CLAUDE.md` cites it. The repair as landed does roughly that: the corrected
+   row names `PROJECT_SET_KEYS` as the one constant where the exemption is declared, instead of
+   restating the rule.
+
+**Note on this record's own header.** `**Status:**` still reads `open` while the filename marker is
+`_a_`. Not corrected here: it is one member of the population measured in
+`shared/issues/260812-1232_o_thirty-four-of-seventy-four-decision-records-carry-a-status-header-that-contradicts-their-filename-marker.md`,
+re-measured at 35 of 86 on 2026-08-14, and repairing members one at a time moves that measurement
+without closing the record.
