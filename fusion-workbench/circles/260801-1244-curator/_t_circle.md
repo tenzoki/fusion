@@ -94,6 +94,16 @@ flowchart LR
   judged the Directive's build half met and its proof half not begun: the C11 validation run against
   the project's own decision corpus has not been performed and no curator run file exists.
 
+- Turn 3 (session 260813-2345): commits 7421f51..2a8a2f7; Coherence verdict recorded at the
+  per-Turn gate; session history: shared/history/260813-2345-orchestrator-session.md. One task done,
+  one blocked. T6 closed the three Turn-2 defects, correcting prose to match the mechanism rather
+  than the reverse, with a measured net effect of zero bytes on the always-on corpus. T7, the C11
+  proof run, could not start: `Agent(fusion:curator)` is not reachable from the session that built
+  the curator, because a session's agent roster is read at start from the installed plugin copy and
+  pinned for its whole life. Filed as
+  `issues/260814-1210_*_the-proof-run-cannot-be-dispatched-from-the-session-that-built-the-agent.md`.
+  The user chose to update the install and perform C11 in a fresh session; the Circle stays active.
+
 ## Activation proposal
 
 **Als nächster Circle gereiht, aber nicht zur Aktivierung vorgeschlagen — playmaker-Lauf
