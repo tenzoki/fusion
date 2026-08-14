@@ -5,7 +5,7 @@
 **Status:** active
 **Filed by:** shaper (anticipated-circle mode)
 **Active spec/plan:** circles/260801-1244-curator/planning/260814-0738_o_spec-curator.md
-**Active session history:** (none yet)
+**Active session history:** shared/history/260813-2345-orchestrator-session.md
 
 ---
 
