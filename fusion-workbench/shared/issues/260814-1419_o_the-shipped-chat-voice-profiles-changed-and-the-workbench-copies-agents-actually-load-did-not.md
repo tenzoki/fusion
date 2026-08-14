@@ -1,0 +1,45 @@
+The shipped chat-voice profiles changed and the workbench copies agents actually load did not, so the change is inert in this repository
+
+---
+Commit `ae21c87` tightened the length caps in `stilwerk/chat-voice-de.yaml` and `stilwerk/chat-voice-en.yaml`. `bin/fusion-rules` does not emit those files. It emits `./fusion-workbench/stilwerk/<stem>-<lang>.yaml` (`bin/fusion-rules:296-321`, `emit_voice_profile`), and the workbench copies were not touched. Every agent dispatched in this repository since `ae21c87` — including the curator run in the same session — has loaded the old caps. `/fusion:setup` will not repair it: its copy is idempotent, and it copies from the *installed* plugin at `$FUSION_PLUGIN_ROOT`, not from the work tree.
+
+---
+**Found by:** coderev, Turn-3 incremental review of `5c843e6..0301909`, review file `circles/260801-1244-curator/reviews/260814-1419-coderev-curator-turn-3.md`.
+**Owner:** `coder`, with a decision to make first — see *Two fixes, and they are not equivalent*.
+**Severity:** Medium.
+**Filed in the shared store** per the Origin Rule: commit `ae21c87` was made during Circle `260801-1244-curator`'s Turn 3 but was not caused by its Directive, which is the curator agent and the always-on growth bound.
+**Cross-references:** `fusion-workbench/portfolio.md` `## Warnings` → *"Standing, each verified against disk this run"* → `chat-voice-caps-tightened-in-the-template-only` (playmaker run 260814-0823 raised this while the edit was still uncommitted; committing it did not clear it); `circles/260801-1244-curator/history/260814-1332-curator-run.md` candidate C07 (the curator measured the divergence at 13:32 and classed it as outside its three surfaces); `shared/issues/260814-1001_o_three-skill-bodies-embed-german-while-skill-bodies-are-an-english-surface.md` (a neighbouring shipped-vs-consumed gap).
+
+**Verified 2026-08-14 at HEAD `0301909`:**
+
+```
+$ for f in chat-voice-de.yaml chat-voice-en.yaml default-voice-de.yaml default-voice-en.yaml; do
+    diff -q stilwerk/$f fusion-workbench/stilwerk/$f; done
+chat-voice-de.yaml     plugin=7358  workbench=7353  DIVERGED
+chat-voice-en.yaml     plugin=6800  workbench=6801  DIVERGED
+default-voice-de.yaml  plugin=13417 workbench=13417 IDENTICAL
+default-voice-en.yaml  plugin=10438 workbench=10438 IDENTICAL
+```
+
+The two long-form profiles are byte-identical, so the divergence is exactly what `ae21c87` wrote and nothing older.
+
+```
+$ bin/fusion-rules curator | grep voice
+./fusion-workbench/stilwerk/chat-voice-de.yaml
+./fusion-workbench/stilwerk/default-voice-en.yaml
+```
+
+The emitted path is the workbench copy. Its C04 entry still reads *"Gate-Prompts bis 8 Zeilen, Chat-Antworten bis 12 Zeilen"*; the shipped copy reads 6 and 8.
+
+**Timeline, which shows setup is not the remedy.** `ae21c87` committed at 13:05. `/fusion:setup` re-ran at 13:11 — `fusion-workbench/.fusion-setup` moved to `{"setup_at":"2026-08-14T13:11:08+0200",…,"plugin_version":"8.2.0"}` in commit `0301909`. The workbench profiles are still the old ones. Two reasons compound: setup skips files that already exist, and even a forced copy would bring `~/.fusion/stilwerk/`, which is the 8.2.0 tarball and not this work tree.
+
+**Why it is worth a record rather than a `cp`.** The class is general, not specific to these two files. Every asset `/fusion:setup` copies into the workbench — the four `stilwerk/` profiles, `monitor`, `templates/plane.config.yaml` — is edited in the work tree and consumed from the workbench, with no mechanism that notices when the two disagree. `CLAUDE.md` `## Conventions` documents the work-tree preference for `bin/fusion-rules`, `bin/fusion-paths` and `bin/fusion-source-root` precisely because a stale installed copy is a known failure here; the copied assets have no equivalent and no warning. Copying these two files closes today's instance and leaves the mechanism that produced it.
+
+**Two fixes, and they are not equivalent.**
+
+1. **Make `bin/fusion-rules` prefer the work tree for `stilwerk/` too, under `bin/fusion-plugin-cwd`,** the way it already prefers the work-tree `rules/`. Smallest change consistent with an existing, documented convention. Note that whether the work-tree preference extends further is part (c) of `shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`, which is deliberately unanswered — so this route needs that decision first.
+2. **Add a divergence check.** A test or a Setup-step comparison that fails when a copied asset differs from its shipped source. Catches every asset, not just these two, and needs no decision. Costs a new gate to maintain.
+
+**One thing that is not a fix: reverting `ae21c87`.** Whether the caps should be 6/8 or 8/12 is a separate question, filed as `shared/issues/260814-1419_o_the-tightened-chat-profile-caps-contradict-the-length-section-of-the-rule-that-owns-them.md`.
+
+**Bookkeeping gap noticed alongside it, recorded here rather than filed separately.** `ae21c87` is attributed to no task in any session record. `grep -rn ae21c87 fusion-workbench/` returns five hits and every one of them is the curator citing it as *the HEAD it read against*, never as a change this session made. It has no `commit` event in `orchestrator-events.jsonl`, no row in `orchestrator-live.md` (its two neighbours `2a8a2f7` and `e101761` both have one), and no mention in the Circle's Turn log or the session history. A shipped-asset change inside a Turn loop with no task, no event and no entry is how a change of this shape stops being reviewable.

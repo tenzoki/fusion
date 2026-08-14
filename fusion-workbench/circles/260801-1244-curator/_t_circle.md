@@ -104,6 +104,19 @@ flowchart LR
   `issues/260814-1210_*_the-proof-run-cannot-be-dispatched-from-the-session-that-built-the-agent.md`.
   The user chose to update the install and perform C11 in a fresh session; the Circle stays active.
 
+- Turn 3, continued (session 260813-2345, resumed 260814-1311): commits e101761..0301909. T7, the
+  C11 proof run, ran to completion after the install was updated to 8.2.0 and `fusion:curator`
+  became reachable. The survey proposed 28 corrections, all tier 1, across `CLAUDE.md`, nineteen
+  shared decision records and three project rule files; the user approved all of them at the gate
+  and the apply pass landed all 28 with nothing skipped, stale or failed. No constraint was removed
+  at any tier. T8 followed from it: the rule-file edits moved
+  `rules/fusion-workbench-conventions.md` by 522 bytes, so the golden fixture was regenerated
+  through its own supported path, and the growth bound armed in T4 held with roughly 11 500 bytes
+  remaining. The survey's verdict on the Directive's question is that no living decision record
+  supersedes another and that this is structural, filed as
+  `decisions/260814-1332_o_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`.
+  Run file: `circles/260801-1244-curator/history/260814-1332-curator-run.md`.
+
 ## Activation proposal
 
 **Als nächster Circle gereiht, aber nicht zur Aktivierung vorgeschlagen — playmaker-Lauf

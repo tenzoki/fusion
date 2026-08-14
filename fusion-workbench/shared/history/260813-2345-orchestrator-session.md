@@ -182,3 +182,40 @@ superseded). Detected domain `code` (125 source files against 21 data files, cou
 The work queue at `fusion-workbench/tasklist.md` reads **stale**: its head records no Circle, while
 `260801-1244-curator` is active. This session works from the queue in `agentstate.yaml`, so the file
 is not on its path; it should be rebuilt before anything consumes it as current.
+
+### Turn 3, continued (after the resume)
+
+- Tasks attempted: T7 (curator, the C11 proof run), T8 (coder, the golden-fixture regeneration T7 made necessary)
+- Tasks completed: T7, T8
+- Commits: `1a36fe4` (the 28 corrections plus the regenerated fixture), `0301909` (the run file, the open decision, the two defect records, the coder's history)
+- Review findings: none yet — the incremental review for this Turn has not run
+- Circuit breaker status: OK
+- Coherence: not yet evaluated for this Turn
+
+**What T7 established.** The curator surveyed the three normative surfaces of fusion's own
+repository and proposed 28 corrections, every one of them tier 1: a checkable statement about the
+present that a command falsified. Four sat in `CLAUDE.md`, nineteen in shared decision records, five
+in project rule files. The user approved all 28 at the gate. Thirteen candidates were reported and,
+by the agent's own rule, never offered for approval; they remain unapplied.
+
+The decision-record half was uniformly stale citation: bracket markers and store paths from before
+the v4 container layout, and literal state markers that died at the cited record's first transition.
+They now carry the wildcard form the citation convention defines.
+
+**The answer to the Directive's question.** Across the citation-linked pairs the selection rule
+reached, no living decision record supersedes another, and four of them say as much in their own
+text. That none of the 84 records carries the `_s_` marker is structural rather than accidental:
+this project retires a decision by deleting its implementation at a user gate, not by filing a
+superseding record. The removal of the protected-path half on 260812 left roughly thirteen
+implemented records in that state. The marker vocabulary has no state for it, and the curator filed
+the question as an open decision rather than answering it itself.
+
+**What the staleness check caught.** On the first apply attempt a hand-transcribed before-text did
+not match the file, and the run aborted before writing anything. The agent then extracted every
+before/after string programmatically from the ledger; all 32 substitutions across the 28 entries
+matched their file exactly once. The error was the agent's own transcription, not drift on disk —
+git HEAD was unchanged between the two passes.
+
+**Bookkeeping.** The state file, this history and the Circle's Turn log all froze again across the
+two commits above and were brought current afterwards, prompted by the drift check that rides the
+commit. Recorded as a `state_drift` event.

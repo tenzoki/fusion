@@ -1409,3 +1409,10 @@
 {"ts":"2026-08-14T11:18:21","event":"task_start","turn":3,"task":"T7","agent":"curator","detail":"C11 proof run — curator survey mode against this project's normative surfaces"}
 {"ts":"2026-08-14T11:44:36","event":"gate_response","turn":3,"task":"T7","agent":"user","detail":"curate gate: apply all 28 tier-1 entries"}
 {"ts":"2026-08-14T11:49:30","event":"task_start","turn":3,"task":"T8","agent":"coder","detail":"regenerate rules-emission golden fixture after the curator's rule-file edits"}
+{"ts":"2026-08-14T11:56:10","event":"task_done","turn":3,"task":"T7","agent":"curator","detail":"28 tier-1 corrections applied, none stale or failed; commit 1a36fe4, records 0301909"}
+{"ts":"2026-08-14T11:56:10","event":"task_done","turn":3,"task":"T8","agent":"coder","detail":"golden fixture regenerated, npm test exit 0, growth bound held"}
+{"ts":"2026-08-14T11:56:10","event":"commit","turn":3,"task":"T7","detail":"1a36fe4 fix(normative): 28 claims corrected across three surfaces"}
+{"ts":"2026-08-14T11:56:10","event":"commit","turn":3,"task":"T7","detail":"0301909 chore(records): ledger, one open decision, two defects"}
+{"ts":"2026-08-14T11:56:10","event":"state_drift","turn":3,"detail":"progress.commits said 15, git counted 17 since d7786eb; the Circle Turn log and the session history had no entry for the resumed part of Turn 3. All three brought current."}
+{"ts":"2026-08-14T12:04:31","event":"session_start","history_file":"shared/history/260813-2345-orchestrator-session.md","detail":"setup re-run mid-session; user chose to continue, session state and queue untouched"}
+{"ts":"2026-08-14T12:06:32","event":"review_start","turn":3,"agent":"coderev","detail":"range 5c843e6..HEAD, 6 commits, 44 files, plus 10 carried not-opened files from the Turn-2 review"}
