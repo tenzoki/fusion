@@ -419,7 +419,7 @@ Proceed only after user confirms. Emit `scope_resolved` event and **REFRESH DASH
 
 1. Emit `shaper_start` event. **REFRESH DASHBOARD** — show `[SHAPING] <topic>`.
 2. Invoke `shaper` with the user's raw request.
-3. The shaper will involve the user in decisions via `AskUserQuestion`. **Do not intercept or shortcut these interactions** — the shaper's user involvement is the whole point.
+3. **Relay the shaper's clarification rounds.** A dispatched shaper does not receive `AskUserQuestion`; it returns a batch of questions with options and stops. Put each batch to the user yourself and re-dispatch with their answers, by the same relay **Re-sharpening an anticipated Circle (shaper portfolio-activation)** spells out for its own dispatch. Do not answer a round on the user's behalf and do not shortcut one — the shaper's user involvement is the whole point.
 4. When the shaper returns, read the spec file it produced.
 5. Emit `shaper_done` event.
 6. **Evaluate design diagrams (advisory).** If the spec contains any ` ```mermaid ` block, dispatch `conceptrev` on the spec file. Emit `conceptrev_start` then `conceptrev_done` events. Read its verdict (clean / acceptable / tangled) and findings. If the spec has no diagram, skip this step.

@@ -55,9 +55,9 @@ fusion-workbench/
 │
 │   # ── Root-anchored. The hooks, the monitor and the bin/ helpers read these ──
 │   # ── HERE, at fixed root-relative paths. Do not move them.               ──
-├── agentstate.yaml                     # bin/monitor
-├── orchestrator-live.md                # bin/monitor
-├── orchestrator-events.jsonl           # bin/monitor
+├── agentstate.yaml                     # bin/monitor, hooks/lib/state-drift.ts, hooks/lib/review-coverage.ts, hooks/lib/churn.ts, hooks/lib/staging-drift.ts
+├── orchestrator-live.md                # bin/monitor, hooks/lib/churn.ts, hooks/lib/staging-drift.ts
+├── orchestrator-events.jsonl           # bin/monitor, hooks/lib/state-drift.ts, hooks/lib/churn.ts, hooks/lib/staging-drift.ts
 ├── .guard-state/                       # bin/monitor, hooks/lib/events.ts, hooks/lib/guard-state-file.ts
 ├── .commit-lock/                       # bin/fusion-commit-lock (created and removed per commit)
 ├── .session-marker                     # bin/fusion-session-mark
@@ -66,7 +66,7 @@ fusion-workbench/
 └── .plane-outbox.jsonl                 # bin/fusion-plane (deferred pushes; replayed on the next reconcile)
 ```
 
-**The root-anchored surfaces are not negotiable.** Each is read at a fixed root-relative path by the consumer named beside it in the tree, and none of those consumers has a fallback path — relocating one into a Circle or into `shared/` breaks it silently.
+**The root-anchored surfaces are not negotiable.** Each is bound to a fixed root-relative path by every consumer named beside it in the tree, and none of those consumers has a fallback path — relocating one into a Circle or into `shared/` breaks it silently. The column names a consumer that only *names* the path, in an exclusion or classification list, next to one that reads the file: what breaks on a move is the same dependency either way.
 
 They are root-anchored because none of them belongs to a unit of work. `agentstate.yaml`, `orchestrator-live.md` and `orchestrator-events.jsonl` are session state, and a session may span Circles. `.guard-state/` counters are project-wide. `.commit-lock/` guards the project's git index, which no single Circle owns. `.session-marker` answers "is an orchestrator already running in this project", which is meaningless scoped to a Circle. This placement is what makes the guarantee "hooks behave unchanged across the layout" structural rather than promised.
 
