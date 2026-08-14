@@ -1462,3 +1462,6 @@
 {"ts":"2026-08-14T20:07:25","event":"reconciliation","turn":6,"detail":"second Phase-3 pass: both High findings verified closed against the tree; aggregate verdict coherent, no Rebalance recommended"}
 {"ts":"2026-08-14T20:07:25","event":"coherence_review","turn":6,"detail":"verdict coherent; all three edges OK; 26 Artifact-Grounding claims re-derived, 28 of 29 commits on-Directive, 20 active decisions none conflicting"}
 {"ts":"2026-08-14T20:07:25","event":"portfolio_refresh","turn":6,"detail":"circles/260801-1244-curator/_c_circle.md; playmaker log shared/history/260814-2203-playmaker-orchestrator-phase4.md; portfolio at 0 active 0 anticipated; backlog entry radical-simplification renamed to recommended"}
+{"ts":"2026-08-14T20:08:03","event":"session_end","turn":6,"detail":"Complete — Circle 260801-1244-curator closed coherent. 6 Turns, 13 tasks, 30 commits, 0 agent errors, 5 human gates."}
+{"ts":"2026-08-14T20:41:23","event":"session_start","history_file":"shared/history/260814-2225-orchestrator-release.md","detail":"release v8.2.0, mode custom"}
+{"ts":"2026-08-14T20:41:23","event":"scope_resolved","detail":"release fusion v8.2.0: plugin.json already at 8.2.0; tag HEAD, bump marketplace 8.1.0 to 8.2.0 and fix its stale 16-agent description, refresh two FUSION_REF pin examples"}
