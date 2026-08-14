@@ -189,6 +189,30 @@ A single concise summary, action-first per `rules/user-facing-output.md`:
 - Archive: files moved (count) into `<archive folder>` / nothing to archive
 - CLAUDE.md: lines added / updated / pruned
 - Activity log: updated
+- Normative surfaces: the date of the last consolidation run, or that none has run, followed by the current size in bytes of the decision records, the project's own rule files, and `CLAUDE.md`
+
+**Where the consolidation line comes from.** It is a read-only measurement. It dispatches nothing, writes nothing, and runs under `--dry-run` exactly as it does on a full run. Cleanup never consolidates; `/fusion:curate` is the surface that does, and naming that command for the user here is the one deliberate exception to "perform the work, don't name the command" at the top of this file — a pass that rewrites binding rules is a thing the user asks for, not a thing a wrap-up does on their behalf.
+
+```bash
+# The most recent curator run file across every directory $SCAN_HISTORY names.
+# Sort on the filename, not the whole path: run files are timestamped
+# YYMMDD-HHMM, and a path sort would order by store directory first.
+LAST_RUN="$(for d in $(printf '%s\n' "$SCAN_HISTORY"); do
+  find "$WORKBENCH/$d" -mindepth 1 -maxdepth 1 -name '*-curator-run.md' 2>/dev/null
+done | awk -F/ '{ print $NF "\t" $0 }' | sort | tail -1 | cut -f2)"
+
+# The three surfaces, in bytes. `find -exec cat {} +` runs nothing when nothing
+# matches, so an empty or absent store contributes zero instead of hanging.
+DECISION_BYTES="$(for d in $(printf '%s\n' "$SCAN_DECISIONS"); do
+  find "$WORKBENCH/$d" -mindepth 1 -maxdepth 1 -name '*.md' -exec cat {} + 2>/dev/null
+done | wc -c)"
+RULE_BYTES="$(for d in ./rules ./.claude/rules; do
+  [ -d "$d" ] && find "$d" -maxdepth 1 -name '*.md' -exec cat {} + 2>/dev/null
+done | wc -c)"
+CLAUDE_MD_BYTES="$( [ -f CLAUDE.md ] && wc -c < CLAUDE.md || echo 0 )"
+```
+
+Read the date out of `$LAST_RUN`'s filename — its leading `YYMMDD-HHMM` — and report it with the three totals. The two rule directories are relative to the project root, where Step 0 left you, and both are optional: a project shipping neither reports zero for that surface, which is a measurement rather than a failure. **When `$LAST_RUN` is empty, say that no consolidation has run on this project.** Do not report an absent run as a zero or an old date — a project that has never consolidated and a run that found nothing to change are different facts, and only the first is a reason to run `/fusion:curate`.
 
 End with anything that needs the user's attention (a rejected push, a flagged reconcile discrepancy, conflicts). If everything succeeded cleanly, the first line is "Session cleaned up — nothing needs your attention."
 

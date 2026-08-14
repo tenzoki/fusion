@@ -1380,3 +1380,6 @@
 {"ts":"2026-08-14T07:48:28","event":"task_done","turn":1,"task":"T1","agent":"coder","detail":"6ba9d77; npm test exit 0, 1023 tests"}
 {"ts":"2026-08-14T07:48:37","event":"task_start","turn":1,"task":"T2","agent":"coder","detail":"skills/curate/SKILL.md + three registrations, plan step 3"}
 {"ts":"2026-08-14T08:01:49","event":"task_done","turn":1,"task":"T2","agent":"coder","detail":"npm test exit 0, 1024 tests; 2 findings filed to shared"}
+{"ts":"2026-08-14T08:02:04","event":"commit","turn":1,"task":"T2","detail":"44b9967 — /fusion:curate skill"}
+{"ts":"2026-08-14T08:02:04","event":"task_start","turn":1,"task":"T3","agent":"coder","detail":"skills/cleanup/SKILL.md staleness line, plan step 4"}
+{"ts":"2026-08-14T08:11:17","event":"task_done","turn":1,"task":"T3","agent":"coder","detail":"npm test exit 0; resolver emits both new keys"}

@@ -160,7 +160,7 @@ Step 5 is last because the arming baseline is taken from the corpus as this Circ
    - Dependencies: step 2
    - Acceptance: `cd hooks && npm test` passes; `bin/fusion-paths curate` exits 0 with no stderr.
 
-4. **Give `/fusion:cleanup` the staleness line**
+4. [DONE] **Give `/fusion:cleanup` the staleness line**
    - Executor: `coder`
    - Files: `skills/cleanup/SKILL.md`
    - Changes: one read-only line in Step 8's report. It reads the most recent curator run file across every directory `$SCAN_HISTORY` names, reports its date, and reports the current byte totals of the three surfaces: the decision records under `$SCAN_DECISIONS`, the project-owned rule files under `./rules/` and `.claude/rules/`, and `CLAUDE.md`. Where no curator run file exists it says so. Naming `$SCAN_HISTORY` and `$SCAN_DECISIONS` in the body extends the skill's derived key set, which `bin/fusion-paths` picks up with no change. Cleanup dispatches nothing and gains no step.
