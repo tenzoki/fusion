@@ -157,3 +157,28 @@ in one working session.
 - **Circuit breaker status:** OK. Two tasks resolved against three issues created — the Turn-1
   ratio was three against eleven, so the net-negative row has now had one qualifying Turn and one
   non-qualifying one, and does not trip.
+
+## Resume (session 260814-1311)
+
+The session was interrupted after Turn 3's second commit and resumed at 13:11 on 260814. Setup ran
+in full: workbench located, monitor refreshed to 8.2.0, session marker written, drift check clean
+(five rows, no divergence; `progress.commits` read 14 against git's 15, inside the one-commit
+tolerance for a commit in flight, and has been brought current). The user chose **Continue**, so this
+session inherits the history file, the session anchor `d7786eb`, the start stamp `260813-2345` and
+the Turn counter at 3, and emits no second `turn_start` for the Turn it re-enters.
+
+**T7's blocker is cleared.** Issue `circles/260801-1244-curator/issues/260814-1200_o_*.md` recorded
+that `Agent(fusion:curator)` was unreachable from the session that built the curator, because a
+session reads its agent roster at start from the installed plugin copy. The install at `~/.fusion`
+now carries `agents/curator.md` and `skills/curate/`, and reports version 8.2.0; the roster of this
+session lists `fusion:curator`. The C11 proof run is therefore runnable here.
+
+Snapshot at resume: 97 open defect records (4 in the Circle, 93 shared), 3 open plan files, 7 open
+decision records (all shared), 15 analyses, 14 Circles (1 active, 11 closed, 1 bounded, 1
+superseded). Detected domain `code` (125 source files against 21 data files, counted by
+`git ls-files`). Turn budget resolved to 5. The guard is not halted; the block events in
+`escalation.json` are historical, from the branch policy deleted on 260809.
+
+The work queue at `fusion-workbench/tasklist.md` reads **stale**: its head records no Circle, while
+`260801-1244-curator` is active. This session works from the queue in `agentstate.yaml`, so the file
+is not on its path; it should be rebuilt before anything consumes it as current.

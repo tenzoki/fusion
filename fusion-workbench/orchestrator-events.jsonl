@@ -1403,3 +1403,9 @@
 {"ts":"2026-08-14T09:49:02","event":"turn_start","turn":3,"detail":"2 tasks: the three Turn-2 findings, then the C11 validation run; head 7421f51"}
 {"ts":"2026-08-14T09:49:02","event":"task_start","turn":3,"task":"T6","agent":"coder","detail":"3 findings from 260814-1128"}
 {"ts":"2026-08-14T09:58:50","event":"task_done","turn":3,"task":"T6","agent":"coder","detail":"3 findings closed; npm test exit 0, 1030 tests; net effect on always-on corpus zero"}
+{"ts":"2026-08-14T09:59:21","event":"task_start","turn":3,"task":"T7","agent":"curator","detail":"C11 validation run, survey mode"}
+{"ts":"2026-08-14T10:00:34","event":"task_error","turn":3,"task":"T7","agent":"curator","detail":"Agent type fusion:curator not found — the session roster comes from the installed copy, which predates the agent this Circle built"}
+{"ts":"2026-08-14T11:15:56","event":"session_start","history_file":"shared/history/260813-2345-orchestrator-session.md","detail":"resumed session 260813-2345, mode plan, Circle 260801-1244-curator, Turn 3/5"}
+{"ts":"2026-08-14T11:18:21","event":"task_start","turn":3,"task":"T7","agent":"curator","detail":"C11 proof run — curator survey mode against this project's normative surfaces"}
+{"ts":"2026-08-14T11:44:36","event":"gate_response","turn":3,"task":"T7","agent":"user","detail":"curate gate: apply all 28 tier-1 entries"}
+{"ts":"2026-08-14T11:49:30","event":"task_start","turn":3,"task":"T8","agent":"coder","detail":"regenerate rules-emission golden fixture after the curator's rule-file edits"}
