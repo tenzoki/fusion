@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** orchestrator (at the user's challenge, Rebalance / revise Grounding)
-**Cross-references:** `circles/260804-1205-shell-reachability-model/decisions/260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md` (the precedent, and the binding decision `rules/critical-stance.md` §4 was written from); `shared/issues/260809-2300_o_the-arithmetic-command-span-is-recognised-only-after-a-blank-so-if-and-for-defeat-it.md`; `shared/issues/260809-2044_c_...`, `260809-1110_c_...`, `260809-1111_c_...`, `260809-1548_c_...`, `260809-1226_c_...` (the five patches of session 260809-1725); `shared/issues/260809-2255_o_the-branch-policy-verification-left-an-active-halt-...`
+**Cross-references:** `circles/260804-1205-shell-reachability-model/decisions/260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md` (the precedent, and the binding decision `rules/critical-stance.md` §4 was written from); `shared/issues/260809-2300_*_the-arithmetic-command-span-is-recognised-only-after-a-blank-so-if-and-for-defeat-it.md`; `shared/issues/260809-2044_c_...`, `260809-1110_c_...`, `260809-1111_c_...`, `260809-1548_c_...`, `260809-1226_c_...` (the five patches of session 260809-1725); `shared/issues/260809-2255_o_the-branch-policy-verification-left-an-active-halt-...`
 
 ---
 

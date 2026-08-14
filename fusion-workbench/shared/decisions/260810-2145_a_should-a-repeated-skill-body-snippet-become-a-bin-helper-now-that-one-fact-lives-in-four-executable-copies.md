@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** open
 **Filed by:** orchestrator (on the Turn-2 and Turn-3 executors' proposals)
-**Cross-references:** `shared/issues/260810-2030_o_the-source-root-resolution-is-stated-in-two-skill-bodies-and-has-no-single-home.md`; `shared/issues/260810-2110_o_the-domain-capture-one-liner-is-now-copied-into-a-fourth-skill-body-and-the-copying-is-the-stated-justification.md`; `shared/issues/260810-1918_c_the-cleanup-skill-carries-a-second-domain-cascade-in-the-pre-fix-order-and-no-gate-reads-it.md`
+**Cross-references:** `shared/issues/260810-2030_*_the-source-root-resolution-is-stated-in-two-skill-bodies-and-has-no-single-home.md`; `shared/issues/260810-2110_o_the-domain-capture-one-liner-is-now-copied-into-a-fourth-skill-body-and-the-copying-is-the-stated-justification.md`; `shared/issues/260810-1918_c_the-cleanup-skill-carries-a-second-domain-cascade-in-the-pre-fix-order-and-no-gate-reads-it.md`
 
 ---
 

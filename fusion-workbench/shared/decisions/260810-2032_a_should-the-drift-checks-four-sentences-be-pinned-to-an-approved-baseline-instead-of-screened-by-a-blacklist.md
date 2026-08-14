@@ -111,7 +111,7 @@ Implemented:
 deliberately not advanced.**
 
 Checked, because the sequencing constraint is the whole point of this record. The prerequisite is
-open: `shared/issues/260801-2038_o_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`
+`shared/issues/260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` (closed since this record was written)
 carries `_o_` on disk and is queued as task 2 of `fusion-workbench/tasklist.md`. No pin exists in
 `hooks/lib/__tests__/state-drift-detection-lint.test.ts` — the file's header at `:92-104` states the
 undecidability, names the pin as the answer, and records why it has not landed: it would hand the

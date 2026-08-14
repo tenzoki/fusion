@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** open
 **Filed by:** orchestrator
-**Cross-references:** circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_wem-gehoert-die-circle-aktivierung.md (the binding decision that made the mode user-direct-only); circles/260801-1244-guard-rules-write/issues/260805-1839_*_der-shaper-portfolio-activation-modus-hat-keinen-erreichbaren-dispatcher-mehr.md (closed by removing the dispatcher claims); agents/shaper.md mode 3; circles/260801-1244-curator/_a_circle.md (the Circle that surfaced this)
+**Cross-references:** circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_wem-gehoert-die-circle-aktivierung.md (the binding decision that made the mode user-direct-only); circles/260801-1244-guard-rules-write/issues/260805-1839_*_der-shaper-portfolio-activation-modus-hat-keinen-erreichbaren-dispatcher-mehr.md (closed by removing the dispatcher claims); agents/shaper.md mode 3; circles/260801-1244-curator (the Circle that surfaced this)
 
 ---
 

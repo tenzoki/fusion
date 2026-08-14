@@ -5,7 +5,7 @@
 **Status:** open
 **Filed by:** planner, planning the protected-path removal
 **Cross-references:**
-`shared/planning/260812-1232_o_remove-the-protected-path-half-of-the-compliance-guard.md` (step 6, which keeps the code and corrects the comment),
+`shared/planning/260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md` (step 6, which keeps the code and corrects the comment),
 `hooks/guard.ts:401-415` (the stand-down), `hooks/lib/self-detect.ts` (both entry points and why they ask about different directories),
 `shared/decisions/260812-1232_o_does-the-escalation-counter-survive-a-block-source-that-ships-inert.md` (the answer here follows that one)
 

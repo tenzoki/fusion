@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** orchestrator (session `260810-0844`, Turn 1 — triage of a defect record that names three things to decide, not one)
-**Cross-references:** `shared/issues/260810-0352_o_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` (the instance); `shared/issues/260810-0508_*_fifteen-commits-landed-with-no-plugin-version-bump.md` (the other half of the same gap); commit `2910cf6` (the call site); `CLAUDE.md` `## Conventions` (the work-tree preference and its stated residual)
+**Cross-references:** `shared/issues/260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` (the instance); `shared/issues/260810-0508_*_fifteen-commits-landed-with-no-plugin-version-bump.md` (the other half of the same gap); commit `2910cf6` (the call site); `CLAUDE.md` `## Conventions` (the work-tree preference and its stated residual)
 
 ---
 
@@ -134,4 +134,4 @@ Answered: shared/history/260810-0844-orchestrator-session.md `## Grounding revis
 ---
 Implemented: 26ea3c3 — option (a1), tolerate and report. agents/orchestrator.md Setup Step 5 guards the bin/fusion-count-sources call with [ -x ] and, when absent, prints the helper's own absent-count shape (counted_by=none) with the reason on stderr, exiting 0. The existing counted_by == "none" cascade branch from 31d8bb3 is reused, not duplicated, and a paragraph forbids giving the absent helper a branch of its own. Parts (b) — a uniform guarded-call convention for prompt-called helpers — and (c) — whether the work-tree preference extends to helper resolution — remain OPEN and were deliberately not touched; parts (b) and (c) have been split out into their own record so this one can carry a single state.
 
-Split: parts (b) and (c) moved to shared/decisions/260810-1544_o_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md — a decision record bundling separable questions cannot be tracked, because its state is not a single value. With those two carried elsewhere, this record's remaining scope is part (a1) alone, which 26ea3c3 realises.
+Split: parts (b) and (c) moved to shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md — a decision record bundling separable questions cannot be tracked, because its state is not a single value. With those two carried elsewhere, this record's remaining scope is part (a1) alone, which 26ea3c3 realises.

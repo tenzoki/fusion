@@ -55,12 +55,15 @@ fusion-workbench/
 │
 │   # ── Root-anchored. The hooks, the monitor and the bin/ helpers read these ──
 │   # ── HERE, at fixed root-relative paths. Do not move them.               ──
-├── agentstate.yaml                     # hooks/tracker.ts:33-36, bin/monitor:72-75
-├── orchestrator-live.md                # hooks/tracker.ts:33-36, bin/monitor:72-75
-├── orchestrator-events.jsonl           # hooks/tracker.ts:33-36, bin/monitor:72-75
-├── .guard-state/                       # hooks/tracker.ts:33-36, bin/monitor:72-75
+├── agentstate.yaml                     # bin/monitor
+├── orchestrator-live.md                # bin/monitor
+├── orchestrator-events.jsonl           # bin/monitor
+├── .guard-state/                       # bin/monitor, hooks/lib/events.ts, hooks/lib/guard-state-file.ts
 ├── .commit-lock/                       # bin/fusion-commit-lock (created and removed per commit)
-└── .session-marker                     # bin/fusion-session-mark
+├── .session-marker                     # bin/fusion-session-mark
+├── plane.config.yaml                   # bin/fusion-plane (consumer-filled; seeded by /fusion:setup)
+├── .plane-map.json                     # bin/fusion-plane (file ↔ Plane id map)
+└── .plane-outbox.jsonl                 # bin/fusion-plane (deferred pushes; replayed on the next reconcile)
 ```
 
 **The root-anchored surfaces are not negotiable.** Each is read at a fixed root-relative path by the consumer named beside it in the tree, and none of those consumers has a fallback path — relocating one into a Circle or into `shared/` breaks it silently.
@@ -254,7 +257,7 @@ The writing profile follows its surface's language, not the artifact declaration
 
 `bin/fusion-rules` emits the chat profile path for every agent and the writing profile path only for long-form-prose agents. The two paths may name different languages; for a project whose chat and artifacts differ that is the intended configuration, not a fault to report or work around.
 
-Each family keeps its own missing-variant fallback, and the fallback is **per family, not shared**: when the resolved language's variant is missing (e.g. the artifact language is `de` but no `default-voice-de.yaml` exists), the agent falls back to the `-en.yaml` variant of that same family and records a single line in its session history file noting the fallback. If neither variant of a family exists, the agent emits nothing for that family and follows `rules/user-facing-output.md` alone — that rule always applies, regardless of profile presence.
+Each family keeps its own missing-variant fallback, and the fallback is **per family, not shared**: when the resolved language's variant is missing (e.g. the artifact language is `de` but no `default-voice-de.yaml` exists), `bin/fusion-rules` falls back to the `-en.yaml` variant of that same family. It emits only the resolved path, so an agent cannot today tell a fallback from a project that declared `en`, and the history line this rule asks for is unreachable until the helper says so — tracked as `circles/260801-1244-curator/issues/260814-1332_*_the-voice-profile-fallback-is-performed-by-the-helper-so-the-agent-cannot-record-it.md`. If neither variant of a family exists, the agent emits nothing for that family and follows `rules/user-facing-output.md` alone — that rule always applies, regardless of profile presence.
 
 **Exempt surfaces — English in every project, whatever either line says.** These ship to consuming projects of every language, so one project's declaration cannot govern them:
 

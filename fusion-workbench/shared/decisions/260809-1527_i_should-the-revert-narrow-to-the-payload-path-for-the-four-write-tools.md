@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** orchestrator
-**Cross-references:** `shared/planning/260809-1229_o_plan-five-severe-guard-defects.md` (Step 5, and Open Questions item 1); `shared/issues/260809-1107_o_any-writer-active-during-the-tool-call-window-is-attributed-to-the-agent-and-reverted.md`; `shared/analyses/260809-1103-guard-enforced-policies.md`
+**Cross-references:** `shared/planning/260809-1229_*_plan-five-severe-guard-defects.md` (Step 5, and Open Questions item 1); `shared/issues/260809-1107_*_any-writer-active-during-the-tool-call-window-is-attributed-to-the-agent-and-reverted.md`; `shared/analyses/260809-1103-guard-enforced-policies.md`
 
 ---
 

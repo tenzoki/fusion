@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** shaper
-**Cross-references:** decisions/260716-1847[a]-plane-rolle-source-of-truth.md, planning/260716-1847[o]-spec-plane-integration-und-workbench-struktur.md
+**Cross-references:** `shared/decisions/260716-1847_*_plane-rolle-source-of-truth.md`, `circles/260716-1847-workbench-umbau/planning/260716-1847_*_spec-plane-integration-und-workbench-struktur.md`
 
 **Status-Notiz (Orchestrator, 2026-07-16):** Die Rollen-Entscheidung ist inzwischen beantwortet und fiel auf "Spiegel" (Push-only). Damit ist die Bedingung erfüllt, unter der der Shaper Option 2 empfiehlt. Diese Entscheidung bleibt dennoch offen, weil sie dem Nutzer gehört und erst für Circle 2 (Plane-Anbindung) beantwortet werden muss. Circle 1 (Umbau) ist von ihr nicht blockiert.
 

@@ -33,7 +33,7 @@ The consequence for the user: uncommitted changes to workbench files stay in the
 
 Stash behaviour activates only when `fusion-workbench/stashes/` exists. The directory is created by `/fusion:circle-stash` on first invocation; it is NOT created by `/fusion:setup`. Workbenches that never stash never grow a `stashes/` directory.
 
-Stashes are created by `/fusion:circle-stash [reason]` and consumed by `/fusion:circle-pop [stash-id]`. Both skills resolve the workbench root via `bin/fusion-workbench-root` and refuse to run outside a fusion-set-up project.
+Stashes are created by `/fusion:circle-stash [reason]` and consumed by `/fusion:circle-pop [stash-id]`. Both skills resolve through `bin/fusion-paths <skill-name>` at their own first step, which delegates to `bin/fusion-workbench-root` internally, and both refuse to run outside a fusion-set-up project.
 
 ### Filesystem layout
 

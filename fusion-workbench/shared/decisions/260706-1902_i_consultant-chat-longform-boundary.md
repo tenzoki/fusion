@@ -4,7 +4,7 @@
 **Domain:** knowledge
 **Status:** implemented
 **Filed by:** analyst
-**Cross-references:** fusion-workbench/issues/260706-1902[o]-consultant-chat-misrouted-to-longform-voice.md, fusion-workbench/analyses/260706-1902-user-facing-agents-garbled-language-rootcause.md
+**Cross-references:** `shared/issues/260706-1902_*_consultant-chat-misrouted-to-longform-voice.md`, `shared/analyses/260706-1902-user-facing-agents-garbled-language-rootcause.md`
 ---
 
 ## Question

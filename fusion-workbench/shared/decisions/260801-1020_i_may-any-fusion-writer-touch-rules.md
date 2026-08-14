@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** analyst
-**Cross-references:** `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md` (Question 3); `shared/decisions/260801-1020_*_where-does-normative-consistency-live.md` (the capability question that raised this); `shared/issues/260801-1020_o_guard-protects-rules-but-not-claude-rules.md` (a defect in the current protection, orthogonal to this choice)
+**Cross-references:** `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md` (Question 3); `shared/decisions/260801-1020_*_where-does-normative-consistency-live.md` (the capability question that raised this); `shared/issues/260801-1020_*_guard-protects-rules-but-not-claude-rules.md` (a defect in the current protection, orthogonal to this choice)
 
 ---
 

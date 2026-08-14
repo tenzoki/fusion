@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** orchestrator (surfaced by the executor of plan step 7)
-**Cross-references:** `shared/planning/260812-1720_o_circle-first-placement-and-the-backlog-store.md` steps 1, 7 and 8; `shared/decisions/260812-0254_a_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md`
+**Cross-references:** `shared/planning/260812-1720_*_circle-first-placement-and-the-backlog-store.md` steps 1, 7 and 8; `shared/decisions/260812-0254_*_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md`
 
 ---
 
@@ -72,7 +72,7 @@ Implemented: b995049 — the playmaker's prompt names the write, so `bin/fusion-
 
 **Late addition, 260813-1548 — a sixth surface was found while this reconciliation ran.** A
 `coderev` pass over `b995049`, running concurrently with the reconciler, filed
-`circles/260813-0858-playmaker-maintains-backlog-store/issues/260813-1545_o_the-next-skills-boundaries-paragraph-still-says-playmaker-writes-only-circle-records-and-the-portfolio.md`:
+`circles/260813-0858-playmaker-maintains-backlog-store/issues/260813-1545_*_the-next-skills-boundaries-paragraph-still-says-playmaker-writes-only-circle-records-and-the-portfolio.md`:
 `skills/next/SKILL.md:291` still enumerates the playmaker's writes as "only Circle records and the
 portfolio", in a paragraph the same commit edited. **This does not weaken `_i_`.** The question
 this record asked — who writes `_p_` — has exactly one answer on disk, and the mechanism that

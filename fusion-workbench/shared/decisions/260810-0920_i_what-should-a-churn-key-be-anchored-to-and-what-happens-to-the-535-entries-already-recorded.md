@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** orchestrator (session `260810-0844`, Turn 1 — triage of a defect record that states a decision precedes the fix)
-**Cross-references:** `shared/issues/260809-2023_o_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md` (the measurement); `shared/decisions/260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md` (measurement 7 saw one entry of this and called it a missing boundary); `hooks/tracker.ts` (the normalisation), `hooks/lib/churn.ts` (the map), `agents/orchestrator.md` and `skills/setup/SKILL.md` (the reader)
+**Cross-references:** `shared/issues/260809-2023_*_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md` (the measurement); `shared/decisions/260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md` (measurement 7 saw one entry of this and called it a missing boundary); `hooks/tracker.ts` (the normalisation), `hooks/lib/churn.ts` (the map), `agents/orchestrator.md` and `skills/setup/SKILL.md` (the reader)
 
 ---
 

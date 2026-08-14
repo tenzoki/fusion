@@ -7,8 +7,8 @@
 **Cross-references:**
 `agents/editor.md:16,62` (the two lines that read the declaration),
 `rules/fusion-workbench-conventions.md` `## Project language` (the authoring home for both declarations, rewritten in `def9d13`),
-`shared/decisions/260807-1515_a_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md` (the answer that created the gap),
-`shared/planning/260807-2024_o_two-language-declarations.md` (the plan whose inventory missed this site)
+`shared/decisions/260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md` (the answer that created the gap),
+`shared/planning/260807-2024_*_two-language-declarations.md` (the plan whose inventory missed this site)
 
 ---
 

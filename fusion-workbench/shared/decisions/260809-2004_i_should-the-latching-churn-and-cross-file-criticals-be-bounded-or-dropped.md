@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented (marker `_i_`; header corrected by the reconciler 260809-2252 — it still read `open` two commits after `c353196` landed the answer)
 **Filed by:** coder
-**Cross-references:** `shared/issues/260809-1101_c_churn-and-cross-file-criticals-latch-permanently-and-never-reset.md` (the defect this decision blocked; closed by the same commit — marker corrected from `_o_` by the reconciler 260809-2252); `shared/analyses/260809-1101-guard-support-layer.md` (finding 1, targets C1/C3, and the open question at its end); `circles/260801-1244-guard-rules-write/issues/260805-1859_o_das-guard-event-log-waechst-unbegrenzt-und-sein-groesster-schreiber-liefert-null-information.md` (log volume, treats the symptom); `circles/260801-1244-guard-rules-write/issues/260802-2232_c_advisory-rows-share-the-30-row-warnings-panel-and-can-bury-blocks.md` (the panel budget); `circles/260804-1205-shell-reachability-model/decisions/260807-0825_i_should-the-guard-predict-shell-writes-or-enforce-them.md` (binding on how a commit checkpoint may be detected); `README-hooks.md` (Churn Detection); `fusion-workbench/tasklist.md` task 9.
+**Cross-references:** `shared/issues/260809-1101_c_churn-and-cross-file-criticals-latch-permanently-and-never-reset.md` (the defect this decision blocked; closed by the same commit — marker corrected from `_o_` by the reconciler 260809-2252); `shared/analyses/260809-1101-guard-support-layer.md` (finding 1, targets C1/C3, and the open question at its end); `circles/260801-1244-guard-rules-write/issues/260805-1859_*_das-guard-event-log-waechst-unbegrenzt-und-sein-groesster-schreiber-liefert-null-information.md` (log volume, treats the symptom); `circles/260801-1244-guard-rules-write/issues/260802-2232_c_advisory-rows-share-the-30-row-warnings-panel-and-can-bury-blocks.md` (the panel budget); `circles/260804-1205-shell-reachability-model/decisions/260807-0825_i_should-the-guard-predict-shell-writes-or-enforce-them.md` (binding on how a commit checkpoint may be detected); `README-hooks.md` (Churn Detection); `fusion-workbench/tasklist.md` task 9.
 
 ---
 
@@ -121,7 +121,7 @@ backward references survive in comments. `resetCrossFile` and `getTopChurnFiles`
 both callerless. 1127 tests green.
 
 One part of the question turned out to have a second cause the decision had not seen, and it is
-filed rather than absorbed: `shared/issues/260809-2023_o_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md`.
+filed rather than absorbed: `shared/issues/260809-2023_*_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md`.
 Of 535 churn keys, 297 resolve to no file under any reading, because the tracker normalises an
 absolute path against the working directory and otherwise stores it raw. Dropping the lifetime
 threshold does not touch that.
