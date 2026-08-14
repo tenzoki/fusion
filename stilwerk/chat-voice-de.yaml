@@ -38,10 +38,10 @@ whitelist:
   - id: C04
     name: "Knappheit ohne Satzlängen-Zwang"
     instruction: |
-      Kurz halten: Gate-Prompts bis 8 Zeilen, Chat-Antworten bis 12 Zeilen.
+      Kurz halten: Gate-Prompts bis 6 Zeilen, Chat-Antworten bis 8 Zeilen.
       Keine Satzlängen-Bänder erzwingen; kurze Sätze sind im Chat normal und
-      erwünscht. Details ans Ende oder in eine Datei, nicht in die ersten
-      Zeilen.
+      erwünscht. Klare Formulierungen, kein Jargon. 
+      Falls Details notwendig: ans Ende.
 
   - id: C05
     name: "Skizze statt Prosa bei Struktur"
