@@ -53,3 +53,14 @@ correct and a citation is cheaper to repair than a state that lies.
 **Filed by:** reconciler, session `shared/history/260813-2345-orchestrator-session.md`, Circle
 `260801-1244-curator`. Filed in the Circle's own store per the Origin Rule: it arose from
 reconciling this Circle's own planning files.
+
+---
+Resolved: all five live citations are repaired at HEAD `d5b71f1`. Four were repaired by `e02f268`
+itself — the reconciler's own pass renamed the two files and carried their citations with it — and
+the fifth, `agentstate.yaml`, was repointed by the orchestrator in the same sitting, both the
+`plan_context.plan_file` and the `current_task.source_file` field. Verified rather than taken from
+the Turn-4 review that reported it: `grep -rn '260814-0738_o_spec-curator\|260814-0845_o_plan-curator'`
+over the workbench now returns hits only inside closed issue records and inside this record's own
+evidence block, which is exactly the set this record said should deliberately stay as it is. A
+citation inside a closed record is a statement about what was true when it was written, not a
+pointer that has to resolve.

@@ -1428,3 +1428,5 @@
 {"ts":"2026-08-14T13:47:26","event":"task_done","turn":4,"task":"T9","agent":"coder","detail":"decision 260813-0027 realised across shaper.md and orchestrator.md in one commit bf9553f; npm test exit 0"}
 {"ts":"2026-08-14T13:47:26","event":"commit","turn":4,"task":"T9","detail":"bf9553f feat(shaper): portfolio-activation gets a second route and a reachable caller"}
 {"ts":"2026-08-14T15:32:42","event":"gate_response","turn":4,"agent":"user","detail":"/fusion:next backlog gate: approved the split of 260811-0826 observations into three entries"}
+{"ts":"2026-08-14T16:40:47","event":"review_start","turn":4,"agent":"coderev","detail":"range 0301909..HEAD, 5 commits, 39 files, plus 8 carried not-opened files from the Turn-3 review"}
+{"ts":"2026-08-14T16:56:07","event":"review_done","turn":4,"agent":"coderev","detail":"6 issues filed (2 High); bf9553f meets all three constraints; coverage uncovered=0"}
