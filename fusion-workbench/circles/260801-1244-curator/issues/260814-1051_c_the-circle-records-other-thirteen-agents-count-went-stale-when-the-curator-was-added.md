@@ -40,3 +40,6 @@ Regenerating the golden fixture in the same commit is part of the change.
 fixture under `hooks/`.
 
 **Filed by:** coder, while resolving the seven findings of the Turn 1 review.
+
+---
+Resolved: `rules/circle-records.md` now reads "The other agents work inside a Circle without ever transitioning one" — the figure is removed rather than refreshed to fourteen, per the binding answer to `circles/260801-1244-curator/decisions/260814-0845_*_are-the-sixteen-agent-claims-corrected-or-derived-away.md` (option 2: correct what a parser asserts, retire what nothing checks). The sentence needed nothing beyond the number: "the other" already means the complement of the three agents named in the sentence before it, and no reader has to hold a count to follow the paragraph. Nothing else in the file states a fleet count, verified by grep for `thirteen|fourteen|sixteen|seventeen`. The file went 11 958 -> 11 949 bytes, so `hooks/lib/__tests__/fixtures/rules-emission.golden` was regenerated in the same change: the diff holds exactly the three Circle-key agents (`orchestrator`, `playmaker`, `shaper`) at -9 bytes each and no other movement. Done first in the same session as the growth-bound arming, so the fixture was regenerated once and the arming baseline describes the corpus as it will actually ship.

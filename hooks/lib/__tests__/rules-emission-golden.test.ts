@@ -75,12 +75,24 @@ import { dirname, resolve, join, relative } from "node:path";
 //      role applies it. It is a prose obligation about an AUDIENCE decision — it
 //      never asks anyone to cut text.
 //
-//   HARD — the DRIFT CEILING. The one number that still blocks; see below.
+//   HARD — the DRIFT CEILING. The far blocking number; see below.
 //
-//   REPORTED, NEVER FAILING — the BUDGET. Every role gets GROWTH_BUDGET bytes of
-//      head-room above its floor (`RULE_BASELINE`, summed over the files that
-//      role loads). Past that, the run PRINTS which files grew and by how much
-//      and says a cleanup is due. It does not fail.
+//   HARD — the UNIVERSAL-CORE GROWTH BOUND. The near one, armed 2026-08-14. The
+//      rule text EVERY agent loads gets GROWTH_BUDGET bytes of head-room above
+//      its baseline, and past that the suite FAILS. Charged to every dispatch in
+//      the fleet, opt-out impossible; see `WHY THE CORE BLOCKS AND THE EXTRAS
+//      REPORT` below.
+//
+//   REPORTED, NEVER FAILING — the BUDGET on ROLE-SPECIFIC text. Each role's
+//      EXTRAS — the files it loads that not every agent loads — get their own
+//      GROWTH_BUDGET of head-room above `RULE_BASELINE`. Past that, the run
+//      PRINTS which files grew and by how much and says a cleanup is due. It
+//      does not fail.
+//
+//      The two read ONE `growth()` over ONE `RULE_BASELINE`, called with two
+//      DISJOINT file sets: the universal core, and each role's extras. Every
+//      byte the fleet loads is measured by exactly one of them, so the gate and
+//      the report cannot disagree about a byte.
 //
 // WHY THE BUDGET REPORTS INSTEAD OF BLOCKING. Until 2026-08-05 this file carried
 // a ratchet: one cap per role, pinned to that role's measured high-water mark and
@@ -92,6 +104,24 @@ import { dirname, resolve, join, relative } from "node:path";
 // time the text gets cleaned up. This file's job is to say when a cleanup is due,
 // in a form somebody can act on — which file grew, and by how much. Without the
 // per-file breakdown the report is a number nobody can do anything with.
+//
+// WHY THE CORE BLOCKS AND THE EXTRAS REPORT. On 2026-08-14 half of that answer
+// was taken back, deliberately and along one line: the universal core blocks
+// again, and only the role-specific text still merely reports. The reason the
+// ratchet failed was that it made a finding-driven addition unlandable unless
+// somebody else's reasoned prose was cut by the same number of bytes. That
+// argument holds where the text is bought by the agents that need it, and it
+// does not hold for the core, where a byte is charged to every dispatch in the
+// fleet and no agent can decline it. The report also had three years' worth of
+// evidence against it in this project's own history: the 2026-08-05 partition
+// was undone inside a week, and the largest deletion this project ever performed
+// was back above its pre-deletion peak in four days
+// (`shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`).
+// A report is not a bound, and the binding constraint was measured to be the
+// RATE of addition rather than the size of the system. So the core gets a rate
+// bound and the extras keep the report. Capability C10 of Circle
+// `circles/260801-1244-curator`; the arming itself is the last entry in the cut
+// log above `RULE_BASELINE`.
 //
 // WHERE THE THRESHOLD COMES FROM. It was measured, not guessed: `git log` over
 // `rules/` was replayed commit by commit from 2026-05-04 to 2026-08-05, re-running
@@ -111,13 +141,13 @@ import { dirname, resolve, join, relative } from "node:path";
 // so no consuming project pays more than origin/main already charged before the
 // budget is even a question.
 //
-// WHY THERE IS STILL A GATE. A gate that never blocks is not a gate, and a gate
-// that blocks on every byte is the ratchet this file just gave up. The one that
-// remains is DRIFT_CEILING = 145 144 — the level the fleet actually reached on
+// WHY THERE IS STILL A FAR GATE. A gate that never blocks is not a gate, and a
+// gate that blocks on every byte is the ratchet this file gave up. The far one
+// is DRIFT_CEILING = 145 144 — the level the fleet actually reached on
 // 2026-08-04, before the cut. No finding-driven addition can reach it; it stands
-// 33 378 bytes above today's worst-off agent, which is weeks at the calm rate; and
-// long before it is in reach the budget report will have been asking for a
-// cleanup. It makes "back to 145 kB in four days without anyone noticing"
+// weeks of calm-rate growth above the worst-off agent, and long before it is in
+// reach the near gate will have blocked and the budget report will have been
+// asking for a cleanup. It makes "back to 145 kB in four days without anyone noticing"
 // impossible by construction rather than by attention, which is the failure this
 // file exists to stop.
 //
@@ -145,17 +175,38 @@ import { dirname, resolve, join, relative } from "node:path";
 // That run rewrites the fixture from live measurement and then FAILS on
 // purpose. The failure is the point: it forces a second run without the flag,
 // and it means no CI or habitual `vitest run` can ever be green while the flag
-// is set. Review the fixture diff — that is the whole obligation. Nothing else
-// has to move: a size change costs a regeneration, never a cut.
+// is set. Review the fixture diff — that is the whole obligation. For
+// ROLE-SPECIFIC text nothing else has to move: a size change costs a
+// regeneration, never a cut. For the UNIVERSAL CORE that stopped being true on
+// 2026-08-14: a regeneration records the growth, and if the core has spent its
+// head-room the hard bound fails until the text comes back down. Regenerating
+// the golden does not move `RULE_BASELINE` and therefore never clears the bound.
 //
-// ## Re-baselining after a cleanup
+// ## Re-baselining: the two events at which the baseline moves
 //
-// `RULE_BASELINE` is the reference the budget measures growth FROM. It moves at
-// exactly one moment: after somebody has done the cleanup the report asked for.
-// Then, and only then, copy the per-file sizes out of the regenerated golden into
-// `RULE_BASELINE` and say in a comment which cut produced them, the way the entries
-// there already do. Between cleanups it stays where it is — a reference that
-// followed the measurement would measure nothing.
+// `RULE_BASELINE` is the reference both measurements read: the report measures a
+// role's extras from it, and the hard bound measures the universal core from it.
+// It is hand-edited, and it moves at exactly two kinds of moment.
+//
+//   1. AFTER A CLEANUP. Somebody has done the cut the report asked for. Then, and
+//      only then, copy the per-file sizes out of the regenerated golden into
+//      `RULE_BASELINE` and say in a comment which cut produced them, the way the
+//      entries there already do.
+//
+//   2. AT AN ARMING. A measurement that used to report starts blocking, and the
+//      corpus it is armed on is already past the head-room the new gate enforces.
+//      Arming at the old baseline would ship a permanently red suite, which is a
+//      suite nobody reads. This has happened ONCE, on 2026-08-14, for the
+//      universal-core bound; the cut log's last entry is that event.
+//
+// Between those, the baseline stays where it is — a reference that followed the
+// measurement would measure nothing. And neither event is the SILENT RAISE this
+// section exists to prevent, for one reason: both are written down. A cleanup
+// names the cut, an arming names the gate it armed and reproduces, as TEXT, the
+// overshoot the re-baseline absolved — so the cleanup request the report had been
+// making survives the number moving. Editing `RULE_BASELINE` to make a failing
+// bound pass, with no cut and no cut-log entry, is neither of these and is the
+// thing this file is asking you not to do.
 //
 // Use `npx vitest run`, not `npm test`: the latter is
 // `npm run build && vitest run`, which wipes and rebuilds `hooks/dist`. This
@@ -224,7 +275,8 @@ const DRIFT_CEILING = 145_144;
  * numbers summed over the files that role actually loads, so the floor and the
  * per-file breakdown in the report are one fact rather than two that can disagree.
  *
- * Hand-edited, and only at a cleanup — see `## Re-baselining after a cleanup`. A
+ * Hand-edited, and only at one of the two events in `## Re-baselining: the two
+ * events at which the baseline moves`. A
  * file the emission carries but this map does not (a newly added always-on rule)
  * counts as growth in full, which is correct: nobody granted it a budget. A file
  * this map carries that the emission dropped is simply not measured.
@@ -235,9 +287,10 @@ const DRIFT_CEILING = 145_144;
  * GROWTH, while an audience change is governed by the golden (hard) and by the
  * justification duty (hard).
  *
- * The figures below are the 2026-08-05 post-cut sizes, at v5.9.1. How the
- * whole-fleet number moved to get here, cut by cut — kept because each line names
- * which cut produced which figure:
+ * The five CORE figures below are the 2026-08-14 arming sizes; the three
+ * ROLE-SPECIFIC ones are still the 2026-08-05 post-cut sizes, at v5.9.1. How the
+ * number moved to get here, event by event — kept because each line names which
+ * cut, or which arming, produced which figure:
  *
  *   150 817 — 2026-08-05, at plan step 1. Introduced. The six design-diagram
  *             agents (analyst, conceptrev, investigator, planner, shaper,
@@ -351,21 +404,78 @@ const DRIFT_CEILING = 145_144;
  *             is the instrument working: the growth is real, it was never cut,
  *             and re-baselining here would have absolved it in the same edit
  *             that removed the thing hiding it.
+ *
+ *    86 573 — 2026-08-14, at the ARMING of the universal-core growth bound.
+ *             NOT A CUT, and the only entry in this log that is not one. No byte
+ *             was removed and no rule file was touched for its size. What moved
+ *             is the baseline: the five core entries below take the sizes the
+ *             regenerated golden reported at this moment, so that the hard bound
+ *             armed in this step has a reference to bound growth FROM. The three
+ *             role-specific entries are untouched and still stand at their
+ *             2026-08-05 post-cut sizes, which is why the diff of this change
+ *             shows exactly which half moved. Capability C10 of Circle
+ *             `circles/260801-1244-curator`, plan step 5. The core-only role
+ *             stands at 86 573 and the measured high-water mark, the
+ *             orchestrator, at 111 474.
+ *
+ *             THE STANDING CLEANUP REQUEST, KEPT AS TEXT. A re-baseline absolves
+ *             the growth it re-baselines over, so the report this arming
+ *             silences is written down here rather than disappearing with the
+ *             number. Measured immediately before the re-baseline, every one of
+ *             the five roles was over its head-room — the state the 2026-08-12
+ *             entry above describes, still true on the day this one was written:
+ *
+ *               role                                      emitted  budget  over by
+ *               (core only)                                86 573  75 654   10 919
+ *               design-diagrams.md                         92 246  81 327   10 919
+ *               circle-records.md                          98 522  84 956   13 566
+ *               circle-records.md + design-diagrams.md    104 195  90 629   13 566
+ *               circle-records.md + stash-and-lock.md     111 474  94 206   17 268
+ *
+ *             The whole of that overshoot is UNIVERSAL-CORE growth: 22 919 bytes
+ *             added to the five always-on files since the 2026-08-05 cut, against
+ *             12 000 of head-room. Per file, `fusion-workbench-conventions.md`
+ *             +17 356, `critical-stance.md` +4 641, `agent-setup.md` +721,
+ *             `user-facing-output.md` +101, `decision-record-examples.md` +100.
+ *             The role-specific files grew too and are NOT absolved: their
+ *             entries do not move here, so `workbench-stash-and-lock.md` (+3 702)
+ *             and `circle-records.md` (+2 647) still count against the report.
+ *             The spec's table for C10 reads 107 bytes lower per role because it
+ *             was measured at HEAD d7786eb, before this Circle's own steps added
+ *             that much to `fusion-workbench-conventions.md`.
+ *
+ *             WHY THIS IS AN ARMING AND NOT THE SILENT RAISE THIS FILE WARNS
+ *             AGAINST. The rule it overrides was written for a REPORTING
+ *             instrument, where the baseline's only job is to keep the report
+ *             actionable. Under a BLOCKING gate the baseline acquires a second
+ *             job, defining what the gate blocks on, and a gate armed on a corpus
+ *             already 22 919 bytes past its head-room ships red on the day it
+ *             lands. Cutting the corpus back first was the alternative and was
+ *             explicitly removed from this Circle's scope; shipping the red suite
+ *             was the third option and was not seriously proposed. The user chose
+ *             the re-baseline on 2026-08-14, having been shown that it overrides
+ *             the position recorded here. What that position protects against —
+ *             a raise that quietly retires the cleanup the report was asking for
+ *             — is preserved by the table above, which outlives the number.
+ *             Binding record:
+ *             `circles/260801-1244-curator/decisions/260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`.
  */
 const RULE_BASELINE: Record<string, number> = {
-  // The universal core — text every agent applies. 63 654 bytes at the
-  // 2026-08-05 cut, against 80 670 emitted today; the 17 016 difference is the
-  // growth the budget report now names, and it is unbudgeted on purpose (see
-  // the 2026-08-12 entry above).
-  "agent-setup.md": 2_792,
-  "fusion-workbench-conventions.md": 34_671,
-  "decision-record-examples.md": 4_191,
-  "user-facing-output.md": 16_683,
-  "critical-stance.md": 5_317,
-  // Role-specific, each loaded by a derived audience rather than a named list.
-  "design-diagrams.md": 5_673,
-  "circle-records.md": 9_302,
-  "workbench-stash-and-lock.md": 9_250,
+  // The universal core — text every agent applies, and the exact set the HARD
+  // bound measures. 86 573 bytes, re-set once at the 2026-08-14 arming; the cut
+  // log's last entry says what that re-baseline absolved and why it is not the
+  // silent raise this file warns about.
+  "agent-setup.md": 3_513, // 2026-08-14 arming
+  "fusion-workbench-conventions.md": 52_027, // 2026-08-14 arming
+  "decision-record-examples.md": 4_291, // 2026-08-14 arming
+  "user-facing-output.md": 16_784, // 2026-08-14 arming
+  "critical-stance.md": 9_958, // 2026-08-14 arming
+  // Role-specific, each loaded by a derived audience rather than a named list,
+  // and the set the REPORT measures. Deliberately NOT touched by the 2026-08-14
+  // arming: their growth since the last real cut still stands against the report.
+  "design-diagrams.md": 5_673, // 2026-08-05 cut
+  "circle-records.md": 9_302, // 2026-08-05 cut
+  "workbench-stash-and-lock.md": 9_250, // 2026-08-05 cut
 };
 
 interface Role {
@@ -391,15 +501,18 @@ interface Role {
  * left pointing at a figure the emission moved away from. The comments below say
  * what each role buys and why; the arithmetic is the map's.
  *
- * Five roles as of 2026-08-12, every one of them below RELEASE_CAP. The figures
- * are FLOORS — RULE_BASELINE summed over the role's files — not what the role
- * emits today; the gap between the two is what the budget report prints.
+ * Five roles as of the 2026-08-14 arming, every one of them still below
+ * RELEASE_CAP, the orchestrator's role by 229 bytes. The figures are FLOORS —
+ * RULE_BASELINE summed over the role's files — not what the role emits today:
+ * for the five core files the two are now equal, and for a role's extras the gap
+ * between them is what the budget report prints. How many agents each role holds
+ * is not written here; it is measured, and the messages print it.
  *
- *   63 654  core only                                      8 agents
- *   69 327  design-diagrams.md                             5 agents
- *   72 956  circle-records.md                              1 agent
- *   78 629  circle-records.md + design-diagrams.md         1 agent
- *   82 206  circle-records.md + workbench-stash-and-lock.md 1 agent
+ *    86 573  core only
+ *    92 246  design-diagrams.md
+ *    95 875  circle-records.md
+ *   101 548  circle-records.md + design-diagrams.md
+ *   105 125  circle-records.md + workbench-stash-and-lock.md
  */
 const ROLES: Record<string, Role> = {
   /**
@@ -440,18 +553,22 @@ const ROLES: Record<string, Role> = {
    * Turns a Directive into a Circle record and draws the design diagram that
    * goes in it, so it pays for both files. It used to be the role closest to the
    * release cap, 483 bytes under it; the 2026-08-12 cut put 26 725 bytes between
-   * them, so the role that would cross first is now a question for whichever
-   * re-baseline comes next.
+   * them and the 2026-08-14 arming re-baseline brought that back to 3 806. The
+   * role that would cross the cap first is no longer this one but the
+   * orchestrator's, below.
    */
   "circle-records.md + design-diagrams.md": {},
 
   /**
-   * NO LONGER OVER THE RELEASE CAP. It was, by 3 094 bytes, when this entry was
-   * written; its floor now stands 23 148 under. The `overRelease` reason below
-   * is kept rather than deleted — the justification duty is discharged by prose
-   * and the prose is still true of this role, and a floor that moves back up
-   * would otherwise silently find no reason where one had been written. The
-   * assertion skips it while the floor is under the cap.
+   * NOT OVER THE RELEASE CAP, and the role that would cross it first. It was
+   * over by 3 094 bytes when this entry was written; the 2026-08-12 cut put
+   * 23 148 between them, and the 2026-08-14 arming re-baseline — which re-set the
+   * five core entries this role also pays for — brought that margin down to 229
+   * bytes. The `overRelease` reason below is kept rather than deleted: the
+   * justification duty is discharged by prose, the prose is still true of this
+   * role, and a floor that moves back up would otherwise silently find no reason
+   * where one had been written. The assertion skips it while the floor is under
+   * the cap, which on this margin is one core-file edit away from firing.
    *
    * `circle-records.md` (9 302) is the Circle state vocabulary and the record
    * and portfolio templates. This role writes those transitions — it activates
@@ -490,12 +607,87 @@ function roleKey(extras: string[]): string {
 }
 
 /**
- * What this emission weighed at the last cleanup: the baseline sizes of exactly
- * the files it carries. A file with no baseline entry contributes 0, so its whole
- * current size shows up as growth.
+ * What a set of rule files weighs now against what it weighed at the last
+ * re-baseline. ONE function over ONE `RULE_BASELINE`, called with two DISJOINT
+ * file sets — the universal core, which the hard bound measures, and a role's
+ * extras, which the report measures — so the two can never disagree about a byte
+ * and no byte is measured twice or missed.
+ *
+ * `floor` is `RULE_BASELINE` summed over the same files. A file with no baseline
+ * entry contributes 0, so its whole current size reads as growth, which is
+ * correct: nobody granted it a budget. A shrink gives a negative `delta` and is
+ * never `over`, which is the other half of "this bounds the RATE of addition".
+ */
+interface Growth {
+  /** What the set emits today. */
+  bytes: number;
+  /** What the same files weighed at the last re-baseline. */
+  floor: number;
+  /** bytes - floor. Negative when the set shrank. */
+  delta: number;
+  /** floor + GROWTH_BUDGET — the point past which the set is over. */
+  budget: number;
+  /** True only when the set has spent its whole head-room. */
+  over: boolean;
+  /** Per-file growth, biggest first. A file that shrank or held is absent. */
+  grown: { rel: string; delta: number }[];
+}
+
+function growth(files: { rel: string; bytes: number }[]): Growth {
+  const bytes = files.reduce((n, f) => n + f.bytes, 0);
+  const floor = files.reduce((n, f) => n + (RULE_BASELINE[f.rel] ?? 0), 0);
+  const budget = floor + GROWTH_BUDGET;
+  const grown = files
+    .map((f) => ({ rel: f.rel, delta: f.bytes - (RULE_BASELINE[f.rel] ?? 0) }))
+    .filter((g) => g.delta > 0)
+    .sort((a, b) => b.delta - a.delta);
+  return { bytes, floor, delta: bytes - floor, budget, over: bytes > budget, grown };
+}
+
+/** The per-file breakdown both the hard bound and the report print. */
+function grownLines(g: Growth): string[] {
+  const width = Math.max(0, ...g.grown.map((x) => x.rel.length));
+  return g.grown.map((x) => `  ${x.rel.padEnd(width)}  +${fmt(x.delta)}`);
+}
+
+/**
+ * The hard bound's failure text. Factored out of the assertion so the unit tests
+ * at the bottom of this file can prove it names the file that grew, without any
+ * rule file having to be edited to produce a failure.
+ */
+function hardBoundMessage(g: Growth): string {
+  return [
+    "",
+    `The ALWAYS-ON rule set — the text every agent loads on every dispatch — has ` +
+      `grown ${fmt(g.delta)} bytes past its baseline, which is ` +
+      `${fmt(g.bytes - g.budget)} beyond the ${fmt(GROWTH_BUDGET)} of head-room it ` +
+      `gets (${fmt(g.bytes)} emitted, budget ${fmt(g.budget)} = floor ` +
+      `${fmt(g.floor)} + ${fmt(GROWTH_BUDGET)}).`,
+    "grown since the baseline was last set:",
+    ...grownLines(g),
+    "",
+    "This is the one budget that FAILS instead of reporting, because every byte of " +
+      "it is charged to every dispatch in the fleet and no agent can opt out. Cut " +
+      "the text where the growth is, then regenerate the golden with:",
+    "",
+    "  cd hooks && UPDATE_RULES_GOLDEN=1 npx vitest run lib/__tests__/rules-emission-golden.test.ts",
+    "",
+    "Regenerating does NOT clear this: the golden records what the files weigh, " +
+      "RULE_BASELINE records what they are allowed to weigh from. RULE_BASELINE " +
+      "moves at exactly the two events named in `## Re-baselining: the two events " +
+      "at which the baseline moves` in this file's header — after a cleanup, or at " +
+      "a one-time arming written into the cut log. Editing it to make this " +
+      "assertion pass is neither of them.",
+    "",
+  ].join("\n");
+}
+
+/**
+ * What this emission weighed at the last re-baseline: the baseline sizes of
+ * exactly the files it carries.
  */
 function floorOf(e: Emission): number {
-  return e.files.reduce((n, f) => n + (RULE_BASELINE[f.rel] ?? 0), 0);
+  return growth(e.files).floor;
 }
 
 /** Digit grouping with a space, so the report reads like the byte counts above. */
@@ -649,8 +841,10 @@ describe("rules emission golden", () => {
       `The golden at ${relative(pluginRoot, goldenPath)} has been REWRITTEN from live ` +
         `measurement. This failure is deliberate — it stops a regeneration run from ` +
         `ever being green. Now: (1) read the fixture diff and confirm every change is ` +
-        `one you intended, (2) re-run without UPDATE_RULES_GOLDEN. Nothing else has ` +
-        `to move: RULE_BASELINE is re-cut only after a cleanup, not after a change.`,
+        `one you intended, (2) re-run without UPDATE_RULES_GOLDEN. RULE_BASELINE ` +
+        `does NOT move with the golden: it is re-cut only at the two events in ` +
+        `\`## Re-baselining\` above, so a regeneration records growth and never ` +
+        `absolves it.`,
     ).toBe(false);
   });
 
@@ -765,41 +959,56 @@ describe("rules emission golden", () => {
     ).toEqual([]);
   });
 
-  it("reports, without failing, when a role's rule text is due for a cleanup", () => {
-    // The instrument this file exists for, and the one thing here that does NOT
-    // fail. Growth is allowed; the report says when it has accumulated enough to
-    // be worth a pass, and names the files, because a total on its own is a
-    // number nobody can act on.
+  it("holds the always-on rule set — what every agent loads — inside its budget", () => {
+    // THE HARD BOUND, armed 2026-08-14 (capability C10 of
+    // `circles/260801-1244-curator`). It measures the UNIVERSAL CORE and nothing
+    // else: the files the intersection above proves every agent loads. Growth
+    // here is charged to every dispatch in the fleet and no agent can decline
+    // it, which is the whole reason this one fails where the role report only
+    // prints. The disjoint other half is the test below.
+    //
+    // Every agent emits the same core files at the same sizes — that is what
+    // makes them the core — so one agent's emission carries the whole set.
+    const coreFiles = measured.get(agents[0])!.files.filter((f) => core.has(f.rel));
+    expect(
+      coreFiles.length,
+      "The universal core is empty, so this bound would pass on a measurement of " +
+        "nothing. The role-coverage test above says why that can happen.",
+    ).toBe(core.size);
+
+    const g = growth(coreFiles);
+    expect(g.over, hardBoundMessage(g)).toBe(false);
+  });
+
+  it("reports, without failing, when a role's own rule text is due for a cleanup", () => {
+    // The report this file was built for, narrowed on 2026-08-14 to each role's
+    // EXTRAS — the files it loads that not every agent loads. The core moved to
+    // the hard bound above, so the two sets are disjoint and every byte the
+    // fleet loads is measured exactly once. Role-specific growth still only
+    // reports: it is bought by the agents that need it, and the ratchet this
+    // file gave up in 2026-08-05 is what blocking it again would be.
+    //
+    // Every member of a role loads the same files, so one member is enough.
+    const extrasOf = (key: string) =>
+      measured.get(roles.get(key)![0])!.files.filter((f) => !core.has(f.rel));
+
     const lines: string[] = [];
 
-    // Worst overage first: when the growth is in the shared core every role is
-    // over at once, and the one furthest past its budget is the one to act on.
-    const byOverage = [...roles].sort(
-      ([, a], [, b]) =>
-        measured.get(b[0])!.total -
-        floorOf(measured.get(b[0])!) -
-        (measured.get(a[0])!.total - floorOf(measured.get(a[0])!)),
-    );
+    // Worst overage first: the role furthest past its budget is the one to act on.
+    const byOverage = [...roles.keys()]
+      .filter((key) => extrasOf(key).length > 0)
+      .sort((a, b) => growth(extrasOf(b)).delta - growth(extrasOf(a)).delta);
 
-    for (const [key, members] of byOverage) {
-      // Every member of a role loads the same files, so one is enough.
-      const e = measured.get(members[0])!;
-      const floor = floorOf(e);
-      const budget = floor + GROWTH_BUDGET;
-      if (e.total <= budget) continue;
-
-      const grown = e.files
-        .map((f) => ({ rel: f.rel, delta: f.bytes - (RULE_BASELINE[f.rel] ?? 0) }))
-        .filter((g) => g.delta > 0)
-        .sort((a, b) => b.delta - a.delta);
-      const width = Math.max(...grown.map((g) => g.rel.length));
+    for (const key of byOverage) {
+      const g = growth(extrasOf(key));
+      if (!g.over) continue;
 
       lines.push(
-        `role '${key}' — ${members.join(", ")}`,
-        `  ${fmt(e.total)} bytes, budget ${fmt(budget)} ` +
-          `(floor ${fmt(floor)} + ${fmt(GROWTH_BUDGET)})`,
+        `role '${key}' — ${roles.get(key)!.join(", ")}`,
+        `  ${fmt(g.bytes)} bytes of role-specific rule text, budget ${fmt(g.budget)} ` +
+          `(floor ${fmt(g.floor)} + ${fmt(GROWTH_BUDGET)})`,
         "grown since the last cut:",
-        ...grown.map((g) => `  ${g.rel.padEnd(width)}  +${fmt(g.delta)}`),
+        ...grownLines(g),
         "",
       );
     }
@@ -809,12 +1018,12 @@ describe("rules emission golden", () => {
         [
           "",
           "─".repeat(78),
-          "RULE-TEXT BUDGET — a cleanup is due. This does not fail the suite.",
+          "ROLE RULE-TEXT BUDGET — a cleanup is due. This does not fail the suite.",
           "",
           ...lines,
-          "-> cut where the growth is, then re-baseline RULE_BASELINE in",
-          "   hooks/lib/__tests__/rules-emission-golden.test.ts from the regenerated",
-          "   golden. Until then this report stands; it is not a blocker.",
+          "-> cut where the growth is, then re-baseline that file's RULE_BASELINE",
+          "   entry in hooks/lib/__tests__/rules-emission-golden.test.ts from the",
+          "   regenerated golden. Until then this report stands; it is not a blocker.",
           "─".repeat(78),
           "",
         ].join("\n"),
@@ -910,5 +1119,66 @@ describe("rules emission golden", () => {
         "RULE_BASELINE. Raising DRIFT_CEILING is not the third option: it is a " +
         "historical fact about a state this project decided to leave.",
     ).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// growth(), proved on synthetic file sets.
+//
+// The behaviours the hard bound and the report both rest on, exercised on
+// INVENTED byte counts against the real RULE_BASELINE. Nothing here reads or
+// edits a rule file: proving that growth fails would otherwise mean bloating an
+// always-on rule to see the gate fire, which is the one experiment this file
+// exists to make unnecessary.
+// ---------------------------------------------------------------------------
+describe("growth(), on synthetic file sets", () => {
+  /** Three real core files, each at exactly its baseline: zero growth by construction. */
+  const CORE = ["agent-setup.md", "fusion-workbench-conventions.md", "critical-stance.md"];
+  /** One real role-specific file — the disjoint half the hard bound must not see. */
+  const EXTRA = "circle-records.md";
+
+  const at = (rels: string[]) => rels.map((rel) => ({ rel, bytes: RULE_BASELINE[rel] }));
+
+  it("sits at zero growth when every file is at its baseline", () => {
+    const g = growth(at(CORE));
+    expect(g.delta).toBe(0);
+    expect(g.over).toBe(false);
+    expect(g.grown).toEqual([]);
+  });
+
+  it("goes over once the set has spent its whole head-room", () => {
+    const files = at(CORE);
+    files[1].bytes += GROWTH_BUDGET + 1;
+    const g = growth(files);
+    expect(g.delta).toBe(GROWTH_BUDGET + 1);
+    expect(g.over).toBe(true);
+  });
+
+  it("never goes over on a shrink, however large — this bounds the rate of addition", () => {
+    const files = at(CORE);
+    files[1].bytes -= 20_000;
+    const g = growth(files);
+    expect(g.delta).toBe(-20_000);
+    expect(g.over).toBe(false);
+    expect(g.grown).toEqual([]);
+  });
+
+  it("keeps growth in a role-specific file out of the universal-core measurement", () => {
+    // The disjointness the two gates rest on: the same overshoot that fires the
+    // report cannot reach the hard bound, because the hard bound is never called
+    // with that file.
+    const extras = [{ rel: EXTRA, bytes: RULE_BASELINE[EXTRA] + 2 * GROWTH_BUDGET }];
+    expect(growth(extras).over, "role-specific growth should reach the report").toBe(true);
+    expect(growth(at(CORE)).over, "and should not reach the hard bound").toBe(false);
+  });
+
+  it("names the file that grew, and the way out, in the hard bound's message", () => {
+    const files = at(CORE);
+    files[1].bytes += GROWTH_BUDGET + 500;
+    const msg = hardBoundMessage(growth(files));
+    expect(msg).toContain(CORE[1]);
+    expect(msg).toContain(`+${fmt(GROWTH_BUDGET + 500)}`);
+    expect(msg).toContain("UPDATE_RULES_GOLDEN=1");
+    expect(msg).toContain("## Re-baselining: the two events at which the baseline moves");
   });
 });

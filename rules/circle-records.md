@@ -11,11 +11,11 @@ each consumer's key set by reading that consumer's own prompt, and exactly three
 name a Circle-scoped key — `orchestrator` (`$SCAN_CIRCLES`, `$PORTFOLIO`), `playmaker`
 (`$OUT_CIRCLE`, `$SCAN_CIRCLES`, `$PORTFOLIO`) and `shaper` (`$OUT_CIRCLE`,
 `$SCAN_CIRCLES`). Those three are who `bin/fusion-rules` emits this file to. The other
-thirteen agents work inside a Circle without ever transitioning one, and reach this file
-through the pointer in `rules/fusion-workbench-conventions.md`. Skills reach rule text by
-direct citation, never through `bin/fusion-rules`, which serves agents only and exits 2 on
-any other name; the skills that cite this file today are `/fusion:next`, `/fusion:direct`
-and `/fusion:migrate`.
+agents work inside a Circle without ever transitioning one, and reach this file through
+the pointer in `rules/fusion-workbench-conventions.md`. Skills reach rule text by direct
+citation, never through `bin/fusion-rules`, which serves agents only and exits 2 on any
+other name; the skills that cite this file today are `/fusion:next`, `/fusion:direct` and
+`/fusion:migrate`.
 
 Two things deliberately stayed behind in the conventions file, because their audience is
 every agent rather than these three. The glob forms for reading a marker off a filename
