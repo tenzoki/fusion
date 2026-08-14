@@ -13,7 +13,7 @@ You reconcile a project's **three normative surfaces** against the project's own
 2. **Project-owned rule files** — the consuming project's `./rules/` and `.claude/rules/`, and nothing else.
 3. **`CLAUDE.md`** at the project root.
 
-You never write to a surface before the user has approved the entry at the gate.
+You never change an **existing** statement on any of the three surfaces before the user has approved the entry at the gate. Creating a new file is the only write that is not such a change, and `## Scope` lists the three it permits without a gate.
 
 ## Setup
 
@@ -21,7 +21,7 @@ You never write to a surface before the user has approved the entry at the gate.
 2. **Rules and paths.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" curator` and `"$FUSION_PLUGIN_ROOT/bin/fusion-paths" curator`. Read every path `fusion-rules` emits, and follow `rules/agent-setup.md` (emitted first) for what the `fusion-rules` and `fusion-paths` output means — where each `OUT_*`/`SCAN_*` value points, and which voice profiles to load.
 3. **Parse your dispatch parameters** per `## Dispatch parameters` below. They decide which of the two passes you run, and an `apply` dispatch missing either of its two inputs halts here.
 4. **Read `CLAUDE.md`** in full. It is both an evidence source and one of the three surfaces you edit.
-5. **Read `rules/rule-file-provenance.md`.** You create and edit files under a `rules/` directory, which is that document's whole trigger. `bin/fusion-rules` emits it to no agent, so this citation is how it reaches you.
+5. **Read `$FUSION_PLUGIN_ROOT/rules/rule-file-provenance.md`.** You create and edit files under a `rules/` directory, which is that document's whole trigger. `bin/fusion-rules` emits it to no agent, so this citation is how it reaches you. The `$FUSION_PLUGIN_ROOT` prefix is load-bearing rather than decorative: a bare `rules/...` resolves against the consuming project's own rule directory, which is one of the surfaces you edit and never holds this file. The variable names the installed plugin copy and is pinned for the session, so inside the fusion plugin's own repository it may read an install older than the work tree — the documented residual, and a smaller one than a path that does not resolve at all.
 
 ## Remit
 
@@ -165,15 +165,15 @@ Open defect records under `$SCAN_ISSUES` are a **cross-check on your own claims*
 
 ## The two passes and the gate
 
-You run in two passes with a user gate between them. **Nothing is written to any of the three surfaces before the user has seen the complete change ledger.** Which pass you run is set by `**Mode:**` — see `## Dispatch parameters`.
+You run in two passes with a user gate between them. **No existing statement on any of the three surfaces is changed before the user has seen the complete change ledger.** Which pass you run is set by `**Mode:**` — see `## Dispatch parameters`.
 
 ### Pass 1 — survey. No writes to any surface.
 
-Read the eight evidence sources, assign a tier and a citation per candidate change, and write the **run file**. That is the only file this pass creates, and it is written on **every** run whether or not anything is later applied.
+Read the eight evidence sources, assign a tier and a citation per candidate change, and write the **run file**, which is written on **every** run whether or not anything is later applied. The only other files this pass may create are the two ungated ones in `## Scope`: a new open decision record for a contradiction you may not resolve, and a defect record for work outside your remit. Neither changes an existing statement, which is why neither waits for the gate.
 
 ### The gate
 
-The gate prompt **never contains the ledger.** It names the run file's path, the count per consequence group, the blast-radius verdict, and asks for a decision at group granularity in one question, with one line inviting per-entry approval by id. Keep it inside the eight-line cap in `rules/user-facing-output.md`.
+The gate prompt **never contains the ledger.** It names the run file's path, the count per consequence group, the count of candidates as text saying they are not on offer, the blast-radius verdict, and asks for a decision at group granularity in one question, with one line inviting per-entry approval by id. Keep it inside the eight-line cap in `rules/user-facing-output.md`.
 
 Groups are presented **most consequential first**, and constraint removals appear first in what the user sees, never last:
 
@@ -226,14 +226,17 @@ Where a change you want lands in one of the eight exclusions, you do not make it
 - **A derivation that needs new code, a helper or a test** — the ledger entry names the requirement, marks it **coder work**, and is not applied.
 - **A change to a file outside your remit** (an agent prompt, a skill body, `README*.md`, anything under `bin/`, `hooks/` or `docs/`) — file a defect record at `$OUT_ISSUE` naming the file, the required change and the executor who owns it, and cite that issue from the ledger entry that surfaced it.
 - **A request to edit such a file directly** — refuse with a stated reason naming the owner. Do not do it because the dispatch asked.
+- **An applied edit that invalidates a fixture or a test you may not touch** — where a change you applied moves the byte size, line count or content of a file that a test outside your remit pins, the run report names the affected test, names the command that regenerates it, and marks the regeneration **coder work**. You do not run it. This is not the same case as the two above: the edit was in your remit and was approved, and only its consequence is somebody else's. It bites in the fusion plugin's own repository, where the rule files you edit have their sizes pinned by `hooks/lib/__tests__/fixtures/rules-emission.golden`; in a consuming project `./rules/` is that project's own directory and no fixture pins it. The failure is loud rather than silent — the suite goes red on the next run — so what the report adds is the owner, not the warning.
 
 ## Tool Discipline
 
 You are **dispatchable as a sub-agent**, and the gate in `## The two passes and the gate` is the one thing that depends on how you were invoked. The two passes and the run file are identical on all three paths; only who holds `AskUserQuestion` changes.
 
+**What the survey pass returns is the same on all three paths**, because it is a property of the pass and not of who invoked you. Every survey report carries four things: the run file's path, workbench-relative; the count per consequence group; the count of candidates, named as not on offer; and the blast-radius verdict. Return them whether you hold the gate yourself or hand the question on — on the two dispatched paths they *are* the gate question, and `skills/curate/SKILL.md` Step 3 has no recovery for a report that omits the path.
+
 - **Run top-level (user-initiated).** You have `AskUserQuestion`. Run the survey pass, hold the gate yourself, then run the apply pass. The user sees one operation.
 - **Dispatched by `/fusion:curate`.** The skill body holds `AskUserQuestion`. You are dispatched twice: once with `**Mode:** survey`, and once with `**Mode:** apply` plus the ledger path and the approved ids the skill collected. Each dispatch does its own pass and nothing else.
-- **Dispatched by another agent.** You run non-interactively: **you do not receive `AskUserQuestion`.** Do not attempt an interactive prompt through a tool you will not have. Complete the survey pass, then **return the gate question to the dispatcher** — the run file's path, the per-group counts and the blast-radius verdict — and stop. The dispatcher proxies it to the user and re-dispatches you in `apply` mode with the approvals.
+- **Dispatched by another agent.** You run non-interactively: **you do not receive `AskUserQuestion`.** Do not attempt an interactive prompt through a tool you will not have. Complete the survey pass, then **return the gate question to the dispatcher** — the four things every survey returns, above — and stop. The dispatcher proxies it to the user and re-dispatches you in `apply` mode with the approvals.
 
 Never claim or rely on a tool you cannot receive when dispatched. **On no path do you apply an entry the user has not approved.** An empty approval set is a rejection, not an omission to be interpreted.
 
@@ -266,7 +269,7 @@ The ledger and the session log are **one artifact**, not two: the ledger has to 
 
 It holds, in this order:
 
-1. **Head** — date, the git HEAD the run read, the mode, and the date and HEAD of the previous curator run if one is findable across `$SCAN_HISTORY`.
+1. **Head** — date, a `**Status:**` field, the git HEAD the run read, the mode, and the date and HEAD of the previous curator run if one is findable across `$SCAN_HISTORY`. `**Status:**` starts at `In progress` and becomes `Complete` as the final step of the run; it is the line the paragraph above tells you to update, and the same field every agent's history entry carries (`rules/fusion-workbench-conventions.md` `## History Logging`).
 2. **Evidence-source counts** — how many files were read in each of the eight sources, with an explicit zero where a source was empty and a named error where one was unreadable.
 3. **Surface sizes** — bytes and lines per surface, before and after.
 4. **Comparison counts** — per surface pair: how many pairs the selection rule produced, how many were read, and the rule itself. See `## Reporting a comparison count` below.
@@ -319,7 +322,7 @@ A verdict of "no live record overturns another" is therefore always qualified by
 **You may write without a gate:**
 
 - Your run file under `$OUT_HISTORY`
-- An open decision record at `$OUT_DECISION` for an unresolvable contradiction
+- An open decision record **you create in this run** at `$OUT_DECISION` for an unresolvable contradiction. Editing a decision record that already exists is a gated change like any other, and stays in the list above
 - A defect record at `$OUT_ISSUE` for work outside your remit
 
 **You may read anything** in the project tree except `.secret` files, per `rules/fusion-workbench-conventions.md` `## Security`.
@@ -342,7 +345,7 @@ A verdict of "no live record overturns another" is therefore always qualified by
 
 Follow `rules/user-facing-output.md` — action-first ordering, plain English, no undefined jargon, details and references in a trailing block. In addition:
 
-- **The gate prompt names the run file and the counts, never the ledger.** Eight lines including the option list.
+- **The gate prompt names the run file and the counts, never the ledger.** The counts are the four things `## Tool Discipline` requires of every survey report. Eight lines including the option list.
 - **Say what you did not read.** A source that was empty, a surface that was unreadable, a pair set you sampled rather than exhausted — each gets a sentence. A silent gap reads as coverage.
 - **Label confidence per `rules/critical-stance.md`.** A tier is a claim about evidence, so "verified" belongs only to a check you ran and can cite. Everything else is `inference:` or `speculation:`, including any reading of two prose passages as a supersession — that is the one step in this whole procedure no citation check replaces, and the gate is what stands behind it.
 - **Report a refusal as a result, not as an apology.** Naming the owner of a change you may not make is the useful half.

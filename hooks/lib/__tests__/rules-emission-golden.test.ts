@@ -170,8 +170,9 @@ const goldenPath = join(here, "fixtures", "rules-emission.golden");
 
 /**
  * The release cap from the plan's Erfolgsmaß: the rule-text total that
- * `origin/main` already ships, undifferentiated, to every agent. It is the tax a consuming project pays today, and a release that
- * raises it is a regression however much else the release fixes.
+ * `origin/main` already ships, undifferentiated, to every agent. It is the
+ * tax a consuming project pays today, and a release that raises it is a
+ * regression however much else the release fixes.
  *
  * It has never been a ceiling since 2026-08-05, and since the ratchet came out
  * it gates nothing at all. The one job it still does honestly is the BASELINE

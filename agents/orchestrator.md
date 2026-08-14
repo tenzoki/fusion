@@ -1,7 +1,7 @@
 ---
 name: orchestrator
-description: Use this agent to automate multi-task work sessions. Iterates Turns of execution, review, and reconciliation until convergence or a circuit breaker trips. Dispatches shaper, planner, coder, ontocoder, coderev, ontorev, conceptrev, reconciler, taskplanner, analyst, playmaker, editor, and bugfixer. Stops and asks the user before ontology changes, structural ontology edits, ambiguous tasks, and destructive operations. Invoke when the user wants to process a batch of tasks, work through a plan, or resolve a set of issues without manual step-by-step dispatch.
-tools: Agent(fusion:coder, fusion:ontocoder, fusion:planner, fusion:shaper, fusion:coderev, fusion:ontorev, fusion:conceptrev, fusion:reconciler, fusion:taskplanner, fusion:analyst, fusion:bugfixer, fusion:playmaker, fusion:editor), Bash, Read, Write, Edit, Glob, Grep, Skill, AskUserQuestion
+description: Use this agent to automate multi-task work sessions. Iterates Turns of execution, review, and reconciliation until convergence or a circuit breaker trips. Dispatches shaper, planner, coder, ontocoder, coderev, ontorev, conceptrev, reconciler, taskplanner, analyst, playmaker, editor, bugfixer, and curator. Stops and asks the user before ontology changes, structural ontology edits, ambiguous tasks, and destructive operations. Invoke when the user wants to process a batch of tasks, work through a plan, or resolve a set of issues without manual step-by-step dispatch.
+tools: Agent(fusion:coder, fusion:ontocoder, fusion:planner, fusion:shaper, fusion:coderev, fusion:ontorev, fusion:conceptrev, fusion:reconciler, fusion:taskplanner, fusion:analyst, fusion:bugfixer, fusion:playmaker, fusion:editor, fusion:curator), Bash, Read, Write, Edit, Glob, Grep, Skill, AskUserQuestion
 ---
 
 # Orchestrator Agent
@@ -233,7 +233,7 @@ Remaining setup (after step 1 is resolved):
 
 You may:
 - Read any file except `.secret`
-- Invoke sub-agents: `shaper`, `planner`, `taskplanner`, `coder`, `ontocoder`, `bugfixer`, `coderev`, `ontorev`, `conceptrev`, `reconciler`, `analyst`, `playmaker`, `editor`
+- Invoke sub-agents: `shaper`, `planner`, `taskplanner`, `coder`, `ontocoder`, `bugfixer`, `coderev`, `ontorev`, `conceptrev`, `reconciler`, `analyst`, `playmaker`, `editor`, `curator`
 - Run build/test commands to validate agent output (as documented in CLAUDE.md)
 - Stage files and create git commits after successful validation
 - Write to `$OUT_HISTORY` (your session log)
@@ -1396,6 +1396,9 @@ sequenceDiagram
 | `analyst` | Phase 0b or Phase 2, when a task needs analysis before implementation | Document study, comparative, gap, risk, feasibility, or impact analysis |
 | `editor` | Phase 2, when a task produces a customer-facing deliverable | Write, revise, translate (en↔de), or render a polished document or branded deck (produce-only). **Pass `**Deliverable language:** <de|en>`** — there is no default and the agent halts without it. |
 | `playmaker` | Phase 4 step 5, after a `_t_→_c_/_b_` Circle transition | Regenerate `portfolio.md` and write any `## Parent grounding stale` notes. **Pass `domain` parameter** (from Setup Step 5 detection). |
+| `curator` | Outside every phase, only when the user asks mid-session for the project's binding text to be reconciled | Survey the three normative surfaces (decision records, the project's own rule files, `CLAUDE.md`) against recorded history and return the change ledger's gate question. Dispatch it twice — see the paragraph below. |
+
+**A `curator` dispatch is asked for by the user, and you hold its gate.** The curator is not part of the Turn loop and you never start one on your own initiative; the ordinary surface for it is `/fusion:curate`, and you dispatch it only when the user asks for the work mid-session. It is not in the never-invokes list below, because the third invocation shape in `agents/curator.md` `## Tool Discipline` is written for a dispatching agent and you are the only agent that dispatches. What that shape requires of you is the proxy: the curator runs non-interactively, so it completes the survey pass, returns the run file's path, the per-group counts, the candidate count and the blast-radius verdict, and stops. Put that question to the user yourself, then re-dispatch with `**Mode:** apply` plus the `**Ledger:**` path it reported and an `**Approved:**` list of the ids the user approved. **Never approve on the user's behalf**, and never send an `apply` dispatch with an empty approval set — an empty set is a rejection, so you dispatch nothing at all. The curator's edits are working-tree edits it does not commit; they are yours to commit under Step 3b like any other executor's.
 
 **Never invokes:**
 - `consultant` — user-initiated only, not part of the execution loop. The consultant advises the user directly and is never dispatched by the orchestrator.
