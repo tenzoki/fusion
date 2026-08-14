@@ -127,3 +127,33 @@ in one working session.
 - **Circuit breaker status:** OK. Three tasks resolved against seven issues created, so the
   net-negative row is armed but not tripped; it needs two consecutive Turns.
 - **Coherence:** recorded at the per-Turn gate.
+
+### Turn 2
+
+- **Tasks attempted:** T5 (the seven Turn-1 review findings), T4 (plan step 5, arming the growth
+  bound, preceded by a stale derived count that would otherwise have been baselined).
+- **Tasks completed:** both. None errored, none skipped, no bugfixer dispatch.
+- **Commits:** `5a1ec16`, `5c843e6`, plus the orchestrator's staging repair `00f4a0b`.
+- **Validation:** `cd hooks && npm test` after each task, exit 0; 1024 tests after T5, 1030 after
+  T4 with the bound armed and no budget report printed for any role. `claude plugin validate .`
+  passed after both.
+- **Two orchestrator errors this Turn, both corrected and both worth recording.** The staging list
+  for T5 reached for a glob to name the seven pre-rename filenames; a renamed file is already gone
+  from disk, so the pattern matched nothing and git recorded seven additions with no deletions,
+  leaving the open names in HEAD beside their own closures. This is `f38f37d` from the opposite
+  side, and the executor's report had carried all fourteen paths in full. Repaired in `00f4a0b`.
+  Separately, a commit hash was written into `agentstate.yaml` without being read back; corrected to
+  `5a1ec16`.
+- **Review findings:** `coderev` over `5b81f5a..5c843e6`, three defects, all in comment and
+  description text and none in behaviour. It verified every one of the five conditions the arming
+  decision imposed against the diff, recomputed all fifteen figures of the overshoot table, and
+  independently confirmed the orchestrator role floor at 229 bytes under `RELEASE_CAP`.
+- **The reviewer's verdict on the Directive: build half met, proof half not begun.** C11, the
+  validation run of `/fusion:curate` against this project's own decision corpus, has not been
+  performed and no curator run file exists. The Directive names that run as the proof of the
+  capability. Everything Turn 1 flagged as a blocker for it is closed.
+- **Review coverage:** `covered`, 11 commits, 0 uncovered. The conceptrev diagram evaluation
+  remains unusable to the helper, filed separately.
+- **Circuit breaker status:** OK. Two tasks resolved against three issues created — the Turn-1
+  ratio was three against eleven, so the net-negative row has now had one qualifying Turn and one
+  non-qualifying one, and does not trip.

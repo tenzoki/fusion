@@ -83,6 +83,17 @@ flowchart LR
   from the orchestrator's dispatch allowlist, which leaves two of its three invocation shapes
   unreachable and spec criterion C7 unmet.
 
+- Turn 2 (session 260813-2345): commits 249e606..5c843e6; Coherence verdict recorded at the
+  per-Turn gate; session history: shared/history/260813-2345-orchestrator-session.md. Two tasks
+  done. T5 closed all seven Turn-1 defects, the severe one by registering the curator at four sites
+  in `agents/orchestrator.md`, verified by a headless smoke dispatch with a control rather than by
+  reading. T4 removed a stale derived count from `rules/circle-records.md` and then armed the growth
+  bound, in that order so that one golden regeneration covered both and the baseline describes the
+  corpus that ships. Both of the Circle's decision records reached the implemented marker.
+  `coderev` filed three further defects, all in comment and description text, none in behaviour, and
+  judged the Directive's build half met and its proof half not begun: the C11 validation run against
+  the project's own decision corpus has not been performed and no curator run file exists.
+
 ## Activation proposal
 
 **Als nächster Circle gereiht, aber nicht zur Aktivierung vorgeschlagen — playmaker-Lauf

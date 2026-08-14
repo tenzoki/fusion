@@ -1394,3 +1394,8 @@
 {"ts":"2026-08-14T09:01:00","event":"task_done","turn":2,"task":"T5","agent":"coder","detail":"7 findings closed; npm test exit 0; plugin validate passed; allowlist verified by smoke dispatch with control"}
 {"ts":"2026-08-14T09:01:00","event":"state_drift","turn":2,"detail":"progress.commits said 8, git counted 10 — the repair commit for the unstaged renames was not written back before the next tool call. Corrected. Turn-log row is the known expected-by-construction case, filed as 260814-0920."}
 {"ts":"2026-08-14T09:01:00","event":"task_start","turn":2,"task":"T4","agent":"coder","detail":"plan step 5, arming the growth bound, preceded by the circle-records count fix"}
+{"ts":"2026-08-14T09:20:14","event":"commit","turn":2,"task":"T4","detail":"5c843e6 — growth bound armed"}
+{"ts":"2026-08-14T09:20:14","event":"task_done","turn":2,"task":"T4","agent":"coder","detail":"npm test exit 0, 1030 tests, no budget report for any role"}
+{"ts":"2026-08-14T09:20:14","event":"review_start","turn":2,"agent":"coderev","detail":"range 249e606..HEAD"}
+{"ts":"2026-08-14T09:35:34","event":"review_done","turn":2,"agent":"coderev","detail":"3 issues filed; arming verified against all five decision conditions; Directive build half met, proof half (C11) not begun"}
+{"ts":"2026-08-14T09:35:34","event":"turn_end","turn":2,"detail":"2 tasks resolved, 3 issues created, 2 task commits plus 1 staging repair"}

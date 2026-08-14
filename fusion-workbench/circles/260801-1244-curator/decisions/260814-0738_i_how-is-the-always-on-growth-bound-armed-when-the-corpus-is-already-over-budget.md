@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** answered
+**Status:** implemented
 **Filed by:** shaper (portfolio-activation mode)
 **Cross-references:** `circles/260801-1244-curator/planning/260814-0738_o_spec-curator.md` C10; `hooks/lib/__tests__/rules-emission-golden.test.ts`; `shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`
 
@@ -47,6 +47,6 @@ Confidence, labelled per `rules/critical-stance.md`: the measurements are verifi
 
 ---
 Answered: shared/history/260813-2345-orchestrator-session.md § User decisions recorded this session, item 5 — option 1, re-baseline once at arming; the 2026-08-14 overshoot is written into the file as text so the standing cleanup request survives the number moving. Answered by the user on 2026-08-14 at an orchestrator gate, having been shown that this overrides the recorded position in rules-emission-golden.test.ts.
-Implemented:
+Implemented: 5c843e6 — the five core entries in RULE_BASELINE re-set once at the arming, each carrying an inline comment naming the event; the three role-specific entries keep their 2026-08-05 figures. The cut log gains a dated arming entry stating that no bytes were removed and reproducing the per-role overshoot as text, so the standing cleanup request survives the number moving. RELEASE_CAP and DRIFT_CEILING untouched. The bound was falsified live against an always-on file and a role-specific one before being accepted.
 Deferred:
 Superseded by:
