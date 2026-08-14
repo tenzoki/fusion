@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** anticipated
+**Status:** active
 **Filed by:** shaper (anticipated-circle mode)
 **Active spec/plan:** circles/260801-1244-curator/planning/260814-0738_o_spec-curator.md
 **Active session history:** (none yet)
@@ -228,3 +228,56 @@ portfolio-activation mode for a Directive without capability C9, a fresh validat
 Grounding measured this week, and an answer on whether the Directive needs a rate-bounding
 component. Then run `/fusion:next`. Playmaker only names this. The re-sharpening is shaper work and
 the activation is yours.
+
+## Activation proposal (playmaker run 260814-0823)
+
+**Recommended for activation. Playmaker run 260814-0823, trigger direct-dispatch, domain bias
+`code`.** Appended beside the sections from runs 260807-1646, 260813-0007 and 260813-2326 rather
+than replacing them. Those three each ranked this Circle first and declined to propose it. This one
+proposes it, and the reason is that the work those runs asked for has been done.
+
+**What changed, in one commit.** `f273b9a` landed the shaper's portfolio-activation pass of
+2026-08-14, recorded at `circles/260801-1244-curator/history/260814-0738-shaper-curator.md`. It
+discharged all three standing blockers at once. The Grounding snapshot was re-measured against HEAD
+`d7786eb` on the day it was written, so the falsification this record carried on nine consecutive
+runs is gone. The validation case is new and is the project's own decision corpus, 82 records of
+which none is marked superseded, which replaces the capability C9 proof that another Circle
+performed by hand. And the rate-bounding question the run at 260813-0007 raised is answered inside
+the Directive as capability C10, a growth bound on the always-on rule set that turns the existing
+budget report into a failing test.
+
+**The Circle now has the founding documents it lacked.** A spec at
+`circles/260801-1244-curator/planning/260814-0738_*_spec-curator.md`, seven capabilities, with the
+head field pointing at it. All six artifact subdirectories exist, so the housekeeping gap the run at
+260813-0007 noticed is closed.
+
+**On the code heuristic it scores clean, and this time the score means something.** All three
+dependencies are closed coherent: `260801-1244-rule-provenance-header` on 260802,
+`260801-1244-guard-rules-write` on 260805, and transitively `260801-1244-guard-bash-inspection` on
+260801. The Grounding snapshot cites no open decision record. Its one decision,
+`circles/260801-1244-curator/decisions/260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`,
+carries the answered marker: the user chose option 1, a one-time re-baseline at the moment of
+arming, at an orchestrator gate on 2026-08-14. First place is still uncontested, since this remains
+the only non-terminal Circle in the portfolio, but the rank is no longer the only thing supporting
+the recommendation.
+
+**Three surfaces still describe that decision as open, and a planner reading any of them would
+stop.** The Grounding snapshot says "One question is open and is the user's to answer before the
+planner plans the growth bound". The spec's `## User Decisions Pending` carries an unticked box for
+the same question. Both cite the record by a path spelling the open marker, which no longer
+resolves. The answer arrived after the two documents were written, so this is a lag rather than a
+contradiction, and it costs one edit to each. It does not block activation; it blocks the planner if
+nobody corrects it first.
+
+**One filed defect touches what the portfolio renders.**
+`circles/260801-1244-curator/issues/260814-0813_*_the-circle-records-title-and-dependencies-still-describe-the-conventions-file-as-the-validation-case.md`
+records that this record's title and its `## Dependencies` section still name the conventions file
+as the proof, which the Directive above them no longer claims. The title is what `portfolio.md`
+renders and what `/fusion:next` reads aloud, so until it is corrected the portfolio advertises a
+validation case this Circle has retired. The record's own filer judged it not blocking, and this run
+agrees: the Directive, the Grounding and the spec are current and consistent with each other.
+
+**Proposed next step.** Run `/fusion:next` and confirm activation. The two lag edits above are worth
+making first, because they are cheap and because the planner is the next agent to read both
+documents. Playmaker only proposes. The rename of this record to the active marker and the
+`.active-circle` pointer are the orchestrator's writes, on your confirmation.
