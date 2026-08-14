@@ -1252,6 +1252,126 @@ function projectSeededWithTemplate(): string {
   return root;
 }
 
+/**
+ * The top-level keys of `fusion-guard.json` that a project is documented to set
+ * for itself, and which the drift check below therefore admits as a difference
+ * between this repository's copy and the shipped template. This list is the ONE
+ * place that exemption is stated: a setting that becomes project-configurable
+ * later is admitted by adding its top-level key here and nowhere else.
+ *
+ * `orchestrator` is here because `templates/fusion-guard.json`'s own
+ * `_turnBudget` note tells every project that this file is the only place to
+ * change the orchestrator's Turn budget, and this repository is such a project.
+ */
+const PROJECT_SET_KEYS = ["orchestrator"] as const;
+
+/** Index just past the closing quote of the JSON string starting at `start`. */
+function endOfString(text: string, start: number): number {
+  for (let i = start + 1; i < text.length; i++) {
+    if (text[i] === "\\") {
+      i++;
+      continue;
+    }
+    if (text[i] === '"') return i + 1;
+  }
+  return text.length;
+}
+
+/** Index of the first non-whitespace character at or after `from`. */
+function nextNonSpace(text: string, from: number): number {
+  let i = from;
+  while (i < text.length && /\s/.test(text[i])) i++;
+  return i;
+}
+
+/**
+ * Index of the opening quote of `key` where it is used as a TOP-LEVEL key, or
+ * -1. The scan tracks string and nesting state, so the key's name occurring
+ * inside one of the documentation notes — `_turnBudget` names `orchestrator`
+ * twice — is not mistaken for a declaration of it.
+ */
+function findTopLevelKey(text: string, key: string): number {
+  const token = JSON.stringify(key);
+  let depth = 0;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (ch === '"') {
+      const end = endOfString(text, i);
+      const isKeyHere =
+        depth === 1 &&
+        end === i + token.length &&
+        text.startsWith(token, i) &&
+        text[nextNonSpace(text, end)] === ":";
+      if (isKeyHere) return i;
+      i = end - 1;
+      continue;
+    }
+    if (ch === "{" || ch === "[") depth++;
+    else if (ch === "}" || ch === "]") depth--;
+  }
+  return -1;
+}
+
+/** Index just past the last character of the value of the entry at `keyStart`. */
+function endOfEntryValue(text: string, keyStart: number): number {
+  let i = text.indexOf(":", endOfString(text, keyStart)) + 1;
+  let depth = 0;
+  for (; i < text.length; i++) {
+    const ch = text[i];
+    if (ch === '"') {
+      i = endOfString(text, i) - 1;
+      continue;
+    }
+    if (ch === "{" || ch === "[") depth++;
+    else if (ch === "}" || ch === "]") {
+      if (depth === 0) break; // the enclosing object's own closing brace
+      depth--;
+    } else if (ch === "," && depth === 0) break;
+  }
+  while (i > 0 && /\s/.test(text[i - 1])) i--; // back off to the value itself
+  return i;
+}
+
+/** `text` with the top-level entry `key` cut out; unchanged if it has none. */
+function cutTopLevelEntry(text: string, key: string): string {
+  const keyStart = findTopLevelKey(text, key);
+  if (keyStart < 0) return text;
+
+  const valueEnd = endOfEntryValue(text, keyStart);
+  const terminator = nextNonSpace(text, valueEnd);
+
+  if (text[terminator] === ",") {
+    // Not the last entry: the whole line goes, its comma and line break with it.
+    let start = keyStart;
+    while (start > 0 && (text[start - 1] === " " || text[start - 1] === "\t")) start--;
+    let end = terminator + 1;
+    while (text[end] === " " || text[end] === "\t") end++;
+    if (text[end] === "\r") end++;
+    if (text[end] === "\n") end++;
+    return text.slice(0, start) + text.slice(end);
+  }
+
+  // The last entry: the comma separating it from the previous entry goes with
+  // it, and the whitespace before the closing brace stays where it is.
+  let start = keyStart;
+  while (start > 0 && /\s/.test(text[start - 1])) start--;
+  if (text[start - 1] === ",") start--;
+  return text.slice(0, start) + text.slice(valueEnd);
+}
+
+/**
+ * `text` with the {@link PROJECT_SET_KEYS} entries cut out and every other byte
+ * left exactly where it was. Cutting the source rather than re-serialising the
+ * parsed object is deliberate: `JSON.parse` + `JSON.stringify` would normalise
+ * away the indentation, the blank lines and the key order, which are three of
+ * the four things the comparison below exists to hold still.
+ */
+function withoutProjectSetKeys(text: string): string {
+  let out = text;
+  for (const key of PROJECT_SET_KEYS) out = cutTopLevelEntry(out, key);
+  return out;
+}
+
 describe("the seeded template declares inheritance and declares nothing", () => {
   it("merges to the plugin's configuration and nothing else", () => {
     const root = projectSeededWithTemplate();
@@ -1322,17 +1442,43 @@ describe("the seeded template declares inheritance and declares nothing", () => 
     );
   });
 
-  it("is what this repository's own fusion-guard.json is, byte for byte", () => {
-    // Per plan Q4 the repository root carries the template verbatim. Asserted
-    // rather than eyeballed, because the two files drift the first time someone
-    // edits the one they happen to have open.
-    const template = readFileSync(TEMPLATE);
-    const copy = readFileSync(REPO_COPY);
+  it("is what this repository's own fusion-guard.json is, apart from the keys this repository sets for itself", () => {
+    // Per plan Q4 the repository root carries the template. Asserted rather than
+    // eyeballed, because the two files drift the first time someone edits the
+    // one they happen to have open.
+    //
+    // WHAT IS COMPARED: every byte of both files except the top-level entries
+    // named in PROJECT_SET_KEYS, which are cut out of each side first. So the
+    // five documentation notes are still held byte for byte — edit one, delete
+    // one, reorder them, or change a space inside the shared part and this case
+    // fails, which is the drift it was written to catch.
+    //
+    // WHAT IS DELIBERATELY NOT COMPARED, and why: the value of a key a project
+    // is documented to set for itself. `templates/fusion-guard.json`'s own
+    // `_turnBudget` note tells every project that this file is the only place to
+    // change the orchestrator's Turn budget; this repository runs its own
+    // workbench and its own Turn loop, so it is such a project, and it sets
+    // `"orchestrator": {"maxTurns": N}` here. Byte identity cannot tell that
+    // apart from accidental drift — a documented change and a stray edit are the
+    // same bytes — so the check keeps the question it CAN decide and drops the
+    // one it cannot. Issue 260814-2022, option 1.
+    const templateText = readFileSync(TEMPLATE, "utf-8");
+    const templateBytes = readFileSync(TEMPLATE);
+    const copyText = readFileSync(REPO_COPY, "utf-8");
 
-    // Text first, so a failure shows the difference; bytes second, so the case
-    // says what it claims to say.
-    expect(copy.toString("utf-8")).toBe(template.toString("utf-8"));
-    expect(copy.equals(template)).toBe(true);
+    // Anti-vacuity, and the reason the right-hand side below is the template's
+    // untouched text: the template declares no setting at all, so the cut must
+    // be a no-op on it. A cut that silently ate shared prose would have to eat
+    // it here first.
+    expect(withoutProjectSetKeys(templateText)).toBe(templateText);
+
+    const stripped = withoutProjectSetKeys(copyText);
+
+    // Text first, so a failure shows the difference; bytes second, against the
+    // template's bytes as read, so the case still says something about bytes and
+    // not only about what decoded from them.
+    expect(stripped).toBe(templateText);
+    expect(Buffer.from(stripped, "utf-8").equals(templateBytes)).toBe(true);
   });
 });
 
