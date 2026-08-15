@@ -1,11 +1,11 @@
 ---
-description: Reconcile the project's three normative surfaces — its decision records, its own rule files, and CLAUDE.md — against its recorded history. Dispatches the curator to survey, puts the change ledger to the user at a gate, then dispatches it again to apply only what was approved.
+description: The CLAUDE.md step of /fusion:cleanup, kept as its own body rather than a command. Reconciles the project's three normative surfaces — its decision records, its own rule files, and CLAUDE.md — against its recorded history: dispatches the curator to survey, puts the change ledger to the user at a gate, then dispatches it again to apply only what was approved.
 allowed-tools: [Bash, Read, AskUserQuestion, Agent(fusion:curator)]
 ---
 
 # Fusion — curate (reconcile the normative surfaces)
 
-The user invoked `/fusion:curate`. This skill is the user-facing surface for the `curator` agent. It dispatches the agent to **survey**, reads the run file the agent wrote, holds the **gate** itself, and dispatches the agent a second time to **apply** only the entries the user approved.
+This is the `CLAUDE.md` step of `/fusion:cleanup` (its Step 5), and the procedure below is what that step reads and performs inline. It is not one of fusion's three commands; the caller that runs it holds the gate. Whatever runs it, this body is the user-facing surface for the `curator` agent. It dispatches the agent to **survey**, reads the run file the agent wrote, holds the **gate** itself, and dispatches the agent a second time to **apply** only the entries the user approved.
 
 **This skill writes nothing.** The two dispatches are the only writes in the whole operation, and only the second one reaches a normative surface. Rejecting everything at the gate leaves all three surfaces byte-identical and still leaves the run file on disk.
 
@@ -120,7 +120,7 @@ If an approved entry has no outcome line at all, say which one plainly. That, an
 - The skill **dispatches only `fusion:curator`**, twice at most.
 - The skill **commits nothing**, and neither does the agent. The working-tree edits are left for the user or the orchestrator to commit.
 - Safe to invoke during an active orchestrator session in the sense that it starts nothing: it runs no Turn, activates no Circle and touches no session state. The apply pass does edit files an active session may also be editing, so it is worth running at a quiet point rather than mid-Turn.
-- `/fusion:cleanup` never dispatches the curator. Its report carries a staleness line about consolidation; running one stays a thing the user asks for.
+- The caller holds the gate, and there is no path where nothing does. `/fusion:cleanup` Step 5 runs this procedure and puts the ledger to the user itself; an orchestrator that dispatches the curator mid-session proxies the same question (`agents/orchestrator.md`). A caller that cannot ask the user runs the survey pass and stops.
 
 ## Tone
 

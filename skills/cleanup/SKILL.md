@@ -1,14 +1,16 @@
 ---
-description: Autonomous end-of-session cleanup — file issues for open tasks, commit + push the work in meaningful splits, reconcile, archive with safe defaults, revise CLAUDE.md, log activity, then commit + push the housekeeping artifacts. One-shot wrap-up of a work session.
-argument-hint: "[--dry-run] [--no-push]"
-allowed-tools: [Bash, Read, Write, Edit, Glob, Grep, AskUserQuestion, Agent(fusion:reconciler)]
+description: End-of-session cleanup — file issues for open tasks, commit + push the work in meaningful splits, reconcile, archive with safe defaults, reconcile CLAUDE.md at a user gate, log activity, then commit + push the housekeeping artifacts. One-shot wrap-up of a work session, with one stop for your approval.
+argument-hint: "[--dry-run] [--no-push] [--only <steps>] [--skip <steps>]"
+allowed-tools: [Bash, Read, Write, Edit, Glob, Grep, AskUserQuestion, Agent(fusion:reconciler), Agent(fusion:curator)]
 ---
 
-# Fusion — cleanup (autonomous session wrap-up)
+# Fusion — cleanup (session wrap-up)
 
-The user invoked `/fusion:cleanup`. This is a one-shot, mostly-autonomous pipeline that closes out a work session: it captures unfinished work as issues, commits and pushes the real changes in meaningful splits, runs reconciliation, archives stale workbench files with safe defaults, revises `CLAUDE.md`, regenerates the activity log, then commits and pushes the housekeeping artifacts those last steps produced.
+The user invoked `/fusion:cleanup`. This is a one-shot pipeline that closes out a work session: it captures unfinished work as issues, commits and pushes the real changes in meaningful splits, runs reconciliation, archives stale workbench files with safe defaults, reconciles `CLAUDE.md` against the project's history behind a user gate, regenerates the activity log, then commits and pushes the housekeeping artifacts those last steps produced.
 
-**Skills cannot invoke other slash commands.** Where a step corresponds to another fusion skill, read that skill's body from `$FUSION_SRC/skills/<name>/SKILL.md` and execute its procedure inline. Do not tell the user to type the slash command — perform the work. The reconcile step dispatches the `reconciler` agent directly. **That root is not specific to skill bodies: every path into a file the plugin ships carries `$FUSION_SRC`** — an agent prompt at `$FUSION_SRC/agents/<name>.md` exactly as much as a skill body — because nothing the plugin ships exists at a consuming project's root, where a bare `agents/…` or `skills/…` path resolves to nothing. Rule files are the exception in form only: an agent receives them from `"$FUSION_PLUGIN_ROOT/bin/fusion-rules"`, which prints absolute paths, so a `rules/…` name below identifies the file that governs and is not a path to open by hand.
+**This is fusion's end-of-session command, and it is one of three.** `/fusion:setup` starts a session, `/fusion:cleanup` ends it, `/fusion:cadence` shows what happened. The archive pass, the `CLAUDE.md` pass and the activity-log pass are steps of this pipeline rather than commands of their own; their procedures still live in their own files, and this skill reads and performs them (Steps 4, 5 and 6). `--only` and `--skip` are how you reach one of them alone.
+
+**Skills cannot invoke other slash commands.** Where a step corresponds to another fusion skill, read that skill's body from `$FUSION_SRC/skills/<name>/SKILL.md` and execute its procedure inline. Do not tell the user to type the slash command — perform the work. Two steps dispatch an agent directly rather than reading a body: Step 3 dispatches the `reconciler`, and Step 5 dispatches the `curator` twice, from the procedure `skills/curate/SKILL.md` holds. **That root is not specific to skill bodies: every path into a file the plugin ships carries `$FUSION_SRC`** — an agent prompt at `$FUSION_SRC/agents/<name>.md` exactly as much as a skill body — because nothing the plugin ships exists at a consuming project's root, where a bare `agents/…` or `skills/…` path resolves to nothing. Rule files are the exception in form only: an agent receives them from `"$FUSION_PLUGIN_ROOT/bin/fusion-rules"`, which prints absolute paths, so a `rules/…` name below identifies the file that governs and is not a path to open by hand.
 
 Resolve that root once, before the first step that cites one:
 
@@ -35,10 +37,28 @@ echo "source root: ${FUSION_SRC:-UNRESOLVED (FUSION_PLUGIN_ROOT is unset)}"
 - empty (default) — run the full pipeline, committing and pushing.
 - `--dry-run` — survey and report what each step *would* do, make no writes, no commits, no dispatch. Use this to preview.
 - `--no-push` — run the full pipeline and commit, but never `git push`. Leave the commits local.
+- `--only <steps>` — run only the named steps, in pipeline order. Comma-separated, no spaces.
+- `--skip <steps>` — run the full pipeline except the named steps. Same spelling.
+
+The step names, in pipeline order, are the selector's whole vocabulary:
+
+| Name | Step |
+|---|---|
+| `issues` | Step 1 — file issues for open tasks, finalise the session surfaces |
+| `commit` | Step 2 — commit and push the real work |
+| `reconcile` | Step 3 — dispatch the reconciler |
+| `archive` | Step 4 — archive with safe defaults (tier-1) |
+| `claude-md` | Step 5 — reconcile `CLAUDE.md` at the gate |
+| `log-activity` | Step 6 — regenerate the activity log |
+| `commit-housekeeping` | Step 7 — commit and push what Steps 3–6 produced |
+
+`--only archive`, `--only claude-md` and `--only log-activity` are the three that replace commands fusion used to expose on their own. Step 8, the report, always runs; it reports the steps that ran and names the ones that did not. `--only` and `--skip` are mutually exclusive — given both, ask which was meant rather than guessing. A name the table does not carry is an error: say which name and list the valid ones. Neither flag relaxes a guardrail, and neither turns the gate in Step 5 off.
 
 ## Autonomy and safety
 
-"Autonomous" means: no per-step confirmation gates. Run the whole sequence and report at the end. Three hard guardrails override autonomy:
+**The pipeline runs unattended through every step except one.** Step 5 reconciles `CLAUDE.md` and it stops there for your approval: the curator surveys, this skill puts the change ledger to you, and nothing reaches `CLAUDE.md` until you answer. That is the only gate, and it is deliberate — no mechanism edits this project's binding instructions without a person seeing what changes. **A run that is typed and walked away from stops at Step 5 and does not finish.** Steps 6, 7 and 8 never happen, so the activity log is not regenerated and the housekeeping commits are not made. Either sit with the run, or reach for `--skip claude-md`, which runs the rest end to end and leaves `CLAUDE.md` for a later pass.
+
+Three hard guardrails hold on every run, gate or no gate:
 
 - **Never force-push.** Plain `git push` only. If it's rejected (non-fast-forward), stop, report, and leave the commits local for the user to resolve.
 - **Never `git add -A` / `git add .`.** Stage explicit paths per commit split (Step 2).
@@ -155,11 +175,19 @@ Read `$FUSION_SRC/skills/archive/SKILL.md` and execute its **tier-1** procedure 
 
 If `--dry-run`, report the tier-1 survey (what would move) without moving anything.
 
-## Step 5 — Revise CLAUDE.md
+## Step 5 — Reconcile CLAUDE.md (the one gate)
 
-Read `$FUSION_SRC/skills/revise-claude-md/SKILL.md` and execute its full three-pass procedure (add → update → prune) against this session's learnings. Report the diff summary.
+Read `$FUSION_SRC/skills/curate/SKILL.md` and execute its procedure inline, end to end: resolve paths with `fusion-paths curate`, dispatch `fusion:curator` with `**Mode:** survey`, read the run file it wrote, run the blast-radius confirmation when that stop fired, **put the gate to the user**, then dispatch the curator a second time with `**Mode:** apply` plus the ledger path and the approved ids. Report as that body's last step says.
 
-If `--dry-run`, run the survey passes but make no edits.
+That file owns the procedure and this one does not restate it — the dispatch parameters, the two halt conditions on the run file, the gate's option shape and the per-entry id path are all defined there, and a second statement of them here would be a copy that drifts.
+
+Three things are this step's and not that body's:
+
+- **The gate is yours to hold and you do not skip it.** `AskUserQuestion` is in this skill's `allowed-tools` for exactly this. Never approve on the user's behalf, and never send an apply dispatch with an empty approval set — an empty set is a rejection, so you dispatch nothing.
+- **A rejection is a complete step**, not a failure. Record it in one line and go on to Step 6.
+- **`--dry-run` stops after the survey.** Dispatch the survey pass, report the run file's path and the per-group counts, ask nothing, and dispatch no apply pass. Same shape as every other step under `--dry-run`: it shows what would change and changes nothing.
+
+This step replaces the autonomous three-pass rewrite of `CLAUDE.md` that cleanup used to run. The pass that reads the whole workbench and the whole git history, cites its evidence per entry, and lands nothing unapproved is the one path to this file now.
 
 ## Step 6 — Log activity
 
@@ -169,11 +197,11 @@ If `--dry-run`, report what it would write without writing.
 
 ## Step 7 — Commit the housekeeping artifacts, then push
 
-Steps 3–6 produce changes: reconciler's tracking-file updates, the archive moves, the `CLAUDE.md` revision, and the activity log. Commit them now, in meaningful splits, exactly as in Step 2 (explicit staging, Conventional Commits messages, message via scratch file + `-F`, each stage+commit pair under `fusion-commit-lock with cleanup --`, no amend). Typical splits:
+Steps 3–6 produce changes: reconciler's tracking-file updates, the archive moves, whatever the curator applied to `CLAUDE.md` and the other normative surfaces, and the activity log. Commit them now, in meaningful splits, exactly as in Step 2 (explicit staging, Conventional Commits messages, message via scratch file + `-F`, each stage+commit pair under `fusion-commit-lock with cleanup --`, no amend). Typical splits:
 
 - `chore(workbench): reconcile tracking files` — reconciler output
 - `chore(workbench): archive stale files (tier-1)` — the archive moves
-- `docs: revise CLAUDE.md with session learnings` — CLAUDE.md
+- `docs: apply the approved normative-surface changes` — the curator's applied edits
 - `docs: update activity log` — the activity log
 
 Then **push** (unless `--no-push`), same rules as Step 2.
@@ -187,11 +215,11 @@ A single concise summary, action-first per `rules/user-facing-output.md`:
 - Push: pushed to `<branch>` / skipped (`--no-push`) / **rejected** (with the git error)
 - Reconcile: domain used, and where it came from (`agentstate.yaml` or the fallback); discrepancies fixed/flagged
 - Archive: files moved (count) into `<archive folder>` / nothing to archive
-- CLAUDE.md: lines added / updated / pruned
+- Normative surfaces: entries approved and applied, per surface; every entry that came back `stale` or `failed`, by id and reason; or that the ledger was rejected, or that the survey proposed nothing
 - Activity log: updated
 - Normative surfaces: the date of the last consolidation run, or that none has run, followed by the current size in bytes of the decision records, the project's own rule files, and `CLAUDE.md`
 
-**Where the consolidation line comes from.** It is a read-only measurement. It dispatches nothing, writes nothing, and runs under `--dry-run` exactly as it does on a full run. Cleanup never consolidates; `/fusion:curate` is the surface that does, and naming that command for the user here is the one deliberate exception to "perform the work, don't name the command" at the top of this file — a pass that rewrites binding rules is a thing the user asks for, not a thing a wrap-up does on their behalf.
+**Where the consolidation line comes from.** It is a read-only measurement. It dispatches nothing, writes nothing, and runs under `--dry-run` exactly as it does on a full run. It reports the state of the surfaces; Step 5 is what changes them, and only through the gate.
 
 ```bash
 # The most recent curator run file across every directory $SCAN_HISTORY names.
@@ -220,5 +248,5 @@ End with anything that needs the user's attention (a rejected push, a flagged re
 
 - This skill is destructive-adjacent (it commits and pushes). The guardrails in "Autonomy and safety" are not optional.
 - The two commit phases are deliberate: Step 2 captures the *work*, Step 7 captures the *housekeeping the work triggered*. Don't collapse them — a clean tree before reconcile makes the reconciler's diff legible.
-- If the repo is not a git repository, skip Steps 2 and 7's commit/push and say so; still run reconcile, archive, revise, and log.
+- If the repo is not a git repository, skip Steps 2 and 7's commit/push and say so; still run reconcile, archive, the `CLAUDE.md` gate, and the activity log.
 - Match the user's energy: they asked for a one-shot wrap-up. Run it end to end; report once at the end, not after every step (unless a guardrail trips).

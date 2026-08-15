@@ -1549,3 +1549,5 @@
 {"ts":"2026-08-15T13:06:22","event":"task_start","turn":4,"task":"P-10","agent":"coder","detail":"remove the persisted tasklist.md and the queue-ground apparatus"}
 {"ts":"2026-08-15T13:34:23","event":"task_done","turn":4,"task":"P-10","agent":"coder","detail":"dd312eb; 45/831 -> 41/790; taskplanner keeps batching, its product is the report; this project's queue moved to shared planning under a closed marker"}
 {"ts":"2026-08-15T13:34:23","event":"task_start","turn":4,"task":"P-11","agent":"coder","detail":"session counters and drift machinery; extract state-file.ts first; restore queue_built removed in error at P-10"}
+{"ts":"2026-08-15T14:03:41","event":"task_done","turn":4,"task":"P-11","agent":"coder","detail":"f45f76a; 41/790 -> 39/741; state-file.ts extracted first; agentstate progress block renamed control; queue_built restored; what stops being noticed written down"}
+{"ts":"2026-08-15T14:03:41","event":"task_start","turn":4,"task":"P-12","agent":"coder","detail":"eight administrative names to three; implements both answered decisions"}

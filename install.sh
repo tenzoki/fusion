@@ -74,11 +74,13 @@ VERSION="$(sed -n 's/.*"version" *: *"\([^"]*\)".*/\1/p' "$SRC/.claude-plugin/pl
 say "Installing to $INSTALL_DIR ..."
 rm -rf "$INSTALL_DIR"
 mkdir -p "$INSTALL_DIR"
-# Copy the plugin assets, including settings.json (fusion's scoped permission
-# auto-allows — workbench writes + git ops). Never dev cruft (no node_modules,
-# CLAUDE.md, .gitignore). cp -R preserves the +x bit on bin/ and hook scripts.
+# Copy the plugin assets. No permission file is among them: a plugin's own
+# permission settings were measured not to be read under --plugin-dir, so
+# fusion ships none and /fusion:setup seeds the project's own file instead.
+# Never dev cruft (no node_modules, CLAUDE.md, .gitignore). cp -R preserves the
+# +x bit on bin/ and hook scripts.
 for item in .claude-plugin agents skills rules hooks bin stilwerk templates docs \
-            settings.json README.md README-agents.md README-hooks.md LICENSE; do
+            README.md README-agents.md README-hooks.md LICENSE; do
   [ -e "$SRC/$item" ] && cp -R "$SRC/$item" "$INSTALL_DIR/"
 done
 [ -f "$INSTALL_DIR/.claude-plugin/plugin.json" ] || die "Install copy failed."

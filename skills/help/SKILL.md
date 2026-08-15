@@ -73,6 +73,10 @@ Once `/fusion:setup` has run in a project, the day-to-day flow is:
 
 5. **Recovering after a crash:** re-run `/fusion:setup`. It reads `fusion-workbench/agentstate.yaml`, surfaces interrupted tasks, and offers to resume.
 
+6. **Three commands frame the work, and there are only three to remember.** `/fusion:setup` at the start of a session, `/fusion:cleanup` at the end, `/fusion:cadence` whenever you want to see what you have actually been doing. Cleanup is a pipeline: it files issues for what is unfinished, commits and pushes in meaningful splits, reconciles, archives, reconciles `CLAUDE.md` **at a gate you answer**, regenerates the activity log, then commits the housekeeping. `--only <step>` runs one of those steps alone (`--only archive`, `--only claude-md`, `--only log-activity`), `--skip <step>` runs everything else, `--dry-run` shows what would happen, `--no-push` keeps the commits local. Tell a user who asks about archiving, the activity log, or `CLAUDE.md` maintenance to reach for cleanup with `--only`, not for a separate command.
+
+   **The gate is the one thing to warn them about.** A cleanup run left unattended stops at the `CLAUDE.md` step and never reaches the housekeeping commits. `--skip claude-md` is the flag for a run they intend to walk away from.
+
 For the full agent reference (scope, inputs, outputs, exact dispatch criteria), point the user at `$FUSION_SRC/README-agents.md`. For the working model behind the day-to-day flow — the Circle lifecycle, spec-driven flow, the gates, and the compliance guard walked end to end — point them at `$FUSION_SRC/docs/working-model.md`.
 
 ### 3. Install — *getting fusion into a project*

@@ -1,11 +1,11 @@
 ---
-description: Scan project activity and generate/update the activity log
+description: The activity-log step of /fusion:cleanup (reachable alone as `/fusion:cleanup --only log-activity`), kept as its own body rather than a command. Scans project activity and generates or updates the activity log.
 allowed-tools: [Bash, Read, Glob, Grep, Write, Edit]
 ---
 
 # Log Activity Command
 
-When the user invokes `/fusion:log-activity`, scan all project activity sources and create or update the user's activity log file in the project root.
+This is the activity-log step of `/fusion:cleanup` (its Step 6), and the procedure below is what that step reads and performs inline. Scan all project activity sources and create or update the user's activity log file in the project root.
 
 ## Process
 

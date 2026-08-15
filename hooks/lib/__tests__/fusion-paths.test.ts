@@ -21,8 +21,7 @@ const AGENTS = [
 
 const SKILLS = [
   "archive", "cleanup", "commit", "curate", "direct", "help",
-  "log-activity", "memo", "migrate", "next", "revise-claude-md",
-  "setup", "unlock",
+  "log-activity", "memo", "migrate", "next", "setup",
 ];
 
 /** The prompt file a name resolves to — the same rule the script applies. */

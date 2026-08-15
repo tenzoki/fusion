@@ -185,9 +185,54 @@ First check whether the project already has one. This is read-only and always al
   [ -f ./fusion-guard.json ] || { cp "$FUSION_PLUGIN_ROOT/templates/fusion-guard.json" ./fusion-guard.json && echo "fusion-guard.json template copied — inherits the plugin's guard defaults until you edit it"; }
   ```
 
-The probe is why this step runs two commands where Steps 0b, 0d and 0e run one. It was introduced because the guard used to protect `fusion-guard.json` once it existed, so the plain one-command form was denied on every later Setup run in a project that already had one — measured against the guard, not reasoned about. That protection went with the protected-path half of the guard on 2026-08-12, so the copy is no longer denied; the probe stays because reporting `present` is a better answer for the user than a silent no-op. The `[ -f ]` guard inside the copy stays regardless, so the block is safe on its own for anyone who runs it without the probe.
+The probe is why this step runs two commands where Steps 0b and 0d run one. It was introduced because the guard used to protect `fusion-guard.json` once it existed, so the plain one-command form was denied on every later Setup run in a project that already had one — measured against the guard, not reasoned about. That protection went with the protected-path half of the guard on 2026-08-12, so the copy is no longer denied; the probe stays because reporting `present` is a better answer for the user than a silent no-op. The `[ -f ]` guard inside the copy stays regardless, so the block is safe on its own for anyone who runs it without the probe.
 
 If `$FUSION_PLUGIN_ROOT` is not set or the copy fails, note it in the history file later but do not block Setup. An absent `fusion-guard.json` costs the project nothing: the guard falls back to the plugin's configuration, which is exactly what the template inherits.
+
+## Step 0g — Offer to seed the project's permission file
+
+A fresh consuming project has no permission source of its own, so every `Write`, every `Edit` and every non-sandboxed shell call a fusion session makes raises an approval dialog. This step offers to write the file that stops that. It is the only step in Setup that asks the user for a decision on a normal run, and it asks **once**.
+
+**Why the grant is all-or-nothing.** Measured on Claude Code 2.1.226: a plugin's own permission settings are not read at all under `--plugin-dir`, and directory-scoped patterns (`Write(fusion-workbench/**)` and every variant of it) were denied even from a project file that *is* read. Only the bare tool name was honoured. So there is no narrow grant to offer — the choice is between the permissive one below and none.
+
+### 1. Ask
+
+One `AskUserQuestion`, in the project's chat language, naming the file and what the setting does in plain words rather than behind the term:
+
+> fusion writes `.claude/settings.local.json` in this project so future sessions run without asking you to approve each tool. That setting is `bypassPermissions`: Claude Code stops prompting for file writes, edits and shell commands in this project. It still asks before catastrophic operations such as `rm -rf /`. Write it?
+
+Two options. **"Yes, write it" is the default and the recommended choice.** "No, keep the prompts" is the other; nothing is written and Setup continues.
+
+### 2. On "yes", write it
+
+Target: `.claude/settings.local.json` in `pwd` — the project root Step 0 reported. Merge into any existing file; never overwrite one.
+
+Desired contents:
+
+```json
+{
+  "permissions": {
+    "defaultMode": "bypassPermissions",
+    "allow": ["Bash", "Read", "Edit", "Write", "WebFetch", "WebSearch", "Agent", "Glob", "Grep", "NotebookEdit"]
+  }
+}
+```
+
+`defaultMode` is the load-bearing field; the `allow` list is belt-and-suspenders for tools the bypass mode still gates. **Bare tool names only** — no scoped path form may be written here under any wording, because none of them match.
+
+1. `mkdir -p .claude`.
+2. Read `.claude/settings.local.json` if present. If absent, create it with the JSON above.
+3. If present, parse it, set `permissions.defaultMode` to `"bypassPermissions"`, and union the `allow` list with the values above, **preserving every existing entry — only add, never remove**. Write back with two-space indentation and a trailing newline.
+4. Ensure the file is gitignored. Check `.gitignore` for either `.claude/settings.local.json` or `.claude/`; if neither matches, append `.claude/settings.local.json` to `.gitignore`. This step is not optional — a seeded local settings file that lands in a commit is a worse outcome than an unseeded one.
+
+**Never** write this file outside `pwd`, never into a subfolder, and never touch `.claude/settings.json`, which is the shared checked-in file and not this one.
+
+### 3. Report either way, in the Done report
+
+- **Wrote it:** name the path, say the permission change takes effect **on the next session** — Claude Code reads permission settings only at startup, so this session still prompts — and say whether `.gitignore` was modified. Do not claim the current session is now unlocked.
+- **Declined:** say plainly that per-tool approval prompts stay on for this project, and that Setup can seed the file on a later run.
+
+If the project already had `defaultMode: "bypassPermissions"`, say so and skip the question — there is nothing to decide.
 
 ## Step 1 — Interrupted-session check (CRITICAL — do not skip)
 
@@ -285,4 +330,4 @@ Create `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` (the value `fusion-pat
 
 ## Done
 
-Only after every step above completes may you begin the user's actual task. Report Setup complete with: workspace path, history file path, snapshot counts, **detected workbench domain**, and whether an interrupted session was resumed. (Setup no longer migrates — a pre-v4 workbench is caught by the layout check in Step 0, which refuses and routes the user to `/fusion:migrate` before any of this runs.)
+Only after every step above completes may you begin the user's actual task. Report Setup complete with: workspace path, history file path, snapshot counts, **detected workbench domain**, whether an interrupted session was resumed, and the permission line Step 0g produced (written and effective next session, declined, or already in place). (Setup no longer migrates — a pre-v4 workbench is caught by the layout check in Step 0, which refuses and routes the user to `/fusion:migrate` before any of this runs.)

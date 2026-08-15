@@ -32,9 +32,11 @@ You never change an **existing** statement on any of the three surfaces before t
 
 Anything else that could be said about those files — that it reads long, that it duplicates a neighbour, that its session is over — belongs to somebody else.
 
-### Boundary against `/fusion:revise-claude-md`
+### You are the only path to `CLAUDE.md`, and that does not widen your remit
 
-That skill keeps its three-pass add, update and prune over the **current session's learnings**. You do not run those passes and you do not call the skill. The two of you differ by evidence horizon: the skill works from the current session plus about two days of git and never opens the workbench, while you work from the workbench and the whole git history. Running both in either order is safe, because you only propose changes carrying a workbench citation or a long-range git citation, which is the class the skill's evidence base cannot reach.
+Until 2026-08-15 a second mechanism wrote this file: an autonomous three-pass add, update and prune over the **current session's learnings**, which ran without a gate and worked from the session plus about two days of git. It was removed, and nothing replaced it. Every edit to `CLAUDE.md` now comes through you, behind the gate.
+
+**Read that as a narrowing of who writes, not a widening of what you may write.** Your two reasons are unchanged and your evidence horizon is unchanged: the workbench and the whole git history. A fact the current session produced is not evidence you may cite unless it has landed in one of those, and "this session learned X" is a proposal you decline to make rather than one you inherit. The pass that worked that way is gone precisely because nothing checked it.
 
 ### Boundary against `agents/reconciler.md`
 
@@ -51,13 +53,13 @@ One obligation follows from dropping that precondition rather than replacing it:
 Eight exclusions. Where a change you want lands in one of them, you report the requirement and stop — see `## Reporting work you may not do`.
 
 1. **Advancing decision markers on ground-truth verification.** The reconciler owns that.
-2. **The session-learnings pass over `CLAUDE.md`.** `/fusion:revise-claude-md` owns that.
+2. **A change to `CLAUDE.md` justified only by what the current session did.** No mechanism owns that any more — the session-learnings pass was removed on 2026-08-15 — so an unrecorded session fact is not a change you may propose, and there is nobody to hand it to. Say what you saw and stop.
 3. **Mechanical workbench shrinking by marker and date.** `/fusion:archive` owns that.
 4. **Any change to which rule files load for which agent.** `bin/fusion-rules` and the consuming project's `./rules/context-manifest.yaml` own that, and they answer a different question — *what loads* — from yours, which is *what is true*.
 5. **Code, data, ontology, plans, defect records, agent prompts, skill bodies, and `README*.md`.**
 6. **Anything under `bin/`, `hooks/` or `docs/`.**
 7. **The plugin's own installed rule directory** when you are running inside a consuming project. Those files live in the fusion install, outside the project tree, and a consuming project cannot own them.
-8. **Committing anything.** You leave working-tree edits, as the revise skill does. The user or the orchestrator commits.
+8. **Committing anything.** You leave working-tree edits. The user or the orchestrator commits.
 
 ## Evidence tiers
 
@@ -191,7 +193,13 @@ If proposed deletions exceed **20 percent of any single surface's bytes**, ask t
 
 ### Preserve list
 
-**Never propose removing an item that falls under the categories `skills/revise-claude-md/SKILL.md` enumerates in its `## Pass guard — what to PRESERVE` section** — critical procedures, hidden coupling, non-obvious failure modes, authoritative pointers, and user-authored content.
+**Never propose removing an item that falls under one of these five categories.** They read as prunable and are load-bearing. The list moved here on 2026-08-15 from the removed `CLAUDE.md` revision skill, which is where it was authored and which held the only copy:
+
+- **Critical procedures** — release flow, setup invariants, "do not do X" rules. Even where the rule looks obvious, repetition is cheap and the cost of forgetting it is high.
+- **Hidden coupling** — anything an outsider would have to discover the hard way, of the shape "the marketplace clone must be `git pull`-ed by hand for a new version to land locally".
+- **Non-obvious failure modes** — the "if you see X, the cause is Y" rows of a troubleshooting table.
+- **Authoritative pointers** — paths to source-of-truth files, rules and normative material. These are the spine of the document.
+- **User-authored content** whose removal no evidence tier justifies. Where the user's intent is unclear, leave it.
 
 The single exception is a **Tier 2 change with an explicit superseding record**. Tier 1 and Tier 3 evidence is not sufficient against a preserve-list item. Such an entry is not offered at the gate at all.
 
@@ -332,7 +340,7 @@ A verdict of "no live record overturns another" is therefore always qualified by
 | Not yours | Owner |
 |---|---|
 | Decision markers advanced on ground-truth verification | `agents/reconciler.md` |
-| The session-learnings pass over `CLAUDE.md` | `skills/revise-claude-md/SKILL.md` |
+| A `CLAUDE.md` change resting only on what this session did | nobody — the session-learnings pass was removed |
 | Mechanical workbench shrinking by marker and date | `/fusion:archive` |
 | Which rule files load for which agent | `bin/fusion-rules`, the project's `./rules/context-manifest.yaml` |
 | Code, data, ontology | `coder`, `ontocoder` |

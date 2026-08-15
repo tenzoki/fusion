@@ -83,6 +83,6 @@ filed and forgotten.
 
 ---
 Answered: shared/history/260814-2306-orchestrator-session.md:103 — Option 1, the gate blocks: /fusion:cleanup presents the curator's change ledger and waits for the user before touching CLAUDE.md. The deciding fact, that the user sits with the run rather than leaving it, was supplied by the user at the activation gate.
-Implemented:
+Implemented: skills/cleanup/SKILL.md `## Step 5 — Reconcile CLAUDE.md (the one gate)` and `## Autonomy and safety` — Step 5 now reads skills/curate/SKILL.md and runs its procedure inline, holding the gate itself; nothing reaches CLAUDE.md until the user answers, --dry-run stops after the survey dispatch, and the autonomy section states that an unattended run stops at Step 5 with Steps 6 to 8 unrun. No commit hash: the executor does not commit, and the orchestrator's commit for this step is what carries these paths.
 Deferred:
 Superseded by:

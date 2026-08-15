@@ -1,5 +1,5 @@
 ---
-description: Archive completed/aged fusion-workbench artifacts. Supports pre-defined safety tiers (tier-1/tier-2/tier-3) or natural-language description. Survey, propose, confirm, then move into the workbench's archive store.
+description: The archive step of /fusion:cleanup (reachable alone as `/fusion:cleanup --only archive`), kept as its own body rather than a command. Archives completed/aged fusion-workbench artifacts by safety tier (tier-1/tier-2/tier-3) or natural-language description: survey, propose, confirm, then move into the workbench's archive store.
 argument-hint: tier-1 | tier-2 | tier-3 | <natural-language description>
 allowed-tools: [Bash, Read, Write, Edit, AskUserQuestion]
 ---
@@ -27,7 +27,7 @@ Two rules follow from the container premise, and they are what keep this skill s
 
 - `YYMMDD-HHMM` from `date +%y%m%d-%H%M` (never guess).
 - `<slug>` is a short kebab-case label (lowercase, alphanumerics + dashes, ≤ 40 chars). For tier mode the slug is `safe-cleanup-tier-<n>`. For natural-language mode it's derived from the description.
-- One archive folder per `/fusion:archive` invocation. Never reuse a folder.
+- One archive folder per run of this procedure. Never reuse a folder.
 - Inside the archive folder, preserve the original path relative to `$WORKBENCH`. A Circle directory keeps its whole subtree.
 
 ## Step 1 — Resolve paths

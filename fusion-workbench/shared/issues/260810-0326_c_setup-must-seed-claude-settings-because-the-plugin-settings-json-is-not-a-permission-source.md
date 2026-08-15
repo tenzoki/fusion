@@ -107,3 +107,33 @@ orchestrator is the only agent with such a list.
   implementation of it.
 - Whatever is decided about the plugin-root `settings.json`, no shipped document claims it
   grants permissions.
+
+---
+Resolved: `/fusion:setup` Step 0g offers once, defaulting to yes, to write `.claude/settings.local.json`
+with `defaultMode: "bypassPermissions"` and bare tool names, then gitignores it; the `unlock` skill was
+deleted and its merge procedure moved into that step verbatim, so exactly one implementation of the merge
+exists. The plugin-root `settings.json` was deleted with its `install.sh` copy entry, and `CLAUDE.md`'s
+installer bullet now states the measurement without naming a file that is gone. Both decisions this record
+deferred are answered and implemented:
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-0029_*_what-permission-grant-does-setup-seed-when-unlock-becomes-a-setup-step.md`.
+
+**Two of the three acceptance criteria are met outright; the first is met with a bound that could not be
+removed, and closing this record without naming it would misreport the fix.**
+
+- *"The seeded file is produced by the same merge procedure `/fusion:unlock` uses, not a second
+  implementation of it."* — **met**, by relocation rather than reuse. The skill body is gone and its
+  procedure is now Setup's; there is one copy, not two.
+- *"No shipped document claims the plugin-root `settings.json` grants permissions."* — **met**. The file
+  does not exist, and no shipped surface names it.
+- *"A fresh consuming project that has only run `/fusion:setup`, with no `.claude/` beforehand, completes
+  an orchestrator Turn without a per-tool approval dialog."* — **met from the next session onward, and not
+  in the session that ran Setup.** Claude Code reads permission settings at startup only, so a file written
+  mid-session changes nothing about that session. No Setup-time seeding can close that half; the criterion
+  as written is unreachable by any mechanism that writes the file during the run. Step 0g says so in its
+  report rather than claiming the session is unlocked. It is also conditional on the user answering yes,
+  which is the consent the answered decision deliberately kept.
+
+Not settled by this fix, and filed on: whether the approval dialogs this record was written about still
+occur at all on the current Claude Code version. The decision's *Not established* paragraph names it, and
+if they are gone, Step 0g is asking a dead question. See
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1617_o_re-measure-whether-a-fresh-project-still-raises-approval-dialogs-before-setup-keeps-asking.md`.
