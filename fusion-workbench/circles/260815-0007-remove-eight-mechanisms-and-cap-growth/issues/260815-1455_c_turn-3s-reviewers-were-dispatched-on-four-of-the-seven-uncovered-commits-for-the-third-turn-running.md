@@ -58,3 +58,6 @@ Two things worth settling in the same change, and the second is a decision rathe
 
 1. The dispatch should carry resolved hashes on both ends, never `HEAD` — the receiving prompts already require that of the review file, so the dispatch may as well hand it over resolved.
 2. Whether the uncovered set and the Turn's own commits should be dispatched as one range or as two passes. They are not the same thing: three of these seven belong to Turn 2 and were reviewed in substance by the Turn 2 reviewers, whose own files declare a range ending at `5d29b6d` and therefore do not cover the commits that *recorded* that review. Folding them into the next Turn's range works, and it means every Turn's reviewers inherit the previous Turn's bookkeeping commits. That may be right; it has not been decided.
+
+---
+Resolved: the Turn 4 dispatch named the four commits `bin/fusion-review-coverage` reported, copied verbatim, instead of a range the orchestrator computed. Both reviewers derived the same range from them and neither had to correct it — the first Turn in four where that held. The cause was named in `c4761dc`'s successor commit: a Turn boundary is not a coverage boundary, because a previous review may cover less than its Turn contained and the remainder then lies before the next Turn's start.
