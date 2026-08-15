@@ -234,3 +234,17 @@ Until it lands, this orchestrator dispatches nothing in parallel that runs the s
   in the event stream; and one commit message over-claimed a measured hit that the measurement
   places elsewhere. Both named by the reviewers, both corrected.
 - Circuit breaker status: OK
+
+### Turn 3
+- Steps: P-7 conceptrev removed, P-8 investigator folded into analyst, P-9 the two domain values
+- Commits: a17cc8c, 7260bbc, 0894d0d, 518926d
+- Measured effect: 828 to 827 to 831 tests — the domain step added four cases that refuse a
+  re-added branch and a stale copy of the four-outcome cascade. Rule text to `coder` 95 023 B at
+  step 1, 94 332 B now.
+- Each of the three steps falsified something in its own instructions: a sender set that does not
+  exist, a resolver premise contradicted by measurement, and a module listed under removal that is
+  the only executable definition of a decision still being made.
+- One consequence named rather than absorbed: failure investigation became dispatchable, where the
+  investigator was user-initiated by design. The alternative was a carve-out inside the analyst,
+  which is the special case the critical-stance rule warns against. Surfaced to the user.
+- Circuit breaker status: OK

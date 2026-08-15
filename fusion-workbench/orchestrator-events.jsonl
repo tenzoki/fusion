@@ -1537,3 +1537,7 @@
 {"ts":"2026-08-15T11:44:17","event":"task_start","turn":3,"task":"P-8","agent":"coder","detail":"fold investigator into analyst; decide the investigations resolver arm from measurement"}
 {"ts":"2026-08-15T12:08:58","event":"task_done","turn":3,"task":"P-8","agent":"coder","detail":"7260bbc; 828 -> 827 tests; ninth analysis type carried at +141 bytes per dispatch; both investigations resolver arms retired on measurement; failure investigation became dispatchable"}
 {"ts":"2026-08-15T12:08:58","event":"task_start","turn":3,"task":"P-9","agent":"coder","detail":"domain values; cascade rewritten not deleted; implements the analyst-executor decision"}
+{"ts":"2026-08-15T12:43:29","event":"task_done","turn":3,"task":"P-9","agent":"coder","detail":"0894d0d; 827 -> 831 tests, four added as retirement controls; cascade rewritten; decision reaches implemented"}
+{"ts":"2026-08-15T12:43:29","event":"state_drift","turn":3,"detail":"progress.commits surface=20 record=22; brought current with the Turn 3 log entry and the history Per-Turn Log"}
+{"ts":"2026-08-15T12:43:29","event":"review_start","turn":3,"agent":"coderev","detail":"range 6350854..HEAD"}
+{"ts":"2026-08-15T12:43:29","event":"review_start","turn":3,"agent":"ontorev","detail":"range 6350854..HEAD, structured data half"}
