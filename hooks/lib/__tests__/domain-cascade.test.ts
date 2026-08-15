@@ -590,8 +590,8 @@ function reportStatements(rel: string, found: CascadeStatement[]): string {
         `    ${s.text.slice(0, 160)}\n` +
         `    -> ${DEFINITION_SITE} Setup Step 5 is the one definition. Obtain the domain,\n` +
         `       do not decide it: read session.domain from fusion-workbench/agentstate.yaml\n` +
-        `       (the route /fusion:next, /fusion:direct, /fusion:seed-from-plane and\n` +
-        `       /fusion:cleanup take), or take it from a **Domain:** dispatch parameter.`,
+        `       (the route /fusion:next, /fusion:direct and /fusion:cleanup take), or\n` +
+        `       take it from a **Domain:** dispatch parameter.`,
     )
     .join("\n");
 }

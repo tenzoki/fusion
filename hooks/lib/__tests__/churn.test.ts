@@ -346,7 +346,7 @@ describe("migrateChurnKeys", () => {
     const state: ChurnState = {
       files: {
         "/proj/hooks/lib/churn.ts": stats({ totalChanges: 9 }),
-        "/Users/other/clone/bin/fusion-plane": stats({ totalChanges: 32 }),
+        "/Users/other/clone/bin/fusion-paths": stats({ totalChanges: 32 }),
         "/tmp/fusion-commit-msg.txt": stats({ totalChanges: 4 }),
       },
       sessionStart: "2026-08-09T09:00:00.000Z",

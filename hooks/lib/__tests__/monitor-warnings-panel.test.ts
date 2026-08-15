@@ -37,9 +37,9 @@ import { dirname, resolve, join } from "node:path";
 // WHY IT DRIVES THE REAL BINARY. The panel logic lives in a Python heredoc
 // inside a bash script; there is no importable module, and the script executes
 // its server at the bottom of the same heredoc, so it cannot be imported for a
-// unit test either. `fusion-paths.test.ts` and `fusion-plane.test.ts` set the
-// precedent for driving a real `bin/` script through child_process; this file
-// extends it to the one script that has to be spoken to over HTTP. The seam is
+// unit test either. `fusion-paths.test.ts` sets the precedent for driving a
+// real `bin/` script through child_process; this file extends it to the one
+// script that has to be spoken to over HTTP. The seam is
 // `GET /api/dashboard`, whose `warnings` array is exactly what renderWarnings()
 // receives — so an assertion here is an assertion about what a user sees.
 //

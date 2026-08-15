@@ -1485,3 +1485,6 @@
 {"ts":"2026-08-15T05:25:52","event":"turn_start","turn":1,"detail":"steps 1-3: before-measurement, Plane mirror removal, Plane data files; turn_start_head=348f6db"}
 {"ts":"2026-08-15T05:26:21","event":"state_drift","turn":1,"detail":"progress.turn surface=0 record=1; Circle Turn log surface=0 entries record=1 turns run. Both created by this Turn's own turn_start and brought current in the same command: agentstate.yaml rewritten with turn 1 and the 16-entry queue, Turn 1 entry appended to the Circle record"}
 {"ts":"2026-08-15T05:26:34","event":"task_start","turn":1,"task":"P-1","agent":"coder","detail":"before-measurement and suite check; no shipped file touched"}
+{"ts":"2026-08-15T05:32:01","event":"task_done","turn":1,"task":"P-1","agent":"coder","detail":"d78dfb7; suite green 1030 tests exit 0; before-figures taken; corrected the record's 74.5-of-99 claim to 75.587 of 76.57"}
+{"ts":"2026-08-15T05:32:01","event":"commit","turn":1,"detail":"d78dfb7 chore(measure): the before-figures, and the claim they corrected on the way"}
+{"ts":"2026-08-15T05:32:01","event":"task_start","turn":1,"task":"P-2","agent":"coder","detail":"Plane mirror: code, prompts, prose"}

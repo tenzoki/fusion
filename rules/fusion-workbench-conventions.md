@@ -60,10 +60,7 @@ fusion-workbench/
 ├── orchestrator-events.jsonl           # bin/monitor, hooks/lib/state-drift.ts, hooks/lib/churn.ts, hooks/lib/staging-drift.ts
 ├── .guard-state/                       # bin/monitor, hooks/lib/events.ts, hooks/lib/guard-state-file.ts, hooks/lib/churn.ts, hooks/lib/staging-drift.ts
 ├── .commit-lock/                       # bin/fusion-commit-lock, hooks/lib/staging-drift.ts (created and removed per commit)
-├── .session-marker                     # bin/fusion-session-mark, hooks/lib/staging-drift.ts
-├── plane.config.yaml                   # bin/fusion-plane (consumer-filled; seeded by /fusion:setup)
-├── .plane-map.json                     # bin/fusion-plane, hooks/lib/staging-drift.ts (file ↔ Plane id map)
-└── .plane-outbox.jsonl                 # bin/fusion-plane, hooks/lib/staging-drift.ts (deferred pushes; replayed on the next reconcile)
+└── .session-marker                     # bin/fusion-session-mark, hooks/lib/staging-drift.ts
 ```
 
 **The root-anchored surfaces are not negotiable.** Each is bound to a fixed root-relative path by every consumer named beside it in the tree, and none of those consumers has a fallback path — relocating one into a Circle or into `shared/` breaks it silently. The column names a consumer that only *names* the path, in an exclusion or classification list, next to one that reads the file: what breaks on a move is the same dependency either way.

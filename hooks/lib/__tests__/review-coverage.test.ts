@@ -520,13 +520,13 @@ describe("review coverage: the declared out-of-scope list", () => {
         writeState(p.root, start);
         writeReview(p.root, "260811-0900-coderev-in-circle.md", {
           range: `\`${start}..${end}\``,
-          notOpened: "`bin/fusion-plane`",
+          notOpened: "`bin/fusion-paths`",
           dir: "fusion-workbench/circles/260811-0900-a-circle/reviews",
         });
 
         const k = keys(runCli(p.root).stdout);
         expect(k.verdict).toBe("covered");
-        expect(k.carried).toBe("bin/fusion-plane");
+        expect(k.carried).toBe("bin/fusion-paths");
       });
     },
     CASE_TIMEOUT,

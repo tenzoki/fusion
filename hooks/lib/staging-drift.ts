@@ -76,14 +76,13 @@
  *     store. These are what a staging list is supposed to name.
  *   - `in-flight` — the live-state surfaces `rules/fusion-workbench-conventions.md`
  *     `## Which of them a tracked workbench tracks` groups as "do not track it",
- *     plus the three tracked-but-machine-written ones and the session's own
+ *     plus the two tracked-but-machine-written ones and the session's own
  *     history file. Never a fault.
  *   - `unclassified` — everything else under the workbench. Named, with the
  *     statement that it is **not** a record store and that nothing is claimed
  *     about it. The worked case is `stilwerk/`, the four voice profiles
- *     `/fusion:setup` copies in, and `plane.config.yaml` beside them: hand-
- *     edited project configuration that must appear in a complete reading and
- *     must not raise an alarm.
+ *     `/fusion:setup` copies in: hand-edited project configuration that must
+ *     appear in a complete reading and must not raise an alarm.
  *
  *     The example used to be `shared/backlogs/`, a user's own note file, and
  *     it stopped being one when the backlog became a declared store — the
@@ -155,7 +154,7 @@ export const PRESCRIBED_MESSAGE_PATH = "/tmp/fusion-commit-msg-<task-id>.txt";
 /**
  * The live-state surfaces, by exact workbench-relative name.
  *
- * The first six are the "do not track it" group of
+ * The first five are the "do not track it" group of
  * `rules/fusion-workbench-conventions.md` `## Which of them a tracked workbench
  * tracks`; this repository's own `.gitignore` applies exactly that split, so in
  * a project that follows it they never reach `git status` at all. They are
@@ -163,13 +162,12 @@ export const PRESCRIBED_MESSAGE_PATH = "/tmp/fusion-commit-msg-<task-id>.txt";
  * project's decision — a consumer that tracks `agentstate.yaml` must not be
  * told on every commit that it forgot to stage it.
  *
- * The last three are the opposite case and the more interesting one: they are
+ * The last two are the opposite case and the more interesting one: they are
  * TRACKED by that same split, and they are still not a task's records.
- * `orchestrator-events.jsonl` is appended to by every event emission,
- * `.fusion-setup` is written by `/fusion:setup`, and the two `.plane-*` files
- * are owned by `bin/fusion-plane`. Each is in flight for the whole session by
- * construction, so a per-commit report about them would fire every time and
- * mean nothing.
+ * `orchestrator-events.jsonl` is appended to by every event emission and
+ * `.fusion-setup` is written by `/fusion:setup`. Each is in flight for the
+ * whole session by construction, so a per-commit report about them would fire
+ * every time and mean nothing.
  */
 const LIVE_STATE: { path: string; why: string }[] = [
   { path: "agentstate.yaml", why: "live session state — overwritten every Turn, deleted at Cleanup" },
@@ -179,8 +177,6 @@ const LIVE_STATE: { path: string; why: string }[] = [
   { path: "monitor", why: "a verbatim copy of bin/monitor, re-created by /fusion:setup" },
   { path: "orchestrator-events.jsonl", why: "append-only — written by every event emission, in flight all session" },
   { path: ".fusion-setup", why: "the setup marker — written by /fusion:setup" },
-  { path: ".plane-map.json", why: "the Plane id map — owned by bin/fusion-plane" },
-  { path: ".plane-outbox.jsonl", why: "the Plane outbox — owned by bin/fusion-plane" },
 ];
 
 /** Live-state directories, by workbench-relative prefix. */

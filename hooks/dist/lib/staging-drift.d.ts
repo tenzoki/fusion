@@ -76,14 +76,13 @@
  *     store. These are what a staging list is supposed to name.
  *   - `in-flight` — the live-state surfaces `rules/fusion-workbench-conventions.md`
  *     `## Which of them a tracked workbench tracks` groups as "do not track it",
- *     plus the three tracked-but-machine-written ones and the session's own
+ *     plus the two tracked-but-machine-written ones and the session's own
  *     history file. Never a fault.
  *   - `unclassified` — everything else under the workbench. Named, with the
  *     statement that it is **not** a record store and that nothing is claimed
  *     about it. The worked case is `stilwerk/`, the four voice profiles
- *     `/fusion:setup` copies in, and `plane.config.yaml` beside them: hand-
- *     edited project configuration that must appear in a complete reading and
- *     must not raise an alarm.
+ *     `/fusion:setup` copies in: hand-edited project configuration that must
+ *     appear in a complete reading and must not raise an alarm.
  *
  *     The example used to be `shared/backlogs/`, a user's own note file, and
  *     it stopped being one when the backlog became a declared store — the

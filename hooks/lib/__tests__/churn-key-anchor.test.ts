@@ -209,7 +209,7 @@ describe("the migration of a state file written under the old anchor", () => {
             // absolute in this checkout, the same file again
             [resolve(project.root, "fusion-workbench", "tasklist.md")]: { totalChanges: 12, changesThisSession: 0, lastChange: "2026-08-09T11:00:00.000Z", thrashingScore: 4 },
             // absolute, another root entirely
-            "/Users/someone-else/clone/bin/fusion-plane": { totalChanges: 32, changesThisSession: 0, lastChange: "2026-08-09T08:00:00.000Z", thrashingScore: 70 },
+            "/Users/someone-else/clone/bin/fusion-paths": { totalChanges: 32, changesThisSession: 0, lastChange: "2026-08-09T08:00:00.000Z", thrashingScore: 70 },
           },
         });
 
