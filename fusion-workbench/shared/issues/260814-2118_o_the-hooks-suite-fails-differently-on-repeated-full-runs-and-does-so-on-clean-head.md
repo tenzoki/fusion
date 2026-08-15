@@ -49,3 +49,67 @@ The `coder` on task T11 met it separately, on a different working tree, without 
 The orchestrator then met a third variant while verifying Turn 6 before the commit: the first full run reported `Test Files 48 passed (49)` with `Errors 1 error` and `Tests 1021 passed (1030)`, so one file did not run at all rather than failing an assertion. The immediately following run on the same unchanged tree reported 49 of 49 and 1030 of 1030, green.
 
 Three agents, three trees, three different failure shapes, and one of them a file that never executed. The last is worth separating from the other two: an assertion that fails under load is a timing assumption, while a file that errors out of the run is the runner itself losing a worker, and a fix aimed only at the first would leave the second.
+
+---
+
+## Measurement added 260815-0850 — bugfixer
+
+**Marker unchanged (`_o_`).** Nothing is fixed here. This separates the three shapes the record
+already holds side by side, because they do not share a cause and a repair aimed at one leaves
+the others.
+
+### `legacy-halt-clearing.test.ts` — shared build output, not timing
+
+Established, with a deterministic reproduction:
+
+```
+npx vitest run lib/__tests__/legacy-halt-clearing.test.ts &
+sleep 0.6 && npm run build
+```
+
+produces `AssertionError: expected 1 to be +0` at `legacy-halt-clearing.test.ts:209` — the exact
+assertion this record names as "a `clear-halt` exit of 1 where 0 was expected".
+
+`hooks/package.json:9` is `"build": "rm -rf dist && tsc"` and `:10` runs it ahead of every
+`vitest run`, so a second `npm test` in the same checkout leaves `hooks/dist/` absent for one to
+two seconds. `legacy-halt-clearing.test.ts:90` spawns the live `dist/clear-halt.js` with plain
+`node` at four points across the file's ~5 s runtime; with `dist/` gone the child is
+`MODULE_NOT_FOUND` and exits 1. Measured on its own: `dist` moved aside, `node
+hooks/dist/clear-halt.js` exits **1** printing `Error: Cannot find module`.
+
+**The 4-of-6 count is the fingerprint.** The first case of each `describe` reaches only
+`runWrite`, which the harness spawns from SOURCE as `tsx guard.ts`
+(`helpers/guard-harness.ts:164-200`). Exactly the four `dist`-dependent cases fail; the two that
+do not touch `dist` pass. A timing cause would not partition that way.
+
+**It is not load.** Twelve full runs at HEAD `c4761dc`: eight idle, all exit 0; four with 32 spin
+loops saturating all 16 cores, all exit 1 — and in all four the failing file was
+`fusion-commit-lock.test.ts`, never this one. CPU pressure alone does not reach it.
+
+This is case 2 of decision `260811-2009` verbatim, so **direction 1 and direction 2 of this
+record's `## What a fix would have to establish` both miss it**: serialising the harnesses that
+own a filesystem resource does not help, because the resource is `hooks/dist/` and every run
+destroys it; and there is no assertion here to weaken, because the assertions are right and the
+artifact under them is gone.
+
+### The other two shapes are unchanged and are other causes
+
+- `fusion-commit-lock.test.ts` — reproduced 4 of 4 under CPU saturation. Genuine wall-clock
+  assumption, already `shared/issues/260810-1135_o_…`. This is the one direction 2 is about.
+- A file that never runs (`Errors 1 error`, `48 passed (49)`) — the reconciler already measured
+  this with nothing else in flight (`260811-2009`, evidence of 260811-2330: `Error: Worker
+  exited unexpectedly` from tinypool). Not the build race and not a timing budget.
+
+### Why no repair was applied
+
+Snapshotting `dist/` into a temp directory in `beforeAll`, the way
+`clear-halt-concurrent-halt.test.ts:127` already does, shrinks this file's exposure from ~5 s to
+~20 ms without removing it — a wipe landing during the copy converts four red tests into one
+errored file, which is the third shape above. It also leaves the other readers of the live tree
+exposed: `reference-resolution-lint.test.ts:323` resolves prose citations with
+`existsSync(join(pluginRoot, token))`, so any citation of `hooks/dist/…` reports missing during a
+wipe, which is what decision `260811-2009` measured. A change that makes the suite look greener
+without making it more trustworthy is the damage that decision's Constraints section names.
+
+The two repairs that would actually close it — a build that does not delete before it writes,
+or serialising runs in the checkout — are options 2 and 1 of `260811-2009`, which is open.

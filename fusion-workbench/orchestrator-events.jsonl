@@ -1506,3 +1506,6 @@
 {"ts":"2026-08-15T06:31:16","event":"gate_response","turn":2,"detail":"Turn 1 coherence gate: continue; plan correction chosen over inline workaround; flake to be fixed now by bugfixer"}
 {"ts":"2026-08-15T06:31:16","event":"planner_start","turn":2,"agent":"planner","detail":"correct the false lint premise in steps 4 and 11, check all remaining steps, narrow the Decidability claim"}
 {"ts":"2026-08-15T06:31:16","event":"bugfix_start","turn":2,"agent":"bugfixer","detail":"legacy-halt-clearing.test.ts: 4 fail in full run, 6/6 in isolation (record 260814-2118)"}
+{"ts":"2026-08-15T06:48:14","event":"planner_done","turn":2,"agent":"planner","detail":"8 of 11 remaining steps carried the same trap, not 2; plan 69608 -> 81607 bytes; Decidability narrowed to path-shaped citations in shipped text"}
+{"ts":"2026-08-15T06:48:14","event":"commit","turn":2,"detail":"d1ae1c0 plan correction, 89ca95a stray record"}
+{"ts":"2026-08-15T06:48:14","event":"state_drift","turn":2,"detail":"progress.commits surface=8 record=10; brought current"}

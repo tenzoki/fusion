@@ -121,3 +121,56 @@ file, and run 2 named no slow or failing file, so which of the 52 died is not es
 these two runs. Whoever takes this up should reproduce with `--pool=forks --no-file-parallelism`
 or `--reporter=verbose` before costing option 2, rather than assuming it is one of the two
 already-recorded timing cases (`260810-1135`, `260811-1409`).
+
+---
+
+## Evidence added 260815-0850 — bugfixer, investigating `shared/issues/260814-2118_o_…`
+
+**Marker unchanged (`_o_`).** No option is chosen here. This adds a deterministic reproduction of
+**case 2** and one measurement that separates it from the load-sensitive cases it has been
+travelling with.
+
+Case 2 has only ever been observed as a side effect of a real batch. It reproduces on demand:
+
+```
+cd hooks
+npx vitest run lib/__tests__/legacy-halt-clearing.test.ts &
+sleep 0.6 && npm run build
+```
+
+`AssertionError: expected 1 to be +0` at `legacy-halt-clearing.test.ts:209`. The child is
+`node hooks/dist/clear-halt.js` (`:90`), and with `dist/` mid-rebuild it is `MODULE_NOT_FOUND`
+and exits 1. Moving `dist` aside by hand and running the same command gives exit **1** and
+`Error: Cannot find module`, so no inference is carrying the conclusion.
+
+**Case 2 and the timing cases are distinguishable from the outside, which they were not before.**
+Twelve full runs at HEAD `c4761dc`:
+
+- Eight on an idle machine, `cd hooks && npm test` — all exit 0. `legacy-halt-clearing.test.ts`
+  green in all eight.
+- Four with 32 spin loops saturating all 16 cores — all exit 1, and in all four the single
+  failing test was `fusion-commit-lock.test.ts`'s noclobber case. `legacy-halt-clearing.test.ts`
+  green in all four.
+
+So CPU pressure alone never reaches `legacy-halt-clearing.test.ts`; only a concurrent build does.
+Its 4-of-6 failure count is the signature: the two cases per `describe` that spawn `dist/` fail
+and the one that goes through `tsx guard.ts` from source does not. A reader meeting a red suite
+can now tell which of the two questions they are in without re-running anything —
+`fusion-commit-lock` alone is a timing budget (tasks 37/38), `legacy-halt-clearing` at 4 of 6 is
+this record's case 2.
+
+**What it does to the options.** Nothing is added for or against option 1, 3 or 4. It sharpens
+option 2 by splitting its two halves further apart than the Recommendation already had them: the
+build half is now reproducible in one command and is not blocked on costing the timing budgets,
+which are a separate fault with separate evidence. `inference:` that makes "a build that does not
+delete before it writes" costable on its own, ahead of the rest of option 2, if the user wants
+the cheapest thing that makes the instrument readable.
+
+**What was deliberately not done.** The obvious local repair — snapshot `dist/` into a temp
+directory in `legacy-halt-clearing.test.ts`'s `beforeAll`, as `clear-halt-concurrent-halt.test.ts`
+already does at `:127` — was rejected rather than overlooked. It narrows that file's exposure from
+~5 s to ~20 ms without closing it, converts its failure shape into the errored-file shape this
+record's 260811-2330 evidence describes, and leaves the other readers of the live tree untouched
+(`reference-resolution-lint.test.ts:323` resolves prose citations with `existsSync`, which is how
+case 2 was first seen). It would have moved the suite toward green without moving it toward
+trustworthy, which this record's Constraints section forbids.
