@@ -39,3 +39,6 @@ Option 1 unless somebody argues option 2 on its merits.
 **Related, and deliberately not folded in.** The same entry shifted `rules/fusion-workbench-conventions.md` by two lines, which stales the ledger's own L07 citation of `:294` (the line is `:296` at HEAD). That is inside a workbench record rather than a shipped surface and is filed separately if at all.
 
 **Found by:** coderev, review of `1e29572..9306f0a`, commit `e8052e7`.
+
+---
+Resolved: Option 1 taken. `rules/fusion-workbench-conventions.md:64` now states the measured split — four consumers exclude `stashes/`, and all but the archive skill exclude `.migration-v2-backup/` too. The split was re-measured against all four files before the edit and matches what this record reports. Option 2 was deliberately not taken: `skills/archive/SKILL.md:96` is unchanged, and the question of whether it *should* carry the exclusion is filed separately as `shared/issues/260816-0025_o_the-archive-skills-never-archive-list-omits-the-migration-backup-store-while-naming-its-twin.md`. The correction cost 97 bytes on the always-on surface; `hooks/lib/__tests__/fixtures/rules-emission.golden` was regenerated and the universal-core growth bound still passes.
