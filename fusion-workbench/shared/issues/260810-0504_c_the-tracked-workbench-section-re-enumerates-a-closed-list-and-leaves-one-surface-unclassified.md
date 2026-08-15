@@ -74,3 +74,22 @@ section does not.
    where the decision is actually applied.
 3. Whatever is decided, add the two Plane runtime files once, in the tree, per `260810-0410` — not
    twice.
+
+---
+Resolved: parts 1 and 2 are closed in `rules/fusion-workbench-conventions.md`
+`### Which of them a tracked workbench tracks`. Part 1 — `.fusion-setup` is now classified as a
+**record**, with the consequence of the opposite choice stated where the choice is made, so the case
+split is disjoint and complete over its stated range. Part 2 — the section no longer re-enumerates
+the tree's closed list: its scope is now declared by exclusion (**every root entry outside the
+artifact directories**), so a new root-anchored surface lands in the tree once and is classified by
+the rule rather than by a second list somebody has to remember to extend.
+
+Fix-direction items 2 and 3 are **not** done, and both are moot rather than deferred. Item 2 named
+`rules/workbench-stash-and-lock.md` as the section's proper home; that file no longer exists — the
+commit lock moved to `rules/commit-lock.md` and the stash half left with the two stash skills on
+2026-08-15, so there is no orchestrator-only home to move it to and re-partitioning for one section
+would cost more bytes than it saves. Item 3 named the two Plane runtime files; the Plane mirror was
+removed on 2026-08-15, so there is nothing to add. Part 3 of the defect (audience) therefore stands
+unaddressed by design: the section is still emitted to every agent. Cost of the change measured at
++366 bytes on the always-on surface, absorbed within head-room —
+`hooks/lib/__tests__/rules-emission-golden.test.ts` passes and no baseline moved.

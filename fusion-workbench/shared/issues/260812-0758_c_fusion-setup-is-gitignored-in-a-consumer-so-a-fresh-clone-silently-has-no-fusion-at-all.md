@@ -48,3 +48,12 @@ is made.
 
 The SessionStart hook already warns when a workbench root is found *above* the working directory.
 It says nothing when no marker is found at all — the one case where fusion is doing nothing.
+
+---
+Resolved: `rules/fusion-workbench-conventions.md` `### Which of them a tracked workbench tracks` now
+classifies `.fusion-setup` as a **record** and states the consequence of the other choice at the point
+where the choice is made — a clone without the marker halts every agent at Setup and silences every
+hook, set up in appearance and inert in fact. The `orchestrator-events.jsonl` half of this record was
+already discharged in the same section (it was in the record group before this change). The
+consumer's `.gitignore` line 49 is that project's to delete; what this record asked of fusion — that
+the consequence be stated where the decision is made — is now in the file that project is pointed at.
