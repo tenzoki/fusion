@@ -211,3 +211,5 @@ and `.active-circle` is absent. Five artifacts bind this one and are cited rathe
   — retired by the investigator fold rather than answered; close it with the fold.
 
 ## Turn log
+
+- Turn 1 (session 260814-2306): in progress, from 348f6db; steps P-1 to P-3 (before-measurement, Plane mirror removal, Plane data files); session history: shared/history/260814-2306-orchestrator-session.md

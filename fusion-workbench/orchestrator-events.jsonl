@@ -1482,3 +1482,6 @@
 {"ts":"2026-08-14T22:39:23","event":"conceptrev_start","agent":"conceptrev","detail":"plan carries 2 mermaid diagrams"}
 {"ts":"2026-08-15T01:47:51","event":"conceptrev_done","agent":"conceptrev","detail":"verdict=acceptable; 2 diagrams; finding: prose contradicts diagram on three step numbers, places curator pass after the growth bound"}
 {"ts":"2026-08-15T01:47:51","event":"gate_response","detail":"plan gate: approved with numbering correction first; analyst set passed always; Setup asks once and settings.json deleted; state-drift deleted whole"}
+{"ts":"2026-08-15T05:25:52","event":"turn_start","turn":1,"detail":"steps 1-3: before-measurement, Plane mirror removal, Plane data files; turn_start_head=348f6db"}
+{"ts":"2026-08-15T05:26:21","event":"state_drift","turn":1,"detail":"progress.turn surface=0 record=1; Circle Turn log surface=0 entries record=1 turns run. Both created by this Turn's own turn_start and brought current in the same command: agentstate.yaml rewritten with turn 1 and the 16-entry queue, Turn 1 entry appended to the Circle record"}
+{"ts":"2026-08-15T05:26:34","event":"task_start","turn":1,"task":"P-1","agent":"coder","detail":"before-measurement and suite check; no shipped file touched"}
