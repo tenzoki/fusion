@@ -108,7 +108,7 @@
  *
  * It never stages anything, never commits, never writes a workbench record.
  * The only file it writes is its own throttle record under `.guard-state/`.
- * That is the same refusal `lib/state-drift.ts` states and for a stronger
+ * That is the same refusal `lib/review-coverage.ts` states and for a stronger
  * reason here: a mechanism that staged files on its own behalf would be a
  * second author of the staging list, and the shape whose whole value is that
  * every path in it was written out by the party that knows why would be gone.
@@ -200,7 +200,7 @@ export interface StagingReport {
      * every fault row's code and path, so a miss that GROWS — another record left
      * behind by the next commit — reads as a new signature and speaks again,
      * while one that merely persists is reported once. Same contract as
-     * `lib/state-drift.ts` and `lib/review-coverage.ts`.
+     * `lib/review-coverage.ts`.
      */
     signature: string;
 }

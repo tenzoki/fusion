@@ -1,43 +1,47 @@
 /**
  * Compliance Guard — PostToolUse hook for Claude Code.
  *
- * Three jobs, in this order:
+ * Two jobs, each on its own narrow trigger, and NEITHER of them on the
+ * every-tool-call path:
  *
- *   0. SESSION-STATE DRIFT. Compare `agentstate.yaml`, the active Circle's Turn
- *      log and this session's history file with the two records that cannot
- *      silently freeze — git, and `orchestrator-events.jsonl`. A surface that
- *      has stopped being written is named back to the model. It runs first
- *      because, unlike the other two, it has something to say on every guarded
- *      tool call. It writes nothing but its own throttle record. See
- *      lib/state-drift.ts and `measureStateDriftForModel` below.
- *
- *   0b. REVIEW COVERAGE, on one narrow trigger: a review file landing under a
+ *   0a. REVIEW COVERAGE, on one narrow trigger: a review file landing under a
  *      `reviews/` store. It tiles the review files' declared ranges against the
  *      session's commit range and names, commit by commit, what no reviewer has
  *      opened — plus the files the last pass declared it did not open, which are
- *      the next dispatch's scope. It is deliberately NOT on the every-tool-call
- *      path job 0 sits on: an uncovered range mid-Turn is the normal state, and
- *      a check that fires on its commonest path is one its reader learns to
- *      ignore. See lib/review-coverage.ts and `measureReviewCoverageForModel`.
+ *      the next dispatch's scope. An uncovered range mid-Turn is the normal
+ *      state, and a check that fires on its commonest path is one its reader
+ *      learns to ignore. See lib/review-coverage.ts and
+ *      `measureReviewCoverageForModel`.
  *
- *   0c. STAGING DRIFT, on one measured trigger: HEAD is not where it was on the
+ *   0b. STAGING DRIFT, on one measured trigger: HEAD is not where it was on the
  *      previous tool call. It reads `git status --porcelain` over the workbench
  *      and names the authored records — and any commit-message-shaped file that
  *      landed inside the workbench where no artifact store owns it — that the
- *      commit just made did not carry. Like 0b
- *      it is not on the every-tool-call path: an unstaged record mid-Turn is the
- *      normal state, and the moment a missed record becomes a missed record is
- *      the commit. The trigger is READ FROM THE REPOSITORY, never from the
- *      command's text — deciding from a shell string whether it will move HEAD
- *      is the question the deleted branch policy answered wrong 24 times. See
- *      lib/staging-drift.ts and `measureStagingDriftForModel`.
+ *      commit just made did not carry. Same reason for the narrow trigger: an
+ *      unstaged record mid-Turn is the normal state, and the moment a missed
+ *      record becomes a missed record is the commit. The trigger is READ FROM
+ *      THE REPOSITORY, never from the command's text — deciding from a shell
+ *      string whether it will move HEAD is the question the deleted branch
+ *      policy answered wrong 24 times. See lib/staging-drift.ts and
+ *      `measureStagingDriftForModel`.
  *
- * Two jobs left before them and neither was replaced. A job 1 sat between 0c and
- * 2 until 2026-08-12: a second fingerprint of every path on
- * `guard.protectedPaths`, compared against the one `guard.ts` took before the
- * tool ran, with anything that changed written back and the guard halted. It was
- * the enforcing half of the protected-path mechanism, and the whole mechanism
- * was removed — see `guard.ts`'s header for the measurement that decided it. A
+ * Three jobs left before them and none was replaced. A job 0 ran on EVERY
+ * guarded tool call until 2026-08-15: session-state drift, comparing
+ * `agentstate.yaml`, the active Circle's Turn log and the session history file
+ * with git and `orchestrator-events.jsonl`. Its subject was the hand-maintained
+ * session counters, and it went with them — every firing it ever produced in
+ * either measured project was `progress.commits` disagreeing with a number the
+ * check derived from `git rev-list` in order to compare against it, so removing
+ * the hand-written copy removed the measurement's subject. **Nothing is on the
+ * every-tool-call path now.** An ordinary write at an unremarkable path reaches
+ * no measurement here at all, and what stops being noticed is stated in that
+ * removal's history entry rather than left to be discovered: a dangling
+ * `session.history_file`, a history file whose Directive disagrees with the
+ * state file's, and a Circle record whose Turn log has frozen. A job 1 sat
+ * between the measurements and job 2 until 2026-08-12: a second fingerprint of
+ * every path on `guard.protectedPaths`, compared against the one `guard.ts`
+ * took before the tool ran, with anything that changed written back and the
+ * guard halted — see `guard.ts`'s header for the measurement that decided it. A
  * job 2 sat after them until 2026-08-15: the churn heatmap, which recorded every
  * write-tool file mutation under `.guard-state/churn.json` and emitted
  * `churn_warning` / `churn_critical` at configured per-session thresholds. It
@@ -46,10 +50,10 @@
  * watched, restored or reported, and a thrashed file is not counted, by this
  * hook or any other.
  *
- * The plugin-repo stand-down that used to sit in `main` went with it. Its whole
- * subject was churn — a fusion developer's own edits are not churn signal — and
- * the three measurements above were deliberately placed AHEAD of it because each
- * is anchored at the workbench root and each was measured in this very
+ * The plugin-repo stand-down that used to sit in `main` went with churn. Its
+ * whole subject was churn — a fusion developer's own edits are not churn signal
+ * — and the measurements above were deliberately placed AHEAD of it because
+ * each is anchored at the workbench root and each was measured in this very
  * repository. With churn gone there is nothing here to stand down, and the
  * remaining stand-down in `guard.ts` asks a different directory (cwd, via
  * `isFusionPluginCwd()`) for a different mechanism.
@@ -92,12 +96,6 @@ import { emitEvent } from "./lib/events.js";
 import { bestEffort, failOpen } from "./lib/fail-open.js";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 import { foldCase } from "./lib/paths.js";
-import {
-  driftSentence,
-  lastReported,
-  measureStateDrift,
-  recordReported,
-} from "./lib/state-drift.js";
 import {
   coverageSentence,
   lastReportedCoverage,
@@ -176,18 +174,22 @@ function respond(additionalContext?: string): void {
 /**
  * THE TRIGGER IS WHAT DECIDES WHETHER A NEW MEASUREMENT IS A SIBLING.
  *
- * Three measurements hang below this line, and each argued in its own review
- * that it was a SIBLING of the others rather than an extension of one. That
+ * Two measurements hang below this line, and each argued in its own review
+ * that it was a SIBLING of the other rather than an extension of it. That
  * argument was accepted, and the reason is one property and not a matter of
- * taste: **the three fire on three different conditions.** Decision
+ * taste: **they fire on different conditions.** Decision
  * `fusion-workbench/shared/decisions/260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md`
  * records it as the criterion, so it is written here rather than remembered.
  *
- * The three, in the order they appear below:
+ * A third hung here until 2026-08-15 and its trigger was **every guarded tool
+ * call**: session-state drift, on the argument that a stale `agentstate.yaml`
+ * is a fault at every moment after the commit that outdated it. It was removed
+ * with the hand-maintained counters that were its subject, and the every-call
+ * slot is now EMPTY rather than free — a proposal that wants it has to make the
+ * argument below from scratch, not inherit a vacancy.
  *
- *   - `measureStateDriftForModel` — **every guarded tool call.** A stale
- *     `agentstate.yaml` is a fault at every moment after the commit that
- *     outdated it, so measuring always reports a fault only when there is one.
+ * The two, in the order they appear below:
+ *
  *   - `measureReviewCoverageForModel` — **a review file lands** under a
  *     `reviews/` store. An uncovered commit range mid-Turn is the normal and
  *     correct state; the review landing is the moment the gap becomes both
@@ -234,14 +236,17 @@ function respond(additionalContext?: string): void {
  * **When a fourth measurement is proposed, the chassis is built first.** The
  * same decision takes option 2 for the third — the throttle store onto
  * `lib/guard-state-file.ts`, the git wrapper into `lib/git.ts`, both of which
- * already had an owner — and leaves the rest as three copies: the three
- * `measure…ForModel` bodies below, the three CLI mains under `hooks/`, and the
- * three `bin/` wrappers. Three copies is where this codebase drew the line the
- * last time (`lib/guard-state-file.ts`'s own header), and drawing it in the
- * same place twice is a decision rather than a coincidence. A fourth copy of
- * the boilerplate is the signal that the chassis is now cheaper than the
- * copies, and `bin/monitor` not rendering two of the three emitted events is
- * what the omission looks like when it is not.
+ * already had an owner — and leaves the rest as per-measurement copies: the
+ * `measure…ForModel` bodies below, the CLI mains under `hooks/`, and the
+ * wrappers under `bin/`. There were three sets when that decision was taken and
+ * there are two now, the session-state drift measurement having been removed on
+ * 2026-08-15 with the counters that were its subject. Three copies is where
+ * this codebase drew the line the last time (`lib/guard-state-file.ts`'s own
+ * header), and drawing it in the same place twice was a decision rather than a
+ * coincidence. **The trip-wire counts UP, so the removal moved it further off
+ * rather than resetting it:** a fourth copy of the boilerplate is the signal
+ * that the chassis is now cheaper than the copies, and `bin/monitor` not
+ * rendering the emitted events is what the omission looks like when it is not.
  *
  * What a chassis must NOT do, when it is built: flatten the three trigger
  * arguments into a flag. The reasoning in each measurement's doc comment below,
@@ -251,94 +256,24 @@ function respond(additionalContext?: string): void {
  * the part worth keeping.
  */
 
-/* ------------------------------------------------------------------ *
- * Session-state drift
- * ------------------------------------------------------------------ */
-
-/**
- * Measure the session's bookkeeping surfaces against the two records that
- * cannot silently freeze, and hand the model a sentence when one has drifted.
- *
- * ## Why this lives in a hook at all
- *
- * Issue `260801-2038` measured the freeze six times and its own reconciliation
- * measured why the first fix did not take: the check was written into
- * `agents/orchestrator.md`, an agent prompt is loaded at session start, and so
- * the session that installed it was never the session that could run it. That
- * is construction rather than task pressure, and no firmer sentence closes it.
- * A PostToolUse hook is invoked by Claude Code from `hooks/hooks.json`, per tool
- * call, reading `hooks/dist/tracker.js` off disk each time — it needs no
- * cooperation from the session and is not something a session can decline.
- *
- * ## Why here rather than as its own end-of-Turn step
- *
- * A commit is what moves `git rev-list --count` past what `agentstate.yaml`
- * claims, and a commit is a `Bash` tool call, so this fires on the very call
- * that produced the divergence. That is the issue's own candidate 1 — the
- * bookkeeping obligation riding an obligation the session already holds —
- * mechanised rather than prescribed.
- *
- * ## Three properties worth stating plainly
- *
- * 1. **It writes nothing but its own throttle record.** Candidate 3 of the
- *    issue, letting something other than the orchestrator repair the surfaces,
- *    is rejected there and stays rejected: a second writer racing the
- *    orchestrator's own overwrite is worse than a stale number. So this makes a
- *    skipped write impossible not to notice; it cannot make the write happen.
- * 2. **It is anchored at the workbench root rather than at cwd, and it is not
- *    stood down in fusion's own repository.** Two plugin-repo stand-downs used
- *    to stand between this measurement and that root — the protected-path
- *    measurement's, removed on 2026-08-12, and churn's, removed on 2026-08-15 —
- *    and this one was deliberately ordered ahead of both. Neither ever applied
- *    to it: fusion's own repository is a fusion consumer with a live workbench,
- *    and every one of the six measured instances happened in it. Standing this
- *    down there would switch it off in the only project where it is known to be
- *    needed.
- * 3. **It reports once per divergence, not once per tool call.** The throttle
- *    compares the drift signature with the last one reported; a divergence that
- *    grows speaks again, one that merely persists stays quiet.
- */
-function measureStateDriftForModel(): string | null {
-  const root = findWorkbenchRoot();
-  if (root === null) return null;
-
-  const report = measureStateDrift(root);
-  const seen = lastReported(root);
-
-  if (report.signature === seen) return null;
-
-  // Cleared as readily as it is set: when the orchestrator brings the surfaces
-  // current the signature becomes "", the record is emptied, and a later drift
-  // is reported afresh rather than being mistaken for the one already told.
-  bestEffort("tracker", () => recordReported(root, report.signature));
-
-  if (report.drifted.length === 0) return null;
-
-  const detail = report.drifted
-    .map((r) => `${r.surface}: surface=${r.says} record=${r.record}`)
-    .join("; ");
-  bestEffort("tracker", () => emitEvent("state_drift", undefined, undefined, detail));
-
-  return driftSentence(report);
-}
-
 /**
  * Review coverage, measured when a review file lands — issue `260810-1205`.
  *
  * ## The trigger is the whole design
  *
  * This runs on ONE condition: a write tool just wrote a `.md` file under a
- * `reviews/` store inside the workbench. It is not on the every-tool-call path
- * the state-drift measurement sits on, and the asymmetry is deliberate rather
- * than an omission.
+ * `reviews/` store inside the workbench. It is not on the every-tool-call path,
+ * and that is deliberate rather than an omission.
  *
- * A stale `agentstate.yaml` is a fault at every moment after the commit that
- * outdated it, so measuring it on every call reports a fault only when there is
- * one. An uncovered commit range mid-Turn is the **normal and correct** state —
- * review runs at Step 3c, after the Turn's tasks have landed — so the same
+ * An uncovered commit range mid-Turn is the **normal and correct** state —
+ * review runs at Step 3c, after the Turn's tasks have landed — so an every-call
  * cadence here would report a fault on the commonest path, and a check that
  * cries wolf on its commonest path teaches its reader to ignore it. That is
- * issue `260810-0710` arriving one level up.
+ * issue `260810-0710` arriving one level up. The measurement that DID hold the
+ * every-call slot, until 2026-08-15, held it on the opposite reading of the
+ * same criterion: a stale `agentstate.yaml` was a fault at every moment after
+ * the commit that outdated it, so measuring on every call reported a fault only
+ * when there was one.
  *
  * A review file landing is the moment the answer is actionable and the moment
  * it is a fault to ignore: the range is now as tiled as this pass is going to
@@ -347,10 +282,10 @@ function measureStateDriftForModel(): string | null {
  * it was that they sat in a file nobody reopened. Reporting them here makes the
  * carried list an obligation that arrives rather than a footnote.
  *
- * Like `measureStateDriftForModel`, it writes nothing but its own throttle
- * record, it reports once per gap rather than once per file, and it is anchored
- * at the workbench root — so it is NOT stood down in fusion's own repository,
- * which is where issue `260810-1205` was measured.
+ * Like its sibling below, it writes nothing but its own throttle record, it
+ * reports once per gap rather than once per file, and it is anchored at the
+ * workbench root — so it is NOT stood down in fusion's own repository, which is
+ * where issue `260810-1205` was measured.
  */
 function measureReviewCoverageForModel(input: HookInput): string | null {
   if (!WRITE_TOOLS.includes(input.tool_name)) return null;
@@ -398,8 +333,8 @@ function measureReviewCoverageForModel(input: HookInput): string | null {
  * previous tool call recorded. Two alternatives were available and both are
  * mistakes this codebase has already paid for.
  *
- * Firing on **every tool call** — where the state-drift measurement sits —
- * would report the commonest correct state as a fault. A coder writes an issue
+ * Firing on **every tool call** — where the removed state-drift measurement
+ * sat — would report the commonest correct state as a fault. A coder writes an issue
  * file and Step 3b stages it minutes later; in between, the record is unstaged
  * and nothing is wrong. `measureReviewCoverageForModel` above declines the
  * every-call path for the same reason, and issue `260810-0710` is where that
@@ -492,20 +427,11 @@ async function main(): Promise<void> {
     return;
   }
 
-  // The session-state drift measurement, anchored at the workbench root rather
-  // than at cwd. Its own header says why it is not stood down in fusion's own
-  // repository: that repository is a fusion consumer, and all six measured
-  // instances of the freeze happened there. `bestEffort` because one
-  // bookkeeping report may never cost the other two.
-  let drift: string | null = null;
-  bestEffort("tracker", () => {
-    drift = measureStateDriftForModel();
-  });
-
-  // Review coverage, on the narrow trigger of a review file landing. Same
-  // anchoring and the same reason for reporting in fusion's own repository; see
-  // `measureReviewCoverageForModel` for why its trigger is a single act rather
-  // than every tool call.
+  // Review coverage, on the narrow trigger of a review file landing. Anchored
+  // at the workbench root rather than at cwd, and not stood down in fusion's
+  // own repository: that repository is a fusion consumer, and issue
+  // `260810-1205` was measured there. `bestEffort` because one bookkeeping
+  // report may never cost the other.
   let coverage: string | null = null;
   bestEffort("tracker", () => {
     coverage = measureReviewCoverageForModel(input);
@@ -524,9 +450,11 @@ async function main(): Promise<void> {
   // govern CHURN and nothing else — the workbench root is fusion's own
   // repository, so a fusion developer's own edits were not counted as churn —
   // and it went with the heatmap on 2026-08-15, as its protected-path sibling
-  // had gone on 2026-08-12. What is left is three measurements that were each
+  // had gone on 2026-08-12. What is left is two measurements that were each
   // deliberately placed ahead of that gate, because each is anchored at the
-  // workbench root and each was measured in this very repository. The remaining
+  // workbench root and each was measured in this very repository. A third stood
+  // beside them on the same footing until the session counters that were its
+  // subject were removed on 2026-08-15. The remaining
   // stand-down in `guard.ts` asks a DIFFERENT directory (cwd, via
   // `isFusionPluginCwd()`) about a different mechanism; CLAUDE.md documents the
   // divergence, and it is now a difference between two hooks rather than within
@@ -539,7 +467,7 @@ async function main(): Promise<void> {
   // and the rule they established is not — nothing may run between these
   // measurements and `respond`. Joined rather than chosen between, for the same
   // reason.
-  const parts: (string | null)[] = [drift, coverage, staging];
+  const parts: (string | null)[] = [coverage, staging];
   const context = parts.filter((s): s is string => s !== null).join(" ");
 
   respond(context === "" ? undefined : context);

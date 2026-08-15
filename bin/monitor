@@ -103,16 +103,28 @@ GUARD_EVENTS_JSONL = os.path.join(BASE_DIR, ".guard-state", "events.jsonl")
 #     protecting you", so a panel that omits it shows a guard protecting
 #     nothing as normal operation. Rendered at the loudest level the panel
 #     has — see renderWarnings().
-#   - Stale session state (state_drift) reports that the numbers the dashboard
-#     itself is drawing have stopped being written. hooks/tracker.ts measures
-#     agentstate.yaml, the active Circle's Turn log and the session history
-#     against git and orchestrator-events.jsonl on every guarded tool call, and
-#     emits one of these when a surface has frozen (issue 260801-2038, measured
-#     six times). This panel is where it belongs rather than in the event list:
-#     a monitor that keeps rendering "Commits: 4" from a frozen file while git
-#     holds 16 is not merely missing a row, it is reporting a wrong number as a
-#     right one. The divergence is NOT recomputed here — one measurement, in
-#     the hook, surfaced by its event.
+#   - Stale session state (state_drift) reported that the numbers the dashboard
+#     itself was drawing had stopped being written. NOTHING EMITS THIS ANY MORE.
+#     hooks/tracker.ts measured agentstate.yaml, the active Circle's Turn log
+#     and the session history against git and orchestrator-events.jsonl on every
+#     guarded tool call (issue 260801-2038, measured six times); the measurement
+#     was removed on 2026-08-15 with the hand-maintained session counters that
+#     were its subject.
+#
+#     It stays in this panel, and the reason is the log rather than the hook:
+#     orchestrator-events.jsonl is APPEND-ONLY and holds 29 real state_drift
+#     rows, the most recent from the day the emitter was removed, and the
+#     monitor is read across sessions against logs older than itself. A renderer
+#     is styling for data, and this data still exists. Dropping the arm would
+#     not remove a row — the rows still reach the panel through
+#     WARNING_EVENT_TYPES — it would render them at the amber default with the
+#     label "Warning", which is a worse reading of a historical divergence than
+#     the one below. Same call, same reasoning, as the queue_built colour rule
+#     kept one step earlier.
+#
+#     The divergence was never recomputed here — one measurement, in the hook,
+#     surfaced by its event — so nothing in this file went looking for a state
+#     file that has ceased to exist, then or now.
 #
 # Everything else a guard hook writes (guard_allow, tracker_record, clears)
 # is bookkeeping: it records the ordinary path, nobody asked to be told
@@ -171,14 +183,17 @@ DRIFT_EVENT_TYPES = {"state_drift"}
 # visible row, so what the budget buys is the VARIETY of errors — two emitters,
 # with room for their exception texts to differ.
 #
-# 8 for stale-state rows, and again for a measured rate rather than for
-# symmetry. hooks/tracker.ts throttles state_drift on the drift SIGNATURE, so a
-# divergence that merely persists across a hundred tool calls emits once — but a
-# divergence that GROWS emits again, and a session that commits sixteen times
-# without ever bringing agentstate.yaml current produces a row per commit. Left
-# in the warning class those sixteen would push every guard_block and guard_halt
-# off the panel, which is the advisory burst exactly. Eight is enough to show the
-# divergence widening, which is the part a reader acts on.
+# 8 for stale-state rows. The rate this was sized for is now historical — the
+# emitter was removed on 2026-08-15 — and the carve-out is kept because the rows
+# it caps are still in the log. hooks/tracker.ts throttled state_drift on the
+# drift SIGNATURE, so a divergence that merely persisted across a hundred tool
+# calls emitted once, but a divergence that GREW emitted again, and a session
+# that committed sixteen times without ever bringing agentstate.yaml current
+# produced a row per commit. Those bursts are on disk. Charged to the warning
+# class they would push guard_block and guard_halt rows off the panel of anyone
+# reading a log from before the removal, which is the advisory burst exactly.
+# Eight is enough to show the divergence widening, which is the part a reader
+# acts on.
 MAX_WARNINGS_RETURNED = 30
 MAX_ADVISORIES_RETURNED = 8
 MAX_ERRORS_RETURNED = 8
@@ -549,11 +564,13 @@ HTML_PAGE = r"""<!DOCTYPE html>
       // "<X> error (fail-open): ...", so the label names the half they share
       // and the detail beside it says which hook.
       else if (w.event === 'guard_error') { levelClass = 'failopen'; levelLabel = 'Fail-open'; }
-      // Stale session state. It keeps the amber warning level — something IS
-      // wrong — but not the label: "Warning" beside a row reading
+      // Stale session state. Historical only — the emitter was removed on
+      // 2026-08-15 with the counters it measured — and kept because the log is
+      // append-only and holds these rows. It keeps the amber warning level —
+      // something WAS wrong — but not the label: "Warning" beside a row reading
       // "progress.commits: surface=0 record=12" invites the reader to treat it
-      // as one more guard event, when what it says is that the counters in the
-      // header above are no longer being written. The label names that.
+      // as one more guard event, when what it says is that the counters that
+      // stood in the header above had stopped being written. The label names that.
       else if (w.event === 'state_drift') { levelClass = 'warning'; levelLabel = 'Stale state'; }
       var ts = formatLocalTime(w.ts || '', 'date');
       var key = warningKey(w);

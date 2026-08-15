@@ -166,7 +166,7 @@ Since v2.9.0, every Turn closes with a **Coherence Review** (per-Turn gate again
               └─────────────┴───────────────┘
 ```
 
-**The Turn budget is configuration, not a constant.** `bin/fusion-turn-budget` resolves it once per session, at the orchestrator's Setup, from `{"orchestrator": {"maxTurns": N}}` in the project's `fusion-guard.json`, merged per leaf over the plugin's `hooks/config.json` and then the built-in default, which is defined once in `hooks/lib/config.ts` `DEFAULTS`. No count is written into the orchestrator prompt or into the diagram above. When the resolution fails, the orchestrator substitutes none: it omits the maximum from `agentstate.yaml`, shows the dashboard's Turn field as `<current>/--`, treats the Max-Turns circuit breaker as not evaluable, and asks the user at every Turn boundary instead.
+**The Turn budget is configuration, not a constant.** `bin/fusion-turn-budget` resolves it once per session, at the orchestrator's Setup, from `{"orchestrator": {"maxTurns": N}}` in the project's `fusion-guard.json`, merged per leaf over the plugin's `hooks/config.json` and then the built-in default, which is defined once in `hooks/lib/config.ts` `DEFAULTS`. No count is written into the orchestrator prompt or into the diagram above. When the resolution fails, the orchestrator substitutes none: it writes no number in the budget's place — `agentstate.yaml` has carried no maximum since 2026-08-15, when its hand-maintained counters were removed — shows the dashboard's Turn field as `<current>/--`, treats the Max-Turns circuit breaker as not evaluable, and asks the user at every Turn boundary instead.
 
 ### Orchestrator observability
 

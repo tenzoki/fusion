@@ -29,7 +29,7 @@ Hold the printed path and use it wherever a step below writes `$FUSION_SRC/…`.
 
 **Why the branch, and why it is a call.** `bin/fusion-source-root` owns the criterion; its own header states it in full and this file does not restate it. In one line: `$FUSION_PLUGIN_ROOT` names the installed copy and is pinned for the whole session, and inside the fusion plugin's own source repository that is the wrong copy, because `bin/fusion-rules` and `bin/fusion-paths` read the work tree there on purpose. Four executable copies of that criterion used to live across this file and `$FUSION_SRC/skills/next/SKILL.md`, and a correction to one of them reached two and left two standing — repeated prose drifts in meaning, repeated shell drifts in behaviour (decision `260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper…` under `$SCAN_DECISIONS`, option 1).
 
-**The `[ -x ]` guard is the one Step 1's drift check and Step 3's domain detection carry, for the same reason** — a helper added to the plugin's work tree between releases is simply absent from an older install, and a bare call is exit 127 at this skill's own first step. The absent branch falls to `$FUSION_PLUGIN_ROOT`, which is the behaviour that preceded the helper, and says so on stderr rather than resolving in silence. An unset `FUSION_PLUGIN_ROOT` does not fall anywhere, because there is nothing to fall to, and it is the branch that prints `UNRESOLVED`.
+**The `[ -x ]` guard is the one Step 3's domain detection carries, for the same reason** — a helper added to the plugin's work tree between releases is simply absent from an older install, and a bare call is exit 127 at this skill's own first step. The absent branch falls to `$FUSION_PLUGIN_ROOT`, which is the behaviour that preceded the helper, and says so on stderr rather than resolving in silence. An unset `FUSION_PLUGIN_ROOT` does not fall anywhere, because there is nothing to fall to, and it is the branch that prints `UNRESOLVED`.
 
 **What the root does *not* cover.** A `bin/` helper is always run from `$FUSION_PLUGIN_ROOT`, and so is an asset this skill copies — `bin/monitor`, `stilwerk/`, `templates/`, `.claude-plugin/plugin.json`. Whether the work-tree preference reaches helper resolution is part (c) of decision `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention…` and is **unanswered**; do not assume it. The split is by what you do with the path: read shipped text → `$FUSION_SRC`; run or copy an installed artefact → `$FUSION_PLUGIN_ROOT`.
 
@@ -197,20 +197,18 @@ Read `./fusion-workbench/agentstate.yaml`.
 - **If it exists:** a prior session was interrupted. You MUST do ALL of:
   0a. **Schema check (v2.9.0).** If the saved `agentstate.yaml` contains the legacy fields `cycle:` or `goal:` (instead of the current `turn:` / `directive:`), it is a pre-v2.9.0 snapshot that cannot be replayed against v2.9.0 fields. The schema rename is a hard break — there is no soft alias. Tell the user "schema mismatch — please restart", offer **Restart only** (delete `agentstate.yaml` and proceed with fresh setup), and do not attempt to resume. Skip the remaining sub-steps once Restart is chosen.
   1. Read the file completely.
-  2. **Run the drift check before you summarise, not after.** The saved state is what you are about to replay, and a frozen one describes a session that got much further than it says it did — measured six times, with `agentstate.yaml` saying `commits: 0` while git counted 6, 7, 8 and 12 (issue `260801-2038`). A divergence of that size changes the answer to "Continue or Restart?", and the user cannot weigh it if you present the file's own numbers as fact.
+  2. **Derive how far the session got before you summarise it, rather than reading it off the file.** The saved state carries no counters — it never carries a number that could be stale, because the fields that could be were removed on 2026-08-15 along with the check that caught them (`agents/orchestrator.md` **Persistent State File → Format**). It used to: `agentstate.yaml` said `commits: 0` while git counted 6, 7, 8 and 12, measured six times (issue `260801-2038`). Take the two figures from the records that could not freeze:
 
      ```bash
-     if [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-state-drift" ]; then
-       "$FUSION_PLUGIN_ROOT/bin/fusion-state-drift"
-     else
-       echo "fusion: no bin/fusion-state-drift in the installed plugin at $FUSION_PLUGIN_ROOT — no drift check taken" >&2
-     fi
+     A=$(sed -n 's/.*git_head_at_start: *"\([^"]*\)".*/\1/p' ./fusion-workbench/agentstate.yaml 2>/dev/null)
+     [ -n "$A" ] && echo "commits=$(git rev-list --count "$A"..HEAD 2>/dev/null)" || echo "commits=unavailable"
+     echo "turns=$(grep -c '"event":"turn_start"' ./fusion-workbench/orchestrator-events.jsonl 2>/dev/null || echo unavailable)"
      ```
 
-     It prints `anchor=`, `state=`, `rows=`, `drift=` and `verdict=`, then one line per surface: what the surface says, what the record that can contradict it says, and `DRIFT` or `UNCHECKED (<reason>)` where either applies. `verdict=drift` is **a line of output, not an exit code** — exit 0 means the check ran, exit 2 means no workbench, exit 3 means the installed plugin carries no compiled hooks. The `[ -x ]` guard is the one Step 3's domain detection carries, for the same reason: `$FUSION_PLUGIN_ROOT` is the installed copy, pinned for the whole session, so a helper added between releases is absent there and a bare call is exit 127. Do not re-implement the comparison by hand; the same computation runs in `hooks/tracker.ts` after every tool call, and two spellings of it would be free to disagree.
+     The task tallies come from counting the `work_queue` entries by `status` in the file you just read. Report a figure that could not be taken as `unavailable`, never as `0` — an absent anchor is not a session with no commits.
   3. Present a summary to the user:
      - Session Directive and mode
-     - Progress (Turn number, tasks completed vs total)
+     - Progress (the Turn and commit counts derived in sub-step 2, tasks completed vs total from `work_queue`)
      - The task that was active when the session stopped
      - Remaining tasks (with their status)
      - Plan file and user directive, if any
@@ -282,7 +280,7 @@ Create `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` (the value `fusion-pat
   TS="$(date -u +%Y-%m-%dT%H:%M:%S)"
   echo "{\"ts\":\"${TS}\",\"event\":\"session_start\",\"history_file\":\"<the Step 4 path>\"}" >> ./fusion-workbench/orchestrator-events.jsonl
   ```
-  That field is the session's identity in an append-only log, and the drift check's Turn row counts from the first `session_start` carrying it — which is what lets the count span an interrupted session's resume instead of restarting at zero (`agents/orchestrator.md` **Persistent State File → Drift check**).
+  That field is the session's identity in an append-only log, and a Turn count taken over `turn_start` events runs from the first `session_start` carrying it — which is what lets the count span an interrupted session's resume instead of restarting at zero. Since the Turn number stopped being written to `agentstate.yaml`, this log is the only place it can be read (`agents/orchestrator.md` Phase 2).
 - Overwrite `./fusion-workbench/orchestrator-live.md` with the real session Directive and snapshot counts (replace the placeholder `Initializing` line). The dashboard is now live for the monitor.
 
 ## Done

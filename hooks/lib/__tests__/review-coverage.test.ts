@@ -12,9 +12,9 @@
  *
  * So every case here builds a real throwaway git repository with real commits
  * and real review files, and asserts on what came back. The subprocess cases go
- * through the harness for the reason `state-drift.test.ts` gives at length:
- * `isFusionPluginCwd()` caches per process, so an in-process assertion about the
- * plugin-repo case would pass vacuously.
+ * through the harness for the reason `staging-drift.test.ts` gives at the same
+ * place: `isFusionPluginCwd()` caches per process, so an in-process assertion
+ * about the plugin-repo case would pass vacuously.
  *
  * ## The properties under test
  *
@@ -423,7 +423,8 @@ describe("review coverage: a range it cannot pin", () => {
         writeState(p.root, start);
 
         // Finding an uncovered range is a line of output, never an exit code —
-        // the lesson bin/fusion-state-drift records from issue 260810-0710.
+        // the lesson of issue 260810-0710, first paid for by the session-state
+        // drift reader that carried it until that reader was deleted.
         const found = runCli(p.root);
         expect(keys(found.stdout).verdict).toBe("uncovered");
         expect(found.status).toBe(0);

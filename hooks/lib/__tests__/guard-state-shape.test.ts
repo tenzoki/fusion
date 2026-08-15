@@ -18,42 +18,56 @@
  * every state file on the tracker's path goes through; its header carries the
  * argument.
  *
- * ## Which state file the rows seed, and why it has changed twice
+ * ## Which state file the rows seed, and why it has changed three times
  *
  * The subject of this file is the STATE LOAD, not any one file and not whatever
  * the reply happens to say. Every row needs the tracker to have SOMETHING to
  * report, so that "the reply survived the load" is observable at all.
  *
- * The reply was the protected-path halt sentence until 2026-08-12, and moved to
- * the session-state drift sentence when that half of the guard was removed. The
- * seeded file was `churn.json` until 2026-08-15, and moved to `state-drift.json`
- * when the churn heatmap was removed with the last state file the tracker loaded
- * outside its own measurements.
+ * The reply was the protected-path halt sentence until 2026-08-12, then the
+ * session-state drift sentence, and is the review-coverage sentence from
+ * 2026-08-15. The seeded file was `churn.json` until the churn heatmap went,
+ * then `state-drift.json`, and is `review-coverage.json` now. Each move happened
+ * because the mechanism the rows had borrowed from was removed, and the third
+ * one is the first that had no uncoupled option to move to.
  *
- * `state-drift.json` is the right successor rather than the nearest one. It is
- * the throttle record `measureStateDriftForModel` reads on EVERY guarded tool
- * call, before it produces the sentence — so a load that threw would take the
- * sentence with it, which is exactly the shape the defect had. Review coverage
- * and staging drift have throttle records too, and both were declined for the
- * reason their triggers already state: coverage needs the payload to be a `.md`
- * file under a `reviews/` store with a session window to measure against, and
- * staging needs HEAD to have moved. Either would couple these rows to a second
- * trigger that has nothing to do with the load. Drift needs no such coupling: it
- * needs a git repository, a six-line `agentstate.yaml` and three commits, after
- * which every tool call in the project reports the same divergence.
+ * `state-drift.json` was the right second choice for a reason that has ceased to
+ * hold. It was the throttle `measureStateDriftForModel` read on EVERY guarded
+ * tool call, so an ordinary `notes.txt` edit reached the load and no second
+ * trigger was involved. Coverage and staging were declined then, on the ground
+ * that each would couple these rows to a trigger unrelated to the load —
+ * coverage needs the payload to be a `.md` file under a `reviews/` store with a
+ * session window, staging needs HEAD to have moved. **After the drift
+ * measurement's removal both surviving reports are narrow, so the uncoupled
+ * option no longer exists** and the criterion decides between the two coupled
+ * ones instead of against them.
  *
- * The fixture is `freezeCommitCount` in helpers/guard-harness.ts, which carries
+ * It decides for coverage, structurally rather than by preference. Staging
+ * drift's throttle record holds the HEAD its own trigger compares against, so a
+ * row that seeds that record malformed — which is every row in this file —
+ * disarms the trigger and observes nothing at all. Coverage's throttle holds
+ * only a signature; a malformed one reads as "never reported", which is the
+ * safe direction, and the gap still speaks. So the seam under test is reached
+ * with the state file in exactly the shapes the defect was measured in.
+ *
+ * The cost is real and is not hidden: these rows now fail if the coverage
+ * trigger breaks, for a reason that is not their subject. That is what a coupled
+ * probe buys. It is cheaper than the alternative, which was deleting the only
+ * suite in this repository that covers `lib/guard-state-file.ts`'s coercion seam
+ * while the seam still ships and still has two callers.
+ *
+ * The fixture is `openCoverageGap` in helpers/guard-harness.ts, which carries
  * the rest of that reasoning and is shared with the one other suite pointed the
  * same way. It is deliberately MINIMAL rather than the full state file the
- * orchestrator writes: `measureStateDrift` reports each row it cannot decide as
- * `unchecked` and omits it from the sentence, so the two fields that produce the
- * `progress.commits` row are all either suite needs.
+ * orchestrator writes: only `session.git_head_at_start` is read, and the three
+ * commits past it are what no review's declared range covers.
  *
  * ## Why every case here uses a write tool
  *
- * Nothing here requires it of the drift measurement, which runs for `Bash` too.
- * The write tools are kept because the defect was measured on one, and because
- * an ordinary `notes.txt` edit is the plainest call that reaches the load.
+ * Now it is required rather than chosen: the coverage trigger fires only for a
+ * write tool whose payload names a `.md` file under a `reviews/` store. It was
+ * a choice under the two previous probes, and the reason it was made is the
+ * reason it is comfortable now — the defect was measured on a write tool.
  *
  * ## What proves the fix rather than the absence of the bug
  *
@@ -68,22 +82,24 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 import {
   CASE_TIMEOUT,
-  DRIFT_SENTENCE_MARKERS,
-  freezeCommitCount,
+  COVERAGE_SENTENCE_MARKERS,
+  REVIEW_PAYLOAD,
+  openCoverageGap,
+  openCoverageWindowWithNoGap,
   readEvents,
   runToolCall,
   withProject,
   type Project,
 } from "./helpers/guard-harness.js";
 
-const THROTTLE_FILE = "fusion-workbench/.guard-state/state-drift.json";
+const THROTTLE_FILE = "fusion-workbench/.guard-state/review-coverage.json";
 
-/** The file the tool call names. Unremarkable, and that is the point. */
-const PAYLOAD = "notes.txt";
+/** The file the tool call names — a review landing, which is the trigger. */
+const PAYLOAD = REVIEW_PAYLOAD;
 
 /** The context sentence the tracker handed back to the model, or "". */
 function context(post: { hookSpecificOutput?: { additionalContext?: string } }): string {
@@ -98,40 +114,45 @@ function readState(root: string, rel: string): Record<string, unknown> | null {
 }
 
 /* ------------------------------------------------------------------ *
- * The drift fixture
+ * The coverage fixture
  * ------------------------------------------------------------------ */
 
 /**
- * A project whose bookkeeping has drifted, with the throttle record seeded
+ * A project with an uncovered commit range, with the throttle record seeded
  * verbatim.
  *
- * `git: true` is not optional here: the drift is measured against the git
- * history, which is one of the two records the check reads.
+ * `git: true` is not optional here: the range is `git rev-list` over the
+ * session anchor, and without a repository the report comes back with a `why`
+ * and the tracker returns before the load these rows are about.
  */
-function withDrift<T>(throttle: string, fn: (project: Project) => T): T {
+function withGap<T>(throttle: string, fn: (project: Project) => T): T {
   return withProject(
     (project) => {
-      freezeCommitCount(project.root);
+      openCoverageGap(project.root);
       return fn(project);
     },
     { git: true, files: { [THROTTLE_FILE]: throttle } },
   );
 }
 
-/** One ordinary Edit on `notes.txt`. Returns the tracker's reply. */
-function ordinaryEdit(root: string): string {
+/** One review file landing. Returns the tracker's reply. */
+function reviewLands(root: string): string {
+  const abs = resolve(root, PAYLOAD);
   const { post } = runToolCall(
     root,
-    "Edit",
-    { file_path: resolve(root, PAYLOAD) },
-    () => writeFileSync(resolve(root, PAYLOAD), "edited\n", "utf-8"),
+    "Write",
+    { file_path: abs },
+    () => {
+      mkdirSync(dirname(abs), { recursive: true });
+      writeFileSync(abs, "# review\n", "utf-8");
+    },
   );
   return context(post);
 }
 
 /** Everything the lost sentence carried, asserted as one. */
-function expectTheDriftSentence(text: string): void {
-  for (const marker of DRIFT_SENTENCE_MARKERS) expect(text).toContain(marker);
+function expectTheCoverageSentence(text: string): void {
+  for (const marker of COVERAGE_SENTENCE_MARKERS) expect(text).toContain(marker);
 }
 
 const MALFORMED_ROWS: [string, string][] = [
@@ -146,10 +167,10 @@ const MALFORMED_ROWS: [string, string][] = [
 describe("a malformed state file no longer swallows the tracker's reply", () => {
   for (const [name, content] of MALFORMED_ROWS) {
     it(
-      `reports the state drift with state-drift.json = ${name}`,
+      `reports the coverage gap with review-coverage.json = ${name}`,
       () => {
-        withDrift(content, ({ root }) => {
-          expectTheDriftSentence(ordinaryEdit(root));
+        withGap(content, ({ root }) => {
+          expectTheCoverageSentence(reviewLands(root));
         });
       },
       CASE_TIMEOUT,
@@ -159,10 +180,10 @@ describe("a malformed state file no longer swallows the tracker's reply", () => 
 
 describe("the malformed file is repaired, not just survived", () => {
   it(
-    "still reports the drift, and repairs the file instead of failing again",
+    "still reports the gap, and repairs the file instead of failing again",
     () => {
-      withDrift("{}", ({ root }) => {
-        expectTheDriftSentence(ordinaryEdit(root));
+      withGap("{}", ({ root }) => {
+        expectTheCoverageSentence(reviewLands(root));
 
         // The second amplifier in the issue: nothing repaired the file,
         // because the save sits after the throw, so every later tool call in
@@ -182,22 +203,27 @@ describe("the malformed file is repaired, not just survived", () => {
   );
 
   it(
-    "costs nothing on an ordinary write with nothing to report",
+    "costs nothing on a review landing with nothing to report",
     () => {
-      // The same malformed file in a project with no drift. The load still runs
-      // and still must not throw, and the honest reading of a malformed
-      // throttle is "never reported" — which equals the empty signature a
-      // project with nothing drifted produces, so the measurement returns before
-      // it writes. The file is therefore left exactly as it was, and that is the
-      // assertion: the repair above is a repair the REPORT performs, not
-      // something the load does on its own.
+      // The same malformed file in a project whose range is fully covered
+      // because it is EMPTY — the anchor is HEAD. That distinction is what
+      // makes the case worth anything: a project with no `agentstate.yaml` at
+      // all returns on the measurement's `why` branch, which sits BEFORE the
+      // load, and would assert nothing about the load. With a window and no
+      // gap, the load runs, still must not throw, and the honest reading of a
+      // malformed throttle is "never reported" — which equals the empty
+      // signature a fully covered range produces, so the measurement returns
+      // before it writes. The file is therefore left exactly as it was, and
+      // that is the assertion: the repair above is a repair the REPORT
+      // performs, not something the load does on its own.
       withProject(
         ({ root }) => {
-          expect(ordinaryEdit(root)).toBe("");
+          openCoverageWindowWithNoGap(root);
+          expect(reviewLands(root)).toBe("");
           expect(readState(root, THROTTLE_FILE)).toEqual({});
           expect(readEvents(root).map((e) => e.event)).not.toContain("guard_error");
         },
-        { files: { [THROTTLE_FILE]: "{}" } },
+        { git: true, files: { [THROTTLE_FILE]: "{}" } },
       );
     },
     CASE_TIMEOUT,
@@ -208,15 +234,15 @@ describe("a well-formed state file is carried forward, not emptied", () => {
   it(
     "reads back the signature the previous call wrote and stays quiet",
     () => {
-      withDrift("{}", ({ root }) => {
+      withGap("{}", ({ root }) => {
         // The first call has nothing to compare against and speaks.
-        expectTheDriftSentence(ordinaryEdit(root));
+        expectTheCoverageSentence(reviewLands(root));
         const first = readState(root, THROTTLE_FILE)?.reported;
 
         // The second call loads what the first wrote. A coercion that emptied a
         // well-formed file would make this speak again — and a message on every
-        // tool call is the failure the throttle exists to prevent.
-        expect(ordinaryEdit(root)).toBe("");
+        // review landing is the failure the throttle exists to prevent.
+        expect(reviewLands(root)).toBe("");
         expect(readState(root, THROTTLE_FILE)?.reported).toBe(first);
       });
     },

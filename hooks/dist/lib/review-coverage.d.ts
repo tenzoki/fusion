@@ -91,15 +91,17 @@
  *      right then, and it is what makes the carried out-of-scope list an
  *      obligation that arrives rather than a footnote in a file nobody reopens.
  *
- * It is **not** on the tracker's every-tool-call path, where the state-drift
- * measurement sits, and the difference is not an oversight. A stale
- * `agentstate.yaml` is a fault at every moment after the commit that outdated
- * it. An uncovered range mid-Turn is the *normal and correct* state — review
- * runs at Step 3c, after the Turn's tasks — so a per-call report would fire on
- * the commonest path, and a check that cries wolf on its commonest path teaches
- * its reader to ignore it. That is issue `260810-0710` arriving one level up,
- * and `agents/orchestrator.md` `### Drift check` records it as the reason the
- * drift check's verdict is a line of output rather than an exit code.
+ * It is **not** on an every-tool-call path, and the difference is not an
+ * oversight. An uncovered range mid-Turn is the *normal and correct* state —
+ * review runs at Step 3c, after the Turn's tasks — so a per-call report would
+ * fire on the commonest path, and a check that cries wolf on its commonest path
+ * teaches its reader to ignore it. That is issue `260810-0710` arriving one
+ * level up, and it is why this measurement's verdict is a line of output rather
+ * than an exit code. Until 2026-08-15 a third measurement DID sit on the
+ * every-call path — session-state drift, whose subject was a stale
+ * `agentstate.yaml`, a fault at every moment after the commit that outdated it.
+ * It was removed with the hand-maintained counters it measured; nothing on that
+ * path replaced it.
  */
 /**
  * The mandated header fields. One spelling each, and these two constants are
@@ -158,7 +160,7 @@ export interface CoverageReport {
      * Carries the uncovered commits and the carried file list, so a gap that
      * GROWS reads as a new signature and speaks again, while one that merely
      * persists across the next review file is reported once. Same contract as
-     * `lib/state-drift.ts`'s signature, and the throttle beside it is the same.
+     * `lib/staging-drift.ts`'s signature, and the throttle beside it is the same.
      */
     signature: string;
 }
@@ -228,7 +230,7 @@ export declare function coverageSentence(report: CoverageReport): string;
  * The signature last reported to the model, or "" when none was.
  *
  * Same contract, same reason, and deliberately the same shape as
- * `lib/state-drift.ts`'s pair: without it the hook would repeat itself for as
+ * `lib/staging-drift.ts`'s pair: without it the hook would repeat itself for as
  * long as the gap stands, and a message that arrives every time is one an agent
  * learns to read past — which is the failure this whole mechanism exists to
  * catch, arriving one level up.

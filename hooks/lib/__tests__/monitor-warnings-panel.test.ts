@@ -727,6 +727,16 @@ describe("bin/monitor — the fail-open row", () => {
       expect(level("guard_block")).toEqual({ levelClass: "block", levelLabel: "Blocked" });
       expect(level("guard_halt")).toEqual({ levelClass: "halt", levelLabel: "Halt" });
       expect(level("guard_advisory")).toEqual({ levelClass: "advisory", levelLabel: "Advisory" });
+      // Historical rows, and the arm is deliberately kept. Nothing has emitted
+      // `state_drift` since 2026-08-15, when the session-state drift
+      // measurement went with the hand-maintained counters that were its
+      // subject — but `orchestrator-events.jsonl` is append-only, holds real
+      // rows written before that, and the monitor is read across sessions
+      // against logs older than itself. Dropping the arm would not remove a
+      // row: they still reach the panel through WARNING_EVENT_TYPES, and would
+      // render at the amber default labelled "Warning", which says less about a
+      // historical divergence than "Stale state" does. Same call, same
+      // reasoning, as the `queue_built` colour rule kept one step earlier.
       expect(level("state_drift")).toEqual({ levelClass: "warning", levelLabel: "Stale state" });
       // The amber default, reached now only by an event no arm names.
       expect(level("guard_allow")).toEqual({ levelClass: "warning", levelLabel: "Warning" });

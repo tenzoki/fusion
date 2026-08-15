@@ -297,7 +297,7 @@ Every step's acceptance includes `cd hooks && npm test` green and a history entr
     - Note for the record: `agents/playmaker.md:280` explains at length that whether the taskplanner and the queue retire into the backlog is open in both directions, citing option 4 of the backlog decision. That paragraph is now half-answered — the queue retires and the taskplanner does not — and must be rewritten to say so rather than left standing as an open question this step closed.
     - Dependencies: step 9. Placed after the smaller removals because it is the widest prompt surgery in the plan and benefits from a tree that has already settled.
 
-11. **Remove the hand-maintained session counters and the drift machinery** *(record item 8)*
+11. [DONE] **Remove the hand-maintained session counters and the drift machinery** *(record item 8)*
     - Executor: `coder`
     - Files: `hooks/lib/state-drift.ts` (677 lines, deleted); `hooks/state-drift.ts` (deleted); `bin/fusion-state-drift` (deleted); `hooks/lib/__tests__/{state-drift,state-drift-detection-lint}.test.ts` (1 846 lines, deleted); a new `hooks/lib/state-file.ts`; `hooks/lib/{staging-drift,review-coverage}.ts`; `hooks/tracker.ts`; `bin/monitor`; `bin/{fusion-staging-drift,fusion-review-coverage}`; `agents/orchestrator.md`; `skills/setup/SKILL.md`; `rules/fusion-workbench-conventions.md`; `hooks/lib/__tests__/{hook-fail-open,staging-drift,review-coverage}.test.ts` and `hooks/lib/__tests__/helpers/guard-harness.ts`; **`hooks/lib/__tests__/guard-state-shape.test.ts`** and **`hooks/lib/__tests__/monitor-warnings-panel.test.ts`**, both added to this list on 2026-08-15 after step 4 re-pointed them onto the measurement this step deletes; `README-hooks.md`; `CLAUDE.md` (enumeration half only).
     - Changes:

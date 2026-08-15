@@ -8,16 +8,24 @@
  * working directory (i.e. the project never ran `/fusion:setup`).
  */
 /**
- * `state_drift` is the one entry here that is also emitted by something other
- * than a hook. `agents/orchestrator.md` emits it into
- * `fusion-workbench/orchestrator-events.jsonl` when its own Drift check finds a
- * diverging row; `hooks/tracker.ts` emits it here, into
- * `.guard-state/events.jsonl`, when the same measurement fires without being
- * asked. One concept, one name, two logs — the monitor reads the guard log for
- * its warnings panel and the orchestrator log for its event list, so a drift is
- * visible in the panel whichever caller measured it.
+ * What a hook may write. It is the EMITTER's vocabulary, not the reader's, and
+ * that distinction decided the one removal it has had.
+ *
+ * `state_drift` sat here until 2026-08-15 and was the one entry also emitted by
+ * something other than a hook: `agents/orchestrator.md` wrote it into
+ * `fusion-workbench/orchestrator-events.jsonl` at its own Drift check, and
+ * `hooks/tracker.ts` wrote it here, into `.guard-state/events.jsonl`, when the
+ * same measurement fired without being asked. Both emitters went with the
+ * session counters that were the measurement's subject, so no code can produce
+ * the value and it has no place in a union that says what may be produced.
+ *
+ * **`bin/monitor` still styles `state_drift`, and that is not an inconsistency
+ * to tidy up.** It reads an append-only log holding real rows written before
+ * the removal, so it is a reader of data that exists; this union is a writer's
+ * vocabulary for data nothing can create. Deleting the monitor's arm would
+ * render those rows at the amber default and tell the user less about them.
  */
-export type GuardEventType = "guard_allow" | "guard_block" | "guard_halt" | "guard_advisory" | "guard_error" | "halt_cleared" | "state_drift" | "review_coverage" | "staging_drift" | "tracker_record";
+export type GuardEventType = "guard_allow" | "guard_block" | "guard_halt" | "guard_advisory" | "guard_error" | "halt_cleared" | "review_coverage" | "staging_drift" | "tracker_record";
 export interface GuardEvent {
     ts: string;
     event: GuardEventType;

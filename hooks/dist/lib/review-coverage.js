@@ -91,27 +91,29 @@
  *      right then, and it is what makes the carried out-of-scope list an
  *      obligation that arrives rather than a footnote in a file nobody reopens.
  *
- * It is **not** on the tracker's every-tool-call path, where the state-drift
- * measurement sits, and the difference is not an oversight. A stale
- * `agentstate.yaml` is a fault at every moment after the commit that outdated
- * it. An uncovered range mid-Turn is the *normal and correct* state — review
- * runs at Step 3c, after the Turn's tasks — so a per-call report would fire on
- * the commonest path, and a check that cries wolf on its commonest path teaches
- * its reader to ignore it. That is issue `260810-0710` arriving one level up,
- * and `agents/orchestrator.md` `### Drift check` records it as the reason the
- * drift check's verdict is a line of output rather than an exit code.
+ * It is **not** on an every-tool-call path, and the difference is not an
+ * oversight. An uncovered range mid-Turn is the *normal and correct* state —
+ * review runs at Step 3c, after the Turn's tasks — so a per-call report would
+ * fire on the commonest path, and a check that cries wolf on its commonest path
+ * teaches its reader to ignore it. That is issue `260810-0710` arriving one
+ * level up, and it is why this measurement's verdict is a line of output rather
+ * than an exit code. Until 2026-08-15 a third measurement DID sit on the
+ * every-call path — session-state drift, whose subject was a stale
+ * `agentstate.yaml`, a fault at every moment after the commit that outdated it.
+ * It was removed with the hand-maintained counters it measured; nothing on that
+ * path replaced it.
  */
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { resolve } from "node:path";
 import { git } from "./git.js";
 import { isStateObject, loadGuardState, saveGuardState } from "./guard-state-file.js";
-import { readStateFile, stateField } from "./state-drift.js";
+import { readStateFile, stateField } from "./state-file.js";
 /* ------------------------------------------------------------------ *
- * Layout — root-anchored, exactly as `lib/state-drift.ts` reads it
+ * Layout — root-anchored, exactly as `lib/state-file.ts` reads it
  * ------------------------------------------------------------------ */
 /**
  * The root-anchored surfaces, named literally, for the reason
- * `lib/state-drift.ts` gives at the same place: `rules/fusion-workbench-conventions.md`
+ * `lib/state-file.ts` gives at the same place: `rules/fusion-workbench-conventions.md`
  * `## fusion-workbench Layout` puts these at fixed root-relative paths precisely
  * because the hooks and the `bin/` helpers read them there and none of them has
  * a fallback. `reviews` is the constant `bin/fusion-paths` resolves
@@ -274,7 +276,7 @@ function expand(root, from, to) {
 }
 /** The session anchor `agentstate.yaml` records, or "" with nothing recorded. */
 export function sessionAnchor(root) {
-    // The read goes through `lib/state-drift.ts`, which owns the flat
+    // The read goes through `lib/state-file.ts`, which owns the flat
     // `agentstate.yaml` read. It used to be a second copy of the same six lines
     // here; a third copy in `lib/staging-drift.ts` is what made one shared reader
     // the cheaper option. The phrasing stays local, because only this caller
@@ -458,7 +460,7 @@ function coerceCoverageThrottle(value) {
  * The signature last reported to the model, or "" when none was.
  *
  * Same contract, same reason, and deliberately the same shape as
- * `lib/state-drift.ts`'s pair: without it the hook would repeat itself for as
+ * `lib/staging-drift.ts`'s pair: without it the hook would repeat itself for as
  * long as the gap stands, and a message that arrives every time is one an agent
  * learns to read past — which is the failure this whole mechanism exists to
  * catch, arriving one level up.

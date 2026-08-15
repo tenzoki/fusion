@@ -13,9 +13,8 @@
  * the session's coverage), and by anyone at a terminal who wants to know which
  * commits no reviewer has opened.
  *
- * Output, one `KEY=value` per line in the shape `bin/fusion-paths` and
- * `bin/fusion-state-drift` use, then one line per uncovered commit and one per
- * review considered:
+ * Output, one `KEY=value` per line in the shape `bin/fusion-paths` uses, then
+ * one line per uncovered commit and one per review considered:
  *
  *   anchor=workbench-root
  *   since=8a49fd5
@@ -43,9 +42,9 @@
  *   1  usage error.
  *   2  no fusion workbench above the working directory; nothing to check.
  *
- * **Finding an uncovered range is not an error exit**, for the reason
- * `hooks/state-drift.ts` gives at the same place: its predecessor handed a
- * verdict to an exit code and cried wolf on its commonest path (issue
+ * **Finding an uncovered range is not an error exit**, and the reason is the
+ * one the deleted session-state drift reader established: its predecessor
+ * handed a verdict to an exit code and cried wolf on its commonest path (issue
  * `260810-0710`), and a check whose status is ignored is the failure it exists
  * to catch arriving one level up. Nor is it a release gate — whether a release
  * may go out over an uncovered range is an unfiled decision belonging beside

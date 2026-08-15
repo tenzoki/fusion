@@ -26,8 +26,8 @@
 #
 # Exit codes:
 #   0  the check ran. `verdict=` says what it found. Finding an unstaged record
-#      is NOT a non-zero exit, deliberately — same reason bin/fusion-state-drift
-#      and bin/fusion-review-coverage give (issue 260810-0710).
+#      is NOT a non-zero exit, deliberately — same reason bin/fusion-review-coverage
+#      gives (issue 260810-0710).
 #   1  usage error.
 #   2  no fusion workbench above the working directory; nothing to check.
 #   3  the plugin's compiled hooks are missing, so nothing could be asked. Its

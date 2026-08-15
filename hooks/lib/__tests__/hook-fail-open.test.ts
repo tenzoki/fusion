@@ -38,10 +38,14 @@
  *
  * The acceptance criteria name the real failure — an unwritable `.guard-state/`
  * — and it is reachable without touching either hook: `chmod 0555` on the
- * directory, then one ordinary tool call at an unprotected path. `saveEscalation`
- * (guard) and the drift measurement's throttle write (tracker) both write there
- * on the plain allow path, so the throw arrives through production code rather
- * than through a seam opened for the test.
+ * directory, then one tool call. `saveEscalation` (guard) writes there on the
+ * plain allow path at any payload; the tracker writes there only when one of its
+ * two measurements has something to record, which since 2026-08-15 is never on
+ * an ordinary write. So the two tracker cases name a review file under a
+ * `reviews/` store instead, which is the review-coverage trigger. Either way the
+ * throw arrives through production code rather than through a seam opened for
+ * the test. `helpers/guard-harness.ts` `openCoverageGap` carries the full
+ * reasoning for that probe and for why staging drift cannot serve as one.
  *
  * ## Why these cases spawn the hooks themselves
  *
@@ -62,21 +66,22 @@
 import { describe, expect, it, vi } from "vitest";
 import { spawnSync } from "node:child_process";
 import { chmodSync, mkdirSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import { answer, bestEffort, failOpen } from "../fail-open.js";
 import {
   CASE_TIMEOUT,
-  DRIFT_SENTENCE_MARKERS,
+  COVERAGE_SENTENCE_MARKERS,
+  REVIEW_PAYLOAD,
   childEnv,
-  freezeCommitCount,
   guardEntry,
+  openCoverageGap,
   projectConfig,
   trackerEntry,
   withProject,
 } from "./helpers/guard-harness.js";
 import type { GuardEntry, ProjectOptions } from "./helpers/guard-harness.js";
 
-/** The unprotected file every tool call here names. */
+/** The unprotected file the guard-side tool calls name. */
 const PAYLOAD = "notes.txt";
 
 interface RawRun {
@@ -183,34 +188,45 @@ describe("an unwritable .guard-state/ does not cost a hook its verdict", () => {
   it(
     "tracker replies with a valid envelope, exits 0, and still says why on stderr",
     () => {
-      // The project has to have DRIFTED for this case to have a subject. Until
-      // 2026-08-15 it did not need to: the churn heatmap wrote to
-      // `.guard-state/` on every write-tool call whatever the project's state,
-      // so an unwritable directory always produced a throw. With the heatmap
-      // gone the tracker writes there only when a measurement has something to
-      // record, and a project with nothing to report now correctly writes
-      // nothing at all. Drift is what makes the throttle write happen.
+      // The project has to have something to REPORT for this case to have a
+      // subject, and the tool call has to reach the measurement that reports
+      // it. Until 2026-08-15 neither was true and neither had to be: the churn
+      // heatmap wrote to `.guard-state/` on every write-tool call whatever the
+      // project's state, so an unwritable directory always produced a throw.
+      // With the heatmap gone the tracker writes there only when a measurement
+      // has something to record; with the session-state drift measurement gone
+      // too, no measurement fires on an ordinary write AT ALL, and a plain
+      // `notes.txt` edit now correctly writes nothing. So the payload is a
+      // review file landing and the fixture is an uncovered range.
       withUnwritableStateDir(
         (root) => {
-          const run = runRaw(trackerEntry(), root, "PostToolUse", "Edit", {
-            file_path: resolve(root, PAYLOAD),
+          const run = runRaw(trackerEntry(), root, "PostToolUse", "Write", {
+            file_path: resolve(root, REVIEW_PAYLOAD),
           });
 
           expect(run.stderr).toContain("[tracker] Error:");
 
-          // The verdict survived the failed record: the drift sentence is a
+          // The verdict survived the failed record: the coverage sentence is a
           // well-formed PostToolUse reply, and it is what the throw used to
           // take out.
           const body = verdictOf(run, "tracker") as {
             hookSpecificOutput?: { additionalContext?: string };
           };
           const sentence = body.hookSpecificOutput?.additionalContext ?? "";
-          for (const marker of DRIFT_SENTENCE_MARKERS) {
+          for (const marker of COVERAGE_SENTENCE_MARKERS) {
             expect(sentence).toContain(marker);
           }
           expect(run.status).toBe(0);
         },
-        { git: true, prepare: freezeCommitCount },
+        {
+          git: true,
+          prepare: (root) => {
+            openCoverageGap(root);
+            const abs = resolve(root, REVIEW_PAYLOAD);
+            mkdirSync(dirname(abs), { recursive: true });
+            writeFileSync(abs, "# review\n", "utf-8");
+          },
+        },
       );
     },
     CASE_TIMEOUT,
@@ -220,10 +236,13 @@ describe("an unwritable .guard-state/ does not cost a hook its verdict", () => {
     "tracker with nothing to report writes nothing, so nothing can fail",
     () => {
       // The other half of the change above, pinned so it is a property rather
-      // than an accident: an ordinary write in a project with no drift, no
-      // review file and no moved HEAD makes the tracker touch `.guard-state/`
-      // not at all. A read-only directory is therefore not an error condition
-      // for it, and the reply is the bare `{}` this hook has always emitted.
+      // than an accident: an ordinary write at an unremarkable path makes the
+      // tracker touch `.guard-state/` not at all. Since 2026-08-15 that is the
+      // GENERAL case rather than a quiet corner of one — no measurement is on
+      // the every-tool-call path any more, so neither the payload nor the
+      // project state has to be arranged for this to hold. A read-only
+      // directory is therefore not an error condition for the tracker, and the
+      // reply is the bare `{}` this hook has always emitted.
       withUnwritableStateDir((root) => {
         const run = runRaw(trackerEntry(), root, "PostToolUse", "Edit", {
           file_path: resolve(root, PAYLOAD),
@@ -328,37 +347,41 @@ describe("a verdict the hook already reached survives its own bookkeeping", () =
       // The PostToolUse side of the same shape: a state write that fails must
       // not take the sentence out with it.
       //
-      // The probe is the state-drift report, which is also now the WRITE that is
-      // sabotaged, and the two roles are separable. `measureStateDriftForModel`
-      // measures the drift, then writes its throttle record through `bestEffort`,
-      // then returns the sentence — so a throw in the write is swallowed, marked
-      // on stderr, and the sentence still reaches `respond`.
+      // The probe is the review-coverage report, which is also the WRITE that is
+      // sabotaged, and the two roles are separable.
+      // `measureReviewCoverageForModel` measures the gap, then writes its
+      // throttle record through `bestEffort`, then returns the sentence — so a
+      // throw in the write is swallowed, marked on stderr, and the sentence
+      // still reaches `respond`.
       //
-      // Two earlier spellings of this case are worth knowing about, because each
-      // went with the mechanism it was written on. The probe was the
-      // protected-path halt sentence until 2026-08-12. The sabotaged write was
-      // `churn.json`, whose `saveChurn` ran AFTER the reply through `answer`,
-      // until the heatmap was removed on 2026-08-15 — and with it the last thing
-      // the tracker does after replying. What survives both is the property
-      // issue `260809-2045` was filed about: a report may not withdraw a verdict.
+      // Three earlier spellings of this case are worth knowing about, because
+      // each went with the mechanism it was written on. The probe was the
+      // protected-path halt sentence until 2026-08-12, then the session-state
+      // drift sentence until 2026-08-15. The sabotaged write was `churn.json`,
+      // whose `saveChurn` ran AFTER the reply through `answer`, until the
+      // heatmap was removed — and with it the last thing the tracker does after
+      // replying — then `state-drift.json` until the counters went. What
+      // survives all three is the property issue `260809-2045` was filed about:
+      // a report may not withdraw a verdict.
       //
-      // `state-drift.json` is replaced by a NON-EMPTY directory rather than the
-      // whole state directory being made unwritable, so the sabotage reaches one
-      // write rather than every write the tool call makes.
+      // `review-coverage.json` is replaced by a NON-EMPTY directory rather than
+      // the whole state directory being made unwritable, so the sabotage reaches
+      // one write rather than every write the tool call makes.
       withProject(
         ({ root }) => {
-          freezeCommitCount(root);
+          openCoverageGap(root);
 
-          const payload = resolve(root, PAYLOAD);
+          const payload = resolve(root, REVIEW_PAYLOAD);
           const stateDir = resolve(root, "fusion-workbench", ".guard-state");
 
-          writeFileSync(payload, "edited\n", "utf-8");
+          mkdirSync(dirname(payload), { recursive: true });
+          writeFileSync(payload, "# review\n", "utf-8");
 
           // `saveGuardState`'s rename cannot land on a non-empty directory.
-          mkdirSync(resolve(stateDir, "state-drift.json", "occupied"), {
+          mkdirSync(resolve(stateDir, "review-coverage.json", "occupied"), {
             recursive: true,
           });
-          writeFileSync(resolve(stateDir, "state-drift.json", "occupied", "f"), "x\n");
+          writeFileSync(resolve(stateDir, "review-coverage.json", "occupied", "f"), "x\n");
 
           const run = runRaw(trackerEntry(), root, "PostToolUse", "Write", {
             file_path: payload,
@@ -371,7 +394,7 @@ describe("a verdict the hook already reached survives its own bookkeeping", () =
             hookSpecificOutput?: { additionalContext?: string };
           };
           const sentence = body.hookSpecificOutput?.additionalContext ?? "";
-          for (const marker of DRIFT_SENTENCE_MARKERS) {
+          for (const marker of COVERAGE_SENTENCE_MARKERS) {
             expect(sentence).toContain(marker);
           }
         },

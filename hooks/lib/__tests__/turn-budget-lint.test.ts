@@ -19,9 +19,12 @@ import { dirname, resolve, join } from "node:path";
 // The fix makes the budget a configured value: `orchestrator.maxTurns`, merged
 // per leaf by `hooks/lib/config.ts` from the project's `fusion-guard.json`, the
 // plugin's `hooks/config.json` and the built-in `DEFAULTS`; read once per
-// session by `bin/fusion-turn-budget` at Setup; carried in `agentstate.yaml`
-// where `progress.max_turns` already had a home and where it was already read
-// as data.
+// session by `bin/fusion-turn-budget` at Setup, on a resume exactly as on a
+// fresh session, and held for that session only. It was also persisted, as
+// `progress.max_turns` in `agentstate.yaml`, until 2026-08-15 — that copy went
+// with the six other hand-maintained counters in the same block, on the ground
+// that a configured ceiling is not session state and a second source is the
+// very defect this gate exists over.
 //
 // What this gate pins is the part that would otherwise be undone: that no bare
 // Turn-budget literal comes BACK into the prompt. Seven copies of one fact did
@@ -205,20 +208,43 @@ describe("the orchestrator obtains the budget instead of assuming it", () => {
         `fail three ways and says nothing about what then happens is where a literal comes back.${REMEDY}`,
     ).toBe(true);
     expect(
-      text.includes("Omit `progress.max_turns` from `agentstate.yaml` entirely"),
-      `${ORCHESTRATOR} must say the key is OMITTED when the budget is unresolved. ` +
-        `a reader parses progress.max_turns as a number, so a word written there is read ` +
-        `as a garbled one, while an absent key is a case a reader can already handle.`,
+      text.includes("**Write no substitute anywhere.**"),
+      `${ORCHESTRATOR} must say plainly that NOTHING is written in the budget's place when the ` +
+        `read fails. Until 2026-08-15 the sentence it had to carry was narrower — omit the ` +
+        `progress.max_turns key from agentstate.yaml — because the resolved budget was persisted ` +
+        `there and a word written into a numeric field is read as a garbled number. The budget is ` +
+        `no longer persisted at all, so there is no key to omit and the instruction widened to the ` +
+        `one it always meant: do not invent a bound, in the state file, the dashboard, a gate ` +
+        `prompt or your own reasoning.${REMEDY}`,
     ).toBe(true);
   });
 
-  it("carries the budget in agentstate.yaml, where a resumed session reads it", () => {
+  it("does NOT carry the budget in agentstate.yaml — a resumed session resolves it", () => {
+    // This assertion was its own inverse until 2026-08-15, and the reversal is
+    // the point rather than a relaxation.
+    //
+    // `progress.max_turns` was the handoff surface: a resumed session read the
+    // budget out of the state file instead of assuming one, and the field was
+    // required here. It went with the six other hand-maintained counters in that
+    // block, and the argument that removed it is the one this whole gate is
+    // built on. A budget is a CONFIGURED ceiling, not session state — it is
+    // resolved from `fusion-guard.json` through `bin/fusion-turn-budget` at
+    // Setup Step 2, and Setup Step 2 runs on a resume exactly as it runs on a
+    // fresh session. So the persisted copy handed a resume nothing it could not
+    // resolve itself, while being one more number a session could write stale.
+    //
+    // Asserted as an ABSENCE, and asserted rather than dropped: re-adding the
+    // field is the natural-looking fix for someone who meets a resume and wants
+    // the budget nearby, and it would reintroduce a second source for a value
+    // whose whole defect (issue 260811-1712) was having many.
     const state = read(ORCHESTRATOR).split(/^### Format\s*$/m)[1] ?? "";
     expect(
       /^\s*max_turns:/m.test(state),
-      `${ORCHESTRATOR} "### Format" must keep progress.max_turns. It is the handoff surface: ` +
-        `a resumed session reads the budget from there rather than assuming one.${REMEDY}`,
-    ).toBe(true);
+      `${ORCHESTRATOR} "### Format" must NOT carry max_turns. The Turn budget is configuration, ` +
+        `not session state: Setup Step 2 resolves it through ${HELPER} on a resume exactly as on ` +
+        `a fresh session, so a persisted copy is a second source for a value whose defect was ` +
+        `having several.${REMEDY}`,
+    ).toBe(false);
   });
 
   it("has the setup skill cite that call rather than copy it", () => {

@@ -108,7 +108,7 @@
  *
  * It never stages anything, never commits, never writes a workbench record.
  * The only file it writes is its own throttle record under `.guard-state/`.
- * That is the same refusal `lib/state-drift.ts` states and for a stronger
+ * That is the same refusal `lib/review-coverage.ts` states and for a stronger
  * reason here: a mechanism that staged files on its own behalf would be a
  * second author of the staging list, and the shape whose whole value is that
  * every path in it was written out by the party that knows why would be gone.
@@ -125,9 +125,9 @@
 import { basename, resolve, relative, sep } from "node:path";
 import { git } from "./git.js";
 import { isStateObject, loadGuardState, saveGuardState } from "./guard-state-file.js";
-import { readStateFile, stateField } from "./state-drift.js";
+import { readStateFile, stateField } from "./state-file.js";
 /* ------------------------------------------------------------------ *
- * Layout — root-anchored, exactly as `lib/state-drift.ts` reads it
+ * Layout — root-anchored, exactly as `lib/state-file.ts` reads it
  * ------------------------------------------------------------------ */
 const WB = "fusion-workbench";
 /**

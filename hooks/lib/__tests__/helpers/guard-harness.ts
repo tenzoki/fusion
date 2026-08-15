@@ -141,11 +141,11 @@ export function sessionStartEntry(): GuardEntry {
 }
 
 /**
- * How to spawn the session-state drift reader.
+ * How to spawn the review-coverage reader.
  *
- * Not a hook — `bin/fusion-state-drift` runs it, and `hooks/tracker.ts` runs the
- * same computation in-process on every guarded tool call — but it shares the one
- * property that makes the tsx default matter here rather than being a
+ * Not a hook — `bin/fusion-review-coverage` runs it, and `hooks/tracker.ts` runs
+ * the same computation in-process when a review file lands — but it shares the
+ * one property that makes the tsx default matter here rather than being a
  * convenience: its whole subject is a working directory and the workbench root
  * above it, so every case is a subprocess. Spawning the SOURCE by default also
  * keeps the suite independent of the build entirely — which used to be the only
@@ -154,10 +154,6 @@ export function sessionStartEntry(): GuardEntry {
  * mid-run. The build no longer deletes anything (`scripts/build.mjs`), so this
  * is now a convenience again rather than a shield.
  */
-export function stateDriftEntry(): GuardEntry {
-  return hookEntry("state-drift");
-}
-
 export function reviewCoverageEntry(): GuardEntry {
   return hookEntry("review-coverage");
 }
@@ -174,13 +170,12 @@ export function stagingDriftEntry(): GuardEntry {
   return hookEntry("staging-drift");
 }
 
-/** Shared resolution for all six entry points. See `guardEntry`. */
+/** Shared resolution for all five entry points. See `guardEntry`. */
 function hookEntry(
   name:
     | "guard"
     | "tracker"
     | "session-start"
-    | "state-drift"
     | "review-coverage"
     | "staging-drift",
 ): GuardEntry {
@@ -415,50 +410,66 @@ function git(root: string, ...args: string[]): string {
 }
 
 /**
- * Make this project's session bookkeeping drift, so the tracker has something
- * to say on every guarded tool call.
+ * The review store this project's probe writes into, root-relative.
+ *
+ * Named here rather than in each suite because two of them write to it and the
+ * tracker's trigger is a path test: the payload has to be a `.md` file inside
+ * the workbench with a `reviews/` component. Get any part of that wrong and the
+ * measurement never runs, which is a case that passes while proving nothing.
+ */
+export const REVIEW_PAYLOAD = "fusion-workbench/shared/reviews/260815-1200-coderev-probe.md";
+
+/**
+ * Open a review-coverage gap, so a review file landing gives the tracker
+ * something to say.
  *
  * ## Why a harness capability rather than a fixture in one test file
  *
- * Two suites here are not about session state at all. They are about the
+ * Two suites here are not about review coverage at all. They are about the
  * PostToolUse reply surviving something — a malformed state file, an unwritable
  * `.guard-state/` — and each needs the tracker to be carrying SOME report in
- * order to observe whether it survived. Both used to borrow the protected-path
- * halt sentence for that, and both had to be re-pointed when it went.
+ * order to observe whether it survived.
  *
- * Of the three surviving tracker reports, state drift is the only one that
- * fires on every guarded tool call: review coverage needs the payload to be a
- * `.md` file under a `reviews/` store with a session window to measure against,
- * and staging drift needs HEAD to have moved since the previous call. Either
- * would couple a case to a trigger that has nothing to do with its subject.
+ * ## Why this probe, on the third re-pointing
+ *
+ * Both suites borrowed the protected-path halt sentence until 2026-08-12, then
+ * the session-state drift sentence until 2026-08-15, and each move happened
+ * because the mechanism they had borrowed from was removed. Drift was the right
+ * second choice for a reason that no longer holds: of the three tracker reports
+ * it was the only one that fired on every guarded tool call, so a case could
+ * reach it with an ordinary `notes.txt` edit and stay uncoupled from any
+ * trigger. **Both surviving reports are narrow by construction**, so there is no
+ * uncoupled probe left and the choice is between coupling and having no probe.
+ *
+ * Review coverage is the survivor that can carry it, and staging drift is not,
+ * for a structural reason rather than a preference: staging drift's throttle
+ * record holds the HEAD its trigger compares against, so a case that seeds that
+ * record MALFORMED — which is the whole subject of `guard-state-shape.test.ts`
+ * — disarms the trigger and observes nothing. Coverage's throttle holds only a
+ * signature, a malformed one reads as "never reported", and the gap speaks.
+ *
+ * The cost is named rather than hidden: a case using this probe now fails if
+ * the coverage trigger breaks, for a reason unrelated to its own subject. That
+ * is what a coupled probe buys, and it is cheaper than deleting the only suite
+ * that covers `lib/guard-state-file.ts`'s coercion seam.
  *
  * ## What it writes, and why so little
  *
- * A six-line `agentstate.yaml` and three commits past it. `measureStateDrift`
- * reports every row it cannot decide as `unchecked` and leaves it out of the
- * sentence, so the two fields that produce the `progress.commits` row are the
- * whole fixture — the fuller state files in `state-drift.test.ts` and
- * `review-coverage.test.ts` exist because those suites assert on the other rows.
+ * A two-line `agentstate.yaml` and three commits past its anchor. Only
+ * `session.git_head_at_start` is read — it is the session window the coverage
+ * range is measured over — and the three commits are what no review's declared
+ * range covers. The fuller state file in `review-coverage.test.ts` exists
+ * because that suite asserts on the rest of the report.
  *
- * THREE commits, not one: the measurement deliberately allows a difference of
- * one as the commit currently in flight, so a smaller fixture would report
- * nothing and every case resting on it would pass vacuously.
- *
- * Requires `git: true` on the project — the divergence is measured against the
- * git history, which is one of the two records the check reads.
+ * Requires `git: true` on the project: the range is `git rev-list` over the
+ * anchor, and without a repository the report comes back with a `why` and the
+ * tracker says nothing at all.
  */
-export function freezeCommitCount(root: string): void {
+export function openCoverageGap(root: string): void {
   const head = git(root, "rev-parse", "--short", "HEAD");
   writeFileSync(
     resolve(root, "fusion-workbench", "agentstate.yaml"),
-    [
-      "session:",
-      `  git_head_at_start: "${head}"`,
-      "",
-      "progress:",
-      "  commits: 0",
-      "",
-    ].join("\n"),
+    ["session:", `  git_head_at_start: "${head}"`, ""].join("\n"),
     "utf-8",
   );
   for (const n of [1, 2, 3]) {
@@ -469,13 +480,32 @@ export function freezeCommitCount(root: string): void {
 }
 
 /**
- * Everything the drift sentence carries, asserted as one — so the two suites
+ * A session window with NOTHING uncovered — the other half of the probe.
+ *
+ * The anchor is HEAD, so the range is empty, so the report is well-formed and
+ * its signature is `""`. That is what a case needs when it wants the throttle
+ * LOAD to run and the report to have nothing to say: the tracker reaches the
+ * load, compares an empty signature with an empty one, and returns before it
+ * writes. Without the anchor the measurement returns on its `why` branch,
+ * BEFORE the load, and a case asserting the load survived would prove nothing.
+ */
+export function openCoverageWindowWithNoGap(root: string): void {
+  const head = git(root, "rev-parse", "--short", "HEAD");
+  writeFileSync(
+    resolve(root, "fusion-workbench", "agentstate.yaml"),
+    ["session:", `  git_head_at_start: "${head}"`, ""].join("\n"),
+    "utf-8",
+  );
+}
+
+/**
+ * Everything the coverage sentence carries, asserted as one — so the two suites
  * that use it as a probe cannot disagree about what "the tracker spoke" means.
  */
-export const DRIFT_SENTENCE_MARKERS = [
-  "session bookkeeping has drifted",
-  "progress.commits",
-  "says 0",
+export const COVERAGE_SENTENCE_MARKERS = [
+  "a review landed and 3 commit(s)",
+  "still covered by no review's declared range",
+  "issue 260810-1205",
 ] as const;
 
 function disposeProject(project: Project): void {

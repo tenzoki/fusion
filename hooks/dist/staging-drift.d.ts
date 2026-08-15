@@ -12,8 +12,8 @@
  * as the `turn_end` emission, and at Cleanup — plus anyone at a terminal who
  * wants to know what the workbench is holding that no commit carries.
  *
- * Output, one `KEY=value` per line in the shape `bin/fusion-state-drift` and
- * `bin/fusion-review-coverage` use, then one line per entry:
+ * Output, one `KEY=value` per line in the shape `bin/fusion-review-coverage`
+ * uses, then one line per entry:
  *
  *   anchor=workbench-root
  *   head=5ef92eb
@@ -39,7 +39,7 @@
  *   2  no fusion workbench above the working directory; nothing to check.
  *
  * **Finding an unstaged record is not an error exit**, for the reason
- * `bin/fusion-state-drift` gives at the same place (issue `260810-0710`): a
+ * `bin/fusion-review-coverage` gives at the same place (issue `260810-0710`): a
  * check that hands its verdict to an exit code teaches its reader to ignore
  * that code, and a Turn that legitimately ends with a record still in flight
  * would then be reporting failure where nothing is wrong. The verdict is a line

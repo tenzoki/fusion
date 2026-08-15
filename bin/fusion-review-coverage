@@ -7,8 +7,9 @@
 #
 # `--since` defaults to `session.git_head_at_start` in
 # fusion-workbench/agentstate.yaml — the session's own anchor, already recorded
-# for the drift check and for Step 3c's `git diff`, so review coverage needs no
-# field of its own. `--head` defaults to HEAD.
+# for Step 3c's `git diff`, so review coverage needs no field of its own. It is
+# an anchor rather than a tally, which is why it survived the removal of that
+# file's counters on 2026-08-15. `--head` defaults to HEAD.
 #
 # Output on stdout, one KEY=value per line, then one line per uncovered commit
 # and one per review considered:
@@ -28,7 +29,7 @@
 #
 # Exit codes:
 #   0  the check ran. `verdict=` says what it found. Finding an uncovered range
-#      is NOT a non-zero exit, deliberately — same reason bin/fusion-state-drift
+#      is NOT a non-zero exit, deliberately — same reason bin/fusion-staging-drift
 #      gives (issue 260810-0710): a check that hands its verdict to an exit code
 #      teaches its reader to ignore that code.
 #   1  usage error.

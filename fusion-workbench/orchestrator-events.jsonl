@@ -1547,3 +1547,5 @@
 {"ts":"2026-08-15T13:06:22","event":"turn_end","turn":3,"detail":"3 steps resolved, 7 issues created, 3 closed, 5 commits"}
 {"ts":"2026-08-15T13:06:22","event":"turn_start","turn":4,"detail":"steps 10-12: persisted tasklist and queue ground, session counters and drift machinery, administrative surface; turn_start_head=9955e8f"}
 {"ts":"2026-08-15T13:06:22","event":"task_start","turn":4,"task":"P-10","agent":"coder","detail":"remove the persisted tasklist.md and the queue-ground apparatus"}
+{"ts":"2026-08-15T13:34:23","event":"task_done","turn":4,"task":"P-10","agent":"coder","detail":"dd312eb; 45/831 -> 41/790; taskplanner keeps batching, its product is the report; this project's queue moved to shared planning under a closed marker"}
+{"ts":"2026-08-15T13:34:23","event":"task_start","turn":4,"task":"P-11","agent":"coder","detail":"session counters and drift machinery; extract state-file.ts first; restore queue_built removed in error at P-10"}

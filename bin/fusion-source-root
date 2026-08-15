@@ -58,7 +58,7 @@
 # installed artefact -> $FUSION_PLUGIN_ROOT.
 #
 # Resolution of its own sibling. bin/fusion-plugin-cwd is found relative to THIS
-# script rather than through $FUSION_PLUGIN_ROOT, the way bin/fusion-state-drift
+# script rather than through $FUSION_PLUGIN_ROOT, the way bin/fusion-staging-drift
 # resolves its own entry point, so an install copy and a work tree each ask
 # their own criterion. Called the documented way — through
 # "$FUSION_PLUGIN_ROOT/bin/fusion-source-root" — the two are the same directory.

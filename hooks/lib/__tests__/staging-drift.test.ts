@@ -14,8 +14,8 @@
  * that the prompts carry the contract. They read text and can prove nothing
  * about behaviour. Every case here spawns a real subprocess against a real
  * throwaway project with a real git repository, and asserts on what came back —
- * the same discipline `state-drift.test.ts` states at length, for the same
- * reason (`isFusionPluginCwd()` caches per process, so an in-process
+ * the same discipline `review-coverage.test.ts` states at the same place, for
+ * the same reason (`isFusionPluginCwd()` caches per process, so an in-process
  * stand-down assertion would pass vacuously).
  *
  * ## The properties under test

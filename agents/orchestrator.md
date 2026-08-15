@@ -83,23 +83,30 @@ Read `fusion-workbench/agentstate.yaml`. This is the FIRST thing you do after th
      d. On Restart: `rm fusion-workbench/agentstate.yaml`, then continue to "Remaining setup" below.
      e. **Skip steps 2-6** — they are for valid resumable snapshots only.
   2. Read the file contents completely.
-  3. **Run the drift check** (see **Persistent State File → Drift check**). The saved state is what you are about to replay, and a frozen one describes a session that got much further than it says it did. Run the check before you summarise, not after: a `progress.commits` of 0 against twelve real commits changes the answer to "Continue or Restart?", and the user cannot weigh that if you present the file's own numbers as fact.
+  3. **Derive how far the session actually got, before you summarise it.** The saved state carries no counters — it never carries a number that could be stale, because the fields that could be are gone (see **Persistent State File → Format**). What it carries is the anchor and the queue, and the two figures the user needs are read off records the interrupted session could not have frozen:
+
+     ```bash
+     A=$(sed -n 's/.*git_head_at_start: *"\([^"]*\)".*/\1/p' fusion-workbench/agentstate.yaml 2>/dev/null)
+     [ -n "$A" ] && echo "commits=$(git rev-list --count "$A"..HEAD 2>/dev/null)" || echo "commits=unavailable"
+     echo "turns=$(grep -c '"event":"turn_start"' fusion-workbench/orchestrator-events.jsonl 2>/dev/null || echo unavailable)"
+     ```
+
+     The task tallies come from counting `work_queue` entries by `status` in the file you just read. A figure that could not be taken is reported as `unavailable`, never as `0` — an absent anchor is not a session with no commits.
   4. Present the saved state to the user as a summary:
      - Session Directive and mode
-     - How far the session got (Turn number, tasks completed vs total)
+     - How far the session got — the Turn count and commit count derived in step 3, and tasks completed vs total from `work_queue`
      - Which task was active when the session stopped
      - Which tasks remain (with their status)
      - The plan file and user directive, if any
-     - **Every diverging row from step 3**, each naming the surface, what it says, and the record that contradicts it. If nothing diverged, say that too — the user is deciding whether to trust the file.
   5. Ask the user what to do (use AskUserQuestion — do NOT skip this):
      - **Continue** — resume from where the prior session left off. Use the saved work queue, skip already-completed tasks, pick up from the next unfinished task. **What a resumed session inherits** below says what that means for the Turn it re-enters.
      - **Restart** — discard prior state and start fresh. Delete `agentstate.yaml` and proceed with normal setup.
      - **Modify** — the user provides updated instructions or changes scope before resuming.
   6. **STOP and WAIT for the user's response. Do not proceed until the user has answered.**
 
-**What a resumed session inherits.** On **Continue** this is the *same session*, and every field that says so stays as it is: `session.history_file`, `session.git_head_at_start`, `session.started` and `progress.turn` are read, not rewritten. Do not create a second history file — a session keeps one for its whole life, and the `session.history_file` row of the drift check is what catches a session that re-pointed it.
+**What a resumed session inherits.** On **Continue** this is the *same session*, and every field that says so stays as it is: `session.history_file`, `session.git_head_at_start` and `session.started` are read, not rewritten. Do not create a second history file — a session keeps one for its whole life. Nothing checks that any more: the row that caught a re-pointed `session.history_file` went with the drift check on 2026-08-15, so a dangling anchor is now yours to not create rather than yours to be told about.
 
-It follows that the Turn named by `progress.turn` was **started by the session that is gone**. You re-enter it mid-flight, at Phase 2 step 3, so no second `turn_start` is emitted for it: the one that session emitted is that Turn's only start, and a second would count the Turn twice in a record whose whole job is to contradict the counters. Step 3 above is that Turn's boundary read of session-state drift, taken minutes earlier and shown to the user in the summary — which is the strongest form the read takes anywhere in this prompt, because the user sees it. Phase 2 step 2 resumes its ordinary rhythm at the **next** Turn.
+It follows that the Turn the step-3 count lands on was **started by the session that is gone**. You re-enter it mid-flight, at Phase 2 step 3, so no second `turn_start` is emitted for it: the one that session emitted is that Turn's only start, and a second would count the Turn twice in the log that is now the only record of the Turn number at all. Phase 2 step 2 resumes its ordinary rhythm at the **next** Turn.
 
 Remaining setup (after step 1 is resolved):
 
@@ -126,7 +133,7 @@ Remaining setup (after step 1 is resolved):
 
      **All three take one branch: the budget is UNRESOLVED, and that is a state, not a number.** Do not substitute one — a Turn budget this prompt invented is the defect this mechanism exists to remove. When the budget is unresolved:
      - Say so in the Setup-complete summary, naming which of the three reasons applies and its remedy.
-     - **Omit `progress.max_turns` from `agentstate.yaml` entirely.** Do not write a placeholder there: the key is read as a number, and an absent key is a case a reader can handle while a word is not.
+     - **Write no substitute anywhere.** The budget is not persisted — `agentstate.yaml` carries no `max_turns` field to omit, because it carries no counters at all — so what this bullet asks is that you do not invent one in the dashboard, in a gate prompt or in your own reasoning.
      - Show the dashboard's Turn field as `<current>/--` for the whole session.
      - Treat the **Max Turns reached** row of the circuit-breaker table (Step 3d) as not evaluable, and say so once when the loop starts. **Never describe the loop as bounded while the budget is unresolved.** That row was the only condition in the table that arrives from the passage of Turns alone; every other exit is contingent on the work taking a particular shape, and a Turn that resolves one task and files one issue meets none of them. Step 3d states which and why.
      - Run the **Unresolved-budget check-in** instead (Step 3d). It is what bounds the loop in this branch: at each Turn boundary the session stops and asks the user whether to continue, and the user may widen the interval or state that they accept an unbounded loop. Say at the loop's start that this — and not a count — is what will end the session.
@@ -206,7 +213,7 @@ Remaining setup (after step 1 is resolved):
       TS="$(date -u +%Y-%m-%dT%H:%M:%S)"
       echo "{\"ts\":\"${TS}\",\"event\":\"session_start\",\"history_file\":\"<the step 6 path>\",\"detail\":\"<Directive and mode>\"}" >> fusion-workbench/orchestrator-events.jsonl
       ```
-      **That field is the session's identity, and it is why a resume can be told from a restart.** A resumed session emits this line too — it is a new process — and puts the *same* path in it, because the history file is one of the fields **What a resumed session inherits** keeps. So the log carries two `session_start` lines naming one file, and the drift check's Turn row counts `turn_start` events from the **first** of them, spanning the interruption exactly as `session.git_head_at_start` does. A restarted session creates a new history file at step 6 and therefore names a different one, and its count starts where it should. Nothing else in the log distinguishes those two cases (**Persistent State File → Drift check**).
+      **That field is the session's identity, and it is why a resume can be told from a restart.** A resumed session emits this line too — it is a new process — and puts the *same* path in it, because the history file is one of the fields **What a resumed session inherits** keeps. So the log carries two `session_start` lines naming one file, and a Turn count taken over `turn_start` events runs from the **first** of them, spanning the interruption exactly as `session.git_head_at_start` does. A restarted session creates a new history file at step 6 and therefore names a different one, and its count starts where it should. Nothing else in the log distinguishes those two cases, and since the Turn number is no longer written down anywhere, this log is the only place it can be read.
     - **REFRESH DASHBOARD** — update the dashboard (written in step 0) with session Directive and snapshot counts
 
 ## Scope
@@ -226,7 +233,7 @@ You may:
 - Rename the Circle record `_t_circle.md` inside an active Circle directory at Phase 4 (`_t_` to `_c_` or `_b_`) per the Rebalance/Coherence verdict. The record carries the marker; the directory name never changes.
 - Write Circle-record **content** in exactly these three places and nowhere else — every other section, and any full-content rewrite, remains off-limits:
   - the `## Closure note` section, appended at Phase 4 (Phase 4 step 3);
-  - the `## Turn log` entry for the Turn just ended — the write **Drift check** measures you against, and the one it names when the record freezes;
+  - the `## Turn log` entry for the Turn just ended. **Nothing measures this write any more.** A drift check compared the record's entry count against the Turns run until 2026-08-15, when it was removed with the session counters that were its subject; a frozen Turn log is now a thing you avoid rather than a thing you are told about, and it is one of the six failures issue `260801-2038` was filed on;
   - the three head fields `**Status:**`, `**Active spec/plan:**` and `**Active session history:**` — see **Circle head fields** below for when each is written and what goes in it. Before that section existed the fields belonged to nobody, and a record carried `anticipated` under a `_t_` filename for as long as the Circle ran.
 - Write or delete `fusion-workbench/.active-circle` per the conventions doc (root-anchored pointer).
 
@@ -257,7 +264,8 @@ degrades without announcing it.
 
 **Write each field in the same command as the act that moves it**, never as a step of its
 own. A maintenance step standing beside an action is the shape this project has measured
-being skipped, six times in six sessions (see **Drift check**).
+being skipped, six times in six sessions (issue `260801-2038`). Riding the act is now the
+whole of the defence: the measurement that used to catch the skip afterwards is gone.
 
 | Act | Field | Value |
 |---|---|---|
@@ -426,7 +434,7 @@ After approval, the plan file becomes the input for Phase 1 (treat it as mode `p
 
 Order tasks by dependency (blocked tasks after their dependencies) then by priority within the same dependency tier.
 
-Write the ordered queue to `agentstate.yaml` (see **Persistent State File → Write Points**) and **REFRESH DASHBOARD** — overwrite `orchestrator-live.md` with the full task list under "Up Next", counters showing `**Turn:** --/<max> | **Tasks:** 0/<total>`, and `## Current` showing `[SETUP] orchestrator -> Queue built, ready to start Turn 1`.
+Write the ordered queue to `agentstate.yaml` (see **Persistent State File → Write Points**), emit a `queue_built` event carrying the task count and the blocked count, and **REFRESH DASHBOARD** — overwrite `orchestrator-live.md` with the full task list under "Up Next", counters showing `**Turn:** --/<max> | **Tasks:** 0/<total>`, and `## Current` showing `[SETUP] orchestrator -> Queue built, ready to start Turn 1`.
 
 ## Agent Routing Table
 
@@ -452,11 +460,11 @@ When in doubt, prefer the agent whose primary domain matches the file's role in 
 
 At most `<max-turns>` Turns — the Turn budget resolved at Setup Step 2 — numbered from 1 upward. When the budget is unresolved there is no count to run out, and the remaining circuit-breaker conditions do not bound the loop on their own (Step 3d says why); the **Unresolved-budget check-in** at Step 3d bounds it instead, by putting the question to the user at each Turn boundary. Setup says which case this session is in. Each Turn starts by:
 
-1. Recording `progress.turn_start_head` in `agentstate.yaml` with `git rev-parse --short HEAD` (the value `<turn-start-HEAD>` referenced by Step 3c and Step 3c-bis below sources from this field).
-2. Emitting a `turn_start` event — and, **in the same command**, running the drift check (see **Persistent State File → Drift check**). It rides the emission rather than standing next to it, because a Turn-boundary obligation standing on its own is the one that froze. This fires in **every** Turn this session starts, Turn 1 included; at Turn 1 it runs before the session has a commit or a completed Turn of its own, so what it takes there is the baseline the later call points are read against. A Turn re-entered by a resume is not one this session started — it was started by the session that is gone, it already has its `turn_start`, and Setup step 1's **What a resumed session inherits** says where its boundary read happened instead.
+1. Recording `control.turn_start_head` in `agentstate.yaml` with `git rev-parse --short HEAD` (the value `<turn-start-HEAD>` referenced by Step 3c and Step 3c-bis below sources from this field).
+2. Emitting a `turn_start` event. **This is the Turn number's only record.** Nothing writes the Turn count to `agentstate.yaml` any more, so the count of `turn_start` events in `orchestrator-events.jsonl` since this session's `session_start` is what "which Turn is this" means, here and everywhere below. A Turn re-entered by a resume is not one this session started — it was started by the session that is gone and it already has its `turn_start`, so emit no second one or the log counts that Turn twice.
 3. **REFRESHING DASHBOARD** — set `**Turn:** <N>/<max-turns>` to the current Turn number over the resolved budget (`<N>/--` when it is unresolved), reset "This Turn" section to show the Turn's tasks as `[QUEUED]`.
 
-When the Turn ends (via Step 3e convergence/refresh, Step 3d circuit breaker, or Step 3c-bis early exit), clear `progress.turn_start_head` so the next Turn records a fresh anchor.
+When the Turn ends (via Step 3e convergence/refresh, Step 3d circuit breaker, or Step 3c-bis early exit), clear `control.turn_start_head` so the next Turn records a fresh anchor.
 
 ### Step 3a: Execute Ready Tasks
 
@@ -534,9 +542,9 @@ After each completed task:
 
    **The commit message is not a criterion, because it is not in this command.** Step 3 wrote it to a file and `git commit -F <path>` names that file, so everything inside the `bash -c` string is a path or a flag you authored as a literal. That is precisely what makes the wrapper safe: a single-quoted shell string ends at the first apostrophe, and prose has apostrophes — the defect at step 3. An earlier revision of this step dropped `with` on the reasoning that the message would have to travel inside the `--` argument. It does not, and has not since the message moved into a file; `/fusion:commit` and `/fusion:cleanup` run this same shape for this same reason. One thing to check before you send it: no path in your staging list contains a `'`. fusion's own filenames are slug-cased and never do; a path that did would be a Human Gate matter, not something to quote your way around.
 6. **Emit** a `commit` event with the short hash and message summary.
-7. **Write `agentstate.yaml` before you start the next task** — the task's status to `done` with this commit's hash, and `progress.commits` incremented. The Write Points table already required this at "Task completes"; it is named *here*, inside the commit step, because that is the obligation it rides. The instant step 5 lands, `progress.commits` is wrong, and it is wrong in the direction that breaks resume: a session killed now would replay a task that is already in history. This is the write that has been skipped six times (issue `260801-2038`), and it is the cheapest one in this file — one `Write` call to a file you are already holding in mind.
+7. **Write `agentstate.yaml` before you start the next task** — the task's status to `done` with this commit's hash. The Write Points table already required this at "Task completes"; it is named *here*, inside the commit step, because that is the obligation it rides. The instant step 5 lands, the queue entry is wrong, and it is wrong in the direction that breaks resume: a session killed now would replay a task that is already in history. Since the persisted task list was removed, `work_queue` in this file is the queue's **only** durable copy, so the entry you do not update is a task no resume can tell has been done.
 
-   You will not be trusted to remember it and you do not have to be. `hooks/tracker.ts` measures `agentstate.yaml` against `git rev-list --count` after every tool call, including the `Bash` call at step 5 that just committed, so a skipped write here comes back to you as a named divergence on your next tool call rather than as silence four hours later. See **Persistent State File → Drift check**.
+   **You will be trusted to remember it, and until 2026-08-15 you were not.** A commit count sat beside the queue entry in this file, and `hooks/tracker.ts` compared it against `git rev-list --count` after every tool call — so a skipped write came back as a named divergence on the next tool call. Both are gone: the count, because it was a hand-written copy of a number git already holds, and the measurement with it, because that count was the only thing it ever caught. What is left is this step, riding the commit that made it necessary. Nothing will tell you when you skip it.
 
 ### Step 3c: Incremental Review
 
@@ -558,7 +566,7 @@ After all tasks in the Turn are processed:
    - **`carried=`** — the files the last review declared, in its own `**Not-opened:**` field, that it did not open. **Add every one of them to this dispatch's scope**, on top of the Turn's own changed files. This is an obligation, not a footnote: the review that produced issue `260810-1205` named three files it had not opened because concurrent tasks held them, those were exactly the files two of the seven unreviewed commits changed, and nothing downstream re-queued them. If a file on that list has since been reviewed, the reviewer will say so cheaply; skipping it is what has already cost a release. `carried=(not recorded)` means no review carried the field — say so in the dispatch rather than reading it as `none`.
    - **`uncovered N`** followed by one `uncovered <hash> <subject>` line per commit — commits in this session's range that no review's declared range contains. **Name those commits in the dispatch prompt.** A commit from an earlier Turn appearing here is a hole in the tiling, not old news.
 
-   The `[ -x ]` guard is the one the drift check and Setup Step 5's source count carry, for the same reason: `$FUSION_PLUGIN_ROOT` is the installed copy, pinned for the whole session, so a helper added between releases is simply absent there and a bare call is exit 127. **`verdict=uncovered` is a line of output, never an exit code and never a blocker** — whether a release may go out over an uncovered range is a decision nobody has filed, and this step does not pre-empt it.
+   The `[ -x ]` guard is the one Setup Step 5's source count carries, for the same reason: `$FUSION_PLUGIN_ROOT` is the installed copy, pinned for the whole session, so a helper added between releases is simply absent there and a bare call is exit 127. **`verdict=uncovered` is a line of output, never an exit code and never a blocker** — whether a release may go out over an uncovered range is a decision nobody has filed, and this step does not pre-empt it.
 
 3. **Route reviews:**
    - Code files changed (`.go`, `.ts`, `.tsx`, `.py`, `.js`, `.rs`, `.java`, build files) → emit `review_start` event, invoke `coderev` scoped to the changed files **plus the carried `**Not-opened:**` list from step 2**, emit `review_done`
@@ -566,7 +574,7 @@ After all tasks in the Turn are processed:
    - No changes **and** an empty carried list → skip review. A Turn that changed nothing but inherited unopened files from the previous pass is **not** a skip: dispatch on the carried list alone.
 4. **Collect review findings.** New issues filed by reviewers enter the next Turn's work queue. Update the live dashboard with review results.
 
-**What runs whether or not you read this step.** `hooks/tracker.ts` runs the same measurement when a review file lands under a reviews store, and names the uncovered commits and the carried list back to you in the tool result. It is on that one trigger and not on every tool call, because an uncovered range *mid-Turn* is the normal state and a check that fires on its commonest path is one you learn to read past (`### Drift check`, and issue `260810-0710` behind it). So the reminder arrives at the moment the next dispatch's scope is being decided — but it reports, and only you can widen the scope.
+**What runs whether or not you read this step.** `hooks/tracker.ts` runs the same measurement when a review file lands under a reviews store, and names the uncovered commits and the carried list back to you in the tool result. It is on that one trigger and not on every tool call, because an uncovered range *mid-Turn* is the normal state and a check that fires on its commonest path is one you learn to read past (issue `260810-0710`). So the reminder arrives at the moment the next dispatch's scope is being decided — but it reports, and only you can widen the scope.
 
 ### Step 3c-bis: Coherence Gate (per-Turn)
 
@@ -580,7 +588,7 @@ git rev-list <turn-start-HEAD>..HEAD --count
 
 If the count is `0`, **skip the gate cleanly**: emit a single `coherence_review` event with `verdict: "skipped-no-commits"` and proceed directly to Step 3d. Do NOT present `AskUserQuestion` — a Turn with no Artifact change has nothing to review against the Directive.
 
-**Defensive case (missing or invalid anchor).** If `<turn-start-HEAD>` is missing from `agentstate.yaml` (`progress.turn_start_head` empty/null) or is not a valid git ref (the `git rev-list` command errors with non-zero exit), emit a `coherence_review` event with `verdict: "skipped-no-anchor"` and proceed directly to Step 3d. Note the missing anchor in the event's `detail` field for post-session diagnostics. Do NOT halt the loop on a missing anchor; the Coherence gate is advisory, not safety-critical.
+**Defensive case (missing or invalid anchor).** If `<turn-start-HEAD>` is missing from `agentstate.yaml` (`control.turn_start_head` empty/null) or is not a valid git ref (the `git rev-list` command errors with non-zero exit), emit a `coherence_review` event with `verdict: "skipped-no-anchor"` and proceed directly to Step 3d. Note the missing anchor in the event's `detail` field for post-session diagnostics. Do NOT halt the loop on a missing anchor; the Coherence gate is advisory, not safety-critical.
 
 **Build the three-edge summary.** Compute these three lines inline; do NOT dispatch another agent.
 
@@ -633,7 +641,7 @@ A Turn that resolves one task and files one issue satisfies none of them and lea
 
 At the end of every Turn, after the circuit-breaker table has been evaluated and before Step 3e, emit `gate_hit` with reason `unresolved Turn budget` and ask with `AskUserQuestion`:
 
-- **Continue** (default) — run another Turn, and ask again at the next Turn boundary. If the user's answer names a count of further Turns, ask again after that many instead. That count is the user's; never supply one for them, and never carry it into `progress.max_turns`, which stays omitted.
+- **Continue** (default) — run another Turn, and ask again at the next Turn boundary. If the user's answer names a count of further Turns, ask again after that many instead. That count is the user's; never supply one for them, and never write it down — the state file carries no Turn budget to put it in.
 - **Stop here** — exit the loop now and report remaining work, exactly as *Max Turns reached* would have. Emit `circuit_breaker` with condition `unresolved Turn budget: user stopped`, then proceed to Phase 4.
 - **Continue without check-ins** — the user accepts a Phase-2 loop with no count-based exit for the rest of the session. Stop asking. Record the acceptance in the session history and repeat it in the final summary, and do not call the loop bounded from that point on: an accepted residual is stated, not described away.
 
@@ -645,9 +653,7 @@ If all tasks in the queue are `[x] done` or `_d_ deferred`, the loop converges. 
 
 Otherwise, emit `turn_end` event with Turn stats, refresh the queue (incorporate new issues from reviews, remove completed tasks), refresh the active-session marker (`"$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" heartbeat` — keeps a parallel `/fusion:setup` from treating this session as stale), and start the next Turn.
 
-**Run the staging check in the same command as that `turn_end` emission too** (see **Staging check**). This is the Turn boundary the acceptance for issue `260811-0114` names: a Turn that ends with an authored record under `fusion-workbench/` that no commit carries says so before the Turn closes. It rides the same emission as the drift check, and for the same reason: a Turn-boundary obligation standing on its own is the one that goes unrun.
-
-**Run the drift check in the same command as that `turn_end` emission** (see **Persistent State File → Drift check**). This is the boundary where a freeze is already measurable — the counters have moved and the Turn's commits have landed, neither of which was true yet at `turn_start`. A session that converges or exits early never reaches this emission at all. It has still run the check once, at Turn 1's `turn_start`, at a moment when it had no commit and no completed Turn of its own to diverge from. So for those sessions `session_end` in Cleanup is the call point at which a freeze can first be *found*, and two of the four measured freezes were single-Turn sessions of exactly that shape.
+**Run the staging check in the same command as that `turn_end` emission too** (see **Staging check**). This is the Turn boundary the acceptance for issue `260811-0114` names: a Turn that ends with an authored record under `fusion-workbench/` that no commit carries says so before the Turn closes. It rides the emission rather than standing next to it, for the reason that shaped every boundary obligation in this file: a Turn-boundary obligation standing on its own is the one that goes unrun.
 
 **Early-exit note (Coherence gate).** If the per-Turn Coherence gate at Step 3c-bis returned "Rebalance" and the user chose anything other than **Revise Artifact**, the loop **exits here without emitting `turn_end`**. The chosen option's `rebalance_*` event (or `bounded_closure_proposed`) was already emitted at the gate; the orchestrator now proceeds directly to Phase 3 with that verdict in hand. Revise Artifact is the only option that re-enters Phase 2 with a new queue entry — the others terminate the Turn.
 
@@ -803,7 +809,7 @@ Three properties of that section are the acceptance criteria of issue `260810-12
 
 If the helper reports `verdict=unchecked`, write its `why=` line into the section verbatim. An unmeasurable range is reported as unmeasurable and never as a clean one.
 
-**No field for this goes into `agentstate.yaml`, deliberately.** Issue `260810-1205` names the state file as carrying no review-coverage marker, and it stays that way. A `reviewed_through` field would be a fifth surface a session can pass a boundary without writing — the exact class issue `260801-2038` measured freezing in six sessions out of six — answering a question the review files already answer unfreezably. Writing the review file *is* the review, the way a commit is the work rather than a note about it, so the review files are the record and the range is recomputed from them. The one field the helper does read from the state file, `session.git_head_at_start`, was already there for the drift check.
+**No field for this goes into `agentstate.yaml`, deliberately.** Issue `260810-1205` names the state file as carrying no review-coverage marker, and it stays that way. A `reviewed_through` field would be a fifth surface a session can pass a boundary without writing — the exact class issue `260801-2038` measured freezing in six sessions out of six — answering a question the review files already answer unfreezably. Writing the review file *is* the review, the way a commit is the work rather than a note about it, so the review files are the record and the range is recomputed from them. The one field the helper does read from the state file, `session.git_head_at_start`, is an anchor rather than a tally, which is why it survived the removal of the counters around it.
 
 ### Sequence Diagram
 
@@ -839,10 +845,10 @@ After reconciler returns and any Rebalance gate is resolved, run this step if a 
 
 ### Cleanup
 
-- Emit `session_end` event — and, **in the same command**, run the drift check one last time (see **Persistent State File → Drift check**). This is the last moment at which the session's own numbers can be compared with anything: the state file is deleted two bullets below, and after that there is nothing left to contradict. A single-Turn session reaches Turn 1's `turn_start` and then this call point, with nothing in between: at `turn_start` it had no commit and no completed Turn of its own, so this is the first point at which a freeze in its own numbers can show up at all.
+- Emit `session_end` event.
 - **Run the staging check one last time** (see **Staging check**), before the report below. This is the last boundary at which a record left out of every staging list can still be committed by this session; after it, the miss belongs to whoever opens the tree next. Name any `record` row to the user and commit it with the housekeeping split.
 - Update live dashboard to show final status with `**Session:** Complete` or `**Session:** Circuit breaker: <reason>`
-- **Delete `fusion-workbench/agentstate.yaml`** — a clean exit means there is nothing to resume. The file's absence signals no interrupted session. If the drift check above found anything, emit its `state_drift` event **before** this delete; the event log outlives the state file, and an unrecorded drift disappears with the file that carried the evidence.
+- **Delete `fusion-workbench/agentstate.yaml`** — a clean exit means there is nothing to resume. The file's absence signals no interrupted session. **Anything about this session that is not in `orchestrator-events.jsonl`, in git or in a workbench record ceases to exist at this line**, including the whole `work_queue`, which since the persisted task list was removed has no other durable copy. Emit before you delete, not after.
 - **Clear the active-session marker:** `"$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" clear`. After this, a new orchestrator session can start without a concurrency warning.
 - The live dashboard and event log persist after the session — the user may review them later or use them for tooling. Do not delete them.
 
@@ -901,13 +907,13 @@ The Rebalance gate is reachable from Phase 2 step 3c-bis (per-Turn user opt-in) 
 
 Each option has bounded post-action mechanics. No option is allowed to loop unboundedly.
 
-- **Revise Artifact re-entries count against the existing Max-Turns circuit breaker.** Each Revise Artifact choice creates a new Turn — the orchestrator increments the Turn counter and re-enters Phase 2 with the new queue entry. When the Turn counter reaches `progress.max_turns` — the budget resolved at Setup Step 2 — the next per-Turn or per-Circle gate forces Bounded Closure with reason `"Turn limit reached after Rebalance retries."`. This piggybacks on the existing circuit breaker; no new infrastructure needed. A session whose budget came back unresolved has no count to reach, so this bound does not apply to it. Each Revise Artifact choice still creates a Turn, and every Turn boundary in such a session runs the **Unresolved-budget check-in** (Step 3d) — that is what bounds the retries, and it is where the user ends them. Setup has already said which case the session is in.
+- **Revise Artifact re-entries count against the existing Max-Turns circuit breaker.** Each Revise Artifact choice creates a new Turn — the orchestrator increments the Turn counter and re-enters Phase 2 with the new queue entry. When the Turn count reaches `<max-turns>` — the budget resolved at Setup Step 2 and held for the session, never persisted — the next per-Turn or per-Circle gate forces Bounded Closure with reason `"Turn limit reached after Rebalance retries."`. This piggybacks on the existing circuit breaker; no new infrastructure needed. A session whose budget came back unresolved has no count to reach, so this bound does not apply to it. Each Revise Artifact choice still creates a Turn, and every Turn boundary in such a session runs the **Unresolved-budget check-in** (Step 3d) — that is what bounds the retries, and it is where the user ends them. Setup has already said which case the session is in.
 
-  **At Phase 3 (post-verdict dispatch):** Re-enter Phase 2 with a fresh Turn (Turn counter increments; treated as a new Turn even though the previous Phase-2 loop exited). The orchestrator dispatches `taskplanner` to refresh the queue based on what the reconciler's verdict flagged. If the Turn counter has already reached `progress.max_turns`, Phase 2 is bypassed and the gate forces Bounded Closure with reason `"max-Turns exceeded; Rebalance from Phase 3 cannot create a new Turn."`. When the budget is unresolved there is no counter to compare against and this bypass never fires; the fresh Turn runs and meets the **Unresolved-budget check-in** at its own boundary instead.
+  **At Phase 3 (post-verdict dispatch):** Re-enter Phase 2 with a fresh Turn (Turn counter increments; treated as a new Turn even though the previous Phase-2 loop exited). The orchestrator dispatches `taskplanner` to refresh the queue based on what the reconciler's verdict flagged. If the Turn count has already reached `<max-turns>`, Phase 2 is bypassed and the gate forces Bounded Closure with reason `"max-Turns exceeded; Rebalance from Phase 3 cannot create a new Turn."`. When the budget is unresolved there is no counter to compare against and this bypass never fires; the fresh Turn runs and meets the **Unresolved-budget check-in** at its own boundary instead.
 
-- **Revise Directive is limited to once per session.** The orchestrator increments the persisted counter `progress.directive_revisions_this_session` in `agentstate.yaml` (initialised to 0 at session start; persisted so the cap holds across session interruption). The first Revise Directive choice re-enters Step 0b.1 (shaper), regenerating spec + plan + queue. A second Revise Directive in the same session is rejected; the gate instead forces Bounded Closure with reason `"Directive revised twice without convergence."`. Rationale: re-shaping more than once per session usually means the project itself needs to step back, not the current Circle.
+- **Revise Directive is limited to once per session.** The orchestrator increments the persisted counter `control.directive_revisions_this_session` in `agentstate.yaml` (initialised to 0 at session start; persisted so the cap holds across session interruption). The first Revise Directive choice re-enters Step 0b.1 (shaper), regenerating spec + plan + queue. A second Revise Directive in the same session is rejected; the gate instead forces Bounded Closure with reason `"Directive revised twice without convergence."`. Rationale: re-shaping more than once per session usually means the project itself needs to step back, not the current Circle.
 
-  **At Phase 3 (post-verdict dispatch):** Re-enter Step 0b.1 (shaper). The orchestrator preserves the existing session history file but appends a new `## Directive revision (post-Phase-3)` section noting the trigger (the reconciler verdict and the user's Rebalance choice). The shaper produces a new spec with the prior commits as Grounding context. Then Step 0b.2 (planner) and Phase 1 (queue rebuild) and Phase 2 (fresh Turn). `progress.directive_revisions_this_session` increments and is persisted before re-entering Step 0b.1; if already at 1, Bounded Closure is forced.
+  **At Phase 3 (post-verdict dispatch):** Re-enter Step 0b.1 (shaper). The orchestrator preserves the existing session history file but appends a new `## Directive revision (post-Phase-3)` section noting the trigger (the reconciler verdict and the user's Rebalance choice). The shaper produces a new spec with the prior commits as Grounding context. Then Step 0b.2 (planner) and Phase 1 (queue rebuild) and Phase 2 (fresh Turn). `control.directive_revisions_this_session` increments and is persisted before re-entering Step 0b.1; if already at 1, Bounded Closure is forced.
 
 - **Revise Grounding does not increment the Turn counter** (decision-filing is not Artifact work). The orchestrator pauses Phase 2 at the current queue position (records `paused_at_task: <task ID>` in `agentstate.yaml`), then prompts the user via `AskUserQuestion` to choose between:
   (a) **File a new `_o_` decision record** — orchestrator asks the user for the question text and any options/constraints (or for the full decision body if the user prefers to type it directly), then writes the file at `$OUT_DECISION/YYMMDD-HHMM_o_<topic>.md` per the decision-record template in `fusion-workbench-conventions.md`; OR
@@ -946,7 +952,7 @@ Each option has bounded post-action mechanics. No option is allowed to loop unbo
 - `decisions_answered` — count of `_o_` → `_a_` transitions on decision records this session, across every store (Grounding-growth metric)
 - `decisions_implemented` — count of `_a_` → `_i_` transitions on decision records this session, across every store (Grounding-realisation metric)
 - `commits_made` — number of successful commits
-- `directive_revisions_this_session` — count of Revise Directive choices accepted at the Rebalance gate this session (initialised to 0; capped at 1 — see Rebalance bounding). **Persisted in `agentstate.yaml` (`progress.directive_revisions_this_session`)** so the cap holds across session interruption.
+- `directive_revisions_this_session` — count of Revise Directive choices accepted at the Rebalance gate this session (initialised to 0; capped at 1 — see Rebalance bounding). **Persisted in `agentstate.yaml` (`control.directive_revisions_this_session`)** so the cap holds across session interruption.
 - `agent_errors` — count of agent failures (no output, wrong scope, etc.)
 
 The four record counters above — `issues_created`, `issues_resolved`, `decisions_answered`, `decisions_implemented` — are the ones **not** trusted to the tally at Phase 4. Keep them if they help you narrate a Turn; the figures that reach the budget table and the user report are the derived ones (see **Phase 4 → The record counts are computed, not tallied**).
@@ -974,14 +980,7 @@ session:
   history_file: "<workbench-relative path to this session's history file, as resolved at Setup step 2>"
   git_head_at_start: "<short hash>"
 
-progress:
-  turn: <current turn number>
-  max_turns: <the Turn budget resolved at Setup Step 2 — OMIT THIS KEY ENTIRELY when the resolution came back unresolved; never write a word or a placeholder here, the key is read as a number>
-  tasks_total: <N>
-  tasks_done: <N>
-  tasks_skipped: <N>
-  tasks_errored: <N>
-  commits: <N>
+control:
   turn_start_head: "<short hash, recorded at start of current Turn — used by Phase 2 step 3c and step 3c-bis git-rev-list checks; cleared at Turn end>"
   paused_at_task: "<task ID when Rebalance 'Revise Grounding' paused Phase 2; null/absent otherwise — see Rebalance bounding>"
   directive_revisions_this_session: <integer; initialised to 0; capped at 1 — see Rebalance bounding 'Revise Directive'>
@@ -1007,74 +1006,39 @@ plan_context:
   key_findings: "<any captured context needed for resumption>"
 ```
 
-Fields under `plan_context` are optional — include only what is relevant to the session. The `work_queue` list preserves the full queue with per-task status so the orchestrator knows exactly where to pick up.
+Fields under `plan_context` are optional — include only what is relevant to the session. The `work_queue` list preserves the full queue with per-task status so the orchestrator knows exactly where to pick up, and since the persisted `tasklist.md` was removed it is the queue's **only** durable copy.
+
+**The block is called `control:` because it holds no counts, and it held seven until 2026-08-15.** `turn`, `max_turns`, `tasks_total`, `tasks_done`, `tasks_skipped`, `tasks_errored` and `commits` were hand-maintained numbers, written at boundaries a session can pass without writing them, and every one of them is **derivable at read time** from a record that cannot silently freeze:
+
+| What you used to read here | Where you read it now |
+|---|---|
+| `progress.commits` | `git rev-list --count <session.git_head_at_start>..HEAD` |
+| `progress.turn` | the `turn_start` events in `orchestrator-events.jsonl` since this session's `session_start` |
+| `progress.tasks_total` / `_done` / `_skipped` / `_errored` | the `status` field of the `work_queue` entries in this same file |
+| `progress.max_turns` | `bin/fusion-turn-budget`, resolved once at Setup Step 2 — it reads a configured ceiling and was never a session count |
+
+Derive them; do not re-add a field. A number written by hand into this file is a number that can freeze, and what the removal traded away is stated where it belongs — the measurement that used to compare these seven against git and the event log went with them, so a frozen Circle Turn log, a dangling `session.history_file` and a history file whose Directive disagrees with this one's are no longer noticed by anything. Three surfaces remain in this file and none of them is a tally: a git anchor and two pieces of control state.
 
 ### Write Points
 
-Overwrite `agentstate.yaml` at each of these transitions (same cadence as the live dashboard):
+Overwrite `agentstate.yaml` at each of these transitions (same cadence as the live dashboard). **Every row that survives records a transition; the rows that existed to bump a counter are gone**, and a plain Turn boundary is no longer a write point at all — nothing in the file changes at one.
 
 | Transition | What changes |
 |------------|--------------|
 | Phase 0 complete (scope resolved) | Initial write: session metadata, directive, mode, empty queue |
 | Phase 1 complete (queue built) | Full work queue with all tasks in `queued` status |
 | Task starts | `current_task` updated, task status → `running` |
-| Task completes | Task status → `done` with commit hash, `progress` counters updated |
-| Task errors | Task status → `errored`, `progress.tasks_errored` incremented |
+| Task completes | Task status → `done` with commit hash |
+| Task errors | Task status → `errored` |
 | Task skipped/deferred | Task status → `skipped`/`deferred` |
 | Human gate hit | `current_task.status` → `gate` |
-| Turn boundary | `progress.turn` incremented |
-| Turn starts | `progress.turn_start_head` recorded with current `git rev-parse --short HEAD` (cleared on Turn end) |
-| Rebalance Revise Grounding pauses Phase 2 | `progress.paused_at_task` set to current task ID; cleared when Phase 2 resumes after the decision is filed |
-| Rebalance Revise Directive accepted | `progress.directive_revisions_this_session` incremented; persisted before re-entering Step 0b.1 (cap holds across session interruption) |
+| Turn starts | `control.turn_start_head` recorded with current `git rev-parse --short HEAD` (cleared on Turn end) |
+| Rebalance Revise Grounding pauses Phase 2 | `control.paused_at_task` set to current task ID; cleared when Phase 2 resumes after the decision is filed |
+| Rebalance Revise Directive accepted | `control.directive_revisions_this_session` incremented; persisted before re-entering Step 0b.1 (cap holds across session interruption) |
 | Session ends normally | **Delete the file.** A clean exit means there is nothing to resume. |
 
 **The file exists only while a session is in progress.** Its presence signals an incomplete session. On normal completion (Phase 4 cleanup), delete the file. This makes the resumption check in Setup unambiguous: file exists = interrupted session.
 
-### Drift check
-
-`agentstate.yaml`, the active Circle's record and this session's history file are all written at boundaries a session can pass **without** writing them. Nothing breaks when the write is skipped, so the skip is silent — and it has been measured six times in six separate sessions (`260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`): the state file said `commits: 0` while git counted 7, then 8, then 6; a Circle record said `Status: anticipated` with an empty Turn log while that Circle had been active for days; a history file said `Directive: (not yet stated)` while the Directive was set and eight hours of work followed. Resume is the feature this breaks, because the state file is authoritative in exactly the situation where the session that wrote it is gone and cannot be asked.
-
-Two records did **not** freeze in any of the six. `orchestrator-events.jsonl` kept up every time, because emitting an event is a call that either happens or visibly does not; and git kept up, because a commit is the work itself rather than a note about it. The drift check reads those two and prints each bookkeeping surface next to the record that can contradict it.
-
-**Run it in the same command as every boundary event emission** — `turn_start` (Phase 2), `turn_end` (Step 3e) and `session_end` (Cleanup) — and once more at Setup Step 1 when a prior session's state file is found. Riding those emissions is the design, not a convenience: a *separate* obligation at the Turn boundary is precisely what got skipped six times, so the check is attached instead to the one call that empirically never was. Run it from the workbench root; the helper resolves everything else itself, including the active Circle, so there is no `WORKBENCH` or `SCAN_CIRCLES` to pass and nothing that goes wrong when you are somewhere else in the tree. Any row it cannot decide comes back **named as unchecked**, never dropped: a drift check that exists to catch a silent skip must not perform one (`rules/fusion-workbench-conventions.md` `## Path Resolution` → *Where the call belongs*).
-
-**Run the helper; do not re-implement it.** The check used to be twenty lines of shell inlined here, and two things went wrong with that. Its last line handed the whole block's exit status to a guard that was false on the ordinary session with no Circle active, so it reported failure in the situation where nothing is wrong (issue `260810-0710`) — and a check that cries wolf on its commonest path teaches its reader to ignore its status, which is this section's own failure arriving one level up. More decisively, prose in this file cannot reach the session that wrote it, so a snippet here was never going to be what runs. Both are closed by the computation living in `hooks/lib/state-drift.ts`, which this helper prints and which the PostToolUse hook runs on every guarded tool call without being asked:
-
-```bash
-if [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-state-drift" ]; then
-  "$FUSION_PLUGIN_ROOT/bin/fusion-state-drift"
-else
-  echo "fusion: no bin/fusion-state-drift in the installed plugin at $FUSION_PLUGIN_ROOT — no drift check taken" >&2
-fi
-```
-
-It prints `anchor=`, `state=`, `rows=`, `drift=` and `verdict=`, then one line per surface: the value the surface holds, the value the un-freezable record holds, and `DRIFT` or `UNCHECKED (<reason>)` where either applies. **`verdict=drift` is a line of output, not an exit code** — exit 0 means the check ran, exit 2 means there is no workbench, exit 3 means the installed plugin has no compiled hooks. The `[ -x ]` guard is the one Setup Step 5's source count carries, for the same reason: `$FUSION_PLUGIN_ROOT` is the installed copy, pinned for the whole session, so a helper added between releases is simply absent there and a bare call is exit 127.
-
-**Both numeric rows measure one session, and it is the session `agentstate.yaml` describes — not the process reading it.** `progress.commits` counts from `session.git_head_at_start`, which a resume does not rewrite. `progress.turn` counts `turn_start` events from the first `session_start` carrying this session's `history_file`, which a resume does not re-point either. So the two rows answer "since when?" with one answer, and a session that resumed inside Turn 4 reads 4 against 4. They did not: the Turn row used to count from the *last* `session_start`, and a resume writes one, so it read 4 against 0 and said DRIFT on every tool call for the rest of every resumed session while nothing was stale (issue `260811-2143`). Where a log predates the `history_file` field **and** carries more than one `session_start` since the last `session_end`, which of them began this session is not decidable from the log, and the row comes back `UNCHECKED` with that reason rather than attributing a difference it cannot place.
-
-**Read the rows against these conditions.** Each row pairs one surface with the one record that can contradict it, and a row is drift only under its own condition — a value that legitimately differs is not a fault to report:
-
-| Row | Drift when |
-|---|---|
-| `progress.commits` | the two numbers differ by more than one (the one allows the commit currently in flight) |
-| `progress.turn` | the two numbers differ at all. The count runs from the first `session_start` naming this session's `history_file`, so a resume does not reset it and the Turns run before the interruption are still counted |
-| `session.history_file` | the named file is not on disk — the resume anchor points at nothing |
-| history Directive | the history file's line is a placeholder (`(not yet …)`) while `agentstate.yaml` carries a Directive. Different **wording** is not drift: the two are written at different moments and neither is the other's source. |
-| Circle Turn log | the record carries fewer entries than Turns run |
-
-**When any row drifts:**
-
-1. **Emit a `state_drift` event** naming the diverging rows, both values, and the record each value came from. Do this first. The event log is the surface that survives, `agentstate.yaml` is deleted at Cleanup, and a drift that was noticed but never recorded disappears with the file that held the evidence.
-2. **Tell the user in one line**, naming what diverged and from what — e.g. `Session state stale: agentstate.yaml says 0 commits, git counts 12 since 8960e1a.` Do not fold it into the Turn report's body, where it reads as a statistic rather than as a warning about the numbers around it.
-3. **Bring the surfaces current** by performing the writes Write Points already required — the state file, the Circle's Turn-log entry, the history file's Per-Turn Log. You are the sole writer of all three, so this is not a second writer repairing them; it is the skipped write, done late. The `state_drift` event stays in the log regardless, so correcting the surfaces does not erase the fact that they froze.
-
-**The mid-session Circle supersession case.** When the active Circle changes mid-session — activated, superseded, closed — `$OUT_HISTORY` re-resolves to a different store. That is not a licence to re-point `session.history_file`: a session keeps **one** history file for its whole life, and that field names the file the session actually writes, wherever it was created. In the third measured instance the anchor was rewritten to a path under the successor Circle that the session never created, so a resuming orchestrator would have found neither the Turn state nor the log it named. The `session.history_file` row above is what catches that, and it is the only row whose failure mode is a dangling pointer rather than a stale number.
-
-**What runs without being asked.** The measurement above is also wired into `hooks/tracker.ts`, the PostToolUse hook Claude Code invokes after every `Write`, `Edit`, `MultiEdit`, `NotebookEdit` and `Bash` call. It reads the same `hooks/lib/state-drift.ts`, it is anchored at the workbench root rather than at your working directory, and when a surface has drifted it names the diverging rows back to you in the tool result and records a `state_drift` event under `.guard-state/`, which `bin/monitor` surfaces as a **Stale state** row. It reports once per divergence rather than once per tool call: a divergence that merely persists stays quiet, one that grows speaks again.
-
-**That is where the Turn-boundary write finally rides an obligation you already hold.** A commit is what moves `git rev-list --count` past what `agentstate.yaml` claims, a commit is a `Bash` tool call, and the hook fires on that very call — so the demand for the bookkeeping write arrives attached to the act that made it necessary, without anything having to remember it. This section's four call points remain: they are how *you* read the rows deliberately, at a boundary, and they cover the surfaces the hook reports on but is not permitted to touch.
-
-**What this is, honestly.** Half of it is now an enforcement and half of it is still a convention, and the halves are worth telling apart. The **measurement** is executed: nothing about it depends on this file being read, which is what closes the failure that produced this section — an agent prompt is loaded at session start, so the session that installed the earlier version of this check was, by construction, never the session that could run it (issue `260801-2038`, reconciliation `260810-0819`). The **repair write** is not executed and deliberately never will be: `agentstate.yaml`, the Circle record and the session history have exactly one writer, and putting a second one on them is candidate 3 of that issue, rejected there and still rejected. So the mechanism makes a skipped write impossible not to notice; it cannot make the write happen. That last step is yours, and it is still prompt text (`rules/critical-stance.md` §2; this project's own worked case is "Problem 11" in `CLAUDE.md`). Read this section as a measurement you cannot dodge and a write you can still skip — and know that skipping it now leaves a `state_drift` event in a log that outlives your session.
 
 ### Write mechanics
 
@@ -1098,7 +1062,7 @@ else
 fi
 ```
 
-The `[ -x ]` guard is the one the drift check and the coverage read carry, for the same reason: `$FUSION_PLUGIN_ROOT` is the installed copy, pinned for the whole session, so a helper added between releases is simply absent there and a bare call is exit 127.
+The `[ -x ]` guard is the one the coverage read carries, for the same reason: `$FUSION_PLUGIN_ROOT` is the installed copy, pinned for the whole session, so a helper added between releases is simply absent there and a bare call is exit 127.
 
 It prints `anchor=`, `head=`, `rows=`, `unstaged=` and `verdict=`, then **one line per entry under the workbench, in four classes**. Two of them are yours to act on and two are deliberately not:
 
@@ -1213,6 +1177,7 @@ Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit
 | `shaper_done` | Phase 0b, shaper returned; also each portfolio-activation return | Spec file path; for portfolio-activation, also the Circle directory whose record was edited |
 | `planner_start` | Phase 0b, planner invoked | Topic or spec file path |
 | `planner_done` | Phase 0b, planner returned | Plan file path |
+| `queue_built` | Phase 1 done | Task count, blocked count |
 | `turn_start` | Beginning of each Turn | Turn number, ready task count |
 | `task_start` | Before dispatching executor | Task ID, agent, primary file |
 | `task_done` | Task completed + committed | Commit hash |
@@ -1231,7 +1196,6 @@ Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit
 | `review_done` | Review complete | Issues filed count |
 | `circuit_breaker` | Circuit breaker tripped | Condition name |
 | `turn_end` | End of Turn | Tasks resolved, issues created |
-| `state_drift` | The drift check found a bookkeeping surface contradicted by git or by this log — run at `turn_start`, `turn_end`, `session_end` and at Setup Step 1 (see **Persistent State File → Drift check**) | One entry per diverging row: the surface, what it says, what the record says, and which record. Emitted **before** `agentstate.yaml` is deleted at Cleanup, because this log is what outlives it. |
 | `coherence_review` | Phase 2 step 3c-bis (per-Turn Coherence gate fired); also Phase 3 step 3 defensive fallback when the reconciler's `## Coherence` section is malformed | `verdict` (ok \| review-needed \| skipped-no-commits \| skipped-no-directive \| skipped-no-anchor) + three-edge summary lines (Artifact↔Grounding, Artifact↔Directive, Grounding↔Directive). The `bounded-closure-proposed` verdict is NOT emitted here — that case has its own dedicated `bounded_closure_proposed` event row below, fired by the per-Circle reconciler verdict, not by this per-Turn gate. |
 | `rebalance_artifact` | Rebalance gate, user chose Revise Artifact | Re-tried task ID or new task description |
 | `rebalance_grounding` | Rebalance gate, user chose Revise Grounding | Decision-record file path created or superseded |

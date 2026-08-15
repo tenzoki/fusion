@@ -16,20 +16,24 @@
  * Measured on the protected-path halt sentence, which is gone with its half of
  * the guard; the defect class is not, and is not specific to what the message
  * said. A throw in a state load takes out whatever the hook was about to tell
- * the model, and the tracker still tells it three things — the drift, coverage
- * and staging measurements all leave through the same reply. One defect, fixed
- * once, in one of three places. The ping-back tracker left with decision
- * `260809-2004`, and the churn heatmap on 2026-08-15.
+ * the model, and the tracker still tells it what it has to say — the coverage
+ * and staging measurements leave through the same reply. One defect, fixed
+ * once, in one place. The ping-back tracker left with decision `260809-2004`,
+ * the churn heatmap on 2026-08-15, and the session-state drift measurement with
+ * the counters it measured on the same day.
  *
- * It happened a second time. Three measurement modules — `state-drift.ts`,
- * `review-coverage.ts`, `staging-drift.ts` — landed in one afternoon, each with
+ * It happened a second time. Three measurement modules — the since-removed
+ * `state-drift.ts`, plus `review-coverage.ts` and `staging-drift.ts` — landed
+ * in one afternoon, each with
  * its own twelve-line throttle store written BESIDE this file rather than
  * through it, and they had already diverged: all three wrote with a bare
  * `writeFileSync` where this one writes through a `.tmp` and a rename, and all
  * three read with an `as` cast where this one takes a coercion. Decision
  * `260811-1146` moved them onto the seam and widened it by one optional `root`,
- * which is the only thing they needed and did not have. Four modules use it
- * today — the fifth was `churn.ts`, removed on 2026-08-15.
+ * which is the only thing they needed and did not have. Three modules use it
+ * today — `escalation.ts`, `review-coverage.ts` and `staging-drift.ts`.
+ * `churn.ts` and `state-drift.ts` were the fourth and fifth, both removed on
+ * 2026-08-15.
  *
  * So the seam is a parameter rather than a pattern to reproduce:
  * `loadGuardState` takes the coercion, and a state module that wants to persist
@@ -72,7 +76,7 @@
  * was deleted with the protected-path half of the guard on 2026-08-12, so the
  * recommendation is moot rather than done.
  *
- * The files that DO route through here are `escalation.json` and the three
+ * The files that DO route through here are `escalation.json` and the two
  * measurement throttle records.
  */
 /** Where one state file lives, or null when no workbench is set up. */
@@ -94,13 +98,13 @@ export interface GuardStatePaths {
  * this walk up from the working directory — that walk is the no-workbench no-op
  * above, and it must stay its default.
  *
- * The three measurement modules are the other case. Each is handed a workbench
- * root by its caller (the tracker resolves it once per tool call; the `bin/`
- * CLIs resolve it once at startup) and each is deliberately anchored there
- * rather than at cwd — a hook's `process.cwd()` is whatever directory the
- * session happens to sit in. Passing that root through is what let them use
- * this seam at all; before it existed they forked three copies of it instead,
- * which is the failure this module's header already describes.
+ * The measurement modules are the other case. Each is handed a workbench root
+ * by its caller (the tracker resolves it once per tool call; the `bin/` CLIs
+ * resolve it once at startup) and each is deliberately anchored there rather
+ * than at cwd — a hook's `process.cwd()` is whatever directory the session
+ * happens to sit in. Passing that root through is what let them use this seam
+ * at all; before it existed they forked three copies of it instead, which is
+ * the failure this module's header already describes.
  *
  * A caller that passes a root gets no null: it has already answered the
  * question the walk asks. The walk runs only when no root is given.

@@ -3,14 +3,16 @@
  *
  * ## Why this module exists
  *
- * Three measurement modules landed in one afternoon — `lib/state-drift.ts`,
- * `lib/review-coverage.ts` and `lib/staging-drift.ts` — and each asked git the
+ * Three measurement modules landed in one afternoon — `lib/review-coverage.ts`,
+ * `lib/staging-drift.ts` and a `lib/state-drift.ts` that was removed on
+ * 2026-08-15 with the session counters it measured — and each asked git the
  * same way: `execFileSync` with the root as cwd, a timeout, stderr discarded,
  * and every failure collapsed to `null`. Two carried the wrapper verbatim
  * (`review-coverage.ts`, `staging-drift.ts`); the third inlined it inside
  * `commitsSince`. That is the failure class `lib/guard-state-file.ts` names for
  * state files, arriving for subprocesses: a defect fixed once would have had to
- * be fixed three times.
+ * be fixed three times. Two callers remain and the argument is unchanged — the
+ * wrapper exists because copies of it drift, not because there were three.
  *
  * ## The three properties, stated once
  *
@@ -33,9 +35,11 @@
  * `shared/decisions/260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md`
  * takes option 2 — the two pieces that already had an owner — and leaves the
  * tracker's per-measurement bodies, the CLI mains and the `bin/` wrappers as
- * three copies until a fourth measurement is proposed. See the trigger
- * criterion in `hooks/tracker.ts` for what decides whether that fourth is a
- * sibling at all.
+ * per-measurement copies until a further measurement is proposed. There were
+ * three sets of them when that decision was taken and there are two now; the
+ * trip-wire is the count going UP, so the removal moved it further off rather
+ * than resetting it. See the trigger criterion in `hooks/tracker.ts` for what
+ * decides whether a new measurement is a sibling at all.
  */
 import { execFileSync } from "node:child_process";
 /**

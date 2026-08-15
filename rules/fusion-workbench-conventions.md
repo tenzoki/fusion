@@ -53,9 +53,9 @@ fusion-workbench/
 │
 │   # ── Root-anchored. The hooks, the monitor and the bin/ helpers read these ──
 │   # ── HERE, at fixed root-relative paths. Do not move them.               ──
-├── agentstate.yaml                     # bin/monitor, hooks/lib/state-drift.ts, hooks/lib/review-coverage.ts, hooks/lib/staging-drift.ts
+├── agentstate.yaml                     # bin/monitor, hooks/lib/state-file.ts (for review-coverage and staging-drift)
 ├── orchestrator-live.md                # bin/monitor, hooks/lib/staging-drift.ts
-├── orchestrator-events.jsonl           # bin/monitor, hooks/lib/state-drift.ts, hooks/lib/staging-drift.ts
+├── orchestrator-events.jsonl           # bin/monitor, hooks/lib/staging-drift.ts
 ├── .guard-state/                       # bin/monitor, hooks/lib/events.ts, hooks/lib/guard-state-file.ts, hooks/lib/staging-drift.ts
 ├── .commit-lock/                       # bin/fusion-commit-lock, hooks/lib/staging-drift.ts (created and removed per commit)
 └── .session-marker                     # bin/fusion-session-mark, hooks/lib/staging-drift.ts

@@ -32,12 +32,10 @@ bin/*
 !bin/fusion-session-mark
 !bin/fusion-commit-lock
 !bin/fusion-paths
-!bin/fusion-plane
 !bin/fusion-plugin-cwd
 !bin/fusion-source-root
 !bin/fusion-count-sources
 !bin/fusion-churn-rank
-!bin/fusion-state-drift
 !bin/fusion-review-coverage
 !bin/fusion-staging-drift
 !bin/fusion-turn-budget
