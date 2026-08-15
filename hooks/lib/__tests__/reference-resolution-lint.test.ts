@@ -204,6 +204,10 @@ function scannedLines(f: SurfaceFile): { line: number; text: string }[] {
 const EXAMPLE_PATHS: Record<string, string> = {
   "rules/relevant-file.md": "guard-doc fabricated value in an event-JSON example",
   "bin/fu": "removed v3.20.0; CLAUDE.md names it as history, deliberately",
+  "bin/fusion-state-drift":
+    "removed 2026-08-15 with the counters it measured; the surviving "  +
+    "`bin/fusion-staging-drift` row in CLAUDE.md names it as history, "  +
+    "deliberately — same shape as `bin/fu` above",
   "rules/context-manifest.yaml":
     "the CONSUMING project's manifest (./rules/context-manifest.yaml); " +
     "fusion-workbench-conventions.md spells it bare in the exit-code table",

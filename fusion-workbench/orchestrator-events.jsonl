@@ -1551,3 +1551,5 @@
 {"ts":"2026-08-15T13:34:23","event":"task_start","turn":4,"task":"P-11","agent":"coder","detail":"session counters and drift machinery; extract state-file.ts first; restore queue_built removed in error at P-10"}
 {"ts":"2026-08-15T14:03:41","event":"task_done","turn":4,"task":"P-11","agent":"coder","detail":"f45f76a; 41/790 -> 39/741; state-file.ts extracted first; agentstate progress block renamed control; queue_built restored; what stops being noticed written down"}
 {"ts":"2026-08-15T14:03:41","event":"task_start","turn":4,"task":"P-12","agent":"coder","detail":"eight administrative names to three; implements both answered decisions"}
+{"ts":"2026-08-15T15:44:06","event":"gate_hit","turn":4,"detail":"G1 curator ledger: 12 entries, 0 constraint removals, blast radius under 1.7 percent"}
+{"ts":"2026-08-15T15:44:06","event":"gate_response","turn":4,"detail":"G1: all twelve ledger entries approved; C01 candidate not applied; resume-shell duplication accepted as two copies, no mechanism built"}

@@ -42,3 +42,6 @@ Choosing between them is a design call about how much mechanism five lines of sh
 the one Circle that is explicitly removing mechanisms. That is the orchestrator's and the user's
 call at a gate, not an executor's inside a repair dispatch. Both copies are correct at HEAD, so
 nothing is broken while this is open — the exposure is the next correction reaching one of them.
+
+---
+Resolved: closed by user decision at gate G1, option three of the three the filing executor costed — two copies are accepted and no mechanism is built to hold them identical. Reasoning recorded at shared/history/260814-2306-orchestrator-session.md:252 — five lines of shell justify neither a thirteenth bin helper with its gitignore line and its asserted table row, nor a fortieth test file, and both are the kind of addition the growth cap in step 13 exists to slow. The risk is not denied: the two copies can diverge and nothing will say so. It stays named here rather than engineered away.

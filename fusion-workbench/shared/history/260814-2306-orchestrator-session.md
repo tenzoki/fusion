@@ -248,3 +248,27 @@ Until it lands, this orchestrator dispatches nothing in parallel that runs the s
   investigator was user-initiated by design. The alternative was a carve-out inside the analyst,
   which is the special case the critical-stance rule warns against. Surfaced to the user.
 - Circuit breaker status: OK
+
+## Gate G1 — the curator's pass, and one decision beside it
+
+The curator surveyed the three normative surfaces against twenty-eight commits and returned a
+twelve-entry ledger: nine against `CLAUDE.md`, three against `rules/fusion-workbench-conventions.md`,
+none against the decision store. Zero constraint removals, zero Tier-3 entries, blast radius under
+1.7 percent of the smallest surface. The user approved **all twelve**.
+
+Not approved and not applied: the candidate C01. Thirteen decision records now assert a mechanism
+that no longer exists, and the curator changed none of them because an open decision filed by the
+previous curator run owns exactly that question. It was filed when two records were affected; today
+it is thirteen. The curator's own judgement, marked as inference at medium confidence: that decision
+should be answered before the next curator run, or no pass repairs the stock.
+
+**The duplication decision.** The two copies of the resume shell now agree and nothing holds them
+agreeing. Three options were costed by the executor that repaired them — a shared helper, a lint
+pinning the two fenced blocks equal, or accepting two copies — and the executor escalated the choice
+rather than taking it, on the ground that how much mechanism five lines of shell deserve, inside the
+Circle that is removing mechanisms, is a gate decision.
+
+**The user chose to accept two copies.** The reasoning stated at the gate: five lines of shell
+justify neither a thirteenth helper nor a fortieth test file, and both would be exactly the kind of
+addition the cap in step 13 exists to slow. The risk is real and stays named in its record rather
+than being engineered away.
