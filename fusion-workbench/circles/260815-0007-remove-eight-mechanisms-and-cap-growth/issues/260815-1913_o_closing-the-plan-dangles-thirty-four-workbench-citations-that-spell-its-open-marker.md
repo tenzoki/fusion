@@ -47,3 +47,23 @@ The same class already has an instance in this Circle at
 `issues/260815-1247_o_a-backlog-entrys-related-line-points-at-a-marker-the-playmaker-has-since-moved.md`,
 filed against one entry rather than thirty-four. Whether it is a defect at all depends on which of
 the three positions holds, which makes it a decision this record does not take.
+
+---
+
+**Re-measured 260815-2109 at HEAD `d2b45e1`** (reconciler, `history/260815-2109-reconciliation.md`).
+The count in the title is stale and the record stays open. `grep -ro` across `fusion-workbench/`
+now returns **57** occurrences, or **41** once the two append-only event streams
+(`orchestrator-events.jsonl`, `.guard-state/events.jsonl`) are excluded — those two legitimately
+hold the name the plan carried when the event was written and must never be rewritten.
+
+The title was not corrected, deliberately: renaming the file to carry a new number would itself
+create the dangling-citation class this record is about, in the four places that already cite it.
+The number in a title is a filing timestamp of the measurement, not a live figure; this annotation
+is where the live figure goes.
+
+**One of the 41 was repaired by this pass** rather than left: `agentstate.yaml:26`
+`current_task.source_file`, which named the `_o_` path while its sibling `plan_context.plan_file`
+named the `_c_` one. That is a live session-state field a resume reads, not a historical record,
+so it is in a different class from the other 40 and was fixed on sight. The remaining 40 are
+history files, closed issue records and review files that name the plan under the marker it
+carried at the time — correct as written.

@@ -380,3 +380,64 @@ the definition in `rules/fusion-workbench-conventions.md` (:328, :431-436, :520)
 parallel dispatch, and the annotation on 25 records, written here. The record is therefore
 implemented and its `_a_` → `_i_` transition is available. It was not taken, because the dispatch
 that ran this pass instructed it to rename nothing; the evidence is recorded on the record itself.
+
+## Coherence — re-run after the Grounding revision
+
+<!-- RECONCILER-OWNED -->
+
+**Scope:** re-run at HEAD `d2b45e1`, range `9a7da8e..d2b45e1`, **35 commits**. Supersedes
+neither `## Coherence` above nor `## Coherence — Grounding revision applied`; it is the third
+reading, taken after the Rebalance gate's answer landed in full. Full pass record at
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-2109-reconciliation.md`.
+The dispatch named 38 commits; `git rev-list --count 9a7da8e..HEAD` returns **35**, and that is
+the number every figure below is taken against — the same correction the first verdict had to
+make against 34.
+
+**Verdict:** coherent
+
+**Edges:**
+
+- **Artifact↔Grounding: OK, with two named residuals.** Re-verified at HEAD by measurement, not by reading a marker: `cd hooks && npm test` green at **40 files / 751 tests**, 57.26 s, unchanged from the first verdict. The Grounding revision is on disk exactly as claimed and both figures reproduce to the byte — `rules/fusion-workbench-conventions.md` grew **761 bytes** in `c8eac96` (53 399 → 54 160), and the always-on set stands at 88 679 against a baseline of 86 573, leaving **9 894** of the 12 000-byte head-room. The `Retired:` form is defined at the three named places (`:328` marker row, `:432` annotation form, `:520` template footer) and carried by exactly **25** `_i_` records; a 26th file matching the grep is the new decision's own empty template footer, not a stray annotation. `260814-1332` is at `_i_` with `**Status:** implemented`, an `Answered:` line citing the gate and an `Implemented:` line citing `c8eac96`. The `_i_` population is 64, the 63 enumerated plus this record. All three orchestrator bookkeeping items are fixed: the Turn-4 entry carries `9955e8f..9306f0a`, `**Active spec/plan:**` names the plan's `_c_` path, and `work_queue` P-15 reads `done` at `9306f0a`. **Two residuals, both named rather than closed.** First, review coverage is still `uncovered` and **grew from 6 to 9** — but the number is padded: four of the nine (`c1e207d`, `9cde86c`, `bd07ee7`, `d2b45e1`) touch **no shipped file at all** and are tracking writes a reviewer has nothing to open in. Five touch shipped files: `5f2171e` (3), `e8052e7` (5, and it passed the G1 user gate with an evidence-tiered ledger), `0609945` (6), `9306f0a` (7, of which `install.sh` is the pin-example comment only), `c8eac96` (2). Second, the closure measurement's `docs/` + `README*.md` row is still stale — re-measured here at **15 402 bytes**, not the 23 534 recorded — and its issue stays open for Phase 4 to consume.
+- **Artifact↔Directive: OK.** All 35 commits move toward the Directive; none is orthogonal and none moves away. The three since the previous reading are the Grounding revision itself (`c8eac96`, `d2b45e1`) and the pass that preceded it (`bd07ee7`), all tracking-file and rule-text writes discharging the gate's own answer. The closure criterion — "the restored cap fails the suite as soon as something is added back to `agents/`, `skills/` or the hook tests" — is met and **demonstrated by execution on two of the three surfaces**: `skills/` at `9306f0a`, where an 897-byte edit turned the suite red and the fixture was regenerated with no baseline moved, and `agents/` in the reproduction recorded in `260815-1942_o_`, where two restored agent prompts failed the bound at 18 000 bytes of head-room.
+- **Grounding↔Directive: OK, discharged.** The flag raised in the first verdict is gone. The 25 annotations are on disk, no marker moved, and the residual the pass declined to force — two `_a_` records whose answers became unrealisable and which have no implementation for a `Retired:` line to cite — is filed as its own decision at `circles/260815-0007-…/decisions/260815-2056_o_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`, with both records carrying a note pointing at it. 5 `_o_` decisions stand in the Circle's own store and `shared/`; none contradicts the Directive.
+
+**Rebalance recommendation:** none
+
+**Why this is `coherent` and the first verdict was not, stated against my own prior position.**
+The `Grounding↔Directive` flag is discharged on evidence. The `Artifact↔Grounding` flag is not
+discharged — it is **re-characterised**, and the honest reason is that "unreviewed" and
+"unexamined" came apart in this Circle. `0609945` is the commit I raised loudest and no reviewer
+has opened it; it also carries **four filed defect records**, one **High**, each with reproduction
+steps, produced by reconciliation running the mechanism rather than reading it. A rule that
+blocked closure for want of a review *file* would have blocked it over the single commit in this
+session that received the most scrutiny. The gap did not shrink and I am not calling it closed;
+what changed is that I can now say what is in it, commit by commit and shipped-file by
+shipped-file, which the first verdict could not.
+
+**What the closure note must carry, as acknowledged residuals rather than as omissions.**
+(1) **Nine commits closed unreviewed, five of them touching shipped files**, named individually,
+with the statement that the user stopped the review dispatch deliberately and that this is the
+fifth consecutive Turn or Circle whose review range and commit range disagree. (2) **The cap
+ships with a demonstrated latent escape.** `260815-1935_o_` is High: `surface-growth-bound.test.ts`
+reads `__tests__/*.ts` and `__tests__/helpers/*.ts` only, while Vitest's include is recursive, so
+a test file in any third subdirectory runs uncounted — demonstrated with 3 002 lines, 120 % of
+that surface's entire head-room, all twelve assertions green. **It is latent, not active**: at
+HEAD `__tests__/` holds only `fixtures/` and `helpers/`, and all 44 `.ts` files sit in the two
+directories the bound reads, so nothing is uncounted today. The note must say both halves — a
+reader told only "High, cap bypassable" will conclude the cap does not work, and a reader told
+only "latent" will not fix it. (3) The three other records against `0609945` — `260815-1942_o_`
+(baselines asserted on by nothing), `260815-1939_o_` (rate and percentile inputs do not reproduce
+from git while every point figure does), `260815-1941_o_` (the motivating table's `rules/`
+before-row taken at the wrong anchor: -7.5 %, not -10 %). (4) The corrected `docs/` + `README*.md`
+figure, **15 402 bytes**.
+
+**One thing this pass changed in the tree, and one it filed.** `agentstate.yaml:26`
+`current_task.source_file` still named the plan's `_o_` path, which no longer exists on disk;
+it now names the `_c_` path its sibling `plan_context.plan_file` already used. And the question
+underneath all three of this session's verdicts — **may a Circle close over an uncovered review
+range** — turned out to be owned by no decision record anywhere in the workbench, while
+`bin/fusion-review-coverage`'s own header names it as unfiled. It is now filed, at
+`shared/decisions/260815-2109_o_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`,
+in `shared/` rather than this Circle's store because its instances predate this Circle. Three
+verdicts in one session decided it ad hoc, two one way and one the other; that inconsistency is
+the argument for the record, and it is mine to own rather than the gate's.
