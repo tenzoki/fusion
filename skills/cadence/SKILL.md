@@ -151,7 +151,7 @@ For large histories, read enough of each file to identify its themes; you do not
 - **reconciliation**, archiving, and the activity-log or cadence runs themselves
 - compliance-**guard** toggling, and commit / push / release *mechanics* as such
 
-Keep the **substance** of what was decided, built, analysed, or written — even when the subject is the tooling itself. In a plugin-development repo, "design the conceptrev agent" or "cadence churn metric" are real work topics; "workbench tracking & housekeeping" is not. In an end-user project, the user's own domain work is the signal and all fusion machinery is noise. The test: would the user name this as something they worked on? If not, drop it.
+Keep the **substance** of what was decided, built, analysed, or written — even when the subject is the tooling itself. In a plugin-development repo, "design the portfolio ranking" or "cadence churn metric" are real work topics; "workbench tracking & housekeeping" is not. In an end-user project, the user's own domain work is the signal and all fusion machinery is noise. The test: would the user name this as something they worked on? If not, drop it.
 
 ### 6. Build the recent lists — yesterday, then last 7 days
 

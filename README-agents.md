@@ -18,7 +18,7 @@ Options 1 and 2 launch a sub-agent with its own context window (see [How to invo
 
 ## The agents
 
-Since v4.0.0 the **Writes** column names artifact *kinds*, not fixed root paths. Each kind resolves at run time through `bin/fusion-paths` into the active Circle (`<circle>/planning/`, `<circle>/issues/`, …) or into `shared/` when no Circle is active — the Origin Rule decides which. The three former review folders (`codereview/`, `ontoreview/`, `conceptreview/`) are merged into one `reviews/`, with the reviewing agent named in the filename.
+Since v4.0.0 the **Writes** column names artifact *kinds*, not fixed root paths. Each kind resolves at run time through `bin/fusion-paths` into the active Circle (`<circle>/planning/`, `<circle>/issues/`, …) or into `shared/` when no Circle is active — the Origin Rule decides which. The former review folders (`codereview/`, `ontoreview/`, `conceptreview/`) are merged into one `reviews/`, with the reviewing agent named in the filename.
 
 | Agent | Role | Reads | Writes | Output goes to |
 |-------|------|-------|--------|----------------|
@@ -28,7 +28,6 @@ Since v4.0.0 the **Writes** column names artifact *kinds*, not fixed root paths.
 | `ontocoder` | Implements **structured-data and ontology** changes per a plan or task | Anything | `.yaml`, `.yml`, `.json`, `.toml`, `.csv`, `.tsv`, `.xml`, `.ndjson` where they carry data, ontology, manifests, schemas, fixture data, derived stats/index files, data documentation, `history/`, `issues/` | Data edits + history log |
 | `coderev` | Reviews **application code, prompts, build/packaging, and tooling**, files findings | Anything | `reviews/`, `issues/` (`$OUT_REVIEW` and `$OUT_ISSUE`, resolved per-Circle or `shared/`) | Review report + issue files |
 | `ontorev` | Reviews ontology, manifests, verb hierarchies, files findings | Anything | `reviews/`, `issues/` | Review report + issue files |
-| `conceptrev` | Evaluates the formal Mermaid design diagrams in plans, specs, analyses, tasklists and investigations — measures graph structure (fan-out, cycles, layering, orphans), returns an advisory coherence verdict. Read-only; files nothing | Anything (esp. planning/analysis docs) | `reviews/` | Coherence verdict (clean/acceptable/tangled) + findings |
 | `reconciler` | Reconciles plans / issues / reviews against the actual codebase | Anything | Tracking files under `planning/`, `issues/` and `reviews/` (status markers, marker renames, reconciliation logs and evidence citations — never the descriptions themselves), `history/`, new `issues/` and `decisions/`, plus the `## Coherence` section appended to the orchestrator's session-history file | Updated tracking files + Coherence verdict + history log |
 | `taskplanner` | Builds the dependency-ordered work queue from open plans, issues, reviews and answered (`_a_`) decisions | All `fusion-workbench/` tracking files — plans, issues, decisions, reviews, history | `tasklist.md`, `history/` | A single, executable task list |
 | `bugfixer` | Diagnoses and fixes a specific bug: autonomous investigation, minimal targeted fix, verification | Anything | Any file type (code, data, ontology), `history/`, `issues/` | Verified fix + history log |
@@ -40,9 +39,9 @@ Since v4.0.0 the **Writes** column names artifact *kinds*, not fixed root paths.
 | `playmaker` | Circle portfolio management — ranks anticipated Circles, proposes next activation, detects dependency cycles, flags parent-Grounding-stale; also **maintains** the shared backlog store: it ranks the entries and renames one between open (`_o_`) and recommended (`_p_`) on its own, and splits, merges, closes or defers one only with a user confirmation the run holds for that operation. It never originates an entry | All of `fusion-workbench/` except the frozen stores (`archive/`, `.migration-v2-backup/`, and any legacy `stashes/`), plus `CLAUDE.md` and the codebase | Circle records — appended `## Activation proposal`, `## Dependency warning` and `## Parent grounding stale` sections only, on a record of any marker, never a rename — `portfolio.md` (regenerated in full), `backlog/`, `history/` | Updated Circle records + portfolio brief + ranked backlog + history log |
 | `curator` | Reconciles the three **normative surfaces** — decision records, the project's own `./rules/` and `.claude/rules/` files, and `CLAUDE.md` — against the project's recorded history. Removes what history retired, resolves what the surfaces state in contradiction. Every change carries an evidence tier and a citation; nothing lands before a user gate. It advances no marker on ground-truth verification (reconciler) and runs no session-learnings pass (`/fusion:revise-claude-md`) | Anything except `.secret` — plus the whole workbench, the archive store and the full git history as evidence | The three surfaces themselves (gated); `history/` (the run file, which is also the change ledger), `decisions/` (an open record for a contradiction it may not resolve), `issues/` (work outside its remit) | Change ledger + applied edits + history log |
 
-**"Anything" in the Reads column is the project tree minus `.secret`.** These prompts state that exclusion in their own Scope section — `analyst`, `bugfixer`, `conceptrev`, `coderev`, `consultant`, `curator`, `investigator`, `ontorev`, `orchestrator`, `planner`, `shaper`. The rest (`coder`, `ontocoder`, `reconciler`, `taskplanner`, `playmaker`, `editor`) say nothing about `.secret` either way.
+**"Anything" in the Reads column is the project tree minus `.secret`.** These prompts state that exclusion in their own Scope section — `analyst`, `bugfixer`, `coderev`, `consultant`, `curator`, `investigator`, `ontorev`, `orchestrator`, `planner`, `shaper`. The rest (`coder`, `ontocoder`, `reconciler`, `taskplanner`, `playmaker`, `editor`) say nothing about `.secret` either way.
 
-**The three reviewers write no session history.** `coderev`, `ontorev` and `conceptrev` each state it in their own prompt: the review or assessment file under `$OUT_REVIEW` is that session's durable record, and a history log would only duplicate it. That is why `history/` is absent from their Writes column and why `bin/fusion-paths` values them no `OUT_HISTORY` key.
+**Neither reviewer writes a session history.** `coderev` and `ontorev` each state it in their own prompt: the review or assessment file under `$OUT_REVIEW` is that session's durable record, and a history log would only duplicate it. That is why `history/` is absent from their Writes column and why `bin/fusion-paths` values them no `OUT_HISTORY` key.
 
 **What decides the `coder` / `ontocoder` split is the file's role, not its extension.** `agents/orchestrator.md` `## Agent Routing Table` is the authority for it: a `.json` or `.toml` that configures the build or declares the project's dependencies (`package.json`, `Cargo.toml`, `tsconfig.json`) is the `coder`'s, and the same extension holding ontology entries, manifest data or a schema is the `ontocoder`'s. Stated once here rather than as an exception clause in each row, so a new build manifest or a new data format needs no edit to the table.
 
@@ -193,8 +192,8 @@ Two side loops feed into the chain at any point (outside the orchestrator's scop
 
 The plugin ships a set of framework rule files under `rules/`, split into an always-on core and conditionally-emitted extras:
 
-- **Always-on core** (every agent, in this order): `agent-setup.md` — emitted **first**, the factored Setup contract every one of the 17 prompts points at (read-every-emitted-path, the `bin/fusion-paths` `OUT_*`/`SCAN_*` semantics, exit-code handling) — then `fusion-workbench-conventions.md` (layout, state markers, filename patterns, issue filing, history logging), `decision-record-examples.md`, `user-facing-output.md`, and `critical-stance.md`, plus the project's short-form `chat-voice-<lang>.yaml` stylometric profile. The authoritative list is the `emit_if_exists` block in `bin/fusion-rules`.
-- **Conditional:** `design-diagrams.md` for the design-diagram agents (the five producers + `conceptrev`); the long-form `default-voice-<lang>.yaml` for the prose agents; `circle-records.md` for the Circle-transitioning agents (`orchestrator`, `playmaker`, `shaper`); `commit-lock.md` for the `orchestrator`; and per-agent domain patterns (below).
+- **Always-on core** (every agent, in this order): `agent-setup.md` — emitted **first**, the factored Setup contract every one of the 16 prompts points at (read-every-emitted-path, the `bin/fusion-paths` `OUT_*`/`SCAN_*` semantics, exit-code handling) — then `fusion-workbench-conventions.md` (layout, state markers, filename patterns, issue filing, history logging), `decision-record-examples.md`, `user-facing-output.md`, and `critical-stance.md`, plus the project's short-form `chat-voice-<lang>.yaml` stylometric profile. The authoritative list is the `emit_if_exists` block in `bin/fusion-rules`.
+- **Conditional:** `design-diagrams.md` for the design-diagram agents (`planner`, `analyst`, `taskplanner`, `shaper`, `investigator`); the long-form `default-voice-<lang>.yaml` for the prose agents; `circle-records.md` for the Circle-transitioning agents (`orchestrator`, `playmaker`, `shaper`); `commit-lock.md` for the `orchestrator`; and per-agent domain patterns (below).
 - **Mechanism docs:** `context-manifest.md` and `context-lean-claude-md.md` author the optional topic-scoped loading convention (below); they are shipped, not auto-emitted.
 
 Domain-specific rules (coding standards, ontology constraints, etc.) are **supplied by the consuming project** in its own `./rules/` (fusion-agent-specific) or `.claude/rules/` (project-wide) directory.
@@ -216,11 +215,11 @@ Agents discover their applicable rules via the helper `bin/fusion-rules <agent-n
 | `ontocoder`, `ontorev` | `*ontology*`, `*normative*`, `*verb*` | `./rules/ontology-rules.md`, `./rules/verb-ontology.md`, `./rules/normative.md` |
 | `planner` | `*coding*`, `*ontology*` | both groups above |
 | `investigator` | `*investigator*` | `./rules/investigator-capture-layout.md` |
-| `orchestrator`, `shaper`, `taskplanner`, `reconciler`, `analyst`, `consultant`, `playmaker`, `conceptrev`, `editor`, `curator` | (no domain patterns — always-on core plus any conditional emissions listed above) | — |
+| `orchestrator`, `shaper`, `taskplanner`, `reconciler`, `analyst`, `consultant`, `playmaker`, `editor`, `curator` | (no domain patterns — always-on core plus any conditional emissions listed above) | — |
 
 If a pattern has no match in either directory, the agent operates on workbench conventions alone — agents skip missing rules silently rather than failing. Consuming projects can add their own rule files at any time and the next session picks them up automatically.
 
-**Plus a shared rubric:** the plugin-shipped `rules/design-diagrams.md` is emitted (independent of the patterns above) to the design-diagram group — `planner`, `analyst`, `taskplanner`, `shaper`, `investigator` (the producers) and `conceptrev` (the evaluator). It defines how technical design is expressed as formal, parseable Mermaid and the coherence heuristics `conceptrev` judges by, so producer and evaluator share one definition of "coherent".
+**Plus a shared rubric:** the plugin-shipped `rules/design-diagrams.md` is emitted (independent of the patterns above) to the design-diagram group — `planner`, `analyst`, `taskplanner`, `shaper`, `investigator`. It defines how technical design is expressed as formal, parseable Mermaid and the coherence heuristics each producer self-checks against, so one definition of "coherent" governs every diagram the fleet draws.
 
 ### Adding rules
 
@@ -261,7 +260,7 @@ Since v4.0.0 the workbench is **Circle-as-container**: a Circle is a directory h
 fusion-workbench/
 ├── circles/<stamp>-<slug>/     # one directory per unit of work; _t_circle.md carries the marker (all states glob as *_circle.md)
 │   ├── planning/  issues/  decisions/  history/  analyses/
-│   └── reviews/                # coderev + ontorev + conceptrev output, merged (sender in filename)
+│   └── reviews/                # coderev + ontorev output, merged (sender in filename)
 ├── shared/                     # everything with no Circle affiliation
 │   ├── planning/  issues/  decisions/  history/  reviews/  analyses/
 │   ├── investigations/         # investigator output — shared-only

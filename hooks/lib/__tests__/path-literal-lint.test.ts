@@ -208,7 +208,7 @@ describe("path-literal lint: the shape rule matches paths, not prose", () => {
   // The load-bearing correctness requirement (issue item 3). Fixtures built from
   // the real false-positive lines in the tree today.
   const PROSE_THAT_MUST_NOT_FIRE: [string, string][] = [
-    ["conceptrev.md:36", "names the target — a path to a planning/analysis document, or a set of them."],
+    ["a dispatch line naming a document kind", "names the target — a path to a planning/analysis document, or a set of them."],
     ["taskplanner.md:171", "- How many plans/issues/reviews scanned"],
     ["taskplanner.md:71", "Skip files with terminal markers — issues/planning `[c]`/`[d]` — entirely."],
     ["log-activity legend", "defects go in issues, decisions record open questions, analyses study."],

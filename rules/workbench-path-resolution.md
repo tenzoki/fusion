@@ -55,7 +55,7 @@ In the Value column, `A → B` means: `A` when a Circle is in scope, `B` when no
 | `OUT_HISTORY` | `<circle>/history` → `shared/history` | Session history writes. |
 | `OUT_ISSUE` | `<circle>/issues` → `shared/issues` | Defect filing. |
 | `OUT_DECISION` | `<circle>/decisions` → `shared/decisions` | Decision-record filing. |
-| `OUT_REVIEW` | `<circle>/reviews` → `shared/reviews` | codereview / ontoreview / conceptrev writes. |
+| `OUT_REVIEW` | `<circle>/reviews` → `shared/reviews` | codereview / ontoreview writes. |
 | `OUT_ANALYSIS` | `<circle>/analyses` → `shared/analyses` | Analysis writes. |
 | `OUT_INVESTIGATION` | `shared/investigations` | Always shared — never Circle-bound. |
 | `OUT_CONSULT` | `shared/consult` | Always shared — never Circle-bound. |

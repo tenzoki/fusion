@@ -238,7 +238,7 @@ Every step's acceptance includes `cd hooks && npm test` green and a history entr
      - `README-agents.md`, two gate-forced edits: delete the `/fusion:circle-stash` and `/fusion:circle-pop` rows from the skill table (`:250`, `:251`), which is asserted to hold exactly one row per skill directory; and rename `workbench-stash-and-lock.md` to `commit-lock.md` in the **Conditional** bullet at `:197`, where `derivable-enumerations-lint` requires the rule file and its full derived agent set (`` `orchestrator` ``) to be co-mentioned on one line.
    - Dependencies: step 5. It must precede step 11: `skills/circle-stash/SKILL.md` reads `progress.max_turns` as a number, and step 11 removes that field. Deleting the reader first means step 11 has one fewer consumer to reason about, and the reverse order breaks a shipped skill between two commits.
 
-7. **Remove `conceptrev`** *(record item 6)*
+7. [DONE] **Remove `conceptrev`** *(record item 6)*
    - Executor: `coder`
    - Files: `agents/conceptrev.md` (deleted); `agents/orchestrator.md`; `bin/fusion-rules`; `rules/design-diagrams.md`; `rules/fusion-workbench-conventions.md`; `rules/workbench-path-resolution.md`; `agents/{analyst,taskplanner,reconciler,shaper,planner,investigator}.md`; `skills/{setup,migrate,archive,cadence}/SKILL.md`; `hooks/lib/review-coverage.ts`; `hooks/lib/__tests__/{path-literal-lint,fusion-paths,rules-emission-golden,context-manifest,review-coverage-mandate}.test.ts` and `fixtures/rules-emission.golden`; `README.md`; `README-agents.md`; `docs/philosophy.md`; `CLAUDE.md` (enumeration half only).
    - Changes:

@@ -59,7 +59,7 @@ Each key below may name two directories — the active Circle's store and the sh
 - `$SCAN_PLANS` — plans with step-level status
 - `$SCAN_ISSUES` — issues with state markers
 - `$SCAN_DECISIONS` — decision records with the richer marker vocabulary `_o_/_a_/_i_/_d_/_s_`
-- `$SCAN_REVIEWS` — review findings from `coderev`, `ontorev` and `conceptrev` (the sender is in the filename)
+- `$SCAN_REVIEWS` — review findings from `coderev` and `ontorev` (the sender is in the filename)
 - `$SCAN_HISTORY` — skim recent entries for context
 
 Collect all **open work items**:
@@ -114,7 +114,7 @@ Construct a DAG from all tasks and their dependencies:
 
 Topologically sort the DAG. If cycles exist, flag them at the top of the tasklist as blockers for human resolution.
 
-Render the DAG as a formal, parseable **Mermaid** `flowchart TD` in the tasklist (per `rules/design-diagrams.md`). The dependency graph is itself a decomposition-quality signal: a tangled graph, a god-node every task depends on, or a hidden cycle means the work was sliced badly, not that the work is genuinely complex. Run the coherence self-check in that rule before writing; the independent `conceptrev` evaluator may assess the graph.
+Render the DAG as a formal, parseable **Mermaid** `flowchart TD` in the tasklist (per `rules/design-diagrams.md`). The dependency graph is itself a decomposition-quality signal: a tangled graph, a god-node every task depends on, or a hidden cycle means the work was sliced badly, not that the work is genuinely complex. Run the coherence self-check in that rule before writing; it is the only structural check the graph gets before the reader.
 
 ### Step 4: Write tasklist
 

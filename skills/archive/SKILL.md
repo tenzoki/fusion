@@ -143,7 +143,7 @@ The `.guard-state/` entry in safety filter 1 covers the state files beside the l
 
 ### Tier 2 — Tier 1 + aged shared reviews
 
-Adds `$SHARED_REVIEWS/*.md` whose filename date prefix is older than the threshold. Reviews don't carry markers; aging is the only signal. All three review kinds (coderev, ontorev, conceptrev) share this one store and are distinguished by the sender in the filename.
+Adds `$SHARED_REVIEWS/*.md` whose filename date prefix is older than the threshold. Reviews don't carry markers; aging is the only signal. Every review kind shares this one store and they are distinguished by the sender in the filename.
 
 ### Tier 3 — Tier 2 + aged shared history
 

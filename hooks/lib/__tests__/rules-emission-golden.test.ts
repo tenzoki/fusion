@@ -539,9 +539,11 @@ const ROLES: Record<string, Role> = {
   "(core only)": {},
 
   /**
-   * The design-diagram producers and the evaluator that judges their output.
-   * They pay 5 673 for the shared Mermaid rubric so that producer and reviewer
-   * hold one definition of "coherent".
+   * The design-diagram producers. They pay 5 673 for the shared Mermaid rubric
+   * so that one definition of "coherent" governs every diagram the fleet draws.
+   * Until 2026-08-15 the role also held the evaluator that judged their output;
+   * removing it left the role's file set unchanged, which is why this entry did
+   * not move.
    */
   "design-diagrams.md": {},
 

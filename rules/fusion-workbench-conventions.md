@@ -31,14 +31,14 @@ fusion-workbench/
 │       ├── issues/
 │       ├── decisions/
 │       ├── history/
-│       ├── reviews/                   # codereview + ontoreview + conceptreview, merged
+│       ├── reviews/                   # codereview + ontoreview, merged
 │       └── analyses/
 ├── shared/                            # everything with no Circle affiliation
 │   ├── planning/                      # specs and plans written with no Circle in scope
 │   ├── issues/
 │   ├── decisions/
 │   ├── analyses/
-│   ├── reviews/                       # codereview + ontoreview + conceptreview, merged
+│   ├── reviews/                       # codereview + ontoreview, merged
 │   ├── investigations/                # investigations are always shared — see below
 │   ├── consult/                       # consultations are always shared — see below
 │   ├── history/
@@ -85,7 +85,7 @@ This repository applies exactly that split; see its `.gitignore`.
 
 **`shared/` mirrors the Circle's artifact kinds, plus four of its own.** Every kind a Circle can hold has a shared counterpart, because any of them can be produced with no Circle active and must still have a home. `investigations/`, `consult/`, `memos/` and `backlog/` exist only in `shared/`: an investigation studies a failure capture, a consultation answers a question, a memo records a note, and a backlog entry precedes every Directive by construction. None of the four is produced by executing a Directive, so none can originate in a Circle.
 
-**The three review types collapse into one `reviews/`.** codereview, ontoreview and conceptreview differ by sender, not by kind. The sender is in the filename (`YYMMDD-HHMM-<sender>-<topic>.md`) and in the document header. Inside one Circle they do not earn a directory each.
+**The review types collapse into one `reviews/`.** codereview and ontoreview differ by sender, not by kind. The sender is in the filename (`YYMMDD-HHMM-<sender>-<topic>.md`) and in the document header. Inside one Circle they do not earn a directory each.
 
 `fusion-workbench/.active-circle` is a one-line pointer file containing the **directory name** of the active Circle (e.g. `260716-1847-workbench-umbau`) — no marker, no `circles/` prefix, no `.md`. It is absent when no Circle is active. Because the directory name is stable across the Circle's whole lifecycle, the pointer no longer has to be re-pointed on every marker change. Its writer set is closed and enumerated here (decision `260806-0015_*_wem-gehoert-die-circle-aktivierung`). On the activation path there are two writers: the orchestrator **writes** it on `_a_→_t_` activation (after user confirmation of playmaker's proposal) and **deletes** it on `_t_→_c_/_b_/_s_/_d_` closure at Phase 4; `/fusion:next` writes it in its user-confirmed interactive-activation branch. Two lifecycle skills touch it outside activation, each in one bounded way: `/fusion:migrate` re-points it from the pre-v4 filename form to the directory name, and `/fusion:cleanup` clears it only when the active Circle's record already carries a terminal marker. No other party writes it; a new writer adds itself to this enumeration in the same commit. The pointer is the single source of truth for "active Circle" — `agentstate.yaml` does NOT duplicate this field.
 
@@ -284,7 +284,7 @@ Patterns attach to the **kind of artifact**, not to a directory. The same kind c
 | Defect | `$OUT_ISSUE` | `YYMMDD-HHMM_S_<topic>.md` | yes (issues/planning vocabulary) |
 | Decision record | `$OUT_DECISION` | `YYMMDD-HHMM_S_<topic>.md` | yes (decisions vocabulary — richer set) |
 | Session history | `$OUT_HISTORY` | `YYMMDD-HHMM-<topic>.md` | no |
-| Review (code / onto / concept) | `$OUT_REVIEW` | `YYMMDD-HHMM-<sender>-<topic>.md` | no |
+| Review (code / onto) | `$OUT_REVIEW` | `YYMMDD-HHMM-<sender>-<topic>.md` | no |
 | Analysis | `$OUT_ANALYSIS` | `YYMMDD-HHMM-<topic>.md` | no |
 | Investigation | `$OUT_INVESTIGATION` | `YYMMDD-HHMM-<topic>.md` | no |
 | Consultation | `$OUT_CONSULT` | `YYMMDD-HHMM-<topic>.md` | no |
@@ -294,7 +294,7 @@ Patterns attach to the **kind of artifact**, not to a directory. The same kind c
 | Portfolio | `$PORTFOLIO` | fixed | — |
 | Task queue | `$TASKLIST` | fixed | — |
 
-`<sender>` on a review file is `coderev`, `ontorev`, or `conceptrev`. It is what distinguishes the three review kinds now that they share one `reviews/` directory — it is mandatory, and the document header repeats it.
+`<sender>` on a review file is `coderev` or `ontorev`. It is what distinguishes the two review kinds now that they share one `reviews/` directory — it is mandatory, and the document header repeats it. Older files may carry a third sender, `conceptrev`, retired with its agent on 2026-08-15.
 
 The two kinds sharing `$OUT_MEMO` differ in write semantics: the memo and task files are **append** logs (`/fusion:memo` adds to them), while the cadence digest is **overwritten** on each `/fusion:cadence` run — it is a fresh snapshot of the work cadence, not a history of its own runs.
 

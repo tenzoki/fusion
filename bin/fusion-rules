@@ -56,9 +56,8 @@
 #   - Design-diagram agents additionally read design-diagrams.md (shipped by
 #     plugin) — the doctrine for expressing technical design as formal,
 #     parseable Mermaid (when / which type, validity, coherence self-check).
-#     Recipients: planner, analyst, taskplanner, shaper, investigator (the
-#     producers) plus conceptrev (the independent evaluator that judges
-#     produced diagrams by the same shared rubric).
+#     Recipients: planner, analyst, taskplanner, shaper, investigator — the
+#     agents that produce the diagrams.
 #   - Domain agents additionally match filename patterns:
 #       coder, coderev, bugfixer  → *coding*.md
 #       ontocoder, ontorev        → *ontology*.md, *normative*.md, *verb*.md
@@ -69,7 +68,7 @@
 #                                   see templates/investigator-capture-layout.md)
 #   - All other agents get workbench-conventions only. The conventions-only
 #     set currently includes: orchestrator, shaper, taskplanner, reconciler,
-#     analyst, consultant, playmaker, conceptrev, editor, curator.
+#     analyst, consultant, playmaker, editor, curator.
 #
 # Optional topic-scoped loading (the context manifest):
 #   A consuming project MAY add ./rules/context-manifest.yaml to load large
@@ -101,7 +100,7 @@
 #       default-voice-<lang>.yaml  — emitted for the long-form-prose agents only
 #                                    (orchestrator, consultant, shaper, planner,
 #                                    analyst, investigator, playmaker,
-#                                    conceptrev, editor, curator), for narrative
+#                                    editor, curator), for narrative
 #                                    outputs:
 #                                    session summary bodies, consultation
 #                                    replies, analysis reports, investigator
@@ -171,7 +170,7 @@ case "$AGENT" in
   ontocoder|ontorev)              PATTERNS="ontology normative verb" ;;
   planner)                        PATTERNS="coding ontology" ;;
   investigator)                   PATTERNS="investigator" ;;
-  orchestrator|shaper|taskplanner|reconciler|analyst|consultant|playmaker|conceptrev|editor|curator)
+  orchestrator|shaper|taskplanner|reconciler|analyst|consultant|playmaker|editor|curator)
                                   PATTERNS="" ;;
   *)
     echo "fusion-rules: unknown agent '$AGENT'" >&2
@@ -182,19 +181,17 @@ esac
 # Prose-agent flag — independent of PATTERNS. The agents below produce
 # long-form narrative output that the stylometric profile governs.
 case "$AGENT" in
-  orchestrator|consultant|shaper|planner|analyst|investigator|playmaker|conceptrev|editor|curator)
+  orchestrator|consultant|shaper|planner|analyst|investigator|playmaker|editor|curator)
                                   IS_PROSE_AGENT=1 ;;
   *)                              IS_PROSE_AGENT=0 ;;
 esac
 
 # Design-diagram-agent flag — independent of PATTERNS. These agents produce
 # technical-design documents whose structure is expressed as formal parseable
-# Mermaid (planner, analyst, taskplanner, shaper, investigator), plus the
-# conceptrev evaluator that judges those diagrams. All read the shared rubric
-# in rules/design-diagrams.md so producer and evaluator use one definition of
-# "coherent".
+# Mermaid. They read the shared rubric in rules/design-diagrams.md so that one
+# definition of "coherent" governs every diagram the plugin's agents draw.
 case "$AGENT" in
-  planner|analyst|taskplanner|shaper|investigator|conceptrev)
+  planner|analyst|taskplanner|shaper|investigator)
                                   IS_DIAGRAM_AGENT=1 ;;
   *)                              IS_DIAGRAM_AGENT=0 ;;
 esac
@@ -414,10 +411,10 @@ if [ "$IS_PROSE_AGENT" -eq 1 ]; then
   emit_voice_profile "default-voice" "$ARTIFACT_LANG"
 fi
 
-# 1c. Design-diagram agents (the five producers + the conceptrev evaluator)
-#     receive the diagram doctrine: when / which Mermaid type, the
-#     parseable-form requirement, and the coherence self-check heuristics.
-#     Shared rubric so producer and evaluator judge by one definition.
+# 1c. Design-diagram agents (the five producers) receive the diagram doctrine:
+#     when / which Mermaid type, the parseable-form requirement, and the
+#     coherence self-check heuristics. One shared rubric, so every producer
+#     judges its own graph by the same definition.
 if [ "$IS_DIAGRAM_AGENT" -eq 1 ]; then
   emit_if_exists "$PLUGIN_RULES_DIR/design-diagrams.md"
 fi

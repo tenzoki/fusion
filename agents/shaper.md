@@ -218,7 +218,7 @@ Write to `$OUT_PLAN/YYMMDD-HHMM_o_spec-<topic>.md`:
 - [ ] <Any decisions the user deferred or said "decide later">
 ```
 
-Where the spec's scope is clarified by structure — the shape of what is being built, the major pieces and how they relate — include a high-level **Mermaid** context diagram per `rules/design-diagrams.md` (fenced ` ```mermaid `). Keep it at the capability/shape level; detailed technical-design diagrams are the planner's job. ASCII art is rejected for structural representation. The `conceptrev` evaluator may assess the diagram at the spec gate.
+Where the spec's scope is clarified by structure — the shape of what is being built, the major pieces and how they relate — include a high-level **Mermaid** context diagram per `rules/design-diagrams.md` (fenced ` ```mermaid `). Keep it at the capability/shape level; detailed technical-design diagrams are the planner's job. ASCII art is rejected for structural representation. Run the coherence self-check in that rule before the spec goes to the gate.
 
 ### 6. Log and Report
 

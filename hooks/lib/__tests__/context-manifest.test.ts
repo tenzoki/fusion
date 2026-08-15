@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, cpSync, copyFileSync, chmodSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, cpSync, copyFileSync, chmodSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, join } from "node:path";
@@ -25,7 +25,7 @@ const fusionRules = join(pluginRoot, "bin", "fusion-rules");
 
 const AGENTS = [
   "orchestrator", "coder", "ontocoder", "bugfixer", "coderev",
-  "ontorev", "conceptrev", "planner", "shaper", "taskplanner",
+  "ontorev", "planner", "shaper", "taskplanner",
   "reconciler", "analyst", "investigator", "consultant", "playmaker",
   "editor", "curator",
 ];
@@ -158,7 +158,15 @@ describe("agent-setup.md is emitted always-on, first, for every agent (Circle D 
   const conventions = "fusion-workbench-conventions.md";
 
   it(`emits ${setup} for every agent (no manifest)`, () => {
-    expect(AGENTS.length).toBe(17); // 15 original + editor + curator
+    // Derived, not written: the list above is a fixture, and a literal count
+    // beside it is a second statement of the same fact that goes stale on the
+    // next agent added or removed (it did, when `conceptrev` left on
+    // 2026-08-15). What this asserts is that the fixture still covers the tree.
+    const onDisk = readdirSync(join(pluginRoot, "agents"))
+      .filter((f) => f.endsWith(".md"))
+      .map((f) => f.replace(/\.md$/, ""))
+      .sort();
+    expect([...AGENTS].sort()).toEqual(onDisk);
     for (const agent of AGENTS) {
       const out = lines(run(emptyProject, agent).stdout);
       expect(

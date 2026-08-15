@@ -72,7 +72,7 @@ Read every `*.md` under every directory each of these names — and each may nam
 - `$SCAN_PLANS` — all plans with their claimed status
 - `$SCAN_ISSUES` — all issues with their claimed status
 - `$SCAN_DECISIONS` — all decisions with their claimed status (`_o_/_a_/_i_/_d_/_s_`)
-- `$SCAN_REVIEWS` — all review findings from `coderev`, `ontorev` and `conceptrev` (the sender is in the filename)
+- `$SCAN_REVIEWS` — all review findings from `coderev` and `ontorev` (the sender is in the filename)
 - `$SCAN_HISTORY` — completed session logs (skim for what was actually done)
 
 Build a master list of all claimed statuses.

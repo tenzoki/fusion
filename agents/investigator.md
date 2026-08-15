@@ -20,7 +20,7 @@ This agent is **project-agnostic**. Where captures live, how they are structured
 4. `git log --oneline -20` for recent change context — the failure may already be addressed in flight.
 5. Skim recent entries across `$SCAN_HISTORY` — understand the current state of development.
 6. Skim the open files under `$SCAN_ISSUES` (`grep -l '_o_' <dir>/*.md` for each directory it names), the `*_o_*.md` and `*_a_*.md` records under `$SCAN_DECISIONS`, and the active plans under `$SCAN_PLANS` — don't refile known items, cross-reference instead.
-7. Skim `$SCAN_REVIEWS` for prior `coderev` / `ontorev` / `conceptrev` findings that may already explain the symptom.
+7. Skim `$SCAN_REVIEWS` for prior `coderev` / `ontorev` findings that may already explain the symptom.
 
 ## Inputs — captured project runs
 

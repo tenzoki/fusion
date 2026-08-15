@@ -14,7 +14,7 @@ const fusionPaths = join(pluginRoot, "bin", "fusion-paths");
 
 const AGENTS = [
   "orchestrator", "coder", "ontocoder", "bugfixer", "coderev",
-  "ontorev", "conceptrev", "planner", "shaper", "taskplanner",
+  "ontorev", "planner", "shaper", "taskplanner",
   "reconciler", "analyst", "investigator", "consultant", "playmaker",
   "editor", "curator",
 ];
@@ -543,7 +543,6 @@ describe("bin/fusion-paths", () => {
       expect(parse(run(project, "analyst").stdout).OUT_ANALYSIS).toBe("shared/analyses");
       expect(parse(run(project, "coderev").stdout).OUT_REVIEW).toBe("shared/reviews");
       expect(parse(run(project, "ontorev").stdout).OUT_REVIEW).toBe("shared/reviews");
-      expect(parse(run(project, "conceptrev").stdout).OUT_REVIEW).toBe("shared/reviews");
       expect(parse(run(project, "shaper").stdout).OUT_CIRCLE).toBe("circles");
     });
 
@@ -584,11 +583,11 @@ describe("bin/fusion-paths", () => {
 
     it("gives log-activity WORKBENCH alone — it names no key", () => {
       // The skill that broke the agent-only namespace: it reads consultations
-      // and investigations, SCAN_CONSULT is named only by playmaker and
-      // SCAN_INVESTIGATIONS only by conceptrev, and no agent names both, so no
-      // agent argument resolved it. It scans the tree from WORKBENCH instead —
-      // and asking under its own name is what makes that legible rather than a
-      // borrowed argument that "selects nothing".
+      // and investigations, SCAN_CONSULT is named only by playmaker, and no
+      // agent names both kinds, so no agent argument resolved it. It scans the
+      // tree from WORKBENCH instead — and asking under its own name is what
+      // makes that legible rather than a borrowed argument that "selects
+      // nothing".
       const p = parse(run(project, "log-activity").stdout);
       expect(Object.keys(p)).toEqual(["WORKBENCH"]);
     });
@@ -617,15 +616,6 @@ describe("bin/fusion-paths", () => {
       );
     });
 
-    it("gives conceptrev no OUT_INVESTIGATION — it reads investigations, never writes one", () => {
-      // A write key for a read-only agent inverts the contract's own semantics:
-      // the prompt would read "write to $OUT_INVESTIGATION" and either violate
-      // read-only or ignore the key.
-      const p = parse(run(project, "conceptrev").stdout);
-      expect(p.OUT_INVESTIGATION).toBeUndefined();
-      expect(p.SCAN_INVESTIGATIONS).toBe("shared/investigations");
-    });
-
     it("gives investigator no SCAN_INVESTIGATIONS — it writes them and never reads them", () => {
       // The mirror of the case above: a key for a read the prompt does not
       // perform would be speculation, not coverage.
@@ -634,14 +624,19 @@ describe("bin/fusion-paths", () => {
       expect(p.SCAN_INVESTIGATIONS).toBeUndefined();
     });
 
-    it("keeps SCAN_INVESTIGATIONS / SCAN_CONSULT shared-only, Circle active or not", () => {
-      // Invariant 2 collapses for these two: their kinds exist only in shared/,
-      // so "both stores" has nothing to range over.
+    it("keeps SCAN_CONSULT shared-only, Circle active or not", () => {
+      // Invariant 2 collapses for the unconditionally-shared kinds: they exist
+      // only in shared/, so "both stores" has nothing to range over.
+      //
+      // SCAN_INVESTIGATIONS is the same kind and is not asserted here, because
+      // since 2026-08-15 no prompt names it: `agents/conceptrev.md` was its
+      // only reader and went with the agent. The resolver keeps the arm — an
+      // unnamed key costs nothing at run time, and `shared/investigations/`
+      // still holds reports — so there is nothing to run the assertion
+      // through. Whether the arm is retired is the investigation-key question
+      // that belongs with `agents/investigator.md`, not here.
       for (const withCircle of [false, true]) {
         if (withCircle) activate();
-        expect(parse(run(project, "conceptrev").stdout).SCAN_INVESTIGATIONS).toBe(
-          "shared/investigations",
-        );
         expect(parse(run(project, "playmaker").stdout).SCAN_CONSULT).toBe("shared/consult");
       }
     });

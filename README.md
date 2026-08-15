@@ -1,6 +1,6 @@
 # fusion
 
-A multi-agent orchestration framework for Claude Code. Fusion runs a work session as a team of **17 specialized agents** — an orchestrator that dispatches the rest, plus coders, reviewers, planners, and analysts — coordinating through files on disk, with a compliance guard that catches drift at write time and a human at the decisions that matter.
+A multi-agent orchestration framework for Claude Code. Fusion runs a work session as a team of **16 specialized agents** — an orchestrator that dispatches the rest, plus coders, reviewers, planners, and analysts — coordinating through files on disk, with a compliance guard that catches drift at write time and a human at the decisions that matter.
 
 See [`docs/philosophy.md`](docs/philosophy.md) for why it's built this way, [`docs/working-model.md`](docs/working-model.md) for how a session runs (the Circle flow, the gates, and the guard), and [`README-agents.md`](README-agents.md) for the full agent reference.
 

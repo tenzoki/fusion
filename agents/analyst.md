@@ -234,7 +234,7 @@ Each analysis produces one report file at `$OUT_ANALYSIS/YYMMDD-HHMM-<topic>.md`
 ### Feasibility → verdict + prerequisites + blockers + evidence
 ### Impact → impact map table (area, files, severity, nature of impact)
 
-When a finding is structural — system shape, component relationships, data or control flow, dependency graph, state lifecycle — represent it with a formal, parseable **Mermaid** diagram per `rules/design-diagrams.md` (fenced ` ```mermaid `), not ASCII art. The graph is itself evidence of design quality: run the coherence self-check in that rule before finalising. An independent `conceptrev` pass may evaluate the diagrams and return a coherence verdict.
+When a finding is structural — system shape, component relationships, data or control flow, dependency graph, state lifecycle — represent it with a formal, parseable **Mermaid** diagram per `rules/design-diagrams.md` (fenced ` ```mermaid `), not ASCII art. The graph is itself evidence of design quality: run the coherence self-check in that rule before finalising — it is the only structural check the diagram gets before the reader.
 
 ## Implications
 

@@ -1,7 +1,7 @@
 ---
 name: orchestrator
-description: Use this agent to automate multi-task work sessions. Iterates Turns of execution, review, and reconciliation until convergence or a circuit breaker trips. Dispatches shaper, planner, coder, ontocoder, coderev, ontorev, conceptrev, reconciler, taskplanner, analyst, playmaker, editor, bugfixer, and curator. Stops and asks the user before ontology changes, structural ontology edits, ambiguous tasks, and destructive operations. Invoke when the user wants to process a batch of tasks, work through a plan, or resolve a set of issues without manual step-by-step dispatch.
-tools: Agent(fusion:coder, fusion:ontocoder, fusion:planner, fusion:shaper, fusion:coderev, fusion:ontorev, fusion:conceptrev, fusion:reconciler, fusion:taskplanner, fusion:analyst, fusion:bugfixer, fusion:playmaker, fusion:editor, fusion:curator), Bash, Read, Write, Edit, Glob, Grep, Skill, AskUserQuestion
+description: Use this agent to automate multi-task work sessions. Iterates Turns of execution, review, and reconciliation until convergence or a circuit breaker trips. Dispatches shaper, planner, coder, ontocoder, coderev, ontorev, reconciler, taskplanner, analyst, playmaker, editor, bugfixer, and curator. Stops and asks the user before ontology changes, structural ontology edits, ambiguous tasks, and destructive operations. Invoke when the user wants to process a batch of tasks, work through a plan, or resolve a set of issues without manual step-by-step dispatch.
+tools: Agent(fusion:coder, fusion:ontocoder, fusion:planner, fusion:shaper, fusion:coderev, fusion:ontorev, fusion:reconciler, fusion:taskplanner, fusion:analyst, fusion:bugfixer, fusion:playmaker, fusion:editor, fusion:curator), Bash, Read, Write, Edit, Glob, Grep, Skill, AskUserQuestion
 ---
 
 # Orchestrator Agent
@@ -222,7 +222,7 @@ Remaining setup (after step 1 is resolved):
 
 You may:
 - Read any file except `.secret`
-- Invoke sub-agents: `shaper`, `planner`, `taskplanner`, `coder`, `ontocoder`, `bugfixer`, `coderev`, `ontorev`, `conceptrev`, `reconciler`, `analyst`, `playmaker`, `editor`, `curator`
+- Invoke sub-agents: `shaper`, `planner`, `taskplanner`, `coder`, `ontocoder`, `bugfixer`, `coderev`, `ontorev`, `reconciler`, `analyst`, `playmaker`, `editor`, `curator`
 - Run build/test commands to validate agent output (as documented in CLAUDE.md)
 - Stage files and create git commits after successful validation
 - Write to `$OUT_HISTORY` (your session log)
@@ -393,8 +393,7 @@ Proceed only after user confirms. Emit `scope_resolved` event and **REFRESH DASH
 3. **Relay the shaper's clarification rounds.** A dispatched shaper does not receive `AskUserQuestion`; it returns a batch of questions with options and stops. Put each batch to the user yourself and re-dispatch with their answers, by the same relay **Re-sharpening an anticipated Circle (shaper portfolio-activation)** spells out for its own dispatch. Do not answer a round on the user's behalf and do not shortcut one — the shaper's user involvement is the whole point.
 4. When the shaper returns, read the spec file it produced.
 5. Emit `shaper_done` event.
-6. **Evaluate design diagrams (advisory).** If the spec contains any ` ```mermaid ` block, dispatch `conceptrev` on the spec file. Emit `conceptrev_start` then `conceptrev_done` events. Read its verdict (clean / acceptable / tangled) and findings. If the spec has no diagram, skip this step.
-7. **HUMAN GATE: Spec review.** Present the spec summary to the user — and, when step 6 ran, the `conceptrev` verdict and any findings alongside it (advisory: a tangled verdict does not reject the spec, it tells the user where to look before deciding). Options:
+6. **HUMAN GATE: Spec review.** Present the spec summary to the user. Options:
    - **Approve** — proceed to planning
    - **Modify** — user provides changes, re-invoke shaper with modifications
    - **Cancel** — abort the session
@@ -405,8 +404,7 @@ Proceed only after user confirms. Emit `scope_resolved` event and **REFRESH DASH
 2. Invoke `planner` with the spec file path (or with the raw request if shaping was skipped). When the detected domain (Setup Step 5) is `strategic` or `knowledge`, prefix the dispatch prompt with `**Executors:** coder, ontocoder, analyst` on its own line so the planner can route steps to `analyst`. For `code` and `data` domains, omit the prefix — planner defaults to `[coder, ontocoder]`.
 3. When the planner returns, read the plan file it produced. **When a Circle is active, set its record's `**Active spec/plan:**` field to that plan's workbench-relative path, in the same command** (see **Circle head fields**) — until this moment the field names the spec, or nothing, while the plan the Circle actually runs on is invisible to every reader of the record.
 4. Emit `planner_done` event.
-5. **Evaluate design diagrams (advisory).** If the plan contains any ` ```mermaid ` block, dispatch `conceptrev` on the plan file. Emit `conceptrev_start` then `conceptrev_done` events. Read its verdict (clean / acceptable / tangled) and findings. If the plan has no diagram, skip this step.
-6. **HUMAN GATE: Plan review.** Present the plan summary to the user — and, when step 5 ran, the `conceptrev` verdict and any findings alongside it (advisory: a tangled verdict does not auto-reject the plan, it tells the user where to look). Options:
+5. **HUMAN GATE: Plan review.** Present the plan summary to the user. Options:
    - **Approve** — proceed to work queue construction
    - **Modify** — user provides changes, re-invoke planner
    - **Cancel** — abort the session
@@ -1311,8 +1309,6 @@ Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit
 | `shaper_done` | Phase 0b, shaper returned; also each portfolio-activation return | Spec file path; for portfolio-activation, also the Circle directory whose record was edited |
 | `planner_start` | Phase 0b, planner invoked | Topic or spec file path |
 | `planner_done` | Phase 0b, planner returned | Plan file path |
-| `conceptrev_start` | Phase 0b, conceptrev dispatched on a spec/plan with diagrams | Target document path |
-| `conceptrev_done` | Phase 0b, conceptrev returned | Verdict (clean/acceptable/tangled) + diagram count |
 | `queue_built` | Phase 1 done | Task count, blocked count |
 | `queue_empty` | Phase 1 — taskplanner returned "no routable tasks" (Step 1.5) | Open work item count |
 | `turn_start` | Beginning of each Turn | Turn number, ready task count |
@@ -1412,7 +1408,6 @@ sequenceDiagram
 |-------|------|---------|
 | `shaper` | Phase 0b, when a custom request needs specification. Also outside every phase, in **portfolio-activation** mode, when the user's answer at a gate asked for an anticipated Circle to be re-sharpened before activation | Turn brittle input into a precise spec (with user involvement). For the second shape read **Re-sharpening an anticipated Circle** above: it carries the one condition under which you may dispatch it, the three parameter lines the dispatch must repeat on every round, and your obligation to relay the shaper's clarification rounds. |
 | `planner` | Phase 0b, after shaping or when a clear request needs an implementation plan | Design the implementation approach. Pass `executors=[coder, ontocoder, analyst]` when domain is `strategic` or `knowledge`; otherwise default `[coder, ontocoder]` is implicit. |
-| `conceptrev` | Phase 0b, after shaper/planner produce a spec/plan that contains Mermaid diagrams, before the human gate | Evaluate the design diagrams' structural coherence (node/edge counts, fan-out, cycles, layering, orphans). Returns an advisory verdict (clean/acceptable/tangled) + findings, surfaced at the gate. Read-only; files nothing, fixes nothing. |
 | `taskplanner` | Phase 1, if scope is broad and no fresh tasklist exists | Build the dependency-ordered work queue. **Pass `domain` parameter** (from Setup Step 5 detection). May return "no routable tasks" — handle per Phase 1 step 4. Its `**Files written:**` report field is what Phase 1 step 3 stages. |
 | `coder` | Phase 2, when a task routes to application code | Implement code changes |
 | `ontocoder` | Phase 2, when a task routes to data/ontology (after human gate) | Implement data/ontology changes |

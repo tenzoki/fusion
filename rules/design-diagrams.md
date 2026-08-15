@@ -2,9 +2,9 @@
 
 **Provenance:** No motivating record recoverable; introduced in `git:bd5f6e6`.
 
-This rule is loaded for the planning and analysis agents (`planner`, `analyst`, `taskplanner`, `shaper`, `investigator`) and for the evaluator that judges their output (`conceptrev`). It governs **how technical design is represented** in the documents these agents produce.
+This rule is loaded for the planning and analysis agents (`planner`, `analyst`, `taskplanner`, `shaper`, `investigator`). It governs **how technical design is represented** in the documents these agents produce.
 
-The core idea: **a diagram of a design is also a measurement of that design.** A clear graph — few crossing edges, visible layering, sensible fan-out, no unexplained cycles — reflects a clear architecture. A tangled hairball reflects a tangled one. So the diagram is not decoration; it is evidence. For that evidence to be usable, it must be in a **formal, parseable form** — Mermaid — that you, the `conceptrev` evaluator, and the human at the gate can all read and judge unambiguously.
+The core idea: **a diagram of a design is also a measurement of that design.** A clear graph — few crossing edges, visible layering, sensible fan-out, no unexplained cycles — reflects a clear architecture. A tangled hairball reflects a tangled one. So the diagram is not decoration; it is evidence. For that evidence to be usable, it must be in a **formal, parseable form** — Mermaid — that you and the human at the gate can both read and judge unambiguously.
 
 ASCII art is **rejected** for structural design. It is ambiguous, it cannot be parsed, and it cannot be evaluated. Use it only for throwaway sketches that never enter a deliverable.
 
@@ -42,9 +42,9 @@ When in doubt, a directed `flowchart` with named edges covers most design conten
 4. **Name nodes for intent, not implementation** — consistent with `HYG-INTENT-NAMES` where the project ships coding-hygiene rules.
 5. **One diagram, one concern.** If a single graph tries to show architecture *and* sequence *and* data model at once, split it. Overloaded diagrams are the visual form of an overloaded module.
 
-## Coherence self-check (your cheap first line)
+## Coherence self-check
 
-Before you finalise a diagram, read it as a critic would. This is a *first* line of defence, not the authoritative one — the independent `conceptrev` evaluator and the human at the gate are the real assessment. But an obvious hairball should never leave your hands:
+Before you finalise a diagram, read it as a critic would. This check is the only structural assessment the graph gets before the human at the gate reads it, so run it rather than assume something downstream will. An obvious hairball should never leave your hands:
 
 - **Hairball test** — is the edge count wildly out of proportion to the node count? Dense crossing edges usually mean missing structure (a layer or grouping you have not drawn), not genuine complexity.
 - **Fan-out** — does one node point at almost everything? A god-node in the graph is usually a god-object in the design.
@@ -54,8 +54,4 @@ Before you finalise a diagram, read it as a critic would. This is a *first* line
 
 If your own diagram fails these, the fix is almost never "draw it neater" — it is "the design has the problem the graph is showing you." Fix the design, then redraw. This is `HYG-FIX-DESIGN` applied to the picture.
 
-## How the evaluation works
-
-The `conceptrev` agent is the independent evaluator. After a planning or analysis document with diagrams is produced, the orchestrator dispatches `conceptrev` to parse the Mermaid, measure the graph (node/edge counts, fan-in/-out, cycles, layering, orphans), and return a coherence verdict — **clean / acceptable / tangled** — with concrete findings. That verdict is **advisory**: it is surfaced to the human at the existing plan/spec gate, who decides approve or revise. The machine does not reject your plan on metrics alone — a legitimately dense domain can have a dense graph — but a tangled verdict with named findings tells the human exactly where to look.
-
-This is why the formal form matters: it is what lets the design be evaluated at all. Write the graph so that an honest reading of it would survive that evaluation.
+This is why the formal form matters: a parseable graph is one a reader can check claim by claim. Write it so that an honest reading of it holds up at the gate.
