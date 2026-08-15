@@ -70,3 +70,6 @@ that one stays. It is a statement about the tree at 08:47 and it was true then.
 - `planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md`, `**Decidability:**`
 - `history/260815-1032-coder-stash-pop-removal-and-commit-lock-rehome.md`
 - `rules/critical-stance.md` §4 — what the head is for
+
+---
+Resolved: corrected to seven in the Decidability head, and in `## Testing Strategy`, which carried the same claim plus a stale section reference and which this record had not checked. Correcting one of two copies is the defect class this repository files against itself.

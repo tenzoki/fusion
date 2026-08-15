@@ -289,3 +289,133 @@ along with all fifteen step headers and every `## ` heading. No step number move
 - No new issue or decision filed. Everything this pass found is a correction to the plan's own text,
   which is the artifact the dispatch handed over; the two record-sweep obligations the reviewers
   filed are theirs and remain open.
+
+---
+
+## Second correction pass — 2026-08-15 13:08, after Turn 2's two reviews
+
+Dispatched by the user with four corrections named, each carrying the record that filed it. The
+reviews behind them are committed at `b093a54` and their records sit in the Circle's issue store.
+Steps 1 to 6 have landed and carry `[DONE]`; step 7 was held for this pass. The plan grew from
+81 628 to 91 935 bytes.
+
+### 1. The inserted step exists in the plan now
+
+`issues/260815-1247_o_the-inserted-step-p-3b-is-in-no-plan-and-in-no-turn-log-only-in-the-event-stream.md`
+
+Turn 2 inserted a prerequisite the plan never contained, dispatched it, and landed it as `332267a`,
+the largest commit of the Turn. It is written into `## Implementation Steps` as **step 3b**, marked
+`[DONE]`, between steps 3 and 4, at the scope it actually had: the build compiles into a private
+staging directory and replaces `hooks/dist/` file by file with `rename(2)`, `npm test` runs through
+`scripts/run-tests.mjs` and hands two content-reading cases their own build through
+`FUSION_TEST_DIST`, the two wall-clock-bound cases became event-bound, and a run is capped at half
+the machine's cores. Measured 6 of 6 red before and 12 of 12 green after; both figures are in the
+step. Its binding record (`shared/decisions/260811-2009_i_…`) and its run record are cited there,
+and so is the reason it belongs in this Circle at all: step 13 arms a growth bound whose value rests
+entirely on the suite failing on an add-back.
+
+The step's last bullet points at steps 11 and 13, which is where the consequences are spelled out,
+and it names the question the defect record deliberately left open — whether an inserted step is
+also a change of plan, since the plan was approved at a gate — without answering it.
+
+**Diagram.** The step-dependency graph needed the node, so `S3B` was added between `S3` and `S4`
+with the two edges that implies. The `removals` subgraph label was extended to *"plus one inserted
+prerequisite"*, because step 3b is not a removal and the label would otherwise have claimed it was.
+No other node, edge or label changed, and the second diagram is untouched.
+
+**One arithmetic consequence outside the step:** `## Current State`'s *"Eight of the fifteen steps
+edit `agents/orchestrator.md`"* now reads sixteen, with a parenthetical saying which sixteen, since
+a reader counting the numbered list finds fifteen.
+
+### 2. Step 11's file list caught up with Turn 2
+
+`issues/260815-1251_o_step-11s-file-list-predates-turn-2-which-re-pointed-two-suites-onto-the-measurement-step-11-deletes.md`
+
+`a69d56e` re-pointed two suites onto the state-drift measurement that step 11 deletes, seventeen
+hours after the step's file list was last corrected. Both are now in the list, and a new bullet says
+what each needs, verified at HEAD `b093a54` rather than taken from the record:
+
+- `guard-state-shape.test.ts` — nine cases (six malformed rows, the repair case, the
+  unwritable-directory case, the carried-forward case), every one of them driving `ordinaryEdit()`
+  and asserting the drift sentence. The step now says the choice is a third re-pointing or a
+  deletion, that it is made at execution time, and that the file's own header carries the criterion
+  the previous two choices were made on.
+- `monitor-warnings-panel.test.ts:730` — one assertion on the `state_drift` level, deleted with the
+  branch it names.
+
+**The prose correction is the larger half.** Step 11 enumerated what stops being measured and missed
+the biggest item: after the step, no tracker measurement fires on an ordinary write at an
+unremarkable path. `hooks/tracker.ts:173-201` names the three surviving measurements and their
+triggers, and removing state-drift removes the only one a plain `Edit` reaches. A new bullet states
+that, and states that `hook-fail-open.test.ts`'s two tracker cases lose their *subject* rather than
+their wording even though the file was already in the list — so they are not edits, and the step
+must either build a replacement probe or retire them and say what stops being demonstrated. The
+reviewer's candidate probe is carried as an `inference:`, unbuilt.
+
+**Two build notes, one per step, because the dispatch asked where step 3b matters.** Step 11 gains a
+bullet on `hooks/dist/`: the build no longer wipes it, so the four deleted outputs leave through the
+prune and the two new ones arrive through the sync, all six belong in the commit, and
+`hooks/lib/state-file.ts` must sit inside `tsconfig.json` `include` because a TypeScript file the
+build deliberately skips is the one pair the prune cannot decide. Step 13 gains a bullet on three
+things step 3b left it: its new files sit under an excluded directory and never reach `dist/`; the
+arming baseline absorbs the 356 test lines step 3b added, which the arming entry has to say; and the
+three `.mjs` files fall outside the hook-test-line surface, so after step 13 nothing bounds them and
+the step claims no coverage of them.
+
+### 3. The after-measurement is annotated, not re-cut
+
+`issues/260815-1251_o_the-after-measurement-command-cannot-see-the-320-lines-the-build-change-added.md`
+
+Step 14 gains a bullet naming `hooks/scripts/build.mjs` (205 lines), `hooks/scripts/run-tests.mjs`
+(48) and `hooks/vitest.config.mjs` (67), re-measured here at 320 lines together. It states that
+neither the command nor the extensions may change: step 1's block is the "before" reading, and the
+`.mjs` extension is what keeps the build's orphan prune decidable. The obligation therefore lands on
+the closure note, and the bullet carries the arithmetic it needs — step 1's 7 934 lines at
+`d78dfb7`, 6 945 at `5d29b6d`, an apparent −989 that is a real −669 once the invisible 320 are
+counted.
+
+### 4. The Decidability head reads seven
+
+`issues/260815-1251_o_the-plans-decidability-head-counts-eight-asserted-enumerations-and-seven-remain.md`
+
+Step 6 deleted the stash-manifest field count with its subject. The head now names seven
+enumerations and no longer lists that check.
+
+**Extended beyond the record's letter, deliberately.** `## Testing Strategy` restates the same claim
+in full — *"re-derives **eight** enumerations"*, with the stash-manifest check named — and the record
+did not catch it: it checked `## Approach` and stopped. Correcting one copy and leaving the other is
+the failure this repository files defects about, so both were corrected. The Testing Strategy
+sentence additionally called the `bin/` roster *"section 8 of the file, `:423-495`"*; at HEAD it is
+section 7 at `:387-462`, renumbered by that same deletion, and the sentence says so. The head's own
+sibling claim in `d1ae1c0`'s commit message stays as the record asks, since it was true when written.
+
+### Not touched, as instructed
+
+Step substance, order, executor assignment, acceptance criteria, the `[DONE]` markers, and
+`## Open Questions`. The second diagram is byte-identical. Every step header and every `## ` heading
+is unchanged apart from the inserted `3b`, and no step number moved.
+
+### Not acted on, with the judgement the dispatch asked for
+
+The two Low records were left alone, as instructed. Both are work for a later executor and neither
+belongs in a step of this plan:
+
+- `260815-1251_o_four-shipped-consumers-exclude-a-stashes-store-…` asks for one sentence under the
+  layout tree in `rules/fusion-workbench-conventions.md`, naming `stashes/` and
+  `.migration-v2-backup/` as legacy stores nothing shipped creates any more. That is normative prose
+  about the workbench layout carrying no path-shaped token and no asserted digit, which is the
+  curator's at gate G1 by this plan's own criterion. It should be handed to the curator's ledger
+  there, not given a step. Inside the Circle either way: step 6 created the condition.
+- `260815-1251_o_the-reference-lints-non-plugin-root-var-branch-lost-its-data-…` is outside the
+  Circle. The Circle's Directive is removal and a growth bound; restoring a deleted test case for
+  the `ROOT_VARS` skip branch adds a test, and step 13 arms a cap that a new test file then has to
+  be baselined against. It is cheap and it is real, and it belongs to a later Circle or to a direct
+  fix outside one, not to a step here.
+
+### Not done
+
+- Nothing implemented; no executor dispatched; no test suite run.
+- No new issue or decision filed. Everything this pass changed is text inside the plan, which is the
+  artifact the dispatch handed over.
+- **The Circle record's Turn 2 line still names "steps P-4 to P-6" and not `P-3b`.** The defect asks
+  for that extension as well; it is the record's owner's, not the plan's, and it is still open.

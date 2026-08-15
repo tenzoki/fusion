@@ -73,3 +73,6 @@ about the plan-gate contract and belongs in a decision record, not in this fix.
 - `shared/decisions/260811-2009_i_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`
   — the decision the inserted step implements.
 - `history/260815-1133-coder-hooks-suite-concurrency-safety.md` — the run's own record, which exists.
+
+---
+Resolved: both surfaces now carry it. The Circle record's Turn 2 entry names the inserted step, its commit `332267a`, the measurement behind it and why the Circle grew by it (orchestrator, before `b093a54`). The plan carries it as step `3b. [DONE]` between 3 and 4, with its binding decision, and steps 11 and 13 each gained a paragraph naming where the changed build reaches them (planner correction pass). The reviewer's point stands as filed: marking cannot reach a step the plan never contained, so this was not the same defect as the missing `[DONE]` markers.

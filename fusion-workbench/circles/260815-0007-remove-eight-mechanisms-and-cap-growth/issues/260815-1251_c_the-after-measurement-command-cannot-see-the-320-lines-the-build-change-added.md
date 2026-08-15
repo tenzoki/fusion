@@ -71,3 +71,6 @@ a number nobody can reconcile against the tree is the thing that criterion exist
   (line 330)
 - `history/260815-1133-coder-hooks-suite-concurrency-safety.md` — the run that added the three files
 - `_t_circle.md` `## Closure criterion` — the before-and-after measurement
+
+---
+Resolved: step 14 keeps the command byte-identical, since a reworded command makes before and after incomparable, and carries the obligation in the closure note instead. It names `build.mjs` (205), `run-tests.mjs` (48) and `vitest.config.mjs` (67), 320 lines together, with the arithmetic: apparent -989, real -669.

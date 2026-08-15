@@ -110,3 +110,6 @@ Three edits to step 11, all in the plan:
 - `260815-0804_o_the-plan-still-carries-the-false-premise-step-2-disproved-and-steps-4-and-11-will-ship-red-on-it.md`
 - `shared/issues/260809-2045_c_the-churn-half-still-runs-before-the-reply-…` — the property the
   two `hook-fail-open` cases hold
+
+---
+Resolved: step 11's file list now names `guard-state-shape.test.ts` and `monitor-warnings-panel.test.ts` with the work each needs, and its prose carries a new paragraph on what the old enumeration missed: after the step no tracker measurement fires on an ordinary write, so the two tracker cases in `hook-fail-open.test.ts` lose their trigger rather than their wording and are not edits.
