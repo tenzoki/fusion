@@ -290,3 +290,6 @@ Superseded by:
 **One convention note.** The `Implemented:` line names task T7-1 rather than a commit hash; `rules/fusion-workbench-conventions.md` asks for `Implemented: <short-hash>`. T7-1 is **`c9c44a3`**. Recorded here rather than edited into the line, so the original wording stands. Same note on `260803-2338_i_`.
 
 **The `## Answer` survived the correction, and the record says so correctly.** One of its two supporting arguments (the consistency claim about `curl -o rules/x.md`) was inverted and is now struck; the measured defect `260803-1835` carries the conclusion alone. Re-checked: `curl -o rules/x.md https://x` does allow at HEAD, so the correction is right and the conclusion still stands on the remaining leg.
+
+---
+Retired: `ba7ccda` (circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_c_plan-guard-misst-statt-orakelt.md) — the fail-closed bound was a property of the shell classifier's verdict, and the classifier is deleted. `hooks/lib/bash-mutation-guard.ts` and `hooks/lib/shell-parse.ts` are both absent at HEAD (`shell-parse.ts` was cut back by `ba7ccda` for the branch policy and deleted with it by `7598073`), so no command text produces a verdict that could fail closed either way.

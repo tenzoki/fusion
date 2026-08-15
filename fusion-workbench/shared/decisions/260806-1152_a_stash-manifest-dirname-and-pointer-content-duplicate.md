@@ -58,3 +58,19 @@ question text does not yet cover — a distinction worth carrying into whoever a
 This is active Grounding (`_a_` is Grounding-Stand per `rules/fusion-workbench-conventions.md`
 `## State Markers — decisions`) whose subject the Artifact removed, and it is one of the two records
 that flag the Grounding↔Directive edge in this Circle's session-end Coherence verdict.
+
+**Reconciliation 260815-2056 (reconciler, HEAD `bd07ee7`) — the open decision named in the note
+above has been answered, and it does not reach this record. Marker unchanged.**
+
+`circles/260801-1244-curator/decisions/260814-1332_a_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
+was answered by the user at this Circle's Rebalance gate: option 3, a `Retired:` annotation citing
+what removed the implementation, marker stays `_i_`. That answer was applied to twenty-five `_i_`
+records in this pass. It is **not** applied here, and the reason is the definition it landed with in
+`rules/fusion-workbench-conventions.md` `## Decision Record Template` — "set when the
+implementation is removed; the marker stays `_i_`". This record has no implementation to retire:
+its `Implemented:` line is empty, which is what `_a_` says. Citing a removal of something never
+built is a citation a reader cannot resolve, and an annotation covering both cases would answer two
+questions, which is the ground option 2 was declined on there.
+
+The residual is filed as its own question rather than settled by stretching the annotation:
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_o_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`.

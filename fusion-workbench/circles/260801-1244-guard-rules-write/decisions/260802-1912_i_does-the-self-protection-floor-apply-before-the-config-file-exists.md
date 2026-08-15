@@ -90,3 +90,6 @@ This record bounds the accepted residual at "an agent may create a narrowing `fu
 - `rules/protected-path-discipline.md:36-46` states the same in the project-layer paragraph ("The guard's own state directory is an ordinary entry and goes with the rest").
 
 The record's own text keeps its original, narrower framing; this note is the bridge, so a reader of the record finds the measured bound where it now lives. No marker change — `_i_` is terminal and the implementation this record cites is unchanged.
+
+---
+Retired: `60c9cd8` (shared/planning/260812-1232_c_remove-the-protected-path-half-of-the-compliance-guard.md) — the self-protection floor over `fusion-guard.json` is one of the pieces `README-hooks.md:286` names as removed, and `hooks/lib/config.ts:127` carries the note in the source ("THE SELF-PROTECTION FLOOR WENT WITH IT"). The residual this record accepted and the reach the 260805-2323 note widened it to are both moot: nothing is on an effective list at all.

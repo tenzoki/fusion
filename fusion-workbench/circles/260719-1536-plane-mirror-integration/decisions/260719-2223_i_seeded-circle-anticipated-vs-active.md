@@ -42,3 +42,6 @@ Superseded by:
 Answered: user approved the plan gate with recommended defaults (session 260719-1632) — the seeded Circle enters as **anticipated (`_a_`)**, reusing the `/fusion:direct` capture path; the user activates it later. Not straight-to-active. Realised in the plane bounded-bridge plan (this Circle's planning/).
 
 Implemented: `bd62bf1` (Step 5, seeding read) — `skills/seed-from-plane/SKILL.md` hands the fetched Plane title+description to the existing `/fusion:direct` → shaper path, producing an anticipated `_a_` Circle; `bin/fusion-plane seed` records the origin UUID under the new Circle's natural key so later pushes land on the same origin story. No straight-to-active path was built. Verified by reconciler 2026-07-19: seed-extraction + origin-UUID-record tests green in `hooks/lib/__tests__/fusion-plane.test.ts`.
+
+---
+Retired: `d0ddabb` (step 2 of circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_c_plan-remove-eight-mechanisms-and-cap-growth.md), completed by `1e29572` (step 12) — the seeding read left with the mirror and `/fusion:seed-from-plane` left with the administrative-surface collapse. No path now creates a Circle from a Plane issue, so the anticipated-versus-active question this record settled has no caller.

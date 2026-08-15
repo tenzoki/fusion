@@ -43,3 +43,6 @@ Answered: circles/260719-1536-plane-mirror-integration/_c_circle.md (## Directiv
 Implemented: `bd62bf1` — the bounded bridge shipped whole. Verified 260731-2324 (reconciler): `bin/fusion-plane seed <seq>` is "Bounded one-shot read: resolve sequence_id, GET the ..." (`:1511`) with its own `cmd_seed` dispatch (`:1544`); the user surface is `skills/seed-from-plane/SKILL.md`. The push side stayed push-only (C3 + C4 unchanged, per D1 above). The write-safety invariant the option turned on was hardened separately in `a7eccbe` ("never overwrite a seeded issue's story description — state-only writes") and is covered by the tests "a fresh create is full-scope — fusion authors the issue it POSTs" and "the seed flag survives a state sync" (`hooks/lib/__tests__/fusion-plane.test.ts`; suite green 316/316, run 260731-2324). Shipped in v5.5.0.
 Deferred:
 Superseded by:
+
+---
+Retired: `d0ddabb` (step 2 of circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_c_plan-remove-eight-mechanisms-and-cap-growth.md), with the seeding skill removed by `1e29572` (step 12) — both halves of the answer are gone: the push-only mirror and the one bounded read (`fusion-plane seed` / `/fusion:seed-from-plane`) it was widened by.

@@ -314,3 +314,69 @@ log, which still reads "in progress"; the `## Closure` section carrying the befo
 three corrected rows; this file's `**Status:**` line, still `In progress`; and the record's
 `**Active spec/plan:**` pointer at `:7`, which now names the plan's old `_o_` path after this pass
 renamed it to `_c_`.
+
+## Rebalance gate — the Grounding is revised
+
+The reconciler returned `review-needed` and recommended revising the Grounding. The user chose to
+answer the open decision rather than close bounded or defer.
+
+`circles/260801-1244-curator/decisions/260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
+
+**Answer: option 3.** A `Retired:` annotation joins the four the decision template already carries,
+citing the plan, commit or gate that removed the implementation. **The marker stays `_i_`.** No
+existing record's marker moves, so no glob, filter or count anywhere in fusion changes behaviour,
+and `_s_` keeps meaning exactly one thing: a later decision overrode this one.
+
+What the option costs, stated rather than glossed: a sixth annotation on a template that already
+carries four, two rule lines the growth bound now charges for, and a filename marker that no longer
+tells the whole story — a reader who trusts the marker alone still learns nothing.
+
+Why not the others. Option 1 leaves a reader unable to distinguish an implementation that ships
+today from one deleted a week later, which is the case the curator exists to catch. Option 2 widens
+`_s_` to mean both "a later decision overrode this" and "the code went away", which retire a record
+for different reasons. Option 4 puts the obligation on whoever removes a mechanism, and this session
+is fresh evidence against it: our own plan carried a goes/stays/changes inventory and still did not
+name the eleven records its removals devalued.
+
+The population this answer has to be applied to is about twenty-four records, roughly eleven of them
+created by this Circle.
+
+## Coherence — Grounding revision applied
+
+<!-- RECONCILER-OWNED -->
+
+**Scope:** follow-up pass at HEAD `bd07ee7`, applying the Rebalance gate's answer to the record
+population it governs. Not a session-end pass — no new range was walked and the verdict above is not
+recomputed. Full pass record at
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-2056-reconciliation.md`.
+
+**Verdict:** review-needed (unchanged; the flagged `Artifact↔Grounding` edge is untouched by this
+pass, and the `Grounding↔Directive` flag is discharged in part)
+
+**Edges:**
+
+- **Artifact↔Grounding: unchanged, still flagged.** No claim was re-derived and no tree state was
+  measured beyond what this pass needed. The six uncovered commits from `c1e207d..9306f0a` are still
+  uncovered, and `bd07ee7` adds a seventh.
+- **Artifact↔Directive: unchanged, OK.** One commit since the verdict (`bd07ee7`, the previous
+  pass's own tracking-file writes); this pass wrote no code and no commit.
+- **Grounding↔Directive: discharged for the `_i_` class, one residual filed.** The `Retired:`
+  annotation is on **25** implemented records — 7 Plane (`d0ddabb` + `7c12d6a`), 2 churn (`a69d56e` +
+  `04ea182`), 1 queue (`dd312eb`), 7 protected-path (`60c9cd8` + `fa2f00b`) and 8 write-classifier
+  (`ba7ccda`) — each citing the plan or commit that removed the implementation. **No marker moved.**
+  The population is 25 rather than the 13 reported at G1 or the ~24 estimated at the verdict above;
+  the difference is measured record by record and set out in the pass record. The two `_a_` records
+  named in the verdict are **not** instances: `Retired:` cites a removed *implementation* and an
+  `_a_` record has none. That residual is filed as
+  `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_o_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`,
+  and both records carry a note saying why they were left alone.
+
+**Rebalance recommendation:** revise Artifact — the Grounding revision the gate chose is applied, and
+the remaining flag is the review-coverage gap plus the two bookkeeping faults the verdict above
+already scoped. One review pass over `c1e207d..HEAD` closes it.
+
+**One transition this pass did not take.** Both halves of `260814-1332`'s option 3 are now on disk —
+the definition in `rules/fusion-workbench-conventions.md` (:328, :431-436, :520), written by a
+parallel dispatch, and the annotation on 25 records, written here. The record is therefore
+implemented and its `_a_` → `_i_` transition is available. It was not taken, because the dispatch
+that ran this pass instructed it to rename nothing; the evidence is recorded on the record itself.

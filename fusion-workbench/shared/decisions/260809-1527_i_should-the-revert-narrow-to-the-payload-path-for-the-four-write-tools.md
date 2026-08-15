@@ -113,3 +113,6 @@ Superseded by:
 Obligation 2 carries one implementation detail the record did not ask for and that is worth recording: the spare comparison folds case (`foldCase(change.path) !== foldCase(spared)`, `:515`), because the protected patterns are matched folded and an unfolded comparison would spare `RULES/x.md` from a payload naming `rules/x.md` on a case-insensitive volume. That is a narrowing of the narrowing, in the safe direction.
 
 The record stays `_i_`. `_i_` is terminal; if the exposure named in its own Cons is ever measured, that is a new decision superseding this one, not a reopening.
+
+---
+Retired: `60c9cd8` (shared/planning/260812-1232_c_remove-the-protected-path-half-of-the-compliance-guard.md) — the revert this record narrowed no longer exists. The before-and-after fingerprint in `guard.ts`, the write-back in `tracker.ts` job 1 and `hooks/lib/reverted-copy.ts` all went with the protected-path half, and with them the OBLIGATION 4 test that pinned the narrowing. Nothing is reverted, so there is no scope left to draw.

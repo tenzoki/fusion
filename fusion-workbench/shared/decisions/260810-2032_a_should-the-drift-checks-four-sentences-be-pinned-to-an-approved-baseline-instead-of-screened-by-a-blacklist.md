@@ -148,3 +148,15 @@ pre-empt it.
 
 This is active Grounding whose subject the Artifact removed, and it is the second of the two records
 that flag the Grounding↔Directive edge in this Circle's session-end Coherence verdict.
+
+**Reconciliation 260815-2056 (reconciler, HEAD `bd07ee7`) — the open decision named in the note
+above has been answered, and it does not reach this record. Marker unchanged.**
+
+`circles/260801-1244-curator/decisions/260814-1332_a_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
+was answered by the user at this Circle's Rebalance gate: option 3, a `Retired:` annotation citing
+what removed the implementation, marker stays `_i_`. Twenty-five `_i_` records carry it after this
+pass. This record is not one of them. `Retired:` is defined against a removed *implementation*, and
+this record's answer was never realised — the record says so itself, in the closing sentence that
+made `_a_` → `_i_` conditional on a pin that `f45f76a` deleted the target of.
+
+The residual is filed as its own question: `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_o_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`.

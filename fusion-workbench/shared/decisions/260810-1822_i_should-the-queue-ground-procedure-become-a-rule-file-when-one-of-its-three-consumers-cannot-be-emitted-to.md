@@ -124,3 +124,6 @@ is still in the prompt. Only the root variable named in passing changed.
 **The consequence the note recorded still stands.** `260810-0511` (the queue-head parser written
 twice inside the section that calls itself canonical) is not settled by option 1 and is open on disk
 as queued task 16.
+
+---
+Retired: `dd312eb` (step 10 of circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_c_plan-remove-eight-mechanisms-and-cap-growth.md) — option 1 was "leave the procedure in the prompt", and the prompt section it left it in, `agents/orchestrator.md` `### The queue's ground`, went with the persisted `tasklist.md`. The rooted citations and the presence check that `89b13f1` added to `skills/setup/SKILL.md` and `skills/next/SKILL.md` went with it. The commit states that the reasoning was deliberately not relocated, so the answer was retired rather than rehomed.

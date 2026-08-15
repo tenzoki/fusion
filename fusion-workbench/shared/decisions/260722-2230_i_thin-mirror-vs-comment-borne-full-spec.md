@@ -58,3 +58,6 @@ Plane instance (ticket #66).
 
 ---
 Implemented: dd6b092 (docs/version) atop bf5dc5e (wiring) and 4d95a91 (primitives), tests d75afed — bin/fusion-plane `spec_comment` opt-in; the full Circle brief now rides in an idempotent, re-push-surviving Plane comment while the description stays a thin stub. 315 tests passing; plugin validates.
+
+---
+Retired: `d0ddabb` + `7c12d6a` (steps 2 and 3 of circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_c_plan-remove-eight-mechanisms-and-cap-growth.md) — the thin-mirror description this record chose was written by `bin/fusion-plane push`, which no longer exists. Nothing fusion ships now writes anything into Plane.

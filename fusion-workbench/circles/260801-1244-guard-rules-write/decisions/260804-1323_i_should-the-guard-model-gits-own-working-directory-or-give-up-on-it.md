@@ -190,3 +190,6 @@ the orchestrator commits this Turn and owns filling it in here.
 
 ---
 Implemented: `613d6fd` — the union rule shipped as described above; measured 0 newly allowing out of 1,622,420 evaluations, and structurally so, because a directory fact only ever adds a candidate resolution.
+
+---
+Retired: `ba7ccda` (circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_c_plan-guard-misst-statt-orakelt.md) — the union rule `613d6fd` shipped lived in `hooks/lib/bash-mutation-guard.ts` and was deleted with the classifier. The guard models no working directory, git's or the shell's, because it reads no command text at all.

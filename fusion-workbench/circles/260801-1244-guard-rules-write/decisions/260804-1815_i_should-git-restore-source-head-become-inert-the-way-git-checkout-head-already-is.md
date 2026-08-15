@@ -143,3 +143,6 @@ Answered: this record, `## Answer` — user chose option 1; the asymmetry costs 
 
 ---
 Implemented: 98c9363 — option 1 is documentation-only, and the sentence landed: the `restore`/`checkout` asymmetry is stated where a reader meets it, with the allowed spelling named in as many words (`git checkout HEAD -- <paths>`) in `rules/protected-path-discipline.md`'s git-row section and `README-hooks.md:180`; the unit suite pins the divergence with a `MEASURES:` case. Walked `_a_` → `_i_` by the reconciler at the final Circle reconciliation 260805-2323.
+
+---
+Retired: `ba7ccda` (circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_c_plan-guard-misst-statt-orakelt.md), completed by `fa2f00b` (shared/planning/260812-1232_c_remove-the-protected-path-half-of-the-compliance-guard.md) — the asymmetry is gone because both sides of it are. The classifier that treated `git checkout HEAD -- <paths>` as inert was deleted by `ba7ccda`, taking the `MEASURES:` unit case that pinned the divergence; the sentence this documentation-only answer landed in `rules/protected-path-discipline.md` went with the rule file at `fa2f00b`, and `README-hooks.md` no longer names either spelling.

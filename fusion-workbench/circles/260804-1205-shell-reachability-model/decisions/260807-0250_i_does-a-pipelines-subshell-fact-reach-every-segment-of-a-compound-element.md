@@ -76,3 +76,6 @@ adds the `pipe-exit` edge, `SPAN_OPENERS`, a per-scope span stack and
 knock-on `pipe-member` → `pipe-unproven` on the following element) — the deny direction
 only. The classifier does not consume the layer yet, so the full-corpus verdict
 differential against HEAD `38c5123` is 0/0/0.
+
+---
+Retired: `ba7ccda` (circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_c_plan-guard-misst-statt-orakelt.md) — the reachability layer this record's answer built was deleted the same day it was measured, without ever being consumed. The record's own footer says the classifier did not read the layer yet; `ba7ccda` removed `hooks/lib/shell-reach.ts` (786 lines), its test file, `helpers/reachability-corpus.ts`, `helpers/shell-witness.ts` and `fixtures/mutation-verdicts-head.json`. `pipe-exit`, `SPAN_OPENERS` and `spanIsPipelineElement` exist nowhere at HEAD.

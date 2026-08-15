@@ -152,3 +152,6 @@ declared protected with the flag set.
 
 ---
 Implemented: `ac20f7d` — the subtraction applies only to entries whose provenance is the project layer, which is what `protectedPathsSource === "project"` means and why Step 4 waited on Step 2. A project that declares nothing keeps the exemption byte-identically: the whole 145-case exemption unit suite passes an empty declared list, three integration cases assert it through a real guard subprocess, and the mutation substituting the effective list for the declared one breaks 26 cases. The subtraction adopts the protection side's match conventions, case folded with the trailing-separator retry, or `rm -rf rules/immutable` would delete the subtree a project declared immutable.
+
+---
+Retired: `60c9cd8` (shared/planning/260812-1232_c_remove-the-protected-path-half-of-the-compliance-guard.md) — the subtraction `ac20f7d` built ran between two sets that no longer exist. `hooks/lib/paths.ts:9-31` records both in its own header as gone: the PROTECTED set with `matchesAnyFolded`, and the EXEMPT set (`RULE_DIR_PATTERNS`, the `FUSION_ALLOW_RULES_WRITE` exemption) with `canonicalise`. A project can declare no protected path, so there is nothing for the flag to be subtracted from.

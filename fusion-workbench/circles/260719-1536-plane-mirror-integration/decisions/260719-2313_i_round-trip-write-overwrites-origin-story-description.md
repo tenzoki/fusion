@@ -36,3 +36,6 @@ Answered: user chose **Option 1** (session 260719-1632, follow-up on 2026-07-20)
 Implemented: `a7eccbe` — durable `origin` field (`seed`|`fusion`) in `.plane-map.json`, preserved across updates (without preservation the first push would relabel a seeded entry and the second would overwrite the story); one branch point sets `write_scope`; entries lacking `origin` resolve to `fusion` so existing maps are unchanged; `--plan` exposes `write_scope`/`writes`. 6 new tests, `npm test` 290/290. Documented in `docs/plane-setup.md` `## First run` (`c605626`).
 Deferred:
 Superseded by:
+
+---
+Retired: `d0ddabb` + `7c12d6a` (steps 2 and 3 of circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_c_plan-remove-eight-mechanisms-and-cap-growth.md) — the durable `origin` field this record's answer added lived in `.plane-map.json`, which went with the mirror's code and data. There is no round-trip write left to preserve an origin story's description against.

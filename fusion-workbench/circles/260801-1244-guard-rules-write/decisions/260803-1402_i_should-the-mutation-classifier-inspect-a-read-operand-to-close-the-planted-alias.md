@@ -176,3 +176,6 @@ Answered: this record, `## Answer` — user chose option 1; the write-only rule 
 
 ---
 Implemented: 98c9363 — option 1 is documentation-only, and the obligation landed: the planted-alias residual is stated in full in `rules/protected-path-discipline.md` (rewritten around the measured block) and `README-hooks.md:215`, and the hard-linked-rule-file exception on the exemption side landed with C5b plan Step 7 obligation 3 (`373f5ed`). Walked `_a_` → `_i_` by the reconciler at the final Circle reconciliation 260805-2323.
+
+---
+Retired: `ba7ccda` (circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_c_plan-guard-misst-statt-orakelt.md), completed by `fa2f00b` (shared/planning/260812-1232_c_remove-the-protected-path-half-of-the-compliance-guard.md) — the mutation classifier this record declined to widen was deleted whole: `ba7ccda` removed `hooks/lib/bash-mutation-guard.ts` (3,351 lines) and `hooks/lib/shell-reach.ts`, and struck the `classifyBashMutation` call from `hooks/guard.ts`. Option 1 was documentation-only and both documents it landed in are gone or cut: `rules/protected-path-discipline.md` was deleted by `fa2f00b`, and the planted-alias residual it stated no longer describes anything the guard does. Nothing about a `Bash` command is read by the guard today.

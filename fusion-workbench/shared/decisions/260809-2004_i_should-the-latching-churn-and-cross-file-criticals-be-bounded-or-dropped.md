@@ -125,3 +125,6 @@ filed rather than absorbed: `shared/issues/260809-2023_*_the-churn-map-is-keyed-
 Of 535 churn keys, 297 resolve to no file under any reading, because the tracker normalises an
 absolute path against the working directory and otherwise stores it raw. Dropping the lifetime
 threshold does not touch that.
+
+---
+Retired: `a69d56e` + `04ea182` (steps 4 and 5 of circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_c_plan-remove-eight-mechanisms-and-cap-growth.md) — the reset boundary this record put on the latching churn counter and the cross-file criticals went out with the counters themselves: `hooks/lib/churn.ts`, the `churn_warning`/`churn_critical` events, job 2 in `hooks/tracker.ts`, `bin/fusion-churn-rank` and the `guard.churn`/`guard.crossFile` configuration leaves. Nothing latches, so nothing needs a boundary.

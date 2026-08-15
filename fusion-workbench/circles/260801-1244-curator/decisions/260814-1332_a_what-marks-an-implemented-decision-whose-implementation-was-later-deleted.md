@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** answered
 **Filed by:** curator
 **Cross-references:** `circles/260801-1244-curator/history/260814-1332-curator-run.md` §3 (the corpus measurement this record is filed from); `rules/fusion-workbench-conventions.md` `## State Markers — decisions` (position A); `agents/curator.md` `## Remit` and `circles/260801-1244-curator/_t_circle.md` `## Directive` (position B); `shared/decisions/260801-1020_*_may-any-fusion-writer-touch-rules.md` and `shared/decisions/260809-1527_*_should-the-revert-narrow-to-the-payload-path-for-the-four-write-tools.md` (the two instances inside `$SCAN_DECISIONS`); `shared/planning/260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md` (the retirement that produced them)
 
@@ -61,7 +61,34 @@ Option 4 is right about where the knowledge is cheapest and wrong about whether 
 `speculation:` the reason this shape has no marker is that fusion's decision vocabulary was designed around decisions superseding each other, and this project has instead retired decisions by deleting code at user gates. If that is a durable habit rather than an artefact of one guard-heavy quarter, option 3's annotation will be used more often than `Superseded by:` ever has been — which, across 84 records, is zero times.
 
 ---
-Answered:
+Answered: shared/history/260814-2306-orchestrator-session.md:318 — Option 3: a `Retired:` annotation citing the plan, commit or gate that removed the implementation, with the marker left at `_i_`. Nothing renames, so no glob, filter or count changes behaviour, and `_s_` keeps its single meaning. Answered by the user at the Rebalance gate of Circle 260815-0007, where the population had grown from two records to about twenty-four.
 Implemented:
 Deferred:
 Superseded by:
+
+---
+
+**Reconciliation 260815-2056 (reconciler, HEAD `bd07ee7`) — the answer is applied. Marker
+deliberately unchanged; the `_a_` → `_i_` transition is available and was not taken by this pass.**
+
+Both halves of option 3 are on disk. The definition landed in
+`rules/fusion-workbench-conventions.md` — the `_i_` row of `## State Markers — decisions` (:328), the
+annotation form and its no-rename clause in `## Inline State Tracking` (:431-436), and the
+`Retired:` line in `## Decision Record Template` (:520) — written by a parallel dispatch, not by this
+pass. The annotation itself is on **twenty-five** records, listed in
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-2056-reconciliation.md`.
+No marker moved anywhere, so the property the option was chosen for holds: no glob, filter or count
+in fusion changes behaviour.
+
+**The population is twenty-five, and none of the three earlier figures was right.** This record's own
+text says "at least two records inside the curator's editable surface … roughly eleven more … in
+closed Circles" — thirteen, the figure reported at gate G1 on 2026-08-14. The Circle's Phase-3
+reconciliation on 2026-08-15 put it "near twenty-four" by adding nine `_i_` records this Circle's
+removals produced plus two `_a_` records. Measured record by record against the tree at `bd07ee7`:
+twenty-five `_i_` records, and the two `_a_` records are not instances of this question at all.
+
+**The `_a_` case is a different question and was filed rather than absorbed.** `Retired:` as landed
+cites what removed *the implementation*, and an `_a_` record has none. See
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_o_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`.
+The `speculation:` block above guessed the annotation would be used more often than `Superseded by:`
+ever has been; on the first day it was used twenty-five times against that record's zero.

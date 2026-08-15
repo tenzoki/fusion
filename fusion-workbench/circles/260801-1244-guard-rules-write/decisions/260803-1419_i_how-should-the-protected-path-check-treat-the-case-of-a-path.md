@@ -118,3 +118,6 @@ That a citation flagged by one reconciliation survives the next session untouche
 **The `**Cross-references:**` line points at `issues/260802-2320_o_…`; that file now carries `_c_`.** Third instance of `shared/issues/260802-1740_*_a-citation-path-carrying-a-state-marker-dies-on-ordinary-progress.md` inside this Circle alone. Not repaired here, for the same reason the sibling instances were not: hand-fixing one path leaves the mechanism untouched.
 
 **Header field corrected.** `**Status:**` read `answered` while the marker read `_i_` and the `Implemented:` line was filled. Set to `implemented`. Two other records in this store had the same disagreement — see the note on `260803-2338_i_`.
+
+---
+Retired: `60c9cd8` (shared/planning/260812-1232_c_remove-the-protected-path-half-of-the-compliance-guard.md) — the case-folded matcher this record chose, `matchesAnyFolded`, was deleted with the protected set it served; `hooks/lib/paths.ts:9-31` states so and explains that what survives matches one set only, `guard.categoryPaths`, through the plain `matchesAny`. `foldCase` still exists in that file but is imported by `hooks/tracker.ts` for an unrelated purpose, so the helper's survival is not the answer's.

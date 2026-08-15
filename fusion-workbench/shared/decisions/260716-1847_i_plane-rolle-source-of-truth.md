@@ -50,3 +50,6 @@ Answered: circles/260716-1847-workbench-umbau/history/260716-1800-orchestrator-s
 Implemented: `982336f` — `bin/fusion-plane` is the push-only mirror the answer chose. Verified 260731-2324 (reconciler): the header states "push-only, idempotent mirror of the fusion work queue into a Plane project" (`bin/fusion-plane:2`); the subcommand set is `push / seed / map / states / doctor / plan` (`:1501-1544`) with no continuous read-back path; the map/state writes go one way. The later bounded seeding read (`seed`, `bd62bf1`) refines this decision rather than overturning it — see `shared/decisions/260719-2141_i_plane-rolle-push-only-vs-bounded-readback-martin.md`, which says so explicitly. Shipped in v5.5.0.
 Deferred:
 Superseded by:
+
+---
+Retired: `d0ddabb` + `7c12d6a` (Schritte 2 und 3 von circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_c_plan-remove-eight-mechanisms-and-cap-growth.md) — die Push-only-Rolle war die Rolle des Spiegels, und der Spiegel ist entfernt. Die Antwort bleibt richtig fuer die Zeit, in der sie galt; ein Zielsystem, dem gegenueber die workbench fuehrend waere, gibt es nicht mehr.

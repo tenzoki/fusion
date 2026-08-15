@@ -69,3 +69,6 @@ Querverweis-Umlenkungen. Alle drei Verpflichtungen erfüllt; die dritte als Befu
 Schnitt liegt **kein** Agent unter dem Release-Deckel von 105 354 (110 931 / 116 604 / 131 685),
 und die Plan-Projektion von 104 600 hat die sechs Diagramm-Agenten nie mitgerechnet. Commit durch
 den Orchestrator.
+
+---
+Retired: `fa2f00b` (shared/planning/260812-1232_c_remove-the-protected-path-half-of-the-compliance-guard.md) — die Dreischichtung ist auf eine Schicht zusammengefallen. Kern und Referenz waren `rules/protected-path-discipline.md`, die als immer-aktive Regel geloescht wurde (10 420 Byte pro Dispatch); damit ist auch die Verpflichtung "die Forensik muss zitierbar bleiben" ohne Traeger, denn der Kern war der Verweis. Erhalten ist allein die Forensik selbst, `circles/260801-1244-guard-rules-write/analyses/260805-0717-protected-path-forensics.md`, jetzt ohne die Datei, aus der sie ausgelagert wurde.
