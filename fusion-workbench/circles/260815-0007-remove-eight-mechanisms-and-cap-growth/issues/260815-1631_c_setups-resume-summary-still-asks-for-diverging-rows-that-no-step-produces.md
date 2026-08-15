@@ -38,3 +38,6 @@ Delete the bullet, or replace it with whatever the new sub-step 2 can honestly s
 what the bullet was *for* — "the user is deciding whether to trust the file" — is a purpose P-11
 removed rather than relocated: the state file no longer carries a figure that can be distrusted.
 Saying that, once, is probably better than deleting the bullet silently.
+
+---
+Resolved: The bullet is deleted from `skills/setup/SKILL.md`, bringing the skill's resume summary to the same shape `agents/orchestrator.md` already carried. Deleted rather than reworded: what the record asked to be said once — that the saved state no longer carries a figure that can be distrusted — is already said in this same file, at sub-step 2 ("The saved state carries no counters — it never carries a number that could be stale"), which is the step that produces the two figures. A second statement of it inside the summary list would restate the point where the list should only name what the step emits. Net -190 bytes on a growth-bounded surface.
