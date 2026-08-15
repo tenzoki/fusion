@@ -193,9 +193,11 @@ Adds `$SHARED_HISTORY/*.md` whose filename date prefix is older than the thresho
    - In natural-language mode, list `[ACTIVE]`-flagged hits explicitly.
 
 6. **Confirm via `AskUserQuestion`.** Write the prompt in the project's language per the `**Language:**` line in `CLAUDE.md` (see `rules/fusion-workbench-conventions.md` `## Project language`), following `rules/user-facing-output.md` and the chat profile at `./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`. Offer:
-   - **Archivieren** — archive exactly this list
-   - **Ändern** — change scope (drop or add items, change tier, change threshold)
-   - **Abbrechen** — abort, change nothing
+   The three option labels are given here in English; render them in that language too.
+
+   - **Archive** — archive exactly this list
+   - **Change scope** — drop or add items, change tier, change threshold
+   - **Cancel** — abort, change nothing
 
    Do not move anything until the user picks the first.
 

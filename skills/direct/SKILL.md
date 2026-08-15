@@ -22,7 +22,7 @@ Hold the emitted values. On a non-zero exit, read the code — it says whose fau
 
 - **Exit 1** — no workbench above `pwd`. Halt:
 
-  > *Keine fusion-workbench über `$(pwd)` gefunden. Führe zuerst `/fusion:setup` im Projektwurzelverzeichnis aus.*
+  > *No fusion workbench found above `$(pwd)`. Run `/fusion:setup` once at the project root first.*
 
   Exit cleanly. Do NOT bootstrap a workbench from here — `/fusion:setup` is the single point of workbench creation. (Creating the Circle store in Step 2 is a different scope: it adds one missing subdirectory inside an existing workbench, not a new workbench.)
 
@@ -34,7 +34,7 @@ Then:
 
 - **No draft argument provided**: halt with:
 
-  > *So geht's: `/fusion:direct <Entwurf>` — gib in einer Zeile an, was du festhalten willst, oder den Pfad zu einem Backlog-Eintrag. Der shaper schärft es mit dir und legt den geplanten Circle an.*
+  > *How to use it: `/fusion:direct <draft>` — say in one line what you want to capture, or give the path to a backlog entry. The shaper sharpens it with you and creates the anticipated Circle.*
 
   Exit cleanly.
 
@@ -123,9 +123,9 @@ When shaper returns, report:
 3. **The source entry's state**, and only when the draft was a backlog entry — closed, or left open with what is still in it. Take it from shaper's report; do not open the entry to check. One line, because the answer decides whether the user still has something to file.
 4. **Follow-up hint** — print:
 
-   > *Weiter:*
-   > - *`/fusion:next` zeigt dir diesen Circle im Portfolio neben den anderen geplanten, mit Aktivierungs-Abfrage.*
-   > - *`/fusion:next <dirname>` aktiviert ihn direkt und überspringt den Vorschlag. (`--write-activation <dirname>` bleibt als Alt-Alias erhalten.)*
+   > *Next:*
+   > - *`/fusion:next` shows this Circle in the portfolio beside the other anticipated ones, with an activation prompt.*
+   > - *`/fusion:next <dirname>` activates it directly and skips the proposal. (`--write-activation <dirname>` stays as an old alias.)*
 
    Substitute `<dirname>` with the actual Circle directory name (e.g. `260511-1925-replace-auth-with-oauth`) — no marker, no `.md`. The marker lives on the record inside the directory, not on the name you type here.
 
@@ -140,6 +140,6 @@ This is the entire user-facing output.
 
 ## Tone
 
-User-facing output follows `rules/user-facing-output.md` (loaded into every agent via `bin/fusion-rules`) plus the chat profile for the project's language (`./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`; the language comes from the `**Language:**` line in `CLAUDE.md`). For this skill specifically: the Step-5 confirmation leads with the **Circle's name and path** (the action surface — the user wants to know where it lives) and the one-line refined Directive, then the hints. Don't bury the path mid-paragraph.
+User-facing output follows `rules/user-facing-output.md` (loaded into every agent via `bin/fusion-rules`) plus the chat profile for the project's chat language (`./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`; the language comes from the `**Language:**` line in `CLAUDE.md`, resolved per `rules/fusion-workbench-conventions.md` `## Project language`). Every prompt and hint specified above is written here in English because a skill body ships to projects of every language; render each of them in that chat language. For this skill specifically: the Step-5 confirmation leads with the **Circle's name and path** (the action surface — the user wants to know where it lives) and the one-line refined Directive, then the hints. Don't bury the path mid-paragraph.
 
 Concise. The user invoked this to capture a Directive, not to read meta-commentary. Shaper handles the clarification dialogue; this skill is the entry point and the post-write confirmation.
