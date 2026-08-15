@@ -2,7 +2,7 @@
 
 **Directive:** Bring the two simplification backlog entries on the way — the axis question (which whole mechanisms fusion stops carrying) with the eight-admin-commands collapse as its sub-step
 **Mode:** custom (promote two backlog entries into one anticipated Circle, then plan and execute)
-**Status:** In progress
+**Status:** Complete
 
 ## Setup snapshot
 
@@ -534,3 +534,44 @@ sequenceDiagram
     O->>PM: portfolio refresh
     PM-->>O: portfolio empty, backlog recommendation
 ```
+
+
+## Review coverage
+
+**Range:** `9a7da8e..HEAD` — 37 commits
+**Covered by:** eight review files across four Turns, each carrying its `**Reviewed-range:**`; the
+last usable one covers `518926d..1e29572`.
+**Not covered:** 11 commits, listed below. Five touch shipped files; the rest are tracking writes.
+The user stopped the review dispatch that would have covered the first six, and the closing
+commits since then were never dispatched for review at all. The reconciler judged this a residual
+rather than a blocker, on the ground that the cap-arming commit carries four defect records with
+reproduction steps, so unreviewed and unexamined came apart.
+
+```
+uncovered de10bab chore(circle): the simplification Circle closes coherent, and the portfolio empties
+  uncovered c2b7fe2 chore(reconcile): the verdict is coherent, and the residual it names is not the one that was expected
+  uncovered d2b45e1 chore(decision): the annotation decision reaches implemented, marker and header together
+  uncovered c8eac96 chore(grounding): the Retired annotation is defined and applied to the 25 records that needed it
+  uncovered bd07ee7 chore(reconcile): the tracking files meet the tree, and the verdict is review-needed
+  uncovered 9306f0a chore(release): v9.0.0 is prepared, and the note it owes the projects that configured what left
+  uncovered 9cde86c chore(measure): the after-figures, and the four claims they do not support
+  uncovered 0609945 feat(cap): the growth bound reaches the three surfaces where the growth happened
+  uncovered e8052e7 docs(curate): twelve approved corrections land, and the pass adds text rather than removing it
+  uncovered 5f2171e fix(resume): the shell that replaced the drift check reports an untakeable figure as untakeable
+  uncovered c1e207d chore(review): Turn 4 reviewed, and the range was right on the first try
+```
+
+**Carried out-of-scope files:** none.
+
+## Budget
+
+| Metric | Count |
+|--------|-------|
+| Turns | 4 |
+| Plan steps resolved | 17 (15 planned, 1 inserted, plus gate G1) |
+| Commits | 37 |
+| Human gates hit | 8 |
+| Agent errors | 0 |
+| Orchestrator errors caught by mechanism or review | 6 |
+
+Record counts are the derived ones, taken from the stores rather than tallied.
