@@ -219,3 +219,18 @@ growth bound whose entire value is that the suite fails on an add-back, and a su
 random cannot carry that. It is inserted as step 3b and the Circle grows by one step.
 
 Until it lands, this orchestrator dispatches nothing in parallel that runs the suite.
+
+### Turn 2
+- Steps attempted: plan correction, the legacy-halt-clearing flake, inserted P-3b, P-4, P-5, P-6
+- Steps completed: all six
+- Commits: d1ae1c0, 89ca95a, c45e27b, 332267a, a69d56e, 04ea182, 5d29b6d, b093a54, b70097f
+- Measured effect: suite 46 files/842 tests to 45/830; rules to orchestrator 129 877 B to 104 181 B;
+  visible skills 17 to 15; the suite is green under concurrency for the first time
+- Review: coderev and ontorev over 7c12d6a..HEAD. Both corrected the range the dispatch gave them
+  from seven commits to nine. Coverage covered, uncovered 0.
+- Findings: 10 records filed, 5 closed. Two would have made step 11 ship red, both created by this
+  Turn's own earlier steps rather than by the world moving.
+- Orchestrator omissions this Turn: the inserted step P-3b existed in no plan and no Turn log, only
+  in the event stream; and one commit message over-claimed a measured hit that the measurement
+  places elsewhere. Both named by the reviewers, both corrected.
+- Circuit breaker status: OK

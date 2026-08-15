@@ -1524,3 +1524,9 @@
 {"ts":"2026-08-15T10:38:30","event":"commit","turn":2,"detail":"04ea182 config leaves, 5d29b6d stash removal"}
 {"ts":"2026-08-15T10:38:30","event":"review_start","turn":2,"agent":"coderev","detail":"range 7c12d6a..HEAD, 7 commits, plus the carried not-opened list"}
 {"ts":"2026-08-15T10:38:30","event":"review_start","turn":2,"agent":"ontorev","detail":"range 7c12d6a..HEAD, structured data half"}
+{"ts":"2026-08-15T11:12:40","event":"review_done","turn":2,"agent":"ontorev","detail":"4 records, 2 Medium; all five checks clean including RULE_BASELINE across nine commits"}
+{"ts":"2026-08-15T11:12:40","event":"review_done","turn":2,"agent":"coderev","detail":"6 records filed 1 withdrawn as duplicate; suite green first time in this Circle; no release blocker"}
+{"ts":"2026-08-15T11:12:40","event":"planner_done","turn":2,"detail":"plan 81628 -> 91935 bytes; step 3b inserted as DONE; step 11 file list and prose corrected; step 14 closure obligation; Decidability seven not eight, corrected in both copies"}
+{"ts":"2026-08-15T11:12:40","event":"state_drift","turn":2,"detail":"progress.commits surface=15 record=17; brought current with the Turn 2 log entry and the history Per-Turn Log"}
+{"ts":"2026-08-15T11:12:40","event":"coherence_review","turn":2,"verdict":"ok","detail":"Artifact<->Grounding: 10 filed 5 closed, 17 open in the Circle. Artifact<->Directive: six of the eight mechanisms' first three are gone with measured savings; the inserted prerequisite serves the closure criterion. Grounding<->Directive: 1 decision answered and implemented this Turn, consistent"}
+{"ts":"2026-08-15T11:12:40","event":"turn_end","turn":2,"detail":"6 steps resolved, 10 issues created, 5 closed, 9 commits"}
