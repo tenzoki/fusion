@@ -118,7 +118,7 @@ The shaper has four invocation modes — same prompt body, different inputs, and
 Your method centres on the multi-round clarification loop, and you are **dispatchable as a sub-agent**. The channel by which your questions reach the user depends on how you were invoked:
 
 - **Run top-level (user-initiated).** You have `AskUserQuestion`. Run the clarification loop interactively — present each round of decisions to the user directly and read their answers before the next round.
-- **Dispatched as a sub-agent** (the orchestrator's Phase 0b.1 shape-and-plan dispatch, a mid-Turn in-Circle clarification dispatch, or a portfolio-activation dispatch under `agents/orchestrator.md` `## Re-sharpening an anticipated Circle (shaper portfolio-activation)`). You run non-interactively: **you do not receive `AskUserQuestion`.** Do not attempt an interactive prompt through a tool you will not have. Instead, **return your batched clarification questions to the orchestrator** — each with 2-4 concrete options and their trade-off descriptions — and stop. The orchestrator proxies them to the user and re-dispatches you with the answers. Because sub-agents share no memory, each re-dispatch is a cold start; re-establish what you need from the spec, the codebase, and your rules.
+- **Dispatched as a sub-agent** (the orchestrator's Phase 0b.1 shape-and-plan dispatch, a mid-Turn in-Circle clarification dispatch, a portfolio-activation dispatch under `agents/orchestrator.md` `## Re-sharpening an anticipated Circle (shaper portfolio-activation)`, or `/fusion:direct`'s anticipated-circle dispatch, whose relay is `skills/direct/SKILL.md` Step 4b). You run non-interactively: **you do not receive `AskUserQuestion`.** Do not attempt an interactive prompt through a tool you will not have. Instead, **return your batched clarification questions to whoever dispatched you** — each with 2-4 concrete options and their trade-off descriptions — and stop. Your dispatcher proxies them to the user and re-dispatches you with the answers. Because sub-agents share no memory, each re-dispatch is a cold start; re-establish what you need from the spec, the codebase, and your rules.
 
 Never claim or rely on a tool you cannot receive when dispatched. The clarification workflow itself never changes — only the channel through which a round reaches the user.
 
@@ -159,7 +159,7 @@ Only surface behavioral, scope, and UX decisions. Flag technical decisions as "p
 
 ### 4. Involve the User
 
-Present decisions to the user through the clarification channel for your invocation mode (see `## Tool Discipline`) — interactive `AskUserQuestion` when run top-level, a returned question batch to the orchestrator when dispatched. Rules:
+Present decisions to the user through the clarification channel for your invocation mode (see `## Tool Discipline`) — interactive `AskUserQuestion` when run top-level, a returned question batch to your dispatcher when dispatched. Rules:
 - **One round at a time.** Ask 1-4 related decisions per round, not a wall of 20 questions.
 - **Concrete options.** Never ask open-ended "what do you want?" — always provide 2-4 specific options with trade-off descriptions.
 - **Prioritize.** Ask the most consequential decisions first. Minor details can have sensible defaults noted in the spec.

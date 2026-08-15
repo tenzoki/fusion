@@ -1,12 +1,12 @@
 ---
 description: Draft a Directive — shaper refines a one-line draft via clarifying questions and writes an anticipated Circle. Use when you want to capture a goal as a portfolio-anticipated Circle without starting a Turn loop.
 argument-hint: <draft Directive, or the path to a backlog entry>
-allowed-tools: [Bash, Read, Write, Edit, Agent(fusion:shaper)]
+allowed-tools: [Bash, Read, Write, Edit, AskUserQuestion, Agent(fusion:shaper)]
 ---
 
 # Fusion — direct (draft a Directive)
 
-The user invoked `/fusion:direct <draft>`. This skill is the user-facing surface for **capturing a Directive as an anticipated Circle** without entering an orchestrator Turn loop. It dispatches the `shaper` agent in `anticipated-circle` mode; shaper runs its normal clarification flow with the user and creates the Circle.
+The user invoked `/fusion:direct <draft>`. This skill is the user-facing surface for **capturing a Directive as an anticipated Circle** without entering an orchestrator Turn loop. It dispatches the `shaper` agent in `anticipated-circle` mode, relays shaper's clarification questions to the user and the answers back (Step 4b), and shaper creates the Circle.
 
 A Circle is a directory, not a file: shaper creates `<dirname>/` with its record `_a_circle.md` and the six artifact subdirectories. See `rules/circle-records.md` `## Circle record template`.
 
@@ -81,7 +81,7 @@ Do **not** pass shaper a write target. It resolves its own at its Setup, the sam
 Shaper will then:
 
 - Read the conventions and load the Circle record template from `rules/circle-records.md`
-- Run its normal 1-4-questions-per-round clarification flow with the user via `AskUserQuestion`
+- Return each round of 1-4 clarification questions to this skill, which puts them to the user (Step 4b) — a dispatched shaper holds no `AskUserQuestion`
 - Derive a `<directive-slug>` from the refined Directive (kebab-case, ≤6 words, lowercased, articles dropped)
 - Create the Circle directory `YYMMDD-HHMM-<directive-slug>/`, its record `_a_circle.md`, and the six artifact subdirectories
 - Write its own history file
@@ -90,7 +90,29 @@ Shaper will then:
 
 **Whether the entry is closed is shaper's call, not this skill's, and it is not always yes.** A Circle takes an entry whole or not at all: promoting a one-idea entry closes it (marker `_c_`, plus one appended `Promoted:` line), and an entry carrying several ideas is left exactly as it is, with shaper's first clarification round asking which of them the Circle is. Shaper's report says which happened. Do not close, rename or annotate an entry from here under any circumstances — this skill's writes are the two named at the top of this file.
 
-Wait for shaper to complete. The clarification flow may take several rounds — that's the whole point of using shaper instead of stashing the draft verbatim.
+Wait for shaper to return, then go to Step 4b. The clarification flow may take several rounds — that's the whole point of using shaper instead of stashing the draft verbatim — and each round is one return and one re-dispatch.
+
+## Step 4b — Relay shaper's questions to the user
+
+The `AskUserQuestion` grant in this skill's frontmatter belongs to the skill body running in the main session; it does not travel to the agent the skill dispatches. So shaper returns its clarification round as report text and this skill asks. Same shape as `/fusion:next` Step 5b.
+
+**A returned Circle, no step.** When the report names the Circle directory instead of questions, go straight to Step 5.
+
+**1. Put the returned questions to the user**, one `AskUserQuestion` per round, as shaper wrote them and with the options it gave. Do not narrow them, merge them, or answer one yourself.
+
+**2. Re-dispatch shaper** — target `fusion:shaper`, as in Step 4 — repeating the **whole Step 4 parameter block verbatim**, plus the answers. Sub-agents share no memory, so a parameter dropped from a re-dispatch is dropped for good:
+
+```
+**Mode:** anticipated-circle
+**Draft:** <user's raw argument, verbatim>
+**Domain:** <detected-domain>
+**Answers:**
+- <question, as shaper asked it> → <the user's answer, in their own words>
+```
+
+The answers travel as the user worded them, never paraphrased into your framing — that wording is what shaper's next round reads.
+
+**3. Repeat** until a report names the Circle directory rather than a further round, then go to Step 5.
 
 ## Step 5 — Confirm to user
 
@@ -111,7 +133,7 @@ This is the entire user-facing output.
 
 ## Boundaries
 
-- The skill never writes Circle content directly — shaper produces it.
+- The skill never writes Circle content directly — shaper produces it. Step 4b adds no write of its own: it asks and it re-dispatches.
 - The skill never starts an orchestrator Turn loop. Capture is the whole product.
 - The skill never modifies an existing Circle. It only causes a *new* anticipated Circle to come into being.
 - The skill is safe to invoke during an active orchestrator session — a new anticipated Circle does not affect the active one, and `.active-circle` is untouched.

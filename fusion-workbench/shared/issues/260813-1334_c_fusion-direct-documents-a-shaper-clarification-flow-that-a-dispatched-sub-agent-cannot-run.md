@@ -58,3 +58,21 @@ skill in the shaper's `## Tool Discipline` enumeration so the agent knows a rela
 Not planned here, and deliberately not folded into the backlog Circle: that Circle's Directive is
 the playmaker's backlog maintenance, and this is a different skill and a different agent found
 nearby.
+
+---
+
+**Resolved:** 2026-08-15 by `coder`. `skills/direct/SKILL.md` gained **Step 4b — Relay shaper's
+questions to the user**, built on the shape `skills/next/SKILL.md` Step 5b already uses for the
+playmaker: the skill puts each returned round to the user with `AskUserQuestion`, re-dispatches
+shaper with the full Step 4 parameter block repeated verbatim plus the answers in the user's own
+words, and loops until a report names the Circle directory rather than a further round.
+`AskUserQuestion` was added to the skill's `allowed-tools`; the three passages that promised an
+interactive shaper (the header sentence, the Step 4 bullet, the Step 4 closing line) now name the
+relay instead.
+
+`agents/shaper.md:121` now lists `/fusion:direct`'s anticipated-circle dispatch alongside the
+orchestrator's three paths, and the return address in that bullet and at `:162` reads *whoever
+dispatched you* rather than *the orchestrator*, since two dispatchers now relay.
+
+The behavioural half of the record was taken as unverified and not reproduced: the documentation
+contradiction alone determined the fix, exactly as the record says it may.
