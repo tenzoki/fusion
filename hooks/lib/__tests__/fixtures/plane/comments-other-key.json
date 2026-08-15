@@ -1,8 +1,0 @@
-{
-  "results": [
-    {
-      "id": "comment-uuid-2",
-      "comment_html": "<!-- fusion-spec-comment:some-other-circle -->\n<pre>the spec-comment of a DIFFERENT Circle</pre>"
-    }
-  ]
-}

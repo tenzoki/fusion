@@ -1,3 +1,0 @@
-# Closed issue two
-
-Resolved.

@@ -1,3 +1,0 @@
-# Dropped issue three
-
-Dropped.

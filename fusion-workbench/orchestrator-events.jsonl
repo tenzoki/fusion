@@ -1488,3 +1488,7 @@
 {"ts":"2026-08-15T05:32:01","event":"task_done","turn":1,"task":"P-1","agent":"coder","detail":"d78dfb7; suite green 1030 tests exit 0; before-figures taken; corrected the record's 74.5-of-99 claim to 75.587 of 76.57"}
 {"ts":"2026-08-15T05:32:01","event":"commit","turn":1,"detail":"d78dfb7 chore(measure): the before-figures, and the claim they corrected on the way"}
 {"ts":"2026-08-15T05:32:01","event":"task_start","turn":1,"task":"P-2","agent":"coder","detail":"Plane mirror: code, prompts, prose"}
+{"ts":"2026-08-15T05:47:08","event":"task_done","turn":1,"task":"P-2","agent":"coder","detail":"d0ddabb + 507dbc6; suite 903 tests green, 76.57s -> ~30s; 6 unpredicted findings; 2 issues closed"}
+{"ts":"2026-08-15T05:47:08","event":"commit","turn":1,"detail":"d0ddabb refactor(plane) and 507dbc6 fix(records) staging correction"}
+{"ts":"2026-08-15T05:47:08","event":"state_drift","turn":1,"detail":"progress.commits surface=3 record=5; brought current in agentstate.yaml. Cause: the P-2b correction commit and the P-2 commit both landed before the state write"}
+{"ts":"2026-08-15T05:47:08","event":"task_start","turn":1,"task":"P-3","agent":"ontocoder","detail":"Plane data files, templates and 14 fixtures"}
