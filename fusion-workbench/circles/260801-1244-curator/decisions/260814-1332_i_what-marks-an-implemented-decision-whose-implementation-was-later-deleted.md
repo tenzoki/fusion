@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** answered
+**Status:** implemented
 **Filed by:** curator
 **Cross-references:** `circles/260801-1244-curator/history/260814-1332-curator-run.md` §3 (the corpus measurement this record is filed from); `rules/fusion-workbench-conventions.md` `## State Markers — decisions` (position A); `agents/curator.md` `## Remit` and `circles/260801-1244-curator/_t_circle.md` `## Directive` (position B); `shared/decisions/260801-1020_*_may-any-fusion-writer-touch-rules.md` and `shared/decisions/260809-1527_*_should-the-revert-narrow-to-the-payload-path-for-the-four-write-tools.md` (the two instances inside `$SCAN_DECISIONS`); `shared/planning/260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md` (the retirement that produced them)
 
@@ -62,7 +62,7 @@ Option 4 is right about where the knowledge is cheapest and wrong about whether 
 
 ---
 Answered: shared/history/260814-2306-orchestrator-session.md:318 — Option 3: a `Retired:` annotation citing the plan, commit or gate that removed the implementation, with the marker left at `_i_`. Nothing renames, so no glob, filter or count changes behaviour, and `_s_` keeps its single meaning. Answered by the user at the Rebalance gate of Circle 260815-0007, where the population had grown from two records to about twenty-four.
-Implemented:
+Implemented: c8eac96 — the `Retired:` annotation is defined in `rules/fusion-workbench-conventions.md` at its three named places (the `_i_` marker row, the decision-files subsection of `## Inline State Tracking`, and the record template's footer) and applied to the 25 records a full enumeration of all 63 implemented records found to cite an artifact the tree no longer holds. No marker was renamed, which is the option's substance.
 Deferred:
 Superseded by:
 
