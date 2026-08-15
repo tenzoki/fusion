@@ -35,3 +35,26 @@ $ for h in $(git log --format=%H --since=2026-08-01 --until=2026-08-15); do
 **Why it is worth correcting rather than tolerating.** These four figures were specifically re-measured because the Circle record's originals "were taken against a different anchor", and the test header says so in the same paragraph. Correcting an anchor drift and then introducing a two-day one in the corrected table is the failure repeating inside its own repair. The fix is a one-line edit in two places (`surface-growth-bound.test.ts:22-23` and the step report's table), plus the percentage.
 
 **Found by:** coderev, review of `1e29572..9306f0a`, commit `0609945`.
+
+---
+
+**Resolved:** 2026-08-16, coder, in `hooks/lib/__tests__/surface-growth-bound.test.ts`.
+
+Re-measured in this checkout before editing. `66e4a698` is the last commit of
+2026-08-05 (23:46:12 +0200), and `rules/` there is **166 610** bytes; every file
+under `rules/` on that day is `.md`, so the `.md` total and the all-files total
+are the same number. The 165 747 in this record does not reproduce here. At
+`9a7da8e` the surface is 154 092, so the row reads `166 610 -> 154 092`, a fall
+of 12 518 bytes or **-7.5 %**. That is what the header now carries, and both
+anchor commits are named in the sentence so the reader can check the row against
+the anchor its two neighbours use.
+
+The other two rows were re-verified at the same pair and are exact: `agents/`
+289 958 -> 460 292 and hook test lines 19 838 -> 25 897.
+
+**Residual, deliberately not fixed.** The second site is
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-1818-coder-extend-failing-growth-cap.md`,
+a history log. It records what was reported at the time, and history logs are
+not rewritten after the fact; the correction lives here and in the test file
+instead. Closing on that basis — reopen if the Circle wants the step report
+annotated rather than left as written.

@@ -30,19 +30,19 @@
   total 400152
 
 [skills bytes]
-  archive/SKILL.md 23705
+  archive/SKILL.md 23777
   cadence/SKILL.md 17560
-  cleanup/SKILL.md 23662
+  cleanup/SKILL.md 23999
   commit/SKILL.md 6233
   curate/SKILL.md 12741
-  direct/SKILL.md 10799
+  direct/SKILL.md 11012
   help/SKILL.md 14248
   log-activity/SKILL.md 13559
   memo/SKILL.md 12560
-  migrate/SKILL.md 26256
-  next/SKILL.md 26249
-  setup/SKILL.md 36230
-  total 223802
+  migrate/SKILL.md 26623
+  next/SKILL.md 26821
+  setup/SKILL.md 36393
+  total 225526
 
 [hook-tests lines]
   clear-halt-concurrent-halt.test.ts 427
@@ -87,6 +87,6 @@
   rules-voice-profile.test.ts 318
   session-start-subdirectory.test.ts 159
   staging-drift.test.ts 649
-  surface-growth-bound.test.ts 576
+  surface-growth-bound.test.ts 574
   turn-budget-lint.test.ts 398
-  total 19453
+  total 19451

@@ -16,14 +16,15 @@ import { fmt, Growth, growth, grownLines, Sized } from "./helpers/growth-bound.j
 // feared. The largest deletion in this project's history was back above its
 // pre-deletion peak in four and a half days
 // (`shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`),
-// and over the ten days from 2026-08-05 to the start of the Circle that armed
-// this file (`9a7da8e`, 2026-08-15), with the report in force and read by nobody,
-// `agents/*.md` rose 289 958 -> 460 292 bytes (+59 %) and the hook test suite
-// 19 838 -> 25 897 lines (+31 %), while `rules/` — the ONE surface the old cap
-// still covered — FELL, 170 835 -> 154 092 (-10 %). Those four figures are
-// re-measured from `git` at the arming rather than quoted; the Circle record's
-// own headline figures for the same period (agents +38 %, hook tests +47 %) were
-// taken against a different anchor and are not restated here as measurements.
+// and over the ten days from the last commit of 2026-08-05 (`66e4a698`) to the
+// start of the Circle that armed this file (`9a7da8e`, 2026-08-15), with the
+// report in force and read by nobody, `agents/*.md` rose 289 958 -> 460 292
+// bytes (+59 %) and the hook test suite 19 838 -> 25 897 lines (+31 %), while
+// `rules/` — the ONE surface the old cap still covered — FELL, 166 610 ->
+// 154 092 (-7.5 %). All four are re-measured from `git` at those two named
+// commits rather than quoted; the Circle record's own headline figures for the
+// same period (agents +38 %, hook tests +47 %) used a different anchor and are
+// not restated here as measurements.
 // A failing cap is the only instrument this project has ever had that bounded the
 // rate, and the surfaces it did not cover are the surfaces that grew. This file
 // puts it where the growth was.
@@ -61,45 +62,37 @@ import { fmt, Growth, growth, grownLines, Sized } from "./helpers/growth-bound.j
 //
 // ## Where each head-room comes from
 //
-// Derived, not chosen, and derived per surface — the 12 000 bytes
-// `rules-emission-golden.test.ts` uses was measured against the growth rate of
-// `rules/` and licenses nothing about a surface whose rate is different.
-// `git log` was replayed commit by commit over the SAME WINDOW that figure came
-// from, 2026-05-05 (the repository's first commit) to 2026-08-05, re-measuring
-// each surface at each of the 337 commits in it. Each replayed commit's growth
-// was split into growth in files that already existed and files that arrived, so
-// the "honest single commit" figures below describe prose growth rather than
-// a new file's arrival.
+// ONE PROPERTY, BECAUSE IT IS THE ONE THAT REPRODUCES FROM `git`: each head-room
+// sits INSIDE its own surface's worst measured single day, so a run like that day
+// trips the bound on the day it begins. It is derived per surface and pooled with
+// nothing — the 12 000 bytes `rules-emission-golden.test.ts` uses was measured
+// against `rules/` alone and licenses nothing here.
 //
-// The same three properties that produced 12 000 for `rules/` produced each
-// figure below: it sits INSIDE the surface's worst measured single day, so a run
-// like that day trips the bound on the day it begins; it is two to three weeks
-// of the surface's own sustained rate, so a cleanup comes due on that cadence;
-// and it stands well above the 95th-percentile honest single-commit addition, so
-// ordinary work never trips it.
+// The method, so the next re-baseliner recomputes rather than re-derives: size
+// each surface at the last commit of every day from `b05b423` (2026-05-04, the
+// repository's first commit) to `66e4a698` (2026-08-05) — 340 commits over 40
+// commit-days, no merges, so diffing consecutive commit-days is valid — and take
+// the largest of those rises. Sizes come off the tree, not off diffs: for
+// `agents/`, `git ls-tree -r -l <commit> agents/` summed over the `.md` entries.
 //
-//   surface           worst day   sustained rate   p90 / p95 commit   head-room
-//   agents/ bytes       +50 725      851 /day        +7 216 / +12 082    18 000
-//   skills/ bytes       +38 025    1 427 /day        +6 976 / +10 456    20 000
-//   hook test lines      +5 247      129 /day          +532 /    +793     2 500
+//   surface           worst measured day     head-room   share of that day
+//   agents/ bytes     +50 725 (2026-05-16)     18 000          35 %
+//   skills/ bytes     +38 025 (2026-05-19)     20 000          53 %
+//   hook test lines    +5 247 (2026-08-04)      2 500          48 %
 //
-//   agents/ 18 000 bytes — 35 % of the worst measured day (2026-05-16, +50 725);
-//     21 days at the calm-stretch rate of 851 bytes a day (2026-06-02 to
-//     2026-07-31); 1.5x the p95 single-commit addition to an existing prompt.
-//   skills/ 20 000 bytes — 53 % of the worst measured day (2026-05-19, +38 025);
-//     14 days at the calm-stretch rate of 1 427 bytes a day; 1.9x p95.
-//   hook tests 2 500 lines — 48 % of the worst measured day (2026-08-04, +5 247),
-//     and under the +4 026 of 2026-08-01, the FIRST day of the four-day run that
-//     built most of this suite, so that run trips on day one; 19 days at 129
-//     lines a day, which is this surface's existing-file growth over the whole
-//     window rather than a calm-stretch rate, because it HAS no honest calm
-//     stretch — it was three files until August and the 2026-06/07 figure of 51
-//     lines a day describes a suite that did not yet exist; 3.2x p95.
+// 2 500 also sits under the +4 026 of 2026-08-01, the FIRST day of the four-day
+// run that built most of this suite, so a run like that one trips on day one.
 //
-// Corroboration from outside the window, deliberately not used to set the
-// figures: over 2026-08-05 to 2026-08-15 `agents/` gained 10 989 bytes a day with
-// a peak day of +66 803 and `skills/` 1 029 a day with a peak of +28 367. Every
-// head-room above is well inside those peaks too, so none of them is slack.
+// THE ARMING CLAIMED TWO FURTHER PROPERTIES AND A CORROBORATION RATE; all three
+// are gone, named here so nobody restores them from an older commit. "Two to
+// three weeks of the surface's own sustained rate" and "above the p95 honest
+// single-commit addition" reproduce under no replay method, and the rates are out
+// by large factors: over 2026-08-05..08-15 `agents/` measures 17 033 bytes a day
+// against a stated 10 989, `skills/` 8 398 against 1 029 (issue 260815-1939). No
+// head-room moved and nothing was recomputed to fit — a figure no method
+// reproduces reads as measured, which is worse than none. The peak days of that
+// window DO reproduce and still corroborate: `agents/` +66 803 (2026-08-11) and
+// `skills/` +28 367 (2026-08-10), both far above every head-room here.
 //
 // ## The arming, 2026-08-15
 //
@@ -109,8 +102,8 @@ import { fmt, Growth, growth, grownLines, Sized } from "./helpers/growth-bound.j
 // `circles/260801-1244-curator/decisions/260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`.
 //
 // NO BYTES AND NO LINES WERE REMOVED BY THE ARMING ITSELF, and one surface grew
-// BECAUSE of it: this file and `helpers/growth-bound.ts` are 699 lines inside the
-// hook-test surface they bound, and the baseline below carries them. A bound that
+// BECAUSE of it: this file and `helpers/growth-bound.ts` entered the baseline
+// below at 699 lines inside the hook-test surface they bound. A bound that
 // exempted its own instrument would be granting itself the one exemption it
 // exists to refuse, so the 699 lines are baselined like any others and the next
 // 2 500 are what this surface has left. It is the last step of
@@ -343,10 +336,15 @@ const SURFACES: Surface[] = [
     baseline: TEST_LINE_BASELINE,
     headRoom: TEST_LINE_HEAD_ROOM,
     cost: "every line is maintenance and suite wall-clock, paid on every run",
-    // Recursive, because vitest's include is: a `.ts` file at ANY depth under
-    // `__tests__/` runs, so reading two directories and naming `helpers` was the
-    // written-down list this reader exists to refuse — a test file one level
-    // deeper ran and was measured by nothing (issue 260815-1935).
+    // Recursive, and NOT filtered by what vitest runs: `vitest.config.mjs` sets no
+    // `include`, so the default `**/*.{test,spec}.?(c|m)[jt]s?(x)` collects a TEST
+    // file at any depth and no plain `.ts` at all — `helpers/*.ts` is run by
+    // nothing and counted here anyway. The criterion is what the suite's tree
+    // costs to MAINTAIN and to run, and it settles `fixtures/` deliberately: that
+    // directory IS inside the walk, and its goldens fall out for being machine-
+    // written records of other surfaces' size, not TypeScript anybody maintains.
+    // Two named directories were the written-down list this reader exists to
+    // refuse (issue 260815-1935).
     files: () =>
       readdirSync(here, { recursive: true })
         .filter((f) => f.endsWith(".ts"))

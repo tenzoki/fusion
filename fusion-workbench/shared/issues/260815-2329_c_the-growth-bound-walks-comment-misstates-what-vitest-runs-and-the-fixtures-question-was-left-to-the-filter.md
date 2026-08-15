@@ -67,3 +67,40 @@ is read non-recursively (`:313-318`, safe only because the directory is flat by 
 file keeps the context cost and drops out of the count. The second is the one worth watching.
 
 **Found by:** coderev, review of `d33cd22..f4f01b0`, commit `0e8a400`.
+
+---
+
+**Resolved:** 2026-08-16, coder, in `hooks/lib/__tests__/surface-growth-bound.test.ts`.
+
+Re-verified the collection behaviour before writing, in a scratch root outside
+this repository holding a copy of `hooks/vitest.config.mjs`, `lib/__tests__/
+top.test.ts`, `lib/__tests__/unit/probe.test.ts`, `lib/__tests__/unit/probe.ts`
+and `lib/__tests__/helpers/aid.ts`:
+
+```
+$ cd hooks && npx vitest list --root <scratch>      # exit 0
+lib/__tests__/top.test.ts > t
+lib/__tests__/unit/probe.test.ts > p
+```
+
+Both plain `.ts` files are absent from the listing and the nested test file is
+present, which is your finding exactly. The probe root was outside the checkout
+so no concurrent `npm test` here could collect it.
+
+The comment now says three things instead of one. What vitest collects: no
+`include` in `vitest.config.mjs`, so the default
+`**/*.{test,spec}.?(c|m)[jt]s?(x)` takes a test file at any depth and no plain
+`.ts` at all. Why the walk is wider than that: the criterion is what the suite's
+tree costs to maintain and to run, which is why `helpers/*.ts` is counted while
+nothing runs it. And the `fixtures/` answer, stated rather than left to the
+filter: that directory IS inside the walk, and the goldens in it fall out for
+being machine-written records of other surfaces' size rather than TypeScript
+anybody maintains, so a hand-written `.ts` fixture would count. No special case
+is written for the directory name.
+
+Not line-neutral: the comment went 4 lines to 9. The file as a whole shrank by 2
+(576 -> 574), because the header edits in the same pass removed more than this
+added.
+
+**Still open, as your record says:** the non-recursive `agents/` read and the
+`skills/*/SKILL.md`-only read. Neither was touched.

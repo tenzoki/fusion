@@ -50,3 +50,29 @@ The `skills/` figure is out by a factor of eight. Both peak-day figures in the s
 `speculation:` the claimed `agents/` calm rate of 851 B/day is suspiciously close to the 800 B/day the same report gives for `rules/`, and the `rules/` calm rate I measure over the same window is 1 029 B/day, which is in turn the claimed `skills/` corroboration figure. That pattern is consistent with figures being transposed between surfaces, but I have not established it and it should not be treated as a finding.
 
 **Found by:** coderev, review of `1e29572..9306f0a`, commit `0609945`.
+
+---
+
+**Resolved:** 2026-08-16, coder, in `hooks/lib/__tests__/surface-growth-bound.test.ts`.
+
+Took the second of the two directions this record offered. `## Where each
+head-room comes from` now rests on the worst-measured-day property alone, which
+reproduces exactly for all three surfaces (`agents/` +50 725 on 2026-05-16,
+`skills/` +38 025 on 2026-05-19, hook tests +5 247 on 2026-08-04, plus the
++4 026 of 2026-08-01, all re-measured in this checkout). The section names the
+replay method that produces them — day-end snapshots from `b05b423` (2026-05-04)
+to `66e4a698` (2026-08-05), 340 commits over 40 commit-days, no merges, largest
+consecutive-day rise — so the next re-baseliner recomputes rather than re-derives.
+
+The sustained-rate figures, the p90/p95 per-commit figures and the two
+corroboration rates are gone. A paragraph names all three claims and says they
+reproduced under no replay method, with your measured counter-figures (17 033 vs
+10 989, 8 398 vs 1 029) and this record's stamp, so they are not restored from an
+older commit. The August peak days survive because they do reproduce.
+
+**No head-room moved:** 18 000 / 20 000 / 2 500 are byte-identical, and no
+baseline constant was touched. What changed is the argument, not the numbers.
+
+The first direction — committing the replay as a script under `hooks/` or `bin/`
+— was out of this task's file scope and remains available. The method is now
+written down in the header, which is the cheaper half of it.
