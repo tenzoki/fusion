@@ -203,6 +203,8 @@ One `AskUserQuestion`, in the project's chat language, naming the file and what 
 
 Two options. **"Yes, write it" is the default and the recommended choice.** "No, keep the prompts" is the other; nothing is written and Setup continues.
 
+Read `.claude/settings.local.json` first if it exists and note `permissions.defaultMode`. Already `bypassPermissions` — skip the question (§3). Any **other** value — the question must name it and say plainly what happens to it: *this project currently sets `defaultMode: "<existing>"`; saying yes replaces it.* A replacement the question did not name is not a replacement the user consented to.
+
 ### 2. On "yes", write it
 
 Target: `.claude/settings.local.json` in `pwd` — the project root Step 0 reported. Merge into any existing file; never overwrite one.
@@ -222,17 +224,17 @@ Desired contents:
 
 1. `mkdir -p .claude`.
 2. Read `.claude/settings.local.json` if present. If absent, create it with the JSON above.
-3. If present, parse it, set `permissions.defaultMode` to `"bypassPermissions"`, and union the `allow` list with the values above, **preserving every existing entry — only add, never remove**. Write back with two-space indentation and a trailing newline.
+3. If present, parse it and union the `allow` list with the values above, **preserving every existing entry — only add, never remove**; that guarantee is about the `allow` list and reaches no other field. Set `permissions.defaultMode` to `"bypassPermissions"` only when the file carries no `defaultMode`, or when the question named the existing value the user agreed to replace — a scalar is replaced, not merged, so it is never set silently. Write back with two-space indentation and a trailing newline.
 4. Ensure the file is gitignored. Check `.gitignore` for either `.claude/settings.local.json` or `.claude/`; if neither matches, append `.claude/settings.local.json` to `.gitignore`. This step is not optional — a seeded local settings file that lands in a commit is a worse outcome than an unseeded one.
 
 **Never** write this file outside `pwd`, never into a subfolder, and never touch `.claude/settings.json`, which is the shared checked-in file and not this one.
 
 ### 3. Report either way, in the Done report
 
-- **Wrote it:** name the path, say the permission change takes effect **on the next session** — Claude Code reads permission settings only at startup, so this session still prompts — and say whether `.gitignore` was modified. Do not claim the current session is now unlocked.
+- **Wrote it:** name the path, say the permission change takes effect **on the next session** — Claude Code reads permission settings only at startup, so this session still prompts — and say whether `.gitignore` was modified. If a `defaultMode` was replaced, name the old value beside the new one. Do not claim the current session is now unlocked.
 - **Declined:** say plainly that per-tool approval prompts stay on for this project, and that Setup can seed the file on a later run.
 
-If the project already had `defaultMode: "bypassPermissions"`, say so and skip the question — there is nothing to decide.
+If the project already had `defaultMode: "bypassPermissions"`, say so and skip the question — there is nothing to decide. Any other existing `defaultMode` survives the run untouched unless the user answered yes to the question that named it.
 
 ## Step 1 — Interrupted-session check (CRITICAL — do not skip)
 
