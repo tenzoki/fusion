@@ -265,32 +265,6 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
 
   If any Circles exist, print a one-line advisory pointing to `/fusion:next` for portfolio review. If none exist, no hint is printed — opt-in behaviour preserved. The orchestrator's Setup Step 5 contains the canonical implementation.
 
-- **The work queue's ground.** `./fusion-workbench/tasklist.md` is built once against the workbench as it stood that minute, and it outlives the Circle it was built for — measured on 260807, where the active Circle was superseded mid-session and eleven entries of the queue went on describing work a commit had already made pointless. Setup is the last step before the orchestrator reads that file as its work queue in Phase 1, so the queue's standing is settled here, in front of the consumer, not only at the boundary where it went stale.
-
-  Run the check from `$FUSION_SRC/agents/orchestrator.md` `### The queue's ground` → `#### Reading a queue`. That section is the canonical implementation and carries the four-row verdict table; do not restate the branches here.
-
-  Confirm the section is there before you run it. This is the one citation in this file with no inline fallback, so a source root whose copy predates the section resolves the path to a file that carries no such heading and the step is skipped in silence — the file is found, the branches are not:
-
-  ```bash
-  if [ -x "${FUSION_PLUGIN_ROOT:-}/bin/fusion-source-root" ]; then
-    FUSION_SRC="$("$FUSION_PLUGIN_ROOT/bin/fusion-source-root")"
-  elif [ -n "${FUSION_PLUGIN_ROOT:-}" ]; then
-    echo "fusion: no bin/fusion-source-root in the installed plugin at $FUSION_PLUGIN_ROOT — the source root falls back to that install copy" >&2
-    FUSION_SRC="$FUSION_PLUGIN_ROOT"
-  else
-    FUSION_SRC=""
-  fi
-  SEC="$FUSION_SRC/agents/orchestrator.md"
-  grep -q '^#### Reading a queue' "$SEC" 2>/dev/null && echo "queue-check: canonical section found in $SEC" || echo "queue-check: UNAVAILABLE — $SEC carries no '#### Reading a queue' section. The path names the copy actually in use: an install that predates the section (run 'fusion --update' and restart the session), a work tree that does not carry it, or nothing at all when FUSION_PLUGIN_ROOT is unset."
-  ```
-
-  Report the verdict in the Setup-complete summary, in one line, and say what it means for the session:
-
-  - **current** or **unaffiliated backlog** — nothing to say beyond the line itself.
-  - **stale** — name the Circle the queue was built for and the one that is active (or that none is). Tell the user plainly that Phase 1 should rebuild the queue before it is worked, and that the file's entries were chosen for ground that has moved.
-  - **no ground recorded** — the queue carries no `**Active Circle:**` line at all, so it was written before the producer mandated one and which Circle it was built for is not recoverable. Say that plainly and say that Phase 1 should rebuild it; do not infer its ground from its contents.
-  - **`queue-check: UNAVAILABLE`** — say that in the summary in place of a verdict, and say plainly that the queue's standing was not established and why. Do not improvise the branches: the verdict table is exactly what is missing, and a guessed verdict is worse than a stated gap.
-
 ## Step 4 — History file
 
 Timestamp: `date +%y%m%d-%H%M`.
@@ -313,4 +287,4 @@ Create `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` (the value `fusion-pat
 
 ## Done
 
-Only after every step above completes may you begin the user's actual task. Report Setup complete with: workspace path, history file path, snapshot counts, **detected workbench domain**, **the work queue's verdict from Step 3** (one line — a stale queue is the one thing in this summary the user has to act on before Phase 1 runs), and whether an interrupted session was resumed. (Setup no longer migrates — a pre-v4 workbench is caught by the layout check in Step 0, which refuses and routes the user to `/fusion:migrate` before any of this runs.)
+Only after every step above completes may you begin the user's actual task. Report Setup complete with: workspace path, history file path, snapshot counts, **detected workbench domain**, and whether an interrupted session was resumed. (Setup no longer migrates — a pre-v4 workbench is caught by the layout check in Step 0, which refuses and routes the user to `/fusion:migrate` before any of this runs.)

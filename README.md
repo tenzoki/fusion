@@ -132,7 +132,6 @@ fusion-workbench/
 │   ├── planning/  issues/  decisions/  history/  reviews/  analyses/
 │   ├── investigations/  consult/  memos/  backlog/   # shared-only
 ├── portfolio.md             # playmaker output
-├── tasklist.md              # taskplanner work queue
 ├── .active-circle           # pointer to the active Circle's directory name
 └── (root-anchored state: agentstate.yaml, orchestrator-live.md,
      orchestrator-events.jsonl, .guard-state/, .commit-lock/, monitor)

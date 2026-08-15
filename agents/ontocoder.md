@@ -50,8 +50,8 @@ You may **read** code freely to understand how data is consumed (loaders, parser
 
 **Do not edit against an unclear spec.**
 
-1. Check if a plan exists under `$SCAN_PLANS`
-2. Check if `$TASKLIST` exists — use it as your work queue (top-to-bottom, find first `[ ]` task assigned to `ontocoder`)
+1. Read the dispatch prompt — it is your task, and it is the whole of your task. The orchestrator holds the session's work queue and dispatches one task at a time; there is no task list on disk to work through
+2. Check if a plan exists under `$SCAN_PLANS`
 3. Verify the spec is clear: what file, what shape, what validation, what side effects on other files
 4. If the spec is brittle, ambiguous, or could violate guidelines: **STOP and ask user**
 

@@ -40,7 +40,7 @@ function promptPath(name: string): string {
  */
 function keysNamedIn(name: string): string[] {
   const body = readFileSync(promptPath(name), "utf-8");
-  const found = body.match(/\$(?:(?:OUT|SCAN)_[A-Z][A-Z_]*|PORTFOLIO|TASKLIST)/g) ?? [];
+  const found = body.match(/\$(?:(?:OUT|SCAN)_[A-Z][A-Z_]*|PORTFOLIO)/g) ?? [];
   return [...new Set(found.map((m) => m.slice(1)))].sort();
 }
 
@@ -698,8 +698,8 @@ describe("bin/fusion-paths", () => {
       const bin = stage();
       const source = readFileSync(fusionPaths, "utf-8");
       const patched = source.replace(
-        /^       PORTFOLIO TASKLIST"$/m,
-        '       PORTFOLIO TASKLIST OUT_NOVALUE"',
+        /^       PORTFOLIO"$/m,
+        '       PORTFOLIO OUT_NOVALUE"',
       );
       expect(patched, "ORDER injection did not apply — update the anchor").not.toBe(source);
       writeFileSync(join(bin, "fusion-paths"), patched);

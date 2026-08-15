@@ -324,7 +324,7 @@ describe("path-literal lint: setup's key needs stay a subset of the orchestrator
   // and the subset breaks.
   function keysNamedIn(rel: string): Set<string> {
     const body = readFileSync(join(pluginRoot, rel), "utf-8");
-    const found = body.match(/\$(?:(?:OUT|SCAN)_[A-Z][A-Z_]*|PORTFOLIO|TASKLIST)/g) ?? [];
+    const found = body.match(/\$(?:(?:OUT|SCAN)_[A-Z][A-Z_]*|PORTFOLIO)/g) ?? [];
     return new Set(found.map((m) => m.slice(1)));
   }
 

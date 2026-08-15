@@ -1541,3 +1541,9 @@
 {"ts":"2026-08-15T12:43:29","event":"state_drift","turn":3,"detail":"progress.commits surface=20 record=22; brought current with the Turn 3 log entry and the history Per-Turn Log"}
 {"ts":"2026-08-15T12:43:29","event":"review_start","turn":3,"agent":"coderev","detail":"range 6350854..HEAD"}
 {"ts":"2026-08-15T12:43:29","event":"review_start","turn":3,"agent":"ontorev","detail":"range 6350854..HEAD, structured data half"}
+{"ts":"2026-08-15T13:06:22","event":"review_done","turn":3,"agent":"ontorev","detail":"4 records; corrected the dispatched range from 4 to 7 commits; RULE_BASELINE clean across 16 commits, verified independently of the suite"}
+{"ts":"2026-08-15T13:06:22","event":"review_done","turn":3,"agent":"coderev","detail":"3 records, 0 High; corrected the same range; non-vacuity guard verified non-vacuous; actual reviewed-range 5d29b6d..518926d"}
+{"ts":"2026-08-15T13:06:22","event":"coherence_review","turn":3,"verdict":"ok","detail":"Artifact<->Grounding: 7 filed, 3 closed this Turn, coverage 0 uncovered. Artifact<->Directive: six of the nine removals are through with measured effect. Grounding<->Directive: 1 decision implemented, 1 superseded, both consistent"}
+{"ts":"2026-08-15T13:06:22","event":"turn_end","turn":3,"detail":"3 steps resolved, 7 issues created, 3 closed, 5 commits"}
+{"ts":"2026-08-15T13:06:22","event":"turn_start","turn":4,"detail":"steps 10-12: persisted tasklist and queue ground, session counters and drift machinery, administrative surface; turn_start_head=9955e8f"}
+{"ts":"2026-08-15T13:06:22","event":"task_start","turn":4,"task":"P-10","agent":"coder","detail":"remove the persisted tasklist.md and the queue-ground apparatus"}

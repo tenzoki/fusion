@@ -20,7 +20,7 @@
  *   rows=4
  *   unstaged=2
  *   verdict=unstaged
- *     record          M tasklist.md  UNSTAGED  (the work queue — …)
+ *     record          M portfolio.md  UNSTAGED  (the Circle portfolio briefing — …)
  *     record         ?? shared/history/260810-1723-tasklist-update.md  UNSTAGED  (…)
  *     in-flight       M orchestrator-events.jsonl  (append-only — …)
  *     unclassified   ?? stilwerk/chat-voice-de.yaml  (not a record store …)

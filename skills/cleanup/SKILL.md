@@ -90,7 +90,7 @@ The goal is that no unfinished work is lost when the session ends.
    ```
 
    Hold `$DOMAIN` and `$DOMAIN_SOURCE` for the rest of the run. The 2-space indent scopes the match to the `session:` block, and the `"?` handles a quoted or unquoted YAML value.
-2. Read `$WORKBENCH/$TASKLIST` (if present) for unchecked tasks, and skim every path in `$SCAN_PLANS` for open or in-progress plans with unmarked or `[IN PROGRESS]` steps. `$SCAN_PLANS` may name **two** directories — the active Circle's and the shared one. Skim both, or unfinished work in one of them is silently missed.
+2. Skim every path in `$SCAN_PLANS` for open or in-progress plans with unmarked or `[IN PROGRESS]` steps. `$SCAN_PLANS` may name **two** directories — the active Circle's and the shared one. Skim both, or unfinished work in one of them is silently missed.
 
    Match the marker (the underscore is inert — no escaping needed):
 

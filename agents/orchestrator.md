@@ -406,27 +406,18 @@ After approval, the plan file becomes the input for Phase 1 (treat it as mode `p
 ## Phase 1: Work Queue Construction
 
 **Broad scope (mode `all` or `issues`):**
-1. Check if `$TASKLIST` exists and is recent (generated today)
-2. If stale or missing, invoke `taskplanner` to build it. **Pass the detected workbench domain** (from Setup Step 5) as the `domain` parameter — prefix the dispatch prompt with `**Domain:** <code|data>` on its own line so the agent's Setup picks it up.
-3. **Commit the rebuild before Phase 2 starts — you are its owner.** `$TASKLIST` and the history entry beside it are `taskplanner`'s alone to *write* and yours alone to *commit*: `taskplanner` does not commit, and you dispatched it outside the Turn loop, where Step 3b's staging list does not exist. Neither party owned the handoff, and the cost is measured — the queue session `260810-1646` worked from, 2128 lines and 1409 insertions against the committed copy, was uncommitted for eighteen commits, and its history entry was untracked the whole time (`260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md` in `$SCAN_ISSUES`).
+1. Invoke `taskplanner` to build the queue. **Pass the detected workbench domain** (from Setup Step 5) as the `domain` parameter — prefix the dispatch prompt with `**Domain:** <code|data>` on its own line so the agent's Setup picks it up.
+2. **Read the queue out of taskplanner's report** — it is returned to you, not written to a file. There is nothing here to stage and nothing to commit, and nothing on disk that can go stale between this dispatch and the next: the queue you hold is the queue you were handed, and it lives for exactly this session. Persist it as described under **Persistent State File** — `work_queue` in `agentstate.yaml` is its only durable copy, and it is what a resumed session picks up.
 
-   Take the paths from the `**Files written:**` field of taskplanner's report — `agents/taskplanner.md` Step 6 mandates it on every run, absolute, one per line — and run **the Step 3b shape unchanged** over them: `Write` the message to `/tmp/fusion-commit-msg-queue-<stamp>.txt`, then
+   **One file does come out of this dispatch: taskplanner's history entry**, named on the `**History entry:**` line of its report. You dispatched it outside the Turn loop, where Step 3b's staging list does not exist, and that is the gap the queue rebuild of session `260810-1646` fell through (`260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md` in `$SCAN_ISSUES` — its queue half is moot now, its history-entry half is not). Carry that path into the **first** Step 3b staging list of Turn 1, written out in full and absolute. If Phase 2 never runs, the **Staging check** at Cleanup names it as a `record` row and it goes into the housekeeping split; that check is the backstop, not the plan.
 
-   ```bash
-   "$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with orchestrator -- bash -c 'git add <absolute-path> <absolute-path> && git commit -F /tmp/fusion-commit-msg-queue-<stamp>.txt'
-   ```
-
-   Every path written out in full and absolute, exactly as Step 3b step 4 requires. Nothing here widens that rule — it applies it at a point that previously had no staging list at all, which is why the omission was invisible rather than wrong. A recorded `**Files written:** none` is an answer, not an omission — it is what the routability case at step 4 produces, and there is nothing to commit. If the report carries no `**Files written:**` field at all, the report is incomplete: re-dispatch for that one line, or read the two paths off disk and write them out yourself. **Do not reach for a directory argument, `-A` or `-u`** — that is the opposite defect (`f38f37d`, three records out of HEAD) and it is forbidden here for the same reason it is forbidden there.
-
-   **This holds for every `taskplanner` dispatch, not only this one.** The Rebalance gate's *Revise Artifact* option and the Phase-3 post-verdict dispatch both rebuild the queue and both produce the same two files with the same exposure.
-
-4. Read the generated tasklist as your work queue. **Handle the "no routable tasks" case:** if the taskplanner returns a structured "no routable tasks" result (per its Step 1.5), emit a `queue_empty` event, **REFRESH DASHBOARD** with `[QUEUE EMPTY] orchestrator -> No routable tasks; <N> open items reported to user`, list the open items to the user with file paths, and skip Phase 2 entirely. Proceed to Phase 4 with a session summary.
-5. **Surface open `_o_` decisions before finalising the queue.** Open decisions — the `*_o_*.md` files across **every** path in `$SCAN_DECISIONS`, the active Circle's store and the shared one alike — are user-input gates, not executor work. List them to the user in the dashboard and Phase 4 summary. The user may answer them inline (you record the answer + transition `_o_`→`_a_`), defer them, or proceed without (the queue runs without realisation work for those decisions).
+   **Handle the "no routable tasks" case:** if the taskplanner returns a structured "no routable tasks" result (per its Step 1.5), **REFRESH DASHBOARD** with `[QUEUE EMPTY] orchestrator -> No routable tasks; <N> open items reported to user`, list the open items to the user with file paths, and skip Phase 2 entirely. Proceed to Phase 4 with a session summary.
+3. **Surface open `_o_` decisions before finalising the queue.** Open decisions — the `*_o_*.md` files across **every** path in `$SCAN_DECISIONS`, the active Circle's store and the shared one alike — are user-input gates, not executor work. List them to the user in the dashboard and Phase 4 summary. The user may answer them inline (you record the answer + transition `_o_`→`_a_`), defer them, or proceed without (the queue runs without realisation work for those decisions).
 
 **Targeted scope (mode `plan`, `bundle`, `custom`):**
 1. Read the source file(s) directly
 2. Extract open steps/items
-3. Build a local work queue in the same format as `$TASKLIST`:
+3. Build the work queue in the shape `agents/taskplanner.md` Step 4 reports:
    - Task ID, source file, summary, dependencies, priority, executor
 
 **For each task, classify:**
@@ -435,7 +426,7 @@ After approval, the plan file becomes the input for Phase 1 (treat it as mode `p
 
 Order tasks by dependency (blocked tasks after their dependencies) then by priority within the same dependency tier.
 
-Emit `queue_built` event and **REFRESH DASHBOARD** — overwrite `orchestrator-live.md` with the full task list under "Up Next", counters showing `**Turn:** --/<max> | **Tasks:** 0/<total>`, and `## Current` showing `[SETUP] orchestrator -> Queue built, ready to start Turn 1`.
+Write the ordered queue to `agentstate.yaml` (see **Persistent State File → Write Points**) and **REFRESH DASHBOARD** — overwrite `orchestrator-live.md` with the full task list under "Up Next", counters showing `**Turn:** --/<max> | **Tasks:** 0/<total>`, and `## Current` showing `[SETUP] orchestrator -> Queue built, ready to start Turn 1`.
 
 ## Agent Routing Table
 
@@ -497,7 +488,7 @@ Process tasks top-to-bottom from the work queue. For each task:
    - If out-of-scope files were modified, revert them with `git checkout HEAD -- <file>`, emit `revert` event, and file an issue at `$OUT_ISSUE` for the correct agent
 6. **Mark complete.** A task the verification line left blocked does not reach this step: leave its source marker at `_p_`, emit `task_error`, **REFRESH DASHBOARD** showing it as `[ERROR]`, and carry the executor's stated reason into the queue entry.
    - Update the source file per `fusion-workbench-conventions.md` (plan step to `[DONE]`, issue: append resolution note and rename marker to `_c_`)
-   - Update `$TASKLIST` if it exists (mark task `[x]`)
+   - Mark the task done in `agentstate.yaml`'s `work_queue`
    - Emit `task_done` event
    - **REFRESH DASHBOARD** — overwrite `orchestrator-live.md` showing this task as `[DONE]` with commit hash, increment counters, update blocked/unblocked tasks
 
@@ -737,7 +728,7 @@ Update the history file `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` (the 
 
 Four rows of that budget table count records rather than tasks — `Issues created`, `Issues resolved`, `Decisions answered`, `Decisions implemented` — and they are read off the stores at write time, never accumulated across Turns in your head. Measured: a session reported *"18 defect records closed, 13 filed"* where the stores held **20 and 15**. The endpoint check that would normally catch a miscount passed on both pairs, because `48 − 20 + 15` and `48 − 18 + 13` both land on the 43 open records the session actually ended with; two compensating errors of the same size are invisible to the one invariant a hand-kept count has. The record is `260810-1205_*_the-session-closure-and-filing-counts-are-hand-maintained-and-both-drifted-by-two-against-the-disk.md` in `$SCAN_ISSUES`.
 
-Run this alongside the coverage read below, and for the same reason: both read `agentstate.yaml`, which Cleanup deletes. The block re-resolves `WORKBENCH`, `SCAN_ISSUES` and `SCAN_DECISIONS` through `bin/fusion-paths` instead of reading what Setup step 2 held, for the reason the queue retirement in Phase 4 re-resolves `OUT_PLAN`: the Bash tool gives every call its own shell, so no value Setup resolved survives to here. The assertion in front of the read is the conventions file's empty-key rule (`## Path Resolution` → *Where the call belongs*), and because the block resolves the keys itself, the only thing that assertion can now be reporting is the resolver — read the exit code it prints under that file's exit-code table, where 3 is an orphaned or corrupt `.active-circle` for the user to fix and 4 is a fusion bug. Each `SCAN_*` may name **two** stores, which is why the store list is turned into lines and read rather than iterated as `for d in $SCAN_ISSUES`: that loop splits an unquoted parameter on spaces under bash and does not under zsh, so it is one shell's correct code and the other's silent `find` on a single path made of two, failing into `2>/dev/null` and reporting the Circle's records as absent. Lines read the same in both. Verified in both shells, single-store and two-store, with the Circle's store empty at the anchor and populated.
+Run this alongside the coverage read below, and for the same reason: both read `agentstate.yaml`, which Cleanup deletes. The block re-resolves `WORKBENCH`, `SCAN_ISSUES` and `SCAN_DECISIONS` through `bin/fusion-paths` instead of reading what Setup step 2 held: the Bash tool gives every call its own shell, so no value Setup resolved survives to here. The assertion in front of the read is the conventions file's empty-key rule (`## Path Resolution` → *Where the call belongs*), and because the block resolves the keys itself, the only thing that assertion can now be reporting is the resolver — read the exit code it prints under that file's exit-code table, where 3 is an orphaned or corrupt `.active-circle` for the user to fix and 4 is a fusion bug. Each `SCAN_*` may name **two** stores, which is why the store list is turned into lines and read rather than iterated as `for d in $SCAN_ISSUES`: that loop splits an unquoted parameter on spaces under bash and does not under zsh, so it is one shell's correct code and the other's silent `find` on a single path made of two, failing into `2>/dev/null` and reporting the Circle's records as absent. Lines read the same in both. Verified in both shells, single-store and two-store, with the Circle's store empty at the anchor and populated.
 
 ```bash
 R=$("$FUSION_PLUGIN_ROOT/bin/fusion-paths" orchestrator); X=$?
@@ -838,92 +829,13 @@ After reconciler returns and any Rebalance gate is resolved, run this step if a 
 
    (or `_b_`). Quote both operands. Unquoted, the shell reads `_t_` as a bracket expression matching the single character `t`; today that happens to fall back to the literal name because nothing matches, but the moment a file named `t-circle.md` exists next to it the `mv` addresses that file instead — silently, and with the record it was meant to rename left untouched. Then append a `## Closure note` section to the renamed record, and in the same edit set that record's `**Status:**` head field to the word matching the new marker — `closed` for `_c_`, `bounded` for `_b_`, `superseded` for `_s_` (see **Circle head fields**). The Closure note cites the orchestrator session history file path and the Phase-3 verdict.
 
-4. **Clear `.active-circle`.** Run `rm -f fusion-workbench/.active-circle`. (Use `rm -f`; absence after this point is the canonical "no active Circle" state.)
-
-   **Retire the queue in the same command as that clear** (see **The queue's ground** below). Clearing the pointer is what makes a closure a closure — the one act in this step that cannot be skipped and still leave a closed Circle — so the queue's fate rides it rather than standing beside it as a step of its own. With `DIR` as the Circle directory path from step 1:
-
-   ```bash
-   Q=fusion-workbench/tasklist.md
-   G=$(grep -m1 '^\*\*Active Circle:\*\*' "$Q" 2>/dev/null | grep -oE 'circles/[A-Za-z0-9._-]+|`[A-Za-z0-9._-]+`' | head -1 | tr -d '`' | sed 's|^circles/||')
-   if [ -n "$G" ] && [ "$G" = "$(basename "$DIR")" ]; then
-     P=$("$FUSION_PLUGIN_ROOT/bin/fusion-paths" orchestrator | sed -n 's/^OUT_PLAN=//p')
-     if [ -n "$WORKBENCH" ] && [ -n "$P" ]; then
-       mkdir -p "$WORKBENCH/$P"
-       mv "$Q" "$WORKBENCH/$P/$(date +%y%m%d-%H%M)_c_retired-tasklist.md"
-     else
-       echo "fusion bug: WORKBENCH or OUT_PLAN empty — queue not retired, left at $Q" >&2
-     fi
-   fi
-   rm -f fusion-workbench/.active-circle
-   ```
-
-   `$OUT_PLAN` is re-resolved here rather than reused from Setup, for the reason step 1 gives about the pointer: a Circle activated mid-session is not reflected in a `fusion-paths` call that ran before the activation. The re-resolution runs while the pointer still names the closing Circle, so it lands in that Circle's own plan store — which is where the queue belongs by the Origin Rule, since it was built to execute that Circle's Directive.
-
-   **Nothing is written through a key that came back empty** (`rules/fusion-workbench-conventions.md` `## Path Resolution` → *Where the call belongs*). `fusion-paths` exiting 3 or 4 prints nothing, so `sed -n 's/^OUT_PLAN=//p'` yields the empty string; an unguarded `mkdir -p "$WORKBENCH/$P"` then reads as `mkdir -p "$WORKBENCH/"`, succeeds, and the `mv` lands the queue at the **workbench root** under a `_c_` marker no scan expects. An unsubstituted `$WORKBENCH` beside it aims the same `mv` at `/`. The check repeats Setup step 2's because it has to: the Bash tool gives every call its own shell, so no value Setup resolved survives to here. It is the same assertion, in the same spelling, that `/fusion:cadence` step 8 carries for the same reason.
-
-   **The empty key skips the retirement; it does not skip the clear.** Naming the key and leaving the queue where it is costs nothing — the file is still at the root, and the next read reports it stale under row 2 of the table below. Exiting before `rm -f` would leave a renamed `_c_` record beside a live pointer, which is a closure that did not close. So the assertion sits inside the `if`, not in front of the whole command. If it fires, report it to the user as a fusion bug in the session report, in place of the retirement note.
-
-   Plain `mv`, never `rm`: the queue is authored text with reasoning and acceptance wording, which is why a tracked workbench tracks it. Append two lines to the head of the moved file naming the closure that retired it and this session's history file. **The queue is retired only when its own head names the closing Circle** — a queue that names no Circle was not built on this ground and is left where it is; retiring it would destroy a valid backlog. If the retirement fired, say so in the session report: the entries that were not this Circle's are re-derivable from the records, which are the authority, but the queue's prose is not, and it is now at the path you moved it to.
+4. **Clear `.active-circle`.** Run `rm -f fusion-workbench/.active-circle`. (Use `rm -f`; absence after this point is the canonical "no active Circle" state.) Clearing the pointer is what makes a closure a closure — the one act in this step that cannot be skipped and still leave a closed Circle.
 
 5. **Dispatch playmaker.** Use `Agent(fusion:playmaker)` with the prompt prefix `**Domain:** <detected-domain-from-Setup-Step-5>`. Playmaker regenerates `$PORTFOLIO` to reflect the closure and (per its process Step 5, "Detect Bounded-Closure propagation") writes any `## Parent grounding stale` notes for `_b_` propagation.
 
 6. **Append `## Portfolio update` section** to the orchestrator's session history file citing the playmaker's history file path.
 
 7. **Emit a `portfolio_refresh` event.**
-
-### The queue's ground
-
-`fusion-workbench/tasklist.md` is **derived** from the records and **durable** in the file system. It is built once against the workbench as it stood that minute, and where a project tracks its workbench it is git-tracked, because it carries reasoning and acceptance wording rather than a machine refresh (`rules/fusion-workbench-conventions.md` `## Which of them a tracked workbench tracks`). Those two properties pull against each other: the ground the queue was built on moves, and the file does not move with it.
-
-The ground is `fusion-workbench/.active-circle`. It moved on 260807 and the queue did not: the active Circle was **superseded** mid-session while a queue naming it stayed at the root, and for the next seven hours eleven of its entries described work a commit had already made pointless. Several agents read the file as stale that session and none could act on it, because `tasklist.md` is taskplanner's alone to write. The record is `260807-1515_*_die-warteschlange-veraltet-wieder-weil-nur-die-neuerzeugung-gebaut-wurde-nicht-die-vorbeugung.md` in `$SCAN_ISSUES`; its predecessor was closed by regenerating the file, and the file was stale again seven hours later, which is why the answer here is not a third regeneration.
-
-**The pointer is the condition, not an event list.** A rule keyed to the closure markers has no event for a supersession, and that is precisely how the 260807 case got through. Everything below hangs on `.active-circle` changing, whatever marker transition was behind it.
-
-#### Reading a queue
-
-Two inputs decide whether the queue at the root is current: the `**Active Circle:**` line its head carries, and the pointer. The producer writes that line on every run — `agents/taskplanner.md` Step 4 mandates it, in two spellings: a backticked `circles/<dirname>` when a Circle was active, the bare word `none` when none was. Run this before treating the queue as current, from the workbench's parent directory:
-
-```bash
-Q=fusion-workbench/tasklist.md; P=fusion-workbench/.active-circle
-[ -f "$Q" ] || { echo "queue: none at the root"; exit 0; }
-G=$(grep -m1 '^\*\*Active Circle:\*\*' "$Q" 2>/dev/null | sed -E 's/^\*\*Active Circle:\*\*[[:space:]]*//; s/[[:space:]].*$//; s/`//g; s|^circles/||')
-AC=$(cat "$P" 2>/dev/null); AC=${AC:-none}
-if [ -z "$G" ]; then
-  echo "queue: NO GROUND RECORDED — no '**Active Circle:**' line in its head, so it was written before the producer mandated one. Which Circle it was built for is not recoverable from the file. Rebuild it, or read it as history."
-elif [ "$G" = "$AC" ]; then
-  [ "$G" = none ] && echo "queue: current — unaffiliated backlog, no Circle active and none named" \
-                  || echo "queue: current — built for Circle $G, which is active"
-else
-  echo "queue: STALE — built for ${G}; active is ${AC}"
-fi
-```
-
-Both inputs are now strings the two sides recorded, so the comparison is one equality and the table is two rows — one per outcome of it. `none` is a recorded ground like any other, which is what lets the head-says-none cases be compared rather than guessed at:
-
-| The queue's head | `.active-circle` | Verdict |
-|---|---|---|
-| names a Circle, or `none` | holds the same ground — that Circle, or nothing where the head says `none` | **current**. With `none` on both sides it is an **unaffiliated backlog**: a queue over `shared/` with no Circle to outlive. |
-| names a Circle, or `none` | holds different ground — another Circle, nothing where the head names one, or a Circle where the head says `none` | **stale** — its entries were chosen against ground that is not the ground any more. Do not consume it as current; rebuild it, or read it as history. |
-
-**Stale is a statement about ground, not a verdict on the entries.** A backlog that predates an activation lands in row 2 — it was built with no Circle active, so it was not built for the Circle now active — and its entries can still be perfectly good work. It is not deleted for it: the retirement at closure touches only a queue whose head names the *closing* Circle.
-
-A queue carrying no `**Active Circle:**` line at all is not a row here, because it is not a format the specification can produce. It is a file written before the mandate, and its ground is not recoverable from its text — the `**Source:**` paths do not answer it, since a queue built for one Circle routinely draws records from several (`rules/critical-stance.md` §4). The check reports it as **no ground recorded** and says so loudly. Until the mandate landed, that case was carried by two further table rows that settled it with `find -newer`: an ordering test a checkout or a copy resets in the direction that reads as *current*, so it failed quiet rather than loud. Those rows are gone, and nothing here consults a modification time any more.
-
-`/fusion:setup` Step 3 and `/fusion:next` Step 5 run this, and this section is the canonical implementation both cite.
-
-#### Where the ground moves
-
-| Site | What happens to the queue |
-|---|---|
-| Phase 4 step 4 — the pointer is cleared at closure | **Retired** in the same command, when its head names the closing Circle *and* the keys the move writes through resolved. See step 4. |
-| `/fusion:next` step 6.3 — the pointer is written at activation | Left alone, and **said out loud** in the same command: a queue already at the root was built with no Circle active, so it is a backlog rather than this Circle's work. Retiring it would destroy a valid queue. |
-| The `_a_`→`_t_` pointer write this prompt performs directly (see **You may**) | Same as 6.3, and for the same reason. The next read of the queue reports it **stale** under row 2 — its head says `none`, the pointer now holds a Circle — which is exact, where the ordering test this replaced was not. |
-
-#### What this is, honestly
-
-**A convention, not an enforcement**, with one contingent exception. Nothing executes the two tables above; they are prompt text, and prompt text loses to task pressure — this project's own worked case is "Problem 11" in `CLAUDE.md`, where a "MUST" in this prompt was skipped under the urgency of a user request (`rules/critical-stance.md` §2). The exception is the retirement: *when it is performed*, the stale queue stops existing at the root, so there is nothing left to misread. That is prevention in effect, conditional on the step running at all — and on the two keys it writes through resolving, since an empty one now skips the move rather than misdirecting it.
-
-**The producer half has landed, and what it buys is narrower than it sounds.** `agents/taskplanner.md` Step 4 now mandates the `**Active Circle:**` line on every run, `none` included, which is what let rows 3 and 4 collapse into rows 1 and 2 and the `find -newer` test go (record `260810-0431_*_the-work-queue-does-not-record-the-ground-it-was-built-on.md` in `$SCAN_ISSUES`). A mandate in a prompt is still prompt text, and this whole section is a worked case of what that is worth. What raises it above the two tables is the gate: `hooks/lib/__tests__/queue-ground-producer.test.ts` fails the suite if Step 4 stops mandating the field or stops showing both spellings, and it feeds the spellings taken out of that prompt through the snippet above, so a producer format this consumer cannot read is caught at `npm test` rather than by a session reading a queue wrong. Read that precisely: the gate proves the **specification** carries the line and that the two sides agree on its format. Nothing executes at session time, so it cannot prove a given taskplanner run wrote it — a run that skips it produces a queue that reports **no ground recorded**, which is loud rather than quiet, and that is the whole of the improvement, not a guarantee the case cannot arise. Queues written before the mandate are in exactly that position permanently: their ground was never recorded, and it is not decidable from their text (`rules/critical-stance.md` §4 — when the question is undecidable from the available inputs, the mechanism changes, not the approximation).
 
 ### Cleanup
 
@@ -978,7 +890,7 @@ If the user chooses Modify, update the task description and re-route. If Skip, m
 
 When a Coherence-related condition triggers (any of the three bottom rows of the gate-rules table above — per-Turn user opt-in, per-Circle `review-needed`, per-Circle `bounded-closure-proposed`), the gate presents **four explicit options** instead of the standard Proceed/Skip/Defer/Modify:
 
-- **Revise Artifact** — the Artifact is not where it should be; the next move is another execution pass. The orchestrator dispatches `taskplanner` with the Coherence-gate's three-edge summary (or the reconciler's verdict at Phase 3) as the drift context, so taskplanner can refresh `$TASKLIST` with a new queue entry that addresses the drift. Re-enters Phase 2 with the rebuilt queue. Emits `rebalance_artifact` event. (Bounding: see Rebalance bounding below.)
+- **Revise Artifact** — the Artifact is not where it should be; the next move is another execution pass. The orchestrator dispatches `taskplanner` with the Coherence-gate's three-edge summary (or the reconciler's verdict at Phase 3) as the drift context, so taskplanner can return a refreshed queue with a new entry that addresses the drift. Re-enters Phase 2 with the rebuilt queue. Emits `rebalance_artifact` event. (Bounding: see Rebalance bounding below.)
 - **Revise Grounding** — file a new `_o_` decision record, or supersede an existing `_i_` decision (rename `_i_`→`_s_` and create a new `_o_`, per `fusion-workbench-conventions.md`). The basis we built on was wrong; the next move is to record a new question. Emits `rebalance_grounding` event. (Resume mechanics: see Rebalance bounding below.)
 - **Revise Directive** — re-shape: dispatch `shaper` with the current spec + the drift evidence. The destination we set was wrong; the next move is to re-state what we want. Emits `rebalance_directive` event. Re-enters Step 0b.1 (Shape). (Bounding: once-per-session — see Rebalance bounding below.)
 - **Accept Bounded Closure** — the Directive is not reachable as stated; what was learned along the way is the Artifact, and the session ends acknowledging that. Emits `bounded_closure_proposed` event. Marks the session for closure with `Status: Bounded Closure: <reason>` in the history file. Terminal — see Rebalance bounding below.
@@ -1176,7 +1088,7 @@ Measured here. The queue rebuild of session `260810-1646` and its history entry 
 
 **Do not answer it by widening `git add`.** The opposite defect is measured here too: a `git add -u` given the directory a batch of records had just been renamed inside staged three deletions and added nothing, and three `_o_` records left HEAD until the repair commit `f38f37d`. The shape stays exactly as Step 3b step 4 states it — no `-A`, no `-u`, no directory argument, no glob, no `.`. What changes is that the **result** is now measured, which is the move the guard itself made when it stopped predicting writes from a command's text and started fingerprinting paths (`circles/260807-0923-guard-misst-statt-orakelt`).
 
-**Run the helper at three points** — Phase 1 after a queue rebuild is committed, Step 3e in the same command as the `turn_end` emission, and Cleanup before the report:
+**Run the helper at two points** — Step 3e in the same command as the `turn_end` emission, and Cleanup before the report:
 
 ```bash
 if [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-staging-drift" ]; then
@@ -1192,7 +1104,7 @@ It prints `anchor=`, `head=`, `rows=`, `unstaged=` and `verdict=`, then **one li
 
 | Class | What it is | What you do |
 |---|---|---|
-| `record` | an authored artifact no commit carries — `tasklist.md`, `portfolio.md`, a Circle record, or anything under an artifact store | add it to the next Step 3b staging list, written out in full and absolute |
+| `record` | an authored artifact no commit carries — `portfolio.md`, a Circle record, or anything under an artifact store | add it to the next Step 3b staging list, written out in full and absolute |
 | `commit-message` | a commit-message-shaped **name** that no artifact store owns — the class the improvised `.commit-msg-tmp` lands in | read the file first. A leftover commit message: delete it, and write the next one to the `/tmp` path Step 3b step 3 names. Anything a session authored: name the file to the user and stage it. **Do not delete on the class alone** — this is the one class decided by a name rather than a location, so a false positive can enter it, and a deletion is not recoverable (issue `260811-1141`) |
 | `in-flight` | live state and the machine-written surfaces — the dashboard, the event log, `.guard-state/`, the setup marker, this session's own history file | **nothing.** These are in flight by construction; a report about them would fire on every commit and mean nothing |
 | `unclassified` | anything else under the workbench — a user's own note file, a frozen snapshot | **nothing, and do not file an issue about it.** The helper names it and says in the same line that it is not a record store and nothing is claimed about it |
@@ -1301,8 +1213,6 @@ Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit
 | `shaper_done` | Phase 0b, shaper returned; also each portfolio-activation return | Spec file path; for portfolio-activation, also the Circle directory whose record was edited |
 | `planner_start` | Phase 0b, planner invoked | Topic or spec file path |
 | `planner_done` | Phase 0b, planner returned | Plan file path |
-| `queue_built` | Phase 1 done | Task count, blocked count |
-| `queue_empty` | Phase 1 — taskplanner returned "no routable tasks" (Step 1.5) | Open work item count |
 | `turn_start` | Beginning of each Turn | Turn number, ready task count |
 | `task_start` | Before dispatching executor | Task ID, agent, primary file |
 | `task_done` | Task completed + committed | Commit hash |
@@ -1400,7 +1310,7 @@ sequenceDiagram
 |-------|------|---------|
 | `shaper` | Phase 0b, when a custom request needs specification. Also outside every phase, in **portfolio-activation** mode, when the user's answer at a gate asked for an anticipated Circle to be re-sharpened before activation | Turn brittle input into a precise spec (with user involvement). For the second shape read **Re-sharpening an anticipated Circle** above: it carries the one condition under which you may dispatch it, the three parameter lines the dispatch must repeat on every round, and your obligation to relay the shaper's clarification rounds. |
 | `planner` | Phase 0b, after shaping or when a clear request needs an implementation plan | Design the implementation approach. Prefix `**Executors:** coder, ontocoder, analyst` on every dispatch, unconditionally. |
-| `taskplanner` | Phase 1, if scope is broad and no fresh tasklist exists | Build the dependency-ordered work queue. **Pass `domain` parameter** (from Setup Step 5 detection). May return "no routable tasks" — handle per Phase 1 step 4. Its `**Files written:**` report field is what Phase 1 step 3 stages. |
+| `taskplanner` | Phase 1, if scope is broad | Build the dependency-ordered work queue and return it in its report. **Pass `domain` parameter** (from Setup Step 5 detection). May return "no routable tasks" — handle per Phase 1 step 2. Writes no queue file, so there is nothing to stage. |
 | `coder` | Phase 2, when a task routes to application code | Implement code changes |
 | `ontocoder` | Phase 2, when a task routes to data/ontology (after human gate) | Implement data/ontology changes |
 | `coderev` | Phase 2 step 3c, after code changes land in a Turn | Review changed code files |

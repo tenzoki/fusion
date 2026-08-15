@@ -1,3 +1,10 @@
+<!-- Retired 2026-08-15 by step 10 of `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md`,
+     which removed the persisted `tasklist.md` and the queue-ground apparatus that read it.
+     Moved rather than deleted: the entries carry verification notes and acceptance reasoning that the
+     defect records they cite do not. The records under `shared/issues/` remain the authority on what is
+     open; this file is history and must not be read as a live queue. Its `**Active Circle:**` head line
+     names a field no producer writes any more. -->
+
 # Tasklist
 
 **Generated:** 2026-08-11 17:34

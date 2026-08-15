@@ -897,7 +897,7 @@ export const REACH = {
       claim:
         "A domain name in backticks, double quotes, single quotes or asterisk bold. Four " +
         "spellings, because nothing in this project requires one of them and " +
-        "`agents/taskplanner.md:125` writes the names bare.",
+        "`agents/taskplanner.md:128` writes the names bare.",
       probes: [
         "Use `data` when the data files outnumber the source files, otherwise `code`.",
         'Use "data" when the data files outnumber the source files, otherwise "code".',

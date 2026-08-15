@@ -17,8 +17,9 @@
  * different commit every day it is read. There is no cleverer parse: the
  * producer either records the range in one form or the information is not
  * recoverable (`rules/critical-stance.md` §4). Hence a mandate, and hence this
- * gate on the mandate — exactly the shape `queue-ground-producer.test.ts` uses
- * for `**Active Circle:**`, and for the same reason.
+ * gate on the mandate — the same shape the work queue's `**Active Circle:**`
+ * head line was gated in until that queue left the plugin on 2026-08-15, and
+ * for the same reason.
  *
  * ## What this gate does, and it is three things
  *

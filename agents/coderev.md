@@ -78,7 +78,7 @@ You write no separate session-history entry — your review file under `$OUT_REV
 ```
 
 - **`**Reviewed-range:**`** — the commits you actually opened, as **two resolved short hashes**. Get them with `git rev-parse --short <ref>`. Never `HEAD`, never a branch name, never a tag: those name a different commit every day the file is read, and a range that cannot be pinned to the commits it covered is not a range. Two of the ten review files that existed when this mandate was written end in `-to-head`, and neither can be tiled today.
-- **`**Not-opened:**`** — every file inside the dispatched range that you did **not** open, backticked and comma-separated, or the bare word `none` when you opened all of them. A concurrent task holding a file, a scope the dispatch narrowed, a file you ran out of budget for — all of them go here. Write `none` explicitly rather than dropping the line: a recorded absence can be compared and a missing line can only be guessed at, which is why `agents/taskplanner.md` mandates `**Active Circle:** none` for the same reason.
+- **`**Not-opened:**`** — every file inside the dispatched range that you did **not** open, backticked and comma-separated, or the bare word `none` when you opened all of them. A concurrent task holding a file, a scope the dispatch narrowed, a file you ran out of budget for — all of them go here. Write `none` explicitly rather than dropping the line: a recorded absence can be compared and a missing line can only be guessed at, which is the rule `rules/critical-stance.md` §4 states: when the producer did not record the fact, it is not recoverable from the text.
 
 A pass that opened everything in a real range, and one that did not:
 

@@ -281,7 +281,7 @@ Every step's acceptance includes `cd hooks && npm test` green and a history entr
      - Acceptance, and it is mechanical: `grep -rn 'strategic\|knowledge' agents skills rules bin hooks docs README*.md .claude-plugin` returns nothing but ordinary English usage of the words.
    - Dependencies: step 8. The analyst-executor decision that once blocked this step is answered and its answer is folded into the Changes above; nothing here waits on it.
 
-10. **Remove the persisted `tasklist.md` and the queue-ground apparatus** *(record item 4)*
+10. [DONE] **Remove the persisted `tasklist.md` and the queue-ground apparatus** *(record item 4)*
     - Executor: `coder`
     - Files: `agents/orchestrator.md`; `agents/taskplanner.md`; `agents/{coder,ontocoder,playmaker,reconciler,coderev,ontorev,analyst}.md`; `skills/{next,archive,cleanup,setup,help}/SKILL.md`; `bin/fusion-paths`; `bin/fusion-rules`; `bin/fusion-staging-drift`; `rules/{fusion-workbench-conventions,workbench-path-resolution,context-lean-claude-md,design-diagrams}.md`; `hooks/lib/{domain-cascade,staging-drift,review-coverage}.ts`; `hooks/tracker.ts`; `hooks/staging-drift.ts`; `hooks/lib/__tests__/{queue-ground-producer,queue-ground-lint,queue-commit-ownership-lint,queue-retirement-empty-key}.test.ts` (deleted) and `{staging-drift,commit-message-path,fusion-paths,path-literal-lint,context-manifest,review-coverage-mandate,rules-emission-golden}.test.ts` plus `fixtures/rules-emission.golden` (edited); `fusion-workbench/tasklist.md` (deleted); `README.md`; `README-agents.md`; `README-hooks.md`; `docs/philosophy.md`; `CLAUDE.md` (enumeration half only).
     - Changes — **what leaves `agents/orchestrator.md`:**

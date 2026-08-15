@@ -90,7 +90,7 @@ These are non-negotiable defaults. The user can override them at the `refine` st
 
 1. **Reserved — never archive.** The root-anchored surfaces, because their consumers read them at fixed paths and none has a fallback (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`):
    - `$WORKBENCH/agentstate.yaml`, `$WORKBENCH/orchestrator-live.md`, `$WORKBENCH/orchestrator-events.jsonl`
-   - `$WORKBENCH/$TASKLIST`, `$WORKBENCH/$PORTFOLIO`
+   - `$WORKBENCH/$PORTFOLIO`
    - `$WORKBENCH/.guard-state/` **apart from `events.jsonl`** — the counters and throttle stores in there (`escalation.json` and its siblings) each describe *now* and are rewritten in place. The append-only `events.jsonl` beside them is not a state file and has its own case; see *Rolling the guard event log* below.
    - `$WORKBENCH/.commit-lock/`, `$WORKBENCH/.session-marker`, `$WORKBENCH/.active-circle`, `$WORKBENCH/.fusion-setup`
    - `$WORKBENCH/monitor`, `$WORKBENCH/stilwerk/`, `$WORKBENCH/stashes/`

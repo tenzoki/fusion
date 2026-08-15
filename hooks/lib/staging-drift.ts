@@ -3,14 +3,22 @@
  *
  * ## The defect this answers
  *
- * The 17:23 queue rebuild of session `260810-1646` — `tasklist.md`, 2128 lines,
- * 1409 insertions against the committed copy — and its companion history file
+ * The 17:23 queue rebuild of session `260810-1646` — the root-anchored
+ * `tasklist.md` of the day, 2128 lines, 1409 insertions against the committed
+ * copy — and its companion history file
  * `shared/history/260810-1723-tasklist-update.md` never entered a commit. The
  * queue the whole session worked from survived only in the working tree, for
  * eighteen commits, and nothing would have noticed if an ordinary
  * `git checkout -- fusion-workbench/` had taken it. A third file,
  * `.commit-msg-tmp`, sat at the workbench root holding the last commit's
  * message, because the message was written there instead of under `/tmp`.
+ *
+ * The queue file itself is gone — the persisted `tasklist.md` and the whole
+ * apparatus that read it left the plugin on 2026-08-15, and `taskplanner` now
+ * returns its queue in a report. The history entry beside it did not go: it is
+ * still written, still dispatched for outside the Turn loop, and still a
+ * `record` here. The defect this module answers is the class, not the one
+ * file, and the class outlived its worked case.
  *
  * ## Why the staging rule did not catch it, and what that implies
  *
@@ -71,9 +79,9 @@
  *     leaves behind. The store scoping is not a detail — without it the class
  *     also claimed every authored record whose topic slug says "commit
  *     message", and told the model to delete it (issue `260811-1141`).
- *   - `record` — an authored artifact: the root-anchored `tasklist.md` and
- *     `portfolio.md`, a Circle's `*_circle.md`, or anything under an artifact
- *     store. These are what a staging list is supposed to name.
+ *   - `record` — an authored artifact: the root-anchored `portfolio.md`, a
+ *     Circle's `*_circle.md`, or anything under an artifact store. These are
+ *     what a staging list is supposed to name.
  *   - `in-flight` — the live-state surfaces `rules/fusion-workbench-conventions.md`
  *     `## Which of them a tracked workbench tracks` groups as "do not track it",
  *     plus the two tracked-but-machine-written ones and the session's own
@@ -209,7 +217,6 @@ const STORES = [
 
 /** The root-anchored records: authored text, not machine-refreshed. */
 const ROOT_RECORDS: { path: string; why: string }[] = [
-  { path: "tasklist.md", why: "the work queue — the file this issue was filed about" },
   { path: "portfolio.md", why: "the Circle portfolio briefing" },
 ];
 

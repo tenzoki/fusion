@@ -224,7 +224,7 @@ else
   exit 2
 fi
 
-# The prompt's own `$OUT_*` / `$SCAN_*` / `$PORTFOLIO` / `$TASKLIST` references
+# The prompt's own `$OUT_*` / `$SCAN_*` / `$PORTFOLIO` references
 # ARE the key set. WORKBENCH and CIRCLE are deliberately not matched: both are
 # emitted unconditionally, so they are not part of any consumer's set.
 #
@@ -235,7 +235,7 @@ fi
 # A consumer whose prompt names no key derives an empty set and receives
 # WORKBENCH alone. That is a true answer, not a failure — /fusion:help and
 # /fusion:commit file nothing.
-KEYS="$(grep -oE '\$(OUT|SCAN)_[A-Z][A-Z_]*|\$PORTFOLIO|\$TASKLIST' "$PROMPT" | tr -d '$' | sort -u | tr '\n' ' ')"
+KEYS="$(grep -oE '\$(OUT|SCAN)_[A-Z][A-Z_]*|\$PORTFOLIO' "$PROMPT" | tr -d '$' | sort -u | tr '\n' ' ')"
 
 # ---------------------------------------------------------------------------
 # 2. Locate the workbench. Delegated to bin/fusion-workbench-root — the single
@@ -357,7 +357,6 @@ value_for() {
     SCAN_BACKLOG)       printf '%s' "shared/backlog" ;;
     SCAN_CIRCLES)       printf '%s' "circles" ;;
     PORTFOLIO)          printf '%s' "portfolio.md" ;;
-    TASKLIST)           printf '%s' "tasklist.md" ;;
     *)
       # Reached when a key is in ORDER but has no value here — the second half
       # of the same guarantee the ORDER check below enforces. Between them:
@@ -380,7 +379,7 @@ ORDER="OUT_PLAN OUT_HISTORY OUT_ISSUE OUT_DECISION OUT_REVIEW OUT_ANALYSIS
        OUT_CONSULT OUT_MEMO OUT_BACKLOG OUT_CIRCLE
        SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_REVIEWS
        SCAN_ANALYSES SCAN_CONSULT SCAN_BACKLOG SCAN_CIRCLES
-       PORTFOLIO TASKLIST"
+       PORTFOLIO"
 
 has_key() {
   local want="$1" k

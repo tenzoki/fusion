@@ -208,7 +208,7 @@ cd hooks && npm run build && cd .. \
 
 **Caught.** Each line is asserted against probes in `domain-cascade.test.ts`:
 
-- A domain name in backticks, double quotes, single quotes or asterisk bold. Four spellings, because nothing in this project requires one of them and `agents/taskplanner.md:125` writes the names bare.
+- A domain name in backticks, double quotes, single quotes or asterisk bold. Four spellings, because nothing in this project requires one of them and `agents/taskplanner.md:128` writes the names bare.
 - A paraphrase naming the counts in prose — code files, source files, data files, and the decisions, issues, analyses and commits the retired branches read — rather than by variable name.
 - A paraphrase written with the cascade's own variable names.
 - A stale copy restating the retired four-outcome cascade. Its two surviving outcomes still fire, and the four counts only the retired branches ever read are still recognised as inputs, so the likeliest second copy from here on is caught rather than walked past.

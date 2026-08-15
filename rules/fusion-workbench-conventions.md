@@ -47,7 +47,6 @@ fusion-workbench/
 ├── archive/                           # /fusion:archive target
 ├── stilwerk/                          # stylometric profiles
 ├── portfolio.md                       # playmaker output
-├── tasklist.md                        # generated work queue (taskplanner only)
 ├── monitor                            # dashboard binary, copied at setup
 ├── .active-circle                     # pointer to the active Circle directory
 ├── .fusion-setup                      # setup marker (JSON: timestamp + plugin version)
@@ -72,7 +71,7 @@ The list is exhaustive as written, and it is a list rather than a count on purpo
 
 Whether the workbench is under version control at all is the project's decision — fusion ships no `.gitignore` rule for it, so a consuming project's workbench may be tracked, ignored, or neither. Where it *is* tracked, the root-anchored surfaces still split in two, by whether a past version answers anything:
 
-- **Records — track them.** `orchestrator-events.jsonl` (append-only across all sessions, read cross-session), `.guard-state/events.jsonl` (the guard's own append-only log — see below), `tasklist.md` and `portfolio.md` (authored text, not machine-refreshed).
+- **Records — track them.** `orchestrator-events.jsonl` (append-only across all sessions, read cross-session), `.guard-state/events.jsonl` (the guard's own append-only log — see below), and `portfolio.md` (authored text, not machine-refreshed).
 - **Live state — do not track it.** `agentstate.yaml`, `orchestrator-live.md`, `.guard-state/` **apart from `events.jsonl`**, `.commit-lock/`, `.session-marker` and `.active-circle` each describe *now* and are overwritten or removed; a committed version is noise in every diff and, restored by a checkout, a statement about a session that has ended. `monitor` is a verbatim copy of the shipped `bin/monitor` that `/fusion:setup` re-creates.
 
 **`.guard-state/` is not one thing, and the directory is the wrong unit to classify.** The counters and throttle stores in it — `escalation.json` and the measurement throttle records — are rewritten in place and a past version of them answers nothing, so they are live state. `events.jsonl` beside them is appended to and never rewritten, and a past version answers a great deal: which tool call the guard blocked, when it halted, when a human cleared the halt. It is classified by what it is rather than by the directory it sits in, and it is a **record** (decision `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`).
@@ -201,7 +200,7 @@ It carries the issues/planning marker vocabulary below, read for this kind as: `
 Two bounds:
 
 - **No agent files a backlog entry.** Filing is originating an idea; maintenance is reshaping ideas the store already holds. A defect an agent finds is an issue and a choice point is a decision record, exactly as before. The user files, by hand or through `/fusion:memo`; the playmaker maintains; nobody else writes here.
-- **The backlog is not the work queue.** It holds ideas, not tasks. Whether `taskplanner` and `tasklist.md` retire into it is open (option 4 of the backlog decision, which the user left undecided), and nothing here answers it in either direction.
+- **The backlog is not the work queue.** It holds ideas, not tasks. The work queue is not a file at all — `taskplanner` builds it from the records and returns it in its report, for that session only. Option 4 of the backlog decision asked whether `taskplanner` and the queue retire into the backlog; the persisted queue has since retired outright, and whether the agent should is still open.
 
 **Maintenance is four operations and a ranking rename.** Splitting one entry's ideas across several files, merging several statements of one idea into one, closing an entry whose idea is no longer live, and deferring one to a named later moment — **four**, each performed only with a user confirmation the run holds for that operation. Renaming between `_o_` and `_p_` states the playmaker's own ranking of a live idea and is autonomous. None of the five adds an idea to the store, which is why the bound survives them: the text a merge writes consolidates statements already filed.
 
@@ -223,7 +222,7 @@ Always obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`. LLMs have no clock — nev
 **The surface decides.** Not the length of the text, not who reads it, not which agent wrote it. Every piece of output falls into exactly one of four cases:
 
 - Output the user reads in the terminal — gate prompts, `AskUserQuestion` text, status reports, chat replies — is written in the **chat language**.
-- Output that persists as a file **for the project's own use** — specs and plans, defect and decision records, session histories, reviews, analyses, memos, the portfolio and the task queue — is written in the **artifact language**.
+- Output that persists as a file **for the project's own use** — specs and plans, defect and decision records, session histories, reviews, analyses, memos and the portfolio — is written in the **artifact language**.
 - Output that persists as a file **for a reader outside the project** — a customer deliverable: the Markdown documents and branded decks `agents/editor.md` produces, and its translations of them — is written in the language **the dispatching task names**. There is no default and no fallback, and the editor **halts** when the task names none.
 - Text that ships to consuming projects is **English**, whatever either declaration says. The exempt surfaces are listed below.
 
@@ -291,7 +290,6 @@ Patterns attach to the **kind of artifact**, not to a directory. The same kind c
 | Backlog entry | `$OUT_BACKLOG` | `YYMMDD-HHMM_S_<topic>.md` | yes (issues/planning vocabulary) |
 | Cadence digest | `$OUT_MEMO` | `cadence-<username>.md` | no |
 | Portfolio | `$PORTFOLIO` | fixed | — |
-| Task queue | `$TASKLIST` | fixed | — |
 
 `<sender>` on a review file is `coderev` or `ontorev`. It is what distinguishes the two review kinds now that they share one `reviews/` directory — it is mandatory, and the document header repeats it. Older files may carry a third sender, `conceptrev`, retired with its agent on 2026-08-15.
 

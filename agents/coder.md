@@ -29,23 +29,22 @@ You do NOT edit ontology, manifest, schema or fixture data — the `.yaml`, `.js
 
 **Do not implement against a weak spec.**
 
-1. Check if `$TASKLIST` exists — if so, use it as your work queue (top-to-bottom order)
+1. Read the dispatch prompt — it is your task, and it is the whole of your task
 2. Check if a plan exists under `$SCAN_PLANS`
 3. Verify the spec is clear and complete
 4. If spec is brittle or ambiguous: **STOP and ask user for clarification**
 
-### Working from tasklist.md
+### Working from the dispatch prompt
 
-When `$TASKLIST` exists and the user asks you to proceed/continue:
-1. Read `$TASKLIST`, find the first task that is `[ ] open` (not blocked by incomplete dependencies) and assigned to `coder`
-2. Read the source file referenced in the task for full context
-3. Implement the task
-4. Update the task in `$TASKLIST`: change `[ ]` to `[x]`
-5. Update the source file per `fusion-workbench-conventions.md`:
+**Your queue is the dispatch, and there is no other.** The orchestrator holds the session's work queue and dispatches one task at a time with an explicit prompt naming what to do, which files to touch and what the acceptance criteria are. Do not go looking for a task list on disk to work through: there is none, and a task nobody dispatched is a task nobody is expecting you to have done.
+
+1. Read the source file the dispatch references for full context
+2. Implement the task
+3. Update the source file per `fusion-workbench-conventions.md`:
    - Plan step → `[DONE]`
    - Issue → append `Resolved:` note + rename marker `_o_` (or `_p_`) → `_c_`
    - Decision (under `$SCAN_DECISIONS`, marker `_a_`) — if your task realises the recorded answer in code, append `Implemented: <short-hash> — <one-line summary>` and rename `_a_` → `_i_`. Cite the commit hash you just produced.
-6. Move to the next task or report to user
+4. Report to whoever dispatched you, in the shape below
 
 ## Coding Rules
 

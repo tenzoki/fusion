@@ -71,7 +71,6 @@ In the Value column, `A → B` means: `A` when a Circle is in scope, `B` when no
 | `SCAN_BACKLOG` | `shared/backlog` | Read counterpart of `OUT_BACKLOG`. Shared-only — see invariant 2. |
 | `SCAN_CIRCLES` | `circles` | Portfolio-wide scans (playmaker, `/fusion:next`). |
 | `PORTFOLIO` | `portfolio.md` | |
-| `TASKLIST` | `tasklist.md` | |
 
 ### The three unconditionally-shared kinds, and the one that meets the target argument
 
@@ -87,7 +86,7 @@ The general form, for whoever adds the fifth such kind: an unconditionally-share
 
 The resolver emits only the keys a consumer needs — a coder gets no `OUT_PLAN`, a playmaker gets no `OUT_ISSUE`. This table defines what each key *means*; **the prompt defines which keys a consumer gets.**
 
-**The key set is not declared anywhere. It is read out of the prompt.** `bin/fusion-paths <name>` greps `agents/<name>.md` or `skills/<name>/SKILL.md` for its own `$OUT_*`, `$SCAN_*`, `$PORTFOLIO` and `$TASKLIST` references, and those references *are* the set. `WORKBENCH` is emitted unconditionally; `CIRCLE` whenever a Circle is active; neither belongs to a set. A prompt that names no key gets `WORKBENCH` alone — a true answer, not a failure.
+**The key set is not declared anywhere. It is read out of the prompt.** `bin/fusion-paths <name>` greps `agents/<name>.md` or `skills/<name>/SKILL.md` for its own `$OUT_*`, `$SCAN_*` and `$PORTFOLIO` references, and those references *are* the set. `WORKBENCH` is emitted unconditionally; `CIRCLE` whenever a Circle is active; neither belongs to a set. A prompt that names no key gets `WORKBENCH` alone — a true answer, not a failure.
 
 This is what makes the rule below hold **by construction** rather than by audit:
 

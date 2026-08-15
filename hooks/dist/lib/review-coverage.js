@@ -48,10 +48,11 @@
  *
  * A file with no `**Reviewed-range:**` line is reported **unusable, by name,
  * with the reason** — never dropped, and never guessed at from its filename.
- * That is the `**Active Circle:**` lesson (`agents/orchestrator.md`
- * `### The queue's ground`): when the producer did not record the fact, it is
- * not recoverable from the text, and the mechanism changes rather than the
- * approximation (`rules/critical-stance.md` §4).
+ * When the producer did not record the fact, it is not recoverable from the
+ * text, and what changes is the mechanism rather than the approximation
+ * (`rules/critical-stance.md` §4). The worked case that taught this project
+ * the rule was the work queue's `**Active Circle:**` head line, whose consumer
+ * left the plugin with the queue file on 2026-08-15; the rule did not.
  *
  * ## What it computes
  *
@@ -191,9 +192,9 @@ export function parseRange(value) {
 /**
  * The declared out-of-scope files, and whether the field was there at all.
  *
- * A recorded `none` and an absent line are different facts and are kept apart,
- * for the reason `**Active Circle:** none` is mandated on every taskplanner run:
- * a recorded absence can be compared, a missing line can only be guessed at.
+ * A recorded `none` and an absent line are different facts and are kept apart:
+ * a recorded absence can be compared, a missing line can only be guessed at
+ * (`rules/critical-stance.md` §4).
  */
 export function parseNotOpened(value) {
     if (value === null)
