@@ -22,8 +22,10 @@ if [[ $# -lt 2 ]]; then
   echo "  will SIGTERM it before binding (intentional — clears stale prior monitors)." >&2
   echo "  Pass an unused port if you don't want this behavior." >&2
   echo "" >&2
-  echo "  Env: MONITOR_BIND sets the bind address (default 0.0.0.0 = LAN-reachable;" >&2
-  echo "  set MONITOR_BIND=127.0.0.1 for loopback-only)." >&2
+  echo "  Env: MONITOR_BIND sets the bind address. The default is the dual-stack" >&2
+  echo "  wildcard — LAN-reachable, and answering on both 127.0.0.1 and ::1, so" >&2
+  echo "  the localhost URL below is true whichever family the resolver returns" >&2
+  echo "  first. Set MONITOR_BIND=127.0.0.1 for a loopback-only IPv4 server." >&2
   echo "" >&2
   echo "  Env: MONITOR_NO_BROWSER, set to any non-empty value, starts the server" >&2
   echo "  without opening a browser tab on it." >&2
@@ -80,6 +82,27 @@ MAX_EVENTS = int(sys.argv[3])
 INTERVAL = int(sys.argv[4])
 BASE_DIR = sys.argv[5]
 BIND = sys.argv[6]
+
+# Line-buffer stdout, because this process prints once and then blocks forever.
+#
+# Python block-buffers stdout whenever it is not a terminal, and the only
+# writer here is the startup banner — a few hundred bytes, nowhere near the
+# 8 KB that would flush a block buffer on its own. serve_forever() then blocks,
+# so a monitor started with stdout redirected to a log file wrote an empty log
+# for its entire life and emitted the banner only at shutdown, if it was shut
+# down gently enough to run its exit handlers at all. Under SIGKILL the banner
+# was simply lost. Every non-interactive caller — a test harness, a CI job,
+# nohup, a background job whose output someone tails — is in exactly that case,
+# and the banner is the one place the serving URL and the watched directory are
+# stated.
+#
+# Line buffering rather than a single flush after the banner: it also covers
+# the shutdown line, and it leaves the next print anyone adds here correct by
+# default instead of correct only if they remember.
+try:
+    sys.stdout.reconfigure(line_buffering=True)
+except (AttributeError, OSError):
+    pass
 
 LIVE_MD = os.path.join(BASE_DIR, "orchestrator-live.md")
 EVENTS_JSONL = os.path.join(BASE_DIR, "orchestrator-events.jsonl")
@@ -1166,9 +1189,17 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
 import socket, signal, subprocess
 
-# Kill any previous monitor on this port
+# Kill any previous monitor on this port.
+#
+# `-sTCP:LISTEN` is load-bearing, not a tidy-up. `lsof -ti :PORT` answers "who
+# has this port open", which includes every *client* connected to it — and the
+# browser tab showing the previous dashboard is exactly such a client. So
+# starting a monitor on the port a tab was already watching SIGTERMed the
+# user's browser, which is a far larger event than the stale server this step
+# exists to clear. Narrowed to listeners, the step reaches the one process
+# whose existence would make the bind below fail, and nothing else.
 try:
-    out = subprocess.check_output(["lsof", "-ti", f":{PORT}"], stderr=subprocess.DEVNULL).decode().strip()
+    out = subprocess.check_output(["lsof", "-ti", f":{PORT}", "-sTCP:LISTEN"], stderr=subprocess.DEVNULL).decode().strip()
     for pid in out.split("\n"):
         pid = pid.strip()
         if pid and int(pid) != os.getpid():
@@ -1196,15 +1227,64 @@ class ReuseServer(http.server.ThreadingHTTPServer):
             pass
         super().server_bind()
 
+
+class DualStackServer(ReuseServer):
+    """The wildcard bind, carrying both address families on one socket.
+
+    ThreadingHTTPServer is AF_INET, so the wildcard bind `0.0.0.0` listened on
+    IPv4 alone — while every URL this script prints and opens says `localhost`,
+    which resolves to the IPv6 loopback `::1` first on macOS and on modern
+    Linux. The program was therefore naming an address it was not listening at.
+    Clients that walk the whole address list (curl, the browsers) recover by
+    retrying on 127.0.0.1 and pay only the delay of one refused connection;
+    a client that takes the first address gets `connection refused` from a URL
+    the program itself handed it.
+
+    Printing `127.0.0.1` instead would also close that gap, and it is the
+    smaller edit. It is not the one taken, for two reasons. The URL is the
+    thing a user copies, pastes and bookmarks, and `localhost` is what belongs
+    in it. And `hooks/lib/__tests__/monitor-warnings-panel.test.ts` pins the
+    launched URL to `http://localhost:${port}` — so the spelling change moves
+    a defect out of this file and into a test's expectations, while binding
+    both families makes the existing spelling true and leaves the pin correct.
+
+    IPV6_V6ONLY=0 is what makes the one socket answer IPv4 too, via v4-mapped
+    addresses. It is not universal — OpenBSD refuses v4-mapped sockets outright
+    — so a platform that rejects the option raises here and the caller below
+    falls back to the IPv4 server this file has always built.
+    """
+    address_family = socket.AF_INET6
+
+    def server_bind(self):
+        self.socket.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 0)
+        super().server_bind()
+
+
 # BIND defaults to 0.0.0.0 (LAN-reachable). MONITOR_BIND=127.0.0.1 gives a
 # loopback-only server — the test suite relies on this, because macOS parks a
 # non-loopback listener of a process without Local Network permission in
 # CLOSED state (never LISTEN) and silently drops its inbound connections.
-server = ReuseServer((BIND, PORT), Handler)
+#
+# Only the wildcard goes dual-stack. An explicit MONITOR_BIND names one
+# address and gets exactly that address, on the family it belongs to: a
+# loopback IPv6 socket cannot carry 127.0.0.1 (v4-mapping works on the
+# wildcard only), so widening `127.0.0.1` would silently move the server off
+# the address the caller asked for.
+WILDCARD_BINDS = ("0.0.0.0", "::", "")
+if BIND in WILDCARD_BINDS:
+    try:
+        server = DualStackServer(("::", PORT), Handler)
+    except OSError:
+        # No IPv6 on this host, or a kernel that will not clear V6ONLY. IPv4
+        # alone is what this file did before, and it still serves.
+        server = ReuseServer(("0.0.0.0", PORT), Handler)
+else:
+    server = ReuseServer((BIND, PORT), Handler)
 
 # Loopback-only bind: no LAN URL to print, the server answers on 127.0.0.1 only.
-# IPv4 spellings only — the server is AF_INET (ThreadingHTTPServer default), so
-# an IPv6 bind like ::1 fails at construction and never reaches this check.
+# IPv4 spellings only — an explicit bind builds the AF_INET server above, so an
+# IPv6 bind like ::1 fails at construction and never reaches this check. The
+# wildcard is dual-stack and is not a loopback bind, so it is not listed here.
 LOOPBACK_BINDS = ("127.0.0.1", "localhost")
 
 # Best-effort LAN address for the printed URL only — failure to detect an
