@@ -624,6 +624,8 @@ Evaluate after each Turn. If any condition is met, **exit the loop immediately**
 
 When a circuit breaker trips, emit a `circuit_breaker` event, update the live dashboard, log the reason in the history file, and report it to the user with full context.
 
+**Net-negative progress is the one row that reads the tally.** Both its counters are among the four Phase 4 derives off the stores rather than trusts to a count (see **State Tracking**); deriving them here would cost that store read every Turn, and it is not paid. A drift of one flips a comparison whose threshold is a zero difference, so read the row as a divergence signal, not a measurement.
+
 #### Unresolved-budget check-in
 
 **Fires only when the Turn budget came back unresolved at Setup Step 2.** When it resolved, the *Max Turns reached* row above is doing this work and this gate does not fire at all.
@@ -639,7 +641,7 @@ When a circuit breaker trips, emit a `circuit_breaker` event, update the live da
 | Guard halt | a guard halt, which is unrelated to Turn count |
 | Step 3e convergence | the queue to empty |
 
-A Turn that closes one issue and files another satisfies none of them and leaves the queue no shorter, so a session in that steady state runs forever. Removing the count-based row removes termination, not one exit among six. The count that configuration could not supply is therefore **asked for, not invented**.
+A Turn that resolves one task — closing one issue — and files another that enters the queue satisfies none of them: no error, no halt, work still runnable, and one entry off the queue for one on. So a session in that steady state runs forever. Removing the count-based row removes termination, not one exit among six. The count that configuration could not supply is therefore **asked for, not invented**.
 
 At the end of every Turn, after the circuit-breaker table has been evaluated and before Step 3e, emit `gate_hit` with reason `unresolved Turn budget` and ask with `AskUserQuestion`:
 
@@ -949,8 +951,8 @@ Each option has bounded post-action mechanics. No option is allowed to loop unbo
 - `tasks_resolved` — total tasks marked done
 - `tasks_skipped` — tasks skipped by user at human gates
 - `tasks_errored` — tasks that failed validation or agent errors
-- `issues_created` — issues filed by reviewers during incremental review
-- `issues_resolved` — issues resolved during execution
+- `issues_created` — issues filed this session by **any** agent or the user, not only by reviewers at Step 3c
+- `issues_resolved` — issues resolved this session by **any** agent
 - `decisions_answered` — count of `_o_` → `_a_` transitions on decision records this session, across every store (Grounding-growth metric)
 - `decisions_implemented` — count of `_a_` → `_i_` transitions on decision records this session, across every store (Grounding-realisation metric)
 - `commits_made` — number of successful commits

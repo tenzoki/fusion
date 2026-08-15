@@ -77,3 +77,44 @@ hundred bytes; part 3, if it becomes a sentence at `:619`, adds perhaps a hundre
 near the bound.
 
 **Found by:** coderev, review of `d33cd22..f4f01b0`, commit `3c0e7da`.
+
+---
+
+**Resolved:** 260816-0050, `coder`, in `agents/orchestrator.md` (+544 B).
+
+**Part 1 — populations aligned, residual stated rather than closed.** `:952`/`:953` now read
+"issues filed this session by **any** agent or the user, not only by reviewers at Step 3c" and
+"issues resolved this session by **any** agent". The record's first option was taken: widen the
+numerator, because a divergence metric wants every filing, and the asymmetry had no defence to
+state.
+
+**Part 3 — taken, not deferred.** The definition edit was judged *necessary but not sufficient*,
+so the accepted position is written where the row is read, after the circuit-breaker table:
+Net-negative is the one control decision reading the untrusted pair, per-Turn derivation would
+cost the Phase-4 store read on every Turn and is not paid, and the row is therefore a divergence
+signal rather than a measurement. Deriving the inputs was *not* chosen — see the note below on why
+that fix is larger than it looks.
+
+**Why derivation was not the fix.** The Phase-4 block (`:741-765`) is anchored at
+`session.git_head_at_start`, so it yields session-cumulative counts. The breaker needs a per-Turn
+delta ("2 consecutive Turns where"), which would need a second derivation anchored at
+`control.turn_start_head` — a new ~20-line block running every Turn, not a definition edit. That is
+a design change with its own cost, and it belongs in a decision record rather than in a review
+fix.
+
+**Part 2 — the example now clears each exit in that exit's own units.** `:642` reads "A Turn that
+resolves one task — closing one issue — and files another that enters the queue satisfies none of
+them: no error, no halt, work still runnable, and one entry off the queue for one on." Net-negative
+`1 > 1` false; Zero-progress checkable from the example's own text in tasks *and* issues; Error
+cascade and Guard halt named; All-blocked named; the queue-length claim now counted in queue
+entries rather than resting on a 1:1 issue-to-task mapping.
+
+**Residual, filed here rather than silently fixed.** The counters are session-cumulative
+("maintained throughout the session") while the Net-negative row reads them as a per-Turn
+comparison and the Zero-progress row reads them as per-Turn deltas outright. That ambiguity
+predates `3c0e7da`, is not what this record raises, and was left untouched.
+
+**Verification:** `cd hooks && npm test` — exit 1, sole failure
+`surface-growth-bound.test.ts > matches the checked-in golden` (the per-file byte inventory, stale
+by design and excluded from this task's scope); 750/751 pass. Run in a detached worktree carrying
+only this patch. The `agents` growth bound itself did not trip.
