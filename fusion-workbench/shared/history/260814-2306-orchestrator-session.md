@@ -116,3 +116,61 @@ failure modes measured under option 2 (a log whose last entry is 16 June, three
 Consequence carried into the plan: the `## Autonomy and safety` sentence in
 `skills/cleanup/SKILL.md` that defines autonomous as "no per-step confirmation gates" is false
 under this answer and is rewritten in the same change.
+
+## Activation and planning
+
+Circle activated: record renamed to `_t_circle.md`, `**Status:** active`, `**Active session
+history:**` pointed at this file, `.active-circle` written. Plane push at call point 1 returned
+deferred (0 pushed, 2 deferred, `PLANE_API_KEY` absent) — surfaced, not blocking. Shaping output and
+activation committed as `38b80d0`; the collapse backlog entry had never reached a commit before and
+enters history there.
+
+Planner dispatched with `**Circle:** 260815-0007-remove-eight-mechanisms-and-cap-growth`. Plan at
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md`:
+15 execution steps plus one user gate, 13 for `coder` and 2 for `ontocoder`. The Circle record's
+`**Active spec/plan:**` field was set to that path on reading the plan.
+
+Three findings moved the plan away from the record's outline:
+
+- **The reference lints make the sweep decidable.** `reference-resolution-lint.test.ts` resolves
+  every cited plugin path against the tree, so a citation is always removed before its target, and
+  the enumerations in `CLAUDE.md` must fall in the same commit as each removal rather than waiting
+  for the curator. The narrative half of `CLAUDE.md` stays a gate step.
+- **`hooks/lib/domain-cascade.ts` is rewritten, not deleted.** It is the only executable definition
+  of a decision that survives losing two of its four outcomes.
+- **`hooks/lib/state-drift.ts` exports two helpers that `staging-drift` and `review-coverage`
+  import.** They are extracted before the deletion, in the same commit, or two surviving
+  measurements break.
+
+Asked explicitly and answered: `staging-drift` and `review-coverage` both stay. The criterion is
+whether the measurement's subject survives this Circle. The counters do not; the git index and
+review coverage do.
+
+Two decisions block execution and go to the user at the plan gate (steps 9 and 12). One defect was
+filed against the Circle record itself: its `## Dependencies` cites a decision record as an issue
+and asks for a transition the decision vocabulary does not have.
+
+## Plan gate — approved, with four answers
+
+`conceptrev` verdict on the plan's two diagrams: **acceptable**. No cycle, no god-node, no orphan,
+both render. Two findings, the first of which is a defect the user chose to have fixed before
+execution: the plan's prose contradicts its own diagram on three step numbers and places the
+curator pass after the growth bound, which is the one order the plan forbids. Its `## Current
+State` also claims nine steps touch `agents/orchestrator.md` where the file lists give eight.
+Review at `circles/260815-0007-.../reviews/260815-0044-conceptrev-plan-remove-eight-mechanisms-and-cap-growth.md`.
+
+The user's four answers at the gate:
+
+1. **Plan approved, numbering corrected first.** The planner re-runs to fix the three step-number
+   references and the step-count claim before any execution begins.
+2. **The `analyst` executor set is passed on every planner dispatch** (option 1). The planner routes
+   a step to `analyst` when that step produces a strategic deliverable; the orchestrator-side
+   condition in front of that routing goes. `README-agents.md` `## Dispatch parameters` is rewritten
+   in the same change, since its "Passed by" cell cites a condition that will not exist.
+3. **Setup asks once before seeding permissions, defaulting to yes, and the inert `settings.json`
+   is deleted** along with its `install.sh` copy entry. The consent the slash command carried
+   survives the fold. The merge procedure stays `/fusion:unlock`'s and is not re-implemented, and
+   its gitignore step travels with it.
+4. **`hooks/lib/state-drift.ts` is deleted whole**, all five rows. The three rows whose subject
+   survives this Circle have never fired in either measured project. Recorded as a one-way door the
+   user was shown and accepted.

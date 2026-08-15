@@ -1,0 +1,48 @@
+The Circle record cites the investigator case-folder record as an issue and asks for a transition that vocabulary does not have
+
+---
+
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/_t_circle.md` § Dependencies, last
+bullet, cites `shared/issues/260812-0254_*_should-the-investigator-get-case-folders-with-a-status-per-case.md`
+and instructs: *"retired by the investigator fold rather than answered; close it with the fold."*
+
+Two things are wrong with that bullet, and they compound.
+
+1. **The path is wrong.** No such file exists under `shared/issues/`. The record is
+   `shared/decisions/260812-0254_o_should-the-investigator-get-case-folders-with-a-status-per-case.md`
+   — a decision record, filed by the orchestrator on the user's request, carrying `## Question`,
+   `## Options`, `## Constraints` and `## Recommendation`.
+
+2. **"Close it" is not a transition decisions have.** `rules/fusion-workbench-conventions.md`
+   `## State Markers — decisions` and `rules/decision-record-examples.md` `## Anti-patterns` both
+   state it: decisions never close, they answer, implement, defer, or get superseded, and `_c_` is
+   the issue vocabulary. An executor following the bullet literally would rename a decision record
+   to `_c_`, producing a marker that no glob in the decision vocabulary matches and that every
+   reconciliation pass would read as an issue.
+
+There is a third fact that makes the correct transition non-obvious, and it is the reason this is
+filed rather than fixed in passing. The record's own text says *"the removal recommendation for
+the investigator is withdrawn"*, on the user's contradiction of the measurement. This Circle's
+Directive reinstates the removal, on the field measurement the third analysis supplied. So the
+record is not merely retired by a fold — it is **overridden by a later decision the user took at
+this Circle's activation gate**, which is the textbook `_o_` → `_s_` case.
+
+## Context
+
+The correct transition, and what the plan's step 8 should perform:
+
+- Append to the body:
+  `Superseded by: circles/260815-0007-remove-eight-mechanisms-and-cap-growth/_t_circle.md § Grounding snapshot item 5 — the investigator is folded into the analyst on the field measurement (four dispatches, all on two days, none in the eight weeks since, input surface deleted in July). The case-folder question is retired with its subject.`
+- Rename `shared/decisions/260812-0254_o_…` to `shared/decisions/260812-0254_s_…`.
+
+`_o_` → `_s_` is explicitly permitted: worked transition 5 in
+`rules/fusion-workbench-conventions.md` `## State Markers — decisions`, "a new decision overrides
+an open one before it was even answered".
+
+Cross-reference: `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md`
+step 8, which plans the transition in this form.
+
+Whether the Circle record's Dependencies bullet is itself corrected is a separate question. A
+Circle record is a historical statement of what was known at activation, and the plan now carries
+the corrected instruction, so leaving the bullet and citing this defect from the Closure note may
+be the better answer than editing it.
