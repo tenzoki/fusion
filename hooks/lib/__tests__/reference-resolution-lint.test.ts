@@ -27,7 +27,13 @@ import {
 //
 //   (a) plugin-file paths — `rules/<name>.md`, `agents/<name>.md`,
 //       `hooks/lib/<name>.ts`, `bin/<name>`, … — checked for existence against
-//       the repo tree. A `$VAR/<path>` spelling is checked the same way with
+//       the repo tree. The bare `lib/<name>.ts` spelling is the SAME class:
+//       it is how this repository's hook modules are cited in prose, because
+//       it is how they are imported, and it resolves against `hooks/`
+//       (`resolveToken`). It was unrecognised until 2026-08-16, so 34
+//       citations written that way were never checked and three dangling ones
+//       stood through a removal that expected the gate to name them
+//       (issue 260812-1407). A `$VAR/<path>` spelling is checked the same way with
 //       the variable stripped, PROVIDED the variable is declared in ROOT_VARS
 //       as naming the plugin tree; an undeclared variable in front of a
 //       plugin-shaped path FAILS rather than being skipped (see ROOT_VARS for
@@ -169,6 +175,16 @@ function surface(): SurfaceFile[] {
     if (!statSync(abs).isFile() || !f.endsWith(".ts")) continue;
     files.push({ rel: `hooks/lib/${f}`, abs, commentRe: TS_COMMENT_RE, recordsOnly: true });
   }
+  // The hook and CLI entrypoints one directory up, on the same terms. The
+  // reasoning just above applies verbatim here and was not carried across until
+  // 2026-08-16: `hooks/review-coverage.ts:52` cited a record that had moved to
+  // `_d_` before the session that found it by hand, and the gate was green
+  // because `surface()` stopped at `hooks/lib` (issue 260811-1755).
+  for (const f of readdirSync(join(pluginRoot, "hooks"))) {
+    const abs = join(pluginRoot, "hooks", f);
+    if (!statSync(abs).isFile() || !f.endsWith(".ts")) continue;
+    files.push({ rel: `hooks/${f}`, abs, commentRe: TS_COMMENT_RE, recordsOnly: true });
+  }
   return files;
 }
 
@@ -211,6 +227,30 @@ const EXAMPLE_PATHS: Record<string, string> = {
   "rules/context-manifest.yaml":
     "the CONSUMING project's manifest (./rules/context-manifest.yaml); " +
     "fusion-workbench-conventions.md spells it bare in the exit-code table",
+  // Deleted hook modules that README-hooks.md names ON PURPOSE, in the sections
+  // that exist precisely because the modules do not: a reader of an older tree,
+  // an older copy of that file or an existing events.jsonl comes there looking
+  // for them. Same shape as `bin/fu` above — history, deliberately — and they
+  // became visible only when the `lib/…` spelling entered the gate's scope
+  // (issue 260812-1407). Each is DEAD WEIGHT the moment its section is
+  // rewritten to stop naming it, which the "still referenced" test below is
+  // what catches.
+  "lib/bash-mutation-guard.ts":
+    "removed 2026-08-07; the shell-write classifier, named in README-hooks' " +
+    "account of the protected-path half's first generation",
+  "lib/protected-snapshot.ts":
+    "removed 2026-08-12 with the protected-path half; named in that section's " +
+    "'what went with it, by name' list and in the guard-state-file row",
+  "lib/rules-write-exemption.ts":
+    "removed 2026-08-12 with the protected-path half; named in the same list",
+  "lib/fs-locator.ts":
+    "removed 2026-08-12 with the protected-path half; named in the same list",
+  "lib/reverted-copy.ts":
+    "removed 2026-08-12 with the protected-path half; named in the same list",
+  "lib/state-drift.ts":
+    "removed 2026-08-15 with the session counters it measured; named in the " +
+    "state-file, git and review-coverage rows as where their code came from " +
+    "and as the every-tool-call slot nothing occupies now",
 };
 
 // The shape of a path inside the plugin tree, held as a source string because
@@ -218,8 +258,13 @@ const EXAMPLE_PATHS: Record<string, string> = {
 // paths in running prose (PLUGIN_PATH_RE), and anchored, to ask whether the
 // remainder of a `$VAR/`-rooted token is one (PLUGIN_SHAPE_RE) — there the
 // variable has already supplied the root, so there is nothing to look behind.
+// `lib` is in the alternation because prose cites a hook module by its import
+// spelling (`lib/config.ts`); `resolveToken` below is what makes that token
+// resolve under `hooks/`, and it is the single place the mapping is written, so
+// the scanner and the EXAMPLE_PATHS guard cannot disagree about where a token
+// lives.
 const PLUGIN_PATH_BODY =
-  "(?:rules|agents|skills|docs|hooks|bin|templates|stilwerk)\\/" +
+  "(?:rules|agents|skills|docs|hooks|bin|templates|stilwerk|lib)\\/" +
   "[A-Za-z0-9<>$*{}…][A-Za-z0-9._<>$*{}…\\/-]*[A-Za-z0-9>}]" +
   "|\\.claude-plugin\\/plugin\\.json|README(?:-[a-z]+)?\\.md|CLAUDE\\.md" +
   "|install\\.sh|settings\\.json";
@@ -232,6 +277,13 @@ const PLUGIN_PATH_RE = new RegExp("(?<![A-Za-z0-9_.\\/-])(" + PLUGIN_PATH_BODY +
 
 /** The same shape, anchored: is this whole token a path into the plugin tree? */
 const PLUGIN_SHAPE_RE = new RegExp("^(?:" + PLUGIN_PATH_BODY + ")$");
+
+/** Where a citation token resolves in the tree. One spelling needs a mapping:
+ *  a bare `lib/…` names a hook module, which lives under `hooks/`. Everything
+ *  else is already repo-root-relative and passes through unchanged. */
+function resolveToken(token: string): string {
+  return token.startsWith("lib/") ? "hooks/" + token : token;
+}
 
 /**
  * Every `$VAR` that stands in front of a plugin-tree-shaped path anywhere in
@@ -274,9 +326,12 @@ const ROOT_VARS: Record<string, true | string> = {
   // plugin tree either way.
   FUSION_SRC: true,
   // No non-plugin entry stands here today. The last one, STASH_DIR, went with
-  // the stash skills on 2026-08-15; the load-bearing test below is therefore
+  // the stash skills on 2026-08-15; the "load-bearing" test below is therefore
   // vacuous until a shadowing variable reappears, and it goes live again with
-  // the first one that does.
+  // the first one that does. The BEHAVIOUR of the reason-string arm is not
+  // vacuous, though — `scanPluginPaths` takes its table as an argument, so the
+  // case below drives the arm from a locally-declared entry rather than needing
+  // a real inhabitant here (issue 260815-1251).
 };
 
 // `$VAR/<path>` for ANY variable. The variable is captured and classified
@@ -288,6 +343,9 @@ const ROOT_VAR_RE =
 function scanPluginPaths(
   rel: string,
   lines: { line: number; text: string }[],
+  /** The root-variable table. A parameter, not a closed-over constant, so a
+   *  test can exercise an arm the shipped table has no inhabitant for. */
+  rootVars: Record<string, true | string> = ROOT_VARS,
 ): { violations: Violation[]; resolved: number } {
   const violations: Violation[] = [];
   let resolved = 0;
@@ -301,7 +359,7 @@ function scanPluginPaths(
     ROOT_VAR_RE.lastIndex = 0;
     while ((m = ROOT_VAR_RE.exec(text)) !== null) {
       const [, rootVar, rest] = m;
-      const names = ROOT_VARS[rootVar];
+      const names = rootVars[rootVar];
       if (typeof names === "string") continue; // declared as naming something else
       if (names === true) candidates.push({ token: rest }); // the plugin tree: resolve
       else if (PLUGIN_SHAPE_RE.test(rest)) candidates.push({ token: rest, unknownRoot: rootVar });
@@ -325,7 +383,7 @@ function scanPluginPaths(
         continue;
       }
       if (token in EXAMPLE_PATHS) continue;
-      if (existsSync(join(pluginRoot, token))) {
+      if (existsSync(join(pluginRoot, resolveToken(token)))) {
         resolved++;
         continue;
       }
@@ -416,6 +474,36 @@ function scanHeadingAnchors(
 
 // --- the gate ---------------------------------------------------------------
 
+// How many references each class resolved, pinned to a committed number rather
+// than floored. A floor can only notice coverage ARRIVING: when eight citations
+// of `agents/orchestrator.md` left the existence check behind an unclassified
+// `$FUSION_SRC`, and again when 34 `lib/…` citations turned out never to have
+// been in scope at all, the floor stayed green through both, and no floor placed
+// anywhere would have caught them — high enough to see a departure is brittle
+// against every legitimate edit, low enough to be robust is blind (issue
+// 260810-2149; the mechanism is decision 260810-2032's baseline pin applied to a
+// number instead of to prose).
+// Approved 2026-08-16, the run that put the pin in. paths 1095 → 1122 is the 27
+// resolving `lib/…` citations entering scope (the other 7 of that spelling's 34
+// are the dangling ones now carried in EXAMPLE_PATHS); records 87 → 95 is the
+// top-level `hooks/*.ts` entering scope.
+const BASELINE = { paths: 1122, anchors: 139, records: 95 };
+
+// Stated on the assertion, not left to be inferred: a gate that punishes a
+// legitimate edit without saying what to do gets routed around, which is the
+// whole risk of pinning (issue 260810-2149).
+const BASELINE_MESSAGE =
+  "the number of references this gate resolved has moved away from the committed " +
+  "baseline in BASELINE.\n" +
+  "UP: citations were added, or a spelling entered scope. DOWN: citations were " +
+  "removed, or — the case the pin exists for — a spelling left scope and stopped " +
+  "being checked while the gate stayed green.\n" +
+  "If the change is legitimate, RE-APPROVING THE BASELINE IS THE EXPECTED " +
+  "RESPONSE: check the received numbers against the edit you made, then write them " +
+  "into BASELINE in this file and commit that with the edit. Re-approval is part of " +
+  "the change, not a way around the gate — what is not expected is to widen the " +
+  "assertion back into a floor.";
+
 function runAll() {
   const byBase = shippedMd();
   const all: Violation[] = [];
@@ -444,15 +532,14 @@ describe("reference-resolution lint: every reference in the shipped text resolve
     ).toEqual([]);
   });
 
-  it("is not vacuous — each class resolved a sensible number of real references", () => {
-    // Floors are far below the measured corpus (hundreds of path references,
-    // dozens of heading anchors, a dozen-plus record citations), so they fail
-    // only when a scanner stops seeing its class at all.
-    expect(counts.paths, "class (a) plugin-path references resolved").toBeGreaterThan(50);
-    expect(counts.anchors, "class (b) heading anchors resolved").toBeGreaterThan(20);
-    if (WORKBENCH_PRESENT) {
-      expect(counts.records, "class (c) workbench-record citations resolved").toBeGreaterThan(10);
-    }
+  it("resolved exactly the pinned number of references in each class", () => {
+    const pinned = { paths: BASELINE.paths, anchors: BASELINE.anchors, records: BASELINE.records };
+    const actual = {
+      paths: counts.paths,
+      anchors: counts.anchors,
+      records: WORKBENCH_PRESENT ? counts.records : BASELINE.records,
+    };
+    expect(actual, BASELINE_MESSAGE).toEqual(pinned);
   });
 
   it("degrades loudly, not silently, when the workbench is absent", () => {
@@ -490,6 +577,16 @@ describe("reference-resolution lint: class (a) behaviour", () => {
     const { violations } = scanPluginPaths("fixture.md", L('"$FUSION_PLUGIN_ROOT/bin/no-such-helper"'));
     expect(violations.length).toBe(1);
     expect(violations[0].token).toBe("bin/no-such-helper");
+  });
+
+  it("reads the bare lib/… import spelling as a hook module, both ways", () => {
+    // Issue 260812-1407: this spelling resolved nothing and reported nothing.
+    const ok = scanPluginPaths("fixture.md", L("the loader is `lib/config.ts`"));
+    expect(ok.violations).toEqual([]);
+    expect(ok.resolved).toBe(1);
+    const bad = scanPluginPaths("fixture.md", L("the loader is `lib/no-such-module.ts`"));
+    expect(bad.violations.length).toBe(1);
+    expect(bad.violations[0].token).toBe("lib/no-such-module.ts");
   });
 
   it("resolves a $FUSION_SRC-rooted path and catches a dangling one", () => {
@@ -536,6 +633,26 @@ describe("reference-resolution lint: class (a) behaviour", () => {
     expect(resolved).toBe(0);
   });
 
+  it("skips a variable declared as naming something other than the plugin tree", () => {
+    // The reason-string arm of ROOT_VARS. The shipped table has no inhabitant
+    // for it since STASH_DIR left, so the entry is declared here — the fixture
+    // line was always synthetic, and the table now is too (issue 260815-1251).
+    // Without the skip, `$STASH_DIR/rules/x.md` would be read as a plugin path
+    // and reported as dangling.
+    const rootVars = { ...ROOT_VARS, STASH_DIR: "the workbench's stash store, not the plugin tree" };
+    const { violations, resolved } = scanPluginPaths(
+      "fixture.md",
+      L("restore from `$STASH_DIR/rules/does-not-exist.md`"),
+      rootVars,
+    );
+    expect(violations).toEqual([]);
+    expect(resolved).toBe(0);
+    // and the same token under an UNdeclared variable is still a violation, so
+    // the skip is the declaration's doing and not the shape's
+    const undeclared = scanPluginPaths("fixture.md", L("restore from `$STASH_DIR/rules/does-not-exist.md`"));
+    expect(undeclared.violations.length).toBe(1);
+  });
+
   it("every non-plugin ROOT_VARS entry is load-bearing: each still shadows a plugin-shaped path", () => {
     // The falsifier for the skip half, mirroring the EXAMPLE_PATHS guards: an
     // entry that no longer shadows anything is an exemption that can only
@@ -574,7 +691,9 @@ describe("reference-resolution lint: class (a) behaviour", () => {
   });
 
   it("every EXAMPLE_PATHS entry is fabricated: none exists in the tree", () => {
-    const real = Object.keys(EXAMPLE_PATHS).filter((p) => existsSync(join(pluginRoot, p)));
+    const real = Object.keys(EXAMPLE_PATHS).filter((p) =>
+      existsSync(join(pluginRoot, resolveToken(p))),
+    );
     expect(
       real,
       `${real.join(", ")} exists in the tree, so its exemption would swallow a real ` +

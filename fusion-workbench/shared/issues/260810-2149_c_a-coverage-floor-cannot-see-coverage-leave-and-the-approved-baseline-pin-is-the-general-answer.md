@@ -43,3 +43,45 @@ settle whether the blacklist beside it comes out — the same restraint applies 
 `I:260801-2038-frozen-state`. This one has no such dependency and can land on its own.
 
 **Filed by:** orchestrator, session `260810-1646`, on the silent-skip executor's costed proposal.
+
+---
+
+## Resolved 2026-08-16 — for `reference-resolution-lint.test.ts` only
+
+Session `260816-0119`, coder, in one pass with the three sibling defects that share the file.
+
+The three floors — `counts.paths > 50`, `counts.anchors > 20`, `counts.records > 10` — are gone. In
+their place a committed `BASELINE = { paths: 1122, anchors: 139, records: 95 }` is asserted with
+`toEqual`, in one comparison over all three so a count moving between classes cannot hide inside a
+per-class check.
+
+**The costing held: roughly 15 lines**, plus the failure message. The measured numbers came with the
+same pass's other two fixes, and the comment beside the constant says which fix moved which number
+(`paths` 1095 → 1122, the `lib/…` spelling entering scope; `records` 87 → 95, the top-level
+`hooks/*.ts` entering scope), so a later reader can tell an approved move from an unexplained one.
+
+**The condition the record insisted on is met, and it was verified by mutation in both directions**
+rather than asserted:
+
+- *Coverage leaves* — the case no floor can see. Rewriting one shipped citation from `lib/git.ts` to
+  a bare `git.ts` (path-shaped to basename, the exact shape of a spelling silently leaving scope)
+  fails at `paths: 1121` against `1122`.
+- *Coverage arrives* — adding two resolving citations to `README-hooks.md` fails at `paths: 1124`.
+
+Both print the same message, which states in full sentences that **re-approving the baseline is the
+expected response to a legitimate change**, tells the reader to check the received numbers against
+the edit they made and write them into `BASELINE` in the same commit, and names the one response
+that is not wanted: widening the assertion back into a floor.
+
+**The scope question the record raised is deliberately NOT answered here**, on the restraint the
+record itself asks for — `260810-2032` covered the drift check only, and this closure covers
+`reference-resolution-lint.test.ts` only. **The cascade reach gate is untouched and still carries
+its hand-written claim.** Whether count-pinning becomes a convention for every gate that reports
+what it examined remains open; this is the third application, which is the point at which the record
+says the answer stops being obvious, and it should be settled as its own decision rather than
+inherited from this fix.
+
+One floor deliberately survives in the same file: `expect(gateResolved, "not vacuous — the surface
+still carries record citations").toBeGreaterThan(10)` in the parser-parity describe block. It
+guards the same quantity that `BASELINE.records` now pins exactly, so it can no longer be the only
+thing standing between a departure and a green suite.

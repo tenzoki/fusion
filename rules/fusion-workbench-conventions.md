@@ -458,6 +458,8 @@ This applies to:
 
 **Where it goes** is the Origin Rule's answer, resolved for you: defects to `$OUT_ISSUE`, decisions to `$OUT_DECISION`. Both point into the active Circle when there is one and into `shared/` when there is not. The one judgment left to you is the one the Origin Rule names: did this arise from the active Directive, or did you merely find it nearby? If the latter, file it in the shared store even while a Circle is active.
 
+**Before writing, list what is already there.** One `ls` over the open (`_o_`) record names in the target store, plus `shared/` when a Circle is active. Names only, never bodies — a costlier check gets skipped. On a hit, append one line to that record: `Also seen: YYMMDD-HHMM by <agent> — <one clause>` — no second file, no marker moves. **In doubt, write the new record**: a duplicate costs one merge, an unfiled defect costs the defect. This step never ends with nothing written.
+
 **NEVER put issues or decisions inside plan documents, review documents, analyses, code comments, chat output, history logs, or any other location.** Embedded items get lost. Each item is a separate file in its own store.
 
 **Filename:** `YYMMDD-HHMM_o_<topic>.md` (always `_o_` on creation, for either kind).

@@ -96,3 +96,25 @@ den Punkt als Befund gemeldet; er stand als Beobachtung im Protokoll
 `circles/260801-1244-guard-rules-write/history/260805-1440-coder-zwei-nachgeschobene-befunde-aus-einem-konsumierenden-projekt.md`
 (Punkt 3). Die beiden doppelt gefileten Records liegen im konsumierenden Projekt, nicht
 hier.
+
+---
+
+**Resolved: 260816-0112 by coder.** Der Absatz steht in
+`rules/fusion-workbench-conventions.md`, `## Issue and Decision Filing — MANDATORY`, vor
+dem NEVER-Block, mit allen drei Eigenschaften: `ls` nur über Namen, `Also seen:`-Zeile bei
+Treffer ohne zweiten Record und ohne Markerwechsel, und die ausdrückliche Gegenrichtung
+("In doubt, write the new record", plus der Satz, dass dieser Schritt nie damit endet,
+dass nichts geschrieben wurde). Kosten: +490 Bytes auf einer immer geladenen Regeldatei.
+
+Der Blocker ist weg: der Ratchet aus
+`decisions/260805-1559_o_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md`
+ist implementiert — die immer geladene Regelmenge wird weiter gemessen, blockt aber nicht
+mehr, sondern meldet innerhalb eines Head-rooms. Ein Schnitt an fremdem Regeltext war
+damit nicht nötig.
+
+Zwei Sätze wurden für das Budget gestrichen und stehen nur hier: die Grenze des
+Namensabgleichs (derselbe Defekt in ähnlichen Worten wird gefangen, in anderen Worten
+verfehlt; der Reconciler bleibt der Auffang) und die ausführliche Fassung von
+"Zustand und Zuständigkeit bleiben unangetastet".
+
+Protokoll: `shared/history/260816-0112-coder-duplicate-check-before-filing.md`

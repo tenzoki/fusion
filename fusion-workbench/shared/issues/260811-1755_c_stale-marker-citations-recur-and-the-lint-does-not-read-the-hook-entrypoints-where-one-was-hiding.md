@@ -71,3 +71,35 @@ The literal-marker form also survives in four shipped files as *fabricated* exam
 (`rules/decision-record-examples.md`, `rules/circle-records.md`, `agents/playmaker.md`,
 `skills/migrate/SKILL.md`). Those are correct as they stand — the literal marker is the thing being
 illustrated, the records do not exist, and the lint exempts them by pattern. **Do not "fix" them.**
+
+---
+
+## Resolved 2026-08-16 — part 1 only, and part 2 deliberately not
+
+Session `260816-0119`, coder, in one pass with three sibling defects in the same file.
+
+**Item 1 (widen the lint's surface to `hooks/*.ts`) is done.** `surface()` gained a second loop over
+the top-level `hooks/` directory on exactly the terms `hooks/lib/` already had — `commentRe`
+TS-comment lines, `recordsOnly: true` — with a comment at the loop naming this record and the
+`hooks/review-coverage.ts:52` citation that was stale while the gate was green.
+
+**Measured: 8 record citations entered the examined set** (`counts.records` 87 → 95), across
+`hooks/guard.ts`, `hooks/review-coverage.ts`, `hooks/session-start.ts` and `hooks/tracker.ts`. The
+expectation that it would "find more than the one this sweep found by hand" did **not** hold — every
+one of the 8 resolves at HEAD. Nothing in a shipped file needed changing, and none was.
+
+**One thing worth naming, since the dispatch expected a defect there.** `hooks/guard.ts:307` cites
+`shared/decisions/260812-1232_o_does-the-write-guards-fusion-repo-stand-down-survive-the-loss-of-its-subject.md`
+in the **literal-marker** form. It resolves — the record is still `_o_` — so the gate passes it, by
+design: an exact-marker citation fails only when the record has moved on. It is a live instance of
+exactly the coupling `260806-0015` eliminated, and it will redden the suite the day that decision is
+answered. Left as it stands rather than rewritten, because this task's scope was the gate and not
+the shipped text, and because rewriting it would have removed the demonstration before item 2 below
+is decided.
+
+**Item 2 (can anything carry the rename→citation obligation?) is untouched**, as it should be — the
+record itself calls it a judgement rather than a fix. It stays open work; this record's closure
+covers item 1 only.
+
+The gate now reads the entrypoints, so the *next* stale marker in one of them turns the suite red at
+the moment it goes stale rather than at the moment somebody greps by hand.

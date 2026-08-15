@@ -77,3 +77,31 @@ only coupling to fix is the module-level constant. I did not write it.
 - `hooks/lib/__tests__/reference-resolution-lint.test.ts:265-274`, `:301`, `:535-560`
 - `history/260815-1032-coder-stash-pop-removal-and-commit-lock-rehome.md` — the run that removed
   both halves, and which names the removal of the case
+
+---
+
+## Resolved 2026-08-16
+
+Session `260816-0119`, coder, in one pass with three sibling defects in the same file. **Option one
+of "What it would take" was taken**, as the record's own `inference:` predicted it would be small —
+it was.
+
+`scanPluginPaths` now takes its table as a third parameter, `rootVars: Record<string, true | string>
+= ROOT_VARS`. Every existing caller and the gate itself are unchanged, because the default is the
+shipped constant; the one new caller passes `{ ...ROOT_VARS, STASH_DIR: "the workbench's stash
+store, not the plugin tree" }`. The record's reading of the coupling was exactly right: the function
+already took its lines as an argument, so the module-level constant was the only thing to fix.
+
+The deleted case is restored under its own name — *"skips a variable declared as naming something
+other than the plugin tree"* — and it keeps its original subject, `$STASH_DIR` in front of a
+plugin-shaped path. It asserts two things rather than one: that the declared entry produces no
+violation and no resolve, **and** that the same token under an undeclared variable still fires. The
+second half is what makes the case a demonstration rather than an assertion of absence — without it
+a test that skips everything would also pass.
+
+**The vacuous guard test below it is untouched and still vacuous**, deliberately. It asks a
+different question — whether a *shipped* reason-string entry still shadows something — and it has no
+inhabitant to ask about. That is now stated where the comment sits in `ROOT_VARS`: the behaviour of
+the reason-string arm is exercised, its live-inhabitant guard is not, and the two are separate
+claims. The next shadowing variable added to the table goes green-to-red under the restored case
+before it ever reaches the guard.
