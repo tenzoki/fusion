@@ -35,7 +35,6 @@ bin/*
 !bin/fusion-plugin-cwd
 !bin/fusion-source-root
 !bin/fusion-count-sources
-!bin/fusion-churn-rank
 !bin/fusion-review-coverage
 !bin/fusion-staging-drift
 !bin/fusion-turn-budget

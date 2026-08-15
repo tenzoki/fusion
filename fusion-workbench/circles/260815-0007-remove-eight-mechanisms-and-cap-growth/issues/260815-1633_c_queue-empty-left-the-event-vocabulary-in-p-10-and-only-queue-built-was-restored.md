@@ -48,3 +48,23 @@ Restore the row and the emission the way `queue_built` was restored, at
 `:1180`. If `queue_empty` is instead judged genuinely dead, that is a decision and needs saying —
 but it cannot rest on the file's removal, since `queue_built` was kept on the opposite reasoning in
 the very next commit.
+
+---
+Resolved: Restored, row and emission together, on the record's own reasoning. Read against
+`queue_built`, the two are the same case: neither event was about the deleted state file, both
+record the session's initial queue shape, and P-11 made the event log the sole durable record of
+that shape. `queue_empty` names the one shape in which Phase 2 never runs, which is otherwise
+indistinguishable in the log from a session that died in Phase 1. There is no ground on which one
+belongs and the other does not.
+
+- `agents/orchestrator.md:424` — the no-routable-tasks paragraph emits it again, ahead of the
+  dashboard refresh, exactly where P-10 removed it. The payload is spelled at the call site
+  ("carrying the open work item count") the way `queue_built`'s restoration spells its two counts,
+  rather than only in the table.
+- `agents/orchestrator.md:1183` — the event-type row is back, directly under `queue_built`.
+
+`bin/monitor` needs no change and got none: it never carried a `queue_empty` colour rule
+(`git log -S queue_empty -- bin/monitor` is empty), so the event renders at the default the way it
+always did. No test asserts the event vocabulary — the only occurrence of either name under `hooks/`
+is a comment in `monitor-warnings-panel.test.ts:739` — so the suite is unchanged at 39 files and
+739 tests.

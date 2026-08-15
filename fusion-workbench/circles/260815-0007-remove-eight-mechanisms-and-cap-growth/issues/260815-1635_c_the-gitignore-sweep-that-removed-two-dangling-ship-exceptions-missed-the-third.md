@@ -52,3 +52,28 @@ Delete `.gitignore:38`. Separately worth considering: the `bin/` roster is now a
 `CLAUDE.md` and unasserted here, which is one enumeration with two homes and one gate — extending
 the existing lint to `.gitignore`'s `!bin/` list is a smaller change than it looks and would close
 the class rather than this instance. That second half is a suggestion, not part of the defect.
+
+---
+Resolved: `!bin/fusion-churn-rank` deleted from `.gitignore` (it was line 38; the file is now 112
+lines). The list was then re-measured against the directory in **both** directions rather than the
+count being trusted:
+
+```
+$ diff <(grep -o '^!bin/.*' .gitignore | sed 's|^!bin/||' | sort) <(ls bin/ | sort)
+$ echo $?
+0
+```
+
+No fourth dangling `!bin/` exception exists, and no helper in `bin/` is missing its line — the two
+sets are now equal, which is the stronger of the two properties the header warns about. Twelve
+helpers, twelve exceptions.
+
+One other exception in the file names a path the tree does not carry: `!.env.example` at line 51,
+under `.env` / `.env.*`. It is deliberately left alone. It is not this defect's class — not a
+ship-exception for a deleted helper, but a standing allowance for a placeholder file this repository
+has never had, of the kind a `.gitignore` carries pre-emptively. Removing it would change behaviour
+the day someone adds the file.
+
+The suggested second half — extending `derivable-enumerations-lint` to this list so the `bin/` roster
+has one gate across both of its homes — was **not** done. The record marks it a suggestion rather
+than part of the defect, and adding a gate is not this dispatch's scope.

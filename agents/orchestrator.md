@@ -87,11 +87,13 @@ Read `fusion-workbench/agentstate.yaml`. This is the FIRST thing you do after th
 
      ```bash
      A=$(sed -n 's/.*git_head_at_start: *"\([^"]*\)".*/\1/p' fusion-workbench/agentstate.yaml 2>/dev/null)
-     [ -n "$A" ] && echo "commits=$(git rev-list --count "$A"..HEAD 2>/dev/null)" || echo "commits=unavailable"
-     echo "turns=$(grep -c '"event":"turn_start"' fusion-workbench/orchestrator-events.jsonl 2>/dev/null || echo unavailable)"
+     C=$([ -n "$A" ] && git rev-list --count "$A"..HEAD 2>/dev/null)
+     T=$(grep -c '"event":"turn_start"' fusion-workbench/orchestrator-events.jsonl 2>/dev/null)
+     echo "commits=${C:-unavailable}"
+     echo "turns=${T:-unavailable}"
      ```
 
-     The task tallies come from counting `work_queue` entries by `status` in the file you just read. A figure that could not be taken is reported as `unavailable`, never as `0` — an absent anchor is not a session with no commits.
+     The task tallies come from counting `work_queue` entries by `status` in the file you just read. A figure that could not be taken is reported as `unavailable`, never as `0` — an absent anchor is not a session with no commits. Each figure is captured into a variable and reported on its own emptiness, never on the exit code of the command that took it: `git rev-list` prints nothing when the anchor no longer resolves, and `grep -c` prints `0` **and** exits non-zero when the log carries no match, so a form that branched on `||` printed the number and the fallback word together. `turns=0` is the opposite case and is a real figure: the log was read and the session stopped before its first Turn.
   4. Present the saved state to the user as a summary:
      - Session Directive and mode
      - How far the session got — the Turn count and commit count derived in step 3, and tasks completed vs total from `work_queue`
@@ -419,7 +421,7 @@ After approval, the plan file becomes the input for Phase 1 (treat it as mode `p
 
    **One file does come out of this dispatch: taskplanner's history entry**, named on the `**History entry:**` line of its report. You dispatched it outside the Turn loop, where Step 3b's staging list does not exist, and that is the gap the queue rebuild of session `260810-1646` fell through (`260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md` in `$SCAN_ISSUES` — its queue half is moot now, its history-entry half is not). Carry that path into the **first** Step 3b staging list of Turn 1, written out in full and absolute. If Phase 2 never runs, the **Staging check** at Cleanup names it as a `record` row and it goes into the housekeeping split; that check is the backstop, not the plan.
 
-   **Handle the "no routable tasks" case:** if the taskplanner returns a structured "no routable tasks" result (per its Step 1.5), **REFRESH DASHBOARD** with `[QUEUE EMPTY] orchestrator -> No routable tasks; <N> open items reported to user`, list the open items to the user with file paths, and skip Phase 2 entirely. Proceed to Phase 4 with a session summary.
+   **Handle the "no routable tasks" case:** if the taskplanner returns a structured "no routable tasks" result (per its Step 1.5), emit a `queue_empty` event carrying the open work item count, **REFRESH DASHBOARD** with `[QUEUE EMPTY] orchestrator -> No routable tasks; <N> open items reported to user`, list the open items to the user with file paths, and skip Phase 2 entirely. Proceed to Phase 4 with a session summary.
 3. **Surface open `_o_` decisions before finalising the queue.** Open decisions — the `*_o_*.md` files across **every** path in `$SCAN_DECISIONS`, the active Circle's store and the shared one alike — are user-input gates, not executor work. List them to the user in the dashboard and Phase 4 summary. The user may answer them inline (you record the answer + transition `_o_`→`_a_`), defer them, or proceed without (the queue runs without realisation work for those decisions).
 
 **Targeted scope (mode `plan`, `bundle`, `custom`):**
@@ -1178,6 +1180,7 @@ Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit
 | `planner_start` | Phase 0b, planner invoked | Topic or spec file path |
 | `planner_done` | Phase 0b, planner returned | Plan file path |
 | `queue_built` | Phase 1 done | Task count, blocked count |
+| `queue_empty` | Phase 1 — taskplanner returned "no routable tasks" (Step 1.5) | Open work item count |
 | `turn_start` | Beginning of each Turn | Turn number, ready task count |
 | `task_start` | Before dispatching executor | Task ID, agent, primary file |
 | `task_done` | Task completed + committed | Commit hash |

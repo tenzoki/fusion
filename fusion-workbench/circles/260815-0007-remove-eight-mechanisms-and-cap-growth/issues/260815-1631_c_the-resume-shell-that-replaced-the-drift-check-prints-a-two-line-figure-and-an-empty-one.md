@@ -59,3 +59,28 @@ from the other in exactly the same way.
 One helper both prompts call, or — if a helper is judged too heavy for four lines — a shell form
 that tests the *outcome* rather than the input on both figures, e.g. capturing into a variable and
 branching on emptiness. Whichever is chosen, the two spellings must not remain independent.
+
+---
+Resolved: Both figures now branch on their own **outcome** rather than on an input test or an exit
+code, in both copies (`agents/orchestrator.md:88-93`, `skills/setup/SKILL.md:248-252`). Each is
+captured into a variable — `C=$([ -n "$A" ] && git rev-list --count "$A"..HEAD 2>/dev/null)`,
+`T=$(grep -c '"event":"turn_start"' … 2>/dev/null)` — and reported as `${C:-unavailable}` /
+`${T:-unavailable}`. The `[ -n "$A" ]` guard is kept inside the substitution, not as the report's
+condition: without it an empty anchor makes the range `..HEAD`, which git reads as `HEAD..HEAD` and
+counts as a legitimate `0`, the exact value the rule below the block forbids. The prose under the
+block now names the two mechanisms (`git rev-list` prints nothing, `grep -c` prints `0` and exits
+non-zero) and states that `turns=0` is a real figure for a session that stopped before its first
+Turn, so the case is not "corrected" back later.
+
+Verified in a scratch git repository (three commits, a synthetic `agentstate.yaml` and event log),
+both copies, under zsh 5.9 and bash 3.2, five cases each: ordinary → `commits=2 turns=1`; log
+present with no `turn_start` → `turns=0` alone, no second line; log absent → `turns=unavailable`;
+anchor present but unresolvable (`deadbeef`) → `commits=unavailable`; no anchor field and no state
+file → `commits=unavailable`. Anchor equal to HEAD gives `commits=0`, which is a taken figure and
+correct. The old form was run against the same inputs and reproduced both reported faults
+(`commits=` empty, and `turns=0` followed by `unavailable`).
+
+Not closed by this fix: the block is still two independent spellings in two files with no shared
+owner, which is the record's Cross-cutting paragraph. The two were made identical in logic here,
+which is what the dispatch asked for, but nothing holds them identical. Filed separately as
+`260815-1712_*_the-resume-shell-is-two-independent-copies-and-nothing-holds-them-identical.md`.

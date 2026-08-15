@@ -246,11 +246,13 @@ Read `./fusion-workbench/agentstate.yaml`.
 
      ```bash
      A=$(sed -n 's/.*git_head_at_start: *"\([^"]*\)".*/\1/p' ./fusion-workbench/agentstate.yaml 2>/dev/null)
-     [ -n "$A" ] && echo "commits=$(git rev-list --count "$A"..HEAD 2>/dev/null)" || echo "commits=unavailable"
-     echo "turns=$(grep -c '"event":"turn_start"' ./fusion-workbench/orchestrator-events.jsonl 2>/dev/null || echo unavailable)"
+     C=$([ -n "$A" ] && git rev-list --count "$A"..HEAD 2>/dev/null)
+     T=$(grep -c '"event":"turn_start"' ./fusion-workbench/orchestrator-events.jsonl 2>/dev/null)
+     echo "commits=${C:-unavailable}"
+     echo "turns=${T:-unavailable}"
      ```
 
-     The task tallies come from counting the `work_queue` entries by `status` in the file you just read. Report a figure that could not be taken as `unavailable`, never as `0` — an absent anchor is not a session with no commits.
+     The task tallies come from counting the `work_queue` entries by `status` in the file you just read. Report a figure that could not be taken as `unavailable`, never as `0` — an absent anchor is not a session with no commits. Each figure is captured into a variable and reported on its own emptiness, never on the exit code of the command that took it: `git rev-list` prints nothing when the anchor no longer resolves, and `grep -c` prints `0` **and** exits non-zero when the log carries no match, so a form that branched on `||` printed the number and the fallback word together. `turns=0` is the opposite case and is a real figure: the log was read and the session stopped before its first Turn.
   3. Present a summary to the user:
      - Session Directive and mode
      - Progress (the Turn and commit counts derived in sub-step 2, tasks completed vs total from `work_queue`)
