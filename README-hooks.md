@@ -369,6 +369,30 @@ cd hooks && npm install && npm test
 - `hooks/lib/__tests__/helpers/guard-harness.ts` `TEST_DIST` — the cases that spawn or copy a compiled artifact read the run's private build, not the shared one.
 - `hooks/vitest.config.mjs` — one run uses half the machine's cores rather than all of them. Measured: at one worker per core, three concurrent runs failed 5 of 9 times on fork/exec starvation; at half, 9 of 9 were green, and a single run costs nothing measurable.
 
+### Growth bounds on the shipped text
+
+Four surfaces of this plugin have a **failing** bound on how much they may grow, and the suite goes red when one of them spends its head-room. This is a bound on the *rate of addition*, not on size: a shrink never trips it, and each surface's head-room was derived from that surface's own replayed `git` history rather than picked.
+
+| Surface | Unit | Head-room | Bounded in |
+|---|---|---|---|
+| the always-on rule set every agent loads | bytes | 12 000 | `hooks/lib/__tests__/rules-emission-golden.test.ts` |
+| `agents/*.md` | bytes | 18 000 | `hooks/lib/__tests__/surface-growth-bound.test.ts` |
+| `skills/*/SKILL.md` | bytes | 20 000 | `hooks/lib/__tests__/surface-growth-bound.test.ts` |
+| the hook test suite | lines | 2 500 | `hooks/lib/__tests__/surface-growth-bound.test.ts` |
+
+**The four budgets are independent.** One instrument computes all of them — `hooks/lib/__tests__/helpers/growth-bound.ts`, which takes the baseline map and the head-room as arguments so no surface can see another's numbers — but there is no shared pool. Growth in `agents/` cannot be paid for by shrinkage in `skills/`, and a single surface crossing its own bound fails the suite alone. Role-specific rule text is the one thing that still only **reports**: it is bought by the agents that need it, while every byte of the always-on set is charged to every dispatch.
+
+When a bound fires, the failure names the files that grew and by how much. **Cut where the growth is.** Regenerating a golden records the movement and never clears a bound — the golden says what the files measure, the baseline says what they are allowed to measure *from*. A baseline moves at exactly two moments, both of which are written down: after a cleanup, or at a one-time arming. That rule is authored once, in `hooks/lib/__tests__/helpers/growth-bound.ts`.
+
+Each bound keeps a golden fixture so that every movement lands in a diff somebody reads. Regenerating one is deliberate and cannot be left switched on — the run rewrites the fixture and then fails on purpose:
+
+```bash
+cd hooks && UPDATE_RULES_GOLDEN=1   npx vitest run lib/__tests__/rules-emission-golden.test.ts
+cd hooks && UPDATE_SURFACE_GOLDEN=1 npx vitest run lib/__tests__/surface-growth-bound.test.ts
+```
+
+**What no bound covers.** The hook-test surface counts the suite's own `.ts` files, `hooks/lib/__tests__/helpers` included; the three `.mjs` files under `hooks/` — the build script, the test runner and the vitest configuration — are hook scripts rather than tests and fall outside every surface. Nothing bounds them, and nothing bounds `hooks/*.ts`, `hooks/lib/*.ts`, `bin/`, `docs/` or the READMEs either. That is a statement of coverage, not a justification: those surfaces were not measured, and arming a bound on a corpus nobody measured is the one thing the instrument's own rule forbids.
+
 ### Rebuilding after TS changes
 
 ```bash

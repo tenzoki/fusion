@@ -335,7 +335,7 @@ Every step's acceptance includes `cd hooks && npm test` green and a history entr
 
 **GATE G1 — the `CLAUDE.md` narrative pass.** Not an executor step, and it cannot be one: the active executor set is `[coder, ontocoder]` and this pass belongs to the `curator`, behind a user gate, per the Circle's own answer. The orchestrator runs `/fusion:curate` after step 12 lands; the curator surveys the three normative surfaces against the recorded history of this Circle, produces the change ledger, and the user approves entry by entry. Every removal above falsifies at least one row of the `CLAUDE.md` Layout table or one Conventions bullet, and the whole set of them is one coherent pass rather than twelve scattered edits. The enumeration edits the test suite forces have already landed with their removals (see `## Approach` → *The `CLAUDE.md` cut*), so what the curator faces is the narrative half alone. Nothing after this gate may start until the ledger is applied or rejected.
 
-13. **Extend the failing cap to `agents/`, `skills/` and the hook test lines** *(record item 10)*
+13. [DONE] **Extend the failing cap to `agents/`, `skills/` and the hook test lines** *(record item 10)*
     - Executor: `coder`
     - Files: a new `hooks/lib/__tests__/surface-growth-bound.test.ts`; `hooks/lib/__tests__/rules-emission-golden.test.ts`; a new `hooks/lib/__tests__/fixtures/surface-growth.golden`; `README-hooks.md`; `CLAUDE.md` (via gate G1's ledger if the curator's pass reached it, otherwise a mechanical row).
     - Changes:

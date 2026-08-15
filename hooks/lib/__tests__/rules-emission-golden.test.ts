@@ -12,6 +12,7 @@ import {
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, join, relative } from "node:path";
+import { fmt, Growth, growth, grownLines } from "./helpers/growth-bound.js";
 
 // ---------------------------------------------------------------------------
 // The emission golden — how many bytes of plugin rule text every agent loads
@@ -182,31 +183,17 @@ import { dirname, resolve, join, relative } from "node:path";
 // head-room the hard bound fails until the text comes back down. Regenerating
 // the golden does not move `RULE_BASELINE` and therefore never clears the bound.
 //
-// ## Re-baselining: the two events at which the baseline moves
+// ## Re-baselining
 //
 // `RULE_BASELINE` is the reference both measurements read: the report measures a
 // role's extras from it, and the hard bound measures the universal core from it.
-// It is hand-edited, and it moves at exactly two kinds of moment.
-//
-//   1. AFTER A CLEANUP. Somebody has done the cut the report asked for. Then, and
-//      only then, copy the per-file sizes out of the regenerated golden into
-//      `RULE_BASELINE` and say in a comment which cut produced them, the way the
-//      entries there already do.
-//
-//   2. AT AN ARMING. A measurement that used to report starts blocking, and the
-//      corpus it is armed on is already past the head-room the new gate enforces.
-//      Arming at the old baseline would ship a permanently red suite, which is a
-//      suite nobody reads. This has happened ONCE, on 2026-08-14, for the
-//      universal-core bound; the cut log's last entry is that event.
-//
-// Between those, the baseline stays where it is — a reference that followed the
-// measurement would measure nothing. And neither event is the SILENT RAISE this
-// section exists to prevent, for one reason: both are written down. A cleanup
-// names the cut, an arming names the gate it armed and reproduces, as TEXT, the
-// overshoot the re-baseline absolved — so the cleanup request the report had been
-// making survives the number moving. Editing `RULE_BASELINE` to make a failing
-// bound pass, with no cut and no cut-log entry, is neither of these and is the
-// thing this file is asking you not to do.
+// It is hand-edited, and it moves at exactly two moments, neither of which is the
+// silent raise this file warns about. THE RULE IS AUTHORED ONCE, in
+// `helpers/growth-bound.ts` `## Re-baselining: the two events at which a baseline
+// moves`, because since 2026-08-15 four surfaces obey it and a second copy would
+// be a second rule. Read it there. What is local to this file is the CUT LOG
+// above `RULE_BASELINE`, where the two events are recorded for THIS surface, and
+// the 2026-08-14 arming entry that is the only non-cut in it.
 //
 // `npx vitest run` is enough for this file: it measures rule text and needs no
 // compile at all. `npm test` also works and no longer wipes anything — the
@@ -627,48 +614,20 @@ function roleKey(extras: string[]): string {
 }
 
 /**
- * What a set of rule files weighs now against what it weighed at the last
- * re-baseline. ONE function over ONE `RULE_BASELINE`, called with two DISJOINT
- * file sets — the universal core, which the hard bound measures, and a role's
- * extras, which the report measures — so the two can never disagree about a byte
- * and no byte is measured twice or missed.
+ * `growth()` and the `Growth` shape it returns live in
+ * `helpers/growth-bound.ts`, shared with `surface-growth-bound.test.ts`. What is
+ * local to this file is WHICH file sets it is called with, and with what
+ * baseline and head-room.
  *
- * `floor` is `RULE_BASELINE` summed over the same files. A file with no baseline
- * entry contributes 0, so its whole current size reads as growth, which is
- * correct: nobody granted it a budget. A shrink gives a negative `delta` and is
- * never `over`, which is the other half of "this bounds the RATE of addition".
+ * ONE function over ONE `RULE_BASELINE`, called with two DISJOINT file sets —
+ * the universal core, which the hard bound measures, and a role's extras, which
+ * the report measures — so the two can never disagree about a byte and no byte
+ * is measured twice or missed. `floor` is `RULE_BASELINE` summed over the same
+ * files; a file with no baseline entry contributes 0, so its whole current size
+ * reads as growth, which is correct: nobody granted it a budget.
  */
-interface Growth {
-  /** What the set emits today. */
-  bytes: number;
-  /** What the same files weighed at the last re-baseline. */
-  floor: number;
-  /** bytes - floor. Negative when the set shrank. */
-  delta: number;
-  /** floor + GROWTH_BUDGET — the point past which the set is over. */
-  budget: number;
-  /** True only when the set has spent its whole head-room. */
-  over: boolean;
-  /** Per-file growth, biggest first. A file that shrank or held is absent. */
-  grown: { rel: string; delta: number }[];
-}
-
-function growth(files: { rel: string; bytes: number }[]): Growth {
-  const bytes = files.reduce((n, f) => n + f.bytes, 0);
-  const floor = files.reduce((n, f) => n + (RULE_BASELINE[f.rel] ?? 0), 0);
-  const budget = floor + GROWTH_BUDGET;
-  const grown = files
-    .map((f) => ({ rel: f.rel, delta: f.bytes - (RULE_BASELINE[f.rel] ?? 0) }))
-    .filter((g) => g.delta > 0)
-    .sort((a, b) => b.delta - a.delta);
-  return { bytes, floor, delta: bytes - floor, budget, over: bytes > budget, grown };
-}
-
-/** The per-file breakdown both the hard bound and the report print. */
-function grownLines(g: Growth): string[] {
-  const width = Math.max(0, ...g.grown.map((x) => x.rel.length));
-  return g.grown.map((x) => `  ${x.rel.padEnd(width)}  +${fmt(x.delta)}`);
-}
+const ruleGrowth = (files: { rel: string; size: number }[]): Growth =>
+  growth(files, RULE_BASELINE, GROWTH_BUDGET);
 
 /**
  * The hard bound's failure text. Factored out of the assertion so the unit tests
@@ -680,8 +639,8 @@ function hardBoundMessage(g: Growth): string {
     "",
     `The ALWAYS-ON rule set — the text every agent loads on every dispatch — has ` +
       `grown ${fmt(g.delta)} bytes past its baseline, which is ` +
-      `${fmt(g.bytes - g.budget)} beyond the ${fmt(GROWTH_BUDGET)} of head-room it ` +
-      `gets (${fmt(g.bytes)} emitted, budget ${fmt(g.budget)} = floor ` +
+      `${fmt(g.total - g.budget)} beyond the ${fmt(GROWTH_BUDGET)} of head-room it ` +
+      `gets (${fmt(g.total)} emitted, budget ${fmt(g.budget)} = floor ` +
       `${fmt(g.floor)} + ${fmt(GROWTH_BUDGET)}).`,
     "grown since the baseline was last set:",
     ...grownLines(g),
@@ -695,7 +654,7 @@ function hardBoundMessage(g: Growth): string {
     "Regenerating does NOT clear this: the golden records what the files weigh, " +
       "RULE_BASELINE records what they are allowed to weigh from. RULE_BASELINE " +
       "moves at exactly the two events named in `## Re-baselining: the two events " +
-      "at which the baseline moves` in this file's header — after a cleanup, or at " +
+      "at which a baseline moves` in helpers/growth-bound.ts — after a cleanup, or at " +
       "a one-time arming written into the cut log. Editing it to make this " +
       "assertion pass is neither of them.",
     "",
@@ -707,12 +666,7 @@ function hardBoundMessage(g: Growth): string {
  * exactly the files it carries.
  */
 function floorOf(e: Emission): number {
-  return growth(e.files).floor;
-}
-
-/** Digit grouping with a space, so the report reads like the byte counts above. */
-function fmt(n: number): string {
-  return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  return ruleGrowth(e.files).floor;
 }
 
 /** The files every agent loads — the intersection. */
@@ -725,7 +679,7 @@ function universalCore(measured: Map<string, Emission>): Set<string> {
 
 interface Emission {
   /** Path relative to `<plugin>/rules`, in emission order. */
-  files: { rel: string; bytes: number }[];
+  files: { rel: string; size: number }[];
   total: number;
 }
 
@@ -777,13 +731,13 @@ function measure(agent: string): Emission {
   const lines = runRules(agent);
   const files = lines
     .filter((p) => p.startsWith(rulesDir + "/"))
-    .map((p) => ({ rel: relative(rulesDir, p), bytes: statSync(p).size }));
-  return { files, total: files.reduce((n, f) => n + f.bytes, 0) };
+    .map((p) => ({ rel: relative(rulesDir, p), size: statSync(p).size }));
+  return { files, total: files.reduce((n, f) => n + f.size, 0) };
 }
 
 /** One agent's block, in the exact shape the golden stores. */
 function render(agent: string, e: Emission): string {
-  const body = e.files.map((f) => `  ${f.rel} ${f.bytes}`).join("\n");
+  const body = e.files.map((f) => `  ${f.rel} ${f.size}`).join("\n");
   return `[${agent}]\n${body}\n  total ${e.total}`;
 }
 
@@ -996,7 +950,7 @@ describe("rules emission golden", () => {
         "nothing. The role-coverage test above says why that can happen.",
     ).toBe(core.size);
 
-    const g = growth(coreFiles);
+    const g = ruleGrowth(coreFiles);
     expect(g.over, hardBoundMessage(g)).toBe(false);
   });
 
@@ -1017,15 +971,15 @@ describe("rules emission golden", () => {
     // Worst overage first: the role furthest past its budget is the one to act on.
     const byOverage = [...roles.keys()]
       .filter((key) => extrasOf(key).length > 0)
-      .sort((a, b) => growth(extrasOf(b)).delta - growth(extrasOf(a)).delta);
+      .sort((a, b) => ruleGrowth(extrasOf(b)).delta - ruleGrowth(extrasOf(a)).delta);
 
     for (const key of byOverage) {
-      const g = growth(extrasOf(key));
+      const g = ruleGrowth(extrasOf(key));
       if (!g.over) continue;
 
       lines.push(
         `role '${key}' — ${roles.get(key)!.join(", ")}`,
-        `  ${fmt(g.bytes)} bytes of role-specific rule text, budget ${fmt(g.budget)} ` +
+        `  ${fmt(g.total)} bytes of role-specific rule text, budget ${fmt(g.budget)} ` +
           `(floor ${fmt(g.floor)} + ${fmt(GROWTH_BUDGET)})`,
         "grown since the last cut:",
         ...grownLines(g),
@@ -1157,10 +1111,10 @@ describe("growth(), on synthetic file sets", () => {
   /** One real role-specific file — the disjoint half the hard bound must not see. */
   const EXTRA = "circle-records.md";
 
-  const at = (rels: string[]) => rels.map((rel) => ({ rel, bytes: RULE_BASELINE[rel] }));
+  const at = (rels: string[]) => rels.map((rel) => ({ rel, size: RULE_BASELINE[rel] }));
 
   it("sits at zero growth when every file is at its baseline", () => {
-    const g = growth(at(CORE));
+    const g = ruleGrowth(at(CORE));
     expect(g.delta).toBe(0);
     expect(g.over).toBe(false);
     expect(g.grown).toEqual([]);
@@ -1168,16 +1122,16 @@ describe("growth(), on synthetic file sets", () => {
 
   it("goes over once the set has spent its whole head-room", () => {
     const files = at(CORE);
-    files[1].bytes += GROWTH_BUDGET + 1;
-    const g = growth(files);
+    files[1].size += GROWTH_BUDGET + 1;
+    const g = ruleGrowth(files);
     expect(g.delta).toBe(GROWTH_BUDGET + 1);
     expect(g.over).toBe(true);
   });
 
   it("never goes over on a shrink, however large — this bounds the rate of addition", () => {
     const files = at(CORE);
-    files[1].bytes -= 20_000;
-    const g = growth(files);
+    files[1].size -= 20_000;
+    const g = ruleGrowth(files);
     expect(g.delta).toBe(-20_000);
     expect(g.over).toBe(false);
     expect(g.grown).toEqual([]);
@@ -1187,18 +1141,19 @@ describe("growth(), on synthetic file sets", () => {
     // The disjointness the two gates rest on: the same overshoot that fires the
     // report cannot reach the hard bound, because the hard bound is never called
     // with that file.
-    const extras = [{ rel: EXTRA, bytes: RULE_BASELINE[EXTRA] + 2 * GROWTH_BUDGET }];
-    expect(growth(extras).over, "role-specific growth should reach the report").toBe(true);
-    expect(growth(at(CORE)).over, "and should not reach the hard bound").toBe(false);
+    const extras = [{ rel: EXTRA, size: RULE_BASELINE[EXTRA] + 2 * GROWTH_BUDGET }];
+    expect(ruleGrowth(extras).over, "role-specific growth should reach the report").toBe(true);
+    expect(ruleGrowth(at(CORE)).over, "and should not reach the hard bound").toBe(false);
   });
 
   it("names the file that grew, and the way out, in the hard bound's message", () => {
     const files = at(CORE);
-    files[1].bytes += GROWTH_BUDGET + 500;
-    const msg = hardBoundMessage(growth(files));
+    files[1].size += GROWTH_BUDGET + 500;
+    const msg = hardBoundMessage(ruleGrowth(files));
     expect(msg).toContain(CORE[1]);
     expect(msg).toContain(`+${fmt(GROWTH_BUDGET + 500)}`);
     expect(msg).toContain("UPDATE_RULES_GOLDEN=1");
-    expect(msg).toContain("## Re-baselining: the two events at which the baseline moves");
+    expect(msg).toContain("## Re-baselining: the two events at which a baseline moves");
+    expect(msg).toContain("helpers/growth-bound.ts");
   });
 });

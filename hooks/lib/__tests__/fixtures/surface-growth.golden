@@ -1,0 +1,92 @@
+# surface-growth.golden — what the bounded shipped surfaces measure, per file.
+#
+# Generated. Do not hand-edit. To update after a deliberate change:
+#
+#   cd hooks && UPDATE_SURFACE_GOLDEN=1 npx vitest run lib/__tests__/surface-growth-bound.test.ts
+#
+# That run rewrites this file and then fails on purpose, so the flag can never
+# be left on in a green run. Reviewing the diff is the whole obligation.
+#
+# One block per surface: every file in it with its size, then the total.
+# agents and skills are bytes; hook-tests are lines. Regenerating this file
+# does not move any baseline and therefore never clears a bound.
+
+[agents bytes]
+  analyst.md 21317
+  bugfixer.md 11808
+  coder.md 9688
+  coderev.md 13257
+  consultant.md 14825
+  curator.md 33541
+  editor.md 14272
+  ontocoder.md 13305
+  ontorev.md 11234
+  orchestrator.md 139859
+  planner.md 18434
+  playmaker.md 38602
+  reconciler.md 20006
+  shaper.md 25320
+  taskplanner.md 14375
+  total 399843
+
+[skills bytes]
+  archive/SKILL.md 23705
+  cadence/SKILL.md 17506
+  cleanup/SKILL.md 23662
+  commit/SKILL.md 6233
+  curate/SKILL.md 12741
+  direct/SKILL.md 9232
+  help/SKILL.md 13351
+  log-activity/SKILL.md 13559
+  memo/SKILL.md 12560
+  migrate/SKILL.md 26256
+  next/SKILL.md 26249
+  setup/SKILL.md 35385
+  total 220439
+
+[hook-tests lines]
+  clear-halt-concurrent-halt.test.ts 427
+  commit-message-path.test.ts 366
+  config.test.ts 1522
+  context-manifest.test.ts 476
+  deliverable-language-lint.test.ts 141
+  derivable-enumerations-lint.test.ts 462
+  domain-cascade-order-lint.test.ts 235
+  domain-cascade.test.ts 925
+  escalation.test.ts 253
+  executor-verification-report-lint.test.ts 218
+  fusion-commit-lock.test.ts 372
+  fusion-count-sources.test.ts 443
+  fusion-paths.test.ts 879
+  glob-nomatch-lint.test.ts 162
+  guard-bash-integration.test.ts 389
+  guard-escalation-shape.test.ts 278
+  guard-halt-event.test.ts 146
+  guard-project-config-integration.test.ts 530
+  guard-state-shape.test.ts 251
+  helpers/citation-scan.ts 574
+  helpers/growth-bound.ts 123
+  helpers/guard-harness.ts 1015
+  helpers/prompt-blocks.ts 28
+  hook-fail-open.test.ts 607
+  hooks-wiring.test.ts 92
+  legacy-halt-clearing.test.ts 262
+  marker-format-lint.test.ts 186
+  monitor-warnings-panel.test.ts 897
+  path-literal-lint.test.ts 342
+  paths.test.ts 132
+  playmaker-backlog-mandate-lint.test.ts 392
+  portfolio-citation-form-lint.test.ts 171
+  project-relative.test.ts 159
+  provenance-header-lint.test.ts 449
+  record-counts-measurement.test.ts 521
+  reference-resolution-lint.test.ts 814
+  review-coverage-mandate.test.ts 278
+  review-coverage.test.ts 677
+  rules-emission-golden.test.ts 1159
+  rules-voice-profile.test.ts 318
+  session-start-subdirectory.test.ts 159
+  staging-drift.test.ts 649
+  surface-growth-bound.test.ts 576
+  turn-budget-lint.test.ts 398
+  total 19453
