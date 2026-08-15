@@ -4,7 +4,7 @@
  *
  * ## Why this module exists
  *
- * Three state modules — `escalation.ts`, `churn.ts` and the since-removed
+ * Three state modules — `escalation.ts` and the since-removed `churn.ts` and
  * `cross-file.ts` — each carried their own copy of the same twelve lines:
  * resolve the state directory from `findWorkbenchRoot()`, read a JSON file, hand
  * the parsed value to the caller, and write it back through a `.tmp` and a
@@ -16,10 +16,10 @@
  * Measured on the protected-path halt sentence, which is gone with its half of
  * the guard; the defect class is not, and is not specific to what the message
  * said. A throw in a state load takes out whatever the hook was about to tell
- * the model, and the hook still tells it several things — the churn warning and
- * the three drift and coverage measurements all leave through the same reply.
- * One defect, fixed once, in one of three places. The ping-back tracker left
- * with decision `260809-2004`.
+ * the model, and the tracker still tells it three things — the drift, coverage
+ * and staging measurements all leave through the same reply. One defect, fixed
+ * once, in one of three places. The ping-back tracker left with decision
+ * `260809-2004`, and the churn heatmap on 2026-08-15.
  *
  * It happened a second time. Three measurement modules — `state-drift.ts`,
  * `review-coverage.ts`, `staging-drift.ts` — landed in one afternoon, each with
@@ -28,8 +28,8 @@
  * `writeFileSync` where this one writes through a `.tmp` and a rename, and all
  * three read with an `as` cast where this one takes a coercion. Decision
  * `260811-1146` moved them onto the seam and widened it by one optional `root`,
- * which is the only thing they needed and did not have. Five modules use it
- * today.
+ * which is the only thing they needed and did not have. Four modules use it
+ * today — the fifth was `churn.ts`, removed on 2026-08-15.
  *
  * So the seam is a parameter rather than a pattern to reproduce:
  * `loadGuardState` takes the coercion, and a state module that wants to persist
@@ -55,9 +55,10 @@
  * the file to merge in a halt another process raised since its load — and a
  * save that reads is exactly the shape this module already owns, so it joined
  * rather than growing a second reader next door. It keeps its own coercion and
- * wraps `loadGuardState`/`saveGuardState` with the merge. The merge does NOT
- * generalise to `churn.json`: its lost updates cost counter accuracy, where
- * escalation's cost a raised halt.
+ * wraps `loadGuardState`/`saveGuardState` with the merge. The merge is its own
+ * and does not generalise: it exists because a lost update here costs a raised
+ * halt, where every other file on this seam records a signature the next
+ * measurement recomputes anyway.
  *
  * ## What is NOT routed through here, and why
  *
@@ -71,8 +72,8 @@
  * was deleted with the protected-path half of the guard on 2026-08-12, so the
  * recommendation is moot rather than done.
  *
- * The two files that DO route through here are `escalation.json` and
- * `churn.json`.
+ * The files that DO route through here are `escalation.json` and the three
+ * measurement throttle records.
  */
 import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -87,9 +88,9 @@ import { findWorkbenchRoot } from "./workbench-root.js";
  *
  * ## The optional root, and why it is optional rather than required
  *
- * `escalation.ts` and `churn.ts` run inside the hooks and have no root of their
- * own, so they let this walk up from the working directory — that walk is the
- * no-workbench no-op above, and it must stay their default.
+ * `escalation.ts` runs inside the hooks and has no root of its own, so it lets
+ * this walk up from the working directory — that walk is the no-workbench no-op
+ * above, and it must stay its default.
  *
  * The three measurement modules are the other case. Each is handed a workbench
  * root by its caller (the tracker resolves it once per tool call; the `bin/`
@@ -171,18 +172,4 @@ export function nonNegativeCount(value) {
     return typeof value === "number" && Number.isFinite(value)
         ? Math.max(0, Math.floor(value))
         : 0;
-}
-/**
- * A timestamp string, or null when the value cannot be read as one.
- *
- * The parse check is not decoration. `churn.ts` computes a session age from its
- * `sessionStart`, and an unparseable string yields `NaN`, which compares false
- * against every threshold — so the two-hour session reset would silently never
- * fire again. A string that Date cannot read is no more a timestamp than a
- * number is.
- */
-export function optionalTimestamp(value) {
-    return typeof value === "string" && Number.isFinite(Date.parse(value))
-        ? value
-        : null;
 }

@@ -26,8 +26,10 @@
  * 3. **It speaks once per divergence, not once per tool call.** A message on
  *    every call is one an agent learns to read past.
  * 4. **It does not stand down in fusion's own repository.** All six measured
- *    instances happened there, and the churn/protected-path stand-down asks a
- *    different question about a different directory.
+ *    instances happened there. Two stand-downs it was deliberately ordered ahead
+ *    of have since gone — the protected-path measurement's on 2026-08-12 and
+ *    churn's on 2026-08-15 — and the one left, in `guard.ts`, asks a different
+ *    question about a different directory.
  */
 
 import { describe, it, expect } from "vitest";
@@ -584,7 +586,7 @@ describe("session-state drift: what reaches the model", () => {
 
 describe("session-state drift: fusion's own repository", () => {
   it(
-    "measures in a plugin root, where the churn and protected-path halves stand down",
+    "measures in a plugin root, where two now-removed halves used to stand down",
     () => {
       withPluginRepo((p) => {
         const start = head(p.root);
@@ -595,10 +597,10 @@ describe("session-state drift: fusion's own repository", () => {
           trackerSays(p),
           "the drift check stood down in fusion's own repository. Every one of the six measured " +
             "instances of the freeze happened there, so a stand-down here switches the check " +
-            "off in the only project it is known to be needed in. The other two stand-downs " +
-            "answer different questions: churn is about plugin-development edits not being " +
-            "signal, and the protected-path measurement is about a fusion developer's own " +
-            "files not being reverted.",
+            "off in the only project it is known to be needed in. The two stand-downs this " +
+            "check was ordered ahead of answered different questions and are both gone: churn " +
+            "was about plugin-development edits not being signal, and the protected-path " +
+            "measurement about a fusion developer's own files not being reverted.",
         ).not.toBeNull();
         expect(driftEvents(p.root).length).toBe(1);
       });

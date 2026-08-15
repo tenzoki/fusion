@@ -1,71 +1,70 @@
 /**
- * A shape-valid `churn.json` used to swallow the tracker's reply.
- * (`cross-file.json` carried the identical defect and the identical coverage
- * here until the ping-back tracker was removed with decision `260809-2004`.)
+ * A shape-valid `.guard-state/` JSON file used to swallow the tracker's reply.
  *
  * ## The mechanism, in the order it runs
  *
- * `tracker.ts` produces its reply first and tracks churn afterwards. Both state
- * loads used to cast the parsed JSON with `as` inside a `try/catch` that handles
- * a MISSING file and UNPARSEABLE text — and nothing else. A file that parses to
- * a valid JSON value of the wrong shape (`{}` is enough) passed that catch and
- * threw on the next field access, inside the churn half. The throw reached the
- * top-level handler, which calls `respond()` with NO argument, so the reply went
- * out empty. Both state loads: `churn.json` is the one that survives.
+ * `tracker.ts` loads state, produces its reply, and every state load on the way
+ * used to cast the parsed JSON with `as` inside a `try/catch` that handles a
+ * MISSING file and UNPARSEABLE text — and nothing else. A file that parses to a
+ * valid JSON value of the wrong shape (`{}` is enough) passed that catch and
+ * threw on the next field access. The throw reached the top-level handler, which
+ * calls `respond()` with NO argument, so the reply went out empty.
  *
- * What that costs is precise. Whatever the measurements before it had to say
- * was lost — and every one of them is a sentence the model would otherwise have
+ * What that costs is precise. Whatever the measurements before it had to say was
+ * lost — and every one of them is a sentence the model would otherwise have
  * acted on. The state file was never repaired either, because the save sits
  * after the throw, so every later tool call in that project repeated it (issue
- * `260809-1101`).
+ * `260809-1101`). The fix is `lib/guard-state-file.ts`'s coercion seam, which
+ * every state file on the tracker's path goes through; its header carries the
+ * argument.
  *
- * ## Which reply the rows use as their probe, and why it changed
+ * ## Which state file the rows seed, and why it has changed twice
  *
- * The subject of this file is the CHURN LOAD, not whatever the reply happens to
- * say. Every row needs the tracker to have SOMETHING to report, so that "the
- * reply survived the churn half" is observable at all; which report it is was
- * never the subject.
+ * The subject of this file is the STATE LOAD, not any one file and not whatever
+ * the reply happens to say. Every row needs the tracker to have SOMETHING to
+ * report, so that "the reply survived the load" is observable at all.
  *
- * It used to be the protected-path halt sentence, because that was the reply
- * nearest to hand. The plan that removes the protected-path half therefore had
- * to re-point it, and named two candidates: session-state drift first, review
- * coverage as the fallback if drift proved awkward to trigger inside the
- * harness.
+ * The reply was the protected-path halt sentence until 2026-08-12, and moved to
+ * the session-state drift sentence when that half of the guard was removed. The
+ * seeded file was `churn.json` until 2026-08-15, and moved to `state-drift.json`
+ * when the churn heatmap was removed with the last state file the tracker loaded
+ * outside its own measurements.
  *
- * **State drift was chosen — the plan's first choice — and it was not awkward.**
- * The reason is worth recording rather than re-derived: of the three surviving
- * tracker reports it is the only one that fires on EVERY guarded tool call.
- * Review coverage fires only when the tool's own payload is a `.md` file under a
- * `reviews/` store AND a session window exists to measure against; staging drift
- * fires only when HEAD moved since the previous call. Both would have coupled
- * these rows to a second trigger that has nothing to do with `churn.json`, and
- * the payload constraint in particular would have forced every case to write a
- * review file instead of the ordinary `notes.txt` edit the defect was measured
- * on. Drift needs no such coupling: it needs a git repository, a six-line
- * `agentstate.yaml` and three commits, after which every tool call in the
- * project reports the same divergence.
+ * `state-drift.json` is the right successor rather than the nearest one. It is
+ * the throttle record `measureStateDriftForModel` reads on EVERY guarded tool
+ * call, before it produces the sentence — so a load that threw would take the
+ * sentence with it, which is exactly the shape the defect had. Review coverage
+ * and staging drift have throttle records too, and both were declined for the
+ * reason their triggers already state: coverage needs the payload to be a `.md`
+ * file under a `reviews/` store with a session window to measure against, and
+ * staging needs HEAD to have moved. Either would couple these rows to a second
+ * trigger that has nothing to do with the load. Drift needs no such coupling: it
+ * needs a git repository, a six-line `agentstate.yaml` and three commits, after
+ * which every tool call in the project reports the same divergence.
  *
- * The fixture itself is `freezeCommitCount` in helpers/guard-harness.ts, which
- * carries the rest of that reasoning and is shared with the one other suite
- * re-pointed the same way. It is deliberately MINIMAL rather than the full state
- * file the orchestrator writes: `measureStateDrift` reports each row it cannot
- * decide as `unchecked` and omits it from the sentence, so the two fields that
- * produce the `progress.commits` row are all either suite needs.
+ * The fixture is `freezeCommitCount` in helpers/guard-harness.ts, which carries
+ * the rest of that reasoning and is shared with the one other suite pointed the
+ * same way. It is deliberately MINIMAL rather than the full state file the
+ * orchestrator writes: `measureStateDrift` reports each row it cannot decide as
+ * `unchecked` and omits it from the sentence, so the two fields that produce the
+ * `progress.commits` row are all either suite needs.
  *
  * ## Why every case here uses a write tool
  *
- * The churn half returns immediately for `Bash`, so a malformed state file is
- * never even read on that surface. The write tools are where the load happens
- * and therefore where the reply could be lost.
+ * Nothing here requires it of the drift measurement, which runs for `Bash` too.
+ * The write tools are kept because the defect was measured on one, and because
+ * an ordinary `notes.txt` edit is the plainest call that reaches the load.
  *
  * ## What proves the fix rather than the absence of the bug
  *
  * `runTracker` throws when the tracker prints `[tracker] Error:`, which is the
  * fail-open path this defect took, so a regression fails here loudly. On top of
- * that each case asserts the sentence itself reached stdout, and the last case
- * asserts that a well-formed state file is still carried forward — a coercion
- * that emptied everything would satisfy all the malformed rows while silently
- * resetting a project's counters on load.
+ * that each malformed row asserts the sentence itself reached stdout, and the
+ * last case asserts that a well-formed throttle is read back rather than
+ * discarded — a coercion that emptied everything would satisfy all the malformed
+ * rows while silently resetting the throttle on every load, and a throttle that
+ * resets repeats its sentence on every tool call, which is the failure the
+ * throttle exists to prevent.
  */
 
 import { describe, expect, it } from "vitest";
@@ -81,7 +80,7 @@ import {
   type Project,
 } from "./helpers/guard-harness.js";
 
-const CHURN_FILE = "fusion-workbench/.guard-state/churn.json";
+const THROTTLE_FILE = "fusion-workbench/.guard-state/state-drift.json";
 
 /** The file the tool call names. Unremarkable, and that is the point. */
 const PAYLOAD = "notes.txt";
@@ -103,18 +102,19 @@ function readState(root: string, rel: string): Record<string, unknown> | null {
  * ------------------------------------------------------------------ */
 
 /**
- * A project whose bookkeeping has drifted, with `churn.json` seeded verbatim.
+ * A project whose bookkeeping has drifted, with the throttle record seeded
+ * verbatim.
  *
  * `git: true` is not optional here: the drift is measured against the git
  * history, which is one of the two records the check reads.
  */
-function withDrift<T>(churn: string, fn: (project: Project) => T): T {
+function withDrift<T>(throttle: string, fn: (project: Project) => T): T {
   return withProject(
     (project) => {
       freezeCommitCount(project.root);
       return fn(project);
     },
-    { git: true, files: { [CHURN_FILE]: churn } },
+    { git: true, files: { [THROTTLE_FILE]: throttle } },
   );
 }
 
@@ -136,17 +136,17 @@ function expectTheDriftSentence(text: string): void {
 
 const MALFORMED_ROWS: [string, string][] = [
   ["{} — the shape the issue was measured with", "{}"],
-  ["a state object with no files map at all", '{"sessionStart":"2026-08-09T09:00:00.000Z"}'],
-  ["files as an array rather than a map", '{"files":[]}'],
+  ["a state object with no reported field at all", '{"seen":"whatever"}'],
+  ["reported as an array rather than a string", '{"reported":[]}'],
   ["null — valid JSON with no properties to read", "null"],
-  ["truncated JSON — one of the two rows the old catch did handle", '{"files": {'],
+  ["truncated JSON — one of the two rows the old catch did handle", '{"reported": {'],
   ["an empty file — the other row the old catch did handle", ""],
 ];
 
-describe("a malformed churn.json no longer swallows the tracker's reply", () => {
+describe("a malformed state file no longer swallows the tracker's reply", () => {
   for (const [name, content] of MALFORMED_ROWS) {
     it(
-      `reports the state drift with churn.json = ${name}`,
+      `reports the state drift with state-drift.json = ${name}`,
       () => {
         withDrift(content, ({ root }) => {
           expectTheDriftSentence(ordinaryEdit(root));
@@ -168,9 +168,9 @@ describe("the malformed file is repaired, not just survived", () => {
         // because the save sits after the throw, so every later tool call in
         // the project took the same path until a human deleted it. It now
         // comes back as a state the next load can read.
-        const churn = readState(root, CHURN_FILE);
-        expect(churn?.files).toMatchObject({ [PAYLOAD]: expect.anything() });
-        expect(typeof churn?.sessionStart).toBe("string");
+        const throttle = readState(root, THROTTLE_FILE);
+        expect(typeof throttle?.reported).toBe("string");
+        expect(throttle?.reported).not.toBe("");
 
         // And nothing took the fail-open path on the way. `runTracker` throws
         // on the stderr line; this asserts the event the handler emits, which
@@ -182,18 +182,22 @@ describe("the malformed file is repaired, not just survived", () => {
   );
 
   it(
-    "records the churn of an ordinary write with nothing to report",
+    "costs nothing on an ordinary write with nothing to report",
     () => {
-      // The same malformed file in a project with no drift, so the repair is
-      // shown to be the load's doing and not something a report arranged.
+      // The same malformed file in a project with no drift. The load still runs
+      // and still must not throw, and the honest reading of a malformed
+      // throttle is "never reported" — which equals the empty signature a
+      // project with nothing drifted produces, so the measurement returns before
+      // it writes. The file is therefore left exactly as it was, and that is the
+      // assertion: the repair above is a repair the REPORT performs, not
+      // something the load does on its own.
       withProject(
         ({ root }) => {
           expect(ordinaryEdit(root)).toBe("");
-          expect(readState(root, CHURN_FILE)?.files).toMatchObject({
-            [PAYLOAD]: { totalChanges: 1 },
-          });
+          expect(readState(root, THROTTLE_FILE)).toEqual({});
+          expect(readEvents(root).map((e) => e.event)).not.toContain("guard_error");
         },
-        { files: { [CHURN_FILE]: "{}" } },
+        { files: { [THROTTLE_FILE]: "{}" } },
       );
     },
     CASE_TIMEOUT,
@@ -202,33 +206,19 @@ describe("the malformed file is repaired, not just survived", () => {
 
 describe("a well-formed state file is carried forward, not emptied", () => {
   it(
-    "keeps the churn counters a previous session accumulated",
+    "reads back the signature the previous call wrote and stays quiet",
     () => {
-      withProject(
-        ({ root }) => {
-          ordinaryEdit(root);
-          const files = readState(root, CHURN_FILE)?.files as Record<
-            string,
-            { totalChanges: number }
-          >;
-          expect(files[PAYLOAD].totalChanges).toBe(5);
-        },
-        {
-          files: {
-            [CHURN_FILE]: JSON.stringify({
-              files: {
-                [PAYLOAD]: {
-                  totalChanges: 4,
-                  changesThisSession: 4,
-                  lastChange: "2026-08-09T10:00:00.000Z",
-                  thrashingScore: 5,
-                },
-              },
-              sessionStart: new Date().toISOString(),
-            }),
-          },
-        },
-      );
+      withDrift("{}", ({ root }) => {
+        // The first call has nothing to compare against and speaks.
+        expectTheDriftSentence(ordinaryEdit(root));
+        const first = readState(root, THROTTLE_FILE)?.reported;
+
+        // The second call loads what the first wrote. A coercion that emptied a
+        // well-formed file would make this speak again — and a message on every
+        // tool call is the failure the throttle exists to prevent.
+        expect(ordinaryEdit(root)).toBe("");
+        expect(readState(root, THROTTLE_FILE)?.reported).toBe(first);
+      });
     },
     CASE_TIMEOUT,
   );

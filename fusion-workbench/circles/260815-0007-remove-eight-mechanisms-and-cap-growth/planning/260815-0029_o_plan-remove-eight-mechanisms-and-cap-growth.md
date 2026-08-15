@@ -185,7 +185,7 @@ Every step's acceptance includes `cd hooks && npm test` green and a history entr
    - Changes: delete all of them. The workbench is git-tracked in this repository, so the outbox's evidence survives in history and needs no copy; step 2's history entry already carries the two figures that matter.
    - Dependencies: step 2. Reversing the order fails the reference lint, which resolves `templates/` paths: deleting the template while `skills/setup/SKILL.md` Step 0e still cites it is a dangling citation.
 
-4. **Remove churn and the cross-file counters: code, prompts and prose** *(record item 2, first half)*
+4. [DONE] **Remove churn and the cross-file counters: code, prompts and prose** *(record item 2, first half)*
    - Executor: `coder`
    - Files: `hooks/lib/churn.ts` (667 lines); `hooks/churn-rank.ts`; `bin/fusion-churn-rank`; `hooks/tracker.ts` (39 references); `hooks/lib/{fail-open,guard-state-file,project-relative,escalation,config,paths,events,self-detect}.ts`; `bin/monitor`; `agents/orchestrator.md`; `skills/setup/SKILL.md`; `skills/archive/SKILL.md`; `rules/fusion-workbench-conventions.md`; `hooks/lib/__tests__/{churn,churn-key-anchor}.test.ts` (deleted) and `{guard-state-shape,hook-fail-open,monitor-warnings-panel,config,turn-budget-lint,state-drift,staging-drift,review-coverage,fusion-count-sources}.test.ts` plus `helpers/guard-harness.ts` (edited); `hooks/{state-drift,review-coverage,turn-budget}.ts` and `bin/fusion-source-root` (comment references); `README.md`; `README-hooks.md` (19 references); `README-agents.md`; `docs/philosophy.md`; `docs/working-model.md`; `CLAUDE.md` (enumeration half only).
    - Changes:

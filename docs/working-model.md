@@ -116,11 +116,10 @@ That last option is the point of the whole model: the goal can change mid-work w
 While the gates govern *decisions*, a **compliance guard** governs *file writes*. It runs on every edit an agent attempts, and it is deliberately narrow about what it blocks:
 
 - **Decision-governed paths — blocked only at high sensitivity.** Files a project decision governs carry a sensitivity level. Only `high` blocks; `medium` and `low` pass. This lets a project ring-fence its most binding areas without freezing everything.
-- **Churn — observation only.** The guard counts how often each file is touched in a session. When a file is thrashed past the threshold, it emits a **warning** the monitor and orchestrator can see. The count is taken *after* the write and never blocks it: it signals, it does not stop.
 - **Escalation → halt.** Consecutive blocks accumulate. After a threshold (default 3), the guard enters **halt** and blocks all writes until a human clears it. This catches an agent stuck retrying something it's not allowed to do.
 - **Shell commands — not read at all.** The guard does not try to work out from a command's text what it is about to do. That question is undecidable, and two policies that asked it — one predicting which files a command would write, one predicting whether it would move HEAD — were built and then deleted. What blocks is decided on the path a write tool names, never on wording.
 
-So of everything the guard watches, only two things ever block a write: a high-sensitivity decision-governed path, and an active halt. Churn only warns. There was a third until 2026-08-12 — a **protected path**, a list of files (agent definitions, rules, workbench state) that agents could not write and that the guard put back if they changed by any other route. The whole half was removed; see [`README-hooks.md`](../README-hooks.md) for what went and why.
+So of everything the guard watches, only two things ever block a write: a high-sensitivity decision-governed path, and an active halt. Two more things were watched and neither blocked either, and both are gone: a **protected path** until 2026-08-12, a list of files (agent definitions, rules, workbench state) that agents could not write and that the guard put back if they changed by any other route, and **churn** until 2026-08-15, a per-file count of how often a session touched a file, which only ever warned. See [`README-hooks.md`](../README-hooks.md) for what went and why.
 
 The guard runs on a spectrum from full enforcement to advisory to fully off. For how to tune or disable it, see the README's [Tuning or disabling the compliance guard](../README.md#tuning-or-disabling-the-compliance-guard); for the full guard model and configuration, see [`README-hooks.md`](../README-hooks.md).
 
@@ -134,7 +133,7 @@ Two paths reach the same place and cross different machinery. The first is one c
 2. The **orchestrator** resolves the scope: this is code work, one clear outcome.
 3. The request is specific enough, so the **shaper** is skipped. The **planner** produces a plan — a middleware step, a config step, a test step.
 4. **PLAN GATE** — you review the three steps and approve.
-5. **Turn 1 begins.** The **coder** edits the middleware. Each write passes through the **guard** — the middleware file sits in no decision-governed area, so nothing blocks and the write lands. The coder edits it twice more while iterating; on the third touch the guard emits a churn *warning* (visible on the monitor) but does not block.
+5. **Turn 1 begins.** The **coder** edits the middleware. Each write passes through the **guard** — the middleware file sits in no decision-governed area, so nothing blocks and the write lands. The coder edits it twice more while iterating, and nothing stands in the way.
 6. **coderev** reviews the Turn's changes and files any findings as issues.
 7. The orchestrator **commits** the work (holding the commit lock so parallel agents don't collide on the git index).
 8. **Per-Turn Coherence check** — the three questions pass: the work matches the assumptions, moves toward the goal, and the goal is still reachable. The Turn continues.

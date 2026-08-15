@@ -91,7 +91,7 @@ These are non-negotiable defaults. The user can override them at the `refine` st
 1. **Reserved — never archive.** The root-anchored surfaces, because their consumers read them at fixed paths and none has a fallback (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`):
    - `$WORKBENCH/agentstate.yaml`, `$WORKBENCH/orchestrator-live.md`, `$WORKBENCH/orchestrator-events.jsonl`
    - `$WORKBENCH/$TASKLIST`, `$WORKBENCH/$PORTFOLIO`
-   - `$WORKBENCH/.guard-state/` **apart from `events.jsonl`** — the counters and throttle stores in there (`churn.json`, `escalation.json` and their siblings) each describe *now* and are rewritten in place. The append-only `events.jsonl` beside them is not a state file and has its own case; see *Rolling the guard event log* below.
+   - `$WORKBENCH/.guard-state/` **apart from `events.jsonl`** — the counters and throttle stores in there (`escalation.json` and its siblings) each describe *now* and are rewritten in place. The append-only `events.jsonl` beside them is not a state file and has its own case; see *Rolling the guard event log* below.
    - `$WORKBENCH/.commit-lock/`, `$WORKBENCH/.session-marker`, `$WORKBENCH/.active-circle`, `$WORKBENCH/.fusion-setup`
    - `$WORKBENCH/monitor`, `$WORKBENCH/stilwerk/`, `$WORKBENCH/stashes/`
    - Anything already under the archive store.
@@ -127,7 +127,7 @@ Each tier is **additive**: tier-2 includes tier-1, tier-3 includes tier-2. The d
 
 ### Rolling the guard event log
 
-`$WORKBENCH/.guard-state/events.jsonl` is the guard's append-only record: every block, halt, cleared halt, advisory override, churn warning and fail-open the hooks have emitted, across every session, in every Circle. It is classified as **evidence, not telemetry** (`rules/fusion-workbench-conventions.md` `### Which of them a tracked workbench tracks`, and decision `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` under `$SCAN_DECISIONS`), and this roll is the **only** thing that bounds its size.
+`$WORKBENCH/.guard-state/events.jsonl` is the guard's append-only record: every block, halt, cleared halt, advisory override and fail-open the hooks have emitted, across every session, in every Circle. It is classified as **evidence, not telemetry** (`rules/fusion-workbench-conventions.md` `### Which of them a tracked workbench tracks`, and decision `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` under `$SCAN_DECISIONS`), and this roll is the **only** thing that bounds its size.
 
 **There is no line or byte ceiling anywhere, and none may be added** — not here, not in `hooks/lib/events.ts`. Every ceiling expressible in lines or bytes discards the oldest lines first, and the oldest lines are the `guard_block`, `guard_halt` and `halt_cleared` events: 0.6 % of the file when it was measured, and the only lines that record the guard ever enforcing anything. A guard that forgets it halted is a strange guard.
 
@@ -139,7 +139,7 @@ The destination preserves the original path relative to `$WORKBENCH`, and the fi
 <archive store>/<YYMMDD-HHMM>-<slug>/.guard-state/events-<YYMMDD-HHMM>.jsonl
 ```
 
-The `.guard-state/` entry in safety filter 1 covers the state files beside the log and **not** the log itself. That is the whole distinction: `churn.json` and `escalation.json` describe *now* and a past version of them answers nothing; `events.jsonl` is append-only and a past version answers when the guard stopped somebody.
+The `.guard-state/` entry in safety filter 1 covers the state files beside the log and **not** the log itself. That is the whole distinction: `escalation.json` and the measurement throttle records describe *now* and a past version of them answers nothing; `events.jsonl` is append-only and a past version answers when the guard stopped somebody.
 
 ### Tier 2 — Tier 1 + aged shared reviews
 

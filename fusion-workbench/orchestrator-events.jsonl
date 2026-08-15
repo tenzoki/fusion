@@ -1512,3 +1512,6 @@
 {"ts":"2026-08-15T07:10:33","event":"bugfix_failure","turn":2,"agent":"bugfixer","detail":"declined to fix by design: cause is concurrent npm test runs racing on hooks/dist, root fix sits under open decision 260811-2009; local patch would narrow the window without closing it"}
 {"ts":"2026-08-15T07:10:33","event":"gate_response","turn":2,"detail":"concurrency decision 260811-2009 answered: option 2, make the suite safe to run concurrently; scope grows by inserted step P-3b"}
 {"ts":"2026-08-15T07:10:33","event":"task_start","turn":2,"task":"P-3b","agent":"coder","detail":"inserted prerequisite: concurrency-safe build plus the two wall-clock-bound cases"}
+{"ts":"2026-08-15T09:38:41","event":"task_done","turn":2,"task":"P-3b","agent":"coder","detail":"332267a; 6/6 red before, 12/12 green after; 2 issues closed, 1 narrowed; 42 orphaned monitor processes found and reaped"}
+{"ts":"2026-08-15T09:38:41","event":"commit","turn":2,"detail":"332267a fix(hooks): the build stops deleting what a parallel run is reading"}
+{"ts":"2026-08-15T09:38:41","event":"task_start","turn":2,"task":"P-4","agent":"coder","detail":"churn and cross-file counters: code, prompts, prose"}

@@ -13,9 +13,8 @@
  * and by anyone at a terminal who wants to know whether a running session's
  * numbers can be believed.
  *
- * Output, one `KEY=value` per line in the shape `bin/fusion-paths`,
- * `bin/fusion-count-sources` and `bin/fusion-churn-rank` use, then one line per
- * row:
+ * Output, one `KEY=value` per line in the shape `bin/fusion-paths` and
+ * `bin/fusion-count-sources` use, then one line per row:
  *
  *   anchor=workbench-root
  *   state=present

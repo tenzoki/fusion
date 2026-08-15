@@ -55,10 +55,10 @@ fusion-workbench/
 │
 │   # ── Root-anchored. The hooks, the monitor and the bin/ helpers read these ──
 │   # ── HERE, at fixed root-relative paths. Do not move them.               ──
-├── agentstate.yaml                     # bin/monitor, hooks/lib/state-drift.ts, hooks/lib/review-coverage.ts, hooks/lib/churn.ts, hooks/lib/staging-drift.ts
-├── orchestrator-live.md                # bin/monitor, hooks/lib/churn.ts, hooks/lib/staging-drift.ts
-├── orchestrator-events.jsonl           # bin/monitor, hooks/lib/state-drift.ts, hooks/lib/churn.ts, hooks/lib/staging-drift.ts
-├── .guard-state/                       # bin/monitor, hooks/lib/events.ts, hooks/lib/guard-state-file.ts, hooks/lib/churn.ts, hooks/lib/staging-drift.ts
+├── agentstate.yaml                     # bin/monitor, hooks/lib/state-drift.ts, hooks/lib/review-coverage.ts, hooks/lib/staging-drift.ts
+├── orchestrator-live.md                # bin/monitor, hooks/lib/staging-drift.ts
+├── orchestrator-events.jsonl           # bin/monitor, hooks/lib/state-drift.ts, hooks/lib/staging-drift.ts
+├── .guard-state/                       # bin/monitor, hooks/lib/events.ts, hooks/lib/guard-state-file.ts, hooks/lib/staging-drift.ts
 ├── .commit-lock/                       # bin/fusion-commit-lock, hooks/lib/staging-drift.ts (created and removed per commit)
 └── .session-marker                     # bin/fusion-session-mark, hooks/lib/staging-drift.ts
 ```
@@ -76,7 +76,7 @@ Whether the workbench is under version control at all is the project's decision 
 - **Records — track them.** `orchestrator-events.jsonl` (append-only across all sessions, read cross-session), `.guard-state/events.jsonl` (the guard's own append-only log — see below), `tasklist.md` and `portfolio.md` (authored text, not machine-refreshed).
 - **Live state — do not track it.** `agentstate.yaml`, `orchestrator-live.md`, `.guard-state/` **apart from `events.jsonl`**, `.commit-lock/`, `.session-marker` and `.active-circle` each describe *now* and are overwritten or removed; a committed version is noise in every diff and, restored by a checkout, a statement about a session that has ended. `monitor` is a verbatim copy of the shipped `bin/monitor` that `/fusion:setup` re-creates.
 
-**`.guard-state/` is not one thing, and the directory is the wrong unit to classify.** The counters and throttle stores in it — `churn.json`, `escalation.json` and their siblings — are rewritten in place and a past version of them answers nothing, so they are live state. `events.jsonl` beside them is appended to and never rewritten, and a past version answers a great deal: which tool call the guard blocked, when it halted, when a human cleared the halt. It is classified by what it is rather than by the directory it sits in, and it is a **record** (decision `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`).
+**`.guard-state/` is not one thing, and the directory is the wrong unit to classify.** The counters and throttle stores in it — `escalation.json` and the measurement throttle records — are rewritten in place and a past version of them answers nothing, so they are live state. `events.jsonl` beside them is appended to and never rewritten, and a past version answers a great deal: which tool call the guard blocked, when it halted, when a human cleared the halt. It is classified by what it is rather than by the directory it sits in, and it is a **record** (decision `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`).
 
 **What preserves that record is `/fusion:archive`, not a ceiling and not tracking the live file.** The log has no line or byte limit anywhere, deliberately: every such limit discards the oldest lines first, and the oldest lines are the block, halt and clear events, which are the only ones recording the guard enforcing anything. `/fusion:archive` rolls the live log into the archive store under a dated name and starts a fresh empty one, so the rolled copies are ordinary archived files and are kept wherever the archive store is kept. A project may therefore leave the live log untracked and still hold the evidence, paying no diff on every tool call — the record side of the split is satisfied by the rolled copies. That is the one entry above where "track them" reads as "keep what the roll produces", and it is the configuration this repository runs.
 

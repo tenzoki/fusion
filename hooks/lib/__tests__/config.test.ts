@@ -146,9 +146,12 @@ afterEach(() => {
 // The constraint it was written for was the Circle's first one — that no path
 // protected today becomes unprotected — and that constraint died with the
 // mechanism, along with `protectedPaths` and the floor, which are struck from
-// the transcription below. What survives is the weaker property the case can
-// still measure and that still matters: introducing a project layer changed
-// nothing for a project that has no project layer.
+// the transcription below. The `churn` container was struck the same way when
+// the heatmap was removed on 2026-08-15: a container the loader no longer
+// resolves cannot appear in a byte comparison of what it resolves. What survives
+// is the weaker property the case can still measure and that still matters:
+// introducing a project layer changed nothing for a project that has no project
+// layer.
 //
 // DEFAULTS is transcribed too rather than imported. Importing it would compare
 // the new loader against itself and pass however the values drifted; a frozen
@@ -165,10 +168,6 @@ const DEFAULTS_BEFORE_STEP_6 = {
   },
   decisions: [] as unknown[],
   escalation: { blocksBeforeHalt: 3 },
-  churn: {
-    changesPerSessionWarning: 5,
-    changesPerSessionCritical: 10,
-  },
 };
 
 /** `loadConfig` as it behaved before step 6, for one source. */
@@ -193,13 +192,6 @@ function loadConfigAsOfStep5(path: string): object {
     escalation: {
       blocksBeforeHalt:
         raw.escalation?.blocksBeforeHalt ?? D.escalation.blocksBeforeHalt,
-    },
-    churn: {
-      changesPerSessionWarning:
-        raw.churn?.changesPerSessionWarning ?? D.churn.changesPerSessionWarning,
-      changesPerSessionCritical:
-        raw.churn?.changesPerSessionCritical ??
-        D.churn.changesPerSessionCritical,
     },
   };
 }
@@ -371,35 +363,36 @@ describe("merge — per leaf: project, then plugin, then DEFAULTS", () => {
     expect(guard.categorySensitivity).toEqual({ onto: "high" });
   });
 
-  it("walks the same way through escalation, churn and decisions", () => {
+  it("walks the same way through escalation, orchestrator and decisions", () => {
     // Issue 260804-1633: the same omission defect, latent in four more keys and
     // invisible only because `hooks/config.json` and DEFAULTS happen to agree
     // on every leaf they share. The plugin layer below deliberately disagrees
     // with DEFAULTS everywhere, which is what arms it.
+    //
+    // `churn` was the third container here until the heatmap was removed on
+    // 2026-08-15, and it carried the within-a-declared-container half of the
+    // walk because it was the only container with two leaves besides `guard`.
+    // The case above carries that half now, on `guard.categorySensitivity`; what
+    // is left here is the cross-container half, which was always this case's
+    // point.
     const root = projectWith({
       escalation: { blocksBeforeHalt: 7 },
-      churn: { changesPerSessionWarning: 1 },
     });
 
     const config = loadConfig({
       pluginConfigPath: pluginConfig({
         decisions: [{ id: "D-1", category: "onto", statement: "…" }],
         escalation: { blocksBeforeHalt: 9 },
-        churn: {
-          changesPerSessionWarning: 91,
-          changesPerSessionCritical: 92,
-        },
+        orchestrator: { maxTurns: 91 },
       }),
       projectRoot: root,
     });
 
     // Declared: the project's.
     expect(config.escalation.blocksBeforeHalt).toBe(7);
-    expect(config.churn.changesPerSessionWarning).toBe(1);
-    // Omitted, inside an object the project DID declare: the plugin's, not
-    // DEFAULTS' 10.
-    expect(config.churn.changesPerSessionCritical).toBe(92);
-    // A whole top-level key the project never mentioned.
+    // A whole top-level key the project never mentioned: the plugin's, not
+    // DEFAULTS' 5.
+    expect(config.orchestrator.maxTurns).toBe(91);
     expect(config.decisions).toEqual([
       { id: "D-1", category: "onto", statement: "…" },
     ]);
@@ -412,7 +405,9 @@ describe("merge — per leaf: project, then plugin, then DEFAULTS", () => {
     });
 
     expect(config.escalation.blocksBeforeHalt).toBe(3);
-    expect(config.churn.changesPerSessionCritical).toBe(10);
+    // A leaf inside a container BOTH layers declared, which neither of them
+    // names: DEFAULTS' empty map.
+    expect(config.guard.categorySensitivity).toEqual({});
     expect(config.decisions).toEqual([]);
   });
 
@@ -1406,9 +1401,9 @@ describe("the seeded template declares inheritance and declares nothing", () => 
     // Each key below is deliberately DISTINCT from DEFAULTS, so "the template
     // declared this key" and "the template stayed silent" have different
     // answers for all of them. Against the shipped config alone they would not:
-    // its escalation and churn both equal DEFAULTS, and it declares no
-    // `orchestrator` section at all, so a template that restated any of the
-    // three would pass the case above unnoticed.
+    // its escalation equals DEFAULTS, and it declares no `orchestrator` section
+    // at all, so a template that restated either would pass the case above
+    // unnoticed.
     const pluginConfigPath = pluginConfig({
       guard: {
         enabled: false,
@@ -1418,10 +1413,6 @@ describe("the seeded template declares inheritance and declares nothing", () => 
       },
       decisions: [{ id: "D-1", category: "onto", statement: "…" }],
       escalation: { blocksBeforeHalt: 9 },
-      churn: {
-        changesPerSessionWarning: 91,
-        changesPerSessionCritical: 92,
-      },
       orchestrator: { maxTurns: 93 },
     });
 

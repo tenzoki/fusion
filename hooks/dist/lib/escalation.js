@@ -92,11 +92,12 @@ function coerceState(value) {
     return {
         haltActive: Boolean(raw.haltActive),
         consecutiveBlocks: nonNegativeCount(raw.consecutiveBlocks),
-        // NOT `optionalTimestamp`. That primitive additionally requires the string
-        // to parse as a date, which `churn.ts` needs because it computes a session
-        // age from its own timestamp. Nothing computes anything from this one — it
-        // is displayed by `clear-halt.ts` and no more — so tightening it here would
-        // be a behaviour change with no defect behind it.
+        // Read as a string and not parsed as a date. Nothing computes anything
+        // from this one — it is displayed by `clear-halt.ts` and no more — so
+        // tightening it here would be a behaviour change with no defect behind it.
+        // The seam once carried an `optionalTimestamp` primitive that did require a
+        // parseable date; its one caller was the churn heatmap's session-age
+        // arithmetic, and it went with the heatmap on 2026-08-15.
         lastBlockTimestamp: typeof raw.lastBlockTimestamp === "string" ? raw.lastBlockTimestamp : null,
         recentEvents: Array.isArray(raw.recentEvents)
             ? raw.recentEvents
@@ -204,10 +205,10 @@ export function loadEscalation() {
  *
  * NOT preserved — `consecutiveBlocks` and `lastBlockTimestamp`, which are
  * last-writer-wins. A lost increment costs counter accuracy: the threshold halt
- * arrives one block later than it might have. That is the same trade the
- * counters in `churn.ts` make with the same shape, and it is left alone for the
- * same reason — the boundary the guard actually enforces is the outright halt
- * above, not the count that approaches one.
+ * arrives one block later than it might have. It is left alone because the
+ * boundary the guard actually enforces is the outright halt above, not the
+ * count that approaches one. The churn heatmap's counters made the same trade
+ * with the same shape until they were removed on 2026-08-15.
  *
  * ## The window this shrinks rather than closes
  *

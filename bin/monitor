@@ -89,8 +89,8 @@ GUARD_EVENTS_JSONL = os.path.join(BASE_DIR, ".guard-state", "events.jsonl")
 # Guard events surfaced as sticky rows in the warnings panel. Three kinds
 # qualify, and the distinction is what the panel is for:
 #
-#   - Warnings and blocks (churn_*, guard_block, guard_halt) report something
-#     the user did not ask for.
+#   - Warnings and blocks (guard_block, guard_halt) report something the user
+#     did not ask for.
 #   - Advisories (guard_advisory) report something the user DID ask for: a
 #     write the guard would normally deny, let through because an override
 #     flag was set. The user turned the guard down, so the user is the one
@@ -118,7 +118,6 @@ GUARD_EVENTS_JSONL = os.path.join(BASE_DIR, ".guard-state", "events.jsonl")
 # is bookkeeping: it records the ordinary path, nobody asked to be told
 # about it, and it stays out of the panel.
 WARNING_EVENT_TYPES = {
-    "churn_warning", "churn_critical",
     "guard_block", "guard_halt",
     "guard_advisory",
     "guard_error",
@@ -134,15 +133,15 @@ DRIFT_EVENT_TYPES = {"state_drift"}
 
 # INDEPENDENT CAPS, NOT ONE SHARED BUDGET.
 #
-# The classes arrive at very different rates. A block or a churn warning is
-# rare and each one is individually worth reading. An advisory is emitted per
-# guarded tool call for as long as its cause stands — a project whose
-# fusion-guard.json carries a wrong-typed key, or the retired guard.protectedPaths
-# key, gets one on every single call until the line is edited. Under a single
-# shared budget, one un-fixed configuration line is an unbounded stream of
-# advisory rows and every guard_block, guard_halt and churn_critical older than
-# them is off the panel. That is the failure guard.ts already refuses to
-# cause with guard_allow, arriving through a different door.
+# The classes arrive at very different rates. A block or a halt is rare and each
+# one is individually worth reading. An advisory is emitted per guarded tool call
+# for as long as its cause stands — a project whose fusion-guard.json carries a
+# wrong-typed key, or the retired guard.protectedPaths key, gets one on every
+# single call until the line is edited. Under a single shared budget, one
+# un-fixed configuration line is an unbounded stream of advisory rows and every
+# guard_block and guard_halt older than them is off the panel. That is the
+# failure guard.ts already refuses to cause with guard_allow, arriving through a
+# different door.
 #
 # So the warning class keeps its full 30 whatever the other classes do, and each
 # carve-out gets its own small allowance on top. A burst can no longer evict
@@ -163,9 +162,8 @@ DRIFT_EVENT_TYPES = {"state_drift"}
 # config, a corrupted escalation counter, a bug — emits one row per guarded tool
 # call for as long as it sits there. Charged to the warning class it behaves
 # exactly like the advisory burst: thirty ordinary tool calls with a broken
-# tracker push every guard_block, guard_halt and churn_critical off the panel,
-# which is a live combination because a
-# tracker failure does not stop the guard from blocking. The reverse is why the
+# tracker push every guard_block and guard_halt off the panel, which is a live
+# combination because a tracker failure does not stop the guard from blocking. The reverse is why the
 # class is not simply capped small and forgotten: a busy session's warnings must
 # not push the fail-open row off either, and only a separate budget prevents
 # both directions at once. Eight rather than one because a repeating fault
@@ -178,9 +176,9 @@ DRIFT_EVENT_TYPES = {"state_drift"}
 # divergence that merely persists across a hundred tool calls emits once — but a
 # divergence that GROWS emits again, and a session that commits sixteen times
 # without ever bringing agentstate.yaml current produces a row per commit. Left
-# in the warning class those sixteen would push every guard_block and
-# churn_critical off the panel, which is the advisory burst exactly. Eight is
-# enough to show the divergence widening, which is the part a reader acts on.
+# in the warning class those sixteen would push every guard_block and guard_halt
+# off the panel, which is the advisory burst exactly. Eight is enough to show the
+# divergence widening, which is the part a reader acts on.
 MAX_WARNINGS_RETURNED = 30
 MAX_ADVISORIES_RETURNED = 8
 MAX_ERRORS_RETURNED = 8
@@ -263,7 +261,6 @@ HTML_PAGE = r"""<!DOCTYPE html>
     border-left: 4px solid var(--yellow); background: var(--bg2);
     font-size: 13px;
   }
-  .warning-row.critical { border-left-color: var(--red); }
   .warning-row.block    { border-left-color: var(--orange); }
   .warning-row.halt     { border-left-color: var(--red); background: rgba(239,68,68,0.08); }
   .warning-row.advisory { border-left-color: var(--cyan); }
@@ -276,7 +273,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
     padding: 2px 8px; border-radius: 3px; background: var(--bg3); color: var(--yellow);
     min-width: 70px; text-align: center;
   }
-  .warning-row.critical .warning-level, .warning-row.halt .warning-level,
+  .warning-row.halt .warning-level,
   .warning-row.failopen .warning-level { color: var(--red); }
   .warning-row.block    .warning-level { color: var(--orange); }
   .warning-row.advisory .warning-level { color: var(--cyan); }
@@ -538,9 +535,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
       var w = visible[j];
       var levelClass = 'warning';
       var levelLabel = 'Warning';
-      if (w.event === 'churn_critical') {
-        levelClass = 'critical'; levelLabel = 'Critical';
-      } else if (w.event === 'guard_block') { levelClass = 'block'; levelLabel = 'Blocked'; }
+      if (w.event === 'guard_block') { levelClass = 'block'; levelLabel = 'Blocked'; }
       else if (w.event === 'guard_halt')  { levelClass = 'halt'; levelLabel = 'Halt'; }
       // An advisory is not a warning: an override flag the user set let a
       // normally-denied write through, and this row is the receipt. The

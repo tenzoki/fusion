@@ -36,8 +36,6 @@ export type GuardEventType =
   | "guard_advisory"
   | "guard_error"
   | "halt_cleared"
-  | "churn_warning"
-  | "churn_critical"
   | "state_drift"
   | "review_coverage"
   | "staging_drift"

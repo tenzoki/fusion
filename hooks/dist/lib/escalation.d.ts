@@ -108,10 +108,10 @@ export declare function loadEscalation(): EscalationState;
  *
  * NOT preserved — `consecutiveBlocks` and `lastBlockTimestamp`, which are
  * last-writer-wins. A lost increment costs counter accuracy: the threshold halt
- * arrives one block later than it might have. That is the same trade the
- * counters in `churn.ts` make with the same shape, and it is left alone for the
- * same reason — the boundary the guard actually enforces is the outright halt
- * above, not the count that approaches one.
+ * arrives one block later than it might have. It is left alone because the
+ * boundary the guard actually enforces is the outright halt above, not the
+ * count that approaches one. The churn heatmap's counters made the same trade
+ * with the same shape until they were removed on 2026-08-15.
  *
  * ## The window this shrinks rather than closes
  *

@@ -1,15 +1,14 @@
 /**
  * Compliance Guard — PostToolUse hook for Claude Code.
  *
- * Four jobs, in this order:
+ * Three jobs, in this order:
  *
  *   0. SESSION-STATE DRIFT. Compare `agentstate.yaml`, the active Circle's Turn
  *      log and this session's history file with the two records that cannot
  *      silently freeze — git, and `orchestrator-events.jsonl`. A surface that
- *      has stopped being written is named back to the model. It runs first and
- *      ahead of the plugin-repo stand-down, because unlike the other two it is
- *      anchored at the workbench root and is needed in fusion's own repository
- *      most of all. It writes nothing but its own throttle record. See
+ *      has stopped being written is named back to the model. It runs first
+ *      because, unlike the other two, it has something to say on every guarded
+ *      tool call. It writes nothing but its own throttle record. See
  *      lib/state-drift.ts and `measureStateDriftForModel` below.
  *
  *   0b. REVIEW COVERAGE, on one narrow trigger: a review file landing under a
@@ -33,16 +32,27 @@
  *      is the question the deleted branch policy answered wrong 24 times. See
  *      lib/staging-drift.ts and `measureStagingDriftForModel`.
  *
- *   2. CHURN. Record write-tool file mutations in the churn heatmap, emitting
- *      warning/critical events at the configured per-session thresholds.
- *
- * A job 1 sat between 0c and 2 until 2026-08-12: a second fingerprint of every path
- * on `guard.protectedPaths`, compared against the one `guard.ts` took before the
+ * Two jobs left before them and neither was replaced. A job 1 sat between 0c and
+ * 2 until 2026-08-12: a second fingerprint of every path on
+ * `guard.protectedPaths`, compared against the one `guard.ts` took before the
  * tool ran, with anything that changed written back and the guard halted. It was
  * the enforcing half of the protected-path mechanism, and the whole mechanism
- * was removed — see `guard.ts`'s header for the measurement that decided it.
- * Nothing replaced it: a protected path is not watched, not restored and not
- * reported, by this hook or any other.
+ * was removed — see `guard.ts`'s header for the measurement that decided it. A
+ * job 2 sat after them until 2026-08-15: the churn heatmap, which recorded every
+ * write-tool file mutation under `.guard-state/churn.json` and emitted
+ * `churn_warning` / `churn_critical` at configured per-session thresholds. It
+ * warned and never blocked, nothing downstream acted on a warning, and it went
+ * with its ranking helper and its configuration leaves. A protected path is not
+ * watched, restored or reported, and a thrashed file is not counted, by this
+ * hook or any other.
+ *
+ * The plugin-repo stand-down that used to sit in `main` went with it. Its whole
+ * subject was churn — a fusion developer's own edits are not churn signal — and
+ * the three measurements above were deliberately placed AHEAD of it because each
+ * is anchored at the workbench root and each was measured in this very
+ * repository. With churn gone there is nothing here to stand down, and the
+ * remaining stand-down in `guard.ts` asks a different directory (cwd, via
+ * `isFusionPluginCwd()`) for a different mechanism.
  *
  * ## What a PostToolUse hook can and cannot do
  *
@@ -66,11 +76,11 @@
  *
  * ## The reply is written before anything records it
  *
- * The reply goes out first and everything after it is a report: the event rows
- * and the churn heatmap. Each goes through `answer` or `bestEffort` from
- * lib/fail-open.ts, so none of them can discard the sentence on its way out. The
- * churn half used to run ahead of the reply and did exactly that; that module's
- * header carries the class and the measurements.
+ * The reply goes out first and the event rows after it. Each measurement runs
+ * through `bestEffort` from lib/fail-open.ts, so none of them can discard the
+ * sentence on its way out. The churn half used to run ahead of the reply and did
+ * exactly that; lib/fail-open.ts's header carries the class and the
+ * measurements, and the ordering rule outlives the half that was measured on.
  *
  * Protocol: reads JSON from stdin, writes {} to stdout, or a
  * `hookSpecificOutput.additionalContext` envelope when a measurement has
@@ -78,19 +88,8 @@
  */
 
 import { resolve, sep } from "node:path";
-import {
-  TRACKER_NOISE_FILES,
-  analyzeChurn,
-  churnKey,
-  loadChurn,
-  recordChange,
-  saveChurn,
-} from "./lib/churn.js";
-import { loadConfig } from "./lib/config.js";
-import { matchesAny } from "./lib/paths.js";
-import { isFusionPluginRoot } from "./lib/self-detect.js";
 import { emitEvent } from "./lib/events.js";
-import { answer, bestEffort, failOpen } from "./lib/fail-open.js";
+import { bestEffort, failOpen } from "./lib/fail-open.js";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 import { foldCase } from "./lib/paths.js";
 import {
@@ -116,12 +115,13 @@ import {
 /**
  * The four tools whose payload NAMES the path they write.
  *
- * ONE reader now: `trackChurn`, which uses it to decide what counts as a file
- * mutation. It was module-level because a second reader in the removed job 1
- * (`narrowingTarget`) had to agree with it about which payloads name their
- * target, and a disagreement between two copies would have been a silent change
- * in what the guard reverted. It stays module-level because it is a fact about
- * Claude Code's tool surface rather than about churn.
+ * ONE reader now: `measureReviewCoverageForModel`, which uses it to decide
+ * whether this call could have written a review file. It was module-level
+ * because two removed readers had to agree with it about which payloads name
+ * their target — job 1's `narrowingTarget` and job 2's `trackChurn` — and a
+ * disagreement between copies would have been a silent change in what the guard
+ * did. It stays module-level because it is a fact about Claude Code's tool
+ * surface rather than about any one measurement.
  */
 const WRITE_TOOLS = ["Write", "Edit", "MultiEdit", "NotebookEdit"];
 
@@ -167,125 +167,6 @@ function respond(additionalContext?: string): void {
           },
         };
   process.stdout.write(JSON.stringify(body) + "\n");
-}
-
-/* ------------------------------------------------------------------ *
- * Churn
- * ------------------------------------------------------------------ */
-
-/**
- * The heatmap half of this hook, unchanged in substance.
- *
- * Split out of `main` so a measurement can run for EVERY guarded tool call
- * while this part keeps its own early returns. Before the split, every `return`
- * here was also the hook's reply; now the reply is written once, in `main`, and
- * carries whatever the measurements had to say.
- *
- * It runs AFTER that reply, as a guarded report. This is an advisory heatmap:
- * its `loadConfig`, its `emitEvent` calls and its `saveChurn` can each throw,
- * and none of them may cost a sentence the model needs.
- */
-function trackChurn(input: HookInput): void {
-  // Only write tools produce churn, and only they are recorded.
-  //
-  // A `Bash` call used to emit `{"event":"tracker_record","tool":"Bash",
-  // "detail":"Bash command observed"}` here — no file, no command, no result.
-  // It said that a Bash call happened, which every other line in the log
-  // already implies, and nothing read it: the monitor drops `tracker_record`
-  // before the warnings panel, and no hook, helper or prompt has ever consumed
-  // one. It was 22 % of an 11 142-line log at the time it was measured, and the
-  // log has no rotation, so the cheapest thing that could be done about the
-  // growth was to stop writing the part that carried nothing (issue
-  // `260805-1859`).
-  //
-  // Filling it with content instead was the other half of that choice and was
-  // not taken: the content available here is the command text, and the guard
-  // stopped reading command text in v6.0.0 on purpose. Copying every shell
-  // command into an append-only log would be a new surface, not a fix for this
-  // one. What remains unsettled is the log's upper bound, which discards
-  // evidence whichever way it is set — filed as decision `260811-1534`.
-  if (!WRITE_TOOLS.includes(input.tool_name)) {
-    return;
-  }
-
-  const rawFilePath = extractFilePath(input.tool_input);
-  if (!rawFilePath) {
-    return;
-  }
-
-  // The key is anchored to the WORKBENCH ROOT, not to the session's working
-  // directory. It used to be cwd-relative when the path fell inside cwd and raw
-  // absolute otherwise, so one file collected one counter per directory a
-  // session was ever started in — and the workbench-relative spelling that
-  // produced never matched `TRACKER_NOISE_FILES` either, which is how
-  // `tasklist.md` and `agentstate.yaml` came to be tracked as churn. The two
-  // steps `churnKey` runs were shared with `narrowingTarget` in the removed
-  // protected-path measurement, so the heatmap and the measurement read one path
-  // the same way; the heatmap is now the only reader of that spelling (issue
-  // `260809-2023`, decision `260810-0920`).
-  const filePath = churnKey(rawFilePath, process.cwd(), findWorkbenchRoot());
-  if (filePath === null) {
-    // No workbench, or a path outside the root — a scratchpad, another clone.
-    // Recorded as an observation, counted under no key: there is no spelling
-    // for it under this anchor, and inventing one is what the anchor ended.
-    emitEvent(
-      "tracker_record",
-      input.tool_name,
-      rawFilePath,
-      "File change recorded (outside the workbench root, not tracked)",
-    );
-    return;
-  }
-
-  // Skip workbench dashboard/state files — designed to be continuously rewritten.
-  if (matchesAny(filePath, TRACKER_NOISE_FILES)) {
-    emitEvent("tracker_record", input.tool_name, filePath, "File change recorded (noise file, not tracked)");
-    return;
-  }
-
-  // Load config for thresholds — the same two-source resolution the guard hook
-  // does, so a project's `fusion-guard.json` sets ITS churn thresholds and not
-  // just the plugin's.
-  //
-  // `config.diagnostics` is deliberately ignored here. This is PostToolUse, and
-  // every tool call that reaches this line (a write tool, past the plugin-repo
-  // stand-down above) was inspected by the PreToolUse guard on the same call
-  // with the same two sources — so it already emitted one advisory per
-  // diagnostic. Emitting again would report one broken configuration file
-  // twice per tool call.
-  const config = loadConfig();
-
-  // Record the change in churn state
-  const churn = loadChurn();
-  recordChange(churn, filePath);
-
-  // Analyze churn against thresholds
-  const warnings = analyzeChurn(churn, config.churn);
-
-  // Emit events for warnings
-  for (const warning of warnings) {
-    if (warning.level === "critical") {
-      emitEvent(
-        "churn_critical",
-        input.tool_name,
-        filePath,
-        `${warning.message}: ${warning.files.join(", ")}`,
-      );
-    } else if (warning.level === "warning") {
-      emitEvent(
-        "churn_warning",
-        input.tool_name,
-        filePath,
-        `${warning.message}: ${warning.files.join(", ")}`,
-      );
-    }
-  }
-
-  // Record the individual change event
-  emitEvent("tracker_record", input.tool_name, filePath, "File change recorded");
-
-  // Save updated churn state
-  saveChurn(churn);
 }
 
 /* ------------------------------------------------------------------ *
@@ -404,14 +285,15 @@ function trackChurn(input: HookInput): void {
  *    is rejected there and stays rejected: a second writer racing the
  *    orchestrator's own overwrite is worse than a stale number. So this makes a
  *    skipped write impossible not to notice; it cannot make the write happen.
- * 2. **It runs BEFORE the plugin-repo stand-down in `main`, and is anchored at
- *    the workbench root rather than at cwd.** The stand-down exists so a fusion
- *    developer's own edits are not counted as churn — and, until the
- *    protected-path measurement was removed, not written back either. Neither
- *    applies here: fusion's own repository is a
- *    fusion consumer with a live workbench, and every one of the six measured
- *    instances happened in it. Standing this down there would switch it off in
- *    the only project where it is known to be needed.
+ * 2. **It is anchored at the workbench root rather than at cwd, and it is not
+ *    stood down in fusion's own repository.** Two plugin-repo stand-downs used
+ *    to stand between this measurement and that root — the protected-path
+ *    measurement's, removed on 2026-08-12, and churn's, removed on 2026-08-15 —
+ *    and this one was deliberately ordered ahead of both. Neither ever applied
+ *    to it: fusion's own repository is a fusion consumer with a live workbench,
+ *    and every one of the six measured instances happened in it. Standing this
+ *    down there would switch it off in the only project where it is known to be
+ *    needed.
  * 3. **It reports once per divergence, not once per tool call.** The throttle
  *    compares the drift signature with the last one reported; a divergence that
  *    grows speaks again, one that merely persists stays quiet.
@@ -481,7 +363,7 @@ function measureReviewCoverageForModel(input: HookInput): string | null {
 
   // Case-folded, so a case-insensitive file system does not decide whether this
   // fires. `foldCase` was shared with the protected-path measurement's match and
-  // is now read here and by the churn noise filter.
+  // with the churn heatmap's noise filter, and is the last reader of it here.
   const abs = foldCase(resolve(process.cwd(), written));
   const store = foldCase(resolve(root, "fusion-workbench"));
   if (!abs.startsWith(store + sep)) return null;
@@ -610,28 +492,27 @@ async function main(): Promise<void> {
     return;
   }
 
-  // The session-state drift measurement, ahead of the stand-down below and
-  // anchored at the workbench root rather than at cwd. Its own header says why
-  // it is not stood down in fusion's own repository: that repository is a
-  // fusion consumer, and all six measured instances of the freeze happened
-  // there. `bestEffort` because one bookkeeping report may never cost the
-  // others, or the churn heatmap that follows them.
+  // The session-state drift measurement, anchored at the workbench root rather
+  // than at cwd. Its own header says why it is not stood down in fusion's own
+  // repository: that repository is a fusion consumer, and all six measured
+  // instances of the freeze happened there. `bestEffort` because one
+  // bookkeeping report may never cost the other two.
   let drift: string | null = null;
   bestEffort("tracker", () => {
     drift = measureStateDriftForModel();
   });
 
   // Review coverage, on the narrow trigger of a review file landing. Same
-  // anchoring and the same reason for not standing down in fusion's own
-  // repository; see `measureReviewCoverageForModel` for why its trigger is a
-  // single act rather than every tool call.
+  // anchoring and the same reason for reporting in fusion's own repository; see
+  // `measureReviewCoverageForModel` for why its trigger is a single act rather
+  // than every tool call.
   let coverage: string | null = null;
   bestEffort("tracker", () => {
     coverage = measureReviewCoverageForModel(input);
   });
 
   // Staging drift, on the measured trigger of HEAD having moved. Same anchoring
-  // and the same reason for not standing down in fusion's own repository; see
+  // and the same reason for reporting in fusion's own repository; see
   // `measureStagingDriftForModel` for why the trigger is read out of the
   // repository rather than out of the command that moved it.
   let staging: string | null = null;
@@ -639,66 +520,29 @@ async function main(): Promise<void> {
     staging = measureStagingDriftForModel();
   });
 
-  // Self-detect: the workbench root is fusion's own repository, so CHURN stands
-  // down — plugin development edits are not meaningful churn signal.
-  //
-  // ## The question is asked of the ROOT, not of cwd
-  //
-  // This gate governs CHURN, and nothing else. It had a sibling — the
-  // protected-path measurement folded its own plugin-repo stand-down into
-  // `measurementRoot()` and asked it of this same workbench root — and that
-  // sibling was removed with the measurement on 2026-08-12. The remaining
+  // Nothing stands down here. A plugin-repo gate used to sit at this line and
+  // govern CHURN and nothing else — the workbench root is fusion's own
+  // repository, so a fusion developer's own edits were not counted as churn —
+  // and it went with the heatmap on 2026-08-15, as its protected-path sibling
+  // had gone on 2026-08-12. What is left is three measurements that were each
+  // deliberately placed ahead of that gate, because each is anchored at the
+  // workbench root and each was measured in this very repository. The remaining
   // stand-down in `guard.ts` asks a DIFFERENT directory (cwd, via
-  // `isFusionPluginCwd()`), which is the divergence CLAUDE.md documents.
+  // `isFusionPluginCwd()`) about a different mechanism; CLAUDE.md documents the
+  // divergence, and it is now a difference between two hooks rather than within
+  // one.
   //
-  // It used to ask `process.cwd()`, on the stated ground that churn keys were
-  // relativized against cwd. `25c5454` moved that anchor to the workbench root
-  // in this same file — `churnKey(rawFilePath, process.cwd(), findWorkbenchRoot())`
-  // — which left the gate resting on a premise the line above it contradicted
-  // (issue `260810-1632`). The behavioural half is the defect that anchor move
-  // was closing, arriving one gate later: `isFusionPluginCwd()` does no upward
-  // walk, so in this repository a session started at the root recorded no churn
-  // at all while a session started in `fusion-workbench/` — CLAUDE.md calls it
-  // the ordinary case — recorded churn AND ran the on-disk key migration over
-  // `churn.json`. What gets counted must not depend on which directory the
-  // session happened to start in (issue `260805-1839`).
-  //
-  // ## A null root is not a stand-down
-  //
-  // Without a workbench there is nothing here to stand down: `churnKey` returns
-  // null and `emitEvent` writes nowhere. Folding the two causes into one null —
-  // the shape the removed `measurementRoot()` took, where both meant "do not
-  // measure" — would answer "fusion's own repository" for any directory that
-  // never ran `/fusion:setup`.
-  //
-  // ## The three reports above run ahead of this deliberately
-  //
-  // Their placement is load-bearing in EVERY session in this repository now, not
-  // only in root-started ones: this gate no longer misses the subdirectory case,
-  // so a report moved below it would fall silent exactly where each was measured.
-  const workbenchRoot = findWorkbenchRoot();
-  if (workbenchRoot !== null && isFusionPluginRoot(workbenchRoot)) {
-    const sentences: (string | null)[] = [drift, coverage, staging];
-    const standDown = sentences.filter((t): t is string => t !== null).join(" ");
-    respond(standDown === "" ? undefined : standDown);
-    return;
-  }
-
-  // The reply first, the heatmap after it. The reply is the only thing this
-  // hook says to the model, and it used to be held until an advisory metric had
-  // finished. Measured with `churn.json` replaced by a non-empty directory: `{}`
-  // on stdout and the agent told nothing (`260809-2045`). What was silenced then
-  // was the protected-path sentence, and that sentence is gone with the
-  // measurement — the three below are what is left to lose, and losing one is
-  // the same defect. Joined rather than chosen between, for the same reason.
+  // The reply is the only thing this hook says to the model, and it used to be
+  // held until an advisory metric had finished: measured with `churn.json`
+  // replaced by a non-empty directory, `{}` reached stdout and the agent was
+  // told nothing (`260809-2045`). Both things that could swallow it are gone,
+  // and the rule they established is not — nothing may run between these
+  // measurements and `respond`. Joined rather than chosen between, for the same
+  // reason.
   const parts: (string | null)[] = [drift, coverage, staging];
   const context = parts.filter((s): s is string => s !== null).join(" ");
 
-  answer(
-    "tracker",
-    () => respond(context === "" ? undefined : context),
-    () => trackChurn(input),
-  );
+  respond(context === "" ? undefined : context);
 }
 
 main().catch((err) => {

@@ -13,9 +13,9 @@
  * the session's coverage), and by anyone at a terminal who wants to know which
  * commits no reviewer has opened.
  *
- * Output, one `KEY=value` per line in the shape `bin/fusion-paths`,
- * `bin/fusion-churn-rank` and `bin/fusion-state-drift` use, then one line per
- * uncovered commit and one per review considered:
+ * Output, one `KEY=value` per line in the shape `bin/fusion-paths` and
+ * `bin/fusion-state-drift` use, then one line per uncovered commit and one per
+ * review considered:
  *
  *   anchor=workbench-root
  *   since=8a49fd5

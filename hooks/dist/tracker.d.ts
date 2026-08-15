@@ -1,15 +1,14 @@
 /**
  * Compliance Guard — PostToolUse hook for Claude Code.
  *
- * Four jobs, in this order:
+ * Three jobs, in this order:
  *
  *   0. SESSION-STATE DRIFT. Compare `agentstate.yaml`, the active Circle's Turn
  *      log and this session's history file with the two records that cannot
  *      silently freeze — git, and `orchestrator-events.jsonl`. A surface that
- *      has stopped being written is named back to the model. It runs first and
- *      ahead of the plugin-repo stand-down, because unlike the other two it is
- *      anchored at the workbench root and is needed in fusion's own repository
- *      most of all. It writes nothing but its own throttle record. See
+ *      has stopped being written is named back to the model. It runs first
+ *      because, unlike the other two, it has something to say on every guarded
+ *      tool call. It writes nothing but its own throttle record. See
  *      lib/state-drift.ts and `measureStateDriftForModel` below.
  *
  *   0b. REVIEW COVERAGE, on one narrow trigger: a review file landing under a
@@ -33,16 +32,27 @@
  *      is the question the deleted branch policy answered wrong 24 times. See
  *      lib/staging-drift.ts and `measureStagingDriftForModel`.
  *
- *   2. CHURN. Record write-tool file mutations in the churn heatmap, emitting
- *      warning/critical events at the configured per-session thresholds.
- *
- * A job 1 sat between 0c and 2 until 2026-08-12: a second fingerprint of every path
- * on `guard.protectedPaths`, compared against the one `guard.ts` took before the
+ * Two jobs left before them and neither was replaced. A job 1 sat between 0c and
+ * 2 until 2026-08-12: a second fingerprint of every path on
+ * `guard.protectedPaths`, compared against the one `guard.ts` took before the
  * tool ran, with anything that changed written back and the guard halted. It was
  * the enforcing half of the protected-path mechanism, and the whole mechanism
- * was removed — see `guard.ts`'s header for the measurement that decided it.
- * Nothing replaced it: a protected path is not watched, not restored and not
- * reported, by this hook or any other.
+ * was removed — see `guard.ts`'s header for the measurement that decided it. A
+ * job 2 sat after them until 2026-08-15: the churn heatmap, which recorded every
+ * write-tool file mutation under `.guard-state/churn.json` and emitted
+ * `churn_warning` / `churn_critical` at configured per-session thresholds. It
+ * warned and never blocked, nothing downstream acted on a warning, and it went
+ * with its ranking helper and its configuration leaves. A protected path is not
+ * watched, restored or reported, and a thrashed file is not counted, by this
+ * hook or any other.
+ *
+ * The plugin-repo stand-down that used to sit in `main` went with it. Its whole
+ * subject was churn — a fusion developer's own edits are not churn signal — and
+ * the three measurements above were deliberately placed AHEAD of it because each
+ * is anchored at the workbench root and each was measured in this very
+ * repository. With churn gone there is nothing here to stand down, and the
+ * remaining stand-down in `guard.ts` asks a different directory (cwd, via
+ * `isFusionPluginCwd()`) for a different mechanism.
  *
  * ## What a PostToolUse hook can and cannot do
  *
@@ -66,11 +76,11 @@
  *
  * ## The reply is written before anything records it
  *
- * The reply goes out first and everything after it is a report: the event rows
- * and the churn heatmap. Each goes through `answer` or `bestEffort` from
- * lib/fail-open.ts, so none of them can discard the sentence on its way out. The
- * churn half used to run ahead of the reply and did exactly that; that module's
- * header carries the class and the measurements.
+ * The reply goes out first and the event rows after it. Each measurement runs
+ * through `bestEffort` from lib/fail-open.ts, so none of them can discard the
+ * sentence on its way out. The churn half used to run ahead of the reply and did
+ * exactly that; lib/fail-open.ts's header carries the class and the
+ * measurements, and the ordering rule outlives the half that was measured on.
  *
  * Protocol: reads JSON from stdin, writes {} to stdout, or a
  * `hookSpecificOutput.additionalContext` envelope when a measurement has

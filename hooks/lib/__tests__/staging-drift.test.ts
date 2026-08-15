@@ -585,9 +585,10 @@ describe("staging drift: anchoring and side effects", () => {
         runTracker(project.root, "Bash", { command: "ls" });
         commit(project.root, 1);
         const after = runTracker(project.root, "Bash", { command: "git commit" });
-        // The churn and protected-path stand-downs ask a different question
-        // about a different directory. This measurement is anchored at the
-        // workbench root, and issue 260811-0114 happened in this repository.
+        // The two stand-downs this measurement was ordered ahead of asked a
+        // different question about a different directory, and both are gone.
+        // This one is anchored at the workbench root, and issue 260811-0114
+        // happened in this repository.
         expect(after.hookSpecificOutput?.additionalContext ?? "").toContain("tasklist.md");
       });
     },

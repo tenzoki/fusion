@@ -5,7 +5,7 @@
  *
  * A hook's contract with Claude Code is one line on stdout. Everything else it
  * does — the `guard_block` row in `events.jsonl`, the escalation counter under
- * `.guard-state/`, the churn heatmap, the marker line on stderr — is a report
+ * `.guard-state/`, the marker line on stderr — is a report
  * ABOUT that line, written for a human reading the log afterwards. Reports are
  * best effort; the verdict is not. A record must not be able to withdraw what it
  * records.
@@ -36,10 +36,10 @@
  *
  * It was written for the two `main().catch` handlers, and there it was complete.
  * The same inversion sat untouched at every site INSIDE `main`, on both hooks —
- * `saveEscalation` before `block`, `emitEvent` before `block`, `trackChurn`
- * before `respond`. Several of those turned a verdict the guard had already
- * reached into its opposite, each measured with `.guard-state/` at mode `0555`
- * or with `churn.json` replaced by a directory:
+ * `saveEscalation` before `block`, `emitEvent` before `block`, the churn
+ * heatmap's `trackChurn` before `respond`. Several of those turned a verdict the
+ * guard had already reached into its opposite, each measured with
+ * `.guard-state/` at mode `0555` or with `churn.json` replaced by a directory:
  *
  *   - the protected-path deny and the decision-governed deny
  *     (`shared/issues/260809-1825_*_an-unwritable-guard-state-directory-….md`),
@@ -142,7 +142,7 @@ export function bestEffort(tag, step) {
  *                left to fall back to, and the failure belongs on the way out to
  *                `main().catch`.
  * @param reports Everything that records the verdict — the escalation counter,
- *                the event rows, the churn heatmap. Each runs in its own `try`,
+ *                the event rows. Each runs in its own `try`,
  *                in order, and none can withdraw the verdict or take another
  *                report down with it.
  */

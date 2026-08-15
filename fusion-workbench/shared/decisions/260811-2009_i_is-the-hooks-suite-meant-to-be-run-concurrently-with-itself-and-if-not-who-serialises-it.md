@@ -177,3 +177,5 @@ trustworthy, which this record's Constraints section forbids.
 
 ---
 Answered: shared/history/260814-2306-orchestrator-session.md:198 — Option 2: make the suite safe to run concurrently. Each run gets its own build output or the build stops deleting before it writes, and the two wall-clock-bound cases wait on something observable. The verification contract and the executor prompts are unchanged. Answered by the user after a bugfix dispatch reproduced the cause deterministically.
+
+Implemented: 332267a — the build compiles into a private staging directory and replaces `hooks/dist/` file by file with `rename(2)`; the two cases that launch or copy a compiled artifact read their own run's build through `FUSION_TEST_DIST`; a run is capped at half the machine's cores. Measured 6 of 6 red before, 12 of 12 green after, at two parallel runs with an eight-second offset.

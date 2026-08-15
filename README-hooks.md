@@ -19,13 +19,21 @@ A third layer sat between those two until 2026-08-12: a **protected-path** deny 
 
 Consecutive blocks accumulate. After a configurable threshold (default: 3), the guard enters **halt mode** — blocking all write operations until a human reviews the situation and clears the halt. This catches the pattern where an agent repeatedly attempts a disallowed action.
 
-### Churn Detection
+### Churn detection was removed on 2026-08-15
 
-A PostToolUse tracker records every file mutation. When the same file is changed too many times in a session (thrashing), it emits `churn_warning` / `churn_critical` events that the monitor and orchestrator can see. Churn detection is **observation-only**: it is a signal, not an enforcement point.
+A PostToolUse tracker used to record every file mutation in a heatmap under
+`.guard-state/churn.json` and emit `churn_warning` / `churn_critical` events at configured
+per-session thresholds. It never blocked anything: it was a signal the monitor's warnings
+panel rendered and the orchestrator read at Setup through a `bin/` ranking helper. The
+whole of it is gone — the module, that helper, the two event types, the two configuration
+leaves, and the plugin-repo stand-down that existed only to keep a fusion developer's own
+edits out of the count.
 
-The thresholds are **per session only**. `totalChanges` is still counted and still written to `churn.json`, because the orchestrator reads it at Setup, but nothing compares it against a limit. It used to: the counter is monotonic for the life of a project, so the first file to cross the lifetime critical made every later write report a critical, permanently, and the panel filled with rows that carried no information (decision `260809-2004`). The same decision removed the cross-file ping-back tracker outright — nothing consumed its verdict and its reset function never had a caller.
-
-The PostToolUse hook is observation-only in full. It carried one thing that was not — the protected-path measurement, which put a changed protected path back and raised the halt from a hook that cannot block. That went on 2026-08-12, so a halt has exactly one source again: three consecutive PreToolUse blocks.
+The PostToolUse hook is observation-only in full, and now measures rather than counts:
+session-state drift, review coverage, staging drift. It carried one thing that was not
+observation-only — the protected-path measurement, which put a changed protected path back
+and raised the halt from a hook that cannot block. That went on 2026-08-12, so a halt has
+exactly one source again: three consecutive PreToolUse blocks.
 
 ## Architecture
 
@@ -50,9 +58,10 @@ Claude Code
   |
   +-- PostToolUse (Write/Edit/MultiEdit/NotebookEdit/Bash)
         \-- tracker.ts
-              |   Records the change and measures. Observation only: it
-              |   cannot block, and it no longer raises anything either.
-              +-- fusion-workbench/.guard-state/churn.json (per-file change counts)
+              |   Measures. Observation only: it cannot block, and it no
+              |   longer raises or counts anything either.
+              +-- fusion-workbench/.guard-state/{state-drift,review-coverage,
+              |     staging-drift}.json (one throttle record per measurement)
               \-- fusion-workbench/.guard-state/events.jsonl (audit log)
 ```
 
@@ -104,7 +113,7 @@ Edit `hooks/config.json` to define:
 - **Category paths** — which file areas map to which decision categories
 - **Decisions** — the actual rules, each with an ID, category, statement, and optional rule file reference
 - **Sensitivity** — how aggressively each category escalates (none/low/medium/high)
-- **Thresholds** — when to escalate (blocks before halt, churn limits)
+- **Thresholds** — when to escalate (blocks before halt)
 
 These are the plugin's defaults. A consuming project overrides them per project, without touching the plugin, through `fusion-guard.json` at its own root — see [Per-project configuration](#per-project-configuration-fusion-guardjson).
 
@@ -146,11 +155,11 @@ one to walk up separately would be several special cases with several chances to
 One message at the moment the working directory is chosen, and still cheap to change, makes
 the assumption they share audible instead.
 
-The churn heatmap is not among them: its keys anchor at the workbench root, so one file has
-one counter whatever directory the session started in (`lib/churn.ts`, `KEY_ANCHOR`). The
-rule the two anchors follow — evaluate a stand-down where the mechanism keys its state — is
-stated in `lib/self-detect.ts`, and it was established on the protected-path measurement
-before that measurement was removed.
+The tracker's three measurements are not among them: each is anchored at the workbench root
+rather than at cwd, so each reports the same thing whatever directory the session started
+in. The rule that anchoring follows — evaluate a stand-down where the mechanism keys its
+state — is stated in `lib/self-detect.ts`. It was established on the protected-path
+measurement and carried by the churn heatmap, and it outlived both.
 
 ## Files
 
@@ -158,27 +167,25 @@ before that measurement was removed.
 |------|---------|------------|
 | `session-start.ts` | SessionStart hook — warns when the session started below the project root. See [Start your session at the project root](#start-your-session-at-the-project-root) | Yes |
 | `guard.ts` | PreToolUse hook — checks a write against the halt and the decision-governed categories, and blocks on either | Yes |
-| `tracker.ts` | PostToolUse hook — records changes, detects churn, and runs the session-state, staging and review-coverage measurements. Observation only: a PostToolUse hook cannot block, and since 2026-08-12 it raises nothing either | Yes |
+| `tracker.ts` | PostToolUse hook — runs the session-state, staging and review-coverage measurements and hands the model whatever they have to say. Observation only: a PostToolUse hook cannot block, and since 2026-08-12 it raises nothing either | Yes |
 | `clear-halt.ts` | Manual halt reset utility | Yes |
-| `churn-rank.ts` | Prints the churn ranking with the files that no longer exist, and the workbench surfaces the tracker refuses to count, left out — each counted on its own line, so "deleted" and "not evidence" stay distinguishable. For the orchestrator's Setup. Run through `bin/fusion-churn-rank`, never by reading `churn.json` directly: the map keeps every file it has ever seen, so a direct read is led by deleted ones | Yes |
 | `turn-budget.ts` | Prints the orchestrator's Phase-2 Turn budget, merged from the project's `fusion-guard.json` (`{"orchestrator": {"maxTurns": <n>}}`), the plugin's `config.json` and the built-in defaults. For the orchestrator's Setup, through `bin/fusion-turn-budget`. No hook reads the value — it exists so the budget stops being prose: it was written into `agents/orchestrator.md` in seven places and four spellings, one of which already called it a "default" while nothing could override it (issue `260811-1712`). A value that is not a whole number of 1 or more is dropped, named on stderr, and inherits | Yes |
 | `state-drift.ts` | Prints the session-state drift check for `/fusion:setup` Step 1 and `agents/orchestrator.md`. Run through `bin/fusion-state-drift`. Finding drift is `verdict=drift` on stdout, never a non-zero exit — a check that reports failure on its commonest path teaches its reader to ignore its status | Yes |
 | `review-coverage.ts` | Prints the review-coverage tiling for `agents/orchestrator.md` Step 3c and Phase 4. Run through `bin/fusion-review-coverage`. Finding an uncovered range is `verdict=uncovered` on stdout, never a non-zero exit and never a release gate — whether a release may go out over an unreviewed range is an unfiled decision this program does not pre-empt | Yes |
 | `config.json` | Guard rules, decisions, thresholds | Yes |
 | `lib/paths.ts` | Glob-to-regex path matching | Yes |
-| `lib/project-relative.ts` | Normalises a written path into the coordinate space its reader matches in: cwd-relative for `guard.categoryPaths`, workbench-root-relative for the churn key | Yes |
+| `lib/project-relative.ts` | Normalises a written path into the coordinate space its reader matches in: cwd-relative for `guard.categoryPaths`, the only caller left | Yes |
 | `lib/config.ts` | JSON config loader | Yes |
 | `lib/escalation.ts` | Escalation state management | Yes |
 | `lib/events.ts` | Append-only event logger | Yes |
-| `lib/fail-open.ts` | The ordering rule both hooks run on: the verdict goes to stdout first and unguarded, every record of it after, each in its own `try`, so a failed report cannot withdraw the answer it reports. `failOpen` is the error tail of each entry point; `answer` and `bestEffort` carry the same rule to the fourteen sites inside `main` where an escalation save, an event append or the churn heatmap stood ahead of the verdict. The reports append under `.guard-state/`, the likeliest thing to have failed, which is how reporting first turned a deny into `{}` and swallowed the halt sentence | Yes |
-| `lib/guard-state-file.ts` | The read-coerce-write seam under `fusion-workbench/.guard-state/`: resolves one state file, reads it, hands whatever it holds to the caller's coercion, and writes it back atomically. The coercion is a parameter, so absence, unparseable text and a valid JSON value of the wrong shape are one answer and no state module has anywhere to put an `as` cast — the defect that let a `{}` state file throw on the next field access and discard the halt message the same tool call had already produced. `escalation.ts` and `churn.ts` both use it, and they are now the only two: `protected-snapshot.ts`, the one module that never fitted the seam, went with the protected-path half. Escalation wraps it with the merge its save needs, which re-reads the file so a halt another process raised since the load survives | Yes |
+| `lib/fail-open.ts` | The ordering rule both hooks run on: the verdict goes to stdout first and unguarded, every record of it after, each in its own `try`, so a failed report cannot withdraw the answer it reports. `failOpen` is the error tail of each entry point; `answer` and `bestEffort` carry the same rule to the fourteen sites inside `main` where an escalation save, an event append or the churn heatmap stood ahead of the verdict. The heatmap went on 2026-08-15; the rule is what the sites keep. The reports append under `.guard-state/`, the likeliest thing to have failed, which is how reporting first turned a deny into `{}` and swallowed the halt sentence | Yes |
+| `lib/guard-state-file.ts` | The read-coerce-write seam under `fusion-workbench/.guard-state/`: resolves one state file, reads it, hands whatever it holds to the caller's coercion, and writes it back atomically. The coercion is a parameter, so absence, unparseable text and a valid JSON value of the wrong shape are one answer and no state module has anywhere to put an `as` cast — the defect that let a `{}` state file throw on the next field access and discard the halt message the same tool call had already produced. `escalation.ts` and the three measurement throttle stores use it, and they are now the only callers: `protected-snapshot.ts`, the one module that never fitted the seam, went with the protected-path half, and `churn.ts` with the heatmap. Escalation wraps it with the merge its save needs, which re-reads the file so a halt another process raised since the load survives | Yes |
 | `lib/git.ts` | The one `git` the measurements run: `execFileSync` in a named root, stderr discarded, every failure — not a repository, an unresolvable ref, a non-zero exit, the timeout — collapsed to `null`, because no caller distinguishes them and each turns "git would not say" into a report that claims nothing rather than into a fault. It existed verbatim in `review-coverage.ts` and `staging-drift.ts` and inline in `state-drift.ts` until decision `260811-1146`. The default timeout is a ref read's; `staging-drift.ts` passes a larger one at its `git status` call, which is the only call in the family that walks a working tree | Yes |
-| `lib/churn.ts` | Churn heatmap tracker. Keys are relative to the **workbench root**, resolved by `findWorkbenchRoot()` and `projectRelative`, so one file has one counter whatever directory the session started in, and a state file written under the old cwd-relative key is migrated once on load. Nothing is ever deleted from the map; the ranking is where the entries that are not evidence are left out — a file that is no longer on disk, and a workbench surface the session rewrites continuously by design. That second list, `TRACKER_NOISE_FILES`, lives here rather than in `tracker.ts`: the write path and the read path apply the same rule, and a hook entry point cannot be imported from | Yes |
 | `lib/state-drift.ts` | The session-state drift measurement (issue 260801-2038): compares `agentstate.yaml`, the active Circle's Turn log and the session history file against the two records that cannot silently freeze — git, and `orchestrator-events.jsonl`. Three callers share it and none of them is the session that installed it: `tracker.ts` on every guarded tool call, `state-drift.ts` behind `bin/fusion-state-drift`, and `bin/monitor` by way of the `state_drift` events the first two emit. It reports and never repairs — the session-state surfaces have exactly one writer and a second one is worse than a stale number | Yes |
 | `lib/staging-drift.ts` | The staging-drift measurement (issue 260811-0114): reads `git status --porcelain` over the workbench and classifies every entry — `record` (an authored artifact no commit carries), `commit-message` (a commit-message-shaped **name** that no artifact store owns, which is where the improvised `.commit-msg-tmp` lands; the store scoping is what the class is, not a detail of it, because without it the name test also claimed every authored record whose topic slug says "commit message" and the model was told to delete it, issue 260811-1141), `in-flight` (live state and the machine-written surfaces, never a fault), `unclassified` (a user's own note, named with the statement that nothing is claimed about it). Two callers: `staging-drift.ts` behind `bin/fusion-staging-drift`, and `tracker.ts` on the one trigger of **HEAD having moved** since the previous tool call — read with `git rev-parse`, never inferred from the command's text. The commit is the first moment an unstaged record is a fault; mid-Turn it is the normal state. It reports and never stages, because a mechanism that staged would be a second author of a staging list whose whole value is that a human wrote every path in it. The name test alone is exported as `hasCommitMessageName`, because a second caller asks a different question of the same string — `commit-message-path.test.ts` asks whether a shipped prompt *prescribes* a message file inside the workbench, and a prescription pointing into a store is exactly what the location scoping forgives (issue 260811-1410). One pattern, two scopings, neither transcribed | Yes |
 | `lib/review-coverage.ts` | The review-coverage measurement (issue 260810-1205): tiles the review files' own mandated `**Reviewed-range:**` fields against `git rev-list <session-start>..HEAD` and names, commit by commit, what no reviewer opened — plus the `**Not-opened:**` list the last pass declared, which is the next dispatch's scope. Two callers: `review-coverage.ts` behind `bin/fusion-review-coverage`, and `tracker.ts` on the one trigger of a review file landing. Deliberately NOT on the tracker's every-tool-call path, where `lib/state-drift.ts` sits: an uncovered range mid-Turn is the normal state, and a check that fires on its commonest path is one its reader learns to ignore. It reports and never gates | Yes |
 | `lib/workbench-root.ts` | Walks up from cwd to find `fusion-workbench/.fusion-setup` (single source of truth for workbench presence in TS) | Yes |
-| `lib/self-detect.ts` | Detects the fusion plugin's own repo so parts of the guard stand down in it. Both stand-downs were built for the protected paths — an edit to `agents/**` or `rules/**` is the work here, not a violation — and both outlived that protection. Two entry points, on purpose: `isFusionPluginCwd()` asks about cwd, for the write-tool branch of `guard.ts`, whose verdict is computed in cwd's coordinate space; `isFusionPluginRoot(dir)` asks about a named directory, for the churn stand-down in `tracker.ts`, whose keys are anchored at the workbench root | Yes |
+| `lib/self-detect.ts` | Detects the fusion plugin's own repo so the guard's write-tool branch stands down in it. That stand-down was built for the protected paths — an edit to `agents/**` or `rules/**` is the work here, not a violation — and outlived that protection. Two entry points, on purpose: `isFusionPluginCwd()` asks about cwd, for `guard.ts`, whose verdict is computed in cwd's coordinate space; `isFusionPluginRoot(dir)` asks about a named directory, which is the form a root-anchored mechanism needs. Its last caller was the churn stand-down in `tracker.ts`, removed on 2026-08-15 | Yes |
 | `lib/domain-cascade.ts` | Parses the domain cascade out of `agents/orchestrator.md` Setup Step 5 and **executes** it. No hook calls it — the gates do, so what they measure is the verdict a real project reaches rather than the layout of the prompt's branch lines. There is deliberately no second copy of the cascade in TypeScript: the interpreter runs the prompt's own block. That keeps *this file* from drifting and nothing else, which is where the claim used to overreach — a second copy shipped in `skills/cleanup/SKILL.md` in the pre-fix order while both gates read the orchestrator prompt alone (issue 260810-1918). The module now also *finds* a statement of the cascade, fenced or prose, and `domain-cascade.test.ts` runs that over the file set, allowing exactly one. How far that reaches is not described here and not described in the module either — it is the `REACH` object at the foot of the module, and [the section below](#how-far-the-domain-cascade-reach-gate-reaches) is rendered from it | Yes |
 | `package.json` | Dev dependencies (tsx, typescript, vitest) | Yes |
 
@@ -232,10 +239,10 @@ The guard runs on a spectrum — full enforcement, advisory, or off — assemble
 |---|---|
 | Off entirely | `guard.enabled: false`. Plugin `hooks/config.json` only: a project's `fusion-guard.json` cannot set `enabled` (see [Per-project configuration](#per-project-configuration-fusion-guardjson)) |
 | Advisory-only (warns, never blocks) | keep `enabled: true`; leave every decision sensitivity at `medium`/`low`, since only `high` blocks. Nothing else in the guard blocks, so nothing else has to be turned down |
-| Looser, not off | keep sensitivities ≤ `medium`, raise `escalation.blocksBeforeHalt`, raise the `churn.*` thresholds |
+| Looser, not off | keep sensitivities ≤ `medium`, raise `escalation.blocksBeforeHalt` |
 | Clear a stuck halt | `cd <project-root> && node ${CLAUDE_PLUGIN_ROOT}/hooks/dist/clear-halt.js` — the halt is project-scoped and the script locates it by walking up from its working directory, so the `cd` is part of the command (see [Clearing a halt](#clearing-a-halt)) |
 
-Two things cause a block, and only these: a write to a **decision-governed path at `high` sensitivity**, and an active **halt**. There used to be a third — a write-tool call on a protected path, at any sensitivity — and with it went the only thing a `Bash` call could set off: a change to a protected path that reached disk by some other route was never blocked, it was measured afterwards, put back, and it raised the halt ([The protected-path half, and why it was removed](#the-protected-path-half-and-why-it-was-removed)). Nothing a shell command says causes a block, and since 2026-08-12 nothing a shell command *does* causes one either. Churn detection is advisory: it emits warning events but never blocks. `guard.enabled: false` stands the whole guard down.
+Two things cause a block, and only these: a write to a **decision-governed path at `high` sensitivity**, and an active **halt**. There used to be a third — a write-tool call on a protected path, at any sensitivity — and with it went the only thing a `Bash` call could set off: a change to a protected path that reached disk by some other route was never blocked, it was measured afterwards, put back, and it raised the halt ([The protected-path half, and why it was removed](#the-protected-path-half-and-why-it-was-removed)). Nothing a shell command says causes a block, and since 2026-08-12 nothing a shell command *does* causes one either. Churn detection never blocked either, and it was removed on 2026-08-15. `guard.enabled: false` stands the whole guard down.
 
 **How a path is matched.** On the *text* of the path — no symlink is resolved — against the globs in `guard.categoryPaths`, in the coordinate space of the process's working directory (`lib/project-relative.ts`). The match is **case-sensitive**. It was not always: the protected list was matched with case folded, unconditionally on every platform, because a glob compiles to a case-sensitive regex and on a case-insensitive filesystem — APFS in its default configuration, so every stock macOS install — the whole list was bypassable by shifting one letter. That fold was the protected list's and went with it; whether `findRelevantDecisions` should fold too is an open question and was open before the removal, on the argument that CHECK 3 escalates rather than denies outright (`circles/260801-1244-guard-rules-write/decisions/260804-1632_*_should-findrelevantdecisions-fold-case-…`). One of the two grounds that record rests on is gone with the list, so it is worth re-opening rather than reading as settled.
 
@@ -259,7 +266,7 @@ In the event log the halt rows are distinguishable by their detail. Two are stil
 
 Everything `hooks/config.json` defines is the plugin's **default**, not the answer for a given project. A consuming project may ship `fusion-guard.json` at its project root — `/fusion:setup` seeds it from `templates/fusion-guard.json`, declaring nothing — and the guard hooks read it on every guarded tool call, merging it over the plugin's file and then over fusion's built-in defaults.
 
-The file is **git-tracked on purpose**. It decides how sensitively the guard reads the decisions a project records, when it escalates to a halt, how loud the churn warning is and how many Turns the orchestrator may run, so every change to it has to appear in a diff and pass the same review as the rest of the project. Until 2026-08-12 the diff was the *second* line of defence: the guard added this file to the protected list as soon as it existed and wrote back any change an agent made to it. That defence went with the protected-path half, so an agent can now edit this file like any other and the git history is the only place a change to it shows.
+The file is **git-tracked on purpose**. It decides how sensitively the guard reads the decisions a project records, when it escalates to a halt and how many Turns the orchestrator may run, so every change to it has to appear in a diff and pass the same review as the rest of the project. Until 2026-08-12 the diff was the *second* line of defence: the guard added this file to the protected list as soon as it existed and wrote back any change an agent made to it. That defence went with the protected-path half, so an agent can now edit this file like any other and the git history is the only place a change to it shows.
 
 **The merge is per leaf key, not per object.** A key the project declares is taken exactly as written; a key it omits — even inside an object it did declare — inherits the plugin's value and falls back to fusion's built-in default only when neither file speaks. So `{"guard":{"defaultSensitivity":"high"}}` raises the sensitivity and keeps every other guard setting the plugin ships. Narrowing works because a declared value wins outright: `{"guard":{"categoryPaths":{}}}` is the empty object, on purpose, not an inheritance. A value with the wrong type is dropped, named in a `guard_advisory` diagnostic, and then inherits exactly as an omitted key does; a file that is not valid JSON is dropped and reported the same way, never ignored in silence.
 
@@ -279,7 +286,7 @@ This section described a live mechanism until 2026-08-12. It is kept, shorter, b
 
 **What went with it, by name.** Four modules under `hooks/lib` — `lib/protected-snapshot.ts`, `lib/rules-write-exemption.ts`, `lib/fs-locator.ts`, `lib/reverted-copy.ts` — plus the standalone effective-list reporter and its `bin/` wrapper; CHECK 2 in `guard.ts` and job 1 in `tracker.ts`; the `guard.protectedPaths` configuration leaf, the self-protection floor over `fusion-guard.json`, and the `FUSION_ALLOW_RULES_WRITE` session flag that existed only to soften the deny. Nothing replaced any of it: a protected path is not listed, not watched, not restored and not reported, by any hook.
 
-**What survives it.** A halt raised by the old mechanism in a consuming project still blocks at CHECK 1 and still clears through `clear-halt.js`; that migration path is pinned by `lib/__tests__/legacy-halt-clearing.test.ts`. A project whose `fusion-guard.json` still declares `guard.protectedPaths` gets the retired-key advisory described under [Per-project configuration](#per-project-configuration-fusion-guardjson) rather than silence. And the rule the two stand-downs established — evaluate a stand-down in the coordinate space the mechanism keys its state by — outlived the measurement it was measured on, and now governs the write-tool branch and the churn heatmap (`lib/self-detect.ts`).
+**What survives it.** A halt raised by the old mechanism in a consuming project still blocks at CHECK 1 and still clears through `clear-halt.js`; that migration path is pinned by `lib/__tests__/legacy-halt-clearing.test.ts`. A project whose `fusion-guard.json` still declares `guard.protectedPaths` gets the retired-key advisory described under [Per-project configuration](#per-project-configuration-fusion-guardjson) rather than silence. And the rule the two stand-downs established — evaluate a stand-down in the coordinate space the mechanism keys its state by — outlived the measurement it was measured on and the churn heatmap that carried it next. It governs the one stand-down left, the write-tool branch (`lib/self-detect.ts`).
 
 ### Clearing a halt
 
@@ -380,7 +387,6 @@ One consequence worth knowing before adding a file: nothing under `hooks/` may b
 Ported from Fusion's guard system (`fusion/reactor/pkg/guard/`):
 - `decision_guard.go` → `guard.ts` + `lib/config.ts` + `lib/paths.ts`
 - `escalation.go` → `lib/escalation.ts`
-- `churn_heatmap.go` → `lib/churn.ts`
 - `event_parser.go` → `lib/events.ts`
 
 The key difference: Fusion intercepts via the SDK's `canUseTool` callback in a running Go server. The Compliance Guard intercepts via Claude Code's native hook system — external scripts invoked per tool call.

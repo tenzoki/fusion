@@ -4,20 +4,23 @@
  *
  * ## Who asks, and against which directory
  *
- * Two callers, and they name different directories on purpose:
+ * One caller today, and the directory it names is the point:
  *
  *   - `guard.ts` passes `process.cwd()`. Its answer is matched against the globs
  *     in `guard.categoryPaths`, which a project writes relative to where it
  *     starts its sessions, and CHECK 3's whole verdict is computed in that
  *     space.
- *   - `churn.ts` passes the workbench root. Its answer is the churn map's KEY,
- *     and a counter has to mean the same file whatever directory the session
- *     started in (`KEY_ANCHOR`, issue `260809-2023`).
  *
- * A third caller used to pass cwd as well — the protected-path deny, whose list
- * was the reason this module says "every pattern" anywhere it still does. That
- * half of the guard was removed on 2026-08-12. It is named here because the two
- * defects below were both measured on it, and neither is repaired by its going.
+ * Two callers have gone and both are named here, because the argument below is
+ * about the SPACE a caller matches in and a single surviving caller makes that
+ * easy to forget. The protected-path deny passed cwd too, and its list is the
+ * reason this module says "every pattern" anywhere it still does; it was removed
+ * on 2026-08-12, and the two defects below were both measured on it. The churn
+ * heatmap's `churnKey` passed the workbench ROOT rather than cwd, because a
+ * counter has to mean the same file whatever directory the session started in
+ * (`KEY_ANCHOR`, issue `260809-2023`); it was removed on 2026-08-15. Neither
+ * defect below is repaired by either going, and the next caller names its own
+ * directory for its own reason.
  *
  * ## Why this is its own module
  *
@@ -58,9 +61,10 @@
  * location be reached from a working directory that is not the project root.
  *
  * The floor, and the list it stood on, went with the protected-path half. The
- * arithmetic did not: `churnKey` resolves a relative operand for the same reason
- * and would otherwise key a `../`-spelled path under a string no reader can
- * resolve, which is the four-spelling failure `KEY_ANCHOR` exists to end.
+ * arithmetic did not, and the reason it is kept is that resolving a relative
+ * operand is what makes a pattern naming an absolute location reachable from a
+ * subdirectory at all — a property of the coordinate space, not of the list that
+ * was matched in it.
  *
  * ## The direction this moves the guard, stated because it moves it
  *
@@ -87,8 +91,6 @@
  * matches, so it can only add denials, and the direction has to be argued rather
  * than assumed by whoever adds the next caller.
  *
- * For churn there is no such question in either direction — a path outside the
- * root is not counted at all rather than stored absolute (`churnKey`).
  *
  * PURELY LEXICAL — `resolve` does not touch the filesystem and does not follow
  * symlinks. A path that reaches a different file through a link still reads as
@@ -102,12 +104,11 @@ import { relative, resolve } from "node:path";
  * absolute when it lands outside.
  *
  * `cwd` is whatever directory the CALLER matches in — the process's working
- * directory for `guard.categoryPaths`, the workbench root for a churn key — and
- * is an argument for exactly that reason.
+ * directory for `guard.categoryPaths` — and is an argument rather than a
+ * `process.cwd()` read for exactly that reason.
  *
  * Returns the empty string when the path IS that directory, which is what
- * `relative` answers; `guard.ts` normalises it to `"."` and `churnKey` reads it
- * as "no file named" and counts nothing.
+ * `relative` answers; `guard.ts` normalises it to `"."`.
  */
 export function projectRelative(filePath: string, cwd: string): string {
   // Relative and absolute alike: `resolve` leaves an absolute path alone and

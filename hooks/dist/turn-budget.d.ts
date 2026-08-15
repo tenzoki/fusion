@@ -37,8 +37,8 @@
  *
  * ## Output and exits
  *
- * One `KEY=value` line on stdout, in the shape `bin/fusion-paths`,
- * `bin/fusion-count-sources` and `bin/fusion-churn-rank` use:
+ * One `KEY=value` line on stdout, in the shape `bin/fusion-paths` and
+ * `bin/fusion-count-sources` use:
  *
  *   max_turns=5
  *

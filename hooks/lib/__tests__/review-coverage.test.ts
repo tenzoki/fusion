@@ -664,9 +664,9 @@ describe("review coverage: what the hook says, and when", () => {
 
         expect(
           trackerSays(p, rel) ?? "",
-          "the measurement stood down in a plugin-shaped root. The churn and " +
-            "protected-path stand-downs ask about cwd for reasons that do not apply " +
-            "here: fusion's own repository is a fusion consumer, and issue " +
+          "the measurement stood down in a plugin-shaped root. The two stand-downs " +
+            "this one was ordered ahead of are gone, and neither reason applied here " +
+            "anyway: fusion's own repository is a fusion consumer, and issue " +
             "260810-1205 was measured in it.",
         ).toContain("260810-1205");
       });

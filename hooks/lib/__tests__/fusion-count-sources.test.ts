@@ -262,7 +262,7 @@ describe("fusion-count-sources", () => {
     const root = project([
       "src/main.go",
       "fusion-workbench/.fusion-setup",
-      "fusion-workbench/.guard-state/churn.json",
+      "fusion-workbench/.guard-state/escalation.json",
       "fusion-workbench/shared/notes/tool.py",
     ]);
     const r = run(root);

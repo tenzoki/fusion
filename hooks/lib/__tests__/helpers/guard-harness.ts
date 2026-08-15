@@ -141,9 +141,10 @@ export function sessionStartEntry(): GuardEntry {
 }
 
 /**
- * How to spawn the churn-ranking reader.
+ * How to spawn the session-state drift reader.
  *
- * Not a hook — `bin/fusion-churn-rank` runs it at Setup — but it shares the one
+ * Not a hook — `bin/fusion-state-drift` runs it, and `hooks/tracker.ts` runs the
+ * same computation in-process on every guarded tool call — but it shares the one
  * property that makes the tsx default matter here rather than being a
  * convenience: its whole subject is a working directory and the workbench root
  * above it, so every case is a subprocess. Spawning the SOURCE by default also
@@ -152,18 +153,6 @@ export function sessionStartEntry(): GuardEntry {
  * second session running the suite in the same checkout was observed wiping it
  * mid-run. The build no longer deletes anything (`scripts/build.mjs`), so this
  * is now a convenience again rather than a shield.
- */
-export function churnRankEntry(): GuardEntry {
-  return hookEntry("churn-rank");
-}
-
-/**
- * How to spawn the session-state drift reader.
- *
- * Not a hook either — `bin/fusion-state-drift` runs it, and `hooks/tracker.ts`
- * runs the same computation in-process on every guarded tool call. It is here
- * for the same reason `churnRankEntry` is: its whole subject is a working
- * directory and the workbench root above it, so every case is a subprocess.
  */
 export function stateDriftEntry(): GuardEntry {
   return hookEntry("state-drift");
@@ -185,13 +174,12 @@ export function stagingDriftEntry(): GuardEntry {
   return hookEntry("staging-drift");
 }
 
-/** Shared resolution for all seven entry points. See `guardEntry`. */
+/** Shared resolution for all six entry points. See `guardEntry`. */
 function hookEntry(
   name:
     | "guard"
     | "tracker"
     | "session-start"
-    | "churn-rank"
     | "state-drift"
     | "review-coverage"
     | "staging-drift",
@@ -433,8 +421,8 @@ function git(root: string, ...args: string[]): string {
  * ## Why a harness capability rather than a fixture in one test file
  *
  * Two suites here are not about session state at all. They are about the
- * PostToolUse reply surviving something — a malformed `churn.json`, an
- * unwritable one — and each needs the tracker to be carrying SOME report in
+ * PostToolUse reply surviving something — a malformed state file, an unwritable
+ * `.guard-state/` — and each needs the tracker to be carrying SOME report in
  * order to observe whether it survived. Both used to borrow the protected-path
  * halt sentence for that, and both had to be re-pointed when it went.
  *
@@ -550,7 +538,7 @@ export function projectConfig(value: object | string): string {
  *
  * Several suites in this directory are not about protected paths at all. They
  * are about something else entirely — a malformed `escalation.json` must not
- * make the guard fail open, a malformed `churn.json` must not swallow the
+ * make the guard fail open, a malformed state file must not swallow the
  * tracker's reply, an innocuous `Bash` call must not reset the block counter —
  * and each of them needed A DENY to exist in order to observe its own subject.
  * The nearest deny to hand was `Edit agents/coder.md`, so that is what they

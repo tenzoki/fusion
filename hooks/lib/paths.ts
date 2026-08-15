@@ -20,9 +20,10 @@
  *     strip, and matched through the plain `matchesAny`.
  *
  * Both sets went with the protected-path half of the guard, and
- * `matchesAnyFolded` and `canonicalise` went with them. What is left matches ONE
- * set — `guard.categoryPaths`, read by `findRelevantDecisions` — plus two noise
- * filters over hardcoded constants.
+ * `matchesAnyFolded` and `canonicalise` went with them, and the churn heatmap's
+ * two noise filters over hardcoded constants went with it on 2026-08-15. What is
+ * left matches ONE set — `guard.categoryPaths`, read by
+ * `findRelevantDecisions`.
  *
  * The asymmetry is recorded rather than deleted because it explains the shape of
  * what remains: `collapseSegments` keeps a trailing separator, and the reason is
@@ -73,13 +74,13 @@ export function matchesPattern(filePath: string, pattern: string): boolean {
  *
  * CASE-SENSITIVE, and this is now the ONLY path match in the guard.
  *
- * Three callers. Two read hardcoded constants and are as unreachable by a
- * differently-cased path as they ever were: the noise filters in `churn.ts` and
- * `tracker.ts`. The third is `config.ts findRelevantDecisions`, matching
- * `guard.categoryPaths`, and it is REACHABLE — a consuming project's
- * `fusion-guard.json` can declare `guard.categoryPaths` and `decisions`, which
- * falsified the "no per-project config loader exists yet" this paragraph used to
- * claim (`260804-1432`).
+ * ONE caller: `config.ts findRelevantDecisions`, matching `guard.categoryPaths`,
+ * and it is REACHABLE — a consuming project's `fusion-guard.json` can declare
+ * `guard.categoryPaths` and `decisions`, which falsified the "no per-project
+ * config loader exists yet" this paragraph used to claim (`260804-1432`). Two
+ * others read hardcoded constants and were as unreachable by a differently-cased
+ * path as they ever were: the churn heatmap's noise filters in `churn.ts` and
+ * `tracker.ts`, removed on 2026-08-15.
  *
  * Whether that third caller should fold was raised and DEFERRED by the user on
  * 2026-08-04, on two grounds: the two sides of a `categoryPaths` match are both

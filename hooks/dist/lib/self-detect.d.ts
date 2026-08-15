@@ -1,13 +1,14 @@
 /**
  * Self-detection: is the guard running inside the fusion plugin's own repo?
  *
- * Two things stand down in fusion's own tree: the write-tool branch of the
- * guard, and the churn heatmap. The reason both were built was the same — the
- * guard used to protect agents/**, rules/** and .claude-plugin/plugin.json,
- * which is correct for projects USING fusion and wrong when developing fusion
- * itself, where every edit to the plugin's own source would have been blocked
- * and written back. That protection was removed on 2026-08-12 and both
- * stand-downs outlived it; each call site below says what its own now covers.
+ * One thing stands down in fusion's own tree: the write-tool branch of the
+ * guard. It was built because the guard used to protect agents/**, rules/** and
+ * .claude-plugin/plugin.json, which is correct for projects USING fusion and
+ * wrong when developing fusion itself, where every edit to the plugin's own
+ * source would have been blocked and written back. That protection was removed
+ * on 2026-08-12 and the stand-down outlived it; the call site says what it now
+ * covers. A second stand-down governed the churn heatmap in `tracker.ts` and
+ * went with the heatmap on 2026-08-15.
  *
  * Heuristic: if a directory contains a .claude-plugin/plugin.json whose "name"
  * field is "fusion", that directory is the fusion plugin's own source tree and
@@ -18,14 +19,16 @@
  * `isFusionPluginCwd()` asks about `process.cwd()`, with NO upward walk. One
  * caller is left for it: the write-tool branch of `guard.ts`, whose own
  * coordinate space is the process's working directory (`normalizeToRelative`).
- * The churn heatmap asked it too until its keys moved to the workbench root; it
- * now asks `isFusionPluginRoot` about that root, like everything else that walks
- * up.
  *
- * `isFusionPluginRoot(dir)` asks about a directory the caller names. One caller
- * is left for it too: the churn stand-down in `tracker.ts`, since `25c5454`
- * moved churn's keys to the workbench root. The cost of leaving that one at cwd
- * was measured, in `lib/__tests__/churn-key-anchor.test.ts`.
+ * `isFusionPluginRoot(dir)` asks about a directory the caller names. It has no
+ * caller of its own today — `isFusionPluginCwd()` is a call of it with
+ * `process.cwd()` — and it is kept as the entry point rather than folded away
+ * because the rule below is what decides which of the two a future caller wants,
+ * and a mechanism that has to invent the root-anchored form for itself will get
+ * that decision wrong. Its last caller was the churn stand-down in `tracker.ts`,
+ * which asked about the workbench root because `25c5454` had moved churn's keys
+ * there; the cost of leaving that one at cwd was measured, in the since-deleted
+ * `lib/__tests__/churn-key-anchor.test.ts`.
  *
  * ## The rule the two entry points exist to serve
  *
@@ -39,9 +42,11 @@
  * churn heatmap repeated the same mistake on its own gate and was moved for the
  * same reason (issues `260805-1839`, `260810-1632`).
  *
- * The two remaining callers therefore ask about DIFFERENT directories, and that
- * is correct rather than a drift to unify: `guard.ts`'s verdict is computed in
- * cwd's coordinate space and churn's keys are computed in the root's.
+ * While two callers existed they therefore asked about DIFFERENT directories,
+ * and that was correct rather than a drift to unify: `guard.ts`'s verdict is
+ * computed in cwd's coordinate space and churn's keys were computed in the
+ * root's. One caller is left, and the rule is what the next one is measured
+ * against.
  */
 /**
  * Does `dir` itself carry a fusion plugin manifest?

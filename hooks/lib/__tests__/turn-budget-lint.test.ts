@@ -187,9 +187,9 @@ describe("the orchestrator obtains the budget instead of assuming it", () => {
     ).toBe(true);
     expect(
       text.includes(`if [ -x "$FUSION_PLUGIN_ROOT/${HELPER}" ]`),
-      `${ORCHESTRATOR} must guard the ${HELPER} call with [ -x ], as the churn ranking and the ` +
-        `source count do: $FUSION_PLUGIN_ROOT is the installed copy, pinned for the session, so ` +
-        `a helper added between releases is absent there and a bare call is exit 127.`,
+      `${ORCHESTRATOR} must guard the ${HELPER} call with [ -x ], as the source count does: ` +
+        `$FUSION_PLUGIN_ROOT is the installed copy, pinned for the session, so a helper added ` +
+        `between releases is absent there and a bare call is exit 127.`,
     ).toBe(true);
   });
 
@@ -254,7 +254,7 @@ describe("the default is defined once, in the configuration layer", () => {
       `${CONFIG_TS} must assign maxTurns a number exactly once — in DEFAULTS. Found ` +
         `${assignments.length}: ${assignments.join(", ")}. Two copies of a default are two ` +
         `values free to disagree, which is the standing complaint this module's docstring already ` +
-        `makes about escalation and churn.${REMEDY}`,
+        `makes about escalation.${REMEDY}`,
     ).toHaveLength(1);
   });
 

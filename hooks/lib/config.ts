@@ -32,14 +32,16 @@
  * granularity at which "declared" is read, from the whole top-level object down
  * to the leaf. Nothing about a declared value moved.
  *
- * The rule was never scoped to one key. `escalation`, `churn` and `decisions`
- * carry the identical defect, invisible only because the plugin file and
- * `DEFAULTS` happen to agree on every leaf they share and nothing keeps them
- * agreeing (`260804-1633`). One walk closes them all rather than one per-key
- * rule each. (Two of the leaves it was written for have since gone: `crossFile`
- * with the ping-back tracker, decision `260809-2004`, and `guard.protectedPaths`
- * with the mechanism it configured — see `## The leaf that was retired` below,
- * which is where the argument above used to draw its worked example from.)
+ * The rule was never scoped to one key. `escalation` and `decisions` carry the
+ * identical defect, invisible only because the plugin file and `DEFAULTS` happen
+ * to agree on every leaf they share and nothing keeps them agreeing
+ * (`260804-1633`). One walk closes them all rather than one per-key rule each.
+ * (Three of the leaves it was written for have since gone: `crossFile` with the
+ * ping-back tracker, decision `260809-2004`; `guard.protectedPaths` with the
+ * mechanism it configured — see `## The leaf that was retired` below, which is
+ * where the argument above used to draw its worked example from; and `churn`
+ * with the heatmap on 2026-08-15, removed outright rather than retired, because
+ * no project ever set it.)
  *
  * ## The one setting here that is not the guard's
  *
@@ -57,8 +59,8 @@
  *
  * THE DEFAULT IS DEFINED ONCE, in `DEFAULTS` below, and deliberately NOT
  * restated in the plugin's `hooks/config.json`. Every other leaf is spelled in
- * both, and the paragraph above about `escalation` and `churn` is the standing
- * complaint that nothing keeps the two copies agreeing. One copy cannot
+ * both, and the paragraph above about `escalation` is the standing complaint
+ * that nothing keeps the two copies agreeing. One copy cannot
  * disagree with itself. A project that wants a different budget declares
  * `{"orchestrator":{"maxTurns":12}}` and the leaf walk does the rest.
  *
@@ -210,10 +212,6 @@ export interface GuardSettings {
   escalation: {
     blocksBeforeHalt: number;
   };
-  churn: {
-    changesPerSessionWarning: number;
-    changesPerSessionCritical: number;
-  };
   /**
    * The orchestrator's Phase-2 Turn budget. Read by `bin/fusion-turn-budget`
    * at Setup, not by any hook — see the module docstring for why a non-guard
@@ -250,7 +248,6 @@ interface RawConfig {
   guard?: Partial<GuardSettings["guard"]>;
   decisions?: Decision[];
   escalation?: Partial<GuardSettings["escalation"]>;
-  churn?: Partial<GuardSettings["churn"]>;
   orchestrator?: Partial<GuardSettings["orchestrator"]>;
 }
 
@@ -264,10 +261,6 @@ const DEFAULTS: GuardSettings = {
   decisions: [],
   escalation: {
     blocksBeforeHalt: 3,
-  },
-  churn: {
-    changesPerSessionWarning: 5,
-    changesPerSessionCritical: 10,
   },
   // THE TURN BUDGET'S ONE DEFINITION. Not restated in the plugin's
   // `hooks/config.json`, and not in `agents/orchestrator.md` — the prompt reads
@@ -428,10 +421,6 @@ function isPositiveInteger(value: unknown): boolean {
   return typeof value === "number" && Number.isInteger(value) && value >= 1;
 }
 
-function isThreshold(value: unknown): boolean {
-  return typeof value === "number" && Number.isFinite(value) && value >= 0;
-}
-
 function isDecisionArray(value: unknown): boolean {
   return (
     Array.isArray(value) &&
@@ -482,10 +471,6 @@ const CONTAINER_LEAF_RULES: Record<string, Record<string, LeafRule>> = {
       check: isPositiveInteger,
       expected: "a whole number of 1 or more",
     },
-  },
-  churn: {
-    changesPerSessionWarning: { check: isThreshold, expected: "a number" },
-    changesPerSessionCritical: { check: isThreshold, expected: "a number" },
   },
   orchestrator: {
     maxTurns: {
@@ -689,11 +674,6 @@ export function loadConfig(sources?: ConfigSources): GuardConfig {
     plugin.raw.escalation?.[key] ??
     DEFAULTS.escalation[key];
 
-  const pickChurn = <K extends keyof GuardSettings["churn"]>(
-    key: K,
-  ): GuardSettings["churn"][K] =>
-    project.raw.churn?.[key] ?? plugin.raw.churn?.[key] ?? DEFAULTS.churn[key];
-
   const pickOrchestrator = <K extends keyof GuardSettings["orchestrator"]>(
     key: K,
   ): GuardSettings["orchestrator"][K] =>
@@ -712,10 +692,6 @@ export function loadConfig(sources?: ConfigSources): GuardConfig {
     decisions: project.raw.decisions ?? plugin.raw.decisions ?? DEFAULTS.decisions,
     escalation: {
       blocksBeforeHalt: pickEscalation("blocksBeforeHalt"),
-    },
-    churn: {
-      changesPerSessionWarning: pickChurn("changesPerSessionWarning"),
-      changesPerSessionCritical: pickChurn("changesPerSessionCritical"),
     },
     orchestrator: {
       maxTurns: pickOrchestrator("maxTurns"),

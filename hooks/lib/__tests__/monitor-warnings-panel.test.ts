@@ -24,8 +24,8 @@ import { dirname, resolve, join } from "node:path";
 // when guard_advisory joined the panel, because an advisory is emitted per
 // guarded tool call for as long as its cause stands — a project carrying one
 // wrong-typed or retired key in its `fusion-guard.json` emits an unbounded
-// stream of them, and thirty in a row would push every guard_block, guard_halt
-// and churn_critical off the panel. Measured first on the burst the
+// stream of them, and thirty in a row would push every guard_block and
+// guard_halt off the panel. Measured first on the burst the
 // `FUSION_ALLOW_RULES_WRITE` exemption produced, one advisory per exempted
 // write; that flag went with the protected-path half on 2026-08-12 and the
 // fixture below keeps its rows, because the panel must still render an
@@ -342,17 +342,40 @@ async function indexPage(wb: string): Promise<string> {
 
 afterEach(reapMonitors);
 
-const RESCUED = new Set(["guard_block", "guard_halt", "churn_critical"]);
+// The events the panel exists to surface and that no burst may evict. It held
+// `churn_critical` as a third member until the churn heatmap was removed on
+// 2026-08-15; the property under test is the budget carve-out, not the set's
+// size, so the two survivors carry it unchanged.
+const RESCUED = new Set(["guard_block", "guard_halt"]);
+
+/**
+ * A filler row charged to the WARNING class rather than to a carve-out.
+ *
+ * The cases below need to overflow that class, which means an event in
+ * `WARNING_EVENT_TYPES` that is in none of `SUBSET_BUDGETS`. Two are left after
+ * the churn removal, `guard_block` and `guard_halt`, and these fillers used to
+ * be `churn_warning` — the one warning-class event that was neither. `guard_block`
+ * takes the role: a session that blocks fifty writes is what a full warning load
+ * now looks like, and the detail string is what every assertion reads.
+ */
+function warningRow(ts: string, n: number): GuardEvent {
+  return {
+    ts,
+    event: "guard_block",
+    tool: "Edit",
+    file: `src/f${n}.ts`,
+    detail: `warning ${n}`,
+  };
+}
 
 describe("bin/monitor — warnings panel capacity", () => {
   it(
-    "an advisory burst cannot evict a block, halt or critical",
+    "an advisory burst cannot evict a block or a halt",
     async () => {
       const ts = makeClock();
       const events: GuardEvent[] = [
-        // The three things the panel exists to surface — emitted FIRST, so a
+        // The two things the panel exists to surface — emitted FIRST, so a
         // single shared budget would rank them oldest and drop them.
-        { ts: ts(), event: "churn_critical", tool: "Edit", file: "src/a.ts", detail: "Churn critical: 9 edits" },
         { ts: ts(), event: "guard_block", tool: "Bash", file: "rules/x.md", detail: "Protected path: rm -rf rules" },
         { ts: ts(), event: "guard_halt", tool: "Bash", file: "rules/x.md", detail: "Halt active — mutating Bash command blocked: rm -rf rules" },
       ];
@@ -373,10 +396,9 @@ describe("bin/monitor — warnings panel capacity", () => {
       const { warnings } = await dashboard(seedWorkbench(events));
       const kinds = warnings.map((w) => w.event);
 
-      // Every one of the three survives the burst. Under the single shared
-      // budget this read [ ...29 advisories ] and nothing else.
+      // Both survive the burst. Under the single shared budget this read
+      // [ ...29 advisories ] and nothing else.
       expect(kinds.filter((k) => RESCUED.has(k)).sort()).toEqual([
-        "churn_critical",
         "guard_block",
         "guard_halt",
       ]);
@@ -401,9 +423,7 @@ describe("bin/monitor — warnings panel capacity", () => {
     async () => {
       const ts = makeClock();
       const events: GuardEvent[] = [];
-      for (let i = 1; i <= 50; i++) {
-        events.push({ ts: ts(), event: "churn_warning", tool: "Edit", file: `src/f${i}.ts`, detail: `warning ${i}` });
-      }
+      for (let i = 1; i <= 50; i++) events.push(warningRow(ts(), i));
       for (let i = 1; i <= 50; i++) {
         events.push({ ts: ts(), event: "guard_advisory", tool: "Edit", file: `rules/r${i}.md`, detail: `advisory ${i}` });
       }
@@ -411,7 +431,7 @@ describe("bin/monitor — warnings panel capacity", () => {
       const { warnings } = await dashboard(seedWorkbench(events));
       // 30 is MAX_WARNINGS_RETURNED, unchanged and unshared. If the two classes
       // ever go back to competing for one budget this drops below 30.
-      expect(warnings.filter((w) => w.event === "churn_warning").length).toBe(30);
+      expect(warnings.filter((w) => w.event === "guard_block").length).toBe(30);
       expect(warnings.filter((w) => w.event === "guard_advisory").length).toBeLessThanOrEqual(10);
     },
     30000,
@@ -422,9 +442,7 @@ describe("bin/monitor — warnings panel capacity", () => {
     async () => {
       const ts = makeClock();
       const events: GuardEvent[] = [];
-      for (let i = 1; i <= 40; i++) {
-        events.push({ ts: ts(), event: "churn_warning", tool: "Edit", file: `src/f${i}.ts`, detail: `warning ${i}` });
-      }
+      for (let i = 1; i <= 40; i++) events.push(warningRow(ts(), i));
 
       const { warnings } = await dashboard(seedWorkbench(events));
       // The old behaviour exactly: last 30 matching events, file order, newest
@@ -617,11 +635,10 @@ describe("bin/monitor — the fail-open row", () => {
   );
 
   it(
-    "a fail-open burst cannot evict a block, halt or critical",
+    "a fail-open burst cannot evict a block or a halt",
     async () => {
       const ts = makeClock();
       const events: GuardEvent[] = [
-        { ts: ts(), event: "churn_critical", tool: "Edit", file: "src/a.ts", detail: "Churn critical: 9 edits" },
         { ts: ts(), event: "guard_block", tool: "Bash", file: "rules/x.md", detail: "Protected path: rm -rf rules" },
         { ts: ts(), event: "guard_halt", tool: "Bash", file: "rules/x.md", detail: "Halt active — mutating Bash command blocked: rm -rf rules" },
       ];
@@ -633,7 +650,7 @@ describe("bin/monitor — the fail-open row", () => {
         events.push({
           ts: ts(),
           event: "guard_error",
-          detail: "Tracker error (fail-open): Error: ENOENT: no such file or directory, open '.guard-state/churn.json'",
+          detail: "Tracker error (fail-open): Error: ENOENT: no such file or directory, open '.guard-state/state-drift.json'",
         });
       }
 
@@ -641,9 +658,8 @@ describe("bin/monitor — the fail-open row", () => {
       const kinds = warnings.map((w) => w.event);
 
       // Charged to the warning class — which is what Step 5 prescribed — this
-      // reads [ ...30 guard_error ] and NONE of the three.
+      // reads [ ...30 guard_error ] and NEITHER of the two.
       expect(kinds.filter((k) => RESCUED.has(k)).sort()).toEqual([
-        "churn_critical",
         "guard_block",
         "guard_halt",
       ]);
@@ -666,14 +682,12 @@ describe("bin/monitor — the fail-open row", () => {
       const events: GuardEvent[] = [
         { ts: ts(), event: "guard_error", detail: "Guard error (fail-open): TypeError: config.guard.protectedPaths.some is not a function" },
       ];
-      for (let i = 1; i <= 50; i++) {
-        events.push({ ts: ts(), event: "churn_warning", tool: "Edit", file: `src/f${i}.ts`, detail: `warning ${i}` });
-      }
+      for (let i = 1; i <= 50; i++) events.push(warningRow(ts(), i));
 
       const { warnings } = await dashboard(seedWorkbench(events));
       expect(warnings.filter((w) => w.event === "guard_error").length).toBe(1);
       // And the warning class still gets its full, unshared 30.
-      expect(warnings.filter((w) => w.event === "churn_warning").length).toBe(30);
+      expect(warnings.filter((w) => w.event === "guard_block").length).toBe(30);
     },
     30000,
   );
@@ -683,9 +697,7 @@ describe("bin/monitor — the fail-open row", () => {
     async () => {
       const ts = makeClock();
       const events: GuardEvent[] = [];
-      for (let i = 1; i <= 40; i++) {
-        events.push({ ts: ts(), event: "churn_warning", tool: "Edit", file: `src/f${i}.ts`, detail: `warning ${i}` });
-      }
+      for (let i = 1; i <= 40; i++) events.push(warningRow(ts(), i));
       for (let i = 1; i <= 12; i++) {
         events.push({ ts: ts(), event: "guard_advisory", tool: "Edit", file: `rules/r${i}.md`, detail: `advisory ${i}` });
       }
@@ -709,12 +721,15 @@ describe("bin/monitor — the fail-open row", () => {
       const level = levelMapper(page);
 
       // The whole chain is pinned, not just the new branch, so a reordering
-      // that swallows one event into another's arm fails here.
-      expect(level("churn_critical")).toEqual({ levelClass: "critical", levelLabel: "Critical" });
+      // that swallows one event into another's arm fails here. A
+      // `churn_critical` arm sat at the head of it until 2026-08-15 and is the
+      // one line this block lost with the heatmap.
       expect(level("guard_block")).toEqual({ levelClass: "block", levelLabel: "Blocked" });
       expect(level("guard_halt")).toEqual({ levelClass: "halt", levelLabel: "Halt" });
       expect(level("guard_advisory")).toEqual({ levelClass: "advisory", levelLabel: "Advisory" });
-      expect(level("churn_warning")).toEqual({ levelClass: "warning", levelLabel: "Warning" });
+      expect(level("state_drift")).toEqual({ levelClass: "warning", levelLabel: "Stale state" });
+      // The amber default, reached now only by an event no arm names.
+      expect(level("guard_allow")).toEqual({ levelClass: "warning", levelLabel: "Warning" });
 
       const failopen = level("guard_error");
       expect(failopen.levelLabel).toBe("Fail-open");
