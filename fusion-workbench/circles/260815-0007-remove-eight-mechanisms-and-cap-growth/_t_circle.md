@@ -212,4 +212,5 @@ and `.active-circle` is absent. Five artifacts bind this one and are cited rathe
 
 ## Turn log
 
-- Turn 1 (session 260814-2306): in progress, from 348f6db; steps P-1 to P-3 (before-measurement, Plane mirror removal, Plane data files); session history: shared/history/260814-2306-orchestrator-session.md
+- Turn 1 (session 260814-2306): commits 348f6db..c4761dc; steps P-1 to P-3 done (before-measurement, Plane mirror removed in two halves); suite 1030 tests/76.6s -> 903 tests/~30s; reviewed over the whole session range 9a7da8e..HEAD by coderev and ontorev, coverage now covered; 10 defect records filed, 3 closed; Coherence verdict: pending gate; session history: shared/history/260814-2306-orchestrator-session.md
+- Turn 2 (session 260814-2306): in progress, from c4761dc; plan correction of the false lint premise, the legacy-halt-clearing flake, then steps P-4 to P-6 (churn removal, churn config leaves, stash/pop pair); session history: shared/history/260814-2306-orchestrator-session.md

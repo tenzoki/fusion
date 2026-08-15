@@ -174,3 +174,23 @@ The user's four answers at the gate:
 4. **`hooks/lib/state-drift.ts` is deleted whole**, all five rows. The three rows whose subject
    survives this Circle have never fired in either measured project. Recorded as a one-way door the
    user was shown and accepted.
+
+## Per-Turn Log
+
+### Turn 1
+- Steps attempted: P-1 before-measurement, P-2 Plane mirror code and prose, P-3 Plane data and fixtures
+- Steps completed: all three
+- Commits: d78dfb7, d0ddabb, 507dbc6, 7c12d6a, 53f2ed2, c4761dc
+- Measured effect: suite 1030 tests / 76.57 s to 903 tests / ~30 s; test files 49 to 48; rules to
+  orchestrator 130 440 B to 129 877 B
+- Review: coderev and ontorev over 9a7da8e..HEAD, the whole session range, because the coverage read
+  found all six commits uncovered. Coverage now reads covered, uncovered 0.
+- Findings: 1 High, 3 Medium, 3 Low from coderev; 5 from ontorev; 3 duplicates withdrawn by coderev.
+  10 records stand open, 3 closed this Turn.
+- Orchestrator errors this Turn, both caught by mechanism rather than by attention: a rename staged
+  with only the new path, leaving a record under two names in HEAD (507dbc6); and a record closed in
+  the wrong Circle as a bodiless stub while its open original stood (53f2ed2). The second was my
+  misreading of a grep-filtered listing whose directory headers the filter had removed.
+- Blocker carried into Turn 2: the plan still states that the enumeration lint does not read
+  CLAUDE.md's Layout table. Step 2 disproved it. Steps 4 and 11 would ship red on it and be reverted.
+- Circuit breaker status: OK

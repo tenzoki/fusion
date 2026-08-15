@@ -1496,3 +1496,13 @@
 {"ts":"2026-08-15T05:54:09","event":"commit","turn":1,"detail":"7c12d6a chore(plane): the mirror's data files and fixtures follow its code out"}
 {"ts":"2026-08-15T05:54:09","event":"review_start","turn":1,"agent":"coderev","detail":"range 9a7da8e..HEAD, 6 commits, all previously uncovered"}
 {"ts":"2026-08-15T05:54:09","event":"review_start","turn":1,"agent":"ontorev","detail":"range 9a7da8e..HEAD, structured data half"}
+{"ts":"2026-08-15T06:13:17","event":"review_done","turn":1,"agent":"ontorev","detail":"5 records filed, 1 High; golden and RULE_BASELINE verified clean"}
+{"ts":"2026-08-15T06:13:17","event":"review_done","turn":1,"agent":"coderev","detail":"1 High 3 Medium 3 Low, 3 duplicates withdrawn; plan false premise will make steps 4 and 11 ship red; HEAD not reliably green (known flake 260814-2118)"}
+{"ts":"2026-08-15T06:13:17","event":"commit","turn":1,"detail":"53f2ed2 fix(records) and c4761dc chore(review)"}
+{"ts":"2026-08-15T06:13:17","event":"state_drift","turn":1,"detail":"progress.commits surface=6 record=8; brought current together with the Circle Turn-log entry and the history Per-Turn Log for Turn 1"}
+{"ts":"2026-08-15T06:29:58","event":"coherence_review","turn":1,"verdict":"ok","detail":"Artifact<->Grounding: 10 records filed, 3 closed, 1 High repaired. Artifact<->Directive: commits move toward the Directive, Plane mirror fully removed with a measured saving. Grounding<->Directive: 3 answered decisions, consistent, none conflicting"}
+{"ts":"2026-08-15T06:29:58","event":"turn_end","turn":1,"detail":"3 steps resolved, 10 issues created, 3 closed, 6 commits"}
+{"ts":"2026-08-15T06:29:58","event":"turn_start","turn":2,"detail":"plan correction (planner) and the legacy-halt-clearing flake (bugfixer), then steps 4-6; turn_start_head=c4761dc"}
+{"ts":"2026-08-15T06:31:16","event":"gate_response","turn":2,"detail":"Turn 1 coherence gate: continue; plan correction chosen over inline workaround; flake to be fixed now by bugfixer"}
+{"ts":"2026-08-15T06:31:16","event":"planner_start","turn":2,"agent":"planner","detail":"correct the false lint premise in steps 4 and 11, check all remaining steps, narrow the Decidability claim"}
+{"ts":"2026-08-15T06:31:16","event":"bugfix_start","turn":2,"agent":"bugfixer","detail":"legacy-halt-clearing.test.ts: 4 fail in full run, 6/6 in isolation (record 260814-2118)"}

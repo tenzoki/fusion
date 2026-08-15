@@ -199,3 +199,93 @@ The plan's `**Status:**` moved from `Draft` to `Approved`, which is what the gat
   blocks, and the portability of the cluster-to-cluster edge in diagram 2, which carries the
   "baselines taken AFTER the removals" caption. Neither was raised by the user and neither
   affects what an executor does.
+
+---
+
+## Second correction pass, 2026-08-15 08:35
+
+Dispatched by the user with the Circle named, after Turn 1's two reviews (`c4761dc`) and the defect
+they filed. Steps 1 to 3 have landed (`d78dfb7`, `d0ddabb`, `7c12d6a`); step 4 was held on this pass.
+Nothing was implemented, no executor was dispatched, no measurement was re-taken.
+
+### What the pass was given
+
+`issues/260815-0804_o_the-plan-still-carries-the-false-premise-step-2-disproved-and-steps-4-and-11-will-ship-red-on-it.md`,
+plus `reviews/260815-0804-coderev-plane-mirror-removal.md` section B and
+`reviews/260815-0803-ontorev-plane-structured-data-removal.md`. The instruction named steps 4 and 11,
+asked that all eleven remaining steps be checked, and asked that the `**Decidability:**` claim be
+narrowed rather than the plan widened.
+
+### The premise, and how far it actually reached
+
+The plan said at step 4 that `derivable-enumerations-lint` does not read `CLAUDE.md`'s Layout table.
+It does: section 8, `hooks/lib/__tests__/derivable-enumerations-lint.test.ts:423-495`, a closed
+enumeration of the `bin/` roster in both directions. Read at source in this pass, not taken from the
+issue.
+
+The reach is wider than that one section, and this is the finding the pass added. Two gates decide
+gate-forced-versus-narrative, not one, and the second has no section structure at all:
+`reference-resolution-lint.test.ts` scans `CLAUDE.md` **entirely** — every line, not a table or a
+listing — and resolves any token shaped like a plugin path, plus `settings.json`, `install.sh`,
+`CLAUDE.md`, `README*.md` and `.claude-plugin/plugin.json` by name. So the question is never *which
+part of the document is this* but *what token does this text carry*. The plan's `## Approach` had
+sorted by document section (`Layout table rows` → narrative), which is what produced the false
+sentence; the criterion itself (*does `npm test` assert it?*) was correct and is unchanged.
+
+### Every remaining step, checked, with the method
+
+For each step: the files it deletes or adds, then `grep` for each of those names across the scanned
+surface (`rules/ agents/ docs/ templates/ skills/*/SKILL.md README*.md CLAUDE.md`, plus `bin/*` and
+`install.sh` comment lines), then the eight re-derived enumerations read at source in
+`derivable-enumerations-lint.test.ts` and matched against what the step deletes.
+
+| Step | Verdict | What was found |
+|---|---|---|
+| 4 | **corrected** | The false sentence replaced. The `bin/fusion-churn-rank` Layout row (`CLAUDE.md:38`) is asserted twice over — section 8 and the row's own path token — and lands in step 4's commit. Two further gate-forced citations added: `README-hooks.md:163` cites `bin/fusion-churn-rank`, and `bin/fusion-source-root:61` does the same in a scanned shell comment. Step 4 now leaves **nothing** for G1. |
+| 5 | clean | Config leaves only; deletes no file in any enumeration and no shipped text names them by path. |
+| 6 | **corrected** | Three gate-forced edits the plan omitted. `CLAUDE.md:55` carries a `/fusion:circle-stash` mention **outside** the skill listing, and the phantom check scans the whole file. `CLAUDE.md:41` (the `bin/fusion-commit-lock` row) spells `rules/workbench-stash-and-lock.md` as a path, which the rename dangles. `README-agents.md:197`'s Conditional bullet must co-mention the renamed rule with `` `orchestrator` `` on one line (section 4). The two `README-agents.md` skill-table rows are also named explicitly. `CLAUDE.md:137`, the `DEFINITION_SITES` echo, writes bare basenames and was already correctly covered. |
+| 7 | **corrected** | The digit claims are **five, not three**: `CLAUDE.md` ×3, `README.md:3`, `README-agents.md:196`, all five in the lint's `CLAIMS` list. `README.md` was absent from the file list and was added. |
+| 8 | **corrected** | Same five-digit correction, and `README.md` added. The issue's ruling that the `templates/` row is narrative is right for `CLAUDE.md:51` (bare filename) and **wrong for `CLAUDE.md:122`**, the "Where to look" row, which spells `templates/investigator-capture-layout.md` as a path and is therefore gate-forced. Both are now named, with the difference stated. |
+| 9 | clean, said so | Deletes no file in any roster; `domain-cascade.ts` is rewritten. Its two `CLAUDE.md` passages (`:16`, `:60`) carry no path, no `/fusion:` token and no asserted digit. A sentence was added saying the `CLAUDE.md` file-list entry is the curator's, so it is not read as an unstated obligation. |
+| 10 | clean, said so | Same shape. `tasklist.md` appears only under a `fusion-workbench/` label, which is not a plugin-tree path. One gate-forced citation exists — `agents/orchestrator.md:947` spells `hooks/lib/__tests__/queue-ground-producer.test.ts` — and it sits inside `#### What this is, honestly`, which the step deletes whole. Stated so the executor does not go looking. |
+| 11 | **corrected** | The trap by omission, plus one the reviewers did not name: the step **creates** `hooks/lib/state-file.ts`, and the `hooks/lib` table check is exact set equality in **both** directions, so an added module without a `README-hooks.md` row is as red as a deleted one with a surviving row. Four gate-forced edits now enumerated: the `CLAUDE.md:43` Layout row, the two `README-hooks.md` table changes, `README-hooks.md:165`'s path citation, and the header comments at `bin/fusion-staging-drift:29` and `bin/fusion-review-coverage:31`. |
+| 12 | **corrected** | Two omissions. Deleting the plugin-root `settings.json` dangles a **named** token in the lint's own path grammar: `CLAUDE.md:108` carries three occurrences and `install.sh:77` one, and the plan's sentence *"that statement stays true after the file is gone"* is true and beside the point. And the phantom-skill check reaches beyond the listing: `CLAUDE.md:108`, `README.md:95` (three occurrences) and `README-agents.md:41` each cite a skill this step deletes. |
+| 13 | **corrected**, one clause | The shared growth helper must land under `hooks/lib/__tests__/helpers/`; a new `hooks/lib/*.ts` would need a `README-hooks.md` table row in the same commit. |
+| 14, 15 | clean | Measurement and release preparation; neither deletes nor adds a file in any enumeration. |
+
+Step 2's own text (`:173`) still carries the false premise and was **left alone**: it is `[DONE]`, its
+executor corrected it at run time and recorded the correction, and rewriting a landed step's
+instruction would falsify the record of what was planned. Noted here instead.
+
+### The Decidability line
+
+Narrowed to what the evidence supports, per `rules/critical-stance.md` §3, with no mechanism added
+and no work planned for the two uncovered classes. Decidable: path-shaped citations in shipped text.
+Not decidable: the workbench, which `reference-resolution-lint` does not scan
+(`shared/issues/260812-1720_*_…`; seven open records naming deleted Plane paths, tabulated in
+`issues/260815-0803_*_seven-open-defect-records-…`), and bare filenames in the `templates/`, `docs/`
+and `stilwerk/` inventory rows (`issues/260815-0803_*_two-claude-md-inventory-rows-…`). The count of
+those records is seven as verified in that issue at `7c12d6a`, not the nine the dispatch prompt
+named — the wider grep returns fifteen files, of which the extras are the review-filed records that
+legitimately name the deleted paths as their subject.
+
+### Also corrected, because they restated the same false premise
+
+`## Testing Strategy`'s description of `derivable-enumerations-lint` listed six of its eight checks
+and omitted the `bin/` roster — the one that produced the defect — and the stash-manifest field
+count. `## Risks & Mitigations`' row about deferred enumeration edits said "the three assertions";
+a second row was added for the failure mode itself, deciding by document section.
+
+### Not touched, as instructed
+
+Step substance, order, executor assignment, acceptance criteria, the `[DONE]` markers, the
+`## Open Questions` section, and both Mermaid diagrams — verified byte-identical after the pass,
+along with all fifteen step headers and every `## ` heading. No step number moved. The plan grew from
+69 608 to 81 607 bytes.
+
+### Not done
+
+- Nothing implemented; no executor dispatched; no test suite run.
+- No new issue or decision filed. Everything this pass found is a correction to the plan's own text,
+  which is the artifact the dispatch handed over; the two record-sweep obligations the reviewers
+  filed are theirs and remain open.
