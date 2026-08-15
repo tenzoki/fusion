@@ -26,3 +26,6 @@ The three files are genuinely root-anchored: `bin/fusion-plane:236-238` resolves
 - Do not add a second enumeration. `260810-0504` already records that this file enumerates the root-anchored set twice and that a new surface therefore has two landing sites. Any fix here lands in both or the defect recurs.
 
 **Byte cost.** Both paragraphs sit in an always-on file, so any addition is charged against the growth bound armed in T4 and needs the golden regenerated in the same commit.
+
+---
+Resolved: moot. The three Plane files left the root-anchored layout tree with the Plane mirror itself (step 2 of Circle `260815-0007-remove-eight-mechanisms-and-cap-growth`, commit `d0ddabb`), so there are no per-surface arguments left to extend. The executing coder confirmed no paragraph beneath the tree ever covered them.
