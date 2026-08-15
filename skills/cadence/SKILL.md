@@ -123,7 +123,7 @@ git log --date=short --pretty='%ad %h %s' 2>/dev/null
 
 **Iterate over every path in `$SCAN_HISTORY`.** It resolves to **two** space-separated directories when a Circle is active — the active Circle's history store and the shared one — and collapses to the shared one alone when no Circle is active (`rules/fusion-workbench-conventions.md` `## Path Resolution` → "Two invariants", invariant 2). Reading only the first path silently under-reports: the whole active Circle's work, or the whole non-Circle work, disappears from all three lists, and the result looks like a quiet week rather than a bug.
 
-`/fusion:log-activity` writes the activity log to the **project root**, so that is the usual location; the workbench copy is the fallback for projects that moved it. Note in the final report which sources were found and which were absent.
+The activity-log step of `/fusion:cleanup` writes the activity log to the **project root**, so that is the usual location; the workbench copy is the fallback for projects that moved it. Note in the final report which sources were found and which were absent.
 
 ### 4. Date each log unit
 
@@ -252,5 +252,5 @@ this skill produces no file.
 ## What this skill is NOT
 
 - It does not modify the source logs or the activity log — read-only on all inputs, writes only `cadence-$USER.md` in `$OUT_MEMO`.
-- It is not `/fusion:log-activity`. That skill maintains the dated raw activity record; cadence is a higher-level digest built on top of it (and on the session histories and git). Run `/fusion:log-activity` first if you want the activity log fresh before a cadence pass.
+- It is not the activity-log step of `/fusion:cleanup`. That step maintains the dated raw activity record; cadence is a higher-level digest built on top of it (and on the session histories and git). Run `/fusion:cleanup --only log-activity` first if you want the activity log fresh before a cadence pass.
 - It files no issues and no decisions. A cadence run is a read of the past, not a queue of work.

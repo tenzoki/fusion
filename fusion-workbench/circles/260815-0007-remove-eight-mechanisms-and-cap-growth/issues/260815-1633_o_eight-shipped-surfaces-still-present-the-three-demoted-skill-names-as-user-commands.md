@@ -78,3 +78,36 @@ It says the ordinary surface for the curator is `/fusion:curate`; `README-agents
 surface is `/fusion:cleanup --only claude-md` and that `curate` is Cleanup Step 5. Both ship, both
 are read by the orchestrator, and they disagree about what to tell a user. The record's own
 sequencing — do that one first and separately — is unperformed.
+
+---
+
+**Partial resolution 260815-2330 (coder) — the six named files are done, two instances stand
+outside them, so the marker stays `_o_`.**
+
+Every row of the reconciled table above is discharged. `agents/orchestrator.md` was done
+first and separately, as the record asked: its curator line now reads "the `CLAUDE.md` step
+of `/fusion:cleanup`, reachable alone as `/fusion:cleanup --only claude-md`", which is what
+`README-agents.md:246` says, so the contradiction is gone. Two instances the table did not
+carry were found in the same lines and rewritten with them: `agents/curator.md:246`
+("Dispatched by `/fusion:curate`") and the `/fusion:log-activity` Step 3 cross-reference in
+`agents/playmaker.md:61`.
+
+The prose form chosen throughout is the record's own suggestion — name the step, and give
+the `--only` selector where a user needs a way in. The three selectors written are
+`--only archive`, `--only claude-md` and `--only log-activity`. `--only curate` was written
+nowhere; the selector's error path rejects it.
+
+**What is left, and why this record does not close.** The dispatch bounded the edit to six
+files. Two shipped surfaces outside that set still present a demoted name as a command:
+
+| Where | What it says |
+|---|---|
+| `skills/setup/SKILL.md:60` | "`/fusion:archive` moves it there"; "The precedent for the exclusion set is `/fusion:log-activity` Step 3" |
+| `skills/cleanup/SKILL.md:243` | "only the first is a reason to run `/fusion:curate`" |
+
+Both were being edited by other tasks in the same session, which is the second reason they
+were left. `CLAUDE.md:21` and `README-agents.md:239-246` also name all three and are
+correct as they stand — the first is required by `derivable-enumerations-lint` to name every
+skill directory, and both already present the names as pipeline steps.
+
+Session history: `shared/history/260815-2330-coder-demoted-skill-names-in-shipped-prose.md`.

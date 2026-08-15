@@ -17,32 +17,32 @@
   coder.md 9688
   coderev.md 13257
   consultant.md 14825
-  curator.md 33541
+  curator.md 33621
   editor.md 14272
   ontocoder.md 13305
   ontorev.md 11234
-  orchestrator.md 139858
+  orchestrator.md 139967
   planner.md 18434
-  playmaker.md 38602
+  playmaker.md 38622
   reconciler.md 20006
-  shaper.md 25320
+  shaper.md 25421
   taskplanner.md 14375
-  total 399842
+  total 400152
 
 [skills bytes]
   archive/SKILL.md 23705
-  cadence/SKILL.md 17506
+  cadence/SKILL.md 17560
   cleanup/SKILL.md 23662
   commit/SKILL.md 6233
   curate/SKILL.md 12741
-  direct/SKILL.md 9232
+  direct/SKILL.md 10799
   help/SKILL.md 14248
   log-activity/SKILL.md 13559
   memo/SKILL.md 12560
   migrate/SKILL.md 26256
   next/SKILL.md 26249
-  setup/SKILL.md 35385
-  total 221336
+  setup/SKILL.md 36230
+  total 223802
 
 [hook-tests lines]
   clear-halt-concurrent-halt.test.ts 427
