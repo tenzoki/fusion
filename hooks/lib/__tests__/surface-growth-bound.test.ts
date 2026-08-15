@@ -343,15 +343,15 @@ const SURFACES: Surface[] = [
     baseline: TEST_LINE_BASELINE,
     headRoom: TEST_LINE_HEAD_ROOM,
     cost: "every line is maintenance and suite wall-clock, paid on every run",
-    files: () => {
-      const rels = [
-        ...readdirSync(here).filter((f) => f.endsWith(".ts")),
-        ...readdirSync(join(here, "helpers"))
-          .filter((f) => f.endsWith(".ts"))
-          .map((f) => join("helpers", f)),
-      ].sort();
-      return rels.map((rel) => ({ rel, size: lineCount(join(here, rel)) }));
-    },
+    // Recursive, because vitest's include is: a `.ts` file at ANY depth under
+    // `__tests__/` runs, so reading two directories and naming `helpers` was the
+    // written-down list this reader exists to refuse — a test file one level
+    // deeper ran and was measured by nothing (issue 260815-1935).
+    files: () =>
+      readdirSync(here, { recursive: true })
+        .filter((f) => f.endsWith(".ts"))
+        .sort()
+        .map((rel) => ({ rel, size: lineCount(join(here, rel)) })),
   },
 ];
 

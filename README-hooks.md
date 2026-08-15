@@ -391,7 +391,7 @@ cd hooks && UPDATE_RULES_GOLDEN=1   npx vitest run lib/__tests__/rules-emission-
 cd hooks && UPDATE_SURFACE_GOLDEN=1 npx vitest run lib/__tests__/surface-growth-bound.test.ts
 ```
 
-**What no bound covers.** The hook-test surface counts the suite's own `.ts` files, `hooks/lib/__tests__/helpers` included; the three `.mjs` files under `hooks/` — the build script, the test runner and the vitest configuration — are hook scripts rather than tests and fall outside every surface. Nothing bounds them, and nothing bounds `hooks/*.ts`, `hooks/lib/*.ts`, `bin/`, `docs/` or the READMEs either. That is a statement of coverage, not a justification: those surfaces were not measured, and arming a bound on a corpus nobody measured is the one thing the instrument's own rule forbids.
+**What no bound covers.** The hook-test surface counts every `.ts` file in the suite's own tree at any depth (`hooks/lib/__tests__/**.ts`) — a recursive walk rather than a list of directories, so a test file in a new subdirectory is measured on the day it arrives; the three `.mjs` files under `hooks/` — the build script, the test runner and the vitest configuration — are hook scripts rather than tests and fall outside every surface. Nothing bounds them, and nothing bounds `hooks/*.ts`, `hooks/lib/*.ts`, `bin/`, `docs/` or the READMEs either. That is a statement of coverage, not a justification: those surfaces were not measured, and arming a bound on a corpus nobody measured is the one thing the instrument's own rule forbids.
 
 ### Rebuilding after TS changes
 
