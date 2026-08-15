@@ -348,14 +348,14 @@ Every step's acceptance includes `cd hooks && npm test` green and a history entr
       - **Falsify the bound before accepting it**, as the 2026-08-14 arming did: add a byte to an agent prompt and a line to a hook test, confirm the suite goes red for each, and revert. A bound that has never been seen to fail has not been armed, it has been declared.
     - Dependencies: gate G1. Last of the substantive steps by construction — arming before the removals would baseline the surfaces at their pre-removal size and grant the space this Circle just opened as head-room, which is the one outcome the record forbids.
 
-14. **Take the after-measurement** *(closure criterion)*
+14. [DONE] **Take the after-measurement** *(closure criterion)*
     - Executor: `coder`
     - Files: the Circle's history store (new entry only).
     - Changes: re-run step 1's command block verbatim and record the output under `## After` beside step 1's `## Before`. Produce the three comparisons the closure criterion names — bytes per dispatch, Setup tokens, line counts — as a table with a delta column, and state the suite's wall-clock duration before and after. Where a figure moved for a reason other than this Circle's removals, say so; an unexplained delta in a closure note is a number nobody can use.
       - **The command stays byte-identical and the hook-source row is annotated instead — this is an obligation of the closure note, not an edit to the block.** `cat hooks/*.ts hooks/lib/*.ts | wc -l` cannot see three files step 3b added: `hooks/scripts/build.mjs` (205 lines), `hooks/scripts/run-tests.mjs` (48 lines) and `hooks/vitest.config.mjs` (67 lines), 320 lines together, verified at HEAD `b093a54`. Both available repairs sit in the measurement, and neither may change the tree or the command. The `.mjs` extension is load-bearing, because a TypeScript file the build deliberately skips is the one pair its orphan prune cannot decide (`hooks/scripts/build.mjs`, the paragraph beginning "That rule is only sound"), and step 1's block must be re-run verbatim or the before and after are not comparable. **So the closure note names those three files and their 320 lines, and states that the hook-source delta in its table overstates the reduction by that much:** the command reads a shrink the Circle did not produce, because 320 lines of hook code it cannot see were added inside the same range. The arithmetic to carry: step 1 read 7 934 lines at `d78dfb7`, the reading at `5d29b6d` was 6 945, and the −989 that implies is a real −669 in hook code once the 320 `.mjs` lines are counted. This step re-takes the after reading and applies the same correction to whatever it finds. This is the inverse of the sentence the paragraph above already asks for: a figure that did **not** move, for a reason. Defect: `issues/260815-1251_o_the-after-measurement-command-cannot-see-the-320-lines-the-build-change-added.md`.
     - Dependencies: step 13.
 
-15. **Prepare the release**
+15. [DONE] **Prepare the release**
     - Executor: `coder`
     - Files: `.claude-plugin/plugin.json`; `install.sh`; `README.md`; and the marketplace clone at `/Users/k1/Projects/productive/F03-CLAUDE-plugin-marketplace/claude-plugins/.claude-plugin/marketplace.json`.
     - Changes:

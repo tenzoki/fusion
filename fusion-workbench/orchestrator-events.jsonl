@@ -1553,3 +1553,6 @@
 {"ts":"2026-08-15T14:03:41","event":"task_start","turn":4,"task":"P-12","agent":"coder","detail":"eight administrative names to three; implements both answered decisions"}
 {"ts":"2026-08-15T15:44:06","event":"gate_hit","turn":4,"detail":"G1 curator ledger: 12 entries, 0 constraint removals, blast radius under 1.7 percent"}
 {"ts":"2026-08-15T15:44:06","event":"gate_response","turn":4,"detail":"G1: all twelve ledger entries approved; C01 candidate not applied; resume-shell duplication accepted as two copies, no mechanism built"}
+{"ts":"2026-08-15T16:39:07","event":"task_done","turn":4,"task":"P-13","agent":"coder","detail":"0609945; cap armed on three surfaces with per-surface head-room, proven by four add-backs going red"}
+{"ts":"2026-08-15T16:39:07","event":"task_done","turn":4,"task":"P-14","agent":"coder","detail":"9cde86c; after-measurement settles the three contested figures and contradicts four claims of this Circle"}
+{"ts":"2026-08-15T16:39:07","event":"task_start","turn":4,"task":"P-15","agent":"coder","detail":"prepare the release: version bump, three of four version surfaces, validate"}

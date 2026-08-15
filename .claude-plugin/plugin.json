@@ -1,6 +1,6 @@
 {
   "name": "fusion",
-  "version": "8.2.0",
+  "version": "9.0.0",
   "description": "Multi-domain AI agent orchestration framework. Project-agnostic specialized agents (3 parameterised by domain — code/data) with a compliance guard, decision-record tracking, a real-time browser-based monitor with session-scoped ETA estimation. /fusion:help inside Claude Code for self-explainer.",
   "author": {
     "name": "Kai / qantr GmbH"

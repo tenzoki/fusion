@@ -23,7 +23,9 @@ fusion --uninstall  # remove ~/.fusion and the launcher
 fusion --where      # print the install dir
 ```
 
-Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v8.2.0` to pin a release — every release since v5.5.0 is tagged), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN` (launcher dir, default `~/.local/bin`).
+Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v9.0.0` to pin a release — every release since v5.5.0 is tagged), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN` (launcher dir, default `~/.local/bin`).
+
+**Upgrading from v8 or earlier?** v9 is a removal release: eight mechanisms, two agents and five skills left the plugin. Nothing breaks and no migration step is required, but a project set up under an older version may still hold configuration and workbench files that nothing reads any more. `docs/upgrading-to-v9.md` is the cleanup checklist.
 
 ### Alternative — Claude Code marketplace
 

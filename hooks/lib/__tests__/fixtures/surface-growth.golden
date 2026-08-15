@@ -36,13 +36,13 @@
   commit/SKILL.md 6233
   curate/SKILL.md 12741
   direct/SKILL.md 9232
-  help/SKILL.md 13351
+  help/SKILL.md 14248
   log-activity/SKILL.md 13559
   memo/SKILL.md 12560
   migrate/SKILL.md 26256
   next/SKILL.md 26249
   setup/SKILL.md 35385
-  total 220439
+  total 221336
 
 [hook-tests lines]
   clear-halt-concurrent-halt.test.ts 427
