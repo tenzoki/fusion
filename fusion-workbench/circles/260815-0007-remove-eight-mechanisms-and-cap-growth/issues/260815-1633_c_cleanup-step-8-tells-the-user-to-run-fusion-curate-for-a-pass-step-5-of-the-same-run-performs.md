@@ -40,3 +40,7 @@ It also re-opens the "perform the work, don't name the command" rule at the top 
 Point the sentence at the flag rather than the command — `--only claude-md` — or make it conditional
 on Step 5 having been skipped. Either way the surviving `/fusion:curate` reference should not be the
 only trace of a justification the same step deleted.
+
+---
+
+Resolved: `skills/cleanup/SKILL.md:243` now points at the flag and gates the advice on the step having been skipped: "only the first is a reason to run `--only claude-md` later, and only when Step 5 was skipped on this run: after a full run it has already surveyed and gated." No `/fusion:curate` reference remains in the body, which also closes the demoted-command residual.

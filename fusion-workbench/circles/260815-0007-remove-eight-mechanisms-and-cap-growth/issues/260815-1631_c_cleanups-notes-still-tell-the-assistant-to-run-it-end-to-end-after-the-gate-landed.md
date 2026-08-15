@@ -35,3 +35,7 @@ not the note eleven lines below it that repeats the same claim in shorter form.
 
 Rewrite the bullet around the one stop, e.g. that the run reports once at the end and asks once, at
 Step 5. Keep the "don't report after every step" half — that part is still right.
+
+---
+
+Resolved: `skills/cleanup/SKILL.md:252` now reads "Ask once, at Step 5's gate, and report once at the end — not after every step (unless a guardrail trips)." The "run it end to end" half is gone; the "don't report after every step" half is kept.

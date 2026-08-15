@@ -35,7 +35,7 @@ echo "source root: ${FUSION_SRC:-UNRESOLVED (FUSION_PLUGIN_ROOT is unset)}"
 ## Arguments
 
 - empty (default) — run the full pipeline, committing and pushing.
-- `--dry-run` — survey and report what each step *would* do, make no writes, no commits, no dispatch. Use this to preview.
+- `--dry-run` — survey and report what each step *would* do, make no writes, no commits, no dispatch, with one exception: Step 5 dispatches the curator's survey pass, which writes its run file. Use this to preview.
 - `--no-push` — run the full pipeline and commit, but never `git push`. Leave the commits local.
 - `--only <steps>` — run only the named steps, in pipeline order. Comma-separated, no spaces.
 - `--skip <steps>` — run the full pipeline except the named steps. Same spelling.
@@ -92,7 +92,7 @@ Capture the starting state for the final report:
 git rev-parse --abbrev-ref HEAD; git status --short; git log --oneline -1
 ```
 
-If `--dry-run`, announce it now: every subsequent step reports its intent but performs no write, commit, dispatch, or push.
+If `--dry-run`, announce it now: every subsequent step reports its intent but performs no write, commit, dispatch, or push — except Step 5's survey dispatch and the run file it writes.
 
 ## Step 1 — Close the session: file issues for open tasks
 
@@ -185,7 +185,7 @@ Three things are this step's and not that body's:
 
 - **The gate is yours to hold and you do not skip it.** `AskUserQuestion` is in this skill's `allowed-tools` for exactly this. Never approve on the user's behalf, and never send an apply dispatch with an empty approval set — an empty set is a rejection, so you dispatch nothing.
 - **A rejection is a complete step**, not a failure. Record it in one line and go on to Step 6.
-- **`--dry-run` stops after the survey.** Dispatch the survey pass, report the run file's path and the per-group counts, ask nothing, and dispatch no apply pass. Same shape as every other step under `--dry-run`: it shows what would change and changes nothing.
+- **`--dry-run` stops after the survey.** Dispatch the survey pass, report the run file's path and the per-group counts, ask nothing, and dispatch no apply pass. Same shape as every other step under `--dry-run`, save the run file the survey writes: it shows what would change and applies nothing.
 
 This step replaces the autonomous three-pass rewrite of `CLAUDE.md` that cleanup used to run. The pass that reads the whole workbench and the whole git history, cites its evidence per entry, and lands nothing unapproved is the one path to this file now.
 
@@ -215,9 +215,9 @@ A single concise summary, action-first per `rules/user-facing-output.md`:
 - Push: pushed to `<branch>` / skipped (`--no-push`) / **rejected** (with the git error)
 - Reconcile: domain used, and where it came from (`agentstate.yaml` or the fallback); discrepancies fixed/flagged
 - Archive: files moved (count) into `<archive folder>` / nothing to archive
-- Normative surfaces: entries approved and applied, per surface; every entry that came back `stale` or `failed`, by id and reason; or that the ledger was rejected, or that the survey proposed nothing
+- Normative surfaces changed: entries approved and applied, per surface; every entry that came back `stale` or `failed`, by id and reason; or that the ledger was rejected, or that the survey proposed nothing
 - Activity log: updated
-- Normative surfaces: the date of the last consolidation run, or that none has run, followed by the current size in bytes of the decision records, the project's own rule files, and `CLAUDE.md`
+- Normative surfaces, current state: the date of the last consolidation run, or that none has run, followed by the current size in bytes of the decision records, the project's own rule files, and `CLAUDE.md`
 
 **Where the consolidation line comes from.** It is a read-only measurement. It dispatches nothing, writes nothing, and runs under `--dry-run` exactly as it does on a full run. It reports the state of the surfaces; Step 5 is what changes them, and only through the gate.
 
@@ -240,7 +240,7 @@ done | wc -c)"
 CLAUDE_MD_BYTES="$( [ -f CLAUDE.md ] && wc -c < CLAUDE.md || echo 0 )"
 ```
 
-Read the date out of `$LAST_RUN`'s filename — its leading `YYMMDD-HHMM` — and report it with the three totals. The two rule directories are relative to the project root, where Step 0 left you, and both are optional: a project shipping neither reports zero for that surface, which is a measurement rather than a failure. **When `$LAST_RUN` is empty, say that no consolidation has run on this project.** Do not report an absent run as a zero or an old date — a project that has never consolidated and a run that found nothing to change are different facts, and only the first is a reason to run `/fusion:curate`.
+Read the date out of `$LAST_RUN`'s filename — its leading `YYMMDD-HHMM` — and report it with the three totals. The two rule directories are relative to the project root, where Step 0 left you, and both are optional: a project shipping neither reports zero for that surface, which is a measurement rather than a failure. **When `$LAST_RUN` is empty, say that no consolidation has run on this project.** Do not report an absent run as a zero or an old date — a project that has never consolidated and a run that found nothing to change are different facts, and only the first is a reason to run `--only claude-md` later, and only when Step 5 was skipped on this run: after a full run it has already surveyed and gated.
 
 End with anything that needs the user's attention (a rejected push, a flagged reconcile discrepancy, conflicts). If everything succeeded cleanly, the first line is "Session cleaned up — nothing needs your attention."
 
@@ -249,4 +249,4 @@ End with anything that needs the user's attention (a rejected push, a flagged re
 - This skill is destructive-adjacent (it commits and pushes). The guardrails in "Autonomy and safety" are not optional.
 - The two commit phases are deliberate: Step 2 captures the *work*, Step 7 captures the *housekeeping the work triggered*. Don't collapse them — a clean tree before reconcile makes the reconciler's diff legible.
 - If the repo is not a git repository, skip Steps 2 and 7's commit/push and say so; still run reconcile, archive, the `CLAUDE.md` gate, and the activity log.
-- Match the user's energy: they asked for a one-shot wrap-up. Run it end to end; report once at the end, not after every step (unless a guardrail trips).
+- Match the user's energy: they asked for a one-shot wrap-up. Ask once, at Step 5's gate, and report once at the end — not after every step (unless a guardrail trips).

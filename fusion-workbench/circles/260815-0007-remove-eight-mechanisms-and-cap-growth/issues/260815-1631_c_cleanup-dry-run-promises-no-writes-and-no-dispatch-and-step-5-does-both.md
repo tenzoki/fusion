@@ -47,3 +47,7 @@ Either narrow the two blanket statements to name the survey dispatch and the run
 exception, or have Step 5 under `--dry-run` report that it *would* survey without dispatching. The
 first is probably right: the survey is the only thing that makes the dry run informative about this
 step at all. Whichever is chosen, lines 38 and 95 must say it.
+
+---
+
+Resolved: Both blanket promises now name the one exception — `skills/cleanup/SKILL.md:38` and `:95` state that a dry run makes no write, commit, dispatch or push except Step 5's survey dispatch and the run file it writes. Step 5's own dry-run bullet (`:188`) carried the same false claim in shorter form ("changes nothing") and was narrowed with them.

@@ -37,3 +37,7 @@ The label P-12 chose is the right one for its bullet; it is the collision that w
 Rename one of them. "Normative surfaces changed" and "Normative surfaces state" would do, or move the
 measurement bullet to the end under a label naming what it is — it is the only read-only line in a
 list of things the run did.
+
+---
+
+Resolved: The two Step 8 bullets are distinguishable by label: `:218` is now "Normative surfaces changed" (what this run applied) and `:220` "Normative surfaces, current state" (the read-only measurement).
