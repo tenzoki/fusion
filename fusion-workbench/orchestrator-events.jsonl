@@ -1520,3 +1520,7 @@
 {"ts":"2026-08-15T10:12:01","event":"task_start","turn":2,"task":"P-5","agent":"ontocoder","detail":"churn configuration leaves in four config files"}
 {"ts":"2026-08-15T10:18:59","event":"task_done","turn":2,"task":"P-5","agent":"ontocoder","detail":"04ea182; counts unmoved at 46/842; step grew by one file, the help-skill pointer, judgement named"}
 {"ts":"2026-08-15T10:18:59","event":"task_start","turn":2,"task":"P-6","agent":"coder","detail":"stash/pop pair removed, commit-lock half rehomed"}
+{"ts":"2026-08-15T10:38:30","event":"task_done","turn":2,"task":"P-6","agent":"coder","detail":"5d29b6d; 46/842 -> 45/830; rule text to orchestrator 112010 -> 104181 bytes; stashes/ kept as legacy store with all four exclusions"}
+{"ts":"2026-08-15T10:38:30","event":"commit","turn":2,"detail":"04ea182 config leaves, 5d29b6d stash removal"}
+{"ts":"2026-08-15T10:38:30","event":"review_start","turn":2,"agent":"coderev","detail":"range 7c12d6a..HEAD, 7 commits, plus the carried not-opened list"}
+{"ts":"2026-08-15T10:38:30","event":"review_start","turn":2,"agent":"ontorev","detail":"range 7c12d6a..HEAD, structured data half"}
