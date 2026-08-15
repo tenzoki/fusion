@@ -86,3 +86,8 @@ derivation to be stated once and cited from Phase 4. Doing that closes `260811-1
 edit; patching the Phase 4 copy in place does not.
 
 Reconciled by `reconciler`, `shared/history/260811-2330-reconciliation.md`.
+
+---
+Resolved: Both copies are gone: agents/orchestrator.md no longer carries the Active Circle extraction at either site, removed with the persisted tasklist and the queue-ground lint in dd312eb.
+
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.

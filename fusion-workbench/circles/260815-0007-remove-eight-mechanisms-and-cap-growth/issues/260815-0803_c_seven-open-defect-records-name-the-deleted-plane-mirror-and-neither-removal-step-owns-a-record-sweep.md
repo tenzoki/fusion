@@ -73,3 +73,8 @@ remaining removal steps, in step 8's form — was not applied to any of the elev
 The evidence is this count: had it been applied, these fifteen would have been closed by the commits
 that removed their subjects rather than by a reconciliation pass three Turns later. Fix step 3, the
 question of whether the sweep is mechanisable, remains unfiled as a decision.
+
+---
+Resolved: Discharged by closing the three Plane-mirror records above: the 260815-1913 reconciliation closed four of the seven and named these three as the out-of-reach remainder, so the closure list completes here. Fix step 2 is unactionable now that all fifteen plan steps landed and the Circle closed; fix step 3 was explicitly a decision it did not propose.
+
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.

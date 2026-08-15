@@ -85,3 +85,8 @@ Criterion 1 — met. `fusion-workbench/.guard-state/escalation.json` at `ed87d87
 Criterion 2 — not met, and not attempted this session. No verification-surface rule names the branch policy, because the policy was deleted (`7598073`) before a rule could be written for it. That leaves the criterion satisfiable only in the general form — *a policy is verified through the sanctioned harness, not through live probes against the running project* — which is the same class question that `shared/decisions/260810-0710_o_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md` carries from the other direction.
 
 Closure candidate for the user: if criterion 2 is judged moot with the policy gone, this record closes on criterion 1 alone. The reconciler does not make that call, because the criterion is written as a rule obligation and not as a state fact.
+
+---
+Resolved: Acceptance 1 is met — .guard-state/escalation.json reads haltActive false and 0 consecutive blocks with a recorded halt_cleared event — and acceptance 2's subject, the git branch/worktree policy, was deleted on 260809.
+
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.

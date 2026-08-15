@@ -45,3 +45,8 @@ that is a different edit from the one the plan's wording sets up.
 At gate G1, in `CLAUDE.md:59`: cut `, which the orchestrator derives from the detected domain` and
 say instead that the orchestrator passes all three unconditionally. In `CLAUDE.md:16`: reduce the
 value list to `code | data`.
+
+---
+Resolved: Both edits landed in e8052e7: CLAUDE.md now says the orchestrator passes all three executors on every planner dispatch with no condition, and the domain value list reads code | data.
+
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.

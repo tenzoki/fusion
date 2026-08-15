@@ -35,3 +35,8 @@ is not part of it.
 
 **Filed by:** orchestrator, at Phase 3 of session 260813-1815, on the reconciler's finding.
 **Cross-references:** `circles/260813-0910-documentation-matches-shipped-plugin/planning/260813-1820_p_documentation-matches-shipped-plugin.md` step 10 and its risk table; `circles/260813-0910-documentation-matches-shipped-plugin/history/260813-2258-reconciliation.md`
+
+---
+Resolved: docs/plane-setup.md (the text to be verified) and bin/fusion-plane (the thing to verify it against) were both deleted in d0ddabb.
+
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.

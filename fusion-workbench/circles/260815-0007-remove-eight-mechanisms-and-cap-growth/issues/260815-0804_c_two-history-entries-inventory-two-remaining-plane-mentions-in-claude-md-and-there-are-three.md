@@ -60,3 +60,8 @@ Delete the clause at `CLAUDE.md:73`, so that the two statements of the design ag
 stability is the reason on both surfaces. Correct the count in both history entries, or leave them
 and let this record be the correction — a history entry is a record of what an agent did and saw, and
 rewriting one after the fact has its own cost. Whichever, the curator's G1 ledger needs the third row.
+
+---
+Resolved: The third mention, CLAUDE.md's "immutable natural key for the Plane mirror" clause, was rewritten into the past tense in e8052e7; the record offers its only other ask, correcting the two history-entry counts, as explicitly optional.
+
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.

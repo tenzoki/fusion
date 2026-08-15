@@ -70,3 +70,8 @@ own commit, and add the matching bullet to step 11 for `bin/fusion-state-drift`.
 same pass: it deletes `templates/investigator-capture-layout.md`, which the `templates/` Layout row
 names — that row is **not** asserted by section 8, which reads `bin/` rows only, so it is genuinely
 narrative and genuinely G1's. Saying which of the three is which is the whole content of the fix.
+
+---
+Resolved: The plan was corrected in d1ae1c0: step 4 now says the bin/fusion-churn-rank Layout row is gate-forced and lands in its own commit, citing this record, and step 11 gained the matching CLAUDE.md bullet; both steps executed green and bin/ holds 12 files against 12 Layout rows.
+
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.

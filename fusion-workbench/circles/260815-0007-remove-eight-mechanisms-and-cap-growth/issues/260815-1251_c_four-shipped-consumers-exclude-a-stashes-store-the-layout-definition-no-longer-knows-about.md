@@ -71,3 +71,8 @@ writes.
 - `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`
 - `history/260815-1032-coder-stash-pop-removal-and-commit-lock-rehome.md`
 - `skills/setup/SKILL.md:60` — the measurement, and the deadlock it records
+
+---
+Resolved: The asked-for sentence landed in e8052e7: rules/fusion-workbench-conventions.md now names stashes/ and .migration-v2-backup/ as legacy stores, says nothing shipped writes either, and cites all four exclusions on the frozen-content principle.
+
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.

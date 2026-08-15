@@ -94,3 +94,8 @@ exactly that work.
 
 Not load-bearing today, as this issue's own § "What is right first" establishes with two
 independent reproductions.
+
+---
+Resolved: Both named artifacts, hooks/lib/__tests__/fixtures/git-verdicts-head.json and git-branch-guard.test.ts whose docstring was the third item, were deleted with the git branch/worktree guard in 7598073.
+
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.

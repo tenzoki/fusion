@@ -52,3 +52,8 @@ than growing the list once more — but if the list does grow first, `only when`
 `shared/decisions/260810-2032_o_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md`.
 
 **Filed by:** coderev, review of session `260810-1646` Turn 2, range `da8c9db..b3cc034`.
+
+---
+Resolved: Its whole subject, the SKIP_LICENCES blacklist in hooks/lib/__tests__/state-drift-detection-lint.test.ts, was deleted with the state-drift mechanism in f45f76a; SKIP_LICENCES returns nothing anywhere at HEAD.
+
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.

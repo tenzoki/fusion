@@ -49,3 +49,8 @@ Three faults, from one cause.
 3. `rm circles/260719-1536-plane-mirror-integration/issues/260814-1419_c_…md`.
 
 Do not resolve it the other way round. The stub carries nothing the repaired record needs.
+
+---
+Resolved: Fixed as prescribed in 53f2ed2: the stub under the plane-mirror Circle is gone and the curator Circle's copy is now _c_ at 31 lines with its full body and a Resolved footer.
+
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.

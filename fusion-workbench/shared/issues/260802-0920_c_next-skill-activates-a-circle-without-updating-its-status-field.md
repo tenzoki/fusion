@@ -92,3 +92,18 @@ This is the third distinct Circle to acquire the contradiction, and it arrived e
 Survey at HEAD `cde5319`, 11 Circle records, before this pass's corrections: `260718-1924-v5x-overhaul` read `active` at `_c_` (unchanged since the first survey), `260801-1244-guard-rules-write` read `active` at `_c_` (its `_t_→_c_` closure on 260805-2359 renamed the record and skipped the field), `260805-2005-textschicht-gegen-code-nachziehen` read `active` at `_c_` (the reconciler had corrected the field to `active` while `_t_` on 260806-1057; the closure at 260806-1105 renamed the record and skipped the field again — the defect out-raced its own correction inside eight minutes). Four of eleven disagreed, three in the closure direction the 260802-1413 annotation predicted.
 
 Two changes by this pass: the three closed records above were corrected to `closed (coherent)` as part of closure-record reconciliation (they are terminal; no transition remains to preserve evidence for), and `circles/260801-1244-rule-provenance-header/_c_circle.md` keeps its deliberately preserved `anticipated`/`(none yet)` fields as the sole specimen, per its own closure note. The source is still unfixed: `skills/next/SKILL.md` Step 6 renames the record and writes the pointer without touching `**Status:**`, and the orchestrator's Phase 4 closure step still renames without a field update. Candidate fix 2 (drop the field, marker is the only source) has gained further evidence: every activation-ownership surface was consolidated by D2 `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_i_wem-gehoert-die-circle-aktivierung.md` (commit `81d4154`) and the field-update obligation still landed nowhere, because no decision assigned it.
+
+---
+Resolved: Fixed in 282ef42: skills/next/SKILL.md Step 6.2 sets Status: active in the same call as the rename, and agents/orchestrator.md gained a "Circle head fields" owner section covering closure too.
+
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.
+
+The open question this record carried is **not** closed with it. Candidate fix 2 — drop the field
+and let the filename marker be the only source — was always a decision rather than a defect fix,
+as this record says of itself, and it is now filed as
+`shared/decisions/260815-2312_o_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md`
+carrying the three candidate fixes and the four reconciliation surveys above as evidence.
+
+`agents/orchestrator.md:293` still cites *this* record as the tracker for that question and should
+be repointed at the decision. That repoint is queued as its own task rather than done here, because
+an agent prompt is a coder's file and not the orchestrator's.

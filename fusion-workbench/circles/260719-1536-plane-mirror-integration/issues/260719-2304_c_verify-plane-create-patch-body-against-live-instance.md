@@ -16,3 +16,8 @@ Also minor: `doctor` returned rc=0 (not non-zero) when run outside a workbench (
 
 ---
 Reconciliation (2026-07-19, reconciler, domain=code): LEFT OPEN — verified this is the pre-live-Plane gap, not implementation debt. The offline core is complete and proven (`npm test` = 284/284; `bin/fusion-plane` commit `982336f`, tests `aefbf39`), and the plan deliberately scoped acceptance as offline dry-run (Testing §, agenda item 8). No live Plane instance was reachable this session, so the three unverified body assumptions (`states/` envelope, create/PATCH field names incl. `description_html`, the `parent` sub-issue field) and the doctor exit-code check remain to be confirmed against `plane.digitalleadership.com` at first real push / install. The DR-1 links fallback keeps the mirror safe even if the `parent` path fails. This open issue is the tracked reason the Circle's Artifact↔Directive coherence is "coherent with a noted live-verification follow-up" rather than fully closed on the live mirror (see the session `## Coherence`).
+
+---
+Resolved: The subject bin/fusion-plane and its doctor subcommand were deleted with the whole Plane mirror in d0ddabb; there is no helper left to verify against a live instance.
+
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.

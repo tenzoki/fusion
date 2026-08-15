@@ -83,3 +83,8 @@ Der beschriebene Zustand liegt so am Baum, geprüft gegen HEAD `e684eae`:
 Die Vorprüfung in Schritt 10 des Plans hat den Fall nicht abgedeckt; sie fuhr die sieben
 Harness-Suiten ein zweites Mal gegen `dist`, nicht eine eigene Messreihe zur Reichweite der
 Ausnahme. Der Befund überlebt den Circle unverändert.
+
+---
+Resolved: The file the record is about, hooks/lib/rules-write-exemption.ts and its "What the flag reaches" block, was deleted with the FUSION_ALLOW_RULES_WRITE exemption in 60c9cd8; the re-measurement it asks for has no subject.
+
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.

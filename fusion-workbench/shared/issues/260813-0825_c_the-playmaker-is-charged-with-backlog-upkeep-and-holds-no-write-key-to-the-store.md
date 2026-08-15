@@ -73,3 +73,8 @@ All of them, or the change is half-made and the derived key set will contradict 
 Whether `taskplanner` and `$TASKLIST` retire into the backlog. That is option 4 of
 `shared/decisions/260812-0254_a_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md`
 and the user left it undecided in both directions.
+
+---
+Resolved: Landed in b995049: bin/fusion-paths playmaker now emits OUT_BACKLOG, agents/playmaker.md names the write, the conventions file's "Backlog entries" section names the playmaker as the sole _p_ writer, and the no-filing bound survives — all four acceptance items met.
+
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.
