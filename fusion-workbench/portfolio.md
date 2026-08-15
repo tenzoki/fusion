@@ -1,234 +1,211 @@
 # Portfolio
 
-**Generated:** 260814-2203 (by playmaker session 260814-2203-playmaker-orchestrator-phase4)
+**Generated:** 260815-2116 (by playmaker session 260815-2116-playmaker-orchestrator-phase4)
 **Domain bias:** code
-**git HEAD at run:** `d90b794`
+**git HEAD at run:** `c2b7fe2`
 
 **This is a Phase-4 refresh after a closure, and it holds no user confirmation.** It ranked,
 regenerated this file in full, and moved one backlog entry to the recommended marker, which is the
 one backlog write that needs no confirmation. Everything else it would do to the backlog stands
-below as a proposal. Every figure in this file was measured against disk on this run; nothing is
-carried forward from the previous one.
+below as a proposal. Every figure here was measured against disk on this run; nothing is carried
+forward from the previous portfolio.
+
+**The headline: the Circle portfolio is empty.** All fifteen Circles carry a terminal marker, none
+is active, and none is anticipated. There is nothing to activate. The only forward move available
+today is to shape a backlog entry into a Circle, so the `## Backlog — ranked` section below carries
+this run's real recommendation rather than the anticipated section.
 
 ## Active (_t_)
 
-**(none).** `260801-1244-curator` closed coherent at 260814-2200 and is now the first entry under
-`## Recently closed`. `.active-circle` has been deleted, no Circle record carries the active marker,
-and the two agree, so no pointer warning is raised. An empty active slot with no pointer is the
-normal post-closure state.
+**(none).** `260815-0007-remove-eight-mechanisms-and-cap-growth` closed coherent at 260815-2115 and
+is now the first entry under `## Recently closed`. `.active-circle` is absent, no Circle record
+carries the active marker, and the two agree, so no pointer warning is raised. An empty active slot
+with no pointer is the normal post-closure state.
 
 ## Anticipated (_a_) — ranked
 
-**Recommended next: (none).** No Circle record carries the anticipated marker, and none has since
-the curator Circle was activated on the morning of 2026-08-14.
+**Recommended next: (none) — no Circle carries the anticipated marker.**
 
-The project now stands at zero active and zero anticipated Circles, which is the first time it has
-held both at zero. Nothing is wrong, but one consequence is worth stating plainly: `/fusion:next`
-has nothing to offer, and the only surface that can produce the next unit of work is the backlog
-below. That makes the section that follows the substantive part of this run rather than an
-appendix.
+The store holds fifteen Circle directories and every record in it is terminal: twelve closed
+coherent, one at Bounded Closure, one superseded, none deferred. This is the second consecutive
+Phase-4 refresh to find the anticipated slot empty, and it is a state rather than a fault — the last
+two Circles were each shaped from a backlog entry on demand instead of being drawn from a standing
+queue of anticipated work.
+
+Because the node set of non-terminal Circles is empty, two of this run's checks had nothing to
+examine and are reported as such rather than as passes: no dependency graph could be built, and no
+parent Grounding could be stale. Details under `## Warnings`.
 
 ## Backlog — ranked
 
-**Recommended to shape: `shared/backlog/260814-1733_*_radical-simplification.md` — the only live
-idea whose evidence is already on disk, so it can be shaped today without commissioning new
-analysis.**
+**Recommended to shape: `shared/backlog/260814-1733_*_bounded-executor-dispatches.md` — the only
+live idea that can be shaped today without a user act clearing its path first.**
 
-    /fusion:direct shared/backlog/260814-1733_*_radical-simplification.md
+    /fusion:direct shared/backlog/260814-1733_*_bounded-executor-dispatches.md
 
-Two analyses already answer the question this entry asks, with measurements rather than opinion.
-`shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md` carries a
-costed removal list and the finding that the binding constraint on fusion is the rate at which
-mechanisms are added rather than the size of the system as it stands.
-`shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md` names a single first move
-— deriving the hand-maintained session counters from git and the event log at read time instead of
-maintaining them — and puts the saving at up to 28 percent of session time, 43 130 tokens out of
-every orchestrator Setup, and roughly 5 400 lines of drift machinery. A shaper can turn that into a
-Directive in one sitting, because the sizing work has already been done and is on disk.
+The idea is to bound how long an executor runs before returning to the orchestrator. Its evidence is
+on disk and already sized: `shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md`
+adopts the bounded-dispatch half of the user's filed proposal on cost grounds at roughly a fourfold
+saving in re-sent tokens, and refutes the re-injection half by finding that the rules did not decay
+over a long dispatch but were never in force to begin with. That split is what makes the entry ready
+rather than raw: shaping it means putting a Directive narrower than the filed wording to the user
+and getting agreement on the narrowing, which is the conversation `/fusion:direct` exists to hold. No
+record it cites blocks it. Its companion issue,
+`shared/issues/260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md`, is open and is
+context for the Directive rather than a gate on it.
 
-The recommendation also answers the shape of the moment rather than only the merits of the idea.
-The three closures of the last two days each delivered a mechanism, and the observation standing
-behind this entry is that fusion spends its sessions repairing itself while the project work
-recedes. Shaping the simplification question next is the one available move that acts on that
-observation instead of adding to it.
+**Read this before accepting the recommendation.** On merit alone the other live entry now outranks
+it, and the ranking below does not reflect merit alone — it reflects what can be shaped today. One
+user act reverses the order. That act is spelled out in the entry note below.
 
-**Live and ranked (3).** Ranking recomputed this run against the code-domain bias, which prefers an
-idea whose cited evidence is already on disk over one that would need fresh analysis before it could
-be sized.
+**Live and ranked (2).** Ranking recomputed this run against the code-domain bias, which prefers an
+idea whose cited evidence is already on disk and whose dependencies are clear over one that must
+wait on an unresolved record.
 
-1. **`shared/backlog/260814-1733_*_radical-simplification.md`** (recommended, `_p_`) — can fusion be
-   radically simplified, and along which axis. First, for the reason given above: two analyses on
-   disk, no blocking record, and a first move already costed.
-2. **`shared/backlog/260814-1733_*_bounded-executor-dispatches.md`** (open) — bound how long an
-   executor runs before returning to the orchestrator. Second, because the measurement on disk
-   adopts one half of the user's proposed fix on cost grounds and refutes the other half, so shaping
-   it opens with a conversation about narrowing the Directive rather than with a blocker.
-3. **`shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md`** (open) — a rule lands with an
-   executable check or it does not land. Third despite being the remedy the analyses rate highest,
-   because it waits on a user act. The decision it depends on,
+1. **`shared/backlog/260814-1733_*_bounded-executor-dispatches.md`** (recommended, `_p_`) — bound how
+   long an executor runs before returning to the orchestrator. First for the reason given above:
+   evidence on disk, one half already costed and the other already refuted, and no record standing
+   in its way.
+2. **`shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md`** (open, `_o_`) — a rule lands with
+   an executable check or it does not land. Second **on shapeability, not on merit**, and the gap
+   between those two is the most decision-relevant thing in this section.
+
+   *Merit.* The Circle that just closed produced fresh evidence for this idea, and it is the
+   strongest yet. A plan corrected twice still carried the same false premise in eight of its eleven
+   remaining steps (Turn 2 of
+   `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/_*_circle.md` `## Turn log`), and
+   every executor step from 5 onward found citations its own file list had missed — filed as
+   separate records for steps 3, 7, 9, 11 and 14 in that Circle's issue store. The entry's thesis is
+   that a norm written as prose governs nothing on its own and either lands with something that
+   executes it at the moment of the act or does not land at all. A plan is exactly such a prose
+   norm, and it failed against its own steps in the very session that closed. This is the third
+   independent confirmation of the thesis and, in our reading, makes it the best-supported idea in
+   the store. **The judgement of what that is worth is the user's; this run raises the evidence and
+   does not decide it.**
+
+   *Shapeability.* It still cannot be shaped today, and the obstruction is unchanged and was
+   re-verified on disk this run. The decision it depends on,
    `shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`,
    carries the deferred marker, and reviving a deferred decision is the user's own act. That record
    in turn waits on
    `shared/issues/260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`,
-   which is open. Both were verified on disk this run.
+   which is open. The entry's own text states that the revival has to precede shaping it.
 
-**Proposed and not performed (1).** A Phase-4 dispatch holds no confirmation, so this is a proposal
-for the next interactive run to put to the user:
+   *The lever.* Revive that decision and this entry becomes first, ahead of the recommendation
+   above. Nothing else in the ranking would need to change.
+
+**Proposed and not performed (0).** This run proposes no split, merge, close or deferral.
+
+**The standing deferral proposal from the previous run is withdrawn, and the reasoning is recorded
+here because withdrawing it is a reversal.** The Phase-4 run of 260814-2203 proposed, for the next
+interactive run to put to the user:
 
     defer shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md until shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md is revived
 
-The argument for it: the entry cannot be shaped at all until the user revives that decision, and the
-deferred marker is the vocabulary's own way of saying "live, but waiting on a named target". The
-argument against it, which the user should weigh: a deferred entry is revived only by hand, so
-deferring adds a step, and leaving the entry open costs nothing today beyond its third-place
-position. We recommend the deferral only if the user does not expect to revive the decision soon.
+That proposal was reasonable when the entry sat third of three on merit as well as on shapeability.
+It is no longer, on two grounds. The evidence above moved the entry to the top of the store on
+merit, and deferring buries the best-supported idea behind a marker whose whole meaning is "not
+now". And deferral is the more expensive path even if the user agrees with it: a deferred entry is
+revived only by hand and is outside the shaper's promotion path entirely, so deferring costs the
+user two later acts — revive the decision, then revive the entry — where leaving it open costs one.
+The cheaper move toward the same end is to revive the decision.
 
-**No split, merge or close is proposed.** Each of the three entries now states one idea and can be
-promoted whole, which the split of 260814-1733 is what made true. The two entries that both cite the
-rules-decay analysis state distinct ideas — one bounds dispatch length, the other binds a rule to an
-executable check — so a merge would consolidate two things into one and lose a Directive.
+**No split, merge or close is proposed either.** Each of the two live entries states one idea and can
+be promoted whole. They both cite the same rules-decay analysis and are still distinct ideas — one
+bounds dispatch length, the other binds a rule to an executable check — so a merge would consolidate
+two Directives into one and lose one of them.
 
-**Performed this run:** the ranking rename only. `260814-1733_o_radical-simplification.md` became
-`260814-1733_p_radical-simplification.md`. No entry was created, split, merged, closed or deferred.
+**Performed this run:** the ranking rename only.
+`260814-1733_o_bounded-executor-dispatches.md` became
+`260814-1733_p_bounded-executor-dispatches.md`. No entry was created, split, merged, closed or
+deferred. The previous recommendation,
+`shared/backlog/260814-1733_*_radical-simplification.md`, left the ranking by promotion rather than
+by any act of this run: the shaper closed it into
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth`, as it closed
+`shared/backlog/260814-2312_*_collapse-the-eight-admin-commands-into-three-entry-points.md` into the
+same Circle. Both carry the shaper's `Promoted:` line.
 
 ## Recently closed (_c_ / _b_)
 
-| Circle | Marker | Closure in one line |
-|---|---|---|
-| `260801-1244-curator` | `_c_` | Closed coherent on 260814 after six Turns and 29 commits; the curator agent ships as fusion's seventeenth, the growth bound on the always-on rule corpus is armed with tests firing in both directions, and the proof run against this repository landed all 28 approved corrections with no constraint removed. |
-| `260813-0910-documentation-matches-shipped-plugin` | `_b_` | Bounded Closure on 260813 after five Turns; nine of ten plan steps landed, and the unreached step 10, verifying `docs/plane-setup.md` against `bin/fusion-plane`, is the Bounded-Closure Artifact. |
-| `260813-0858-playmaker-maintains-backlog-store` | `_c_` | Closed coherent on 260813 after four Turns; the reconciler's review-needed verdict was taken as a revise recommendation and its five findings closed in Turn 4. |
-| `260807-0923-guard-misst-statt-orakelt` | `_c_` | Closed coherent on 260807; the static shell classifier was deleted outright and replaced by a measurement. |
-| `260805-2005-textschicht-gegen-code-nachziehen` | `_c_` | Closed coherent on 260806; four code fixes, the citation-form decision, and two new lints landed green. |
+1. **`260815-0007-remove-eight-mechanisms-and-cap-growth`** (`_c_`, closed 260815-2115) — nine
+   mechanisms left the shipped plugin and a failing growth cap now covers `agents/`, `skills/` and
+   the hook test lines; four of the Circle's own Grounding claims did not survive its closing
+   measurement, which the Closure note records as the measurement working rather than failing.
+2. **`260801-1244-curator`** (`_c_`, closed 260814-2200) — the curator reconciles the three
+   normative surfaces and was proved on fusion's own conventions file; 29 commits over six Turns.
+3. **`260813-0910-documentation-matches-shipped-plugin`** (`_b_`, closed 260813) — Bounded Closure
+   chosen by the user at the Rebalance gate with the Turn budget spent at 5 of 5; nine of ten plan
+   steps landed and the remaining work was judged a fresh unit rather than a correction.
+4. **`260813-0858-playmaker-maintains-backlog-store`** (`_c_`, closed 260813) — the playmaker
+   maintains the backlog store it is charged with; closed after the user took the reconciler's
+   `review-needed` recommendation to revise the Artifact.
+5. **`260807-0923-guard-misst-statt-orakelt`** (`_c_`, closed 260807-1650) — the guard measures what
+   changed instead of predicting what will change; the static classifier was removed outright.
 
 ## Archived (_s_ / _d_)
 
-| Circle | Marker | Why |
-|---|---|---|
-| `260804-1205-shell-reachability-model` | `_s_` | Superseded on 260807 by `260807-0923-guard-misst-statt-orakelt`. Neither reached nor unreachable: the user changed the mechanism, so the Directive stopped being the right one. |
+- **`260804-1205-shell-reachability-model`** (`_s_`, superseded 260807-0923) — superseded by
+  `circles/260807-0923-guard-misst-statt-orakelt/`, not closed and not bounded: the user replaced
+  the mechanism rather than judging the Directive reached or unreachable.
 
-No Circle record carries the deferred marker.
+No Circle carries the deferred marker.
 
 ## Warnings
 
-### New this run
+**Pointer state: clean.** `.active-circle` is absent and no Circle record carries the active marker.
+That is the normal post-closure state and raises none of `STALE-POINTER`, `POINTER-MISMATCH`,
+`MISSING-POINTER` or `MULTIPLE-ACTIVE`.
 
-**`the-parent-spec-is-in-an-undecided-state-and-sits-above-everything`.** The curator Circle was the
-last of four under `shared/planning/260801-1122_*_spec-normative-consolidation.md`, and all four have
-now delivered. The spec still carries the open marker. Whether it may close is a question rather than
-a measurement, because three of its capabilities left the scope instead of landing: C9 was performed
-by hand in another Circle and put out of scope by user direction, C4 was retired by user decision on
-2026-08-14, and C5c's subject, the guard's protected-path half, was deleted outright on 2026-08-12.
-Closing the file asserts a delivery that did not happen; leaving it open asserts outstanding work
-nobody intends to do. The reconciler filed the question as
-`shared/decisions/260814-2017_*_does-a-parent-spec-close-when-its-last-circle-does-if-three-of-its-capabilities-were-retired-rather-than-delivered.md`,
-open, with three options and a recommendation. This portfolio does not answer it and takes no
-position. It is surfaced here because a reader choosing what to do next needs to know that the
-document standing above this whole body of work is in an undecided state, and because once the
-Circle is closed nothing scans that file on any routine path.
+**Dependency cycles: not evaluable, and reported as such rather than as a pass.** The graph is built
+from the `## Dependencies` sections of non-terminal Circles, and there are none, so the node set is
+empty. No cycle was found because none could be. No `## Dependency warning` section was appended to
+any Circle record this run.
 
-**`the-project-holds-no-anticipated-circle-and-no-active-one`.** Stated as a warning rather than only
-as a portfolio fact, because it changes what the tooling can do: `/fusion:next` will report no
-candidate, and the backlog is the only remaining source of the next unit of work. The recommendation
-in `## Backlog — ranked` is the response.
+**Parent Grounding staleness: not evaluable, same reason.** One Circle carries the Bounded-Closure
+marker, `260813-0910-documentation-matches-shipped-plugin`, and the propagation check scans
+non-terminal Circles that cite it. There are none. The Circle that did cite it — the one that just
+closed, in its `## Dependencies` — is itself terminal now and is out of the check's scope by
+construction. No `## Parent grounding stale` section was appended, and no `parent-grounding-stale`
+event was logged. **This is worth a second look by the user rather than by us:** that Bounded Closure
+left a body of unreached work, and the mechanism that would carry it forward only fires onto a live
+Circle. With the portfolio empty, nothing is holding it.
 
-**`twenty-one-open-defect-records-and-two-open-decisions-outlive-the-curator-circle`.** Counted off
-disk this run: 21 open and 20 closed defect records in
-`circles/260801-1244-curator/issues/`, and 2 open against 2 implemented decision records in that
-Circle's decision store. The Circle is terminal, so nothing scans these on a routine path; they reach
-a successor by citation, or they reach the task queue, and they reach neither by sitting there. The
-Closure note names 21 open defects and one open decision. The second open decision,
-`circles/260801-1244-curator/decisions/260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`,
-was filed at 260814-1915 and so predates the closure; the note's count is one low.
+**Two open decisions from the closed Circle bear on future Circles and block neither backlog
+candidate.** Both were checked against the two live entries this run and neither touches them.
 
-### Standing, each verified against disk this run
+- `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`
+- `shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
 
-**`release-8-2-0-is-published-in-one-place-and-not-the-other`.** Unchanged since the previous run and
-re-measured. `.claude-plugin/plugin.json` reads 8.2.0 and the installed copy at `/Users/k1/.fusion`
-reads 8.2.0. The fusion entry in
-`/Users/k1/Projects/productive/F03-CLAUDE-plugin-marketplace/claude-plugins/.claude-plugin/marketplace.json`
-reads 8.1.0, and the newest git tag in this repository is `v8.1.0`. Against the release process in
-`CLAUDE.md`, steps 1 and 6 are done and steps 3, 4 and 5 are outstanding. A user installing over
-HTTPS gets 8.2.0 from `main`, a user installing through the marketplace gets 8.1.0, and the
-documented `FUSION_REF=tags/v8.2.0` pin resolves against nothing.
+The second is the general form of the closed Circle's first residual — nine commits closed
+unreviewed, five of them touching shipped files, the fifth consecutive Turn where review and commit
+ranges diverged. It is a Grounding question and not a portfolio item, so it is named here and not
+ranked. It will bear on the closure of whichever Circle is shaped next.
 
-**`the-task-queue-is-three-days-stale`.** `tasklist.md` was generated on 2026-08-11 at 17:34 against
-HEAD `f70cb07`; HEAD is now `d90b794`. Its own header inventories 72 open defect records, while
-`shared/issues/` alone now holds 97. Its `Active Circle: none` line happens to be correct again after
-today's closure, which is the kind of accidental agreement that makes a stale file easy to trust.
-The portfolio does not read the work queue and does not write it; this is reported so that nothing
-reads it as current.
+**Open work sits in a terminal container with nothing carrying it.** The Circle that just closed
+holds **48 open defect records** in its own issue store against 17 closed, and 95 issue records are
+open across all Circle stores with a further 80 in `shared/issues/`. Two of the 48 are the residuals
+the Closure note names as bearing on what comes next:
 
-**`chat-voice-caps-tightened-in-the-shipped-copy-only`.** Re-measured this run and unchanged.
-`fusion-workbench/stilwerk/chat-voice-de.yaml` holds 7 353 bytes against 7 358 in both the shipped
-`stilwerk/` and the installed copy; `chat-voice-en.yaml` holds 6 801 against 6 800. The workbench
-copies are the ones `bin/fusion-rules` emits, so until they are refreshed the tightened caps govern
-no agent in this project.
+- `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1935_*_the-hook-test-growth-bound-reads-two-directories-and-a-test-file-in-a-third-runs-unbounded.md`
+  — the cap's latent hole, filed at severity High, demonstrated with 3 002 invisible lines against a
+  2 500-line head-room. The cap is the instrument the whole Directive rested on, and this is its
+  cheapest escape. Latent today only because every test file currently lives in the two directories
+  the bound reads.
+- `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1633_*_eight-shipped-surfaces-still-present-the-three-demoted-skill-names-as-user-commands.md`
+  — the presentational half of the command collapse.
 
-**`ten-open-defects-and-two-open-decisions-outlive-the-bounded-circle`.** Recounted off disk and
-unchanged: `circles/260813-0910-documentation-matches-shipped-plugin/` holds 10 open issue records
-against 16 closed, and 2 open decision records. The same terminal-Circle reasoning as the curator
-entry above applies.
+We raise the volume as a portfolio condition and file nothing: filing is not ours, and the user
+decides whether any of it becomes a Circle, a taskplanner batch, or is left where it is.
 
-**`plane-setup-verification-outlives-its-circle`.** The unmet Directive clause of that bounded Circle
-sits inside the terminal Circle as
-`circles/260813-0910-documentation-matches-shipped-plugin/issues/260813-2305_*_the-directive-promises-plane-setup-verification-and-step-10-was-deferred-with-no-record.md`,
-so nothing schedules it.
+**Two live records state the same residual with different counts.** The Closure note of
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/_*_circle.md` says *seven* shipped
+surfaces still tell a user to type a demoted name; the issue record above says *eight* and
+enumerates them in a table, one row of which is `agents/playmaker.md:61`. The enumerated count is the
+evidenced one. A reader comparing the two records today finds a contradiction with nothing to settle
+it, which is why it is named here.
 
-**`the-bounded-circles-own-acceptance-record-is-still-open`.**
-`shared/issues/260813-0825_*_the-v8-1-0-documentation-step-reached-three-files-and-the-feature-reached-seven-surfaces.md`
-holds that Circle's acceptance conditions and is still open, but sits in `shared/`, so an ordinary
-reconciler pass can still reach it.
-
-**`write-key-defect-record-is-open-and-demonstrably-satisfied`.**
-`shared/issues/260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`
-is still open on disk. Its four acceptance conditions read as met against the work tree and against
-the installed copy, and this run exercised the write key it asks about. It is closable.
-
-**`one-sided-dependency-is-now-frozen-on-both-sides`.**
-`shared/issues/260813-0913_*_a-dependency-between-two-circles-can-only-be-recorded-on-one-side-because-nobody-may-write-the-other.md`,
-open, whose scope needs widening to cover the case where both Circles have gone terminal.
-
-**`fusion-direct-cannot-run-the-flow-it-documents`.**
-`shared/issues/260813-1334_*_fusion-direct-documents-a-shaper-clarification-flow-that-a-dispatched-sub-agent-cannot-run.md`,
-open. Surfaced here because the path from a backlog idea to a Circle runs through `/fusion:direct`,
-and the recommendation in `## Backlog — ranked` above ends at exactly that command.
-
-**`backlog-idea-only-partly-filed`.** The user's observation that every fusion operation is
-unbearably slow, not only Setup, exists on disk solely as a witness line inside a record scoped to
-Setup (`shared/issues/260812-0253_*_setup-takes-far-too-long-and-nothing-measures-it.md`). It is
-defect-shaped rather than idea-shaped, so it did not belong in the split that produced today's three
-entries, and no open record covers it as stated. The playmaker files no issues; this one is the
-user's to decide.
-
-### Cleared this run
-
-**`the-active-circle-has-one-turn-of-budget-and-thirteen-open-defect-records`** is discharged by the
-closure. The Circle ran two further Turns, reached six in total, and closed coherent. The open-record
-half of it is restated above as the terminal-Circle warning, which is a different concern.
-
-**`the-turn-3-coherence-verdict-recommends-revising-the-grounding-and-nothing-has`** is discharged.
-The third reconciliation pass (`circles/260801-1244-curator/history/260814-2153-reconciliation.md`)
-issued `coherent` on all three edges after the two High findings were closed and verified against the
-tree.
-
-**`backlog-acceptance-run-still-not-performed`** is discharged and is now gone from the standing set.
-The relay ran end to end on 260814-1733 and produced today's three entries.
-
-**`curator-record-title-contradicts-its-directive`** and
-**`curator-grounding-still-calls-the-growth-bound-question-open`** leave this file, not because the
-underlying records changed, but because their subject is now a terminal Circle. Both are folded into
-the terminal-Circle warning above and remain open as filed defect records inside that Circle.
-
-### Graph checks
-
-**Dependency cycles: none, and none constructible.** The graph over non-terminal Circles is empty:
-no record carries the anticipated or active marker, so there are no nodes and no edges. No
-`## Dependency warning` section was appended to any record.
-
-**Parent-grounding-stale events: none.** The one Circle carrying the bounded marker is
-`260813-0910-documentation-matches-shipped-plugin`. The propagation scan looks for non-terminal
-Circles whose `## Grounding snapshot` cites that directory or the Artifact its Closure note names,
-and there are no non-terminal Circles, so the scan has an empty candidate set. Today's closure was
-coherent rather than bounded and propagates nothing by construction. No `## Parent grounding stale`
-section was appended.
+**One dangling citation exists inside the backlog store this run maintains.** It is already filed as
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1247_*_a-backlog-entrys-related-line-points-at-a-marker-the-playmaker-has-since-moved.md`,
+at severity Low and owned by `ontocoder`: a closed entry's `Related:` line spells a marker rather
+than starring it, and the entry it points at has since moved. Repairing an entry's body is not among
+the operations this agent may perform, so it is surfaced and left.

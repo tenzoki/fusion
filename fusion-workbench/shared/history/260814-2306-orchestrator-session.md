@@ -441,3 +441,96 @@ range** — turned out to be owned by no decision record anywhere in the workben
 in `shared/` rather than this Circle's store because its instances predate this Circle. Three
 verdicts in one session decided it ad hoc, two one way and one the other; that inconsistency is
 the argument for the record, and it is mine to own rather than the gate's.
+
+## Session Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant O as Orchestrator
+    participant S as Shaper
+    participant P as Planner
+    participant C as Coder
+    participant OC as Ontocoder
+    participant CR as Coderev
+    participant OR as Ontorev
+    participant BF as Bugfixer
+    participant R as Reconciler
+    participant CU as Curator
+    participant PM as Playmaker
+
+    U->>O: two backlog entries about simplifying fusion
+    O->>U: GATE scope — four options
+    U-->>O: both entries, full axis
+    O->>S: promote both into one Circle
+    S-->>O: round 1, three questions
+    O->>U: relay
+    U-->>O: six removals + counters; field measurement wins; lever a
+    S-->>O: round 2, four questions
+    U-->>O: conceptrev out; curate replaces revise-claude-md; budget stays
+    S-->>O: Circle 260815-0007 created, both entries closed
+    O->>U: GATE spec — approve and activate?
+    U-->>O: approve, activate, gate blocks
+    O->>P: plan the Circle
+    P-->>O: 15 steps + gate G1
+    O->>U: GATE plan — conceptrev acceptable, numbering wrong
+    U-->>O: fix numbering first; 3 decisions answered
+
+    Note over O: Turn 1
+    O->>C: P-1 before-measurement
+    C-->>O: 1030 tests, 76.57s (d78dfb7)
+    O->>C: P-2 Plane mirror
+    C-->>O: 903 tests, ~30s (d0ddabb)
+    O->>OC: P-3 Plane data
+    OC-->>O: 19 deletions (7c12d6a)
+    O->>CR: review whole session range
+    O->>OR: review whole session range
+    CR-->>O: plan premise will ship red
+    OR-->>O: 1 High, a stub record in the wrong Circle
+
+    Note over O: Turn 2
+    O->>P: correct the false premise
+    P-->>O: 8 of 11 steps carried it
+    O->>BF: the suite flake
+    BF-->>O: not flaky — two concurrent runs race on dist
+    O->>U: GATE concurrency decision
+    U-->>O: make the suite safe
+    O->>C: P-3b concurrency safety
+    C-->>O: 6/6 red before, 12/12 green after (332267a)
+    O->>C: P-4 churn
+    O->>OC: P-5 churn config
+    O->>C: P-6 stash/pop, commit-lock rehomed
+
+    Note over O: Turn 3
+    O->>C: P-7 conceptrev
+    O->>C: P-8 investigator into analyst
+    O->>C: P-9 domain values
+
+    Note over O: Turn 4
+    O->>C: P-10 persisted queue
+    O->>C: P-11 counters and drift machinery
+    O->>C: P-12 eight names to three
+    O->>CU: GATE G1 survey
+    CU-->>O: 12 entries, 0 constraint removals
+    O->>U: approve the ledger?
+    U-->>O: all twelve
+    CU-->>O: applied, golden now stale
+    O->>C: P-13 growth cap
+    C-->>O: armed, four add-backs red (0609945)
+    O->>C: P-14 after-measurement
+    C-->>O: four of the Circle's claims fail
+    O->>C: P-15 release v9.0.0
+
+    O->>R: reconcile
+    R-->>O: review-needed — revise the Grounding
+    O->>U: GATE rebalance
+    U-->>O: answer the decision
+    O->>C: define the Retired annotation
+    O->>R: apply it
+    R-->>O: 25 records, not 13 or 24
+    O->>R: re-run the verdict
+    R-->>O: coherent
+    Note over O: Circle closed _c_
+    O->>PM: portfolio refresh
+    PM-->>O: portfolio empty, backlog recommendation
+```

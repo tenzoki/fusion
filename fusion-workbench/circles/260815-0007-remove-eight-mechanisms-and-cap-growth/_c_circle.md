@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** active
+**Status:** closed
 **Filed by:** shaper (anticipated-circle mode)
 **Active spec/plan:** circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_c_plan-remove-eight-mechanisms-and-cap-growth.md
 **Active session history:** shared/history/260814-2306-orchestrator-session.md
@@ -216,3 +216,65 @@ and `.active-circle` is absent. Five artifacts bind this one and are cited rathe
 - Turn 2 (session 260814-2306): commits c4761dc..b70097f; plan correction of the false lint premise (8 of 11 remaining steps carried it, not the 2 reported); the legacy-halt-clearing flake diagnosed and deliberately not patched, its cause being two concurrent npm test runs racing on hooks/dist; **inserted step P-3b**, not in the plan, which made the suite safe to run concurrently (332267a, 6/6 red before and 12/12 green after) and which the Circle grew by, since the closure criterion rests on the suite meaning something; then steps P-4 to P-6 (churn heatmap, churn configuration leaves, stash/pop pair with the commit-lock rule rehomed); session history: shared/history/260814-2306-orchestrator-session.md
 - Turn 3 (session 260814-2306): commits 6350854..518926d; steps P-7 to P-9 (conceptrev removed, investigator folded into analyst, the strategic and knowledge domain values); session history: shared/history/260814-2306-orchestrator-session.md
 - Turn 4 (session 260814-2306): commits 9955e8f..9306f0a; steps P-10 to P-12 (the persisted tasklist and its queue-ground apparatus, the hand-maintained session counters and the drift machinery, the administrative surface down to three names), then gate G1; session history: shared/history/260814-2306-orchestrator-session.md
+
+## Closure note
+
+Closed coherent at 260815-2115, after a Rebalance gate at which the user revised the Grounding.
+Session history: `shared/history/260814-2306-orchestrator-session.md`. 36 commits from `9a7da8e`.
+
+### What the Directive asked, and what it got
+
+Eight mechanisms left the shipped plugin, plus `conceptrev` as a ninth: the Plane mirror, the churn
+heatmap and its configuration, the stash and pop skills, the persisted `tasklist.md` and its
+queue-ground apparatus, `investigator` (folded into `analyst`), `conceptrev`, the `strategic` and
+`knowledge` domain values, and the hand-maintained session counters with their drift machinery.
+`unlock` and `revise-claude-md` went as skills. The failing growth cap now covers `agents/`,
+`skills/` and the hook test lines, each with its own baseline, floor and separately derived
+head-room, and it was proved by four add-backs turning the suite red.
+
+### The measurement, with the qualification it needs
+
+| | before | after |
+|---|---:|---:|
+| test files / tests | 49 / 1 030 | 40 / 751 |
+| suite duration | 76.57 s | ~60 s |
+| `agents/*.md` | 460 292 B | 399 843 B |
+| `skills/*/SKILL.md` | 294 134 B | 220 439 B |
+| hook source lines | 7 934 | 6 277 (−1 337 real) |
+| hook test lines | 25 897 | 19 453 |
+| `bin/*` lines | 6 135 | 3 414 |
+| Setup read | 467 129 B / 116 782 tok | 266 829 B / 66 707 tok |
+
+**Four claims of this Circle's own Grounding did not survive the measurement**, and that is the
+measurement working rather than failing. Rule text per dispatch **rose 248 bytes** for six of the
+fifteen agents, because the curator's approved pass put back more than the removals took. The suite
+fell 21 percent, not to a third. 81 percent of the Setup saving is this repository's own accumulated
+queue; the portable part another project would observe is **38 262 bytes, about 9 565 tokens**. The
+`docs/` figure is 15 402 bytes, not the 23 534 first recorded — step 15 added a file after the
+measurement.
+
+### Residuals, named rather than resolved
+
+1. **Nine commits closed unreviewed**, five of them touching shipped files. The fifth consecutive
+   Turn where review and commit ranges diverged. Judged a residual and not a blocker on the ground
+   that the cap commit carries four defect records with reproduction steps, so unreviewed and
+   unexamined came apart.
+2. **The cap has a demonstrated latent hole.** It reads two directories while the test runner loads
+   recursively — 3 002 lines invisible, 120 percent of the head-room. Latent, not active: every test
+   file today lives in the two directories it reads. Both halves belong in any statement of it.
+3. **The collapse to three names is presentational.** A skill directory is a slash command, so
+   `archive`, `log-activity` and `curate` still resolve. Only `unlock` and `revise-claude-md` are
+   gone. Seven shipped surfaces still tell a user to type a demoted name.
+4. **Failure investigation became dispatchable**, where the investigator was user-initiated by
+   design. Surfaced to the user, who did not object.
+5. **Two answered decisions have unrealisable answers**, deliberately not annotated, filed as their
+   own question.
+6. **Three of four version surfaces are written.** The marketplace entry and the tag are the user's.
+
+### What the Circle leaves that outlasts it
+
+The `Retired:` annotation and its 25 applications, from an open question this Circle roughly doubled
+the population of before answering. And the honest finding underneath the whole Directive: the
+largest deletion in this project's history was refilled in four and a half days, so removal buys
+days and the cap is what is meant to make it hold. Whether it does is not yet measured.
+
