@@ -37,3 +37,14 @@ as a numbered hand-off: pull the clone, set the fusion `version` to `9.0.0`, rew
 `description` and drop `churn-detection` from `keywords`, commit and push both repositories, and tag
 `v9.0.0` in this one. The tag does not exist yet either — `git tag --list` stops at `v8.2.0` — which
 matters because `install.sh`'s own header now names `FUSION_REF=tags/v9.0.0` as the current pin.
+
+---
+Resolved: marketplace commit `2f1b4e8` ("chore: fusion 9.0.0") in
+`/Users/k1/Projects/productive/F03-CLAUDE-plugin-marketplace/claude-plugins`, pushed to
+`origin main` (`259d58d..2f1b4e8`). The fusion entry's `version` is now `9.0.0`, matching
+`.claude-plugin/plugin.json`; the `description` was rewritten against the plugin's own
+`CLAUDE.md` and `README.md` rather than edited by subtraction, so the agent count reads 15,
+the domain values read code and data, and the investigator agent, churn detection and the
+Plane work-queue mirror are gone; `churn-detection` left the `keywords` array and
+`decision-records` took its place. The release tag `v9.0.0` this record also named already
+existed when the fix ran.
