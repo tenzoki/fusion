@@ -1515,3 +1515,6 @@
 {"ts":"2026-08-15T09:38:41","event":"task_done","turn":2,"task":"P-3b","agent":"coder","detail":"332267a; 6/6 red before, 12/12 green after; 2 issues closed, 1 narrowed; 42 orphaned monitor processes found and reaped"}
 {"ts":"2026-08-15T09:38:41","event":"commit","turn":2,"detail":"332267a fix(hooks): the build stops deleting what a parallel run is reading"}
 {"ts":"2026-08-15T09:38:41","event":"task_start","turn":2,"task":"P-4","agent":"coder","detail":"churn and cross-file counters: code, prompts, prose"}
+{"ts":"2026-08-15T10:12:01","event":"task_done","turn":2,"task":"P-4","agent":"coder","detail":"a69d56e; suite 48 files/903 tests -> 46/842, one case added; 3 measurements re-pointed rather than lost; ninth missed-citation instance filed"}
+{"ts":"2026-08-15T10:12:01","event":"commit","turn":2,"detail":"a69d56e refactor(churn); also carries decision 260811-2009 to implemented"}
+{"ts":"2026-08-15T10:12:01","event":"task_start","turn":2,"task":"P-5","agent":"ontocoder","detail":"churn configuration leaves in four config files"}

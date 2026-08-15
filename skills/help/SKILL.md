@@ -103,7 +103,7 @@ For the maintainer-side release flow (bumping `plugin.json` + `marketplace.json`
 
 Three things to configure:
 
-- **Compliance guard:** `$FUSION_SRC/README-hooks.md` and `$FUSION_SRC/hooks/config.example.json`. Decision categories and their sensitivities, churn thresholds, escalation behavior.
+- **Compliance guard:** `$FUSION_SRC/README-hooks.md` and `$FUSION_SRC/hooks/config.example.json`. Decision categories and their sensitivities, escalation behavior.
 - **Project rules:** read `$FUSION_SRC/bin/fusion-rules` (the header comment is the spec). Two project-side rule locations:
   - `./rules/` — fusion-agent-specific rules (e.g. `investigator-capture-layout.md`, `taskplanner-priorities.md`) that have no meaning outside a fusion context.
   - `.claude/rules/` — project-wide rules every Claude session should respect (coding/ontology/normative/verb guidelines).

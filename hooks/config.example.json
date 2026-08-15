@@ -62,11 +62,5 @@
 
   "escalation": {
     "blocksBeforeHalt": 3
-  },
-
-  "churn": {
-    "_comment": "Per-session change counts only. There is deliberately no lifetime threshold: totalChanges is monotonic for the life of a project, so comparing it against one made every write report a critical for ever once any file crossed it (decision 260809-2004).",
-    "changesPerSessionWarning": 5,
-    "changesPerSessionCritical": 10
   }
 }
