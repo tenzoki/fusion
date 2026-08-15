@@ -42,3 +42,16 @@ Either:
   `headerField` stop at the first heading rather than scanning the whole file.
 
 The second is the smaller change and closes the parser's exposure at the same time.
+
+---
+Resolved: fix direction 2, the smaller change, taken in both halves. `agents/coderev.md:73` and
+`agents/ontorev.md:66` now read "in the header block — anywhere above the first `##` heading,
+which is where the reader stops looking", so the placement resolves against the file's own
+structure rather than against `**Sender:**`, which no prompt defines. `headerField`
+(`hooks/lib/review-coverage.ts`) returns null at the first line starting `##`, so the parser
+implements the same rule and the prose exposure the record named is closed with it: a review
+*about* the mandate no longer has its quoted `**Reviewed-range:**` line read as its own.
+Pinned two ways — `review-coverage-mandate.test.ts` `mandateGaps` requires the placement to be
+stated and rejects the `beside **Sender:**` anchor, and `review-coverage.test.ts` writes a review
+whose body quotes the field and asserts the file is reported UNUSABLE with its commit uncovered.
+Both fail against the pre-fix tree (verified by restoring HEAD's sources and re-running).

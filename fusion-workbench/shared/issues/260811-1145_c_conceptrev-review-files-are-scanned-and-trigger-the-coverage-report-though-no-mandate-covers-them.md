@@ -84,3 +84,23 @@ What the removal changed is the arrival rate, not the fault: no new `conceptrev`
 written, so the population is now closed at whatever each workbench already holds. The permanent
 `UNUSABLE` row remains, and the fix direction in `## Fix direction` above is unchanged — the sender
 segment is still the discriminator, and the recognised set is now two names rather than three.
+
+---
+Resolved: the sender segment is now the discriminator on both sides, driven from one exported
+constant. `hooks/lib/review-coverage.ts` exports `REVIEW_SENDERS` (`coderev`, `ontorev`),
+`reviewSender(name)` reading the `<sender>` segment of the mandatory filename pattern, and
+`isMeasuredReview(name)` as the population test. `reviewFiles()` filters on it, and
+`measureReviewCoverageForModel` in `hooks/tracker.ts` calls the same function on the written
+path's basename before measuring, so the trigger cannot drift wider than the scan.
+
+The split is disjoint and complete over every name a reviews store can hold: a recognised sender
+is measured; a sender that parses but is not recognised is excluded (the `conceptrev` case, whose
+permanent UNUSABLE row is what the record objected to); a name with no recognisable sender is
+KEPT and reported by name with the reason "the filename carries no <sender> segment — nothing says
+whether the review mandate covers it", contributing no coverage. Dropping that third case
+silently would have been the opposite defect.
+
+`review-coverage-mandate.test.ts` asserts `REVIEW_SENDERS` equals its own `REVIEWER_PROMPTS` set
+and that `hooks/tracker.ts` reads `isMeasuredReview` while naming no sender literally.
+`review-coverage.test.ts` adds the two behavioural cases (a `conceptrev` file is neither scanned
+nor triggered on; an unrecognisable name is still named). All fail against the pre-fix tree.

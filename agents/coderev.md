@@ -70,7 +70,7 @@ You write no separate session-history entry — your review file under `$OUT_REV
 
 ### The review file's header — two mandated fields
 
-**Every review file you write carries these two lines in its header block, beside `**Sender:**`.** They are not decoration and they are not optional on a pass that found nothing:
+**Every review file you write carries these two lines in the header block — anywhere above the first `##` heading, which is where the reader stops looking.** They are not decoration and they are not optional on a pass that found nothing:
 
 ```
 **Reviewed-range:** `<from>..<to>`

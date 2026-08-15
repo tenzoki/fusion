@@ -58,6 +58,7 @@ import { dirname, join, resolve } from "node:path";
 import {
   NOT_OPENED_FIELD,
   RANGE_FIELD,
+  REVIEW_SENDERS,
   parseNotOpened,
   parseRange,
 } from "../review-coverage.js";
@@ -95,6 +96,14 @@ function mandateGaps(text: string): string[] {
   if (!text.includes(NOT_OPENED_FIELD)) gaps.push(`no ${NOT_OPENED_FIELD} field`);
   if (!/resolved short hashes/i.test(text)) gaps.push("the resolved-hash requirement is not stated");
   if (!/never `HEAD`/i.test(text)) gaps.push("`HEAD` is not refused");
+  // Issue 260811-1147: the placement used to read "beside `**Sender:**`", a
+  // field no prompt defines, so a reviewer had to invent either the field or the
+  // position. The rule has to resolve against something the file itself shows,
+  // and it has to be the one `headerField` implements.
+  if (!/first `##` heading/.test(text)) gaps.push("the header block's end is not stated");
+  if (/beside `\*\*Sender:\*\*`/.test(text)) {
+    gaps.push("the placement anchors on `**Sender:**`, which no prompt defines");
+  }
   if (!fieldLines(text, NOT_OPENED_FIELD).some((v) => /^none\b/i.test(v))) {
     gaps.push("the `none` spelling is not shown");
   }
@@ -140,6 +149,27 @@ describe("review-coverage mandate: the producers", () => {
     // not differ is the spelling `lib/review-coverage.ts` reads.
     expect(fieldLines(a, RANGE_FIELD).sort()).toEqual(fieldLines(b, RANGE_FIELD).sort());
     expect(fieldLines(a, NOT_OPENED_FIELD).sort()).toEqual(fieldLines(b, NOT_OPENED_FIELD).sort());
+  });
+
+  // Issue 260811-1145: `REVIEWER_PROMPTS` above already fixed the mandate at two
+  // prompts and nothing carried that fact into the scan or the trigger. One
+  // constant both consumers reach makes a fourth sender somebody's decision.
+  it("the recognised sender set is those same two prompts, and both sides read it", () => {
+    expect([...REVIEW_SENDERS].sort()).toEqual(
+      REVIEWER_PROMPTS.map((p) => p.replace(/\.md$/, "")).sort(),
+    );
+
+    const tracker = read("hooks", "tracker.ts");
+    expect(
+      tracker,
+      "hooks/tracker.ts stopped reading the shared population test, so its " +
+        "trigger can drift wider than the scan it fires.",
+    ).toContain("isMeasuredReview");
+    expect(
+      /["']coderev["']|["']ontorev["']/.test(tracker),
+      "hooks/tracker.ts names a sender literally. Two literals is the silent " +
+        "widening this constant exists to prevent.",
+    ).toBe(false);
   });
 
   it("catches a prompt that dropped the mandate — the control for the two cases above", () => {
@@ -216,8 +246,36 @@ describe("review-coverage mandate: the prompts' own lines, through the real pars
   });
 
   it("keeps a recorded `none` apart from an absent line", () => {
-    expect(parseNotOpened("none")).toEqual({ files: [], recorded: true });
-    expect(parseNotOpened(null)).toEqual({ files: [], recorded: false });
+    expect(parseNotOpened("none")).toEqual({ files: [], recorded: true, raw: "" });
+    expect(parseNotOpened(null)).toEqual({ files: [], recorded: false, raw: "" });
+  });
+
+  // Issue 260811-1148, in opposite directions: an exclusion opening with the
+  // word `none` read as the absence of one, and a sentence the parser could not
+  // read was comma-split into filenames nobody had written.
+  it("does not read a declared exclusion as a declared `none`", () => {
+    const parsed = parseNotOpened("none of the prompt files");
+    expect(parsed.files).toEqual([]);
+    expect(
+      parsed.raw,
+      "`none of the prompt files` states an exclusion and was recorded as there " +
+        "being none — the quiet half of the defect.",
+    ).toBe("none of the prompt files");
+  });
+
+  it("still accepts `none` with a gloss behind it", () => {
+    expect(parseNotOpened("none — everything in the range was opened").raw).toBe("");
+    expect(parseNotOpened("None.").raw).toBe("");
+  });
+
+  it("invents no filename out of a value it cannot read", () => {
+    const parsed = parseNotOpened("nothing left unopened");
+    expect(
+      parsed.files,
+      "the sentence became a file list, which is a scope, which is acted on.",
+    ).toEqual([]);
+    expect(parsed.raw).toBe("nothing left unopened");
+    expect(parsed.recorded).toBe(true);
   });
 });
 

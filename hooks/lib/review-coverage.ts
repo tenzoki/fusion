@@ -54,6 +54,14 @@
  * the rule was the work queue's `**Active Circle:**` head line, whose consumer
  * left the plugin with the queue file on 2026-08-15; the rule did not.
  *
+ * ## Whose files it reads
+ *
+ * Only the senders the mandate covers, read from the filename's `<sender>`
+ * segment — see `REVIEW_SENDERS` below for the set, for why a file with no
+ * recognisable sender is nonetheless kept and named, and for the `conceptrev`
+ * files that were reported `UNUSABLE` forever because no mandate could ever
+ * cover them (issue `260811-1145`).
+ *
  * ## What it computes
  *
  * Coverage is a set difference over commits, not interval arithmetic over
@@ -149,6 +157,64 @@ export const NOT_OPENED_FIELD = "**Not-opened:**";
 const HASH = /^[0-9a-f]{7,40}$/;
 
 /* ------------------------------------------------------------------ *
+ * Whose files this measures — one set, both sides
+ * ------------------------------------------------------------------ */
+
+/**
+ * The senders whose prompts carry the header mandate, and therefore the only
+ * senders whose files this can measure.
+ *
+ * Issue `260811-1145`: three agents wrote into the reviews stores and only two
+ * were ever mandated. `conceptrev` evaluated a document's diagrams, carried no
+ * commit range and correctly never claimed one — so every `conceptrev` file was
+ * scanned, found rangeless and reported `UNUSABLE` forever, and one landing at
+ * the plan gate fired the whole measurement at Phase 0b, before any Turn had
+ * run. A permanent `UNUSABLE` row normalises `UNUSABLE`, which is the erosion
+ * this module's header refuses one level up. The agent was retired on
+ * 2026-08-15; the files it wrote are still on disk, so the population is closed
+ * rather than empty and the filter is still what closes it.
+ *
+ * **One set, consumed twice** — here by `isMeasuredReview` for the scan, and in
+ * `hooks/tracker.ts` through that same function for the trigger. Two literals
+ * would be a silent widening waiting to happen, which is the shape of the
+ * defect itself: `review-coverage-mandate.test.ts` already fixed the mandate at
+ * two prompts and nothing carried that fact into the scan.
+ */
+export const REVIEW_SENDERS = ["coderev", "ontorev"] as const;
+
+/**
+ * The `<sender>` segment of a review filename, or null when it has none.
+ *
+ * `rules/fusion-workbench-conventions.md` `## Filename Patterns` makes the
+ * sender mandatory in `YYMMDD-HHMM-<sender>-<topic>.md`, so it is read rather
+ * than inferred from the file's contents.
+ */
+export function reviewSender(name: string): string | null {
+  const hit = /^\d{6}-\d{4}-([a-z][a-z0-9]*)(?:-|\.md$)/.exec(name);
+  return hit === null ? null : hit[1];
+}
+
+/**
+ * Is this filename in the measurement's population? The split is disjoint and
+ * complete over every name a reviews store can hold:
+ *
+ *   - a recognised sender — measured, because a mandate covers it;
+ *   - a sender that parses but is not recognised — excluded, because no mandate
+ *     covers it and reporting it could only ever say `UNUSABLE`;
+ *   - no recognisable sender at all — **kept**, and reported by name with the
+ *     reason. Nothing says whether the mandate covers it, and silently dropping
+ *     a file this cannot classify is the opposite defect.
+ */
+export function isMeasuredReview(name: string): boolean {
+  const sender = reviewSender(name);
+  return sender === null || (REVIEW_SENDERS as readonly string[]).includes(sender);
+}
+
+/** The reason an unclassifiable file is listed rather than measured or dropped. */
+const NO_SENDER_REASON =
+  "the filename carries no <sender> segment — nothing says whether the review mandate covers it";
+
+/* ------------------------------------------------------------------ *
  * The report shape
  * ------------------------------------------------------------------ */
 
@@ -169,6 +235,12 @@ export interface ReviewRow {
   notOpened: string[];
   /** False when the file carries no `**Not-opened:**` line at all. */
   notOpenedRecorded: boolean;
+  /**
+   * The `**Not-opened:**` value verbatim when it is neither `none` nor
+   * backticked paths, `""` otherwise. It is rendered as text and never acted
+   * on — see `parseNotOpened`.
+   */
+  notOpenedRaw: string;
   /** How many of the measured window's commits this review covers. */
   covers: number;
   /** Why the range could not be used. "" when it was used. */
@@ -212,10 +284,20 @@ export interface CoverageReport {
  * Reading the review files
  * ------------------------------------------------------------------ */
 
-/** First value for a `**Field:**` line, trimmed. Null when the line is absent. */
+/**
+ * First value for a `**Field:**` line **in the header block**, trimmed. Null
+ * when the block carries no such line.
+ *
+ * The header block ends at the first `##` heading, which is exactly the
+ * placement `agents/coderev.md` and `agents/ontorev.md` mandate — parser and
+ * mandate state one rule, and issue `260811-1147` is the two of them disagreeing.
+ * Scanning the whole file made the first line of PROSE that opens with the field
+ * name win, and a review whose subject is the mandate is precisely such a file.
+ */
 function headerField(text: string, field: string): string | null {
   for (const line of text.split("\n")) {
     const t = line.trim();
+    if (t.startsWith("##")) return null;
     if (t.startsWith(field)) return t.slice(field.length).trim();
   }
   return null;
@@ -260,29 +342,58 @@ export function parseRange(value: string | null): { from: string; to: string; wh
   return { from, to, why: "" };
 }
 
+/** What a `**Not-opened:**` value was read as. Exactly one of the three cases. */
+export interface NotOpened {
+  /** The declared out-of-scope files. Empty for a recorded `none`. */
+  files: string[];
+  /** Was the line there at all? */
+  recorded: boolean;
+  /** The value verbatim when it could not be interpreted, `""` otherwise. */
+  raw: string;
+}
+
 /**
  * The declared out-of-scope files, and whether the field was there at all.
  *
  * A recorded `none` and an absent line are different facts and are kept apart:
  * a recorded absence can be compared, a missing line can only be guessed at
  * (`rules/critical-stance.md` §4).
+ *
+ * Issue `260811-1148` — the two readings this used to get wrong, in opposite
+ * directions. `none of the prompt files` matched `/^none\b/i` and was read as
+ * *nothing was excluded*, so a declared exclusion reached the reader as an
+ * absent one. And `nothing left unopened` fell through to a comma-split and
+ * became the file list `["nothing left unopened"]`, which `coverageSentence`
+ * then handed the orchestrator as the next dispatch's scope.
+ *
+ * So the `none` branch takes the bare word and a gloss behind punctuation, and
+ * nothing else; and the fallback keeps the reviewer's sentence **as a
+ * sentence**. The instinct behind the old fallback was right — a statement that
+ * cannot be parsed must not vanish — but promoting it to a file list is what
+ * made it actionable, and a file list is acted on.
  */
-export function parseNotOpened(value: string | null): { files: string[]; recorded: boolean } {
-  if (value === null) return { files: [], recorded: false };
-  if (/^none\b/i.test(value.trim())) return { files: [], recorded: true };
-  const ticked = backticked(value);
-  if (ticked.length > 0) return { files: ticked, recorded: true };
-  // A line that is present but neither `none` nor backticked paths: take the
-  // comma-separated words rather than dropping the reviewer's statement.
-  const words = value
-    .split(",")
-    .map((s) => s.trim())
-    .filter((s) => s !== "");
-  return { files: words, recorded: words.length > 0 };
+export function parseNotOpened(value: string | null): NotOpened {
+  if (value === null) return { files: [], recorded: false, raw: "" };
+  const v = value.trim();
+  // A field with no value records nothing, so it reads as the absence it is
+  // rather than as a `none` the reviewer never wrote.
+  if (v === "") return { files: [], recorded: false, raw: "" };
+  if (/^none$/i.test(v) || /^none\s*[.,;:—–-]/i.test(v)) {
+    return { files: [], recorded: true, raw: "" };
+  }
+  const ticked = backticked(v);
+  if (ticked.length > 0) return { files: ticked, recorded: true, raw: "" };
+  return { files: [], recorded: true, raw: v };
 }
 
-/** Every review file under every reviews store, absolute, with its mtime. */
-function reviewFiles(root: string): { abs: string; rel: string; mtime: number }[] {
+/**
+ * Every review file this can measure, under every reviews store, with its mtime.
+ *
+ * "Can measure" is `isMeasuredReview` and nothing else — the same function
+ * `hooks/tracker.ts` puts in front of its trigger, so the scan and the trigger
+ * cannot disagree about whose files these are (issue `260811-1145`).
+ */
+function reviewFiles(root: string): { abs: string; rel: string; name: string; mtime: number }[] {
   const dirs: string[] = [SHARED_REVIEWS_REL];
   try {
     for (const e of readdirSync(resolve(root, CIRCLES_REL), { withFileTypes: true })) {
@@ -293,7 +404,7 @@ function reviewFiles(root: string): { abs: string; rel: string; mtime: number }[
     // opened one. The shared store still answers.
   }
 
-  const out: { abs: string; rel: string; mtime: number }[] = [];
+  const out: { abs: string; rel: string; name: string; mtime: number }[] = [];
   for (const dir of dirs) {
     const abs = resolve(root, dir);
     let entries: string[];
@@ -304,9 +415,10 @@ function reviewFiles(root: string): { abs: string; rel: string; mtime: number }[
     }
     for (const name of entries) {
       if (!name.endsWith(".md")) continue;
+      if (!isMeasuredReview(name)) continue;
       const file = resolve(abs, name);
       try {
-        out.push({ abs: file, rel: `${dir}/${name}`.slice(WB.length + 1), mtime: statSync(file).mtimeMs });
+        out.push({ abs: file, rel: `${dir}/${name}`.slice(WB.length + 1), name, mtime: statSync(file).mtimeMs });
       } catch {
         /* vanished between readdir and stat — nothing to report about it */
       }
@@ -419,18 +531,49 @@ export function measureReviewCoverage(
     .sort((a, b) => b.mtime - a.mtime);
 
   for (const f of files) {
+    // Named, never dropped, and never measured: nothing classifies this file,
+    // so nothing it might claim can be trusted as coverage either.
+    if (reviewSender(f.name) === null) {
+      reviews.push({
+        path: f.rel,
+        range: "",
+        notOpened: [],
+        notOpenedRecorded: false,
+        notOpenedRaw: "",
+        covers: 0,
+        why: NO_SENDER_REASON,
+      });
+      continue;
+    }
+
     let text: string;
     try {
       text = readFileSync(f.abs, "utf-8");
     } catch {
-      reviews.push({ path: f.rel, range: "", notOpened: [], notOpenedRecorded: false, covers: 0, why: "unreadable" });
+      reviews.push({
+        path: f.rel,
+        range: "",
+        notOpened: [],
+        notOpenedRecorded: false,
+        notOpenedRaw: "",
+        covers: 0,
+        why: "unreadable",
+      });
       continue;
     }
 
-    const { files: notOpened, recorded } = parseNotOpened(headerField(text, NOT_OPENED_FIELD));
+    const { files: notOpened, recorded, raw } = parseNotOpened(headerField(text, NOT_OPENED_FIELD));
     const { from, to, why } = parseRange(headerField(text, RANGE_FIELD));
     if (why !== "") {
-      reviews.push({ path: f.rel, range: "", notOpened, notOpenedRecorded: recorded, covers: 0, why });
+      reviews.push({
+        path: f.rel,
+        range: "",
+        notOpened,
+        notOpenedRecorded: recorded,
+        notOpenedRaw: raw,
+        covers: 0,
+        why,
+      });
       continue;
     }
 
@@ -441,6 +584,7 @@ export function measureReviewCoverage(
         range: `${from}..${to}`,
         notOpened,
         notOpenedRecorded: recorded,
+        notOpenedRaw: raw,
         covers: 0,
         why: `git could not list ${from}..${to} — a hash that no longer resolves here`,
       });
@@ -454,7 +598,15 @@ export function measureReviewCoverage(
         covers++;
       }
     }
-    reviews.push({ path: f.rel, range: `${from}..${to}`, notOpened, notOpenedRecorded: recorded, covers, why: "" });
+    reviews.push({
+      path: f.rel,
+      range: `${from}..${to}`,
+      notOpened,
+      notOpenedRecorded: recorded,
+      notOpenedRaw: raw,
+      covers,
+      why: "",
+    });
   }
 
   const uncovered = commits.filter((c) => !covered.has(c.full));
@@ -463,7 +615,13 @@ export function measureReviewCoverage(
   // whose range was refused still declared what it did not open, and that
   // statement is what the next dispatch owes; only an unreadable file has
   // nothing to carry.
-  const source = reviews.find((r) => r.why !== "unreadable" && r.notOpenedRecorded) ?? null;
+  //
+  // A value this could not interpret is deliberately not a source: `carried` is
+  // a SCOPE, something the next dispatch is told to open, and prose is not one
+  // (issue `260811-1148`). It is not lost either — `renderReview` prints it
+  // verbatim on that review's own row, which is where a sentence belongs.
+  const source =
+    reviews.find((r) => r.why !== "unreadable" && r.notOpenedRecorded && r.notOpenedRaw === "") ?? null;
   const carried = source?.notOpened ?? [];
   const carriedFrom = source === null ? null : source.path;
 
@@ -484,10 +642,18 @@ export function renderUncovered(c: Commit): string {
   return `  uncovered ${c.short} ${c.subject}`;
 }
 
-/** One review row, with its range and what it declared it did not open. */
+/**
+ * One review row, with its range and what it declared it did not open.
+ *
+ * An uninterpretable value is printed verbatim behind `(unparsed)`, so the
+ * reviewer's sentence reaches the reader as a sentence. It used to be split on
+ * commas into filenames nobody had written (issue `260811-1148`).
+ */
 export function renderReview(r: ReviewRow): string {
   const range = r.range === "" ? "(none recorded)" : r.range;
-  const not = r.notOpenedRecorded
+  const not = r.notOpenedRaw !== ""
+    ? `(unparsed) ${r.notOpenedRaw}`
+    : r.notOpenedRecorded
     ? r.notOpened.length === 0
       ? "none"
       : r.notOpened.join(", ")

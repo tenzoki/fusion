@@ -53,3 +53,21 @@ bare word `none`. Everything else is unrecognised.
   the reader without being mistaken for a scope.
 
 Both reviewer prompts already show only the two mandated spellings, so nothing legitimate is lost.
+
+---
+Resolved: both fix directions taken. `parseNotOpened` (`hooks/lib/review-coverage.ts`) returns a
+`NotOpened` with a third field `raw`, and its branches are now disjoint: an absent line and an
+empty value record nothing; `/^none$/i` or `none` followed by punctuation is a declared `none`, so
+`none — everything was opened` still passes and `none of the prompt files` no longer does;
+backticked tokens are the file list; anything else is carried verbatim in `raw` with `files: []`.
+The comma-splitting fallback is gone, so no filename that was never written can be produced.
+
+`ReviewRow` gained `notOpenedRaw`, `renderReview` prints it as `(unparsed) <value>`, and the
+`carried` source deliberately skips a row with a raw value: `carried=` is a scope the next
+dispatch is told to open, and prose is not one. The statement still reaches the reader, on that
+review's own row, as a statement.
+
+Pinned by three unit cases in `review-coverage-mandate.test.ts` (the `none`-prefix exclusion, the
+`none`-with-gloss control, and the uninterpretable value) and one end-to-end case in
+`review-coverage.test.ts` asserting `(unparsed) nothing left unopened` in the report and
+`carried=(not recorded)`. All fail against the pre-fix tree.

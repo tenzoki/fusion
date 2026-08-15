@@ -124,6 +124,8 @@ interface ReviewFixture {
   notOpened?: string;
   /** Where it goes. Defaults to the shared store. */
   dir?: string;
+  /** Lines placed BELOW the first `##` heading — prose, not header. */
+  body?: string[];
 }
 
 /** A review file in the mandated shape, written where a reviewer would write it. */
@@ -142,6 +144,7 @@ function writeReview(root: string, name: string, f: ReviewFixture): string {
       "",
       "## Verdict",
       "",
+      ...(f.body ?? []),
       "Nothing to report.",
       "",
     ].join("\n"),
@@ -670,6 +673,130 @@ describe("review coverage: what the hook says, and when", () => {
             "anyway: fusion's own repository is a fusion consumer, and issue " +
             "260810-1205 was measured in it.",
         ).toContain("260810-1205");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+/* ------------------------------------------------------------------ *
+ * 7. The header block, and whose files are in it
+ * ------------------------------------------------------------------ */
+
+describe("review coverage: the header block ends at the first `##` heading", () => {
+  it(
+    "reads no field out of the prose below it",
+    () => {
+      withRepo((p) => {
+        const start = head(p.root);
+        const only = commit(p.root, "one");
+        writeState(p.root, start);
+
+        // A review whose SUBJECT is the mandate quotes the field it discusses,
+        // and the quote is not this file's own range (issue 260811-1147).
+        writeReview(p.root, "260811-0900-coderev-about-the-mandate.md", {
+          notOpened: "none",
+          body: [`**Reviewed-range:** \`${start}..${only}\``, ""],
+        });
+
+        const out = runCli(p.root);
+        expect(out.status, out.stderr).toBe(0);
+        expect(keys(out.stdout).unusable).toBe("1");
+        expect(out.stdout).toContain("no **Reviewed-range:** line");
+        expect(
+          uncoveredHashes(out.stdout),
+          "prose was read as the file's range, so a commit no reviewer opened " +
+            "counted as covered.",
+        ).toEqual([only]);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+describe("review coverage: whose files it measures", () => {
+  it(
+    "neither scans nor triggers on a sender no mandate covers",
+    () => {
+      withRepo((p) => {
+        const start = head(p.root);
+        commit(p.root, "one");
+        writeState(p.root, start);
+
+        // `conceptrev` carried no commit range and correctly never claimed one,
+        // so scanning it could only ever print UNUSABLE (issue 260811-1145). The
+        // agent is retired; the files it wrote are still on disk.
+        const rel = writeReview(p.root, "260811-0900-conceptrev-a-diagram.md", {});
+
+        const out = runCli(p.root);
+        expect(out.status, out.stderr).toBe(0);
+        expect(keys(out.stdout).reviews).toBe("0");
+        expect(out.stdout).not.toContain("conceptrev");
+        expect(
+          trackerSays(p, rel),
+          "an unmandated sender's verdict fired the whole measurement — it lands " +
+            "at the plan gate, where an uncovered range is the normal state.",
+        ).toBeNull();
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "still names a file whose sender it cannot recognise",
+    () => {
+      withRepo((p) => {
+        const start = head(p.root);
+        const only = commit(p.root, "one");
+        writeState(p.root, start);
+
+        writeReview(p.root, "notes-on-the-range.md", {
+          range: `\`${start}..${only}\``,
+          notOpened: "none",
+        });
+
+        const out = runCli(p.root);
+        expect(out.status, out.stderr).toBe(0);
+        expect(keys(out.stdout).reviews).toBe("1");
+        expect(keys(out.stdout).unusable).toBe("1");
+        expect(out.stdout).toContain("notes-on-the-range.md");
+        expect(out.stdout).toContain("no <sender> segment");
+        expect(
+          uncoveredHashes(out.stdout),
+          "an unclassifiable file's range was believed rather than named.",
+        ).toEqual([only]);
+      });
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+/* ------------------------------------------------------------------ *
+ * 8. A statement that could not be parsed is text, never a scope
+ * ------------------------------------------------------------------ */
+
+describe("review coverage: an uninterpretable **Not-opened:** value", () => {
+  it(
+    "reaches the report verbatim and the dispatch scope not at all",
+    () => {
+      withRepo((p) => {
+        const start = head(p.root);
+        const only = commit(p.root, "one");
+        writeState(p.root, start);
+
+        writeReview(p.root, "260811-0900-coderev-a.md", {
+          range: `\`${start}..${only}\``,
+          notOpened: "nothing left unopened",
+        });
+
+        const out = runCli(p.root);
+        expect(out.status, out.stderr).toBe(0);
+        expect(out.stdout).toContain("(unparsed) nothing left unopened");
+        expect(
+          keys(out.stdout).carried,
+          "prose became a file list and was handed on as the next dispatch's " +
+            "scope: `did not open nothing left unopened` (issue 260811-1148).",
+        ).toBe("(not recorded)");
       });
     },
     CASE_TIMEOUT,
