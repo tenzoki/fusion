@@ -338,24 +338,87 @@ describe("the unresolved branch claims only the bound it actually has", () => {
   // would measure nothing, which is the standing complaint about the
   // setup-skill literal case and not a shape to copy.
 
-  /** The claim, in the shape it took and the near ones it could return in. */
-  const CLAIM = /\bloop is (?:still |nonetheless |nevertheless )?bounded\b/i;
+  /**
+   * A bound being asserted, in every shape the prompt has actually stated one.
+   *
+   * The first alternative is the original (issue 260811-2142): the sentence
+   * `61bd21f` wrote beside its own refusal to invent a number. The other three
+   * are the Rebalance-bounding section's own words, which the first shape of
+   * this pattern did not reach — and that gap is what let `500f51f` close one
+   * false bound claim while leaving two more standing one paragraph away
+   * (issue 260811-2305).
+   */
+  const CLAIM =
+    /\bloop is (?:still |nonetheless |nevertheless )?bounded\b|\bbounded post-action mechanics\b|\bbounds the retries\b|\bno option is allowed to loop unboundedly\b/i;
+
+  /**
+   * The state that makes every CLAIM false, and therefore the qualification a
+   * line asserting one has to carry.
+   *
+   * One rule, not two: a bound may be stated, and it must name the answer that
+   * removes it, on the same line where the reader meets the assertion. The
+   * pre-fix text failed exactly that — the check-in's own bullet stated the
+   * residual plainly while the two sentences asserting the opposite, 260 lines
+   * away, did not. Co-location is the whole property; a qualification the
+   * reader has to go and find is the defect.
+   */
+  const OPT_OUT = "Continue without check-ins";
+
+  /**
+   * The gate put where not every route reaches it (issue 260811-2304).
+   *
+   * "Every Turn boundary runs the check-in" was false: Step 3c-bis exits a Turn
+   * before Step 3d, and its *Revise Artifact* answer starts the next one, so
+   * the one path that creates Turns without ending them the ordinary way never
+   * met the gate. The check-in now runs at Turn START, which every route that
+   * creates a Turn executes. This pattern catches the old placement coming
+   * back in words.
+   *
+   * Honest bound: it fires only on a line that also says "check-in", so the
+   * prompt's several legitimate mentions of a Turn boundary (the staging check,
+   * the state-write cadence, the dashboard reset) are left alone. A sentence
+   * that mis-places the gate WITHOUT naming it is not reached.
+   */
+  const BOUNDARY_CLAIM = /\b(?:every|each|the next) Turn boundary\b/i;
 
   /** The name every site that points at the gate refers to it by. */
   const ANCHOR = "Unresolved-budget check-in";
 
-  it("never states that the Phase-2 loop is bounded", () => {
-    const offending = read(ORCHESTRATOR)
+  /** Numbered lines of `text` matching `pattern`, minus those `exempt` clears. */
+  const offenders = (text: string, pattern: RegExp, exempt: (line: string) => boolean) =>
+    text
       .split("\n")
       .map((line, i) => `${i + 1}: ${line.trim()}`)
-      .filter((line) => CLAIM.test(line));
+      .filter((line) => pattern.test(line) && !exempt(line));
+
+  it("states no bound without the answer that removes it", () => {
+    const offending = offenders(read(ORCHESTRATOR), CLAIM, (line) => line.includes(OPT_OUT));
     expect(
       offending,
-      `${ORCHESTRATOR} states that the Phase-2 loop is bounded. Whether that holds depends on ` +
-        `the Turn budget resolving: unresolved, the Max-Turns row is not evaluated, and it was ` +
-        `the only row in the Step 3d table guaranteed to arrive from the passage of Turns. What ` +
-        `bounds that branch is the ${ANCHOR} gate, not the remaining conditions — say that, or ` +
-        `say the residual is accepted. Do not say bounded. Issue 260811-2142.`,
+      `${ORCHESTRATOR} asserts a bound on the Phase-2 loop without naming "${OPT_OUT}", the ` +
+        `answer that removes it. Whether the loop is bounded at all depends on the Turn budget ` +
+        `resolving: unresolved, the Max-Turns row is not evaluated, and it was the only row in ` +
+        `the Step 3d table guaranteed to arrive from the passage of Turns. What bounds that ` +
+        `branch is the ${ANCHOR}, and the user may switch it off for the rest of the session. ` +
+        `State the bound with that exception named on the same line, or do not state it. ` +
+        `Issues 260811-2142, 260811-2305.`,
+    ).toEqual([]);
+  });
+
+  it("does not place the check-in at a Turn boundary, which not every route reaches", () => {
+    const offending = offenders(
+      read(ORCHESTRATOR),
+      BOUNDARY_CLAIM,
+      (line) => !/check-in/i.test(line),
+    );
+    expect(
+      offending,
+      `${ORCHESTRATOR} puts the ${ANCHOR} at a Turn boundary. Not every route to a Turn ` +
+        `boundary runs it: Step 3c-bis exits the Turn before Step 3d, and its *Revise Artifact* ` +
+        `answer re-enters Phase 2 with a new Turn — the very path the Rebalance section named ` +
+        `the check-in as bounding. The gate runs at the START of a Turn (Phase 2 step 1), which ` +
+        `every route that creates a Turn executes and no route that exits the loop reaches. ` +
+        `Issue 260811-2304.`,
     ).toEqual([]);
   });
 
@@ -394,5 +457,51 @@ describe("the unresolved branch claims only the bound it actually has", () => {
     expect(budgetLiteralHits("continue for 4 more Turns before asking again")).not.toEqual([]);
     expect(budgetLiteralHits("emit turn_start at Turn 1, then again at Turn 2")).toEqual([]);
     expect(budgetLiteralHits("| Error cascade | 3+ agent errors in a single Turn |")).toEqual([]);
+  });
+
+  it("reaches the sentences its first shape missed, measured on them verbatim", () => {
+    // The two prompt scans above pass trivially against a prompt that states
+    // nothing, so a widened pattern whose only evidence is an empty result is
+    // indistinguishable from a broken one — the same argument the interval case
+    // above makes. Measure the detectors on the text as it was actually
+    // shipped.
+    const asShipped = [
+      // `61bd21f`, the sentence issue 260811-2142 was filed over. The first
+      // shape of CLAIM reached this one, and only this one.
+      "the loop is still bounded — the other five conditions and the Step 3e convergence check all still exit it",
+      // `500f51f`, agents/orchestrator.md:972 and :974 — the two the first
+      // shape missed, which is why issue 260811-2305 had to be filed by hand.
+      "Each option has bounded post-action mechanics. No option is allowed to loop unboundedly.",
+      "every Turn boundary in such a session runs the **Unresolved-budget check-in** (Step 3d) — that is what bounds the retries, and it is where the user ends them",
+    ];
+    for (const line of asShipped) {
+      expect(CLAIM.test(line), `CLAIM does not reach: ${line}`).toBe(true);
+    }
+
+    // Naming the opt-out on the same line is what clears a stated bound, and
+    // it is the only thing that does.
+    const qualified = `Each option has bounded post-action mechanics, until the user answers ${OPT_OUT}.`;
+    expect(CLAIM.test(qualified)).toBe(true);
+    expect(offenders(qualified, CLAIM, (line) => line.includes(OPT_OUT))).toEqual([]);
+
+    // Prose that points at the bound without asserting it is left alone, and so
+    // is the Setup instruction that forbids the claim.
+    expect(CLAIM.test("(Bounding: see Rebalance bounding below.)")).toBe(false);
+    expect(CLAIM.test("Never describe the loop as bounded while the budget is unresolved.")).toBe(
+      false,
+    );
+
+    // The placement claim (issue 260811-2304), and the boundary mentions that
+    // are not it: the staging check, the state-write cadence, the Continue
+    // bullet in its fixed wording.
+    const misplaced = "every Turn boundary in such a session runs the Unresolved-budget check-in";
+    expect(offenders(misplaced, BOUNDARY_CLAIM, (l) => !/check-in/i.test(l))).not.toEqual([]);
+    for (const line of [
+      "a plain Turn boundary is no longer a write point at all",
+      "This is the Turn boundary the acceptance for issue 260811-0114 names",
+      "run another Turn, and ask again at the start of the next Turn",
+    ]) {
+      expect(offenders(line, BOUNDARY_CLAIM, (l) => !/check-in/i.test(l)), line).toEqual([]);
+    }
   });
 });
