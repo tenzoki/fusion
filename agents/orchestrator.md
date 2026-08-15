@@ -616,7 +616,7 @@ Evaluate after each Turn. If any condition is met, **exit the loop immediately**
 | Condition | Threshold | Recovery |
 |-----------|-----------|----------|
 | Max Turns reached | `<max-turns>`, the budget resolved at Setup Step 2 — **not evaluated** when that resolution came back unresolved | Normal exit, report remaining work |
-| Net-negative progress | 2 consecutive Turns where `issues_created > tasks_resolved` | Stop, report the divergence pattern |
+| Net-negative progress | 2 consecutive Turns where `issues_created > issues_resolved` | Stop, report the divergence pattern |
 | Zero progress | 1 Turn that resolves 0 tasks AND creates 0 issues | Stop, all work is blocked or empty |
 | Error cascade | 3+ agent errors in a single Turn | Stop, report errors for manual triage |
 | All blocked | Every remaining task has unresolved dependencies | Stop, report blocking graph |
@@ -632,14 +632,14 @@ When a circuit breaker trips, emit a `circuit_breaker` event, update the live da
 
 | Remaining exit | What it needs before it can fire |
 |---|---|
-| Net-negative progress | `issues_created > tasks_resolved`, twice running |
+| Net-negative progress | `issues_created > issues_resolved`, twice running |
 | Zero progress | both counts at zero in one Turn |
 | Error cascade | agent errors |
 | All blocked | a blocking dependency graph |
 | Guard halt | a guard halt, which is unrelated to Turn count |
 | Step 3e convergence | the queue to empty |
 
-A Turn that resolves one task and files one issue satisfies none of them and leaves the queue no shorter, so a session in that steady state runs forever. Removing the count-based row removes termination, not one exit among six. The count that configuration could not supply is therefore **asked for, not invented**.
+A Turn that closes one issue and files another satisfies none of them and leaves the queue no shorter, so a session in that steady state runs forever. Removing the count-based row removes termination, not one exit among six. The count that configuration could not supply is therefore **asked for, not invented**.
 
 At the end of every Turn, after the circuit-breaker table has been evaluated and before Step 3e, emit `gate_hit` with reason `unresolved Turn budget` and ask with `AskUserQuestion`:
 

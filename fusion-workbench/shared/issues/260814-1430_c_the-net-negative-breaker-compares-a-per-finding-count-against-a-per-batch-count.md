@@ -81,3 +81,22 @@ Fixing the metric will not make the check run.
 `agents/orchestrator.md:1015` already has a counter for — `issues_resolved` — which the breaker
 does not read. That is a hint the right comparison was available and not wired, not a proof of it;
 the record is right to call both candidates guesses.
+
+---
+Resolved: both statements of the Net-negative progress condition in `agents/orchestrator.md` now
+compare `issues_created > issues_resolved` — like against like, both per finding — instead of
+`issues_created > tasks_resolved`. Changed at `agents/orchestrator.md:619` (the circuit-breaker
+table) and `:635` (the contingency table under the unresolved-budget check-in). No third statement
+of the comparison exists in the shipped text; `grep` over `agents/`, `skills/`, `rules/`, `docs/`
+and the READMEs finds `issues_created` only in those two rows and in the State Tracking definitions.
+`issues_resolved` was already defined at `:953` and needed no new counter.
+
+The steady-state sentence at `:642` was adjusted with it, from "A Turn that resolves one task and
+files one issue" to "A Turn that closes one issue and files another". Under the old comparison the
+original example satisfied none of the six exits; under the new one it says nothing about issues
+resolved, so it would have read as net-negative and broken the argument it is making. The rewritten
+example satisfies none of the exits again and still leaves the queue no shorter.
+
+This closes the design half of the record only. The execution half the reconciliation separated out
+— the check not being performed at a Turn boundary where its condition held — is untouched, and
+fixing the metric does not make the check run.
