@@ -27,6 +27,10 @@ if [[ $# -lt 2 ]]; then
   echo "  the localhost URL below is true whichever family the resolver returns" >&2
   echo "  first. Set MONITOR_BIND=127.0.0.1 for a loopback-only IPv4 server." >&2
   echo "" >&2
+  echo "  The URL the banner prints, and the one the browser tab opens at, is" >&2
+  echo "  the address the server actually bound — so it names localhost only" >&2
+  echo "  where localhost is true, and 127.0.0.1 where it is not." >&2
+  echo "" >&2
   echo "  Env: MONITOR_NO_BROWSER, set to any non-empty value, starts the server" >&2
   echo "  without opening a browser tab on it." >&2
   echo "" >&2
@@ -66,6 +70,10 @@ fi
 WORKBENCH_DIR="$(cd "$WORKBENCH_DIR" 2>/dev/null && pwd || echo "$WORKBENCH_DIR")"
 TMPDIR_PATH="$(mktemp -d)"
 TMPFILE="$TMPDIR_PATH/monitor-server.py"
+# The server writes the URL it actually answers at here, once it has bound. See
+# the `local_host` block in the python below for why the wrapper may not
+# compose that URL itself.
+URL_FILE="$TMPDIR_PATH/monitor-url"
 
 cleanup() { rm -rf "$TMPDIR_PATH"; }
 trap cleanup EXIT INT TERM
@@ -82,6 +90,13 @@ MAX_EVENTS = int(sys.argv[3])
 INTERVAL = int(sys.argv[4])
 BASE_DIR = sys.argv[5]
 BIND = sys.argv[6]
+# Where to publish the URL this server actually answers at, for the bash
+# wrapper's browser launcher. The wrapper forks this process and then has no
+# channel back from it, so it used to compose the tab's URL from a constant —
+# `http://localhost:$PORT` — while only this process knows which server got
+# built. Optional: an argv short of it just means nobody asked, and the
+# launcher keeps its constant.
+LOCAL_URL_FILE = sys.argv[7] if len(sys.argv) > 7 else ""
 
 # Line-buffer stdout, because this process prints once and then blocks forever.
 #
@@ -1191,22 +1206,71 @@ import socket, signal, subprocess
 
 # Kill any previous monitor on this port.
 #
+# Two questions, asked separately, and their answers unioned.
+#
 # `-sTCP:LISTEN` is load-bearing, not a tidy-up. `lsof -ti :PORT` answers "who
 # has this port open", which includes every *client* connected to it — and the
 # browser tab showing the previous dashboard is exactly such a client. So
 # starting a monitor on the port a tab was already watching SIGTERMed the
 # user's browser, which is a far larger event than the stale server this step
-# exists to clear. Narrowed to listeners, the step reaches the one process
-# whose existence would make the bind below fail, and nothing else.
-try:
-    out = subprocess.check_output(["lsof", "-ti", f":{PORT}", "-sTCP:LISTEN"], stderr=subprocess.DEVNULL).decode().strip()
-    for pid in out.split("\n"):
-        pid = pid.strip()
-        if pid and int(pid) != os.getpid():
-            os.kill(int(pid), signal.SIGTERM)
+# exists to clear. Narrowed to listeners, the step reaches the process whose
+# existence would make the bind below fail, and no client at all. That is the
+# first question, and it is the documented behaviour of this script: whatever
+# is *listening* on the port gets a SIGTERM, monitor or not.
+#
+# The second question exists because a stale monitor need not be in LISTEN.
+# The MONITOR_BIND note further down this file records a state measured on this
+# machine on 2026-08-06 and written up in
+# `fusion-workbench/circles/260805-2005-textschicht-gegen-code-nachziehen/issues/260806-0820_c_*`:
+# a non-loopback listener of a process without macOS Local Network permission
+# parked in CLOSED and never reached LISTEN. If that is the state a host is in,
+# a state-filtered query cannot see the stale monitor it was written to clear,
+# and SO_REUSEPORT below means the new bind succeeds anyway — two servers, one
+# port, no diagnostic. That premise is **not verified at HEAD** and could not be
+# re-measured here (this host has since been granted the permission, so the
+# precondition is absent); see the record above and the finding
+# `shared/issues/260815-2326_*`.
+#
+# So the second question does not rest on it. It asks *what a process is*
+# rather than what state its socket is in: of the pids holding this port, the
+# ones running this very script — `monitor-server.py`, the name the wrapper
+# writes — are prior monitors by construction, in LISTEN or CLOSED alike, and
+# a browser can never be one. The union is therefore a superset of the previous
+# kill set that adds only prior instances of this file, and it is inert on a
+# host where a stale monitor does reach LISTEN, because there the first
+# question already found it.
+SERVER_SCRIPT = os.path.basename(os.path.abspath(__file__))
+
+
+def _lsof_pids(*extra):
+    try:
+        out = subprocess.check_output(
+            ["lsof", "-ti", f":{PORT}", *extra], stderr=subprocess.DEVNULL
+        ).decode()
+    except (subprocess.CalledProcessError, OSError):
+        return set()
+    return {p.strip() for p in out.split("\n") if p.strip().isdigit()}
+
+
+def _runs_this_script(pid):
+    try:
+        cmd = subprocess.check_output(
+            ["ps", "-o", "command=", "-p", pid], stderr=subprocess.DEVNULL
+        ).decode()
+    except (subprocess.CalledProcessError, OSError):
+        return False
+    return SERVER_SCRIPT in cmd
+
+
+_listeners = _lsof_pids("-sTCP:LISTEN")
+_stale_monitors = {p for p in (_lsof_pids() - _listeners) if _runs_this_script(p)}
+for _pid in _listeners | _stale_monitors:
+    try:
+        if int(_pid) != os.getpid():
+            os.kill(int(_pid), signal.SIGTERM)
             import time; time.sleep(0.3)
-except (subprocess.CalledProcessError, ValueError, ProcessLookupError):
-    pass
+    except (ValueError, ProcessLookupError, PermissionError):
+        pass
 
 # ThreadingHTTPServer (not the single-threaded HTTPServer): the browser fires
 # two concurrent requests every poll (/api/dashboard + /api/state), and any one
@@ -1261,9 +1325,29 @@ class DualStackServer(ReuseServer):
 
 
 # BIND defaults to 0.0.0.0 (LAN-reachable). MONITOR_BIND=127.0.0.1 gives a
-# loopback-only server — the test suite relies on this, because macOS parks a
-# non-loopback listener of a process without Local Network permission in
-# CLOSED state (never LISTEN) and silently drops its inbound connections.
+# loopback-only server, and the test suite pins that for cases whose subject is
+# not the bind.
+#
+# The reason it pins it is a measurement, and the measurement's status matters
+# because three things lean on it. On 2026-08-06, on this development machine,
+# macOS parked a non-loopback listener of a process without Local Network
+# permission in CLOSED state — never LISTEN — and dropped its inbound SYNs even
+# from 127.0.0.1, while a loopback bind was exempt. Nine tests were red for it.
+# That is measured and written up in
+# `fusion-workbench/circles/260805-2005-textschicht-gegen-code-nachziehen/issues/260806-0820_c_*`,
+# which labels the CLOSED/LISTEN dichotomy as measured and the attribution to
+# the Local Network TCC service as inference.
+#
+# **It does not reproduce here any more, and that is not the same as being
+# false.** Re-measured 2026-08-16 on macOS 15.7.7 (24G720): all four binds —
+# `0.0.0.0`, `::`, the en0 LAN address and `127.0.0.1` — reach LISTEN and answer.
+# The precondition is what changed: this process tree now *has* Local Network
+# permission (an outbound TCP connect to the LAN gateway succeeds, which a
+# denied process cannot do), because the 2026-08-06 record closed by asking the
+# user to grant it. Re-testing the claim needs a host where the permission is
+# denied, and revoking it here is a system-settings change no fix is worth.
+# Treat the claim as unverified-at-HEAD rather than as either fact or fiction:
+# do not delete it, and do not build anything that only works if it is true.
 #
 # Only the wildcard goes dual-stack. An explicit MONITOR_BIND names one
 # address and gets exactly that address, on the family it belongs to: a
@@ -1271,12 +1355,16 @@ class DualStackServer(ReuseServer):
 # wildcard only), so widening `127.0.0.1` would silently move the server off
 # the address the caller asked for.
 WILDCARD_BINDS = ("0.0.0.0", "::", "")
+dual_stack = False
 if BIND in WILDCARD_BINDS:
     try:
         server = DualStackServer(("::", PORT), Handler)
+        dual_stack = True
     except OSError:
         # No IPv6 on this host, or a kernel that will not clear V6ONLY. IPv4
-        # alone is what this file did before, and it still serves.
+        # alone is what this file did before, and it still serves — but it
+        # serves at 127.0.0.1 and not at every address `localhost` can name,
+        # so `dual_stack` stays False and the printed URL follows it below.
         server = ReuseServer(("0.0.0.0", PORT), Handler)
 else:
     server = ReuseServer((BIND, PORT), Handler)
@@ -1286,6 +1374,40 @@ else:
 # IPv6 bind like ::1 fails at construction and never reaches this check. The
 # wildcard is dual-stack and is not a loopback bind, so it is not listed here.
 LOOPBACK_BINDS = ("127.0.0.1", "localhost")
+
+# The address this program prints is the address this program is listening at.
+#
+# `localhost` is the name a user copies, pastes and bookmarks, so it is what
+# belongs in the URL — but only when it is true. It resolves to `::1` first on
+# macOS and on modern Linux, so it is true of the dual-stack server and false
+# of every IPv4-only server this file can end up with: the OSError fallback
+# above, and an explicit `MONITOR_BIND=127.0.0.1` (or the `localhost` spelling
+# of it, which python resolves to an AF_INET socket). Printing `localhost` on
+# those paths is exactly the defect the dual-stack bind was written to remove,
+# reinstated on the paths nobody watches — the fallback is the
+# platform-compatibility arm, so it fires where there is no one to notice.
+#
+# So the spelling follows the socket rather than being a constant: the name
+# when both loopback families answer, the literal `127.0.0.1` when only one
+# does, and the caller's own address when the caller named one.
+if dual_stack:
+    local_host = "localhost"
+elif BIND in WILDCARD_BINDS or BIND in LOOPBACK_BINDS:
+    local_host = "127.0.0.1"
+else:
+    local_host = BIND
+LOCAL_URL = f"http://{local_host}:{PORT}"
+
+# Publish it for the wrapper's browser launcher, which forks this process and
+# cannot otherwise learn which of the two servers got built. Best-effort by
+# construction: the launcher falls back to its own constant, and a monitor that
+# could not write a scratch file must still serve.
+if LOCAL_URL_FILE:
+    try:
+        with open(LOCAL_URL_FILE, "w") as fh:
+            fh.write(LOCAL_URL)
+    except OSError:
+        pass
 
 # Best-effort LAN address for the printed URL only — failure to detect an
 # address must never be fatal.
@@ -1302,7 +1424,7 @@ if BIND not in LOOPBACK_BINDS:
             lan_host = None
 
 print(f"\n  {MONITOR_NAME} — Orchestrator Monitor")
-print(f"  Local: http://localhost:{PORT}")
+print(f"  Local: {LOCAL_URL}")
 if lan_host:
     print(f"  LAN:   http://{lan_host}:{PORT}")
 print(f"  Watching: {BASE_DIR}")
@@ -1316,7 +1438,7 @@ except KeyboardInterrupt:
     server.server_close()
 PYTHON_SCRIPT
 
-python3 "$TMPFILE" "$MONITOR_NAME" "$PORT" "$MAX_EVENTS" "$INTERVAL" "$WORKBENCH_DIR" "${MONITOR_BIND:-0.0.0.0}" &
+python3 "$TMPFILE" "$MONITOR_NAME" "$PORT" "$MAX_EVENTS" "$INTERVAL" "$WORKBENCH_DIR" "${MONITOR_BIND:-0.0.0.0}" "$URL_FILE" &
 SERVER_PID=$!
 
 trap 'kill $SERVER_PID 2>/dev/null; wait $SERVER_PID 2>/dev/null; exit 0' INT TERM
@@ -1375,21 +1497,45 @@ trap 'kill $SERVER_PID 2>/dev/null; wait $SERVER_PID 2>/dev/null; exit 0' INT TE
 # the remedy is one line away. MONITOR_NO_BROWSER is exempt by construction,
 # and so is every non-interactive caller: neither reaches this block, and the
 # gap is only a gap for someone who wanted the tab.
+#
+# The URL is read from the server, not composed here. A tab opened at a name
+# the server does not answer at is the same defect as a banner printing one,
+# and this half is the half that would have kept it: only the python process
+# knows whether the dual-stack bind succeeded. `$URL_FILE` is written right
+# after the bind, so waiting for it is also a better startup gate than the flat
+# `sleep` — it waits for the event the sleep was estimating. The constant stays
+# as the fallback for a server that never wrote the file, because a tab at the
+# old URL is what this script did before and is better than no tab at all.
 if [[ -t 1 && -z "${MONITOR_NO_BROWSER:-}" ]]; then
   case "$(uname -s)" in
     Darwin) BROWSER_LAUNCHER=open ;;
     *)      BROWSER_LAUNCHER=xdg-open ;;
   esac
   BROWSER_GAP=""
+  LOCAL_URL="http://localhost:${PORT}"
   if command -v "$BROWSER_LAUNCHER" >/dev/null 2>&1; then
-    sleep 0.5 2>/dev/null || sleep 1 || true
-    "$BROWSER_LAUNCHER" "http://localhost:${PORT}" ||
+    # Same fractional-sleep caveat as before, and the same whole-second
+    # fallback: BusyBox without FEATURE_FANCY_SLEEP, Solaris and AIX reject a
+    # fractional operand. Probed once so the fallback cannot turn a 1 s wait
+    # into a 10 s one.
+    if sleep 0.1 2>/dev/null; then
+      for _ in 1 2 3 4 5 6 7 8 9; do
+        if [[ -s "$URL_FILE" ]]; then break; fi
+        sleep 0.1 || true
+      done
+    else
+      sleep 1 || true
+    fi
+    if [[ -s "$URL_FILE" ]]; then
+      LOCAL_URL="$(cat "$URL_FILE" 2>/dev/null || echo "$LOCAL_URL")"
+    fi
+    "$BROWSER_LAUNCHER" "$LOCAL_URL" ||
       BROWSER_GAP="$BROWSER_LAUNCHER could not open a browser"
   else
     BROWSER_GAP="no $BROWSER_LAUNCHER on PATH"
   fi
   if [[ -n "$BROWSER_GAP" ]]; then
-    echo "monitor: ${BROWSER_GAP}. Open http://localhost:${PORT} yourself; set MONITOR_NO_BROWSER=1 to silence this." >&2 || true
+    echo "monitor: ${BROWSER_GAP}. Open ${LOCAL_URL} yourself; set MONITOR_NO_BROWSER=1 to silence this." >&2 || true
   fi
 fi
 wait $SERVER_PID

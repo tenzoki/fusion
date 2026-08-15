@@ -65,3 +65,50 @@ cannot be reached on a host that supports v4-mapped sockets, so pinning it means
 leaving the arm untested by omission.
 
 **Found by:** coderev, review of `d33cd22..f4f01b0`, commit `f5ae298`.
+
+---
+Resolved: the wildcard bind is pinned, and the case is not vacuous (coder, 2026-08-16).
+
+**The case.** `monitor-warnings-panel.test.ts`, new describe block `bin/monitor — the default
+wildcard bind`: one case that spawns the monitor with `MONITOR_BIND` **deleted** from the child
+environment and asserts `http://localhost:${port}/api/dashboard` answers `HTTP/1.x 200` with the
+address family forced, once to 4 and once to 6.
+
+All three of the record's constraints are met, and each in the way it asked for:
+
+- *Deleted, not set to a wildcard.* `MonitorOpts` gained `bind?: string | null`; `null` deletes the
+  variable, so what runs is the address the program picks when nobody picked one. The harness's
+  `MONITOR_BIND=127.0.0.1` pin stays for every other case — a case whose subject is the panel
+  should not be able to fail for the host's privacy configuration.
+- *The family is forced.* `fetch` cannot express this — Node does happy-eyeballs and would pass
+  against the very defect the case exists for. The case uses `net.connect` with an explicit
+  `family` **and** `autoSelectFamily: false`, writes a raw HTTP/1.0 request and reads the status
+  line. `autoSelectFamily` alone would have re-introduced the retry.
+- *The `:1264` question is answered as far as it can be, and the case is guarded rather than
+  flaky.* See the sibling record `260815-2326_c_*`: the claim does not reproduce on this host and
+  its precondition is absent, so it is unverified rather than refuted. The case therefore runs
+  behind a probe that binds a dual-stack wildcard from the test process itself and checks loopback
+  reachability on both families. Where the claim does not hold — this machine, measured — the probe
+  passes and the case runs with no excuse available to it. Where it does hold, or where a CI host
+  has no IPv6 loopback at all, the case skips and prints the reason. Node and the monitor's python3
+  share a responsible app, so they share the permission the probe is standing in for.
+
+**Not vacuous — mutation-checked.** With `IPV6_V6ONLY` replaced by an invalid option number and the
+banner forced back to the constant `localhost` — the exact original defect — the case fails with
+`connect ECONNREFUSED ::1:PORT`. Restored, it passes. The suite is 16/16.
+
+**The fallback arm: the explicit decision the record asked for, and it is not to test it.** The
+`OSError` arm cannot be reached on a host that supports v4-mapped sockets, so pinning it means
+faking a kernel failure, and the only seams for that are a monkey-patched `setsockopt` or a
+test-only environment knob in production code. Both put a fault-injection surface into `bin/monitor`
+to pin one `except` branch. What the arm actually has to get right is not "does it bind" — the
+record verified that by hand — but "does the printed address follow it", and that property is now
+pinned on the other IPv4-only path the program can take without faking anything:
+`monitor-warnings-panel.test.ts:874` asserts the launched URL is `http://127.0.0.1:${port}` for the
+loopback-pinned server, and fails if the wrapper goes back to composing a constant. The two cases
+together cover the property on both reachable paths; the unreachable arm shares the `local_host`
+expression with the path that is covered.
+
+Line delta for the golden: `monitor-warnings-panel.test.ts` 897 → 1079, **+182 lines**. Well inside
+the hook-tests head-room (`holds hook-tests inside its own head-room of 2500 lines` passes). The
+golden fixture is deliberately **not** regenerated here.

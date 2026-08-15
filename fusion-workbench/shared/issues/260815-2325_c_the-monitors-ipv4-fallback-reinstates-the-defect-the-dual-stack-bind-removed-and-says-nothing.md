@@ -75,3 +75,34 @@ pre-existing, and the same `local_host` refactor would be the natural place to a
 explicit IPv6 literal to an `AF_INET6` server.
 
 **Found by:** coderev, review of `d33cd22..f4f01b0`, commit `f5ae298`.
+
+---
+Resolved: the printed address now follows the bind that actually happened (coder, 2026-08-16).
+`bin/monitor`'s wildcard branch sets `dual_stack` when `DualStackServer` constructs, and the
+banner is composed from it: `localhost` only when both loopback families answer, `127.0.0.1` on
+the `OSError` fallback and on an explicit loopback bind (including the `localhost` spelling, which
+python resolves to an AF_INET socket and which carried the same defect this record names),
+the caller's own address otherwise.
+
+The record's first constraint — the bash launcher having no channel from the python process — is
+answered by making the server the author of the URL rather than the wrapper: python writes the
+effective URL to `$TMPDIR_PATH/monitor-url` immediately after binding, and the launcher reads it,
+falling back to its old constant only if the file never appears. That also replaced the flat
+`sleep 0.5` before the launch with a bounded wait on that file, which is the event the sleep was
+estimating; the whole-second fallback for platforms that reject a fractional operand is preserved.
+
+The record's second constraint is met by changing the pin rather than dropping it:
+`monitor-warnings-panel.test.ts:874` now expects `http://127.0.0.1:${port}`, which is correct for
+the loopback-pinned server that case spawns, and the `localhost` case it used to stand for is
+pinned by the new wildcard case instead.
+
+Verified by execution, 2026-08-16, macOS 15.7.7 (24G720). All three reachable paths print an
+address that answers `200` at `/api/dashboard`: default dual-stack → `http://localhost:P` (200 on
+both families), forced fallback (`IPV6_V6ONLY` replaced by an invalid option number, the same
+mutation this record used) → `http://127.0.0.1:P` (200), `MONITOR_BIND=127.0.0.1` →
+`http://127.0.0.1:P` (200). Mutation-checked: restoring the constant launcher URL fails
+`monitor-warnings-panel.test.ts` at the launched-URL assertion.
+
+The adjacent `MONITOR_BIND=::1` `gaierror` is deliberately **not** fixed here. It is pre-existing,
+the record filed it as adjacent, and routing an explicit IPv6 literal to an AF_INET6 server is a
+behaviour change to the explicit-bind contract that this task's scope does not cover.

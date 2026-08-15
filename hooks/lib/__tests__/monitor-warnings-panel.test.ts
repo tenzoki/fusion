@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { spawn, spawnSync, type ChildProcess } from "node:child_process";
-import { createServer } from "node:net";
+import { createServer, connect } from "node:net";
 import {
   mkdtempSync,
   mkdirSync,
@@ -247,6 +247,13 @@ interface MonitorOpts {
   env?: Record<string, string>;
   /** Give the monitor a pseudo-terminal, so its `[ -t 1 ]` gate is true. */
   tty?: boolean;
+  /**
+   * Override the harness's `MONITOR_BIND` pin. `null` **deletes** the variable
+   * from the child environment, which is the only way to reach the monitor's
+   * own default — setting it to a wildcard spelling would test a value the
+   * caller chose rather than the default the program picks when nobody chose.
+   */
+  bind?: string | null;
 }
 
 /** Start the real monitor against `wb` and return the port it answers on. */
@@ -264,17 +271,31 @@ async function startMonitor(wb: string, opts: MonitorOpts = {}): Promise<number>
     }
   }
   const [cmd, ...args] = opts.tty === true ? ["python3", ptyRunner(), ...argv] : argv;
-  // MONITOR_BIND=127.0.0.1: the monitor's default bind is 0.0.0.0 (LAN
-  // dashboard), but macOS Local Network privacy parks a non-loopback listener
-  // of an unauthorized process in CLOSED state (netstat shows CLOSED, never
-  // LISTEN) and drops its inbound SYNs — even from loopback — so the fetch
-  // poll below times out whenever the terminal app's Local Network permission
-  // is absent or revoked. A loopback bind is exempt from that filtering,
-  // which makes the suite deterministic regardless of TCC state.
+  // MONITOR_BIND=127.0.0.1: the monitor's default bind is the wildcard (LAN
+  // dashboard), and on 2026-08-06 this machine measured macOS parking a
+  // non-loopback listener of a process without Local Network permission in
+  // CLOSED state — never LISTEN — and dropping its inbound SYNs even from
+  // loopback, which made the fetch poll below hang. A loopback bind was exempt.
+  // The pin is what made the suite deterministic regardless of that state, and
+  // it stays: a case whose subject is the panel should not be able to fail for
+  // the host's privacy configuration.
+  //
+  // The pin is therefore also a blind spot, and it is deliberate rather than
+  // total. `bind: null` below reaches the default, and the one case whose
+  // subject *is* the bind uses it — guarded by a probe, because on a host in
+  // the 2026-08-06 state that case genuinely cannot run. See the
+  // "default wildcard bind" describe block at the bottom of this file.
+  const env: NodeJS.ProcessEnv = {
+    ...process.env,
+    MONITOR_BIND: "127.0.0.1",
+    ...opts.env,
+  };
+  if (opts.bind === null) delete env.MONITOR_BIND;
+  else if (typeof opts.bind === "string") env.MONITOR_BIND = opts.bind;
   const proc = spawn(cmd, args, {
     stdio: "ignore",
     detached: true,
-    env: { ...process.env, MONITOR_BIND: "127.0.0.1", ...opts.env },
+    env,
   });
   running.push(proc);
   // A child that never execs — python3 gone from PATH, bin/monitor not
@@ -870,8 +891,19 @@ describe("bin/monitor — the browser launch", () => {
         await waitForFile(marker, lastMonitor()),
         "the monitor exited without opening the dashboard for its terminal",
       ).toBe(true);
+      // `127.0.0.1`, not `localhost`, and the difference is the assertion.
+      // This case spawns with the harness's `MONITOR_BIND=127.0.0.1` pin, so
+      // the server is IPv4-only — and `localhost` resolves to `::1` first on
+      // macOS and on modern Linux, so a tab opened at the name would reach a
+      // socket that does not exist. The wrapper used to compose this URL from
+      // a constant and therefore handed out the name on every path, including
+      // the wildcard's IPv4 fallback. It now reads the URL the server itself
+      // published after binding, so this string is a statement about which
+      // socket got built. The dual-stack path's counterpart — where the name
+      // *is* true, and is what gets launched — is pinned in the
+      // "default wildcard bind" block below.
       expect(readFileSync(marker, "utf8").trim()).toBe(
-        `http://localhost:${port}`,
+        `http://127.0.0.1:${port}`,
       );
     },
     30000,
@@ -891,6 +923,156 @@ describe("bin/monitor — the browser launch", () => {
       expect(existsSync(marker)).toBe(false);
       const r = await fetch(`http://127.0.0.1:${port}/api/dashboard`);
       expect(r.ok).toBe(true);
+    },
+    30000,
+  );
+});
+
+// ---------------------------------------------------------------------------
+// bin/monitor — the default bind, and whether the name the program prints is a
+// name the program answers at.
+//
+// WHY THIS BLOCK EXISTS. Every case above spawns with `MONITOR_BIND=127.0.0.1`
+// and fetches `http://127.0.0.1:${port}` by address. Both halves of that make
+// the suite deterministic, and both make it blind to one whole class of defect:
+// a bind pinned to loopback never reaches the wildcard branch, and a fetch to a
+// literal address never asks the resolver anything. So when `bin/monitor` bound
+// the IPv4 wildcard while printing and launching `localhost` — which resolves
+// to `::1` first on macOS and on modern Linux — the suite was green throughout,
+// and stayed green for as long as the defect stood
+// (`shared/issues/260812-0253`, and `260815-2327` for the gap itself).
+//
+// The property under test is not "the server serves". It is that the *name* the
+// program hands a user resolves, on either family, to a socket the program is
+// listening on. That needs the default bind and a request made by name with the
+// family forced, and nothing else in this file does either.
+
+/**
+ * One HTTP request, made by NAME, forced onto a single address family.
+ *
+ * `fetch` cannot express this. Node's client does happy-eyeballs: a request to
+ * `localhost` against an IPv4-only server succeeds after one refused `::1`
+ * attempt, so a `fetch`-based assertion passes against the very defect it would
+ * be written for. `autoSelectFamily: false` alongside an explicit `family` is
+ * what turns the retry off and makes the failure observable.
+ */
+function getForcingFamily(
+  host: string,
+  port: number,
+  family: 4 | 6,
+  timeoutMs = 8000,
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const sock = connect({ host, port, family, autoSelectFamily: false });
+    let buf = "";
+    sock.setTimeout(timeoutMs, () => {
+      sock.destroy(new Error(`no answer within ${timeoutMs}ms`));
+    });
+    sock.on("connect", () => {
+      // HTTP/1.0: the monitor's handler leaves `protocol_version` at the
+      // default, so the server closes the connection after answering and
+      // `close` is the whole response.
+      sock.write(`GET /api/dashboard HTTP/1.0\r\nHost: ${host}\r\n\r\n`);
+    });
+    sock.on("data", (d) => {
+      buf += d.toString("utf8");
+    });
+    sock.on("error", reject);
+    sock.on("close", () => resolve(buf));
+  });
+}
+
+/**
+ * Can this host host the case at all?
+ *
+ * Not a convenience skip. `bin/monitor`'s own MONITOR_BIND comment records a
+ * state measured on the development machine on 2026-08-06: macOS parked a
+ * non-loopback listener of a process without Local Network permission in CLOSED
+ * and dropped its inbound SYNs even from 127.0.0.1. On a host in that state a
+ * wildcard-bound monitor answers nobody, and this case would fail for the
+ * host's privacy configuration rather than for anything about the monitor —
+ * which is exactly the flakiness the harness's loopback pin was introduced to
+ * end, and re-introducing it here would be a worse bargain than the blind spot.
+ *
+ * So the probe binds a dual-stack wildcard from *this* process and asks whether
+ * loopback reaches it. Node and the monitor's python3 share a responsible app,
+ * so they share that permission. Where the claim does not hold — measured on
+ * macOS 15.7.7 on 2026-08-16, where all four bind spellings reach LISTEN and
+ * answer — the probe passes and the case runs with no excuse available to it.
+ * It also catches the unrelated CI shape where IPv6 loopback is absent
+ * outright, which would make the `::1` half meaningless rather than failing.
+ */
+async function wildcardLoopbackUsable(): Promise<
+  { ok: true } | { ok: false; reason: string }
+> {
+  const srv = createServer((s) => s.end());
+  try {
+    await new Promise<void>((res, rej) => {
+      srv.once("error", rej);
+      srv.listen({ port: 0, host: "::", ipv6Only: false }, () => res());
+    });
+  } catch (e) {
+    return {
+      ok: false,
+      reason: `this host cannot bind the dual-stack wildcard at all: ${(e as Error).message}`,
+    };
+  }
+  const addr = srv.address();
+  const port = typeof addr === "object" && addr !== null ? addr.port : 0;
+  try {
+    for (const [host, family] of [
+      ["127.0.0.1", 4],
+      ["::1", 6],
+    ] as const) {
+      await new Promise<void>((res, rej) => {
+        const s = connect({ port, host, family, autoSelectFamily: false });
+        s.setTimeout(3000, () => s.destroy(new Error("timed out")));
+        s.once("connect", () => {
+          s.destroy();
+          res();
+        });
+        s.once("error", rej);
+      });
+    }
+    return { ok: true };
+  } catch (e) {
+    return {
+      ok: false,
+      reason:
+        `a dual-stack wildcard listener on this host is unreachable over loopback ` +
+        `(${(e as Error).message}) — the state bin/monitor's MONITOR_BIND comment ` +
+        `describes for macOS without Local Network permission, or a host with no ` +
+        `IPv6 loopback. bin/monitor is not implicated: it is never started.`,
+    };
+  } finally {
+    srv.close();
+  }
+}
+
+describe("bin/monitor — the default wildcard bind", () => {
+  it(
+    "answers at `localhost` on both loopback families, with no MONITOR_BIND set",
+    async (ctx) => {
+      const pre = await wildcardLoopbackUsable();
+      if (!pre.ok) {
+        console.warn(`skipped — ${pre.reason}`);
+        ctx.skip();
+        return;
+      }
+
+      // `bind: null` deletes MONITOR_BIND rather than setting a wildcard, so
+      // what runs is the address the program picks when nobody picked one.
+      const port = await startMonitor(seedWorkbench([]), { bind: null });
+
+      for (const family of [4, 6] as const) {
+        const answer = await getForcingFamily("localhost", port, family);
+        expect(
+          answer,
+          `the monitor prints http://localhost:${port} but does not answer ` +
+            `there over IPv${family} — the URL it hands the user names a socket ` +
+            `it is not listening on`,
+        ).toMatch(/^HTTP\/1\.[01] 200/);
+      }
     },
     30000,
   );
