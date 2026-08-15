@@ -1,0 +1,49 @@
+# A decision record's cross-reference points at an `_a_circle.md` that activation renamed
+
+---
+
+The cleanup-gate decision cites `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/_a_circle.md`.
+The Circle was activated in the same range and the record is now `_t_circle.md`, so the citation
+resolves to nothing.
+
+---
+
+**Severity:** Low — one dangling citation in one record; the target is unambiguous.
+**Domain:** code
+**Filed by:** `coderev`, reviewing `9a7da8e..7c12d6a` (`reviews/260815-0804-coderev-plane-mirror-removal.md`)
+**Owner:** `coder`
+**Affects:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-0007_a_does-fusion-cleanup-block-at-the-claude-md-gate-or-leave-the-ledger.md:7`
+
+**Verified 2026-08-15 at HEAD `7c12d6a`.** The Circle directory holds `_t_circle.md` and no
+`_a_circle.md`.
+
+## The line
+
+> **Cross-references:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/_a_circle.md`
+> § Grounding snapshot → The administrative surface; …
+
+The record was filed by `shaper` in anticipated-circle mode, when `_a_circle.md` was the correct
+name, and the orchestrator's `_a_`→`_t_` activation renamed the file underneath it.
+
+## Not the same as the shaper's history entry
+
+`history/260815-0007-shaper-remove-eight-mechanisms-and-cap-growth.md:83` also names `_a_circle.md`,
+in its `## Files written` list. That one is correct and must not be edited: it is a statement about
+what that run wrote, at the name it wrote it under, and it stays true. The distinction is the one
+step 2 drew for the two test comments that keep the word "Plane" — a historical statement survives
+its subject, a live pointer does not.
+
+## Why the marker-on-the-record design does not prevent this
+
+`rules/circle-records.md:30` argues the marker sits on the record rather than the directory precisely
+so *"every reference into a Circle … stays valid for the Circle's whole life."* That guarantee covers
+references **into** the directory. It does not cover a reference **to the record file itself**, which
+is the one path in a Circle that changes at every transition. Nothing in the rule says which form a
+citation should take.
+
+## What the fix has to establish
+
+Re-point the line to `_t_circle.md`, or to the directory plus the section name, which survives every
+further transition. The second is the durable form and is what a subsequent `_t_`→`_c_` rename will
+otherwise break again in a few Turns. Whether the citation convention for a Circle record should say
+so belongs in `rules/circle-records.md` and is a decision, not this fix.

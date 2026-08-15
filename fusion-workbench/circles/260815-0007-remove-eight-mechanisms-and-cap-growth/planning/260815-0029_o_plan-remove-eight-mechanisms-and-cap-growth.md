@@ -135,7 +135,7 @@ flowchart LR
 
 Every step's acceptance includes `cd hooks && npm test` green and a history entry in the Circle's history store. Those two are not restated per step.
 
-1. **Take the before-measurement and confirm HEAD is green**
+1. [DONE] **Take the before-measurement and confirm HEAD is green**
    - Executor: `coder`
    - Files: `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/` (new entry only). No shipped file is touched.
    - Changes: run `cd hooks && npm test` first and record the result and the wall-clock duration; the Circle's claim that `fusion-plane.test.ts` is 74.5 seconds of a 99-second suite is checked here, not asserted. Then run the measurement below from the repo root and record every line verbatim in the history entry under a heading `## Before`. The identical block is re-run at step 14, so copy it into the history entry as well — a measurement whose command was paraphrased is not comparable.
@@ -161,7 +161,7 @@ Every step's acceptance includes `cd hooks && npm test` green and a history entr
      ```
    - Dependencies: none. Nothing else may start before this lands.
 
-2. **Remove the Plane mirror: code, prompts and prose** *(record item 1, first half)*
+2. [DONE] **Remove the Plane mirror: code, prompts and prose** *(record item 1, first half)*
    - Executor: `coder`
    - Files: `bin/fusion-plane`; `hooks/lib/__tests__/fusion-plane.test.ts`; `skills/seed-from-plane/SKILL.md` (whole directory); `docs/plane-setup.md`; `agents/orchestrator.md`; `skills/setup/SKILL.md`; `skills/cleanup/SKILL.md`; `rules/fusion-workbench-conventions.md`; `rules/circle-records.md`; `hooks/lib/staging-drift.ts`; `hooks/lib/__tests__/{staging-drift,review-coverage,churn,churn-key-anchor,domain-cascade,derivable-enumerations-lint,monitor-warnings-panel,state-drift-detection-lint}.test.ts`; `README.md`; `README-agents.md`; `docs/working-model.md`; `CLAUDE.md` (enumeration half only); `.claude-plugin/plugin.json` (description).
    - Changes:
@@ -175,7 +175,7 @@ Every step's acceptance includes `cd hooks && npm test` green and a history entr
      - Record in the history entry what the mirror was, citing `circles/260719-1536-plane-mirror-integration/_c_circle.md` and its closure note, and quote the two outbox facts this Circle's own activation produced: the outbox holds deferred entries whose reason is `Plane unreachable`, and `.plane-map.json` is `{}` — zero successful pushes, in this project's own runtime state. The record asks that the removal record what was built, and this is where it is recorded.
    - Dependencies: step 1.
 
-3. **Delete the Plane data files and fixtures** *(record item 1, second half)*
+3. [DONE] **Delete the Plane data files and fixtures** *(record item 1, second half)*
    - Executor: `ontocoder`
    - Files: `templates/plane.config.yaml`; `fusion-workbench/plane.config.yaml`; `fusion-workbench/.plane-map.json`; `fusion-workbench/.plane-outbox.jsonl`; `hooks/lib/__tests__/fixtures/plane/` (whole tree, 14 files).
    - Changes: delete all of them. The workbench is git-tracked in this repository, so the outbox's evidence survives in history and needs no copy; step 2's history entry already carries the two figures that matter.
