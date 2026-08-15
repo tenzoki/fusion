@@ -2,8 +2,8 @@
 // The workbench-domain cascade, parsed out of the prompt and EXECUTED.
 //
 // `agents/orchestrator.md` Setup Step 5 decides a workbench's domain
-// (code | data | strategic | knowledge) from a fixed if/elif cascade over five
-// integers and one string. The cascade is prompt text, so nothing ran it, and
+// (code | data) from a fixed if/elif cascade over two integers and one string.
+// The cascade is prompt text, so nothing ran it, and
 // the only gate on it measured the *layout* of its branch lines — whether a
 // line mentioned a token, not whether that line could ever fire. Four edits
 // that reinstated the defect it guards therefore passed it: a decoy branch
@@ -35,11 +35,11 @@
 // — there is one definition". That sentence was false when it was written. A
 // second definition is representable and one existed: `skills/cleanup/SKILL.md`
 // carried the cascade as a single prose sentence, in the pre-fix order and with
-// no absent-count case, so a project reached `code` at Setup and `strategic` at
-// cleanup inside one session (issue 260810-1918). It predated the claim
-// denying it, and both gates read `agents/orchestrator.md` alone, so neither
-// could see it. Running the prompt's own block keeps THIS file from being a
-// second copy; it says nothing about any other consumer.
+// no absent-count case, so one project got two different domains out of one
+// session (issue 260810-1918). It predated the claim denying it, and both gates
+// read `agents/orchestrator.md` alone, so neither could see it. Running the
+// prompt's own block keeps THIS file from being a second copy; it says nothing
+// about any other consumer.
 //
 // The claim is therefore a measurement now, not an argument.
 // `findCascadeStatements()` and `cascadeBlocks()` below detect a statement of
@@ -78,20 +78,49 @@ export class CascadeError extends Error {
   }
 }
 
-export const DOMAINS = ["code", "data", "strategic", "knowledge"] as const;
+export const DOMAINS = ["code", "data"] as const;
 export type Domain = (typeof DOMAINS)[number];
 
+// ---------------------------------------------------------------------------
+// What was retired, and why the names are still here
+//
+// The cascade had four outcomes until the domain parameter was cut back to two.
+// `strategic` and `knowledge` were decided from the workbench's own artifact
+// counts — open decisions, open issues, analyses, commits — and both are gone,
+// measured: across the dispatches where the parameter meant anything,
+// `strategic` was never passed once and `knowledge` was passed twice.
+//
+// The two lists below are the only place either name is written, and they are
+// DATA rather than prose because each one does a job:
+//
+//   RETIRED_DOMAINS      — `parseCascade` refuses a branch assigning one, with
+//                          a message saying it was retired rather than the
+//                          generic "not a domain". Re-adding a branch is a
+//                          decision, not a typo, and it fails saying so.
+//   RETIRED_COUNT_NAMES  — the grammar no longer accepts these as inputs, but
+//                          `inputsNamedIn` still recognises them, because the
+//                          plainest second copy anyone will meet from here on
+//                          is a STALE one restating the four-outcome cascade.
+//                          Dropping them would make exactly that copy invisible
+//                          to the reach gate, which is the one shape it was
+//                          built for (issue 260810-1918).
+// ---------------------------------------------------------------------------
+
+/** Domain values the cascade may no longer assign. */
+export const RETIRED_DOMAINS = ["strategic", "knowledge"] as const;
+
 /** The names the cascade may read. An identifier outside this set is an error. */
-export const COUNT_NAMES = [
+export const COUNT_NAMES = ["code_files", "data_files", "counted_by"] as const;
+export type CountName = (typeof COUNT_NAMES)[number];
+
+/** Inputs only the retired branches read. Not readable; still recognisable. */
+export const RETIRED_COUNT_NAMES = [
   "commits",
   "analyses_count",
   "issues_count",
   "decisions_count",
-  "code_files",
-  "data_files",
-  "counted_by",
 ] as const;
-export type CountName = (typeof COUNT_NAMES)[number];
+export type RetiredCountName = (typeof RETIRED_COUNT_NAMES)[number];
 
 /**
  * The inputs Step 5 gathers. Numbers are counts; strings are the two values
@@ -289,11 +318,16 @@ class Parser {
     if (tok.t === "ident") {
       this.pos++;
       if (!(COUNT_NAMES as readonly string[]).includes(tok.v)) {
+        const retired = (RETIRED_COUNT_NAMES as readonly string[]).includes(tok.v);
         throw new CascadeError(
-          `the cascade reads \`${tok.v}\`, which is not one of the inputs Step 5 gathers ` +
-            `(${COUNT_NAMES.join(", ")}). Either the prompt renamed a count — in which case ` +
-            `COUNT_NAMES in hooks/lib/domain-cascade.ts moves with it — or the branch reads ` +
-            `something nothing supplies. Line: ${this.src}`,
+          retired
+            ? `the cascade reads \`${tok.v}\`, an input that was retired with the ` +
+              `\`${RETIRED_DOMAINS.join("` and `")}\` domains. Nothing supplies it and no ` +
+              `branch may read it. Line: ${this.src}`
+            : `the cascade reads \`${tok.v}\`, which is not one of the inputs Step 5 gathers ` +
+              `(${COUNT_NAMES.join(", ")}). Either the prompt renamed a count — in which case ` +
+              `COUNT_NAMES in hooks/lib/domain-cascade.ts moves with it — or the branch reads ` +
+              `something nothing supplies. Line: ${this.src}`,
         );
       }
       return { kind: "var", name: tok.v as CountName };
@@ -357,9 +391,13 @@ function stripComment(line: string): string {
 }
 
 /**
- * Every fenced block in `markdown` that assigns both the `code` and the
- * `strategic` domain — i.e. every executable copy of the cascade the text
- * carries. Zero for an ordinary file, one for the definition site.
+ * Every fenced block in `markdown` that assigns both surviving domains — i.e.
+ * every executable copy of the cascade the text carries. Zero for an ordinary
+ * file, one for the definition site.
+ *
+ * Both are required, not either: a block naming one outcome states no choice.
+ * The pair is derived from DOMAINS rather than spelled out, so it moved with
+ * the removal instead of staying pinned to a name that no longer exists.
  *
  * Exported because "how many files hold one" is the reach gate's question as
  * much as "which block do I run" is this module's.
@@ -367,19 +405,19 @@ function stripComment(line: string): string {
 export function cascadeBlocks(markdown: string): string[] {
   return markdown
     .split(/^\s*```.*$/m)
-    .filter((b) => /domain\s*=\s*"code"/.test(b) && /domain\s*=\s*"strategic"/.test(b));
+    .filter((b) => DOMAINS.every((d) => new RegExp(`domain\\s*=\\s*"${d}"`).test(b)));
 }
 
 /**
- * The one fenced block assigning both the `code` and the `strategic` domain.
- * Exactly one such block must exist — two would mean the prompt describes the
- * decision twice, and this reader would have to guess which one runs.
+ * The one fenced block assigning both domains. Exactly one such block must
+ * exist — two would mean the prompt describes the decision twice, and this
+ * reader would have to guess which one runs.
  */
 export function extractCascadeBlock(markdown: string): string {
   const found = cascadeBlocks(markdown);
   if (found.length !== 1) {
     throw new CascadeError(
-      `expected exactly one fenced block assigning both the \`code\` and \`strategic\` ` +
+      `expected exactly one fenced block assigning both the \`${DOMAINS.join("` and `")}\` ` +
         `domains, found ${found.length}`,
     );
   }
@@ -410,6 +448,14 @@ export function parseCascade(markdown: string): Branch[] {
       throw new CascadeError(`branch does not assign a domain: ${line}`);
     }
     if (!(DOMAINS as readonly string[]).includes(assign[1])) {
+      if ((RETIRED_DOMAINS as readonly string[]).includes(assign[1])) {
+        throw new CascadeError(
+          `branch assigns domain "${assign[1]}", which was retired: the cascade has two ` +
+            `outcomes, ${DOMAINS.join(" | ")}. Re-adding a third is a decision about the ` +
+            `dispatch parameter, not a cascade edit — see RETIRED_DOMAINS in ` +
+            `hooks/lib/domain-cascade.ts. Line: ${line}`,
+        );
+      }
       throw new CascadeError(
         `branch assigns domain "${assign[1]}", which is not one of ${DOMAINS.join(" | ")}: ${line}`,
       );
@@ -621,12 +667,16 @@ export function countsFromHelperOutput(stdout: string): Pick<
 // what finds that shape.
 //
 // What a statement of the cascade IS, measurably: a unit of text naming at
-// least two of the four DOMAINS as literals AND at least two of the cascade's
-// own INPUTS. Two outcomes plus two of the counts they are decided from is a
-// decision procedure; anything less is a consumer talking about a domain it was
-// handed. That split was measured, not assumed: it leaves the per-domain
-// priority tables in `reconciler`, `taskplanner` and `playmaker` alone, which
-// name four domains each and no input.
+// least two DOMAINS as literals AND at least two INPUTS. Two outcomes plus two
+// of the counts they are decided from is a decision procedure; anything less is
+// a consumer talking about a domain it was handed. That split was measured, not
+// assumed: it leaves the per-domain tables in `reconciler`, `taskplanner` and
+// `playmaker` alone, which name the domains and no input.
+//
+// The input half deliberately spans more than the cascade now reads. Both
+// `COUNT_NAMES` and `RETIRED_COUNT_NAMES` count, so a copy restating the
+// four-outcome cascade — the likeliest stale copy from here on — still trips
+// the gate on the counts only that cascade read.
 //
 // ---------------------------------------------------------------------------
 // HOW FAR THIS REACHES IS NOT WRITTEN IN THIS COMMENT
@@ -682,12 +732,15 @@ function domainLiteralsIn(line: string): Set<Domain> {
   return out;
 }
 
+/** Any input name the detector recognises: live, or retired with its branch. */
+export type NamedInput = CountName | RetiredCountName;
+
 /**
  * The prose spelling of each input, mapped to the count it names. A line that
  * says "decisions" and one that says `decisions_count` name the same input, so
  * they collapse to one — two spellings of one count are not two inputs.
  */
-const INPUT_PROSE: [RegExp, CountName][] = [
+const INPUT_PROSE: [RegExp, NamedInput][] = [
   [/\bcommits?\b/i, "commits"],
   [/\banalys[ei]s\b/i, "analyses_count"],
   [/\bissues?\b/i, "issues_count"],
@@ -697,9 +750,9 @@ const INPUT_PROSE: [RegExp, CountName][] = [
 ];
 
 /** The cascade inputs a line names, by variable name or by prose spelling. */
-export function inputsNamedIn(line: string): Set<CountName> {
-  const out = new Set<CountName>();
-  for (const name of COUNT_NAMES) {
+export function inputsNamedIn(line: string): Set<NamedInput> {
+  const out = new Set<NamedInput>();
+  for (const name of [...COUNT_NAMES, ...RETIRED_COUNT_NAMES]) {
     if (new RegExp(`(?<![A-Za-z0-9_])${name}(?![A-Za-z0-9_])`).test(line)) out.add(name);
   }
   for (const [re, name] of INPUT_PROSE) if (re.test(line)) out.add(name);
@@ -714,7 +767,7 @@ export interface CascadeStatement {
   /** The unit as written, trimmed; a 2-line unit is joined with one space. */
   text: string;
   domains: Domain[];
-  inputs: CountName[];
+  inputs: NamedInput[];
 }
 
 /**
@@ -726,9 +779,9 @@ export interface CascadeStatement {
  * wrap split in half; joining a line to the next BLOCK would re-admit exactly
  * the per-domain lists and tables the two-input rule was chosen to leave alone
  * — measured on this tree, an unconditional two-line window selects
- * `agents/playmaker.md:111` and `agents/reconciler.md:135`, both of them
- * adjacent bullets of a legitimate per-domain list, and the continuation rule
- * selects neither.
+ * `agents/playmaker.md:31-32`, two rows of a legitimate per-domain table, and
+ * `agents/reconciler.md:107-108`, two adjacent bullets of the edge list. The
+ * continuation rule selects neither.
  */
 const BLOCK_START = /^\s*(?:#{1,6}\s|[-*+]\s|\d+[.)]\s|\||>|```|~~~|<!--|<[A-Za-z/]|\[[^\]]+\]:)/;
 const FENCE_LINE = /^\s*(?:```|~~~)/;
@@ -843,38 +896,40 @@ export const REACH = {
     {
       claim:
         "A domain name in backticks, double quotes, single quotes or asterisk bold. Four " +
-        "spellings, because the second copy that shipped backticked its four by its author's " +
-        "habit and nothing in this project requires that; `agents/taskplanner.md:127` writes " +
-        "them bare.",
+        "spellings, because nothing in this project requires one of them and " +
+        "`agents/taskplanner.md:125` writes the names bare.",
       probes: [
-        "Use `strategic` when open decisions outnumber open issues, otherwise `code`.",
-        'Use "strategic" when open decisions outnumber open issues, otherwise "code".',
-        "Use 'strategic' when open decisions outnumber open issues, otherwise 'code'.",
-        "Use **strategic** when open decisions outnumber open issues, otherwise **code**.",
+        "Use `data` when the data files outnumber the source files, otherwise `code`.",
+        'Use "data" when the data files outnumber the source files, otherwise "code".',
+        "Use 'data' when the data files outnumber the source files, otherwise 'code'.",
+        "Use **data** when the data files outnumber the source files, otherwise **code**.",
       ],
     },
     {
       claim:
-        "A paraphrase naming the counts in prose — decisions, issues, analyses, commits, code " +
-        "files, data files — rather than by variable name.",
+        "A paraphrase naming the counts in prose — code files, source files, data files, and " +
+        "the decisions, issues, analyses and commits the retired branches read — rather than " +
+        "by variable name.",
       probes: [
-        "Pick `strategic` when open decisions outnumber open issues, `knowledge` when analyses " +
-          "exist without source, `data` when data files dominate, otherwise `code`.",
+        "Pick `data` when the tree holds more data files than source files, and `code` " +
+          "otherwise.",
       ],
     },
     {
       claim: "A paraphrase written with the cascade's own variable names.",
       probes: [
-        "`strategic` if decisions_count >= issues_count, else `knowledge` if analyses_count > 0 " +
-          "and code_files == 0, else `code`.",
+        "`data` if data_files > code_files * 2, else `code` whenever code_files is above zero.",
       ],
     },
     {
       claim:
-        "A two-branch fragment. Two outcomes and two of the counts they are decided from is " +
-        "already a decision procedure, whether or not all four domains appear.",
+        "A stale copy restating the retired four-outcome cascade. Its two surviving outcomes " +
+        "still fire, and the four counts only the retired branches ever read are still " +
+        "recognised as inputs, so the likeliest second copy from here on is caught rather " +
+        "than walked past.",
       probes: [
-        "Use `strategic` if the workbench has more open decisions than issues; otherwise `code`.",
+        "Detect the workbench domain the way Setup does: `data` if data files dominate, else " +
+          "`code`; with no source at all, weigh decisions_count against issues_count.",
       ],
     },
     {
@@ -882,8 +937,8 @@ export const REACH = {
         "One sentence hard-wrapped across two lines. A line and its continuation are scanned " +
         "joined, which is the shape this repository's own 78-column prose produces by default.",
       probes: [
-        "Pick `strategic` when open decisions outnumber open issues,\n" +
-          "and `code` otherwise (measured on decisions_count and issues_count).",
+        "Pick `data` when the data files outnumber the source files,\n" +
+          "and `code` otherwise (measured on data_files and code_files).",
       ],
     },
   ] as const satisfies readonly ReachCase[],
@@ -893,14 +948,14 @@ export const REACH = {
       claim:
         "A domain name written as a plain word, with no markup around it. This is the plainest " +
         "second copy anyone would write and it is NOT caught. Matching bare words was measured " +
-        "over the scanned set and rejected on cost, because `code` and `data` are ordinary " +
-        "English words in these files and `code files` is both a domain name and an input " +
-        "phrase.",
+        "over the scanned set and rejected on cost, because both surviving domain names are " +
+        "ordinary English words in these files and `code files` is both a domain name and an " +
+        "input phrase.",
       probes: [
-        "Detect the workbench domain: strategic if decisions dominate, knowledge if analyses " +
-          "exist with no code, data if data files dominate, else code.",
+        "Detect the workbench domain: data if the data files outnumber the source files, " +
+          "else code.",
       ],
-      cost: { widening: "matching bare words", singleLine: 13, withWindow: 13 },
+      cost: { widening: "matching bare words", singleLine: 12, withWindow: 12 },
     },
     {
       claim:
@@ -908,34 +963,36 @@ export const REACH = {
         "A table row and a list item each open a block and are never joined to the line above " +
         "them, and the window is two lines wide.",
       probes: [
-        "| domain | when |\n|---|---|\n| `strategic` | open decisions outnumber open issues |\n" +
+        "| domain | when |\n|---|---|\n| `data` | the data files outnumber the source files |\n" +
           "| `code` | the tree holds source files |",
-        "Pick `strategic` when open decisions\noutnumber open issues, and otherwise\nfall back to `code`.",
+        "Pick `data` when the data files\noutnumber the source files, and\notherwise fall back to `code`.",
       ],
     },
     {
       claim:
         "A paraphrase naming no input. It names no evidence, so it restates less than the " +
         "cascade decides.",
-      probes: ["`strategic` for planning work, else `code`."],
+      probes: ["`data` for ontology work, else `code`."],
     },
     {
       claim:
-        "A paraphrase naming its inputs in words the prose list does not carry. The list is six " +
-        "spellings, not a synonym set.",
-      probes: ["`strategic` when open questions outnumber defects, otherwise `code`."],
+        "A paraphrase naming its inputs in words the prose list does not carry. The list is a " +
+        "fixed set of spellings, not a synonym set.",
+      probes: ["`data` when the schemas outnumber the modules, otherwise `code`."],
     },
   ] as const satisfies readonly ReachCase[],
 
   excluded: [
     {
       glob: "docs/*.md",
-      measured: "fires",
+      measured: "clean",
       note:
-        "`docs/philosophy.md:19` says what each domain PRIORITISES, in a line shape-identical " +
-        "to a paraphrase. Scanning `docs/` means either that false positive or an exemption " +
-        "list, so it is left out on a measured cost rather than on a definition of who a " +
-        "consumer is.",
+        "Left out on a measured cost that has since expired. `docs/philosophy.md:19` said what " +
+        "each of four domains PRIORITISED, in a line shape-identical to a paraphrase, and " +
+        "scanning `docs/` meant either that false positive or an exemption list. With two " +
+        "domains the line names no count and the directory now measures clean, so the reason " +
+        "for the exclusion is gone and only the exclusion is left. That is an uncovered " +
+        "directory, not a justified one.",
     },
     {
       glob: "CLAUDE.md",

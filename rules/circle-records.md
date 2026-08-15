@@ -66,7 +66,7 @@ The Circle record is `<circle-dir>/_S_circle.md`. Creating a Circle means creati
 # <One-line Directive title>
 
 ---
-**Domain:** <code|data|strategic|knowledge>
+**Domain:** <code|data>
 **Status:** <anticipated | active | closed | bounded | superseded | deferred>
 **Filed by:** <agent name or "user">
 **Active spec/plan:** <workbench-relative path to the spec or plan, or "(none yet)">
@@ -111,7 +111,7 @@ A path resolves in both cases; a bare filename resolves only in the first, and f
 # Portfolio
 
 **Generated:** YYMMDD-HHMM (by playmaker session <id>)
-**Domain bias:** <code|data|strategic|knowledge>
+**Domain bias:** <code|data>
 
 ## Active (_t_)
 

@@ -91,7 +91,7 @@ DOMAIN="${DOMAIN:-code}"
 
 The 2-space leading indent scopes the match to `session:`-block fields (the only place `domain:` lives today); the `"?` around the captured token handles both quoted (`"code"`) and unquoted (`code`) YAML values.
 
-`<detected-domain>` ∈ `{code, data, strategic, knowledge}` for the remainder of this skill.
+`<detected-domain>` ∈ `{code, data}` for the remainder of this skill.
 
 ## Step 3 — Dispatch playmaker
 

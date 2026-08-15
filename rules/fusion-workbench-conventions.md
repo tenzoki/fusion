@@ -476,7 +476,7 @@ Body:
 # <one-line decision title — phrased as a question or choice point>
 
 ---
-**Domain:** code | data | strategic | knowledge
+**Domain:** code | data
 **Status:** open | answered | implemented | deferred | superseded
 **Filed by:** <agent name or "user">
 **Cross-references:** <paths to related defects, analyses, plans, or decision records — in this Circle, in another Circle, or in shared/. Cite where they are; never copy them here.>

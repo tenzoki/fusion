@@ -49,3 +49,25 @@ same string for the domain values, rather than rewriting the sentence twice.
 - `issues/260815-0803_*_two-claude-md-inventory-rows-went-stale-and-neither-lint-gate-can-see-them.md`
   — the same class, measured on step 2.
 - `history/260815-1206-coder-step4-churn-removal.md` — the run that found them.
+
+---
+
+**Two of the three are now closed; item 1 is the whole of what is left.**
+
+Item 3 (`skills/help/SKILL.md:106`) was resolved in `04ea182`, the step-5 commit, which named the
+edit and its reason — recorded in
+`issues/260815-1251_o_the-three-churn-references-record-lists-three-and-two-remain.md`, which asked
+for this append.
+
+Item 2 (`.claude-plugin/plugin.json:4`) was resolved in step 9, which rewrote the same sentence for
+the domain values and dropped the `churn detection` clause in the same edit, exactly as
+`## What it would take` above asked. The description now reads
+*"Project-agnostic specialized agents (3 parameterised by domain — code/data) with a compliance
+guard, decision-record tracking, …"*. The version was **not** bumped; step 15 owns that.
+
+Item 1 (`.gitignore:39`, `!bin/fusion-churn-rank`) still stands, and it stays outside step 9's
+scope on purpose. That `.gitignore` block now carries two stale re-inclusion exceptions and step 11
+adds a third when `bin/fusion-state-drift` goes, so it is one sweep, not three edits in three steps
+— see
+`issues/260815-0803_o_gitignore-still-carries-the-ship-exception-for-the-deleted-bin-fusion-plane.md`.
+This record stays `_o_` for that one item.

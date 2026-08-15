@@ -208,22 +208,22 @@ cd hooks && npm run build && cd .. \
 
 **Caught.** Each line is asserted against probes in `domain-cascade.test.ts`:
 
-- A domain name in backticks, double quotes, single quotes or asterisk bold. Four spellings, because the second copy that shipped backticked its four by its author's habit and nothing in this project requires that; `agents/taskplanner.md:127` writes them bare.
-- A paraphrase naming the counts in prose — decisions, issues, analyses, commits, code files, data files — rather than by variable name.
+- A domain name in backticks, double quotes, single quotes or asterisk bold. Four spellings, because nothing in this project requires one of them and `agents/taskplanner.md:125` writes the names bare.
+- A paraphrase naming the counts in prose — code files, source files, data files, and the decisions, issues, analyses and commits the retired branches read — rather than by variable name.
 - A paraphrase written with the cascade's own variable names.
-- A two-branch fragment. Two outcomes and two of the counts they are decided from is already a decision procedure, whether or not all four domains appear.
+- A stale copy restating the retired four-outcome cascade. Its two surviving outcomes still fire, and the four counts only the retired branches ever read are still recognised as inputs, so the likeliest second copy from here on is caught rather than walked past.
 - One sentence hard-wrapped across two lines. A line and its continuation are scanned joined, which is the shape this repository's own 78-column prose produces by default.
 
 **Not caught.** Each line is asserted to still be a miss, so closing one of these turns the suite red until this list is corrected:
 
-- A domain name written as a plain word, with no markup around it. This is the plainest second copy anyone would write and it is NOT caught. Matching bare words was measured over the scanned set and rejected on cost, because `code` and `data` are ordinary English words in these files and `code files` is both a domain name and an input phrase. Measured cost of matching bare words, across the scanned set and outside the definition site: 13 lines of honest prose selected on single lines, 13 with the continuation window. The suite re-measures both numbers.
+- A domain name written as a plain word, with no markup around it. This is the plainest second copy anyone would write and it is NOT caught. Matching bare words was measured over the scanned set and rejected on cost, because both surviving domain names are ordinary English words in these files and `code files` is both a domain name and an input phrase. Measured cost of matching bare words, across the scanned set and outside the definition site: 12 lines of honest prose selected on single lines, 12 with the continuation window. The suite re-measures both numbers.
 - A paraphrase spread across the rows of a table, or across three or more wrapped lines. A table row and a list item each open a block and are never joined to the line above them, and the window is two lines wide.
 - A paraphrase naming no input. It names no evidence, so it restates less than the cascade decides.
-- A paraphrase naming its inputs in words the prose list does not carry. The list is six spellings, not a synonym set.
+- A paraphrase naming its inputs in words the prose list does not carry. The list is a fixed set of spellings, not a synonym set.
 
 **Not scanned**, with what running the gate over it yields today:
 
-- `docs/*.md` — fires. `docs/philosophy.md:19` says what each domain PRIORITISES, in a line shape-identical to a paraphrase. Scanning `docs/` means either that false positive or an exemption list, so it is left out on a measured cost rather than on a definition of who a consumer is.
+- `docs/*.md` — clean. Left out on a measured cost that has since expired. `docs/philosophy.md:19` said what each of four domains PRIORITISED, in a line shape-identical to a paraphrase, and scanning `docs/` meant either that false positive or an exemption list. With two domains the line names no count and the directory now measures clean, so the reason for the exclusion is gone and only the exclusion is left. That is an uncovered directory, not a justified one.
 - `CLAUDE.md` — clean. A consumer by the same contract that puts `rules/` in the file set, and it is not scanned. That is an uncovered file, not a justified exclusion: it is clean today and nothing keeps it clean.
 - `README-hooks.md` — clean. Documentation about the gate, including this block. Not scanned, and it would be wrong to scan the file whose job is to quote the claim.
 

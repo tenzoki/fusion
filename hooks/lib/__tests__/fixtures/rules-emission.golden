@@ -15,128 +15,128 @@
 
 [analyst]
   agent-setup.md 3499
-  fusion-workbench-conventions.md 52460
+  fusion-workbench-conventions.md 52436
   decision-record-examples.md 4291
   user-facing-output.md 16788
   critical-stance.md 9941
   design-diagrams.md 4834
-  total 91813
+  total 91789
 
 [bugfixer]
   agent-setup.md 3499
-  fusion-workbench-conventions.md 52460
+  fusion-workbench-conventions.md 52436
   decision-record-examples.md 4291
   user-facing-output.md 16788
   critical-stance.md 9941
-  total 86979
+  total 86955
 
 [coder]
   agent-setup.md 3499
-  fusion-workbench-conventions.md 52460
+  fusion-workbench-conventions.md 52436
   decision-record-examples.md 4291
   user-facing-output.md 16788
   critical-stance.md 9941
-  total 86979
+  total 86955
 
 [coderev]
   agent-setup.md 3499
-  fusion-workbench-conventions.md 52460
+  fusion-workbench-conventions.md 52436
   decision-record-examples.md 4291
   user-facing-output.md 16788
   critical-stance.md 9941
-  total 86979
+  total 86955
 
 [consultant]
   agent-setup.md 3499
-  fusion-workbench-conventions.md 52460
+  fusion-workbench-conventions.md 52436
   decision-record-examples.md 4291
   user-facing-output.md 16788
   critical-stance.md 9941
-  total 86979
+  total 86955
 
 [curator]
   agent-setup.md 3499
-  fusion-workbench-conventions.md 52460
+  fusion-workbench-conventions.md 52436
   decision-record-examples.md 4291
   user-facing-output.md 16788
   critical-stance.md 9941
-  total 86979
+  total 86955
 
 [editor]
   agent-setup.md 3499
-  fusion-workbench-conventions.md 52460
+  fusion-workbench-conventions.md 52436
   decision-record-examples.md 4291
   user-facing-output.md 16788
   critical-stance.md 9941
-  total 86979
+  total 86955
 
 [ontocoder]
   agent-setup.md 3499
-  fusion-workbench-conventions.md 52460
+  fusion-workbench-conventions.md 52436
   decision-record-examples.md 4291
   user-facing-output.md 16788
   critical-stance.md 9941
-  total 86979
+  total 86955
 
 [ontorev]
   agent-setup.md 3499
-  fusion-workbench-conventions.md 52460
+  fusion-workbench-conventions.md 52436
   decision-record-examples.md 4291
   user-facing-output.md 16788
   critical-stance.md 9941
-  total 86979
+  total 86955
 
 [orchestrator]
   agent-setup.md 3499
-  fusion-workbench-conventions.md 52460
+  fusion-workbench-conventions.md 52436
   decision-record-examples.md 4291
   user-facing-output.md 16788
   critical-stance.md 9941
-  circle-records.md 11690
+  circle-records.md 11650
   commit-lock.md 5663
-  total 104332
+  total 104268
 
 [planner]
   agent-setup.md 3499
-  fusion-workbench-conventions.md 52460
+  fusion-workbench-conventions.md 52436
   decision-record-examples.md 4291
   user-facing-output.md 16788
   critical-stance.md 9941
   design-diagrams.md 4834
-  total 91813
+  total 91789
 
 [playmaker]
   agent-setup.md 3499
-  fusion-workbench-conventions.md 52460
+  fusion-workbench-conventions.md 52436
   decision-record-examples.md 4291
   user-facing-output.md 16788
   critical-stance.md 9941
-  circle-records.md 11690
-  total 98669
+  circle-records.md 11650
+  total 98605
 
 [reconciler]
   agent-setup.md 3499
-  fusion-workbench-conventions.md 52460
+  fusion-workbench-conventions.md 52436
   decision-record-examples.md 4291
   user-facing-output.md 16788
   critical-stance.md 9941
-  total 86979
+  total 86955
 
 [shaper]
   agent-setup.md 3499
-  fusion-workbench-conventions.md 52460
+  fusion-workbench-conventions.md 52436
   decision-record-examples.md 4291
   user-facing-output.md 16788
   critical-stance.md 9941
   design-diagrams.md 4834
-  circle-records.md 11690
-  total 103503
+  circle-records.md 11650
+  total 103439
 
 [taskplanner]
   agent-setup.md 3499
-  fusion-workbench-conventions.md 52460
+  fusion-workbench-conventions.md 52436
   decision-record-examples.md 4291
   user-facing-output.md 16788
   critical-stance.md 9941
   design-diagrams.md 4834
-  total 91813
+  total 91789

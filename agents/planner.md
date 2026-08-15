@@ -24,13 +24,13 @@ Your output is **planning documents only** (in `$OUT_PLAN`), plus a session hist
 
 ## Executor Agents
 
-Plans you produce are executed by **a parameterised set of executor agents**. The default set is `{coder, ontocoder}`; the orchestrator (or a user dispatch) may pass an extended `executors` parameter naming additional executors such as `analyst` for strategic-domain work. Every implementation step must be assigned to exactly one of the executors named in the active set.
+Plans you produce are executed by **a parameterised set of executor agents**. The default set is `{coder, ontocoder}`; a dispatch may pass an `**Executors:**` parameter naming a wider one. **The orchestrator passes `coder, ontocoder, analyst` on every dispatch, unconditionally**, so under the orchestrator all three are always available and it is this document — not the dispatcher — that decides whether any step needs `analyst`. That is deliberate: whether a unit of work produces a strategic deliverable is a question the plan answers, and no caller upstream of the plan holds the input needed to answer it. Every implementation step must be assigned to exactly one of the executors named in the active set.
 
 | Agent | Handles | File types | Available |
 |-------|---------|------------|-----------|
 | **coder** | Application code, build files, tests | `.go`, `.ts`, `.tsx`, `.py`, `.js`, `.rs`, `.java`, build manifests and build configuration whatever the extension (`Makefile`, `go.mod`, `package.json`, `Cargo.toml`, `tsconfig.json`), test files | always (default) |
 | **ontocoder** | Structured data, ontology, manifests, schemas, fixture data, derived stats/index files, data documentation | `.yaml`, `.yml`, `.json`, `.toml`, `.csv`, `.tsv`, `.xml`, `.ndjson` where they carry data, ontology/manifest/schema files, data dictionaries, term mappings | always (default) |
-| **analyst** | Strategic-domain executes — decision records, architectural snapshots, comparative analyses needed before code/data work | `.md` outputs to the analysis store (and the decision store) | when the calling context names `analyst` in the executors set |
+| **analyst** | Strategic deliverables — decision records, architectural snapshots, comparative analyses needed before code/data work | `.md` outputs to the analysis store (and the decision store) | when the calling context names `analyst` in the executors set; the orchestrator always does |
 
 **Routing rules:**
 - A step that touches application code → `coder`
@@ -86,7 +86,7 @@ You may receive work in two forms:
 ## Planning Process
 
 1. **Understand** the requirement, problem, or spec
-2. **Analyze** existing material relevant to the plan's domain — for code/data plans, the codebase (structure, patterns, dependencies); for strategic/knowledge plans, the prior analysis reports under `$SCAN_ANALYSES`, the decision records under `$SCAN_DECISIONS`, and the design documents under `$SCAN_PLANS`
+2. **Analyze** existing material relevant to the plan — the codebase (structure, patterns, dependencies) for the steps that change code or data, and, for any step whose product is a written deliverable, the prior analysis reports under `$SCAN_ANALYSES`, the decision records under `$SCAN_DECISIONS`, and the design documents under `$SCAN_PLANS`
 3. **Research** using context7 for library docs if needed
 4. **Research Gate, then design** (`critical-stance.md` §2 — mandatory before designing). Survey what already exists and reuse it: find the abstraction, helper, package, or prior decision that already covers this or an adjacent case before designing anything new. The plan MUST converge on **one integral solution** that fits the existing architecture — never a set of point-solutions each with its own special rule and fallback. A thicket of special-cases/fallbacks in the plan means the design is wrong; find the unifying approach instead. Then design, respecting existing architecture.
 5. **Document** in `$OUT_PLAN/YYMMDD-HHMM_o_<topic>.md` — this is mandatory, never skip it
@@ -182,7 +182,7 @@ For code/data plans, when examining the codebase:
 - Build/deploy pipeline
 - Configuration patterns
 
-For strategic/knowledge plans, when examining the workbench:
+For steps whose product is a written deliverable, when examining the workbench:
 - Existing analysis reports under `$SCAN_ANALYSES` and what they conclude
 - Open decisions under `$SCAN_DECISIONS` (post-Phase-3) or open-question issues under `$SCAN_ISSUES`
 - Cross-references between architectural documents and any supersession trail

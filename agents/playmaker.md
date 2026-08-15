@@ -24,18 +24,16 @@ You are distinct from `consultant`. The consultant handles user-direct conversat
 
 ## Domain Parameter
 
-The dispatcher passes a `domain` parameter on the dispatch prompt's first non-empty content line: one of `code | data | strategic | knowledge`. If absent, default to `code`. The domain biases ranking heuristics in Process Steps 2b and 3 — it does NOT change marker vocabulary or portfolio.md output structure.
+The dispatcher passes a `domain` parameter on the dispatch prompt's first non-empty content line: one of `code | data`. If absent, default to `code`. The domain biases ranking heuristics in Process Steps 2b and 3 — it does NOT change marker vocabulary or portfolio.md output structure.
 
 | Domain | Ranking bias |
 |---|---|
 | `code` | Prioritise `_a_` Circles whose `Grounding snapshot` cites the fewest unresolved `_o_` decision records and whose dependencies are all `_c_`. |
 | `data` | Same as code, plus prioritise Circles touching ontology/manifest files with high pending-issue counts. |
-| `strategic` | Prioritise `_a_` Circles whose Directive cites open `_o_` decisions — Circles that unblock the most decision-realisation work. |
-| `knowledge` | Prioritise `_a_` Circles whose Directive depends on analyses already on disk vs those requiring new analysis. |
 
 ### Parameter parsing
 
-If the dispatch prompt's first non-empty content line is `**Domain:** <value>`, parse `<value>` as the domain (one of `code | data | strategic | knowledge`). If the line is absent, the value is unrecognised, or the line appears later in the prompt body, default to `domain = code` per the rule above. Do not echo the parsed parameter line back to the user as part of any portfolio.md content — it is a control prefix, not part of the briefing.
+If the dispatch prompt's first non-empty content line is `**Domain:** <value>`, parse `<value>` as the domain (one of `code | data`). If the line is absent, the value is unrecognised, or the line appears later in the prompt body, default to `domain = code` per the rule above. Do not echo the parsed parameter line back to the user as part of any portfolio.md content — it is a control prefix, not part of the briefing.
 
 ## Scope
 
@@ -124,12 +122,9 @@ You **maintain** this store: you reshape the ideas it already holds, and you ori
 
 Apply the domain-biased heuristic from the Domain Parameter table above. For each `_a_` Circle, compute:
 
-- **Unresolved-decision count** — number of `_o_` decision records cited in its `## Grounding snapshot`. Lower is better (for `code`/`data`); higher is better (for `strategic`, because the Circle unblocks more decisions when activated).
+- **Unresolved-decision count** — number of `_o_` decision records cited in its `## Grounding snapshot`. Lower is better: a Circle whose Grounding is still full of open questions is not ready to run.
 - **Dependencies-closed flag** — whether every entry in `## Dependencies` resolves to an existing Circle directory whose record carries `_c_` (closed-coherent). Circles depending on `_t_`, `_a_`, `_b_`, `_s_`, or `_d_` Circles, or on directory names that do not exist, get a flag.
-- **Domain-specific signals:**
-  - `data`: count of pending issues (`_o_` and `_p_` files under `$SCAN_ISSUES`) that mention ontology/manifest paths cited in the Circle's `Grounding snapshot`.
-  - `strategic`: count of open `_o_` decisions cited in the Circle's `## Directive` (decisions the Circle would realise).
-  - `knowledge`: ratio of `$SCAN_ANALYSES` files already on disk vs cited-but-absent in the Circle's `Grounding snapshot`.
+- **Domain-specific signal** — under `data` only: count of pending issues (`_o_` and `_p_` files under `$SCAN_ISSUES`) that mention ontology/manifest paths cited in the Circle's `Grounding snapshot`.
 
 Produce a ranked list. The top-ranked Circle gets a one-paragraph rationale citing file paths (e.g. Circle `260511-1100-rebuild-auth` — three dependencies all `_c_`, one open decision `260510-0930_*_token-format.md` cited). Lower-ranked Circles get a single-sentence rationale.
 

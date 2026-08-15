@@ -24,10 +24,10 @@ import {
 // The domain cascade, gated on what it DECIDES.
 //
 // `agents/orchestrator.md` Setup Step 5 picks a workbench's domain from an
-// if/elif chain over five counts, and that domain is passed as the default to
-// `taskplanner`, `reconciler` and `planner`. Under `strategic` the reconciler
-// runs no code tests, so a wrong verdict on a project full of source is not a
-// cosmetic misfiling.
+// if/elif chain over two counts and one string, and that domain is passed as
+// the default to `taskplanner` and `reconciler`. It selects the reconciler's
+// ground-truth protocol and the queue's priority axis, so a wrong verdict on a
+// project full of source is not a cosmetic misfiling.
 //
 // The gate that stood here measured branch LAYOUT — whether a line mentioned
 // `code_files`. Four edits reinstating the defect it guards passed it (issue
@@ -54,6 +54,8 @@ import {
 //      changes what a real project is classified as.
 //   2. NO DEAD BRANCH — every branch fires for some input in a wide sweep. A
 //      branch that can never fire is not decision logic, it is camouflage.
+//      The sweep is two-dimensional now: the four artifact counts left with the
+//      two domains they decided, so the cascade reads the tree and nothing else.
 //   3. THE ABSENT COUNT stays out of arithmetic. `unavailable` is modelled as
 //      the string the helper actually prints, so a count branch lifted above
 //      the `counted_by == "none"` line raises instead of quietly comparing.
@@ -68,21 +70,17 @@ const promptText = () => readFileSync(orchestrator, "utf-8");
 const promptCascade = () => parseCascade(promptText());
 
 /**
- * The artifact counts measured in the consuming project where the defect was
- * caught: 122 commits, three open decisions against one open defect record, two
- * analyses. Every `code`/`data` scenario below carries this profile, because it
- * is precisely the profile that used to override the code count. A cascade that
- * answers `code` here is answering on the tree, which is the fix.
+ * The cascade's whole input surface: two file counts and the string that says
+ * whether they were measured at all.
+ *
+ * The consuming project where the defect was caught carried 122 commits, three
+ * open decisions against one open defect record and two analyses, and those
+ * four numbers are what used to override its 108 source files. They are no
+ * longer inputs — the branches that read them went with the two domains they
+ * decided — so the profile that produced the defect is now unrepresentable
+ * rather than merely outvoted. What remains asserted below is the tree.
  */
-const DEFECT_PROFILE = {
-  commits: 122,
-  analyses_count: 2,
-  issues_count: 1,
-  decisions_count: 3,
-} as const;
-
 const counted = (over: Partial<Counts>): Counts => ({
-  ...DEFECT_PROFILE,
   counted_by: "git-ls-files",
   code_files: 0,
   data_files: 0,
@@ -127,56 +125,13 @@ const scenarios: Scenario[] = [
     domain: "data",
   },
   {
-    name: "a sourceless workbench whose open decisions match its open defects",
-    counts: counted({ code_files: 0, data_files: 0, decisions_count: 3, issues_count: 1 }),
-    domain: "strategic",
-  },
-  {
-    name: "a sourceless workbench with analyses and no commits",
-    counts: counted({
-      code_files: 0,
-      data_files: 0,
-      decisions_count: 0,
-      issues_count: 0,
-      analyses_count: 2,
-      commits: 0,
-    }),
-    domain: "strategic",
-  },
-  {
-    name: "a sourceless workbench carrying analyses, already committed against",
-    counts: counted({
-      code_files: 0,
-      data_files: 0,
-      decisions_count: 0,
-      issues_count: 2,
-      analyses_count: 2,
-      commits: 122,
-    }),
-    domain: "knowledge",
-  },
-  {
     name: "a sourceless tree that still holds structured data",
-    counts: counted({
-      code_files: 0,
-      data_files: 4,
-      decisions_count: 0,
-      issues_count: 0,
-      analyses_count: 0,
-      commits: 5,
-    }),
+    counts: counted({ code_files: 0, data_files: 4 }),
     domain: "data",
   },
   {
-    name: "no evidence at all — the final fallback",
-    counts: counted({
-      code_files: 0,
-      data_files: 0,
-      decisions_count: 0,
-      issues_count: 0,
-      analyses_count: 0,
-      commits: 5,
-    }),
+    name: "a sourceless workbench with no structured data either — the fallback",
+    counts: counted({ code_files: 0, data_files: 0 }),
     domain: "code",
   },
   {
@@ -220,40 +175,14 @@ function assertVerdicts(branches: Branch[]): void {
 const SWEEP = {
   code_files: [0, 1, 2, 11, 19, 27, 88, 99, 108],
   data_files: [0, 1, 4, 11, 21, 30, 60],
-  analyses_count: [0, 1, 2],
-  issues_count: [0, 1, 3],
-  decisions_count: [0, 1, 3],
-  commits: [0, 1, 122],
 };
 
 /** Every combination of the sweep, plus the one absent-count shape. */
 function* corpus(): Generator<Counts> {
   for (const code_files of SWEEP.code_files)
     for (const data_files of SWEEP.data_files)
-      for (const analyses_count of SWEEP.analyses_count)
-        for (const issues_count of SWEEP.issues_count)
-          for (const decisions_count of SWEEP.decisions_count)
-            for (const commits of SWEEP.commits)
-              yield {
-                counted_by: "git-ls-files",
-                code_files,
-                data_files,
-                analyses_count,
-                issues_count,
-                decisions_count,
-                commits,
-              };
-  for (const analyses_count of SWEEP.analyses_count)
-    for (const decisions_count of SWEEP.decisions_count)
-      yield {
-        counted_by: "none",
-        code_files: "unavailable",
-        data_files: "unavailable",
-        analyses_count,
-        issues_count: 1,
-        decisions_count,
-        commits: 122,
-      };
+      yield { counted_by: "git-ls-files", code_files, data_files };
+  yield { counted_by: "none", code_files: "unavailable", data_files: "unavailable" };
 }
 
 /**
@@ -276,11 +205,11 @@ function assertNoDeadBranch(branches: Branch[]): void {
   }
 }
 
-/** All four domains are still reachable — not merely mentioned. */
+/** Every domain is still reachable — not merely mentioned. */
 function assertAllDomainsReachable(branches: Branch[]): void {
   const reached = new Set<Domain>();
   for (const counts of corpus()) reached.add(evaluateCascade(branches, counts).domain);
-  for (const d of ["code", "data", "strategic", "knowledge"] as Domain[]) {
+  for (const d of DOMAINS) {
     expect(reached.has(d), `no input in the sweep reaches domain "${d}"`).toBe(true);
   }
 }
@@ -328,7 +257,7 @@ describe("orchestrator Setup Step 5 — the cascade, executed", () => {
     assertNoDeadBranch(promptCascade());
   });
 
-  it("can still reach all four domains", () => {
+  it("can still reach every domain it names", () => {
     assertAllDomainsReachable(promptCascade());
   });
 
@@ -384,8 +313,13 @@ describe("orchestrator Setup Step 5 — the cascade, executed", () => {
 
 const fence = (lines: string[]) => ["```", ...lines, "```"].join("\n");
 
-/** The cascade as it stood at 2910cf6, before the reorder. */
-const PRE_FIX = [
+/**
+ * The cascade as it stood at 2910cf6. Two of its branches assign domains that
+ * were retired with them, so it no longer parses at all — which is asserted
+ * below rather than assumed, and is why the defeats are re-expressed in the
+ * surviving vocabulary instead of being driven from this text.
+ */
+const HISTORICAL_PRE_FIX = [
   'if decisions_count > 0 and decisions_count >= issues_count: domain = "strategic"',
   'elif analyses_count > 0 and commits == 0:                   domain = "strategic"',
   'elif counted_by == "none":                                  domain = "code"',
@@ -394,13 +328,23 @@ const PRE_FIX = [
   'else:                                                       domain = "code"',
 ];
 
-/** The pre-fix order, restored beneath a leading absent-count branch. */
+/**
+ * The pre-fix SHAPE, in the two domains that survive: the branch deciding on
+ * the data count alone stands ahead of every reading of the source count, and
+ * the ratio below it has lost its `code_files > 0` guard, so its denominator of
+ * zero degenerates to `data_files > 0` all over again. Restored beneath a
+ * leading absent-count branch, exactly as the original was.
+ */
 const PRE_FIX_BENEATH = [
-  'elif decisions_count > 0 and decisions_count >= issues_count: domain = "strategic"',
-  'elif analyses_count > 0 and commits == 0:                     domain = "strategic"',
-  'elif analyses_count > 0 and code_files == 0:                  domain = "knowledge"',
+  'elif data_files > 0:                                          domain = "data"',
   'elif data_files > code_files * 2:                             domain = "data"',
   'else:                                                         domain = "code"',
+];
+
+/** The pre-fix shape as a whole cascade, absent-count branch included. */
+const PRE_FIX = [
+  'if counted_by == "none":                                      domain = "code"',
+  ...PRE_FIX_BENEATH,
 ];
 
 /** One targeted substitution in the live prompt block, asserted to have landed. */
@@ -436,7 +380,7 @@ const DEFEATS: { name: string; markdown: () => string }[] = [
     markdown: () =>
       fence([
         'if counted_by == "none":                                      domain = "code"',
-        'elif issues_count < 0:                                        domain = "code"   # code_files not read',
+        'elif data_files < 0:                                          domain = "code"   # code_files not read',
         ...PRE_FIX_BENEATH,
       ]),
   },
@@ -448,20 +392,38 @@ describe("the gate catches the four edits that defeated its predecessor", () => 
       expect(() => assertCascadeBehaviour(parseCascade(defeat.markdown()))).toThrow();
     });
 
-    it(`— and it is the defect: KRK is classified strategic under ${defeat.name}`, () => {
-      // 108 Rust files, 11 data files, three open decisions against one open
-      // defect record. This is issue 260807-1942 verbatim, and it is what each
-      // defeat restores while the layout lint stays green.
+    it(`— and it is the defect: KRK is classified data under ${defeat.name}`, () => {
+      // 108 Rust files against 11 data files, and the verdict comes back
+      // `data`. This is issue 260807-1942 in the vocabulary that survives it:
+      // the project's source volume has no influence on the answer, which is
+      // what each defeat restores while the layout lint stays green.
       const krk = counted({ code_files: 108, data_files: 11 });
-      expect(domainOf(parseCascade(defeat.markdown()), krk)).toBe("strategic");
+      expect(domainOf(parseCascade(defeat.markdown()), krk)).toBe("data");
     });
   }
 
-  it("rejects the pre-fix cascade itself", () => {
+  it("rejects the pre-fix shape itself", () => {
     expect(() => assertCascadeBehaviour(parseCascade(fence(PRE_FIX)))).toThrow();
     expect(domainOf(parseCascade(fence(PRE_FIX)), counted({ code_files: 108, data_files: 11 }))).toBe(
-      "strategic",
+      "data",
     );
+  });
+
+  it("refuses the historical pre-fix cascade at parse, naming the retirement", () => {
+    // The real 2910cf6 text is kept as a control of a different kind: two of
+    // its branches assign retired domains, and the grammar says so rather than
+    // silently reading a four-outcome cascade into a two-outcome world.
+    expect(() => parseCascade(fence(HISTORICAL_PRE_FIX))).toThrow(/retired/);
+  });
+
+  it("refuses a branch reading an input that was retired with those domains", () => {
+    const retiredInput = fence([
+      'if counted_by == "none":                                      domain = "code"',
+      'elif decisions_count > 0:                                     domain = "data"',
+      'elif code_files > 0:                                          domain = "code"',
+      'else:                                                         domain = "code"',
+    ]);
+    expect(() => parseCascade(retiredInput)).toThrow(/retired/);
   });
 
   it("rejects a cascade with no final `else`, which would leave some input unanswered", () => {
@@ -474,7 +436,7 @@ describe("the gate catches the four edits that defeated its predecessor", () => 
     const lifted = fence([
       'if code_files > 0:                                            domain = "code"',
       'elif counted_by == "none":                                    domain = "code"',
-      'elif decisions_count > 0 and decisions_count >= issues_count: domain = "strategic"',
+      'elif data_files > 0:                                          domain = "data"',
       'else:                                                         domain = "code"',
     ]);
     expect(() => assertAbsentCountSafe(parseCascade(lifted))).toThrow(/260807-1951/);
@@ -484,7 +446,7 @@ describe("the gate catches the four edits that defeated its predecessor", () => 
     const renamed = fence([
       'if counted_by == "none":                                      domain = "code"',
       'elif source_files > 0:                                        domain = "code"',
-      'elif decisions_count > 0 and decisions_count >= issues_count: domain = "strategic"',
+      'elif data_files > 0:                                          domain = "data"',
       'else:                                                         domain = "code"',
     ]);
     expect(() => parseCascade(renamed)).toThrow(/not one of the inputs Step 5 gathers/);
@@ -494,7 +456,7 @@ describe("the gate catches the four edits that defeated its predecessor", () => 
     const truthy = fence([
       'if counted_by == "none":                                      domain = "code"',
       'elif code_files:                                              domain = "code"',
-      'elif decisions_count > 0 and decisions_count >= issues_count: domain = "strategic"',
+      'elif data_files > 0:                                          domain = "data"',
       'else:                                                         domain = "code"',
     ]);
     expect(() => parseCascade(truthy)).toThrow(/not a comparison/);
@@ -510,9 +472,9 @@ describe("the gate catches the four edits that defeated its predecessor", () => 
 //
 //   Round 1 asserted a second definition was unrepresentable. One existed:
 //   `skills/cleanup/SKILL.md` carried the cascade as one prose sentence, in the
-//   pre-fix order, with no `counted_by == "none"` case. A project reached `code`
-//   at Setup and `strategic` at cleanup inside one session, and under
-//   `strategic` the reconciler runs no code tests.
+//   pre-fix order, with no `counted_by == "none"` case. One project came out of
+//   a single session with two different domains, Setup and cleanup disagreeing,
+//   and the domain selects the reconciler's ground-truth protocol.
 //
 //   Round 2 replaced that with a scoped measurement naming three holes. A review
 //   measured a fourth against the shipped build (issues 260810-2110): a domain
@@ -603,8 +565,8 @@ describe("the domain cascade is stated in exactly one consumer", () => {
       .map(({ rel }) => rel);
     expect(
       holders,
-      `a fenced cascade block assigning both \`code\` and \`strategic\` must exist in ` +
-        `${DEFINITION_SITE} and nowhere else in agents/ or skills/. Found in: ${holders.join(", ")}`,
+      `a fenced cascade block assigning every domain in ${DOMAINS.join(" | ")} must exist in ` +
+        `${DEFINITION_SITE} and nowhere else in the scanned set. Found in: ${holders.join(", ")}`,
     ).toEqual([DEFINITION_SITE]);
   });
 
@@ -643,9 +605,15 @@ describe("the reach gate catches the copy it was written for", () => {
     "with no code, `data` if data files dominate, else `code`. When unsure, default `code`.";
 
   it("flags the cleanup sentence, naming its domains and its inputs", () => {
+    // Kept verbatim, and it still fires — which is the whole reason
+    // `RETIRED_COUNT_NAMES` survives the removal of the branches that read
+    // them. Two of the sentence's four domain names no longer exist, so what
+    // selects it now is its two surviving names plus counts only the retired
+    // cascade ever read. A stale copy is the likeliest copy from here on, and
+    // this is the assertion that it is still visible.
     const found = findCascadeStatements(CLEANUP_COPY);
     expect(found.length).toBe(1);
-    expect(found[0].domains.sort()).toEqual(["code", "data", "knowledge", "strategic"]);
+    expect(found[0].domains.sort()).toEqual(["code", "data"]);
     expect(found[0].inputs).toContain("decisions_count");
     expect(found[0].inputs).toContain("analyses_count");
   });
@@ -701,8 +669,8 @@ describe("the reach gate catches the copy it was written for", () => {
     copy.splice(
       12,
       0,
-      "Detect the domain the orchestrator detected: `strategic` if open decisions outnumber " +
-        "open issues, `knowledge` if analyses exist with no source, otherwise `code`.",
+      "Detect the domain the orchestrator detected: `data` if the data files outnumber the " +
+        "source files, otherwise `code`.",
     );
     const found = findCascadeStatements(copy.join("\n"));
     expect(found.map((s) => s.line)).toEqual([13]);
@@ -713,8 +681,8 @@ describe("the reach gate catches the copy it was written for", () => {
     // The line-scope widening (issue 260810-2110). The same sentence on one
     // line already fired; split by a 78-column wrap it did not.
     const wrapped =
-      "Pick `strategic` when open decisions outnumber open issues,\n" +
-      "and `code` otherwise (measured on decisions_count and issues_count).";
+      "Pick `data` when the data files outnumber the source files,\n" +
+      "and `code` otherwise (measured on data_files and code_files).";
     const found = findCascadeStatements(wrapped);
     expect(found.length).toBe(1);
     expect(found[0].line).toBe(1);
@@ -732,17 +700,16 @@ describe("the reach gate catches the copy it was written for", () => {
   const MUST_FIRE: [string, string][] = [
     [
       "reworded, prose inputs",
-      "Pick `strategic` when open decisions outnumber open issues, `knowledge` when analyses " +
-        "exist without source, `data` when data files dominate, otherwise `code`.",
+      "Pick `data` when the data files dominate the source files, otherwise `code`.",
     ],
     [
       "written with the cascade's own variable names",
-      "`strategic` if decisions_count >= issues_count, else `knowledge` if analyses_count > 0 " +
-        "and code_files == 0, else `code`.",
+      "`data` if data_files > code_files * 2, else `code` whenever code_files is above zero.",
     ],
     [
-      "a two-branch fragment, which is already a decision procedure",
-      "Use `strategic` if the workbench has more open decisions than issues; otherwise `code`.",
+      "a stale copy that still names the retired counts",
+      "Detect the workbench domain the way Setup does: `data` if data files dominate, else " +
+        "`code`; with no source at all, weigh decisions_count against issues_count.",
     ],
   ];
 
@@ -758,47 +725,52 @@ describe("the reach gate catches the copy it was written for", () => {
   // rather than in a red suite nobody can read.
   const MUST_NOT_FIRE: [string, string][] = [
     [
-      "reconciler.md:47 — parsing the dispatch parameter",
+      "reconciler.md:34 — parsing the dispatch parameter",
       "If the dispatch prompt's first non-empty content line is `**Domain:** <value>`, parse " +
-        "`<value>` as the domain (one of `code | data | strategic | knowledge`).",
+        "`<value>` as the domain (one of `code | data`).",
     ],
     [
-      "reconciler.md:169 — branching on the domain it was given",
-      "**When `domain=strategic` or `domain=knowledge`:** do NOT rename issue markers " +
-        "`_o_→_c_` for items whose answer lives in a later analysis.",
+      "reconciler.md:8 — saying what ground truth is per domain, naming no count",
+      "The shape of \"ground truth\" depends on the active domain (see Domain Parameter below) " +
+        "— for `code` it's the codebase, for `data` it's the schemas and the ontology.",
     ],
     [
-      "playmaker.md:108 — a ranking heuristic, not a domain heuristic",
-      "**Unresolved-decision count** — number of `_o_` decision records cited in its Grounding " +
-        "snapshot. Lower is better (for `code`/`data`); higher is better (for `strategic`).",
+      "reconciler.md:78 — pointing at the per-domain protocols",
+      "The bullets below describe the `code` protocol verbatim; the `data` notes follow it.",
     ],
     [
-      "reconciler.md:91 — pointing at the per-domain protocols",
-      "The bullets below describe the `code` protocol verbatim; for `data`, `strategic`, " +
-        "`knowledge` see the per-domain notes that follow.",
+      "reconciler.md:107 — one retired count is named, and one is not two",
+      "- **Artifact↔Grounding edge** — already implicit in the `code`/`data` protocol output " +
+        "(claims-vs-disk + reviewer-issues count).",
     ],
     [
-      "next/SKILL.md:72 — naming the value set",
-      "`<detected-domain>` ∈ `{code, data, strategic, knowledge}` for the remainder of this skill.",
+      "taskplanner.md:38 — an assumption about the reconciler, not a heuristic",
+      "- The `reconciler` has been run recently — tracking files reflect ground truth for the " +
+        "active domain (the codebase for `code`, the schemas and ontology for `data`).",
+    ],
+    [
+      "next/SKILL.md:94 — naming the value set",
+      "`<detected-domain>` ∈ `{code, data}` for the remainder of this skill.",
     ],
     // The two the continuation window costs if it joins across blocks instead
-    // of only to a wrap. Both are adjacent bullets of a legitimate per-domain
+    // of only to a wrap. Both are adjacent lines of a legitimate per-domain
     // list, and an unconditional two-line window selects both — measured on the
-    // shipped tree before the block rule went in.
+    // shipped tree before the block rule went in, and re-measured after the
+    // domain values were cut back to two.
     [
-      "playmaker.md:111-112 — two bullets of the per-domain signal list",
-      "  - `data`: count of pending issues (`_o_` and `_p_` files under `$SCAN_ISSUES`) that " +
-        "mention ontology/manifest paths cited in the Circle's `Grounding snapshot`.\n" +
-        "  - `strategic`: count of open `_o_` decisions cited in the Circle's `## Directive` " +
-        "(decisions the Circle would realise).",
+      "playmaker.md:31-32 — two rows of the per-domain ranking table",
+      "| `code` | Prioritise `_a_` Circles whose `Grounding snapshot` cites the fewest " +
+        "unresolved `_o_` decision records and whose dependencies are all `_c_`. |\n" +
+        "| `data` | Same as code, plus prioritise Circles touching ontology/manifest files " +
+        "with high pending-issue counts. |",
     ],
     [
-      "reconciler.md:135-136 — two bullets of the edge list",
+      "reconciler.md:107-108 — two bullets of the edge list",
       "- **Artifact↔Grounding edge** — already implicit in the `code`/`data` protocol output " +
-        "(claims-vs-disk + reviewer-issues count). For `strategic`/`knowledge` domains, restate " +
-        "using their protocol's outputs.\n" +
-        "- **Artifact↔Directive edge** — read the session history's `**Directive:**` line and " +
-        "walk the commits from `git log <session-start-HEAD>..HEAD`.",
+        "(claims-vs-disk + reviewer-issues count). Restate as one line: `<N> claims verified " +
+        "/ <M> drift items / <K> open coderev+ontorev issues`.\n" +
+        "- **Artifact↔Directive edge** — read the orchestrator's session history file's " +
+        "`**Directive:**` line and walk the commits from `git log <session-start-HEAD>..HEAD`.",
     ],
   ];
 

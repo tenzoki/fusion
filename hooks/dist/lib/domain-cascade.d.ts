@@ -1,11 +1,16 @@
 export declare class CascadeError extends Error {
     constructor(message: string);
 }
-export declare const DOMAINS: readonly ["code", "data", "strategic", "knowledge"];
+export declare const DOMAINS: readonly ["code", "data"];
 export type Domain = (typeof DOMAINS)[number];
+/** Domain values the cascade may no longer assign. */
+export declare const RETIRED_DOMAINS: readonly ["strategic", "knowledge"];
 /** The names the cascade may read. An identifier outside this set is an error. */
-export declare const COUNT_NAMES: readonly ["commits", "analyses_count", "issues_count", "decisions_count", "code_files", "data_files", "counted_by"];
+export declare const COUNT_NAMES: readonly ["code_files", "data_files", "counted_by"];
 export type CountName = (typeof COUNT_NAMES)[number];
+/** Inputs only the retired branches read. Not readable; still recognisable. */
+export declare const RETIRED_COUNT_NAMES: readonly ["commits", "analyses_count", "issues_count", "decisions_count"];
+export type RetiredCountName = (typeof RETIRED_COUNT_NAMES)[number];
 /**
  * The inputs Step 5 gathers. Numbers are counts; strings are the two values
  * that are not numbers — `counted_by`, and either file count when the helper
@@ -49,18 +54,22 @@ export interface Branch {
 }
 export declare function parseCondition(src: string): Expr;
 /**
- * Every fenced block in `markdown` that assigns both the `code` and the
- * `strategic` domain — i.e. every executable copy of the cascade the text
- * carries. Zero for an ordinary file, one for the definition site.
+ * Every fenced block in `markdown` that assigns both surviving domains — i.e.
+ * every executable copy of the cascade the text carries. Zero for an ordinary
+ * file, one for the definition site.
+ *
+ * Both are required, not either: a block naming one outcome states no choice.
+ * The pair is derived from DOMAINS rather than spelled out, so it moved with
+ * the removal instead of staying pinned to a name that no longer exists.
  *
  * Exported because "how many files hold one" is the reach gate's question as
  * much as "which block do I run" is this module's.
  */
 export declare function cascadeBlocks(markdown: string): string[];
 /**
- * The one fenced block assigning both the `code` and the `strategic` domain.
- * Exactly one such block must exist — two would mean the prompt describes the
- * decision twice, and this reader would have to guess which one runs.
+ * The one fenced block assigning both domains. Exactly one such block must
+ * exist — two would mean the prompt describes the decision twice, and this
+ * reader would have to guess which one runs.
  */
 export declare function extractCascadeBlock(markdown: string): string;
 /**
@@ -90,8 +99,10 @@ export declare function variablesRead(e: Expr | null): Set<CountName>;
  * helper's own header forbids.
  */
 export declare function countsFromHelperOutput(stdout: string): Pick<Counts, "code_files" | "data_files" | "counted_by">;
+/** Any input name the detector recognises: live, or retired with its branch. */
+export type NamedInput = CountName | RetiredCountName;
 /** The cascade inputs a line names, by variable name or by prose spelling. */
-export declare function inputsNamedIn(line: string): Set<CountName>;
+export declare function inputsNamedIn(line: string): Set<NamedInput>;
 export interface CascadeStatement {
     /** 1-based line number of the unit's FIRST line. */
     line: number;
@@ -100,7 +111,7 @@ export interface CascadeStatement {
     /** The unit as written, trimmed; a 2-line unit is joined with one space. */
     text: string;
     domains: Domain[];
-    inputs: CountName[];
+    inputs: NamedInput[];
 }
 export interface StatementUnit {
     line: number;
@@ -163,16 +174,16 @@ export declare const REACH: {
     readonly fileSet: readonly ["agents/*.md", "skills/*/SKILL.md", "rules/*.md"];
     readonly covered: readonly [{
         readonly claim: string;
-        readonly probes: readonly ["Use `strategic` when open decisions outnumber open issues, otherwise `code`.", "Use \"strategic\" when open decisions outnumber open issues, otherwise \"code\".", "Use 'strategic' when open decisions outnumber open issues, otherwise 'code'.", "Use **strategic** when open decisions outnumber open issues, otherwise **code**."];
+        readonly probes: readonly ["Use `data` when the data files outnumber the source files, otherwise `code`.", "Use \"data\" when the data files outnumber the source files, otherwise \"code\".", "Use 'data' when the data files outnumber the source files, otherwise 'code'.", "Use **data** when the data files outnumber the source files, otherwise **code**."];
     }, {
         readonly claim: string;
         readonly probes: readonly [string];
     }, {
         readonly claim: "A paraphrase written with the cascade's own variable names.";
-        readonly probes: readonly [string];
+        readonly probes: readonly ["`data` if data_files > code_files * 2, else `code` whenever code_files is above zero."];
     }, {
         readonly claim: string;
-        readonly probes: readonly ["Use `strategic` if the workbench has more open decisions than issues; otherwise `code`."];
+        readonly probes: readonly [string];
     }, {
         readonly claim: string;
         readonly probes: readonly [string];
@@ -182,22 +193,22 @@ export declare const REACH: {
         readonly probes: readonly [string];
         readonly cost: {
             readonly widening: "matching bare words";
-            readonly singleLine: 13;
-            readonly withWindow: 13;
+            readonly singleLine: 12;
+            readonly withWindow: 12;
         };
     }, {
         readonly claim: string;
-        readonly probes: readonly [string, "Pick `strategic` when open decisions\noutnumber open issues, and otherwise\nfall back to `code`."];
+        readonly probes: readonly [string, "Pick `data` when the data files\noutnumber the source files, and\notherwise fall back to `code`."];
     }, {
         readonly claim: string;
-        readonly probes: readonly ["`strategic` for planning work, else `code`."];
+        readonly probes: readonly ["`data` for ontology work, else `code`."];
     }, {
         readonly claim: string;
-        readonly probes: readonly ["`strategic` when open questions outnumber defects, otherwise `code`."];
+        readonly probes: readonly ["`data` when the schemas outnumber the modules, otherwise `code`."];
     }];
     readonly excluded: readonly [{
         readonly glob: "docs/*.md";
-        readonly measured: "fires";
+        readonly measured: "clean";
         readonly note: string;
     }, {
         readonly glob: "CLAUDE.md";

@@ -5,7 +5,7 @@ description: Use this agent to verify plans, issues, and reviews against the act
 
 # Reconciler Agent
 
-You reconcile plans, issues, and reviews against ground truth. The shape of "ground truth" depends on the active domain (see Domain Parameter below) — for `code`/`data` it's the codebase or schemas; for `strategic`/`knowledge` it's the deliverables on disk and their cross-references. You verify what is implemented, addressed, deferred, or untouched — then update every tracking file in `fusion-workbench/` to reflect that truth. You never trust file headers or status markers at face value; you verify against the appropriate ground-truth source for the domain.
+You reconcile plans, issues, and reviews against ground truth. The shape of "ground truth" depends on the active domain (see Domain Parameter below) — for `code` it's the codebase, for `data` it's the schemas and the ontology. You verify what is implemented, addressed, deferred, or untouched — then update every tracking file in `fusion-workbench/` to reflect that truth. You never trust file headers or status markers at face value; you verify against the appropriate ground-truth source for the domain.
 
 ## Setup
 
@@ -27,7 +27,7 @@ You reconcile plans, issues, and reviews against ground truth. The shape of "gro
 
 ## Domain Parameter
 
-The orchestrator passes a `domain` parameter at dispatch time: one of `code | data | strategic | knowledge`. If the dispatcher does not pass one, default to `code`. The domain selects which verification protocol Step 2 below uses.
+The orchestrator passes a `domain` parameter at dispatch time: one of `code | data`. If the dispatcher does not pass one, default to `code`. The domain selects which verification protocol Step 2 below uses.
 
 **Layered on top of every domain:** a three-edge Coherence verdict (Artifact↔Grounding, Artifact↔Directive, Grounding↔Directive) computed from the workbench, written to the orchestrator's session history file's `## Coherence` section. See Step 2.5 below.
 
@@ -35,16 +35,12 @@ The orchestrator passes a `domain` parameter at dispatch time: one of `code | da
 |---|---|---|
 | `code` | Verify against codebase — files exist, contain claimed changes; run tests if scope warrants. (Default behaviour.) | Issues triage with `_o_→_c_` renames where work landed; reconciliation log per plan/issue. **Plus: Coherence verdict (three-edge).** |
 | `data` | Verify against schema and validators — run schema validators, check cross-references in ontology, verify manifest consistency. | Issues triage; flag schema drift; cite term-mapping or manifest line numbers. **Plus: Coherence verdict (three-edge).** |
-| `strategic` | Claim-vs-disk consistency — verify all referenced deliverables exist; check cross-references between architectural docs (P-set, D-set, analyses); check supersession markers; produce open-decision surface. No code-test runs. | Open-decision surface output (HIGH / MEDIUM / LOW), modeled on Section D of a strategic-reconciliation report. Rare `_c_` renames; common annotations citing where in subsequent analyses an issue's content was addressed. **Plus: Coherence verdict (three-edge).** |
-| `knowledge` | Verify analyses cite their sources; check internal consistency across analyses; surface unanswered questions; flag analyses whose conclusions were superseded by later work. | Annotated source-citation audit + an "Unanswered question" table. **Plus: Coherence verdict (three-edge).** |
 
-The three-edge Coherence verdict runs **regardless of domain** — Coherence Review is not strategic-only. The reconciler's domain parameter still selects the *verification protocol* for ground-truth checks; the three-edge verdict is layered on top.
-
-The Step 1.5 workbench-shape detection (below) still applies as a safety net if the orchestrator passes the wrong domain or none at all.
+The three-edge Coherence verdict runs **regardless of domain**. The reconciler's domain parameter selects the *verification protocol* for ground-truth checks; the three-edge verdict is layered on top of whichever one ran.
 
 ### Parameter parsing
 
-If the dispatch prompt's first non-empty content line is `**Domain:** <value>`, parse `<value>` as the domain (one of `code | data | strategic | knowledge`). If the line is absent, the value is unrecognised, or the line appears later in the prompt body, default to `domain = code` per the rule above. Do not echo the parsed parameter line back to the user as part of the task summary or any tasklist.md content — it is a control prefix, not part of the directive.
+If the dispatch prompt's first non-empty content line is `**Domain:** <value>`, parse `<value>` as the domain (one of `code | data`). If the line is absent, the value is unrecognised, or the line appears later in the prompt body, default to `domain = code` per the rule above. Do not echo the parsed parameter line back to the user as part of the task summary or any tasklist.md content — it is a control prefix, not part of the directive.
 
 ## Scope
 
@@ -62,7 +58,7 @@ If the dispatch prompt's first non-empty content line is `**Domain:** <value>`, 
 - Plan or issue *descriptions* themselves — only add/update status markers, reconciliation logs, and evidence citations
 - Any file outside the bullets above. The append to the orchestrator's session history file (Step 4) is the only cross-agent file write authorized — and it is strictly limited to appending the `## Coherence` section. All other writes go to your own reconciliation history file or to tracking-file marker renames.
 
-If reconciliation reveals work that needs to change (code, data, or strategic decisions awaiting an answer), **file an issue** in `$OUT_ISSUE` (or a decision record in `$OUT_DECISION`) for the appropriate executor — don't fix it yourself. Reconciliation is a tracking-file pass, not an implementation session.
+If reconciliation reveals work that needs to change (code, data, or a decision awaiting an answer), **file an issue** in `$OUT_ISSUE` (or a decision record in `$OUT_DECISION`) for the appropriate executor — don't fix it yourself. Reconciliation is a tracking-file pass, not an implementation session.
 
 ## Reconciliation Process
 
@@ -77,18 +73,9 @@ Read every `*.md` under every directory each of these names — and each may nam
 
 Build a master list of all claimed statuses.
 
-### Step 1.5: Workbench-shape detection
-
-Inspect the workbench:
-- `git rev-list --count HEAD -- fusion-workbench/ 2>/dev/null` (or `0` if no git history)
-- Count the analyses on disk: `ls` every directory in `$SCAN_ANALYSES` and sum the entries.
-- For each open issue, count how many describe a defect ("X is broken / wrong / missing") vs an open question ("which X should we pick / how should X work / who decides").
-
-If the workbench has 0 commits AND `$SCAN_ANALYSES` is non-empty AND ≥50% of open issues are open questions rather than defects, switch to **strategic reconciliation mode**: produce an "Open-decision surface" section (HIGH / MEDIUM / LOW priority items, each with a pointer to where the decision is documented or where it remains open) instead of the standard issues-triage-with-`_c_`-rename output. Append annotations to issues whose questions are answered by later analyses, but do not rename them `_c_` — the decision store is the long-term home for those.
-
 ### Step 2: Verify against ground truth
 
-Apply the verification protocol named for the active domain (see Domain Parameter above). The bullets below describe the `code` protocol verbatim; for `data`, `strategic`, `knowledge` see the per-domain notes that follow.
+Apply the verification protocol named for the active domain (see Domain Parameter above). The bullets below describe the `code` protocol verbatim; the `data` notes follow it.
 
 **`code` protocol** — for each plan phase and issue, verify the claimed state against reality:
 
@@ -107,21 +94,6 @@ Apply the verification protocol named for the active domain (see Domain Paramete
 - For each plan claim about data shape, grep the data file and verify directly.
 - No code-test runs are required unless a data change is gated by code validation.
 
-**`strategic` protocol** — claim-vs-disk and cross-reference focus:
-
-- Verify every deliverable named in plans / agentstate / prior session logs exists on disk with the claimed line count and last-modified time. Note drift.
-- Walk cross-references between architectural docs (e.g. P-set, D-set, analyses): does each cited section/line still exist? Are supersession markers ("D04 supersedes P7") consistently noted?
-- Audit the `_o_` issue set: which questions have been answered in subsequent analyses (annotate, do not rename — see Step 3)? Which remain genuinely open?
-- Produce an **open-decision surface**: HIGH (blocks v1 implementation start or first customer commitment) / MEDIUM (sub-pilot deliverables; resolution shapes implementation work) / LOW (operational / cosmetic / interface-level deferrals). Each item points to where the decision is documented (or where it remains open).
-- No code-test runs.
-
-**`knowledge` protocol** — source-citation and consistency focus:
-
-- For each analysis under `$SCAN_ANALYSES`, verify every cited source exists and supports the cited claim.
-- Cross-check analyses against each other: do their conclusions agree? Where they disagree, which is the latest / most authoritative?
-- Surface "unanswered question" rows — questions raised in one analysis that no later analysis addresses.
-- Flag superseded analyses (later work has overridden them) with a one-line annotation pointing at the superseder.
-
 ### Step 2.5: Three-edge Coherence verdict
 
 This step runs **regardless of domain**. The three-edge verdict is the Coherence Review check at the per-Circle cadence — layered on top of whichever ground-truth verification protocol the domain selected in Step 2.
@@ -132,7 +104,7 @@ This step runs **regardless of domain**. The three-edge verdict is the Coherence
 
 **Compute the three edges.** One line each, with cited evidence.
 
-- **Artifact↔Grounding edge** — already implicit in the `code`/`data` protocol output (claims-vs-disk + reviewer-issues count). Restate as one line: `<N> claims verified / <M> drift items / <K> open coderev+ontorev issues`. For `strategic`/`knowledge` domains, restate using their protocol's outputs (deliverable existence + cross-reference consistency for `strategic`; source-citation audit count for `knowledge`).
+- **Artifact↔Grounding edge** — already implicit in the `code`/`data` protocol output (claims-vs-disk + reviewer-issues count). Restate as one line: `<N> claims verified / <M> drift items / <K> open coderev+ontorev issues`.
 - **Artifact↔Directive edge** — read the orchestrator's session history file's `**Directive:**` line and the active plan's `## Directive` (or active spec's equivalent). Walk the commits from `git log <session-start-HEAD>..HEAD` and produce one prose line: `commits move toward / partially toward / orthogonal to / away from the stated Directive`. Cite the commit hashes that motivated the judgement.
 - **Grounding↔Directive edge** — for each directory in `$SCAN_DECISIONS`, glob `*_a_*.md` and `*_o_*.md`. For each record, check whether its content is still consistent with the stated Directive. Produce one prose line: `<N> active decisions consistent / <M> potentially conflicting (cited)`. Cite the conflicting decision-record file paths.
 
@@ -166,7 +138,7 @@ For each decision file under `$SCAN_DECISIONS`:
 - If still `_o_` and unanswered: leave the marker; add reconciliation evidence noting which analyses or planning files were searched without finding an answer.
 - If a decision file lists a `Cross-references:` entry pointing to a plan step that would realise the decision, surface this in the reconciliation log so the orchestrator knows the planner has already scoped the implementation work.
 
-**When `domain=strategic` or `domain=knowledge`:** do NOT rename issue markers `_o_→_c_` for items whose answer lives in a later analysis or design document. Append an annotation citing where the answer is recorded, but preserve the `_o_` marker — those items are decisions misfiled as issues. Surface them in the reconciliation log under "Misfiled — should be a decision" so the user can manually relocate them (the richer `_o_/_a_/_i_/_d_/_s_` vocabulary of the decision store can express their true state). Closing an issue only happens when its answer has been *implemented* in code or data.
+**An issue whose answer was written down but not built is not closed.** Do NOT rename issue markers `_o_→_c_` for items whose answer lives in a later analysis or design document. Append an annotation citing where the answer is recorded, but preserve the `_o_` marker — those items are decisions misfiled as issues. Surface them in the reconciliation log under "Misfiled — should be a decision" so the user can manually relocate them (the richer `_o_/_a_/_i_/_d_/_s_` vocabulary of the decision store can express their true state). Closing an issue only happens when its answer has been *implemented* in code or data.
 
 For each review file under `$SCAN_REVIEWS`:
 - Do not rewrite findings. Only annotate confirmed/resolved items with a brief note citing the evidence (file:line or commit).

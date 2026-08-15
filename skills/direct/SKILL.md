@@ -58,7 +58,7 @@ if [ -f "$WORKBENCH/agentstate.yaml" ]; then DOMAIN="$(grep -E '^  domain:' "$WO
 DOMAIN="${DOMAIN:-code}"
 ```
 
-`<detected-domain>` ∈ `{code, data, strategic, knowledge}` — passed to shaper so it sets the Circle's `**Domain:**` field correctly. The user can edit the field later if the heuristic misjudged.
+`<detected-domain>` ∈ `{code, data}` — passed to shaper so it sets the Circle's `**Domain:**` field correctly. The user can edit the field later if the heuristic misjudged.
 
 ## Step 4 — Dispatch shaper in anticipated-circle mode
 

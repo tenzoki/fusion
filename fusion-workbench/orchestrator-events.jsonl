@@ -1535,3 +1535,5 @@
 {"ts":"2026-08-15T11:23:56","event":"task_start","turn":3,"task":"P-7","agent":"coder","detail":"remove conceptrev"}
 {"ts":"2026-08-15T11:44:17","event":"task_done","turn":3,"task":"P-7","agent":"coder","detail":"a17cc8c; 830 -> 828 tests; two plan claims disproved rather than performed; SCAN_INVESTIGATIONS lost its last consumer"}
 {"ts":"2026-08-15T11:44:17","event":"task_start","turn":3,"task":"P-8","agent":"coder","detail":"fold investigator into analyst; decide the investigations resolver arm from measurement"}
+{"ts":"2026-08-15T12:08:58","event":"task_done","turn":3,"task":"P-8","agent":"coder","detail":"7260bbc; 828 -> 827 tests; ninth analysis type carried at +141 bytes per dispatch; both investigations resolver arms retired on measurement; failure investigation became dispatchable"}
+{"ts":"2026-08-15T12:08:58","event":"task_start","turn":3,"task":"P-9","agent":"coder","detail":"domain values; cascade rewritten not deleted; implements the analyst-executor decision"}

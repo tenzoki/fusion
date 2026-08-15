@@ -68,3 +68,12 @@ Leave the marker `_o_`.
   the same `.gitignore` block, filed by `ontorev` in Turn 1; it now carries **two** stale
   exceptions, and step 11 adds a third when `bin/fusion-state-drift` goes
 - `history/260815-1217-ontocoder-step5-churn-configuration-leaves.md`
+
+---
+
+Resolved: step 9 performed the append this record prescribed, and widened it by one. The note
+appended to `260815-1206_o_…` records item 3's resolution in `04ea182` as asked, and item 2's
+resolution in step 9 itself, which rewrote the plugin description for the domain values and dropped
+the `churn detection` clause in the same edit — the sequencing both records asked for. Item 1
+(`.gitignore:39`) stands, with the reason it is being held for one sweep, so `260815-1206_o_…` keeps
+its `_o_` marker.

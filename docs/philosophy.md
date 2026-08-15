@@ -16,7 +16,7 @@ This doc explains *why* fusion is shaped the way it is and *how* a session runs 
 
 **4. Compliance over speed.** A compliance guard watches every write. A project records its decisions with the file areas they govern and a sensitivity, and a write into a high-sensitivity area is denied before it runs, with the decision it would violate named back to the agent. Three blocks in a row raise a halt that stops every further write until a human clears it. Drift is caught **at write time**. This fits high-trust work (ontology, regulatory, multi-domain knowledge) and is a poor fit for hot-loop prototyping where you want to thrash freely.
 
-**5. One framework, many project shapes.** Three agents (`taskplanner`, `reconciler`, `playmaker`) take a **domain parameter** at dispatch: `code | data | strategic | knowledge`. It picks the work queue's priority order, the reconciler's ground-truth protocol, and the portfolio's ranking bias. Same plumbing, different priorities — `code` favours user-visible features and bugs, `data` favours schema and ontology integrity, `strategic` favours decisions blocking implementation, `knowledge` favours analyses that unblock design. This lets fusion run on a Go monorepo and on a strategy team's decision archive without a fork.
+**5. One framework, many project shapes.** Three agents (`taskplanner`, `reconciler`, `playmaker`) take a **domain parameter** at dispatch: `code | data`. It picks the work queue's priority order, the reconciler's ground-truth protocol, and the portfolio's ranking bias. Same plumbing, different priorities — `code` favours user-visible features and bugs, `data` favours schema and ontology integrity. This lets fusion run on a Go monorepo and on an ontology project without a fork.
 
 ## How a session runs
 
