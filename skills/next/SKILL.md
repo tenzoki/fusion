@@ -105,7 +105,7 @@ Prompt body:
 
 No other parameters. Playmaker reads, ranks, regenerates the portfolio file, writes its own history file, and returns. It never renames Circle records and never writes `.active-circle`.
 
-**Explicit-form short-circuit:** if the user invoked `/fusion:next <circle-dirname>` (or the `--write-activation` alias), the dispatch in this step is still useful — it keeps the portfolio fresh and re-runs cycle and warning checks before we mutate state — but the briefing render in Step 5 may be skipped. In that case go straight to Step 6 with `<circle-dirname>` as the target. If the explicit target does not exist, or its record does not carry the `_a_` marker, halt with a clear mismatch report; do not fall back to the recommended one.
+**Explicit-form short-circuit:** if the user invoked `/fusion:next <circle-dirname>` (or the `--write-activation` alias), the dispatch in this step is still useful — it keeps the portfolio fresh and re-runs cycle and warning checks before we mutate state — but the briefing render in Step 5 may be skipped. In that case go straight to Step 6 with `<circle-dirname>` as the target, **which skips Step 5b too** — 5b is reachable only from the end of Step 5. Backlog operations this dispatch proposed are therefore never put to the user; they stay in the portfolio until the next default-form `/fusion:next` asks about them. If the explicit target does not exist, or its record does not carry the `_a_` marker, halt with a clear mismatch report; do not fall back to the recommended one.
 
 ## Step 4 — Read the portfolio
 
@@ -215,18 +215,17 @@ Only the record is renamed. The directory name never changes; that stability is 
 ```bash
 mv "$CDIR/_a_circle.md" "$CDIR/_t_circle.md"
 REC="$CDIR/_t_circle.md"
-if grep -qE '^\*\*Status:\*\*' "$REC"; then
-  sed -E 's|^\*\*Status:\*\*[[:space:]].*$|**Status:** active|' "$REC" > "$REC.tmp" && mv "$REC.tmp" "$REC"
-else
-  echo "note: $REC carries no **Status:** field, so none was set; the marker on the filename is the state" >&2
-fi
+sed -E 's|^\*\*Status:\*\*.*$|**Status:** active|' "$REC" > "$REC.tmp" \
+  && mv "$REC.tmp" "$REC" || rm -f "$REC.tmp"
+grep -qE '^\*\*Status:\*\* active$' "$REC" \
+  || echo "note: $REC carries no **Status:** field, so none was set; the marker on the filename is the state" >&2
 ```
 
-Both names are literal arguments to `mv`, not globs — the underscore marker needs no escaping and no special handling here. It is only *pattern matching* against marker names that needs care (see `rules/fusion-workbench-conventions.md` `## Marker globs`). The field is rewritten through a temporary file rather than with `sed -i`, whose in-place flag takes an argument on BSD `sed` and none on GNU `sed`; `/fusion:migrate` rewrites record fields the same way for the same reason.
+Both names are literal arguments to `mv`, not globs — the underscore marker needs no escaping and no special handling here. It is only *pattern matching* against marker names that needs care (see `rules/fusion-workbench-conventions.md` `## Marker globs`). The field is rewritten through a temporary file rather than with `sed -i`, whose in-place flag takes an argument on BSD `sed` and none on GNU `sed`; `/fusion:migrate` rewrites record fields the same way for the same reason, and the `rm -f` keeps a failed write from leaving a `.tmp` behind. The note is decided from the **result** of the write, never from a separate test of the input — a field absent and a field present but valueless both reach it. Put no `grep` guard in front of the `sed`: that was the shape this replaced, and its two patterns asked different questions.
 
 **The head fields are written at the act that moves them, and this is that act for one of the three.** `$FUSION_SRC/agents/orchestrator.md` `## Circle head fields` defines all three — when each is written, what value it takes, and why `(none yet)` is a value rather than a gap. Do not restate it here. What this skill can decide, it decides now; what it cannot, it leaves honest:
 
-- `**Status:**` becomes `active` — the command above, in the same call as the rename, so a rename cannot land without it.
+- `**Status:**` becomes `active` — the write rides the rename in the same call. The `mv` and the rewrite are two commands, not one atomic act, so an interruption between them still leaves the rename standing alone; what the shape guarantees is that a write which does not land is reported.
 - `**Active session history:**` stays `(none yet)`. No session is running this Circle yet — the one that will starts at Step 6.5 — so any path written here would name a file that is not on disk, which the field's readers handle worse than the empty value. The orchestrator sets it at its Setup step 6, when it creates the file.
 - `**Active spec/plan:**` is left exactly as it stands. If shaper's portfolio-activation mode already pointed it at a spec, that citation is current; if it reads `(none yet)`, this skill has no way to find the right file and must not guess one.
 

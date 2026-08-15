@@ -23,3 +23,6 @@ What is wrong is that it is invisible. Step 5b opens *"Playmaker's report from S
 ## Recommendation
 
 One clause at `skills/next/SKILL.md:108`: the explicit form skips Step 5 **and Step 5b** — any backlog operations this run proposed stay in the portfolio and are put to the user on the next default-form `/fusion:next`. Optionally one line in the activation output naming that the portfolio carries unconfirmed proposals, so the user knows there is something waiting.
+
+---
+Resolved: `skills/next/SKILL.md` Step 3 short-circuit now names both steps it skips. It states that going straight to Step 6 skips Step 5b as well, since 5b is reachable only from the end of Step 5, and that backlog operations the run proposed stay in the portfolio until the next default-form `/fusion:next` puts them to the user.

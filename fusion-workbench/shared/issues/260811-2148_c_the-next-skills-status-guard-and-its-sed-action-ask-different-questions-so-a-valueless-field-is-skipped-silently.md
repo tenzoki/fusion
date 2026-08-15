@@ -68,3 +68,6 @@ Correct `skills/next/SKILL.md:200` to say the write rides the rename in the same
 - A record whose `**Status:**` line carries no value either gets `active` written or produces the note — never neither.
 - No `.tmp` remains in the Circle directory on any path.
 - `skills/next/SKILL.md:200` states what the shape actually guarantees.
+
+---
+Resolved: `skills/next/SKILL.md` Step 6.2 drops the `grep` pre-guard. The `sed` runs unconditionally with `[[:space:]]` removed from its pattern, so a valueless `**Status:**` line is rewritten, and the note is decided from the result (`grep -qE '^\*\*Status:\*\* active$'`) rather than from a separate test of the input — a field absent and a field present-but-empty both reach it. A failed write clears its own `.tmp` via `|| rm -f`. Verified against the record's three fixtures: valueless and valued lines both become `**Status:** active` with no note, an absent field produces the note, and no `.tmp` survives either the success or the `sed`-failure path. The prose beside the block now says the write rides the rename in the same call and that the two commands are not atomic, replacing the claim that a rename cannot land without the write.
