@@ -9,6 +9,11 @@ package-lock.json
 # Build artifacts — TypeScript
 dist/
 !hooks/dist/
+# Per-invocation compile staging (hooks/scripts/build.mjs). The shipped
+# hooks/dist/ is synced from here by atomic rename so a concurrent test run
+# never sees it absent; these directories are the transient half and are
+# removed by the build that made them.
+hooks/.build-staging/
 build/
 out/
 *.tsbuildinfo

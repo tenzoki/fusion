@@ -194,3 +194,28 @@ The user's four answers at the gate:
 - Blocker carried into Turn 2: the plan still states that the enumeration lint does not read
   CLAUDE.md's Layout table. Step 2 disproved it. Steps 4 and 11 would ship red on it and be reverted.
 - Circuit breaker status: OK
+
+## Decision answered mid-Turn-2: the hooks suite becomes safe to run concurrently
+
+`shared/decisions/260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`
+
+**Answer: option 2.** Give each run its own build output, or build without deleting first, and fix
+the two wall-clock-bound cases to wait on something observable. The verification contract is left
+alone and every executor keeps verifying its own work.
+
+The trigger was this session's own bugfix dispatch, which reproduced the cause deterministically:
+`hooks/package.json`'s build is `rm -rf dist && tsc` and runs before every vitest invocation, so two
+concurrent `npm test` runs in one checkout race on `dist/`. Four of `legacy-halt-clearing`'s six
+cases fail because those four spawn the real `dist/clear-halt.js`; the two that pass start from
+source through `tsx`. Eleven unloaded runs green, four loaded runs red.
+
+The cause was this orchestrator's own parallel dispatching, twice today: `coderev` with `ontorev`,
+and `planner` with `bugfixer`. The deleted `dist/` was visible in `git status` at the time and was
+read as a build in progress rather than as the fault.
+
+**Scope consequence, stated rather than absorbed.** This work is not in the Circle's Directive,
+which is about removals. It is a prerequisite for the Circle's own closure criterion: step 13 arms a
+growth bound whose entire value is that the suite fails on an add-back, and a suite that fails at
+random cannot carry that. It is inserted as step 3b and the Circle grows by one step.
+
+Until it lands, this orchestrator dispatches nothing in parallel that runs the suite.

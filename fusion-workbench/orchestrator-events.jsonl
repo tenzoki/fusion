@@ -1509,3 +1509,6 @@
 {"ts":"2026-08-15T06:48:14","event":"planner_done","turn":2,"agent":"planner","detail":"8 of 11 remaining steps carried the same trap, not 2; plan 69608 -> 81607 bytes; Decidability narrowed to path-shaped citations in shipped text"}
 {"ts":"2026-08-15T06:48:14","event":"commit","turn":2,"detail":"d1ae1c0 plan correction, 89ca95a stray record"}
 {"ts":"2026-08-15T06:48:14","event":"state_drift","turn":2,"detail":"progress.commits surface=8 record=10; brought current"}
+{"ts":"2026-08-15T07:10:33","event":"bugfix_failure","turn":2,"agent":"bugfixer","detail":"declined to fix by design: cause is concurrent npm test runs racing on hooks/dist, root fix sits under open decision 260811-2009; local patch would narrow the window without closing it"}
+{"ts":"2026-08-15T07:10:33","event":"gate_response","turn":2,"detail":"concurrency decision 260811-2009 answered: option 2, make the suite safe to run concurrently; scope grows by inserted step P-3b"}
+{"ts":"2026-08-15T07:10:33","event":"task_start","turn":2,"task":"P-3b","agent":"coder","detail":"inserted prerequisite: concurrency-safe build plus the two wall-clock-bound cases"}

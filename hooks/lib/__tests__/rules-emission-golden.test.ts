@@ -208,9 +208,10 @@ import { dirname, resolve, join, relative } from "node:path";
 // bound pass, with no cut and no cut-log entry, is neither of these and is the
 // thing this file is asking you not to do.
 //
-// Use `npx vitest run`, not `npm test`: the latter is
-// `npm run build && vitest run`, which wipes and rebuilds `hooks/dist`. This
-// suite measures rule text and has no business regenerating the compiled hooks.
+// `npx vitest run` is enough for this file: it measures rule text and needs no
+// compile at all. `npm test` also works and no longer wipes anything — the
+// build stopped deleting `hooks/dist/` (`scripts/build.mjs`), which is what
+// made a second run in the same checkout fail the suites that read it.
 // ---------------------------------------------------------------------------
 
 const here = dirname(fileURLToPath(import.meta.url));

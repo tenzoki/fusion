@@ -77,3 +77,42 @@ removes the sensitivity instead of lengthening the fuse.
 Consider recording both this and `260810-1135` against one decision about whether this suite is
 meant to be run concurrently with itself at all. Three of the project's own working patterns
 (parallel executors, a reviewer running `npm test` beside them) put it in that state routinely.
+
+---
+
+Resolved: `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-1133-coder-hooks-suite-concurrency-safety.md`
+— the marker wait ends on an event, and one run no longer claims every core.
+
+**What was done.** `waitForFile(marker, 10000)` is now `waitForFile(marker, proc)`: it ends
+when the file appears or when the process that would create it exits, with no inner numeric
+budget. `startMonitor`'s own fifteen-second poll for the server lost its deadline the same
+way, so the case has one deadline instead of three stacked ones, and that one is the vitest
+case timeout — a deadlock guard rather than an assumption about how fast this machine forks.
+The record's reading was right: the launch was late, not absent, and a late launch is not
+the defect these cases exist to catch.
+
+That alone was not enough at the concurrency this record measured at. `hooks/vitest.config.mjs`
+now caps one run at half the machine's cores, because the suite is subprocess-bound and three
+runs at one worker per core oversubscribe macOS fork/exec threefold. Measured at the default:
+9.5 s for one bash script to reach its first `mkdir` in a run that passed, past 30 s in the
+two that did not. At half: 9 of 9 green. Cost to a single run: none measurable.
+
+**Evidence, at this record's own configuration of three concurrent suites.** Before, on an
+idle 16-core machine: 5 of 9 runs red, this case among them every time. After: 3 concurrent
+× 4 rounds, **12 of 12 green on this case**, and 2 concurrent × 6 rounds, 12 of 12 exit 0.
+
+**One thing this record's `## What this is not` section pointed at is still open.** The
+`Error: Worker exited unexpectedly` signature is a different fault, it still occurs at
+roughly 1 run in 12 with three concurrent suites, and it is held by
+`shared/issues/260814-2118_o_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md`.
+Two facts about it were established while closing this one: the worker that dies is always
+`monitor-warnings-panel.test.ts`'s, and a real SIGTERM reaches it.
+
+**Also found while measuring, and worth knowing here because this file is the source.** The
+monitor cases were leaking their servers: 42 orphaned `bin/monitor` processes were found on
+the machine, the oldest three days and twenty-one hours old, each a python HTTP server
+polling every two seconds, one holding half a core. They accumulate whenever a run is killed
+rather than finishing, and every later run of the suite pays for them — which is a large part
+of what "under parallel load" has meant in practice for both timing records. The file now
+reaps from `process.on("exit")` as well as `afterEach`. A signal-handler variant was tried
+and removed: it turned an ordinary SIGTERM into a failed run.

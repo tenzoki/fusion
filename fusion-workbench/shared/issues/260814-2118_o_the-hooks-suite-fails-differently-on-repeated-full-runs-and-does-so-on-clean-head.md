@@ -113,3 +113,66 @@ without making it more trustworthy is the damage that decision's Constraints sec
 
 The two repairs that would actually close it — a build that does not delete before it writes,
 or serialising runs in the checkout — are options 2 and 1 of `260811-2009`, which is open.
+
+---
+
+## Measurement added 260815-1133 — coder, step P-3b of Circle `260815-0007-remove-eight-mechanisms-and-cap-growth`
+
+**Marker unchanged (`_o_`).** Two of the three shapes this record holds are closed. The third
+is not, and it is why this record stays open. Full account:
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-1133-coder-hooks-suite-concurrency-safety.md`.
+
+### Closed: the shared build output
+
+`hooks/package.json` no longer builds with `rm -rf dist && tsc`. The compile goes to a private
+staging directory and the shipped tree is refreshed file by file with `rename(2)`, so a path
+under `dist/` is never absent and never half-written; the two cases that spawn or copy a
+compiled artifact read the run's own private build instead of the shared one. The bugfix
+dispatch's deterministic reproduction (`vitest run legacy-halt-clearing` with a build started
+0.6 s later) is green 3 of 3, and so is the harsher form where the *destructive*
+`npm run build:clean` runs against a live `npm test`.
+
+### Closed: the timing budgets
+
+`260810-1135` and `260811-1409` are both closed with their own evidence sections. Two changes
+between them: each wait now ends on an observable event rather than a budget, and
+`hooks/vitest.config.mjs` caps one run at half the machine's cores, because at one worker per
+core three concurrent suites made a bash script take 9.5 s to reach its first `mkdir`.
+
+### Not closed: a file that never runs
+
+`Error: Worker exited unexpectedly` from tinypool still occurs. Rate on an idle 16-core
+machine, measured after the changes above: **0 of 12** runs with two concurrent suites,
+**1 of 12** with three. Two facts are now established that were not:
+
+- **It is always `monitor-warnings-panel.test.ts`'s worker.** Identified by differencing the
+  reported test names against a green run: the missing 15 are that file's, in every
+  occurrence. The reconciler's note of 260811-2330 recorded that "which of the 52 died is not
+  established"; it is now established, and it is the file that spawns fifteen detached
+  process groups.
+- **A real SIGTERM reaches the worker.** Found by accident: a `SIGTERM` handler installed
+  during this work (and since removed, because it turned an ordinary signal into a failed run)
+  fired, which no handler would have done unless the signal arrived.
+
+What sends it is not established, and three candidates were considered and none confirmed. A
+diagnostic over every process-group kill the monitor file performs found that **every one of
+them targeted a live child of that same worker** — so the obvious explanation, one run
+signalling another run's group through a reused pid, is not supported by the evidence.
+
+### A fourth cause, in no record until now, and it changes how "under load" should be read
+
+Measured mid-session: **42 orphaned `bin/monitor` processes on this machine, the oldest three
+days and twenty-one hours old**, one of them holding half a core. Each is a python HTTP server
+polling a deleted workbench every two seconds. They accumulate whenever a run is killed rather
+than finishing, and they never exit. Every later run of the suite paid for them.
+
+That is a standing, invisible load which has been present for as long as this record's
+observations, and it belongs in any reading of "it fails under load" — the load was partly the
+suite's own residue rather than the other work on the machine. The monitor file now reaps from
+`process.on("exit")` as well as `afterEach`; a run killed with a signal still leaks.
+
+**And a caution for whoever measures next.** A deliberate load test in this session left 32
+spin loops running after the `kill` that was supposed to end them. Every timing number taken
+in the following half hour was wrong by a factor of three to four, in a direction that made a
+correct change look like a fourfold regression. Check `uptime` and the process table before
+believing a timing measurement on this suite.

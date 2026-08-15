@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** answered
 **Filed by:** orchestrator
 **Cross-references:** `shared/issues/260810-1135_o_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md` (queue task 37); `shared/issues/260811-1409_o_the-browser-launch-case-in-the-monitor-suite-fails-under-parallel-load-and-passes-in-isolation.md` (queue task 38); `shared/issues/260810-1820_o_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md` (queue task 40); `agents/coder.md` `### Report shape`
 
@@ -174,3 +174,6 @@ record's 260811-2330 evidence describes, and leaves the other readers of the liv
 (`reference-resolution-lint.test.ts:323` resolves prose citations with `existsSync`, which is how
 case 2 was first seen). It would have moved the suite toward green without moving it toward
 trustworthy, which this record's Constraints section forbids.
+
+---
+Answered: shared/history/260814-2306-orchestrator-session.md:198 — Option 2: make the suite safe to run concurrently. Each run gets its own build output or the build stops deleting before it writes, and the two wall-clock-bound cases wait on something observable. The verification contract and the executor prompts are unchanged. Answered by the user after a bugfix dispatch reproduced the cause deterministically.

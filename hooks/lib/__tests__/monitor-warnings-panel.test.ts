@@ -106,6 +106,53 @@ function freePort(): Promise<number> {
 const running: ChildProcess[] = [];
 
 /**
+ * Kill every monitor this file still has running.
+ *
+ * `afterEach` is the ordinary caller. The process-level hooks below are the
+ * ones that matter for the machine: a monitor left alive is a python HTTP
+ * server that polls its workbench every two seconds and never exits, and it
+ * outlives the run that started it. Measured on this machine while proving the
+ * suite concurrency-safe: 42 orphaned monitor processes going back three days
+ * and twenty-one hours, one of them holding half a core. Every later run of the
+ * suite paid for them — which is the "it fails under load" condition two
+ * records describe from the other side
+ * (`shared/issues/260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md`,
+ * `shared/issues/260811-1409_*_the-browser-launch-case-in-the-monitor-suite-fails-under-parallel-load-and-passes-in-isolation.md`).
+ *
+ * `exit` is the second caller and covers a worker vitest tears down mid-file.
+ * There is deliberately NO signal handler here, and the reason is measured: a
+ * `SIGTERM` handler that reaped and then called `process.exit` turned an
+ * ordinary signal into a failed run — vitest instruments `process.exit` and
+ * reports it as an uncaught exception, and the reap it performed on the way out
+ * killed the monitor the case was still waiting for. A worker that is signalled
+ * is going to die either way; making its death louder helped nobody. A run
+ * killed with a signal therefore still leaks, and so does SIGKILL.
+ *
+ * The group is signalled only while OUR child is still alive. A pid that has
+ * been reaped may have been handed to something else by then, and this machine
+ * cycles pids often enough for that to be a real possibility rather than a
+ * theoretical one; `-pid` on a stranger's pid is a signal to a stranger's whole
+ * process group.
+ */
+function reapMonitors(): void {
+  while (running.length > 0) {
+    const p = running.pop();
+    if (p?.pid === undefined) continue;
+    if (p.exitCode !== null || p.signalCode !== null) continue;
+    // Negative pid: the whole process group. `bin/monitor` is a bash wrapper
+    // that execs python as a child, so killing the bash pid alone orphans a
+    // listening server and the next test's port scan meets a stranger.
+    try {
+      process.kill(-p.pid, "SIGTERM");
+    } catch {
+      /* already gone */
+    }
+  }
+}
+
+process.on("exit", reapMonitors);
+
+/**
  * A `python3` wrapper that runs its argv with a pseudo-terminal on stdin,
  * stdout and stderr, so the child's `[ -t 1 ]` is true.
  *
@@ -245,7 +292,15 @@ async function startMonitor(wb: string, opts: MonitorOpts = {}): Promise<number>
         ? `${cmd} was killed by ${signal} before the server answered`
         : `${cmd} exited with status ${code} before the server answered`;
   });
-  const deadline = Date.now() + 15000;
+  // No wall-clock budget here. This wait used to give up after 15 s, and under
+  // three concurrent suites the python3 pty runner -> bash -> fork chain does
+  // not finish inside a budget like that — the case then failed for load rather
+  // than for anything about the monitor
+  // (`shared/issues/260811-1409_*_the-browser-launch-case-in-the-monitor-suite-fails-under-parallel-load-and-passes-in-isolation.md`).
+  // The two exits below are events: the server answers, or the process that
+  // would have answered is gone. The vitest case timeout is the one deadline
+  // left, and it is a deadlock guard rather than an assumption about how fast
+  // this machine forks.
   for (;;) {
     try {
       const r = await fetch(`http://127.0.0.1:${port}/api/dashboard`);
@@ -256,18 +311,19 @@ async function startMonitor(wb: string, opts: MonitorOpts = {}): Promise<number>
     // `bin/monitor` ends in `wait $SERVER_PID` and the pty runner in
     // `proc.wait()`, so whatever we spawned outlives the server it forked. Its
     // exit before the first answer is terminal: report it now, with its status,
-    // instead of waiting out the deadline to blame a monitor that never ran.
+    // instead of polling a port nothing will ever answer on.
     if (spawnFailure !== undefined) {
       throw new Error(`monitor did not come up: ${spawnFailure}`);
     }
-    if (Date.now() > deadline) {
-      throw new Error(
-        `monitor did not come up: no answer from 127.0.0.1:${port} within 15s, ` +
-          `and ${cmd} is still running`,
-      );
-    }
     await new Promise((r) => setTimeout(r, 100));
   }
+}
+
+/** The process `startMonitor` spawned last — the one that owns the launch. */
+function lastMonitor(): ChildProcess {
+  const proc = running[running.length - 1];
+  if (proc === undefined) throw new Error("no monitor has been started in this case");
+  return proc;
 }
 
 /** Start the real monitor against `wb` and return its /api/dashboard payload. */
@@ -284,20 +340,7 @@ async function indexPage(wb: string): Promise<string> {
   return await r.text();
 }
 
-afterEach(() => {
-  while (running.length > 0) {
-    const p = running.pop();
-    if (p?.pid === undefined) continue;
-    // Negative pid: the whole process group. `bin/monitor` is a bash wrapper
-    // that execs python as a child, so killing the bash pid alone orphans a
-    // listening server and the next test's port scan meets a stranger.
-    try {
-      process.kill(-p.pid, "SIGTERM");
-    } catch {
-      /* already gone */
-    }
-  }
-});
+afterEach(reapMonitors);
 
 const RESCUED = new Set(["guard_block", "guard_halt", "churn_critical"]);
 
@@ -736,13 +779,24 @@ function pathWith(dir: string): string {
   return `${dir}:${process.env.PATH ?? ""}`;
 }
 
-/** Poll for `file` to appear, up to `ms`. */
-async function waitForFile(file: string, ms: number): Promise<boolean> {
-  const deadline = Date.now() + ms;
+/**
+ * Wait for `file` to appear, ending on an event rather than on a clock: the
+ * file exists, or `proc` — the only process that can create it — has exited.
+ *
+ * The budget this replaces was ten seconds, and it was the whole of the failure
+ * recorded in
+ * `shared/issues/260811-1409_*_the-browser-launch-case-in-the-monitor-suite-fails-under-parallel-load-and-passes-in-isolation.md`:
+ * three concurrent suites, three runs, the same case each time, the marker
+ * arriving after the budget rather than never. `bin/monitor` sleeps 0.5 s after
+ * forking the server and then launches, so on a saturated machine the launch is
+ * late, not absent — and a late launch is not the defect these cases exist to
+ * catch.
+ */
+async function waitForFile(file: string, proc: ChildProcess): Promise<boolean> {
   for (;;) {
     if (existsSync(file)) return true;
-    if (Date.now() > deadline) return false;
-    await new Promise((r) => setTimeout(r, 100));
+    if (proc.exitCode !== null || proc.signalCode !== null) return existsSync(file);
+    await new Promise((r) => setTimeout(r, 50));
   }
 }
 
@@ -781,8 +835,16 @@ describe("bin/monitor — the browser launch", () => {
       });
 
       // Fails if the gate is too tight — a fix that made the monitor silent
-      // for the human who started it would be a different defect.
-      expect(await waitForFile(marker, 10000)).toBe(true);
+      // for the human who started it would be a different defect. Two failure
+      // shapes, and they are worth telling apart: `false` means the monitor
+      // exited without opening anything, and a case timeout means it is alive
+      // and has not opened. Nothing the monitor emits distinguishes "decided
+      // not to launch" from "has not launched yet", so the second shape is the
+      // case timeout and not a shorter budget dressed as an assertion.
+      expect(
+        await waitForFile(marker, lastMonitor()),
+        "the monitor exited without opening the dashboard for its terminal",
+      ).toBe(true);
       expect(readFileSync(marker, "utf8").trim()).toBe(
         `http://localhost:${port}`,
       );

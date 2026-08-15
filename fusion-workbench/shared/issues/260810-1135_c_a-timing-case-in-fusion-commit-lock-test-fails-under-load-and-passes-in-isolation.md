@@ -72,3 +72,35 @@ writing this workbench at the time, which is the right call and is noted so the 
 read as an oversight.
 
 Four observations now, all under parallel load, none in isolation.
+
+---
+
+Resolved: `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-1133-coder-hooks-suite-concurrency-safety.md`
+— the case waits on the lock's own output instead of on a clock, and one run no longer
+claims every core.
+
+**What was done, against this record's own fix direction.** The record asked for the timing
+to be made injectable rather than for the tolerance to be widened. Neither was needed in the
+end, because the case was not measuring elapsed time — it was trying to *catch* a state that
+expired. The injected `sleep 4` between `mkdir` and the holder write is now a gate: the
+patched copy of `bin/fusion-commit-lock` announces itself by creating a file and parks
+indefinitely until the test creates another. The holder-less state persists until the case
+ends it, so a starved machine takes longer to see it rather than missing it. The two
+`spawnSync` timeouts that stood in for "acquire is still blocking" were replaced by the
+script's own first-fail message, which is printed once and stays in the buffer, and the two
+ten-second reap budgets by an awaited exit. No tolerance was widened and no assertion
+changed.
+
+Alongside it, `hooks/vitest.config.mjs` caps one run at half the machine's cores. The suite
+is subprocess-bound, and at one worker per core three concurrent runs made a bash script
+take 9.5 s to reach its first `mkdir` even in a run that passed.
+
+**Evidence.** Before: two concurrent `npm test` runs in one checkout, started 8 s apart,
+three rounds — this case failed in **6 of 6 runs**. After: 2 concurrent × 6 rounds, **12 of
+12 exit 0**; 3 concurrent × 4 rounds, **12 of 12 green on this case**. The file also passes
+under 32 spin loops saturating all 16 cores, the condition under which the bugfix dispatch
+of 260815-0850 reproduced it 4 of 4.
+
+**Checked for vacuity rather than assumed.** With `set -C` removed from the patched copy the
+case still fails, naming the creator that never reported losing the acquisition. It still
+detects the defect it was written for.

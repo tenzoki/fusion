@@ -70,6 +70,28 @@ export const HOOKS_DIR = resolve(
 /** The plugin repository root. */
 export const REPO_ROOT = resolve(HOOKS_DIR, "..");
 
+/**
+ * The compiled tree a case may SPAWN or COPY.
+ *
+ * `npm test` compiles into a private staging directory of its own and names it
+ * in `FUSION_TEST_DIST` (`scripts/run-tests.mjs`), so a case that runs or
+ * copies a compiled artifact is reading a build no other run in this checkout
+ * can touch. That is the second half of the answer to
+ * `shared/decisions/260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`:
+ * the shared `hooks/dist/` is now replaced file by file with `rename(2)` rather
+ * than deleted, which is enough for an existence check but not for a `cpSync`
+ * of the whole directory, whose one remaining hazard is the build's orphan
+ * prune.
+ *
+ * The fallback is the shared tree, for a bare `npx vitest run` with no build
+ * step in front of it. Nothing deletes `hooks/dist/` any more, so the fallback
+ * is safe too — it is simply the last build's output rather than this run's.
+ */
+export const TEST_DIST =
+  process.env.FUSION_TEST_DIST !== undefined && process.env.FUSION_TEST_DIST !== ""
+    ? resolve(process.env.FUSION_TEST_DIST)
+    : resolve(HOOKS_DIR, "dist");
+
 /* ------------------------------------------------------------------ *
  * Guard entry point
  * ------------------------------------------------------------------ */
@@ -86,9 +108,10 @@ export interface GuardEntry {
  *
  * Default is `tsx guard.ts` — the TypeScript source, which is what this
  * Circle's steps are editing. Set `FUSION_GUARD_ENTRY=dist` to run the
- * committed `dist/guard.js` instead: that is the artifact production actually
- * executes (`hooks/hooks.json`), so once `dist` is rebuilt the same suite can
- * be pointed at the shipped build without touching a test.
+ * compiled `guard.js` instead: that is the form production actually executes
+ * (`hooks/hooks.json`), so the same suite can be pointed at the build without
+ * touching a test. The build it reaches is `TEST_DIST` — this run's own
+ * compile under `npm test`, the shipped `hooks/dist/` under a bare `vitest`.
  */
 export function guardEntry(): GuardEntry {
   return hookEntry("guard");
@@ -124,9 +147,11 @@ export function sessionStartEntry(): GuardEntry {
  * property that makes the tsx default matter here rather than being a
  * convenience: its whole subject is a working directory and the workbench root
  * above it, so every case is a subprocess. Spawning the SOURCE by default also
- * keeps the suite independent of whether `dist/` happens to exist at that
- * instant, which `npm run build` deletes and rebuilds — a second session
- * running the suite in the same checkout has been observed wiping it mid-run.
+ * keeps the suite independent of the build entirely — which used to be the only
+ * defence available, back when `npm run build` deleted `hooks/dist/` and a
+ * second session running the suite in the same checkout was observed wiping it
+ * mid-run. The build no longer deletes anything (`scripts/build.mjs`), so this
+ * is now a convenience again rather than a shield.
  */
 export function churnRankEntry(): GuardEntry {
   return hookEntry("churn-rank");
@@ -174,7 +199,7 @@ function hookEntry(
   const mode = process.env.FUSION_GUARD_ENTRY ?? "tsx";
 
   if (mode === "dist") {
-    const compiled = resolve(HOOKS_DIR, `dist/${name}.js`);
+    const compiled = resolve(TEST_DIST, `${name}.js`);
     if (!existsSync(compiled)) {
       throw new Error(
         `FUSION_GUARD_ENTRY=dist but ${compiled} does not exist. Run \`npm run build\` in hooks/ first.`,

@@ -352,8 +352,16 @@ tail -f fusion-workbench/.guard-state/events.jsonl | jq .
 ### Running tests
 
 ```bash
-cd hooks && npm install && npx vitest run
+cd hooks && npm install && npm test
 ```
+
+`npm test` compiles first and then runs vitest, as it always did. What changed is where the compile goes: into a private staging directory of its own, named to the run in `FUSION_TEST_DIST`, from which the shipped `hooks/dist/` is refreshed file by file. `npx vitest run` on its own still works and skips the compile.
+
+**The suite is safe to run concurrently with itself in one checkout**, which is not a courtesy — the orchestrator dispatches executors in parallel batches and each of them runs this command to decide whether its own change lands. Three things make that true, and each is documented at its own source:
+
+- `hooks/scripts/build.mjs` — the build never deletes `hooks/dist/`. It replaces each file with `rename(2)`, so a path under `dist/` is never momentarily absent and never half-written, and it prunes an output only once its source is gone. It used to be `rm -rf dist && tsc`, which left the whole tree missing for one to two seconds per run and failed three suites in three different shapes.
+- `hooks/lib/__tests__/helpers/guard-harness.ts` `TEST_DIST` — the cases that spawn or copy a compiled artifact read the run's private build, not the shared one.
+- `hooks/vitest.config.mjs` — one run uses half the machine's cores rather than all of them. Measured: at one worker per core, three concurrent runs failed 5 of 9 times on fork/exec starvation; at half, 9 of 9 were green, and a single run costs nothing measurable.
 
 ### Rebuilding after TS changes
 
@@ -361,9 +369,11 @@ cd hooks && npm install && npx vitest run
 cd hooks && npm install && npm run build
 ```
 
-The compiled `hooks/dist/` directory is committed to the repo and ships with the plugin.
+The compiled `hooks/dist/` directory is committed to the repo and ships with the plugin, so it has to match the sources exactly — a deleted source whose compiled output stays behind is tracked in git, copied into `~/.fusion` by the installer, and readable there as a module the plugin no longer has. That happened once already, with the four files of the retired Bash classifier.
 
-`build` is `rm -rf dist && tsc`, and the wipe is the load-bearing half. `tsc` writes into `outDir` without pruning it, so deleting a source file leaves its compiled output behind — tracked in git, copied into `~/.fusion` by the installer, and readable there as a module the plugin no longer has. That happened once already, with the four files of the retired Bash classifier. `npm test` runs the same script (`npm run build && vitest run`), so a full build is the only way `hooks/dist/` is produced and it always matches the sources.
+`build` keeps that promise without deleting anything: it compiles to a staging directory, replaces each changed file in `dist/` atomically, and removes any output whose `.ts` source is no longer in the tree. The result is byte-identical to a wipe-and-rebuild, and `npm run build:clean` is still there (`rm -rf dist && tsc`) for the rare case where you want the wipe itself. `npm test` runs `build`, so a normal test run keeps `hooks/dist/` current exactly as it used to.
+
+One consequence worth knowing before adding a file: nothing under `hooks/` may be a TypeScript source the build deliberately skips. The prune keeps a `dist/` entry whose `.ts` source still exists, and it cannot tell such a file's stale output from a concurrent run's fresh one. That is why the vitest configuration is `vitest.config.mjs`.
 
 ## Origin
 

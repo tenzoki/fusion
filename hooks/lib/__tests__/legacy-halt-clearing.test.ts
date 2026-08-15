@@ -54,12 +54,22 @@
  * placeholder on one machine and a real path on another, and the assertion
  * would have to weaken to a substring to survive both.
  *
- * ## Why `dist/clear-halt.js` and not the source
+ * ## Why the COMPILED script and not the source
  *
  * That is the artifact the message tells the human to run, and the message is
- * half of what this file pins. `npm test` runs `npm run build` first, so `dist`
- * is current; the harness's `FUSION_GUARD_ENTRY` switch does not reach this
- * script because it is not a hook and has no entry there.
+ * half of what this file pins. The harness's `FUSION_GUARD_ENTRY` switch does
+ * not reach this script, because it is not a hook and has no entry there.
+ *
+ * Which compiled copy is `TEST_DIST`: under `npm test` it is this run's own
+ * private build, not the shared `hooks/dist/`. The four spawns below are spread
+ * across the file's whole runtime, and while the build deleted the shared tree
+ * before rewriting it, a second `npm test` in the same checkout made every one
+ * of them `MODULE_NOT_FOUND` — `expected 1 to be +0` at the exit assertion
+ * below, four of six cases, the two `runWrite` cases surviving because they go
+ * through `tsx guard.ts` from source. Nothing deletes the shared tree any more
+ * (`scripts/build.mjs`), and this file reads a build nothing else can reach at
+ * all. Case 2 of
+ * `shared/decisions/260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`.
  */
 
 import { describe, it, expect } from "vitest";
@@ -67,7 +77,7 @@ import { spawnSync } from "node:child_process";
 import { resolve } from "node:path";
 import {
   CASE_TIMEOUT,
-  HOOKS_DIR,
+  TEST_DIST,
   childEnv,
   readEscalation,
   readEvents,
@@ -87,7 +97,7 @@ const SUCCESS_LINE = "Halt cleared. Guard will resume normal operation.";
 const PLUGIN_ROOT = "/opt/fusion-plugin-under-test";
 
 /** The compiled script the halt message tells the user to run. */
-const CLEAR_HALT = resolve(HOOKS_DIR, "dist/clear-halt.js");
+const CLEAR_HALT = resolve(TEST_DIST, "clear-halt.js");
 
 /**
  * The two triggers no surviving code path can produce, with the level each was

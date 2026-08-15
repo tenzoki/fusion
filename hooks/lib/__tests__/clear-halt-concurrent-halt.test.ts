@@ -24,6 +24,15 @@
  * state file is real, and the merge is the real merge — only the MOMENT the
  * second writer acts is chosen rather than hoped for.
  *
+ * The tree that gets copied is `TEST_DIST`, which under `npm test` is this
+ * run's own private compile rather than the shared `hooks/dist/`. A
+ * whole-directory `cpSync` is the one read the build's atomic per-file sync
+ * does not protect: the sync's orphan prune removes a file, and a copy walking
+ * the tree at that instant throws in `beforeAll` and drops the whole FILE from
+ * the run rather than turning a case red. A private build has no second writer
+ * at all. Case 2 of
+ * `shared/decisions/260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`.
+ *
  * `speculation:` how often that moment occurs in the wild is unmeasured. These
  * cases pin what the script does when it occurs, not that it occurs.
  *
@@ -42,7 +51,7 @@ import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import {
   CASE_TIMEOUT,
-  HOOKS_DIR,
+  TEST_DIST,
   childEnv,
   readEscalation,
   withProject,
@@ -124,7 +133,7 @@ export function saveEscalation(state) {
 }
 
 beforeAll(() => {
-  const realDist = resolve(HOOKS_DIR, "dist");
+  const realDist = TEST_DIST;
   const realEscalation = resolve(realDist, "lib/escalation.js");
   shimDir = realpathSync(mkdtempSync(resolve(realpathSync(tmpdir()), "fusion-clear-halt-")));
   cpSync(realDist, shimDir, { recursive: true });
