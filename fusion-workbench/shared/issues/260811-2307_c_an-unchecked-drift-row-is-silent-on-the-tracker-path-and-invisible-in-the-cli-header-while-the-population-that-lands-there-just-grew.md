@@ -54,3 +54,6 @@ The Turn boundary is still covered: `agents/orchestrator.md` runs `bin/fusion-st
 
 - `bin/fusion-state-drift`'s header distinguishes a report with no drift from a report with no drift and an unmeasured row.
 - The module docstring's "never dropped" is either true of all three callers or names the caller it is not true of.
+
+---
+Resolved: moot, not fixed. `driftSentence`, the CLI header and the docstring claim were all in `hooks/lib/state-drift.ts` / `hooks/state-drift.ts`, deleted in `f45f76a` (step 11). Verified at HEAD `9306f0a` by the reconciliation pass of 260815-1913.

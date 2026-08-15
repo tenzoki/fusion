@@ -118,3 +118,6 @@ day. Fixing the surviving copy by *deleting* it in favour of a citation (queue e
 both records; patching it in place leaves the duplication that caused this.
 
 Reconciled by `reconciler`, `shared/history/260811-2330-reconciliation.md`.
+
+---
+Resolved: moot, not fixed. The queue-ground apparatus, both copies of its head-line parse, went with the persisted task list in `dd312eb` (Circle `260815-0007-...`, step 10). Verified at HEAD `9306f0a` by the reconciliation pass of 260815-1913: the `grep -oE 'circles/[A-Za-z0-9._-]+|...'` expression this record and its sibling `260814-2205` were both about appears in no prompt or skill body.

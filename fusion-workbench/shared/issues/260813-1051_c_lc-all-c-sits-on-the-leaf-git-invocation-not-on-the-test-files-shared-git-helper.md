@@ -51,3 +51,6 @@ Whether the same should apply to the other test files that spawn git (`fusion-co
 `queue-ground-producer`, `queue-retirement-empty-key`, `guard-bash-integration`) is a separate
 question — a sweep at the time of the fix found no prose assertion on git output in any of
 them, and this review did not re-run that sweep exhaustively.
+
+---
+Resolved: moot, not fixed. The helper at `hooks/lib/__tests__/circle-stash-git-exclusion.test.ts:52` went with the whole file in `5d29b6d` (Circle `260815-0007-...`, step 6, which removed the stash and pop skill pair). The closing paragraph's separate question about the other git-spawning test files is unaffected and is not carried by this record; three of the eight it named (`state-drift`, `queue-ground-producer`, `queue-retirement-empty-key`) have since been deleted as well. Verified at HEAD `9306f0a` by the reconciliation pass of 260815-1913.

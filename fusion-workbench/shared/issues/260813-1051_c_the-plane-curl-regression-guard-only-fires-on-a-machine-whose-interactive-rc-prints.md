@@ -50,3 +50,6 @@ whatever fix that issue receives, not before.
 
 This is a coverage finding, not a defect in `7342fdd`'s change. The change is correct; what is
 missing is the test that keeps it correct.
+
+---
+Resolved: moot, not fixed. Both cited ranges are inside `hooks/lib/__tests__/fusion-plane.test.ts`, deleted in `d0ddabb`, so the guard this record asked for cannot be added. Verified at HEAD `9306f0a` by the reconciliation pass of 260815-1913.

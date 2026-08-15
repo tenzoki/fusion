@@ -41,3 +41,24 @@ Nothing decides on it. The verdict comes from the cascade, and 88 and 118 land i
 Re-run `./bin/fusion-count-sources` and write what it returns. Both figures, not just the source count: the paragraph's `data` clause is argued from a ratio and the repository now counts 13 data files, which the sentence never mentions. Consider adding the date the measurement was taken, the way the `RULE_BASELINE` entries in `hooks/lib/__tests__/rules-emission-golden.test.ts` carry `// 2026-08-14 arming` — a dated figure ages honestly, an undated present-tense one does not.
 
 **Do not** turn the example into a derived count. It is prose in a prompt, there is no mechanism to derive it into, and inventing one for a calibration figure would be the additive workaround `rules/critical-stance.md` §2 names.
+
+---
+
+**Reconciliation 260815-1913 (reconciler, HEAD `9306f0a`) — still open, and the gap has changed size
+rather than closed.**
+
+`agents/orchestrator.md:187` (was `:178` when this record was filed) still reads *"this repository
+counts 88 files"*. Re-run from the project root at HEAD:
+
+```
+$ ./bin/fusion-count-sources
+code_files=111
+data_files=12
+counted_by=git-ls-files
+```
+
+The example is now 23 files low rather than 30. The helper's answer moved because this Circle
+deleted source files, which is the point the record makes about a hand-written present-tense
+measurement inside a prompt: it decays without anyone touching it, and no gate reads it. The echo
+in `hooks/lib/__tests__/domain-cascade.test.ts:114` (`code_files: 88`) is a fixture and is
+unaffected — it exercises the cascade's arithmetic and does not claim to measure this repository.

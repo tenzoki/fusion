@@ -49,3 +49,6 @@ indefinite legacy path.
 An alternative worth weighing: the rebuild could take the key from the map for entries the map
 already knows, and derive only for issues it has never seen. That keeps the wire format
 unchanged and reduces the exposure to genuinely new issues, though it does not remove it.
+
+---
+Resolved: moot, not fixed. The third derivation site was `JQ_REBUILD_MAP` inside `bin/fusion-plane`, deleted in `d0ddabb`. Verified at HEAD `9306f0a` by the reconciliation pass of 260815-1913.

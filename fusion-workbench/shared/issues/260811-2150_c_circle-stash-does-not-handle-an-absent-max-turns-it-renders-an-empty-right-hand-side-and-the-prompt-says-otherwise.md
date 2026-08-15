@@ -45,3 +45,6 @@ Doing (1) makes (2) true rather than needing it, which is the better order.
 
 - A stash manifest taken over an `agentstate.yaml` with no `progress.max_turns` renders a field that reads as "no budget", not as a truncated one.
 - No shipped surface claims a consumer handles a case it merely survives.
+
+---
+Resolved: moot, not fixed. Both halves of the record's subject are gone: `skills/circle-stash/SKILL.md` was deleted in `5d29b6d` (step 6), and `progress.max_turns` was removed from `agentstate.yaml` in `f45f76a` (step 11), so the overstated justification at `agents/orchestrator.md:125` has no key to justify omitting. Verified at HEAD `9306f0a` by the reconciliation pass of 260815-1913: `grep -n max_turns agents/orchestrator.md` returns nothing. `hooks/lib/__tests__/turn-budget-lint.test.ts` survives and is unaffected — it names the retired key only in comments recording that the copy went on 2026-08-15.

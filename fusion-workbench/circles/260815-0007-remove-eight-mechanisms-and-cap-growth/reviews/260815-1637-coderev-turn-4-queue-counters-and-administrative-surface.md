@@ -296,3 +296,38 @@ collapse into `CLAUDE.md` rather than leaving a later reader to discover it.
 
 Twelve defects are filed. None of them is in `CLAUDE.md`, none is a correctness fault in shipped
 code, and the one High finding is in a shell block the curator's pass does not touch. Proceed.
+
+---
+
+## Reconciliation annotation — 260815-1913, reconciler, HEAD `9306f0a`
+
+Confirmed against the tree, not against the markers on the records.
+
+**A1 (High) — the resume shell.** Repaired by `5f2171e`, record
+`issues/260815-1631_c_the-resume-shell-that-replaced-the-drift-check-prints-a-two-line-figure-and-an-empty-one.md`.
+Verified: `agents/orchestrator.md:93` reads `echo "turns=${T:-unavailable}"`, each figure is captured
+into a variable and reported on its own emptiness rather than on the exit code of the command that
+took it, and `:96` states the reason in prose. Both copies carry the repaired form. The residual the
+repair named — that the two copies are independent with nothing holding them identical — was put to
+the user at gate G1 and answered "accept two copies", recorded on
+`issues/260815-1712_c_the-resume-shell-is-two-independent-copies-and-nothing-holds-them-identical.md`.
+
+**D1 (Medium) — the eight surfaces presenting demoted names.** Two of the nine rows are discharged by
+`e8052e7`, the curator's approved pass; seven stand, and two line numbers have drifted. The row this
+review singled out as more than presentational, `agents/orchestrator.md:1289`, is untouched at
+`:1292` and still contradicts `README-agents.md:246`. Per-row evidence is appended to
+`issues/260815-1633_o_eight-shipped-surfaces-still-present-the-three-demoted-skill-names-as-user-commands.md`.
+
+**F1 (Low) — `.gitignore`'s `!bin/fusion-churn-rank`.** Swept in `5f2171e`. Verified by set
+comparison rather than by reading the diff: the twelve `!bin/` exceptions and the twelve entries of
+`bin/` are identical. Both records closed —
+`issues/260815-0803_c_gitignore-still-carries-the-ship-exception-for-the-deleted-bin-fusion-plane.md`
+and `issues/260815-1206_c_three-churn-references-survive-step-4-in-files-the-step-does-not-name.md`.
+
+**A3, C1–C4, D2, E1, B1** — records still open at their filed markers, each re-checked as present in
+the tree at HEAD. `hooks/turn-budget.ts`'s header still says the orchestrator carries the budget in
+`agentstate.yaml` where `progress.max_turns` had a home (A3). Two test fixtures still build the
+retired `progress:` block. `install.sh:83` still names a `LICENSE` the tree has never shipped.
+
+**The review's own closing verdict held.** "Release blockers: none" — the gate was taken, step 13
+armed, and the suite is green at 40 files / 751 tests as run by this pass.

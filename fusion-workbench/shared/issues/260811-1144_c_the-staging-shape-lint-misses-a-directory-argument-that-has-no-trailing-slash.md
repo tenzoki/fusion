@@ -66,3 +66,6 @@ Whichever cut is taken, add a control that exercises the directory rule alone:
 ```ts
 expect(weakenedStaging(fenced("git add fusion-workbench"))).toHaveLength(1);
 ```
+
+---
+Resolved: moot, not fixed. `weakenedStaging()` lived in `hooks/lib/__tests__/queue-commit-ownership-lint.test.ts`, one of the four queue tests deleted in `dd312eb` (Circle `260815-0007-...`, step 10). Verified at HEAD `9306f0a` by the reconciliation pass of 260815-1913: `grep -rn weakenedStaging hooks/` returns nothing, so no surviving lint carries the trailing-slash test the record was about. `agents/orchestrator.md` Step 3b's staging discipline survives with no lint behind it, which is a wider question than this record and is not carried forward by it.

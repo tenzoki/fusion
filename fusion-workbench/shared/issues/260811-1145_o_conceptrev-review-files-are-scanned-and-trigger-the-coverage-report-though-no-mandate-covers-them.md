@@ -55,3 +55,32 @@ to be inferred:
 
 Put the sender set in one exported constant that `review-coverage-mandate.test.ts` asserts against,
 so adding a fourth review sender is a decision somebody makes rather than a silent widening.
+
+---
+
+**Reconciliation 260815-1913 (reconciler, HEAD `9306f0a`) — still open, and re-measured rather than
+inferred from the agent's removal.**
+
+`agents/conceptrev.md` was deleted in `a17cc8c` (Circle `260815-0007-remove-eight-mechanisms-and-cap-growth`,
+step 7). The plan's step 7 asserted that this record "is retired by this step and should be
+transitioned `_o_` → `_c_`". **That assertion is false and the executor was right not to act on it**,
+which it recorded at `circles/260815-0007-.../history/260815-1339-coder-remove-conceptrev.md`
+§ *Two findings filed rather than executed* and filed as
+`circles/260815-0007-.../issues/260815-1339_o_step-7-named-a-review-coverage-sender-set-that-does-not-exist-and-orphaned-scan-investigations.md`.
+
+Both halves of the defect survive the agent. Neither `reviewFiles()` nor
+`measureReviewCoverageForModel` gained a sender filter — `grep -rn conceptrev hooks/lib/review-coverage.ts`
+returns nothing because there was never a sender set to remove from, which is the defect. Running
+`./bin/fusion-review-coverage` from the project root at HEAD reproduces it on this Circle's own file:
+
+```
+reviews=9
+unusable=1
+  review circles/260815-0007-…/reviews/260815-0044-conceptrev-plan-remove-eight-mechanisms-and-cap-growth.md
+    range=(none recorded) not-opened=(not recorded) UNUSABLE (no **Reviewed-range:** line)
+```
+
+What the removal changed is the arrival rate, not the fault: no new `conceptrev` file will be
+written, so the population is now closed at whatever each workbench already holds. The permanent
+`UNUSABLE` row remains, and the fix direction in `## Fix direction` above is unchanged — the sender
+segment is still the discriminator, and the recognised set is now two names rather than three.

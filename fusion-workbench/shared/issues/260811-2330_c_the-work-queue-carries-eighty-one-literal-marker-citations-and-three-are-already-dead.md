@@ -86,3 +86,6 @@ under it, so this is not a one-line widening.
   shape as `queue-ground-producer.test.ts` for the `**Active Circle:**` field).
 - A gate fails when a queue citation resolves to nothing, and its non-vacuity is measured against
   the three dead citations recorded above.
+
+---
+Resolved: moot, not fixed. `fusion-workbench/tasklist.md` was deleted in `dd312eb` (step 10) and the persisted queue retired with it; the file was moved to `shared/planning/260815-1524_c_retired-tasklist.md` as a record. The eighty-one literal marker citations are therefore no longer live text any agent reads. Verified at HEAD `9306f0a` by the reconciliation pass of 260815-1913. The underlying class — that `reference-resolution-lint` does not scan `fusion-workbench/` — is not closed by this and stands as `shared/issues/260812-1720_o_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`.

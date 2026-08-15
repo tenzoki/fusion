@@ -1,7 +1,7 @@
 # Implementation Plan: remove eight mechanisms, collapse the administrative surface, extend the failing cap
 
 **Date:** 2026-08-15
-**Status:** Approved
+**Status:** Complete
 **Spec:** none — the Circle record is the spec: `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/_t_circle.md`
 **Decidability:** The load-bearing question is *"has every reference to a removed mechanism gone?"* **It is decidable for one class of reference and not for two others, and the honest form of the claim is the narrow one.** Decidable: a **path-shaped citation in shipped text**. `hooks/lib/__tests__/reference-resolution-lint.test.ts` resolves every `rules|agents|skills|docs|hooks|bin|templates|stilwerk`-shaped path — plus `CLAUDE.md`, `README*.md`, `install.sh`, `settings.json` and `.claude-plugin/plugin.json` by name — in every shipped text surface against the tree and fails on a dangling one, and `hooks/lib/__tests__/derivable-enumerations-lint.test.ts` re-derives seven enumerations (the skill roster, the agent-count digits, the always-on rule list, the conditional emission sets, the `hooks/lib` table, the `DEFINITION_SITES` echo, **and the `bin/` helper roster in `CLAUDE.md`'s Layout table**) and diffs them against what the documents claim. For that class, `npm test` answers the question after every step and the sweep obligation is enforced rather than promised.
 
@@ -457,3 +457,81 @@ The three questions that blocked this plan at the gate are answered and folded i
 
 - [x] **Does `bin/fusion-paths` keep its `OUT_INVESTIGATION` arm?** **Answered at step 8: no, and `SCAN_INVESTIGATIONS` goes with it.** The premise that saved the read key was measured false at step 7 — `/fusion:archive` writes the name without the `$` the resolver's derivation grep reads, so it has never been a consumer (`issues/260815-1339_o_step-7-named-a-review-coverage-sender-set-that-does-not-exist-and-orphaned-scan-investigations.md`). Step 8 applied this entry's own criterion instead: with the investigator prompt gone, the two are the only 2 of the resolver's 23 keys named by no shipped prompt, and every other key has at least one consumer. Both arms and both ORDER entries were removed; the reasoning, and the fact that a future prompt naming either exits 4 rather than failing silently, is written up in `rules/workbench-path-resolution.md` `### The three unconditionally-shared kinds`. `shared/investigations/` stays — consuming projects hold reports there, `/fusion:setup` still creates it, and `/fusion:archive` still keeps it out of tier scope.
 - [ ] **Is the Circle record's Dependencies bullet corrected, or left as a historical statement?** Plan-local. The bullet cites a decision record as an issue and asks for a transition the decision vocabulary does not have; the defect is filed as `issues/260815-0029_o_the-circle-record-cites-the-investigator-case-folder-record-as-an-issue-and-asks-for-a-transition-that-vocabulary-has-no.md` and step 8 performs the correct transition regardless. Whether the record itself is edited is a question about what a Circle record is for.
+
+## Reconciliation Log
+
+### 260815-1913 — Phase-3 pass at HEAD `9306f0a`, verdict `review-needed`
+
+**Reconciler, domain `code`.** Every claim below was re-derived from the tree or from a command run
+by this pass. Nothing was taken from a `[DONE]` marker, a history entry or a commit message.
+
+**Status moved `Approved` → `Complete`, filename marker `_o_` → `_c_`.** All sixteen numbered steps
+(1–15 plus the inserted 3b) carry `[DONE]`, and gate G1 is recorded as taken with all twelve ledger
+entries approved (`shared/history/260814-2306-orchestrator-session.md` `## Gate G1`, event
+`gate_response` turn 4 at `2026-08-15T15:44:06`). The rename dangles 34 workbench files that cite
+this plan by its `_o_` name; no shipped file cites it, so no lint is affected. Recorded as
+`issues/260815-1913_o_closing-the-plan-dangles-thirty-four-workbench-citations-that-spell-its-open-marker.md`.
+
+**What was verified, step by step, and what it cost to check.**
+
+- **The eight removals are complete in the tree.** `bin/` holds eleven helpers, none of them
+  `fusion-plane`, `fusion-churn-rank` or `fusion-state-drift`; `agents/` holds fifteen prompts,
+  neither `conceptrev.md` nor `investigator.md`; `skills/` holds twelve directories, none of them
+  `circle-stash`, `circle-pop`, `seed-from-plane`, `unlock` or `revise-claude-md`;
+  `hooks/lib/churn.ts`, `hooks/lib/state-drift.ts`, `hooks/state-drift.ts`, `settings.json`,
+  `fusion-workbench/tasklist.md` and the three Plane runtime files are all absent;
+  `hooks/lib/state-file.ts` is present, which is step 11's extraction. A repo-wide grep for
+  `/fusion:unlock`, `/fusion:revise-claude-md`, `/fusion:circle-stash`, `/fusion:circle-pop` and
+  `/fusion:seed-from-plane` across `agents/ rules/ skills/ docs/ README*.md CLAUDE.md install.sh`
+  returns nothing: the five deleted skill names are swept from the shipped corpus.
+- **The suite.** `cd hooks && npm test` run by this pass: **40 test files, 751 tests, all passed**,
+  64.00 s. Matches step 14's reading.
+- **The cap is armed and has been seen to fire.** `hooks/lib/__tests__/surface-growth-bound.test.ts`
+  and `fixtures/surface-growth.golden` exist, and `9306f0a` is the live proof the Directive asks for:
+  an 897-byte edit to `skills/help/SKILL.md` pushed that surface past its recorded size, the suite
+  went red, and the fixture was regenerated **without the baseline moving** — the golden's own header
+  states that regenerating never clears a bound, and the diff shows only the per-file and total lines
+  changing. That is the bound doing the job step 13 armed it for, one commit after the arming.
+- **The step-9 acceptance grep.** Run verbatim at HEAD it returns matches, every one of them ordinary
+  English use of the words "strategic" and "knowledge" (the analyst routing rule, the consultant
+  description, the context-manifest rule's "body of knowledge"). No domain-value usage survives. The
+  criterion calls itself mechanical and is not, which is
+  `issues/260815-1455_o_plan-step-9s-mechanical-acceptance-grep-fails-at-head-on-a-step-marked-done.md`
+  and stands.
+- **The three decisions this Circle answered are implemented and their citations resolve.**
+  `skills/cleanup/SKILL.md:178` carries `## Step 5 — Reconcile CLAUDE.md (the one gate)` and `:59`
+  the rewritten `## Autonomy and safety`; `skills/setup/SKILL.md:192` carries `## Step 0g — Offer to
+  seed the project's permission file`; `agents/orchestrator.md:406` prefixes `**Executors:** coder,
+  ontocoder, analyst` unconditionally. One footer citation has drifted: the analyst-executor record
+  names `agents/orchestrator.md:396` and the line is now `:406`.
+
+**Three claims in this plan that the tree does not support.**
+
+1. **`## API Changes`, the `bin/` helper row, is off by one at both ends.** It says 13 → 10.
+   `git ls-tree --name-only 9a7da8e bin/` returns fifteen entries, fourteen excluding `bin/monitor`;
+   `ls bin/` returns twelve, eleven excluding it. The true movement is **14 → 11**. Three helpers
+   left, which the row gets right; the population they left is not the one it names.
+2. **Step 15 is `[DONE]` and one of its four version surfaces was not written.**
+   `.claude-plugin/plugin.json`, `install.sh:27` and `README.md:26` all read `9.0.0`; the marketplace
+   clone at `/Users/k1/Projects/productive/F03-CLAUDE-plugin-marketplace/claude-plugins/.claude-plugin/marketplace.json`
+   still reads `8.2.0`. The executor named this deliberately rather than missing it
+   (`history/260815-1855-coder-step15-release-preparation.md:54`, "not touched — another repository")
+   and left a numbered hand-off, so the `[DONE]` is a scope judgement rather than an error. It is
+   recorded here because the step's own file list names that path, so the marker over-claims against
+   the step as written. No git tag `v9.0.0` exists either; `git tag --list` stops at `v8.2.0`.
+3. **Step 7's claim that `shared/issues/260811-1145` is retired by the conceptrev removal is false.**
+   The executor established this at the time and left the record `_o_`
+   (`history/260815-1339-coder-remove-conceptrev.md`). This pass re-measured it:
+   `./bin/fusion-review-coverage` at HEAD still reports `unusable=1` on this Circle's own conceptrev
+   review file, because the defect was the absence of a sender filter and no filter was added. The
+   record is annotated and stays open.
+
+**One question in `## Open Questions` is still unanswered**, the second: whether the Circle record's
+`## Dependencies` bullet is corrected or left as a historical statement. At HEAD `_t_circle.md:210`
+still cites `shared/issues/260812-0254_*_should-the-investigator-get-case-folders-with-a-status-per-case.md`,
+and the record is a **decision**, at `shared/decisions/260812-0254_s_…`, correctly transitioned to
+superseded by step 8. So the bullet names a path that does not exist, in the store it does not exist
+in, and asks for a transition the decision vocabulary does not have. Closing this plan does not
+answer it; it is the Circle record's question, not the plan's.
+
+**Full pass record:** `history/260815-1913-reconciliation.md`.

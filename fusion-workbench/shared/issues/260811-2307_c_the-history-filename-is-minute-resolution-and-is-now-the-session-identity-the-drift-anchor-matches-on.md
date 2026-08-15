@@ -45,3 +45,6 @@ Direction 1 is the proportionate one now. Whether the naming scheme should carry
 
 - Setup cannot silently overwrite an existing session history file.
 - The `sessionAnchor` docstring states what makes a history path unique to one session, or names the residual.
+
+---
+Resolved: moot, not fixed. `sessionAnchor` was in `hooks/lib/state-drift.ts`, deleted in `f45f76a` (step 11), so no mechanism now matches a session on its history filename. The second surface the record cites, the `YYMMDD-HHMM-<topic>.md` pattern in `rules/fusion-workbench-conventions.md`, is unchanged and was never the defect — it became a correctness assumption only through the anchor that is gone. Verified at HEAD `9306f0a` by the reconciliation pass of 260815-1913.

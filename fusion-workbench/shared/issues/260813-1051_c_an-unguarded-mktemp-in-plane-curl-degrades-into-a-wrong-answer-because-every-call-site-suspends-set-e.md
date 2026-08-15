@@ -126,3 +126,6 @@ unchanged.
 
 Severity is unchanged at Low: every ordinary path still removes its temp files, and the headline
 defect stays fixed. Suite green at 49 files / 1019 tests.
+
+---
+Resolved: moot, not fixed. All three cited lines are inside `bin/fusion-plane`, deleted in `d0ddabb`. Verified at HEAD `9306f0a` by the reconciliation pass of 260815-1913.

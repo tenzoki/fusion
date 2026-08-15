@@ -41,3 +41,6 @@ The comment three lines above it says what to do and why:
 **Why it was missed.** Step 2's file list names `bin/fusion-plane` and does not name `.gitignore`, and there is no gate: the comment states outright that nothing checks the list against the tree. That is the same shape as the two uncovered `CLAUDE.md` inventory rows filed in `260815-0803_o_two-claude-md-inventory-rows-went-stale-and-neither-lint-gate-can-see-them.md`, and a reader closing both may want to close them with one mechanism. This record does not propose one; the one-line deletion below is not blocked on that question.
 
 **The fix.** Delete line 30 of `.gitignore`. Re-run the `comm` above and confirm it prints nothing.
+
+---
+Resolved: fixed. The `bin/` re-inclusion block was swept in `5f2171e`. Verified at HEAD `9306f0a` by the reconciliation pass of 260815-1913, by set comparison rather than by reading the diff: `grep '^!bin/' .gitignore | sed 's/^!//' | sort` and `ls bin/ | sed 's|^|bin/|' | sort` are identical, twelve entries each. No exception names a file the tree does not carry, and no shipped file lacks one. The `!.env.example` exception at `:51` is deliberately left, per the closing note on `260815-1635_c_the-gitignore-sweep-that-removed-two-dangling-ship-exceptions-missed-the-third.md`: it is a standing allowance for a placeholder, not a ship exception for a deleted helper.

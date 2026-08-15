@@ -113,3 +113,15 @@ claims.
 (`**Locate** the source root`) is omitted; `### Report shape` is prepended and appears nowhere in the
 pre-fix file; and step 5 is truncated at `:189`, keeping only the first clause of `**update status to
 "Complete" as final step**`.
+
+---
+
+**Reconciliation 260815-1913 (reconciler, HEAD `9306f0a`) — half the subject is gone; the record
+stays open on the other half.**
+
+`hooks/lib/__tests__/queue-ground-lint.test.ts` was one of the four queue tests deleted in `dd312eb`
+(Circle `260815-0007-remove-eight-mechanisms-and-cap-growth`, step 10, which removed the persisted
+task list and the queue-ground apparatus), so the two negative controls at `:222-256` no longer
+exist. `hooks/lib/__tests__/executor-verification-report-lint.test.ts:180-193` is untouched and
+present at HEAD, and the record's defect — a negative control that re-implements the logic it is
+supposed to exercise instead of calling it — still holds there. Marker unchanged.

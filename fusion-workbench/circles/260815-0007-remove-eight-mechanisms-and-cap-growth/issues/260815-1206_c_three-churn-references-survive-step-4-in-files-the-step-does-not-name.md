@@ -71,3 +71,6 @@ adds a third when `bin/fusion-state-drift` goes, so it is one sweep, not three e
 — see
 `issues/260815-0803_o_gitignore-still-carries-the-ship-exception-for-the-deleted-bin-fusion-plane.md`.
 This record stays `_o_` for that one item.
+
+---
+Resolved: all three items are now resolved, and the record's own append already carried two of them. Item 3, `skills/help/SKILL.md`'s churn-thresholds phrase, went in `04ea182` (step 5). Item 2, the `churn detection` clause of the `.claude-plugin/plugin.json` description, went in `0894d0d` (step 9), which rewrote the same sentence for the domain values. Item 1, `.gitignore`'s `!bin/fusion-churn-rank`, went in `5f2171e` as part of the single sweep the record asked for, together with the two other dangling exceptions. Verified at HEAD `9306f0a` by the reconciliation pass of 260815-1913: no `churn` token survives in `.gitignore`, `.claude-plugin/plugin.json` or any skill body, and the only remaining occurrences in the tree are the historical passages in `hooks/tracker.ts` and `hooks/lib/config.ts` that record what left and why, plus the nine cadence-metric uses in `skills/cadence/SKILL.md` that `## Current State` named as keepers.

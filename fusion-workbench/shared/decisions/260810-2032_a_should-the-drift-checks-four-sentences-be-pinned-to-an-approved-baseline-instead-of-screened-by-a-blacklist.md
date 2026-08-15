@@ -125,3 +125,26 @@ sequencing decision rather than an omission.
 
 `_a_` → `_i_` is not available until `260801-2038` lands and the pin is written against the text
 that task leaves behind.
+
+---
+
+**Reconciliation 260815-1913 (reconciler, HEAD `9306f0a`) — the realisation this record was waiting
+for can no longer happen, and the marker is deliberately left at `_a_`.**
+
+The closing sentence above says `_a_` → `_i_` is unavailable until `260801-2038` lands and the pin
+is written against the text that task leaves behind. Circle
+`260815-0007-remove-eight-mechanisms-and-cap-growth` step 11 deleted
+`hooks/lib/__tests__/state-drift-detection-lint.test.ts` together with `hooks/lib/state-drift.ts`,
+`hooks/state-drift.ts` and `bin/fusion-state-drift`, in `f45f76a`. There is no drift check, no four
+sentences, and no lint to pin. The deletion was put to the user as a one-way door at the plan gate
+and accepted on the evidence that the three non-counter rows had never fired in either measured
+project (`shared/history/260814-2306-orchestrator-session.md:174`).
+
+**No marker was moved**, for the same reason recorded on
+`shared/decisions/260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md`: the open
+decision `circles/260801-1244-curator/decisions/260814-1332_o_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
+owns the question of what marker this state takes, and answering it by renaming a record would
+pre-empt it.
+
+This is active Grounding whose subject the Artifact removed, and it is the second of the two records
+that flag the Grounding↔Directive edge in this Circle's session-end Coherence verdict.

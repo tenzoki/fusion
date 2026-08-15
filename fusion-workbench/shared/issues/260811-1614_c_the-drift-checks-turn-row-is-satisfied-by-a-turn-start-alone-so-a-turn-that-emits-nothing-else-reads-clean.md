@@ -123,3 +123,6 @@ events were emitted **late**, after a reviewer or the check caught the gap, carr
 so. A row comparing counts will read a late emission as compliance. That is acceptable — the row
 exists to make the gap visible while the session can still act, not to prove it never happened —
 but the row's failure message should not claim more than it measures.
+
+---
+Resolved: moot, not fixed. `hooks/lib/state-drift.ts` was deleted whole in `f45f76a` (Circle `260815-0007-...`, step 11), all five rows including the Turn row. The deletion was put to the user as a one-way door at the plan gate and accepted (`shared/history/260814-2306-orchestrator-session.md:174`). Verified at HEAD `9306f0a` by the reconciliation pass of 260815-1913.

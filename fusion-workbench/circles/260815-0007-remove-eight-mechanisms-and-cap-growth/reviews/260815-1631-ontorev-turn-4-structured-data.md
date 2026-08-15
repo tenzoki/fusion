@@ -373,3 +373,41 @@ replays two completed steps.
    files.
 5. **The retired tasklist header** (Low). Any time; it is one field and two annotations.
 6. **`LICENSE`** (Low). Last, and it is a licensing question before it is an installer one.
+
+---
+
+## Reconciliation annotation — 260815-1913, reconciler, HEAD `9306f0a`
+
+Confirmed against the tree, not against the markers on the records.
+
+**The High — `agentstate.yaml`'s queue content.** Corrected and closed at
+`issues/260815-1631_c_the-work-queue-misstates-three-of-seventeen-tasks-and-is-now-the-only-durable-copy.md`.
+Verified at HEAD: sixteen of the seventeen entries now carry their true status and commit. **The
+seventeenth does not, and the class has recurred within the same Turn:** P-15 landed as `9306f0a`
+and both `current_task` and `work_queue[16]` still read `running`, with the file's `Updated:` stamp
+three commits behind. Filed as
+`issues/260815-1913_o_the-work-queue-misstates-p-15-again-one-turn-after-the-same-class-was-closed.md`.
+This review's own reasoning is what makes the recurrence matter: `dd312eb` made this field the
+queue's only durable copy and `f45f76a` deleted the check that compared it against git, both in this
+Turn.
+
+**The shape Medium — the retired `progress:` block.** Closed at
+`issues/260815-1631_c_the-live-agentstate-yaml-still-carries-the-progress-block-the-commit-that-renamed-it-retired.md`.
+Verified: the live file carries `control:` with `turn_start_head`, `paused_at_task` and
+`directive_revisions_this_session`, and no `progress:` key. The comment above it correctly says the
+counter fields left with `f45f76a`.
+
+**The derivation-table Medium** — `issues/260815-1631_o_one-of-the-four-derivation-rows-points-at-a-hand-maintained-field-in-the-same-file.md`
+stands. The `work_queue[].status` row still derives a tally from a hand-maintained field in the same
+file, and the recurrence recorded above is that row's failure mode arriving.
+
+**The six checks reproduce.** No baseline number moved (`git diff 518926d..1e29572 --
+hooks/lib/__tests__/rules-emission-golden.test.ts`), the emitted key set still has at least one
+consumer per key, and `TASKLIST` is gone from the resolver. Independently: `cd hooks && npm test`
+run by this pass is **40 files, 751 tests, all passed**, 64.00 s.
+
+**The `8.2.0` manifest observation is now a shipped-version fact rather than an out-of-range one.**
+This review noted the marketplace manifest untouched at `8.2.0` because no commit in its range
+reached it. Step 15 bumped `plugin.json`, `install.sh:27` and `README.md:26` to `9.0.0` and left the
+marketplace clone at `8.2.0` deliberately. Filed as
+`issues/260815-1913_o_the-marketplace-entry-advertises-five-removed-mechanisms-and-was-recorded-only-in-a-history-entry.md`.

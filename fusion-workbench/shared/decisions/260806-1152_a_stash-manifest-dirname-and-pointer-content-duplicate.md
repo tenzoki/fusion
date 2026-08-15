@@ -33,3 +33,28 @@ workbench, and the case the manifest exists for is not a healthy one: on a corru
 half-restored workbench their divergence is the diagnosis, and a nine-field schema would have
 discarded it to save a line. No schema change. Record the reason in the manifest schema
 documentation so the next reader does not re-file the duplication as redundancy.
+
+---
+
+**Reconciliation 260815-1913 (reconciler, HEAD `9306f0a`) — the subject of this decision no longer
+exists, and the marker is deliberately left at `_a_`.**
+
+Circle `260815-0007-remove-eight-mechanisms-and-cap-growth` step 6 deleted `skills/circle-stash/`
+and `skills/circle-pop/` in `5d29b6d`, and renamed `rules/workbench-stash-and-lock.md` to
+`rules/commit-lock.md` with its `## Stashes` half removed. All three of this record's
+`**Cross-references:**` therefore dangle at HEAD, and the ten-field manifest whose two fields the
+question is about is written by nothing. The answer recorded here — keep both fields, no schema
+change, record the reason in the manifest schema documentation — can never be realised, so
+`_a_` → `_i_` is unreachable.
+
+**No marker was moved, and the reason is that an open decision owns exactly this question.**
+`circles/260801-1244-curator/decisions/260814-1332_o_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
+asks what marks a decision whose implementation was deleted with no superseding decision to cite,
+and lists four candidate answers of which two (`_s_` widened, or a new `Retired:` annotation) would
+apply here. Renaming this record now would pre-empt that decision on the weakest evidence tier. This
+record is an `_a_` rather than an `_i_` instance of the same class, which the open decision's
+question text does not yet cover — a distinction worth carrying into whoever answers it.
+
+This is active Grounding (`_a_` is Grounding-Stand per `rules/fusion-workbench-conventions.md`
+`## State Markers — decisions`) whose subject the Artifact removed, and it is one of the two records
+that flag the Grounding↔Directive edge in this Circle's session-end Coherence verdict.

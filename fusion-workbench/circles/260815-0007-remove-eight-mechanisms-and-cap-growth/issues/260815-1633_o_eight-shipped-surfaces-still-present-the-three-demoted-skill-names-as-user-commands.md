@@ -49,3 +49,32 @@ Decide once how a demoted name is written in prose — probably "the `CLAUDE.md`
 (`/fusion:cleanup --only claude-md`)" — and apply it. `agents/orchestrator.md:1289` is worth doing
 first and separately; the rest are a sweep and could reasonably ride with the curator's pass, since
 `rules/fusion-workbench-conventions.md` is one of that agent's three surfaces.
+
+---
+
+**Reconciliation 260815-1913 (reconciler, HEAD `9306f0a`) — seven of the nine rows stand, two are
+discharged, and two line numbers have drifted.**
+
+Every row was re-grepped rather than re-read from the table.
+
+| Row | At HEAD |
+|---|---|
+| `agents/orchestrator.md:1289` | **stands**, now at `:1292` |
+| `agents/curator.md:3` (description) | **stands** |
+| `agents/curator.md:57` | **stands** |
+| `agents/curator.md:344` | **stands** |
+| `agents/playmaker.md:61` | **stands** |
+| `skills/cadence/SKILL.md:255` | **stands**, and `:126` is a tenth instance the table did not list |
+| `rules/fusion-workbench-conventions.md:47,79` | **discharged** by `e8052e7`, the curator's approved pass at gate G1 — `grep -n '/fusion:archive' rules/*.md` returns nothing, and `:81` now reads "the archive step of `/fusion:cleanup`" |
+| `docs/philosophy.md:15` | **stands** |
+| `README.md:150` | **stands**, now at `:152` |
+
+The two discharged rows are the ones the record itself predicted would be reached: it noted that
+`rules/fusion-workbench-conventions.md` is one of the curator's three surfaces and that the sweep
+"could reasonably ride with the curator's pass". It did, for that file and no other.
+
+**`agents/orchestrator.md:1292` is untouched and is still the row that is more than presentational.**
+It says the ordinary surface for the curator is `/fusion:curate`; `README-agents.md:246` says the
+surface is `/fusion:cleanup --only claude-md` and that `curate` is Cleanup Step 5. Both ship, both
+are read by the orchestrator, and they disagree about what to tell a user. The record's own
+sequencing — do that one first and separately — is unperformed.

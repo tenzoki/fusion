@@ -54,3 +54,6 @@ Find the conditional registration and make it unconditional, or make its conditi
 asserted, so the file collects the same set every run. If some tests genuinely cannot run in
 some environments, they should be `skip`ped visibly rather than never registered — a skipped test
 is reported and counted, which is the property this defect removes.
+
+---
+Resolved: moot, not fixed. The one file the variance was entirely in, `hooks/lib/__tests__/fusion-plane.test.ts`, was deleted in `d0ddabb`. Verified at HEAD `9306f0a` by the reconciliation pass of 260815-1913: the suite is 40 files / 751 tests, and `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-1832-coder-after-measurement.md` re-measures the wall clock at 59.52 s and 61.24 s over two runs, against 76.57 s before. The remaining spread has a different cause, named there: step 3b caps a run at half the machine's cores.

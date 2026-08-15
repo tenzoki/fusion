@@ -41,3 +41,6 @@ Low because `--fixture` is documented in the file header as a test seam and no o
 documentation tells a user to reach for it. The cost is one more spelling where the file
 contradicts its own stated rule about silent no-ops, in a file that has now had two of those
 closed in one night.
+
+---
+Resolved: moot, not fixed. `bin/fusion-plane` was deleted in `d0ddabb` (Circle `260815-0007-remove-eight-mechanisms-and-cap-growth`, step 2), so `cmd_push` and its flag handling no longer exist. Verified at HEAD `9306f0a` by the reconciliation pass of 260815-1913: `bin/` holds eleven helpers and none is `fusion-plane`. Closed because the subject left the tree, not because the flag handling was repaired.

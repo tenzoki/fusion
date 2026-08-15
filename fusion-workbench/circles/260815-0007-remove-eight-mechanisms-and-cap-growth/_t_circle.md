@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** active
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md
+**Active spec/plan:** circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_c_plan-remove-eight-mechanisms-and-cap-growth.md
 **Active session history:** shared/history/260814-2306-orchestrator-session.md
 
 ---
@@ -215,4 +215,4 @@ and `.active-circle` is absent. Five artifacts bind this one and are cited rathe
 - Turn 1 (session 260814-2306): commits 348f6db..c4761dc; steps P-1 to P-3 done (before-measurement, Plane mirror removed in two halves); suite 1030 tests/76.6s -> 903 tests/~30s; reviewed over the whole session range 9a7da8e..HEAD by coderev and ontorev, coverage now covered; 10 defect records filed, 3 closed; Coherence verdict: pending gate; session history: shared/history/260814-2306-orchestrator-session.md
 - Turn 2 (session 260814-2306): commits c4761dc..b70097f; plan correction of the false lint premise (8 of 11 remaining steps carried it, not the 2 reported); the legacy-halt-clearing flake diagnosed and deliberately not patched, its cause being two concurrent npm test runs racing on hooks/dist; **inserted step P-3b**, not in the plan, which made the suite safe to run concurrently (332267a, 6/6 red before and 12/12 green after) and which the Circle grew by, since the closure criterion rests on the suite meaning something; then steps P-4 to P-6 (churn heatmap, churn configuration leaves, stash/pop pair with the commit-lock rule rehomed); session history: shared/history/260814-2306-orchestrator-session.md
 - Turn 3 (session 260814-2306): commits 6350854..518926d; steps P-7 to P-9 (conceptrev removed, investigator folded into analyst, the strategic and knowledge domain values); session history: shared/history/260814-2306-orchestrator-session.md
-- Turn 4 (session 260814-2306): in progress, from 9955e8f; steps P-10 to P-12 (the persisted tasklist and its queue-ground apparatus, the hand-maintained session counters and the drift machinery, the administrative surface down to three names), then gate G1; session history: shared/history/260814-2306-orchestrator-session.md
+- Turn 4 (session 260814-2306): commits 9955e8f..9306f0a; steps P-10 to P-12 (the persisted tasklist and its queue-ground apparatus, the hand-maintained session counters and the drift machinery, the administrative surface down to three names), then gate G1; session history: shared/history/260814-2306-orchestrator-session.md
