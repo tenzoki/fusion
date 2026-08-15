@@ -40,3 +40,10 @@ $ ls docs/          philosophy.md  working-model.md
 **The fix, in the shape the gate already uses.** Add two checks to `derivable-enumerations-lint.test.ts`, modelled on the existing `describe("enumeration lint: the bin/ helper roster in CLAUDE.md's Layout table")`: derive `ls templates/` and `ls docs/`, parse the backticked filenames out of the two Layout rows, and diff both ways so a phantom entry and a missing one each fail. Each existing check ships a mutation control; these should too. The two stale rows are the curator's at gate G1 and are not the fix asked for here.
 
 **One thing the fix should not do.** Do not answer this by widening `reference-resolution-lint` to treat a bare filename as a path. A filename with no directory is ambiguous by construction, and the gate's own header records that it stays out of forms it cannot parse unambiguously rather than guessing at them.
+
+---
+Widened by step 8 (2026-08-15), still `_o_` and still gate G1's. The `templates/` row now names **two** phantom files, not one: step 2 removed `plane.config.yaml`, step 8 removed `investigator-capture-layout.md`. `templates/` holds exactly one file, `fusion-guard.json`, so the row is wrong about two of the three entries it lists and wrong about the investigator being the reason the first one exists.
+
+Step 8 left the row rather than fixing it, and the judgement is the plan's rather than the executor's: the plan's step 8 states that `CLAUDE.md:51`'s bare-filename spelling puts the row on the narrative side and names this record as the reason. That call was made knowing the row was already stale. What step 8 adds is the current count, so the curator's pass reads the state as it is rather than as step 2 left it.
+
+The row's sibling obligation is done: the *"Where to look when something breaks"* row that spelled `templates/investigator-capture-layout.md` as a path was gate-forced and left in step 8's own commit.

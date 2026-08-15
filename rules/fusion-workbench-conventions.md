@@ -39,7 +39,7 @@ fusion-workbench/
 │   ├── decisions/
 │   ├── analyses/
 │   ├── reviews/                       # codereview + ontoreview, merged
-│   ├── investigations/                # investigations are always shared — see below
+│   ├── investigations/                # always shared, and write-frozen — see below
 │   ├── consult/                       # consultations are always shared — see below
 │   ├── history/
 │   ├── memos/                         # memos are always shared — see below
@@ -83,7 +83,7 @@ Two consequences. **Nothing in the second group survives a fresh clone**, so no 
 
 This repository applies exactly that split; see its `.gitignore`.
 
-**`shared/` mirrors the Circle's artifact kinds, plus four of its own.** Every kind a Circle can hold has a shared counterpart, because any of them can be produced with no Circle active and must still have a home. `investigations/`, `consult/`, `memos/` and `backlog/` exist only in `shared/`: an investigation studies a failure capture, a consultation answers a question, a memo records a note, and a backlog entry precedes every Directive by construction. None of the four is produced by executing a Directive, so none can originate in a Circle.
+**`shared/` mirrors the Circle's artifact kinds, plus four of its own.** Every kind a Circle can hold has a shared counterpart, because any of them can be produced with no Circle active and must still have a home. `investigations/`, `consult/`, `memos/` and `backlog/` exist only in `shared/`: an investigation studies a failure capture, a consultation answers a question, a memo records a note, and a backlog entry precedes every Directive by construction. None of the four is produced by executing a Directive, so none can originate in a Circle. `investigations/` is **write-frozen** since the `investigator` fold of 2026-08-15: the store and its reports stay, nothing writes there any more, and a failure analysis goes to `$OUT_ANALYSIS` like every other analysis.
 
 **The review types collapse into one `reviews/`.** codereview and ontoreview differ by sender, not by kind. The sender is in the filename (`YYMMDD-HHMM-<sender>-<topic>.md`) and in the document header. Inside one Circle they do not earn a directory each.
 
@@ -161,7 +161,7 @@ The `0/1/2` core is shared with `bin/fusion-rules`; 3 and 4 are this resolver's 
 1. **With no Circle in scope, every `OUT_*` points into `shared/`.** The **Circle in scope** is the `<circle-dir>` argument when one is given, and the active Circle otherwise. There is no error state and no refusal for "no Circle active" — work happens outside Circles routinely, and it has a defined home. This is the Origin Rule's "unknown origin means `shared/`" expressed executably.
 2. **Every `SCAN_*` always carries both stores** — the Circle in scope and the shared one — even when a Circle is active. An agent searching for open decisions must see the Circle's *and* the project's. With no Circle in scope, a `SCAN_*` collapses to the shared store alone.
 
-   `SCAN_INVESTIGATIONS` and `SCAN_CONSULT` look like exceptions and are not. Their kinds exist only in `shared/` (an investigation and a consultation cannot originate in a Circle — see `## fusion-workbench Layout`), so "both stores" has nothing to range over and collapses to one. The invariant is not weakened for them; it is satisfied vacuously. The asymmetry is intentional, and it follows from the layout rather than sitting beside it.
+   `SCAN_CONSULT` and `SCAN_BACKLOG` look like exceptions and are not. Their kinds exist only in `shared/` (a consultation cannot originate in a Circle, and a backlog entry precedes every Directive — see `## fusion-workbench Layout`), so "both stores" has nothing to range over and collapses to one. The invariant is not weakened for them; it is satisfied vacuously. The asymmetry is intentional, and it follows from the layout rather than sitting beside it.
 
    There is deliberately no `SCAN_MEMOS`. `memos/` is shared like the other two, but no agent reads it — a memo is written for the user, not for an agent. A key is emitted when a prompt reads the kind, not because the symmetry of the table would look better with it.
 
@@ -247,7 +247,7 @@ A project names its two languages in `CLAUDE.md`, on two lines:
 **The stylometric profiles under `./fusion-workbench/stilwerk/` follow from the boundary above rather than defining it.** Each family governs one of the first two surfaces, so each resolves from that surface's language:
 
 - **`chat-voice-<lang>.yaml`** — the short-form chat profile, resolved from the **chat** language and applied by **every** agent to its short-form user-facing output (gate prompts, `AskUserQuestion` text, status reports, chat replies). See `rules/user-facing-output.md` `## Style anti-patterns apply to everything`.
-- **`default-voice-<lang>.yaml`** — the long-form writing profile, resolved from the **artifact** language and applied by the long-form-prose agents to their narrative outputs (session summary bodies, consultant reports, analysis reports, investigator timelines, playmaker briefings, prose sections of specs and plans).
+- **`default-voice-<lang>.yaml`** — the long-form writing profile, resolved from the **artifact** language and applied by the long-form-prose agents to their narrative outputs (session summary bodies, consultant reports, analysis reports including failure timelines, playmaker briefings, prose sections of specs and plans).
 
 The writing profile follows its surface's language, not the artifact declaration as such, so **a customer deliverable's prose takes the writing profile of the language the dispatch named** — `default-voice-de.yaml` for a German deliverable in a project whose artifact language is `en`, and the target language's profile on a translation. That is the deliverable case above applied to the profile family, not an exception to it: each family resolves from the language of the surface it governs, and for one surface that language comes from the dispatch.
 
@@ -286,7 +286,6 @@ Patterns attach to the **kind of artifact**, not to a directory. The same kind c
 | Session history | `$OUT_HISTORY` | `YYMMDD-HHMM-<topic>.md` | no |
 | Review (code / onto) | `$OUT_REVIEW` | `YYMMDD-HHMM-<sender>-<topic>.md` | no |
 | Analysis | `$OUT_ANALYSIS` | `YYMMDD-HHMM-<topic>.md` | no |
-| Investigation | `$OUT_INVESTIGATION` | `YYMMDD-HHMM-<topic>.md` | no |
 | Consultation | `$OUT_CONSULT` | `YYMMDD-HHMM-<topic>.md` | no |
 | Memo | `$OUT_MEMO` | `memos-<username>.md` / `tasks-<username>.md` | no |
 | Backlog entry | `$OUT_BACKLOG` | `YYMMDD-HHMM_S_<topic>.md` | yes (issues/planning vocabulary) |

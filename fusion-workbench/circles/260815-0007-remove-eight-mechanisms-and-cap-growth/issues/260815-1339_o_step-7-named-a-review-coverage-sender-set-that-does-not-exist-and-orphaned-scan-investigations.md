@@ -66,3 +66,14 @@ measurement above rather than from the archive skill.
    and `measureReviewCoverageForModel`. That fix is still needed and is now the only thing
    that stops the permanent `UNUSABLE` row on this Circle's own review file.
 3. Correct the plan's open question before step 8 reads it.
+
+---
+Partially answered by step 8 (2026-08-15). **Fix direction 3 is settled; 1 and 2 stay open and this record stays `_o_` for them.**
+
+Step 8 re-ran the measurement this record asks it to decide from, over the whole key table rather than the one key: with `agents/investigator.md` gone, `OUT_INVESTIGATION` and `SCAN_INVESTIGATIONS` are the **only two of the resolver's 23 keys named by no shipped prompt** — every other key has at least one consumer, and `OUT_HISTORY` has fifteen. Orphaning is not a normal state in this resolver; those two were the whole of it.
+
+**Both arms were removed**, not just the one this record names. `rules/workbench-path-resolution.md` states the criterion the removal applied: a key set is a restatement of the prompts, so a key no prompt names restates nothing, and the store's survival is not an argument for the key's survival. Splitting the pair would have been worse than either choice, because `SCAN_INVESTIGATIONS` is defined as the read counterpart of `OUT_INVESTIGATION`.
+
+The "an unnamed key costs nothing at run time" reasoning that kept the arm at step 7 is true and was not the question. What decided it is that the retirement is **not silent**: the ORDER-membership check in `bin/fusion-paths` exits 4 on a prompt naming an unknown key, naming the prompt, the key and both places to add it back, so a future investigating agent fails loudly at its first Setup rather than writing to the workbench root.
+
+`shared/investigations/` stays, `/fusion:setup` still creates it, and `/fusion:archive` still keeps it out of tier scope by safety filter 4. Its prose was corrected in two places that had counted the shared-only kinds: the archive skill's "three kinds need no derivation" is now two, and the resolver rule's "four unconditionally-shared kinds" is now three, with the retirement written up there as the worked case.

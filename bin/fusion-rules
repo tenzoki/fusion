@@ -56,16 +56,12 @@
 #   - Design-diagram agents additionally read design-diagrams.md (shipped by
 #     plugin) — the doctrine for expressing technical design as formal,
 #     parseable Mermaid (when / which type, validity, coherence self-check).
-#     Recipients: planner, analyst, taskplanner, shaper, investigator — the
-#     agents that produce the diagrams.
+#     Recipients: planner, analyst, taskplanner, shaper — the agents that
+#     produce the diagrams.
 #   - Domain agents additionally match filename patterns:
 #       coder, coderev, bugfixer  → *coding*.md
 #       ontocoder, ontorev        → *ontology*.md, *normative*.md, *verb*.md
 #       planner                   → *coding*.md, *ontology*.md
-#       investigator              → *investigator*.md (project must supply
-#                                   its capture-layout description, e.g.
-#                                   ./rules/investigator-capture-layout.md;
-#                                   see templates/investigator-capture-layout.md)
 #   - All other agents get workbench-conventions only. The conventions-only
 #     set currently includes: orchestrator, shaper, taskplanner, reconciler,
 #     analyst, consultant, playmaker, editor, curator.
@@ -99,13 +95,12 @@
 #                                    line.
 #       default-voice-<lang>.yaml  — emitted for the long-form-prose agents only
 #                                    (orchestrator, consultant, shaper, planner,
-#                                    analyst, investigator, playmaker,
-#                                    editor, curator), for narrative
-#                                    outputs:
+#                                    analyst, playmaker, editor, curator), for
+#                                    narrative outputs:
 #                                    session summary bodies, consultation
-#                                    replies, analysis reports, investigator
-#                                    timelines, playmaker briefings, prose
-#                                    sections of specs and plans, editor
+#                                    replies, analysis reports including
+#                                    failure timelines, playmaker briefings,
+#                                    prose sections of specs and plans, editor
 #                                    deliverables. Language: the
 #                                    `**Artifact language:**` line.
 #     What the two declarations name is a boundary by SURFACE, not by length:
@@ -169,7 +164,6 @@ case "$AGENT" in
   coder|coderev|bugfixer)        PATTERNS="coding" ;;
   ontocoder|ontorev)              PATTERNS="ontology normative verb" ;;
   planner)                        PATTERNS="coding ontology" ;;
-  investigator)                   PATTERNS="investigator" ;;
   orchestrator|shaper|taskplanner|reconciler|analyst|consultant|playmaker|editor|curator)
                                   PATTERNS="" ;;
   *)
@@ -181,7 +175,7 @@ esac
 # Prose-agent flag — independent of PATTERNS. The agents below produce
 # long-form narrative output that the stylometric profile governs.
 case "$AGENT" in
-  orchestrator|consultant|shaper|planner|analyst|investigator|playmaker|editor|curator)
+  orchestrator|consultant|shaper|planner|analyst|playmaker|editor|curator)
                                   IS_PROSE_AGENT=1 ;;
   *)                              IS_PROSE_AGENT=0 ;;
 esac
@@ -191,7 +185,7 @@ esac
 # Mermaid. They read the shared rubric in rules/design-diagrams.md so that one
 # definition of "coherent" governs every diagram the plugin's agents draw.
 case "$AGENT" in
-  planner|analyst|taskplanner|shaper|investigator)
+  planner|analyst|taskplanner|shaper)
                                   IS_DIAGRAM_AGENT=1 ;;
   *)                              IS_DIAGRAM_AGENT=0 ;;
 esac

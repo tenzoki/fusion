@@ -58,13 +58,12 @@ Once `/fusion:setup` has run in a project, the day-to-day flow is:
    - A goal to capture without starting work on it → `/fusion:direct <draft>` — **shaper** sharpens the draft with you and writes it as an anticipated Circle; no Turn loop runs, and a backlog entry's path is a valid draft
    - Concrete change with a clear ask → **planner** directly
    - One bug to fix → **bugfixer**
-   - Forensic look at a captured failed run → **investigator**
    - Customer-ready deliverable, branded deck, or en↔de translation → **editor**
    - An idea worth keeping but not yet worth planning → `/fusion:memo` files it as its own new entry in the project backlog, where the playmaker ranks it and `/fusion:next` surfaces it
    - "What should I work on next?" → `/fusion:next` for the portfolio briefing + next-Circle activation (**playmaker**); **taskplanner** builds the in-Circle work queue
    - Tracking files feel stale → **reconciler**
    - Strategic advice or second opinion → **consultant**
-   - Deep document/problem study before work → **analyst**
+   - Deep document/problem study before work, or a forensic look at a captured failed run → **analyst**
 
 3. **The workbench is the project's cross-session memory.** `fusion-workbench/` holds one directory per unit of work under `circles/` — each with its own plans, issues, decisions, history, reviews and analyses — plus a `shared/` store for everything that belongs to no unit of work, and `tasklist.md` and `portfolio.md` at the root. Which artifact lands where is the Origin Rule: it belongs to the Circle whose Directive caused it, and to `shared/` when no Circle was active. The kinds are distinguished by what resolves them — plans ("here's the approach"), defects ("go fix it") in issues, open questions ("decide and record") in decisions, and ideas that are not yet units of work ("worth considering, not yet worth planning") in the shared backlog store, which has no Circle counterpart because an idea precedes every Directive. `portfolio.md` is not an artifact kind: it is the playmaker's regenerated briefing over the anticipated Circles and the backlog, and it is what `/fusion:next` reads back to the user.
 
@@ -105,10 +104,9 @@ Three things to configure:
 
 - **Compliance guard:** `$FUSION_SRC/README-hooks.md` and `$FUSION_SRC/hooks/config.example.json`. Decision categories and their sensitivities, escalation behavior.
 - **Project rules:** read `$FUSION_SRC/bin/fusion-rules` (the header comment is the spec). Two project-side rule locations:
-  - `./rules/` — fusion-agent-specific rules (e.g. `investigator-capture-layout.md`, `taskplanner-priorities.md`) that have no meaning outside a fusion context.
+  - `./rules/` — fusion-agent-specific rules (e.g. `taskplanner-priorities.md`) that have no meaning outside a fusion context.
   - `.claude/rules/` — project-wide rules every Claude session should respect (coding/ontology/normative/verb guidelines).
   Both are loaded by `bin/fusion-rules` per agent-name pattern. For large knowledge bodies you don't want loaded on every run, a project may also ship `./rules/context-manifest.yaml` — it registers topic-scoped loadable units (each a rule file or a `skill:<name>` pointer), pulled only when the agent **and** the active topic match (`bin/fusion-rules <agent> [<topic>]`). This lets `CLAUDE.md` stay a lean index rather than carrying everything inline. The mechanism is authored in `$FUSION_SRC/rules/context-manifest.md` (and the lean-`CLAUDE.md` convention in `rules/context-lean-claude-md.md`); absent the manifest, loading is byte-identical to before.
-- **Investigator capture layout:** if the project has an evidence-locker (failed runs captured for forensic analysis), copy `$FUSION_PLUGIN_ROOT/templates/investigator-capture-layout.md` to `./rules/investigator-capture-layout.md` and fill it in. Without this, the `investigator` agent halts at Setup.
 
 ---
 

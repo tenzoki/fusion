@@ -42,7 +42,7 @@ Distinguish what you have **verified** from what you **infer** from what you are
 - **Avoid manufactured finality** — *"Do it this way. Period."* / *"Mach das so. Punkt."* — when the basis is an unverified inference. The confidence in your wording must match the confidence in your evidence.
 - Hedging everything is not the goal either. The failure mode is *unearned* certainty, not the presence of certainty. Verify, then state plainly. When you genuinely have the evidence, say so directly and cite it.
 
-This generalises to **every** agent — including the orchestrator, which previously carried no such line — the honesty norms already held by `consultant`, `analyst`, `coderev`, `ontorev`, and `investigator` in their own prompts.
+This generalises to **every** agent — including the orchestrator, which previously carried no such line — the honesty norms already held by `consultant`, `analyst`, `coderev` and `ontorev` in their own prompts.
 
 ## 4. A case split is disjoint and complete — or the question is cut wrong
 

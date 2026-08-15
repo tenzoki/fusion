@@ -15,7 +15,7 @@ const fusionPaths = join(pluginRoot, "bin", "fusion-paths");
 const AGENTS = [
   "orchestrator", "coder", "ontocoder", "bugfixer", "coderev",
   "ontorev", "planner", "shaper", "taskplanner",
-  "reconciler", "analyst", "investigator", "consultant", "playmaker",
+  "reconciler", "analyst", "consultant", "playmaker",
   "editor", "curator",
 ];
 
@@ -156,11 +156,8 @@ describe("bin/fusion-paths", () => {
       }
     });
 
-    it("keeps OUT_INVESTIGATION / OUT_CONSULT / OUT_MEMO shared even with a Circle active", () => {
+    it("keeps OUT_CONSULT / OUT_MEMO shared even with a Circle active", () => {
       activate();
-      expect(parse(run(project, "investigator").stdout).OUT_INVESTIGATION).toBe(
-        "shared/investigations",
-      );
       expect(parse(run(project, "consultant").stdout).OUT_CONSULT).toBe("shared/consult");
       // memo, not orchestrator: the memo skill is the only consumer that names
       // OUT_MEMO, now that each asks under its own name.
@@ -261,9 +258,6 @@ describe("bin/fusion-paths", () => {
     });
 
     it("keeps the unconditionally-shared kinds shared", () => {
-      expect(parse(run(project, "investigator", OTHER).stdout).OUT_INVESTIGATION).toBe(
-        "shared/investigations",
-      );
       expect(parse(run(project, "consultant", OTHER).stdout).OUT_CONSULT).toBe("shared/consult");
       expect(parse(run(project, "memo", OTHER).stdout).OUT_MEMO).toBe("shared/memos");
     });
@@ -316,8 +310,8 @@ describe("bin/fusion-paths", () => {
   });
 
   describe("the backlog keys", () => {
-    // OUT_BACKLOG and SCAN_BACKLOG are the fourth unconditionally-shared kind,
-    // beside investigations, consultations and memos. A backlog entry PRECEDES
+    // OUT_BACKLOG and SCAN_BACKLOG are the third unconditionally-shared kind,
+    // beside consultations and memos. A backlog entry PRECEDES
     // every Directive by construction, so there is no Circle it could belong
     // to — which is why the target argument does not move it either. That last
     // case is new: it is the first key set to meet a <circle-dir> target, and
@@ -352,8 +346,8 @@ describe("bin/fusion-paths", () => {
       expect(p.OUT_BACKLOG).toBe("shared/backlog");
       expect(p.SCAN_BACKLOG).toBe("shared/backlog");
       // Invariant 2 collapses for SCAN_BACKLOG exactly as it does for
-      // SCAN_CONSULT and SCAN_INVESTIGATIONS: one store, because the kind has
-      // no Circle counterpart to carry.
+      // SCAN_CONSULT: one store, because the kind has no Circle counterpart
+      // to carry.
       expect(p.SCAN_BACKLOG.split(" ")).toHaveLength(1);
     });
 
@@ -583,8 +577,9 @@ describe("bin/fusion-paths", () => {
 
     it("gives log-activity WORKBENCH alone — it names no key", () => {
       // The skill that broke the agent-only namespace: it reads consultations
-      // and investigations, SCAN_CONSULT is named only by playmaker, and no
-      // agent names both kinds, so no agent argument resolved it. It scans the
+      // and investigations, SCAN_CONSULT is named only by playmaker, and the
+      // investigation kind has no key at all since the investigator fold, so
+      // no agent argument ever resolved it. It scans the
       // tree from WORKBENCH instead — and asking under its own name is what
       // makes that legible rather than a borrowed argument that "selects
       // nothing".
@@ -616,25 +611,23 @@ describe("bin/fusion-paths", () => {
       );
     });
 
-    it("gives investigator no SCAN_INVESTIGATIONS — it writes them and never reads them", () => {
-      // The mirror of the case above: a key for a read the prompt does not
-      // perform would be speculation, not coverage.
-      const p = parse(run(project, "investigator").stdout);
-      expect(p.OUT_INVESTIGATION).toBe("shared/investigations");
-      expect(p.SCAN_INVESTIGATIONS).toBeUndefined();
+    it("emits no investigation key to anyone — the kind lost both of them", () => {
+      // OUT_INVESTIGATION and SCAN_INVESTIGATIONS were retired on 2026-08-15
+      // with `agents/investigator.md` and `agents/conceptrev.md`, the last two
+      // prompts naming either. `shared/investigations/` still exists and still
+      // holds reports; the KEYS went because a key set restates the prompts
+      // and these restated nothing. Asserted over every consumer rather than
+      // one, so re-adding an arm without a prompt to name it fails here.
+      for (const name of [...AGENTS, ...SKILLS]) {
+        const p = parse(run(project, name).stdout);
+        expect(p.OUT_INVESTIGATION, `${name} must get no OUT_INVESTIGATION`).toBeUndefined();
+        expect(p.SCAN_INVESTIGATIONS, `${name} must get no SCAN_INVESTIGATIONS`).toBeUndefined();
+      }
     });
 
     it("keeps SCAN_CONSULT shared-only, Circle active or not", () => {
       // Invariant 2 collapses for the unconditionally-shared kinds: they exist
       // only in shared/, so "both stores" has nothing to range over.
-      //
-      // SCAN_INVESTIGATIONS is the same kind and is not asserted here, because
-      // since 2026-08-15 no prompt names it: `agents/conceptrev.md` was its
-      // only reader and went with the agent. The resolver keeps the arm — an
-      // unnamed key costs nothing at run time, and `shared/investigations/`
-      // still holds reports — so there is nothing to run the assertion
-      // through. Whether the arm is retired is the investigation-key question
-      // that belongs with `agents/investigator.md`, not here.
       for (const withCircle of [false, true]) {
         if (withCircle) activate();
         expect(parse(run(project, "playmaker").stdout).SCAN_CONSULT).toBe("shared/consult");

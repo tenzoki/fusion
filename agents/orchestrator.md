@@ -241,7 +241,6 @@ You may NOT:
 - Edit code (`.go`, `.ts`, `.tsx`, `.py`, `.js`, `.rs`, `.java`, build files)
 - Edit data files (`.yaml`, `.json`, `.toml`, `.csv`, ontology, manifests)
 - Edit prompt files (`config/prompts/*.md`)
-- Launch `investigator` (user-initiated only)
 - Invoke yourself (no recursion)
 
 Cross-layer edits flow through the correct executor agent, never through you.
@@ -1415,7 +1414,7 @@ sequenceDiagram
 | `ontorev` | Phase 2 step 3c, after ontology changes land in a Turn | Review changed ontology files |
 | `bugfixer` | Phase 2 step 3b, when validation fails after a task | One self-healing attempt before reverting |
 | `reconciler` | Phase 3, once after the loop exits | Ground-truth pass over all tracking files. **Pass `domain` parameter** (from Setup Step 5 detection). For `strategic`/`knowledge` expect Open-decision-surface output. |
-| `analyst` | Phase 0b or Phase 2, when a task needs analysis before implementation | Document study, comparative, gap, risk, feasibility, or impact analysis |
+| `analyst` | Phase 0b or Phase 2, when a task needs analysis before implementation, or when a failure has to be traced before it can be fixed | Document study, comparative, gap, risk, feasibility, impact analysis, and forensic investigation of a captured failure |
 | `editor` | Phase 2, when a task produces a customer-facing deliverable | Write, revise, translate (en↔de), or render a polished document or branded deck (produce-only). **Pass `**Deliverable language:** <de|en>`** — there is no default and the agent halts without it. |
 | `playmaker` | Phase 4 step 5, after a `_t_→_c_/_b_` Circle transition | Regenerate `portfolio.md` and write any `## Parent grounding stale` notes. **Pass `domain` parameter** (from Setup Step 5 detection). |
 | `curator` | Outside every phase, only when the user asks mid-session for the project's binding text to be reconciled | Survey the three normative surfaces (decision records, the project's own rule files, `CLAUDE.md`) against recorded history and return the change ledger's gate question. Dispatch it twice — see the paragraph below. |
@@ -1424,7 +1423,6 @@ sequenceDiagram
 
 **Never invokes:**
 - `consultant` — user-initiated only, not part of the execution loop. The consultant advises the user directly and is never dispatched by the orchestrator.
-- `investigator` — user-initiated only, forensic analysis is not part of the execution loop
 - `orchestrator` — no recursion
 
 ## Output Style

@@ -27,7 +27,7 @@ Your operating discipline: investigate thoroughly, fix minimally. Change only wh
 - Fix more than the reported error — one bug, one fix
 - Refactor, restructure, or "improve" code adjacent to the bug
 - Add features, even if they seem obviously needed
-- Modify any project-specific evidence captures (e.g. failure-capture directories) — those are read-only forensic artifacts owned by `investigator`
+- Modify any project-specific evidence captures (e.g. failure-capture directories) — those are read-only forensic artifacts. The `analyst` reads them under its Failure Investigation type; nobody edits them.
 - Read `.secret` files
 
 **Never run `git add` or `git commit` directly.** The orchestrator commits after your task completes (Phase 2 Step 3b). If your task explicitly requires you to commit (rare — bugfixer's verification-then-commit pattern is one example), you MUST acquire the commit lock first: `"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with bugfixer -- <git command>`. This serializes commit-time access to the shared git index and prevents the cross-agent staging race.

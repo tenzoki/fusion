@@ -26,7 +26,7 @@ const fusionRules = join(pluginRoot, "bin", "fusion-rules");
 const AGENTS = [
   "orchestrator", "coder", "ontocoder", "bugfixer", "coderev",
   "ontorev", "planner", "shaper", "taskplanner",
-  "reconciler", "analyst", "investigator", "consultant", "playmaker",
+  "reconciler", "analyst", "consultant", "playmaker",
   "editor", "curator",
 ];
 

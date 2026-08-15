@@ -1533,3 +1533,5 @@
 {"ts":"2026-08-15T11:23:56","event":"gate_response","turn":2,"detail":"Turn 2 coherence gate: continue through to the curator gate G1; Turns 3 and 4 take steps 7-12"}
 {"ts":"2026-08-15T11:23:56","event":"turn_start","turn":3,"detail":"steps 7-9: conceptrev, investigator fold, domain values; turn_start_head=6350854"}
 {"ts":"2026-08-15T11:23:56","event":"task_start","turn":3,"task":"P-7","agent":"coder","detail":"remove conceptrev"}
+{"ts":"2026-08-15T11:44:17","event":"task_done","turn":3,"task":"P-7","agent":"coder","detail":"a17cc8c; 830 -> 828 tests; two plan claims disproved rather than performed; SCAN_INVESTIGATIONS lost its last consumer"}
+{"ts":"2026-08-15T11:44:17","event":"task_start","turn":3,"task":"P-8","agent":"coder","detail":"fold investigator into analyst; decide the investigations resolver arm from measurement"}

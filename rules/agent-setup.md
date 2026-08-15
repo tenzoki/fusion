@@ -19,8 +19,8 @@ demand, not read a file. The set is layered, not ranked: you read all of it.
 
 - `fusion-workbench-conventions.md` — always, for every agent. The framework ground truth
   (workbench layout, the Origin Rule, marker vocabularies, the Path Resolution contract).
-- **Pattern-matched domain rules** — coding, ontology, normative, verb, investigator, etc.,
-  selected per your agent. The descriptive name of the pattern does not matter; you read
+- **Pattern-matched domain rules** — coding, ontology, normative, verb, etc., selected per
+  your agent. The descriptive name of the pattern does not matter; you read
   whatever is emitted regardless of what kind of rule it is.
 - **Project-local rules** from the consuming project's `./rules/` (fusion-agent-specific)
   and `.claude/rules/` (project-wide). Missing files are skipped silently — read what is

@@ -46,3 +46,10 @@ Whether the Circle record's Dependencies bullet is itself corrected is a separat
 Circle record is a historical statement of what was known at activation, and the plan now carries
 the corrected instruction, so leaving the bullet and citing this defect from the Closure note may
 be the better answer than editing it.
+
+---
+Resolved: Step 8 performed the transition this record prescribed. `shared/decisions/260812-0254_o_should-the-investigator-get-case-folders-with-a-status-per-case.md` was renamed to `_s_` with `git mv` and carries a `Superseded by:` footer citing the Circle record's Grounding snapshot item 5. `_c_` was not used and `shared/issues/` was not touched, so neither error the record names was committed.
+
+The footer is longer than the one drafted here, and the addition is the third fact this record identified as the reason to file rather than fix in passing: the superseded record had *withdrawn* the removal on the user's testimony, so the footer states how the disagreement was settled — the measurement was re-taken on the user-initiated population it had previously missed, the runs it counted are real and stopped eight weeks ago, and the work went to the analyst instead. A supersession that only cited the newer record would have left the older one reading as if its evidence had been ignored.
+
+The Circle record's Dependencies bullet was **not** edited, which is the open question this record's last paragraph poses and answers in the same direction: a Circle record states what was known at activation, the plan carries the corrected instruction, and this closed record is the citation for anyone who reads the bullet later.

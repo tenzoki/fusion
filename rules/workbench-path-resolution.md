@@ -57,7 +57,6 @@ In the Value column, `A → B` means: `A` when a Circle is in scope, `B` when no
 | `OUT_DECISION` | `<circle>/decisions` → `shared/decisions` | Decision-record filing. |
 | `OUT_REVIEW` | `<circle>/reviews` → `shared/reviews` | codereview / ontoreview writes. |
 | `OUT_ANALYSIS` | `<circle>/analyses` → `shared/analyses` | Analysis writes. |
-| `OUT_INVESTIGATION` | `shared/investigations` | Always shared — never Circle-bound. |
 | `OUT_CONSULT` | `shared/consult` | Always shared — never Circle-bound. |
 | `OUT_MEMO` | `shared/memos` | Always shared — never Circle-bound. |
 | `OUT_BACKLOG` | `shared/backlog` | Always shared — never Circle-bound, and never target-bound either. |
@@ -68,16 +67,17 @@ In the Value column, `A → B` means: `A` when a Circle is in scope, `B` when no
 | `SCAN_HISTORY` | `<circle>/history shared/history` | |
 | `SCAN_REVIEWS` | `<circle>/reviews shared/reviews` | |
 | `SCAN_ANALYSES` | `<circle>/analyses shared/analyses` | |
-| `SCAN_INVESTIGATIONS` | `shared/investigations` | Read counterpart of `OUT_INVESTIGATION`. Shared-only — see invariant 2. |
 | `SCAN_CONSULT` | `shared/consult` | Read counterpart of `OUT_CONSULT`. Shared-only — see invariant 2. |
 | `SCAN_BACKLOG` | `shared/backlog` | Read counterpart of `OUT_BACKLOG`. Shared-only — see invariant 2. |
 | `SCAN_CIRCLES` | `circles` | Portfolio-wide scans (playmaker, `/fusion:next`). |
 | `PORTFOLIO` | `portfolio.md` | |
 | `TASKLIST` | `tasklist.md` | |
 
-### The four unconditionally-shared kinds, and the one that meets the target argument
+### The three unconditionally-shared kinds, and the one that meets the target argument
 
-`OUT_INVESTIGATION`, `OUT_CONSULT`, `OUT_MEMO` and `OUT_BACKLOG` never point into a Circle, and they are one rule rather than four exemptions: none of the four kinds arises from *executing* a Directive, so none of them can originate in a Circle under the Origin Rule. Their read counterparts — `SCAN_INVESTIGATIONS`, `SCAN_CONSULT`, `SCAN_BACKLOG`; `memos` has none, because nothing reads memos — satisfy invariant 2 **vacuously**. The invariant says a `SCAN_*` carries both stores, and for these kinds the Circle store does not exist, so "both" has nothing to range over. That is a collapse, not an exception: no weakening of the rule is involved and none should be written into a prompt.
+`OUT_CONSULT`, `OUT_MEMO` and `OUT_BACKLOG` never point into a Circle, and they are one rule rather than three exemptions: none of the three kinds arises from *executing* a Directive, so none of them can originate in a Circle under the Origin Rule. Their read counterparts — `SCAN_CONSULT`, `SCAN_BACKLOG`; `memos` has none, because nothing reads memos — satisfy invariant 2 **vacuously**. The invariant says a `SCAN_*` carries both stores, and for these kinds the Circle store does not exist, so "both" has nothing to range over. That is a collapse, not an exception: no weakening of the rule is involved and none should be written into a prompt.
+
+**There were four until 2026-08-15, and the fourth is the worked case for retiring a key.** Investigations were the same class of kind, and `shared/investigations/` is still in the layout and still holds reports — what went is the pair of keys, `OUT_INVESTIGATION` and `SCAN_INVESTIGATIONS`, when the `conceptrev` and `investigator` agents were removed. The criterion is the one this section already states in *Emission is per-consumer* below: a key set is a restatement of the prompts, so a key no prompt names restates nothing. Both were measured at zero shipped consumers, and they were the only two of the table's keys at zero. **The store's survival is not an argument for the keys' survival** — that was the reasoning that kept `SCAN_INVESTIGATIONS` standing for a week after its last reader left, and it confuses "the directory holds files" with "a consumer writes or reads them". Nor is the retirement silent: a later prompt naming either key exits 4 against the ORDER check in `bin/fusion-paths`, naming the prompt, the key, and both places to add it back. Retire a key the same way — measure the consumers, and let the guard cover the return.
 
 `OUT_BACKLOG` is where that reasoning has to be stated rather than inherited, because it is the first key of its class to exist alongside the `<circle-dir>` argument, and the argument is a second way for a Circle to reach a key. It does not reach this one. The substitution replaces the Circle in scope, and a backlog entry has no Circle in scope to replace: it **precedes** every Directive by construction — that is what makes it a backlog entry rather than an issue or a plan — so the target names a Circle the entry cannot belong to any more than the active one could. A caller that passes a target *and* writes an entry writes it to `shared/backlog` both times, and `hooks/lib/__tests__/fusion-paths.test.ts` `the backlog keys` asserts exactly that, under a target with and without a Circle active.
 
