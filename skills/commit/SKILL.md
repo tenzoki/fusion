@@ -77,7 +77,7 @@ headings. The procedure is still seven steps in order.
 Write the confirmed message to a scratch file, then run stage and commit as a
 single command under the project's commit lock — it serialises access to the
 shared git index against any parallel session's agents
-(`rules/workbench-stash-and-lock.md` `## Commit lock`; the `with` form acquires,
+(`rules/commit-lock.md` `## Commit lock`; the `with` form acquires,
 runs, and releases on any exit). The pair must be held together: the lock only
 defends against commit absorption if no path is staged outside it.
 

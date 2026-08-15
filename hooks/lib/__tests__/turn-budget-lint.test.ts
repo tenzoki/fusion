@@ -20,8 +20,8 @@ import { dirname, resolve, join } from "node:path";
 // per leaf by `hooks/lib/config.ts` from the project's `fusion-guard.json`, the
 // plugin's `hooks/config.json` and the built-in `DEFAULTS`; read once per
 // session by `bin/fusion-turn-budget` at Setup; carried in `agentstate.yaml`
-// where `progress.max_turns` already had a home and where
-// `/fusion:circle-stash` already read it as data.
+// where `progress.max_turns` already had a home and where it was already read
+// as data.
 //
 // What this gate pins is the part that would otherwise be undone: that no bare
 // Turn-budget literal comes BACK into the prompt. Seven copies of one fact did
@@ -207,19 +207,17 @@ describe("the orchestrator obtains the budget instead of assuming it", () => {
     expect(
       text.includes("Omit `progress.max_turns` from `agentstate.yaml` entirely"),
       `${ORCHESTRATOR} must say the key is OMITTED when the budget is unresolved. ` +
-        `/fusion:circle-stash parses progress.max_turns with a [0-9]+ pattern ` +
-        `(skills/circle-stash/SKILL.md), so a word written there is read as a garbled number, ` +
-        `while an absent key is a case it already handles.`,
+        `a reader parses progress.max_turns as a number, so a word written there is read ` +
+        `as a garbled one, while an absent key is a case a reader can already handle.`,
     ).toBe(true);
   });
 
-  it("carries the budget in agentstate.yaml, where circle-stash already reads it", () => {
+  it("carries the budget in agentstate.yaml, where a resumed session reads it", () => {
     const state = read(ORCHESTRATOR).split(/^### Format\s*$/m)[1] ?? "";
     expect(
       /^\s*max_turns:/m.test(state),
       `${ORCHESTRATOR} "### Format" must keep progress.max_turns. It is the handoff surface: ` +
-        `skills/circle-stash/SKILL.md reads the budget from there rather than assuming one, ` +
-        `and a resumed session reads it from there too.${REMEDY}`,
+        `a resumed session reads the budget from there rather than assuming one.${REMEDY}`,
     ).toBe(true);
   });
 

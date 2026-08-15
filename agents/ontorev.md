@@ -82,7 +82,7 @@ A pass that opened everything in a real range, and one that did not:
 
 ```
 **Reviewed-range:** `7f617b1..7ddacbc`
-**Not-opened:** `agents/orchestrator.md`, `skills/next/SKILL.md`, `skills/circle-stash/SKILL.md`
+**Not-opened:** `agents/orchestrator.md`, `skills/next/SKILL.md`, `skills/archive/SKILL.md`
 ```
 
 **Why this is mandated and not left to your judgement.** Reviews of every kind share one store, and until this mandate they each stated their scope differently — four spellings of the range across ten files, several with none. So nothing could read them, and nothing did: in session `260810-0844` two passes ran, their ranges did not tile the session's range, and **seven code-bearing commits reached a pushed release tag with no reviewer having opened them** while the session's own report said one. The record is `260810-1205` under `$SCAN_ISSUES`. The second field is the half that had already failed: one pass declared, correctly, three files it had not opened because concurrent tasks held them — exactly the files two of the unreviewed commits changed — and the sentence went into a file and stopped there.

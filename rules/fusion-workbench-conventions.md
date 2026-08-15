@@ -11,7 +11,7 @@ Shared conventions for all agents operating on `fusion-workbench/`, and for the 
 | The resolver's name namespace, key table, and key-set derivation | `rules/workbench-path-resolution.md` | no agent — read when authoring a prompt or the resolver |
 | Circle state markers, transitions, the record and portfolio templates | `rules/circle-records.md` | `orchestrator`, `playmaker`, `shaper` |
 | Provenance headers on rule files | `rules/rule-file-provenance.md` | no agent — read when writing a rule file |
-| Stashes and the commit lock | `rules/workbench-stash-and-lock.md` | `orchestrator` |
+| The commit lock | `rules/commit-lock.md` | `orchestrator` |
 
 No agent prompt and no skill body may carry a competing or supplementary definition of where artifacts go — they resolve their paths at run time (see `## Path Resolution (Pfadauflösung)`) and cite whichever of these five files owns the rule.
 
@@ -45,7 +45,6 @@ fusion-workbench/
 │   ├── memos/                         # memos are always shared — see below
 │   └── backlog/                       # ideas not yet units of work — always shared, see below
 ├── archive/                           # /fusion:archive target
-├── stashes/                           # /fusion:circle-stash target (opt-in; created on first stash)
 ├── stilwerk/                          # stylometric profiles
 ├── portfolio.md                       # playmaker output
 ├── tasklist.md                        # generated work queue (taskplanner only)
@@ -80,7 +79,7 @@ Whether the workbench is under version control at all is the project's decision 
 
 **What preserves that record is `/fusion:archive`, not a ceiling and not tracking the live file.** The log has no line or byte limit anywhere, deliberately: every such limit discards the oldest lines first, and the oldest lines are the block, halt and clear events, which are the only ones recording the guard enforcing anything. `/fusion:archive` rolls the live log into the archive store under a dated name and starts a fresh empty one, so the rolled copies are ordinary archived files and are kept wherever the archive store is kept. A project may therefore leave the live log untracked and still hold the evidence, paying no diff on every tool call — the record side of the split is satisfied by the rolled copies. That is the one entry above where "track them" reads as "keep what the roll produces", and it is the configuration this repository runs.
 
-Two consequences the lifecycle skills depend on. **Nothing in the second group survives a fresh clone**, so no skill may promise that git holds its bytes — that promise is available only for the first group, and only where the project tracks the workbench. And **an ignored path is skipped by `git stash --include-untracked`, but not by `git stash --all` or `git clean -xdf`** — ignoring a transient protects it from the first and from nothing else.
+Two consequences. **Nothing in the second group survives a fresh clone**, so no skill may promise that git holds its bytes — that promise is available only for the first group, and only where the project tracks the workbench. And **an ignored path is skipped by `git stash --include-untracked`, but not by `git stash --all` or `git clean -xdf`** — ignoring a transient protects it from the first and from nothing else. The second consequence had its consumer in the two stash-and-restore skills and lost it when they were removed on 2026-08-15; it is kept because it governs any command that sweeps the tree, not because a skill reads it today.
 
 This repository applies exactly that split; see its `.gitignore`.
 
@@ -88,7 +87,7 @@ This repository applies exactly that split; see its `.gitignore`.
 
 **The three review types collapse into one `reviews/`.** codereview, ontoreview and conceptreview differ by sender, not by kind. The sender is in the filename (`YYMMDD-HHMM-<sender>-<topic>.md`) and in the document header. Inside one Circle they do not earn a directory each.
 
-`fusion-workbench/.active-circle` is a one-line pointer file containing the **directory name** of the active Circle (e.g. `260716-1847-workbench-umbau`) — no marker, no `circles/` prefix, no `.md`. It is absent when no Circle is active. Because the directory name is stable across the Circle's whole lifecycle, the pointer no longer has to be re-pointed on every marker change. Its writer set is closed and enumerated here (decision `260806-0015_*_wem-gehoert-die-circle-aktivierung`). On the activation path there are two writers: the orchestrator **writes** it on `_a_→_t_` activation (after user confirmation of playmaker's proposal) and **deletes** it on `_t_→_c_/_b_/_s_/_d_` closure at Phase 4; `/fusion:next` writes it in its user-confirmed interactive-activation branch. Four lifecycle skills touch it outside activation, each in one bounded way: `/fusion:circle-stash` deletes it when freezing the active Circle, `/fusion:circle-pop` restores it from the stash manifest, `/fusion:migrate` re-points it from the pre-v4 filename form to the directory name, and `/fusion:cleanup` clears it only when the active Circle's record already carries a terminal marker. No other party writes it; a new writer adds itself to this enumeration in the same commit. The pointer is the single source of truth for "active Circle" — `agentstate.yaml` does NOT duplicate this field.
+`fusion-workbench/.active-circle` is a one-line pointer file containing the **directory name** of the active Circle (e.g. `260716-1847-workbench-umbau`) — no marker, no `circles/` prefix, no `.md`. It is absent when no Circle is active. Because the directory name is stable across the Circle's whole lifecycle, the pointer no longer has to be re-pointed on every marker change. Its writer set is closed and enumerated here (decision `260806-0015_*_wem-gehoert-die-circle-aktivierung`). On the activation path there are two writers: the orchestrator **writes** it on `_a_→_t_` activation (after user confirmation of playmaker's proposal) and **deletes** it on `_t_→_c_/_b_/_s_/_d_` closure at Phase 4; `/fusion:next` writes it in its user-confirmed interactive-activation branch. Two lifecycle skills touch it outside activation, each in one bounded way: `/fusion:migrate` re-points it from the pre-v4 filename form to the directory name, and `/fusion:cleanup` clears it only when the active Circle's record already carries a terminal marker. No other party writes it; a new writer adds itself to this enumeration in the same commit. The pointer is the single source of truth for "active Circle" — `agentstate.yaml` does NOT duplicate this field.
 
 The `fusion-workbench/` is anchored to the directory where setup was run — the working directory `pwd` reports, not necessarily the git toplevel. A subfolder may legitimately have its own independent workbench, separate from any workbench at a parent level; the plugin's hooks resolve `process.cwd()` directly and follow whichever directory is active.
 
@@ -533,10 +532,6 @@ The history log is the only durable record of a session. The in-memory task list
 
 Never read or display `.secret` files. If secrets are needed, ask the user to provide them via environment variables.
 
-## Stashes
-
-The stash protocol — opt-in, snapshot layout, manifest schema, lifecycle, boundary events, what a stash does not touch — moved verbatim to `rules/workbench-stash-and-lock.md`, which `bin/fusion-rules` emits to `orchestrator` only; `/fusion:circle-stash` and `/fusion:circle-pop` cite that file directly.
-
 ## Commit lock
 
-The commit-lock protocol — when it activates, mechanism, the `bin/fusion-commit-lock` subcommands, who acquires, tag conventions, failure modes — moved verbatim to `rules/workbench-stash-and-lock.md`, which `bin/fusion-rules` emits to `orchestrator` only.
+The commit-lock protocol — when it activates, mechanism, the `bin/fusion-commit-lock` subcommands, who acquires, tag conventions, failure modes — moved verbatim to `rules/commit-lock.md`, which `bin/fusion-rules` emits to `orchestrator` only.

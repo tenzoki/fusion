@@ -14,8 +14,8 @@
  * A prompt cannot merge three configuration layers, so the budget had to become
  * something the prompt READS. This is that read: one call at Setup, one line of
  * output, and the orchestrator carries the answer in `agentstate.yaml` where
- * `progress.max_turns` already had a home and where `/fusion:circle-stash`
- * already read it as data rather than assuming a number.
+ * `progress.max_turns` already had a home and where it was already read as
+ * data rather than assumed.
  *
  * ## Where the value comes from
  *

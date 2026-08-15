@@ -78,7 +78,6 @@ const DEFINITION_SITES = [
   "bin/fusion-paths", // the executable definition
   "rules/workbench-path-resolution.md", // name namespace, key table, key-set derivation
   "rules/circle-records.md", // Circle markers, record and portfolio templates
-  "rules/workbench-stash-and-lock.md", // the stash snapshot layout
 ];
 
 const alt = TYPE_FOLDERS.join("|");

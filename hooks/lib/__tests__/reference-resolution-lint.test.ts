@@ -269,9 +269,10 @@ const ROOT_VARS: Record<string, true | string> = {
   // this repository, the install everywhere else, and a copy of this same
   // plugin tree either way.
   FUSION_SRC: true,
-  STASH_DIR:
-    "the stash directory /fusion:circle-stash writes; its README.md is that " +
-    "stash's own manifest, not the plugin's README.md",
+  // No non-plugin entry stands here today. The last one, STASH_DIR, went with
+  // the stash skills on 2026-08-15; the load-bearing test below is therefore
+  // vacuous until a shadowing variable reappears, and it goes live again with
+  // the first one that does.
 };
 
 // `$VAR/<path>` for ANY variable. The variable is captured and classified
@@ -526,15 +527,6 @@ describe("reference-resolution lint: class (a) behaviour", () => {
     const { violations, resolved } = scanPluginPaths(
       "fixture.md",
       L("file it at `$OUT_ISSUE/260810-2029_o_slug.md`, serve `$WORKBENCH/monitor`, scan `$SCAN_PLANS/`"),
-    );
-    expect(violations).toEqual([]);
-    expect(resolved).toBe(0);
-  });
-
-  it("skips a variable declared as naming something other than the plugin tree", () => {
-    const { violations, resolved } = scanPluginPaths(
-      "fixture.md",
-      L("Use the `Write` tool to create `$STASH_DIR/README.md`"),
     );
     expect(violations).toEqual([]);
     expect(resolved).toBe(0);

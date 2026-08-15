@@ -20,9 +20,9 @@ const AGENTS = [
 ];
 
 const SKILLS = [
-  "archive", "circle-pop", "circle-stash", "cleanup", "commit",
-  "curate", "direct", "help", "log-activity", "memo", "migrate",
-  "next", "revise-claude-md", "setup", "unlock",
+  "archive", "cleanup", "commit", "curate", "direct", "help",
+  "log-activity", "memo", "migrate", "next", "revise-claude-md",
+  "setup", "unlock",
 ];
 
 /** The prompt file a name resolves to — the same rule the script applies. */

@@ -343,8 +343,8 @@ function unquote(raw: string): string {
  * judgment runs first, the name test runs last.** Live state runs before the
  * store test so the session's own history file is not reported as a record it
  * has not finished writing; `stashes/` runs before it too, because a stash
- * snapshot is a frozen copy owned by `/fusion:circle-stash` rather than a
- * record this session authored; and `commit-message` runs at the end, claiming
+ * snapshot is a frozen copy left behind by the removed stash skills rather
+ * than a record this session authored; and `commit-message` runs at the end, claiming
  * only what no store owns and `ROOT_RECORDS` does not name.
  *
  * ## Why `commit-message` no longer runs first
@@ -397,7 +397,7 @@ export function classify(rel: string, sessionHistory: string): { klass: EntryCla
   if (segments[0] === "stashes") {
     return {
       klass: "unclassified",
-      why: "a stash snapshot, owned by /fusion:circle-stash — not a record this session authored",
+      why: "a stash snapshot left by the removed stash skills — not a record this session authored",
     };
   }
 

@@ -202,14 +202,14 @@ Every step's acceptance includes `cd hooks && npm test` green and a history entr
      - Note the sequencing consequence: `hooks/lib/__tests__/monitor-warnings-panel.test.ts` (810 lines) asserts panel composition against the event set. It is edited here, not deleted — the panel survives.
    - Dependencies: step 3.
 
-5. **Remove the churn configuration leaves** *(record item 2, second half)*
+5. [DONE] **Remove the churn configuration leaves** *(record item 2, second half)*
    - Executor: `ontocoder`
    - Files: `hooks/config.json`; `hooks/config.example.json`; `fusion-guard.json`; `templates/fusion-guard.json`.
    - Changes: delete the `"churn": { "changesPerSessionWarning": 5, "changesPerSessionCritical": 10 }` block from `hooks/config.json` and its counterpart from `hooks/config.example.json`. Remove the clause "how loud the churn warning is and" from the `_gitTracked` note in **both** `fusion-guard.json` and `templates/fusion-guard.json` — `hooks/lib/__tests__/config.test.ts` holds every byte of those two files identical outside its `PROJECT_SET_KEYS`, so an edit to one alone turns the suite red.
    - Changes, negative: do **not** retire `churn` the way `guard.protectedPaths` was retired. That key earns a per-call advisory in every consuming project until the line is deleted, which is right for a key a project may have set deliberately; the churn thresholds were never a project-set key. Removing the leaf and letting an unrecognised key pass through untouched is the documented behaviour and the quiet one.
    - Dependencies: step 4.
 
-6. **Remove the stash and pop skill pair, and rehome the commit-lock rule** *(record item 3)*
+6. [DONE] **Remove the stash and pop skill pair, and rehome the commit-lock rule** *(record item 3)*
    - Executor: `coder`
    - Files: `skills/circle-stash/` and `skills/circle-pop/` (deleted); `rules/workbench-stash-and-lock.md` → `rules/commit-lock.md`; `bin/fusion-rules`; `hooks/lib/__tests__/rules-emission-golden.test.ts` and `fixtures/rules-emission.golden`; `hooks/lib/__tests__/circle-stash-git-exclusion.test.ts` (deleted); `rules/fusion-workbench-conventions.md`; `rules/circle-records.md`; `agents/orchestrator.md`; `agents/{coderev,ontorev,playmaker}.md`; `skills/{setup,cleanup,archive,direct,migrate,log-activity,commit}/SKILL.md`; `hooks/lib/staging-drift.ts`; `hooks/lib/review-coverage.ts`; `hooks/turn-budget.ts`; `hooks/lib/__tests__/{derivable-enumerations-lint,turn-budget-lint,path-literal-lint,reference-resolution-lint,fusion-paths}.test.ts`; `README-agents.md`; `CLAUDE.md` (enumeration half only).
    - Changes:

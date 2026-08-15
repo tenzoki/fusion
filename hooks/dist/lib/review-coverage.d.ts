@@ -15,7 +15,8 @@
  *
  *   1. **Turn 2's omission was declared, not missed.** The `0939` pass states
  *      in its own header that `agents/orchestrator.md`, `skills/next/SKILL.md`
- *      and `skills/circle-stash/SKILL.md` "were not opened" because concurrent
+ *      and the Circle-stash skill's body (a file since removed) "were not
+ *      opened" because concurrent
  *      tasks held them — exactly the files two of the unreviewed commits
  *      changed. The reviewer reported the boundary of its scope correctly.
  *      Nothing downstream read that sentence and re-queued the files.

@@ -126,7 +126,7 @@ Remaining setup (after step 1 is resolved):
 
      **All three take one branch: the budget is UNRESOLVED, and that is a state, not a number.** Do not substitute one — a Turn budget this prompt invented is the defect this mechanism exists to remove. When the budget is unresolved:
      - Say so in the Setup-complete summary, naming which of the three reasons applies and its remedy.
-     - **Omit `progress.max_turns` from `agentstate.yaml` entirely.** Do not write a placeholder there: `/fusion:circle-stash` reads that key as a number, and an absent key is a case it already handles while a word is not.
+     - **Omit `progress.max_turns` from `agentstate.yaml` entirely.** Do not write a placeholder there: the key is read as a number, and an absent key is a case a reader can handle while a word is not.
      - Show the dashboard's Turn field as `<current>/--` for the whole session.
      - Treat the **Max Turns reached** row of the circuit-breaker table (Step 3d) as not evaluable, and say so once when the loop starts. **Never describe the loop as bounded while the budget is unresolved.** That row was the only condition in the table that arrives from the passage of Turns alone; every other exit is contingent on the work taking a particular shape, and a Turn that resolves one task and files one issue meets none of them. Step 3d states which and why.
      - Run the **Unresolved-budget check-in** instead (Step 3d). It is what bounds the loop in this branch: at each Turn boundary the session stops and asks the user whether to continue, and the user may widen the interval or state that they accept an unbounded loop. Say at the loop's start that this — and not a count — is what will end the session.
@@ -259,9 +259,9 @@ store. This section says only *when you write them*, which until now nothing did
 and wrote the pointer while the head kept `anticipated` and two `(none yet)`s, so a record
 read `anticipated` under a `_t_` filename with its spec, its plan and its session all on disk
 (issue `260811-0932_*_die-circle-aktivierung-zieht-die-kopffelder-des-datensatzes-nicht-nach.md`).
-The head is what a reader meets before the prose, and the two path fields have three
-mechanical readers — `/fusion:circle-stash`'s lookup, playmaker's `$PORTFOLIO` rendering, and
-a resume — each of which degrades without announcing it.
+The head is what a reader meets before the prose, and the two path fields have two
+mechanical readers — playmaker's `$PORTFOLIO` rendering and a resume — each of which
+degrades without announcing it.
 
 **Write each field in the same command as the act that moves it**, never as a step of its
 own. A maintenance step standing beside an action is the shape this project has measured
@@ -277,8 +277,8 @@ being skipped, six times in six sessions (see **Drift check**).
 | Phase 4 step 3, with the Closure note | `**Status:**` | `closed`, `bounded` or `superseded`, matching the new marker |
 
 **`(none yet)` is a value, not a gap.** It is what the template prescribes while the artifact
-does not exist, and the three readers treat it as "nothing is cited" — `/fusion:circle-stash`
-tests for that literal string. So never invent a path for a file that is not on disk: a wrong
+does not exist, and both readers treat it as "nothing is cited", testing for that literal
+string. So never invent a path for a file that is not on disk: a wrong
 path is read as a real citation and fails silently, where `(none yet)` is at least honest
 about being empty. A Circle activated through `/fusion:next` has no session history at
 activation, because the session that will write one has not started; the field stays
@@ -547,7 +547,7 @@ After each completed task:
    ```bash
    "$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with orchestrator -- bash -c 'git add <absolute-path> <absolute-path> && git commit -F /tmp/fusion-commit-msg-<task-id>.txt'
    ```
-   Staging and committing sit inside **one** acquisition because `git commit` commits the whole index: a path staged outside the lock is unprotected until the commit lands, and any parallel committer holding the lock in that window absorbs it into its own commit. That race is what the lock exists for — see `rules/workbench-stash-and-lock.md` `## Commit lock` for the protocol and for the closed defect it answers.
+   Staging and committing sit inside **one** acquisition because `git commit` commits the whole index: a path staged outside the lock is unprotected until the commit lands, and any parallel committer holding the lock in that window absorbs it into its own commit. That race is what the lock exists for — see `rules/commit-lock.md` `## Commit lock` for the protocol and for the closed defect it answers.
 
    **Which lock form, and why this one.** `with` is canonical in that rule and it releases on **every** exit path — the helper traps `EXIT INT TERM` — so a `git add` that fails (a path the bugfixer reverted, a rejecting pre-commit hook) frees the lock immediately instead of leaving it held for the 60-second stale threshold with every other committer blocked behind it. There is exactly one criterion for departing from `with`, and it is the one the rule file gives: use the explicit `acquire` / `release` pair only when the region that has to stay held contains **internal control-flow** that `with` cannot express. This region has none — it is `add && commit`. The bugfixer retry is control-flow of Step 3b as a whole, not of the held region: it lives at step 2 and has finished before step 5 acquires anything, and holding a commit lock across an agent dispatch would be wrong on its own terms.
 
@@ -1074,7 +1074,7 @@ session:
 
 progress:
   turn: <current turn number>
-  max_turns: <the Turn budget resolved at Setup Step 2 — OMIT THIS KEY ENTIRELY when the resolution came back unresolved; never write a word or a placeholder here, /fusion:circle-stash reads it as a number>
+  max_turns: <the Turn budget resolved at Setup Step 2 — OMIT THIS KEY ENTIRELY when the resolution came back unresolved; never write a word or a placeholder here, the key is read as a number>
   tasks_total: <N>
   tasks_done: <N>
   tasks_skipped: <N>
@@ -1205,7 +1205,7 @@ It prints `anchor=`, `head=`, `rows=`, `unstaged=` and `verdict=`, then **one li
 | `record` | an authored artifact no commit carries — `tasklist.md`, `portfolio.md`, a Circle record, or anything under an artifact store | add it to the next Step 3b staging list, written out in full and absolute |
 | `commit-message` | a commit-message-shaped **name** that no artifact store owns — the class the improvised `.commit-msg-tmp` lands in | read the file first. A leftover commit message: delete it, and write the next one to the `/tmp` path Step 3b step 3 names. Anything a session authored: name the file to the user and stage it. **Do not delete on the class alone** — this is the one class decided by a name rather than a location, so a false positive can enter it, and a deletion is not recoverable (issue `260811-1141`) |
 | `in-flight` | live state and the machine-written surfaces — the dashboard, the event log, `.guard-state/`, the setup marker, this session's own history file | **nothing.** These are in flight by construction; a report about them would fire on every commit and mean nothing |
-| `unclassified` | anything else under the workbench — a user's own note file, a stash snapshot | **nothing, and do not file an issue about it.** The helper names it and says in the same line that it is not a record store and nothing is claimed about it |
+| `unclassified` | anything else under the workbench — a user's own note file, a frozen snapshot | **nothing, and do not file an issue about it.** The helper names it and says in the same line that it is not a record store and nothing is claimed about it |
 
 The complete listing and the narrow alarm are one design, not a compromise. A check silent about a file leaves you to discover it some other way, which is the shape of the defect; a check that shouts about every file is one you learn to read past, which is issue `260810-0710` arriving here. Only `record` and `commit-message` rows reach `verdict=`.
 

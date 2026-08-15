@@ -324,7 +324,9 @@ const DRIFT_CEILING = 145_144;
  *             does not exist in the plan.
  *   128 555 — 2026-08-05, at plan step 4. `## Stashes` and `## Commit lock` left
  *             `fusion-workbench-conventions.md` (59 303 -> 51 416) for
- *             `workbench-stash-and-lock.md`, emitted to `orchestrator` alone
+ *             `workbench-stash-and-lock.md` (renamed `commit-lock.md` on
+ *             2026-08-15, when the stash half was deleted with its two skills),
+ *             emitted to `orchestrator` alone
  *             because a mechanism bounds that audience: skills are never served
  *             by `bin/fusion-rules`, and the lock is the orchestrator's to take.
  *             Every agent drops 7 887 — the 8 484 the sections weighed, less the
@@ -483,7 +485,7 @@ const RULE_BASELINE: Record<string, number> = {
   // arming: their growth since the last real cut still stands against the report.
   "design-diagrams.md": 5_673, // 2026-08-05 cut
   "circle-records.md": 9_302, // 2026-08-05 cut
-  "workbench-stash-and-lock.md": 9_250, // 2026-08-05 cut
+  "commit-lock.md": 9_250, // 2026-08-05 cut, carried through the 2026-08-15 rename
 };
 
 interface Role {
@@ -520,7 +522,7 @@ interface Role {
  *    92 246  design-diagrams.md
  *    95 875  circle-records.md
  *   101 548  circle-records.md + design-diagrams.md
- *   105 125  circle-records.md + workbench-stash-and-lock.md
+ *   105 125  circle-records.md + commit-lock.md
  */
 const ROLES: Record<string, Role> = {
   /**
@@ -591,25 +593,25 @@ const ROLES: Record<string, Role> = {
    * a Circle on `_a_ -> _t_` and closes it on `_t_ -> _c_` — so the vocabulary
    * is the text it acts on, not background.
    *
-   * `workbench-stash-and-lock.md` (9 250) is `## Stashes` and `## Commit lock`.
-   * The commit lock is this role's to take: it is the agent that commits after
-   * a task completes, and the lock is what serialises that against the other
-   * agents' writes. Stashes are created and consumed by /fusion:circle-stash
-   * and /fusion:circle-pop, which this role runs and which `bin/fusion-rules`
-   * cannot serve directly (it exits 2 on any non-agent name), so the protocol
-   * has to reach the agent to reach the skill.
+   * `commit-lock.md` is `## Commit lock`, and nothing else since 2026-08-15,
+   * when the stash half was deleted with the two skills that consumed it. The
+   * commit lock is this role's to take: it is the agent that commits after a
+   * task completes, and the lock is what serialises that against the other
+   * agents' writes. Its baseline entry (9 250) did NOT move with the rename or
+   * with the truncation — a rename is neither re-baselining event, and the
+   * shrink is growth this role is credited with rather than absolved of.
    *
-   * 18 552 bytes of role-specific text, the most of any role, because this is
-   * the agent with the most distinct jobs. The overage is not shaveable from
-   * the core, where every remaining byte is text every agent applies.
+   * The most role-specific text of any role, because this is the agent with the
+   * most distinct jobs. The overage is not shaveable from the core, where every
+   * remaining byte is text every agent applies.
    */
-  "circle-records.md + workbench-stash-and-lock.md": {
+  "circle-records.md + commit-lock.md": {
     overRelease:
       "circle-records.md (9 302) carries the Circle state vocabulary and the record " +
       "template, and this role is the one that writes the `_a_ -> _t_` and `_t_ -> _c_` " +
-      "transitions. workbench-stash-and-lock.md (9 250) carries the commit lock this " +
-      "role takes before every commit, plus the stash protocol its two skills need and " +
-      "that bin/fusion-rules cannot deliver to a skill directly.",
+      "transitions. commit-lock.md (9 250 at baseline) carries the commit lock this " +
+      "role takes before every commit, which bin/fusion-rules cannot deliver to the " +
+      "two committing skills directly.",
   },
 
 };

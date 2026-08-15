@@ -9,12 +9,12 @@ import { dirname, resolve, join } from "node:path";
 //
 // The shipped documentation carries several enumerations whose ground truth is
 // the tree itself — the skill roster, the agent count, the always-on rule
-// list, the conditional emission sets, the hooks/lib file table, the stash
-// manifest's field count, and the path-literal lint's DEFINITION_SITES echo in
-// CLAUDE.md. Each went stale at least once (the review measured a skill list
-// missing `seed-from-plane`, a lib table missing three modules, "nine fields"
-// against a ten-key schema). This gate re-derives each enumeration from the
-// tree and diffs it against the documented claim.
+// list, the conditional emission sets, the hooks/lib file table, the
+// path-literal lint's DEFINITION_SITES echo in CLAUDE.md, and the bin/ helper
+// roster in CLAUDE.md's Layout table. Each went stale at least once (the review
+// measured a skill list missing `seed-from-plane` and a lib table missing three
+// modules). This gate re-derives each enumeration from the tree and diffs it
+// against the documented claim.
 //
 // THE BOUNDARY, stated plainly (the plan warns against overreach): only
 // enumerations that are MECHANICALLY derivable are checked. Deliberately out
@@ -357,43 +357,7 @@ describe("enumeration lint: the hooks/lib file table in README-hooks.md", () => 
   });
 });
 
-// --- 6. the stash-manifest field count --------------------------------------
-
-const WORD_NUMBERS: Record<string, number> = {
-  five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10,
-  eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15,
-};
-
-describe("enumeration lint: the stash manifest's field count", () => {
-  const rel = "rules/workbench-stash-and-lock.md";
-  const text = read(rel);
-
-  /** Top-level keys of the first ```yaml block. */
-  function schemaKeys(): string[] {
-    const block = text.match(/```yaml\n([\s\S]*?)```/);
-    expect(block, `${rel} no longer carries a \`\`\`yaml schema block — update the parser`).not.toBeNull();
-    return [...block![1].matchAll(/^([a-z_]+):/gm)].map((m) => m[1]);
-  }
-
-  it("both stated counts equal the schema's key count", () => {
-    const keys = schemaKeys();
-    const claims: { text: string; value: number }[] = [];
-    const fieldsLine = text.match(/\b([A-Za-z]+) fields, in this order:/);
-    expect(fieldsLine, `${rel} no longer says '<N> fields, in this order:' — update the parser`).not.toBeNull();
-    claims.push({ text: fieldsLine![0], value: WORD_NUMBERS[fieldsLine![1].toLowerCase()] });
-    const indexComment = text.match(/\b([A-Za-z]+)-field index\b/);
-    expect(indexComment, `${rel} no longer says '<N>-field index' — update the parser`).not.toBeNull();
-    claims.push({ text: indexComment![0], value: WORD_NUMBERS[indexComment![1].toLowerCase()] });
-    for (const c of claims) {
-      expect(
-        c.value,
-        `${rel} claims '${c.text}' but the schema block has ${keys.length} keys: ${keys.join(", ")}`,
-      ).toBe(keys.length);
-    }
-  });
-});
-
-// --- 7. DEFINITION_SITES echoed in CLAUDE.md --------------------------------
+// --- 6. DEFINITION_SITES echoed in CLAUDE.md --------------------------------
 
 describe("enumeration lint: CLAUDE.md's echo of the path-literal lint's DEFINITION_SITES", () => {
   it("every declared definition site is named where CLAUDE.md describes the list", () => {
@@ -420,7 +384,7 @@ describe("enumeration lint: CLAUDE.md's echo of the path-literal lint's DEFINITI
   });
 });
 
-// --- 8. the bin/ helper roster in CLAUDE.md's Layout table -------------------
+// --- 7. the bin/ helper roster in CLAUDE.md's Layout table -------------------
 
 /** Every bin/ helper: a regular file directly under bin/. No extension filter —
  *  the helpers are extensionless executables (plus the compiled `monitor`), so

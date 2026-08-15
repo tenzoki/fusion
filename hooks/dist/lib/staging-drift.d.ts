@@ -203,8 +203,8 @@ export interface StagingReport {
  * judgment runs first, the name test runs last.** Live state runs before the
  * store test so the session's own history file is not reported as a record it
  * has not finished writing; `stashes/` runs before it too, because a stash
- * snapshot is a frozen copy owned by `/fusion:circle-stash` rather than a
- * record this session authored; and `commit-message` runs at the end, claiming
+ * snapshot is a frozen copy left behind by the removed stash skills rather
+ * than a record this session authored; and `commit-message` runs at the end, claiming
  * only what no store owns and `ROOT_RECORDS` does not name.
  *
  * ## Why `commit-message` no longer runs first
