@@ -1,5 +1,5 @@
 ---
-description: The CLAUDE.md step of /fusion:cleanup, kept as its own body rather than a command. Reconciles the project's three normative surfaces — its decision records, its own rule files, and CLAUDE.md — against its recorded history: dispatches the curator to survey, puts the change ledger to the user at a gate, then dispatches it again to apply only what was approved.
+description: The CLAUDE.md step of /fusion:cleanup (reachable alone as `/fusion:cleanup --only claude-md`), kept as its own body rather than a command. Reconciles the project's three normative surfaces — its decision records, its own rule files, and CLAUDE.md — against its recorded history: dispatches the curator to survey, puts the change ledger to the user at a gate, then dispatches it again to apply only what was approved.
 allowed-tools: [Bash, Read, AskUserQuestion, Agent(fusion:curator)]
 ---
 

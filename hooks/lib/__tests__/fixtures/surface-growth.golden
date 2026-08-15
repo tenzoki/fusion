@@ -21,28 +21,28 @@
   editor.md 14272
   ontocoder.md 13305
   ontorev.md 11234
-  orchestrator.md 139967
+  orchestrator.md 140511
   planner.md 18434
   playmaker.md 38622
   reconciler.md 20006
   shaper.md 25421
   taskplanner.md 14375
-  total 400152
+  total 400696
 
 [skills bytes]
   archive/SKILL.md 23777
   cadence/SKILL.md 17560
   cleanup/SKILL.md 23999
   commit/SKILL.md 6233
-  curate/SKILL.md 12741
+  curate/SKILL.md 12797
   direct/SKILL.md 11012
   help/SKILL.md 14248
   log-activity/SKILL.md 13559
   memo/SKILL.md 12560
-  migrate/SKILL.md 26623
-  next/SKILL.md 26821
-  setup/SKILL.md 36393
-  total 225526
+  migrate/SKILL.md 26630
+  next/SKILL.md 27593
+  setup/SKILL.md 36333
+  total 226301
 
 [hook-tests lines]
   clear-halt-concurrent-halt.test.ts 427
@@ -72,7 +72,7 @@
   hooks-wiring.test.ts 92
   legacy-halt-clearing.test.ts 262
   marker-format-lint.test.ts 186
-  monitor-warnings-panel.test.ts 897
+  monitor-warnings-panel.test.ts 1079
   path-literal-lint.test.ts 342
   paths.test.ts 132
   playmaker-backlog-mandate-lint.test.ts 392
@@ -89,4 +89,4 @@
   staging-drift.test.ts 649
   surface-growth-bound.test.ts 574
   turn-budget-lint.test.ts 398
-  total 19451
+  total 19633
