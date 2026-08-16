@@ -297,7 +297,27 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
   - Open issues: for each path in `$SCAN_ISSUES`, count `*_o_*` and `*_p_*` files.
   - Open plan steps: for each path in `$SCAN_PLANS`, skim `*_o_*.md` and `*_p_*.md`.
   - Current git HEAD (if git repo)
-- Guard check: read `./fusion-workbench/.guard-state/escalation.json` (if present). If `haltActive: true`, warn the user immediately — all write operations are blocked. Offer to clear or proceed with the halt active.
+- **Legacy halt flag (migration offer).** Probe for the flag first; this is read-only:
+
+  ```bash
+  [ -f ./fusion-workbench/.guard-state/escalation.json ] && grep -q '"haltActive"[[:space:]]*:[[:space:]]*true' ./fusion-workbench/.guard-state/escalation.json && echo "legacy halt flag present" || echo "no legacy halt flag"
+  ```
+
+  **`no legacy halt flag` — say nothing at all.** An absent file, an unreadable one and `haltActive: false` are the ordinary case, and none of them gets a line in the Setup report. Every other idempotent step here is silent when it has nothing to do, and a Setup that narrates its no-ops is a Setup nobody reads.
+
+  **`legacy halt flag present`** — this project is carrying state written by a mechanism fusion no longer ships. The protected-path check that raised the halt was removed on 2026-08-12, and no code at this version reads the flag: nothing is blocked by it, and no tool behaves differently whether the file stays or goes. Offer to delete it with one `AskUserQuestion`, in the project's chat language, the same way Step 0g asks its question:
+
+  > This project still carries a halt flag in `fusion-workbench/.guard-state/escalation.json`. The check that set it is no longer part of fusion and no current version reads the flag, so nothing is being blocked. Delete the leftover file?
+
+  Two options. **"Delete it" is the default and the recommended choice:**
+
+  ```bash
+  rm -f ./fusion-workbench/.guard-state/escalation.json
+  ```
+
+  "Keep it" is the other: nothing is written, Setup continues, and the offer comes back on the next run.
+
+  **Name the effect exactly, and claim nothing beyond it.** Deleting the file removes a leftover flag. It does not clear a halt, unblock writes or restore write access, because at this version nothing is blocked and nothing was taken away. A user who reads "the halt is cleared" believes write access has just been handed back, and it never left. Report it in the Setup-complete summary in those terms: the flag was deleted and nothing about what is allowed changed, or the flag was left in place.
 - Workbench-domain detection: run the heuristic in `$FUSION_SRC/agents/orchestrator.md` Setup Step 5 (the `decisions_count`/`analyses_count`/`code_files`/`data_files` block). Report the detected domain in the Setup-complete summary. The orchestrator passes this domain as the default `domain` parameter to `taskplanner` and `reconciler` dispatches; the user may override at any individual dispatch.
 - **Circle-count snapshot and hint:** count Circles under `$SCAN_CIRCLES` by the marker on their record, not on the directory. Enumerate the records and read the marker from the name — one pass, no bracket expression, no glob per state:
 

@@ -41,8 +41,8 @@
   memo/SKILL.md 12560
   migrate/SKILL.md 26630
   next/SKILL.md 28189
-  setup/SKILL.md 36333
-  total 226897
+  setup/SKILL.md 38194
+  total 228758
 
 [hook-tests lines]
   clear-halt-concurrent-halt.test.ts 427
