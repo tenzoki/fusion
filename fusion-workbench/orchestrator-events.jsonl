@@ -1583,3 +1583,14 @@
 {"ts":"2026-08-15T23:07:01","event":"turn_start","turn":5,"detail":"5 tasks + review of d33cd22..HEAD remainder; anchor 3a0408a"}
 {"ts":"2026-08-16T05:23:15","event":"reconciliation","turn":6,"agent":"reconciler","detail":"verdict review-needed; 56 closures re-verified, 55 hold and 1 partial with its residual disclosed; 3 markers corrected; 3 defects and 3 decisions filed; the flagged edge is the session record, not the code"}
 {"ts":"2026-08-16T05:23:15","event":"session_end","detail":"6 Turns, 29 commits; 175 open defect records at start, 149 at end with 21 filed during the session; suite green at 764 tests; one release blocker found and fixed"}
+{"ts":"2026-08-16T06:05:01","event":"session_start","history_file":"shared/history/260816-0804-orchestrator-session.md","detail":"Directive not yet stated; mode unresolved; domain code; Turn budget 12"}
+{"ts":"2026-08-16T08:24:33","event":"scope_resolved","detail":"mode=custom (single in-progress defect record 260816-0136); 1 task; executor coder; no human gate expected"}
+{"ts":"2026-08-16T08:24:33","event":"queue_built","detail":"tasks=1 blocked=0"}
+{"ts":"2026-08-16T08:24:33","event":"turn_start","turn":1,"detail":"ready tasks=1"}
+{"ts":"2026-08-16T08:24:33","event":"task_start","turn":1,"task":"I:0136","agent":"coder","detail":".gitignore:67,:69 + rules/fusion-workbench-conventions.md:74"}
+{"ts":"2026-08-16T08:32:32","event":"task_error","turn":1,"task":"I:0136","agent":"coder","detail":"npm test exit 1 — rules-emission golden fixture pins per-file byte sizes; edit 3 moved fusion-workbench-conventions.md 55104->55184. Not a defect: the test header prescribes regeneration. Growth bound not breached (8870 bytes head-room)."}
+{"ts":"2026-08-16T08:32:32","event":"task_start","turn":1,"task":"I:0136","agent":"coder","detail":"re-dispatch: authorized golden regeneration + fixture diff review"}
+{"ts":"2026-08-16T08:38:10","event":"task_error","turn":1,"task":"I:0136","agent":"coder","detail":"scope over-reach in edit 1: KEPT line at .gitignore:67 listed .guard-state/events.jsonl, which .gitignore:77 ignores and which git ls-files shows untracked; the next comment line states the opposite. Verified with git check-ignore. Re-dispatched, .gitignore only."}
+{"ts":"2026-08-16T08:44:32","event":"commit","turn":1,"task":"I:0136","detail":"b18a8cf docs(rules): tracked-workbench split names the legacy stores; KEPT line names what is kept"}
+{"ts":"2026-08-16T08:44:32","event":"task_done","turn":1,"task":"I:0136","agent":"coder","detail":"b18a8cf; source record renamed _p_ -> _c_"}
+{"ts":"2026-08-16T08:44:32","event":"review_start","turn":1,"agent":"coderev","detail":"range 433e206..b18a8cf; 1 commit; carried=(not recorded)"}
