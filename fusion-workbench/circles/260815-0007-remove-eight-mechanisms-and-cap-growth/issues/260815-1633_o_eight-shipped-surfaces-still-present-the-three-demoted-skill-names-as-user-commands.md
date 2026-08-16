@@ -164,3 +164,11 @@ One pass over that comment block discharges both.
 
 **Cross-reference:** `shared/issues/260816-0139_*` filed the empty-table observation and its own
 `README-agents.md` half; that record closes on this rewrite.
+
+**Partial 260816 (coder) — the `.gitignore` half is done.** `.gitignore:69` no longer writes
+`/fusion:archive`: the sentence now reads "what preserves it is the archive step of
+`/fusion:cleanup`, which rolls it into `fusion-workbench/archive/` under a dated name", matching
+`rules/fusion-workbench-conventions.md:81`. The other two sources named in the 260816-0713 table
+(`hooks/lib/events.ts:70` with its two compiled mirrors, and
+`hooks/lib/__tests__/monitor-warnings-panel.test.ts:508`) still write the old form, so the marker
+stays `_o_`.

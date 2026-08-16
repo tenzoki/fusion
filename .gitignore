@@ -64,11 +64,12 @@ credentials.json
 # only ever produces diff noise and — restored by a checkout — a lie about a session
 # that ended. The split and its two consequences for the lifecycle skills are stated in
 # rules/fusion-workbench-conventions.md, "Which of them a tracked workbench tracks".
-# KEPT: orchestrator-events.jsonl, tasklist.md, portfolio.md.
-# .guard-state/events.jsonl is a record too, and it is deliberately NOT excepted here:
-# what preserves it is /fusion:archive rolling it into fusion-workbench/archive/ under a
-# dated name, and the archive store is tracked. So the evidence lands in git without the
-# live log producing a diff on every tool call. Same rule, different form of keeping.
+# KEPT: orchestrator-events.jsonl, portfolio.md, .fusion-setup.
+# The guard's own event log (.guard-state/events.jsonl) is a record too, and it is
+# deliberately NOT excepted here: what preserves it is the archive step of
+# /fusion:cleanup, which rolls it into fusion-workbench/archive/ under a dated name, and
+# the archive store is tracked. So the evidence lands in git without the live log
+# producing a diff on every tool call. Same rule, different form of keeping.
 # Directory entries use `dir/*`, not `dir/`, so a later `!path` exception still works.
 fusion-workbench/agentstate.yaml
 fusion-workbench/orchestrator-live.md
