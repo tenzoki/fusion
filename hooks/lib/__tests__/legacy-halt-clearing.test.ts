@@ -1,103 +1,67 @@
 /**
- * A halt raised by the protected-path mechanism still loads, still blocks, and
- * still clears — after the mechanism that raised it is gone.
+ * A project that upgraded while HALTED is not blocked, is not rewritten, and is
+ * offered the one thing left to do about it.
  *
- * ## What this pins and why it is written first
+ * ## What this file is, and why it was re-pointed rather than deleted
  *
- * The plan this belongs to removes the protected-path half of the guard: the
- * before/after fingerprint pair, the write-tool deny that reads
- * `guard.protectedPaths`, and the two triggers they wrote into
- * `escalation.json`. What it deliberately does NOT remove is `clear-halt.js`,
- * because a consuming project can upgrade while HALTED, and the state file it
- * carries across that upgrade was written by code that will no longer exist.
+ * It was written on 2026-08-12, when the protected-path half of the guard was
+ * removed, and its subject then was that a halt raised by the vanished mechanism
+ * still loaded, still blocked at CHECK 1, and still cleared through
+ * `clear-halt.js`. Every one of those three is now false: the halt check, the
+ * consecutive-block counter, `lib/escalation.ts` and `clear-halt.ts` all went
+ * with the guard's last verdict on 2026-08-16.
  *
- * A halt is not auto-cleared on upgrade. That is a decision, not an omission:
- * a halt is a state a human chose to be in, and silently lifting one would be a
- * second surprise stacked on the first. So the only way out is the same as it
- * always was, and this file is the assertion that the way out still works.
+ * The file stays because its subject is a MIGRATION and not a mechanism. A
+ * consuming project can upgrade across this release carrying `haltActive: true`
+ * in `fusion-workbench/.guard-state/escalation.json`, written by code that no
+ * longer exists, and what it is owed is exactly three things:
  *
- * The two triggers below are the migration's whole subject:
+ *   1. nothing blocks — the flag is inert, not merely unreachable;
+ *   2. nothing rewrites the file — the guard does not read it, so it must not
+ *      touch it either, and a project that keeps the flag keeps it verbatim;
+ *   3. there is a way to be rid of it — `/fusion:setup` offers to delete it.
  *
- *   - `protected_path_measured` — what `tracker.ts` wrote when a fingerprint
- *     moved during a tool call. It raised the halt OUTRIGHT, without passing
- *     through the block counter.
- *   - `protected_path` — what `guard.ts` CHECK 2 wrote on a denied write. Three
- *     of them in a row raised the halt through the counter.
+ * Deleting this file would remove the evidence that the removal was survivable,
+ * which is a different thing from removing the mechanism. That distinction is
+ * why step 9 of the plan re-points this one file and deletes four others.
  *
- * After the removal neither string can be produced by any code path. A state
- * file carrying one is therefore a shape the new code never writes and only
- * ever reads, which is exactly the case a test has to hold down, because
- * nothing else in the suite will exercise it once the producers are deleted.
+ * ## Why the two legacy triggers are still enumerated
  *
- * ## Why it is written BEFORE the surgery rather than after
+ * `protected_path_measured` (the tracker's outright halt) and `protected_path`
+ * (CHECK 2's third consecutive block) are the two strings no code has been able
+ * to produce since 2026-08-12, and a state file carrying one is the shape a
+ * migrating project actually holds. The cases run over both rather than over a
+ * synthetic one, so what is asserted is what a real upgrade meets.
  *
- * A test written afterwards describes whatever survived. This one is written
- * against the tree as it stands, where it passes, so that any later step which
- * breaks the legacy path fails HERE and names the property it broke — rather
- * than the property being quietly redefined to match the new behaviour. It is
- * the migration guarantee, not a note in a README.
+ * ## What is asserted about the skill, and what that is worth
  *
- * ## Why the block message is asserted in full, `cd` included
- *
- * `clearHaltCommand()` in `lib/escalation.ts` builds
- * `cd <project-root> && node <plugin-root>/hooks/dist/clear-halt.js`, and the
- * `cd` is load-bearing. The halt is PROJECT-scoped, and the script finds it by
- * walking up from its own working directory: run from anywhere else it reports
- * "no fusion workbench found", exits non-zero, and clears nothing. A message
- * that named only the script would send a halted user to run it from the wrong
- * directory and read a reassuring line about a project it never opened. So the
- * assertion is on the whole command and not on the substring `clear-halt.js`.
- *
- * `CLAUDE_PLUGIN_ROOT` is passed explicitly to the child rather than read from
- * whatever the developer's shell exports, so the expected string is exact on
- * every machine. Without the override the command carries the `<plugin-root>`
- * placeholder on one machine and a real path on another, and the assertion
- * would have to weaken to a substring to survive both.
- *
- * ## Why the COMPILED script and not the source
- *
- * That is the artifact the message tells the human to run, and the message is
- * half of what this file pins. The harness's `FUSION_GUARD_ENTRY` switch does
- * not reach this script, because it is not a hook and has no entry there.
- *
- * Which compiled copy is `TEST_DIST`: under `npm test` it is this run's own
- * private build, not the shared `hooks/dist/`. The four spawns below are spread
- * across the file's whole runtime, and while the build deleted the shared tree
- * before rewriting it, a second `npm test` in the same checkout made every one
- * of them `MODULE_NOT_FOUND` — `expected 1 to be +0` at the exit assertion
- * below, four of six cases, the two `runWrite` cases surviving because they go
- * through `tsx guard.ts` from source. Nothing deletes the shared tree any more
- * (`scripts/build.mjs`), and this file reads a build nothing else can reach at
- * all. Case 2 of
- * `shared/decisions/260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`.
+ * The third property is a TEXT check over `skills/setup/SKILL.md`. No test can
+ * assert that `/fusion:setup` makes the offer at run time, because a skill body
+ * is a prompt rather than a program — the same honest bound
+ * `turn-budget-lint.test.ts` states about its own prompt assertions. What it
+ * buys is that the offer cannot quietly leave the skill while the code that made
+ * it necessary stays gone.
  */
 
 import { describe, it, expect } from "vitest";
-import { spawnSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import {
   CASE_TIMEOUT,
-  TEST_DIST,
-  childEnv,
+  REPO_ROOT,
   readEscalation,
   readEvents,
+  runBash,
   runWrite,
   withProject,
   type EscalationSnapshot,
 } from "./helpers/guard-harness.js";
 
-/** The line `clear-halt.ts` owes the human on the ordinary path, verbatim. */
-const SUCCESS_LINE = "Halt cleared. Guard will resume normal operation.";
+/** The skill body that carries the migration offer (plan step 1). */
+const SETUP_SKILL = resolve(REPO_ROOT, "skills", "setup", "SKILL.md");
 
-/**
- * A plugin root that is not this machine's, so the expected command is the same
- * everywhere. Any absolute path does; this one is obviously synthetic so a
- * failure message cannot be misread as naming a real installation.
- */
-const PLUGIN_ROOT = "/opt/fusion-plugin-under-test";
-
-/** The compiled script the halt message tells the user to run. */
-const CLEAR_HALT = resolve(TEST_DIST, "clear-halt.js");
+/** The legacy state file, relative to a project root. */
+const STATE_FILE = "fusion-workbench/.guard-state/escalation.json";
 
 /**
  * The two triggers no surviving code path can produce, with the level each was
@@ -146,56 +110,58 @@ function haltedOn(
   };
 }
 
-interface Run {
-  status: number | null;
-  stdout: string;
-  stderr: string;
-}
-
-function runClearHalt(root: string): Run {
-  const run = spawnSync(process.execPath, [CLEAR_HALT], {
-    cwd: root,
-    encoding: "utf-8",
-    env: childEnv({ CLAUDE_PLUGIN_ROOT: PLUGIN_ROOT }),
-  });
-  if (run.error) throw new Error(`could not spawn clear-halt.js: ${run.error}`);
-  return { status: run.status, stdout: run.stdout, stderr: run.stderr };
-}
-
 for (const legacy of LEGACY_HALTS) {
-  describe(`a halt recorded as ${legacy.trigger}`, () => {
+  describe(`a project carrying a halt recorded as ${legacy.trigger}`, () => {
     it(
-      "still blocks a write tool, and names the full clearing command",
+      "is not blocked — the write tool goes through and is traced as an allow",
       () => {
         withProject(
           (project) => {
-            // `notes.txt` is not protected by any list, so a block on it can
-            // only have come from CHECK 1. The case cannot pass for the
-            // protected-path reason by accident — which matters here more than
-            // anywhere, since the protected-path reason is the thing going
-            // away.
+            // `notes.txt` was chosen when this file was written because it was
+            // refused by no list, so a block on it could only be the halt. It
+            // keeps that role inverted: an allow on it is not evidence, but a
+            // BLOCK on it would be, and there is nothing else here that could
+            // produce one.
             const res = runWrite(
               project.root,
               resolve(project.root, "notes.txt"),
               "Edit",
-              { CLAUDE_PLUGIN_ROOT: PLUGIN_ROOT },
             );
 
-            expect(res.decision).toBe("block");
-            expect(res.reason).toContain("[HALTED]");
+            expect(res.decision).toBeUndefined();
+            expect(res.reason).toBeUndefined();
 
-            // The whole command, `cd` included. See the file header for why a
-            // substring match on the script name would be the wrong assertion.
-            expect(res.reason).toContain(
-              `cd ${project.root} && node ${PLUGIN_ROOT}/hooks/dist/clear-halt.js`,
-            );
-
-            // CHECK 1 blocks without touching the counter, so the seeded state
-            // is unchanged — and the legacy record is still on it, unread by
-            // anything that would drop an unrecognised trigger.
+            // And the call was traced like any other write. A guard that had
+            // silently skipped the project on account of the flag would satisfy
+            // the assertion above and fail this one.
             expect(readEvents(project.root).map((e) => e.event)).toEqual([
-              "guard_halt",
+              "guard_allow",
             ]);
+          },
+          { escalation: haltedOn(legacy) },
+        );
+      },
+      CASE_TIMEOUT,
+    );
+
+    it(
+      "keeps the file exactly as the upgrade left it, across a write and a Bash call",
+      () => {
+        withProject(
+          (project) => {
+            const path = resolve(project.root, STATE_FILE);
+            const before = readFileSync(path, "utf-8");
+
+            runWrite(project.root, resolve(project.root, "notes.txt"));
+            runBash(project.root, "ls -la");
+
+            // BYTES, not the parsed shape. The claim is that nothing reads this
+            // file, and a loader that read it, coerced it and wrote it back
+            // would pass a structural comparison while having rewritten the one
+            // explanation a migrating user has for why their project was
+            // halted.
+            expect(readFileSync(path, "utf-8")).toBe(before);
+
             const state = readEscalation(project.root);
             expect(state?.haltActive).toBe(true);
             expect(state?.consecutiveBlocks).toBe(3);
@@ -208,55 +174,40 @@ for (const legacy of LEGACY_HALTS) {
       },
       CASE_TIMEOUT,
     );
-
-    it(
-      "is cleared by clear-halt.js, which reports success and shows the legacy record",
-      () => {
-        withProject(
-          (project) => {
-            const run = runClearHalt(project.root);
-
-            expect(run.status).toBe(0);
-            expect(run.stdout).toContain(SUCCESS_LINE);
-
-            // The legacy entry reached the human's screen rather than being
-            // silently dropped on load. `coerceState` does not validate the
-            // elements of `recentEvents`, and this is the assertion that keeps
-            // it that way: a later tightening that rejected unknown triggers
-            // would blank the one explanation a migrating user has for why
-            // their project was halted.
-            expect(run.stdout).toContain(legacy.trigger);
-            expect(run.stdout).toContain(legacy.message);
-
-            expect(readEscalation(project.root)?.haltActive).toBe(false);
-            expect(
-              readEscalation(project.root)?.recentEvents.map((e) => e.trigger),
-            ).toContain("halt_cleared");
-          },
-          { escalation: haltedOn(legacy) },
-        );
-      },
-      CASE_TIMEOUT,
-    );
-
-    it(
-      "lets the write through once the halt is cleared",
-      () => {
-        withProject(
-          (project) => {
-            const target = resolve(project.root, "notes.txt");
-            expect(runWrite(project.root, target).decision).toBe("block");
-
-            expect(runClearHalt(project.root).status).toBe(0);
-
-            // The end of the migration path: the project is usable again, by
-            // the same route it always was.
-            expect(runWrite(project.root, target).decision).toBeUndefined();
-          },
-          { escalation: haltedOn(legacy) },
-        );
-      },
-      CASE_TIMEOUT,
-    );
   });
 }
+
+describe("the remedy the code no longer carries is carried by /fusion:setup", () => {
+  const skill = (): string => readFileSync(SETUP_SKILL, "utf-8");
+
+  it("probes for the flag and offers to delete the file", () => {
+    const text = skill();
+
+    // The path, so the offer is about the file a migrating project actually
+    // has, and the flag, so the probe distinguishes a halted project from one
+    // that merely has the file.
+    expect(text).toContain(".guard-state/escalation.json");
+    expect(text).toContain("haltActive");
+    // The offer itself. `clear-halt.js` is gone, so deletion is the whole of
+    // what is on the table.
+    expect(text).toContain("rm -f ./fusion-workbench/.guard-state/escalation.json");
+  });
+
+  it("does not tell the user that deleting it unblocks anything", () => {
+    // The one thing the offer must not claim, and the reason step 1 spells it
+    // out at length: a user who reads "the halt is cleared" believes write
+    // access has just been handed back, and it never left. Nothing is blocked at
+    // this version, so nothing is being restored.
+    const text = skill();
+
+    expect(text).toContain("nothing is being blocked");
+    expect(text).toMatch(/does not clear a halt, unblock writes or restore write access/);
+  });
+
+  it("names no script to run, because there is none", () => {
+    // `clear-halt.js` was the remedy until 2026-08-16 and its entry point is
+    // deleted. A skill still naming it would send a user to run a file that is
+    // not in the install.
+    expect(skill()).not.toContain("clear-halt");
+  });
+});

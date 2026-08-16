@@ -1,47 +1,50 @@
 /**
- * A project's `fusion-guard.json` reaching the guard — end to end, through a
- * real subprocess.
+ * A project's `fusion.json` reaching the guard — end to end, through a real
+ * subprocess.
  *
- * ## Why this file exists separately
+ * ## What this file is for
  *
- * It was carved out of `guard-rules-write-integration.test.ts`, whose subject
- * was the `FUSION_ALLOW_RULES_WRITE` exemption and the protected list it
- * softened. Four of that file's thirteen describes were about something else
- * that happens to live next door: whether the PROJECT LAYER of the
- * configuration is read at all, what it can and cannot reach once it is, and
- * what a broken one is told. The loader that answers those questions is staying;
- * the mechanism the rest of that file was about is not, so the two were
- * separated before the deletion rather than during it.
+ * The loader is the only thing the guard still consults, and its diagnostics are
+ * the only thing the guard still has to say about a project's own configuration.
+ * `config.test.ts` proves `loadConfig` returns the right object; this file proves
+ * the hook turns each of its diagnostics into a `guard_advisory` a human can
+ * actually see, on every guarded call, from a real process.
  *
- * ## What came, and what did not
+ * Three groups, and each is a diagnostic scope:
  *
- * The cases here are the ones whose subject SURVIVES the removal of the
- * protected-path half. A case whose subject was the protected list itself — the
- * self-protection floor, a project narrowing or emptying the list, a wrong-typed
- * `protectedPaths` inherited past — had nothing to re-point and stayed behind to
- * be deleted with the mechanism. Where a case needed A DENY only in order to
- * observe something else, the deny is now the decision-governed one (CHECK 3),
- * armed from the throwaway project's own configuration; see `GOVERNED_PATH` in
- * helpers/guard-harness.ts for why that is a drop-in and why it cannot be
- * confused with a protected-path deny.
+ *   - a configuration file that does not PARSE;
+ *   - a retired top-level KEY inside the file that is read;
+ *   - a retired FILE at the project root, which is not read at all.
  *
- * Two cases were dropped rather than moved because re-pointing them would have
- * produced a duplicate of coverage that already exists elsewhere: a halted guard
- * blocking a write (`guard-halt-event.test.ts`, `legacy-halt-clearing.test.ts`)
- * and the write guard standing down in the plugin's own repository
- * (`guard-bash-integration.test.ts`, "self-detect stand-down"). What remains of
- * the plugin-repo describe is the half nothing else asserts: the configuration
- * LOAD is not stood down there, only the verdict is.
+ * The third arrived on 2026-08-16 with the rename of `fusion-guard.json` to
+ * `fusion.json`, and it is the loudest of the three by design: for a project
+ * upgrading across that release the advisory IS the migration path
+ * (decision `260816-1916`, option 1 — `/fusion:setup` deliberately makes no
+ * offer).
+ *
+ * ## What left, and when
+ *
+ * Two groups went in step 9 of the observation-only plan, with their subjects.
+ *
+ * "What a project configuration can and cannot reach — measured" was seven cases
+ * about `guard.enabled` and `escalation.blocksBeforeHalt`: whether a project
+ * could switch the guard off, whether it could halt itself on the first block.
+ * Both keys are retired, both mechanisms are gone, and the boundary they measured
+ * has no two sides left — a project configuration reaches one integer now, and
+ * `config.test.ts` measures what it does with it.
+ *
+ * "The project configuration in the plugin's own repo" asserted that the config
+ * LOAD was not stood down where the verdict was. There is no stand-down and no
+ * verdict, so the asymmetry it pinned has collapsed into the ordinary case that
+ * every other case here already covers.
  *
  * ## Why every case is a subprocess against a throwaway root
  *
- * The write guard stands down in this repository, so a `fusion-guard.json`
- * placed here and edited by hand would be honoured by nothing and would report a
- * pass for a check that never ran. A loader unit test cannot close that gap
- * either: `config.test.ts` proves the loader returns the right object, and this
- * file proves the guard acts on it. The first three cases assert the harness
- * capabilities the rest depend on, because a capability nobody checks fails
- * later as a case that looks broken for an unrelated reason.
+ * Not because of a stand-down — that went on 2026-08-16 — but because the loader
+ * finds a project by walking up from the process's working directory. A
+ * `fusion.json` placed in this repository and edited by hand would be read by
+ * every case at once, and this repository's own configuration would be read by
+ * every case that meant to have none.
  */
 
 import { describe, it, expect } from "vitest";
@@ -49,52 +52,32 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import {
   CASE_TIMEOUT,
-  GOVERNED_CONFIG,
-  GOVERNED_DIR,
-  GOVERNED_PATH,
-  governedFiles,
-  projectConfig,
-  readEscalation,
+  PROJECT_CONFIG,
+  configFiles,
+  guardStateWritten,
   readEvents,
   runBash,
   runWrite,
-  UNGOVERNED_PATH,
-  withGovernedProject,
-  withPluginProject,
   withProject,
 } from "./helpers/guard-harness.js";
 
-/** A project whose `fusion-guard.json` holds `value` (object or raw text). */
+/** The file the loader stopped reading on 2026-08-16, and still names. */
+const RETIRED_CONFIG = "fusion-guard.json";
+
+/** An ordinary write target, refused by nothing. */
+const PAYLOAD = "notes.txt";
+
+/** A project whose `fusion.json` holds `value` (object or raw text). */
 const withConfiguredProject = <T,>(
   value: object | string,
   fn: (project: { root: string }) => T,
-): T =>
-  withProject(fn, { files: { "fusion-guard.json": projectConfig(value) } });
+): T => withProject(fn, { files: configFiles(value) });
 
-/**
- * `GOVERNED_CONFIG` with `extra` merged over it, one level deep on `guard`.
- *
- * The cases that vary one configuration key still need CHECK 3 armed, or they
- * have no verdict to observe. Spelling the merge once keeps "the governed keys
- * are still there" from being a thing each case has to remember.
- */
-function governedPlus(extra: {
-  guard?: Record<string, unknown>;
-  escalation?: Record<string, unknown>;
-}): object {
-  return {
-    ...GOVERNED_CONFIG,
-    ...extra,
-    guard: { ...GOVERNED_CONFIG.guard, ...(extra.guard ?? {}) },
-  };
-}
-
-/** Three siblings under the one governing glob, for the threshold cases. */
-const GOVERNED_SIBLINGS = [
-  GOVERNED_PATH,
-  `${GOVERNED_DIR}/model.ts`,
-  `${GOVERNED_DIR}/client.ts`,
-];
+/** Every `guard_advisory` detail the hook wrote, in order. */
+const advisories = (root: string): string[] =>
+  readEvents(root)
+    .filter((e) => e.event === "guard_advisory")
+    .map((e) => e.detail ?? "");
 
 /* ------------------------------------------------------------------ *
  * The harness capabilities everything below depends on
@@ -113,9 +96,7 @@ describe("harness capabilities the project-configuration cases depend on", () =>
           expect(readFileSync(resolve(root, "src/extra.ts"), "utf-8")).toBe(
             "// added by the case\n",
           );
-          expect(readFileSync(resolve(root, "notes.txt"), "utf-8")).toBe(
-            "replaced\n",
-          );
+          expect(readFileSync(resolve(root, PAYLOAD), "utf-8")).toBe("replaced\n");
           // And the rest of the seed is still there, so `files` is a merge and
           // not a substitution — every case below relies on that.
           expect(existsSync(resolve(root, "skills/demo/SKILL.md"))).toBe(true);
@@ -127,7 +108,7 @@ describe("harness capabilities the project-configuration cases depend on", () =>
         {
           files: {
             "src/extra.ts": "// added by the case\n",
-            "notes.txt": "replaced\n",
+            [PAYLOAD]: "replaced\n",
           },
         },
       );
@@ -136,48 +117,23 @@ describe("harness capabilities the project-configuration cases depend on", () =>
   );
 
   it(
-    "pre-seeds a halt the guard actually reads",
+    "writes the configuration file under the name the LOADER owns, parseable or deliberately not",
     () => {
-      // Reaching halt through three real denials works but couples the case to
-      // `escalation.blocksBeforeHalt`; seeding the state asserts the halt
-      // itself.
-      //
-      // The target is `notes.txt`, which nothing else in the guard refuses. A
-      // block on it can only come from the halt check, so this case cannot pass
-      // for another reason by accident.
-      withProject(
-        ({ root }) => {
-          const res = runWrite(root, resolve(root, "notes.txt"));
+      // `configFiles` keys on `PROJECT_CONFIG_FILENAME` imported from
+      // `lib/config.ts`, so the harness cannot seed a name the loader has
+      // retired. It did exactly that between the rename and step 9, and every
+      // project in the suite silently gained an extra advisory per guarded call
+      // (issue `260816-2122`). Asserted here rather than left to the import,
+      // because the import is the fix and this is the check on it.
+      expect(PROJECT_CONFIG).not.toBe(RETIRED_CONFIG);
 
-          expect(res.decision).toBe("block");
-          expect(res.reason).toContain("[HALTED]");
-          expect(readEvents(root).map((e) => e.event)).toEqual(["guard_halt"]);
-
-          // The halt check blocks without touching the counter, so the seeded
-          // state survives the call unchanged.
-          const state = readEscalation(root);
-          expect(state?.haltActive).toBe(true);
-          expect(state?.consecutiveBlocks).toBe(3);
-        },
-        { escalation: { haltActive: true, consecutiveBlocks: 3 } },
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "writes a fusion-guard.json at the project root, parseable or deliberately not",
-    () => {
-      // `projectConfig` is what every case below feeds the `files` map. An
-      // object becomes JSON; a string is written verbatim, which is the only
-      // way to hand the loader a file that does not parse.
-      withConfiguredProject(GOVERNED_CONFIG, ({ root }) => {
-        const written = readFileSync(resolve(root, "fusion-guard.json"), "utf-8");
-        expect(JSON.parse(written)).toEqual(GOVERNED_CONFIG);
+      withConfiguredProject({ orchestrator: { maxTurns: 9 } }, ({ root }) => {
+        const written = readFileSync(resolve(root, PROJECT_CONFIG), "utf-8");
+        expect(JSON.parse(written)).toEqual({ orchestrator: { maxTurns: 9 } });
       });
 
       withConfiguredProject("{ not json", ({ root }) => {
-        const written = readFileSync(resolve(root, "fusion-guard.json"), "utf-8");
+        const written = readFileSync(resolve(root, PROJECT_CONFIG), "utf-8");
         expect(written).toBe("{ not json");
         expect(() => JSON.parse(written)).toThrow();
       });
@@ -192,34 +148,22 @@ describe("harness capabilities the project-configuration cases depend on", () =>
 
 describe("an unparseable project configuration is reported, not swallowed", () => {
   it(
-    "emits one advisory and drops the project layer rather than failing open",
+    "emits one advisory naming the file and the fault, and still allows",
     () => {
-      // "Dropped" is asserted by its consequence at the verdict: the governed
-      // write this project's own file would have refused is allowed, because
-      // the file the decision was written in never parsed. That is the whole of
-      // "fell back to the plugin layer" for a project layer that declared
-      // everything.
-      withGovernedProject(
-        ({ root }) => {
-          expect(runWrite(root, GOVERNED_PATH).decision).toBeUndefined();
+      // "Dropped" used to be asserted by its consequence at the verdict: the
+      // governed write the project's own file would have refused went through,
+      // because the file the decision was written in never parsed. There is no
+      // verdict left to read that off, so what the case asserts is the two
+      // things a project can still act on — WHICH file, and WHAT is wrong with
+      // it — plus the fact that a diagnostic is not a decision.
+      withConfiguredProject("{ this is not json ", ({ root }) => {
+        expect(runWrite(root, resolve(root, PAYLOAD)).decision).toBeUndefined();
 
-          const advisories = readEvents(root).filter(
-            (e) => e.event === "guard_advisory",
-          );
-          expect(advisories).toHaveLength(1);
-          expect(advisories[0]?.detail).toContain("fusion-guard.json");
-          expect(advisories[0]?.detail).toContain("not valid JSON");
-
-          // A diagnostic is not a violation: it records no block and moves no
-          // counter of its own.
-          const state = readEscalation(root);
-          expect(state?.consecutiveBlocks).toBe(0);
-          expect(
-            (state?.recentEvents ?? []).filter((e) => e.level === "clear"),
-          ).toHaveLength(0);
-        },
-        { files: { "fusion-guard.json": projectConfig("{ this is not json ") } },
-      );
+        const seen = advisories(root);
+        expect(seen).toHaveLength(1);
+        expect(seen[0]).toContain(PROJECT_CONFIG);
+        expect(seen[0]).toContain("not valid JSON");
+      });
     },
     CASE_TIMEOUT,
   );
@@ -235,7 +179,7 @@ describe("an unparseable project configuration is reported, not swallowed", () =
 
         const events = readEvents(root);
         expect(events.map((e) => e.event)).toEqual(["guard_advisory"]);
-        expect(events[0]?.detail).toContain("fusion-guard.json");
+        expect(events[0]?.detail).toContain(PROJECT_CONFIG);
       });
     },
     CASE_TIMEOUT,
@@ -247,10 +191,9 @@ describe("an unparseable project configuration is reported, not swallowed", () =
       // The settled property (issues 260707-0750 and 260707-0751), pinned
       // where it actually applies. The case above bounds the departure; this
       // one bounds the bound.
-      withConfiguredProject(GOVERNED_CONFIG, ({ root }) => {
+      withConfiguredProject({ orchestrator: { maxTurns: 9 } }, ({ root }) => {
         expect(runBash(root, "ls -la").decision).toBeUndefined();
-        expect(readEscalation(root)).toBeNull();
-        expect(readEvents(root)).toEqual([]);
+        expect(guardStateWritten(root)).toBe(false);
       });
     },
     CASE_TIMEOUT,
@@ -263,8 +206,7 @@ describe("an unparseable project configuration is reported, not swallowed", () =
       // emitted anything on a clean load, this is where it would show.
       withProject(({ root }) => {
         expect(runBash(root, "ls -la").decision).toBeUndefined();
-        expect(readEscalation(root)).toBeNull();
-        expect(readEvents(root)).toEqual([]);
+        expect(guardStateWritten(root)).toBe(false);
       });
     },
     CASE_TIMEOUT,
@@ -277,30 +219,61 @@ describe("an unparseable project configuration is reported, not swallowed", () =
 
 describe("a retired key reaches the user, on every guarded call", () => {
   it(
-    "names guard.protectedPaths and says what to do, without denying anything",
+    "names the key and says what to do, without denying anything",
     () => {
-      // The one thing a consuming project learns from the whole protected-path
-      // removal. `config.test.ts` pins the sentence the loader produces; this
-      // case pins that it leaves the loader at all, as a `guard_advisory` from a
-      // real subprocess, and that it is an advisory and not a verdict — the
-      // write goes through, no block is counted, and the project's own
-      // decision-governed refusal is unaffected by the retired key sitting next
-      // to it.
+      // What a project sees if it copies its old `fusion-guard.json` across
+      // instead of starting from the seeded template: the file parses, every key
+      // in it looks like a setting, and three of them mean nothing. This case
+      // pins that the notice leaves the loader at all, as a `guard_advisory`
+      // from a real subprocess, and that it is an advisory and not a verdict.
+      //
+      // `guard.protectedPaths` was the subject here until 2026-08-16; it sits
+      // inside a retired CONTAINER now, so the container's own diagnostic names
+      // it and the leaf-scoped table folded away.
       withConfiguredProject(
-        { ...GOVERNED_CONFIG, guard: { ...GOVERNED_CONFIG.guard, protectedPaths: ["agents/**"] } },
+        { guard: { protectedPaths: ["agents/**"], enabled: false } },
         ({ root }) => {
-          expect(runWrite(root, UNGOVERNED_PATH).decision).toBeUndefined();
+          expect(runWrite(root, resolve(root, PAYLOAD)).decision).toBeUndefined();
 
-          const advisories = readEvents(root).filter(
-            (e) => e.event === "guard_advisory",
-          );
-          expect(advisories).toHaveLength(1);
-          expect(advisories[0]?.detail).toContain('"guard.protectedPaths"');
-          expect(advisories[0]?.detail).toContain("no longer exists");
-          expect(advisories[0]?.detail).toContain("Delete the line");
+          const seen = advisories(root);
+          // ONE advisory for the container, not one per leaf inside it. A key
+          // that no longer means anything has no leaves worth walking into.
+          expect(seen).toHaveLength(1);
+          expect(seen[0]).toContain('"guard"');
+          expect(seen[0]).toContain("no longer exists");
+          expect(seen[0]).toContain("Delete it");
+        },
+      );
+    },
+    CASE_TIMEOUT,
+  );
 
-          const state = readEscalation(root);
-          expect(state?.consecutiveBlocks ?? 0).toBe(0);
+  it(
+    "names each retired container the file declares, and leaves the rest working",
+    () => {
+      // Three keys, three notices, and the one live leaf still resolved beside
+      // them. A project reading "my configuration was dropped" would go and
+      // rewrite settings that are being honoured.
+      withConfiguredProject(
+        {
+          guard: { categoryPaths: {} },
+          decisions: [{ id: "D-1", category: "api", statement: "…" }],
+          escalation: { blocksBeforeHalt: 7 },
+          orchestrator: { maxTurns: 9 },
+        },
+        ({ root }) => {
+          expect(runWrite(root, resolve(root, PAYLOAD)).decision).toBeUndefined();
+
+          const seen = advisories(root);
+          expect(seen).toHaveLength(3);
+          for (const key of ["guard", "decisions", "escalation"]) {
+            expect(seen.some((d) => d.includes(`"${key}" no longer exists`))).toBe(
+              true,
+            );
+          }
+          for (const d of seen) {
+            expect(d).toContain("the rest of this file is unaffected");
+          }
         },
       );
     },
@@ -314,80 +287,121 @@ describe("a retired key reaches the user, on every guarded call", () => {
       // that fired once per session would not carry it. Three guarded calls,
       // three advisories, one per call — Bash included, which is the same
       // deliberate departure from the zero-side-effect Bash path that an
-      // unparseable file already makes and that the case above it pins.
-      withConfiguredProject(
-        { guard: { protectedPaths: [] } },
-        ({ root }) => {
-          expect(runWrite(root, UNGOVERNED_PATH).decision).toBeUndefined();
-          expect(runBash(root, "ls -la").decision).toBeUndefined();
-          expect(runWrite(root, UNGOVERNED_PATH, "Write").decision).toBeUndefined();
+      // unparseable file already makes.
+      withConfiguredProject({ escalation: { blocksBeforeHalt: 3 } }, ({ root }) => {
+        expect(runWrite(root, resolve(root, PAYLOAD)).decision).toBeUndefined();
+        expect(runBash(root, "ls -la").decision).toBeUndefined();
+        expect(runWrite(root, resolve(root, PAYLOAD), "Write").decision).toBeUndefined();
 
-          const advisories = readEvents(root).filter(
-            (e) => e.event === "guard_advisory",
-          );
-          expect(advisories).toHaveLength(3);
-          for (const a of advisories) {
-            expect(a.detail).toContain('"guard.protectedPaths" no longer exists');
-          }
-        },
-      );
+        const seen = advisories(root);
+        expect(seen).toHaveLength(3);
+        for (const d of seen) {
+          expect(d).toContain('"escalation" no longer exists');
+        }
+      });
     },
     CASE_TIMEOUT,
   );
 });
 
 /* ------------------------------------------------------------------ *
- * The boundary of the project layer
+ * A retired FILE at the project root
  * ------------------------------------------------------------------ */
 
 // ---------------------------------------------------------------------------
-// Every row below is a verdict from a real guard subprocess against a throwaway
-// project root. A loader that returns a good value proves nothing about what the
-// guard does with it — that is the vacuity trap this whole file exists to close.
+// The scope above the two groups above, added 2026-08-16 with the rename of
+// `fusion-guard.json` to `fusion.json`.
 //
-// One thing the harness asserts on this block's behalf: `runGuard` throws when
-// the guard prints `[guard] Error:`, so a configuration that crashed the guard
-// into its fail-open branch cannot pass here quietly. It would fail the case,
-// not allow the write.
+// It is the loudest thing the loader does, and deliberately: this advisory is
+// the WHOLE migration path a consuming project gets. `/fusion:setup` was the
+// alternative and the user chose against it (decision `260816-1916`, option 1),
+// on the ground that this channel runs on every guarded tool call while Setup
+// runs once per session and only for a project that runs Setup at all.
+//
+// The failure it exists to prevent is silent and specific: a project that
+// carried `{"orchestrator":{"maxTurns":12}}` in the old file and does nothing
+// drops to fusion's built-in default without a word. So the text has to name the
+// key, name the destination and say to copy before deleting — which is what the
+// first case asserts, phrase by phrase, rather than by substring on the filename.
 // ---------------------------------------------------------------------------
 
-describe("what a project configuration can and cannot reach — measured", () => {
-  // -------------------------------------------------------------------------
-  // Issue 260804-1602 — `guard.enabled` from a project.
-  //
-  // The key sits above every check in guard.ts, so each surface it used to
-  // disable gets its own assertion. Two git rows stood here until the branch
-  // policy was deleted; what they guarded — that a project cannot switch off a
-  // check by declaring a key — is unchanged and is asserted on the surfaces
-  // that are left.
-  // -------------------------------------------------------------------------
-
-  const GUARD_OFF = governedPlus({ guard: { enabled: false } });
-
+describe("a retired FILE is named, with the migration it needs", () => {
   it(
-    "ignores guard.enabled: false and keeps denying on the write surface",
+    "names the file, the key to copy, the destination and the order",
     () => {
-      withConfiguredProject(GUARD_OFF, ({ root }) => {
-        expect(runWrite(root, GOVERNED_PATH).decision).toBe("block");
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "ignores it against an ALREADY ACTIVE halt",
-    () => {
-      // The accurate statement of the old residual was narrow: an agent that
-      // wrote the off-switch BEFORE it earned a halt was immune to halts from
-      // then on, and the write cost it one allowed tool call in any project
-      // whose `fusion-guard.json` did not yet exist.
       withProject(
         ({ root }) => {
-          expect(runWrite(root, "notes.txt").reason).toContain("[HALTED]");
+          expect(runWrite(root, resolve(root, PAYLOAD)).decision).toBeUndefined();
+
+          const seen = advisories(root);
+          expect(seen).toHaveLength(1);
+          const [detail] = seen;
+
+          // The file, by absolute path: a project may have several roots open.
+          expect(detail).toContain(resolve(root, RETIRED_CONFIG));
+          expect(detail).toContain("is no longer read");
+          // The setting that survives the move, and where it goes. Without both
+          // of these the advisory is a "this file moved" notice, and the budget
+          // is lost silently — which is the one loss this whole channel exists
+          // to prevent.
+          expect(detail).toContain("orchestrator.maxTurns");
+          expect(detail).toContain(PROJECT_CONFIG);
+          // The ORDER. Deleting first loses the value the sentence just told
+          // the reader to keep.
+          expect(detail).toContain("first");
+          expect(detail).toContain("Then delete this file");
+        },
+        { files: { [RETIRED_CONFIG]: '{"orchestrator": {"maxTurns": 12}}\n' } },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "says it even when the file is not valid JSON, because it is never read",
+    () => {
+      // `existsSync` is the whole check. The file is not parsed, and a loader
+      // that parsed it in order to decide what to say about not reading it would
+      // be the contradiction it is. So a project whose leftover file is broken
+      // gets the same one notice as a project whose leftover file is perfect —
+      // and exactly one, not one for the retired file plus one for a parse
+      // failure it never attempted.
+      withProject(
+        ({ root }) => {
+          expect(runWrite(root, resolve(root, PAYLOAD)).decision).toBeUndefined();
+
+          const seen = advisories(root);
+          expect(seen).toHaveLength(1);
+          expect(seen[0]).toContain(RETIRED_CONFIG);
+        },
+        { files: { [RETIRED_CONFIG]: "{ not json at all" } },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "is reported ahead of a complaint about the file that IS read",
+    () => {
+      // Ordering, asserted rather than assumed. A file that is not read AT ALL
+      // is the most upstream thing a reader can be wrong about; a dropped key
+      // inside the file that is read is a finer complaint and reads after it. A
+      // project meeting both at once is exactly the project mid-migration.
+      withProject(
+        ({ root }) => {
+          expect(runWrite(root, resolve(root, PAYLOAD)).decision).toBeUndefined();
+
+          const seen = advisories(root);
+          expect(seen).toHaveLength(2);
+          expect(seen[0]).toContain(RETIRED_CONFIG);
+          expect(seen[1]).toContain("orchestrator.maxTurns");
+          expect(seen[1]).toContain("a whole number of 1 or more");
         },
         {
-          files: { "fusion-guard.json": projectConfig(GUARD_OFF) },
-          escalation: { haltActive: true, consecutiveBlocks: 3 },
+          files: {
+            [RETIRED_CONFIG]: '{"orchestrator": {"maxTurns": 12}}\n',
+            ...configFiles({ orchestrator: { maxTurns: 0 } }),
+          },
         },
       );
     },
@@ -395,135 +409,14 @@ describe("what a project configuration can and cannot reach — measured", () =>
   );
 
   it(
-    "reports the ignored key, once, naming it — decision 260804-1631",
+    "says nothing to a project that never had one",
     () => {
-      // Not optional, and not cosmetic. The record calls the diagnostic the only
-      // thing standing between this answer and a silently inert key: a project
-      // owner who writes `"enabled": false`, sees nothing change and hears
-      // nothing concludes the file is not being read at all.
-      withConfiguredProject(GUARD_OFF, ({ root }) => {
-        expect(runWrite(root, "notes.txt").decision).toBeUndefined();
-
-        const advisories = readEvents(root).filter(
-          (e) => e.event === "guard_advisory",
-        );
-        expect(advisories).toHaveLength(1);
-        expect(advisories[0]?.detail).toContain("guard.enabled");
-        expect(advisories[0]?.detail).toContain("cannot be set by a project");
+      // The ordinary project, which is every project fusion sets up from here
+      // on. An advisory here would reach all of them, forever.
+      withConfiguredProject({ orchestrator: { maxTurns: 9 } }, ({ root }) => {
+        expect(runWrite(root, resolve(root, PAYLOAD)).decision).toBeUndefined();
+        expect(advisories(root)).toEqual([]);
       });
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "STATED COST: that advisory repeats on every guarded call until the line is removed",
-    () => {
-      // The surviving failure mode, pinned rather than discovered. `diagnostics`
-      // emits one `guard_advisory` per entry per guarded tool call, so a project
-      // that leaves the key in its file meets this on every call. An advisory
-      // that repeats forever trains its reader to dismiss advisories.
-      withConfiguredProject(GUARD_OFF, ({ root }) => {
-        runWrite(root, "notes.txt");
-        runBash(root, "ls -la");
-        runWrite(root, "notes.txt");
-
-        expect(
-          readEvents(root).filter((e) => e.event === "guard_advisory"),
-        ).toHaveLength(3);
-      });
-    },
-    CASE_TIMEOUT,
-  );
-
-  // -------------------------------------------------------------------------
-  // Issue 260804-1606 — `blocksBeforeHalt: 0`.
-  // -------------------------------------------------------------------------
-
-  it(
-    "drops blocksBeforeHalt: 0 and halts on the plugin's third block instead of the first",
-    () => {
-      withConfiguredProject(
-        governedPlus({ escalation: { blocksBeforeHalt: 0 } }),
-        ({ root }) => {
-          expect(runWrite(root, GOVERNED_SIBLINGS[0]).decision).toBe("block");
-
-          // Before: one block halted the session, and the halt message said
-          // "after repeated violations" when there had been one.
-          const afterOne = readEscalation(root);
-          expect(afterOne?.consecutiveBlocks).toBe(1);
-          expect(afterOne?.haltActive).toBe(false);
-
-          expect(runWrite(root, GOVERNED_SIBLINGS[1]).decision).toBe("block");
-          expect(readEscalation(root)?.haltActive).toBe(false);
-          expect(runWrite(root, GOVERNED_SIBLINGS[2]).decision).toBe("block");
-          expect(readEscalation(root)?.haltActive).toBe(true);
-
-          const advisories = readEvents(root).filter(
-            (e) => e.event === "guard_advisory",
-          );
-          expect(advisories[0]?.detail).toContain("escalation.blocksBeforeHalt");
-        },
-      );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "leaves a project's own VALID threshold alone",
-    () => {
-      // The bound on the case above: validation drops what it cannot use and
-      // nothing else. A project that means 2 gets 2.
-      withConfiguredProject(
-        governedPlus({ escalation: { blocksBeforeHalt: 2 } }),
-        ({ root }) => {
-          expect(runWrite(root, GOVERNED_SIBLINGS[0]).decision).toBe("block");
-          expect(runWrite(root, GOVERNED_SIBLINGS[1]).decision).toBe("block");
-
-          expect(readEscalation(root)?.haltActive).toBe(true);
-          expect(
-            readEvents(root).some((e) => e.event === "guard_advisory"),
-          ).toBe(false);
-        },
-      );
-    },
-    CASE_TIMEOUT,
-  );
-});
-
-/* ------------------------------------------------------------------ *
- * The plugin's own repository
- * ------------------------------------------------------------------ */
-
-describe("the project configuration in the plugin's own repo", () => {
-  it(
-    "still REPORTS a broken configuration there, because the load is not stood down",
-    () => {
-      // The config load sits above the self-detect gate, and deliberately: a
-      // project that cannot be told its guard configuration is broken has no
-      // way to find out, and silence here is exactly the fallback the spec
-      // rejects. That the write guard then stands down does not make the load
-      // pointless — it makes the diagnostic the only thing the load still owes
-      // the user in this one repository.
-      //
-      // The verdict half of the stand-down is not asserted here. It is the
-      // subject of `guard-bash-integration.test.ts`, "self-detect stand-down",
-      // which drives the same boundary from both sides.
-      withPluginProject(
-        ({ root }) => {
-          expect(runWrite(root, GOVERNED_PATH).decision).toBeUndefined();
-
-          const advisories = readEvents(root).filter(
-            (e) => e.event === "guard_advisory",
-          );
-          expect(advisories).toHaveLength(1);
-          expect(advisories[0]?.detail).toContain("fusion-guard.json");
-        },
-        {
-          files: governedFiles({
-            "fusion-guard.json": projectConfig("not json at all"),
-          }),
-        },
-      );
     },
     CASE_TIMEOUT,
   );

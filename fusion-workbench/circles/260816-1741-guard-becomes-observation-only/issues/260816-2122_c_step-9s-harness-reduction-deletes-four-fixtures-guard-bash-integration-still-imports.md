@@ -61,3 +61,51 @@ add every file that comes back to that step's Files list.
 What it costs if it stands: step 9 lands, the compile of the test surface breaks on a file the
 executor was not told about, and the executor either edits outside its file list or reports the
 step done with the suite red for a reason nobody wrote down.
+
+---
+Resolved: step 9, 2026-08-16, in one change with `260816-2021` — which is what
+this record asked for, and it was the right ask: applying the two in sequence
+would have deleted the fixtures between the two passes.
+
+**The fixtures.** `GOVERNED_DIR`, `GOVERNED_PATH`, `UNGOVERNED_PATH`,
+`GOVERNED_CATEGORY`, `GOVERNED_DECISION_ID`, `GOVERNED_DENY_REASON`,
+`GOVERNED_CONFIG`, `governedFiles` and `withGovernedProject` were deleted with
+the CHECK 3 deny they packaged. Neither surviving consumer needed them
+re-pointed: `guard-bash-integration.test.ts` lost the two cases that asserted the
+deny, and `guard-project-config-integration.test.ts` was already loading its own
+configuration through `withConfiguredProject`.
+
+**`readEscalation` and `EscalationSnapshot` were NOT deleted**, and neither was
+the `escalation` seed option. Step 9's text says they go; that text was written
+before the same step's own instruction to re-point `legacy-halt-clearing.test.ts`
+onto the migration, and the re-pointed file cannot assert that a project seeded
+with `haltActive: true` is unblocked and left byte-identical without the ability
+to write such a file and read it back. They now carry a section header naming
+their one consumer and why deleting them would delete the evidence that the
+removal was survivable.
+
+**The count.** Nine consumers after the four deletions, not five — with one
+correction to this record's own list: `surface-growth-bound.test.ts` does not
+import the harness, it names `helpers/guard-harness.ts` in its baseline map. So
+eight files import it: `guard-state-shape`, `guard-bash-integration`,
+`guard-project-config-integration`, `hook-fail-open`, `legacy-halt-clearing`,
+`review-coverage`, `session-start-subdirectory`, `staging-drift`.
+`withPluginProject`, which step 9 does not mention, kept three consumers and
+stays.
+
+**The third finding, which this record did not carry and which was the live
+one.** The harness seeded the literal `fusion-guard.json` into every throwaway
+project, and `fab8a4b` made that a *retired file* — so every project in the suite
+emitted an extra `guard_advisory` per guarded call, and the previously-green
+*allows an unguarded file_path, and records the allow* case was red for a reason
+no case was about. The fix is structural rather than a rename: the harness
+imports `PROJECT_CONFIG_FILENAME` from `lib/config.ts`, `projectConfig` is no
+longer exported, and `configFiles(value)` is the only way to write the file — so
+a case cannot choose the name. A case in
+`guard-project-config-integration.test.ts` asserts the two names differ.
+
+This record's closing suggestion — grep an exported symbol across `hooks/**`
+including `__tests__/` before any remaining step deletes it — was followed here
+and is worth keeping for steps 10 to 15.
+
+History: `circles/260816-1741-guard-becomes-observation-only/history/260816-2250-step-9-test-surface-follows-the-removal.md`.

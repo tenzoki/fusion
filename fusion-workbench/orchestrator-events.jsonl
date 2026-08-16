@@ -1661,3 +1661,6 @@
 {"ts":"2026-08-16T20:18:38","event":"task_done","turn":2,"task":"P-7b","agent":"ontocoder","detail":"6890ea2 — fusion.json in template and root, four old config files deleted, budget 12 survived"}
 {"ts":"2026-08-16T20:18:38","event":"commit","turn":2,"task":"P-7b","agent":"orchestrator","detail":"6890ea2 feat(config): fusion.json replaces the guard configuration"}
 {"ts":"2026-08-16T20:18:38","event":"task_start","turn":2,"task":"P-8","agent":"coder","detail":"skills/setup/SKILL.md Step 0f seeds fusion.json and names the retired file"}
+{"ts":"2026-08-16T20:29:38","event":"task_done","turn":2,"task":"P-8","agent":"coder","detail":"92db96a — Setup Step 0f seeds fusion.json, no budget migration offer per the user answer"}
+{"ts":"2026-08-16T20:29:38","event":"commit","turn":2,"task":"P-8","agent":"orchestrator","detail":"92db96a feat(setup): Step 0f seeds fusion.json"}
+{"ts":"2026-08-16T20:29:38","event":"task_start","turn":2,"task":"P-9","agent":"coder","detail":"test surface: 4 deletions, ~9 re-pointings, harness fixtures; carries four amending defect records"}

@@ -8,16 +8,17 @@
  * no verdict to write, so it writes the permissive one and says why. That is the
  * defect described below, and the first two cases pin it.
  *
- * The second half is every site INSIDE `main` where the guard had ALREADY
- * decided and the record of that decision stood in front of it. There the
- * fail-open verdict is not a fallback but a loss: a deny the guard reached from
- * the config and the path, replaced by an allow because a counter could not be
- * written. Four such sites were measured
- * (`shared/issues/260809-1825_*`, `…2046_*`, `…2045_*`); three of them remain,
- * the fourth having collapsed into its neighbour when the protected-path deny it
- * was reached through was removed. `describe("a verdict the hook already reached
- * survives its own bookkeeping")` below drives each survivor through the real
- * hook subprocess.
+ * The second half is every site INSIDE `main` where a report stands next to a
+ * verdict. There the fail-open verdict is not a fallback but a loss: something
+ * the hook already worked out, thrown away because a file could not be written.
+ * Four such sites were measured
+ * (`shared/issues/260809-1825_*`, `…2046_*`, `…2045_*`), and while the guard
+ * still denied, three of them were denies. The guard reached its last verdict of
+ * any other kind on 2026-08-16 and now allows everything, so the class narrowed
+ * to what a hook still produces: the guard's write trace, its configuration
+ * diagnostic, and the tracker's coverage sentence. `describe("a report that
+ * fails decides nothing")` below drives all three through the real hook
+ * subprocess.
  *
  * Both halves are one rule, and `lib/fail-open.ts` states it: the verdict is
  * written first, everything that records it runs after, guarded.
@@ -73,15 +74,16 @@ import {
   COVERAGE_SENTENCE_MARKERS,
   REVIEW_PAYLOAD,
   childEnv,
+  configFiles,
   guardEntry,
   openCoverageGap,
-  projectConfig,
+  readEvents,
   trackerEntry,
   withProject,
 } from "./helpers/guard-harness.js";
 import type { GuardEntry, ProjectOptions } from "./helpers/guard-harness.js";
 
-/** The unprotected file the guard-side tool calls name. */
+/** The ordinary file the guard-side tool calls name. */
 const PAYLOAD = "notes.txt";
 
 interface RawRun {
@@ -259,83 +261,95 @@ describe("an unwritable .guard-state/ does not cost a hook its verdict", () => {
 });
 
 /**
- * The sites where the hook had already decided, and the record of the decision
- * stood in front of it.
+ * The sites INSIDE `main` where a report stands next to a verdict, and the
+ * report is not allowed to decide it.
  *
- * Each case makes the guard's own bookkeeping fail and then asserts the verdict
- * anyway. They are written as SUBPROCESS runs rather than unit calls for the
- * reason the harness header gives — the self-detect answer is cached per process
- * — and they read the raw result because the marker line they require is exactly
- * what `runGuard` treats as a harness failure.
+ * Each case makes a hook's own bookkeeping fail and then asserts the verdict
+ * anyway. They are subprocess runs rather than unit calls because each hook
+ * resolves its project by walking up from its own working directory, and they
+ * read the raw result because the marker line they require is exactly what
+ * `runGuard` treats as a harness failure.
  *
  * The marker assertion is what keeps each case from passing vacuously: running
  * as root, or on a filesystem that ignores the mode bits, nothing fails and the
- * deny arrives for the ordinary reason, proving nothing about the ordering.
+ * verdict arrives for the ordinary reason, proving nothing about the ordering.
+ *
+ * ## Two cases were re-pointed here, and the class narrowed rather than shrank
+ *
+ * Four sites of this class were measured (`shared/issues/260809-1825_*`,
+ * `…2046_*`, `…2045_*`) and three survived to 2026-08-12. Two of the three were
+ * DENIES — a write refused under an active halt, which failed through
+ * `emitEvent`, and a write refused as decision-governed, which failed through
+ * `saveEscalation` — and the guard reached its last deny on 2026-08-16. Both are
+ * re-pointed rather than dropped, because what they were about was never the
+ * deny: it was that a verdict the hook has already reached must survive the
+ * record of it, and the guard still reaches a verdict and still records it.
+ *
+ * The two guard-side sites that are left are the two orderings `lib/fail-open.ts`
+ * distinguishes, which is why there are still two cases and not one:
+ *
+ *   - `answer` — the write trace. Verdict first, `guard_allow` after, guarded.
+ *   - `bestEffort` — the configuration diagnostic. It CANNOT be moved after the
+ *     verdict, because it has to precede the branch that produces one, so what
+ *     the guarantee removes there is not the order but the step's ability to
+ *     decide anything. `guard.ts` calls that out as the one site where the
+ *     guarantee is about position rather than order, and an unwritable
+ *     `.guard-state/` used to throw there before any check ran at all.
  */
-describe("a verdict the hook already reached survives its own bookkeeping", () => {
+describe("a report that fails decides nothing — the verdict stands either way", () => {
   it(
-    "denies a write in a HALTED project with the state directory unwritable",
+    "keeps the allow and loses only the trace when the state directory is unwritable",
     () => {
-      // CHECK 1, and the site that shows why enumerating this class by call name
-      // missed one: it fails through `emitEvent` writing `events.jsonl`, not
-      // through `saveEscalation`. The payload is the UNPROTECTED file, so the
-      // deny under test can only be the halt.
+      // The `answer` site. What distinguishes this from the fail-open case at
+      // the top of the file is the last assertion: the row was genuinely LOST.
+      // A run where `events.jsonl` landed anyway would satisfy the verdict
+      // assertions while proving nothing about what happens when the report
+      // fails, which is the whole subject.
       withUnwritableStateDir((root) => {
         const run = runRaw(guardEntry(), root, "PreToolUse", "Edit", {
           file_path: resolve(root, PAYLOAD),
         });
 
         expect(run.stderr).toContain("[guard] Error:");
-        const verdict = verdictOf(run, "guard");
-        expect(verdict.decision).toBe("block");
-        expect(String(verdict.reason)).toContain("[HALTED]");
+        expect(verdictOf(run, "guard")).toEqual({});
         expect(run.status).toBe(0);
-      }, { escalation: { haltActive: true, consecutiveBlocks: 3 } });
+
+        expect(readEvents(root)).toEqual([]);
+      });
     },
     CASE_TIMEOUT,
   );
 
   it(
-    "denies a decision-governed path with the state directory unwritable (260809-1825)",
+    "reaches the allow even when a diagnostic that PRECEDES it cannot be written",
     () => {
-      // CHECK 3, and the `saveEscalation`-after-a-deny site that record names.
-      //
-      // A second case stood beside this one and made the identical assertion
-      // through CHECK 2 — the same failing writer, the same verdict, a deny from
-      // the plugin's inherited protected list rather than from the project's own
-      // declaration. When the protected-path half was removed the two collapsed
-      // into one, so the duplicate went and this case inherited the citation.
-      // The site is unchanged: a deny the guard has already reached, with the
-      // record of it standing in front of the verdict.
-      //
-      // `notes.txt` is refused by nothing else in the guard, so what refuses
-      // this call can only be the decision-governed escalation the project's
-      // own config declares.
+      // The `bestEffort` site, and the one this class was hardest to see at:
+      // the failing step runs BEFORE the branch that decides anything, so
+      // without the guarantee it throws on the way to the verdict rather than
+      // after it, and the hook exits 1 with empty stdout. The project's
+      // configuration is deliberately unreadable, so the loop has an entry to
+      // emit; the state directory is unwritable, so emitting it throws.
       withUnwritableStateDir(
         (root) => {
           const run = runRaw(guardEntry(), root, "PreToolUse", "Edit", {
             file_path: resolve(root, PAYLOAD),
           });
 
-          expect(run.stderr).toContain("[guard] Error:");
-          const verdict = verdictOf(run, "guard");
-          expect(verdict.decision).toBe("block");
-          expect(String(verdict.reason)).toContain("D-1");
+          expect(verdictOf(run, "guard")).toEqual({});
           expect(run.status).toBe(0);
+
+          // TWO marker lines, and the count is what makes the case
+          // discriminate. An allow and an exit 0 alone prove nothing here: the
+          // fail-open tail writes the same allow and the same exit code, so a
+          // guard WITHOUT the guarantee — the diagnostic throwing on its way to
+          // the verdict, `main().catch` catching it — would satisfy both
+          // assertions above and produce one marker. Two means the diagnostic's
+          // failure was contained where it happened and the hook carried on to
+          // the write-trace site, which then failed on its own.
+          const markers = run.stderr.match(/\[guard\] Error:/g) ?? [];
+          expect(markers).toHaveLength(2);
         },
-        {
-          files: {
-            "fusion-guard.json": projectConfig({
-              decisions: [
-                { id: "D-1", category: "demo", statement: "notes are governed" },
-              ],
-              guard: {
-                categoryPaths: { demo: [PAYLOAD] },
-                categorySensitivity: { demo: "high" },
-              },
-            }),
-          },
-        },
+        { files: configFiles("{ this is not json ") },
       );
     },
     CASE_TIMEOUT,

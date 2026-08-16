@@ -1,39 +1,44 @@
 /**
- * Integration harness for the compliance guard — plan step 6.
+ * Integration harness for the four write tools, Bash, the tracker and the
+ * SessionStart hook — each run as Claude Code runs it, in a fresh subprocess
+ * against a throwaway project root.
  *
- * ## Why this exists
+ * ## Why a throwaway root, and why a fresh process for every case
  *
- * The write guard STANDS DOWN when `process.cwd()` is the fusion plugin's own
- * repository (`lib/self-detect.ts`). Every denial assertion written naively
- * inside this repository therefore passes vacuously: the check under test does
- * not run at all. A test that cannot fail is worse than no test, because it
- * reports coverage it does not have.
+ * Every hook resolves the project it is talking about by walking up from its own
+ * working directory to a `fusion-workbench/.fusion-setup` marker
+ * (`lib/workbench-root.ts`). So a case run inside THIS repository would write
+ * into the real workbench's `.guard-state/`, and read its counters back as if
+ * they were its own. A temporary root is the whole fix — no container and no
+ * fixture repo — and `spawnSync` per case is what keeps one case's process-level
+ * memoisation (the config loader's cache is keyed, but a process is still the
+ * unit of resolution) from deciding the next case's answer.
  *
- * `isFusionPluginCwd()` resolves `.claude-plugin/plugin.json` against
- * `process.cwd()` with NO upward walk, and caches the answer in a module-level
- * variable. Two consequences shape everything below:
- *
- *   1. Any directory that is not ITSELF a plugin root gets the full write
- *      guard, however deep inside this repository it sits. So a temporary
- *      project root is enough — no container, no fixture repo.
- *   2. One process can only ever answer one way. So each case must be a fresh
- *      SUBPROCESS. That is a requirement, not an implementation detail.
+ * The harness carried a second reason until 2026-08-16, and it was the louder
+ * one: the write guard STOOD DOWN when `process.cwd()` was the fusion plugin's
+ * own repository, so every denial assertion written naively inside this tree
+ * passed vacuously. The stand-down went with the last verdict the guard had left
+ * (`hooks/guard.ts` — it allows every call now), so the vacuity it created is
+ * gone with it. The requirement above outlived it unchanged, which is why the
+ * harness did not shrink when the reason did.
  *
  * ## The macOS symlink trap
  *
  * `mkdtemp` under `os.tmpdir()` hands back `/var/folders/…` on macOS while the
- * child process's `process.cwd()` reports `/private/var/folders/…`. When the
- * two differ, `normalizeToRelative` in guard.ts cannot relativize an absolute
- * `file_path` built from the unresolved root, the path matches no relative
- * glob, and a protected-path case SILENTLY ALLOWS — the assertion passes for
- * the wrong reason. `makeProject` resolves the root with `realpathSync` and
- * then ASSERTS the result is its own realpath, so a future edit that drops the
- * resolution fails loudly here rather than quietly weakening every caller.
+ * child process's `process.cwd()` reports `/private/var/folders/…`. That still
+ * bites, and the bite has moved: the child anchors `.guard-state/` on its own
+ * RESOLVED cwd, while a case reads the event log back through the root string
+ * the harness handed it. When the two differ, `readEvents` opens a directory
+ * nothing ever wrote to and every event assertion in the suite passes as "no
+ * events" — the vacuous pass, arriving from the other side of the same trap.
+ * `makeProject` resolves the root with `realpathSync` and then ASSERTS the
+ * result is its own realpath, so a future edit that drops the resolution fails
+ * loudly here rather than quietly weakening every caller.
  *
- * The same project also carries a deliberate symlinked `alias` of its root, so
- * a suite can reproduce the trap on purpose and prove the vacuous pass is a
- * real mechanism rather than a story (see `guard-bash-integration.test.ts`,
- * "the macOS realpath trap").
+ * The project also carries a deliberate symlinked `alias` of its root, and its
+ * only consumer is that assertion: `alias !== root` while `realpath(alias) ===
+ * root` is what proves the resolution above did something rather than being a
+ * no-op on this filesystem.
  *
  * ## Fail loud, never skip
  *
@@ -60,8 +65,9 @@ import {
 import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { PROJECT_CONFIG_FILENAME } from "../../config.js";
 
-/** `hooks/` — the directory holding guard.ts, config.json and node_modules. */
+/** `hooks/` — the directory holding guard.ts, tracker.ts and node_modules. */
 export const HOOKS_DIR = resolve(
   dirname(fileURLToPath(import.meta.url)),
   "../../..",
@@ -120,10 +126,12 @@ export function guardEntry(): GuardEntry {
 /**
  * How to spawn the PostToolUse hook.
  *
- * The protected-path measurement is a PAIR — `guard.ts` records the
- * fingerprint, `tracker.ts` compares it — so a case that asserts anything about
- * reverting, halting or the explanation has to run both, in order, against the
- * same project. Neither half means anything alone.
+ * It ran in a PAIR with `guard.ts` until 2026-08-12 — the guard recorded a
+ * fingerprint of every protected path and the tracker compared it — and a case
+ * about reverting or halting had to run both, in order, against one project.
+ * Nothing pairs them now: the tracker's two surviving measurements
+ * (review coverage, staging drift) read the tree and the git index on their own,
+ * so a tracker case is a tracker case.
  */
 export function trackerEntry(): GuardEntry {
   return hookEntry("tracker");
@@ -133,8 +141,9 @@ export function trackerEntry(): GuardEntry {
  * How to spawn the SessionStart hook.
  *
  * Its whole subject is `process.cwd()`, so every case has to be a fresh
- * subprocess with a real working directory — the same discipline `runGuard`
- * needs for the cached self-detect answer, arrived at from the other side.
+ * subprocess with a real working directory. Nothing about that changed when the
+ * guard's cwd-anchored stand-down went: a working directory is not injectable,
+ * and a case that faked one would be testing the fake.
  */
 export function sessionStartEntry(): GuardEntry {
   return hookEntry("session-start");
@@ -218,8 +227,9 @@ export interface Project {
   /** The project root, guaranteed to equal its own realpath. */
   root: string;
   /**
-   * A symlink pointing at `root`, deliberately NOT resolved. Only for the
-   * tests that reproduce the unresolved-path trap on purpose.
+   * A symlink pointing at `root`, deliberately NOT resolved. Its consumer is
+   * `makeProject`'s own invariant check, which is where it proves that the
+   * `realpathSync` above did something on this filesystem rather than nothing.
    */
   alias: string;
   /** True when this root carries a `.claude-plugin/plugin.json` naming fusion. */
@@ -257,7 +267,25 @@ function seed(root: string, files: Record<string, string>): void {
   }
 }
 
-/** The state a freshly-seeded `escalation.json` starts from. */
+/* ------------------------------------------------------------------ *
+ * The LEGACY escalation state file
+ *
+ * `escalation.json` was the consecutive-block counter and the halt flag. No
+ * shipped code writes it, reads it or clears it since 2026-08-16 — the counter,
+ * the halt, `lib/escalation.ts` and `clear-halt.ts` all went with the guard's
+ * last verdict.
+ *
+ * The seeder and the reader below are KEPT, with exactly one consumer between
+ * them: `legacy-halt-clearing.test.ts`, whose subject is the migration rather
+ * than the mechanism. A project can upgrade across that removal while carrying
+ * `haltActive: true`, and what it is owed is that nothing blocks and nothing
+ * quietly rewrites the file. Neither half of that is assertable without the
+ * ability to put such a file in a project and read it back afterwards. Deleting
+ * these would delete the evidence that the removal was survivable, which is a
+ * different thing from deleting the mechanism.
+ * ------------------------------------------------------------------ */
+
+/** The state a freshly-seeded legacy `escalation.json` starts from. */
 const EMPTY_ESCALATION: EscalationSnapshot = {
   haltActive: false,
   consecutiveBlocks: 0,
@@ -279,34 +307,39 @@ function seedEscalation(
 }
 
 export interface ProjectOptions {
-  /** Add `.claude-plugin/plugin.json` naming fusion, so self-detect stands down. */
+  /**
+   * Add `.claude-plugin/plugin.json` naming fusion — the single condition
+   * `bin/fusion-plugin-cwd` and `isFusionPluginRoot()` test.
+   *
+   * No hook branches on it any more; the write guard's stand-down was the
+   * last consumer and went on 2026-08-16. What it still buys is the suites whose
+   * own subject is that condition: `session-start-subdirectory` (the warning is
+   * emitted in the plugin's own tree too), `review-coverage` and
+   * `staging-drift`.
+   */
   plugin?: boolean;
   /**
    * Make the project a git repository with every seeded file committed.
    *
-   * NOT required by the protected-path measurement any more. Its restore reads
-   * the content out of the before-fingerprint, so it works identically in a
-   * project that has never been versioned — there is a case that asserts exactly
-   * that by omitting this option. What git still buys a case is an independent
-   * witness: `git status --porcelain` and `git show :<path>` can say what the
-   * working tree and the index hold without asking the guard.
-   *
-   * (While the restore was `git checkout HEAD -- <path>` this option WAS
-   * required, and a case that forgot it proved the report-only branch while
-   * looking like it proved the restore.)
+   * Required by the two measurements that read git: review coverage resolves a
+   * commit range, staging drift reads the index. It is also what lets a case
+   * hold an independent witness — `git status --porcelain` and `git show
+   * :<path>` say what the working tree and the index hold without asking a hook.
    */
   git?: boolean;
   /**
    * Extra project files, merged OVER `SEED_FILES`, so a case can add a file
-   * (`fusion-guard.json`) or replace a seeded one. Paths are root-relative;
+   * (the project configuration, via `configFiles`) or replace a seeded one.
+   * Paths are root-relative;
    * parent directories are created.
    */
   files?: Record<string, string>;
   /**
-   * Guard state to write BEFORE the guard runs, merged over an empty snapshot.
-   * `{ haltActive: true }` is a halted project without the three real denials
-   * it would otherwise take to reach one — which also decouples the case from
-   * the escalation threshold.
+   * A LEGACY `escalation.json` to write before the hook runs, merged over an
+   * empty snapshot. `{ haltActive: true }` is a project that upgraded while
+   * halted — the state a consuming project can still be carrying, and which no
+   * code at this version writes, reads or clears. See the legacy-state section
+   * further down for why the seeder is kept.
    */
   escalation?: Partial<EscalationSnapshot>;
 }
@@ -315,9 +348,9 @@ export interface ProjectOptions {
  * Create a throwaway project root. Caller owns cleanup — prefer `withProject`.
  *
  * `plugin: true` adds `.claude-plugin/plugin.json` naming fusion, which is the
- * single condition `isFusionPluginCwd()` tests. That root reproduces the
- * stand-down without borrowing the real repository, whose `.guard-state/`
- * counters a test must never touch.
+ * single condition the plugin-repo criterion tests. That root reproduces it
+ * without borrowing the real repository, whose `.guard-state/` a test must never
+ * touch.
  */
 export function makeProject(opts: ProjectOptions = {}): Project {
   const base = realpathSync(mkdtempSync(resolve(tmpdir(), "fusion-guard-")));
@@ -532,7 +565,11 @@ export function withProject<T>(
 
 /**
  * Run `fn` against a fresh throwaway root that LOOKS like the fusion plugin's
- * own source tree, so the self-detect stand-down applies.
+ * own source tree.
+ *
+ * Nothing in `hooks/` behaves differently there any more. The suites that use it
+ * are the ones asserting exactly that, or asserting a `bin/` helper's own
+ * work-tree preference.
  */
 export function withPluginProject<T>(
   fn: (project: Project) => T,
@@ -547,123 +584,35 @@ export function withPluginProject<T>(
 }
 
 /**
- * `fusion-guard.json` content for a `files` map.
+ * The project configuration file's name, re-exported from the loader itself.
+ *
+ * IMPORTED rather than spelled, and that is the point. The harness seeded the
+ * literal `fusion-guard.json` into every throwaway project, and on 2026-08-16
+ * that name became a RETIRED FILE (`RETIRED_PROJECT_FILES` in `lib/config.ts`):
+ * every harness project silently began emitting an extra `guard_advisory` per
+ * guarded call, which turned a green case in `guard-bash-integration.test.ts`
+ * red for a reason no case was about. A literal here is a second source for a
+ * filename the loader owns; there is now one.
+ */
+export const PROJECT_CONFIG = PROJECT_CONFIG_FILENAME;
+
+/**
+ * The project configuration file's content for a `files` map.
  *
  * An object is stringified; a string is written verbatim, so a case can supply
  * text that is deliberately not JSON and assert what the loader does with it.
+ *
+ * NOT exported: `configFiles` below is the only way in, so a case cannot write
+ * the configuration under a name it chose for itself. That is how the retired
+ * filename came to be seeded into every project in the suite.
  */
-export function projectConfig(value: object | string): string {
+function projectConfig(value: object | string): string {
   return typeof value === "string" ? value : JSON.stringify(value, null, 2) + "\n";
 }
 
-/* ------------------------------------------------------------------ *
- * A deny that needs no protected path
- * ------------------------------------------------------------------ */
-
-/**
- * The decision-governed deny, packaged for the cases that need A deny rather
- * than a protected-path deny in particular.
- *
- * ## Why this exists
- *
- * Several suites in this directory are not about protected paths at all. They
- * are about something else entirely — a malformed `escalation.json` must not
- * make the guard fail open, a malformed state file must not swallow the
- * tracker's reply, an innocuous `Bash` call must not reset the block counter —
- * and each of them needed A DENY to exist in order to observe its own subject.
- * The nearest deny to hand was `Edit agents/coder.md`, so that is what they
- * reached for.
- *
- * That made their coverage hostage to a mechanism they never meant to test.
- * The plan that removes the protected-path half therefore re-points every such
- * probe here first, before any surgery: the subject of each suite survives the
- * removal, so its probe has to as well.
- *
- * ## What produces the deny
- *
- * CHECK 3 in `guard.ts` — a `decisions` entry whose category has a
- * `categoryPaths` glob matching the written path, at `high` sensitivity. All
- * three keys are ordinary project-settable leaves, so the whole thing is one
- * `fusion-guard.json` in the throwaway project and no production change of any
- * kind.
- *
- * ## Two properties that make it a drop-in
- *
- *   1. **It goes through `recordBlock`**, exactly as the protected-path deny
- *      did, so `consecutiveBlocks`, the halt threshold and the `guard_block`
- *      event behave identically. A case that counted blocks keeps counting.
- *   2. **`GOVERNED_PATH` is matched by no protected pattern.** It is neither
- *      under `agents/`, `rules/` nor `.claude/rules/`, and it is none of the
- *      five literal entries. So a deny on it can only have come from CHECK 3,
- *      and a case using it cannot pass for the protected-path reason by
- *      accident — which is the whole point of moving off that reason.
- */
-
-/** The directory the governing glob covers, for cases that need siblings. */
-export const GOVERNED_DIR = "src/api";
-
-/** The path CHECK 3 governs. Deliberately outside every protected pattern. */
-export const GOVERNED_PATH = `${GOVERNED_DIR}/service.ts`;
-
-/** A sibling of `GOVERNED_PATH` that the same glob does NOT reach. */
-export const UNGOVERNED_PATH = "src/web/page.ts";
-
-/** The category the decision and the glob share. */
-export const GOVERNED_CATEGORY = "api";
-
-/** The decision id, which the deny message quotes back. */
-export const GOVERNED_DECISION_ID = "260812-1232";
-
-/**
- * The phrase every decision-governed deny opens with, for the cases that assert
- * WHICH deny they got rather than merely that they got one.
- */
-export const GOVERNED_DENY_REASON = "affects area governed by";
-
-/** The `fusion-guard.json` object that arms CHECK 3. */
-export const GOVERNED_CONFIG = {
-  decisions: [
-    {
-      id: GOVERNED_DECISION_ID,
-      category: GOVERNED_CATEGORY,
-      statement: "The API surface is governed and changes to it are reviewed.",
-    },
-  ],
-  guard: {
-    categoryPaths: { [GOVERNED_CATEGORY]: [`${GOVERNED_DIR}/**`] },
-    categorySensitivity: { [GOVERNED_CATEGORY]: "high" },
-  },
-};
-
-/**
- * The project files that arm CHECK 3, merged over anything a case supplies.
- *
- * The two source files are seeded as well, so a case can perform a real write
- * against either without first building the directory.
- */
-export function governedFiles(
-  extra: Record<string, string> = {},
-): Record<string, string> {
-  return {
-    "fusion-guard.json": projectConfig(GOVERNED_CONFIG),
-    [GOVERNED_PATH]: "// governed\n",
-    [UNGOVERNED_PATH]: "// not governed\n",
-    ...extra,
-  };
-}
-
-/**
- * `withProject`, with CHECK 3 armed.
- *
- * A caller's own `files` are merged OVER the governed set, so a case can still
- * replace `fusion-guard.json` — which is how the "a project cannot reach this"
- * cases keep working.
- */
-export function withGovernedProject<T>(
-  fn: (project: Project) => T,
-  opts: Omit<ProjectOptions, "plugin"> = {},
-): T {
-  return withProject(fn, { ...opts, files: governedFiles(opts.files ?? {}) });
+/** A `files` map carrying just the project configuration file. */
+export function configFiles(value: object | string): Record<string, string> {
+  return { [PROJECT_CONFIG]: projectConfig(value) };
 }
 
 /* ------------------------------------------------------------------ *
@@ -819,9 +768,10 @@ export interface TrackerResult {
 /**
  * Spawn the tracker as a real subprocess and feed it one PostToolUse payload.
  *
- * Same subprocess discipline as `runGuard`, for the same reason: the self-detect
- * answer is cached per process, so a stand-down assertion written in-process
- * would pass vacuously.
+ * Same subprocess discipline as `runGuard`, for the reason the header gives:
+ * the workbench root is resolved from the process's own working directory, so an
+ * in-process call would measure this repository instead of the project the case
+ * built.
  */
 export function runTracker(
   root: string,
@@ -979,7 +929,7 @@ function stateDir(root: string): string {
   return resolve(root, "fusion-workbench", ".guard-state");
 }
 
-/** `escalation.json`, or null when the guard never wrote it. */
+/** The legacy `escalation.json`, or null when the project carries none. */
 export function readEscalation(root: string): EscalationSnapshot | null {
   const p = resolve(stateDir(root), "escalation.json");
   if (!existsSync(p)) return null;
@@ -996,20 +946,27 @@ export function readEvents(root: string): EventLine[] {
     .map((line) => JSON.parse(line) as EventLine);
 }
 
-// A `guardStateWritten(root)` helper used to live here, answering "has the guard
-// written anything into `.guard-state/` at all". Ten cases asserted `false`
-// through it as the strongest available spelling of "an innocuous call has zero
-// side effect" (issues 260707-0750 and 260707-0751).
-//
-// It cannot answer that any more, and the reason is not a regression: the
-// PreToolUse hook writes a fingerprint of every protected path into
-// `.guard-state/protected-snapshot.json` on EVERY guarded tool call, so the
-// directory exists after the first `ls -la`. The two properties are unchanged
-// and are now asserted on the two files they are actually about —
-// `readEscalation(root) === null` (no counter written) and
-// `readEvents(root) === []` (no event appended). The helper is gone rather than
-// redefined, because a predicate over the directory can no longer distinguish a
-// guard that behaved from one that did not.
+/**
+ * Has the guard written ANYTHING into `.guard-state/` — the strongest spelling
+ * of "this call had zero side effect" (issues 260707-0750 and 260707-0751).
+ *
+ * Restored on 2026-08-16, and the round trip is worth knowing. This is how the
+ * Bash invariants were originally asserted; it stopped being able to answer when
+ * the protected-path measurement began writing a fingerprint into
+ * `.guard-state/protected-snapshot.json` on EVERY guarded tool call, so the
+ * directory existed after the first `ls -la` whatever the guard did. The cases
+ * fell back to naming the two files they were about. That measurement was
+ * removed on 2026-08-12 and the counter on 2026-08-16, so a correctly-configured
+ * project running innocuous Bash once again writes nothing at all — and the
+ * predicate discriminates again.
+ *
+ * It is the strongest of the three spellings because it needs no list of files:
+ * a future writer added to the Bash path fails this without anyone remembering
+ * to name it.
+ */
+export function guardStateWritten(root: string): boolean {
+  return existsSync(stateDir(root));
+}
 
 /** Generous per-case budget: each case is a process start, ~0.2s in practice. */
 export const CASE_TIMEOUT = 30_000;

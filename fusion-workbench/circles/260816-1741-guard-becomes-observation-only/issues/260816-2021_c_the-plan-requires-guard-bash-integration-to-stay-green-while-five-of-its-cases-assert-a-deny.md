@@ -50,3 +50,37 @@ deny case onto the surviving allow-and-trace property; and re-point the opening 
 `innocuous Bash after a block` case a third time, or retire the case, since no deny of any kind
 remains to open it with. Correct the Testing Strategy's claim in the same pass, so the file is
 named as one that follows the removal rather than as one that must not move.
+
+---
+Resolved: step 9, 2026-08-16. The file was added to step 9's list and the five
+cases were dealt with as this record proposed, with one departure it did not
+anticipate.
+
+The `self-detect stand-down` describe went with its subject, and so did the
+`macOS realpath trap` case — not named here, and it had to go for the same
+reason one step further on: its subject was a deny arriving as a SILENT ALLOW
+through an unresolved path, which is indistinguishable from correct behaviour now
+that every path allows. The trap itself is not gone and `makeProject` still
+resolves its root; what moved is which side of it bites, and the harness header
+now states the current one (a case reads `events.jsonl` back through the root
+string it was handed, while the child anchors `.guard-state/` on its own resolved
+cwd).
+
+The precondition case was re-pointed rather than retired: it asserts that the
+hook was reached at all and answered with the shape Claude Code is promised. The
+`innocuous Bash after a block` case was re-pointed a third time as this record
+offered, by dropping the opening block entirely — the eight commands and the
+silence after them were all it was ever about.
+
+The two properties the Testing Strategy names are green, and both are now
+asserted through `guardStateWritten`, which is stronger than the two-file
+spelling they had: it needs no list of files, so a writer added to the Bash path
+fails them without anyone remembering to name it. That helper was deleted in 2026
+when the protected-path measurement made it undiscriminating and is restored with
+the measurement gone.
+
+The Testing Strategy's own claim was NOT corrected — it still names this file
+among those that must stay green throughout, which is the half of this record
+that belongs to whoever next edits the plan's prose rather than its steps.
+
+History: `circles/260816-1741-guard-becomes-observation-only/history/260816-2250-step-9-test-surface-follows-the-removal.md`.

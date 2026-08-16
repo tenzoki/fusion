@@ -4,15 +4,12 @@ import { existsSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import {
   CASE_TIMEOUT,
-  GOVERNED_PATH,
-  governedFiles,
+  configFiles,
   guardEntry,
-  readEscalation,
+  guardStateWritten,
   readEvents,
   runBash,
   runWrite,
-  withGovernedProject,
-  withPluginProject,
   withProject,
 } from "./helpers/guard-harness.js";
 
@@ -20,38 +17,48 @@ import {
 // The guard, run as the hook actually runs — a fresh process, JSON on stdin,
 // JSON on stdout, against a throwaway project root.
 //
-// ## What this file used to be, and what is left of it
+// ## What this file is now
 //
-// It carried the end-to-end half of a classifier that read a shell command and
-// predicted which files it was about to write. That classifier is gone: the
-// question "will this command write?" is not decidable from the command text,
-// and the guard now MEASURES what a protected path holds before and after every
-// tool call instead (`lib/protected-snapshot.ts`, and
-// `protected-snapshot-integration.test.ts` for its end-to-end cases).
+// Two properties and one command, and every one of them is about SILENCE or
+// about a trace rather than about a verdict. The hook reached its last verdict
+// on 2026-08-16; `guard.ts` allows every payload it is given.
 //
-// Every case here that asserted a shell-mutation deny went with it. What
-// remains is what the retirement did not touch, and each of the four is a
-// property a future edit could still break:
+//   * a fresh project running innocuous Bash writes NOTHING — no state
+//     directory, no event row (issues 260707-0750 and 260707-0751);
+//   * a write tool is allowed and RECORDED, which is the whole of what the hook
+//     still produces;
+//   * `git checkout HEAD -- <paths>` runs, which is fusion's own revert
+//     strategy and the one command it cannot afford to lose.
 //
-//   * the WRITE-tool path still denies a protected path through the whole hook,
-//     including config loading and path normalisation;
-//   * the escalation counter and the event log move EXACTLY when they should —
-//     file-level facts, not verdict-level ones;
-//   * the self-detect stand-down covers the write tools;
-//   * fusion's own revert strategy runs.
+// ## What was here, and why five cases went in step 9
 //
-// A second policy outlived the first here — the git branch guard, which read the
-// same command text to predict whether HEAD would move. It was deleted on
-// 260809 for the reason the classifier was, and with it went every deny this
-// surface had. So `Bash` now contributes no block, no counter movement and no
-// event anywhere in this file; the cases that remain on it assert that silence
-// and the one command fusion cannot afford to lose.
+// The file is a survivor of three removals and this is the fourth. It carried
+// the end-to-end half of a classifier that read a shell command and predicted
+// which files it was about to write (retired 2026-08-07, undecidable from the
+// inputs it had); then the git branch policy that predicted whether a command
+// would move HEAD (deleted 2026-08-09); then the protected-path deny and its
+// fingerprint (2026-08-12).
 //
-// Each case is a fresh subprocess against a temporary project root that is NOT
-// a plugin root. That is a requirement of the thing under test, not a style
-// choice: `isFusionPluginCwd()` caches per process, so one process can only
-// ever answer one way, and inside THIS repository it answers "yes" and stands
-// the write guard down. See helpers/guard-harness.ts for the full reasoning.
+// What went on 2026-08-16 was the last two denies and the stand-down above them:
+// the `self-detect stand-down` describe, whose whole subject was a branch that
+// no longer exists; two cases asserting a CHECK 3 block on a governed path; the
+// precondition case that asserted a block in order to prove the harness was
+// pointed somewhere the check ran; and the `macOS realpath trap` case, whose
+// subject was a deny arriving as a SILENT ALLOW through an unresolved path —
+// indistinguishable, now that everything allows, from correct behaviour. The
+// trap itself is not gone and the harness still resolves its root; what moved is
+// which side of it bites, and `helpers/guard-harness.ts` states the current one.
+//
+// This file was in no step's Files list while the plan's Testing Strategy named
+// it first among those that "must stay green throughout" (issue `260816-2021`).
+// Both statements were about the two properties above, which were green
+// throughout and are green here.
+//
+// Each case is still a fresh subprocess against a temporary project root. That
+// is a requirement of the thing under test rather than a style choice: every
+// hook resolves its project by walking up from its own working directory, so a
+// case run in-process would measure this repository. See
+// helpers/guard-harness.ts.
 // ---------------------------------------------------------------------------
 
 describe("integration harness — preconditions", () => {
@@ -65,156 +72,143 @@ describe("integration harness — preconditions", () => {
 
   it("builds a project root that is its own realpath", () => {
     // The macOS trap: mkdtemp hands back /var/folders/… while the child's
-    // process.cwd() reports /private/var/folders/…. When the two differ,
-    // normalizeToRelative cannot relativize an absolute file_path, nothing
-    // matches a relative glob, and every protected-path case silently ALLOWS.
+    // process.cwd() reports /private/var/folders/…. The child anchors
+    // `.guard-state/` on its own resolved cwd, so when the two differ every
+    // `readEvents` in this directory opens a path nothing wrote to and every
+    // event assertion passes as "no events".
     withProject(({ root, alias }) => {
       expect(realpathSync(root)).toBe(root);
       // And the alias really is a second, unresolved name for the same
-      // directory — otherwise the trap test below asserts nothing.
+      // directory — which is what proves the resolution above did something on
+      // this filesystem rather than nothing.
       expect(alias).not.toBe(root);
       expect(realpathSync(alias)).toBe(root);
     });
   });
 
-  it("runs the guard against a root the write guard does NOT stand down in", () => {
-    // The one-line sanity check that the harness is pointed somewhere the
-    // check under test actually runs. If this allows, every denial assertion
-    // in this file is vacuous.
-    //
-    // Asserted on the WRITE surface. It used to be a shell mutation, which is
-    // no longer a deny anywhere — a stand-down and a retired classifier would
-    // now look identical from the shell, which is exactly what a precondition
-    // must not do.
-    withGovernedProject(({ root }) => {
-      expect(runWrite(root, resolve(root, GOVERNED_PATH)).decision).toBe("block");
-    });
-  }, CASE_TIMEOUT);
-});
-
-// ---------------------------------------------------------------------------
-// The write path — and the trap that makes it look guarded when it is not.
-// ---------------------------------------------------------------------------
-
-describe("the Edit write path still denies a governed path", () => {
   it(
-    "blocks an absolute file_path under the project root",
+    "reaches the real hook, which answers with a bare allow",
     () => {
-      // This confirms the harness reproduces the guard's behaviour end to end.
-      // If the harness were misbuilt — wrong cwd, unresolved root, missing
-      // workbench marker — this is the case that catches it, because it depends
-      // on all three.
-      withGovernedProject(({ root }) => {
-        const res = runWrite(root, resolve(root, GOVERNED_PATH));
-        expect(res.decision).toBe("block");
-        expect(res.reason).toContain(GOVERNED_PATH);
-
-        const state = readEscalation(root);
-        expect(state?.consecutiveBlocks).toBe(1);
-        expect(state?.recentEvents[0].trigger).toBe("decision_governed");
+      // The precondition case, and it had to be rewritten rather than dropped.
+      // It used to assert a BLOCK, on the ground that a harness pointed at a
+      // root the guard stood down in would make every denial assertion vacuous.
+      // There is no deny left to assert and no stand-down to be caught by, so
+      // what it can still check is that the hook ran at all and produced the
+      // shape Claude Code is promised: an empty object, no `decision` field.
+      withProject(({ root }) => {
+        const res = runWrite(root, resolve(root, "notes.txt"));
+        expect(res.decision).toBeUndefined();
+        expect(res.reason).toBeUndefined();
       });
     },
     CASE_TIMEOUT,
   );
+});
 
+// ---------------------------------------------------------------------------
+// The write path — the hook's one product.
+// ---------------------------------------------------------------------------
+
+describe("the Edit write path allows and records", () => {
   it(
-    "allows an unguarded file_path, and records the allow",
+    "allows a file_path and appends exactly one guard_allow naming it",
     () => {
-      withGovernedProject(({ root }) => {
+      // The write trace is the whole reason the write tools still reach this
+      // hook: `bin/monitor` renders that log, and it is the only record of what
+      // the write surface did. Asserting the row's `file` as well as its type is
+      // what stops the Bash-side case below from passing by deletion — a guard
+      // that had stopped writing rows entirely would satisfy that case and fail
+      // this one.
+      withProject(({ root }) => {
         expect(runWrite(root, resolve(root, "notes.txt")).decision).toBeUndefined();
-        // The write path — unlike the Bash path — DOES reset the counter and
-        // emit guard_allow. Asserting it here is what stops the Bash-side cases
-        // below from passing by deletion.
-        expect(readEvents(root).map((e) => e.event)).toEqual(["guard_allow"]);
+
+        const events = readEvents(root);
+        expect(events.map((e) => e.event)).toEqual(["guard_allow"]);
+        expect(events[0]?.file).toContain("notes.txt");
       });
     },
     CASE_TIMEOUT,
   );
-});
-
-describe("the macOS realpath trap", () => {
-  // The case below asserts that an absolute path reached through an UNRESOLVED
-  // alias of the project root is allowed. That is not a bug report; it is the
-  // mechanism by which a harness built on a raw `mktemp -d` turns every
-  // denial assertion into a vacuous pass. Pinning it here means the
-  // next person cannot reintroduce it without also deleting a test that
-  // explains exactly what they broke.
-  //
-  // The positive half — the same path through the resolved root — is the
-  // "blocks an absolute file_path" case above.
 
   it(
-    "Edit: an absolute path through an unresolved alias silently ALLOWS",
+    "records the allow in a project that HAS a valid configuration file too",
     () => {
-      withGovernedProject(({ root, alias }) => {
-        expect(runWrite(root, resolve(alias, GOVERNED_PATH)).decision).toBeUndefined();
-      });
+      // The seeded name is the loader's own `PROJECT_CONFIG_FILENAME`, through
+      // `configFiles`. The harness wrote the literal `fusion-guard.json` into
+      // every throwaway project until 2026-08-16, and that name became a RETIRED
+      // FILE in the same release — so every project in this suite began emitting
+      // an extra `guard_advisory` per guarded call, and this case, which asserts
+      // the event list EXACTLY, went red for a reason it was not about
+      // (issue `260816-2122`). The single-element assertion below is what would
+      // catch that happening again.
+      withProject(
+        ({ root }) => {
+          expect(runWrite(root, resolve(root, "notes.txt")).decision).toBeUndefined();
+          expect(readEvents(root).map((e) => e.event)).toEqual(["guard_allow"]);
+        },
+        { files: configFiles({ orchestrator: { maxTurns: 9 } }) },
+      );
     },
     CASE_TIMEOUT,
   );
 });
 
 // ---------------------------------------------------------------------------
-// Ordinary work — the two Bash invariants that are only observable at file
-// level.
+// Ordinary work — the two Bash invariants, which are the reason Bash is on the
+// PreToolUse matcher at all and the reason it must stay silent there.
 //
 // Both are stated in prose at guard.ts's Bash allow path and both are traced to
 // a filed issue: an innocuous Bash call must not reset the consecutive-block
 // counter (260707-0750) and must not append a guard_allow event (260707-0751).
+// The first is now satisfied by there being no counter; what remains assertable,
+// and what the assertion below says, is stronger than either: an innocuous Bash
+// call in a correctly-configured project writes nothing at all.
 //
-// ## Why these are no longer asserted as "`.guard-state/` does not exist"
+// ## Why the strong spelling is back
 //
-// They used to be, and that spelling was the strongest available: a fresh
-// project running innocuous Bash created no state directory at all. It is
-// wrong now, and would be wrong even if the two properties were violated. The
-// PreToolUse hook writes a fingerprint of every protected path into
-// `.guard-state/protected-snapshot.json` on every guarded tool call, so the
-// directory exists after the first `ls -la` — while the counter and the event
-// log, which are what the two issues are about, stay untouched. Asserting the
-// directory's absence would now fail on a guard that is behaving perfectly, and
-// deleting the cases would drop two properties that still hold. So the
-// assertion is on the two files the issues name.
+// It is how these cases were originally written, and it stopped being able to
+// discriminate when the protected-path measurement began writing a fingerprint
+// into `.guard-state/` on EVERY guarded tool call — the directory existed after
+// the first `ls -la` whatever the guard did, so the cases fell back to naming
+// the two files they were about. That measurement went on 2026-08-12 and the
+// counter on 2026-08-16, so the directory's absence discriminates again, and it
+// needs no list of files to be kept up to date.
 // ---------------------------------------------------------------------------
 
 describe("ordinary work is allowed and writes nothing", () => {
   it(
-    "a fresh project running innocuous Bash writes no counter and no event",
+    "a fresh project running innocuous Bash writes no guard state at all",
     () => {
       withProject(({ root }) => {
         expect(runBash(root, "ls -la").decision).toBeUndefined();
-        // Neither file exists: no counter write, no guard_allow append.
-        expect(readEscalation(root)).toBeNull();
-        expect(readEvents(root)).toEqual([]);
+        expect(guardStateWritten(root)).toBe(false);
       });
     },
     CASE_TIMEOUT,
   );
 
   it(
-    "innocuous Bash after a block neither resets the counter nor appends an event",
+    "and goes on writing nothing across the commands agents actually run",
     () => {
-      // The opening block is a write-tool deny. It has been three things: `rm -f
-      // rules/x.md` under the mutation classifier, then a branch switch, and now
-      // this — because the Bash surface has no deny of its own left to open
-      // with. The property under test never depended on which policy blocked,
-      // only that a block is standing when the innocuous calls run.
-      withGovernedProject(({ root }) => {
-        expect(runWrite(root, resolve(root, GOVERNED_PATH)).decision).toBe("block");
-        expect(readEscalation(root)?.consecutiveBlocks).toBe(1);
-
+      // This case used to open with a deny — three of them over its lifetime, a
+      // shell-mutation block, then a branch switch, then a governed write — so
+      // that it could assert the counter had not MOVED. There is no counter and
+      // no deny to open with, so what it asserts instead is the property those
+      // openings were only ever scaffolding for: eight commands, including every
+      // mutation verb a returning classifier would light up, and the hook is
+      // still silent afterwards.
+      withProject(({ root }) => {
         const innocuous = [
           "ls -la",
           "git status",
-          // Mutation verbs on unprotected targets — commands agents run
-          // constantly, and the surface a returning classifier would light up.
+          // Mutation verbs on ordinary targets — commands agents run constantly.
           "mv notes.txt /tmp/",
           "rm -rf build",
           "sed -i '' 's/a/b/' notes.txt",
-          // A guarded path in a READ-only operand role: copying out is fine.
-          `cp ${GOVERNED_PATH} /tmp/y`,
+          "cp docs/.keep /tmp/y",
           // fusion's own revert strategy. If this ever denies, every agent
           // loses its way to undo a bad edit.
-          `git checkout HEAD -- ${GOVERNED_PATH}`,
+          "git checkout HEAD -- notes.txt",
           "echo hi 2>&1",
         ];
 
@@ -225,59 +219,28 @@ describe("ordinary work is allowed and writes nothing", () => {
           ).toBeUndefined();
         }
 
-        // Eight allows later: the counter has not moved and the log has not
-        // grown past the single block that opened the case.
-        expect(readEscalation(root)?.consecutiveBlocks).toBe(1);
-        expect(readEvents(root).map((e) => e.event)).toEqual(["guard_block"]);
+        expect(guardStateWritten(root)).toBe(false);
       });
     },
     CASE_TIMEOUT * 2,
   );
-});
-
-// ---------------------------------------------------------------------------
-// The stand-down pair — the load-bearing ordering property.
-// ---------------------------------------------------------------------------
-
-describe("self-detect stand-down: the write guard yields", () => {
-  // Run against a throwaway root carrying `.claude-plugin/plugin.json` with
-  // name "fusion" — the single condition isFusionPluginCwd() tests. The REAL
-  // repository would work too, and is what a developer actually sits in, but a
-  // test must never write into the project's own .guard-state counters.
-  //
-  // Each case is its own subprocess by construction (runBash spawns), which is
-  // what the caching in self-detect.ts requires: one process, one answer.
-  //
-  // The measurement side of the stand-down — a protected path changed by a
-  // shell in the plugin's own repo is NOT reverted — is asserted in
-  // `protected-snapshot-integration.test.ts`, "the stand-downs".
 
   it(
-    "stands the Edit write path down",
+    "but a BROKEN configuration file breaks that silence, on Bash too",
     () => {
-      withPluginProject(
+      // The bound on the three cases above, and the stated cost of keeping Bash
+      // on the matcher: the diagnostic loop runs for every guarded call, Bash
+      // included, so a project whose configuration cannot be read hears about it
+      // there as well. Pinned here so the silence above reads as a property of a
+      // CORRECTLY configured project rather than as a property of the Bash path.
+      // The verdict is unaffected — it is an advisory, not a decision.
+      withProject(
         ({ root }) => {
-          expect(runWrite(root, resolve(root, GOVERNED_PATH)).decision).toBeUndefined();
-          const events = readEvents(root);
-          expect(events.map((e) => e.event)).toEqual(["guard_allow"]);
-          expect(events[0].detail).toContain("standing down");
+          expect(runBash(root, "ls -la").decision).toBeUndefined();
+          expect(readEvents(root).map((e) => e.event)).toEqual(["guard_advisory"]);
         },
-        { files: governedFiles() },
+        { files: configFiles("{ not json") },
       );
-    },
-    CASE_TIMEOUT,
-  );
-
-  it(
-    "denies the same write as soon as the plugin manifest is not at cwd",
-    () => {
-      // The boundary, asserted from the other side in the same describe: the
-      // ONLY difference between this root and the one above is
-      // .claude-plugin/plugin.json. `isFusionPluginCwd()` does no upward walk,
-      // so this is the whole of the condition.
-      withGovernedProject(({ root }) => {
-        expect(runWrite(root, resolve(root, GOVERNED_PATH)).decision).toBe("block");
-      });
     },
     CASE_TIMEOUT,
   );
@@ -295,16 +258,10 @@ describe("self-detect stand-down: the write guard yields", () => {
 // makes this the case that would notice a third policy arriving on this surface
 // and taking it out.
 //
-// Scope: the PreToolUse VERDICT, on ordinary project files. The two paths this
-// used to revert were `rules/x.md` and `agents/coder.md`, chosen when they were
-// the harness's protected fixtures and the case doubled as a statement about
-// what the guard does to a revert of a protected file. Nothing here depended on
-// that, and the fixtures are going, so it reverts unremarkable files instead.
-//
-// The effect side asserts the command really does revert: the working file is
-// dirtied first, and the command has to put it back. An allow asserted without
-// the effect would pass just as well against a guard that had broken the
-// command some other way.
+// Scope: the PreToolUse VERDICT, on ordinary project files. The effect side
+// asserts the command really does revert: the working file is dirtied first, and
+// the command has to put it back. An allow asserted without the effect would
+// pass just as well against a guard that had broken the command some other way.
 // ---------------------------------------------------------------------------
 
 /** The two shells, because Claude Code starts the user's login shell, not bash. */

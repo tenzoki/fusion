@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, join } from "node:path";
 
@@ -17,8 +17,8 @@ import { dirname, resolve, join } from "node:path";
 // false.
 //
 // The fix makes the budget a configured value: `orchestrator.maxTurns`, merged
-// per leaf by `hooks/lib/config.ts` from the project's `fusion-guard.json`, the
-// plugin's `hooks/config.json` and the built-in `DEFAULTS`; read once per
+// per leaf by `hooks/lib/config.ts` from the project's `fusion.json` and the
+// built-in `DEFAULTS`; read once per
 // session by `bin/fusion-turn-budget` at Setup, on a resume exactly as on a
 // fresh session, and held for that session only. It was also persisted, as
 // `progress.max_turns` in `agentstate.yaml`, until 2026-08-15 — that copy went
@@ -47,7 +47,17 @@ const read = (rel: string) => readFileSync(join(pluginRoot, rel), "utf-8");
 const ORCHESTRATOR = "agents/orchestrator.md";
 const SETUP_SKILL = "skills/setup/SKILL.md";
 const CONFIG_TS = "hooks/lib/config.ts";
-const PLUGIN_CONFIG = "hooks/config.json";
+/**
+ * The two plugin-layer files, DELETED on 2026-08-16 and named here so their
+ * absence can be asserted rather than assumed. `hooks/config.json` was the
+ * middle merge layer and `hooks/config.example.json` a filled-in illustration of
+ * it; both existed to give the guard settings a plugin-level default a project
+ * could narrow, and the guard stopped deciding anything in that release.
+ */
+const DELETED_PLUGIN_CONFIGS = ["hooks/config.json", "hooks/config.example.json"];
+
+/** The two files that carry the key's documentation: what Setup seeds, and this repository's own copy. */
+const DOCUMENTED_IN = ["templates/fusion.json", "fusion.json"];
 const HELPER = "bin/fusion-turn-budget";
 
 /**
@@ -62,7 +72,7 @@ const HELPER = "bin/fusion-turn-budget";
  */
 const REMEDY =
   "\n\nIf the budget genuinely needs to change: for ONE PROJECT, declare " +
-  '{"orchestrator": {"maxTurns": <n>}} in that project\'s fusion-guard.json — nothing in ' +
+  '{"orchestrator": {"maxTurns": <n>}} in that project\'s fusion.json — nothing in ' +
   "this repository changes. For FUSION'S OWN DEFAULT, edit DEFAULTS.orchestrator.maxTurns in " +
   "hooks/lib/config.ts, which is the one place it is written. In neither case does a number " +
   "belong in an agent prompt: the prompt reads the resolved value through bin/fusion-turn-budget " +
@@ -186,7 +196,7 @@ describe("the orchestrator obtains the budget instead of assuming it", () => {
     expect(
       text.includes(`$FUSION_PLUGIN_ROOT/${HELPER}`),
       `${ORCHESTRATOR} must call ${HELPER} at Setup — it is the only thing that merges the ` +
-        `project's fusion-guard.json over the plugin's configuration.${REMEDY}`,
+        `project's fusion.json over fusion's built-in default.${REMEDY}`,
     ).toBe(true);
     expect(
       text.includes(`if [ -x "$FUSION_PLUGIN_ROOT/${HELPER}" ]`),
@@ -228,7 +238,7 @@ describe("the orchestrator obtains the budget instead of assuming it", () => {
     // required here. It went with the six other hand-maintained counters in that
     // block, and the argument that removed it is the one this whole gate is
     // built on. A budget is a CONFIGURED ceiling, not session state — it is
-    // resolved from `fusion-guard.json` through `bin/fusion-turn-budget` at
+    // resolved from `fusion.json` through `bin/fusion-turn-budget` at
     // Setup Step 2, and Setup Step 2 runs on a resume exactly as it runs on a
     // fresh session. So the persisted copy handed a resume nothing it could not
     // resolve itself, while being one more number a session could write stale.
@@ -282,23 +292,30 @@ describe("the default is defined once, in the configuration layer", () => {
     ).toHaveLength(1);
   });
 
-  it("is deliberately absent from the plugin's own config.json", () => {
-    // Every OTHER leaf is spelled in both `hooks/config.json` and `DEFAULTS`,
-    // and the loader's docstring says plainly that nothing keeps the two copies
-    // agreeing. This leaf declines the second copy.
-    const parsed = JSON.parse(read(PLUGIN_CONFIG)) as Record<string, unknown>;
-    expect(
-      parsed.orchestrator,
-      `${PLUGIN_CONFIG} declares an "orchestrator" section. The Turn budget's default lives in ` +
-        `${CONFIG_TS} DEFAULTS alone, so that there is exactly one number to change and no second ` +
-        `one to fall out of step with it.${REMEDY}`,
-    ).toBeUndefined();
+  it("has no shipped JSON layer left to restate it in", () => {
+    // This case used to read `hooks/config.json` and assert it declared no
+    // `orchestrator` section: every OTHER leaf was spelled in both that file and
+    // `DEFAULTS`, with nothing keeping the two copies agreeing, and this leaf
+    // declined the second copy. Both plugin-layer files were deleted on
+    // 2026-08-16 with the guard settings that were the layer's only reason to
+    // exist, so the property is now structural rather than declared — and it is
+    // asserted as an absence, because reinstating either file is the obvious
+    // way to give the default a "documented" home and would put the number in
+    // two places again.
+    for (const rel of DELETED_PLUGIN_CONFIGS) {
+      expect(
+        existsSync(join(pluginRoot, rel)),
+        `${rel} is back. The Turn budget's default lives in ${CONFIG_TS} DEFAULTS alone, so ` +
+          `that there is exactly one number to change and no second one to fall out of step ` +
+          `with it — and a shipped JSON layer is where the second copy has always gone.${REMEDY}`,
+      ).toBe(false);
+    }
   });
 
   it("is documented in the seeded template, which is how a project finds the key", () => {
     // A configurable value nobody can discover is configurable in theory. The
     // template is the file `/fusion:setup` puts in front of a project owner.
-    for (const rel of ["templates/fusion-guard.json", "fusion-guard.json"]) {
+    for (const rel of DOCUMENTED_IN) {
       const parsed = JSON.parse(read(rel)) as Record<string, unknown>;
       const note = String(parsed._turnBudget ?? "");
       expect(
