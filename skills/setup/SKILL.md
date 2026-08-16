@@ -166,28 +166,30 @@ Both copies are idempotent — existing files are left untouched, so any project
 
 If `$FUSION_PLUGIN_ROOT` is not set or the copy fails, note it in the history file later but do not block Setup.
 
-## Step 0f — Ensure the guard configuration file is present locally
+## Step 0f — Ensure the project configuration file is present locally
 
-The compliance guard hooks read `./fusion-guard.json` on every guarded tool call and merge it over the plugin's own `hooks/config.json`, so this file is where a project sets how sensitively the guard reads its decisions, when it escalates to a halt and how many Turns the orchestrator may run (`hooks/lib/config.ts`; the seeded template declares nothing and therefore inherits everything). It belongs in version control: every change to how strictly the guard reads the project has to show up in a diff.
+fusion reads `./fusion.json` at the project root and merges it over its own built-in defaults, so this file is where a project sets how many Turns the orchestrator may run (`hooks/lib/config.ts`; the seeded template declares nothing and therefore inherits everything). It belongs in version control: every change to how long a fusion session may run against the project has to show up in a diff.
 
 It lands at the project root, beside `fusion-workbench/` rather than inside it, in the directory `pwd` reported in Step 0. The "never prepend `cd`" rule at the top of this skill is what keeps it there.
 
 First check whether the project already has one. This is read-only and always allowed:
 
 ```bash
-[ -f ./fusion-guard.json ] && echo "fusion-guard.json present" || echo "fusion-guard.json absent"
+[ -f ./fusion.json ] && echo "fusion.json present" || echo "fusion.json absent"
 ```
 
-- **`present`** — nothing to do; continue to Step 1. Do not run the copy anyway: the template declares nothing, so copying it over a project's filled-in file would replace real settings with an empty inheritance.
+- **`present`** — nothing to do; continue to Step 1. Do not run the copy anyway: the template declares nothing, so copying it over a project's filled-in file would replace a real setting with an empty inheritance.
 - **`absent`** — seed the template. The copy is idempotent and never overwrites:
 
   ```bash
-  [ -f ./fusion-guard.json ] || { cp "$FUSION_PLUGIN_ROOT/templates/fusion-guard.json" ./fusion-guard.json && echo "fusion-guard.json template copied — inherits the plugin's guard defaults until you edit it"; }
+  [ -f ./fusion.json ] || { cp "$FUSION_PLUGIN_ROOT/templates/fusion.json" ./fusion.json && echo "fusion.json template copied — inherits fusion's own Turn budget until you edit it"; }
   ```
 
-The probe is why this step runs two commands where Steps 0b and 0d run one. It was introduced because the guard used to protect `fusion-guard.json` once it existed, so the plain one-command form was denied on every later Setup run in a project that already had one — measured against the guard, not reasoned about. That protection went with the protected-path half of the guard on 2026-08-12, so the copy is no longer denied; the probe stays because reporting `present` is a better answer for the user than a silent no-op. The `[ -f ]` guard inside the copy stays regardless, so the block is safe on its own for anyone who runs it without the probe.
+The probe is why this step runs two commands where Steps 0b and 0d run one: reporting `present` is a better answer for the user than a silent no-op. The `[ -f ]` guard inside the copy stays regardless, so the block is safe on its own for anyone who runs it without the probe.
 
-If `$FUSION_PLUGIN_ROOT` is not set or the copy fails, note it in the history file later but do not block Setup. An absent `fusion-guard.json` costs the project nothing: the guard falls back to the plugin's configuration, which is exactly what the template inherits.
+This step does nothing about a leftover `fusion-guard.json`. Naming that file is the configuration loader's job: it names the file, names the Turn-budget key and says where that key belongs now, once per guarded tool call until the file is deleted. Do not read the old file here, and do not offer to move anything out of it.
+
+If `$FUSION_PLUGIN_ROOT` is not set or the copy fails, note it in the history file later but do not block Setup. An absent `fusion.json` costs the project one thing and only one: the orchestrator runs on fusion's own Turn budget rather than a number the project chose.
 
 ## Step 0g — Offer to seed the project's permission file
 

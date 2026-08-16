@@ -254,12 +254,13 @@ The per-step `Dependencies` lines below are the authority; the subgraph edges ar
    - Dependencies: step 7a
    - Verification: `config.test.ts`'s template-equality case passes with `PROJECT_SET_KEYS` unchanged at `["orchestrator"]`, which is what makes the byte-identity claim in `CLAUDE.md` still true for the renamed pair.
 
-8. **`/fusion:setup` seeds the new file and names the old one**
+8. [DONE] **`/fusion:setup` seeds the new file and names the old one**
    - Executor: `coder`
    - Files: `skills/setup/SKILL.md`
    - Changes: rewrite Step 0f (`:169-190`). The probe and the idempotent copy keep their shape and change their filename. The prose loses the guard account: this file is where a project sets how many Turns the orchestrator may run, and no longer where it sets how sensitively the guard reads its decisions. The paragraph explaining that the probe exists because the guard used to protect this file becomes a shorter statement, since the protection went on 2026-08-12 and the probe is kept only because reporting `present` beats a silent no-op. Whether this step also offers to move a project's `orchestrator.maxTurns` out of a leftover `fusion-guard.json` is the second open question; the plan as written does not, and the loader's diagnostic carries the migration instead.
    - Dependencies: step 7b
    - **User gate:** the second open question, `260816-1916_o_does-setup-offer-to-move-a-projects-turn-budget-out-of-the-retired-configuration-file.md`.
+   - Executed 2026-08-16. Step 0f is renamed *Ensure the project configuration file is present locally*; the probe and the copy keep their two-command shape against `fusion.json` and `templates/fusion.json`. The guard account is gone from the prose and from the probe's `absent` message, which now says the seeded template inherits fusion's own Turn budget. The protected-path history was cut from the probe's justification, leaving only the reason that still holds. No migration offer was added, per the user's option 1 at the plan gate; the step states in one paragraph that a leftover `fusion-guard.json` is the loader's to name and instructs the reader not to read it or offer a move. The closing sentence no longer claims an absent file costs nothing — it names the one cost, running on fusion's own Turn budget rather than a chosen one. Verification is delta-only, since no test can assert a skill body's run-time behaviour: `cd hooks && npm test` exits 1 at 14 files / 116 cases both before and after, the same file set, and `turn-budget-lint.test.ts` is unmoved at 2 failed / 13 passed, both failures being step 7b's deleted `hooks/config.json` and `templates/fusion-guard.json`. History: `circles/260816-1741-guard-becomes-observation-only/history/260816-2226-step-8-setup-seeds-fusion-json.md`.
 
 9. **The test surface follows the removal**
    - Executor: `coder`

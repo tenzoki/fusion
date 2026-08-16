@@ -1658,3 +1658,6 @@
 {"ts":"2026-08-16T20:00:30","event":"gate_hit","turn":2,"task":"P-7b","agent":"user","detail":"ontocoder task — project convention requires user awareness for every data/config file change"}
 {"ts":"2026-08-16T20:14:10","event":"gate_response","turn":2,"task":"P-7b","agent":"user","detail":"proceed — execute P-7b in full, template and root together"}
 {"ts":"2026-08-16T20:14:10","event":"task_start","turn":2,"task":"P-7b","agent":"ontocoder","detail":"templates/fusion.json and root fusion.json written; four old config files deleted"}
+{"ts":"2026-08-16T20:18:38","event":"task_done","turn":2,"task":"P-7b","agent":"ontocoder","detail":"6890ea2 — fusion.json in template and root, four old config files deleted, budget 12 survived"}
+{"ts":"2026-08-16T20:18:38","event":"commit","turn":2,"task":"P-7b","agent":"orchestrator","detail":"6890ea2 feat(config): fusion.json replaces the guard configuration"}
+{"ts":"2026-08-16T20:18:38","event":"task_start","turn":2,"task":"P-8","agent":"coder","detail":"skills/setup/SKILL.md Step 0f seeds fusion.json and names the retired file"}
