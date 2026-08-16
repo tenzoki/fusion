@@ -18,3 +18,6 @@ Filed while closing `circles/260805-2005-textschicht-gegen-code-nachziehen/issue
 **Related.** `shared/issues/260816-0025_o_the-archive-skills-never-archive-list-omits-the-migration-backup-store-while-naming-its-twin.md` measures the same four consumers in a table and carries the `skills/setup/SKILL.md:60,67` row. That table needs the same correction, and the two records should be resolved together.
 
 **Route:** normative text over shipped behaviour — `curator`, or an `ontocoder`/`coder` pass that owns `rules/`.
+
+---
+Resolved: `rules/fusion-workbench-conventions.md:64` now names the three consumers that exclude `stashes/` by path (`log-activity:82`, `archive:96`, `playmaker:61`) and states that `/fusion:setup` **stopped needing** its exclusions rather than losing them — it bounds its probe to the two live trees (`skills/setup/SKILL.md:67`), so every frozen store is outside it by construction and a fourth would need no fourth entry. The standing instruction survives, still citing `skills/setup/SKILL.md:60` for what dropping one of the remaining three costs. `260816-0025`'s table is a separate record and was not in this pass's file set.

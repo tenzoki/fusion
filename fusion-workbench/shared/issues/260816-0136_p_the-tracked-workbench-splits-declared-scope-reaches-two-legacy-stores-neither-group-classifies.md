@@ -35,3 +35,8 @@ Two faults. `tasklist.md` was removed on 2026-08-15 and is named nowhere in the 
 Both are small; the always-on rule surface has roughly 9 400 bytes of head-room, and clause 1 costs under 100.
 
 **Found by:** coderev, reviewing `f4f01b0..3a0408a` (commits `0a514e6`, `f73dfe4`).
+
+---
+Resolved (part 1 only): `rules/fusion-workbench-conventions.md:74` now scopes the split to **every root entry outside the artifact and legacy stores** — `(circles/, shared/, archive/, stilwerk/ and the two above, all simply tracked)`. The deciding question was answered by classifying rather than by silence: a frozen store follows `archive/` and is simply tracked, so it is out of the split's scope by the same rule that puts the artifact directories out of it. Scope and membership now match with no remainder against both the tree and the sentence.
+
+Part 2 (`.gitignore:67` — drop `tasklist.md`, add `.fusion-setup`) is NOT done: `.gitignore` was outside this pass's permitted file set. It remains open work and needs a follow-up.

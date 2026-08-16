@@ -108,6 +108,8 @@ fusion-specific invariants the installer relies on:
 
 So there are effectively **four version surfaces** to keep coherent: `plugin.json`, `marketplace.json`, the `install.sh` header comment's `FUSION_REF=tags/v<version>` example, and the same pin example in `README.md` (the surface a user reads first — it drifted for months because the old count stopped at three). The default ref is `heads/main`, so a stale example still doesn't break a plain install — but since step 5 tags every release, the example now names a tag that actually exists and a user who copies it gets exactly that version. Refresh it at each release rather than letting it drift back to a version nobody tagged. The marketplace entry stays as a documented alternative.
 
+A fifth thing to keep coherent is not a version at all, which is why it is the one that slips: `plugin.json`'s `description` and the fusion entry's `description` in `marketplace.json` describe one product out of two repositories, and each install path shows only its own. They drift when a release rewrites one and leaves the other alone, which is what v9.0.0 did: the marketplace copy was brought up to date while the manifest went on describing the previous shape. Nothing catches that, because two version strings are either equal or not while two prose descriptions can both be well-formed and still disagree, so rewrite the pair together in the same release and read the two side by side before pushing.
+
 ## Testing during development
 
 Use `claude --plugin-dir /path/to/this/repo` to load directly from disk — no install, no cache, no version bumping required. Reserve the marketplace flow for releases.

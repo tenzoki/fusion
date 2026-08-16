@@ -37,3 +37,6 @@ The correction is the one `260816-0058` insists on for its own site, and the rea
 Resolve it in the same pass as `260816-0058` and `260816-0025` — three sites, one measurement, and the measurement is already written down in `260816-0058`.
 
 **Found by:** coderev, reviewing `f4f01b0..3a0408a`.
+
+---
+Resolved: `agents/playmaker.md:61`'s parenthetical now reads *"(Step 3 of cleanup's activity-log step carries the same exclusions in its `find`; `/fusion:setup` Step 0 bounds its probe to the two live trees instead, so the frozen stores fall outside it by construction rather than by exception.)"* — the wording this record proposed, corrected in the same pass as `260816-0058` so both sites agree.
