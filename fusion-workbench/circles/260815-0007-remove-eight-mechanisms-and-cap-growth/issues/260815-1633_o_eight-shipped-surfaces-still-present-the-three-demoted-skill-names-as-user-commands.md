@@ -172,3 +172,14 @@ One pass over that comment block discharges both.
 (`hooks/lib/events.ts:70` with its two compiled mirrors, and
 `hooks/lib/__tests__/monitor-warnings-panel.test.ts:508`) still write the old form, so the marker
 stays `_o_`.
+
+**Reconciliation 260816-1345 (reconciler, HEAD `dd560ab`): the `_o_` marker is correct and the
+discharge line above is accurate.** `.gitignore:69-70` reads "what preserves it is the archive step
+of `/fusion:cleanup`, which rolls it into `fusion-workbench/archive/` under a dated name". A full
+`grep -rn -E '/fusion:(archive|log-activity|curate)'` over the tree, excluding `.git/`,
+`node_modules/` and `fusion-workbench/`, returns eight hits: four are the deliberately-correct
+listings in `CLAUDE.md:21` and `README-agents.md:239,240,246`, and four are the residual code
+comments this record's 260816-0713 note named, `hooks/lib/events.ts:70` with its two compiled
+mirrors and `hooks/lib/__tests__/monitor-warnings-panel.test.ts:508`. The `.gitignore` hit is gone.
+Closing would be wrong while those three sources stand, and the record is right that whether a code
+comment is in scope for a presentational collapse is the question to answer first.

@@ -27,3 +27,12 @@ The other seven are an imperative or a noun and raise nothing.
 **The fix, and why the original mark was not the only option.** `rules/user-facing-output.md:130` prescribes four replacements: a comma, a colon, parentheses, or two sentences. The pass chose two sentences at all three sites; a colon at `:22` and `:83` and a comma at `:57` remove the em-dash without creating the opener, and each is already on the prescribed list. No wording changes.
 
 **What must not be done instead.** Restoring the em-dashes. The file is at 2.2 per 1000 against a stated ceiling of 1, and three restorations put it back at 3.3.
+
+**Reconciliation 260816-1345 (reconciler, HEAD `dd560ab`): the finding is confirmed and three of its
+four line numbers are wrong.** An independent case-sensitive comparison of the normalised token
+streams returns the same ten upward changes and none downward, and `those`, `it` and `that` are among
+them. At HEAD the three sites are `rules/user-facing-output.md:19`, `:56` and `:85`, not `:22`, `:57`
+and `:83`, and the blacklist that bans the figure is at `:18`, one line above the first of them
+rather than four. The file has not changed since `6049d3e`, so this is the citation drift
+`shared/issues/260808-0030_o_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`
+tracks. Whoever takes the fix should re-grep rather than seek by line.

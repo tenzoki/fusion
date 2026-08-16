@@ -90,3 +90,45 @@ seven measured files keep their rates. Measured now, the same seven files run 22
 340 em-dashes, 14.8 per 1000 against the table's 16.3, and the words moved between the two
 measurements as well as the dashes. Closing this record would claim a corpus fix that was not
 performed.
+
+---
+
+**Reconciliation 260816-1345 (reconciler, HEAD `dd560ab`): the `_o_` marker is correct, the
+progress note's corpus numbers reproduce exactly, and the set they are measured over is not the
+always-on set.**
+
+The corpus figures were re-derived independently with the record's own command rather than read
+from the progress note. Every one matches:
+
+```
+rules/agent-setup.md                      533 words    15 em-dash   28.1 /1000
+rules/decision-record-examples.md         554 words    17 em-dash   30.6 /1000
+rules/design-diagrams.md                  794 words    20 em-dash   25.1 /1000
+rules/critical-stance.md                 1587 words    29 em-dash   18.2 /1000
+rules/fusion-workbench-conventions.md    8460 words   133 em-dash   15.7 /1000
+rules/user-facing-output.md              2663 words     6 em-dash    2.2 /1000
+CLAUDE.md                                8280 words   120 em-dash   14.4 /1000
+------------------------------------------------------------------------------
+                                        22871 words   340 em-dash   14.8 /1000
+```
+
+Six of the seven keep their rates; only `rules/fusion-workbench-conventions.md` moved at all, by
+eight words from `b18a8cf`, and its rate is unchanged at 15.7. **Leaving this record open is
+right.** 340 em-dashes stand against 23 permitted at the stated ceiling, so the corpus is at 14.8
+times it and closing would claim a fix nobody performed.
+
+**What the re-derivation did find is the set.** The table is labelled "total always-on context"
+and its membership is wrong in both directions. `rules/design-diagrams.md` is a **conditional**
+emission. `bin/fusion-rules:413` guards it with `if [ "$IS_DIAGRAM_AGENT" -eq 1 ]`, so it reaches
+the five diagram producers and no other agent, and it is the second-worst offender in the table at
+25.1. Missing from it is `fusion-workbench/stilwerk/chat-voice-de.yaml`, which `bin/fusion-rules:396`
+emits unconditionally to **every** agent (882 words, 6 em-dash, 6.8 /1000). Swapping the two gives
+the corpus every dispatch actually carries: **22 959 words, 326 em-dash, 14.1 per 1000**. The
+conclusion is unchanged and the number a later pass will compare against is not. Filed as
+`shared/issues/260816-1345_o_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`.
+
+**One stale figure in the record's own title.** "Sixteen times" was true of the 16.3 measured at
+`787010f`. At HEAD the same seven files run 14.8 and the always-on set runs 14.1. The title is left
+as filed; the numbers above are the ones to act on.
+
+Verification: `cd hooks && npm test` at HEAD `dd560ab`, exit 0, 40 files, 764 tests.

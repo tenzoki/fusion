@@ -2,9 +2,9 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** answered
 **Filed by:** analyst
-**Cross-references:** `shared/analyses/260816-0740-rhetorical-register-of-agent-output.md` findings 10 and 11; `shared/issues/260816-0740_o_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`; `shared/issues/260816-0740_o_the-gate-contract-never-requires-an-option-to-state-what-it-forecloses.md`; `shared/analyses/260706-1902-user-facing-agents-garbled-language-rootcause.md`; `hooks/lib/__tests__/helpers/growth-bound.ts`
+**Cross-references:** `shared/analyses/260816-0740-rhetorical-register-of-agent-output.md` findings 10 and 11; `shared/issues/260816-0740_o_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`; `shared/issues/260816-0740_c_the-gate-contract-never-requires-an-option-to-state-what-it-forecloses.md`; `shared/analyses/260706-1902-user-facing-agents-garbled-language-rootcause.md`; `hooks/lib/__tests__/helpers/growth-bound.ts`
 
 ---
 
@@ -90,7 +90,7 @@ with every other addition to the hook test surface, so option 3's two mechanisms
 expensive than they look.
 
 ---
-Answered: `shared/history/260816-0804-orchestrator-session.md` — **Option 4**, chosen by the user
+Answered: `shared/history/260816-0804-orchestrator-session.md:88` — **Option 4**, chosen by the user
 at an orchestrator gate on 2026-08-16. No gate is built now. The corpus is repunctuated first,
 the falsification measurement from recommendation 4 of the analysis runs against a later
 session's output, and this record is re-opened with a number rather than an inference.

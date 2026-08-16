@@ -103,3 +103,25 @@ lines above the sentence saying so. Reverted before commit.
 
 Verification: `cd hooks && npm test` — exit 0, 40 files, 764 tests. Run by the orchestrator
 independently of the executor's own run.
+
+---
+**Reconciliation 260816-1345 (reconciler, HEAD `dd560ab`): the `_c_` marker is correct. All three
+halves are on disk and were re-checked rather than read from the note above.**
+
+- **Part 1.** `rules/fusion-workbench-conventions.md:74` reads the conditional form the record's own
+  fix direction proposed: `(circles/, shared/, archive/, stilwerk/, all simply tracked, and any
+  stashes/ or .migration-v2-backup/ a workbench still carries, which follow archive/)`. The
+  `Also seen:` objection is discharged with it: the parenthesis no longer asserts that a tracked
+  workbench tracks the two legacy stores.
+- **Part 2.** `.gitignore:67` reads `# KEPT: orchestrator-events.jsonl, portfolio.md, .fusion-setup.`
+  `tasklist.md` is gone and `.fusion-setup` is named. Re-verified independently: `git check-ignore`
+  exits 1 for all three and `git ls-files --error-unmatch` returns all three, so the comment now
+  describes the behaviour.
+- **The borrowed half.** `.gitignore:69-70` reads "what preserves it is the archive step of
+  `/fusion:cleanup`", matching `rules/fusion-workbench-conventions.md:81`. The record it belongs to,
+  `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1633_o_*.md`, keeps its
+  `_o_` marker and carries the discharge line.
+
+One stale path in the record above: the 260815-1633 reconciliation note cites this file at its old
+`_p_` name. Left as written, per open decision
+`shared/decisions/260816-0119_o_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`.

@@ -21,3 +21,10 @@ The defect is the ambiguity, not the arithmetic. A clause that determines a line
 **What would settle both.** One sentence stating whether the foreclosure occupies its own line, and one entry in `## Length` giving `description` a cap. Which numbers is a judgement the curator's evidence tiers do not reach, the same ground on which section 9 of the run file records the original two bullets as a user override; if a number is needed it needs the same gate.
 
 **What must not be done instead.** Relaxing `:101` to make the arithmetic work. `:107` forbids exactly that, and removing a constraint to accommodate a new requirement is the move `circles/260801-1244-curator/issues/260814-1332_o_the-curator-prompt-is-the-one-prose-agent-that-does-not-enumerate-its-long-form-outputs.md` declined for the analogous case.
+
+**Reconciliation 260816-1345 (reconciler, HEAD `dd560ab`): the finding is confirmed and two of its
+four line numbers are wrong.** At HEAD the foreclosure clause is at `rules/user-facing-output.md:96`,
+not `:95`, and the option-label cap is at `:102`, not `:103`. The gate-prompt cap at `:101` and the
+no-relaxing sentence at `:107` are cited correctly. The ambiguity the record names is real and reads
+exactly as described. Same citation drift as
+`shared/issues/260808-0030_o_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`.

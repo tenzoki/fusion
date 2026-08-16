@@ -146,3 +146,16 @@ Nothing here blocks a release.
 **Commands run:** seven-way tokenisation and character-inventory comparison of the two file versions in Python; `git show`/`git diff` over the three commits; `npm test` in `hooks/` (764 passed); `bin/fusion-review-coverage --since b18a8cf`; a marker-versus-`Status` sweep over all 100 non-archived decision records.
 
 **Not verified, and named as such.** I did not observe the user gate and take the curator's section 9 account of it as reported, on that section's own qualification. I did not check whether any consuming project's rendered gate prompts actually exceed the cap; the arithmetic above is arithmetic, not a measurement of real output.
+
+---
+
+**Reconciler annotation, 260816-1345, HEAD `dd560ab`.** A third pass over the repunctuation, run
+independently of this review's evidence block, confirms all five findings and adds none. The token
+identity holds under two normalisations (2700 and 2565 tokens, equal on both sides); 2733 is not
+reproducible by any of nine counts; exactly ten capitals are gained and none lost, with the changed
+`see` at `:12` gaining rather than losing; the semicolon at `:9` is the one mark outside the
+prescribed four; and the markup inventory is byte-stable across the change. `rules/user-facing-output.md`
+at HEAD is correct. The one class of fault this review carries is its own line citations: nine of the
+fourteen into that file are off by one to three lines, recorded as an instance on
+`shared/issues/260808-0030_o_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`
+and corrected on the two records where a fixer would act on them.

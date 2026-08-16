@@ -82,3 +82,15 @@ Nothing is broken at runtime. The cost is a reader sent to the wrong line, and r
 spent re-deriving citations that were correct when filed.
 
 Also seen: 260816-1330 by coderev — commit `52b8665` inserted two bullets into `rules/user-facing-output.md` at `:87` and `:95` and shifted every citation below them by two. Three instances in the same session, two of them inside the same file: `shared/history/260816-1251-curator-run.md:288` records that the analysis cited the gate cap as `:101` and "it is at `:99` at this HEAD", and the commit the same run produced moved it back to `:101`, so the correction was made obsolete by its own change; the same run file then cites `:99` at `:99`, `:181` and `:332`. Commit `6049d3e`'s message cites the ceiling clause as `:128` in one sentence and `:130` two sentences later, for the same line, at a HEAD where `:130` is correct.
+
+Also seen: 260816-1345 by reconciler, third-pass verification at HEAD `dd560ab`. The annotation
+appended one commit earlier is itself an instance. It states that `52b8665` inserted its two bullets
+at `:87` and `:95`; at HEAD they are at `:89` (`A response moment is either a question…`) and `:96`
+(`Every option says what it forecloses.`), and the file has not changed since that commit. Four more
+in the same batch of records, all against `rules/user-facing-output.md` at a HEAD where the file is
+byte-identical to the one reviewed: the three pronoun-opener sites cited `:22`, `:57`, `:83` are at
+`:19`, `:56`, `:85`; the two `see` sites cited `:9` and `:14` are at `:9` and `:12`; the length caps
+cited `:103` is at `:102`; and "four lines above the first of them" for the blacklist at `:18` is one
+line above. The citations that do hold in the same batch are `:101`, `:107`, `:112`, `:121`, `:130`.
+Nine wrong and five right inside one review pass, on the file the pass was reviewing, is the
+strongest evidence this record has that the fault is not carelessness but the absence of any gate.

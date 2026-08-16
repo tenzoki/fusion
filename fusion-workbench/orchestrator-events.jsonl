@@ -1606,3 +1606,10 @@
 {"ts":"2026-08-16T11:20:13","event":"task_done","turn":2,"task":"I:0740-gate","agent":"curator","detail":"52b8665; record 260816-0740 gate-contract _o_ -> _c_"}
 {"ts":"2026-08-16T11:20:13","event":"commit","turn":2,"task":"I:0740-register","detail":"6049d3e fix(rules): em-dash rate 14.1 -> 2.2 in user-facing-output.md"}
 {"ts":"2026-08-16T11:20:13","event":"task_done","turn":2,"task":"I:0740-register","agent":"coder","detail":"6049d3e; record stays _o_, 6 of 7 corpus files untouched"}
+{"ts":"2026-08-16T11:59:26","event":"review_done","turn":2,"agent":"coderev","detail":"5 issues filed; repunctuation claim verified independently"}
+{"ts":"2026-08-16T11:59:26","event":"commit","turn":2,"detail":"dd560ab chore(review): Turn 2 review batch"}
+{"ts":"2026-08-16T11:59:26","event":"turn_end","turn":2,"detail":"tasks resolved=2, issues created=5"}
+{"ts":"2026-08-16T11:59:26","event":"reconciliation","detail":"12 tracking files updated, 1 new issue; verdict review-needed on the record layer, shipped text correct"}
+{"ts":"2026-08-16T11:59:26","event":"gate_hit","detail":"Rebalance gate: reconciler verdict review-needed"}
+{"ts":"2026-08-16T11:59:26","event":"gate_response","detail":"proceed — user chose to close the session and schedule the remaining findings"}
+{"ts":"2026-08-16T11:59:26","event":"session_end","detail":"2 Turns, 3 tasks resolved, 6 commits, 10 issues filed, 2 closed, 1 decision answered"}
