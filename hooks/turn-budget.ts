@@ -11,20 +11,29 @@
  * one of the seven already called it a "default", which implied a source that
  * could override it. None existed, so the word was false (issue `260811-1712`).
  *
- * A prompt cannot merge three configuration layers, so the budget had to become
+ * A prompt cannot merge configuration layers, so the budget had to become
  * something the prompt READS. This is that read: one call at Setup, one line of
- * output, and the orchestrator carries the answer in `agentstate.yaml` where
- * `progress.max_turns` already had a home and where it was already read as
- * data rather than assumed.
+ * output, and the orchestrator holds the answer for the session. It used to
+ * persist it as `progress.max_turns` in `agentstate.yaml`; that field went with
+ * the rest of that file's counters on 2026-08-15, so the resolved budget lives
+ * only in the running session now.
  *
  * ## Where the value comes from
  *
- * `hooks/lib/config.ts`, unchanged in mechanism: the project's
- * `fusion-guard.json`, then the plugin's `hooks/config.json`, then the built-in
- * `DEFAULTS`, merged per leaf. `fusion-guard.json` is the per-project surface a
- * project already has — git-tracked, reviewed in a diff, wrong values dropped
- * and named — so reusing it was the requirement, not inventing a second file
- * for one integer.
+ * `hooks/lib/config.ts`: the project's `fusion.json`, then the built-in
+ * `DEFAULTS`, merged per leaf. That file is fusion's per-project configuration
+ * surface, git-tracked so a change to a budget shows in a diff, with wrong
+ * values dropped and named rather than silently taken.
+ *
+ * It used to be `fusion-guard.json`, and this docstring used to spend a
+ * paragraph explaining why a setting that is not the guard's lived in the
+ * guard's configuration file. That explanation retired with its subject on
+ * 2026-08-16: the guard decides nothing and has no settings, so there is no
+ * guard configuration for this to be an exception to. The budget is now the
+ * one setting the file carries. A project upgrading over that release still has
+ * the old file on disk and hears about it from the loader, on every guarded
+ * tool call, until it copies the budget across and deletes it
+ * (`260816-1915`, `260816-1916`).
  *
  * A project declares a different budget with:
  *

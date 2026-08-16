@@ -1,92 +1,69 @@
 /**
- * Configuration loader for the Compliance Guard.
+ * Configuration loader for fusion's per-project settings.
  *
- * ## Three layers, in order
+ * ## Two layers, in order
  *
- *   1. the PROJECT's `fusion-guard.json`, at the project root
- *   2. the PLUGIN's `hooks/config.json`, inside the fusion install
- *   3. the in-code `DEFAULTS`
+ *   1. the PROJECT's `fusion.json`, at the project root
+ *   2. the in-code `DEFAULTS`
  *
- * Before this existed there was only (2) and (3), and (2) sits inside the
- * install — `findConfigPath()` walks up from the compiled hook's own directory,
- * so it can never reach a consuming project. Every project on one install
- * therefore shared one configuration, which is the gap C5b closes.
+ * There were THREE until 2026-08-16, and the middle one was the plugin's own
+ * `hooks/config.json`, inside the install. It existed for one reason: guard
+ * settings needed a plugin-level default that a project could narrow. The
+ * guard stopped deciding anything in this release, so that reason left with
+ * it. What is left for the layer to carry is nothing — the loader reads ONE
+ * leaf now, and that leaf's default is deliberately defined in exactly one
+ * place, so restating it in a shipped JSON file is the thing this module has
+ * always refused to do. A layer that carries nothing is a claim rather than a
+ * capability, which is what the protected list and the escalation counter were
+ * each removed for. Decision `260816-1915`, answered option 1 at the plan gate.
  *
- * ## Merge: PER LEAF, across all three layers
+ * ## The one leaf
  *
- * One rule, and it is meant to be statable from memory by an agent and by a
- * project owner alike: *a key the project layer does not supply, or supplies
- * unusably, is treated as absent, and absent means the plugin layer, then
- * `DEFAULTS`.* A key the project DOES supply is taken exactly as written.
- *
- * So `{"guard":{"defaultSensitivity":"high"}}` raises the sensitivity and keeps
- * the plugin's `categoryPaths`, and `{"guard":{"categoryPaths":{}}}` really does
- * govern nothing. Only OMISSION changed meaning — from "the built-in default" to
- * "inherit". Decision `260804-1630`, answered option 1 at the plan gate on
- * 2026-08-04.
- *
- * Declaration still wins outright, and that half is not a detail: a union of a
- * declared container can only ever grow, so narrowing — half of what the
- * project-level configuration was asked for — is expressible only if a declared
- * value replaces rather than merges. What the leaf walk changes is the
- * granularity at which "declared" is read, from the whole top-level object down
- * to the leaf. Nothing about a declared value moved.
- *
- * The rule was never scoped to one key. `escalation` and `decisions` carry the
- * identical defect, invisible only because the plugin file and `DEFAULTS` happen
- * to agree on every leaf they share and nothing keeps them agreeing
- * (`260804-1633`). One walk closes them all rather than one per-key rule each.
- * (Three of the leaves it was written for have since gone: `crossFile` with the
- * ping-back tracker, decision `260809-2004`; `guard.protectedPaths` with the
- * mechanism it configured — see `## The leaf that was retired` below, which is
- * where the argument above used to draw its worked example from; and `churn`
- * with the heatmap on 2026-08-15, removed outright rather than retired, because
- * no project ever set it.)
- *
- * ## The one setting here that is not the guard's
- *
- * `orchestrator.maxTurns` is the Turn budget of the orchestrator's Phase-2 loop.
- * It is not a guard setting and no hook reads it — `bin/fusion-turn-budget` does,
- * once per Setup, and the orchestrator carries the answer in `agentstate.yaml`.
- * It lives here because `fusion-guard.json` is the per-project configuration
- * surface a project already has: git-tracked, merged per leaf, wrong values
- * dropped and named. A second configuration file for one integer would be a
- * second mechanism answering the same question (issue `260811-1712`).
+ * `orchestrator.maxTurns` is the Turn budget of the orchestrator's Phase-2
+ * loop. It is the only setting this loader resolves. No hook reads it —
+ * `bin/fusion-turn-budget` does, once per Setup, and the orchestrator carries
+ * the answer from there.
  *
  * The budget had been prose in `agents/orchestrator.md`, written out as `5` in
  * seven places and four spellings, with one of them already calling it a
- * "default" — a word that was false, because no source could override it.
+ * "default" — a word that was false, because no source could override it
+ * (issue `260811-1712`).
  *
- * THE DEFAULT IS DEFINED ONCE, in `DEFAULTS` below, and deliberately NOT
- * restated in the plugin's `hooks/config.json`. Every other leaf is spelled in
- * both, and the paragraph above about `escalation` is the standing complaint
- * that nothing keeps the two copies agreeing. One copy cannot
- * disagree with itself. A project that wants a different budget declares
- * `{"orchestrator":{"maxTurns":12}}` and the leaf walk does the rest.
+ * THE DEFAULT IS DEFINED ONCE, in `DEFAULTS` below. A project that wants a
+ * different budget declares `{"orchestrator":{"maxTurns":12}}` in its own
+ * `fusion.json` and the leaf walk does the rest.
  *
- * ## The one key a project may not set
+ * ## Merge: PER LEAF, across both layers
  *
- * `guard.enabled` is read from the plugin layer and `DEFAULTS` only. It sits
- * above every check in `guard.ts` — above the Bash dispatch, above the halt,
- * above the decision-governed check — so a project that could write it could
- * switch off a guard it is governed by, silently and unrecoverably. Decision
- * `260804-1631`, answered option 1 at the same gate.
+ * One rule, and it is meant to be statable from memory by an agent and by a
+ * project owner alike: *a key the project layer does not supply, or supplies
+ * unusably, is treated as absent, and absent means `DEFAULTS`.* A key the
+ * project DOES supply is taken exactly as written.
  *
- * A project that declares the key gets ONE DIAGNOSTIC naming it. That is not a
- * courtesy: it is the only thing standing between this rule and a silently inert
- * key, and the decision record says so in those words. Do not make it
- * conditional and do not fold it into the type validation below — a project may
- * write a perfectly well-typed `false` and must still hear that nothing
- * happened.
+ * Declaration wins outright, and that half is not a detail: a union of a
+ * declared container can only ever grow, so narrowing — half of what the
+ * project-level configuration was asked for — is expressible only if a declared
+ * value replaces rather than merges. What the leaf walk changed, when it was
+ * written for a loader with six guard leaves, was the granularity at which
+ * "declared" is read, from the whole top-level object down to the leaf.
+ * Decision `260804-1630`, answered option 1 at the plan gate on 2026-08-04.
+ *
+ * With one leaf the walk has nothing to disagree with itself about, and it is
+ * kept as the shape rather than collapsed into a single `??`, because the next
+ * setting to land here inherits the rule instead of re-deriving it. The leaves
+ * it was written for have all gone: `crossFile` with the ping-back tracker
+ * (`260809-2004`), `guard.protectedPaths` with the mechanism it configured
+ * (2026-08-12), `churn` with the heatmap (2026-08-15), and the four remaining
+ * guard leaves with the guard's verdict (2026-08-16).
  *
  * ## Type validation: an unusable value costs exactly what an absence costs
  *
  * `readLayer` used to cast the parsed JSON to `RawConfig` and check nothing
  * inside it, so `{"guard":{"protectedPaths":123}}` crashed the guard into its
  * fail-open branch on every call, and the subtler `"rules/**"` spread into eight
- * single characters and protected nothing, silently (`260804-1603`). That leaf
- * is retired now; the defect it measured is why this table exists, so the
- * example is kept as the history it is.
+ * single characters and protected nothing, silently (`260804-1603`). Both that
+ * leaf and the mechanism behind it are gone; the defect they measured is why
+ * this table exists, so the example is kept as the history it is.
  *
  * `validateLayer` gives every leaf this loader reads a declared type. A leaf
  * whose value does not have that type is DROPPED and NAMED, and the leaf walk
@@ -101,38 +78,40 @@
  * does not diagnose `null`, which has always meant "nothing configured" here and
  * still does; `null` is absent, not wrong.
  *
- * Both layers run through it. The plugin layer is protected, so the risk there
- * is smaller — but `260802-2334` is this Circle's standing proof that "the file
- * is protected" was not enough once already.
+ * ## Retirement, at two scopes
  *
- * ## The leaf that was retired, and the floor that went with it
+ * Something a project once configured and no longer can is neither a validation
+ * failure nor an unknown key. It is a line that still looks like a setting to
+ * whoever wrote it and now does nothing, and the one thing that must not happen
+ * is for it to go through in the silence every unrecognised key gets. So it is
+ * named, once per guarded tool call, until it comes out of the project's tree.
  *
- * `guard.protectedPaths` was the largest leaf this loader read until
- * 2026-08-12, when the protected-path mechanism it configured was removed.
- * Nothing reads a protected list any more, so the leaf is not merged, not
- * defaulted and not validated. It is RETIRED, which is a third state beside
- * "known" and "unknown": a project that still declares it has the value dropped
- * and gets ONE DIAGNOSTIC naming the key, on every guarded tool call, until the
- * line comes out of the file. See `RETIRED_CONTAINER_LEAVES` below.
+ * That notion started at one scope, the leaf (`guard.protectedPaths`, retired
+ * 2026-08-12). This release needs two more, so it is ONE TABLE FAMILY rather
+ * than a second mechanism:
  *
- * That loudness is deliberate and it is the loudness `guard.enabled` already
- * has. Every other unrecognised key is carried through in silence, and rightly
- * — the seeded template is mostly underscore-prefixed documentation keys. But a
- * project that declared a protected list declared it on purpose, usually after
- * something got written that should not have been, and silence would leave it
- * believing a setting is in force behind a mechanism that no longer exists.
- * This diagnostic is the only place in the whole removal where a consuming
- * project learns anything, so it says what happened and what to do about it.
+ *   - `RETIRED_PROJECT_FILES` — a whole FILE at the project root that fusion no
+ *     longer reads. Today: `fusion-guard.json`, replaced by `fusion.json`.
+ *   - `RETIRED_TOP_LEVEL_KEYS` — a top-level KEY inside the file that is read.
+ *     Today: `guard`, `decisions`, `escalation`, which is what a project sees
+ *     if it copies its old file across rather than starting from the template.
  *
- * THE SELF-PROTECTION FLOOR WENT WITH IT, and the loss is real rather than
- * bookkeeping. The loader used to append `fusion-guard.json` to the effective
- * list in two spellings — the bare project-relative name and the absolute path
- * it read the layer from (`260804-1604`) — once the file existed, the existence
- * condition being what let `/fusion:setup` seed a file an unconditional floor
- * would have forbidden (`260802-1912`). There is no effective list to append
- * to now, so nothing in the guard defends this file from an agent. What bounds
- * that is what always bounded the pre-existence gap the floor never covered:
- * the file is git-tracked, so a change to it appears in a diff.
+ * The leaf-scoped table has no members after this release and is gone with
+ * them: `guard.protectedPaths` now sits inside a retired container, so the
+ * container's own diagnostic names it. Reinstate the table if a leaf inside a
+ * LIVE container is ever retired; that is the case it was written for and the
+ * case that does not exist right now.
+ *
+ * THE RETIRED-FILE DIAGNOSTIC IS THE WHOLE OF THE v10 MIGRATION, and it is
+ * written that way on purpose. `/fusion:setup` was the alternative and the user
+ * chose against it (`260816-1916`, option 1), on the ground that this channel
+ * runs on every guarded tool call while Setup runs once per session and only
+ * for a project that runs Setup at all. A project that carried
+ * `{"orchestrator":{"maxTurns":12}}` and does nothing would otherwise drop to
+ * the built-in default without a word, which is the exact class of silent loss
+ * every diagnostic in this module exists to prevent. So the text names the key,
+ * names the destination file and says to copy the value across BEFORE deleting
+ * anything. Do not shorten it into a bare "this file moved".
  *
  * ## Diagnostics rather than silence
  *
@@ -142,25 +121,18 @@
  * per entry. The loader itself does not emit, so it stays pure and unit-testable
  * without a workbench on disk.
  *
- * A MISSING file is recorded for the plugin layer and not for the project
- * layer, and that asymmetry is the rule rather than an exception to it. See
- * `readLayer`, which is where the two layers part.
+ * A MISSING `fusion.json` is silent, and must be: it is the ordinary state of a
+ * project that has configured nothing, and nagging it would put an advisory on
+ * every guarded call of a correctly-behaving project. The one absence that used
+ * to be reported was the plugin layer's, where absence meant a broken install
+ * (`260809-1101`); that diagnostic went with the file it was about.
  *
  * Uses native JSON.parse — zero external dependencies.
  */
 /** The project-level configuration file, at the project root, git-tracked. */
-export declare const PROJECT_CONFIG_FILENAME = "fusion-guard.json";
-/** Sensitivity level for a decision category. */
-export type Sensitivity = "none" | "low" | "medium" | "high";
-/** A decision entry governing a category of paths. */
-export interface Decision {
-    id: string;
-    category: string;
-    statement: string;
-    ruleFile?: string;
-}
+export declare const PROJECT_CONFIG_FILENAME = "fusion.json";
 /**
- * The effective SETTINGS — everything the guard reads to decide a verdict.
+ * The effective SETTINGS — everything this loader resolves.
  *
  * Split out from `GuardConfig` so the load report below can be added to what
  * `loadConfig` returns without becoming a setting. "Did the effective
@@ -168,62 +140,44 @@ export interface Decision {
  * answerable only if the settings are a nameable subset.
  */
 export interface GuardSettings {
-    guard: {
-        enabled: boolean;
-        defaultSensitivity: Sensitivity;
-        categoryPaths: Record<string, string[]>;
-        categorySensitivity: Record<string, Sensitivity>;
-    };
-    decisions: Decision[];
-    escalation: {
-        blocksBeforeHalt: number;
-    };
     /**
      * The orchestrator's Phase-2 Turn budget. Read by `bin/fusion-turn-budget`
-     * at Setup, not by any hook — see the module docstring for why a non-guard
-     * setting lives in the guard's configuration file.
+     * at Setup, not by any hook.
      */
     orchestrator: {
         maxTurns: number;
     };
 }
-/**
- * Which of the three layers a value came from.
- *
- * Read by `readLayer` and `validateLayer`, which behave differently for the
- * project and the plugin file. It stopped being part of `GuardConfig` when
- * `protectedPathsSource` was removed with the protected-path mechanism: no
- * setting reports its provenance any more.
- */
-export type ConfigLayer = "project" | "plugin" | "default";
-/** Guard configuration as loaded: the settings, plus a report about the load. */
+/** Configuration as loaded: the settings, plus a report about the load. */
 export interface GuardConfig extends GuardSettings {
     /**
-     * Non-fatal problems met while resolving the three layers. Empty on a clean
-     * load. NOT configuration — it is a report about the load, which is why it is
-     * excluded from every comparison that asks whether the effective
-     * configuration changed.
+     * Non-fatal problems met while resolving the layers, plus the retirement
+     * announcements. Empty on a clean load. NOT configuration — it is a report
+     * about the load, which is why it is excluded from every comparison that asks
+     * whether the effective configuration changed.
+     *
+     * It is the module's main product now rather than a footnote to one: with a
+     * single leaf to resolve, most of what this loader has to say to a project is
+     * in here.
      */
     diagnostics: string[];
 }
 /**
- * Where the two configuration layers are read from.
+ * Where the project layer is read from.
  *
- * Both are OPTIONAL and both are defaulted inside `loadConfig`, never at module
- * load. A caller that passes `projectRoot: null` means "there is no project
- * layer" and gets exactly that — the absence is honoured rather than filled in
- * by a walk up from the working directory, which is what a `??` default would
- * have done and what would have made every unit case secretly depend on where
- * the test runner was started.
+ * OPTIONAL, and defaulted inside `loadConfig`, never at module load. A caller
+ * that passes `projectRoot: null` means "there is no project layer" and gets
+ * exactly that — the absence is honoured rather than filled in by a walk up
+ * from the working directory, which is what a `??` default would have done and
+ * what would have made every unit case secretly depend on where the test runner
+ * was started.
  */
 export interface ConfigSources {
-    /** Default: `findConfigPath()` — the plugin's own `hooks/config.json`. */
-    pluginConfigPath?: string;
     /** Default: `findWorkbenchRoot(process.cwd())`. `null` means no project layer. */
     projectRoot?: string | null;
 }
 /**
- * Load the effective guard configuration.
+ * Load the effective configuration.
  *
  * Pure with respect to guard state: it reads files and returns a value. It
  * emits no events — see the module docstring for why the diagnostics come back
@@ -232,7 +186,3 @@ export interface ConfigSources {
 export declare function loadConfig(sources?: ConfigSources): GuardConfig;
 /** Reset cached config (for testing). */
 export declare function resetConfigCache(): void;
-/** Numeric level for comparing sensitivities. Higher = more sensitive. */
-export declare function sensitivityLevel(s: Sensitivity): number;
-/** Find decisions whose category matches a file path. */
-export declare function findRelevantDecisions(filePath: string, config: GuardConfig): Decision[];

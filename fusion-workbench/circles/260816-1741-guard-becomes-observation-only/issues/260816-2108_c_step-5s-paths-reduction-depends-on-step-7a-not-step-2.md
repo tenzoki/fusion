@@ -59,3 +59,23 @@ Whichever is chosen, **step 9's edit list needs `lib/__tests__/paths.test.ts` ad
 That file's `globToRegex`, `matchesPattern`, `matchesAny` and `collapseSegments` groups lose
 their subject when the reduction lands, and no step names the file today. Its `foldCase` group
 survives.
+
+---
+Resolved: order 1 was chosen at the Turn 1 coherence gate and recorded in the plan's
+`## Plan amendment`; the reduction was then executed on 2026-08-16 in the same change as step
+7a, which is the step that deletes `findRelevantDecisions`. Both findings are discharged, and
+they are discharged differently, so both are stated here.
+
+The dependency finding is fixed. `hooks/lib/paths.ts` now holds `foldCase` alone. Before any
+function was cut, each of the four was re-grepped over `hooks/**/*.ts` excluding `dist/` and
+`node_modules/` — with the loader already rewritten — and all four had zero hits outside
+`lib/paths.ts` itself and `lib/__tests__/paths.test.ts`. `foldCase` kept `tracker.ts:101`,
+`:306` and `:307`. `cd hooks && npm run build` exits 0, so the compile failure this issue
+predicted for the wrong order did not occur in the right one.
+
+The second finding is carried, not fixed. `lib/__tests__/paths.test.ts` is now red at 14 of its
+18 cases — the `globToRegex`, `matchesPattern`, `matchesAny` and `collapseSegments` groups,
+exactly the four this issue named; the `foldCase` group is green. The plan amendment added the
+file to step 9, so it has an owner, but the red is live until step 9 lands.
+
+History: `circles/260816-1741-guard-becomes-observation-only/history/260816-2156-step-7a-loader-reduced-and-step-5b-paths.md`.

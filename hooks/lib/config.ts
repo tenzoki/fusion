@@ -1,92 +1,69 @@
 /**
- * Configuration loader for the Compliance Guard.
+ * Configuration loader for fusion's per-project settings.
  *
- * ## Three layers, in order
+ * ## Two layers, in order
  *
- *   1. the PROJECT's `fusion-guard.json`, at the project root
- *   2. the PLUGIN's `hooks/config.json`, inside the fusion install
- *   3. the in-code `DEFAULTS`
+ *   1. the PROJECT's `fusion.json`, at the project root
+ *   2. the in-code `DEFAULTS`
  *
- * Before this existed there was only (2) and (3), and (2) sits inside the
- * install — `findConfigPath()` walks up from the compiled hook's own directory,
- * so it can never reach a consuming project. Every project on one install
- * therefore shared one configuration, which is the gap C5b closes.
+ * There were THREE until 2026-08-16, and the middle one was the plugin's own
+ * `hooks/config.json`, inside the install. It existed for one reason: guard
+ * settings needed a plugin-level default that a project could narrow. The
+ * guard stopped deciding anything in this release, so that reason left with
+ * it. What is left for the layer to carry is nothing — the loader reads ONE
+ * leaf now, and that leaf's default is deliberately defined in exactly one
+ * place, so restating it in a shipped JSON file is the thing this module has
+ * always refused to do. A layer that carries nothing is a claim rather than a
+ * capability, which is what the protected list and the escalation counter were
+ * each removed for. Decision `260816-1915`, answered option 1 at the plan gate.
  *
- * ## Merge: PER LEAF, across all three layers
+ * ## The one leaf
  *
- * One rule, and it is meant to be statable from memory by an agent and by a
- * project owner alike: *a key the project layer does not supply, or supplies
- * unusably, is treated as absent, and absent means the plugin layer, then
- * `DEFAULTS`.* A key the project DOES supply is taken exactly as written.
- *
- * So `{"guard":{"defaultSensitivity":"high"}}` raises the sensitivity and keeps
- * the plugin's `categoryPaths`, and `{"guard":{"categoryPaths":{}}}` really does
- * govern nothing. Only OMISSION changed meaning — from "the built-in default" to
- * "inherit". Decision `260804-1630`, answered option 1 at the plan gate on
- * 2026-08-04.
- *
- * Declaration still wins outright, and that half is not a detail: a union of a
- * declared container can only ever grow, so narrowing — half of what the
- * project-level configuration was asked for — is expressible only if a declared
- * value replaces rather than merges. What the leaf walk changes is the
- * granularity at which "declared" is read, from the whole top-level object down
- * to the leaf. Nothing about a declared value moved.
- *
- * The rule was never scoped to one key. `escalation` and `decisions` carry the
- * identical defect, invisible only because the plugin file and `DEFAULTS` happen
- * to agree on every leaf they share and nothing keeps them agreeing
- * (`260804-1633`). One walk closes them all rather than one per-key rule each.
- * (Three of the leaves it was written for have since gone: `crossFile` with the
- * ping-back tracker, decision `260809-2004`; `guard.protectedPaths` with the
- * mechanism it configured — see `## The leaf that was retired` below, which is
- * where the argument above used to draw its worked example from; and `churn`
- * with the heatmap on 2026-08-15, removed outright rather than retired, because
- * no project ever set it.)
- *
- * ## The one setting here that is not the guard's
- *
- * `orchestrator.maxTurns` is the Turn budget of the orchestrator's Phase-2 loop.
- * It is not a guard setting and no hook reads it — `bin/fusion-turn-budget` does,
- * once per Setup, and the orchestrator carries the answer in `agentstate.yaml`.
- * It lives here because `fusion-guard.json` is the per-project configuration
- * surface a project already has: git-tracked, merged per leaf, wrong values
- * dropped and named. A second configuration file for one integer would be a
- * second mechanism answering the same question (issue `260811-1712`).
+ * `orchestrator.maxTurns` is the Turn budget of the orchestrator's Phase-2
+ * loop. It is the only setting this loader resolves. No hook reads it —
+ * `bin/fusion-turn-budget` does, once per Setup, and the orchestrator carries
+ * the answer from there.
  *
  * The budget had been prose in `agents/orchestrator.md`, written out as `5` in
  * seven places and four spellings, with one of them already calling it a
- * "default" — a word that was false, because no source could override it.
+ * "default" — a word that was false, because no source could override it
+ * (issue `260811-1712`).
  *
- * THE DEFAULT IS DEFINED ONCE, in `DEFAULTS` below, and deliberately NOT
- * restated in the plugin's `hooks/config.json`. Every other leaf is spelled in
- * both, and the paragraph above about `escalation` is the standing complaint
- * that nothing keeps the two copies agreeing. One copy cannot
- * disagree with itself. A project that wants a different budget declares
- * `{"orchestrator":{"maxTurns":12}}` and the leaf walk does the rest.
+ * THE DEFAULT IS DEFINED ONCE, in `DEFAULTS` below. A project that wants a
+ * different budget declares `{"orchestrator":{"maxTurns":12}}` in its own
+ * `fusion.json` and the leaf walk does the rest.
  *
- * ## The one key a project may not set
+ * ## Merge: PER LEAF, across both layers
  *
- * `guard.enabled` is read from the plugin layer and `DEFAULTS` only. It sits
- * above every check in `guard.ts` — above the Bash dispatch, above the halt,
- * above the decision-governed check — so a project that could write it could
- * switch off a guard it is governed by, silently and unrecoverably. Decision
- * `260804-1631`, answered option 1 at the same gate.
+ * One rule, and it is meant to be statable from memory by an agent and by a
+ * project owner alike: *a key the project layer does not supply, or supplies
+ * unusably, is treated as absent, and absent means `DEFAULTS`.* A key the
+ * project DOES supply is taken exactly as written.
  *
- * A project that declares the key gets ONE DIAGNOSTIC naming it. That is not a
- * courtesy: it is the only thing standing between this rule and a silently inert
- * key, and the decision record says so in those words. Do not make it
- * conditional and do not fold it into the type validation below — a project may
- * write a perfectly well-typed `false` and must still hear that nothing
- * happened.
+ * Declaration wins outright, and that half is not a detail: a union of a
+ * declared container can only ever grow, so narrowing — half of what the
+ * project-level configuration was asked for — is expressible only if a declared
+ * value replaces rather than merges. What the leaf walk changed, when it was
+ * written for a loader with six guard leaves, was the granularity at which
+ * "declared" is read, from the whole top-level object down to the leaf.
+ * Decision `260804-1630`, answered option 1 at the plan gate on 2026-08-04.
+ *
+ * With one leaf the walk has nothing to disagree with itself about, and it is
+ * kept as the shape rather than collapsed into a single `??`, because the next
+ * setting to land here inherits the rule instead of re-deriving it. The leaves
+ * it was written for have all gone: `crossFile` with the ping-back tracker
+ * (`260809-2004`), `guard.protectedPaths` with the mechanism it configured
+ * (2026-08-12), `churn` with the heatmap (2026-08-15), and the four remaining
+ * guard leaves with the guard's verdict (2026-08-16).
  *
  * ## Type validation: an unusable value costs exactly what an absence costs
  *
  * `readLayer` used to cast the parsed JSON to `RawConfig` and check nothing
  * inside it, so `{"guard":{"protectedPaths":123}}` crashed the guard into its
  * fail-open branch on every call, and the subtler `"rules/**"` spread into eight
- * single characters and protected nothing, silently (`260804-1603`). That leaf
- * is retired now; the defect it measured is why this table exists, so the
- * example is kept as the history it is.
+ * single characters and protected nothing, silently (`260804-1603`). Both that
+ * leaf and the mechanism behind it are gone; the defect they measured is why
+ * this table exists, so the example is kept as the history it is.
  *
  * `validateLayer` gives every leaf this loader reads a declared type. A leaf
  * whose value does not have that type is DROPPED and NAMED, and the leaf walk
@@ -101,38 +78,40 @@
  * does not diagnose `null`, which has always meant "nothing configured" here and
  * still does; `null` is absent, not wrong.
  *
- * Both layers run through it. The plugin layer is protected, so the risk there
- * is smaller — but `260802-2334` is this Circle's standing proof that "the file
- * is protected" was not enough once already.
+ * ## Retirement, at two scopes
  *
- * ## The leaf that was retired, and the floor that went with it
+ * Something a project once configured and no longer can is neither a validation
+ * failure nor an unknown key. It is a line that still looks like a setting to
+ * whoever wrote it and now does nothing, and the one thing that must not happen
+ * is for it to go through in the silence every unrecognised key gets. So it is
+ * named, once per guarded tool call, until it comes out of the project's tree.
  *
- * `guard.protectedPaths` was the largest leaf this loader read until
- * 2026-08-12, when the protected-path mechanism it configured was removed.
- * Nothing reads a protected list any more, so the leaf is not merged, not
- * defaulted and not validated. It is RETIRED, which is a third state beside
- * "known" and "unknown": a project that still declares it has the value dropped
- * and gets ONE DIAGNOSTIC naming the key, on every guarded tool call, until the
- * line comes out of the file. See `RETIRED_CONTAINER_LEAVES` below.
+ * That notion started at one scope, the leaf (`guard.protectedPaths`, retired
+ * 2026-08-12). This release needs two more, so it is ONE TABLE FAMILY rather
+ * than a second mechanism:
  *
- * That loudness is deliberate and it is the loudness `guard.enabled` already
- * has. Every other unrecognised key is carried through in silence, and rightly
- * — the seeded template is mostly underscore-prefixed documentation keys. But a
- * project that declared a protected list declared it on purpose, usually after
- * something got written that should not have been, and silence would leave it
- * believing a setting is in force behind a mechanism that no longer exists.
- * This diagnostic is the only place in the whole removal where a consuming
- * project learns anything, so it says what happened and what to do about it.
+ *   - `RETIRED_PROJECT_FILES` — a whole FILE at the project root that fusion no
+ *     longer reads. Today: `fusion-guard.json`, replaced by `fusion.json`.
+ *   - `RETIRED_TOP_LEVEL_KEYS` — a top-level KEY inside the file that is read.
+ *     Today: `guard`, `decisions`, `escalation`, which is what a project sees
+ *     if it copies its old file across rather than starting from the template.
  *
- * THE SELF-PROTECTION FLOOR WENT WITH IT, and the loss is real rather than
- * bookkeeping. The loader used to append `fusion-guard.json` to the effective
- * list in two spellings — the bare project-relative name and the absolute path
- * it read the layer from (`260804-1604`) — once the file existed, the existence
- * condition being what let `/fusion:setup` seed a file an unconditional floor
- * would have forbidden (`260802-1912`). There is no effective list to append
- * to now, so nothing in the guard defends this file from an agent. What bounds
- * that is what always bounded the pre-existence gap the floor never covered:
- * the file is git-tracked, so a change to it appears in a diff.
+ * The leaf-scoped table has no members after this release and is gone with
+ * them: `guard.protectedPaths` now sits inside a retired container, so the
+ * container's own diagnostic names it. Reinstate the table if a leaf inside a
+ * LIVE container is ever retired; that is the case it was written for and the
+ * case that does not exist right now.
+ *
+ * THE RETIRED-FILE DIAGNOSTIC IS THE WHOLE OF THE v10 MIGRATION, and it is
+ * written that way on purpose. `/fusion:setup` was the alternative and the user
+ * chose against it (`260816-1916`, option 1), on the ground that this channel
+ * runs on every guarded tool call while Setup runs once per session and only
+ * for a project that runs Setup at all. A project that carried
+ * `{"orchestrator":{"maxTurns":12}}` and does nothing would otherwise drop to
+ * the built-in default without a word, which is the exact class of silent loss
+ * every diagnostic in this module exists to prevent. So the text names the key,
+ * names the destination file and says to copy the value across BEFORE deleting
+ * anything. Do not shorten it into a bare "this file moved".
  *
  * ## Diagnostics rather than silence
  *
@@ -142,59 +121,24 @@
  * per entry. The loader itself does not emit, so it stays pure and unit-testable
  * without a workbench on disk.
  *
- * A MISSING file is recorded for the plugin layer and not for the project
- * layer, and that asymmetry is the rule rather than an exception to it. See
- * `readLayer`, which is where the two layers part.
+ * A MISSING `fusion.json` is silent, and must be: it is the ordinary state of a
+ * project that has configured nothing, and nagging it would put an advisory on
+ * every guarded call of a correctly-behaving project. The one absence that used
+ * to be reported was the plugin layer's, where absence meant a broken install
+ * (`260809-1101`); that diagnostic went with the file it was about.
  *
  * Uses native JSON.parse — zero external dependencies.
  */
 
 import { readFileSync, existsSync } from "node:fs";
-import { resolve, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
-import { matchesAny } from "./paths.js";
+import { resolve } from "node:path";
 import { findWorkbenchRoot } from "./workbench-root.js";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
 /** The project-level configuration file, at the project root, git-tracked. */
-export const PROJECT_CONFIG_FILENAME = "fusion-guard.json";
+export const PROJECT_CONFIG_FILENAME = "fusion.json";
 
 /**
- * Find config.json by walking up from __dirname.
- * Works whether running from source (lib/) or compiled (dist/lib/).
- *
- * Called from inside `loadConfig`, NOT at module load. The project side is
- * resolved from `process.cwd()`, and freezing either source into a module-level
- * const would read the working directory at import time — which is also what
- * made this module untestable in-process for as long as it has existed.
- */
-function findConfigPath(): string {
-  let dir = __dirname;
-  for (let i = 0; i < 5; i++) {
-    const candidate = resolve(dir, "config.json");
-    if (existsSync(candidate)) {
-      return candidate;
-    }
-    dir = dirname(dir);
-  }
-  // Fallback: assume one level up (original behavior)
-  return resolve(__dirname, "..", "config.json");
-}
-
-/** Sensitivity level for a decision category. */
-export type Sensitivity = "none" | "low" | "medium" | "high";
-
-/** A decision entry governing a category of paths. */
-export interface Decision {
-  id: string;
-  category: string;
-  statement: string;
-  ruleFile?: string;
-}
-
-/**
- * The effective SETTINGS — everything the guard reads to decide a verdict.
+ * The effective SETTINGS — everything this loader resolves.
  *
  * Split out from `GuardConfig` so the load report below can be added to what
  * `loadConfig` returns without becoming a setting. "Did the effective
@@ -202,100 +146,67 @@ export interface Decision {
  * answerable only if the settings are a nameable subset.
  */
 export interface GuardSettings {
-  guard: {
-    enabled: boolean;
-    defaultSensitivity: Sensitivity;
-    categoryPaths: Record<string, string[]>;
-    categorySensitivity: Record<string, Sensitivity>;
-  };
-  decisions: Decision[];
-  escalation: {
-    blocksBeforeHalt: number;
-  };
   /**
    * The orchestrator's Phase-2 Turn budget. Read by `bin/fusion-turn-budget`
-   * at Setup, not by any hook — see the module docstring for why a non-guard
-   * setting lives in the guard's configuration file.
+   * at Setup, not by any hook.
    */
   orchestrator: {
     maxTurns: number;
   };
 }
 
-/**
- * Which of the three layers a value came from.
- *
- * Read by `readLayer` and `validateLayer`, which behave differently for the
- * project and the plugin file. It stopped being part of `GuardConfig` when
- * `protectedPathsSource` was removed with the protected-path mechanism: no
- * setting reports its provenance any more.
- */
-export type ConfigLayer = "project" | "plugin" | "default";
-
-/** Guard configuration as loaded: the settings, plus a report about the load. */
+/** Configuration as loaded: the settings, plus a report about the load. */
 export interface GuardConfig extends GuardSettings {
   /**
-   * Non-fatal problems met while resolving the three layers. Empty on a clean
-   * load. NOT configuration — it is a report about the load, which is why it is
-   * excluded from every comparison that asks whether the effective
-   * configuration changed.
+   * Non-fatal problems met while resolving the layers, plus the retirement
+   * announcements. Empty on a clean load. NOT configuration — it is a report
+   * about the load, which is why it is excluded from every comparison that asks
+   * whether the effective configuration changed.
+   *
+   * It is the module's main product now rather than a footnote to one: with a
+   * single leaf to resolve, most of what this loader has to say to a project is
+   * in here.
    */
   diagnostics: string[];
 }
 
 /** Raw shape from JSON (may have missing fields). */
 interface RawConfig {
-  guard?: Partial<GuardSettings["guard"]>;
-  decisions?: Decision[];
-  escalation?: Partial<GuardSettings["escalation"]>;
   orchestrator?: Partial<GuardSettings["orchestrator"]>;
 }
 
 const DEFAULTS: GuardSettings = {
-  guard: {
-    enabled: true,
-    defaultSensitivity: "medium",
-    categoryPaths: {},
-    categorySensitivity: {},
-  },
-  decisions: [],
-  escalation: {
-    blocksBeforeHalt: 3,
-  },
-  // THE TURN BUDGET'S ONE DEFINITION. Not restated in the plugin's
-  // `hooks/config.json`, and not in `agents/orchestrator.md` — the prompt reads
-  // it through `bin/fusion-turn-budget` at Setup and names the resolved value
-  // everywhere it used to write a number. See the module docstring.
+  // THE TURN BUDGET'S ONE DEFINITION. Not restated in any shipped JSON file,
+  // and not in `agents/orchestrator.md` — the prompt reads it through
+  // `bin/fusion-turn-budget` at Setup and names the resolved value everywhere
+  // it used to write a number. See the module docstring.
   orchestrator: {
     maxTurns: 5,
   },
 };
 
 /**
- * Where the two configuration layers are read from.
+ * Where the project layer is read from.
  *
- * Both are OPTIONAL and both are defaulted inside `loadConfig`, never at module
- * load. A caller that passes `projectRoot: null` means "there is no project
- * layer" and gets exactly that — the absence is honoured rather than filled in
- * by a walk up from the working directory, which is what a `??` default would
- * have done and what would have made every unit case secretly depend on where
- * the test runner was started.
+ * OPTIONAL, and defaulted inside `loadConfig`, never at module load. A caller
+ * that passes `projectRoot: null` means "there is no project layer" and gets
+ * exactly that — the absence is honoured rather than filled in by a walk up
+ * from the working directory, which is what a `??` default would have done and
+ * what would have made every unit case secretly depend on where the test runner
+ * was started.
  */
 export interface ConfigSources {
-  /** Default: `findConfigPath()` — the plugin's own `hooks/config.json`. */
-  pluginConfigPath?: string;
   /** Default: `findWorkbenchRoot(process.cwd())`. `null` means no project layer. */
   projectRoot?: string | null;
 }
 
 /**
- * One memo slot, KEYED on the resolved source pair.
+ * One memo slot, KEYED on the resolved source.
  *
  * The previous cache was keyed on nothing and ignored its own argument on every
  * call after the first. With one source and one call per hook process that was
- * inert; with two sources and injectable paths it is a live defect, and a vitest
- * file is precisely the case that hits it — one process, many cases, many
- * source pairs.
+ * inert; with an injectable root it is a live defect, and a vitest file is
+ * precisely the case that hits it — one process, many cases, many roots.
  */
 let cache: { key: string; value: GuardConfig } | null = null;
 
@@ -308,42 +219,16 @@ interface Layer {
 const EMPTY_LAYER: Layer = { raw: {}, diagnostics: [] };
 
 /**
- * Read one configuration file into a layer.
+ * Read the project's configuration file into a layer.
  *
- * An ABSENT file means two different things, one per layer, and the loader says
- * so rather than treating both as ordinary (`260809-1101`).
- *
- * For the PROJECT layer, absence is the ordinary state of a project that has
- * configured nothing. It stays silent, and must: nagging every project that has
- * never written `fusion-guard.json` would put an advisory on every guarded call
- * of a correctly-behaving project.
- *
- * For the PLUGIN layer, absence is a broken install. The diagnostic was won by
- * `260809-1101`, whose subject was the protected list: the plugin file carried
- * the only non-empty one, so a missing file dropped it to nothing while the
- * guard went on reporting normal operation. That list is gone and the
- * diagnostic stays, with a smaller and stated claim — every leaf the project
- * has not declared falls through to `DEFAULTS`, which the shipped plugin file
- * agrees with leaf for leaf, so the measurable cost of the absence today is
- * nothing and the reason to say so is that a file fusion ships is missing. ONE
- * DIAGNOSTIC naming the path that was searched, the same loudness the module
- * already chose for a plugin file that exists but does not parse.
- *
- * A file that EXISTS but cannot be read as a JSON object is dropped and named,
- * because the alternative is a mistyped configuration hiding behind
- * apparently-normal operation. The same holds one level down, per key, in
- * `validateLayer` — the second of the two places `kind` goes.
+ * An ABSENT file is silent — see the module docstring's `## Diagnostics rather
+ * than silence`. A file that EXISTS but cannot be read as a JSON object is
+ * dropped and named, because the alternative is a mistyped configuration hiding
+ * behind apparently-normal operation. The same holds one level down, per key,
+ * in `validateLayer`.
  */
-function readLayer(path: string, kind: ConfigLayer): Layer {
-  if (!existsSync(path)) {
-    if (kind !== "plugin") return EMPTY_LAYER;
-    return {
-      raw: {},
-      diagnostics: [
-        `Guard configuration: the plugin's own config.json was not found at ${path}. Every guard setting this project has not declared in ${PROJECT_CONFIG_FILENAME} falls through to fusion's built-in defaults. The fusion install is incomplete; reinstall it.`,
-      ],
-    };
-  }
+function readLayer(path: string): Layer {
+  if (!existsSync(path)) return EMPTY_LAYER;
 
   let parsed: unknown;
   try {
@@ -352,7 +237,7 @@ function readLayer(path: string, kind: ConfigLayer): Layer {
     return {
       raw: {},
       diagnostics: [
-        `Guard configuration at ${path} is not valid JSON and was ignored; falling back to the next source. ${String(err)}`,
+        `fusion configuration at ${path} is not valid JSON and was ignored; falling back to fusion's built-in defaults. ${String(err)}`,
       ],
     };
   }
@@ -365,12 +250,12 @@ function readLayer(path: string, kind: ConfigLayer): Layer {
     return {
       raw: {},
       diagnostics: [
-        `Guard configuration at ${path} is not a JSON object and was ignored; falling back to the next source.`,
+        `fusion configuration at ${path} is not a JSON object and was ignored; falling back to fusion's built-in defaults.`,
       ],
     };
   }
 
-  return validateLayer(parsed as Record<string, unknown>, path, kind);
+  return validateLayer(parsed as Record<string, unknown>, path);
 }
 
 /* ------------------------------------------------------------------ *
@@ -381,58 +266,22 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function isBoolean(value: unknown): boolean {
-  return typeof value === "boolean";
-}
-
-function isStringArray(value: unknown): boolean {
-  return Array.isArray(value) && value.every((e) => typeof e === "string");
-}
-
-const SENSITIVITIES: readonly string[] = ["none", "low", "medium", "high"];
-
-function isSensitivity(value: unknown): boolean {
-  return typeof value === "string" && SENSITIVITIES.includes(value);
-}
-
-function isRecordOf(check: (v: unknown) => boolean): (v: unknown) => boolean {
-  return (value) => isPlainObject(value) && Object.values(value).every(check);
-}
-
 /**
- * A halt threshold of `0` halts on the FIRST denied call, before the agent has
- * had the second and third chances the three-block design exists to give it
- * (`260804-1606`). It is almost certainly a project meaning "no threshold" and
- * getting the strictest one there is. There is no upper bound, deliberately: a
- * large value is a defensible project choice, and inventing a ceiling here would
- * be a policy nobody asked for.
- *
- * `orchestrator.maxTurns` takes the same shape and for the same reason, which
- * is why it reuses this check rather than getting one of its own. A budget of
- * `0` is a session that can never run a Turn — a project writing it almost
- * certainly means "no limit" and would get the tightest limit there is; a
- * negative one is not a count; `2.5` is not a number of Turns. All three are
+ * A budget of `0` is a session that can never run a Turn — a project writing it
+ * almost certainly means "no limit" and would get the tightest limit there is;
+ * a negative one is not a count; `2.5` is not a number of Turns. All three are
  * out of range, all three are dropped, named in an advisory, and inherit the
  * default, because that is the one behaviour an absent, an unusable and an
- * unwritten key are all required to share. And there is no ceiling: a project
- * that wants 60 Turns has said so in a git-tracked file.
+ * unwritten key are all required to share.
+ *
+ * There is no upper bound, deliberately: a project that wants 60 Turns has said
+ * so in a git-tracked file, and inventing a ceiling here would be a policy
+ * nobody asked for. The shape was first argued for the escalation threshold
+ * (`260804-1606`), whose `0` halted on the first denied call; that setting went
+ * with the counter on 2026-08-16 and the argument transferred intact.
  */
 function isPositiveInteger(value: unknown): boolean {
   return typeof value === "number" && Number.isInteger(value) && value >= 1;
-}
-
-function isDecisionArray(value: unknown): boolean {
-  return (
-    Array.isArray(value) &&
-    value.every(
-      (d) =>
-        isPlainObject(d) &&
-        typeof d.id === "string" &&
-        typeof d.category === "string" &&
-        typeof d.statement === "string" &&
-        (d.ruleFile === undefined || typeof d.ruleFile === "string"),
-    )
-  );
 }
 
 interface LeafRule {
@@ -451,27 +300,6 @@ interface LeafRule {
  * this table existed.
  */
 const CONTAINER_LEAF_RULES: Record<string, Record<string, LeafRule>> = {
-  guard: {
-    enabled: { check: isBoolean, expected: "a boolean" },
-    defaultSensitivity: {
-      check: isSensitivity,
-      expected: 'one of "none", "low", "medium", "high"',
-    },
-    categoryPaths: {
-      check: isRecordOf(isStringArray),
-      expected: "an object mapping each category to an array of glob strings",
-    },
-    categorySensitivity: {
-      check: isRecordOf(isSensitivity),
-      expected: "an object mapping each category to a sensitivity",
-    },
-  },
-  escalation: {
-    blocksBeforeHalt: {
-      check: isPositiveInteger,
-      expected: "a whole number of 1 or more",
-    },
-  },
   orchestrator: {
     maxTurns: {
       check: isPositiveInteger,
@@ -481,38 +309,44 @@ const CONTAINER_LEAF_RULES: Record<string, Record<string, LeafRule>> = {
 };
 
 /**
- * Leaves this loader ONCE READ and no longer does, with the reason a project
- * that still declares one needs to hear.
+ * Files at the project root that fusion ONCE READ and no longer does, with the
+ * reason a project still carrying one needs to hear.
  *
- * The counterpart of `CONTAINER_LEAF_RULES` above, and the reason it is a table
- * rather than an `if`: a retired leaf is not a validation failure and not an
- * unknown key. It is a key that meant something, still looks like a setting to
- * whoever wrote it, and now does nothing — and the one thing that must not
- * happen is for it to go through silently as an unknown key, which is what the
- * validator does with every key it does not recognise.
+ * The value completes the sentence "… is no longer read — ___", and it names
+ * what moved and where. See the module docstring's `## Retirement, at two
+ * scopes` for why this is the loudest thing in the module: for the file below it
+ * is the entire migration path a consuming project gets.
  *
- * The value completes the sentence "… no longer exists — ___". Keep it saying
- * what happened and what to do; a project reading it has just upgraded and this
- * is the only notice it gets.
- *
- * An entry here is a promise to keep making noise until the line comes out of
- * the file. Retire a leaf by moving it from the table above into this one; drop
- * it from this table only when a project could no longer plausibly still be
- * carrying it.
+ * An entry here is a promise to keep making noise until the file comes out of
+ * the project's tree. Drop one only when a project could no longer plausibly
+ * still be carrying it.
  */
-const RETIRED_CONTAINER_LEAVES: Record<string, Record<string, string>> = {
-  guard: {
-    protectedPaths:
-      "fusion removed the protected-path mechanism it configured, so declaring the list protects nothing and nothing reads it.",
-  },
+const RETIRED_PROJECT_FILES: Record<string, string> = {
+  "fusion-guard.json":
+    `fusion removed the guard settings this file configured. The one setting it carried that was never the guard's, "orchestrator.maxTurns", now lives in ${PROJECT_CONFIG_FILENAME} at the project root. If this file sets a Turn budget, copy {"orchestrator": {"maxTurns": <n>}} into ${PROJECT_CONFIG_FILENAME} first: a budget left here is not read, and the orchestrator falls back to fusion's built-in default without saying so. Then delete this file to stop this advisory.`,
 };
 
-/** Top-level keys whose value is itself a leaf rather than a container. */
-const TOP_LEVEL_LEAF_RULES: Record<string, LeafRule> = {
-  decisions: {
-    check: isDecisionArray,
-    expected: "an array of {id, category, statement} objects",
-  },
+/**
+ * Top-level keys this loader ONCE READ and no longer does, with the reason a
+ * project that still declares one needs to hear.
+ *
+ * The counterpart of `CONTAINER_LEAF_RULES` above, at the container's own
+ * scope, and the sibling of `RETIRED_PROJECT_FILES` one scope down. It is
+ * reached by a project that copied its `fusion-guard.json` across into
+ * `fusion.json` rather than starting from the seeded template — the ordinary
+ * way an upgrade goes wrong quietly, since the file parses and every key in it
+ * looks like a setting.
+ *
+ * The value completes the sentence "… no longer exists — ___". Keep it saying
+ * what happened; a project reading it has just upgraded and this is its notice.
+ */
+const RETIRED_TOP_LEVEL_KEYS: Record<string, string> = {
+  guard:
+    "fusion's guard decides nothing. It observes the write tools and reports what it could not read here, and it has no settings of its own.",
+  decisions:
+    "the decision-governed check that read this list was removed with the guard's verdict.",
+  escalation:
+    "the consecutive-block counter and the halt it raised were removed with the guard's verdict.",
 };
 
 /** A type name for a diagnostic, short enough to read in a dashboard row. */
@@ -527,55 +361,54 @@ function describeValue(value: unknown): string {
  * Drop every key that cannot be used, and NAME each one.
  *
  * A dropped key behaves exactly like an omitted one — the leaf walk in
- * `loadConfig` then finds it absent and inherits from the next layer. Decision
+ * `loadConfig` then finds it absent and inherits from `DEFAULTS`. Decision
  * `260804-1630` requires that equivalence rather than merely permitting it: two
  * ways of arriving at "absent" that behave differently would be two rules where
  * the answer is one.
  *
- * Applied to BOTH layers. `kind` distinguishes them for exactly one key:
- * `guard.enabled`, which the project layer may not set at all (decision
- * `260804-1631`). That key is dropped from the project layer whatever its type,
- * and the diagnostic says WHY rather than complaining about a type — a project
- * that writes a perfectly well-formed `false` needs to hear that the key does
- * not apply to it, not that it should have written a boolean.
+ * It no longer takes a layer kind. There is one layer, and the two behaviours
+ * that used to distinguish them are gone with it: the plugin file's
+ * missing-file diagnostic, and the project-only refusal of `guard.enabled`,
+ * which is retired inside its container (`260816-1915`, option 1).
  */
 function validateLayer(
   parsed: Record<string, unknown>,
   source: string,
-  kind: ConfigLayer,
 ): Layer {
   const raw: Record<string, unknown> = {};
   const diagnostics: string[] = [];
-
-  const drop = (key: string, rule: LeafRule, value: unknown): void => {
-    diagnostics.push(
-      `Guard configuration at ${source}: "${key}" must be ${rule.expected}, got ${describeValue(value)}. The key was ignored and inherits as if it were absent.`,
-    );
-  };
 
   for (const [key, value] of Object.entries(parsed)) {
     // `null` means "nothing configured" and is not a problem — see `readLayer`.
     // Dropping it here is what makes the leaf walk see it as absent.
     if (value === null || value === undefined) continue;
 
-    const topLevelRule = TOP_LEVEL_LEAF_RULES[key];
-    if (topLevelRule !== undefined) {
-      if (topLevelRule.check(value)) raw[key] = value;
-      else drop(key, topLevelRule, value);
+    // A RETIRED top-level key. Checked before anything else about the key,
+    // because a retired container is not a container to walk into: its leaves
+    // are retired with it, and one advisory naming the container beats one per
+    // leaf inside a key that no longer means anything. The value is dropped, so
+    // nothing downstream can read it back.
+    const retired = RETIRED_TOP_LEVEL_KEYS[key];
+    if (retired !== undefined) {
+      diagnostics.push(
+        `fusion configuration at ${source}: "${key}" no longer exists — ${retired} The key was ignored; the rest of this file is unaffected. Delete it to stop this advisory.`,
+      );
       continue;
     }
 
     const leafRules = CONTAINER_LEAF_RULES[key];
     if (leafRules === undefined) {
       // An unknown key, carried through untouched and undiagnosed. The seeded
-      // template is mostly six underscore-prefixed documentation keys; rejecting
+      // template is mostly underscore-prefixed documentation keys; rejecting
       // them would make the file fusion itself ships a broken one.
       raw[key] = value;
       continue;
     }
 
     if (!isPlainObject(value)) {
-      drop(key, { check: isPlainObject, expected: "a JSON object" }, value);
+      diagnostics.push(
+        `fusion configuration at ${source}: "${key}" must be a JSON object, got ${describeValue(value)}. The key was ignored and inherits as if it were absent.`,
+      );
       continue;
     }
 
@@ -583,34 +416,13 @@ function validateLayer(
     for (const [leafKey, leafValue] of Object.entries(value)) {
       if (leafValue === null || leafValue === undefined) continue;
 
-      if (kind === "project" && key === "guard" && leafKey === "enabled") {
-        diagnostics.push(
-          `Guard configuration at ${source}: "guard.enabled" cannot be set by a project — a project does not switch off the guard that governs it. The key was ignored.`,
-        );
-        continue;
-      }
-
-      // A RETIRED leaf, in EITHER layer. Unscoped on purpose, unlike the
-      // project-only refusal above: `guard.enabled` is a key one layer may
-      // legitimately set, whereas a retired leaf is retired for everybody, and
-      // a plugin `config.json` still carrying one is a stale install saying so
-      // rather than a project to nag. The value is dropped, so nothing
-      // downstream can read it back.
-      const retired = RETIRED_CONTAINER_LEAVES[key]?.[leafKey];
-      if (retired !== undefined) {
-        diagnostics.push(
-          `Guard configuration at ${source}: "${key}.${leafKey}" no longer exists — ${retired} The key was ignored; the rest of this file is unaffected. Delete the line to stop this advisory.`,
-        );
-        continue;
-      }
-
       const rule = leafRules[leafKey];
-      if (rule === undefined) {
-        kept[leafKey] = leafValue;
-      } else if (rule.check(leafValue)) {
+      if (rule === undefined || rule.check(leafValue)) {
         kept[leafKey] = leafValue;
       } else {
-        drop(`${key}.${leafKey}`, rule, leafValue);
+        diagnostics.push(
+          `fusion configuration at ${source}: "${key}.${leafKey}" must be ${rule.expected}, got ${describeValue(leafValue)}. The key was ignored and inherits as if it were absent.`,
+        );
       }
     }
     raw[key] = kept;
@@ -620,14 +432,13 @@ function validateLayer(
 }
 
 /**
- * Load the effective guard configuration.
+ * Load the effective configuration.
  *
  * Pure with respect to guard state: it reads files and returns a value. It
  * emits no events — see the module docstring for why the diagnostics come back
  * as data instead.
  */
 export function loadConfig(sources?: ConfigSources): GuardConfig {
-  const pluginConfigPath = sources?.pluginConfigPath ?? findConfigPath();
   // An explicit `null` is an instruction ("no project layer"), not an omission,
   // so it must survive to the line below. `sources?.projectRoot ?? findWorkbenchRoot()`
   // would silently turn it back into a walk up from the working directory.
@@ -635,7 +446,7 @@ export function loadConfig(sources?: ConfigSources): GuardConfig {
   const projectRoot =
     injectedRoot !== undefined ? injectedRoot : findWorkbenchRoot();
 
-  const key = JSON.stringify([pluginConfigPath, projectRoot]);
+  const key = JSON.stringify([projectRoot]);
   if (cache !== null && cache.key === key) {
     return cache.value;
   }
@@ -643,56 +454,38 @@ export function loadConfig(sources?: ConfigSources): GuardConfig {
   const projectConfigPath =
     projectRoot === null ? null : resolve(projectRoot, PROJECT_CONFIG_FILENAME);
 
-  const plugin = readLayer(pluginConfigPath, "plugin");
   const project =
-    projectConfigPath === null
-      ? EMPTY_LAYER
-      : readLayer(projectConfigPath, "project");
+    projectConfigPath === null ? EMPTY_LAYER : readLayer(projectConfigPath);
 
-  // Project first: it is the layer a reader can edit, so it is the layer they
-  // need named first when both are wrong.
-  const diagnostics = [...project.diagnostics, ...plugin.diagnostics];
+  // A retired file is probed rather than read: nothing in it is parsed, and its
+  // contents cannot reach any setting. `existsSync` is the whole check, which
+  // is deliberate — the file is not read, so reading it to decide what to say
+  // about not reading it would be the contradiction it is.
+  const retiredFiles: string[] = [];
+  if (projectRoot !== null) {
+    for (const [filename, reason] of Object.entries(RETIRED_PROJECT_FILES)) {
+      const path = resolve(projectRoot, filename);
+      if (existsSync(path)) {
+        retiredFiles.push(`fusion configuration: ${path} is no longer read — ${reason}`);
+      }
+    }
+  }
 
-  // THE MERGE, per leaf across all three layers: project, then plugin, then
-  // DEFAULTS. `??` and not `||`, because a leaf may legitimately be `false`,
-  // `0` or `[]` — and `[]` in particular is the deliberate narrowing that a
-  // project declares on purpose and that must survive as itself.
-  //
-  // `guard.enabled` is the one leaf the project layer is not consulted for, and
-  // it cannot be: `validateLayer` removed it from that layer and said so. It is
-  // resolved below from the plugin layer alone, so this helper is never asked
-  // about it.
-  const pickGuard = <K extends keyof GuardSettings["guard"]>(
-    key: K,
-  ): GuardSettings["guard"][K] =>
-    project.raw.guard?.[key] ?? plugin.raw.guard?.[key] ?? DEFAULTS.guard[key];
+  // Retired files first. They name a file that is not read AT ALL, which is the
+  // most upstream thing a reader can be wrong about; a dropped key inside the
+  // file that IS read is a finer complaint and reads better after it.
+  const diagnostics = [...retiredFiles, ...project.diagnostics];
 
-  const pickEscalation = <K extends keyof GuardSettings["escalation"]>(
-    key: K,
-  ): GuardSettings["escalation"][K] =>
-    project.raw.escalation?.[key] ??
-    plugin.raw.escalation?.[key] ??
-    DEFAULTS.escalation[key];
-
+  // THE MERGE, per leaf across both layers: project, then DEFAULTS. `??` and
+  // not `||`, because a leaf may legitimately be `false`, `0` or `[]` — and
+  // `[]` in particular is the deliberate narrowing that a project declares on
+  // purpose and that must survive as itself.
   const pickOrchestrator = <K extends keyof GuardSettings["orchestrator"]>(
     key: K,
   ): GuardSettings["orchestrator"][K] =>
-    project.raw.orchestrator?.[key] ??
-    plugin.raw.orchestrator?.[key] ??
-    DEFAULTS.orchestrator[key];
+    project.raw.orchestrator?.[key] ?? DEFAULTS.orchestrator[key];
 
   const value: GuardConfig = {
-    guard: {
-      // The project layer is not consulted. Decision 260804-1631.
-      enabled: plugin.raw.guard?.enabled ?? DEFAULTS.guard.enabled,
-      defaultSensitivity: pickGuard("defaultSensitivity"),
-      categoryPaths: pickGuard("categoryPaths"),
-      categorySensitivity: pickGuard("categorySensitivity"),
-    },
-    decisions: project.raw.decisions ?? plugin.raw.decisions ?? DEFAULTS.decisions,
-    escalation: {
-      blocksBeforeHalt: pickEscalation("blocksBeforeHalt"),
-    },
     orchestrator: {
       maxTurns: pickOrchestrator("maxTurns"),
     },
@@ -706,37 +499,4 @@ export function loadConfig(sources?: ConfigSources): GuardConfig {
 /** Reset cached config (for testing). */
 export function resetConfigCache(): void {
   cache = null;
-}
-
-/** Numeric level for comparing sensitivities. Higher = more sensitive. */
-export function sensitivityLevel(s: Sensitivity): number {
-  switch (s) {
-    case "none":
-      return 0;
-    case "low":
-      return 1;
-    case "medium":
-      return 2;
-    case "high":
-      return 3;
-    default:
-      return 2;
-  }
-}
-
-/** Find decisions whose category matches a file path. */
-export function findRelevantDecisions(
-  filePath: string,
-  config: GuardConfig,
-): Decision[] {
-  const relevant: Decision[] = [];
-
-  for (const decision of config.decisions) {
-    const patterns = config.guard.categoryPaths[decision.category];
-    if (patterns && matchesAny(filePath, patterns)) {
-      relevant.push(decision);
-    }
-  }
-
-  return relevant;
 }
