@@ -1616,3 +1616,6 @@
 {"ts":"2026-08-16T13:00:24","event":"session_start","history_file":"shared/history/260816-1500-orchestrator-session.md","detail":"Setup via /fusion:setup; Directive not yet stated"}
 {"ts":"2026-08-16T13:05:00","event":"gate_hit","agent":"user","detail":"12 open decisions in shared/decisions presented for inline answering"}
 {"ts":"2026-08-16T15:07:19","event":"gate_response","agent":"user","detail":"all 12 open decisions answered inline; predecessor 260809-1224 re-opened and answered; 2 new decisions filed"}
+{"ts":"2026-08-16T15:18:35","event":"session_end","detail":"13 decisions answered, 2 filed, 1 commit cbc7e15; no Turn run"}
+{"ts":"2026-08-16T16:05:08","event":"shaper_done","agent":"shaper","detail":"anticipated-circle mode: circles/260816-1741-guard-becomes-observation-only created, one blocking decision filed"}
+{"ts":"2026-08-16T16:05:08","event":"gate_response","agent":"user","detail":"Turn-budget decision answered option 1 (renamed project-root file); Circle planning unblocked"}
