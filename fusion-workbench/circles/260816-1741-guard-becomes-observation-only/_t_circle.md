@@ -2,10 +2,10 @@
 
 ---
 **Domain:** code
-**Status:** anticipated
+**Status:** active
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** (none yet)
-**Active session history:** (none yet)
+**Active spec/plan:** circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md
+**Active session history:** circles/260816-1741-guard-becomes-observation-only/history/260816-1841-orchestrator-session.md
 
 ---
 
@@ -161,3 +161,47 @@ The protected-path removal of 2026-08-12 has no Circle of its own. Its plan is
 `shared/planning/260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md`.
 
 ## Turn log
+
+## Activation proposal (playmaker run 260816-1822)
+
+**Recommended for activation — playmaker run 260816-1822 (trigger: `user-fusion-next`, domain bias
+`code`, git HEAD `3d41d4a`).**
+
+This is the only Circle in the portfolio that is not terminal, and it is the first anticipated
+Circle to stand in the store since 260815-2115. It scores clean on both halves of the code-domain
+heuristic, and both were measured against disk on this run rather than read off the record.
+
+**Unresolved decisions cited in the Grounding snapshot: zero.** The Grounding cites four decision
+records and every one of them carries the answered marker. The three lineage records that this
+Circle exists to realise, `shared/decisions/260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md`,
+`shared/decisions/260812-1232_*_does-the-escalation-counter-survive-a-block-source-that-ships-inert.md`
+and `shared/decisions/260812-1232_*_does-the-write-guards-fusion-repo-stand-down-survive-the-loss-of-its-subject.md`,
+were answered by the user on 2026-08-16 and are recorded in
+`shared/history/260816-1500-orchestrator-session.md`. An answered-not-yet-implemented decision is
+not a block under the heuristic; it is the input the Circle consumes.
+
+**Dependencies: all closed.** The `## Dependencies` section names no blocking Circle and cites
+three closed ones as lineage. Each was resolved to an existing directory and each record carries
+the closed-coherent marker: `circles/260807-0923-guard-misst-statt-orakelt`,
+`circles/260801-1244-guard-bash-inspection` and
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth`. No partial-block flag is raised.
+
+**What changed in the forty minutes before this run, and it is the whole argument for activating
+now rather than later.** The record's own `### Open decision this Circle carries` states that the
+plan cannot be written until the Turn-budget question is answered, and names two of its five
+options as deleting `hooks/lib/config.ts`, `hooks/turn-budget.ts` and `bin/fusion-turn-budget`
+outright. The user answered it at 260816-1742, inline, as option 1: a renamed project-root file,
+with the loader and both helpers surviving in reduced form. The record is now
+`circles/260816-1741-guard-becomes-observation-only/decisions/260816-1742_*_where-does-the-orchestrators-turn-budget-live-once-the-guard-configuration-file-is-gone.md`
+at the answered marker. The one stated obstruction to planning is gone, and the answer bounds the
+removal rather than widening it, so the plan this Circle needs is now writable in a single pass.
+
+**The Grounding's measured claims were spot-checked and hold.** `hooks/guard.ts:286-321` is the
+fusion-repository stand-down as described, `hooks/lib/escalation.ts` is 411 lines,
+`hooks/clear-halt.ts` 295, `hooks/lib/config.ts` 742, and every file named in the code-site table
+exists at HEAD. The Circle was shaped today, so its Grounding has not had time to decay; the one
+line that already has is named in the portfolio's `## Warnings` rather than here.
+
+**Proposed activation timestamp: 260816-1822.** Activation renames this record from `_a_` to `_t_`
+and writes `.active-circle`. Neither is this agent's write. The user commits it through
+`/fusion:next`, or the orchestrator does at its own activation step.

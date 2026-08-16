@@ -1619,3 +1619,14 @@
 {"ts":"2026-08-16T15:18:35","event":"session_end","detail":"13 decisions answered, 2 filed, 1 commit cbc7e15; no Turn run"}
 {"ts":"2026-08-16T16:05:08","event":"shaper_done","agent":"shaper","detail":"anticipated-circle mode: circles/260816-1741-guard-becomes-observation-only created, one blocking decision filed"}
 {"ts":"2026-08-16T16:05:08","event":"gate_response","agent":"user","detail":"Turn-budget decision answered option 1 (renamed project-root file); Circle planning unblocked"}
+{"ts":"2026-08-16T16:14:16","event":"session_start","history_file":"shared/history/260816-1814-orchestrator-session.md","detail":"Directive not yet stated; mode unresolved; setup via /fusion:setup"}
+{"ts":"2026-08-16T16:41:06","event":"session_start","history_file":"circles/260816-1741-guard-becomes-observation-only/history/260816-1841-orchestrator-session.md","detail":"Circle 260816-1741-guard-becomes-observation-only activated; Directive: the compliance guard observes and never blocks"}
+{"ts":"2026-08-16T17:07:30","event":"scope_resolved","agent":"orchestrator","detail":"mode=custom (Circle spec, no plan); next=planner with executors coder/ontocoder/analyst; plan review gate expected"}
+{"ts":"2026-08-16T17:07:30","event":"planner_start","agent":"planner","detail":"circles/260816-1741-guard-becomes-observation-only/_t_circle.md — the compliance guard observes and never blocks"}
+{"ts":"2026-08-16T17:23:20","event":"planner_done","agent":"planner","detail":"circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_o_the-compliance-guard-becomes-observation-only.md — 15 steps, 4 phases; 3 open questions returned"}
+{"ts":"2026-08-16T17:23:43","event":"gate_hit","agent":"user","detail":"plan review gate + 3 planner questions (loader scope, setup migration offer, new config filename)"}
+{"ts":"2026-08-16T17:45:06","event":"gate_response","agent":"user","detail":"plan approved; loader=option1 (both cut); setup migration=option1 (no offer); filename=fusion.json"}
+{"ts":"2026-08-16T17:45:53","event":"queue_built","agent":"orchestrator","detail":"16 tasks from the approved plan; 2 blocked at build time only by intra-queue dependencies; 2 route to ontocoder"}
+{"ts":"2026-08-16T17:52:51","event":"turn_start","turn":1,"agent":"orchestrator","detail":"Turn 1; 2 tasks ready (P-1, P-2); 14 blocked on intra-queue dependencies"}
+{"ts":"2026-08-16T17:52:51","event":"task_start","turn":1,"task":"P-1","agent":"coder","detail":"skills/setup/SKILL.md — legacy halt deletion offer"}
+{"ts":"2026-08-16T17:52:51","event":"task_start","turn":1,"task":"P-2","agent":"coder","detail":"hooks/guard.ts — stops deciding"}
