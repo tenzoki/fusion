@@ -198,7 +198,7 @@ The per-step `Dependencies` lines below are the authority; the subgraph edges ar
    - Dependencies: none
    - Verification: the offer text is asserted by the re-pointed `legacy-halt-clearing.test.ts` in step 9.
 
-2. **`guard.ts` stops deciding**
+2. [DONE] **`guard.ts` stops deciding**
    - Executor: `coder`
    - Files: `hooks/guard.ts`
    - Changes: delete CHECK 1 (`:358-392`), CHECK 3 (`:394-452`), `emitBlockEvent` (`:156-168`), `shouldEscalate` (`:114-118`), `block` (`:124-126`), the fusion-repository stand-down (`:286-320`), the path normalisation that only CHECK 3 read (`:95-97`, `:322-354`) and every import from `lib/escalation.js`, `lib/project-relative.js`, `lib/self-detect.js` and the guard half of `lib/config.js`. What stays is the shape in the control-flow diagram above: parse, dispatch on tool name, `loadConfig`, the diagnostic loop under `bestEffort`, a bare allow for Bash, and an allow for a write tool with one `guard_allow` report through `answer`. The `answer` call keeps its verdict-before-reports ordering, so `lib/fail-open.ts` keeps a caller and its own test file keeps a subject. Rewrite the file header: it currently opens by naming the two things the guard checks, and after this step it checks nothing. Say what the hook is for now, which is the write trace and the configuration diagnostic, and keep the paragraph naming the removed halves so a reader of an older tree or an existing `events.jsonl` still finds the account.

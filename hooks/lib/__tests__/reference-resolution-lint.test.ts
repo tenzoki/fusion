@@ -487,7 +487,14 @@ function scanHeadingAnchors(
 // resolving `lib/…` citations entering scope (the other 7 of that spelling's 34
 // are the dangling ones now carried in EXAMPLE_PATHS); records 87 → 95 is the
 // top-level `hooks/*.ts` entering scope.
-const BASELINE = { paths: 1122, anchors: 139, records: 95 };
+// Re-approved 2026-08-16, Circle 260816-1741-guard-becomes-observation-only step
+// 2. records 95 → 94: `hooks/guard.ts` held exactly one class-(c) citation, of
+// the stand-down's own decision record, and the branch citing it is deleted.
+// The count had already fallen to 94 before the deletion — the record moved to
+// `_a_` after the pin was approved, which turned that citation from a resolved
+// reference into a stale-marker violation — so this re-approval records the
+// citation LEAVING, and the violation it had become is gone with it.
+const BASELINE = { paths: 1122, anchors: 139, records: 94 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the
