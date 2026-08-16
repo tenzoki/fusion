@@ -145,9 +145,10 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd -P)"
 
 # Repo-context criterion: is cwd the fusion plugin's own source repo? Decided
-# by the sibling helper bin/fusion-plugin-cwd — the shell half of
-# hooks/lib/self-detect.ts `isFusionPluginCwd()` (one criterion, two
-# implementations; the pairing is documented in the helper). One consequence
+# by the sibling helper bin/fusion-plugin-cwd, which is the only cwd-anchored
+# implementation of that criterion (hooks/lib/self-detect.ts keeps the
+# root-anchored form, `isFusionPluginRoot(dir)`, and no cwd entry point; the
+# helper's own header documents the split). One consequence
 # below, and it does not touch a consuming project: the plugin rule set is read
 # from the WORK TREE's ./rules instead of $FUSION_PLUGIN_ROOT/rules (see
 # PLUGIN_RULES_DIR). In the plugin's own repo the source is the meant state,

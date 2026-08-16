@@ -54,9 +54,12 @@
  * whole subject was churn — a fusion developer's own edits are not churn signal
  * — and the measurements above were deliberately placed AHEAD of it because
  * each is anchored at the workbench root and each was measured in this very
- * repository. With churn gone there is nothing here to stand down, and the
- * remaining stand-down in `guard.ts` asks a different directory (cwd, via
- * `isFusionPluginCwd()`) for a different mechanism.
+ * repository. With churn gone there is nothing here to stand down. Nothing
+ * stands down in `guard.ts` either: its own stand-down went on 2026-08-16 with
+ * the last verdict it had to suppress, so no hook fusion ships treats its own
+ * repository as a special case. `hooks/lib/self-detect.ts` survives without a
+ * caller, carrying the rule that decides which directory a future stand-down
+ * would have to ask.
  *
  * ## What a PostToolUse hook can and cannot do
  *

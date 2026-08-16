@@ -212,12 +212,13 @@ The per-step `Dependencies` lines below are the authority; the subgraph edges ar
    - Dependencies: step 2
    - Verification: no import of `lib/escalation.js` remains anywhere under `hooks/`; `bin/monitor` is untouched and still styles both row types.
 
-4. **The stand-down and `isFusionPluginCwd()` go**
+4. [DONE] **The stand-down and `isFusionPluginCwd()` go**
    - Executor: `coder`
    - Files: `hooks/lib/self-detect.ts`, `hooks/session-start.ts`, `bin/fusion-plugin-cwd`, `bin/fusion-rules`, `bin/fusion-paths`, `bin/fusion-source-root`, `hooks/tracker.ts`
    - Changes: delete `isFusionPluginCwd()` and its module-level cache. Keep `isFusionPluginRoot(dir)` and rewrite the module header so it states, in the present tense, that the module has no caller inside `hooks/` and why it is kept anyway: it carries the measured rule that a stand-down is evaluated in the coordinate space the mechanism keys its state by, and the next root-anchored mechanism should not have to rediscover it. `hooks/session-start.ts:12-14` justifies its warning by two cwd-anchored resolutions, the write-tool checks and `isFusionPluginCwd()`, and both are gone after this step. The warning keeps a subject and the header has to name it correctly: the three `bin/` helpers resolve their work-tree preference against cwd through `bin/fusion-plugin-cwd`, with no upward walk. Correct the four `bin/` headers that describe `bin/fusion-plugin-cwd` as the shell half of a TypeScript function that no longer exists; the shell helper becomes the sole cwd-anchored implementation, paired with `isFusionPluginRoot(dir)` as the root-anchored form rather than as a duplicate. `hooks/tracker.ts:56-59` and `:457-469` describe the surviving stand-down in `guard.ts` and are false after this step.
    - Dependencies: step 2
    - Verification: `grep -r isFusionPluginCwd` over the repository returns nothing outside the workbench's own records.
+   - Executed 2026-08-16. The verification above does **not** hold at this step and was not made to: `CLAUDE.md:8`, `CLAUDE.md:36` and `README-hooks.md:187` still name the deleted function, and all three are out of this step's scope — `CLAUDE.md` is the curator's gated path and `README-hooks.md` belongs to step 11. What holds is the load-bearing half: no caller and no import of the module remains under `hooks/`, and the compiled output carries no such export. Two prose mentions survive in files this step wrote, in `hooks/lib/self-detect.ts` and `bin/fusion-plugin-cwd`, both naming what was deleted rather than referring to it, on the precedent step 2 set at `hooks/guard.ts:48`. History: `circles/260816-1741-guard-becomes-observation-only/history/260816-2110-step-4-stand-down-and-isfusionplugincwd.md`.
 
 5. **The orphaned path machinery goes**
    - Executor: `coder`

@@ -7,25 +7,33 @@
 # Exit 0 when ./.claude-plugin/plugin.json exists at cwd and its TOP-LEVEL
 # "name" field is "fusion"; exit 1 otherwise. Prints nothing.
 #
-# This is the shell half of hooks/lib/self-detect.ts `isFusionPluginCwd()` —
-# ONE criterion, TWO implementations (TS for the hooks, bash for the bin/
-# helpers; there is no runtime the two could share). Keep them consistent:
-# the TS parses the manifest and checks top-level `name === "fusion"`; the
-# awk filter below reduces the manifest to its depth-1 tokens (string-aware,
-# so braces inside quoted values don't shift the depth) before grepping, so
-# a nested `"name": "fusion"` (an author object, a dependency entry) does
-# NOT match — same answer as the TS. Residual imprecision vs JSON.parse:
-# invalid JSON is scanned leniently rather than rejected, and a duplicate
-# top-level "name" key matches if ANY occurrence is "fusion" (JSON.parse
-# keeps the last). Both need a malformed manifest to differ.
-# Change one, change the other.
+# This is the ONLY cwd-anchored implementation of the criterion. It used to be
+# the shell half of hooks/lib/self-detect.ts `isFusionPluginCwd()`, and that
+# function was deleted on 2026-08-16 when the guard stopped deciding anything
+# and its stand-down lost its subject. What survives on the TS side is the
+# ROOT-anchored form, `isFusionPluginRoot(dir)`, which takes the directory as
+# an argument — not a duplicate of this script but the other coordinate space,
+# for a caller that keys its state by the workbench root rather than by cwd.
+# That file's header carries the rule for choosing between them.
 #
-# Consumers: bin/fusion-rules (work-tree rules preference + the guard-internals
-# emission gate), bin/fusion-paths (work-tree prompt preference), and
-# bin/fusion-source-root (which root a skill body's citation of a shipped FILE
-# resolves against), per decision
+# ONE criterion, TWO implementations (TS for the hooks, bash for the bin/
+# helpers; there is no runtime the two could share). Keep the CRITERION
+# consistent even though the anchors differ: the TS parses the manifest and
+# checks top-level `name === "fusion"`; the awk filter below reduces the
+# manifest to its depth-1 tokens (string-aware, so braces inside quoted values
+# don't shift the depth) before grepping, so a nested `"name": "fusion"` (an
+# author object, a dependency entry) does NOT match — same answer as the TS.
+# Residual imprecision vs JSON.parse: invalid JSON is scanned leniently rather
+# than rejected, and a duplicate top-level "name" key matches if ANY occurrence
+# is "fusion" (JSON.parse keeps the last). Both need a malformed manifest to
+# differ. Change one, change the other.
+#
+# Consumers: bin/fusion-rules (work-tree rules preference), bin/fusion-paths
+# (work-tree prompt preference), and bin/fusion-source-root (which root a skill
+# body's citation of a shipped FILE resolves against), per decision
 # 260806-0015_*_veraltete-regeln-im-eigenen-repo-melden-oder-umgehen (option c)
-# in the textschicht Circle. A new consumer adds itself here.
+# in the textschicht Circle. All three are outside hooks/; nothing under hooks/
+# asks this question any more. A new consumer adds itself here.
 set -eu
 manifest=".claude-plugin/plugin.json"
 [ -f "$manifest" ] || exit 1

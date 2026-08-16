@@ -1,52 +1,48 @@
 /**
- * Self-detection: is the guard running inside the fusion plugin's own repo?
+ * Self-detection: does a named directory carry the fusion plugin's own manifest?
  *
- * One thing stands down in fusion's own tree: the write-tool branch of the
- * guard. It was built because the guard used to protect agents/**, rules/** and
- * .claude-plugin/plugin.json, which is correct for projects USING fusion and
- * wrong when developing fusion itself, where every edit to the plugin's own
- * source would have been blocked and written back. That protection was removed
- * on 2026-08-12 and the stand-down outlived it; the call site says what it now
- * covers. A second stand-down governed the churn heatmap in `tracker.ts` and
- * went with the heatmap on 2026-08-15.
+ * ## Nothing under `hooks/` calls this module, and that is the decided state
  *
- * Heuristic: if a directory contains a .claude-plugin/plugin.json whose "name"
- * field is "fusion", that directory is the fusion plugin's own source tree and
- * the guard should stand down for it.
+ * Both mechanisms it once served are gone. The write-tool branch of `guard.ts`
+ * stood down here, for a protected-path protection removed on 2026-08-12, and
+ * outlived it; the churn heatmap in `tracker.ts` stood down here too and went
+ * with the heatmap on 2026-08-15. When `guard.ts` stopped deciding anything at
+ * all, the write-tool stand-down had no subject left and the cwd-anchored entry
+ * point, `isFusionPluginCwd()`, went with it. Decision
+ * `shared/decisions/260812-1232_*_does-the-write-guards-fusion-repo-stand-down-survive-the-loss-of-its-subject.md`
+ * answers this as option 3, dissolution: the stand-down and the cwd entry point
+ * go, `isFusionPluginRoot(dir)` stays, and this header says why.
  *
- * ## Two entry points, because callers ask about two different directories
+ * It is kept for the rule it carries, not against a caller anyone can name.
+ * Deleting it would delete the rule with it, and the rule is the expensive half.
  *
- * `isFusionPluginCwd()` asks about `process.cwd()`, with NO upward walk. One
- * caller is left for it: the write-tool branch of `guard.ts`, whose own
- * coordinate space is the process's working directory (`normalizeToRelative`).
+ * ## The rule
  *
- * `isFusionPluginRoot(dir)` asks about a directory the caller names. It has no
- * caller of its own today — `isFusionPluginCwd()` is a call of it with
- * `process.cwd()` — and it is kept as the entry point rather than folded away
- * because the rule below is what decides which of the two a future caller wants,
- * and a mechanism that has to invent the root-anchored form for itself will get
- * that decision wrong. Its last caller was the churn stand-down in `tracker.ts`,
- * which asked about the workbench root because `25c5454` had moved churn's keys
- * there; the cost of leaving that one at cwd was measured, in the since-deleted
- * `lib/__tests__/churn-key-anchor.test.ts`.
+ * A stand-down is evaluated in the coordinate space the mechanism keys its state
+ * by. A root-anchored mechanism given a cwd-anchored stand-down misses every
+ * session started one directory down; a cwd-anchored mechanism given a
+ * root-anchored one is the reverse hole. Both halves of that were measured, on
+ * the protected-path measurement and again on churn. `CLAUDE.md` states the rule
+ * and both measurements in full; this header cites rather than restates them.
  *
- * ## The rule the two entry points exist to serve
+ * The next mechanism inside `hooks/` that needs a stand-down needs one of two
+ * forms, and choosing the wrong one is invisible until somebody starts a session
+ * in a subdirectory. `isFusionPluginRoot(dir)` is the root-anchored form, ready
+ * to be called with whatever directory that mechanism keys its state by — the
+ * workbench root, for anything resolved through `findWorkbenchRoot()`. A caller
+ * that genuinely keys by the working directory passes `process.cwd()` to the
+ * same function; that is all the deleted entry point ever did, minus a
+ * process-wide cache that made it untestable in a single process.
  *
- * Whichever directory a caller keys its state by, the stand-down is evaluated
- * where that key is anchored. A root-anchored mechanism with a cwd-anchored
- * stand-down misses every session started one directory down; a cwd-anchored
- * mechanism with a root-anchored stand-down is the reverse hole. Both halves of
- * that were measured on the protected-path measurement, which anchored at the
- * workbench root and had its stand-down moved up to match; the measurement was
- * removed on 2026-08-12 and the rule it established is what survives it. The
- * churn heatmap repeated the same mistake on its own gate and was moved for the
- * same reason (issues `260805-1839`, `260810-1632`).
+ * The shell side is `bin/fusion-plugin-cwd`, which is a live helper with three
+ * consumers of its own rather than a second copy of this file. It answers the
+ * cwd-anchored question for `bin/fusion-rules`, `bin/fusion-paths` and
+ * `bin/fusion-source-root`; nothing here is paired with it any more, and neither
+ * side has to move when the other changes.
  *
- * While two callers existed they therefore asked about DIFFERENT directories,
- * and that was correct rather than a drift to unify: `guard.ts`'s verdict is
- * computed in cwd's coordinate space and churn's keys were computed in the
- * root's. One caller is left, and the rule is what the next one is measured
- * against.
+ * Heuristic, unchanged since the module was written: a directory holding a
+ * `.claude-plugin/plugin.json` whose TOP-LEVEL `name` field is `"fusion"` is the
+ * fusion plugin's own source tree.
  */
 
 import { resolve } from "node:path";
@@ -71,11 +67,4 @@ export function isFusionPluginRoot(dir: string): boolean {
   } catch {
     return false;
   }
-}
-
-let cached: boolean | undefined;
-
-export function isFusionPluginCwd(): boolean {
-  if (cached === undefined) cached = isFusionPluginRoot(process.cwd());
-  return cached;
 }

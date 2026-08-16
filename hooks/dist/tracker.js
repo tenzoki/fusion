@@ -54,9 +54,12 @@
  * whole subject was churn — a fusion developer's own edits are not churn signal
  * — and the measurements above were deliberately placed AHEAD of it because
  * each is anchored at the workbench root and each was measured in this very
- * repository. With churn gone there is nothing here to stand down, and the
- * remaining stand-down in `guard.ts` asks a different directory (cwd, via
- * `isFusionPluginCwd()`) for a different mechanism.
+ * repository. With churn gone there is nothing here to stand down. Nothing
+ * stands down in `guard.ts` either: its own stand-down went on 2026-08-16 with
+ * the last verdict it had to suppress, so no hook fusion ships treats its own
+ * repository as a special case. `hooks/lib/self-detect.ts` survives without a
+ * caller, carrying the rule that decides which directory a future stand-down
+ * would have to ask.
  *
  * ## What a PostToolUse hook can and cannot do
  *
@@ -422,11 +425,12 @@ async function main() {
     // deliberately placed ahead of that gate, because each is anchored at the
     // workbench root and each was measured in this very repository. A third stood
     // beside them on the same footing until the session counters that were its
-    // subject were removed on 2026-08-15. The remaining
-    // stand-down in `guard.ts` asks a DIFFERENT directory (cwd, via
-    // `isFusionPluginCwd()`) about a different mechanism; CLAUDE.md documents the
-    // divergence, and it is now a difference between two hooks rather than within
-    // one.
+    // subject were removed on 2026-08-15. Nothing stands down in `guard.ts`
+    // either: that stand-down went on 2026-08-16 with the last verdict it had to
+    // suppress, so the divergence CLAUDE.md documented between the two hooks has
+    // no remaining side. Both hooks now behave in fusion's own repository exactly
+    // as they do in a consuming project, which is what makes a measurement taken
+    // here representative of one taken anywhere.
     //
     // The reply is the only thing this hook says to the model, and it used to be
     // held until an advisory metric had finished: measured with `churn.json`

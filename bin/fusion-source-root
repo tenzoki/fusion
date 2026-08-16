@@ -44,10 +44,16 @@
 # versions of one file, differing in silence.
 #
 # The no-upward-walk bound is inherited, not re-decided. bin/fusion-plugin-cwd
-# tests the working directory and never walks up, congruent with
-# hooks/lib/self-detect.ts by design, so from a SUBDIRECTORY of that repository
-# the answer is the install and every consumer then behaves as it does in a
-# consuming project. This script adds no walk of its own.
+# tests the working directory and never walks up, so from a SUBDIRECTORY of
+# that repository the answer is the install and every consumer then behaves as
+# it does in a consuming project. This script adds no walk of its own. The
+# bound used to be justified as congruence with hooks/lib/self-detect.ts; that
+# module's cwd entry point was deleted on 2026-08-16 with the guard's
+# stand-down, so the helper is now the sole cwd-anchored implementation and the
+# bound stands on its own reason — a walk here would resolve a skill's citation
+# against a repository root the caller never named. SessionStart says out loud
+# when a session starts below the root (hooks/session-start.ts), which is the
+# one condition under which this bound surprises anybody.
 #
 # What this helper does NOT root. A `bin/` executable is always run from
 # $FUSION_PLUGIN_ROOT, and so is an asset a skill copies (templates/, stilwerk/,

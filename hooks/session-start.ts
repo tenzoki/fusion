@@ -4,38 +4,44 @@
  * ## What it answers
  *
  * "Did this session start at the project root, or below it?" Below it, fusion
- * still works, but not everywhere: several of its checks resolve against
- * `process.cwd()` rather than against the workbench root, so from a
- * subdirectory they inspect a directory that is not the project's. Two are
- * known and documented:
+ * still works, but not everywhere: what fusion resolves against `process.cwd()`
+ * rather than against the workbench root inspects, from a subdirectory, a
+ * directory that is not the project's. One such resolution is left, and it is
+ * the reason this warning still fires:
  *
- *   - the PreToolUse write-tool checks (`lib/project-relative.ts`), which
- *     compute the project-relative spelling `guard.categoryPaths` is matched
- *     against from the working directory, and `isFusionPluginCwd()`'s
- *     stand-down, which asks cwd whether it is fusion's own repository.
- *   - the shell half of the same question, `bin/fusion-plugin-cwd`, which tests
- *     cwd with no upward walk, so `bin/fusion-rules`, `bin/fusion-paths` and
- *     `bin/fusion-source-root` read the installed plugin copy instead of the
- *     work tree when a session in fusion's own repository starts one directory
- *     down.
+ *   - the work-tree preference of the three `bin/` helpers. `bin/fusion-rules`,
+ *     `bin/fusion-paths` and `bin/fusion-source-root` each ask
+ *     `bin/fusion-plugin-cwd` whether the working directory is fusion's own
+ *     source repository, and that helper tests cwd with NO upward walk. Started
+ *     one directory down inside that repository, all three answer "no" and read
+ *     the installed plugin copy — rules, prompts and the root a skill body's
+ *     citations open against — instead of the work tree being edited.
  *
- * The sharpest instance of this used to be a third: the protected-path deny
- * matched `guard.protectedPaths` against the working directory, so from a
- * subdirectory an `Edit` of a genuinely protected path was allowed by the
- * pre-check and caught only afterwards by the root-anchored measurement. Both
- * halves were removed with the protected-path mechanism on 2026-08-12. The issue
- * that tracked the residual is
+ * Two sharper instances stood here and are gone, which is why the warning reads
+ * as it does rather than as it did. The protected-path deny matched
+ * `guard.protectedPaths` against the working directory, so from a subdirectory
+ * an `Edit` of a genuinely protected path passed the pre-check and was caught
+ * only afterwards by the root-anchored measurement; both halves went with the
+ * protected-path mechanism on 2026-08-12. The PreToolUse write-tool checks then
+ * computed the project-relative spelling `guard.categoryPaths` was matched
+ * against from the working directory, and the guard's own stand-down asked cwd
+ * whether it was fusion's repository; both went on 2026-08-16, when the guard
+ * stopped deciding anything. The issue that tracked the first residual is
  * `circles/260801-1244-guard-rules-write/issues/260804-2100_*_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md`,
  * still open at the time of writing and now moot — its subject is gone, and
- * closing it is a reconciler's act, not this file's. What is left is the same
- * assumption with milder consequences, which is a reason to keep saying it out
- * loud, not to stop.
+ * closing it is a reconciler's act, not this file's.
  *
- * Each of those could be taught to walk up on its own. That would be several
- * special cases with several chances to disagree. This warning fixes none of
- * them and is not meant to: it makes the one assumption they share **audible**,
- * at the single moment the session's working directory is chosen and still cheap
- * to change.
+ * What survives is milder in consequence and not milder in kind: nothing is
+ * blocked or reverted wrongly any more, but an agent can spend a whole session
+ * reading rules and prompts from a copy that is days stale against the sources
+ * in front of it, silently, which is the failure the work-tree preference was
+ * built to end. That is a reason to keep saying it out loud, not to stop.
+ *
+ * The helpers could be taught to walk up. That would be three copies of a walk
+ * with three chances to disagree, and their no-upward-walk bound is deliberate
+ * and documented in `bin/fusion-source-root`. This warning fixes nothing and is
+ * not meant to: it makes the assumption **audible**, at the single moment the
+ * session's working directory is chosen and still cheap to change.
  *
  * ## The case split
  *

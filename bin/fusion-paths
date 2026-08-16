@@ -181,8 +181,9 @@ PLUGIN_ROOT="$(dirname "$SCRIPT_DIR")"
 # from an outdated prompt. The prompt files are the ONLY plugin-root-relative
 # resources this script reads, so this line is the whole of the preference.
 # Criterion shared with bin/fusion-rules via the sibling helper
-# bin/fusion-plugin-cwd (the shell half of hooks/lib/self-detect.ts
-# `isFusionPluginCwd()`). Decision
+# bin/fusion-plugin-cwd, the only cwd-anchored implementation of it
+# (hooks/lib/self-detect.ts keeps the root-anchored `isFusionPluginRoot(dir)`
+# and no cwd entry point). Decision
 # 260806-0015_*_veraltete-regeln-im-eigenen-repo-melden-oder-umgehen, option c.
 if "$SCRIPT_DIR/fusion-plugin-cwd"; then
   PLUGIN_ROOT="$PWD"

@@ -1638,3 +1638,6 @@
 {"ts":"2026-08-16T18:25:02","event":"task_start","turn":1,"task":"P-3","agent":"coder","detail":"hooks/lib/escalation.ts deleted; guard_block and guard_halt leave GuardEventType"}
 {"ts":"2026-08-16T18:34:17","event":"task_error","turn":1,"task":"P-3","agent":"coder","detail":"plan ordering defect: step 6 must precede step 3; clear-halt.ts imports 5 values from escalation.ts and tsconfig compiles *.ts at the hooks root. Verified independently. Filed as 260816-2032."}
 {"ts":"2026-08-16T18:34:17","event":"task_start","turn":1,"task":"P-3+P-6","agent":"coder","detail":"steps 3 and 6 merged into one change after the ordering defect; the escalation decision record only requires 6 not to precede 1, and 1 is done"}
+{"ts":"2026-08-16T18:44:44","event":"task_done","turn":1,"task":"P-3+P-6","agent":"coder","detail":"9c79202 — escalation.ts and clear-halt.ts deleted, four dist orphans pruned, three event types retired"}
+{"ts":"2026-08-16T18:44:44","event":"commit","turn":1,"task":"P-3+P-6","agent":"orchestrator","detail":"9c79202 refactor(guard): the escalation counter, the halt and its clearing script are gone"}
+{"ts":"2026-08-16T18:44:44","event":"task_start","turn":1,"task":"P-4","agent":"coder","detail":"self-detect.ts, session-start.ts, four bin/ headers, tracker.ts comments"}
