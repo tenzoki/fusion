@@ -20,3 +20,12 @@ So the file now does, on three of its four bind paths, the thing this paragraph 
 **Related.** Closes nothing; `260815-2325_c_*` (the IPv4 fallback reinstates the defect) was closed by `a19c867` and the behaviour half of it did land correctly — this is the prose the same commit left behind.
 
 **Found by:** coderev, reviewing `f4f01b0..3a0408a`.
+
+---
+
+**Resolved:** the two-reason paragraph in `DualStackServer`'s docstring (`bin/monitor`) is rewritten to describe the tree as it stands. Both false claims are gone:
+
+- The paragraph no longer says printing `127.0.0.1` "is not the one taken". It says the file prints `127.0.0.1` on every non-wildcard path — the OSError fallback and an explicit loopback bind — and points at the `local_host` block as the place that choice is made.
+- The test pin is restated as what it now is, both halves: `http://127.0.0.1:${port}` for the loopback-bound cases (`monitor-warnings-panel.test.ts:906`) and `http://localhost:${port}` answering on both families for the default wildcard (`:1052`). Read together the pins assert that the printed name follows the socket, which is the claim the docstring now makes.
+
+The reasoning the record marked as still true is kept and is now the whole argument: `localhost` is the string a user bookmarks, so on the bind nobody asked for — the wildcard — making the name true beats routing around it. The decision to keep the wildcard dual-stack is unchanged.

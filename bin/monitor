@@ -1231,14 +1231,20 @@ import socket, signal, subprocess
 # precondition is absent); see the record above and the finding
 # `shared/issues/260815-2326_*`.
 #
-# So the second question does not rest on it. It asks *what a process is*
-# rather than what state its socket is in: of the pids holding this port, the
-# ones running this very script — `monitor-server.py`, the name the wrapper
-# writes — are prior monitors by construction, in LISTEN or CLOSED alike, and
-# a browser can never be one. The union is therefore a superset of the previous
-# kill set that adds only prior instances of this file, and it is inert on a
-# host where a stale monitor does reach LISTEN, because there the first
-# question already found it.
+# So the second question does not rest on it. It asks *what a process is
+# running* rather than what state its socket is in: of the pids holding this
+# port, the ones whose command line runs this very script — `monitor-server.py`,
+# the name the wrapper writes — are prior monitors, in LISTEN or CLOSED alike,
+# and a browser can never be one. The union is therefore a superset of the
+# previous kill set that adds only prior instances of this file, and it adds
+# nothing on a host where a stale monitor does reach LISTEN, because there the
+# first question already found it.
+#
+# "Runs" is exactly the script token of the command line, not the string
+# appearing anywhere in it — see `_runs_this_script` below, which states what
+# that costs. The looser test was the previous version of this predicate and it
+# killed a port-holding process whose argv merely mentioned the file
+# (`shared/issues/260816-0131_*`).
 SERVER_SCRIPT = os.path.basename(os.path.abspath(__file__))
 
 
@@ -1253,13 +1259,36 @@ def _lsof_pids(*extra):
 
 
 def _runs_this_script(pid):
+    """True when pid is *running* this script — not merely naming it.
+
+    `ps -o command=` prints `<interpreter> [interpreter options] <script>
+    [args…]`, so only the script token decides. A substring test over the whole
+    line does not: a process holding this port whose argv merely contains the
+    string was measured being SIGTERMed, while the identical process without it
+    survived (`shared/issues/260816-0131_*`). Clients, editors and greps carry
+    the name in arguments; none of them runs the file.
+
+    The comparison is on the basename, because the wrapper writes this script
+    into a fresh `mktemp -d` on every run — a prior monitor's script path is
+    never today's, so a full-path test would match nothing.
+
+    Two residuals, both of which lose a kill rather than gaining a wrong one,
+    and both of which leave the first question's listener kill untouched: an
+    interpreter or script path containing a space splits across tokens and is
+    not recognised, and an interpreter invoked as `-c` never reaches a script
+    token.
+    """
     try:
         cmd = subprocess.check_output(
             ["ps", "-o", "command=", "-p", pid], stderr=subprocess.DEVNULL
         ).decode()
     except (subprocess.CalledProcessError, OSError):
         return False
-    return SERVER_SCRIPT in cmd
+    for token in cmd.split()[1:]:
+        if token.startswith("-"):
+            continue
+        return os.path.basename(token) == SERVER_SCRIPT
+    return False
 
 
 _listeners = _lsof_pids("-sTCP:LISTEN")
@@ -1304,13 +1333,21 @@ class DualStackServer(ReuseServer):
     a client that takes the first address gets `connection refused` from a URL
     the program itself handed it.
 
-    Printing `127.0.0.1` instead would also close that gap, and it is the
-    smaller edit. It is not the one taken, for two reasons. The URL is the
-    thing a user copies, pastes and bookmarks, and `localhost` is what belongs
-    in it. And `hooks/lib/__tests__/monitor-warnings-panel.test.ts` pins the
-    launched URL to `http://localhost:${port}` — so the spelling change moves
-    a defect out of this file and into a test's expectations, while binding
-    both families makes the existing spelling true and leaves the pin correct.
+    Printing `127.0.0.1` everywhere would also close that gap, and it is the
+    smaller edit. It is not what this file does. `localhost` is the string a
+    user copies, pastes and bookmarks, so on the bind the user gets without
+    asking for one — the wildcard — the fix is to make the name true rather
+    than to route around it, and that is what this class is for.
+
+    On every other path the file prints the address it actually bound, which
+    *is* `127.0.0.1`: the OSError fallback below, and an explicit
+    `MONITOR_BIND=127.0.0.1` or its `localhost` spelling. The `local_host`
+    block further down is where that choice is made, and it follows the socket
+    rather than a constant. `hooks/lib/__tests__/monitor-warnings-panel.test.ts`
+    pins both halves of it — `http://127.0.0.1:${port}` for its loopback-bound
+    cases (~:906), `http://localhost:${port}` answering on both families for
+    the default wildcard (~:1052) — so the pins assert that the printed name
+    follows the socket, not that either spelling is the constant one.
 
     IPV6_V6ONLY=0 is what makes the one socket answer IPv4 too, via v4-mapped
     addresses. It is not universal — OpenBSD refuses v4-mapped sockets outright

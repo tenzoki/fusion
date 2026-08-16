@@ -49,3 +49,25 @@ Two options, and the cheaper one is enough.
 `_lsof_pids` catches `OSError`. The code it replaced caught `(subprocess.CalledProcessError, ValueError, ProcessLookupError)`, none of which covers the `FileNotFoundError` raised on a host with no `lsof` on PATH — so the monitor used to crash at startup there and now does not. The commit message does not claim this and it is a real improvement; do not lose it in any rewrite.
 
 **Found by:** coderev, reviewing `f4f01b0..3a0408a`. Related: `260815-2326_c_*` (closed by this change), `260816-0110_o_*` (the unverified premise).
+
+---
+
+**Resolved via option 1 — the predicate was tightened, not the comment weakened.**
+
+The record offered both and said the cheaper one was enough. Option 1 was taken because it is cheap here for a reason the record did not have to hand: the launch form is fixed. `bin/monitor:1441` runs `python3 "$TMPFILE" <args…>`, so the script sits in a known position of `ps -o command=` output and no guessing is needed to find it.
+
+`_runs_this_script` now walks the tokens after the interpreter, skips interpreter options, and compares the basename of the first non-option token against `SERVER_SCRIPT`. The comparison stays on the basename deliberately: the wrapper writes the script into a fresh `mktemp -d` on every run, so a prior monitor's path is never today's and a full-path test would match nothing.
+
+**Measured after the change**, on macOS 15.7.7, reproducing the record's own setup on port 18825:
+
+```
+listener      59851 DEAD    (prior monitor — intended, unchanged)
+plain client  60765 ALIVE   (port holder, no string in argv)
+naming client 60766 ALIVE   (port holder whose argv names monitor-server.py — was DEAD before)
+```
+
+And on the predicate directly, against real processes: `python3 a/monitor-server.py alpha 1 2 3` → True; `python3 b/client.py --note /tmp/somewhere/monitor-server.py` → False; `python3 -u a/monitor-server.py` → True.
+
+**The comment was corrected too**, so the two make the same claim. The union block no longer says the query asks "what a process is" but "what a process is *running*", drops "by construction", and says "adds nothing" rather than "is inert" where the first question already found the listener. It points at `_runs_this_script`, whose docstring states the two residuals the token test costs: a path containing a space splits across tokens, and an interpreter invoked as `-c` never reaches a script token. Both lose a kill rather than gaining a wrong one, and neither touches the first question's listener kill.
+
+The unremarked improvement the record asked to preserve is preserved: `_lsof_pids` still catches `OSError`, so a host with no `lsof` on PATH still starts.

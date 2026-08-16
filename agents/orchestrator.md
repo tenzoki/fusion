@@ -957,7 +957,7 @@ Each option has bounded post-action mechanics, and no option is allowed to loop 
 - `tasks_skipped` — tasks skipped by user at human gates
 - `tasks_errored` — tasks that failed validation or agent errors
 - `issues_created` — issues filed this session by **any** agent or the user, not only by reviewers at Step 3c
-- `issues_resolved` — issues resolved this session by **any** agent
+- `issues_resolved` — issues resolved this session by **any** agent or the user
 - `decisions_answered` — count of `_o_` → `_a_` transitions on decision records this session, across every store (Grounding-growth metric)
 - `decisions_implemented` — count of `_a_` → `_i_` transitions on decision records this session, across every store (Grounding-realisation metric)
 - `commits_made` — number of successful commits

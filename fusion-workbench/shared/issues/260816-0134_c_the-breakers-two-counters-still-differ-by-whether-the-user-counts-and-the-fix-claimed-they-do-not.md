@@ -37,3 +37,11 @@ Change `:955` to *"issues resolved this session by **any** agent or the user"*. 
 Then check the sibling pair while the file is open: `:956` `decisions_answered` and `:957` `decisions_implemented` are the other two of the untrusted four, and they are worded as transition counts rather than by author, so they do not carry the same asymmetry — confirm rather than assume.
 
 **Found by:** coderev, reviewing `f4f01b0..3a0408a`. This is a partial landing of `260815-2328`, which is now `_c_`; it should not be reopened, this record carries the remainder.
+
+---
+
+**Resolved:** `agents/orchestrator.md:960` now reads *"issues resolved this session by **any** agent or the user"*, matching `:959`. The two breaker inputs are now the same population on both sides of the strict inequality at `:622`.
+
+The sibling pair was checked rather than assumed, as the record asked. `:961` `decisions_answered` and `:962` `decisions_implemented` are worded as `_o_`→`_a_` and `_a_`→`_i_` transition counts "across every store", naming no author on either side. They carry no directional bias and were left unchanged.
+
+Cost on the `agents` surface: 12 bytes.
