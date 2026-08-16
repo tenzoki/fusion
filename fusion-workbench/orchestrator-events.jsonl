@@ -1630,3 +1630,11 @@
 {"ts":"2026-08-16T17:52:51","event":"turn_start","turn":1,"agent":"orchestrator","detail":"Turn 1; 2 tasks ready (P-1, P-2); 14 blocked on intra-queue dependencies"}
 {"ts":"2026-08-16T17:52:51","event":"task_start","turn":1,"task":"P-1","agent":"coder","detail":"skills/setup/SKILL.md — legacy halt deletion offer"}
 {"ts":"2026-08-16T17:52:51","event":"task_start","turn":1,"task":"P-2","agent":"coder","detail":"hooks/guard.ts — stops deciding"}
+{"ts":"2026-08-16T18:09:24","event":"task_done","turn":1,"task":"P-1","agent":"coder","detail":"05d848b — setup offers legacy-halt deletion; golden regenerated in the same change"}
+{"ts":"2026-08-16T18:09:24","event":"commit","turn":1,"task":"P-1","agent":"orchestrator","detail":"05d848b feat(setup): the legacy halt is offered for deletion rather than cleared"}
+{"ts":"2026-08-16T18:09:24","event":"commit","turn":1,"agent":"orchestrator","detail":"2ae202b chore(circle): activation, plan and three answered questions"}
+{"ts":"2026-08-16T18:25:02","event":"task_done","turn":1,"task":"P-2","agent":"coder","detail":"2f624ca — guard.ts 483 to 223 lines, every path allows"}
+{"ts":"2026-08-16T18:25:02","event":"commit","turn":1,"task":"P-2","agent":"orchestrator","detail":"2f624ca refactor(guard): the PreToolUse hook stops deciding"}
+{"ts":"2026-08-16T18:25:02","event":"task_start","turn":1,"task":"P-3","agent":"coder","detail":"hooks/lib/escalation.ts deleted; guard_block and guard_halt leave GuardEventType"}
+{"ts":"2026-08-16T18:34:17","event":"task_error","turn":1,"task":"P-3","agent":"coder","detail":"plan ordering defect: step 6 must precede step 3; clear-halt.ts imports 5 values from escalation.ts and tsconfig compiles *.ts at the hooks root. Verified independently. Filed as 260816-2032."}
+{"ts":"2026-08-16T18:34:17","event":"task_start","turn":1,"task":"P-3+P-6","agent":"coder","detail":"steps 3 and 6 merged into one change after the ordering defect; the escalation decision record only requires 6 not to precede 1, and 1 is done"}

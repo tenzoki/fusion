@@ -9,7 +9,7 @@
  */
 /**
  * What a hook may write. It is the EMITTER's vocabulary, not the reader's, and
- * that distinction decided the one removal it has had.
+ * that distinction has decided every removal it has had.
  *
  * `state_drift` sat here until 2026-08-15 and was the one entry also emitted by
  * something other than a hook: `agents/orchestrator.md` wrote it into
@@ -19,13 +19,26 @@
  * session counters that were the measurement's subject, so no code can produce
  * the value and it has no place in a union that says what may be produced.
  *
- * **`bin/monitor` still styles `state_drift`, and that is not an inconsistency
- * to tidy up.** It reads an append-only log holding real rows written before
- * the removal, so it is a reader of data that exists; this union is a writer's
- * vocabulary for data nothing can create. Deleting the monitor's arm would
- * render those rows at the amber default and tell the user less about them.
+ * `guard_block`, `guard_halt` and `halt_cleared` left on 2026-08-16 under that
+ * same reading, and they left as one set because one removal retired all three
+ * emitters. The guard stopped deciding: the two checks that could block a
+ * write-tool call, the `emitBlockEvent` helper beneath them and the halt they
+ * raised on the third consecutive block were all removed from
+ * `hooks/guard.ts`, and nothing else ever emitted the first two.
+ * `halt_cleared` had a single emitter, `hooks/clear-halt.ts`, the manual
+ * remedy for that halt; it went with the entry point and with
+ * `lib/escalation.ts`, the state module both of them read. A halt no code can
+ * raise needs no clearing verb, so the value that recorded the clearing has as
+ * little claim on this union as the two that recorded the halt.
+ *
+ * **`bin/monitor` still styles `state_drift`, `guard_block` and `guard_halt`,
+ * and that is not an inconsistency to tidy up.** It reads an append-only log
+ * holding real rows written before the removals, so it is a reader of data that
+ * exists; this union is a writer's vocabulary for data nothing can create.
+ * Deleting the monitor's arms would render those rows at the amber default and
+ * tell the user less about them.
  */
-export type GuardEventType = "guard_allow" | "guard_block" | "guard_halt" | "guard_advisory" | "guard_error" | "halt_cleared" | "review_coverage" | "staging_drift" | "tracker_record";
+export type GuardEventType = "guard_allow" | "guard_advisory" | "guard_error" | "review_coverage" | "staging_drift" | "tracker_record";
 export interface GuardEvent {
     ts: string;
     event: GuardEventType;

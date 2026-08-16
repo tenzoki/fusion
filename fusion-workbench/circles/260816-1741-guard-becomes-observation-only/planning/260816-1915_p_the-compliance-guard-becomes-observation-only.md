@@ -205,7 +205,7 @@ The per-step `Dependencies` lines below are the authority; the subgraph edges ar
    - Dependencies: none
    - Verification: `cd hooks && npm run build` compiles with no unused-import errors; the guard emits `{}` for every payload class.
 
-3. **The escalation module goes, and two event types with it**
+3. [DONE] **The escalation module goes, and two event types with it**
    - Executor: `coder`
    - Files: `hooks/lib/escalation.ts` (delete), `hooks/lib/events.ts`
    - Changes: delete the module outright. Remove `guard_block` and `guard_halt` from the `GuardEventType` union, following the precedent that module's own header already sets for `state_drift`: the union is the emitter's vocabulary, and a value no shipped code can produce has no place in it, while `bin/monitor` goes on rendering the historical rows because it reads data that exists. Keep `halt_cleared` until step 6, which removes its last emitter. Extend the union's comment with this second instance rather than writing a parallel one.
@@ -226,12 +226,13 @@ The per-step `Dependencies` lines below are the authority; the subgraph edges ar
    - Dependencies: step 2
    - Verification: `npm run build` prunes the compiled outputs of both deleted modules from `hooks/dist/`, which is the behaviour `README-hooks.md` `### Rebuilding after TS changes` describes.
 
-6. **`clear-halt.ts` goes**
+6. [DONE] **`clear-halt.ts` goes**
    - Executor: `coder`
    - Files: `hooks/clear-halt.ts` (delete), `hooks/lib/events.ts`
    - Changes: delete the entry point and remove `halt_cleared` from the `GuardEventType` union, this step being the one that removes its last emitter. This is the step the escalation decision record sequences: it may not land before step 1, because a project carrying an active halt must be able to reach a remedy, and after this step the remedy is Setup's offer rather than this script.
    - Dependencies: steps 1 and 3
    - Verification: `hooks/dist/clear-halt.js` is pruned by the build; no shipped text names it after step 11.
+   - Executed as one change with step 3, because the `Dependencies` line above points the wrong way: `clear-halt.ts` imports from `lib/escalation.ts`, which step 3 deletes, so step 3 alone fails the compile and the build's orphan prune never runs — the two compiled outputs would ship. Recorded in `circles/260816-1741-guard-becomes-observation-only/issues/260816-2032_o_step-3-deletes-a-module-step-6s-file-still-imports.md`, option 1. Step 1 had already landed, which is the one ordering constraint the escalation decision record imposes.
 
 7a. **The configuration loader is reduced to one leaf and learns to name a retired file**
    - Executor: `coder`
