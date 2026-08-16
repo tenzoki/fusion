@@ -1653,3 +1653,8 @@
 {"ts":"2026-08-16T19:36:38","event":"turn_end","turn":1,"agent":"orchestrator","detail":"6 tasks resolved (P-1..P-6 minus P-5b), 7 commits, 6 issues created by review, 2 decisions answered, 0 agent errors"}
 {"ts":"2026-08-16T19:37:44","event":"turn_start","turn":2,"agent":"orchestrator","detail":"Turn 2; P-7a ready, carrying P-5b in the same change; queue now 17 tasks after the curator step was added"}
 {"ts":"2026-08-16T19:37:44","event":"task_start","turn":2,"task":"P-7a+P-5b","agent":"coder","detail":"hooks/lib/config.ts reduced to one live leaf; paths.ts reduced once findRelevantDecisions goes"}
+{"ts":"2026-08-16T20:00:30","event":"task_done","turn":2,"task":"P-7a+P-5b","agent":"coder","detail":"fab8a4b — config.ts 742 to 502, paths.ts 161 to 55, retired-file diagnostic written"}
+{"ts":"2026-08-16T20:00:30","event":"commit","turn":2,"task":"P-7a+P-5b","agent":"orchestrator","detail":"fab8a4b refactor(config): the loader keeps one live leaf"}
+{"ts":"2026-08-16T20:00:30","event":"gate_hit","turn":2,"task":"P-7b","agent":"user","detail":"ontocoder task — project convention requires user awareness for every data/config file change"}
+{"ts":"2026-08-16T20:14:10","event":"gate_response","turn":2,"task":"P-7b","agent":"user","detail":"proceed — execute P-7b in full, template and root together"}
+{"ts":"2026-08-16T20:14:10","event":"task_start","turn":2,"task":"P-7b","agent":"ontocoder","detail":"templates/fusion.json and root fusion.json written; four old config files deleted"}
