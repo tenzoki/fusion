@@ -1,0 +1,28 @@
+The override record names the shipped chat profile's cap, and the copy every agent actually loads says otherwise
+
+---
+`shared/history/260816-1251-curator-run.md:332` records what the user weighed before approving the foreclosure clause: "A per-option foreclosure costs roughly one line per option in a chat-text gate, against a line cap that is in dispute between `rules/user-facing-output.md:99`, which says 8 lines, and the always-on chat profile, which says 6". The same framing appears at `:99` and `:181` of that file.
+
+The always-on chat profile says 8, not 6. `bin/fusion-rules:285-313` (`emit_voice_profile`, called at `:396`) emits `./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`, and that copy's C04 reads "Gate-Prompts bis 8 Zeilen, Chat-Antworten bis 12 Zeilen" (`fusion-workbench/stilwerk/chat-voice-de.yaml:41`). The 6 lives in `stilwerk/chat-voice-de.yaml:41`, the shipped copy, which `bin/fusion-rules` never emits. That divergence is itself an open defect, `260814-1419_o_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`, and the run file conflated it with its sibling.
+
+So the two always-on surfaces the user was told disagree in fact agree, at 8. The conclusion the user reached is unaffected, because the arithmetic fails at 8 as well. What is affected is the durable record of a user override, which names the wrong number as the one in force.
+
+---
+**Found by:** coderev, review of `b18a8cf..6049d3e`, review file `shared/reviews/260816-1330-coderev-repunctuation-and-gate-contract.md`.
+**Owner:** `curator` for the run file it wrote, or `reconciler` on its next pass. A history file is a record of a run and is not retro-edited freely; the correction belongs as an appended note, not a rewrite of section 9.
+**Severity:** Low. Nothing depends on the number at runtime. The cost is that section 9 is the ledger entry for a decision taken outside the evidence rules, and it is the entry a later reader will use to judge whether the override was informed.
+**Filed in the shared store** per the Origin Rule: no Circle is active.
+**Cross-references:** `shared/issues/260814-1419_o_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md` (why the shipped copy is not the one in force); `shared/issues/260814-1419_o_the-tightened-chat-profile-caps-contradict-the-length-section-of-the-rule-that-owns-them.md` (the 6-versus-8 dispute, real but not yet reaching any agent here); `shared/issues/260816-1330_o_the-foreclosure-clause-does-not-say-whether-it-costs-a-line-per-option-and-the-cap-two-sections-below-forbids-relaxing.md` (the clause the override approved).
+
+**Verified at HEAD `6049d3e`:**
+
+```
+$ grep -A4 'id: C04' fusion-workbench/stilwerk/chat-voice-de.yaml | grep Zeilen
+      Kurz halten: Gate-Prompts bis 8 Zeilen, Chat-Antworten bis 12 Zeilen.
+$ grep -A4 'id: C04' stilwerk/chat-voice-de.yaml | grep Zeilen
+      Kurz halten: Gate-Prompts bis 6 Zeilen, Chat-Antworten bis 8 Zeilen.
+$ bin/fusion-rules coderev | grep voice
+./fusion-workbench/stilwerk/chat-voice-de.yaml
+```
+
+**One thing the run file got right and should keep.** Its own closing note in section 9 states that the curator did not observe the gate and records only what the apply dispatch reported. That is the qualification which makes this correctable rather than a contested account, and it is why this is filed as an inaccuracy in a relayed fact rather than as a misrepresented approval.

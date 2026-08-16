@@ -80,3 +80,5 @@ also the records agents write.
 
 Nothing is broken at runtime. The cost is a reader sent to the wrong line, and reconciliation time
 spent re-deriving citations that were correct when filed.
+
+Also seen: 260816-1330 by coderev — commit `52b8665` inserted two bullets into `rules/user-facing-output.md` at `:87` and `:95` and shifted every citation below them by two. Three instances in the same session, two of them inside the same file: `shared/history/260816-1251-curator-run.md:288` records that the analysis cited the gate cap as `:101` and "it is at `:99` at this HEAD", and the commit the same run produced moved it back to `:101`, so the correction was made obsolete by its own change; the same run file then cites `:99` at `:99`, `:181` and `:332`. Commit `6049d3e`'s message cites the ceiling clause as `:128` in one sentence and `:130` two sentences later, for the same line, at a HEAD where `:130` is correct.

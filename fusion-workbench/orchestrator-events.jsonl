@@ -1594,3 +1594,15 @@
 {"ts":"2026-08-16T08:44:32","event":"commit","turn":1,"task":"I:0136","detail":"b18a8cf docs(rules): tracked-workbench split names the legacy stores; KEPT line names what is kept"}
 {"ts":"2026-08-16T08:44:32","event":"task_done","turn":1,"task":"I:0136","agent":"coder","detail":"b18a8cf; source record renamed _p_ -> _c_"}
 {"ts":"2026-08-16T08:44:32","event":"review_start","turn":1,"agent":"coderev","detail":"range 433e206..b18a8cf; 1 commit; carried=(not recorded)"}
+{"ts":"2026-08-16T10:48:00","event":"review_done","turn":1,"agent":"coderev","detail":"4 issues filed; commit holds on all four checkpoints"}
+{"ts":"2026-08-16T10:48:00","event":"coherence_review","turn":1,"verdict":"ok","detail":"Artifact/Grounding: 4 issues filed, none blocking. Artifact/Directive: moves toward. Grounding/Directive: 1 decision _o_->_a_ answered by user."}
+{"ts":"2026-08-16T10:48:00","event":"commit","turn":1,"detail":"4921026 chore(records): analyst run + Turn 1 review pass + register gate answered"}
+{"ts":"2026-08-16T10:48:00","event":"turn_end","turn":1,"detail":"tasks resolved=1, issues created=4, decisions answered=1, commits=2"}
+{"ts":"2026-08-16T10:48:00","event":"turn_start","turn":2,"detail":"ready tasks=2 (curator clause, then coder repunctuation)"}
+{"ts":"2026-08-16T10:48:00","event":"task_start","turn":2,"task":"I:0740-gate","agent":"curator","detail":"survey pass: one clause into rules/user-facing-output.md ## Questions and gates"}
+{"ts":"2026-08-16T11:20:13","event":"gate_hit","turn":2,"detail":"curator ledger: 2 candidates, no evidence tier; user override required"}
+{"ts":"2026-08-16T11:20:13","event":"gate_response","turn":2,"detail":"proceed — L01 and L02 both approved by user; override recorded in run file section 9"}
+{"ts":"2026-08-16T11:20:13","event":"commit","turn":2,"task":"I:0740-gate","detail":"52b8665 feat(rules): gate option states what it forecloses"}
+{"ts":"2026-08-16T11:20:13","event":"task_done","turn":2,"task":"I:0740-gate","agent":"curator","detail":"52b8665; record 260816-0740 gate-contract _o_ -> _c_"}
+{"ts":"2026-08-16T11:20:13","event":"commit","turn":2,"task":"I:0740-register","detail":"6049d3e fix(rules): em-dash rate 14.1 -> 2.2 in user-facing-output.md"}
+{"ts":"2026-08-16T11:20:13","event":"task_done","turn":2,"task":"I:0740-register","agent":"coder","detail":"6049d3e; record stays _o_, 6 of 7 corpus files untouched"}
