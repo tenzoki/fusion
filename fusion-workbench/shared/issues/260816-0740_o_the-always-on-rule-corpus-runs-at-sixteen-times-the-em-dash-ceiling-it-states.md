@@ -72,3 +72,21 @@ bounded surfaces would move away from their ceilings.
 
 **Start with `rules/user-facing-output.md`.** A rule that violates its own numeric clause in
 its first sentence teaches the opposite of what it says, and it is 2563 words of the 22 763.
+
+---
+Progress (2026-08-16, coder): `rules/user-facing-output.md` repunctuated. 38 em-dashes to 6,
+14.1 per 1000 words to 2.2, at 91 bytes shorter. The 6 left standing are structural: 4 are
+inside quoted anti-examples the file exhibits as faults (`:21`, `:33`, `:141`, `:182`) and 2 are
+the code-span mentions of the character itself in the clause that states the ceiling (`:130`).
+No wording changed. Normalised for punctuation and case, the token streams before and after are
+identical at 2733 tokens: ten clauses that became their own sentence take a capital, and one
+`see` loses one inside a merged parenthetical.
+
+The rate quoted in the table above was 14.8 against 2563 words. The file had since grown by the
+two gate bullets of `52b8665`, so the same 38 em-dashes measured 14.1 at the start of this pass.
+
+This record stays `_o_`. The user chose the one-file scope at an orchestrator gate, so six of the
+seven measured files keep their rates. Measured now, the same seven files run 22 871 words and
+340 em-dashes, 14.8 per 1000 against the table's 16.3, and the words moved between the two
+measurements as well as the dashes. Closing this record would claim a corpus fix that was not
+performed.
