@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** answered
 **Filed by:** orchestrator
 **Cross-references:** `shared/analyses/260809-1101-guard-support-layer.md` (finding 2, recommendation C5); `hooks/lib/config.ts`; `hooks/config.json`; `hooks/lib/paths.ts`
 
@@ -76,7 +76,7 @@ safe and option 3 becomes unnecessary. If one does, option 2 is forced.
 Until then, recommendation C5 stays blocked and no code on this path is touched.
 
 ---
-Answered:
+Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — re-opened on its own trigger (measurement of 2026-08-12 is zero); option 1, retired: remove CHECK 3 and its four configuration keys. User answered inline 2026-08-16.
 Implemented:
 Deferred:
 Superseded by:

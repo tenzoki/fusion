@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** answered
 **Filed by:** planner, planning the protected-path removal
 **Cross-references:**
 `shared/decisions/260809-1224_d_is-the-decision-governed-escalation-check-3-a-live-feature.md` — **the predecessor question, whose deferral trigger this record reports as met.** Read it first; this record is the successor it does not ask,
@@ -70,7 +70,7 @@ Then answer this one, and the recommendation here is option 3 — but not now, a
 Option 2 is the one to rule out first, because it is the only one that adds work and the only one that contradicts the measurement.
 
 ---
-Answered:
+Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 3, in its own Circle: remove escalation, the halt and clear-halt.js with CHECK 3; guard becomes observation-only; clear-halt.js removal sequences behind the legacy-halt migration. User answered inline 2026-08-16.
 Implemented:
 Deferred:
 Superseded by:

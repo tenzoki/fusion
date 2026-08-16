@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** answered
 **Filed by:** orchestrator
 **Cross-references:** shared/issues/260802-0920_c_next-skill-activates-a-circle-without-updating-its-status-field.md (the defect this question outlived), agents/orchestrator.md `## Circle head fields`, skills/next/SKILL.md Step 6.2, rules/circle-records.md `## Circle record template`
 
@@ -73,7 +73,7 @@ longer a live wound. This is a good candidate for the next Circle that touches C
 another reason, rather than for a Circle of its own.
 
 ---
-Answered: <set when status moves to _a_>
+Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 1: drop the field, filename marker becomes the only source; timed to the next Circle that touches Circle records for another reason. User answered inline 2026-08-16.
 Implemented: <set when status moves to _i_>
 Deferred: <set when status moves to _d_>
 Superseded by: <set when status moves to _s_>

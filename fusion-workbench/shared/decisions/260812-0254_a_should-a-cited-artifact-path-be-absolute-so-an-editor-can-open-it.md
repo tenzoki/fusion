@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** answered
 **Filed by:** orchestrator (on the user's request)
 **Cross-references:** `rules/fusion-workbench-conventions.md` `## Path Resolution`, whose contract makes every emitted path workbench-relative except `WORKBENCH`; `bin/fusion-paths`
 
@@ -53,3 +53,6 @@ project root the reader has to be standing in.
 Option 3 first, because it is available now and costs nothing: agents render `$WORKBENCH`-prefixed
 absolute paths in chat and keep relative paths in files. If "other files" turns out to mean project
 sources outside the workbench, option 2 becomes necessary and option 3 remains its inner half.
+
+---
+Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 3: render `$WORKBENCH`-prefixed absolute paths in chat, keep relative paths in stored records. User answered inline 2026-08-16.

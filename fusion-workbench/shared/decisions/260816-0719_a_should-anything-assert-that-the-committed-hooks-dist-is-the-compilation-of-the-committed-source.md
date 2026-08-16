@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** answered
 **Filed by:** reconciler
 **Cross-references:** `shared/issues/260816-0709_c_the-review-coverage-fix-ships-only-as-typescript-because-no-commit-since-f45f76a-carries-hooks-dist.md` (fix-direction item 2, carried out of that record so it does not close inside it); `hooks/scripts/run-tests.mjs`; `hooks/scripts/build.mjs`; `CLAUDE.md` `### HTTPS installer`
 
@@ -64,7 +64,7 @@ script and the policy behind it is not written down anywhere, so it should be se
 is chosen rather than inferred from a default.
 
 ---
-Answered:
+Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 2: a test that compiles the committed source and compares with committed dist; requires a pinned toolchain and must not read the shared tree during a run. Install-path policy settled as heads/main, which eliminated option 3. User answered inline 2026-08-16.
 Implemented:
 Deferred:
 Superseded by:

@@ -1613,3 +1613,6 @@
 {"ts":"2026-08-16T11:59:26","event":"gate_hit","detail":"Rebalance gate: reconciler verdict review-needed"}
 {"ts":"2026-08-16T11:59:26","event":"gate_response","detail":"proceed — user chose to close the session and schedule the remaining findings"}
 {"ts":"2026-08-16T11:59:26","event":"session_end","detail":"2 Turns, 3 tasks resolved, 6 commits, 10 issues filed, 2 closed, 1 decision answered"}
+{"ts":"2026-08-16T13:00:24","event":"session_start","history_file":"shared/history/260816-1500-orchestrator-session.md","detail":"Setup via /fusion:setup; Directive not yet stated"}
+{"ts":"2026-08-16T13:05:00","event":"gate_hit","agent":"user","detail":"12 open decisions in shared/decisions presented for inline answering"}
+{"ts":"2026-08-16T15:07:19","event":"gate_response","agent":"user","detail":"all 12 open decisions answered inline; predecessor 260809-1224 re-opened and answered; 2 new decisions filed"}

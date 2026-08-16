@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** answered
 **Filed by:** reconciler
 **Cross-references:** `shared/issues/260810-2149_c_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md` (the closure that deferred this question and filed no successor); `shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md` (the first application); `hooks/lib/__tests__/reference-resolution-lint.test.ts` `BASELINE` (the third)
 
@@ -68,7 +68,7 @@ the strongest of the three at HEAD — the cascade's probe assertion has cost no
 — but "cost nothing yet" over one session is not evidence about a convention.
 
 ---
-Answered:
+Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 2: probe-assertion is the convention, count-pinning the fallback where no probe exists. User answered inline 2026-08-16.
 Implemented:
 Deferred:
 Superseded by:

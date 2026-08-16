@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** answered
 **Filed by:** reconciler
 **Cross-references:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1455_c_turn-3s-reviewers-were-dispatched-on-four-of-the-seven-uncovered-commits-for-the-third-turn-running.md`, `shared/issues/260814-2017_c_turn-5-edited-three-shipped-surfaces-including-an-always-on-rule-file-and-no-review-pass-ever-opened-them.md`, `shared/issues/260814-2153_o_the-commit-that-closes-the-last-reviews-own-high-finding-is-the-one-commit-no-review-opens.md`, `shared/issues/260814-2033_o_a-resume-that-re-enters-at-phase-3-never-asks-whether-the-turn-it-skips-past-was-reviewed.md`, `shared/history/260814-2306-orchestrator-session.md` (three `## Coherence` sections)
 
@@ -107,7 +107,7 @@ If the next two Circles close over uncovered ranges and reconciliation finds not
 that is evidence against this recommendation and the question should be re-opened.
 
 ---
-Answered:
+Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — options 3 then 1: filter the uncovered set to commits touching shipped files, keep coverage advisory with the gap named in the closure note. User answered inline 2026-08-16.
 Implemented:
 Deferred:
 Superseded by:

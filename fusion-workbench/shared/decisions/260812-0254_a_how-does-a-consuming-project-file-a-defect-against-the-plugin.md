@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** answered
 **Filed by:** orchestrator (on the user's request)
 **Cross-references:** `shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md` finding 3 and recommendation (c); the three records transferred by hand from the KRK project on 260811 (`260811-0932`, `260810-1730`, and the witness merged into `260811-1915`)
 
@@ -54,3 +54,6 @@ nothing is listening.
 Option 1 now, option 2 as its second half once the store exists and has something in it. The
 transfer being manual is not the weak point — the missing store is. Three records were carried by
 hand this week and all three arrived.
+
+---
+Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 1: a `plugin-issues/` store in the consuming project plus a skill that writes there; transfer stays manual. User answered inline 2026-08-16.

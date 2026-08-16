@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** answered
 **Filed by:** planner, planning the protected-path removal
 **Cross-references:**
 `shared/planning/260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md` (step 6, which keeps the code and corrects the comment),
@@ -46,7 +46,7 @@ Option 3, resolved after the escalation question. The coupling is real: if the e
 If the escalation question is answered by keeping the apparatus, option 2 becomes the better answer, on the ground that a halt that does not bind where the code is written is a halt nobody will ever test.
 
 ---
-Answered:
+Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 3: the question dissolves; the stand-down and isFusionPluginCwd() go in the same Circle as escalation, isFusionPluginRoot() stays with a comment stating why. User answered inline 2026-08-16.
 Implemented:
 Deferred:
 Superseded by:

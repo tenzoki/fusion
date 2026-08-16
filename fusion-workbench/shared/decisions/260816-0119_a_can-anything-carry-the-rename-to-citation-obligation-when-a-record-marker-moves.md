@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** answered
 **Filed by:** coder, session `260816-0119`
 **Cross-references:** `shared/issues/260811-1755_*_stale-marker-citations-recur-and-the-lint-does-not-read-the-hook-entrypoints-where-one-was-hiding.md` (item 2, the part this record carries out of a closed defect); `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md` (the wildcard form this class is supposed to be closed by); `hooks/lib/__tests__/reference-resolution-lint.test.ts` (the gate that catches the breakage after the fact)
 
@@ -63,7 +63,7 @@ about how fusion wants to spend surface, not a technical question. Recorded here
 inside a closed defect.
 
 ---
-Answered:
+Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 1: nothing new; the reference lint remains the whole mechanism. No fusion mechanism rewrites shipped text. User answered inline 2026-08-16.
 Implemented:
 Deferred:
 Superseded by:

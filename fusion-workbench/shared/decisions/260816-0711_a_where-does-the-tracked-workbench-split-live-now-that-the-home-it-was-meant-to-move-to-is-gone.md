@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** answered
 **Filed by:** reconciler
 **Cross-references:** `shared/issues/260810-0504_c_the-tracked-workbench-section-re-enumerates-a-closed-list-and-leaves-one-surface-unclassified.md` (part 3, closed as moot-by-circumstance and untracked until this record); `rules/fusion-workbench-conventions.md` `### Which of them a tracked workbench tracks`; `shared/issues/260816-0136_p_the-tracked-workbench-splits-declared-scope-reaches-two-legacy-stores-neither-group-classifies.md`
 
@@ -70,7 +70,7 @@ Recorded here so that part 3 of `260810-0504` stops living inside a closed defec
 filing gap the reconciler found on `260810-2149` in the same pass.
 
 ---
-Answered:
+Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 2: move to rules/workbench-tracking.md with a pointer left behind; the emission target is a prerequisite filed as its own decision. User answered inline 2026-08-16.
 Implemented:
 Deferred:
 Superseded by:
