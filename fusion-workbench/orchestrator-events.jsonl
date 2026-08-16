@@ -1664,3 +1664,6 @@
 {"ts":"2026-08-16T20:29:38","event":"task_done","turn":2,"task":"P-8","agent":"coder","detail":"92db96a — Setup Step 0f seeds fusion.json, no budget migration offer per the user answer"}
 {"ts":"2026-08-16T20:29:38","event":"commit","turn":2,"task":"P-8","agent":"orchestrator","detail":"92db96a feat(setup): Step 0f seeds fusion.json"}
 {"ts":"2026-08-16T20:29:38","event":"task_start","turn":2,"task":"P-9","agent":"coder","detail":"test surface: 4 deletions, ~9 re-pointings, harness fixtures; carries four amending defect records"}
+{"ts":"2026-08-16T21:00:27","event":"task_done","turn":2,"task":"P-9","agent":"coder","detail":"1d1d3a3 — 4 test files deleted, 8 re-pointed; red set 14 files/116 cases down to 3 files/5 cases"}
+{"ts":"2026-08-16T21:00:27","event":"commit","turn":2,"task":"P-9","agent":"orchestrator","detail":"1d1d3a3 test: the test surface follows the removal"}
+{"ts":"2026-08-16T21:00:39","event":"review_start","turn":2,"agent":"coderev","detail":"6 uncovered commits, range 3c2e1c6..HEAD; carried list empty from the Turn 1 review"}

@@ -52,3 +52,6 @@ Three shapes of answer, and the choice belongs to whoever holds the release gate
 What it costs if it stands: the Circle reaches step 15 with a red suite whose cause is correct
 behaviour, the "is the suite green" question stops being answerable by running it, and the next
 red case in that file hides behind two that everybody has learned to expect.
+
+---
+Also seen: 260816-2315 by coderev — the count is two only up to `3c2e1c6`; step 7b added `CLAUDE.md:30` with two more dangling paths and made the whole `fusion-guard.json` Layout row false. Recorded separately, with the four-citation measurement, in `260816-2317_o_claude-mds-dangling-citation-set-grew-from-two-to-four-at-7b-and-one-whole-layout-row-is-now-false.md`.
