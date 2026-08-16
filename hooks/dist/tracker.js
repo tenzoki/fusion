@@ -90,12 +90,12 @@
  * `hookSpecificOutput.additionalContext` envelope when a measurement has
  * something to say.
  */
-import { resolve, sep } from "node:path";
+import { basename, resolve, sep } from "node:path";
 import { emitEvent } from "./lib/events.js";
 import { bestEffort, failOpen } from "./lib/fail-open.js";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 import { foldCase } from "./lib/paths.js";
-import { coverageSentence, lastReportedCoverage, measureReviewCoverage, recordReportedCoverage, } from "./lib/review-coverage.js";
+import { coverageSentence, isMeasuredReview, lastReportedCoverage, measureReviewCoverage, recordReportedCoverage, } from "./lib/review-coverage.js";
 import { headMoved, measureStagingDrift, readStagingState, stagingSentence, writeStagingState, } from "./lib/staging-drift.js";
 /**
  * The four tools whose payload NAMES the path they write.
@@ -278,6 +278,14 @@ function measureReviewCoverageForModel(input) {
     if (!abs.endsWith(".md"))
         return null;
     if (!abs.includes(sep + "reviews" + sep))
+        return null;
+    // The same population the scan reads, through the same function — a trigger
+    // wider than the scan fires the whole measurement over a file the scan will
+    // not measure, which is what a `conceptrev` verdict landing at the plan gate
+    // did (issue `260811-1145`). `basename` of the ORIGINAL path, not the folded
+    // one: the sender segment is lower-case by the filename convention, and
+    // folding is only ever applied to the directory test above it.
+    if (!isMeasuredReview(basename(written)))
         return null;
     const report = measureReviewCoverage(root);
     if (report.why !== "")

@@ -54,6 +54,14 @@
  * the rule was the work queue's `**Active Circle:**` head line, whose consumer
  * left the plugin with the queue file on 2026-08-15; the rule did not.
  *
+ * ## Whose files it reads
+ *
+ * Only the senders the mandate covers, read from the filename's `<sender>`
+ * segment — see `REVIEW_SENDERS` below for the set, for why a file with no
+ * recognisable sender is nonetheless kept and named, and for the `conceptrev`
+ * files that were reported `UNUSABLE` forever because no mandate could ever
+ * cover them (issue `260811-1145`).
+ *
  * ## What it computes
  *
  * Coverage is a set difference over commits, not interval arithmetic over
@@ -111,6 +119,47 @@
  */
 export declare const RANGE_FIELD = "**Reviewed-range:**";
 export declare const NOT_OPENED_FIELD = "**Not-opened:**";
+/**
+ * The senders whose prompts carry the header mandate, and therefore the only
+ * senders whose files this can measure.
+ *
+ * Issue `260811-1145`: three agents wrote into the reviews stores and only two
+ * were ever mandated. `conceptrev` evaluated a document's diagrams, carried no
+ * commit range and correctly never claimed one — so every `conceptrev` file was
+ * scanned, found rangeless and reported `UNUSABLE` forever, and one landing at
+ * the plan gate fired the whole measurement at Phase 0b, before any Turn had
+ * run. A permanent `UNUSABLE` row normalises `UNUSABLE`, which is the erosion
+ * this module's header refuses one level up. The agent was retired on
+ * 2026-08-15; the files it wrote are still on disk, so the population is closed
+ * rather than empty and the filter is still what closes it.
+ *
+ * **One set, consumed twice** — here by `isMeasuredReview` for the scan, and in
+ * `hooks/tracker.ts` through that same function for the trigger. Two literals
+ * would be a silent widening waiting to happen, which is the shape of the
+ * defect itself: `review-coverage-mandate.test.ts` already fixed the mandate at
+ * two prompts and nothing carried that fact into the scan.
+ */
+export declare const REVIEW_SENDERS: readonly ["coderev", "ontorev"];
+/**
+ * The `<sender>` segment of a review filename, or null when it has none.
+ *
+ * `rules/fusion-workbench-conventions.md` `## Filename Patterns` makes the
+ * sender mandatory in `YYMMDD-HHMM-<sender>-<topic>.md`, so it is read rather
+ * than inferred from the file's contents.
+ */
+export declare function reviewSender(name: string): string | null;
+/**
+ * Is this filename in the measurement's population? The split is disjoint and
+ * complete over every name a reviews store can hold:
+ *
+ *   - a recognised sender — measured, because a mandate covers it;
+ *   - a sender that parses but is not recognised — excluded, because no mandate
+ *     covers it and reporting it could only ever say `UNUSABLE`;
+ *   - no recognisable sender at all — **kept**, and reported by name with the
+ *     reason. Nothing says whether the mandate covers it, and silently dropping
+ *     a file this cannot classify is the opposite defect.
+ */
+export declare function isMeasuredReview(name: string): boolean;
 export interface Commit {
     /** Full hash — the identity the covered-set difference is taken over. */
     full: string;
@@ -127,6 +176,12 @@ export interface ReviewRow {
     notOpened: string[];
     /** False when the file carries no `**Not-opened:**` line at all. */
     notOpenedRecorded: boolean;
+    /**
+     * The `**Not-opened:**` value verbatim when it is neither `none` nor
+     * backticked paths, `""` otherwise. It is rendered as text and never acted
+     * on — see `parseNotOpened`.
+     */
+    notOpenedRaw: string;
     /** How many of the measured window's commits this review covers. */
     covers: number;
     /** Why the range could not be used. "" when it was used. */
@@ -179,17 +234,36 @@ export declare function parseRange(value: string | null): {
     to: string;
     why: string;
 };
+/** What a `**Not-opened:**` value was read as. Exactly one of the three cases. */
+export interface NotOpened {
+    /** The declared out-of-scope files. Empty for a recorded `none`. */
+    files: string[];
+    /** Was the line there at all? */
+    recorded: boolean;
+    /** The value verbatim when it could not be interpreted, `""` otherwise. */
+    raw: string;
+}
 /**
  * The declared out-of-scope files, and whether the field was there at all.
  *
  * A recorded `none` and an absent line are different facts and are kept apart:
  * a recorded absence can be compared, a missing line can only be guessed at
  * (`rules/critical-stance.md` §4).
+ *
+ * Issue `260811-1148` — the two readings this used to get wrong, in opposite
+ * directions. `none of the prompt files` matched `/^none\b/i` and was read as
+ * *nothing was excluded*, so a declared exclusion reached the reader as an
+ * absent one. And `nothing left unopened` fell through to a comma-split and
+ * became the file list `["nothing left unopened"]`, which `coverageSentence`
+ * then handed the orchestrator as the next dispatch's scope.
+ *
+ * So the `none` branch takes the bare word and a gloss behind punctuation, and
+ * nothing else; and the fallback keeps the reviewer's sentence **as a
+ * sentence**. The instinct behind the old fallback was right — a statement that
+ * cannot be parsed must not vanish — but promoting it to a file list is what
+ * made it actionable, and a file list is acted on.
  */
-export declare function parseNotOpened(value: string | null): {
-    files: string[];
-    recorded: boolean;
-};
+export declare function parseNotOpened(value: string | null): NotOpened;
 /** The session anchor `agentstate.yaml` records, or "" with nothing recorded. */
 export declare function sessionAnchor(root: string): {
     since: string;
@@ -215,7 +289,13 @@ export declare function measureReviewCoverage(root: string, opts?: {
 }): CoverageReport;
 /** One uncovered commit, named. The acceptance criterion is "not a count". */
 export declare function renderUncovered(c: Commit): string;
-/** One review row, with its range and what it declared it did not open. */
+/**
+ * One review row, with its range and what it declared it did not open.
+ *
+ * An uninterpretable value is printed verbatim behind `(unparsed)`, so the
+ * reviewer's sentence reaches the reader as a sentence. It used to be split on
+ * commas into filenames nobody had written (issue `260811-1148`).
+ */
 export declare function renderReview(r: ReviewRow): string;
 /**
  * The sentence handed back to the model when a review file lands over a range
