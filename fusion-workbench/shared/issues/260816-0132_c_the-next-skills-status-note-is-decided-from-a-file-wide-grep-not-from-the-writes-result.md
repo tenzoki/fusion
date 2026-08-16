@@ -54,3 +54,25 @@ The instruction the change added — *"Put no `grep` guard in front of the `sed`
 **Growth note:** the fix lands in `skills/`, whose bound has 14 138 bytes of head-room and has already absorbed 5 862 this session. Keep the correction to the shape and drop a sentence elsewhere if it runs long.
 
 **Found by:** coderev, reviewing `f4f01b0..3a0408a` (commit `8c1bd74`). Fixtures reproducible; commands taken verbatim from `skills/next/SKILL.md:218-222`.
+
+---
+Resolved: `f77633f` replaced the `sed` plus verification `grep` at `skills/next/SKILL.md:218-227`
+with a single `awk` pass whose exit status decides the note. All three defects are discharged, each
+checked against the file at HEAD:
+
+- **Defect 1** (verification reads the whole file) — the pass is bounded to the head block by
+  `BEGIN{h=1} /^## /{h=0}`, so a column-0 `**Status:**` line inside a quoted template further down is
+  neither read nor rewritten. Nothing re-reads the record.
+- **Defect 2** (the note asserts a cause it did not test) — the `case $?` block branches three ways:
+  `0` field set, `9` no field in the head block, anything else a failed pass or redirect, each with
+  its own message.
+- **Defect 3** (the `sed` rewrites every matching line) — the `!n` guard plus `n=1;next` rewrites the
+  first match only.
+- The sentence at `:225` that claimed a property the code did not have was rewritten in the same
+  commit and now describes the three branches.
+
+Verified by the executor against nine fixtures and all fifteen real `*_circle.md` records in this
+workbench (`shared/history/260816-0205-coder-status-note-and-demoted-names.md`).
+
+Reconciled 260816-0713 (reconciler, HEAD `f77633f`) — the fix landed in the session's last commit and
+the marker had not been moved.

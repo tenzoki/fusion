@@ -68,3 +68,20 @@ one more instance. Stays open.**
 
 Both surfaces remain the orchestrator's to write. The reconciler may write neither, so this pass
 records the state and changes nothing.
+
+---
+Also seen: 260816-0713 by reconciler — session `260815-2147` ran six Turns and its history file
+`shared/history/260815-2147-orchestrator-session.md` stops at a heading covering Turns 2 and 3.
+Turns 4, 5 and 6 have no section, and the file's `**Status:**` still reads `In progress` while 27
+commits have landed. `orchestrator-live.md` stands at `Turn: 2/12 | Tasks: 5/37 | Commits: 5`, and
+`agentstate.yaml` `current_task.summary` still says "queue built, Turn 1 not yet started" with five
+`work_queue` rows marked `queued` whose tasks landed (`T12`, `T13` in `c0e179a`; `T15` in `3a0408a`;
+`T16`, `T17` in `8c1bd74`). The event log carries four `turn_start` and three `turn_end` entries
+against six Turns run.
+
+**Part 2 of this record's fix is now moot on its own terms and the defect is not.** `bin/fusion-state-drift`
+and the counting rule in `hooks/lib/state-drift.ts` were removed on 2026-08-15 with the rest of the
+counters, so nothing measures the Turn log against the events any more — the masking this record
+describes has been replaced by no measurement at all. Part 1 stands unchanged: both surfaces are the
+orchestrator's to write and the reconciler may write neither. No Circle is active this session, so
+only the session-history half applies.

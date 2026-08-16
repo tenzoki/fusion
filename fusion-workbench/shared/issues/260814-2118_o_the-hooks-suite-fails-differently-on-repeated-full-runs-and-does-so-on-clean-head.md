@@ -176,3 +176,5 @@ spin loops running after the `kill` that was supposed to end them. Every timing 
 in the following half hour was wrong by a factor of three to four, in a direction that made a
 correct change look like a fourfold regression. Check `uptime` and the process table before
 believing a timing measurement on this suite.
+
+Also seen: 260816-0713 by coderev — one full-suite run at `f77633f` failed `monitor-warnings-panel.test.ts` "a terminal on stdout still gets the dashboard opened for it" (`http://localhost:PORT` where the pin expects `http://127.0.0.1:PORT`); two later full runs and an isolated run of that file were green, and the same file was green in a full run at `3a0408a`. So the flake now reaches a file this range touched (`94683c9`).

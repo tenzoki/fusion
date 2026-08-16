@@ -85,3 +85,24 @@ One floor deliberately survives in the same file: `expect(gateResolved, "not vac
 still carries record citations").toBeGreaterThan(10)` in the parser-parity describe block. It
 guards the same quantity that `BASELINE.records` now pins exactly, so it can no longer be the only
 thing standing between a departure and a green suite.
+
+---
+**Reconciliation 260816-0713 (reconciler, HEAD `f77633f`) — the fix holds; two statements in the
+closure above do not. Marker unchanged.**
+
+The fix itself verifies: `hooks/lib/__tests__/reference-resolution-lint.test.ts:490` carries
+`BASELINE = { paths: 1122, anchors: 139, records: 95 }`, asserted with `toEqual` at `:542`, with the
+re-approval message at `:495-503` and one deliberate floor left at `:921`. The suite is green at HEAD
+(40 files, 764 tests, exit 0).
+
+Two corrections to the annotation:
+
+1. *"The cascade reach gate is untouched and still carries its hand-written claim."* Stale.
+   `hooks/lib/__tests__/domain-cascade.test.ts:784-794` now asserts the reach claim by probe —
+   `REACH.covered`, `REACH.holes`, `REACH.excluded` — under `describe("the reach claim is asserted,
+   not written")`. The error is in the conservative direction: more is fixed than the note claims.
+2. The scope question the closure deferred — *"whether count-pinning becomes a convention for every
+   gate that reports what it examined"* — was to be *"settled as its own decision"* and no decision
+   was filed. That filing gap is closed now:
+   `shared/decisions/260816-0711_o_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md`.
+   The record is a filing of the deferred question, not a new one.

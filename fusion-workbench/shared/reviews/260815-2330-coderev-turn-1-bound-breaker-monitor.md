@@ -213,3 +213,23 @@ Nothing here blocks a release. Ordered by what unblocks what:
    it costs nothing and it prevents the next reader inheriting a wrong criterion.
 
 `4f7508d` is uncovered and outside this range. It should be carried into the next review's scope.
+
+---
+
+**Reconciliation annotation, 260816-0713 (reconciler, HEAD `f77633f`). Findings are not rewritten;
+this records only the disposition of the five records at HEAD.**
+
+| Record | Marker at HEAD | Evidence |
+|---|---|---|
+| `260815-2325` | closed | `a19c867` |
+| `260815-2326` | closed | `a19c867` |
+| `260815-2327` | closed | `a19c867` |
+| `260815-2328` | closed | `3c0e7da`, corrected by `e18dcb1` after the Turn-2 review found the first landing partial (`260816-0134`) |
+| `260815-2329` | closed | `3d26164` |
+
+The recommended sequencing was followed. `260816-0110` carries the unmeasured macOS Local-Network
+premise forward and is open.
+
+**The carry-forward was honoured.** This review's closing line asked that `4f7508d` be carried into
+the next review's scope; `shared/reviews/260816-0145-coderev-turn-2-range-f4f01b0-3a0408a.md` opens
+at `f4f01b0` and states that all eighteen closure footers in `4f7508d` were read.

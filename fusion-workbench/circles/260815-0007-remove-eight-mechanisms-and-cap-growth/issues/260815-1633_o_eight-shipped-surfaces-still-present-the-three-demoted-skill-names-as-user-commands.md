@@ -111,3 +111,56 @@ correct as they stand — the first is required by `derivable-enumerations-lint`
 skill directory, and both already present the names as pipeline steps.
 
 Session history: `shared/history/260815-2330-coder-demoted-skill-names-in-shipped-prose.md`.
+
+---
+
+**Reconciliation 260816-0713 (reconciler, HEAD `f77633f`) — the residual table above is empty,
+and the record does not close. It is rewritten here around the sites that actually stand.**
+
+The table under *"What is left, and why this record does not close"* named two sites. Both are
+discharged, and a third pair the table never carried is discharged with them:
+
+| Site the table named | At HEAD |
+|---|---|
+| `skills/setup/SKILL.md:60` | **discharged** by `c0e179a` — the probe's exclusion prose was replaced by a tree bound and the token went with it |
+| `skills/cleanup/SKILL.md:243` | **discharged** by `381f6d8` |
+| `README-agents.md:71,72` (never surveyed by this record) | **discharged** by `f77633f` — both rows now read `/fusion:cleanup --only claude-md`, the form `:246` already used |
+
+The whole shipped-prose surface is therefore clean. `grep -rn -E '/fusion:(archive|log-activity|curate)'`
+over the tree, excluding `.git/`, `node_modules/` and `fusion-workbench/`, returns nine hits and not
+one of them is prose presenting a demoted name as the user's route.
+
+**What stands is a class the record never opened: code comments and one ignore-file comment.**
+Five hits, three distinct sources:
+
+| Where | What it says |
+|---|---|
+| `hooks/lib/events.ts:70` | "What bounds the file instead is `/fusion:archive`, which rolls the live log" |
+| `hooks/dist/lib/events.js:31`, `hooks/dist/lib/events.d.ts:47` | compiled mirrors of the same sentence — they move when the source does, not on their own |
+| `hooks/lib/__tests__/monitor-warnings-panel.test.ts:508` | "// The archive roll. `/fusion:archive` bounds the guard event log by MOVING it" |
+| `.gitignore:69` | "# what preserves it is /fusion:archive rolling it into fusion-workbench/archive/ under a dated name" |
+
+All three sources say the same thing about the same mechanism, and `rules/fusion-workbench-conventions.md:81`
+— the authoring home for that claim — was rewritten to "the archive step of `/fusion:cleanup`" by the
+curator's pass at `e8052e7`. So the three comments now disagree with the rule they paraphrase.
+
+**Deliberately correct, and not to be swept** (unchanged from the earlier passes, re-verified here):
+
+- `CLAUDE.md:21` — names all three directories; `derivable-enumerations-lint` requires this listing to
+  name every directory under `skills/`, and the same line's warning against `--only curate` needs the
+  token to say what not to type.
+- `README-agents.md:239`, `:240`, `:246` — slash-command table rows, each already labelled with its
+  pipeline step and its selector.
+
+**Why the marker stays `_o_`.** The record's thesis — one presentation, applied to the whole corpus —
+is not discharged while three sources still write the old form. But the remaining sites are a
+different kind of surface from the nine the record was filed against, and whether a code comment is
+in scope for a *presentational* collapse is a question this record does not answer. Whoever picks it
+up decides that first; if the answer is no, the record closes on that ground rather than on a sweep.
+
+`.gitignore:69` sits four lines from `.gitignore:67`, the other half of open record
+`shared/issues/260816-0136_p_the-tracked-workbench-splits-declared-scope-reaches-two-legacy-stores-neither-group-classifies.md`.
+One pass over that comment block discharges both.
+
+**Cross-reference:** `shared/issues/260816-0139_*` filed the empty-table observation and its own
+`README-agents.md` half; that record closes on this rewrite.

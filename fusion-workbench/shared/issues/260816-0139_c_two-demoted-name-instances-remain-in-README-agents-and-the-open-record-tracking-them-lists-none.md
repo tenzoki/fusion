@@ -31,3 +31,21 @@ Code comments in the same family, lower priority and a different owner: `hooks/l
 3. The three code-comment sites are worth one sweep of their own; they are not user-facing and can wait.
 
 **Found by:** coderev, reviewing `f4f01b0..3a0408a` (commit `642130f`), with the corpus grep run by a supporting analyst pass and re-verified.
+
+---
+Resolved: both halves are discharged.
+
+**Part 1** — `f77633f` rewrote `README-agents.md:71` and `:72` to `/fusion:cleanup --only claude-md`,
+the form the same file already used at `:246`, keeping the `skills/curate/SKILL.md` section citations.
+Verified at HEAD: `grep -n '/fusion:curate' README-agents.md` returns `:246` only, which is the
+labelled slash-command table row this record names as deliberately correct.
+
+**Part 2** — the empty residual table on
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1633_o_eight-shipped-surfaces-still-present-the-three-demoted-skill-names-as-user-commands.md`
+was rewritten by the reconciler at 260816-0713, per this record's own fix direction step 2. That
+record stays open around what actually stands — the three code-comment sources this record listed as
+"lower priority and a different owner" (`hooks/lib/events.ts:70`, its two compiled mirrors,
+`hooks/lib/__tests__/monitor-warnings-panel.test.ts:508`, `.gitignore:69`) — and now states why a
+sweep is a scope question rather than a task.
+
+Reconciled 260816-0713 (reconciler, HEAD `f77633f`).

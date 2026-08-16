@@ -40,3 +40,25 @@ Both are small; the always-on rule surface has roughly 9 400 bytes of head-room,
 Resolved (part 1 only): `rules/fusion-workbench-conventions.md:74` now scopes the split to **every root entry outside the artifact and legacy stores** — `(circles/, shared/, archive/, stilwerk/ and the two above, all simply tracked)`. The deciding question was answered by classifying rather than by silence: a frozen store follows `archive/` and is simply tracked, so it is out of the split's scope by the same rule that puts the artifact directories out of it. Scope and membership now match with no remainder against both the tree and the sentence.
 
 Part 2 (`.gitignore:67` — drop `tasklist.md`, add `.fusion-setup`) is NOT done: `.gitignore` was outside this pass's permitted file set. It remains open work and needs a follow-up.
+
+---
+**Reconciliation 260816-0713 (reconciler, HEAD `f77633f`) — the `_p_` marker is correct. Part 1 is
+on disk, part 2 is not.**
+
+- **Part 1, verified.** `rules/fusion-workbench-conventions.md:74` reads *"the split below ranges
+  over **every root entry outside the artifact and legacy stores** (`circles/`, `shared/`,
+  `archive/`, `stilwerk/` and the two above, all simply tracked)"*. Scope and membership match
+  against both the tree at `:26-61` and the sentence itself, with no remainder.
+- **Part 2, not done.** `.gitignore:67` still reads `# KEPT: orchestrator-events.jsonl, tasklist.md,
+  portfolio.md.` — `tasklist.md` was removed on 2026-08-15 and `.fusion-setup` is still unnamed,
+  though `git ls-files fusion-workbench/.fusion-setup` confirms the file is tracked, so the behaviour
+  is right and only the comment is wrong.
+
+**One thing the fix direction did not know.** `.gitignore:69`, two lines below the comment part 2
+corrects, writes `/fusion:archive` where `rules/fusion-workbench-conventions.md:81` now reads "the
+archive step of `/fusion:cleanup`". It is the residual of open record
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1633_o_eight-shipped-surfaces-still-present-the-three-demoted-skill-names-as-user-commands.md`.
+One pass over that comment block discharges both records' `.gitignore` halves; whoever takes part 2
+should take it.
+
+Also seen: 260816-0713 by coderev — the `d83c1b4` rewrite closes the scope gap (the two groups now tile the ten non-artifact root entries exactly), but the replacement clause "and the two above, all simply tracked" asserts that a tracked workbench tracks `stashes/` and `.migration-v2-backup/`. Nothing supports that and neither store exists in this repository, so the claim is untestable where it was written.

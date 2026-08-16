@@ -71,3 +71,15 @@ Correct `skills/next/SKILL.md:200` to say the write rides the rename in the same
 
 ---
 Resolved: `skills/next/SKILL.md` Step 6.2 drops the `grep` pre-guard. The `sed` runs unconditionally with `[[:space:]]` removed from its pattern, so a valueless `**Status:**` line is rewritten, and the note is decided from the result (`grep -qE '^\*\*Status:\*\* active$'`) rather than from a separate test of the input — a field absent and a field present-but-empty both reach it. A failed write clears its own `.tmp` via `|| rm -f`. Verified against the record's three fixtures: valueless and valued lines both become `**Status:** active` with no note, an absent field produces the note, and no `.tmp` survives either the success or the `sed`-failure path. The prose beside the block now says the write rides the rename in the same call and that the two commands are not atomic, replacing the claim that a rename cannot land without the write.
+
+---
+**Reconciliation 260816-0713 (reconciler, HEAD `f77633f`) — the closure holds; the annotation above
+describes a mechanism that has since been replaced.**
+
+The `Resolved:` note describes the unconditional `sed` plus a verification `grep -qE '^\*\*Status:\*\*
+active$'`. That shape lived for one Turn. `f77633f` replaced it with a single `awk` pass whose exit
+status decides the note (`skills/next/SKILL.md:218-227`), after `shared/issues/260816-0132_c_*` found
+three defects in the verification `grep`. Every acceptance criterion of *this* record is met by the
+successor — measured on three fixtures: a valueless `**Status:**` is rewritten to `active`, an absent
+field fires the note, and no `.tmp` is left behind. The defect is gone; only the description of how is
+stale.

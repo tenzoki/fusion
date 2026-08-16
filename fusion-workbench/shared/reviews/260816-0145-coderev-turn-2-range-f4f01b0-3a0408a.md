@@ -212,3 +212,31 @@ line in CLAUDE.md's release process naming the two descriptions as a pair).
 **Hand to `reconciler`, not to `coder`.** `260815-1633_o_*` is open with a residual table whose every
 row is now done, while a site it never surveyed still stands (`0139` part 2). Whoever edits
 `README-agents.md` should not be the one to close the record.
+
+---
+
+**Reconciliation annotation, 260816-0713 (reconciler, HEAD `f77633f`). Findings are not rewritten;
+this records only the disposition of the eleven records at HEAD.**
+
+| Record | Marker at HEAD | Evidence |
+|---|---|---|
+| `260816-0130` | closed | `94683c9` |
+| `260816-0131` | closed | `94683c9` |
+| `260816-0132` | closed by this pass | `f77633f` rewrote `skills/next/SKILL.md:218-227` as one `awk` pass; all three defects and the `:225` sentence discharged |
+| `260816-0133` | open | untouched — no gate over the three byte-identical probes |
+| `260816-0134` | closed | `94683c9` |
+| `260816-0135` | closed | `d83c1b4` |
+| `260816-0136` | in progress (`_p_`) | part 1 landed at `rules/fusion-workbench-conventions.md:74`; `.gitignore:67` still reads `tasklist.md` and omits `.fusion-setup` |
+| `260816-0138` | open | untouched |
+| `260816-0139` | closed by this pass | part 1 by `f77633f` (`README-agents.md:71,72`); part 2 discharged by rewriting the residual table on `260815-1633_o_*` |
+| `260816-0140` | open | untouched |
+| `260816-0141` | open | untouched — `.claude-plugin/plugin.json` `description` still the pre-v9 text |
+
+**The pass's closing instruction was carried out.** `260815-1633_o_*` was handed to the reconciler
+rather than to the coder, its residual table was rewritten around what stands, and it stays open on
+a scope question this pass named correctly: the remaining sites are code comments, not prose.
+
+**One thing this review's range could not see.** `736e276`, inside the reviewed range, changed
+`hooks/lib/review-coverage.ts` and `hooks/tracker.ts` and no commit in the session carries the
+compiled `hooks/dist/` output. Filed as
+`shared/issues/260816-0709_*_the-review-coverage-fix-ships-only-as-typescript-because-no-commit-since-f45f76a-carries-hooks-dist.md`.

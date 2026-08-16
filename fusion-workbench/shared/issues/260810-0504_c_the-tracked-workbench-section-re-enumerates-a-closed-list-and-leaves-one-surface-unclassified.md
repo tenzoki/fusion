@@ -93,3 +93,21 @@ removed on 2026-08-15, so there is nothing to add. Part 3 of the defect (audienc
 unaddressed by design: the section is still emitted to every agent. Cost of the change measured at
 +366 bytes on the always-on surface, absorbed within head-room —
 `hooks/lib/__tests__/rules-emission-golden.test.ts` passes and no baseline moved.
+
+---
+**Reconciliation 260816-0713 (reconciler, HEAD `f77633f`) — parts 1 and 2 verified; part 3 stands and
+now has a tracker. Marker unchanged.**
+
+Parts 1 and 2 re-checked rather than read off the note: `rules/fusion-workbench-conventions.md:76`
+classifies `.fusion-setup` as a record and states the consequence of the opposite choice in place;
+`:74` declares the scope by exclusion instead of re-enumerating the tree.
+
+Part 3 stands exactly as the closure disclosed. The subsection `### Which of them a tracked workbench
+tracks` occupies `:72-85` and `./bin/fusion-rules coder` still emits this file as one of five always-on
+rules, so every agent loads it on every dispatch. The closure's reason for leaving it is verified
+true: `ls rules/` carries `commit-lock.md` and no `workbench-stash-and-lock.md`.
+
+**The residual was disclosed but untracked, which is why the marker was not moved and a decision was
+filed instead.** `shared/decisions/260816-0711_o_where-does-the-tracked-workbench-split-live-now-that-the-home-it-was-meant-to-move-to-is-gone.md`
+carries the audience question. Part 3 is a "decide and record" item, not a "go fix it" one — no home
+exists to move the section to, so there is nothing an executor could do with a reopened defect.
