@@ -417,3 +417,48 @@ session history is `circles/260816-1741-guard-becomes-observation-only/history/2
 Step 7a and step 8 are unblocked. Their per-step user gates are discharged by this outcome and
 do not fire again.
 
+
+---
+
+## Plan amendment — Turn 1 coherence gate, 2026-08-16
+
+Two changes to the step order and one new step, all decided by the user at the Turn 1
+coherence gate. The session history is
+`circles/260816-1741-guard-becomes-observation-only/history/260816-1841-orchestrator-session.md`.
+
+### Step 16 (new): the curator reconciles `CLAUDE.md`
+
+- Executor: dispatched through `/fusion:curate`, which holds its own user gate
+- Dependencies: steps 11 and 12. Runs before step 14.
+- Why it exists: `CLAUDE.md:29` and `:129` cite `hooks/lib/project-relative.ts`, deleted in
+  `3c2e1c6`, and `reference-resolution-lint.test.ts` scans `CLAUDE.md`. So the suite cannot
+  reach green through any step of this plan, and step 11's verification line claims a lint green
+  that it cannot make green. The Directive puts `CLAUDE.md` and the rule files on the curator's
+  gated path and this amendment does not weaken that: it schedules the curator pass inside the
+  Circle rather than granting step 11 an exception. The user chose this over the exception and
+  over shipping a red lint.
+- Scope: whatever the curator's survey proposes and the user approves at its gate. The two
+  dangling citations are the reason the step exists, not its bound — `CLAUDE.md:8` and `:36`
+  also name `isFusionPluginCwd()` as live, and `rules/fusion-workbench-conventions.md`
+  `## Project language` still illustrates itself with two removed mechanisms
+  (issue `260816-2115`).
+- Defect: `circles/260816-1741-guard-becomes-observation-only/issues/260816-2123_o_claude-mds-two-dangling-citations-keep-the-citation-lint-red-and-no-step-in-this-plan-may-fix-them.md`
+
+### Step 5 is split, and its second half moves behind step 7a
+
+Step 5's `paths.ts` reduction claims all four functions lose their last caller when CHECK 3
+goes. `matchesAny` is imported at `config.ts:155` and called at `:736` inside
+`findRelevantDecisions`, which step **7a** deletes. The `project-relative.ts` half landed as
+`3c2e1c6`; the reduction is re-queued behind 7a. Defect: `260816-2108`.
+
+### Steps 3 and 6 were executed as one change
+
+Recorded under step 6 at the time. Defect: `260816-2032`, closed.
+
+### What the review added to step 9, which is now the largest unlanded step
+
+Three records amend it and are worth reading together rather than in three passes:
+`260816-2021` (`guard-bash-integration.test.ts` is in no step's list),
+`260816-2122` (the harness reduction deletes four fixtures that same file imports, so adding the
+file is not sufficient on its own), and `260816-2108`'s second finding
+(`lib/__tests__/paths.test.ts` loses its subject at step 5b).

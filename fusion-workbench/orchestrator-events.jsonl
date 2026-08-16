@@ -1648,3 +1648,6 @@
 {"ts":"2026-08-16T19:11:27","event":"commit","turn":1,"task":"P-5a","agent":"orchestrator","detail":"3c2e1c6 refactor(hooks): project-relative.ts goes with its last caller"}
 {"ts":"2026-08-16T19:11:27","event":"task_error","turn":1,"task":"P-5b","agent":"coder","detail":"second plan ordering defect: paths.ts reduction depends on P-7a, not P-2; matchesAny is called at config.ts:736. Verified independently. Re-queued behind P-7a."}
 {"ts":"2026-08-16T19:11:41","event":"review_start","turn":1,"agent":"coderev","detail":"6 commits, 31 non-workbench files; range 3d41d4a..HEAD; carried list not recorded (no prior review)"}
+{"ts":"2026-08-16T19:36:19","event":"coherence_review","turn":1,"agent":"orchestrator","detail":"verdict=ok | Artifact-Grounding: 6 defects filed, all prose, no logic finding | Artifact-Directive: moves toward, guard has no deny leaf left | Grounding-Directive: 2 decisions answered by the user, no conflict"}
+{"ts":"2026-08-16T19:36:19","event":"gate_response","turn":1,"agent":"user","detail":"continue; CLAUDE.md resolved by adding a curator run as step 16 before step 14"}
+{"ts":"2026-08-16T19:36:38","event":"turn_end","turn":1,"agent":"orchestrator","detail":"6 tasks resolved (P-1..P-6 minus P-5b), 7 commits, 6 issues created by review, 2 decisions answered, 0 agent errors"}
