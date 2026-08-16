@@ -1641,3 +1641,6 @@
 {"ts":"2026-08-16T18:44:44","event":"task_done","turn":1,"task":"P-3+P-6","agent":"coder","detail":"9c79202 — escalation.ts and clear-halt.ts deleted, four dist orphans pruned, three event types retired"}
 {"ts":"2026-08-16T18:44:44","event":"commit","turn":1,"task":"P-3+P-6","agent":"orchestrator","detail":"9c79202 refactor(guard): the escalation counter, the halt and its clearing script are gone"}
 {"ts":"2026-08-16T18:44:44","event":"task_start","turn":1,"task":"P-4","agent":"coder","detail":"self-detect.ts, session-start.ts, four bin/ headers, tracker.ts comments"}
+{"ts":"2026-08-16T18:59:31","event":"task_done","turn":1,"task":"P-4","agent":"coder","detail":"ec3b6ad — isFusionPluginCwd deleted, isFusionPluginRoot kept with its rule, four bin/ headers corrected"}
+{"ts":"2026-08-16T18:59:31","event":"commit","turn":1,"task":"P-4","agent":"orchestrator","detail":"ec3b6ad refactor(guard): the fusion-repository stand-down goes"}
+{"ts":"2026-08-16T18:59:31","event":"task_start","turn":1,"task":"P-5","agent":"coder","detail":"project-relative.ts deleted; paths.ts reduced to foldCase"}
