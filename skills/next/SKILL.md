@@ -215,13 +215,15 @@ Only the record is renamed. The directory name never changes; that stability is 
 ```bash
 mv "$CDIR/_a_circle.md" "$CDIR/_t_circle.md"
 REC="$CDIR/_t_circle.md"
-sed -E 's|^\*\*Status:\*\*.*$|**Status:** active|' "$REC" > "$REC.tmp" \
-  && mv "$REC.tmp" "$REC" || rm -f "$REC.tmp"
-grep -qE '^\*\*Status:\*\* active$' "$REC" \
-  || echo "note: $REC carries no **Status:** field, so none was set; the marker on the filename is the state" >&2
+awk 'BEGIN{h=1} /^## /{h=0} h&&!n&&/^\*\*Status:\*\*/{print "**Status:** active";n=1;next} {print} END{exit n?0:9}' "$REC" > "$REC.tmp"
+case $? in
+  0) mv "$REC.tmp" "$REC" || { rm -f "$REC.tmp"; echo "note: $REC — the rewritten copy could not replace the record; **Status:** is unchanged" >&2; } ;;
+  9) rm -f "$REC.tmp"; echo "note: $REC carries no **Status:** field in its head block, so none was set; the marker on the filename is the state" >&2 ;;
+  *) rm -f "$REC.tmp"; echo "note: $REC — the **Status:** rewrite failed, so the field is unchanged" >&2 ;;
+esac
 ```
 
-Both names are literal arguments to `mv`, not globs — the underscore marker needs no escaping and no special handling here. It is only *pattern matching* against marker names that needs care (see `rules/fusion-workbench-conventions.md` `## Marker globs`). The field is rewritten through a temporary file rather than with `sed -i`, whose in-place flag takes an argument on BSD `sed` and none on GNU `sed`; `/fusion:migrate` rewrites record fields the same way for the same reason, and the `rm -f` keeps a failed write from leaving a `.tmp` behind. The note is decided from the **result** of the write, never from a separate test of the input — a field absent and a field present but valueless both reach it. Put no `grep` guard in front of the `sed`: that was the shape this replaced, and its two patterns asked different questions.
+Both names are literal arguments to `mv`, not globs — the underscore marker needs no escaping and no special handling here. It is only *pattern matching* against marker names that needs care (see `rules/fusion-workbench-conventions.md` `## Marker globs`). The field is rewritten through a temporary file rather than in place, because `sed -i` takes an argument on BSD and none on GNU; `/fusion:migrate` rewrites record fields the same way for the same reason, and each `rm -f` keeps a failed write from leaving a `.tmp` behind. One `awk` pass rewrites and reports what it did, and each branch says which of the three happened: exit 9 is a head block with no `**Status:**` line, any other non-zero is a failed pass or redirect, 0 is the field set. Nothing re-reads the record afterwards, because a re-read cannot separate a failed write from a missing field — that mismatch is what put the old `grep` here, first in front of the rewrite and then behind it. The pass stops at the first `## ` heading and rewrites only the first match before it, so a `**Status:**` line quoted in a template block further down is neither read nor touched.
 
 **The head fields are written at the act that moves them, and this is that act for one of the three.** `$FUSION_SRC/agents/orchestrator.md` `## Circle head fields` defines all three — when each is written, what value it takes, and why `(none yet)` is a value rather than a gap. Do not restate it here. What this skill can decide, it decides now; what it cannot, it leaves honest:
 

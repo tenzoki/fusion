@@ -15,19 +15,19 @@
   analyst.md 21317
   bugfixer.md 11808
   coder.md 9688
-  coderev.md 13257
+  coderev.md 13318
   consultant.md 14825
   curator.md 33621
   editor.md 14272
   ontocoder.md 13305
-  ontorev.md 11234
-  orchestrator.md 140511
+  ontorev.md 11295
+  orchestrator.md 144832
   planner.md 18434
-  playmaker.md 38622
+  playmaker.md 38712
   reconciler.md 20006
   shaper.md 25421
   taskplanner.md 14375
-  total 400696
+  total 405229
 
 [skills bytes]
   archive/SKILL.md 23777
@@ -40,9 +40,9 @@
   log-activity/SKILL.md 13559
   memo/SKILL.md 12560
   migrate/SKILL.md 26630
-  next/SKILL.md 27593
+  next/SKILL.md 28189
   setup/SKILL.md 36333
-  total 226301
+  total 226897
 
 [hook-tests lines]
   clear-halt-concurrent-halt.test.ts 427
@@ -80,13 +80,13 @@
   project-relative.test.ts 159
   provenance-header-lint.test.ts 449
   record-counts-measurement.test.ts 521
-  reference-resolution-lint.test.ts 814
-  review-coverage-mandate.test.ts 278
-  review-coverage.test.ts 677
+  reference-resolution-lint.test.ts 933
+  review-coverage-mandate.test.ts 336
+  review-coverage.test.ts 804
   rules-emission-golden.test.ts 1159
   rules-voice-profile.test.ts 318
   session-start-subdirectory.test.ts 159
   staging-drift.test.ts 649
   surface-growth-bound.test.ts 574
-  turn-budget-lint.test.ts 398
-  total 19633
+  turn-budget-lint.test.ts 507
+  total 20046
