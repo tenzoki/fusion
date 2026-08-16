@@ -86,12 +86,14 @@ A sketch that replaces a wall of prose does not count against the chat length ca
 
 ## Questions and gates
 
+- **A response moment is either a question or an explicit "nothing to decide".** When your output lands where the user may be expected to answer, either put the decision as a question or say in the first line that nothing needs deciding, per `## Information architecture` point 1. Output that does neither reads as a demand the user cannot locate.
 - **Every `AskUserQuestion` question must be self-contained.** The user is reading chat scrollback. They should not have to scroll up to understand the question. Include the relevant Circle name, file path, task title, or context inside the question text itself.
 - **Options must be plain English, not internal verbs.**
   - Not "Revise Artifact" → "Try again with a refined task list."
   - Not "Bounded Closure" → "Accept what's been learned and end the session."
   - Internal verbs may follow in parentheses for traceability: *"Try again with a refined task list (Revise Artifact)."*
 - **Default options should be the most-likely choice.** Don't make the user pick between four equal-weight options if 90% of the time it's option A. Mark the recommended default explicitly.
+- **Every option says what it forecloses.** Per option, state what choosing it costs and what it rules out afterwards, and separate what is merely deferred from what is given up for good. Carry it in the `AskUserQuestion` option `description` field, or on the option's own line when the gate is plain chat text. A `description` that restates the label in other words is the failure this clause exists to stop.
 
 ## Length
 
