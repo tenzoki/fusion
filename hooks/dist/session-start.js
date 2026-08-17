@@ -73,12 +73,17 @@
  * ## Why the message is English
  *
  * Every string fusion's hooks emit is English — this file's sibling banner, the
- * guard's deny reasons, the halt notice. Hook and CLI operator strings are one
- * of the surfaces `rules/fusion-workbench-conventions.md` `## Project language`
- * exempts from a project's declared languages; a hook fires before any agent has
- * read `CLAUDE.md`, and teaching a SessionStart hook to parse that file for one
+ * guard's configuration advisories, the tracker's review-coverage and
+ * staging-drift notices. Hook and CLI operator strings are one of the surfaces
+ * `rules/fusion-workbench-conventions.md` `## Project language` exempts from a
+ * project's declared languages; a hook fires before any agent has read
+ * `CLAUDE.md`, and teaching a SessionStart hook to parse that file for one
  * string would be a new mechanism serving one caller. Localising one of fusion's
- * operator strings and not the other fifteen is the inconsistency, not the fix.
+ * operator strings while the rest stay English is the inconsistency, not the fix.
+ *
+ * The count that stood in that last sentence is deliberately not restated: the
+ * set has shrunk three times since it was measured, so a number written into
+ * prose about it is stale before it is committed.
  *
  * ## Channel
  *

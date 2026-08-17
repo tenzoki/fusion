@@ -1678,3 +1678,8 @@
 {"ts":"2026-08-17T02:09:13","event":"task_start","turn":3,"task":"P-12","agent":"coder","detail":"docs/upgrading-to-v10.md, plus the pointers from README and /fusion:help"}
 {"ts":"2026-08-17T03:26:51","event":"gate_response","turn":3,"task":"P-13","agent":"user","detail":"proceed with the corrected Retired list from issue 260816-2316"}
 {"ts":"2026-08-17T03:26:51","event":"task_start","turn":3,"task":"P-13","agent":"ontocoder","detail":"nine decision records across four stores; Retired list corrected"}
+{"ts":"2026-08-17T06:35:34","event":"task_done","turn":3,"task":"P-13","agent":"ontocoder","detail":"c65e1cf — 6 decisions to implemented, 1 superseded, 1 Retired line, 3 issues closed; 260804-1630 deliberately untouched"}
+{"ts":"2026-08-17T06:35:34","event":"commit","turn":3,"task":"P-13","agent":"orchestrator","detail":"c65e1cf chore(decisions): nine records follow the code"}
+{"ts":"2026-08-17T06:35:34","event":"gate_response","turn":3,"agent":"user","detail":"push to origin/main deferred until after P-14"}
+{"ts":"2026-08-17T06:35:34","event":"task_start","turn":3,"task":"P-16","agent":"curator","detail":"survey pass over the three normative surfaces; CLAUDE.md holds the last 4 dangling citations"}
+{"ts":"2026-08-17T08:13:46","event":"gate_response","turn":3,"task":"P-16","agent":"user","detail":"magnitude 26.3% of CLAUDE.md confirmed; all 18 ledger entries approved including the L09 rule deletion"}

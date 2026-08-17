@@ -519,7 +519,21 @@ function scanHeadingAnchors(
 // already uses for `clear-halt.ts`, so a citation of something removed stays out of
 // class (a) rather than earning an EXAMPLE_PATHS entry. anchors and records did not
 // move.
-const BASELINE = { paths: 1112, anchors: 139, records: 94 };
+// Re-approved 2026-08-17, same Circle, step 16 — the curator's pass over
+// `CLAUDE.md` and `rules/fusion-workbench-conventions.md` (run log
+// `circles/260816-1741-guard-becomes-observation-only/history/260817-0845-curator-run.md`).
+// paths 1112 -> 1120, measured per file by rerunning this gate against each file
+// reverted in turn: `CLAUDE.md` moves +7 and the conventions file +1. The nine
+// citations the curator's replacement text adds are `bin/fusion-plugin-cwd`,
+// `bin/fusion-source-root`, `docs/upgrading-to-v10.md`, `hooks/guard.ts` twice,
+// `hooks/lib/config.ts`, `install.sh` and `templates/fusion.json` in `CLAUDE.md`,
+// and `hooks/lib/guard-state-file.ts` in the conventions file (ledger entry L16);
+// the one it drops is a second `hooks/lib/self-detect.ts` in `CLAUDE.md`, leaving
+// +8. Ledger entries L17 and L18 add and remove no citation at all, and neither
+// does the `hooks/session-start.ts` half that lands in the same commit as them:
+// that edit was measured on its own by reverting it, and the count stood at 1120
+// either way. anchors and records did not move.
+const BASELINE = { paths: 1120, anchors: 139, records: 94 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the

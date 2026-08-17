@@ -56,3 +56,19 @@ Both files in one change, so they cannot diverge:
 
 Whoever holds `rules/` holds this. If step 11 of this Circle's plan takes the hook's half,
 it must take the rule's half in the same commit or leave both.
+
+---
+Resolved: Both halves landed in one change, as the record required. The curator's
+gated pass took `rules/fusion-workbench-conventions.md` (run log
+`circles/260816-1741-guard-becomes-observation-only/history/260817-0845-curator-run.md`,
+ledger entries L17 and L18): the exempt-surfaces bullet now illustrates itself with
+the configuration advisories and the measurement notices, and the worked-case
+sentence drops the count instead of re-measuring it. `hooks/session-start.ts`
+`## Why the message is English` was then brought into agreement with it — the
+guard's deny reasons and the halt notice give way to the guard's configuration
+advisories and the tracker's review-coverage and staging-drift notices, both
+verified live (`hooks/lib/config.ts:326,394`, `hooks/tracker.ts:333,415`), and
+"the other fifteen" becomes "the rest", with a sentence saying the count is
+deliberately not restated. The argument itself is unchanged, as the record said it
+should be. `hooks/dist/session-start.js` and its `.d.ts` were rebuilt, the compiled
+copies carrying the comment verbatim.
