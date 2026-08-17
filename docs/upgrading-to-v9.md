@@ -139,7 +139,7 @@ its user surface are `/fusion:setup`, `/fusion:cleanup` and `/fusion:cadence`, a
   which removed the halt, the escalation counter and the clearing script together. A halt
   flag left in your `escalation.json` now blocks nothing, there is no command to clear it
   with, and `/fusion:setup` offers to delete the file. **If you are upgrading past v9, read
-  fusion's v10 upgrade note as well** — it is the one that touches your project root.
+  `docs/upgrading-to-v10.md` as well** — it is the one that touches your project root.
 - **Your `fusion-guard.json`** was unaffected at v9: every key it set that still existed
   was merged exactly as before. At v10 that file is not read at all, and a Turn budget left
   in it is silently not applied. The v10 note covers the move.

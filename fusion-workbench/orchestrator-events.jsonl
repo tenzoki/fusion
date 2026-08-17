@@ -1673,3 +1673,6 @@
 {"ts":"2026-08-17T01:40:42","event":"turn_end","turn":2,"agent":"orchestrator","detail":"4 tasks resolved (P-7a, P-5b, P-7b, P-8, P-9), 6 commits, 7 issues created by review, 0 decisions answered, 0 agent errors"}
 {"ts":"2026-08-17T01:40:59","event":"turn_start","turn":3,"agent":"orchestrator","detail":"Turn 3; P-11 ready; remaining P-10, P-12, P-13, P-14, P-15, P-16"}
 {"ts":"2026-08-17T01:40:59","event":"task_start","turn":3,"task":"P-11","agent":"coder","detail":"shipped text surfaces; scope amended by issues 260816-2124, 2125, 2126, 2127, 2315, 2321"}
+{"ts":"2026-08-17T02:09:13","event":"task_done","turn":3,"task":"P-11","agent":"coder","detail":"1fb3f32 — 12 shipped surfaces corrected, 6 amending records closed; red set down to 2 files/3 cases; all 4 remaining dangling citations are in CLAUDE.md"}
+{"ts":"2026-08-17T02:09:13","event":"commit","turn":3,"task":"P-11","agent":"orchestrator","detail":"1fb3f32 docs: the shipped text says the guard decides nothing"}
+{"ts":"2026-08-17T02:09:13","event":"task_start","turn":3,"task":"P-12","agent":"coder","detail":"docs/upgrading-to-v10.md, plus the pointers from README and /fusion:help"}

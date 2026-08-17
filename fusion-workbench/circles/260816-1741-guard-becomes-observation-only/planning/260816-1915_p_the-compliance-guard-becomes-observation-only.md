@@ -301,12 +301,13 @@ The per-step `Dependencies` lines below are the authority; the subgraph edges ar
     - **Three departures worth recording.** First, the *Guard halt* circuit-breaker row was **deleted** rather than reworded, at both `:626` and its restatement at `:644`, and the two counts around the restatement moved with it ("the other five" → four, "one exit among six" → five). Second, `README-hooks.md`'s `### Clearing a halt` and `### Adding a decision` sections were deleted whole: the first names a script that is gone, the second configures a check that is gone, and neither has a shorter true form. That freed `rules/relevant-file.md` from `EXAMPLE_PATHS`, which the no-dead-weight case caught the moment the section went, and added `lib/escalation.ts` there on the precedent of the four modules the protected-path removal left named on purpose. Third, three surfaces outside the step's list were corrected while open because the same sentence was false in them: `docs/working-model.md:162` (named by `260816-2126`), `README.md`'s best-practices bullet telling a user to dial the guard down, and `docs/philosophy.md`'s opening claim that drift is caught at write time.
     - History: `circles/260816-1741-guard-becomes-observation-only/history/260817-0400-step-11-shipped-text-says-what-the-guard-is.md`.
 
-12. **The migration note for consuming projects**
+12. [DONE] **The migration note for consuming projects**
     - Executor: `coder`
     - Files: `docs/upgrading-to-v10.md` (new), `README.md`, `skills/help/SKILL.md`
     - Changes: write the note on the precedent of `docs/upgrading-to-v9.md`, which exists because v9 removed mechanisms consuming projects had configured. This release does more than that: it removes a file every consuming project has at its root. The note states what left, what a project still has on disk, and what to do with it, in the same shape as its predecessor. Its load-bearing section is the configuration one, because a project that ignores it loses a Turn budget it set. Point at it from `README.md` `## Install` and from the update topic of `/fusion:help`, exactly as the v9 note is pointed at.
     - Dependencies: step 11
     - Verification: the note names the version step 14 writes into `plugin.json`.
+    - Landed: `docs/upgrading-to-v10.md`, pointed at from `README.md` `## Install` and from `/fusion:help`'s update topic, with the v9 note's forward pointer turned into a resolvable path. The note names `v10.0.0`. The lint's `paths` pin moved 1103 -> 1112 and was re-approved in the same change; the red set after the step is the 2 files / 3 cases it was before it.
 
 13. **The decision records are annotated**
     - Executor: `ontocoder`

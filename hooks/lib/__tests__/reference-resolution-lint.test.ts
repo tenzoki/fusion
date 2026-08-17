@@ -508,7 +508,18 @@ function scanHeadingAnchors(
 // shipped text puts 10 back by citing what survived — `templates/fusion.json`,
 // `hooks/lib/config.ts`, the three `bin/` helpers behind the work-tree
 // preference, `hooks/session-start.ts`. anchors and records did not move.
-const BASELINE = { paths: 1103, anchors: 139, records: 94 };
+// Re-approved 2026-08-17, same Circle, step 12 — the migration note for consuming
+// projects. paths 1103 -> 1112, all nine of them citations of `docs/upgrading-to-v10.md`
+// and of what that note points a reader at: four inside the new note itself
+// (`hooks/lib/paths.ts`, `README-hooks.md`, `templates/fusion.json`,
+// `docs/upgrading-to-v9.md`), two each from `README.md` and `skills/help/SKILL.md`
+// naming the new note, and one from `docs/upgrading-to-v9.md`, whose forward
+// pointer to it became a path now that the file exists. The note names the modules
+// this Circle deleted WITHOUT a directory prefix, the spelling README-hooks.md
+// already uses for `clear-halt.ts`, so a citation of something removed stays out of
+// class (a) rather than earning an EXAMPLE_PATHS entry. anchors and records did not
+// move.
+const BASELINE = { paths: 1112, anchors: 139, records: 94 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the
