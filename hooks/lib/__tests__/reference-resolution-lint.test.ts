@@ -533,7 +533,19 @@ function scanHeadingAnchors(
 // does the `hooks/session-start.ts` half that lands in the same commit as them:
 // that edit was measured on its own by reverting it, and the count stood at 1120
 // either way. anchors and records did not move.
-const BASELINE = { paths: 1120, anchors: 139, records: 94 };
+// Re-approved 2026-08-17 — the curator's next pass, run log
+// `shared/history/260817-1925-curator-run.md`, whose three applied ledger entries
+// (L01 `rules/circle-records.md`, L02 `rules/fusion-workbench-conventions.md`,
+// L03 `CLAUDE.md`) replace one false claim: that `rules/circle-records.md`'s
+// emission audience is *derived* from which prompts name a Circle-scoped resolver
+// key. paths 1120 -> 1124, measured per file by reverting each of the three in turn
+// and rerunning this gate: `CLAUDE.md` +2, the conventions file +2, and L01 zero.
+// The four are one `bin/fusion-rules` and one `rules/circle-records.md` in each of
+// the first two files. L01 is the entry worth reading the pin for: at +450 bytes it
+// is the largest of the three and moves the count by nothing, because its
+// replacement text re-spends the citations it inherited rather than adding any.
+// anchors and records did not move.
+const BASELINE = { paths: 1124, anchors: 139, records: 94 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the
