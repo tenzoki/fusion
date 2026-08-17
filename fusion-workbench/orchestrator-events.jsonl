@@ -1689,3 +1689,9 @@
 {"ts":"2026-08-17T09:03:22","event":"task_done","turn":3,"task":"P-10","agent":"coder","detail":"e489133 — hook-test baseline re-armed; agents and skills baselines refused because both grew; suite green"}
 {"ts":"2026-08-17T09:03:22","event":"commit","turn":3,"task":"P-10","agent":"orchestrator","detail":"e489133 test(growth): one baseline moves, and the two that grew are refused"}
 {"ts":"2026-08-17T09:03:22","event":"task_start","turn":3,"task":"P-14","agent":"coder","detail":"version 10.0.0, install.sh and README pin examples, plugin.json description"}
+{"ts":"2026-08-17T09:15:05","event":"task_done","turn":3,"task":"P-14","agent":"coder","detail":"a7f70b9 — version 10.0.0, both pin examples, manifest description rewritten"}
+{"ts":"2026-08-17T09:15:05","event":"commit","turn":3,"task":"P-14","agent":"orchestrator","detail":"a7f70b9 chore(release): version 10.0.0"}
+{"ts":"2026-08-17T09:15:05","event":"commit","turn":3,"agent":"orchestrator","detail":"e331332 docs(readme): the Setup paragraph names fusion.json"}
+{"ts":"2026-08-17T09:15:05","event":"task_start","turn":3,"task":"P-15","agent":"user","detail":"off-repository verification; the user is running it against a copy of a real consuming project"}
+{"ts":"2026-08-17T10:17:26","event":"task_error","turn":3,"task":"P-15","agent":"user","detail":"user verification found the monitor dismiss defect; filed in the shared store; pre-existing from b05b423, made more reachable by fab8a4b"}
+{"ts":"2026-08-17T10:36:05","event":"session_start","history_file":"circles/260816-1741-guard-becomes-observation-only/history/260816-1841-orchestrator-session.md","detail":"RESUME of interrupted session — Directive: the compliance guard observes and never blocks; mode plan; re-entering Turn 3 at P-15"}
