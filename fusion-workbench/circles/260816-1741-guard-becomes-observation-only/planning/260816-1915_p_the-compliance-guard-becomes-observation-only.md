@@ -274,7 +274,7 @@ The per-step `Dependencies` lines below are the authority; the subgraph edges ar
    - **What this step could not reach, named rather than absorbed.** `bin/fusion-turn-budget:41` and `docs/upgrading-to-v9.md:100` each carry a dangling citation of the deleted `hooks/config.json`, and neither file is in step 11's Files list. They are two of the 26 the citation lint reports, and they have no owner in this plan.
    - History: `circles/260816-1741-guard-becomes-observation-only/history/260816-2250-step-9-test-surface-follows-the-removal.md`.
 
-10. **The growth baselines are re-armed**
+10. [DONE] **The growth baselines are re-armed**
     - Executor: `coder`
     - Files: `hooks/lib/__tests__/surface-growth-bound.test.ts`
     - Changes: this is a cleanup, which is one of exactly two moments at which a baseline may move under the rule authored in `hooks/lib/__tests__/helpers/growth-bound.ts`. Regenerate the golden with `UPDATE_SURFACE_GOLDEN=1`, copy the per-file sizes into the baseline map, and write a comment naming this Circle as the cut that produced them. All three of that file's surfaces move: `agents/*.md` and `skills/*/SKILL.md` shrink through steps 1, 8 and 11, and the hook test surface shrinks by roughly 1 100 lines through step 9. Leave `rules-emission-golden.test.ts` alone: the always-on rule set is the curator's surface under the user's answer to shaping question 4, this Circle does not touch it, and re-baselining a corpus this work did not cut would grant head-room nobody paid for.

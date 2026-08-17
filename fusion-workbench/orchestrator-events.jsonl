@@ -1683,3 +1683,6 @@
 {"ts":"2026-08-17T06:35:34","event":"gate_response","turn":3,"agent":"user","detail":"push to origin/main deferred until after P-14"}
 {"ts":"2026-08-17T06:35:34","event":"task_start","turn":3,"task":"P-16","agent":"curator","detail":"survey pass over the three normative surfaces; CLAUDE.md holds the last 4 dangling citations"}
 {"ts":"2026-08-17T08:13:46","event":"gate_response","turn":3,"task":"P-16","agent":"user","detail":"magnitude 26.3% of CLAUDE.md confirmed; all 18 ledger entries approved including the L09 rule deletion"}
+{"ts":"2026-08-17T08:28:01","event":"task_done","turn":3,"task":"P-16","agent":"curator","detail":"5763550 — 18 ledger entries applied to CLAUDE.md and the conventions rule; citation lint green"}
+{"ts":"2026-08-17T08:28:01","event":"commit","turn":3,"task":"P-16","agent":"orchestrator","detail":"5763550 docs(curator): CLAUDE.md and the conventions rule stop describing a guard that decides"}
+{"ts":"2026-08-17T08:28:01","event":"task_start","turn":3,"task":"P-10","agent":"coder","detail":"growth baselines re-armed at the cleanup moment"}

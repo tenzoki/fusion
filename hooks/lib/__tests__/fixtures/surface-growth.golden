@@ -21,72 +21,67 @@
   editor.md 14272
   ontocoder.md 13305
   ontorev.md 11295
-  orchestrator.md 144832
+  orchestrator.md 144634
   planner.md 18434
   playmaker.md 38712
   reconciler.md 20006
   shaper.md 25421
   taskplanner.md 14375
-  total 405229
+  total 405031
 
 [skills bytes]
-  archive/SKILL.md 23777
+  archive/SKILL.md 23970
   cadence/SKILL.md 17560
   cleanup/SKILL.md 23999
   commit/SKILL.md 6233
   curate/SKILL.md 12797
   direct/SKILL.md 11012
-  help/SKILL.md 14248
+  help/SKILL.md 15162
   log-activity/SKILL.md 13559
   memo/SKILL.md 12560
   migrate/SKILL.md 26630
   next/SKILL.md 28189
-  setup/SKILL.md 38194
-  total 228758
+  setup/SKILL.md 38113
+  total 229784
 
 [hook-tests lines]
-  clear-halt-concurrent-halt.test.ts 427
   commit-message-path.test.ts 366
-  config.test.ts 1522
+  config.test.ts 795
   context-manifest.test.ts 476
   deliverable-language-lint.test.ts 141
   derivable-enumerations-lint.test.ts 462
   domain-cascade-order-lint.test.ts 235
   domain-cascade.test.ts 925
-  escalation.test.ts 253
   executor-verification-report-lint.test.ts 218
   fusion-commit-lock.test.ts 372
   fusion-count-sources.test.ts 443
   fusion-paths.test.ts 879
   glob-nomatch-lint.test.ts 162
-  guard-bash-integration.test.ts 389
-  guard-escalation-shape.test.ts 278
-  guard-halt-event.test.ts 146
-  guard-project-config-integration.test.ts 530
+  guard-bash-integration.test.ts 346
+  guard-project-config-integration.test.ts 423
   guard-state-shape.test.ts 251
   helpers/citation-scan.ts 574
   helpers/growth-bound.ts 123
-  helpers/guard-harness.ts 1015
+  helpers/guard-harness.ts 972
   helpers/prompt-blocks.ts 28
-  hook-fail-open.test.ts 607
-  hooks-wiring.test.ts 92
-  legacy-halt-clearing.test.ts 262
+  hook-fail-open.test.ts 621
+  hooks-wiring.test.ts 103
+  legacy-halt-clearing.test.ts 213
   marker-format-lint.test.ts 186
   monitor-warnings-panel.test.ts 1079
   path-literal-lint.test.ts 342
-  paths.test.ts 132
+  paths.test.ts 51
   playmaker-backlog-mandate-lint.test.ts 392
   portfolio-citation-form-lint.test.ts 171
-  project-relative.test.ts 159
   provenance-header-lint.test.ts 449
   record-counts-measurement.test.ts 521
-  reference-resolution-lint.test.ts 933
+  reference-resolution-lint.test.ts 979
   review-coverage-mandate.test.ts 336
   review-coverage.test.ts 804
   rules-emission-golden.test.ts 1159
   rules-voice-profile.test.ts 318
   session-start-subdirectory.test.ts 159
   staging-drift.test.ts 649
-  surface-growth-bound.test.ts 574
-  turn-budget-lint.test.ts 507
-  total 20046
+  surface-growth-bound.test.ts 628
+  turn-budget-lint.test.ts 524
+  total 17875

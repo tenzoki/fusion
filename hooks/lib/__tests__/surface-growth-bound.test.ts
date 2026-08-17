@@ -136,6 +136,64 @@ import { fmt, Growth, growth, grownLines, Sized } from "./helpers/growth-bound.j
 //     shrinking, and the baseline takes it as it is. Nothing here asks for that
 //     to be cut; the bound asks only that it stop growing at the measured rate.
 //
+// ## The cleanup re-baseline, 2026-08-17 — the hook tests, and them alone
+//
+// This is event 1 of `## Re-baselining` in `helpers/growth-bound.ts`: a cut was
+// done, so the surface that was cut is re-baselined onto its post-cut sizes.
+//
+// THE CUT IS Circle `circles/260816-1741-guard-becomes-observation-only`,
+// sixteen commits `3d41d4a..5763550`, which stopped fusion's compliance guard
+// from deciding anything. It removed CHECK 1, CHECK 3, the consecutive-block
+// counter, the halt, `hooks/clear-halt.ts`, the fusion-repository stand-down,
+// `isFusionPluginCwd()`, `hooks/lib/escalation.ts`,
+// `hooks/lib/project-relative.ts`, four of the five exports of
+// `hooks/lib/paths.ts`, `hooks/config.json` and `hooks/config.example.json`,
+// and renamed `fusion-guard.json` to `fusion.json`. Four test files went with
+// their subjects in `1d1d3a3`, and `project-relative.test.ts` in `3c2e1c6`.
+//
+// ONE OF THE THREE SURFACES WAS CUT, AND IT IS THE ONLY ONE RE-BASELINED. The
+// plan step that ordered this re-baseline says all three shrink; two of them do
+// not. Measured off `git` at the commit before the Circle's first (`3d41d4a`)
+// and at its last (`5763550`):
+//
+//   hook test lines      20 046 -> 17 821   (-2 225, twice the estimate)
+//   agents/*.md         405 229 -> 405 031  (-198, 0.05 % of the surface)
+//   skills/*/SKILL.md   226 897 -> 229 784  (+2 887 — this surface GREW)
+//
+// `skills/` grew because steps 1 and 8 added to `skills/setup/SKILL.md` — the
+// legacy-halt deletion offer, then the `fusion.json` seed — and step 11's
+// rewrites cost more bytes than the guard text they replaced. So `AGENT_BASELINE`
+// and `SKILL_BASELINE` DO NOT MOVE HERE. Against the 2026-08-15 arming they
+// stand at +5 188 and +9 345 bytes, inside their own head-room and passing;
+// copying those totals in would absolve 14 533 bytes of growth on the strength
+// of a 198-byte cut, and most of it is not even this Circle's — between the
+// arming (`0609945`) and `3d41d4a`, `agents/` rose 5 386 and `skills/` 6 458.
+// That is the silent raise `helpers/growth-bound.ts` names, and it is the same
+// argument that kept `rules-emission-golden.test.ts` out of this step. The gap
+// between the plan's claim and the measurement is filed as
+// `circles/260816-1741-guard-becomes-observation-only/issues/260817-1032_o_two-of-the-three-bounded-surfaces-grew-through-this-circle-so-only-the-hook-tests-baseline-moves.md`.
+//
+// WHAT THIS RE-BASELINE ABSOLVES, written as text so it survives the numbers
+// moving. `TEST_LINE_BASELINE` drops five entries whose files are gone — 1 263
+// lines of `clear-halt-concurrent-halt`, `escalation`, `guard-escalation-shape`,
+// `guard-halt-event` and `project-relative` — and takes the survivors as they
+// stand. Those survivors net -369 lines against the arming baseline, and inside
+// that net sit 683 lines this Circle ADDED rather than cut:
+// `monitor-warnings-panel.test.ts` +182, `reference-resolution-lint.test.ts`
+// +165, `review-coverage.test.ts` +127, `turn-budget-lint.test.ts` +126,
+// `review-coverage-mandate.test.ts` +58, `hook-fail-open.test.ts` +14 and
+// `hooks-wiring.test.ts` +11. One more addition is this step's own: the
+// section you are reading grew THIS file, and its entry below is taken at the
+// grown size, on the precedent the 2026-08-15 arming set when the instrument's
+// 699 lines entered the baseline it bounds. Those lines and the 683 above are
+// what this re-baseline absolves, and nothing else is.
+//
+// THE SHRINK IS NOT BANKED. The floor falls 18 190 -> 17 875, so the surface's
+// next 2 500 lines are measured from the lower mark: it has LESS room after this
+// step than the -369 lying under the old baseline gave it. A cut that handed
+// itself its own savings back as head-room would be the arming mistake this file
+// already refused once.
+//
 // ## What no bound covers, stated rather than left to be discovered
 //
 // The hook-test surface counts `.ts` under `hooks/lib/__tests__/`. The three
@@ -241,58 +299,54 @@ const SKILL_BASELINE: Record<string, number> = {
 };
 
 /**
- * The hook tests and their helpers, in lines. 19 453 at the 2026-08-15 arming:
- * 18 799 as the removals left the suite, plus the 699 lines of this file and
- * `helpers/growth-bound.ts`, less the 45 the shared instrument took out of
- * `rules-emission-golden.test.ts` when it moved. The instrument counts itself —
- * a bound that did not would be granting itself the one exemption it exists to
- * refuse.
+ * The hook tests and their helpers, in lines. 17 875 at the 2026-08-17 cleanup
+ * re-baseline, down from 19 453 at the 2026-08-15 arming: five entries dropped
+ * with the files Circle 260816-1741 deleted, and the survivors taken as they
+ * stand. See `## The cleanup re-baseline, 2026-08-17` above for what that
+ * absolves and for why the other two maps did not move. The instrument still
+ * counts itself — a bound that did not would be granting itself the one
+ * exemption it exists to refuse.
  */
 const TEST_LINE_BASELINE: Record<string, number> = {
-  "clear-halt-concurrent-halt.test.ts": 427,
   "commit-message-path.test.ts": 366,
-  "config.test.ts": 1522,
+  "config.test.ts": 795,
   "context-manifest.test.ts": 476,
   "deliverable-language-lint.test.ts": 141,
   "derivable-enumerations-lint.test.ts": 462,
   "domain-cascade-order-lint.test.ts": 235,
   "domain-cascade.test.ts": 925,
-  "escalation.test.ts": 253,
   "executor-verification-report-lint.test.ts": 218,
   "fusion-commit-lock.test.ts": 372,
   "fusion-count-sources.test.ts": 443,
   "fusion-paths.test.ts": 879,
   "glob-nomatch-lint.test.ts": 162,
-  "guard-bash-integration.test.ts": 389,
-  "guard-escalation-shape.test.ts": 278,
-  "guard-halt-event.test.ts": 146,
-  "guard-project-config-integration.test.ts": 530,
+  "guard-bash-integration.test.ts": 346,
+  "guard-project-config-integration.test.ts": 423,
   "guard-state-shape.test.ts": 251,
   "helpers/citation-scan.ts": 574,
   "helpers/growth-bound.ts": 123,
-  "helpers/guard-harness.ts": 1015,
+  "helpers/guard-harness.ts": 972,
   "helpers/prompt-blocks.ts": 28,
-  "hook-fail-open.test.ts": 607,
-  "hooks-wiring.test.ts": 92,
-  "legacy-halt-clearing.test.ts": 262,
+  "hook-fail-open.test.ts": 621,
+  "hooks-wiring.test.ts": 103,
+  "legacy-halt-clearing.test.ts": 213,
   "marker-format-lint.test.ts": 186,
-  "monitor-warnings-panel.test.ts": 897,
+  "monitor-warnings-panel.test.ts": 1079,
   "path-literal-lint.test.ts": 342,
-  "paths.test.ts": 132,
+  "paths.test.ts": 51,
   "playmaker-backlog-mandate-lint.test.ts": 392,
   "portfolio-citation-form-lint.test.ts": 171,
-  "project-relative.test.ts": 159,
   "provenance-header-lint.test.ts": 449,
   "record-counts-measurement.test.ts": 521,
-  "reference-resolution-lint.test.ts": 814,
-  "review-coverage-mandate.test.ts": 278,
-  "review-coverage.test.ts": 677,
+  "reference-resolution-lint.test.ts": 979,
+  "review-coverage-mandate.test.ts": 336,
+  "review-coverage.test.ts": 804,
   "rules-emission-golden.test.ts": 1159,
   "rules-voice-profile.test.ts": 318,
   "session-start-subdirectory.test.ts": 159,
   "staging-drift.test.ts": 649,
-  "surface-growth-bound.test.ts": 576,
-  "turn-budget-lint.test.ts": 398,
+  "surface-growth-bound.test.ts": 628,
+  "turn-budget-lint.test.ts": 524,
 };
 
 /** See `## Where each head-room comes from`. Derived per surface, never shared. */
