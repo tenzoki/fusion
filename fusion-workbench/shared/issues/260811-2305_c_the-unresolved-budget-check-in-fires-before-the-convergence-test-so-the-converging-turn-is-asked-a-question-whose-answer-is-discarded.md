@@ -40,3 +40,6 @@ This composes with the Revise-Artifact hole filed alongside it: if the check-in 
 
 - The check-in does not fire on a Turn boundary at which the loop exits for another reason.
 - The prompt states which of Step 3d, Step 3e and Step 3c-bis the gate sits relative to, and why that position and not the neighbouring one.
+
+---
+Resolved: Fixed by the same move as `260811-2304`: the gate sits at the start of a Turn, after Step 3e has already decided whether another Turn is entered. `agents/orchestrator.md:655` carries the reasoning explicitly — "on the Turn that empties the queue, Step 3e exits to Phase 4 whatever the user answered, so a Continue there would be collected, logged, and then not acted on. At the start of a Turn both faults go at once." The discarded-answer case this record measured can no longer occur. Verified by reconciliation pass 260817-1836 at HEAD `2552586`.

@@ -26,3 +26,6 @@ $ bin/fusion-rules coderev | grep voice
 ```
 
 **One thing the run file got right and should keep.** Its own closing note in section 9 states that the curator did not observe the gate and records only what the apply dispatch reported. That is the qualification which makes this correctable rather than a contested account, and it is why this is filed as an inaccuracy in a relayed fact rather than as a misrepresented approval.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The workbench copy at `fusion-workbench/stilwerk/chat-voice-de.yaml` C04 still says 8 and 12 lines while the shipped `stilwerk/chat-voice-de.yaml` C04 says 6 and 8, so the divergence stands. This is the same class as `260814-1419`. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

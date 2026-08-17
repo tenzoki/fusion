@@ -125,3 +125,6 @@ task list and the queue-ground apparatus), so the two negative controls at `:222
 exist. `hooks/lib/__tests__/executor-verification-report-lint.test.ts:180-193` is untouched and
 present at HEAD, and the record's defect — a negative control that re-implements the logic it is
 supposed to exercise instead of calling it — still holds there. Marker unchanged.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). Half of this is moot and half is untouched. `queue-ground-lint.test.ts` no longer exists: it went in `dd312eb` with the persisted task list, in Circle `260815-0007-remove-eight-mechanisms-and-cap-growth`, so its negative control cannot be repaired and does not need to be. The second instance stands unchanged — `hooks/lib/__tests__/executor-verification-report-lint.test.ts:180-193` still carries a hand-written `preFixCoderProcess` fixture that omits step 2 and prepends a heading the real pre-fix text never had (checked against `git show 1f2faaf^:agents/coder.md`). Marker stays open on that one.

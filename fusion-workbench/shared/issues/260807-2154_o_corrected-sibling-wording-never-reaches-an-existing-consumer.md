@@ -91,3 +91,6 @@ in *this* tree now reads "dafür gilt das Langform-Schreibprofil"; the finding a
 the finding and is not a claim about this tree.
 
 The three candidate resolutions all remain open. None was taken this session.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `skills/setup/SKILL.md:159-165` still guards all four stylometric-profile copies with an existence test and leaves existing files untouched. None of the three candidate resolutions (detect and refresh, document in README, accept and close) was taken. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

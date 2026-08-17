@@ -63,3 +63,6 @@ Two separable pieces, and the first does not depend on the second.
       or returns only a line that names it as a mechanism that does not exist.
 - [ ] Every `/fusion:<name>` occurrence in the shipped prompts resolves to a directory under
       `skills/` holding a `SKILL.md`, checked by a test rather than by hand.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:209` still cites `/fusion:monitor-reset`, and `ls skills/` returns twelve directories, none of them that one. The reference lint still resolves only path-shaped citations, not slash-command names. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

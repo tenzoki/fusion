@@ -44,3 +44,6 @@ number, since this is the second renumbering the paragraph has survived unchange
 ## Related
 
 - `shared/issues/260811-2304_*` — the placement defect `b00a7a4` was fixing
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:111` still names Phase 2 step 3 and step 2, while at HEAD step 3 is the `turn_start` emission and the loop resumes at step 1. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

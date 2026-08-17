@@ -20,3 +20,6 @@ What is missing is an agreement check between the graph and the declarations it 
 Filed in the shared store rather than in the Circle: this is a defect in the plugin's own authoring rule, not something the guard/rules-write Directive caused. It was found next to that work, which is the Origin Rule's shared case.
 
 Touches `rules/design-diagrams.md`, which is on `guard.protectedPaths` — a fix needs the Human Gate or `FUSION_ALLOW_RULES_WRITE`, and `rules/protected-path-discipline.md` governs how.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `rules/design-diagrams.md:47-54` still lists only the five shape questions and says nothing about agreement with the prose. The `conceptrev` agent that produced the motivating findings was retired on 2026-08-15, which does not touch the rule text this record is about. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

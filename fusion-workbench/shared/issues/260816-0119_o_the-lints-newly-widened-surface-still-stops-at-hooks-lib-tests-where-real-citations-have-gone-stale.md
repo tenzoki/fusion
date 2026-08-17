@@ -51,3 +51,6 @@ fabricated ones.
 - `shared/decisions/260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md` — the upstream question about who follows a rename into the citing text
 
 Also seen: 260817-1613 by reconciler — a second live instance in the same file, created by this session's own marker rename: `hooks/lib/__tests__/surface-growth-bound.test.ts:174` cites `circles/260816-1741-guard-becomes-observation-only/issues/260817-1032_o_two-of-the-three-bounded-surfaces-grew-through-this-circle-so-only-the-hook-tests-baseline-moves.md`, and that record moved to `_c_` in `dbbad70`. `npm test` is green (35 files, 653 tests) because `surface()` still stops at `hooks/lib/*.ts`, which is exactly the gap this record measures.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `hooks/lib/__tests__/reference-resolution-lint.test.ts` `surface()` still scans only `hooks/lib/*.ts` and top-level `hooks/*.ts`, and both stale citations the record names are still stale. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

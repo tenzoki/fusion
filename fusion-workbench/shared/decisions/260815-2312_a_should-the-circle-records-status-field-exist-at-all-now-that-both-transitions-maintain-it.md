@@ -78,3 +78,6 @@ Implemented: <set when status moves to _i_>
 Deferred: <set when status moves to _d_>
 Superseded by: <set when status moves to _s_>
 Retired: <set when the implementation is removed; the marker stays _i_>
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`). Answer recorded, not yet realised — marker stays `_a_`. `rules/circle-records.md:70` still carries the `**Status:**` field in the Circle record template. The answer timed the removal to the next Circle that touches Circle records for another reason, and no such Circle has run since.

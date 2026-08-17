@@ -82,3 +82,6 @@ Amend `260811-1547` rather than opening a competing record. Two things to change
 
 - [ ] `260811-1547` names `skills/setup/SKILL.md:49` and no longer claims the rule has no exceptions.
 - [ ] Its acceptance criterion 2 is expressible as a test that passes against the tree as it stands.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: Neither fix landed: `260811-1547` still contains the unamended no-exceptions sentence, and `skills/setup/SKILL.md:60` still cites a retired skill name legitimately, which is the exception the record is about. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

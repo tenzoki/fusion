@@ -26,3 +26,6 @@ orchestrator in its history file:
 Both are the same shape: acting on a remembered or reported state instead of the measured one. That
 is what "the instructions are often wrong" looks like from the inside, and it is not obviously the
 same thing as rule decay — it may be the more ordinary failure of trusting a summary over a source.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The dispatched analysis declined to measure the claim, and no mechanism beyond the narrower git-status-over-report convention at `agents/orchestrator.md:1060` was added. The record is unmeasured rather than unfixed, which is worth naming before it is planned. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

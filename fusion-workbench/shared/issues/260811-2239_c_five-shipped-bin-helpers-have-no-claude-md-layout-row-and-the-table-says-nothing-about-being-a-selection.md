@@ -41,3 +41,6 @@ The second is cheap and was deliberately **not** taken while working `260811-215
 
 - Either the five rows exist, or the table states in one line that it is a selection.
 - Whichever is chosen is recorded as a decision that also covers `260810-0410`, so the next table does not have to rediscover it.
+
+---
+Resolved: Closed on the first of the two acceptance branches: the table is exhaustive rather than labelled a selection. `ls bin/` returns 12 executables at HEAD `2552586` and `grep -c "^| \`bin/" CLAUDE.md` returns 12, one row each, including the four this record named as missing (`fusion-commit-lock`, `fusion-count-sources`, `fusion-staging-drift`, `fusion-review-coverage`). The fifth, `fusion-state-drift`, no longer ships — it was removed on 2026-08-15 with the counters it measured — so its row is moot rather than missing. The exhaustiveness is now gated in both directions by the `bin/` roster check in `hooks/lib/__tests__/derivable-enumerations-lint.test.ts` section 7, so the next helper added without a row fails the suite. Verified by reconciliation pass 260817-1836.

@@ -30,3 +30,6 @@ The comparison the commit drew on makes the gap sharper. `/fusion:next` Step 5b,
 `README-agents.md:70` cites `skills/direct/SKILL.md:72` as the site that passes `**Domain:**` to shaper. The relay at `:108` now passes it too. One-token fix while the table is open.
 
 **Found by:** coderev, reviewing `f4f01b0..3a0408a` (commit `9e14f93`), with the corpus greps run by a supporting analyst pass and re-verified against the worktree.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The `## Tone` section of `skills/direct/SKILL.md` still contradicts the relay described earlier in the same file, `**Answers:**` appears in no roster, and the shaper row still cites only the first of two pass-sites. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

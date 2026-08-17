@@ -48,3 +48,6 @@ genuine question (does the migration reverse the recorded promotion?) as
 `shared/decisions/260812-1720_*_does-the-circle-first-migration-reverse-a-recorded-promotion-out-of-a-circle.md`.
 This defect record is the note that the decision record's own body should carry the corrected
 premise once the gate is answered, so the two do not disagree in the archive.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `shared/decisions/260812-0254_a_where-do-a-circles-spec-and-plan-belong-when-the-circle-exists-before-them.md:81` still states that the existing twelve Circles are migrated, with no correction note. The plan that would have executed it records that its step 12 never ran because the gate answered leave it, so the premise was never overtaken by events either. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

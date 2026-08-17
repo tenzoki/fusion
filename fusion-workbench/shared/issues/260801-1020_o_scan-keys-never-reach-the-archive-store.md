@@ -20,3 +20,6 @@ Two candidate resolutions:
 The choice is a design call, not a bug fix, because option 2 is defensible: unbounded read scope has its own cost. What is not defensible is the current state, where the exclusion is invisible and its effect grows silently.
 
 Filed by: analyst, from `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md` (Question 4, fourth thin spot).
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `bin/fusion-paths` emits no `SCAN_ARCHIVE` or equivalent, and `rules/fusion-workbench-conventions.md` documents `archive/` as a store without stating a read-scope exclusion. Neither candidate resolution was taken. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

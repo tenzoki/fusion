@@ -47,3 +47,6 @@ these two are, and the test's own docstring already records that residual as "no
 
 Rewrite both sentences to the Turn-start placement, and decide whether the lint's surface widens to the
 two READMEs and `CLAUDE.md`. If it does, the "must also say check-in" exemption cannot carry over as-is.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `README-agents.md:169` and `CLAUDE.md:38` both still say every Turn boundary, contradicting `agents/orchestrator.md:647`, and `hooks/lib/__tests__/turn-budget-lint.test.ts:47` still scopes the scan to the orchestrator prompt alone. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

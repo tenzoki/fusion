@@ -48,3 +48,6 @@ reads a retired spelling and a corpus that keeps one, and that is a decision rat
 
 **Not to be fixed silently.** Whichever way it goes, the baseline count in the plan's
 reconciliation log moves, and the record of the move belongs beside it.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). Filed as a defect and reading as a decision. The record itself concludes that the choice is between a parser that reads a retired spelling and a corpus that keeps one, and offers no fix, only the fork. Both facts still hold at HEAD: `hooks/lib/__tests__/helpers/citation-scan.ts:87` and `:93` recognise only the single-character ellipsis and only the underscore marker form. Surfaced in this pass under "Misfiled — should be a decision"; relocating it is the user-s move, not a reconciler-s. Marker stays open in the meantime.

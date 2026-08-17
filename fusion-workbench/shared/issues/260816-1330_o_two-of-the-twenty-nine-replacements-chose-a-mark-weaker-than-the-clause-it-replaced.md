@@ -19,3 +19,6 @@ Commit `6049d3e` made 29 replacements in `rules/user-facing-output.md` and prese
 **Proposed marks.** `:112` takes a colon: "and an explicit unit: `min`, `h`, or `day`." `:121` takes parentheses: "After: `Bundle A: 6 steps` (followed, only if the user asked, by a separate trailing line `estimated effort (ai-based): about 45 min`)." Both are on the prescribed list, neither restores an em-dash, and neither changes a word.
 
 **The other 27 hold.** Every remaining replacement is a comma, a colon, parentheses or a sentence split where the subordination it carried is recoverable from the juxtaposition. The three sentence splits that create a pronoun opener are filed separately; they are a register fault, not a force change.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `rules/user-facing-output.md:112` and `:121` both still carry the weaker mark; neither one-character correction landed. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

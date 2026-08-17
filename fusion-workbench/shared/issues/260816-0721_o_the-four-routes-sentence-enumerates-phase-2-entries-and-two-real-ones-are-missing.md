@@ -33,3 +33,6 @@ predicate to "Phase 2 is entered" and is then incomplete.
 
 Keep the predicate: either say "four routes create a Turn" and name the two that enter Phase 2 without
 creating one, or drop the enumeration and rely on the criterion, which is the part that is actually true.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:470` still says four routes; the interrupted-session resume at `:111` and the Revise Grounding resume at `:929` are both real Phase 2 entries and neither is named. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

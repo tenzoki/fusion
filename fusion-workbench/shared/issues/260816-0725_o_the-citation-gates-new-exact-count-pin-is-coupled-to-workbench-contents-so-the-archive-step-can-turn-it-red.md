@@ -46,3 +46,6 @@ Either way `BASELINE_MESSAGE` should name this third cause beside its two.
 
 - `shared/decisions/260816-0711_*_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md`
 - `shared/issues/260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `hooks/lib/__tests__/helpers/citation-scan.ts:148-158` still walks the whole workbench with no archive exclusion and still requires an exact shared-store prefix. The baseline at `reference-resolution-lint.test.ts:536` moved from 1122/139/95 to 1120/139/94, so the pin was re-approved rather than decoupled. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

@@ -38,3 +38,6 @@ filing obligation ("every defect discovered MUST be filed") firing during a look
 context into the reply.
 
 Under analysis at `260812-0xxx` (speed, verbosity and rule decay); this record carries the witness.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `rules/user-facing-output.md` still prescribes relocation rather than deletion and states no total budget, so the structural cause the analysis named is undisturbed. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

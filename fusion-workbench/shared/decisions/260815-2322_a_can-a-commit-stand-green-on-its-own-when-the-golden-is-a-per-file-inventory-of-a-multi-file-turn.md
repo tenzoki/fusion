@@ -74,3 +74,6 @@ Implemented: <set when status moves to _i_>
 Deferred: <set when status moves to _d_>
 Superseded by: <set when status moves to _s_>
 Retired: <set when the implementation is removed; the marker stays _i_>
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`). Answer recorded, not yet realised — marker stays `_a_`. The sentence the answer asked for is not in the golden-s failure text. `hooks/lib/__tests__/rules-emission-golden.test.ts` and `hooks/lib/__tests__/helpers/growth-bound.ts` carry no statement that the green unit is the Turn rather than the commit.

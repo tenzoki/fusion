@@ -94,3 +94,6 @@ cited `:103` is at `:102`; and "four lines above the first of them" for the blac
 line above. The citations that do hold in the same batch are `:101`, `:107`, `:112`, `:121`, `:130`.
 Nine wrong and five right inside one review pass, on the file the pass was reviewing, is the
 strongest evidence this record has that the fault is not carelessness but the absence of any gate.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `hooks/lib/__tests__/reference-resolution-lint.test.ts` still resolves paths, heading anchors and record wildcards, and never bounds a line number. Two further instances have accumulated on the record since filing, which is evidence the class is still producing. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

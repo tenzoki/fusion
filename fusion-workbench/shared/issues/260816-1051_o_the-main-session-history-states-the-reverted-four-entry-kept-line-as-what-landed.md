@@ -50,3 +50,6 @@ Do not delete the wrong-turn reasoning — `1040` is the reusable part and the c
 
 **Found by:** coderev, reviewing `433e206..b18a8cf`
 (`shared/reviews/260816-1049-coderev-tracked-workbench-split-and-kept-line.md`, F4).
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `shared/history/260816-1030-coder-tracked-workbench-split-remainder.md:10-13` still lists the four-entry KEPT line as what landed, with no correction and no pointer to the follow-up file; the landed `.gitignore` line is the three-entry form. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

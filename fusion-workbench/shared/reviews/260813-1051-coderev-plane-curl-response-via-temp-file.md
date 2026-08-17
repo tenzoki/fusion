@@ -180,3 +180,14 @@ Two of five closed, three open, none blocking. `bin/fusion-plane`'s own suite is
 **The `**Not-opened:**` list at `:5` was never carried into a later review**, because no later
 review ran in this session. `bin/fusion-review-coverage --since 1c2d555` reports this file as the
 only review covering the session range, `covers=2` of 8 commits.
+
+---
+
+**Reconciliation annotation — 260817-1836, reconciler, domain `code`.** The subject of this review
+no longer exists. The Plane mirror was removed on 2026-08-15 in Circle
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth`: `bin/fusion-plane` is gone from
+`bin/` (`ls bin/` at HEAD `2552586` lists twelve helpers and none of them is it), the
+`plane.config.yaml` template left `templates/`, and the only surviving mention of the bridge in
+shipped text is the migration note `docs/upgrading-to-v9.md`. The findings below are preserved as
+written and are no longer actionable: nothing they cite can be fixed, because nothing they cite is
+shipped. No finding was rewritten in this pass.

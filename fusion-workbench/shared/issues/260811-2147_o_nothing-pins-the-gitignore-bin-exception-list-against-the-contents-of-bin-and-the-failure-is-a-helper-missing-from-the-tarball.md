@@ -49,3 +49,6 @@ The same shape covers the mirror case a `git ls-files` comparison also catches f
 
 - A test compares `git ls-files bin/` against `ls bin/` and fails naming the offending file and the `.gitignore` line to add or remove.
 - Verified non-vacuous by deleting one `!bin/…` line and confirming the test fails with that helper named.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: No test compares `git ls-files bin/` against the directory. The twelve `!bin/` exception lines currently match the twelve helpers, which is coincidence rather than a gate: nothing catches the next helper added without its line. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

@@ -132,3 +132,6 @@ conclusion is unchanged and the number a later pass will compare against is not.
 as filed; the numbers above are the ones to act on.
 
 Verification: `cd hooks && npm test` at HEAD `dd560ab`, exit 0, 40 files, 764 tests.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). One file of seven was repunctuated, and the corpus figure barely moved. `rules/user-facing-output.md` now runs 6 em-dashes over 2 663 words. The other six are untouched: `agent-setup.md` 15/533, `decision-record-examples.md` 17/554, `design-diagrams.md` 20/794, `critical-stance.md` 29/1587, `fusion-workbench-conventions.md` 131/8570, `CLAUDE.md` 120/8841. The corpus stands at roughly 338 em-dashes over 23 542 words, about 14 per 1 000 against a stated ceiling of 1 per 1 000. Note also `260816-1345`, which is about this record-s own corpus table naming the wrong seven files.

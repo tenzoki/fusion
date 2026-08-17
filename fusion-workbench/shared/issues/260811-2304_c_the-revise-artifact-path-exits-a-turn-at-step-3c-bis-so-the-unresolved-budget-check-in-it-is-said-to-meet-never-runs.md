@@ -53,3 +53,6 @@ Direction 1 is the integral one — one gate, one call point, no per-path carve-
 
 - No sentence in `agents/orchestrator.md` claims a Turn boundary runs the Unresolved-budget check-in unless every route to that boundary does.
 - `hooks/lib/__tests__/turn-budget-lint.test.ts` gains a case over the Rebalance-bounding section in the shape its existing `CLAIM` scan uses, so the claim cannot return.
+
+---
+Resolved: Fixed by moving the check-in from the end of a Turn to the start of one. `agents/orchestrator.md:470` now states that Phase 2 step 1 "is what every route that creates a Turn runs", and names the Revise Artifact answer at Step 3c-bis among the four entries, so the path this record showed exiting before the gate now meets it on re-entry instead. Verified by reconciliation pass 260817-1836 at HEAD `2552586`.

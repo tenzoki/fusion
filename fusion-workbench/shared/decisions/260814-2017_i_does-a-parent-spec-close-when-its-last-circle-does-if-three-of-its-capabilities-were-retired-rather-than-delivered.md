@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** answered
+**Status:** implemented
 **Filed by:** reconciler
 **Cross-references:** `shared/planning/260801-1122_o_spec-normative-consolidation.md` (the spec in question, with four reconciliation entries recording the state at each pass); `circles/260801-1244-curator/_t_circle.md` `## Directive` and its "Four capabilities of the earlier spec are gone" paragraph; `circles/260805-2005-textschicht-gegen-code-nachziehen/_c_circle.md` (where C9 was performed by hand); `shared/planning/260812-1232_c_remove-the-protected-path-half-of-the-compliance-guard.md` (the removal that deleted C5c's subject)
 
@@ -67,6 +67,6 @@ because a fourth was about to.
 
 ---
 Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 1: close the spec `_c_` with a mandatory closing note naming the three retirements (C4, C5c, C9). User answered inline 2026-08-16.
-Implemented:
+Implemented: `shared/planning/260801-1122_c_spec-normative-consolidation.md` — the spec was renamed `_o_` → `_c_`, its `**Status:**` moved to Complete with the authoring text preserved, and the mandatory closing note naming C4, C5c and C9 was written into the file (reconciliation pass 260817-1836, `shared/history/260817-1836-reconciliation.md`). Option 1 as answered, including the condition that made it option 1.
 Deferred:
 Superseded by:

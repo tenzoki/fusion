@@ -33,3 +33,6 @@ per-surface records if that reads better in the queue.
 **Explicitly not the answer:** an obligation in a reviewer or executor prompt, and a gate that
 tries to derive "the artefact explaining this behaviour" from a diff. Both were considered and
 rejected in the decision; do not reintroduce either as a supplement without re-opening it.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). Umbrella record, acceptance per instance. Two of its three named instances are settled. The Turn budget no longer lives in seven places: `bin/fusion-turn-budget` resolves it once and `agents/orchestrator.md` carries no number. The churn-contract instance is moot — the heatmap was removed on 2026-08-15 and `grep -rn churn agents/ rules/` is empty. The routing-table instance is open and is tracked by `260811-1301` and `260811-1613`. Marker stays open until that one closes.

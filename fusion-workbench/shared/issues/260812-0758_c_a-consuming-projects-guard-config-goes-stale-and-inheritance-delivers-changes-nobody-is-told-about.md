@@ -52,3 +52,6 @@ that reviewed and accepted the list a year ago is governed today by a list it ne
   patterns that mean something entirely different outside the plugin's own repository?
 
 The last one is the substantive question and belongs in a decision record, not here.
+
+---
+Resolved: Moot rather than fixed: the mechanism went. `guard.protectedPaths`, the inherited list this record is about, was removed on 2026-08-12 with the protected-path half of the guard, and the remaining guard settings went on 2026-08-16 with the guard-s last verdict (`hooks/lib/config.ts` header). `templates/` now holds one file, `fusion.json`, whose only live leaf is `orchestrator.maxTurns`. There is no inherited list left to go stale and no silent delivery left to be told about. What replaced the failure mode is the opposite behaviour: a retired file or key is reported in an advisory on every guarded tool call until the project deletes it (`hooks/lib/config.ts`, `RETIRED_PROJECT_FILES` / `RETIRED_TOP_LEVEL_KEYS`). Closed by reconciliation pass 260817-1836 at HEAD `2552586`.

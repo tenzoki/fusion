@@ -45,3 +45,6 @@ residual. The first is not free — scanning all tokens re-admits the argv-menti
 ## Related
 
 - `shared/issues/260816-0131_*` — the defect this predicate was narrowed to fix
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `bin/monitor:1263-1291` still returns on the first non-option token after argv[0] and still names only two residuals, so an interpreter reached through `env` is missed. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

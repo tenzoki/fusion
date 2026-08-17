@@ -50,3 +50,6 @@ the two filename patterns one — three surfaces state it and one is a `\d{4}` r
 ## Related
 
 - `shared/issues/260811-1145_*` — the population defect this filter was written for
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `hooks/lib/review-coverage.ts:193` still requires a four-digit stamp, while `agents/coderev.md:112` and `agents/ontorev.md:102` both mandate a two-digit counter for per-topic files, which parse to a null sender. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

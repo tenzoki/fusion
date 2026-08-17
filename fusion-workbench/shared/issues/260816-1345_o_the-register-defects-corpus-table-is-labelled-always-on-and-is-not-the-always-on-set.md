@@ -77,3 +77,6 @@ if [ "$IS_DIAGRAM_AGENT" -eq 1 ]; then
   emit_if_exists "$PLUGIN_RULES_DIR/design-diagrams.md"
 fi
 ```
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The mislabelled table still stands inside `260816-0740_o_...em-dash-ceiling...md`, still listing `design-diagrams.md` (conditional, guarded at `bin/fusion-rules:412-414`) and still omitting the chat voice profile (unconditional, `:397`). Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

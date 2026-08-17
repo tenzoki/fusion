@@ -72,3 +72,6 @@ reopened as a question, only carried forward as a known gap in the chosen option
 executor prompts (`agents/coder.md`, `agents/ontocoder.md`, `agents/bugfixer.md`, which is where a
 verification obligation already lives) or a rule file emitted to them. Prefer whichever avoids
 stating the same procedure in three prompts — `rules/critical-stance.md` §2.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The addendum records the user choosing a scratch copy of the repository, and nothing states it: `grep -rn "scratch copy" agents/ rules/` is empty and `agents/coder.md` still says nothing about where a destructive verification may write. The decided fix was never built. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

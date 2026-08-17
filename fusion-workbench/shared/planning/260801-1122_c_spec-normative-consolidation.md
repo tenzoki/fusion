@@ -1,7 +1,8 @@
 # Spec: normative-surface consolidation
 
 **Date:** 2026-08-01 (revised 2026-08-01, third and final shaper pass)
-**Status:** Final. All twelve decisions are answered and written into the capabilities below. Nothing is pending on the user. One answer, Q2, changed the shape of the work: the guard's Bash bypass is now a capability of its own (C5c) rather than a mechanism choice left to the planner. One answer, Q1, could not be realised the way it was framed — the mechanism named for the scoping step cannot perform it, and C9 step 4 states what does instead, with the evidence.
+**Status:** Complete. Closed 2026-08-17 on the user's answer to `shared/decisions/260814-2017_*_does-a-parent-spec-close-when-its-last-circle-does-if-three-of-its-capabilities-were-retired-rather-than-delivered.md` (option 1: close `_c_` with a mandatory closing note). All four of this spec's Circles have closed, and three capabilities (C4, C5c, C9) were retired rather than delivered. The closing note at the end of this file is part of the answer, not an optional addendum: read it before reading `**Status:** Complete` as `delivered as specified`.
+**Status at authoring (preserved verbatim):** Final. All twelve decisions are answered and written into the capabilities below. Nothing is pending on the user. One answer, Q2, changed the shape of the work: the guard's Bash bypass is now a capability of its own (C5c) rather than a mechanism choice left to the planner. One answer, Q1, could not be realised the way it was framed — the mechanism named for the scoping step cannot perform it, and C9 step 4 states what does instead, with the evidence.
 **Source:** The user's proposal that fusion gain an agent which reads the project's history and the current state of the discussion, judges what must change and what remains, and consolidates the three normative surfaces (decision records, rule files, `CLAUDE.md`) that drift, contradict each other, and grow into a standing context tax.
 
 **Prior decisions this spec builds on, and does not reopen:**
@@ -801,3 +802,73 @@ was re-scoped, is a choice and not a measurement. Filed as
 `shared/decisions/260814-2017_o_does-a-parent-spec-close-when-its-last-circle-does-if-three-of-its-capabilities-were-retired-rather-than-delivered.md`.
 
 Reconciled by `reconciler`, `circles/260801-1244-curator/history/260814-2017-reconciliation.md`.
+
+---
+
+## Closing note (mandatory — 260817-1836)
+
+**This spec is closed (`_c_`) over three retirements, and `Complete` here does not mean
+"delivered as specified".** The user answered
+`shared/decisions/260814-2017_*_does-a-parent-spec-close-when-its-last-circle-does-if-three-of-its-capabilities-were-retired-rather-than-delivered.md`
+with option 1 on 2026-08-16 (`shared/history/260816-1500-orchestrator-session.md` `## Decisions
+answered by the user`), and that answer makes this note a condition of the close rather than a
+courtesy. What follows is the whole of what a reader needs in order not to misread the marker.
+
+**Delivered.** The capability the spec was written for exists at HEAD `2552586`:
+`agents/curator.md` (33 621 bytes), `skills/curate/SKILL.md` (12 797 bytes), the agent registered
+in `bin/fusion-rules:168` and `:179`, and `/fusion:curate` reachable both directly and as step 5
+of `/fusion:cleanup`. All four Circles the spec spawned carry `_c_`:
+`circles/260801-1244-guard-bash-inspection`, `-guard-rules-write`, `-rule-provenance-header`,
+`-curator`. C8's provenance header is a shipped convention with its own rule file
+(`rules/rule-file-provenance.md`) and lint.
+
+**Retired, each by a recorded decision rather than by being built:**
+
+- **C4** (rule-file retirement by relocation, with a tombstone and a version-control check) —
+  retired by user decision on 2026-08-14: a dead rule file is deleted, and git holds the bytes.
+- **C5c** (the guard's Bash inspection) — its subject no longer exists. The write-path classifier
+  went on 2026-08-09, the protected-path half on 2026-08-12, and the guard's last decision-making
+  check on 2026-08-16. At HEAD `hooks/guard.ts` is 223 lines and every path allows.
+- **C9** (reconcile, compact, partition and scope `rules/fusion-workbench-conventions.md`) —
+  performed by hand in Circle `260805-2005-textschicht-gegen-code-nachziehen` and put out of scope
+  by user direction.
+
+**A fourth capability was delivered and then removed, which is a different thing from being
+retired and is recorded here so the marker is not read as covering it.** C5a and C5b (the
+rules-write exemption and its project-level guard configuration) landed in
+`circles/260801-1244-guard-rules-write` and were deleted with the protected-path half on
+2026-08-12. `grep -rn 'FUSION_ALLOW_RULES_WRITE' agents/ skills/ rules/ hooks/*.ts bin/` returns
+only comments recording the retirement (`hooks/guard.ts:30`) and test fixtures; `guard.protectedPaths`
+survives only in `hooks/lib/config.ts`'s retired-key table. The curator does not depend on either:
+its rule-file writes are bounded by a user gate in `skills/curate/SKILL.md`, not by a guard check.
+
+**What is not closed by this.** Nothing in the spec's capability text was rewritten, in this pass
+or in the four before it. Sections C5a, C5b and C5c describe a mechanism that no longer exists and
+are left standing as the record of the state the work was specified against. A reader following
+their `hooks/guard.ts:<line>` citations will not find what the sentences promise.
+
+## Reconciliation Log (continued)
+
+**260817-1836 — reconciler, domain `code`. Marker moved `_o_` → `_c_`. Status moved to Complete.**
+
+Verified at HEAD `2552586` (session-start anchor `83a18a5`; the session being closed made one
+commit, `2552586`, which carries only its own setup record and touched no shipped file).
+
+This is the transition the previous entry (260814-2017) declined to make on its own authority, and
+the reason it declined has since expired: the choice it escalated was answered by the user on
+2026-08-16 and had not been carried out. The four passes before this one each re-derived the same
+judgement and left the marker where it was; this one applies the recorded answer instead.
+
+Evidence checked in the tree rather than in the Circles' reports:
+
+- `agents/curator.md` and `skills/curate/SKILL.md` exist and are non-trivial (33 621 and 12 797
+  bytes). `bin/fusion-rules:168,:179` name `curator` in both emission branches, so the agent
+  resolves rules the way every other agent does.
+- All four Circle records glob as `_c_circle.md` (`ls fusion-workbench/circles/260801-1244-*/*_circle.md`).
+- The three retirements each still hold: C5c's mechanism is gone (`hooks/guard.ts`, 223 lines, no
+  verdict path), C4 and C9 are recorded retirements with no shipped counterpart.
+
+The closing note above is written into the file as the answer required. Nothing else in the spec
+was edited: no capability text, no acceptance criterion, no citation.
+
+Reconciled by `reconciler`, `shared/history/260817-1836-reconciliation.md`.

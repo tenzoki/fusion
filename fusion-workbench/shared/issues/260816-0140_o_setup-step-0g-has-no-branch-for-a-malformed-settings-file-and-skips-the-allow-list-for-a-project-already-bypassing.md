@@ -37,3 +37,6 @@ This predates `bdc0df9`; the skip condition is unchanged by it.
 The measurement behind "bare tool names only" (`:224`) is recorded and unaffected; do not touch it while fixing the above.
 
 **Found by:** coderev, reviewing `f4f01b0..3a0408a` (commit `bdc0df9`), with the state-by-state read performed by a supporting analyst pass and re-verified against `skills/setup/SKILL.md:198-238`.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `skills/setup/SKILL.md` still says parse and union with no parse-failure branch, and the already-bypassing branch still skips the write, so such a project never receives the allow list. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

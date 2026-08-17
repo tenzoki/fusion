@@ -40,3 +40,6 @@ Implemented:
 Deferred:
 Superseded by:
 Retired:
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`). Answer recorded, not yet realised — marker stays `_a_`. The chosen policy is still not written down, which is precisely what this record said a default is not a substitute for. `install.sh:34` reads `REF="${FUSION_REF:-heads/main}"` and its header at `:25-27` documents the tag pin as an option, exactly as before the answer. No sentence in `README.md`, `CLAUDE.md` or `docs/` states that `heads/main` is the standard and the tag an opt-in pin.

@@ -42,3 +42,6 @@ de: Kurz halten: Gate-Prompts bis 6 Zeilen, Chat-Antworten bis 8 Zeilen.
 The German dropped *"or to a file"* and *"not the opening lines"*, and added *"Klare Formulierungen, kein Jargon"*, which has no English counterpart and duplicates `rules/user-facing-output.md` `## Vocabulary` and the readability gate's point 4. The commit message says only that the profiles *"tighten their length caps"*; this second change is not covered by it.
 
 **Part 3 — trailing whitespace.** `stilwerk/chat-voice-de.yaml:43` ends `kein Jargon. ` with a trailing space. Cosmetic, in the same lines as parts 1 and 2.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: All three parts persist: `rules/user-facing-output.md` states 8 and 12 lines while both shipped chat profiles state 6 and 8, with no precedence stated anywhere; the German C04 block is still missing the mirrored clause and still carries the extra one; and the trailing whitespace is still there. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

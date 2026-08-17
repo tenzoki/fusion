@@ -161,3 +161,6 @@ was found, and the claims resting on them stand unchecked here.
   (Herkunftsregel)`.
 - Found while preparing the reporting project's durable-home-for-manual-plan-edits work for
   activation. Not caused by that work.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/shaper.md:82` still fills anticipated-circle frontmatter with `(none yet)` and `:28` still bars touching an existing Circle in that mode. One of the two routes the record named, `skills/seed-from-plane/`, no longer exists; the primary route `/fusion:direct` reproduces the defect unchanged. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

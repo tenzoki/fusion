@@ -95,3 +95,6 @@ The dangling-reference half is exactly as filed.
 
 Severity stays Low, and both proposed items still need user approval: item 1 is a schema change to
 a file every consuming project holds.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: Neither `stilwerk/default-voice-en.yaml` nor `-de.yaml` declares a `scope:` key or carries the long-form-writing-profile phrase, so the reference still resolves only through `rules/agent-setup.md`. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

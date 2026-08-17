@@ -25,3 +25,6 @@ Case 3 currently reads as case 2. The dispatch prompts in this session worked ar
 3. **Make the question narrower rather than the answer softer.** Ask the suite about the task's own surface — the tests that touch the changed files — so the exit code being read is about this task. That is the shape `critical-stance` §4 recommends when a question cannot be decided from the inputs at hand: change the question, not the tolerance. It costs a way to select tests per change, which this repository does not currently have.
 
 **Not a defect in `1f2faaf`.** The derivation is what made `done` mean something. This records a consequence that was not visible until a red baseline and the new contract coexisted, which happened about two hours after it landed.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/coder.md:77-79` still defines the same three `Verification:` forms with no fourth for a named pre-existing failure, and no changed-files test selection exists. The record needs a decision more than a patch, but its factual claim is independently true at HEAD. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

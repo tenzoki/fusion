@@ -46,3 +46,6 @@ On a CRLF record the rewritten line is emitted as `**Status:** active\n` while e
 
 State the guard that actually holds ("the first match in the file, and never past the first `## `
 heading"), or bound the head block on `^#` so a record with any heading closes it.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `skills/next/SKILL.md:218` and `:226` still carry the same one-liner and the same prose. Both halves reproduce on a CRLF fixture with no heading: the protection comes from the line guard rather than a heading stop, and the rewritten line loses its carriage return. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

@@ -186,3 +186,6 @@ the guard answers itself. That is a measurement for the plan, not a premise.
 One irony to record rather than hide: `bin/fusion-protected-paths`, released in v7.4.0 four hours
 before this decision, reports a list that is about to stop existing. It was the right thing to
 build at the time — it is what made the inheritance visible — and it goes with the rest.
+
+---
+Resolved: Closed on the strongest of the outcomes this record asked for. It offered "simplified, project-settable and defaulted to fit" or "not shipped to consumers at all"; what happened is the second. The user chose the protected-path removal on 2026-08-12, and the remainder followed on 2026-08-16: `hooks/guard.ts` is 223 lines at HEAD, every path allows, and no configuration leaf governs a verdict. The configuration surface is one file with one live setting (`fusion.json`, `orchestrator.maxTurns`), git-tracked and documented in the file itself. There is nothing left to simplify. Closed by reconciliation pass 260817-1836 at HEAD `2552586`.

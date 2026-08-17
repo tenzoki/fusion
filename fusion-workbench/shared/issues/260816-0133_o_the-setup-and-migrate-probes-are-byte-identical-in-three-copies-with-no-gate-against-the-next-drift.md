@@ -39,3 +39,6 @@ The `hook-tests` surface has 2 320 lines of head-room, so ten lines is affordabl
 If a third copy is judged too many to pin, the other cut is to have Setup call the migrate survey rather than restate its query — but migrate's survey is a 4 kB block that writes counters and temp files, so this would be a larger change than the defect warrants. Named so the next reader does not have to rediscover why it was not taken.
 
 **Found by:** coderev, reviewing `f4f01b0..3a0408a` (commit `c0e179a`).
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The probe expression is one unique 218-character string across `skills/setup/SKILL.md:67`, `skills/migrate/SKILL.md:54` and `:87`, and no test asserts the equality. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

@@ -40,3 +40,6 @@ An alternative worth weighing rather than assuming: make the opt-out *narrower* 
 
 - No sentence in `agents/orchestrator.md` asserts a bound that the "Continue without check-ins" state removes, or the opt-out no longer produces such a state.
 - `hooks/lib/__tests__/turn-budget-lint.test.ts`'s `CLAIM` scan is widened to reach the Rebalance-bounding section's phrasing (`bounded post-action mechanics`, `bounds the retries`), which its current `loop is bounded` pattern does not match.
+
+---
+Resolved: Fixed as asked: the qualification is now stated rather than described away. `agents/orchestrator.md:915` reads "no option is allowed to loop unboundedly, with one exception that is stated here rather than described away", followed by the sentence naming the unresolved-budget plus Continue-without-check-ins state that is the exception. Verified by reconciliation pass 260817-1836 at HEAD `2552586`.

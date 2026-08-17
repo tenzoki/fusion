@@ -90,3 +90,6 @@ record.
 - `rules/fusion-workbench-conventions.md:497` — the one judgment left to the writing agent.
 - `rules/fusion-workbench-conventions.md:164-185` — key sets are derived from the prompt, so
   an origin-aware write target would be a prompt change, not a resolver change.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:489-492` still lists the same four dispatch-prompt bullets with no origin or Directive line, and no decision answers the two choice points the record names. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

@@ -26,3 +26,6 @@ broken; the point is that nothing would say so.
 next to this Circle's work, not caused by its Directive.
 
 **Filed by:** orchestrator, session `shared/history/260813-2345-orchestrator-session.md`.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). One of the two omissions is moot and one is live. `seed-from-plane` no longer exists, so its absence from the array is correct now. `cadence` does exist and is still missing from the hand-written `SKILLS` array in `hooks/lib/__tests__/fusion-paths.test.ts:22-25`, which still derives nothing from `skills/`. The class defect the record is about, a hand-written roster where a derived one is available, is untouched.

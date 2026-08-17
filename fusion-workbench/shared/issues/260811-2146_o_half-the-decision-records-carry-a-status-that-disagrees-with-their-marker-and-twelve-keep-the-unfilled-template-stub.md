@@ -165,3 +165,6 @@ write moment, a one-time sweep of the 29, a lint) or **dropped** (deleted from t
 the 67). Nothing this pass did constrains that choice.
 
 Reconciled by `reconciler`, `shared/history/260811-2330-reconciliation.md`.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). Re-measured rather than re-asserted. Over the 56 records in `shared/decisions/` at HEAD, 18 carry a `**Status:**` header that disagrees with their filename marker and 5 still carry an unfilled template stub of the form `Implemented: <set when status moves to _i_>`. The stub half is close to repaired and the disagreement half is not: the offenders include `260811-1534_i_` and `260807-2131_i_`, both headed `open` while the marker reads implemented. One was corrected in this pass as a side effect of a marker walk (`260814-2017`, header moved to `implemented` with the marker). No decision answers whether the decision record-s own Status field should be owned or dropped; the adjacent record `260815-2312` is scoped to the Circle record-s field, which is a different question.

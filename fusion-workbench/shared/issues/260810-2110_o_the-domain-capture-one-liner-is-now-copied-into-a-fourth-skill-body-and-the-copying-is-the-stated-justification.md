@@ -43,3 +43,6 @@ than either alone, and one design decision should cover both.
 `shared/decisions/260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`.
 
 **Filed by:** coderev, review of session `260810-1646` Turn 2, range `da8c9db..b3cc034`.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). The count in the title is now wrong and the defect is not. `skills/seed-from-plane/` left with the Plane mirror on 2026-08-15, so three copies remain rather than four: `skills/next/SKILL.md:88`, `skills/direct/SKILL.md:57`, `skills/cleanup/SKILL.md:107`. No mechanism was introduced — there is no domain helper in `bin/` and no `DOMAIN` key in `bin/fusion-paths`. The reserved half of decision `260810-2145` is what this record waits on, and that record is deliberately still answered rather than implemented for exactly this reason.

@@ -27,3 +27,14 @@ No substantive findings. Detail on each structural axis:
 - **Type fit** — `flowchart TD` is the right choice for control/data flow per the type table. TD direction is honoured with no edge fighting the grain; the flow has a single downward spine, so `subgraph` layering would add nothing.
 
 One cosmetic observation, not a defect: `getC` (GET issue comments) is drawn as a process rectangle yet branches on two labelled outcomes, the way a decision diamond would. It reads unambiguously and is a common flowchart idiom for "operation that can fail", so it does not obscure the design — noting it only to distinguish an honest stylistic choice from a structural flaw. No redraw is warranted.
+
+---
+
+**Reconciliation annotation — 260817-1836, reconciler, domain `code`.** The subject of this review
+no longer exists. The Plane mirror was removed on 2026-08-15 in Circle
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth`: `bin/fusion-plane` is gone from
+`bin/` (`ls bin/` at HEAD `2552586` lists twelve helpers and none of them is it), the
+`plane.config.yaml` template left `templates/`, and the only surviving mention of the bridge in
+shipped text is the migration note `docs/upgrading-to-v9.md`. The findings below are preserved as
+written and are no longer actionable: nothing they cite can be fixed, because nothing they cite is
+shipped. No finding was rewritten in this pass.

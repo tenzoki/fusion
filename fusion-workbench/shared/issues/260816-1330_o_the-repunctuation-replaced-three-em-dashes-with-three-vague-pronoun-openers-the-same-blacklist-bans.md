@@ -36,3 +36,6 @@ and `:83`, and the blacklist that bans the figure is at `:18`, one line above th
 rather than four. The file has not changed since `6049d3e`, so this is the citation drift
 `shared/issues/260808-0030_o_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`
 tracks. Whoever takes the fix should re-grep rather than seek by line.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: All three vague pronoun openers are still present in `rules/user-facing-output.md`, four lines below the blacklist entry that bans them. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

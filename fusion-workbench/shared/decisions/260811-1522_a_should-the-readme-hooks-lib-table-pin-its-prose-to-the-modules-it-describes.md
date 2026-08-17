@@ -96,3 +96,6 @@ lives in one place and is cited from the others, and generating this table from 
 rule applied to the surface where the drift was actually measured twice. Option 3, pinning only the
 rows that restate a code decision, would have left the boundary between pinned and unpinned rows as
 a judgement call renewed at every edit.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`). Answer recorded, not yet realised — marker stays `_a_`. No `hooks/lib/*.ts` module exports a description, and nothing generates the table. What exists is a row-set lint (`hooks/lib/__tests__/derivable-enumerations-lint.test.ts` section 5) that checks the table names exactly the files that exist, which is detection rather than the generation this answer chose. The only generated block in the file is the domain-cascade paragraph between its BEGIN and END markers at `README-hooks.md:209` and `:234`.

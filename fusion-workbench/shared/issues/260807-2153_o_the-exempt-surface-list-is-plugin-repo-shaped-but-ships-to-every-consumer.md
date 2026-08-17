@@ -111,3 +111,6 @@ observations in the analysis are unaffected.
 universalisation — code and comments, operator strings — are still the two that carry an
 independent justification, and `hooks/session-start.ts` `## Why the message is English` still
 exists and is still cited from the rule at `:213`.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The quoted block stands verbatim at `rules/fusion-workbench-conventions.md:259` and is still emitted unconditionally at `bin/fusion-rules:385`, so every consuming project loads it. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

@@ -89,3 +89,6 @@ one-off.
 
 Second witness's detail, as reported: the reporting project also observed the asymmetry this
 record names — an ontorev pass the same night wrote exactly the document the coderev pass did not.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: No review file for the cited range exists in `shared/reviews/`, and neither the reconstruction nor the diagnosis note was produced. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

@@ -86,3 +86,6 @@ This one measures that it never has.
 
 **Found by:** coderev, reviewing `433e206..b18a8cf`
 (`shared/reviews/260816-1049-coderev-tracked-workbench-split-and-kept-line.md`, F2).
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `fusion-workbench/archive/` is empty on disk, `git log --all -- fusion-workbench/archive` returns no commit, and `.guard-state/events.jsonl` stands at about 18 250 lines, untracked. The roll has still never fired. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

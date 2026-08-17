@@ -29,3 +29,6 @@ One case in `deliverable-language-lint.test.ts`: assert that no shipped surface 
 
 - A case in `deliverable-language-lint.test.ts` fails when any of those surfaces cites a `## Project language` case by ordinal.
 - It is measured to fail against the text as `9f84254` left it, the way the other controls in this test directory are.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `hooks/lib/__tests__/deliverable-language-lint.test.ts` has no ordinal-citation scan; it tests only the deliverable-language default. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

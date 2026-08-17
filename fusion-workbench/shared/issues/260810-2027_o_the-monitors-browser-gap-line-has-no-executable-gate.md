@@ -33,3 +33,6 @@ established-naming-the-gap.md` (the behaviour this would gate),
 `shared/history/260810-2026-coder-monitor-sleep-and-launcher-gap.md`.
 
 **Filed by:** coder, session `260810-1646`, Turn 2, task `R:260810-1918-monitor-residuals`.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `bin/monitor:1572` and `:1574` still print both browser-gap lines to stderr, and the test harness still starts the monitor with stderr discarded (`hooks/lib/__tests__/monitor-warnings-panel.test.ts:296`, `stdio: "ignore"`), so neither line can be asserted. Only the three pre-existing cases the record names are present; no case for a non-zero-exit launcher shim or an absent launcher was added. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

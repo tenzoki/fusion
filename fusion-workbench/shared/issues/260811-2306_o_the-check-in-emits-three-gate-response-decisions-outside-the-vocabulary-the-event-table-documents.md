@@ -34,3 +34,6 @@ Extend the `:1301` detail cell to name the check-in's three values alongside the
 ## Acceptance criteria
 
 - Every value the prompt instructs an agent to write into a `gate_response` is reachable from the event-type table.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:1200` still documents `gate_response` as proceed/skip/defer/modify, while the check-in at `:650-651` emits Continue, Stop here, and Continue without check-ins. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

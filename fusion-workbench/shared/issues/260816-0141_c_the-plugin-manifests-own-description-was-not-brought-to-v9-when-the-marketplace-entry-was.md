@@ -27,3 +27,6 @@ CLAUDE.md's release process names four version surfaces to keep coherent and doe
 2. Add a line to CLAUDE.md `## Release process` naming the two descriptions as a pair that moves together, beside the four version surfaces. Roughly one sentence; the release section is not on a bounded surface.
 
 **Found by:** coderev, reviewing `f4f01b0..3a0408a` (commit `25af51d`), via a supporting analyst pass; re-verified by reading `.claude-plugin/plugin.json` and the marketplace clone at `/Users/k1/Projects/productive/F03-CLAUDE-plugin-marketplace/claude-plugins`.
+
+---
+Resolved: Fixed in `a7f70b9` ("the manifest stops selling a guard that decides"). `.claude-plugin/plugin.json` at version 10.0.1 describes 15 agents, the observation-only hook and the curator, matching the marketplace entry. The record-s fix direction — rewrite the pair together in the same release — is now written into `CLAUDE.md:111` as standing guidance. Verified by reconciliation pass 260817-1836 at HEAD `2552586`.

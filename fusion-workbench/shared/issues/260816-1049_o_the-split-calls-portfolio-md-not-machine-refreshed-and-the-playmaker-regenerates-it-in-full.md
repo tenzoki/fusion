@@ -87,3 +87,6 @@ regeneration if the size moves at all.
 
 **Found by:** coderev, reviewing `433e206..b18a8cf`
 (`shared/reviews/260816-1049-coderev-tracked-workbench-split-and-kept-line.md`, F1).
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `rules/fusion-workbench-conventions.md:76` still calls `portfolio.md` authored text rather than machine-refreshed, while `agents/playmaker.md:8` regenerates it every run. The live file changed stamp from 260815-2116 to 260817-1643 between two reads, which is the regeneration. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

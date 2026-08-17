@@ -78,3 +78,6 @@ per cent, so it comes first.
 Two grammar gaps found in the same run are filed separately, because they change the count in
 both directions:
 `shared/issues/260812-2136_*_the-citation-grammar-reads-one-ellipsis-and-one-marker-syntax-and-the-workbench-uses-two-of-each.md`.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `hooks/lib/__tests__/reference-resolution-lint.test.ts` `surface()` still walks the shipped tree only, and the gate-s own header documents the workbench exclusion as deliberate and still standing. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

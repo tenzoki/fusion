@@ -33,3 +33,14 @@ No substantive findings. Detail per axis:
 - **Direction** — `LR` rather than the table's suggested `TD` for a DAG. Authoring rule 3 permits either explicit direction; LR reads cleanly here. Cosmetic only.
 
 **Cross-document.** Neither diagram uses `subgraph` layering, and neither needs it: Diagram 1 is a single control-flow spine and Diagram 2 has 5 nodes. Same reasoning the spec review applied. Every structural element described in prose (the noop-wrap, the single gated tail, the Step-2 fork, Step 5's independence) has a matching graph element, so an honest reading of both pictures confirms the plan rather than contradicting it.
+
+---
+
+**Reconciliation annotation — 260817-1836, reconciler, domain `code`.** The subject of this review
+no longer exists. The Plane mirror was removed on 2026-08-15 in Circle
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth`: `bin/fusion-plane` is gone from
+`bin/` (`ls bin/` at HEAD `2552586` lists twelve helpers and none of them is it), the
+`plane.config.yaml` template left `templates/`, and the only surviving mention of the bridge in
+shipped text is the migration note `docs/upgrading-to-v9.md`. The findings below are preserved as
+written and are no longer actionable: nothing they cite can be fixed, because nothing they cite is
+shipped. No finding was rewritten in this pass.

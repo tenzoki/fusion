@@ -29,3 +29,6 @@ The file was restored from git and the edit re-applied. The orchestrator verifie
 A single tracked file vanishing once, with the cause unknown, is not actionable on its own, and the executing agent said so and declined to file. The judgement above it is that the record is cheap and the second occurrence is what makes it valuable: without a prior, a recurrence a month from now starts its investigation from zero, and the two measurements already ruled out here would be repeated. If a second instance appears, this record is the thing that turns it from an anomaly into a pattern with two data points and a suspect already named.
 
 If no second instance appears, close this as not reproducible.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The record-s own closing condition is a second occurrence or an explicit close, and neither has happened. `install.sh` is intact at HEAD and no second instance appears anywhere in `shared/issues/` or `shared/history/`. This is a candidate for closing as not reproducible, which is the user-s call rather than a reconciler-s. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

@@ -139,3 +139,6 @@ Implemented:
 Deferred:
 Superseded by:
 Retired:
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`). Answer recorded, not yet realised — marker stays `_a_`. Option 1 (advisory coverage, gap named in the closure note) is the standing behaviour and was followed at the v10 close. Option 3, filtering the uncovered set to commits touching shipped files, is absent: `hooks/lib/review-coverage.ts` filters the uncovered set only by coverage (`:612`) and mentions no shipped-file predicate anywhere.

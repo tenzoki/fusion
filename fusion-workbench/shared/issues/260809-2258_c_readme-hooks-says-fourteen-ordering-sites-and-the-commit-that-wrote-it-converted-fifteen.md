@@ -57,3 +57,6 @@ the first bundles two sites). Not filed separately; not worth an edit to a histo
 - [ ] `README-hooks.md:175` states a count that matches the sites `answer` / `bestEffort` cover
       in `hooks/guard.ts` and `hooks/tracker.ts`, or drops the number for a description that
       does not go stale on the next conversion.
+
+---
+Resolved: Fixed by dropping the count rather than correcting it, which is the second of the two fix directions this record offered. `README-hooks.md:185` (the `lib/fail-open.ts` row) now reads "The ordering rule both hooks run on ... every site inside `main`" and carries no numeral; `grep -c "fourteen" README-hooks.md` is 0 at HEAD `2552586`. A description that names the scope cannot go stale on the next conversion, which is what the record asked for. Verified by reconciliation pass 260817-1836 (`shared/history/260817-1836-reconciliation.md`).

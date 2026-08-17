@@ -86,3 +86,6 @@ call sites for this attribute today.
 Filed in the shared store rather than the Circle's under the Origin Rule: the defect
 predates the Directive, affects every consuming project, and outlives this Circle. It was
 found by the Circle's verification step, which is discovery rather than origin.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `bin/monitor:527-531` still escapes through a text-node round trip, which does not escape the double quote, and `:621` still interpolates the result into a `data-key` attribute. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

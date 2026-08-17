@@ -71,3 +71,6 @@ The first command prints the six duplicated stems; the second shows six unstaged
       `## State Markers` is the authoring home — and given a gate.
 - [ ] Whichever route is taken, `260807-1941_c_`'s deferral is answered explicitly rather than
       left standing for a third recurrence.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). The instance is gone and the class is not. `git ls-tree -r --name-only HEAD -- fusion-workbench/shared/issues | grep -c _o_` and `ls fusion-workbench/shared/issues | grep -c _o_` agree at HEAD, so no record is carried twice. The class fix is still absent: `rules/fusion-workbench-conventions.md` `## State Markers` still says only "State change = `mv` (rename)" with no `git mv` or stage-both-halves convention, and no decision record on marker-rename staging exists in any decision store. This pass reproduced the failure mode while making its own renames — two marker renames show as a delete plus an untracked file in `git status`, not as renames. Marker stays open on the class.

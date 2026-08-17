@@ -120,3 +120,6 @@ moved again by then.
 `_t_circle.md` `## Dependencies` still does not. A reader opening the playmaker Circle first sees
 a dependency described in prose with no resolvable target, which is the failure the record
 predicted, now observed on the pair it was filed about.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/shaper.md:28` still forbids touching an existing Circle in anticipated mode, `agents/orchestrator.md` contains the word Dependencies zero times, and the playmaker-s write set is still the three appended sections. The concrete instance is now permanently broken: `circles/260813-0858-playmaker-maintains-backlog-store/_c_circle.md:95-96` still says the sibling directory name is to be added by the orchestrator once it exists, and the Circle closed without it. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

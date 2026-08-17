@@ -56,3 +56,6 @@ Option 1 alone is sufficient and needs no executor-prompt change, which argues f
   and is silent about records the *wrong* commit carries)
 
 Also seen: 260817-1613 by reconciler — recurred in session 260816-1841, commit `dbbad70`, and was filed a second time as `circles/260816-1741-guard-becomes-observation-only/issues/260817-1502_*_a-sub-agent-left-renames-staged-and-the-orchestrators-next-commit-absorbed-them.md` without this record being found first. That record carries the newer measurement (six renames in one commit, four of them unnamed by its message, plus two unstaged annotation blocks absorbed with them) and a three-option remedy; this one carries the original 260815-2147 measurement. **They are one defect and want merging.**
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:542` still commits with no pathspec and no surplus check over `git diff --cached --name-only`. The record-s own trailer records a recurrence in session 260816-1841 at commit `dbbad70`, filed separately under the guard Circle-s issue store, so the failure is reproducing rather than dormant. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

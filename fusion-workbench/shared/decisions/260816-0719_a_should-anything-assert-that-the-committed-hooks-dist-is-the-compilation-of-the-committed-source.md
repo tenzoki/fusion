@@ -69,3 +69,6 @@ Implemented:
 Deferred:
 Superseded by:
 Retired:
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`). Answer recorded, not yet realised — marker stays `_a_`. No such test exists. `hooks/lib/__tests__/` holds 37 entries at HEAD and none compiles the committed source for comparison against the committed `dist`. The pinned-toolchain and no-shared-tree conditions the answer attached to it are therefore also unbuilt.

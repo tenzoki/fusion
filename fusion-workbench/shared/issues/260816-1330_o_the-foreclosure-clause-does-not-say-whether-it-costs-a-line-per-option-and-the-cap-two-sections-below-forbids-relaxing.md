@@ -28,3 +28,6 @@ not `:95`, and the option-label cap is at `:102`, not `:103`. The gate-prompt ca
 no-relaxing sentence at `:107` are cited correctly. The ambiguity the record names is real and reads
 exactly as described. Same citation drift as
 `shared/issues/260808-0030_o_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `rules/user-facing-output.md:96` still leaves the cost unstated, `:101` and `:102` still cap the gate and the option label, `:107` still forbids relaxing, and the `description` field is still ungoverned. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

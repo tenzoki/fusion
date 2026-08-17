@@ -34,3 +34,6 @@ Two smaller gaps in the same paragraph:
 
 One sentence naming the test — e.g. "a hit is a record whose slug names the same file or the same
 mechanism", with the tie-breaker as written — and one naming where the line goes.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `rules/fusion-workbench-conventions.md:461` still says names only, never bodies, with no criterion for a hit and no statement of where the cross-reference line goes. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

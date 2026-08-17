@@ -182,3 +182,6 @@ record repeats the withdrawn claim.**
 `:142` mentions as context is not carried as an acceptance item by any open record: the
 documentation Circle's Directive puts the version surfaces out of its scope explicitly. Filed as
 `circles/260813-0858-playmaker-maintains-backlog-store/issues/260813-1545_o_the-deferred-version-bump-has-no-carrier-outside-the-plan-that-is-being-closed.md`.
+
+---
+Resolved: Every claim in this record checks out fixed at HEAD `2552586`, verified surface by surface rather than from a report. `docs/working-model.md` now covers the backlog store and the playmaker (6 and 4 mentions, both were 0). `skills/help/SKILL.md:58-68` documents the backlog store, the playmaker ranking it and `/fusion:next` reading the briefing. `README-agents.md:38` describes the playmaker as maintaining the backlog with the split, merge, close and defer semantics and lists `backlog/` in its Writes column. The three stale claims the record named are gone: `grep -c "max 5 Turns" README-agents.md` is 0, `grep -c "fusion-workbench/history/" README-agents.md` is 0, and the invented tracked-file count is out of `CLAUDE.md`. Closed by reconciliation pass 260817-1836.

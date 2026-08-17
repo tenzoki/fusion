@@ -28,3 +28,6 @@ Remedies to weigh against each other rather than adopt in order:
 
 Note that (2) is what the orchestrator already does informally in well-written dispatches, and this
 session's best executor outcomes correlate with it. That is an observation, not a measurement.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). The stated cause is refuted and the symptom is not. `shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md` measured within-document em-dash compliance improving toward the end of a document, which is the opposite of context-depth decay. The remedy the analysis recommended — attach the rule to the act rather than stating it apart from it — was not adopted: `task_start` is still a standalone instruction (`agents/orchestrator.md:487`, `:1190`) with no lint behind it, and decision `260810-0710` on whether a rule may land without its enforcing check is still deferred. Retitling this record would be a rewrite of its analysis, which a reconciliation pass does not do; the correction is recorded here instead.

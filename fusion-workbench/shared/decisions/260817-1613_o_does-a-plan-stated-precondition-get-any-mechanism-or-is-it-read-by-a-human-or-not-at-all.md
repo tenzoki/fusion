@@ -69,3 +69,13 @@ that a human at that gate is the whole of the enforcement. That is the same shap
 `**Decidability:**` line already uses — put the question where somebody looks rather than build a
 checker for a question that is mostly undecidable. Option 3 is the one to reach for only if option
 2 is measured and misses.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`). Still open, filed
+earlier the same day by the previous pass and unanswered since. Searched: no analysis in
+`shared/analyses/` addresses plan-stated preconditions, no planning file names
+`## Where this Circle stops` as a subject, and no other decision record answers it. The adjacent
+answered record `260815-2109` (coverage is advisory, the gap is named in the closure note) remains
+answered-but-unrealised — its option 3, filtering the uncovered set to commits touching shipped
+files, is absent from `hooks/lib/review-coverage.ts` at HEAD — so the mechanism half of this
+question has no partial answer standing in for it either. Marker stays `_o_`.

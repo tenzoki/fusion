@@ -72,3 +72,6 @@ find a sentence that is not there.
 - [ ] Every file that calls that section "the authority" for the role-not-extension rule can be
       checked against it and finds the rule stated in the same terms.
 - [ ] `260811-1301` is closed or its residual is restated.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: All four surfaces still defer to the table (`agents/coder.md:24`, `agents/ontocoder.md:24`, `agents/planner.md:45`, `README-agents.md:45`) and the table still has no `Cargo.toml` row, so the pointer resolves to nothing on the case it is cited for. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

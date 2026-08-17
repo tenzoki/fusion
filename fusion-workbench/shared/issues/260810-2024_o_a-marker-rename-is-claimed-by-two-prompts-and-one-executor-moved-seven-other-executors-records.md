@@ -53,3 +53,6 @@ since a single change may settle both.
 
 **Filed by:** orchestrator, session `260810-1646`, on the Turn-2 commit-procedure executor's own
 report of the incident.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:234` and `agents/coder.md:45` both still claim the rename, and no name-your-files-explicitly rule was added. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

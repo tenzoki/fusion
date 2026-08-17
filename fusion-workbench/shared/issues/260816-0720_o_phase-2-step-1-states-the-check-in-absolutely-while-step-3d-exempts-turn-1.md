@@ -30,3 +30,6 @@ the two sentences as written cannot both be executed.
 ## Fix
 
 State the Turn-1 exemption at `:465`, where the step runs, in one clause. The reasoning stays at `:655`.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:465` still states the check-in with only the budget qualifier while `:653` puts the first question at the start of Turn 2. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

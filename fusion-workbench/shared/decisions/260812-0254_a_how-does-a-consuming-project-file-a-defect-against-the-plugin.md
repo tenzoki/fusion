@@ -57,3 +57,6 @@ hand this week and all three arrived.
 
 ---
 Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 1: a `plugin-issues/` store in the consuming project plus a skill that writes there; transfer stays manual. User answered inline 2026-08-16.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`). Answer recorded, not yet realised — marker stays `_a_`. `grep -rln plugin-issues agents/ skills/ rules/ bin/ hooks/ *.md` returns nothing, and `ls skills/` holds twelve directories with no such skill. Neither the store nor the skill that writes to it exists.

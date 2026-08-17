@@ -48,3 +48,6 @@ which is the same block's authoring counterpart in the rule file.
 
 **Found by:** coderev, reviewing `433e206..b18a8cf`
 (`shared/reviews/260816-1049-coderev-tracked-workbench-split-and-kept-line.md`, F3).
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `.gitignore:65` still calls both consequences lifecycle-skill consequences, while the conventions file states the second lost its consumer when the stash skills were removed on 2026-08-15. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

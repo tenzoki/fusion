@@ -39,3 +39,6 @@ Option 3 is the only one that removes the duplication rather than assigning it a
 ## Worked instance
 
 Circle `circles/260814-1228-one-flow-mandate-to-process-control`, 2026-08-15. The Turn log entry for the revision records the gap and points here, which is the only mitigation available inside the current rules: the Turn log *is* a permitted orchestrator write, so the contradiction is at least declared beside the text that carries it.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/shaper.md`-s portfolio-activation mode is still scoped to an anticipated Circle ahead of activation, and `agents/orchestrator.md:236` still permits exactly three Circle-record content writes, none of them a mid-Circle Directive revision. None of the three candidate answers was adopted. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

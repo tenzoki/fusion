@@ -25,3 +25,6 @@ Two parts to a fix:
 2. Make the omission harder to repeat. The orchestrator writes the Turn log at Phase 4 and renames the record at closure in the same phase; a closure that finds the anticipation placeholder still present is a detectable condition.
 
 Filed by: analyst, from `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md` (Question 4, third thin spot).
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `circles/260719-1536-plane-mirror-integration/_c_circle.md:56-58` still carries the anticipation-time placeholder under `## Turn log`, and no backfill or detection step exists. The mirror itself is gone, but the class of defect (a Circle closing over an unwritten Turn log) is not tied to it. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

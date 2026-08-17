@@ -19,3 +19,6 @@ timestamp parsing defect that `CLAUDE.md` documents for this exact file, where a
 is read as local time and the arithmetic comes out wrong by the offset; or the panel is rendered
 only under a condition that is never met. Establish which before changing anything — the three have
 nothing in common.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `bin/monitor:580` still reads `localStorage.getItem(key)` unguarded inside the warning render, and `task_start` emission is still unenforced, so both causes the analysis pinned are live. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

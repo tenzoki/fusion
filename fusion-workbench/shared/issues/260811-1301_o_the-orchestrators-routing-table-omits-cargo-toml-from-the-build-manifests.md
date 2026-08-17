@@ -17,3 +17,6 @@ Since 260811 `agents/coder.md:2` and the `## Scope` section of that same file st
 **Severity:** Low. No routing failure is observed or predicted; the tiebreaker covers the case.
 
 **Filed by:** coder, while closing `circles/260801-1244-guard-rules-write/issues/260805-1830_c_die-coder-beschreibung-nennt-rust-nicht-die-sprache-des-groessten-beobachteten-einsatzes.md`.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The coder row of `agents/orchestrator.md` `## Agent Routing Table` still lists build manifests without `Cargo.toml`, and no dedicated row exists beside the `tsconfig.json` one. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

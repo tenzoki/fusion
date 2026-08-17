@@ -58,3 +58,6 @@ Add both types to `WARNING_EVENT_TYPES` and give each its own subset budget and 
   invites the wrong reading, and the same holds here.
 
 `bin/monitor` is on `guard.protectedPaths`, so this is a change a human makes or approves.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `bin/monitor:170-175` `WARNING_EVENT_TYPES` still omits `review_coverage` and `staging_drift`, while `hooks/tracker.ts:333` and `:415` still emit both. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

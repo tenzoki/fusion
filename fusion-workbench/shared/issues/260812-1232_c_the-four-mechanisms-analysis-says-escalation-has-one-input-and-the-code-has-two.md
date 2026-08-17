@@ -44,3 +44,6 @@ supplied it, because the second's three configuration keys ship empty in the plu
 This is a correction to one sentence in an analysis. It does not reopen that analysis's verdicts on
 churn, the domain parameter, the self-bookkeeping family, or the shell blocks in the orchestrator
 prompt.
+
+---
+Resolved: Moot: there is no escalation left for the analysis to have miscounted. The counter, the halt, the consecutive-block counter, `hooks/lib/escalation.ts` and the decision-governed CHECK 3 that fed it were all deleted on 2026-08-16 in `2f624ca` and `9c79202`; `escalation` is now a retired top-level configuration key that fusion reports and never reads (`fusion.json` `_retired`, `hooks/lib/config.ts` `RETIRED_TOP_LEVEL_KEYS`). The analysis it corrects is a historical document and stays as written. Closed by reconciliation pass 260817-1836 at HEAD `2552586`.

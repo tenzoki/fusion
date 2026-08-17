@@ -76,3 +76,6 @@ cd /Users/k1/Projects/productive/fusion && git rev-list --count ff70d3a..c923935
       third counting defect the cohort has produced (with `260810-0751_o_` and `260810-0508_o_`,
       whose "fifteen commits" is now 22). If the answer is that they stay typed, say so somewhere a
       reviewer reads, rather than leaving the next recount to a reconciler.
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `shared/reviews/260810-0512-coderev-turn-1-range-8960e1a-to-head.md:169-178` still shows the fourteen-finding table over a seventeen-finding body, and `260810-0752-coderev-turn-2-range-ff70d3a-to-head.md:4` still says six commits over five. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

@@ -66,3 +66,15 @@ Implemented:
 Deferred:
 Superseded by:
 Retired:
+
+---
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`). Still open, and
+searched rather than assumed. `rules/` holds twelve files at HEAD and `workbench-tracking.md` is
+not among them, so the move this record blocks has not been made. No answer exists in
+`shared/analyses/` (sixteen reports, none on rule emission or on this split), in `shared/planning/`
+(nine files, all `_c_` after this pass), or in another decision record — the only two files naming
+`workbench-tracking` are this record and the one that raised it,
+`260816-0711_a_where-does-the-tracked-workbench-split-live-now-that-the-home-it-was-meant-to-move-to-is-gone.md`.
+That record is itself answered-but-unrealised for exactly this reason, which the pass records as a
+blocking pair rather than as two independent items: neither can move until this question is
+answered. Marker stays `_o_`.
