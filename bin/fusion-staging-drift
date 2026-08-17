@@ -48,8 +48,9 @@
 # over-staging impossible and under-staging invisible — a file nobody names is a
 # file nobody commits, and the rebuild ran forty-three minutes before the range's
 # first commit, so no task's staging list had a reason to name it. The answer is
-# therefore not a broader `git add`; loosening the shape re-opens f38f37d, where
-# a `git add -u` over a directory took three records out of HEAD. The answer is
+# therefore not a broader `git add`: the shape's own defect record is f38f37d,
+# where a `git add -u` over a directory of renamed records staged three
+# deletions and added nothing, taking those records out of HEAD. The answer is
 # to measure the result, which is the move the guard already made when it
 # stopped predicting writes and started fingerprinting paths.
 #

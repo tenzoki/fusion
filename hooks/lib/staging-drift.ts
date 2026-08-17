@@ -652,9 +652,10 @@ export function stagingSentence(report: StagingReport): string {
       "staging list, and commit a queue rebuild at Phase 1 where the dispatch that produced it happened. " +
       "Do NOT reach for `git add -A`, `-u`, a directory argument or a glob: the shape at Step 3b step 4 is what " +
       "makes over-staging impossible, it is not what failed here, and each way of loosening it fails on its own " +
-      "— `-A` and a directory argument are the over-staging that shape prevents; `-u` stages a renamed record's " +
-      "deletion and adds nothing in its place, taking that record out of HEAD; an unquoted glob does the reverse, " +
-      "staging the successor and leaving the deletion behind, so both names land in HEAD. " +
+      "— `-A`, a directory argument and a quoted pathspec glob are the over-staging that shape prevents; `-u` " +
+      "stages a renamed record's deletion and adds nothing in its place, taking that record out of HEAD; an " +
+      "unquoted shell glob does the reverse, staging the successor and leaving the deletion behind, so both " +
+      "names land in HEAD. " +
       "If you are a sub-agent, carry this line into your report — committing is the orchestrator's.",
   );
 
