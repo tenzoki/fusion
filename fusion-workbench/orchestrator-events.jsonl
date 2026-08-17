@@ -1695,3 +1695,12 @@
 {"ts":"2026-08-17T09:15:05","event":"task_start","turn":3,"task":"P-15","agent":"user","detail":"off-repository verification; the user is running it against a copy of a real consuming project"}
 {"ts":"2026-08-17T10:17:26","event":"task_error","turn":3,"task":"P-15","agent":"user","detail":"user verification found the monitor dismiss defect; filed in the shared store; pre-existing from b05b423, made more reachable by fab8a4b"}
 {"ts":"2026-08-17T10:36:05","event":"session_start","history_file":"circles/260816-1741-guard-becomes-observation-only/history/260816-1841-orchestrator-session.md","detail":"RESUME of interrupted session — Directive: the compliance guard observes and never blocks; mode plan; re-entering Turn 3 at P-15"}
+{"ts":"2026-08-17T11:52:07","event":"gate_response","turn":3,"task":"P-15","agent":"user","detail":"release gate opened by user: publish v10 to main and the marketplace"}
+{"ts":"2026-08-17T11:52:07","event":"commit","turn":3,"agent":"orchestrator","detail":"6a872cd (marketplace) chore: fusion 10.0.0 — version bump and description synced verbatim from the manifest"}
+{"ts":"2026-08-17T11:52:07","event":"commit","turn":3,"agent":"orchestrator","detail":"9ae7974 docs(workbench): the off-repository finding and the release-gate log"}
+{"ts":"2026-08-17T11:52:07","event":"task_done","turn":3,"task":"P-15","agent":"user","detail":"off-repository verification passed against krk; v10.0.0 published: origin/main e331332, tag v10.0.0, marketplace 10.0.0"}
+{"ts":"2026-08-17T12:09:26","event":"turn_end","turn":3,"agent":"orchestrator","detail":"6 tasks resolved (P-11, P-16, P-13, P-10, P-14, P-15), 22 commits, v10.0.0 published to main+tag+marketplace, 0 agent errors"}
+{"ts":"2026-08-17T12:47:51","event":"gate_hit","turn":3,"agent":"user","detail":"Rebalance gate — reconciler verdict review-needed, Artifact<->Grounding flagged"}
+{"ts":"2026-08-17T12:47:51","event":"gate_response","turn":3,"agent":"user","detail":"user chose Revise Artifact (Nacharbeiten); writer = shaper portfolio-activation; defects = only 260816-2318, then v10.0.1"}
+{"ts":"2026-08-17T12:47:51","event":"rebalance_artifact","turn":3,"agent":"orchestrator","detail":"3 tasks: correct the two Grounding-snapshot enumerations, fix 260816-2318, patch release v10.0.1"}
+{"ts":"2026-08-17T12:47:51","event":"turn_start","turn":4,"agent":"orchestrator","detail":"Turn 4; T1 shaper record correction, T2 coder 260816-2318, T3 release v10.0.1"}
