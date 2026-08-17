@@ -204,3 +204,155 @@ structural rather than the gap the first pass measured. Coverage is advisory und
 `shared/decisions/260815-2109_a_*` and does not flag an edge. `dcb0784` did touch a shipped code
 file no review opened, `hooks/lib/config.ts`; the change is a docstring plus the `dist` rebuild that
 carries it, and no behaviour moved.
+
+---
+
+# Final summary (written at Phase 4, 2026-08-17)
+
+**Status:** Bounded Closure — one Directive clause reachable and deliberately not reached
+(`260817-1505`), by explicit user decision at the second Rebalance gate.
+
+The session was interrupted once and resumed. It kept this history file, the anchor `3d41d4a` and
+its work queue; the Turn count spans the interruption because it is taken from `turn_start` events
+since the first `session_start` naming this file.
+
+## Budget
+
+Record counts are read off the stores at write time, never accumulated — the rule in
+`agents/orchestrator.md` that exists because a hand-kept pair once drifted by two in both
+directions and the endpoint check could not see it. Measured across **both** the Circle store and
+`shared/`, anchor `3d41d4a`, session start `260816-1841`.
+
+| Metric | Count |
+|--------|-------|
+| Turns | 4 |
+| Tasks resolved | 21 of 21 (18 plan tasks, 3 Turn-4 tasks) |
+| Tasks skipped/deferred | 0 |
+| Issues created | 32 |
+| Issues resolved | 23 |
+| Decisions filed | 3 |
+| Decisions implemented (`_a_`→`_i_`) | 6 |
+| Commits | 30 |
+| Agent errors | 0 |
+| Human gates hit | 7 |
+| Releases published | 2 (v10.0.0, v10.0.1) |
+
+**A caveat on the counts.** `bin/fusion-paths` resolves `SCAN_*` to `shared/` alone once
+`.active-circle` is deleted, so a count taken after the closure sees only a third of this session's
+records. The figures above were re-measured with the Circle store named explicitly. Anyone
+reproducing them after closure must do the same.
+
+## Review coverage
+
+**Range:** `3d41d4a..26fd2e6` — 30 commits
+**Covered by:** three review files tiling `3d41d4a..01932d6` (6 + 6 + 12 commits)
+**Not covered:** 6 — `70f17da`, `dcb0784`, `d0f13fa`, `d5f4ae7`, `5e7bdc1`, `26fd2e6`
+**Carried out-of-scope files:** `hooks/lib/__tests__/fixtures/rules-emission.golden`,
+`hooks/lib/__tests__/fixtures/surface-growth.golden`
+
+All six uncovered commits fall *after* the last review's declared range, and a review cannot open
+the commit that adds it. Five of the six are workbench bookkeeping; `dcb0784` is a shipped-text fix
+and `d0f13fa` the release that carries it. Advisory under `shared/decisions/260815-2109`, and
+stated rather than counted, because a count is what let seven unreviewed commits read as one in the
+run that filed `260810-1205`.
+
+## What the orchestrator got wrong in this session
+
+Recorded because a session that only lists what it fixed is not a record.
+
+1. **Two commits carried renames their messages do not describe.** A sub-agent left work staged and
+   `git commit` writes the whole index. `dbbad70` carries six renames, four of them unnamed — my
+   own count of four was itself wrong and the reconciler corrected it. Filed as `260817-1502`,
+   which then turned out to duplicate `shared/issues/260816-0105`, open since 2026-08-16 with its
+   own measurement.
+2. **One commit message and the dashboard were written in German** while the artifact language is
+   `en`. The reconciler had already filed `260817-1417` for an earlier instance in this same range;
+   the second instance was produced after reading that record.
+3. **The queue was carried without its own history entry into a staging list** until the drift
+   check named it.
+
+## Remaining work
+
+Six defects stay open by user decision: `260816-2319`, `260816-2320`, `260817-1505`, `260817-1507`,
+`260817-1508`, `260817-1509`. `260817-1505` is the unmet Directive clause and sits in a terminal
+Circle's issue store, so nothing carries it forward — the portfolio's `## Warnings` is the only
+surface naming it.
+
+Two questions were opened and not answered: `shared/decisions/260817-1613` (does a plan-stated
+precondition get any mechanism at all) and `shared/issues/260817-1613` (the verdict vocabulary has
+no value for a Directive that is reachable and deliberately not reached).
+
+## Session Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant O as Orchestrator
+    participant C as Coder
+    participant OC as Ontocoder
+    participant CU as Curator
+    participant S as Shaper
+    participant CR as Coderev
+    participant R as Reconciler
+    participant PM as Playmaker
+
+    Note over O: Turn 1
+    O->>C: P-1..P-4, P-5a, P-6 guard verdict and escalation go
+    C-->>O: done (05d848b 2f624ca 9c79202 ec3b6ad 3c2e1c6)
+    O->>CR: review 6 commits
+    CR-->>O: 6 issues
+
+    Note over O: Turn 2
+    O->>C: P-7a, P-5b config loader reduced
+    C-->>O: done (fab8a4b)
+    O->>U: GATE ontocoder P-7b
+    U-->>O: proceed
+    O->>OC: P-7b rename to fusion.json
+    OC-->>O: done (6890ea2)
+    O->>C: P-8, P-9 setup seed and test surface
+    C-->>O: done (92db96a 1d1d3a3)
+    O->>CR: review 6 commits
+    CR-->>O: 7 issues
+
+    Note over O: Turn 3
+    O->>C: P-11, P-12 shipped text and upgrade note
+    C-->>O: done (1fb3f32 18c125b)
+    O->>CU: P-16 reconcile CLAUDE.md and rules
+    CU-->>O: done (5763550)
+    O->>OC: P-13 decision records
+    OC-->>O: done (c65e1cf)
+    O->>C: P-10, P-14 baselines and version 10.0.0
+    C-->>O: done (e489133 a7f70b9)
+    O->>U: P-15 off-repository verification
+    U-->>O: passed, one pre-existing defect
+    Note over O,U: v10.0.0 published — main, tag, marketplace
+    Note over O: no review pass this Turn (filed as 260817-1417)
+
+    Note over O: Phase 3
+    O->>R: final reconciliation
+    R-->>O: review-needed, Artifact-Grounding flagged
+    O->>U: REBALANCE GATE
+    U-->>O: revise Artifact
+
+    Note over O: Turn 4
+    O->>S: T1 correct Grounding snapshot (portfolio-activation)
+    S-->>O: done (dbbad70)
+    O->>C: T2 defect 260816-2318
+    C-->>O: done (01932d6)
+    O->>CR: review the 12 uncovered commits
+    CR-->>O: 5 issues, nothing blocking
+    O->>U: GATE patch scope
+    U-->>O: only 260817-1506
+    O->>C: fix 260817-1506
+    C-->>O: done (dcb0784)
+    Note over O,U: v10.0.1 published — main, tag, marketplace
+
+    Note over O: Phase 3 again
+    O->>R: second reconciliation
+    R-->>O: review-needed, recommend Bounded Closure
+    O->>U: REBALANCE GATE
+    U-->>O: accept Bounded Closure
+    Note over O: Circle _t_ -> _b_, .active-circle cleared
+    O->>PM: portfolio refresh
+    PM-->>O: portfolio regenerated, recommendation (none)
+```
