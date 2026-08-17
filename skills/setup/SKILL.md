@@ -289,7 +289,7 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
 - **Exit 3** — the workbench state is inconsistent: `.active-circle` is orphaned or corrupt. Tell the user to fix or delete the pointer before continuing.
 - **Exit 4** — an internal error in `fusion-paths`. The user's workbench is fine; do **not** send them to check `.active-circle`. Report it as a fusion bug and file an issue.
 
-**The Turn budget is resolved here too.** Run the `bin/fusion-turn-budget` block from `$FUSION_SRC/agents/orchestrator.md` Setup Step 2 — the `[ -x ]` guard is part of it — and hold the answer for the session the same way the `fusion-paths` values are held. That section is the canonical implementation and carries the unresolved branch and its four consequences; do not restate them here, and do not substitute a number for a budget that did not resolve. Report the value, or the fact that it did not resolve and why, in the Setup-complete summary.
+**The Turn budget is resolved here too.** Run the `bin/fusion-turn-budget` block from `$FUSION_SRC/agents/orchestrator.md` Setup Step 2 — the `[ -x ]` guard is part of it — and hold the answer for the session the same way the `fusion-paths` values are held. That section is the canonical implementation and carries the unresolved branch and its four consequences; do not restate them here, and do not substitute a number for a budget that did not resolve. Report the value, or the fact that it did not resolve and why, in the Setup-complete summary — and with it every diagnostic line the helper put on stderr, which that section requires and which arrives even when the budget resolves.
 
 ## Step 3 — Context
 
