@@ -1709,3 +1709,4 @@
 {"ts":"2026-08-17T14:39:48","event":"turn_end","turn":4,"agent":"orchestrator","detail":"4 tasks resolved (T1 record, T2 2318, review pass, T3 release v10.0.1), 6 commits, 5 issues created by review"}
 {"ts":"2026-08-17T14:46:52","event":"portfolio_refresh","turn":4,"agent":"orchestrator","detail":"circles/260816-1741-guard-becomes-observation-only/_b_circle.md; playmaker history shared/history/260817-1643-playmaker-orchestrator-phase4.md; recommendation (none), all 16 Circles terminal"}
 {"ts":"2026-08-17T14:49:02","event":"session_end","turn":4,"agent":"orchestrator","detail":"4 Turns, 21/21 tasks, 30 commits, 32 issues filed, 23 resolved, 2 releases (v10.0.0 v10.0.1), Circle closed bounded, 0 agent errors"}
+{"ts":"2026-08-17T16:21:43","event":"session_start","history_file":"shared/history/260817-1821-orchestrator-session.md","detail":"Directive not yet stated; mode unresolved"}
