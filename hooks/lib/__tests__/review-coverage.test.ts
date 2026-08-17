@@ -57,6 +57,18 @@ const withRepo = <T,>(fn: (p: Project) => T): T => withProject(fn, { git: true }
 const withPluginRepo = <T,>(fn: (p: Project) => T): T =>
   withPluginProject(fn, { git: true });
 
+/**
+ * The proxy for "the coverage sentence reached the model".
+ *
+ * It was the literal `260810-1205` until 2026-08-17, when that id left the
+ * emitted text: it is a fusion workbench id, and the sentence carries it into
+ * every consuming project's session, where it resolves to nothing and was read
+ * as a local record. What is left is the closing instruction, which is the one
+ * part `coverageSentence` emits unconditionally — the two above it depend on
+ * what the report found — and which no other hook output produces.
+ */
+const COVERAGE_SPOKE = "widen the next dispatch's scope";
+
 /* ------------------------------------------------------------------ *
  * Fixtures
  * ------------------------------------------------------------------ */
@@ -562,7 +574,7 @@ describe("review coverage: what the hook says, and when", () => {
             "Mid-Turn an uncovered range is the normal state — review runs after " +
             "the Turn's tasks — and a check that fires on its commonest path is one " +
             "its reader learns to ignore (issue 260810-0710).",
-        ).not.toContain("260810-1205");
+        ).not.toContain(COVERAGE_SPOKE);
         expect(coverageEvents(p.root)).toEqual([]);
       });
     },
@@ -584,7 +596,7 @@ describe("review coverage: what the hook says, and when", () => {
         });
 
         const said = trackerSays(p, rel) ?? "";
-        expect(said).toContain("260810-1205");
+        expect(said, "the coverage sentence did not reach the model.").toContain(COVERAGE_SPOKE);
         expect(said).toContain("agents/orchestrator.md");
         expect(
           said,
@@ -614,7 +626,10 @@ describe("review coverage: what the hook says, and when", () => {
           notOpened: "none",
         });
 
-        expect(trackerSays(p, rel) ?? "").toContain("260810-1205");
+        expect(
+          trackerSays(p, rel) ?? "",
+          "the coverage sentence did not reach the model.",
+        ).toContain(COVERAGE_SPOKE);
         expect(
           trackerSays(p, rel),
           "the same gap was reported twice. A message that arrives every time is " +
@@ -626,7 +641,7 @@ describe("review coverage: what the hook says, and when", () => {
         expect(
           trackerSays(p, rel) ?? "",
           "the gap grew by a commit and the hook stayed quiet.",
-        ).toContain("260810-1205");
+        ).toContain(COVERAGE_SPOKE);
       });
     },
     CASE_TIMEOUT,
@@ -672,7 +687,7 @@ describe("review coverage: what the hook says, and when", () => {
             "this one was ordered ahead of are gone, and neither reason applied here " +
             "anyway: fusion's own repository is a fusion consumer, and issue " +
             "260810-1205 was measured in it.",
-        ).toContain("260810-1205");
+        ).toContain(COVERAGE_SPOKE);
       });
     },
     CASE_TIMEOUT,

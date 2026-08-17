@@ -62,7 +62,7 @@
   guard-state-shape.test.ts 251
   helpers/citation-scan.ts 574
   helpers/growth-bound.ts 123
-  helpers/guard-harness.ts 972
+  helpers/guard-harness.ts 978
   helpers/prompt-blocks.ts 28
   hook-fail-open.test.ts 621
   hooks-wiring.test.ts 103
@@ -77,11 +77,11 @@
   record-counts-measurement.test.ts 521
   reference-resolution-lint.test.ts 991
   review-coverage-mandate.test.ts 336
-  review-coverage.test.ts 804
+  review-coverage.test.ts 819
   rules-emission-golden.test.ts 1159
   rules-voice-profile.test.ts 318
   session-start-subdirectory.test.ts 159
-  staging-drift.test.ts 649
+  staging-drift.test.ts 660
   surface-growth-bound.test.ts 628
   turn-budget-lint.test.ts 524
-  total 17887
+  total 17919

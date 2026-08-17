@@ -97,6 +97,18 @@ const withWorkbench = <T,>(fn: (p: Project) => T): T =>
 const withPluginWorkbench = <T,>(fn: (p: Project) => T): T =>
   withPluginProject(fn, { git: true, files: WORKBENCH_FILES });
 
+/**
+ * The proxy for "the staging sentence reached the model".
+ *
+ * It was the literal `260811-0114` until 2026-08-17, when that id left the
+ * emitted text: it names a record in fusion's own workbench, and the sentence
+ * carried it into every consuming project's session, where it resolves to
+ * nothing. What is left is the prohibition, which `stagingSentence` emits
+ * unconditionally — the two parts above it depend on which classes the report
+ * found — and which no other hook output produces.
+ */
+const STAGING_SPOKE = "Do NOT reach for `git add -A`";
+
 /** Same identity discipline as the harness's own `initGitRepo`. */
 function git(root: string, ...args: string[]): string {
   const run = spawnSync("git", args, {
@@ -264,7 +276,7 @@ describe("staging drift: the defect it was built for", () => {
         const said = after.hookSpecificOutput?.additionalContext ?? "";
         expect(said).toContain(rel);
         expect(said).toContain("record(s) under fusion-workbench/ are still uncommitted");
-        expect(said).toContain("260811-0114");
+        expect(said, "the staging sentence did not reach the model.").toContain(STAGING_SPOKE);
         // And it is not being handed the destructive sentence for it.
         expect(said).not.toMatch(/delete it/i);
       });
@@ -505,11 +517,10 @@ describe("staging drift: the trigger is HEAD moving", () => {
 
         const said = after.hookSpecificOutput?.additionalContext ?? "";
         expect(said).toContain("portfolio.md");
-        expect(said).toContain("260811-0114");
         // It must not teach the reader to reach for the flag that caused the
-        // opposite defect. The acceptance makes the staging shape a constraint.
-        expect(said).toContain("`git add -A`");
-        expect(said).toMatch(/Do NOT reach for/);
+        // opposite defect. The acceptance makes the staging shape a constraint,
+        // and the prohibition doubles as the proxy for the sentence having spoken.
+        expect(said, "the staging sentence did not reach the model.").toContain(STAGING_SPOKE);
 
         const events = readEvents(project.root).filter((e) => e.event === "staging_drift");
         expect(events.length).toBe(1);
@@ -526,7 +537,7 @@ describe("staging drift: the trigger is HEAD moving", () => {
         runTracker(project.root, "Bash", { command: "ls" });
         commit(project.root, 1);
         const after = runTracker(project.root, "Bash", { command: "git commit" });
-        expect(after.hookSpecificOutput?.additionalContext ?? "").not.toContain("260811-0114");
+        expect(after.hookSpecificOutput?.additionalContext ?? "").not.toContain(STAGING_SPOKE);
         expect(readEvents(project.root).filter((e) => e.event === "staging_drift")).toEqual([]);
       });
     },
@@ -564,7 +575,7 @@ describe("staging drift: the trigger is HEAD moving", () => {
         // agent learns to read past.
         commit(project.root, 2);
         const second = runTracker(project.root, "Bash", { command: "git commit" });
-        expect(second.hookSpecificOutput?.additionalContext ?? "").not.toContain("260811-0114");
+        expect(second.hookSpecificOutput?.additionalContext ?? "").not.toContain(STAGING_SPOKE);
 
         // The miss grows: a second record joins it, and the signature changes.
         write(project.root, "fusion-workbench/shared/issues/260811-0400_o_new.md", "another\n");

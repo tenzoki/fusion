@@ -579,8 +579,7 @@ export function coverageSentence(report) {
     }
     if (parts.length === 0)
         return "";
-    parts.push("This is issue 260810-1205: two passes ran, their ranges did not tile the session's range, and seven commits reached a pushed tag unread while the report said one. " +
-        "If you are the orchestrator, widen the next dispatch's scope and name the gap commit by commit in the session summary — `bin/fusion-review-coverage` prints both. " +
+    parts.push("If you are the orchestrator, widen the next dispatch's scope and name the gap commit by commit in the session summary — `bin/fusion-review-coverage` prints both. " +
         "If you are a sub-agent, carry this line into your report; the dispatch scope is the orchestrator's to set.");
     return parts.join(" ");
 }

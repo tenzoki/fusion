@@ -534,11 +534,17 @@ export function openCoverageWindowWithNoGap(root: string): void {
 /**
  * Everything the coverage sentence carries, asserted as one — so the two suites
  * that use it as a probe cannot disagree about what "the tracker spoke" means.
+ *
+ * The third marker was the literal `issue 260810-1205` until 2026-08-17, when
+ * that id left the emitted text: it names a record in fusion's own workbench and
+ * resolved to nothing in the consuming projects the sentence reached. Its
+ * replacement is the closing instruction, the one part of the sentence that is
+ * emitted unconditionally.
  */
 export const COVERAGE_SENTENCE_MARKERS = [
   "a review landed and 3 commit(s)",
   "still covered by no review's declared range",
-  "issue 260810-1205",
+  "widen the next dispatch's scope",
 ] as const;
 
 function disposeProject(project: Project): void {

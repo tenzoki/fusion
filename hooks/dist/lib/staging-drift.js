@@ -543,15 +543,13 @@ export function stagingSentence(report) {
             "leftover commit message, delete it and write the next one to the prescribed path; if it is something " +
             "a session authored, name it to the user and stage it instead. This class is decided by the file's " +
             "NAME once every store has declined to claim it, so a false positive can enter it, and deleting an " +
-            "authored file on a name match is not recoverable — issue 260811-1141 is what that cost when the " +
-            "instruction was unconditional.");
+            "authored file on a name match is not recoverable.");
     }
-    parts.push("This is issue 260811-0114: a queue rebuild and its history file sat in the working tree for eighteen " +
-        "commits because the rebuild ran before the first task and no task's staging list had a reason to name " +
-        "them. If you are the orchestrator, add these paths — written out in full, absolute — to the next Step 3b " +
+    parts.push("If you are the orchestrator, add these paths — written out in full, absolute — to the next Step 3b " +
         "staging list, and commit a queue rebuild at Phase 1 where the dispatch that produced it happened. " +
         "Do NOT reach for `git add -A`, `-u`, a directory argument or a glob: the shape at Step 3b step 4 is what " +
-        "makes over-staging impossible, it is not what failed here, and loosening it re-opens `f38f37d`. " +
+        "makes over-staging impossible, it is not what failed here, and loosening it stages the deletions of " +
+        "records that were renamed, adds nothing in their place, and so takes those records out of HEAD. " +
         "If you are a sub-agent, carry this line into your report — committing is the orchestrator's.");
     return parts.join(" ");
 }
