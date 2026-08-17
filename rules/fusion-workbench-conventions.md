@@ -374,9 +374,13 @@ marker sits on the record inside the Circle directory, never on the directory it
 every path into a Circle stays valid for its whole life.
 
 `bin/fusion-rules` emits that file to `orchestrator`, `playmaker` and `shaper` — the three
-agents whose prompts name a Circle-scoped resolver key, and therefore the three that
-transition or rank a Circle. If you are not one of them you work inside a Circle without
-ever changing its state, and `## fusion-workbench Layout` above is the part you need.
+agents that transition or rank a Circle. Those three were once exactly the agents whose
+prompts named a Circle-scoped resolver key, and the key no longer picks them out:
+`curator` names `$SCAN_CIRCLES` to read Circle records as evidence and moves no Circle.
+The audience is authored in `bin/fusion-rules` rather than derived, and
+`rules/circle-records.md` carries the reason. If you are not one of the three you work
+inside a Circle without ever changing its state, and `## fusion-workbench Layout` above is
+the part you need.
 
 ## Inline State Tracking
 
