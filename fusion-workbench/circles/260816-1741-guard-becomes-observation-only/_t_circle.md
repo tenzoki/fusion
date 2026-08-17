@@ -98,10 +98,18 @@ is, rather than falling silent.
 
 Test files whose subject is being removed: `escalation.test.ts`, `guard-escalation-shape.test.ts`,
 `guard-halt-event.test.ts`, `clear-halt-concurrent-halt.test.ts`,
-`legacy-halt-clearing.test.ts`, `guard-state-shape.test.ts`, and the guard half of
+`legacy-halt-clearing.test.ts`, and the guard half of
 `config.test.ts`, `guard-project-config-integration.test.ts` and `hook-fail-open.test.ts`.
 `legacy-halt-clearing.test.ts` is the one to sequence rather than delete on sight: it pins the
 migration path that the Setup offer replaces.
+
+`guard-state-shape.test.ts` stood in that list when this Circle was shaped and does not belong in
+it. Its subject is the state-load coercion seam in `hooks/lib/guard-state-file.ts`, which this
+Circle does not touch and which keeps its two callers, `hooks/lib/review-coverage.ts` and
+`hooks/lib/staging-drift.ts`. The file was kept, was not edited, and is green. It reads as a halt
+test because it looks like `guard-escalation-shape.test.ts`, whose coercion cases read the same
+seam through `escalation.json` and went with that file. Filed as
+`issues/260816-1917_*_the-groundings-test-list-names-a-test-whose-subject-survives-the-removal.md`.
 
 ### The text surfaces in scope
 
@@ -113,6 +121,23 @@ that becomes the migration offer. `skills/help/SKILL.md:111` points a user at es
 behaviour. `skills/archive/SKILL.md:94` classifies `escalation.json` among the state files, while
 its `events.jsonl` sections stay correct and stay put. `README-hooks.md` documents the guard for
 users and `README.md` presents it in the product summary.
+
+Three further surfaces belong in that enumeration and were missing from it when this Circle was
+shaped. `docs/working-model.md:116-124` walks the guard's blocking behaviour at more length than
+`docs/philosophy.md` does: it states that only two things ever block a write, a high-sensitivity
+decision-governed path and an active halt, carries the escalation-to-halt bullet at `:119`, and
+walks a write past the guard at `:136`. `docs/philosophy.md:46` points at that file as the place
+the guard is walked end to end, so the two cannot be corrected apart.
+`README-agents.md:169` names the Turn budget's home as the project's `fusion-guard.json`, merged
+over the plugin's `hooks/config.json`, and both of those filenames change here.
+`hooks/session-start.ts:12-14` justifies its warning by two resolutions against the working
+directory, the PreToolUse write-tool checks in `lib/project-relative.ts` and `isFusionPluginCwd()`.
+This Circle deletes both, so the stated reason for a warning whose subject survives goes false.
+
+The omission is one of enumeration, not of scope. The Directive states the scope by property, "the
+shipped text that presents a blocking, halting guard as a live property", and all three surfaces
+fall inside it, which is how the plan treated them. Filed as
+`issues/260816-1917_*_the-groundings-text-surface-list-omits-three-surfaces-that-state-the-halt-as-live.md`.
 
 ### Residuals stated rather than designed away
 
