@@ -84,3 +84,10 @@ comment, not an assertion — and the record already contains the `inference:`-m
 that no observable separates the two columns. Whoever picks it up should either write that bound
 down or disprove the inference; leaving it green and unannotated is the one outcome the record
 argues against.
+
+---
+Reconciliation 2026-08-17, second Phase-3 pass. **Left OPEN, re-measured rather than re-asserted,
+unchanged since the first pass.** `hooks/lib/__tests__/hook-fail-open.test.ts:300-321` still carries
+the four original assertions on the `answer` site and no bound in its comment. The suite is green
+whole at HEAD `d0f13fa` (35 files, 653 tests), which is this record's point: green is what it
+reports either way. Left open by the same user decision that left `260816-2320` open on 2026-08-17.

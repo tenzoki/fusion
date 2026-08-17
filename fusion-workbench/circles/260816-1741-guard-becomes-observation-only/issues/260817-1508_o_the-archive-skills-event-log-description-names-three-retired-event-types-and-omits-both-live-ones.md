@@ -51,3 +51,13 @@ that could be added to it.
 - `hooks/lib/events.ts:53-56`, `hooks/guard.ts:7-14`
 - `rules/fusion-workbench-conventions.md:79` (the same correction, made)
 - `README-hooks.md:296` (the retired types written up correctly)
+
+---
+Reconciliation 2026-08-17, second Phase-3 pass. **Left OPEN by explicit user decision. Re-measured
+at HEAD `d0f13fa`:** `skills/archive/SKILL.md:130` still enumerates "every block, halt, cleared
+halt, advisory override and fail-open", and `:132` still names `guard_block`, `guard_halt` and
+`halt_cleared` as the lines a ceiling would discard. Neither `guard_allow` nor `guard_advisory`
+appears anywhere in the file, and those two are the only kinds the hook can emit now. The
+present-perfect tense at `:130` keeps the sentence historically true, which is why this reads as an
+omission rather than a false claim — the roll it argues for is still correct, and the reason it
+gives no longer describes what the log receives.

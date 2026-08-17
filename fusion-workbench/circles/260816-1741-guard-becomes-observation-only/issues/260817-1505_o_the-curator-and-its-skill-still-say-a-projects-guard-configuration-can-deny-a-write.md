@@ -55,3 +55,27 @@ read-only file, a permission denial from the harness, and a disk error, none of 
 - `hooks/guard.ts:1-21`, `hooks/lib/config.ts:305-313`, `:343-351`
 - `circles/260816-1741-guard-becomes-observation-only/issues/260816-2321_c_step-11s-line-scoped-changes-text-misses-two-stale-lines-in-files-it-already-opens.md`
 - `circles/260816-1741-guard-becomes-observation-only/issues/260817-1105_c_readmes-setup-paragraph-still-says-setup-seeds-the-retired-fusion-guard-json.md`
+
+---
+Reconciliation 2026-08-17, second Phase-3 pass. **Left OPEN by explicit user decision, against the
+shipped v10.0.1. Re-measured at HEAD `d0f13fa`, both sentences stand verbatim.**
+
+`agents/curator.md:212` — "A write denied by the project's guard configuration is a **failed** entry
+carrying the denial reason — never an applied one."
+`skills/curate/SKILL.md:110` — "A write the project's guard configuration denied is a **failed**
+entry, never an applied one."
+
+Both halves of the premise are still false at HEAD, re-checked and not carried over: `hooks/guard.ts`
+is 223 lines with no `permissionDecision`, no `"deny"` and no `hookSpecificOutput` anywhere in it,
+and every path writes `{}` (`:112`, `:202`); `guard` is a retired top-level key the loader names and
+drops.
+
+**This record is the one open item that sits inside the Circle's own Directive.** The Directive's
+last clause reads "The shipped text that presents a blocking, halting guard as a live property says
+what the guard now is, in code, **in the agent prompts and skill bodies**, in `README-hooks.md` and
+in `docs/philosophy.md`" (`_t_circle.md:25-27`). `agents/curator.md` is an agent prompt and
+`skills/curate/SKILL.md` is a skill body, and neither says what the guard now is. Every other clause
+of that Directive verifies at HEAD. This is why the second pass's Artifact↔Directive edge is flagged
+on completeness, and it is flagged as a user-chosen shortfall rather than as drift — see
+`circles/260816-1741-guard-becomes-observation-only/history/260816-1841-orchestrator-session.md`
+`## Coherence — second pass`.

@@ -559,3 +559,33 @@ Eight of this Circle's issues were open at the start of the pass. Three are clos
 verified evidence and five stay open. See
 `circles/260816-1741-guard-becomes-observation-only/history/260817-1417-reconciliation.md`
 for the per-record reasoning.
+
+### Second reconciliation pass — 2026-08-17, after the Rebalance
+
+Status unchanged: **Complete**, marker `_c_`, every implementation step plus the amendment's step 16
+carrying `[DONE]`. Nothing in this plan moved and no step marker changed. Re-verified over the full
+session range `3d41d4a..d0f13fa` (27 commits, six of them new since the first pass): `npm test`
+green whole at 35 files and 653 tests, `hooks/guard.ts` at 223 lines with no `permissionDecision`,
+no `"deny"` and no `hookSpecificOutput`, `hooks/lib/escalation.ts` / `hooks/clear-halt.ts` /
+`hooks/lib/project-relative.ts` absent, `hooks/lib/self-detect.ts` exporting `isFusionPluginRoot`
+alone, `hooks/hooks.json` matching `Write|Edit|MultiEdit|NotebookEdit|Bash` on both PreToolUse
+entries, `fusion-guard.json` / `templates/fusion-guard.json` / `hooks/config.json` all gone and
+`fusion.json` / `templates/fusion.json` present.
+
+**`## Where this Circle stops` is now discharged, late.** That section made this Circle's review pass
+a precondition of the tag, and v10.0.0 was tagged without one. The gap was filed as
+`issues/260817-1417_c_the-release-went-out-over-a-turn-whose-six-shipped-file-commits-no-review-opened.md`
+and closed on its own option 2 at Turn 4: `coderev` opened `1d1d3a3..01932d6` (`70f17da`), which
+subsumes all nine commits that were uncovered and all six that touched shipped files, including the
+one `v10.0.0` points at. Coverage at HEAD is `uncovered=3`, and all three are the commits that came
+after the review. The half of that record which is *not* discharged — whether a plan-stated
+precondition gets any mechanism at all — is now its own choice point,
+`shared/decisions/260817-1613_o_does-a-plan-stated-precondition-get-any-mechanism-or-is-it-read-by-a-human-or-not-at-all.md`,
+so it is not left inside a closed record. Note that this plan's own third reason for stopping at the
+work tree cited `shared/issues/260810-1618_o_a-release-was-tagged-and-pushed-while-its-own-review-pass-was-still-running.md`
+as a defect this project had already paid for; the Circle then repeated it.
+
+**Step 10's `Changes` text still reads "All three of that file's surfaces move"**, and only
+`TEST_LINE_BASELINE` moved. That divergence was named by the first pass and is unchanged here — a
+plan step's description is not a reconciliation edit. The argument and the two refusals are in
+`hooks/lib/__tests__/surface-growth-bound.test.ts:163-181`.

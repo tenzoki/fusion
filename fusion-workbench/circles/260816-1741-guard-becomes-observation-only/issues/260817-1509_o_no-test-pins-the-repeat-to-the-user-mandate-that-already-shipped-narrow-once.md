@@ -58,3 +58,13 @@ and cites `:322` and `:341`, which are the two retirement tables' declaration li
 - `hooks/lib/__tests__/turn-budget-lint.test.ts:159-330`
 - `hooks/lib/config.ts:239`, `:252`, `:393`, `:409`, `:423`, `:469`
 - `circles/260816-1741-guard-becomes-observation-only/issues/260816-2318_c_the-retired-file-diagnostics-one-chat-visible-channel-is-a-repeat-mandate-scoped-to-dropped-keys.md`
+
+---
+Reconciliation 2026-08-17, second Phase-3 pass. **Left OPEN by explicit user decision. Re-measured
+at HEAD `d0f13fa`:** the suite is 35 files and 653 tests, the same count as before `01932d6`, so no
+test was added with the fix. The nearest case,
+`hooks/lib/__tests__/guard-project-config-integration.test.ts:284` ("repeats it on every guarded
+call, write tool and Bash alike"), pins the per-call advisory channel and not the orchestrator's
+Setup-summary repeat, which is prompt text in `agents/orchestrator.md:132` and
+`skills/setup/SKILL.md:292`. The mandate that already shipped narrow once is still pinned by
+nothing.

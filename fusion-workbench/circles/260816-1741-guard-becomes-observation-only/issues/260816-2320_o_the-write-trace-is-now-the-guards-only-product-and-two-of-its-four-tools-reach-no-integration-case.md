@@ -64,3 +64,10 @@ takes a tool name, so four cases in `guard-bash-integration.test.ts` asserting t
 cover all four tools and the notebook branch with them. That is an addition to the hook test
 surface, which is the one surface whose growth baseline was re-armed this Circle and which
 therefore has head-room.
+
+---
+Reconciliation 2026-08-17, second Phase-3 pass. **Left OPEN, re-measured at HEAD `d0f13fa`.**
+`MultiEdit` and `NotebookEdit` still appear under `hooks/lib/__tests__/` in one file only,
+`hooks-wiring.test.ts`, where they are matcher entries rather than integration cases; outside the
+tests they appear in `hooks/guard.ts` and `hooks/tracker.ts` alone. Two of the four tools of the
+guard's only remaining product still reach no integration case. Left open by explicit user decision.

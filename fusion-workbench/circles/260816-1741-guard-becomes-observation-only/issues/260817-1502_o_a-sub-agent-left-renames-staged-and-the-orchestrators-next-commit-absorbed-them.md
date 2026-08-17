@@ -57,3 +57,54 @@ and one of them changes what sub-agents are allowed to do.
 
 - `git show --stat dbbad70` — seven files, four of them renames at 100% similarity.
 - `git status` immediately after — the same four files listed as ` M` at their new names.
+
+---
+Reconciliation 2026-08-17, second Phase-3 pass. **Left OPEN. The account is confirmed and the
+count is corrected upward; the remedy is still undecided, which is what keeps it open.**
+
+**Measured at HEAD, not taken from the report above.**
+
+`git show --name-status --find-renames dbbad70` returns **seven paths and six renames**, not two
+plus four:
+
+| Path | Status | Named by the message? |
+|---|---|---|
+| `_t_circle.md` | `M` | yes |
+| `260816-1917_c_…test-list…` | `R065` | yes ("Closes both `260816-1917_*` records") |
+| `260816-1917_c_…text-surface-list…` | `R052` | yes |
+| `260816-2123_c_…dangling-citations…` | `R100` | **no** |
+| `260816-2317_c_…citation-set-grew…` | `R100` | **no** |
+| `260817-1032_c_…bounded-surfaces…` | `R100` | **no** |
+| `260816-1915_c_…observation-only.md` (plan) | `R100` | **no** |
+
+So the four unnamed renames are exactly as this record says. What it does not say is that the two
+*named* renames carry a second author's content: the `R065`/`R052` similarity indices are below 100
+because each of those two files also absorbed the reconciler's unstaged
+`Reconciliation 2026-08-17, Phase 3` annotation block, picked up by the orchestrator's `git add` of
+the path. That is a wider absorption than a staged rename — an unstaged **content** edit from
+another agent, landing under a message that describes only the shaper's half.
+
+**Nothing was lost, and nothing wrong was committed.** Verified three ways:
+
+1. The four `R100` renames carried no content, and their content edits reached the very next
+   commit: `bee46e7` shows `M` on all four at their new names. Both halves of every one of the four
+   changes are in the repository.
+2. Every one of the seven paths is a tracking file of this Circle. No code, no data, no file
+   outside `fusion-workbench/` rode along.
+3. All four renames are **correct changes**, re-verified against the tree rather than against the
+   first pass's claims: `260816-2123` (`reference-resolution-lint` green inside a whole-suite pass,
+   35 files / 653 tests, no dangling path in `CLAUDE.md`), `260816-2317` (`CLAUDE.md:30` rewritten,
+   heading now `` `fusion.json` + `templates/fusion.json` ``), `260817-1032`
+   (`hooks/lib/__tests__/surface-growth-bound.test.ts:163-181` carries the argument and moves
+   `TEST_LINE_BASELINE` alone), and the plan (all 16 implementation steps plus the amendment's step
+   16 carry `[DONE]`; header reads `**Status:** Complete`).
+
+**The working tree and the index are consistent now.** `git diff --cached --quiet` and `git diff
+--quiet` both exit 0, `git status --porcelain --untracked-files=all` is empty, and
+`git rev-list --left-right --count origin/main...HEAD` is `0 0`.
+
+**This is a re-filing.** `shared/issues/260816-0105_*_a-sub-agents-staged-rename-is-absorbed-by-the-orchestrators-next-commit-and-the-staging-list-cannot-prevent-it.md`
+filed the same defect on 2026-08-16 from session 260815-2147, commit `a19c867`, with the same
+mechanism, the same reading of why Step 3b steps 4 and 5 do not reach it, and the same citation of
+`260811-0114`. It was not found before this record was written. Both are now cross-annotated; they
+are one defect and want merging, with this record's three-option remedy kept.

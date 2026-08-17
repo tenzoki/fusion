@@ -49,3 +49,5 @@ fabricated ones.
 - `shared/issues/260811-1755_*_stale-marker-citations-recur-and-the-lint-does-not-read-the-hook-entrypoints-where-one-was-hiding.md` — the same gap one directory up, closed in this session
 - `shared/issues/260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md` — the same gap in the other unscanned corpus
 - `shared/decisions/260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md` — the upstream question about who follows a rename into the citing text
+
+Also seen: 260817-1613 by reconciler — a second live instance in the same file, created by this session's own marker rename: `hooks/lib/__tests__/surface-growth-bound.test.ts:174` cites `circles/260816-1741-guard-becomes-observation-only/issues/260817-1032_o_two-of-the-three-bounded-surfaces-grew-through-this-circle-so-only-the-hook-tests-baseline-moves.md`, and that record moved to `_c_` in `dbbad70`. `npm test` is green (35 files, 653 tests) because `surface()` still stops at `hooks/lib/*.ts`, which is exactly the gap this record measures.

@@ -108,3 +108,99 @@ separately as
 `circles/260816-1741-guard-becomes-observation-only/issues/260817-1417_o_the-release-went-out-over-a-turn-whose-six-shipped-file-commits-no-review-opened.md`,
 because the plan's own `## Where this Circle stops` named that review pass as a precondition of the
 tag and no record said the gate was crossed without it.
+
+## Coherence — second pass
+
+<!-- RECONCILER-OWNED -->
+
+Computed 2026-08-17 at Phase 3, after the Rebalance, over the full session range
+`3d41d4a..d0f13fa` (27 commits). Domain `code`. **This section is appended beneath the first pass's
+`## Coherence` and does not replace it** — the first records the state at `9ae7974` that produced
+`review-needed` and the Rebalance; this one records the state at the released HEAD. Full working in
+`circles/260816-1741-guard-becomes-observation-only/history/260817-1618-reconciliation.md`.
+
+**Verdict:** review-needed
+
+**Edges:**
+
+- **Artifact↔Grounding: OK. The first pass's flag is cleared, verified against the tree rather than
+  against `dbbad70`'s message.** Both corrections in `_t_circle.md` hold in both directions:
+  `guard-state-shape.test.ts` is out of the removed-tests list at `:101` and the paragraph beneath it
+  is accurate in every particular (the file is present, `hooks/lib/guard-state-file.ts` keeps exactly
+  two callers, and `review-coverage.ts:118` and `staging-drift.ts:128` both resolve); and
+  `docs/working-model.md`, `README-agents.md:169` and `hooks/session-start.ts` are enumerated at
+  `:122-138`, each was read at the anchor and at HEAD, and each was in fact corrected inside this
+  Circle (`1fb3f32`, `5763550`, `ec3b6ad`). Both `260816-1917_*` records carry a `Resolved:` footer
+  and a `_c_` marker. 26 claims re-verified, **0 drift items**, `npm test` green whole at 35 files
+  and 653 tests. 8 open defects in the Circle store, of which 6 are open by explicit user decision.
+  Tracking drift corrected in this pass: 1 issue closed on verified evidence, 7 annotated, 1 review
+  annotated per finding, 1 plan log extended, 3 shared records given `Also seen:` lines, 2 new
+  records filed.
+- **Artifact↔Directive: FLAGGED, on completeness rather than on direction.** All 27 commits move
+  toward the Directive; none is orthogonal and none is away. Every clause of the Directive verifies
+  at HEAD except one, and each was checked in the tree: `hooks/guard.ts` is 223 lines with no
+  `permissionDecision`, no `"deny"` and no `hookSpecificOutput`, writing `{}` on every path (`:112`,
+  `:202`); `hooks/lib/escalation.ts`, `hooks/clear-halt.ts` and `hooks/lib/project-relative.ts` are
+  absent; `hooks/lib/self-detect.ts` exports `isFusionPluginRoot` alone; both PreToolUse entries in
+  `hooks/hooks.json` still match `Write|Edit|MultiEdit|NotebookEdit|Bash`; `fusion-guard.json`,
+  `templates/fusion-guard.json` and `hooks/config.json` are gone and `fusion.json` and
+  `templates/fusion.json` are present; v10.0.1 is tagged at `d0f13fa` on `origin/main`, with the
+  marketplace entry at `f3ad823` and the three in-repo version surfaces all reading 10.0.1.
+  **The unmet clause is the last one**: "The shipped text that presents a blocking, halting guard as
+  a live property says what the guard now is, in code, **in the agent prompts and skill bodies**, in
+  `README-hooks.md` and in `docs/philosophy.md`" (`_t_circle.md:25-27`). `agents/curator.md:212` and
+  `skills/curate/SKILL.md:110` both still say a write denied by the project's guard configuration is
+  a `failed` entry. An agent prompt and a skill body, both named by that clause, both stating a
+  mechanism that cannot fire. Filed as `260817-1505`, **left open by explicit user decision against
+  the shipped release**. The other three left open (`260817-1507`, `260817-1508`, `260817-1509`) were
+  read against the same clause and fall outside it: a helper's stderr scope, an omission in a log
+  description whose present-perfect sentence stays true, and a missing test.
+- **Grounding↔Directive: OK.** 24 active decision records (`_o_` + `_a_`) in `$SCAN_DECISIONS`
+  scope, 30 across every store, **0 conflicting**. This Circle's own three are all `_i_` with cited
+  commits. A grep of every active record for the removed mechanisms returns four files, and all four
+  were opened: `shared/decisions/260810-1635_a_*` cites `fusion-guard.json` as historical evidence
+  inside its own argument; `circles/260801-1244-curator/decisions/260814-1915_o_*` and
+  `circles/260815-0007-…/decisions/260815-1845_o_*` use "halt" for a curator run and a Setup step,
+  not for the guard's; and `circles/260801-1244-guard-rules-write/decisions/260805-1548_a_*` matched
+  on German words containing the letters. None depends on a removed mechanism being live.
+
+**Rebalance recommendation:** accept Bounded Closure
+
+**Why this departs from the mapping table, stated rather than left to be noticed.** The table maps
+`review-needed` with the Artifact↔Directive edge flagged to `revise Directive`, and
+`accept Bounded Closure` only to `bounded-closure-proposed`, which is defined as *the Directive is
+judged definitively unreachable*. Neither fits: nothing here is unreachable, and the shortfall is
+one filed defect the user already chose to leave. **The vocabulary has no value for a Directive that
+is reachable and deliberately not reached**, which is a gap in a case split rather than a judgement
+call, and it is filed as
+`shared/issues/260817-1613_o_the-reconcilers-verdict-vocabulary-has-no-case-for-a-directive-that-is-reachable-but-deliberately-not-reached.md`.
+
+**What each closure would mean, since the gate is the user's:**
+
+- **Bounded Closure (`_b_`)** — the Directive stands as written, the Circle closes acknowledging it
+  was not fully reached, and `260817-1505` plus the three adjacent defects are the recorded residue.
+  This is the honest reading of what happened and needs no further Turn.
+- **Revise the Directive, then close `_c_`** — narrow the last clause to the surfaces that were in
+  fact swept, so the record says what the Circle delivered. Equally honest, and it is what the
+  priority order in `agents/reconciler.md` names first. It costs one edit to `_t_circle.md`, and no
+  agent may perform it (`shared/issues/260815-0752_o_*`).
+- **Another Turn is not recommended.** The one item inside the Directive is two sentences in two
+  files, and the user has already declined to spend a Turn on it.
+
+**Due in the same edit as the closure note, whichever marker is chosen.** `_t_circle.md` carries two
+literal-marker citations that no longer resolve: `:7` `**Active spec/plan:**` names
+`planning/260816-1915_p_…` and the plan is `_c_`, and `:167` names `decisions/260816-1742_o_…` and
+that record is `_i_`. The first is the pointer field `rules/circle-records.md` describes as
+degrading silently for `portfolio.md` rendering and orchestrator resume. Both are one token each,
+the record is being edited anyway, and after the transition they are permanent. Recorded on
+`shared/issues/260811-2105_o_*` rather than filed anew. Not a flag — the record's other five
+citations use the ratified `_*_` wildcard form and all resolve.
+
+**Not flagged, and named because the reader will look for it.** `bin/fusion-review-coverage --since
+3d41d4a` reports `commits=27 reviews=3 unusable=0 uncovered=3`, down from `uncovered=9`. The three
+are `70f17da` (the review file itself), `dcb0784` and `d0f13fa`, all of them *after* `coderev`'s
+declared range `1d1d3a3..01932d6` — a review cannot open the commit that adds it, so this residue is
+structural rather than the gap the first pass measured. Coverage is advisory under
+`shared/decisions/260815-2109_a_*` and does not flag an edge. `dcb0784` did touch a shipped code
+file no review opened, `hooks/lib/config.ts`; the change is a docstring plus the `dist` rebuild that
+carries it, and no behaviour moved.

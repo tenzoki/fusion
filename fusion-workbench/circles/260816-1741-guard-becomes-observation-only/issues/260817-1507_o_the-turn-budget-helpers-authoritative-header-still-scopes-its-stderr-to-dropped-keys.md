@@ -53,3 +53,13 @@ classes rather than the class. Name the retired file explicitly as the one that 
 - `circles/260816-1741-guard-becomes-observation-only/issues/260816-2318_c_the-retired-file-diagnostics-one-chat-visible-channel-is-a-repeat-mandate-scoped-to-dropped-keys.md`
 - `circles/260816-1741-guard-becomes-observation-only/issues/260816-2124_c_bin-fusion-turn-budgets-header-documents-the-configuration-file-7a-renames-and-no-step-owns-it.md`
   (the same header, lines 39-41; its fix did not reach lines 14-16)
+
+---
+Reconciliation 2026-08-17, second Phase-3 pass. **Left OPEN by explicit user decision. Re-measured
+at HEAD `d0f13fa`:** `bin/fusion-turn-budget:14` still reads "Anything the configuration loader had
+to drop goes to stderr, one line each", which is narrower than what the loader now returns. The two
+surfaces that were widened in the same class both did move — `agents/orchestrator.md:132` and
+`skills/setup/SKILL.md:292` now say "every diagnostic the configuration loader returned" (`01932d6`)
+— so this header is the one member of that set left behind. Its own row in `CLAUDE.md` names it as
+the authoritative usage block, which is what makes the narrow scope load-bearing rather than
+cosmetic.

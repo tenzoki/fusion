@@ -98,3 +98,5 @@ portfolio and asked for a report rather than a widening.
 
 No Circle is active, and the finding is about the record format itself rather than about the
 subject of any Circle.
+
+Also seen: 260817-1613 by reconciler — two live instances in `circles/260816-1741-guard-becomes-observation-only/_t_circle.md`, both due before that Circle's `_t_` → terminal transition makes them permanent: `:7` `**Active spec/plan:**` names `planning/260816-1915_p_…` and the plan is `_c_`, which is the silently-degrading pointer field this record names; `:167` names `decisions/260816-1742_o_…` and that record is `_i_`. Both were written in the literal-marker form; the same file's other five citations use the ratified `_*_` wildcard and all resolve.

@@ -106,6 +106,33 @@ reconciliation reliably substitutes for review, and one Circle is not evidence t
 If the next two Circles close over uncovered ranges and reconciliation finds nothing in them,
 that is evidence against this recommendation and the question should be re-opened.
 
+
+## Re-measurement asked for by this record — data point 2 of 2
+
+This record's closing paragraph asked to be re-opened if the next two Circles closed over uncovered
+ranges and reconciliation found nothing in them. Recorded here so the re-measurement has both
+points to read.
+
+**Circle 2 of 2: `260816-1741-guard-becomes-observation-only`, closed 2026-08-17.** It did close
+over an uncovered range, twice: `uncovered=9` at the first Phase-3 pass, and `uncovered=3` at the
+second after `70f17da` opened the twelve commits no review had. Reconciliation did **not** find
+nothing. The first pass found four stale plan markers, a stale plan status, three issues open
+against work already done, and two defects nobody had filed. The second pass found that one clause
+of the Circle's own Directive was unmet at the shipped release, that a defect had been filed twice
+across two stores without the earlier record being found, and a new stale citation in shipped test
+source created by the first pass's own rename.
+
+So the evidence stands **in favour** of the answer as given: reconciliation caught, in both Circles,
+things a review pass would have been dispatched to catch. Two caveats belong with it rather than
+after it. Reconciliation runs at Phase 3, after the commits and in this Circle after the tag, so it
+substitutes for review in *finding* and not in *preventing* — the v10.0.0 tag went out over the
+uncovered range and the findings shaped v10.0.1 instead. And the two passes are not independent
+evidence: the second pass found a defect the first pass created.
+
+**Option 3 is still unimplemented.** `bin/fusion-review-coverage` returns the unfiltered count, so
+both passes split it by hand. The record's own prediction that an unfiltered number "will be argued
+with every time it fires" held on both.
+
 ---
 Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — options 3 then 1: filter the uncovered set to commits touching shipped files, keep coverage advisory with the gap named in the closure note. User answered inline 2026-08-16.
 Implemented:

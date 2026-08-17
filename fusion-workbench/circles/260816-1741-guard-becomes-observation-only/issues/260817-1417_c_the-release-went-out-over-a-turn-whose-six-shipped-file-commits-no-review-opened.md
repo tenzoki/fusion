@@ -90,3 +90,32 @@ this Circle was the second one.
 
 Not recommended from here: this belongs to whoever holds the release gate, and the reconciler's
 role ends at naming it.
+
+---
+Resolved: **option 2, executed at Turn 4 as `70f17da`.** `coderev` was dispatched over
+`1d1d3a3..01932d6` — twelve commits, which subsumes all nine that were uncovered when this record
+was filed and all six of those that touched shipped files, including `e331332`, the commit
+`v10.0.0` points at. Five findings came out of it (`260817-1505` through `260817-1509`), and one of
+them rode into the patch rather than waiting: `260817-1506` was fixed in `dcb0784` and shipped in
+v10.0.1, which is precisely the "findings cannot change v10.0.0 but can shape a v10.0.1" this
+record's option 2 predicted.
+
+Re-measured at HEAD by this pass: `bin/fusion-review-coverage --since 3d41d4a` now reports
+`commits=27 reviews=3 unusable=0 uncovered=3`, down from `uncovered=9`. The three that remain are
+`70f17da` (the review file itself), `dcb0784` and `d0f13fa`, all of them *after* the review — a
+review cannot open the commit that adds it, so this residue is structural rather than the gap this
+record names. Two files are carried as `not-opened` by the Turn-4 review's own header,
+`hooks/lib/__tests__/fixtures/rules-emission.golden` and `.../surface-growth.golden`.
+
+**What the closure does not discharge**, stated so it is not read as covered: option 3's second
+half, "separately decide whether a plan-stated precondition gets any mechanism at all", is
+untouched. This record's own `## What it costs if it stands` is therefore still live — the next
+plan that writes such a clause has the same nothing enforcing it. It is now filed as its own
+choice point, `shared/decisions/260817-1613_o_does-a-plan-stated-precondition-get-any-mechanism-or-is-it-read-by-a-human-or-not-at-all.md`,
+rather than left inside this closed record. Option 3's *first* half — the filter of the uncovered
+set to shipped-file commits — remains unimplemented on
+`shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`,
+where it belongs.
+
+The historical fact this record was filed about stands and cannot be undone: v10.0.0 was tagged
+over a range no review had opened. What is closed is the gap, not the history.

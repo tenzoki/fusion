@@ -54,3 +54,5 @@ Option 1 alone is sufficient and needs no executor-prompt change, which argues f
 - `rules/commit-lock.md` (why serialisation does not reach this)
 - `shared/issues/260811-0114_*` (the staging-drift check, which reports records *no* commit carries
   and is silent about records the *wrong* commit carries)
+
+Also seen: 260817-1613 by reconciler — recurred in session 260816-1841, commit `dbbad70`, and was filed a second time as `circles/260816-1741-guard-becomes-observation-only/issues/260817-1502_*_a-sub-agent-left-renames-staged-and-the-orchestrators-next-commit-absorbed-them.md` without this record being found first. That record carries the newer measurement (six renames in one commit, four of them unnamed by its message, plus two unstaged annotation blocks absorbed with them) and a three-option remedy; this one carries the original 260815-2147 measurement. **They are one defect and want merging.**

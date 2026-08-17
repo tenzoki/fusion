@@ -60,3 +60,10 @@ there is no gate on commit-message language, and the two existing prose gates (t
 profiles) explicitly do not cover this surface. A one-line check is possible and may not be worth
 its own mechanism — the honest answer may be that the rule is enough and this was a single lapse.
 Recorded so that a second instance has a first one to point at.
+
+---
+Reconciliation 2026-08-17, second Phase-3 pass. **Left OPEN and now unfixable in place.** `9ae7974`
+is still the only German commit message in `3d41d4a..d0f13fa`; the six commits added since the first
+pass (`dbbad70`, `bee46e7`, `01932d6`, `70f17da`, `dcb0784`, `d0f13fa`) are all English, so the
+count stays one of twenty-seven. The commit is on `origin/main` and carries a published tag range,
+so rewriting it is off the table — what stays open is the convention question, not a repair.
