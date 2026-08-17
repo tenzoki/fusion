@@ -310,3 +310,33 @@ answers are cheap; the gap is that neither was chosen.
 Nothing in this review asks for a change to the code this Turn wrote. The configuration move is
 correct, the migration works when followed, the compiled tree is clean, and the reduction of the
 test surface lost no coverage of a surviving subject.
+
+---
+
+## Reconciliation annotation — 2026-08-17
+
+Findings not rewritten. Their disposition at HEAD, each verified against the tree:
+
+**Four of the seven defects are closed**, on evidence in their own footers: `260816-2315`,
+`260816-2316`, `260816-2321` (all landed with plan step 11) and `260816-2317` (landed with the
+curator pass, `5763550`).
+
+**Three remain open and are the whole of this Circle's open code-surface residue.** Theme 2's
+finding is `260816-2318_o_*` — `agents/orchestrator.md:132` is unchanged at HEAD and the migration
+notice still reaches a consuming project's chat through no mandate; it is the one open record
+against a surface that has now shipped in v10.0.0. Theme 3's is `260816-2319_o_*` — the
+`answer`-site case still carries its four original assertions and the bound this review asked for
+was never written into the comment. `260816-2320_o_*` is also unchanged: `MultiEdit`,
+`NotebookEdit` and `notebook_path` still appear in exactly one test file, `hooks-wiring.test.ts`,
+and only as matcher entries.
+
+**Theme 5's coverage finding widened rather than closed.** Turn 3 received no review pass at all,
+so `bin/fusion-review-coverage --since 3d41d4a` now reports `uncovered=9`, six of them touching
+shipped files, and the tag `v10.0.0` points at one of the six. Recorded as
+`circles/260816-1741-guard-becomes-observation-only/issues/260817-1417_o_the-release-went-out-over-a-turn-whose-six-shipped-file-commits-no-review-opened.md`.
+
+**The migration verification this pass performed against a scratch project was repeated
+independently** at plan step 15, against a real consuming project (`krk`), and passed. It surfaced
+one pre-existing defect in `bin/monitor`, filed as
+`shared/issues/260817-1217_o_the-monitors-dismiss-keys-are-html-escaped-as-text-so-a-quote-in-a-warning-truncates-the-attribute.md`
+and verified still open at `bin/monitor:527-531` and `:621`.

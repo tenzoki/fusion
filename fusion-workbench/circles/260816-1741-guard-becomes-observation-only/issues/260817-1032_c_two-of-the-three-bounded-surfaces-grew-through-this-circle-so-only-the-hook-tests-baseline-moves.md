@@ -49,3 +49,10 @@ the growth they carry stays visible in the next reader's failure text instead of
 **What is left open.** `skills/` has spent 47 % of its head-room and no cut is scheduled against
 it. Whoever plans the next Circle over the skill bodies inherits that, and the instrument will
 say so before it fails.
+
+---
+Resolved: this record's own `## What was done instead` is what landed, and it landed as written. Verified at HEAD in the file rather than in the commit message.
+
+`hooks/lib/__tests__/surface-growth-bound.test.ts` carries the argument at `:112-181` and cites this record by path at `:174`, so the correction is readable from the code and not only from the workbench. `TEST_LINE_BASELINE` is the only map that moved; `AGENT_BASELINE` and `SKILL_BASELINE` are named at `:165-166` as deliberately not moving, with the 198-byte cut and the 14 533 bytes it would have absolved spelled out. The three surfaces pass their bounds today: `cd hooks && npm test` — 35 files, 653 tests, 0 failures.
+
+What is **not** discharged and is deliberately not carried by this record: the plan's step 10 `Changes` text still reads "All three of that file's surfaces move". A plan step's description is not a reconciliation edit, so it stays as the plan wrote it and the divergence is named in that plan's `## Reconciliation Log` instead. Anyone reading step 10 for what happened is one citation away from this record, through the test comment.

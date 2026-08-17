@@ -55,3 +55,10 @@ red case in that file hides behind two that everybody has learned to expect.
 
 ---
 Also seen: 260816-2315 by coderev — the count is two only up to `3c2e1c6`; step 7b added `CLAUDE.md:30` with two more dangling paths and made the whole `fusion-guard.json` Layout row false. Recorded separately, with the four-citation measurement, in `260816-2317_o_claude-mds-dangling-citation-set-grew-from-two-to-four-at-7b-and-one-whole-layout-row-is-now-false.md`.
+
+---
+Resolved: option 1, the one this record recommended and the user chose at the Turn 1 coherence gate — `/fusion:curate` ran inside the Circle as plan step 16 and landed as `5763550`. The curator boundary held: `CLAUDE.md` was edited by the curator at its own gate, not by step 11.
+
+Verified at HEAD by running the gate rather than by reading the diff: `cd hooks && npx vitest run lib/__tests__/reference-resolution-lint.test.ts` — 34 cases, 0 failures, no dangling reference in `CLAUDE.md` or anywhere else it scans. `hooks/lib/project-relative.ts` is named nowhere in `CLAUDE.md`. The whole suite is green with it (35 files, 653 tests), so step 15's release readiness no longer sits behind a red gate.
+
+The second, smaller item is discharged too: `BASELINE.paths` was re-measured rather than copied from any of the three records that predicted it. That measurement, and the argument for moving one baseline and not three, are in `hooks/lib/__tests__/surface-growth-bound.test.ts` and in `260817-1032_c_*`.

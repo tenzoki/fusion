@@ -63,3 +63,24 @@ there, because the next person to reorder `guard.ts:202` will see it green.
 - `hooks/lib/fail-open.ts:127-135`, `:150-157`, `:171-192`
 - `hooks/guard.ts:172-176`, `:202-208`, `:211-223`
 - `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md` step 9, "the integration cases that need a deny are re-pointed onto the surviving `answer` call on the allow path"
+
+---
+Reconciliation 2026-08-17, Phase 3. **Left OPEN. Nothing was changed, not even the comment.**
+
+Read at HEAD: `hooks/lib/__tests__/hook-fail-open.test.ts:300-321` still carries the four
+assertions this record enumerated and no others, and its inline comment still claims the last
+assertion is what distinguishes the case. The bound this record proposed — a comment saying what
+the case can and cannot still show, in the shape `legacy-halt-clearing.test.ts:36-43` uses about
+its own text assertions — was not written. The case is green and the suite is green (35 files,
+653 tests), which is precisely the condition the record warns about: a test that reads as a
+guarantee, cannot fail on the guarantee's violation, and shows green to whoever next reorders
+`guard.ts:202`.
+
+The record's second case is untouched and remains sound; nothing here disputes the `bestEffort`
+half.
+
+This is the cheapest of the three open code-surface records to close — the honest fix is a
+comment, not an assertion — and the record already contains the `inference:`-marked reasoning
+that no observable separates the two columns. Whoever picks it up should either write that bound
+down or disprove the inference; leaving it green and unannotated is the one outcome the record
+argues against.

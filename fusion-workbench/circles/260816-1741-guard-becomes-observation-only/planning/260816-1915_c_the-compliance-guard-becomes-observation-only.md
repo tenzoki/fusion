@@ -1,7 +1,7 @@
 # Implementation Plan: the compliance guard becomes observation-only
 
 **Date:** 2026-08-16
-**Status:** Approved — user gate 2026-08-16; all three open questions answered
+**Status:** Complete — every step [DONE]; verified by reconciliation 2026-08-17 (see `## Reconciliation Log`)
 **Spec:** none as a separate file. The specification is the Circle record, `circles/260816-1741-guard-becomes-observation-only/_t_circle.md`, whose `## Directive` states the target state and whose `## Grounding snapshot` carries the three decisions this Circle executes.
 **Decidability:** The load-bearing question is *what does a consuming project still carrying the removed mechanism's state or configuration get told, and can the plugin decide that from inputs it has?* Both halves are decided by reading the file system at a moment the project is already standing in: `haltActive` in `escalation.json` when `/fusion:setup` runs, and the existence of a project-root `fusion-guard.json` on every guarded tool call. Neither is predicted from a command's text or from an agent's intent, so both are facts read rather than conditions inferred. One thing here is genuinely undecidable, and the plan states it rather than approximating it: whether a given project ever runs Setup again. No mechanism inside the plugin can answer that, so nothing in this plan tries. Step 1 accepts the consequence in the words the Circle's Grounding already uses, a project that never runs Setup keeps an inert halt flag in a file nothing reads.
 
@@ -247,7 +247,7 @@ The per-step `Dependencies` lines below are the authority; the subgraph edges ar
    - Verification: `bin/fusion-turn-budget` prints `max_turns=12` in this repository after step 7b, and prints the retired-file diagnostic on stderr while the old file is still present.
    - Executed 2026-08-16, together with step 5's second half. `npm run build` exits 0; `./bin/fusion-turn-budget` exits 0, prints `max_turns=5` on stdout and the retired-file diagnostic on stderr. The `5` is the correct value between 7a and 7b: this repository's budget of 12 is still in `fusion-guard.json`, which is no longer read, and `fusion.json` does not exist until 7b writes it. `TOP_LEVEL_LEAF_RULES` folded away as well as `RETIRED_CONTAINER_LEAVES`, its only member `decisions` having become a retired top-level key. The diagnostic prefix moved from `Guard configuration` to `fusion configuration`; no consumer outside the three step-9 test files reads that string. **Two things step 9 needs that no record carried before:** `helpers/guard-harness.ts` seeds `fusion-guard.json` into throwaway roots, which is now a *retired file*, so every harness project emits an extra advisory per guarded call until the seeded name changes to `fusion.json` — two currently-red cases are that alone; and `turn-budget-lint.test.ts` did **not** move at this step, because all three of its configuration cases read files 7b has yet to touch. History: `circles/260816-1741-guard-becomes-observation-only/history/260816-2156-step-7a-loader-reduced-and-step-5b-paths.md`.
 
-7b. **The configuration files are renamed and the retired ones deleted**
+7b. [DONE] **The configuration files are renamed and the retired ones deleted**
    - Executor: `ontocoder`
    - Files: `templates/fusion.json` (new), `templates/fusion-guard.json` (delete), `fusion.json` at the repository root (new), `fusion-guard.json` at the repository root (delete), `hooks/config.json` (delete), `hooks/config.example.json` (delete)
    - Changes: write the new template carrying the same underscore-prefixed documentation notes, cut down to what the file still configures. `_what` describes a per-project fusion configuration rather than a guard configuration; `_turnBudget` survives largely as written; `_override` keeps the per-leaf merge account with the guard examples replaced; `_guardEnabled` goes with the key; `_gitTracked` keeps its argument, which was never about the guard. Add one note naming the retired file and what to copy out of it. This repository's own root file carries `{"orchestrator": {"maxTurns": 12}}`, which is the value the Turn-budget decision record requires to survive the move. The two plugin-layer files go if the gate on step 7a answers that the plugin layer goes; if it answers that the layer survives, `hooks/config.json` stays as an empty object with its `_comment` and `hooks/config.example.json` still goes, because its whole content is filled-in `categoryPaths` and `decisions`.
@@ -336,7 +336,7 @@ The per-step `Dependencies` lines below are the authority; the subgraph edges ar
     - **The sweep for a sixth version surface found none, and found one stale sentence instead.** `grep` for `9.0.0` outside `fusion-workbench/` and `docs/upgrading-to-v9.md` returns one hit, `CLAUDE.md:111`, which is the release section recounting what v9.0.0 did and is correct as history. But `README.md:67` still tells a new user that Setup seeds `fusion-guard.json` as the per-project guard configuration and to commit it, 37 lines above `:104`, which states the current shape. Filed as `circles/260816-1741-guard-becomes-observation-only/issues/260817-1105_o_readmes-setup-paragraph-still-says-setup-seeds-the-retired-fusion-guard-json.md` rather than fixed here, because it is outside this step's task.
     - History: `circles/260816-1741-guard-becomes-observation-only/history/260817-1105-step-14-version-and-pin-examples.md`.
 
-15. **Verification against a project root that is not this repository**
+15. [DONE] **Verification against a project root that is not this repository**
     - Executor: `coder`
     - Files: none, this step produces a verification report and no edit
     - Changes: the release process requires, for any change touching the guard, that its behaviour is confirmed against a project root that is not this repository. Until this Circle that requirement existed because the write-tool stand-down made local testing unrepresentative by construction. Step 4 removes the stand-down, so the guard now behaves identically in both trees, and this step is what establishes that claim rather than asserting it. Run the guard against a scratch consuming project in three states: with no configuration file, with the new file carrying a budget, and with a leftover `fusion-guard.json` still present. Confirm three things: every write and every Bash call is allowed, a `guard_allow` row is written for the write tools and none for Bash, and the retired-file diagnostic appears once per guarded call while the old file is there. Also run the default-agent smoke test the release process asks for.
@@ -448,7 +448,7 @@ Two changes to the step order and one new step, all decided by the user at the T
 coherence gate. The session history is
 `circles/260816-1741-guard-becomes-observation-only/history/260816-1841-orchestrator-session.md`.
 
-### Step 16 (new): the curator reconciles `CLAUDE.md`
+### Step 16 (new): [DONE] the curator reconciles `CLAUDE.md`
 
 - Executor: dispatched through `/fusion:curate`, which holds its own user gate
 - Dependencies: steps 11 and 12. Runs before step 14.
@@ -484,3 +484,78 @@ Three records amend it and are worth reading together rather than in three passe
 `260816-2122` (the harness reduction deletes four fixtures that same file imports, so adding the
 file is not sufficient on its own), and `260816-2108`'s second finding
 (`lib/__tests__/paths.test.ts` loses its subject at step 5b).
+
+---
+
+## Reconciliation Log
+
+**2026-08-17, reconciler, domain `code`, Phase 3 (final pass before Circle closure).**
+Range verified: `3d41d4a..9ae7974`, 21 commits after the anchor and 22 counting it, which is
+the difference between this figure and the 22 the dispatch and the Turn-3 `turn_end` event
+both state.
+
+### Verdict on the plan
+
+**Every one of the 18 tasks is landed and verified against the tree, not against its own
+claim.** The plan is set to `**Status:** Complete` and its filename marker moves `_p_` → `_c_`.
+
+Four markers were stale at the start of this pass and are corrected here. Steps **7b** and
+**15** carried no `[DONE]` although `agentstate.yaml` records both `done` (`6890ea2` and
+`9ae7974`), and the amendment's **step 16** carried none at all although it landed as
+`5763550`. The header still read `Approved`. Nothing about the work was wrong; the file had
+simply stopped being written to after step 14.
+
+### What was checked on disk, and how
+
+| Claim | Evidence at HEAD |
+|---|---|
+| `guard.ts` reaches no verdict | 223 lines, down from 483. No `block` call. The only `CHECK` tokens left are in the header's account of what it used to do. |
+| the escalation apparatus is gone | `hooks/lib/escalation.ts`, `hooks/clear-halt.ts`, `hooks/lib/project-relative.ts` all absent, and `hooks/dist/` carries no compiled orphan of any of the three. |
+| `paths.ts` reduced to `foldCase` | one `export`, `foldCase` (`hooks/lib/paths.ts:53`). |
+| `self-detect.ts` keeps only the root-anchored form | one `export`, `isFusionPluginRoot` (`hooks/lib/self-detect.ts:58`). |
+| the configuration surface moved | `fusion.json` and `templates/fusion.json` present; `fusion-guard.json`, `templates/fusion-guard.json`, `hooks/config.json`, `hooks/config.example.json` all absent. The root file carries `{"orchestrator": {"maxTurns": 12}}`, which is the value the Turn-budget record required to survive the rename. |
+| the migration note exists | `docs/upgrading-to-v10.md` present. |
+| the suite is green | `cd hooks && npm test` — 35 files, 653 tests, 0 failures. The citation lint is green on its own too (34 cases), which is what closes the two `CLAUDE.md` records below. |
+| v10.0.0 published | tag `v10.0.0` resolves to `e331332`; `9ae7974` is HEAD on `main`. |
+
+### Drift worth naming
+
+**The plan's own release precondition was not met, and the release went out anyway at a user
+gate.** `## Where this Circle stops` says the tag comes "after step 15 **and after this
+Circle's review pass**". Turn 3 had no review pass: `bin/fusion-review-coverage --since
+3d41d4a` reports `uncovered=9`, and six of those nine touch shipped files (`1fb3f32` 17 files,
+`5763550` 7, `18c125b` 5, `a7f70b9` 3, `e489133` 2, `e331332` 1). The remaining three are
+workbench-only writes with nothing in them for a reviewer to open. Under the recorded answer
+to `shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
+(options 3 then 1, answered 2026-08-16) coverage is **advisory** and the gap is named rather
+than blocking, so this does not stop the closure — but that record's option 3, the filter to
+shipped-file commits, is answered and **not implemented**, so the number above was split by
+hand. Filed as `issues/260817-1417_o_the-release-went-out-over-a-turn-whose-six-shipped-file-commits-no-review-opened.md`.
+
+**Step 10's `Changes` text is still wrong and is deliberately left as written.** It says "All
+three of that file's surfaces move". Two of the three grew through this Circle and only the
+hook-test baseline moved. The correction is not lost: it is measured in
+`issues/260817-1032_c_*` and argued at length in the comment block of
+`hooks/lib/__tests__/surface-growth-bound.test.ts:112-181`, which cites that record by path.
+A plan step's description is not the reconciler's to rewrite; the record and the test comment
+are where the truth lives.
+
+**One commit in the range is written in German** (`9ae7974`, subject and body). The project's
+artifact language is `en` and `rules/fusion-workbench-conventions.md` `## Project language`
+puts commit messages under it explicitly. Filed as
+`issues/260817-1417_o_one-commit-in-this-circles-range-is-written-in-german-while-the-artifact-language-is-en.md`.
+
+**Renaming this file leaves 33 citations pointing at a marker it no longer carries** — 28 name
+it `_p_` and 5 already named it `_o_` before this pass, so the rot predates the rename rather
+than starting with it. It is the condition
+`shared/decisions/260816-0119_a_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`
+was filed for; that record is answered and unimplemented. No lint breaks:
+`reference-resolution-lint.test.ts` scans the plugin's shipped text and not the workbench
+(`hooks/lib/__tests__/reference-resolution-lint.test.ts:74-78`).
+
+### Issue triage
+
+Eight of this Circle's issues were open at the start of the pass. Three are closed here on
+verified evidence and five stay open. See
+`circles/260816-1741-guard-becomes-observation-only/history/260817-1417-reconciliation.md`
+for the per-record reasoning.

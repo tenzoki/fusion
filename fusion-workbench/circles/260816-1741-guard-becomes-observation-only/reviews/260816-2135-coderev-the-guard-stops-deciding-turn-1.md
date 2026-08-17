@@ -232,3 +232,24 @@ without knowing which side of it the lint's surface falls on.
 
 Nothing in this review asks for a change to the Turn's code. The removal is correct, the deletions
 are complete, and the compiled tree is clean.
+
+---
+
+## Reconciliation annotation — 2026-08-17
+
+Findings not rewritten. Their disposition at HEAD, each verified against the tree rather than
+against the step that claimed it:
+
+**All six defects this pass filed are closed.** `260816-2021`, `260816-2032`, `260816-2108`,
+`260816-2115`, `260816-2122` and `260816-2123` each carry a `Resolved:` footer and a `_c_` marker.
+The last of them, the one this review called a release blocker, closed on the remedy this review
+recommended: `/fusion:curate` ran inside the Circle as step 16 (`5763550`) rather than step 11
+being given an exception, so the curator boundary held.
+
+**The two release blockers named in `## Summary` are both cleared.** `cd hooks && npm test` at
+HEAD is green whole — 35 files, 653 tests — and the citation lint is green on its own (34 cases),
+which is the gate this review measured as red at `3c2e1c6`.
+
+**Theme 1's dominant pattern was confirmed twice more after this pass**, in `260816-2315` and
+`260816-2316`, both since closed. Both were the same shape this review named: a step reasoned about
+a symbol's or a record's last consumer and the consumer was somewhere the step never grepped.

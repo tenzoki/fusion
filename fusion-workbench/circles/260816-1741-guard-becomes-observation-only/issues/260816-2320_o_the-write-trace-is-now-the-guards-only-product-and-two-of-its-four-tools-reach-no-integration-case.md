@@ -43,3 +43,24 @@ is not.
 - `hooks/guard.ts:90-109`, `:197-208`
 - `hooks/lib/__tests__/helpers/guard-harness.ts:747-755`
 - `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md` `## Testing Strategy`
+
+---
+Reconciliation 2026-08-17, Phase 3. **Left OPEN. Re-measured at HEAD and the gap is unchanged.**
+
+`grep -rn 'NotebookEdit\|MultiEdit\|notebook_path' hooks/lib/__tests__/` returns exactly one hit
+at HEAD: `hooks-wiring.test.ts:70`, and it is still the matcher-list assertion rather than a call
+through the hook. So the `notebook_path` branch of `extractFilePath` has no case, and neither
+`MultiEdit` nor `NotebookEdit` reaches `guard.ts` in any test. The record's own reading of the
+severity holds: no defect is known to be behind it; what is missing is the evidence that there is
+not.
+
+The weight the record describes is now fully realised rather than anticipated. v10.0.0 shipped
+(tag at `e331332`), so the `guard_allow` row is the released product's only output on the write
+path, `bin/monitor` renders it, and `docs/working-model.md:118` presents it to users as "the only
+record of what the write surface did" — naming all four tools while two of them reach no case.
+
+The cheapest closure the record names is still available and still cheap: `runWrite` already
+takes a tool name, so four cases in `guard-bash-integration.test.ts` asserting the row's `file`
+cover all four tools and the notebook branch with them. That is an addition to the hook test
+surface, which is the one surface whose growth baseline was re-armed this Circle and which
+therefore has head-room.

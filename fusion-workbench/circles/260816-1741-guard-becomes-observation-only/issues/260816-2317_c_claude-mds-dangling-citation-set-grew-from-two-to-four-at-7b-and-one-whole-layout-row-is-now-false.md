@@ -48,3 +48,12 @@ has to find, and it makes a stated count wrong in two records.
 - `circles/260816-1741-guard-becomes-observation-only/issues/260816-2123_o_claude-mds-two-dangling-citations-keep-the-citation-lint-red-and-no-step-in-this-plan-may-fix-them.md`
 - `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md` `### Step 16 (new): the curator reconciles `CLAUDE.md``
 - `hooks/lib/config.ts:4-18`, `:99-103`, `:343-350`
+
+---
+Resolved: step 16's curator pass found the row on its own — which is exactly what this record said it had to do, since the amendment's enumeration stopped at two and this record's count was four. Landed as `5763550`.
+
+Both halves are verified at HEAD, and separately, because a green lint would only have proved the first.
+
+**The two new dangling paths are gone.** `cd hooks && npx vitest run lib/__tests__/reference-resolution-lint.test.ts` — 34 cases, 0 failures. `CLAUDE.md:30` no longer names `templates/fusion-guard.json` or `hooks/config.json`.
+
+**The row was rewritten rather than repaired at its two paths**, which is the remedy this record asked for and the half no lint can see. `CLAUDE.md:30` now heads `` `fusion.json` + `templates/fusion.json` `` and each of the four false statements is corrected in its own terms: it is "the per-project configuration" and not a guard configuration; it is git-tracked "so every change to it shows in a diff" rather than so a change to how strictly the guard reads the project does; the merge is stated as "per **leaf** key across **two** layers — this file, then the built-in `DEFAULTS`"; and retirement is stated at its two new scopes, `RETIRED_PROJECT_FILES` for the leftover file and `RETIRED_TOP_LEVEL_KEYS` for `guard`, `decisions` and `escalation`, with the leaf-scoped table gone.
