@@ -1686,3 +1686,6 @@
 {"ts":"2026-08-17T08:28:01","event":"task_done","turn":3,"task":"P-16","agent":"curator","detail":"5763550 — 18 ledger entries applied to CLAUDE.md and the conventions rule; citation lint green"}
 {"ts":"2026-08-17T08:28:01","event":"commit","turn":3,"task":"P-16","agent":"orchestrator","detail":"5763550 docs(curator): CLAUDE.md and the conventions rule stop describing a guard that decides"}
 {"ts":"2026-08-17T08:28:01","event":"task_start","turn":3,"task":"P-10","agent":"coder","detail":"growth baselines re-armed at the cleanup moment"}
+{"ts":"2026-08-17T09:03:22","event":"task_done","turn":3,"task":"P-10","agent":"coder","detail":"e489133 — hook-test baseline re-armed; agents and skills baselines refused because both grew; suite green"}
+{"ts":"2026-08-17T09:03:22","event":"commit","turn":3,"task":"P-10","agent":"orchestrator","detail":"e489133 test(growth): one baseline moves, and the two that grew are refused"}
+{"ts":"2026-08-17T09:03:22","event":"task_start","turn":3,"task":"P-14","agent":"coder","detail":"version 10.0.0, install.sh and README pin examples, plugin.json description"}

@@ -325,12 +325,16 @@ The per-step `Dependencies` lines below are the authority; the subgraph edges ar
     - **`260804-1632_d_should-findrelevantdecisions-fold-case-…` was left untouched**, which is this step's one finding that produced no edit. The vocabulary holds no instrument for a deferred question whose subject was deleted, and the closest one is what `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md` is open to decide. The fact is already in the tree at `hooks/lib/paths.ts:36-41`.
     - History: `circles/260816-1741-guard-becomes-observation-only/history/260817-0530-step-13-decision-records-annotated.md`.
 
-14. **The version and the pin examples**
+14. [DONE] **The version and the pin examples**
     - Executor: `coder`
     - Files: `.claude-plugin/plugin.json`, `install.sh`, `README.md`
     - Changes: bump the version to `10.0.0`, which is what a removal of a project-root configuration file requires. Update the `FUSION_REF=tags/v<version>` example in the `install.sh` header and the same example in `README.md`, both of which `CLAUDE.md` names as version surfaces that drift. Rewrite `plugin.json`'s `description` in the same change if the guard appears in it, and read it against the marketplace entry's description before the release, which is the fifth surface `CLAUDE.md` names as the one that slips because it is prose rather than a version string.
     - Dependencies: steps 12 and 13
     - Verification: `claude plugin validate .` reports passed.
+    - Landed: `.claude-plugin/plugin.json` at `10.0.0`, matching the `v10.0.0` that `docs/upgrading-to-v10.md:16-17` already named. Both pin examples moved to `FUSION_REF=tags/v10.0.0` (`install.sh:27`, `README.md:26`). `claude plugin validate .` exits 0, passed with the one standing `CLAUDE.md`-at-plugin-root warning. `cd hooks && npm test` exits 0 at 35 files / 653 tests.
+    - **The fifth surface was rewritten and carried no further than this tree.** `plugin.json`'s `description` named "a compliance guard"; it now names an observation-only PreToolUse hook that decides nothing and produces the write trace and the configuration advisory. The marketplace entry in `tenzoki/claude-plugins` holds its own copy of that prose, is outside this tree, and is the release gate's to update — the exact new string is in this step's history file so it can be carried across by hand.
+    - **The sweep for a sixth version surface found none, and found one stale sentence instead.** `grep` for `9.0.0` outside `fusion-workbench/` and `docs/upgrading-to-v9.md` returns one hit, `CLAUDE.md:111`, which is the release section recounting what v9.0.0 did and is correct as history. But `README.md:67` still tells a new user that Setup seeds `fusion-guard.json` as the per-project guard configuration and to commit it, 37 lines above `:104`, which states the current shape. Filed as `circles/260816-1741-guard-becomes-observation-only/issues/260817-1105_o_readmes-setup-paragraph-still-says-setup-seeds-the-retired-fusion-guard-json.md` rather than fixed here, because it is outside this step's task.
+    - History: `circles/260816-1741-guard-becomes-observation-only/history/260817-1105-step-14-version-and-pin-examples.md`.
 
 15. **Verification against a project root that is not this repository**
     - Executor: `coder`
