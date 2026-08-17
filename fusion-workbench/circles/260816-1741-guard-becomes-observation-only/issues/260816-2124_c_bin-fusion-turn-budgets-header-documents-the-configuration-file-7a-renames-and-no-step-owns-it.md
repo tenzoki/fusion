@@ -40,3 +40,7 @@ What it costs if it stands: a project reading the helper's own authoritative hea
 its Turn budget in a file the loader no longer reads, which is exactly the silent-budget-loss
 failure step 7a's retired-file diagnostic exists to prevent, arriving through the surface that
 diagnostic points people at.
+
+---
+
+Resolved: `bin/fusion-turn-budget`'s header now names `fusion.json` as the file a project sets `{"orchestrator": {"maxTurns": 12}}` in, and states the merge as two layers — that file over `DEFAULTS` — instead of the three-layer walk over `hooks/config.json`. The "same walk every guard setting takes" clause was replaced rather than renamed, because no guard setting survives; in its place the header says that a project root still carrying `fusion-guard.json` is told so on every guarded tool call, which is the silent-budget-loss failure this record named. Landed with plan step 11.

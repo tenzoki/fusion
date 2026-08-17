@@ -36,10 +36,13 @@
 # The value now lives in hooks/lib/config.ts DEFAULTS — once — and is overridden
 # per project through the file that already exists for per-project settings:
 #
-#   fusion-guard.json   {"orchestrator": {"maxTurns": 12}}
+#   fusion.json   {"orchestrator": {"maxTurns": 12}}
 #
-# merged per leaf over the plugin's hooks/config.json and then the defaults, the
-# same walk every guard setting takes.
+# merged per leaf over the defaults. Two layers, that file and DEFAULTS, and
+# nothing between them: the plugin-level layer existed for the guard settings a
+# project could narrow, and went with them on 2026-08-16. A project whose root
+# still carries the earlier fusion-guard.json is told so on every guarded tool
+# call, because a budget left in that file is not read.
 #
 # The work is hooks/dist/turn-budget.js, resolved relative to this script rather
 # than through $FUSION_PLUGIN_ROOT, so an install copy and a work tree each run

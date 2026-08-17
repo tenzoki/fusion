@@ -53,3 +53,7 @@ is the natural place to notice it; the text itself belongs to step 1's file, so 
 What it costs if it stands: a user whose halt came from CHECK 3 is told it came from a mechanism they
 never had, and a reader reconciling `skills/setup/SKILL.md` against `hooks/guard.ts` finds the two
 shipped accounts of the same flag disagreeing about what wrote it.
+
+---
+
+Resolved: `skills/setup/SKILL.md`'s deletion offer now attributes the flag to **no mechanism at all** — "No check fusion still ships can raise a halt" — which is this record's second proposed shape, chosen because it is shorter and cannot go stale again the way the single-mechanism attribution did. One further clause tells the reader not to attribute the flag to a particular check, and says why: two could set it, and which one a given project met is not readable from the file. The paragraph's conclusion is unchanged, and `legacy-halt-clearing.test.ts`'s three text assertions still pass. Landed with plan step 11.

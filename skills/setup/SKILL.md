@@ -307,7 +307,7 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
 
   **`no legacy halt flag` — say nothing at all.** An absent file, an unreadable one and `haltActive: false` are the ordinary case, and none of them gets a line in the Setup report. Every other idempotent step here is silent when it has nothing to do, and a Setup that narrates its no-ops is a Setup nobody reads.
 
-  **`legacy halt flag present`** — this project is carrying state written by a mechanism fusion no longer ships. The protected-path check that raised the halt was removed on 2026-08-12, and no code at this version reads the flag: nothing is blocked by it, and no tool behaves differently whether the file stays or goes. Offer to delete it with one `AskUserQuestion`, in the project's chat language, the same way Step 0g asks its question:
+  **`legacy halt flag present`** — this project is carrying state written by a mechanism fusion no longer ships. **No check fusion still ships can raise a halt**, and no code at this version reads the flag: nothing is blocked by it, and no tool behaves differently whether the file stays or goes. Do not attribute the flag to a particular check — two of them could set it, and which one this project met is not readable from the file. Offer to delete it with one `AskUserQuestion`, in the project's chat language, the same way Step 0g asks its question:
 
   > This project still carries a halt flag in `fusion-workbench/.guard-state/escalation.json`. The check that set it is no longer part of fusion and no current version reads the flag, so nothing is being blocked. Delete the leftover file?
 

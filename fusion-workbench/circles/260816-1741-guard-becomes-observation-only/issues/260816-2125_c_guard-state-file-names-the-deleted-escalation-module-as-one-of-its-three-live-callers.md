@@ -47,3 +47,7 @@ without a current subject, the way `isFusionPluginRoot` is.
 What it costs if it stands: the next reader deciding whether `root` may be made required reads a
 justification naming a module they cannot find, and either keeps the default for a reason that no
 longer holds or removes it without the argument that would have been needed.
+
+---
+
+Resolved: three edits to `hooks/lib/guard-state-file.ts`. The live-caller sentence now reads two modules, `review-coverage.ts` and `staging-drift.ts`, and puts `escalation.ts` with the other removals as the fifth, dated 2026-08-16. The `## What escalation.ts adds on top` section is retitled to the past tense and opens by saying it is history, keeping the account of why the merge never generalised. The `escalation.json` half of the routed-files sentence went. The `:103` paragraph — the load-bearing one — no longer justifies the optional `root` on a caller that does not exist: it states that every caller in the tree passes one, that the default exists for a caller inside the hooks with no root of its own, that `escalation.ts` was that caller and was the only one, and that the parameter is kept the way `isFusionPluginRoot` in `lib/self-detect.ts` is kept — a form without a current subject, not a live default. It also says outright that making `root` required would break no code here, so the next reader is not left inferring it. Landed with plan step 11.

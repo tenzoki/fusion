@@ -1667,3 +1667,9 @@
 {"ts":"2026-08-16T21:00:27","event":"task_done","turn":2,"task":"P-9","agent":"coder","detail":"1d1d3a3 — 4 test files deleted, 8 re-pointed; red set 14 files/116 cases down to 3 files/5 cases"}
 {"ts":"2026-08-16T21:00:27","event":"commit","turn":2,"task":"P-9","agent":"orchestrator","detail":"1d1d3a3 test: the test surface follows the removal"}
 {"ts":"2026-08-16T21:00:39","event":"review_start","turn":2,"agent":"coderev","detail":"6 uncovered commits, range 3c2e1c6..HEAD; carried list empty from the Turn 1 review"}
+{"ts":"2026-08-16T21:21:14","event":"review_done","turn":2,"agent":"coderev","detail":"7 issues filed; coverage now verdict=covered over 12 commits; migration verified against a scratch consuming project"}
+{"ts":"2026-08-17T01:40:42","event":"coherence_review","turn":2,"agent":"orchestrator","detail":"verdict=ok | Artifact-Grounding: 7 defects filed, all plan text or tests, migration verified empirically against a scratch project, coverage tiled over 13 commits | Artifact-Directive: moves toward, config surface moved and tests followed | Grounding-Directive: 0 decisions touched this Turn"}
+{"ts":"2026-08-17T01:40:42","event":"gate_response","turn":2,"agent":"user","detail":"continue; step 13 correction carried into its dispatch without a further question"}
+{"ts":"2026-08-17T01:40:42","event":"turn_end","turn":2,"agent":"orchestrator","detail":"4 tasks resolved (P-7a, P-5b, P-7b, P-8, P-9), 6 commits, 7 issues created by review, 0 decisions answered, 0 agent errors"}
+{"ts":"2026-08-17T01:40:59","event":"turn_start","turn":3,"agent":"orchestrator","detail":"Turn 3; P-11 ready; remaining P-10, P-12, P-13, P-14, P-15, P-16"}
+{"ts":"2026-08-17T01:40:59","event":"task_start","turn":3,"task":"P-11","agent":"coder","detail":"shipped text surfaces; scope amended by issues 260816-2124, 2125, 2126, 2127, 2315, 2321"}

@@ -217,8 +217,10 @@ function scannedLines(f: SurfaceFile): { line: number; text: string }[] {
 // those texts did. The "no dead weight" test below is what caught it — an
 // exemption nothing cites is an exemption nobody re-reads before it swallows
 // something real.
+// A fourth left on 2026-08-16: `rules/relevant-file.md` was the fabricated
+// `ruleFile` value in README-hooks' "Adding a decision" example, and that whole
+// section went with the decision-governed check it configured.
 const EXAMPLE_PATHS: Record<string, string> = {
-  "rules/relevant-file.md": "guard-doc fabricated value in an event-JSON example",
   "bin/fu": "removed v3.20.0; CLAUDE.md names it as history, deliberately",
   "bin/fusion-state-drift":
     "removed 2026-08-15 with the counters it measured; the surviving "  +
@@ -251,6 +253,10 @@ const EXAMPLE_PATHS: Record<string, string> = {
     "removed 2026-08-15 with the session counters it measured; named in the " +
     "state-file, git and review-coverage rows as where their code came from " +
     "and as the every-tool-call slot nothing occupies now",
+  "lib/escalation.ts":
+    "removed 2026-08-16 with the halt and the consecutive-block counter; " +
+    "named in README-hooks' account of that removal and in its Origin table, " +
+    "where the port it came from is still worth naming",
 };
 
 // The shape of a path inside the plugin tree, held as a source string because
@@ -494,7 +500,15 @@ function scanHeadingAnchors(
 // `_a_` after the pin was approved, which turned that citation from a resolved
 // reference into a stale-marker violation — so this re-approval records the
 // citation LEAVING, and the violation it had become is gone with it.
-const BASELINE = { paths: 1122, anchors: 139, records: 94 };
+// Re-approved 2026-08-17, same Circle, step 11 — the step the plan makes
+// responsible for this gate's green. paths 1122 → 1103, and the movement is two
+// opposed halves rather than one: steps 2 to 7b deleted the modules and files
+// that 29 of the pinned citations named, which had already taken the count to
+// 1093 with no step re-approving it in between, and step 11's own rewrite of the
+// shipped text puts 10 back by citing what survived — `templates/fusion.json`,
+// `hooks/lib/config.ts`, the three `bin/` helpers behind the work-tree
+// preference, `hooks/session-start.ts`. anchors and records did not move.
+const BASELINE = { paths: 1103, anchors: 139, records: 94 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the

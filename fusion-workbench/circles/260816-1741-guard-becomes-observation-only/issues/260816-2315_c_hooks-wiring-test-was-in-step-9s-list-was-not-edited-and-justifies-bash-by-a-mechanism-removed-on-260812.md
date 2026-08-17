@@ -48,3 +48,7 @@ line that must not move.
 - `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md` step 9, Files list and Changes text
 - `hooks/guard.ts:178-195` — the current reason, already written
 - `hooks/lib/config.ts:105-114` — why the Bash surface now carries the migration
+
+---
+
+Resolved: the comment above the two assertions in `hooks/lib/__tests__/hooks-wiring.test.ts` keeps the `260707-0616[o]` regression history, then states plainly that the protected-path fingerprint that justified the wiring after the classifier went on 2026-08-12, and gives the reason that holds now — the configuration diagnostic loop in `guard.ts`, which emits one advisory per guarded call, Bash being most of them. It goes on to the point this record made about severity: since the configuration file was renamed, the retired-file diagnostic is the whole of the v10 migration for a consuming project, and this matcher is how it reaches one, so dropping Bash here means a project carrying a stale `fusion-guard.json` hears about it on write-tool calls alone — which is where a silently unapplied Turn budget comes from. The two assertions are named as what stops that edit. Landed with plan step 11.

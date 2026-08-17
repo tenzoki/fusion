@@ -1,6 +1,6 @@
 # Fusion — How the Working Model Operates
 
-This is the *how it works in practice* guide. It walks through the shape of a fusion session — the unit of work, the flow from request to result, the gates where fusion stops and asks you, and the guard that watches every file write.
+This is the *how it works in practice* guide. It walks through the shape of a fusion session — the unit of work, the flow from request to result, the gates where fusion stops and asks you, and the hook layer that traces every file write.
 
 For *why* fusion is built this way, see [`docs/philosophy.md`](philosophy.md). For install and hands-on usage, see [`README.md`](../README.md). This doc sits between them: it explains the machinery you'll steer.
 
@@ -113,15 +113,16 @@ That last option is the point of the whole model: the goal can change mid-work w
 
 ## 4. The hooks
 
-While the gates govern *decisions*, a **compliance guard** governs *file writes*. It runs on every edit an agent attempts, and it is deliberately narrow about what it blocks:
+While the gates govern *decisions*, a **hook layer** watches *file writes*. It runs on every edit an agent attempts, and it blocks none of them. Two things come out of it:
 
-- **Decision-governed paths — blocked only at high sensitivity.** Files a project decision governs carry a sensitivity level. Only `high` blocks; `medium` and `low` pass. This lets a project ring-fence its most binding areas without freezing everything.
-- **Escalation → halt.** Consecutive blocks accumulate. After a threshold (default 3), the guard enters **halt** and blocks all writes until a human clears it. This catches an agent stuck retrying something it's not allowed to do.
-- **Shell commands — not read at all.** The guard does not try to work out from a command's text what it is about to do. That question is undecidable, and two policies that asked it — one predicting which files a command would write, one predicting whether it would move HEAD — were built and then deleted. What blocks is decided on the path a write tool names, never on wording.
+- **A write trace.** One row per Write, Edit, MultiEdit or NotebookEdit call, naming the tool and the file, appended to `fusion-workbench/.guard-state/events.jsonl`. That log is what the monitor's panel renders live, and it is the only record of what the write surface did.
+- **A configuration diagnostic.** When the project's `fusion.json` cannot be read, or its root still carries a file or a key fusion has retired, you are told on every guarded tool call until it is fixed. The repetition is deliberate: a setting that is inert *and* silent leaves you believing it is in force.
 
-So of everything the guard watches, only two things ever block a write: a high-sensitivity decision-governed path, and an active halt. Two more things were watched and neither blocked either, and both are gone: a **protected path** until 2026-08-12, a list of files (agent definitions, rules, workbench state) that agents could not write and that the guard put back if they changed by any other route, and **churn** until 2026-08-15, a per-file count of how often a session touched a file, which only ever warned. See [`README-hooks.md`](../README-hooks.md) for what went and why.
+**Shell commands are not read at all.** The guard does not try to work out from a command's text what it is about to do. That question is undecidable, and two policies that asked it — one predicting which files a command would write, one predicting whether it would move HEAD — were built and then deleted. `Bash` still reaches the hook, for the diagnostic alone, and an innocuous shell call in a correctly configured project writes no guard state whatsoever.
 
-The guard runs on a spectrum from full enforcement to advisory to fully off. For how to tune or disable it, see the README's [Tuning or disabling the compliance guard](../README.md#tuning-or-disabling-the-compliance-guard); for the full guard model and configuration, see [`README-hooks.md`](../README-hooks.md).
+**Nothing blocks a write, and nothing can.** Four mechanisms once did or once warned, and all four are gone, each on its own measurement: a **protected path** list until 2026-08-12, whose files were put back if they changed by any route; **churn**, a per-file edit count that only ever warned, until 2026-08-15; and on 2026-08-16 the **decision-governed deny** at high sensitivity together with the **halt** it escalated to after three consecutive blocks. A halt flag left in an older project's state file is inert, and `/fusion:setup` offers to delete it. See [`README-hooks.md`](../README-hooks.md) for what each was and the figures that removed it.
+
+The one thing left to configure is not the guard: `orchestrator.maxTurns`, in your project's `fusion.json`. See the README's [Configuration](../README.md#configuration).
 
 ## 5. Two worked walkthroughs
 
@@ -133,7 +134,7 @@ Two paths reach the same place and cross different machinery. The first is one c
 2. The **orchestrator** resolves the scope: this is code work, one clear outcome.
 3. The request is specific enough, so the **shaper** is skipped. The **planner** produces a plan — a middleware step, a config step, a test step.
 4. **PLAN GATE** — you review the three steps and approve.
-5. **Turn 1 begins.** The **coder** edits the middleware. Each write passes through the **guard** — the middleware file sits in no decision-governed area, so nothing blocks and the write lands. The coder edits it twice more while iterating, and nothing stands in the way.
+5. **Turn 1 begins.** The **coder** edits the middleware. Each write passes through the **hook layer**, which allows it and records a row naming the tool and the file, so the monitor shows the edit as it happens. The coder edits it twice more while iterating, and nothing stands in the way.
 6. **coderev** reviews the Turn's changes and files any findings as issues.
 7. The orchestrator **commits** the work (holding the commit lock so parallel agents don't collide on the git index).
 8. **Per-Turn Coherence check** — the three questions pass: the work matches the assumptions, moves toward the goal, and the goal is still reachable. The Turn continues.
@@ -157,8 +158,8 @@ Nothing in steps 1 to 4 writes what an active Turn loop writes, so this path is 
 
 ## 6. Where to go next
 
-- [`docs/philosophy.md`](philosophy.md) — *why* fusion is built this way (the design ideas behind Circles, file-based coordination, and the guard).
+- [`docs/philosophy.md`](philosophy.md) — *why* fusion is built this way (the design ideas behind Circles, file-based coordination, and observation over enforcement).
 - [`README.md`](../README.md) — install, setup, your first session, best practices, configuration.
-- [`README-hooks.md`](../README-hooks.md) — the compliance guard in full: config fields, sensitivities, thresholds, halt clearing.
+- [`README-hooks.md`](../README-hooks.md) — the hook layer in full: what it traces, the one project setting, and the account of every check that was removed and the measurement behind it.
 - [`rules/fusion-workbench-conventions.md`](../rules/fusion-workbench-conventions.md) — the exact workbench layout and the issue, planning and decision marker vocabularies. The Circle state vocabulary and the Circle-record template are next door in [`rules/circle-records.md`](../rules/circle-records.md).
 - Run `/fusion:help` inside Claude Code for an interactive explainer.

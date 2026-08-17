@@ -183,14 +183,15 @@ DRIFT_EVENT_TYPES = {"state_drift"}
 
 # INDEPENDENT CAPS, NOT ONE SHARED BUDGET.
 #
-# The classes arrive at very different rates. A block or a halt is rare and each
-# one is individually worth reading. An advisory is emitted per guarded tool call
-# for as long as its cause stands — a project whose fusion-guard.json carries a
-# wrong-typed key, or the retired guard.protectedPaths key, gets one on every
-# single call until the line is edited. Under a single shared budget, one
-# un-fixed configuration line is an unbounded stream of advisory rows and every
-# guard_block and guard_halt older than them is off the panel. That is the
-# failure guard.ts already refuses to cause with guard_allow, arriving through a
+# The classes arrive at very different rates. A block or a halt was rare and each
+# one individually worth reading; neither is written any more, and historical
+# rows are exactly the ones a burst would evict. An advisory is emitted per
+# guarded tool call for as long as its cause stands — a project whose fusion.json
+# carries a wrong-typed key, or whose root still holds the retired
+# fusion-guard.json file, gets one on every single call until it is fixed. Under
+# a single shared budget, one un-fixed configuration line is an unbounded stream
+# of advisory rows and every older row is off the panel. That is the failure
+# guard.ts already refuses to cause with guard_allow, arriving through a
 # different door.
 #
 # So the warning class keeps its full 30 whatever the other classes do, and each
@@ -209,11 +210,12 @@ DRIFT_EVENT_TYPES = {"state_drift"}
 # 8 for fail-opens, and the reason is the same measurement rather than symmetry
 # with the number above. A guard_error is NOT one event per fault. Both hooks
 # fail open per invocation, so a fault that sits on disk — an unparseable
-# config, a corrupted escalation counter, a bug — emits one row per guarded tool
+# config, an unwritable state directory, a bug — emits one row per guarded tool
 # call for as long as it sits there. Charged to the warning class it behaves
 # exactly like the advisory burst: thirty ordinary tool calls with a broken
-# tracker push every guard_block and guard_halt off the panel, which is a live
-# combination because a tracker failure does not stop the guard from blocking. The reverse is why the
+# tracker push every older row off the panel, including the historical
+# guard_block and guard_halt rows that are now the only ones there will ever
+# be. The reverse is why the
 # class is not simply capped small and forgotten: a busy session's warnings must
 # not push the fail-open row off either, and only a separate budget prevents
 # both directions at once. Eight rather than one because a repeating fault

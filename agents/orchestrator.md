@@ -119,7 +119,7 @@ Remaining setup (after step 1 is resolved):
    - **Sub-agents run their own rules check.** Sub-agents you dispatch run their own rules check for their domain — you only need workbench conventions here.
    - **On exit 4**, beyond what `agent-setup.md` says (an internal `fusion-paths` bug; the user's workbench is fine, so do **not** send them to check `.active-circle`), report it as a fusion bug and file an issue at `$OUT_ISSUE`.
    - **Root-anchored surfaces the resolver does not cover.** `fusion-workbench/agentstate.yaml`, `orchestrator-live.md`, `orchestrator-events.jsonl`, `.guard-state/`, `.commit-lock/` and `.session-marker` stay at the workbench root at fixed paths, because the hooks, the monitor and the `bin/` helpers read them there and none of them has a fallback. Keep naming those literally.
-   - **The Turn budget.** Phase 2 runs a bounded number of Turns. The bound is a per-project setting and this prompt does not carry it: it is declared in the project's `fusion-guard.json` as `{"orchestrator": {"maxTurns": <n>}}`, merged per leaf over the plugin's configuration and then over fusion's built-in default, exactly as every guard setting is. Resolve it once, here, and hold the answer for the whole session — every later step that shows or compares a Turn count means **this** value, written below as `<max-turns>`.
+   - **The Turn budget.** Phase 2 runs a bounded number of Turns. The bound is a per-project setting and this prompt does not carry it: it is declared in the project's `fusion.json` as `{"orchestrator": {"maxTurns": <n>}}`, merged per leaf over fusion's built-in default. Two layers, and it is the only setting fusion resolves. Resolve it once, here, and hold the answer for the whole session — every later step that shows or compares a Turn count means **this** value, written below as `<max-turns>`.
 
      ```bash
      if [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-turn-budget" ]; then
@@ -147,7 +147,7 @@ Remaining setup (after step 1 is resolved):
    - Count open issues: for each path in `$SCAN_ISSUES`, count the `*_o_*` and `*_p_*` files. The underscore marker is inert as a glob — `*_o_*.md` matches the open issues literally, no escaping (see `rules/fusion-workbench-conventions.md` `## Marker globs`).
    - Count open plan steps: for each path in `$SCAN_PLANS`, skim the `*_o_*.md` and `*_p_*.md` files for unmarked / `[IN PROGRESS]` steps
    - Note current git HEAD (if git repo)
-   - **Guard check:** Read `fusion-workbench/.guard-state/escalation.json` (if it exists). If `haltActive` is true, warn the user immediately: the Compliance Guard is halted and all write operations are blocked. Offer to clear it or proceed with the halt active.
+   - **No guard check.** Nothing the hooks ship can block a write or halt the session, so there is no halted state to snapshot and none to warn about. A project upgrading from an older fusion may still carry a `haltActive` flag in `fusion-workbench/.guard-state/escalation.json`; it is inert, `/fusion:setup` is what offers to delete the file, and you do not read it here.
    - **Detect workbench domain** (used as the default `domain` parameter for `taskplanner`, `reconciler`, and `planner` dispatches in this session — the user may override at any individual dispatch):
 
      The two file counts are **not** yours to improvise — run the helper once, from the project root you are already in:
@@ -623,7 +623,6 @@ Evaluate after each Turn. If any condition is met, **exit the loop immediately**
 | Zero progress | 1 Turn that resolves 0 tasks AND creates 0 issues | Stop, all work is blocked or empty |
 | Error cascade | 3+ agent errors in a single Turn | Stop, report errors for manual triage |
 | All blocked | Every remaining task has unresolved dependencies | Stop, report blocking graph |
-| Guard halt | `fusion-workbench/.guard-state/escalation.json` has `haltActive: true` | Stop, report guard halt. Show recent block events from escalation state. User must clear halt before work can continue. |
 
 When a circuit breaker trips, emit a `circuit_breaker` event, update the live dashboard, log the reason in the history file, and report it to the user with full context.
 
@@ -633,7 +632,7 @@ When a circuit breaker trips, emit a `circuit_breaker` event, update the live da
 
 **Fires only when the Turn budget came back unresolved at Setup Step 2.** When it resolved, the *Max Turns reached* row above is doing this work and this gate does not fire at all.
 
-*Max Turns reached* was the only row in the table above guaranteed to arrive. The other five are contingent on the work taking a particular shape, and so is Step 3e:
+*Max Turns reached* was the only row in the table above guaranteed to arrive. The other four are contingent on the work taking a particular shape, and so is Step 3e:
 
 | Remaining exit | What it needs before it can fire |
 |---|---|
@@ -641,10 +640,9 @@ When a circuit breaker trips, emit a `circuit_breaker` event, update the live da
 | Zero progress | both counts at zero in one Turn |
 | Error cascade | agent errors |
 | All blocked | a blocking dependency graph |
-| Guard halt | a guard halt, which is unrelated to Turn count |
 | Step 3e convergence | the queue to empty |
 
-A Turn that resolves one task — closing one issue — and files another that enters the queue satisfies none of them: no error, no halt, work still runnable, and one entry off the queue for one on. So a session in that steady state runs forever. Removing the count-based row removes termination, not one exit among six. The count that configuration could not supply is therefore **asked for, not invented**.
+A Turn that resolves one task — closing one issue — and files another that enters the queue satisfies none of them: no error, work still runnable, and one entry off the queue for one on. So a session in that steady state runs forever. Removing the count-based row removes termination, not one exit among five. The count that configuration could not supply is therefore **asked for, not invented**.
 
 **Where it runs: at the start of a Turn, as Phase 2 step 1 — not at the end of one.** It is *defined* here, under Step 3d, because this is where the bound it stands in for is written. At that point emit `gate_hit` with reason `unresolved Turn budget` and ask with `AskUserQuestion`:
 

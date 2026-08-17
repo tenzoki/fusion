@@ -52,3 +52,7 @@ developer-facing comment.
 - `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md` step 11
 - `circles/260816-1741-guard-becomes-observation-only/reviews/260816-2135-coderev-the-guard-stops-deciding-turn-1.md` `## Cross-cutting observations` 2
 - `hooks/lib/config.ts:4-18`, `:99-103`, `:344-345`
+
+---
+
+Resolved: both lines corrected in full rather than at the clause the step's line-scoped text named. `agents/orchestrator.md:122` now reads `fusion.json`, states the merge as two layers over the built-in default, and says this is the only setting fusion resolves — so all three errors go, not the filename alone. `bin/monitor:188` replaces both stale examples with current ones: a wrong-typed key in `fusion.json`, and a project root still holding the retired `fusion-guard.json` **file** rather than the retired `guard.protectedPaths` leaf. The paragraph's argument for the advisory class having its own cap is untouched, as this record said it should be. The neighbouring fail-open comment 24 lines below was corrected in the same pass for the same reason — it named a corrupted escalation counter as an example fault and claimed a tracker failure does not stop the guard from blocking. Landed with plan step 11.

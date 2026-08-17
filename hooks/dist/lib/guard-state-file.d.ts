@@ -30,10 +30,11 @@
  * `writeFileSync` where this one writes through a `.tmp` and a rename, and all
  * three read with an `as` cast where this one takes a coercion. Decision
  * `260811-1146` moved them onto the seam and widened it by one optional `root`,
- * which is the only thing they needed and did not have. Three modules use it
- * today — `escalation.ts`, `review-coverage.ts` and `staging-drift.ts`.
- * `churn.ts` and `state-drift.ts` were the fourth and fifth, both removed on
- * 2026-08-15.
+ * which is the only thing they needed and did not have. Two modules use it
+ * today — `review-coverage.ts` and `staging-drift.ts`. `churn.ts` and
+ * `state-drift.ts` were the third and fourth, both removed on 2026-08-15, and
+ * `escalation.ts` the fifth, removed on 2026-08-16 with the halt it counted
+ * toward.
  *
  * So the seam is a parameter rather than a pattern to reproduce:
  * `loadGuardState` takes the coercion, and a state module that wants to persist
@@ -52,17 +53,19 @@
  * coercion, not a malformed file, and swallowing it here would hide exactly the
  * class of failure this module exists to end.
  *
- * ## What `escalation.ts` adds on top, rather than beside
+ * ## What `escalation.ts` added on top, rather than beside — history
  *
- * It was the one module this seam deliberately left alone at first, because its
- * behaviour was pinned by open work. That work landed — its save now re-reads
- * the file to merge in a halt another process raised since its load — and a
- * save that reads is exactly the shape this module already owns, so it joined
- * rather than growing a second reader next door. It keeps its own coercion and
- * wraps `loadGuardState`/`saveGuardState` with the merge. The merge is its own
- * and does not generalise: it exists because a lost update here costs a raised
- * halt, where every other file on this seam records a signature the next
- * measurement recomputes anyway.
+ * Read as history: the module was deleted on 2026-08-16 with the halt and the
+ * consecutive-block counter. It was the one module this seam deliberately left
+ * alone at first, because its behaviour was pinned by open work. That work
+ * landed — its save re-read the file to merge in a halt another process had
+ * raised since its load — and a save that reads is exactly the shape this
+ * module already owns, so it joined rather than growing a second reader next
+ * door. Its merge never generalised and was never wanted here: it existed
+ * because a lost update there cost a raised halt, where every file left on this
+ * seam records a signature the next measurement recomputes anyway. Nothing was
+ * taken out of this module when it went, which is the point of the seam being a
+ * parameter.
  *
  * ## What is NOT routed through here, and why
  *
@@ -76,8 +79,9 @@
  * was deleted with the protected-path half of the guard on 2026-08-12, so the
  * recommendation is moot rather than done.
  *
- * The files that DO route through here are `escalation.json` and the two
- * measurement throttle records.
+ * The files that DO route through here are the two measurement throttle
+ * records, and they are the whole of it: `escalation.json` was the third until
+ * 2026-08-16 and is written by nothing at this version.
  */
 /** Where one state file lives, or null when no workbench is set up. */
 export interface GuardStatePaths {
@@ -92,13 +96,20 @@ export interface GuardStatePaths {
  * what keeps a plain Claude session in a non-fusion directory from bootstrapping
  * a stray workbench.
  *
- * ## The optional root, and why it is optional rather than required
+ * ## The optional root, kept without a current subject
  *
- * `escalation.ts` runs inside the hooks and has no root of its own, so it lets
- * this walk up from the working directory — that walk is the no-workbench no-op
- * above, and it must stay its default.
+ * **Every caller in the tree passes a root.** The default exists for a caller
+ * that runs inside the hooks with no root of its own and lets this walk up from
+ * the working directory instead — that walk is the no-workbench no-op above.
+ * `escalation.ts` was that caller and was the only one; it went on 2026-08-16.
+ * The parameter stays optional the way `isFusionPluginRoot` in
+ * `lib/self-detect.ts` stays exported: the form is cheap to keep and expensive
+ * to re-derive, and the next state module written inside a hook needs it. What
+ * must not be read into it is a live caller — there is none, and a change that
+ * makes `root` required breaks no code in this tree.
  *
- * The measurement modules are the other case. Each is handed a workbench root
+ * The measurement modules are the other case, and the only case now. Each is
+ * handed a workbench root
  * by its caller (the tracker resolves it once per tool call; the `bin/` CLIs
  * resolve it once at startup) and each is deliberately anchored there rather
  * than at cwd — a hook's `process.cwd()` is whatever directory the session

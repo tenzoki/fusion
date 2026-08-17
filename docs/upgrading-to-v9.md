@@ -97,10 +97,13 @@ one, is an open question in fusion's own decision store and is not settled here.
 
 The churn thresholds were never a project-set key: the `fusion-guard.json` template fusion
 seeds has never carried them, so **if you did not add one by hand, there is nothing to
-remove**. If you did add one against the shape in the plugin's `hooks/config.json`, delete
-it. Unlike `guard.protectedPaths`, which is *retired* and reported on every guarded call
-until you delete the line, an unrecognised key such as `churn` is carried through
-untouched and reported nowhere — so a stale block will sit there silently forever.
+remove**. If you did add one against the shape in the plugin's own configuration file,
+delete it. Unlike `guard.protectedPaths`, which was *retired* and reported on every guarded
+call until you deleted the line, an unrecognised key such as `churn` is carried through
+untouched and reported nowhere — so a stale block sits there silently.
+
+At v10 this check is moot in the simplest way: `fusion-guard.json` is not read at all. See
+`## What needs no action` below.
 
 ### 6. Delete `fusion-workbench/stashes/`, if you have one
 
@@ -131,11 +134,15 @@ its user surface are `/fusion:setup`, `/fusion:cleanup` and `/fusion:cadence`, a
 
 ## What needs no action
 
-- **A halt raised by the old protected-path guard** still blocks and still clears exactly
-  as it did. v8 removed the mechanism; the halt value outlives it by design, and the block
-  message names the command that clears it.
-- **Your `fusion-guard.json`** is otherwise unaffected. Every key it sets that still exists
-  is merged exactly as before.
+- **A halt raised by the old protected-path guard** was still enforced at v9: it blocked,
+  and the block message named the command that cleared it. That stopped being true at v10,
+  which removed the halt, the escalation counter and the clearing script together. A halt
+  flag left in your `escalation.json` now blocks nothing, there is no command to clear it
+  with, and `/fusion:setup` offers to delete the file. **If you are upgrading past v9, read
+  fusion's v10 upgrade note as well** — it is the one that touches your project root.
+- **Your `fusion-guard.json`** was unaffected at v9: every key it set that still existed
+  was merged exactly as before. At v10 that file is not read at all, and a Turn budget left
+  in it is silently not applied. The v10 note covers the move.
 - **Your Circle directories, records, issues, decisions, reviews and histories** are
   untouched. The workbench layout did not change in v9.
 - **Review files with a `conceptrev` sender** stay readable and stay where they are. The
