@@ -64,7 +64,7 @@ Run once at the project root:
 /fusion:setup
 ```
 
-This creates `fusion-workbench/` (the shared workspace, including `.guard-state/`), copies in the monitor binary and the stylometric voice profiles, seeds `fusion-guard.json` at the **project root** (the per-project guard configuration — git-tracked, so commit it), and writes a `.fusion-setup` marker. Every agent and hook locates the workbench by walking **up** from its working directory until it finds that marker — so agents run correctly from any subdirectory of the project.
+This creates `fusion-workbench/` (the shared workspace, including `.guard-state/`), copies in the monitor binary and the stylometric voice profiles, seeds `fusion.json` at the **project root** (your project's own fusion settings, git-tracked, so commit it), and writes a `.fusion-setup` marker. Every agent and hook locates the workbench by walking **up** from its working directory until it finds that marker — so agents run correctly from any subdirectory of the project.
 
 Setup is the only thing that creates a workbench. Without it, agents halt with "no fusion workbench found" and hooks no-op silently — intentional, so a session whose working directory happens to land elsewhere never spawns a stray workbench.
 

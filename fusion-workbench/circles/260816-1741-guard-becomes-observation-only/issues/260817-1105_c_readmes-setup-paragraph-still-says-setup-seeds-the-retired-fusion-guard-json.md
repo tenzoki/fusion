@@ -40,3 +40,18 @@ a guard configuration. `README.md:104` already carries the wording to reuse.
 - `skills/setup/SKILL.md:171`, `:178`, `:185`, `:190`
 - `circles/260816-1741-guard-becomes-observation-only/issues/260816-2321_c_step-11s-line-scoped-changes-text-misses-two-stale-lines-in-files-it-already-opens.md`
   (the same lint limit, in two other places)
+
+---
+Resolved: `README.md:67` now reads "seeds `fusion.json` at the **project root** (your project's
+own fusion settings, git-tracked, so commit it)". The retired filename and the "per-project guard
+configuration" gloss are both gone; the git-tracked instruction and the rest of the sentence stand
+unchanged. The wording reuses `README.md:104`, which the record named as the correct shape.
+
+The paragraph's three other claims were checked against the setup skill rather than assumed, and
+each holds: `.guard-state/` is still pre-created (`skills/setup/SKILL.md:82`, `:89`), the monitor
+binary is re-copied (`:124`) and the four voice profiles are seeded (`:159-162`). The neighbouring
+paragraph at `:69` and the intro's pointer at `:5` were read for the same class of staleness and
+neither carries one — `docs/working-model.md` still documents a guard, observation-only. No second
+fix was needed, so this change is the one clause.
+
+Verified: `cd hooks && npm test` — exit 0, 35 files, 653 tests. The pinned counts did not move.
