@@ -1710,3 +1710,34 @@
 {"ts":"2026-08-17T14:46:52","event":"portfolio_refresh","turn":4,"agent":"orchestrator","detail":"circles/260816-1741-guard-becomes-observation-only/_b_circle.md; playmaker history shared/history/260817-1643-playmaker-orchestrator-phase4.md; recommendation (none), all 16 Circles terminal"}
 {"ts":"2026-08-17T14:49:02","event":"session_end","turn":4,"agent":"orchestrator","detail":"4 Turns, 21/21 tasks, 30 commits, 32 issues filed, 23 resolved, 2 releases (v10.0.0 v10.0.1), Circle closed bounded, 0 agent errors"}
 {"ts":"2026-08-17T16:21:43","event":"session_start","history_file":"shared/history/260817-1821-orchestrator-session.md","detail":"Directive not yet stated; mode unresolved"}
+{"ts":"2026-08-17T18:37:54","event":"session_start","history_file":"shared/history/260817-2037-orchestrator-session.md","detail":"Directive not yet stated; mode unresolved; domain code; max_turns 12"}
+{"ts":"2026-08-17T19:10:43","event":"scope_resolved","detail":"custom mode; 1 task; agents coder then coderev; user gate on fix shape already answered"}
+{"ts":"2026-08-17T19:10:43","event":"queue_built","detail":"1 task, 0 blocked"}
+{"ts":"2026-08-17T19:10:43","event":"turn_start","turn":1,"detail":"1 ready task"}
+{"ts":"2026-08-17T19:23:00","event":"task_done","turn":1,"task":"T1","agent":"coder","detail":"hook sentences carry the instruction only"}
+{"ts":"2026-08-17T19:23:00","event":"commit","turn":1,"task":"T1","detail":"bd2db5c fix(hooks): the two model-facing sentences stop citing fusion's own records"}
+{"ts":"2026-08-17T19:23:09","event":"review_start","turn":1,"agent":"coderev","detail":"8 changed files, range 82a860d..bd2db5c"}
+{"ts":"2026-08-17T19:34:08","event":"review_done","turn":1,"agent":"coderev","detail":"3 issues filed: 2 medium, 1 low; range 82a860d..bd2db5c covered"}
+{"ts":"2026-08-17T19:34:08","event":"coherence_review","turn":1,"verdict":"review-needed","detail":"Artifact<->Grounding: 3 issues filed. Artifact<->Directive: the commit reaches the Directive; one restated justification is measurably false and was introduced by the same commit. Grounding<->Directive: 0 active decisions touched this Turn."}
+{"ts":"2026-08-17T19:34:52","event":"turn_end","turn":1,"detail":"1 task resolved, 3 issues created, 1 commit"}
+{"ts":"2026-08-17T19:34:52","event":"gate_response","turn":1,"detail":"user scoped Turn 2 to M1+L1; M2 stays open"}
+{"ts":"2026-08-17T19:34:52","event":"turn_start","turn":2,"detail":"1 ready task"}
+{"ts":"2026-08-17T19:40:59","event":"task_done","turn":2,"task":"T2","agent":"coder","detail":"per-shape justification; source comment corrected"}
+{"ts":"2026-08-17T19:40:59","event":"commit","turn":2,"task":"T2","detail":"6b6436d fix(hooks): each forbidden staging shape gets the justification that holds for it"}
+{"ts":"2026-08-17T19:41:11","event":"review_start","turn":2,"agent":"coderev","detail":"range bd2db5c..6b6436d"}
+{"ts":"2026-08-17T19:50:51","event":"review_done","turn":2,"agent":"coderev","detail":"2 issues filed, both low; range bd2db5c..6b6436d covered"}
+{"ts":"2026-08-17T19:50:51","event":"coherence_review","turn":2,"verdict":"review-needed","detail":"Artifact<->Grounding: 2 low issues filed. Artifact<->Directive: the commit repairs the previous Turn's regression and reaches the Directive; two completeness gaps remain. Grounding<->Directive: 0 active decisions touched this Turn."}
+{"ts":"2026-08-17T19:50:51","event":"turn_end","turn":2,"detail":"1 task resolved, 2 issues resolved, 2 issues created, 1 commit"}
+{"ts":"2026-08-17T19:52:51","event":"gate_response","turn":2,"detail":"user scoped Turn 3 to both low findings, no third review pass"}
+{"ts":"2026-08-17T19:52:51","event":"turn_start","turn":3,"detail":"1 ready task"}
+{"ts":"2026-08-17T20:00:34","event":"task_done","turn":3,"task":"T3","agent":"coder","detail":"quoted pathspec glob clause; wrapper header aligned"}
+{"ts":"2026-08-17T20:00:34","event":"commit","turn":3,"task":"T3","detail":"307a696 fix(hooks): the fourth forbidden staging shape reaches a clause, and the wrapper header follows"}
+{"ts":"2026-08-17T20:00:34","event":"coherence_review","turn":3,"verdict":"ok","detail":"Artifact<->Grounding: no review pass this Turn by user decision, 0 issues filed. Artifact<->Directive: the commit completes the enumeration and aligns the third copy; the Directive is reached. Grounding<->Directive: 0 active decisions touched this Turn."}
+{"ts":"2026-08-17T20:00:34","event":"turn_end","turn":3,"detail":"1 task resolved, 2 issues resolved, 0 issues created, 1 commit"}
+{"ts":"2026-08-17T20:16:40","event":"reconciliation","detail":"verdict review-needed; 1 drift item in the record trail, 0 code discrepancies; new defect 260817-2207"}
+{"ts":"2026-08-17T20:16:40","event":"gate_hit","detail":"Rebalance gate on reconciler verdict review-needed"}
+{"ts":"2026-08-17T20:16:40","event":"gate_response","detail":"user chose a supersession-style note on the issue vocabulary"}
+{"ts":"2026-08-17T20:16:40","event":"rebalance_grounding","detail":"shared/decisions/260817-2215_a_how-does-a-closed-defect-record-point-at-a-later-reversal-of-the-judgement-in-its-resolution-note.md"}
+{"ts":"2026-08-17T20:16:40","event":"rebalance_artifact","detail":"Turn 4 realises the answered decision in the conventions and the two instances"}
+{"ts":"2026-08-17T20:16:40","event":"turn_start","turn":4,"detail":"1 ready task"}
+{"ts":"2026-08-17T20:32:52","event":"session_end","detail":"4 Turns, 4 tasks, 4 commits, 7 issues filed, 6 closed, 1 decision implemented, 2 commits unreviewed by user decision"}

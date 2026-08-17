@@ -197,3 +197,27 @@ between this sentence and a claim that survives the check it invites. Finding 2 
 if the wrapper is convenient, or waits — it reaches no user. The durable answer to all four findings
 across the two passes is the output gate already filed as `260817-2131`, which would catch neither of
 these two directly but is the mechanism that stops the family recurring by hand-inspection alone.
+
+---
+
+## Reconciliation annotation — 260817-2207
+
+Reconciler, final pass of session `260817-2037`, at HEAD `307a696`
+(log `shared/history/260817-2207-reconciliation.md`). Findings only annotated, nothing rewritten.
+
+- **Finding 1** (`260817-2147`, the completeness gap) — resolved in `307a696`. Verified by rendering
+  `stagingSentence()` from the rebuilt `hooks/dist/lib/staging-drift.js`: the over-staging clause
+  reads "`-A`, a directory argument and a quoted pathspec glob", the reverse clause reads "an
+  unquoted shell glob", and `STAGING_SPOKE`'s literal is still a substring. Record closed (`_c_`).
+- **Finding 2** (`260817-2147`, the wrapper header) — resolved in `307a696`. Verified at
+  `bin/fusion-staging-drift:51-54`: the "re-opens f38f37d" generalisation is gone, the incident and
+  the `-u` mechanism stay, and the commit hash is kept as provenance in a `bin/` header that reaches
+  no consuming session. Record closed (`_c_`).
+
+This pass's counter-argument prevailed over the judgement recorded one Turn earlier in
+`260817-2130`'s `Resolved:` note, and that earlier record carries no pointer to the reversal. Filed
+as `shared/issues/260817-2207_o_a-closed-records-resolution-note-states-a-judgement-head-reversed-and-every-citation-points-backward.md`.
+
+The review's declared `**Reviewed-range:**` matches what it opened: `bin/fusion-review-coverage`
+reports `not-opened=none covers=1` for this file. `307a696` was left uncovered by user decision at
+the Turn 2 gate, so no third review file exists and none claims that range.

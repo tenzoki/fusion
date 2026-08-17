@@ -61,3 +61,48 @@ whoever writes the gate, not as a defect against that file.
 **Severity:** Medium
 **Filed by:** coderev, review of `82a860d..bd2db5c`
 **Cross-references:** `shared/issues/260817-2110_*_the-hook-sentences-cite-fusions-own-workbench-ids-and-a-fusion-commit-hash-into-a-consuming-projects-session.md` (the defect this would gate against), `shared/issues/260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md` (same class, one layer up)
+
+---
+
+## Reconciliation 260817-2207 — still open, verified against HEAD `307a696`
+
+Reconciler, final pass of session `260817-2037` (log `shared/history/260817-2207-reconciliation.md`).
+Re-measured rather than re-asserted. Three findings.
+
+**1. The record is genuinely open, and the gate does not exist.** No test in
+`hooks/lib/__tests__/` drives `coverageSentence()` or `stagingSentence()` and asserts on the
+returned string's identifiers: a `grep` for either pattern proposed above
+(`\d{6}-\d{4}`, `[0-9a-f]{7,40}`) over `hooks/lib/__tests__/*.ts` returns nothing, and the only
+reference to a sentence builder outside its own test file is a comment in
+`commit-message-path.test.ts:309`. The premise the record rests on also still holds:
+`hooks/lib/__tests__/reference-resolution-lint.test.ts` registers both modules with
+`commentRe: TS_COMMENT_RE, recordsOnly: true`, so it still reads comment lines only.
+
+**2. Why it was left open is recorded nowhere in this file.** The two session records carry it and
+this record does not: `agentstate.yaml` `plan_context` ("Gate 2: Turn 2 covers M1+L1; 260817-2131
+(M2) stays open"), `orchestrator-events.jsonl` (`gate_response`, turn 1, "user scoped Turn 2 to
+M1+L1; M2 stays open"), and both coder history files ("`260817-2131` (the lint gate) was out of
+scope and stays open"). Stated here so the record itself says why it survived a session that closed
+the five defects around it: **user decision at the Turn 1 gate, 2026-08-17, not oversight and not a
+missed dispatch.**
+
+**3. The proposed gate fails on `coverageSentence()` as written, by construction.** The
+recommendation asks the gate to assert that the returned string carries "no workbench-shaped
+identifier **and no bare short hash**", and separately asks that both builders be driven through
+their conditional branches. Those two requirements contradict each other for this builder.
+`hooks/lib/review-coverage.ts:678-680` emits `report.since`, `report.head` and one `c.short` per
+uncovered commit, so the uncovered branch always returns a string full of short hashes:
+
+```
+fusion: a review landed and 1 commit(s) in 82a860d..HEAD are still covered by no review's
+declared range — 307a696 (fix(hooks): the fourth forbidden staging shape reaches a clause…).
+```
+
+Those hashes are the **consuming project's own** commits and are exactly what the sentence is for.
+The defect this record is filed against is a citation that resolves in fusion's repository and
+nowhere else, which is a property of the identifier's *origin*, not of its shape. Whoever builds
+the gate has to separate the two — for example by asserting only against a synthetic report whose
+own hashes and stamps are known, and treating anything else in the output as foreign. The record
+does not say this, and a gate written to its letter reddens on its first run.
+
+Nothing was renamed. The marker stays `_o_`.

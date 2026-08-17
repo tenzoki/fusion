@@ -305,7 +305,7 @@ Defect files and spec/plan files carry a state marker: `YYMMDD-HHMM_S_<topic>.md
 |--------|---------|
 | `_o_` | Open — initial state on creation |
 | `_p_` | In progress — agent is actively working on it |
-| `_c_` | Closed — resolved, or user decided to close |
+| `_c_` | Closed — resolved, or user decided to close. Stays `_c_` when a later commit or record reverses the reasoning in its `Resolved:` note; the body gains a `Revised by:` line instead (see `## Inline State Tracking`). |
 | `_d_` | Deferred — user decided, or agent proposed and user confirmed |
 
 **Rules:**
@@ -402,6 +402,13 @@ When an issue is resolved, append below the existing content:
 Resolved: <brief description of what was done>
 ```
 Then rename the filename marker to `_c_`.
+
+When a later commit or record reverses the reasoning a closed issue's `Resolved:` note states, append:
+```
+---
+Revised by: <commit hash, or path to the reversing record> — <one-line reason>
+```
+(**no rename** — the marker stays `_c_`.) The defect is still closed; only its stated reasoning moved. Leave the `Resolved:` note itself unedited — it records what was decided then, and rewriting it would erase the reversal instead of pointing at it. `Superseded by:` keeps its decision-record meaning and is never used on an issue file.
 
 ### Decision files
 

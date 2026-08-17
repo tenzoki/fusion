@@ -202,3 +202,29 @@ Neither Medium blocks a release. M1 ships text that is wrong about git and shoul
 before the next version bump, since it is cheap and reaches every consumer. M2 is the durable
 one: it is what stops this recurring, and it is the smaller change of the two. L1 rides along
 with M1 — same file, same reading, one commit.
+
+---
+
+## Reconciliation annotation — 260817-2207
+
+Reconciler, final pass of session `260817-2037`, at HEAD `307a696`
+(log `shared/history/260817-2207-reconciliation.md`). Findings only annotated, nothing rewritten.
+
+- **M1** (`260817-2130`) — resolved in `6b6436d` and revised again in `307a696`. Verified by
+  rendering `stagingSentence()` from the rebuilt `hooks/dist/lib/staging-drift.js`: each of the four
+  forbidden shapes now reaches a clause, and `-A` is not the subject of the deletion mechanism.
+  Record closed (`_c_`). Its `Resolved:` note, written after `6b6436d`, states a judgement that
+  `307a696` reversed and carries no pointer to the reversal, which is filed as
+  `shared/issues/260817-2207_o_a-closed-records-resolution-note-states-a-judgement-head-reversed-and-every-citation-points-backward.md`.
+- **M2** (`260817-2131`) — still open, by user decision at the Turn 1 gate rather than by oversight.
+  Verified that no output-assertion gate exists and that `reference-resolution-lint.test.ts` still
+  registers both modules with `commentRe: TS_COMMENT_RE`. Evidence appended to that record,
+  including a defect in this review's proposed gate: asserting "no bare short hash" over
+  `coverageSentence()`'s uncovered branch fails by construction, because that branch emits the
+  consuming project's own commit hashes.
+- **L1** (`260817-2132`) — resolved in `6b6436d`. Verified: the docstring above `stagingSentence()`
+  attributes `f38f37d` to a directory-wide `git add -u` and cites its agreement with
+  `hooks/lib/staging-drift.ts:29` and `agents/orchestrator.md` Step 3b. Record closed (`_c_`).
+
+The review's declared `**Reviewed-range:**` matches what it opened: `bin/fusion-review-coverage`
+reports `not-opened=none covers=1` for this file. Nothing here claims a range it did not open.
