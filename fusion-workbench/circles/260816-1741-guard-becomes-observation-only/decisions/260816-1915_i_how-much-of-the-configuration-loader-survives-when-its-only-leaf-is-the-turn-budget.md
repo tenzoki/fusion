@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** answered
+**Status:** implemented
 **Filed by:** planner
 **Cross-references:**
 `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_o_the-compliance-guard-becomes-observation-only.md` step 7a (the step this blocks),
@@ -52,3 +52,4 @@ Option 2 is the one to rule out first. Redefining a key whose current meaning is
 
 ---
 Answered: circles/260816-1741-guard-becomes-observation-only/history/260816-1841-orchestrator-session.md — user chose option 1 at the plan gate on 2026-08-16. Two merge layers, not three: `hooks/config.json` and `hooks/config.example.json` go, and `guard.enabled` is retired with the rest of the guard settings. `DEFAULTS` in `hooks/lib/config.ts` stays the single definition site. Realised by plan step 7a in `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_o_the-compliance-guard-becomes-observation-only.md`.
+Implemented: `fab8a4b` (plan step P-7a) and `6890ea2` (P-7b) — option 1. Two merge layers, not three: `hooks/config.json` and `hooks/config.example.json` are deleted with the plugin layer, and `DEFAULTS` in `hooks/lib/config.ts` stays the single definition site. `guard.enabled` is retired inside its container — `RETIRED_TOP_LEVEL_KEYS` names `guard`, `decisions` and `escalation`, and the leaf-scoped retirement table folded away because `guard.protectedPaths` now sits inside a retired container. `validateLayer` no longer takes a layer kind, since the two behaviours that distinguished the layers — the plugin file's missing-file diagnostic and the project-only refusal of `guard.enabled` — both went with them. This record's own constraint on `guard.enabled` is discharged in the same pass: `circles/260801-1244-guard-rules-write/decisions/260804-1631_*_may-a-project-file-set-guard-enabled-and-switch-the-whole-guard-off.md` now carries a `Retired:` line citing `fab8a4b`. Plan: `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_*_the-compliance-guard-becomes-observation-only.md`.

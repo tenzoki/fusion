@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** answered
+**Status:** implemented
 **Filed by:** orchestrator
 **Cross-references:** `shared/analyses/260809-1101-guard-support-layer.md` (finding 2, recommendation C5); `hooks/lib/config.ts`; `hooks/config.json`; `hooks/lib/paths.ts`
 
@@ -103,3 +103,6 @@ state rather than leaving the question looking unasked.
 
 Nothing is blocked meanwhile: the check is inert either way, and its cost is the configuration
 surface it advertises, not any behaviour.
+
+---
+Implemented: `2f624ca` (plan step P-2) and `fab8a4b` (P-7a) — option 1, retired. `2f624ca` deleted CHECK 3 from `hooks/guard.ts` together with `emitBlockEvent`, `shouldEscalate` and `block`, and the hook now emits `{}` on every leaf. `fab8a4b` deleted the configuration surface this record names — the keys `decisions`, `guard.categoryPaths`, `guard.categorySensitivity` and `guard.defaultSensitivity`, with `sensitivityLevel`, `findRelevantDecisions`, the `Sensitivity` and `Decision` types and the sensitivity validators — and `6890ea2` (P-7b) removed the two files that declared them, `hooks/config.json` and `hooks/config.example.json`. The deferral's own re-open trigger was met by the zero measured on 2026-08-12 and tabled in `shared/decisions/260812-1232_*_does-the-escalation-counter-survive-a-block-source-that-ships-inert.md`, which is why this record moves to `_i_` rather than back to `_d_`. Plan: `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_*_the-compliance-guard-becomes-observation-only.md`.

@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** answered
+**Status:** implemented
 **Filed by:** shaper (anticipated-circle mode, shaping round 1)
 **Cross-references:**
 `circles/260816-1741-guard-becomes-observation-only/_a_circle.md` (the Circle this question is carried by),
@@ -110,6 +110,6 @@ so a later reader does not mistake its absence for an oversight.
 
 ---
 Answered: circles/260816-1741-guard-becomes-observation-only/history/260816-1742-shaper-guard-becomes-observation-only.md `## Decision answered by the user` — option 1: a renamed project-root file; the loader, hooks/turn-budget.ts and bin/fusion-turn-budget survive in reduced form, DEFAULTS stays the single default site, and the retired-key advisory keeps its reader. User answered inline 2026-08-16.
-Implemented:
+Implemented: `fab8a4b` (plan step P-7a) and `6890ea2` (P-7b) — option 1, a renamed project-root file. `hooks/lib/config.ts` went from 742 lines to 502 and merges two layers instead of three, with `orchestrator.maxTurns` its only live leaf and `DEFAULTS` still the single site the number is written down; `hooks/turn-budget.ts` and `bin/fusion-turn-budget` survive in reduced form rather than being deleted. `6890ea2` renamed `fusion-guard.json` to `fusion.json` at the project root and in `templates/`. The retired-key advisory keeps its reader, at a wider scope than this record assumed: `RETIRED_PROJECT_FILES` in `hooks/lib/config.ts` probes a leftover `fusion-guard.json` and names the file, `orchestrator.maxTurns`, the JSON to copy and the silent fallback a project gets if it does not. This repository's own budget of 12 came across the rename and was verified by running `bin/fusion-turn-budget`, which is the one thing in that step that could have failed silently. Plan: `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_*_the-compliance-guard-becomes-observation-only.md`.
 Deferred:
 Superseded by:

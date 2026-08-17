@@ -53,3 +53,40 @@ on a rule the code still cites.
 - `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md` step 13
 - `hooks/lib/config.ts:46-49`, `:70-73`, `:363-367`, `:479-486`
 - `hooks/lib/paths.ts:36-41`
+
+---
+Resolved: this record was read before step 13 was executed and overrode the step's own list, as the
+dispatch instructed. All five findings were acted on; three of them produced no edit, which is the
+point of the record.
+
+- **`260804-1631_i_may-a-project-file-set-guard-enabled-…`** gained the `Retired:` line, citing
+  `fab8a4b`, with no rename. It is the step's one correct entry and the only `Retired:` line written
+  in this pass.
+- **`260804-1630_i_what-does-a-project-guard-object-inherit-…` was left untouched.** The four sites
+  this record names were read at HEAD before deciding, not taken from the record: `hooks/lib/config.ts`
+  cites the decision in the present tense at `:46-49` ("Decision `260804-1630`, answered option 1"),
+  at `:70-73` ("that equivalence is an obligation of `260804-1630`") and at `:363-367` ("requires that
+  equivalence rather than merely permitting it"), and the per-leaf walk survives at `:479-486` with
+  `??` and the declared-narrowing note intact. Only the record's setting was deleted; its answer is
+  live code.
+- **`260803-1419_i_…` and `260802-1912_i_…` were left untouched.** Each already carries
+  `Retired: 60c9cd8`, at `:123` and `:95` respectively, and a second line was not added.
+- **The step's re-derivation safeguard was not run.** As measured here, a grep of the decision stores
+  for the identifiers this plan deletes returns `260804-1630` with the highest hit count in the store,
+  so the instruction written to catch a wrong list would have confirmed the one entry that must not
+  carry a line. Every candidate was checked against the code instead.
+- **`260804-1632_d_should-findrelevantdecisions-fold-case-…` was left untouched, deliberately.** The
+  vocabulary in `rules/fusion-workbench-conventions.md` `## Inline State Tracking` holds no instrument
+  for a deferred question whose subject was deleted: `Retired:` cites what removed an *implementation*
+  and a deferred question has none, `Superseded by:` needs a later decision and there is none, and
+  `Deferred:` is already on the record. Stretching `Retired:` onto a marker other than `_i_` is
+  precisely option 1 of
+  `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`,
+  which is open and whose recommendation declines it. That record's scope is `_a_`; this instance is
+  `_d_`, so answering it would have to widen the scope, and that is a decision rather than an
+  annotation. The fact itself is already recorded where a reader meets it, in `hooks/lib/paths.ts:36-41`.
+  Named here as the residual this pass leaves standing, rather than absorbed.
+
+The step's remaining transitions were executed as written: six records `_a_` → `_i_`, one `_a_` → `_s_`,
+and the two `shared/issues/260812-1546_*_…` records closed. History:
+`circles/260816-1741-guard-becomes-observation-only/history/260817-0530-step-13-decision-records-annotated.md`.

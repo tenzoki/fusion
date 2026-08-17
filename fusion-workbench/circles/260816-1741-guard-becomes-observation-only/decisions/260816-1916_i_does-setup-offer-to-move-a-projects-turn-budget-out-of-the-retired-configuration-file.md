@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** answered
+**Status:** implemented
 **Filed by:** planner
 **Cross-references:**
 `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_o_the-compliance-guard-becomes-observation-only.md` steps 1, 7a and 8 (the steps this touches),
@@ -54,3 +54,4 @@ Option 3 is the second choice and the one to take if the user judges the advisor
 
 ---
 Answered: circles/260816-1741-guard-becomes-observation-only/history/260816-1841-orchestrator-session.md — user chose option 1 at the plan gate on 2026-08-16. `/fusion:setup` does not offer the move; the loader's retired-file diagnostic carries the migration alone, naming the file, `orchestrator.maxTurns` and the destination on every guarded tool call until the old file is deleted. `docs/upgrading-to-v10.md` states the same at length. Realised by plan steps 7a and 8.
+Implemented: `fab8a4b` (plan step P-7a), `92db96a` (P-8) and `18c125b` (P-12) — option 1. `fab8a4b` wrote the retired-file advisory that carries the whole migration: `RETIRED_PROJECT_FILES` in `hooks/lib/config.ts` names `fusion-guard.json`, names `orchestrator.maxTurns`, gives the JSON to copy, and says plainly that a budget left behind is not read and the orchestrator falls back to the built-in default without saying so. `92db96a` renamed the file Setup Step 0f seeds and states in the step that it deliberately makes no offer to migrate a budget, with the reason. `18c125b` is cited as well because the recorded answer includes `docs/upgrading-to-v10.md`, which states the same at length and is pointed at from `README.md` `## Install` and from `/fusion:help`'s update topic; it landed at plan step 12 rather than at step 8. Plan: `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_*_the-compliance-guard-becomes-observation-only.md`.

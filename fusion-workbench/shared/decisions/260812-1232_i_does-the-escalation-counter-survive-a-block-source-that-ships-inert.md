@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** answered
+**Status:** implemented
 **Filed by:** planner, planning the protected-path removal
 **Cross-references:**
 `shared/decisions/260809-1224_d_is-the-decision-governed-escalation-check-3-a-live-feature.md` — **the predecessor question, whose deferral trigger this record reports as met.** Read it first; this record is the successor it does not ask,
@@ -71,6 +71,6 @@ Option 2 is the one to rule out first, because it is the only one that adds work
 
 ---
 Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 3, in its own Circle: remove escalation, the halt and clear-halt.js with CHECK 3; guard becomes observation-only; clear-halt.js removal sequences behind the legacy-halt migration. User answered inline 2026-08-16.
-Implemented:
+Implemented: `9c79202` (plan steps P-3 and P-6) — option 3, in its own Circle. `hooks/lib/escalation.ts` with the whole counter and halt apparatus, and `hooks/clear-halt.ts`, are deleted, and `guard_block`, `guard_halt` and `halt_cleared` are gone from `GuardEventType`. The record's sequencing constraint was honoured rather than assumed: the remedy for a project carrying a legacy halt landed first, in `05d848b` (P-1), where `/fusion:setup` offers to delete `.guard-state/escalation.json` instead of clearing it, and `hooks/lib/__tests__/legacy-halt-clearing.test.ts` pins that a seeded halt neither blocks nor is rewritten. The counter's last input had already left with CHECK 3 in `2f624ca` (P-2). `bin/monitor` still styles all three event types on purpose, because consuming projects hold logs that carry them. Plan: `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_*_the-compliance-guard-becomes-observation-only.md`.
 Deferred:
 Superseded by:

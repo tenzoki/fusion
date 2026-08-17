@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** open
+**Status:** superseded
 **Filed by:** ontocoder
 **Cross-references:** `fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_o_plan-guard-misst-statt-orakelt.md` (Entscheidung 1, Schritt 1, offene Frage 2); `fusion-workbench/circles/260804-1205-shell-reachability-model/decisions/260807-0825_a_should-the-guard-predict-shell-writes-or-enforce-them.md` (die bindende Entscheidung, die den Umbau auslöst); `hooks/config.json`, `hooks/config.example.json` (die geänderte Schutzliste); `hooks/lib/escalation.ts` (der Speicher); `hooks/guard.ts` (Leser und Schreiber des Halts)
 
@@ -102,3 +102,10 @@ mechanism, not as an oversight, because that is what it now is.
 
 This also removes the last argument for putting `.guard-state/` back on the protected list, and it
 should be cited by anything that proposes it again.
+
+---
+Superseded by: `shared/decisions/260812-1232_*_does-the-escalation-counter-survive-a-block-source-that-ships-inert.md` — the escalation store whose integrity this record asks about no longer exists, so the answer recorded here can never be realised. That record was answered option 3 by the user on 2026-08-16 and implemented in `9c79202` (plan steps P-3 and P-6): `hooks/lib/escalation.ts` with the counter and the halt, and `hooks/clear-halt.ts`, are deleted, and `guard_block`, `guard_halt` and `halt_cleared` left `GuardEventType`. There is no `fusion-workbench/.guard-state/escalation.json` for a guard to read, write or distrust.
+
+Option 4, chosen here, obliged the text layer to state openly that an agent can clear its own halt, at two named sites. Neither survives: `rules/protected-path-discipline.md` `### What a halt costs you` was deleted with the always-on rule on 2026-08-12 (`fa2f00b`), and `README-hooks.md`'s halt sections went in `1fb3f32` (P-11). The record's closing sentence — that this removes the last argument for putting `.guard-state/` back on the protected list — is moot from the other side as well: the protected list itself was removed on 2026-08-12 in `60c9cd8`.
+
+`Superseded by:` rather than an unrealisable-answer annotation, because a later decision genuinely overrides this one: the successor asks what happens to the escalation apparatus and answers it. The neighbouring class, an `_a_` record whose answer is unrealisable with no successor, is open at `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md` and this record is not one of its instances.
