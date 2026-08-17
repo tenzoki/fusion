@@ -2,9 +2,9 @@
 
 ---
 **Domain:** code
-**Status:** active
+**Status:** bounded
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md
+**Active spec/plan:** circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_c_the-compliance-guard-becomes-observation-only.md
 **Active session history:** circles/260816-1741-guard-becomes-observation-only/history/260816-1841-orchestrator-session.md
 
 ---
@@ -164,7 +164,7 @@ the halt in one Circle removes both sides of that, so nothing about it needs a m
 
 ### Open decision this Circle carries
 
-`circles/260816-1741-guard-becomes-observation-only/decisions/260816-1742_o_where-does-the-orchestrators-turn-budget-live-once-the-guard-configuration-file-is-gone.md`
+`circles/260816-1741-guard-becomes-observation-only/decisions/260816-1742_i_where-does-the-orchestrators-turn-budget-live-once-the-guard-configuration-file-is-gone.md`
 is unanswered, and it is load-bearing for planning rather than for the Directive. Two of its five
 options delete `hooks/lib/config.ts`, `hooks/turn-budget.ts` and `bin/fusion-turn-budget`
 outright, and three keep them in reduced form. The plan cannot be written until the user answers
@@ -186,6 +186,33 @@ The protected-path removal of 2026-08-12 has no Circle of its own. Its plan is
 `shared/planning/260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md`.
 
 ## Turn log
+
+Written at closure, from `orchestrator-events.jsonl`. The section stood empty through all four
+Turns, which is the frozen-surface failure recorded as `shared/issues/260801-2038`.
+
+**Turn 1** (`3d41d4a`..) — 6 tasks: P-1 through P-6 less P-5b. 7 commits. The guard's verdict, the
+escalation apparatus, the stand-down and the orphaned module go. 6 issues filed by review, 2
+decisions answered.
+
+**Turn 2** — 5 tasks: P-7a, P-5b, P-7b, P-8, P-9. 6 commits. The configuration surface moves to
+`fusion.json` and the tests follow. 7 issues filed by review. P-5b was re-ordered onto P-7a rather
+than P-2, on issue `260816-2108`.
+
+**Turn 3** — 6 tasks: P-11, P-16, P-13, P-10, P-14, P-15. The shipped text is rewritten, the
+curator reconciles `CLAUDE.md` and the rule files, growth baselines are re-armed, and **v10.0.0 is
+published** — `origin/main`, tag `v10.0.0` on `e331332`, marketplace `6a872cd`. P-16 was added at
+the Turn 1 coherence gate. P-15, the off-repository verification, was performed by the user against
+a real consuming project and passed; it surfaced `260817-1217`, judged pre-existing.
+
+No review pass ran in this Turn, and the plan had named one as a precondition of the tag. Filed as
+`260817-1417`, closed in Turn 4.
+
+**Turn 4** — opened by the user choosing *revise Artifact* at the Phase-3 Rebalance gate on the
+first reconciliation's `review-needed`. The two false enumerations in this record's Grounding
+snapshot are corrected (`dbbad70`); `260816-2318` is fixed (`01932d6`); the twelve uncovered
+commits are reviewed (`70f17da`, 5 findings); `260817-1506` is fixed because the patch would
+otherwise have contradicted its own migration note (`dcb0784`); **v10.0.1 is published**
+(`d0f13fa`, tag `v10.0.1`, marketplace `f3ad823`).
 
 ## Activation proposal (playmaker run 260816-1822)
 
@@ -230,3 +257,47 @@ line that already has is named in the portfolio's `## Warnings` rather than here
 **Proposed activation timestamp: 260816-1822.** Activation renames this record from `_a_` to `_t_`
 and writes `.active-circle`. Neither is this agent's write. The user commits it through
 `/fusion:next`, or the orchestrator does at its own activation step.
+
+---
+
+## Closure note
+
+**Bounded Closure (`_b_`), 2026-08-17.** Chosen by the user at the second Phase-3 Rebalance gate,
+on the reconciler's recommendation.
+
+**What the Directive asked and what it got.** The compliance guard decides nothing: `hooks/guard.ts`
+reaches no verdict on any path, the decision-governed check, the halt, the consecutive-block
+counter, the escalation module and the halt-clearing script are gone, the configuration loader is
+down to the single leaf `orchestrator.maxTurns`, and the file it reads is `fusion.json`. All 18
+plan tasks verify against the tree. `npm test` is green at 35 files and 653 tests. Two releases
+went out, v10.0.0 and v10.0.1, both tagged and both mirrored to the marketplace.
+
+**Why this is bounded and not coherent.** One Directive clause is unmet, deliberately. The clause
+asks that shipped agent text say what the guard now is; `agents/curator.md:212` and
+`skills/curate/SKILL.md:110` still call a write denied by the project's guard configuration a
+`failed` entry. That is `260817-1505`, and the user scoped it out of v10.0.1 knowing what it was.
+Every other clause was read against the tree and holds. The Directive was **reachable and
+deliberately not reached** — a state the reconciler's verdict vocabulary has no word for, which is
+itself filed as `shared/issues/260817-1613`.
+
+**The Bounded-Closure Artifact — what was learned that the Directive could not reach.** Three
+things, each measured rather than argued:
+
+1. *A mechanism's removal outruns its description.* Six shipped surfaces still described a
+   deciding guard after the code stopped deciding, and two of them survived a curator pass, a
+   review and a release. The lint that should catch this cannot see prose, which is now evidenced
+   three times over (`260816-2321`, `260817-1105`, and this Circle's own findings).
+2. *A plan-stated precondition with no mechanism is not a precondition.* The plan named a review
+   pass as a condition of the tag; the tag went out over twelve unreviewed commits and nothing
+   noticed. Filed as `shared/decisions/260817-1613`.
+3. *An agent's staged index is inherited by whoever commits next.* The staging shape governs what
+   the caller names, not what it finds. Two commits in this Circle carried renames their messages
+   do not describe. Filed twice independently — `shared/issues/260816-0105` and `260817-1502` —
+   which is itself evidence the gap is easy to rediscover and hard to see.
+
+**Six defects stay open by user decision:** `260816-2319`, `260816-2320`, `260817-1505`,
+`260817-1507`, `260817-1508`, `260817-1509`. Review coverage at closure is `uncovered=3`, all three
+commits after the review's own declared range — advisory under `shared/decisions/260815-2109`.
+
+**Session history:** `circles/260816-1741-guard-becomes-observation-only/history/260816-1841-orchestrator-session.md`
+**Reconciliation passes:** `history/260817-1417-reconciliation.md` and `history/260817-1618-reconciliation.md`
