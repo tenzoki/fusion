@@ -9,8 +9,10 @@ block a tool call.
 One thing here is unlike v9, and it is why this page exists: **the release removes a file
 every consuming project has at its root.** `fusion-guard.json` is no longer read, and
 `fusion.json` replaces it. If your `fusion-guard.json` set a Turn budget, that budget stops
-being applied the moment you upgrade, and no session says so out loud. The first check below
-is the whole of the fix and takes about a minute.
+being applied the moment you upgrade, and nothing moves it across for you. fusion does say
+so out loud: it names the leftover file on every guarded tool call, and the orchestrator
+repeats that line in its Setup-complete summary whenever a session runs Setup. Moving the
+value is yours to do, and the first check below is the whole of it and takes about a minute.
 
 Upgrading itself is the ordinary update — `fusion --update`, or the uninstall/install/reload
 sequence on the marketplace path. The release is tagged `v10.0.0`, and the installer's
@@ -73,9 +75,10 @@ rm fusion-guard.json
 
 While it is still there, fusion tells you so on every guarded tool call, naming the file,
 naming the Turn-budget key and saying where that key belongs now. The advisory stops when
-the file is gone. That channel was chosen over a one-off Setup message deliberately: it
-reaches a project on every call, where a Setup message reaches only a project that runs
-Setup again.
+the file is gone. That channel is the one that does not depend on Setup: it reaches a
+project on every call, where a Setup message reaches only a project that runs Setup again.
+When a session does run Setup, the orchestrator repeats the same line in its Setup-complete
+summary, so you may hear it in both places.
 
 If you never had a `fusion-guard.json`, or it set nothing, there is nothing to move, and
 you need no `fusion.json` either — a project that has none runs on fusion's own built-in

@@ -103,10 +103,15 @@
  * case that does not exist right now.
  *
  * THE RETIRED-FILE DIAGNOSTIC IS THE WHOLE OF THE v10 MIGRATION, and it is
- * written that way on purpose. `/fusion:setup` was the alternative and the user
- * chose against it (`260816-1916`, option 1), on the ground that this channel
- * runs on every guarded tool call while Setup runs once per session and only
- * for a project that runs Setup at all. A project that carried
+ * written that way on purpose. `/fusion:setup` MOVING THE BUDGET was the
+ * alternative and the user chose against it (`260816-1916`, option 1), on the
+ * ground that this channel runs on every guarded tool call while Setup runs
+ * once per session and only for a project that runs Setup at all. That names
+ * which channel CARRIES the migration; it is not the complete list of places
+ * the text is heard. `bin/fusion-turn-budget` puts every diagnostic this loader
+ * returns on stderr, and the orchestrator repeats all of them in its
+ * Setup-complete summary (`agents/orchestrator.md` Setup Step 2). Setup still
+ * writes nothing and reads no old file. A project that carried
  * `{"orchestrator":{"maxTurns":12}}` and does nothing would otherwise drop to
  * the built-in default without a word, which is the exact class of silent loss
  * every diagnostic in this module exists to prevent. So the text names the key,
