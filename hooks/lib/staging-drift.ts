@@ -610,9 +610,13 @@ export function renderStagingRow(r: StagingRow): string {
  * commits and the number was never the part nobody read.
  *
  * It also says what NOT to do. An agent told "files were missed by `git add`"
- * reaches for `git add -A`, and that is the defect on the other side —
- * `f38f37d`, three records out of HEAD. The acceptance for this issue makes the
- * staging shape a constraint rather than a nicety, so the sentence carries it.
+ * reaches for `git add -A`, which over-stages. The defect on the other side was
+ * a directory-wide `git add -u`: it staged the deletions of records that had
+ * just been renamed, whose successors were untracked, and so took three of them
+ * out of HEAD — `f38f37d`, which agrees with the account at the head of this
+ * file and with `agents/orchestrator.md` Step 3b. The acceptance for this issue
+ * makes the staging shape a constraint rather than a nicety, so the sentence
+ * carries it.
  */
 export function stagingSentence(report: StagingReport): string {
   if (report.faults.length === 0) return "";
@@ -647,8 +651,10 @@ export function stagingSentence(report: StagingReport): string {
     "If you are the orchestrator, add these paths — written out in full, absolute — to the next Step 3b " +
       "staging list, and commit a queue rebuild at Phase 1 where the dispatch that produced it happened. " +
       "Do NOT reach for `git add -A`, `-u`, a directory argument or a glob: the shape at Step 3b step 4 is what " +
-      "makes over-staging impossible, it is not what failed here, and loosening it stages the deletions of " +
-      "records that were renamed, adds nothing in their place, and so takes those records out of HEAD. " +
+      "makes over-staging impossible, it is not what failed here, and each way of loosening it fails on its own " +
+      "— `-A` and a directory argument are the over-staging that shape prevents; `-u` stages a renamed record's " +
+      "deletion and adds nothing in its place, taking that record out of HEAD; an unquoted glob does the reverse, " +
+      "staging the successor and leaving the deletion behind, so both names land in HEAD. " +
       "If you are a sub-agent, carry this line into your report — committing is the orchestrator's.",
   );
 

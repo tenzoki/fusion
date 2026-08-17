@@ -309,9 +309,13 @@ export declare function renderStagingRow(r: StagingRow): string;
  * commits and the number was never the part nobody read.
  *
  * It also says what NOT to do. An agent told "files were missed by `git add`"
- * reaches for `git add -A`, and that is the defect on the other side —
- * `f38f37d`, three records out of HEAD. The acceptance for this issue makes the
- * staging shape a constraint rather than a nicety, so the sentence carries it.
+ * reaches for `git add -A`, which over-stages. The defect on the other side was
+ * a directory-wide `git add -u`: it staged the deletions of records that had
+ * just been renamed, whose successors were untracked, and so took three of them
+ * out of HEAD — `f38f37d`, which agrees with the account at the head of this
+ * file and with `agents/orchestrator.md` Step 3b. The acceptance for this issue
+ * makes the staging shape a constraint rather than a nicety, so the sentence
+ * carries it.
  */
 export declare function stagingSentence(report: StagingReport): string;
 export {};
