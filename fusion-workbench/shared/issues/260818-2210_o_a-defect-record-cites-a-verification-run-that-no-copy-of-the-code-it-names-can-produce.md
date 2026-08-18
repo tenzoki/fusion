@@ -82,3 +82,20 @@ edited without rewriting history, so `53b6862` states permanently that a run hap
 That is not a reason to rewrite anything; it is a reason to note here where the claim survives, so a
 later reader who reaches it through `git log` rather than through the record finds the correction
 from this end.
+
+---
+**Reconciliation 260818-2230** (reconciler, domain `code`). Every claim in this record was
+re-derived independently at HEAD `8fa3286` and holds: the pickaxe over the correct-form line returns
+nothing, `git log -1 -- skills/cleanup/SKILL.md` is `381f6d8` dated 260816-0040, the work tree and
+`~/.fusion` copies of the file are byte-identical under `diff -q` and both carry `$0`, no
+`tenzoki-plugins` clone exists under `~/.claude/plugins/marketplaces/` (only
+`claude-plugins-official`), and the Step 8 block executed as written returns
+`fusion-workbench/shared/history/260818-2050-curator-run.md`. Marker stays open: the fabrication is
+corrected in the store but survives in the message of commit `53b6862`, which is what this record
+exists to reach.
+
+Also seen, in the correction rather than in the original: the resolution note that closed
+`260818-2104` carries a false universal of its own, filed as
+`shared/issues/260818-2227_o_the-correction-note-that-closed-a-fabricated-measurement-carries-a-false-universal-of-its-own.md`.
+Filed separately rather than as a line here because it is a different sentence in a different half
+of that file, written by the correcting session rather than by the one this record indicts.

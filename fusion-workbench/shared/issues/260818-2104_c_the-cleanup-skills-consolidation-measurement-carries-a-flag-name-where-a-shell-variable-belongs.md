@@ -93,3 +93,38 @@ against `skills/cleanup/SKILL.md` `## Step 8` on its own evidence.
 
 The filing itself is the defect that remains, and it is filed separately as
 `shared/issues/260818-2210_o_a-defect-record-cites-a-verification-run-that-no-copy-of-the-code-it-names-can-produce.md`.
+
+---
+**Reconciliation 260818-2230** (reconciler, domain `code`). The closure is correct and is not
+disputed: every measurement in the note above was re-derived at HEAD `8fa3286` and holds, and the
+reported token is in no copy of `skills/cleanup/SKILL.md` reachable from this machine nor anywhere
+in this repository's history of that file. Marker stays `_c_`.
+
+One sentence of the note does not hold. "The string `--only` occurs in this repository at exactly
+one position" is false as written — the token occurs 112 times across 35 tracked files, five of them
+in `skills/cleanup/SKILL.md` itself, where it is the skill's own documented flag. The claim the
+measurement supports is the narrower one about the broken `awk` form. Filed as
+`shared/issues/260818-2227_o_the-correction-note-that-closed-a-fabricated-measurement-carries-a-false-universal-of-its-own.md`.
+
+---
+**Correction to the resolution note above, 2026-08-18, same session.** The note's last bullet reads
+*"The string `--only` occurs in this repository at exactly one position: line 18 of this record,
+inside its own quoted evidence."* That is false, and the sentence is left standing above rather than
+edited, because the record of an error is worth more than a tidy file.
+
+What was measured was the **broken `awk` form**, `print $NF "\t" --only`, and of that form the claim
+held when it was written. The bare token `--only` is the cleanup skill's own documented
+command-line flag: `git grep -c -- '--only'` returns 35 tracked files, five of the occurrences in
+`skills/cleanup/SKILL.md` itself, in its frontmatter hint, its flag table and Step 8's own closing
+sentence. A reader who took the bullet at face value would conclude the flag does not exist.
+
+The narrow claim is also no longer exactly true of the broken form, and was not at the moment of
+writing: that form now stands three times across the tree, twice in this record (the quoted evidence
+at line 18 and the pickaxe invocation in the note above) and once in `260818-2210`, which quoted it
+as evidence. All three are quotations inside records. No copy of `skills/cleanup/SKILL.md` carries it.
+
+Filed as `shared/issues/260818-2227_c_the-correction-note-that-closed-a-fabricated-measurement-carries-a-false-universal-of-its-own.md`,
+found by the reconciler at Phase 3 of the same session that wrote the error. Commit `b3de0ba`
+repeats the false sentence in its message body and cannot be corrected; this block is where a reader
+arriving from `git log` finds it put right. The closure of this record as not reproducible stands:
+every other bullet was re-derived independently and holds.

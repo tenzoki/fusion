@@ -33,10 +33,10 @@ the first `**Status:**` line in that file's body:
 | Store | Records | Header disagrees with marker |
 |---|---|---|
 | `shared/decisions/` | 51 | 20 |
-| `circles/*/decisions/` | 43 | 20 |
-| **Total** | **94** | **40** |
+| `circles/*/decisions/` | 43 | 19 |
+| **Total** | **94** | **39** |
 
-Breakdown of the 40, as marker against header:
+Breakdown of the 39, as marker against header:
 
 | Marker | Header says | Count |
 |---|---|---|
@@ -45,16 +45,23 @@ Breakdown of the 40, as marker against header:
 | `_a_` answered | `open` | 8 |
 | `_d_` deferred | `open` | 3 |
 | `_s_` superseded | `open` | 1 |
-| `_i_` implemented | a whole sentence of reconciliation prose where one word belongs | 1 |
 
-A naive comparison reports **44**, which is the figure the curator run carries. The difference is
-four records whose header holds the correct word followed by a parenthetical annotation an earlier
-reconciliation added, for example `260803-1803_i_*` reading "implemented (corrected from `open` by
-reconciliation 260804-1021; the filename marker `_i_` was already right)". Those four are right and
-are not counted as drift here. Both figures are defensible; they differ only in how an annotated
-header is treated.
+A naive comparison reports **44**, which is the figure the curator run carries, and the two figures
+reconcile exactly: 39 headers contradict their marker, and **5** more carry the right state in a form
+the template does not use. Four of those five hold the correct word followed by a parenthetical
+annotation an earlier reconciliation added, for example `260803-1803_i_*` reading "implemented
+(corrected from `open` by reconciliation 260804-1021; the filename marker `_i_` was already right)".
+The fifth, `circles/260718-1924-v5x-overhaul/decisions/260718-2150_i_*`, leads with the marker itself:
+`**Status:** _i_ (implemented — …)`. None of the five misleads a reader about the state, so none is
+counted as drift here.
 
-**The trend across four measurements of the same store, each re-derived rather than carried
+**The criterion matters and is stated once.** A record counts as drift when its header names a state
+its marker does not. It does not count as drift merely for departing from the template's wording. An
+earlier revision of this record used the first criterion in its prose and the second in its
+arithmetic, which is what put the `260718-2150` record among the 39; the correction is filed as
+`shared/issues/260818-2228_o_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md`.
+
+**The trend across five measurements of the same store, each re-derived rather than carried
 forward:** 34 of 74 (2026-08-12), 35 of 86 (2026-08-14), 39 of 100 (2026-08-16, coderev), 37 of 106
 (2026-08-17, reconciler), 40 of 94 today. The population moves as records are archived and filed;
 the ratio has not improved in six days, across at least three hand corrections.
@@ -78,7 +85,7 @@ Measured by grep over `agents/`, `skills/`, `rules/`, `templates/` and `hooks/li
   `Approved`). Removing it from the decision template touches none of the others, and any change
   must be scoped by artifact kind rather than by the string.
 
-That change surface is markedly smaller than a first grep suggests: two rule files, not the thirteen
+That change surface is markedly smaller than a first grep suggests: two rule files, not the fourteen
 files that mention a field of that name.
 
 ## Options
@@ -92,7 +99,8 @@ files that mention a field of that name.
      on the 94 records that carry the field today.
 2. **Keep the field and add a lint that re-derives the expected word from the filename.**
    - Pros: keeps a record self-describing; makes the drift impossible to leave. Head-room on the
-     hook-test surface was 1907 lines of 2500 at the last measurement.
+     hook-test surface is 1 972 lines of 2 500, re-derived at `8fa3286`: the per-file baseline in
+     `surface-growth-bound.test.ts` sums to 17 875 and the surface measures 18 403.
    - Cons: does not shrink the surface, which is what `260811-1734` is open to do. A hard gate fails
      immediately on 40 records nobody intends to edit, so it needs either a sweep first or a
      grandfather clause, and a grandfather clause is a second rule about the same field.
@@ -136,3 +144,17 @@ Implemented: <set when status moves to _i_>
 Deferred: <set when status moves to _d_>
 Superseded by: <set when status moves to _s_>
 Retired: <set when the implementation is removed; the marker stays _i_>
+
+---
+**Reconciliation 260818-2230** (reconciler, domain `code`). The measurement above was re-derived
+independently at HEAD `53b6862` and reproduces exactly — 94 records, 40, the 20/20 split, the naive
+44 and all six breakdown rows. Three counts *about* the measurement do not, and are filed as
+`shared/issues/260818-2228_o_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md`:
+the 40 includes one header that agrees with its marker in marker form, so the count of *disagreeing*
+headers is 39; "four measurements" is followed by five; "thirteen files" is fourteen in the grep
+scope this record states. None of them changes the finding, the options or the recommendation. Read
+the defect before acting on a figure from this record.
+
+Marker stays `_o_` and the `**Status:**` field above is left exactly as it stands: this record is
+the open question about that field, and correcting its own header would remove one data point from
+the population it measures.

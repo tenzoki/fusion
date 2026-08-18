@@ -107,3 +107,31 @@ files**, not the thirteen a grep for the field name returns, because four other 
 a `**Status:**` field of their own with different vocabularies. And `260815-2312` itself — the
 decision that removed the field from the Circle record — is one of the 40, reading `answered` under
 an `_i_` marker.
+
+---
+**Reconciliation 260818-2230** (reconciler, domain `code`). Re-verified reproducible at HEAD
+`8fa3286`, re-derived rather than carried forward: the marker was read out of each filename and the
+first `**Status:**` line out of each body, over every live decision store and no archived one. At
+the pre-session HEAD `53b6862` the population is 94 (51 shared, 43 Circle) and 40 headers do not
+hold the template word their marker calls for, split 20 shared and 20 Circle; a whole-field
+comparison gives 44. Both figures and the six-row breakdown in
+`shared/decisions/260818-2212_o_*.md` reproduce exactly. One of the 40 agrees with its marker in
+substance and is written in marker form rather than in the template word
+(`circles/260718-1924-v5x-overhaul/decisions/260718-2150_i_*.md`, reading
+`**Status:** _i_ (implemented — …)`), so the count of headers *disagreeing* is 39 with 5
+correct-but-non-template; that discrepancy and two count-of-count errors are filed as
+`shared/issues/260818-2228_o_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md`.
+No record was hand-corrected, per this record's own instruction. No lint enforces agreement; the
+full hook suite is green at this HEAD (672 tests, 36 files). Marker stays open — the question is now
+filed as a decision, which does not resolve the drift. Log:
+`shared/history/260818-2230-reconciliation.md`.
+
+**Correction to the note above, same day.** Two figures in it were restated from a first pass and are
+wrong. The disagreeing count is **39, not 40** (20 shared, 19 Circle): one header,
+`circles/260718-1924-v5x-overhaul/decisions/260718-2150_i_*`, reads `**Status:** _i_ (implemented — …)`
+and states its marker correctly rather than contradicting it. With it, **5** records carry the right
+state in a non-template form, and 39 + 5 is exactly the 44 a naive whole-field comparison reports.
+And the change surface is **fourteen** files that mention a field of that name, not thirteen; the
+conclusion is unchanged, because only two of them define the vocabulary for this record kind.
+Filed and closed as
+`shared/issues/260818-2228_c_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md`.
