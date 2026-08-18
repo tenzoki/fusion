@@ -1741,3 +1741,20 @@
 {"ts":"2026-08-17T20:16:40","event":"rebalance_artifact","detail":"Turn 4 realises the answered decision in the conventions and the two instances"}
 {"ts":"2026-08-17T20:16:40","event":"turn_start","turn":4,"detail":"1 ready task"}
 {"ts":"2026-08-17T20:32:52","event":"session_end","detail":"4 Turns, 4 tasks, 4 commits, 7 issues filed, 6 closed, 1 decision implemented, 2 commits unreviewed by user decision"}
+{"ts":"2026-08-18T05:23:02","event":"session_start","history_file":"shared/history/260818-0708-orchestrator-session.md","detail":"release v10.1.0 and the identifier-containment analysis"}
+{"ts":"2026-08-18T05:23:02","event":"gate_response","detail":"user chose to build the containment gate; the convention question is not routed to shaper"}
+{"ts":"2026-08-18T05:23:02","event":"turn_start","turn":1,"detail":"1 ready task"}
+{"ts":"2026-08-18T05:36:42","event":"task_done","turn":1,"task":"T1","agent":"coder","detail":"containment gate, 9 branch cases plus 2 self-checks, registry assertion"}
+{"ts":"2026-08-18T05:36:42","event":"commit","turn":1,"task":"T1","detail":"33645a2 test(hooks): an emitted sentence may carry only identifiers its own input supplied"}
+{"ts":"2026-08-18T05:36:42","event":"review_start","turn":1,"agent":"coderev","detail":"range c4ead2a..33645a2"}
+{"ts":"2026-08-18T05:47:40","event":"review_done","turn":1,"agent":"coderev","detail":"3 low issues filed; sensitivity reproduced in 6 injections; range 1dc062d..33645a2 covered"}
+{"ts":"2026-08-18T05:49:06","event":"gate_response","turn":1,"detail":"user scoped Turn 2 to all three findings, no further review pass"}
+{"ts":"2026-08-18T05:49:06","event":"turn_end","turn":1,"detail":"1 task resolved, 1 issue resolved, 3 issues created, 1 commit"}
+{"ts":"2026-08-18T05:49:06","event":"turn_start","turn":2,"detail":"1 ready task"}
+{"ts":"2026-08-18T08:15:54","event":"reconciliation","detail":"verdict review-needed; 1 Grounding gap, 0 code discrepancies; release verified across five surfaces"}
+{"ts":"2026-08-18T08:15:54","event":"gate_hit","detail":"Rebalance gate on reconciler verdict review-needed"}
+{"ts":"2026-08-18T08:15:54","event":"rebalance_grounding","detail":"shared/decisions/260818-0814_a_what-covers-the-plugin-repo-shaped-exempt-surface-record-now-that-the-convention-rule-was-not-chosen.md answered option 2"}
+{"ts":"2026-08-18T08:16:12","event":"gate_response","detail":"user chose option 2: 260807-2153 gets its own route as an ordinary defect"}
+{"ts":"2026-08-18T08:16:12","event":"turn_end","turn":2,"detail":"1 task resolved, 3 issues resolved, 0 issues created, 1 commit"}
+{"ts":"2026-08-18T08:16:12","event":"turn_start","turn":3,"detail":"1 ready task"}
+{"ts":"2026-08-18T08:32:43","event":"session_end","detail":"3 Turns, 3 tasks, 5 commits, release v10.1.0, 5 issues filed and 5 closed, 1 decision implemented, 2 commits unreviewed by user decision"}

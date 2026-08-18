@@ -73,7 +73,7 @@ rule file as a surface rather than about writing the criterion down.
 
 ---
 Answered: <set when status moves to _a_>
-Implemented: 2026-08-18, `coder`, in the commit that carries this transition (hash set by the committing orchestrator) — option 2 realised: the exempt-surface block in `rules/fusion-workbench-conventions.md` `## Project language` is split into a universal group and a criterion a project evaluates against itself (text a project ships to consumers of unknown language is English), this repository's double role is named rather than passed over, and no rule file was created. `shared/issues/260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md` is closed `_c_`. The residual the answer named stands: the instance is answered, the class is not.
+Implemented: `e7ca60f` 2026-08-18, `coder`, in the commit that carries this transition — option 2 realised: the exempt-surface block in `rules/fusion-workbench-conventions.md` `## Project language` is split into a universal group and a criterion a project evaluates against itself (text a project ships to consumers of unknown language is English), this repository's double role is named rather than passed over, and no rule file was created. `shared/issues/260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md` is closed `_c_`. The residual the answer named stands: the instance is answered, the class is not.
 Deferred: <set when status moves to _d_>
 Superseded by: <set when status moves to _s_>
 Retired: <set when the implementation is removed; the marker stays _i_>
