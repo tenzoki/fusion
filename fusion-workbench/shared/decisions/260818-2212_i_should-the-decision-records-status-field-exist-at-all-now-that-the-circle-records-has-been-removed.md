@@ -162,3 +162,9 @@ the defect before acting on a figure from this record.
 Marker stays `_o_` and the `**Status:**` field above is left exactly as it stands: this record is
 the open question about that field, and correcting its own header would remove one data point from
 the population it measures.
+
+---
+Answered: shared/history/260818-2301-orchestrator-session.md — user chose option 1 (2026-08-18): the `**Status:**` field leaves the decision-record template. The change surface is two rule files, `rules/fusion-workbench-conventions.md` `## Decision Record Template` and `rules/decision-record-examples.md`; the filename marker becomes the only source of a decision record's state. The 94 records that carry the field today stay exactly as they stand, following the Circle precedent `260815-2312`, and all affected surfaces say so rather than correcting them. The four other artifact kinds sharing the field name are untouched.
+
+---
+Implemented: `rules/fusion-workbench-conventions.md` `## Decision Record Template` and `rules/decision-record-examples.md` — the `**Status:**` line is out of both, and the conventions file carries the statement of why, with the measurement (39 of 94 records naming a state their marker does not, a ratio held for six days across three hand corrections) and the position on existing records: a record written before the removal keeps the field exactly as it stands, because hand-correcting one destroys the evidence the removal was decided on. `rules/decision-record-examples.md` carries the pointer rather than a second copy. The four other artifact kinds sharing the field name are untouched, and neither `## State Markers — decisions` nor `### Decision files` needed a change, both being about the marker vocabulary and the footers rather than the head field. The two open defects that had been measuring this drift, `260811-2146` and `260812-1232`, close on the cause being gone.

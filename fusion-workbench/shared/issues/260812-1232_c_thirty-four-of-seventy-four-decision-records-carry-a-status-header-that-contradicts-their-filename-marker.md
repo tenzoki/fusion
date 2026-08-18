@@ -135,3 +135,18 @@ And the change surface is **fourteen** files that mention a field of that name, 
 conclusion is unchanged, because only two of them define the vocabulary for this record kind.
 Filed and closed as
 `shared/issues/260818-2228_c_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md`.
+
+
+---
+Resolved: the field itself was removed, so no record filed from now on can carry a state its marker
+contradicts. `shared/decisions/260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`
+put the question to the user and was answered option 1 on 2026-08-18; the removal landed in the same
+session, taking the `**Status:**` line out of `rules/fusion-workbench-conventions.md`
+`## Decision Record Template` and out of the worked example in `rules/decision-record-examples.md`,
+with the reason and the measurement stated in the conventions file.
+
+The existing drift is **not** corrected, and that is the answer rather than an omission. A record
+written before the removal keeps the field exactly as it stands; hand-correcting one destroys the
+evidence the removal was decided on, which is the position the Circle precedent
+`260815-2312` took and the constraint the user chose this option under. This defect therefore closes
+on the cause being gone, not on the population being cleaned.

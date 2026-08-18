@@ -17,7 +17,6 @@ Companion to `fusion-workbench-conventions.md`. Three end-to-end examples showin
 
 ---
 **Domain:** code
-**Status:** open
 **Filed by:** shaper
 **Cross-references:** issues/260430-1900_o_rag-sanitisation.md
 
@@ -42,6 +41,8 @@ The RAG pipeline needs a vector store for chunk retrieval. Open at v1: which lib
 
 sqlite-vss for v1; revisit if a customer crosses 1M vectors.
 ```
+
+**The head carries no `Status:` field.** It left the template; the marker on the filename is the state and the only source. `fusion-workbench-conventions.md` `## Decision Record Template` says why, and what to do with records that still carry it.
 
 **Reconciler's next pass — analyst has authored a comparative-analysis report selecting sqlite-vss:**
 

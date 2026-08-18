@@ -629,7 +629,23 @@ function scanHeadingAnchors(
 // reads 150. Third, `hooks/lib/staging-drift.ts` moves nothing and could not have: its two
 // changed comments repoint from that same anchor to a bare `rules/workbench-tracking.md`, and
 // `hooks/lib/*.ts` is scanned recordsOnly, so classes (a) and (b) are not read there at all.
-const BASELINE = { paths: 1152, anchors: 148, records: 101 };
+// Re-approved 2026-08-19 — the `**Status:**` field leaves the decision-record template,
+// realising decision `shared/decisions/260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`
+// (option 1: the filename marker is the only source of a decision record's state). anchors
+// 148 -> 149 and records 101 -> 102; paths did not move. Measured per file by reverting each
+// of the two changed rule files in turn and rerunning this gate; the two contributions are
+// disjoint and sum exactly, with no interaction, because neither file's added text cites the
+// other's. The anchor is `rules/decision-record-examples.md` citing
+// `## Decision Record Template`, the pointer that keeps the removal's reasoning in one place
+// instead of two. The record is the binding-decision citation in
+// `rules/fusion-workbench-conventions.md`.
+// Two absences a later reader would otherwise read as an error. The examples file also names
+// the record above in prose and contributes ZERO to records: it is exempt from class (c)
+// wholesale as a `RECORD_EXAMPLE_FILES` entry, because every record it walks is fabricated.
+// And its `fusion-workbench-conventions.md` citation is a bare basename, which is no
+// class-(a) token — that class reads `rules/<name>.md` — so paths stayed at 1152 while a
+// file was named. The anchor still resolves, because class (b) matches on basename.
+const BASELINE = { paths: 1152, anchors: 149, records: 102 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the

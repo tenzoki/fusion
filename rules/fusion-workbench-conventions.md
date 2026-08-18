@@ -488,7 +488,6 @@ Body:
 
 ---
 **Domain:** code | data
-**Status:** open | answered | implemented | deferred | superseded
 **Filed by:** <agent name or "user">
 **Cross-references:** <paths to related defects, analyses, plans, or decision records — in this Circle, in another Circle, or in shared/. Cite where they are; never copy them here.>
 
@@ -521,6 +520,14 @@ Deferred: <set when status moves to _d_>
 Superseded by: <set when status moves to _s_>
 Retired: <set when the implementation is removed; the marker stays _i_>
 ```
+
+**There is no `Status:` head field, and you do not write one.** It duplicated the marker and
+drifted from it — 39 of 94 records carried a header naming a state their marker did not, a
+ratio that held six days across three hand corrections. The marker on the filename is the
+state and the only source. A record written before the removal still carries the field; leave
+it exactly as it stands — hand-correcting a record you are not transitioning destroys the
+evidence the removal was decided on. Binding decision:
+`shared/decisions/260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`.
 
 ## Rule-file provenance
 
