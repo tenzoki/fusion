@@ -31,16 +31,37 @@ property: a citation that resolves here and nowhere else. No existing check expr
 ## What the gate should be
 
 Assert on the **output**, not on the source text. Both builders are exported and pure, so a
-test can call them on synthetic reports and assert the returned string carries no
-workbench-shaped identifier and no bare short hash:
+test can call them on synthetic reports and assert on the returned string:
 
 - `coverageSentence()` — `hooks/lib/review-coverage.ts:684`
 - `stagingSentence()` — `hooks/lib/staging-drift.ts:617`
 
-Two patterns cover everything that has appeared: `/\b\d{6}-\d{4}\b/` (the `YYMMDD-HHMM` record
-stamp) and `/\b[0-9a-f]{7,40}\b/` (a git object name). Gating the output rather than the
-literals means a part added later is covered without anyone remembering to extend a list, and
-a sentence assembled from several `parts.push` calls is covered whole.
+**Corrected 2026-08-18, before this record was closed.** This section originally asked for a
+blacklist on identifier *shape* — that the returned string carry "no workbench-shaped identifier
+and no bare short hash", by the two patterns `/\b\d{6}-\d{4}\b/` and `/\b[0-9a-f]{7,40}\b/`. **That
+is the wrong criterion and a gate written to it cannot be run**, for the reason the reconciliation
+note below states and the analysis
+`shared/analyses/260818-0715-preventing-fusion-internal-identifiers-from-reaching-a-consuming-project.md`
+then measured: the uncovered branch of `coverageSentence()` legitimately emits four or more of the
+*consuming project's own* commit hashes, so the second pattern reddens on its first run against
+real data. The wording is corrected here rather than left standing with a note, so that nobody
+reading this closed record implements the rejected design.
+
+The criterion that works is **containment**, stated as a set relation rather than as a pattern:
+
+```
+identifiers(builder(input)) ⊆ identifiers(input)
+```
+
+Every identifier in the emitted sentence must have entered through that call's input. A hash the
+report supplied passes; a fusion record stamp typed into a `parts.push` literal has no input to
+have come from, so it fails. The two patterns above are still how identifiers are *extracted* —
+they are just applied to both sides of the relation instead of to a blacklist. There is no
+allowlist and no exemption list.
+
+Gating the output rather than the literals means a part added later is covered without anyone
+remembering to extend a list, and a sentence assembled from several `parts.push` calls is covered
+whole.
 
 Both builders need to be driven through their conditional branches for the check to be worth
 anything: `coverageSentence` has an uncovered branch and a carried branch,
@@ -106,3 +127,26 @@ own hashes and stamps are known, and treating anything else in the output as for
 does not say this, and a gate written to its letter reddens on its first run.
 
 Nothing was renamed. The marker stays `_o_`.
+
+---
+Resolved: The containment gate is in — `hooks/lib/__tests__/sentence-identifier-containment.test.ts`,
+273 lines. It calls both builders directly on synthetic reports and asserts
+`identifiers(builder(input)) ⊆ identifiers(input)` on every branch: `coverageSentence`'s empty,
+uncovered, carried-without-`carriedFrom`, carried-with-`carriedFrom` and both branches, and
+`stagingSentence`'s no-faults, record (untracked and unstaged rows), commit-message and both
+branches — the two that emit nothing included, pinned to `""`. Two further cases pin the gate's own
+behaviour rather than the builders': sensitivity, against a stamp injected beside a true
+measurement, and specificity, against the branch that emits four of the consuming project's own
+hashes and must stay green. A companion assertion holds the registry equal to the `*Sentence`
+symbols `hooks/tracker.ts` imports, so a third builder wired into the funnel fails the suite until
+it is registered.
+
+Verified by reintroducing a foreign identifier into `coverageSentence()`: four branch cases plus the
+specificity case went red, each naming `FOREIGN 260810-1205 — record stamp (YYMMDD-HHMM)`, the
+identifiers the input did supply, the sentence returned, the criterion and the fix. Reverted; the
+builders are untouched by this change.
+
+The shape-blacklist wording in `## What the gate should be` was corrected in place first (this
+record was still open, so the body was edited rather than footnoted). Recommendation 3 of the
+analysis — the convention in a rule file — was not chosen by the user and is out of scope here;
+`260807-2153` stays open. The static shipped surface is deliberately ungated and must not be swept.

@@ -80,8 +80,9 @@
   review-coverage.test.ts 819
   rules-emission-golden.test.ts 1159
   rules-voice-profile.test.ts 318
+  sentence-identifier-containment.test.ts 273
   session-start-subdirectory.test.ts 159
   staging-drift.test.ts 660
   surface-growth-bound.test.ts 628
   turn-budget-lint.test.ts 524
-  total 17919
+  total 18192
