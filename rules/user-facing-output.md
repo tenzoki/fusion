@@ -92,6 +92,8 @@ A sketch that replaces a wall of prose does not count against the chat length ca
   - Not "Revise Artifact" → "Try again with a refined task list."
   - Not "Bounded Closure" → "Accept what's been learned and end the session."
   - Internal verbs may follow in parentheses for traceability: *"Try again with a refined task list (Revise Artifact)."*
+- **An option names the thing it decides, not the kind of thing.** State the substance in the option's own words. A category leaves its referent unstated, so the user has to open the cited records to find out what they are agreeing to, which is what a gate exists to spare them. The substantive form is usually the same length, so this costs nothing against `## Length` and is not a call for longer options. Nor is it the foreclosure clause below: that one says what a choice rules out, and an option can state that perfectly and still stay abstract about its own subject.
+  - Not "the Circle record promises a constraint that no longer exists" → "the Circle record still promises that a run can be discarded and restarted, which was never built."
 - **Default options should be the most-likely choice.** Don't make the user pick between four equal-weight options if 90% of the time it's option A. Mark the recommended default explicitly.
 - **Every option says what it forecloses.** Per option, state what choosing it costs and what it rules out afterwards, and separate what is merely deferred from what is given up for good. Carry it in the `AskUserQuestion` option `description` field, or on the option's own line when the gate is plain chat text. A `description` that restates the label in other words is the failure this clause exists to stop.
 
