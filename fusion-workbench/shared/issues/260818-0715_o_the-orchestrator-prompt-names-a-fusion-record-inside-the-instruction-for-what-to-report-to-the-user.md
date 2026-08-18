@@ -60,3 +60,22 @@ being told why a rule exists.
 **Domain:** code
 **Filed by:** analyst, analysis `260818-0715`
 **Cross-references:** `shared/analyses/260818-0715-preventing-fusion-internal-identifiers-from-reaching-a-consuming-project.md` finding 6 (the criterion this site is measured against), `shared/issues/260817-2110_c_the-hook-sentences-cite-fusions-own-workbench-ids-and-a-fusion-commit-hash-into-a-consuming-projects-session.md` (the incident, a different channel), `shared/issues/260817-2131_o_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md` (the gate, which does not and should not reach this surface)
+
+---
+**Reconciliation 260818-0814** (reconciler, domain `code`, HEAD `f3a3565`). Still open, and re-read
+rather than assumed. `agents/orchestrator.md:866` carries the bullet verbatim, and `:811` and `:819`
+carry the two rationale occurrences, all three at the exact line numbers filed. No commit in this
+session's range `1dc062d..f3a3565` touched `agents/`, so none of the three options was taken and
+none was foreclosed. The three sites are the only occurrences of `260810-1205` in `agents/`;
+`agents/coderev.md:95`, `agents/ontorev.md:88` and `agents/orchestrator.md:571`, `:742` name it too,
+each in rationale rather than in an instruction about what to tell a user, which is the criterion
+this record is cut on.
+
+One citation in this record's own `Cross-references:` no longer resolves: it names
+`shared/issues/260817-2131_o_…`, and that record closed this session and is now
+`…260817-2131_c_…`. It is an instance of the class `shared/issues/260812-1720_o_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`
+records — re-verified open at HEAD, the lint's `surface()` still walks the shipped tree only — and
+decision `shared/decisions/260816-0119_a_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`
+answered that class option 1: nothing new carries the obligation. The body is left unedited on that
+basis rather than silently repaired. Marker stays `_o_`.
+Log: `shared/history/260818-0814-reconciliation.md`.

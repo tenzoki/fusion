@@ -545,7 +545,16 @@ function scanHeadingAnchors(
 // is the largest of the three and moves the count by nothing, because its
 // replacement text re-spends the citations it inherited rather than adding any.
 // anchors and records did not move.
-const BASELINE = { paths: 1124, anchors: 139, records: 94 };
+// Re-approved 2026-08-18 — the exempt-surface split in
+// `rules/fusion-workbench-conventions.md` `## Project language` (issue
+// `shared/issues/260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md`).
+// paths 1124 -> 1125 and records 94 -> 95, both in that one file and measured by
+// reverting it and rerunning this gate. The path is a second `README.md`: the
+// replacement states the criterion twice, once for a project that ships nothing
+// onward and once for this repository, and names README on both sides. The record
+// is the citation of `shared/decisions/260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`,
+// whose third constraint the new closing paragraph satisfies. anchors did not move.
+const BASELINE = { paths: 1125, anchors: 139, records: 95 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the

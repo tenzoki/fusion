@@ -79,3 +79,14 @@ answered record `260815-2109` (coverage is advisory, the gap is named in the clo
 answered-but-unrealised — its option 3, filtering the uncovered set to commits touching shipped
 files, is absent from `hooks/lib/review-coverage.ts` at HEAD — so the mechanism half of this
 question has no partial answer standing in for it either. Marker stays `_o_`.
+
+---
+**Reconciliation 260818-0814** (reconciler, domain `code`, HEAD `f3a3565`). Still open and
+unanswered. Searched: no analysis in `shared/analyses/` addresses plan-stated preconditions — the
+one report this session added is on identifier containment; no planning file names
+`## Where this Circle stops` as a subject; no other decision record answers it. The adjacent
+`260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` is still
+answered-but-unrealised — its option 3, filtering the uncovered set to commits touching shipped
+files, is absent from `hooks/lib/review-coverage.ts` at HEAD, which this session's own
+`verdict=uncovered` over `f3a3565` demonstrates. Marker stays `_o_`.
+Log: `shared/history/260818-0814-reconciliation.md`.

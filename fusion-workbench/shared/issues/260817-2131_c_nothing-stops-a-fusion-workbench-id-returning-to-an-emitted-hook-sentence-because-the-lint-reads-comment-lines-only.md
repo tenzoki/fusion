@@ -150,3 +150,6 @@ The shape-blacklist wording in `## What the gate should be` was corrected in pla
 record was still open, so the body was edited rather than footnoted). Recommendation 3 of the
 analysis — the convention in a rule file — was not chosen by the user and is out of scope here;
 `260807-2153` stays open. The static shipped surface is deliberately ungated and must not be swept.
+
+---
+Revised by: `f3a3565` (via `shared/issues/260818-0745_c_the-registry-completeness-parse-misses-an-aliased-and-a-namespace-import-so-a-named-builder-still-escapes.md`) — the `Resolved:` note's companion-assertion guarantee, "a third builder wired into the funnel fails the suite until it is registered", did not hold as written: the parse kept the local alias and discarded the imported name, so `import { budgetSentence as budgetLine }` and `import * as rc from "./lib/…"` both left the suite green with an unregistered builder in place. The defect stays closed — the gate itself was never in question — and the guarantee is true at HEAD, where the parse reads the imported half and refuses a relative namespace import outright. Also stale rather than reversed: the note's "273 lines" is the file at `33645a2`; it is 425 at `f3a3565`.

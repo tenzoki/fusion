@@ -5,8 +5,8 @@ The exempt-surface list is written from the plugin repo's position but is emitte
 **Severity:** Medium
 **Domain:** code
 **Filed by:** coderev, review of `b246996..HEAD` (the two-language declaration split)
-**Affects:** `rules/fusion-workbench-conventions.md:204-213` (`## Project language`, the exempt-surface block)
-**Cross-references:** `fusion-workbench/shared/decisions/260807-1515_i_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md` — its third constraint required naming this repository's double role; `bin/fusion-rules:387` — the unconditional emission that puts this text in front of every agent in every project
+**Affects:** `rules/fusion-workbench-conventions.md` `## Project language`, the exempt-surface block (`:259-268` at `f3a3565`, the commit this was fixed against; it stood at `:204-213` when filed)
+**Cross-references:** `fusion-workbench/shared/decisions/260807-1515_i_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md` — its third constraint required naming this repository's double role; `bin/fusion-rules:385` — the unconditional emission that puts this text in front of every agent in every project
 
 ---
 
@@ -15,7 +15,7 @@ The exempt-surface list is written from the plugin repo's position but is emitte
 The new block reads:
 
 ```
-rules/fusion-workbench-conventions.md:204
+rules/fusion-workbench-conventions.md:259 (at f3a3565; `:204` when filed)
   **Exempt surfaces — English in every project, whatever either line says.** These ship to
   consuming projects of every language, so one project's declaration cannot govern them:
 
@@ -32,7 +32,7 @@ rules/fusion-workbench-conventions.md:204
 **every** project:
 
 ```
-bin/fusion-rules:387
+bin/fusion-rules:385
   emit_if_exists "$PLUGIN_RULES_DIR/fusion-workbench-conventions.md"
 ```
 
@@ -40,7 +40,7 @@ So a German consuming project's agents read this list and apply it to *their own
 a consuming project:
 
 - `rules/` is the project's own fusion-agent rule directory — the second search layer in
-  `bin/fusion-rules:464`. It ships nowhere.
+  `bin/fusion-rules:461`. It ships nowhere.
 - `agents/` and `skills/` do not exist as plugin directories at all; if the consumer has
   such paths they are unrelated.
 - `README.md` and `docs/` are the consumer's own documents, written for the consumer's own
@@ -114,3 +114,44 @@ exists and is still cited from the rule at `:213`.
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The quoted block stands verbatim at `rules/fusion-workbench-conventions.md:259` and is still emitted unconditionally at `bin/fusion-rules:385`, so every consuming project loads it. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+
+**Resolved:** 2026-08-18, `coder`. The exempt-surface block in
+`rules/fusion-workbench-conventions.md` `## Project language` is split in two by who the text
+reaches, per the `## Fix direction` above and per decision
+`shared/decisions/260818-0814_*_what-covers-the-plugin-repo-shaped-exempt-surface-record-now-that-the-convention-rule-was-not-chosen.md`
+option 2 — an ordinary defect against the wording of one list, with no rule file created.
+
+**What the text now says.** A **universal** group carrying the two bullets that survived on their
+own merits — code and code comments, and hook and CLI operator strings — with the
+`hooks/session-start.ts` `## Why the message is English` citation kept as the worked case for the
+second. Then a **conditional** group stated as a criterion rather than as paths: *text a project
+ships to consumers of unknown language is English*, with both sides of it spelled out, so a project
+that ships nothing onward reads that its declarations govern its whole tree, its own `rules/` and
+its own `README.md` included. The sentence "These ship to consuming projects of every language" is
+gone as a justification, and appears only inside the closing paragraph as the thing that was wrong.
+
+**The double role is named rather than passed over**, which is the third constraint of
+`shared/decisions/260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`. A closing
+paragraph says fusion's own repository holds both roles at once — source of the shipped rule text
+and a `de` project with its own workbench — and that the criterion *divides* it rather than
+exempting it whole: the rule files, agent prompts, skill bodies, `README.md` and `docs/` it ships
+are English, its workbench artifacts follow its declarations like any other project's. The fourth
+bullet of the four-way split at the head of the section was reworded to match, so the pointer into
+this block no longer promises a single list.
+
+**Cost.** `rules/fusion-workbench-conventions.md` 56 810 → 58 103 bytes (+1 293). It is always-on,
+so every agent pays it on every dispatch. The universal-core growth bound in
+`hooks/lib/__tests__/rules-emission-golden.test.ts` passes; the golden fixture was regenerated by
+its documented command and moved only this file's size and the per-agent totals.
+
+**Citations verified at `f3a3565`** and corrected above where they had drifted: the emission is
+`bin/fusion-rules:385` (this record said `:387`, the 260808 pass said `:404`); the project-rules
+search layer is `bin/fusion-rules:461` (this record said `:464`, the 260808 pass said `:481`);
+`PROJECT_RULES_DIR="./rules"` is `:367` (the 260808 pass said `:386`). The two numbers inside the
+**Reconciliation 260808-0030** note are left as that pass wrote them and are superseded by this
+paragraph — they are a dated record of that measurement, not live pointers.
+`hooks/session-start.ts` `## Why the message is English` exists at `hooks/session-start.ts:73`.
+
+**Verification:** `npm test` in `hooks/`.

@@ -75,7 +75,7 @@
   portfolio-citation-form-lint.test.ts 171
   provenance-header-lint.test.ts 449
   record-counts-measurement.test.ts 521
-  reference-resolution-lint.test.ts 991
+  reference-resolution-lint.test.ts 1000
   review-coverage-mandate.test.ts 336
   review-coverage.test.ts 819
   rules-emission-golden.test.ts 1159
@@ -85,4 +85,4 @@
   staging-drift.test.ts 660
   surface-growth-bound.test.ts 628
   turn-budget-lint.test.ts 524
-  total 18344
+  total 18353

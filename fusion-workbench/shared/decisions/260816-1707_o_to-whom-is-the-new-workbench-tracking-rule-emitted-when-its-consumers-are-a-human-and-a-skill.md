@@ -78,3 +78,12 @@ not among them, so the move this record blocks has not been made. No answer exis
 That record is itself answered-but-unrealised for exactly this reason, which the pass records as a
 blocking pair rather than as two independent items: neither can move until this question is
 answered. Marker stays `_o_`.
+
+---
+**Reconciliation 260818-0814** (reconciler, domain `code`, HEAD `f3a3565`). Still open. Searched and
+not assumed: `rules/` holds twelve files at HEAD and no `workbench-tracking.md` among them; no file
+in `shared/analyses/` (seventeen reports, the new one being on identifier containment) addresses
+rule emission or this split; `shared/planning/` holds three files, all `_c_`; no other decision
+record answers it. The blocking pair with
+`260816-0711_a_where-does-the-tracked-workbench-split-live-now-that-the-home-it-was-meant-to-move-to-is-gone.md`
+stands unchanged. Marker stays `_o_`. Log: `shared/history/260818-0814-reconciliation.md`.
