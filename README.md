@@ -23,7 +23,7 @@ fusion --uninstall  # remove ~/.fusion and the launcher
 fusion --where      # print the install dir
 ```
 
-Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v10.0.2` to pin a release — every release since v5.5.0 is tagged), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN` (launcher dir, default `~/.local/bin`).
+Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v10.1.0` to pin a release — every release since v5.5.0 is tagged), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN` (launcher dir, default `~/.local/bin`).
 
 **Upgrading from v9?** v10 removes a file every consuming project has at its root: `fusion-guard.json` is no longer read, and `fusion.json` replaces it. A Turn budget left in the old file is silently not applied, so move it across before deleting anything. `docs/upgrading-to-v10.md` is the two-check migration.
 
