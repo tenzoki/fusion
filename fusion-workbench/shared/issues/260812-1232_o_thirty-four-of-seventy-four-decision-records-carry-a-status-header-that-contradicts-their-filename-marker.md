@@ -88,3 +88,22 @@ Also seen: 260816-1330 by coderev — re-measured at `6049d3e`: 39 of 100 record
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: Re-derived rather than re-asserted. Over the shared decision store alone, 18 of 56 records carry a `**Status:**` that disagrees with their marker; over every decision store including the Circles, 37 of 106. No lint enforces agreement: `hooks/lib/__tests__/marker-format-lint.test.ts` scopes to `agents/*.md` and `skills/*/SKILL.md` and never reads the workbench. One record was corrected in this pass as a side effect of a marker walk (`260814-2017`), which does not touch the class. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+**The question this record reserved is now filed as a decision, 2026-08-18.**
+`shared/decisions/260818-2212_o_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`
+carries the two candidate fixes this record named, plus the third the Circle-record version of the
+question considered, re-measured at HEAD `53b6862`: **40 of 94** records disagree (20 of 51 shared,
+20 of 43 in Circle stores), and a naive comparison that counts four correct-but-annotated headers
+reports 44.
+
+The trigger was the Circle record's identical field being removed on the same day
+(`260815-2312`, option 1, commit `95bebe1`), which is what made the reservation worth discharging
+rather than renewing. **This record stays open**: the drift it measures is not resolved by filing a
+question about it, and it is the record any sweep or lint will close.
+
+Two things the new decision adds that this record did not have. The change surface is **two rule
+files**, not the thirteen a grep for the field name returns, because four other artifact kinds carry
+a `**Status:**` field of their own with different vocabularies. And `260815-2312` itself — the
+decision that removed the field from the Circle record — is one of the 40, reading `answered` under
+an `_i_` marker.
