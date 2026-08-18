@@ -100,3 +100,22 @@ edit. Commit `b3de0ba` keeps the false sentence and is not rewritten.
 
 Verified after the edit: the correction block is present, the original bullet is unchanged, and both
 records now state the same narrow claim in the same terms.
+
+**Correction to this record's own Evidence section, appended by the orchestrator after a narrow
+verification pass, and reported by the reconciler that wrote it.** Two figures above are wrong, in
+the same lines-versus-occurrences way the record was written to catch.
+
+`git grep -c` counts matching **lines**, not occurrences. So *"`git grep -c -- '--only'` returns 35
+files summing to 112 occurrences"* mixes the two: at `8fa3286` those per-file counts sum to **87
+lines**, and 112 is the `grep -o` occurrence figure for the same tree. Both numbers are real, they
+measure different things, and the sentence attributes one to the command that produced the other.
+
+The same conflation makes the second: the 14-row table below, presented as *"14 files summing to 37
+occurrences"*, sums to **26**. Twenty-six is the line count outside the workbench; 37 is the
+occurrence count. The table is a line-count table under an occurrence-count total, and it is visibly
+wrong on its own page.
+
+The finding this record makes is untouched. `--only` is the cleanup skill's documented flag, it is in
+14 shipped files, and the closed record's claim of one occurrence tree-wide is false under either
+unit. Only the units of the two supporting figures were wrong. Filed and closed as
+`shared/issues/260818-2249_c_*`.

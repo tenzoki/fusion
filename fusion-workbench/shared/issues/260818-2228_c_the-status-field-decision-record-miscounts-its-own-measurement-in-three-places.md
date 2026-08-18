@@ -115,3 +115,17 @@ standing in for.
 Re-measured after the edits, with the corrected criterion: 39 contradicting, 5 correct-but-non-template,
 50 exact, over the 94 records that existed at `53b6862`. The finding, the three options and the
 recommendation are unchanged, as this record predicted.
+
+**Correction to the resolution note above, same session.** Point 1 overstated. "The criterion is now
+stated once" held; "and used consistently" did not. Three figures elsewhere in the record were still
+on the criterion the edit replaced: the trend paragraph closed with "40 of 94 today" against a table
+reading 39, option 2's con argued from "40 records", and the constraints section still split the
+population "20/20". A narrow verification pass over `b46756e` found all three
+(`shared/issues/260818-2248_c_*`), and they are now corrected: 39 in the trend, **44** in option 2
+with the reason stated — a lint that re-derives the expected word demands the word exactly, so it
+fails on the 39 wrong states plus the 5 right states in another form — and 20 shared against 19
+Circle in the constraints.
+
+The lesson is in the shape rather than the arithmetic. Changing a criterion changes every figure
+derived from it, and the three that lagged were the three furthest from the table where the criterion
+is defined. Nothing checks that.

@@ -63,7 +63,8 @@ arithmetic, which is what put the `260718-2150` record among the 39; the correct
 
 **The trend across five measurements of the same store, each re-derived rather than carried
 forward:** 34 of 74 (2026-08-12), 35 of 86 (2026-08-14), 39 of 100 (2026-08-16, coderev), 37 of 106
-(2026-08-17, reconciler), 40 of 94 today. The population moves as records are archived and filed;
+(2026-08-17, reconciler), 39 of 94 today. The five earlier figures are each that pass's own
+criterion, which was the whole-field comparison; on that criterion today's figure is 44. The population moves as records are archived and filed;
 the ratio has not improved in six days, across at least three hand corrections.
 
 **One instance is worth naming on its own.** `260815-2312`, the decision that removed this very
@@ -102,8 +103,10 @@ files that mention a field of that name.
      hook-test surface is 1 972 lines of 2 500, re-derived at `8fa3286`: the per-file baseline in
      `surface-growth-bound.test.ts` sums to 17 875 and the surface measures 18 403.
    - Cons: does not shrink the surface, which is what `260811-1734` is open to do. A hard gate fails
-     immediately on 40 records nobody intends to edit, so it needs either a sweep first or a
-     grandfather clause, and a grandfather clause is a second rule about the same field.
+     immediately on **44** records nobody intends to edit — the 39 that name the wrong state plus the
+     5 that name the right one in another form, since a lint re-deriving the expected word demands
+     the word exactly — so it needs either a sweep first or a grandfather clause, and a grandfather
+     clause is a second rule about the same field.
 3. **Keep the field and declare it decorative in the template.**
    - Pros: one paragraph, no migration.
    - Cons: leaves a field that reads as authoritative and is not. `260815-2312` judged this the worst
@@ -113,7 +116,8 @@ files that mention a field of that name.
 ## Constraints
 
 - Whatever is chosen holds for **every** decision store, the Circle ones included. The measurement
-  splits 20/20 between shared and Circle stores, so a shared-only answer covers half the population.
+  splits 20 shared and 19 Circle, so a shared-only answer leaves just under half the population
+  untouched.
 - The five artifact kinds sharing the field name must not be touched by a change aimed at this one.
 - This project does not rewrite existing artifacts retroactively. Option 1 needs a stated position on
   the 94 records that carry the field; the Circle precedent's position was to leave them exactly as

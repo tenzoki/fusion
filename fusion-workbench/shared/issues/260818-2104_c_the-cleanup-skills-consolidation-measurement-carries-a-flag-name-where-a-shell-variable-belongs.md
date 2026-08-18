@@ -114,14 +114,23 @@ edited, because the record of an error is worth more than a tidy file.
 
 What was measured was the **broken `awk` form**, `print $NF "\t" --only`, and of that form the claim
 held when it was written. The bare token `--only` is the cleanup skill's own documented
-command-line flag: `git grep -c -- '--only'` returns 35 tracked files, five of the occurrences in
-`skills/cleanup/SKILL.md` itself, in its frontmatter hint, its flag table and Step 8's own closing
-sentence. A reader who took the bullet at face value would conclude the flag does not exist.
+command-line flag: at `8fa3286`, `git grep -- '--only'` matched 35 tracked files, five of the
+matching lines in `skills/cleanup/SKILL.md` itself — eight occurrences, since one of those lines
+carries four — in its frontmatter hint, its flag table and Step 8's own closing sentence. A reader
+who took the bullet at face value would conclude the flag does not exist.
 
 The narrow claim is also no longer exactly true of the broken form, and was not at the moment of
-writing: that form now stands three times across the tree, twice in this record (the quoted evidence
-at line 18 and the pickaxe invocation in the note above) and once in `260818-2210`, which quoted it
-as evidence. All three are quotations inside records. No copy of `skills/cleanup/SKILL.md` carries it.
+writing: at `8fa3286` that form stood at three positions across the tree, twice in this record (the
+quoted evidence at line 18 and the pickaxe invocation in the note above) and once in `260818-2210`,
+which quoted it as evidence. All three are quotations inside records. No copy of
+`skills/cleanup/SKILL.md` carries it.
+
+**Both figures name the HEAD they were taken at, and that is the point rather than a formality.**
+This block sits inside the tree it measures, so writing it moved both counts: at `b46756e`, the
+commit that carries this paragraph, the same two measurements read 37 files and nine positions. A
+figure about `--only` stated in the present tense falsifies itself the moment it is committed. Filed
+as `shared/issues/260818-2249_c_*`, which is what established that a fourth correction would have
+moved them again.
 
 Filed as `shared/issues/260818-2227_c_the-correction-note-that-closed-a-fabricated-measurement-carries-a-false-universal-of-its-own.md`,
 found by the reconciler at Phase 3 of the same session that wrote the error. Commit `b3de0ba`

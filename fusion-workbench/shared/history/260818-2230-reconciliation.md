@@ -158,3 +158,97 @@ None found this pass.
 The three-edge verdict for this session is written to
 `shared/history/260818-2124-orchestrator-session.md` `## Coherence`, which is where the orchestrator
 reads it. Aggregate: **review-needed**, Artifact↔Grounding flagged, recommendation *revise Artifact*.
+
+---
+
+# Turn 2 — narrow verification of `b46756e`
+
+Dispatched to check one commit and nothing else: whether the corrections this reconciler asked for in
+`260818-2227` and `260818-2228` are correct. No workbench survey, no re-run of the Turn-1 pass, no
+plans opened. Every figure below was re-derived from git rather than read off the records.
+
+## Verdict
+
+The substance of both corrections is right. Every total, every breakdown row and every derived
+figure reproduces exactly. Two defects remain, both in the *arithmetic around* the corrections rather
+than in the corrections themselves, and one of them is this reconciler's own from Turn 1.
+
+| Checked | Result |
+|---|---|
+| Decision record totals — 39 (20/19), 5, 39 + 5 = 44, five rows summing to 39 | Holds, exactly |
+| Criterion stated once and used consistently | **Fails** — three figures still on the old criterion |
+| `260718-2150_i_*` named as the fifth and quoted in its own form | Holds |
+| "five measurements", "fourteen files" | Holds |
+| Head-room 1 972 of 2 500, baseline 17 875, surface 18 403 at `8fa3286` | Holds, all three |
+| Decision record's marker and `**Status:**` untouched | Holds |
+| `260818-2104`: original bullet present and unedited, narrow claim correct | Holds |
+| `260818-2104`: 35 files, five occurrences, broken form at three positions | **Fails at `b46756e`**, holds at `8fa3286` |
+| `260818-2227` `Resolved:` note | Holds |
+| `260818-2228` `Resolved:` note | Point 1 overstates; points 2-4 and the closing re-measurement hold |
+| `260812-1232` correction note: 39/5/fourteen, record still open | Holds |
+
+## What was re-derived
+
+**The decision-record measurement, from scratch at `53b6862`.** `git ls-tree -r --name-only` over
+`shared/decisions/` and `circles/*/decisions/` returns 94 paths, 51 shared and 43 Circle. Reading the
+marker out of each filename and the first `**Status:**` line out of each body: 44 headers are not the
+exact template word; 5 of those still name the correct state — `260803-1419_i_*`, `260803-1803_i_*`,
+`260803-2338_i_*` and `260809-2004_i_*` annotated, `260718-2150_i_*` in marker form — split 4 Circle
+and 1 shared; leaving **39 disagreeing, 20 shared and 19 Circle**. The five breakdown rows confirm
+against ground truth individually: 14 `_i_`/`answered`, 13 `_i_`/`open`, 8 `_a_`/`open`, 3
+`_d_`/`open`, 1 `_s_`/`open`. 39 + 5 = 44 and 39 + 5 + 50 exact = 94, which is the closure's own
+final line.
+
+**The head-room, replicating the instrument rather than trusting its comment.** The hook-test surface
+is enumerated by `readdirSync(here, {recursive:true})` filtered to `.ts` and measured in newline
+count. At `8fa3286` that is 40 files totalling **18 403** lines. `TEST_LINE_BASELINE` holds 39
+entries summing to **17 875**, and every one of them is still present, so `growth()`'s `floor` — which
+sums the baseline only over files that exist — is also 17 875. The one file with no baseline entry,
+`sentence-identifier-containment.test.ts` at 425 lines, contributes 0 by construction. Budget
+17 875 + 2 500 = 20 375, so head-room is 20 375 − 18 403 = **1 972**. All three numbers as stated.
+
+**The fourteen files.** `git grep -l '\*\*Status:\*\*'` over exactly the scope the record names
+(`agents/`, `skills/`, `rules/`, `templates/`, `hooks/lib/__tests__/`) returns 14 at `53b6862` and
+the same 14 at HEAD: nine agent prompts, `skills/help`, `skills/next`, two rule files, and
+`reference-resolution-lint.test.ts`.
+
+**The untouched header.** The decision record did not exist at `53b6862` — it was filed at `8fa3286`.
+Against that commit its first ten lines are byte-identical at `b46756e`, filename marker included,
+and the commit touches no other decision record.
+
+**The `--only` figures.** `git grep -c -- '--only'` returns 35 files at `8fa3286` and 37 at
+`b46756e`; the broken `awk` form stands at 3 positions at `8fa3286` and 9 at `b46756e`. Everything
+above the appended block in `260818-2104` is byte-identical between the two commits, and the quoted
+bullet is verbatim and is genuinely the last of the measurement list.
+
+## Findings filed
+
+**`shared/issues/260818-2248_o_the-status-field-record-still-carries-three-figures-on-the-criterion-it-replaced.md`**
+— the criterion is stated once at lines 57-62 and is the right one, but three figures elsewhere in
+`260818-2212` were not moved with it: line 66 closes the trend paragraph with "40 of 94 today"
+against a table reading 39; line 105 argues option 2 from "40 records", a figure neither the stated
+criterion (39) nor option 2's own exact-word lint (44) produces; line 116 constrains from a "20/20"
+split the table now gives as 20/19. Consequently `260818-2228`'s `Resolved:` point 1, "stated once
+and used consistently", is half true — stated once holds, used consistently does not.
+
+**`shared/issues/260818-2249_o_the-only-correction-block-quotes-two-measurements-without-the-head-they-were-taken-at-and-both-are-false-at-the-commit-that-carries-them.md`**
+— the correction block on `260818-2104` states its figures in the present tense and names no HEAD,
+while the reconciliation note directly above it names `8fa3286`. Both figures moved between that
+commit and the one the block ships in, and both moved *because the block was written*: 35 files → 37
+(the two added are `260818-2227` and this log), three positions → nine (six added by the same
+commit). At `8fa3286` both are exactly right. The record also carries a lines-versus-occurrences
+conflation: `git grep -c` counts matching lines, so "five occurrences in `skills/cleanup/SKILL.md`"
+is five lines against eight occurrences.
+
+**Owned.** The conflation did not originate in the block — it originated in `260818-2227`, which this
+reconciler wrote at Turn 1. That record says `git grep -c` "returns 35 files summing to 112
+occurrences" when those counts sum to 87 and 112 is the `grep -o` figure, and it prints a 14-row
+table summing to 26 beneath the claim that it sums to 37. The second is visibly wrong on its own
+page. The block inherited both from me and is the smaller error of the two.
+
+## What this pass did not touch
+
+No marker was moved. Nothing in `260818-2212` was edited — the three stale figures are reported, not
+corrected, because this is a tracking pass and the record is a live decision. No second `## Coherence`
+section was appended to `shared/history/260818-2124-orchestrator-session.md`; the Turn-1 verdict
+stands and the orchestrator records the Turn-2 outcome in its own Phase 4 sections.
