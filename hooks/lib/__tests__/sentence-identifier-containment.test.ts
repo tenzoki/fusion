@@ -11,9 +11,19 @@
  *
  *     identifiers(builder(input)) ⊆ identifiers(input)
  *
- * Nothing authored in the source may contribute an identifier. No allowlist and
- * no exemptions: a new `parts.push` and a new report field are both covered on
- * the day they are written.
+ * What the relation catches is an identifier a BUILDER authors — a `parts.push`
+ * literal, which is how the incident happened. It catches every one of those,
+ * with no allowlist and no exemptions, on the day it is written. It does NOT
+ * catch an identifier authored into a REPORT FIELD: `supplied()` draws the
+ * permitted set from the whole input, so a hand-written `StagingRow.why`,
+ * `StagingReport.why` or `CoverageReport.why` travels inside the input and is
+ * contained by construction. That is latent and not live — no `why` literal in
+ * either module carries a stamp or a hash today, and neither builder emits a
+ * `why` field — so a builder that starts emitting one needs its literals read by
+ * hand (issue `260818-0746`). Narrowing `supplied()` to the project-derived
+ * fields is the per-field allowlist this design refused: it would have to be
+ * extended on the day a field is added, which is the failure the gate exists to
+ * survive.
  *
  * NOT a blacklist on identifier shape — `260817-2131`'s own proposal, and it
  * cannot be run: `coverageSentence()` emits `since`, `head` and one short hash
@@ -24,14 +34,30 @@
  * identifier's origin, not of its text.
  *
  * WHAT IT DOES NOT COVER. Branches nobody drives, hence every branch below and
- * the two silent ones included; builders the registry does not name, hence the
- * completeness assertion at the foot; the other composed channels (config
+ * the two silent ones included; an identifier authored into a report field
+ * rather than by a builder, stated above; the other composed channels (config
  * advisories, the SessionStart banner, `bin/` helper stderr, the monitor HTML);
  * identifiers that are neither stamp nor hash, such as a Circle slug in prose;
  * and a 7+ character hash drawn entirely from `a`-`f`, excluded so English words
- * spelled in hex ("defaced") are not read as commits, about 1 in 700. Record
- * paths and Circle directory names need no class of their own — both carry a
- * stamp by the naming convention.
+ * spelled in hex ("defaced") are not read as commits — 0.375^7, about 1 in 960
+ * for the seven-character short hash `git log %h` yields here, and rarer at every
+ * greater length. Record paths and Circle directory names need no class of their
+ * own — both carry a stamp by the naming convention.
+ *
+ * HOW FAR THE COMPLETENESS ASSERTION AT THE FOOT REACHES. It reads the static
+ * `import` declarations of `hooks/tracker.ts` alone, and it keys on the IMPORTED
+ * name, so a builder imported plainly or under any alias is named — one measured
+ * case per form, at the foot. What it cannot see is below, and it is loud about
+ * only the first of them. A NAMESPACE import (`import * as rc from
+ * "./lib/review-coverage.js"`) binds its symbols at the call sites and not in the
+ * import, so a parse of this kind cannot resolve it to a set of symbols at all;
+ * the assertion REFUSES that form rather than reading it, for a relative module,
+ * which is the only kind that can carry a fusion builder. A builder reached by
+ * `require`, by a dynamic `import()` or through a re-export is invisible, and so
+ * is one that reaches the model without passing through `hooks/tracker.ts`. And
+ * membership still rests on the naming convention: a builder not named
+ * `*Sentence` escapes the set, which is the residual the analysis states
+ * (issue `260818-0745`).
  *
  * The static shipped surface (`rules/`, `agents/`, `skills/`) is deliberately
  * OUT of scope and must not be swept: those citations are provenance addressed
@@ -250,24 +276,150 @@ describe("hook sentences carry only the identifiers their input supplied", () =>
   });
 });
 
+/* ---------------------------------------------------------------- *
+ * Completeness: does the registry name every builder that ships?
+ * ---------------------------------------------------------------- */
+
+/** A named-import block, `type` prefix and all: `import { a, b as c } from "…"`. */
+const IMPORT_BLOCK = /import\s*(?:type\s*)?\{([^}]*)\}\s*from/g;
+
+/**
+ * A namespace import of a RELATIVE module: `import * as rc from "./lib/x.js"`.
+ * Relative because that is the only module class that can export a fusion
+ * builder — the hook bundle takes no runtime import from a package, and a
+ * `node:` builtin exports none either — so a namespace import of `node:path` is
+ * not this check's business and does not trip it.
+ */
+const NAMESPACE_IMPORT = /import\s*\*\s*as\s+([A-Za-z_$][\w$]*)\s+from\s*["'](\.[^"']*)["']/g;
+
+const BUILDER_NAME = /^[A-Za-z_$][\w$]*Sentence$/;
+
+/**
+ * The `*Sentence` symbols a source imports by name.
+ *
+ * It is the half BEFORE `as` that counts: `x as y` imports `x` and binds it
+ * locally as `y`, and REGISTRY is keyed by the exported name. Reading the local
+ * half instead — which this did until issue `260818-0745` — erased from the set
+ * every builder whose alias did not itself end in `Sentence`, silently, which is
+ * two of the three legal import forms defeating the half of the gate whose whole
+ * job is to survive its author.
+ */
+function importedSentenceBuilders(source: string): string[] {
+  const out = new Set<string>();
+  for (const block of source.matchAll(IMPORT_BLOCK)) {
+    for (const raw of block[1].split(",")) {
+      const imported = raw.trim().split(/\s+as\s+/)[0].trim();
+      if (BUILDER_NAME.test(imported)) out.add(imported);
+    }
+  }
+  return [...out];
+}
+
+/**
+ * The completeness fault in a tracker source, or null when there is none. The
+ * source is a PARAMETER rather than a read of the live file so that the cases
+ * below can drive it with each import form it claims to read — the assertion is
+ * then measured against a builder that is really missing, not asserted.
+ */
+function completenessFault(source: string, registry: string[]): string | null {
+  const namespaces = [...source.matchAll(NAMESPACE_IMPORT)].map((m) => `\`${m[1]}\` from "${m[2]}"`);
+  if (namespaces.length > 0) {
+    return [
+      "",
+      `\`hooks/tracker.ts\` imports ${namespaces.join(", ")} as a NAMESPACE, and this check cannot`,
+      "read it. The symbols behind `import * as` are named at the call sites, not in the import, so",
+      "a parse of this kind cannot resolve the form to a set of symbols at all — a builder reached",
+      "that way would never enter the set below and the containment gate above would never run",
+      "against it. The form is REFUSED here rather than passed over in silence.",
+      "",
+      "Import the builders by name (any alias is fine — the imported half is what is read), or",
+      "teach this check to read the imported module's exports.",
+    ].join("\n");
+  }
+  const missing = importedSentenceBuilders(source)
+    .filter((s) => !registry.includes(s))
+    .sort();
+  if (missing.length === 0) return null;
+  return (
+    `\n\`hooks/tracker.ts\` imports ${missing.join(", ")}, which this file's REGISTRY does not name, ` +
+    `so the containment gate above never runs against ${missing.length === 1 ? "it" : "them"}.\n` +
+    "Add an entry with one branch per conditional path, the silent ones included. This gate is only\n" +
+    "as complete as the set it knows about, which is why that set is not maintained by memory."
+  );
+}
+
 describe("the registry names every sentence builder the tracker imports", () => {
+  const registry = Object.keys(REGISTRY);
+
   it("registry === the *Sentence symbols imported by hooks/tracker.ts", () => {
-    const imported = new Set<string>();
-    for (const block of readFileSync(trackerPath, "utf-8").matchAll(/import\s*(?:type\s*)?\{([^}]*)\}\s*from/g)) {
-      for (const raw of block[1].split(",")) {
-        const sym = raw.trim().split(/\s+as\s+/).pop()?.trim() ?? "";
-        if (/^[A-Za-z_$][\w$]*Sentence$/.test(sym)) imported.add(sym);
-      }
-    }
-    const missing = [...imported].filter((s) => !(s in REGISTRY)).sort();
-    if (missing.length > 0) {
-      throw new Error(
-        `\n\`hooks/tracker.ts\` imports ${missing.join(", ")}, which this file's REGISTRY does not name, ` +
-          `so the containment gate above never runs against ${missing.length === 1 ? "it" : "them"}.\n` +
-          "Add an entry with one branch per conditional path, the silent ones included. This gate is only\n" +
-          "as complete as the set it knows about, which is why that set is not maintained by memory.",
-      );
-    }
-    expect([...imported].sort()).toEqual(Object.keys(REGISTRY).sort());
+    const source = readFileSync(trackerPath, "utf-8");
+    const fault = completenessFault(source, registry);
+    if (fault !== null) throw new Error(fault);
+    expect(importedSentenceBuilders(source).sort()).toEqual([...registry].sort());
+  });
+});
+
+describe("the completeness check sees a third builder in every import form it claims", () => {
+  // The shape of `hooks/tracker.ts`'s import section, with one slot for the
+  // third builder. `budgetSentence` is deliberately absent from REGISTRY, which
+  // is exactly how issue `260818-0745` measured the defect: a builder correctly
+  // named by the convention, imported in a legal form, and unregistered.
+  const trackerLike = (third: string) =>
+    [
+      'import { basename, resolve, sep } from "node:path";',
+      'import { emitEvent } from "./lib/events.js";',
+      "import {",
+      "  coverageSentence,",
+      "  measureReviewCoverage,",
+      '} from "./lib/review-coverage.js";',
+      'import { headMoved, stagingSentence } from "./lib/staging-drift.js";',
+      third,
+    ].join("\n");
+
+  const registry = Object.keys(REGISTRY);
+  const fault = (third: string) => completenessFault(trackerLike(third), registry);
+
+  it("control: the same source without the third builder is clean", () => {
+    // Without this, every case below could be red for a reason that has nothing
+    // to do with the form it is testing.
+    expect(fault("")).toBeNull();
+    expect(importedSentenceBuilders(trackerLike("")).sort()).toEqual([...registry].sort());
+  });
+
+  it("plain named import", () => {
+    const msg = fault('import { budgetSentence } from "./lib/budget.js";');
+    expect(msg).toContain("imports budgetSentence, which this file's REGISTRY does not name");
+  });
+
+  it("aliased import whose alias drops the suffix", () => {
+    // The form measured green before the fix: `.split(/\s+as\s+/).pop()` kept
+    // `budgetLine`, which fails the `*Sentence` test, so the symbol vanished.
+    const msg = fault('import { budgetSentence as budgetLine } from "./lib/budget.js";');
+    expect(msg).toContain("imports budgetSentence, which this file's REGISTRY does not name");
+  });
+
+  it("aliased import whose alias keeps the suffix, and it is the IMPORTED name that is named", () => {
+    const msg = fault('import { budgetSentence as spendSentence } from "./lib/budget.js";');
+    expect(msg).toContain("imports budgetSentence,");
+    expect(msg).not.toContain("spendSentence");
+  });
+
+  it("multi-line block, inline type specifier beside the builder", () => {
+    const msg = fault(
+      ["import {", "  type BudgetReport,", "  budgetSentence,", '} from "./lib/budget.js";'].join("\n"),
+    );
+    expect(msg).toContain("imports budgetSentence,");
+    expect(msg).not.toContain("BudgetReport");
+  });
+
+  it("namespace import of a relative module is refused, not read", () => {
+    const msg = fault('import * as budget from "./lib/budget.js";');
+    expect(msg).toContain("as a NAMESPACE, and this check cannot");
+    expect(msg).toContain("cannot resolve the form to a set of symbols at all");
+    expect(msg).toContain("REFUSED here rather than passed over in silence");
+  });
+
+  it("namespace import of a package or builtin is not this check's business", () => {
+    expect(fault('import * as nodePath from "node:path";')).toBeNull();
   });
 });
