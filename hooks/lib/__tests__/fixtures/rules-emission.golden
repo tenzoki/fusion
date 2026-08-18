@@ -92,9 +92,9 @@
   decision-record-examples.md 4291
   user-facing-output.md 18205
   critical-stance.md 9941
-  circle-records.md 12100
+  circle-records.md 14832
   commit-lock.md 5663
-  total 111802
+  total 114534
 
 [planner]
   agent-setup.md 3499
@@ -111,8 +111,8 @@
   decision-record-examples.md 4291
   user-facing-output.md 18205
   critical-stance.md 9941
-  circle-records.md 12100
-  total 106139
+  circle-records.md 14832
+  total 108871
 
 [reconciler]
   agent-setup.md 3499
@@ -129,8 +129,8 @@
   user-facing-output.md 18205
   critical-stance.md 9941
   design-diagrams.md 4834
-  circle-records.md 12100
-  total 110973
+  circle-records.md 14832
+  total 113705
 
 [taskplanner]
   agent-setup.md 3499

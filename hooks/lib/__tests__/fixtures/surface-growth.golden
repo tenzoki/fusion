@@ -21,13 +21,13 @@
   editor.md 14272
   ontocoder.md 13305
   ontorev.md 11295
-  orchestrator.md 145191
+  orchestrator.md 148086
   planner.md 18434
   playmaker.md 38712
   reconciler.md 20006
-  shaper.md 25421
+  shaper.md 28141
   taskplanner.md 14375
-  total 405588
+  total 411203
 
 [skills bytes]
   archive/SKILL.md 23970
@@ -40,9 +40,9 @@
   log-activity/SKILL.md 13559
   memo/SKILL.md 12560
   migrate/SKILL.md 26630
-  next/SKILL.md 28189
+  next/SKILL.md 27030
   setup/SKILL.md 38253
-  total 229924
+  total 228765
 
 [hook-tests lines]
   commit-message-path.test.ts 366
@@ -75,7 +75,7 @@
   portfolio-citation-form-lint.test.ts 171
   provenance-header-lint.test.ts 449
   record-counts-measurement.test.ts 521
-  reference-resolution-lint.test.ts 1000
+  reference-resolution-lint.test.ts 1026
   review-coverage-mandate.test.ts 336
   review-coverage.test.ts 819
   rules-emission-golden.test.ts 1159
@@ -85,4 +85,4 @@
   staging-drift.test.ts 660
   surface-growth-bound.test.ts 628
   turn-budget-lint.test.ts 524
-  total 18353
+  total 18379

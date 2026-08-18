@@ -66,6 +66,6 @@ revision. A typo, a wrong statement, and a reversed intent all hit the same wall
 
 ---
 Answered: user gate, orchestrator session `shared/history/260818-1452-orchestrator-session.md`, 2026-08-18 — option 1, pointer plus writer. The duplication is removed where it exists and a sanctioned writer is provided where the record holds the only copy.
-Implemented:
+Implemented: `shared/planning/260818-1512_*_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md`, all seven steps, 2026-08-18 — no commit hash is cited because the executor does not commit; the orchestrator's Phase-2 Step-3b commit for this plan carries the change. `rules/circle-records.md` `### The Directive is a pointer once a spec exists` defines the pointer literal and the invariant (prose in `## Directive` iff `**Active spec/plan:**` reads `(none yet)`); `agents/orchestrator.md` `## Circle head fields` makes the swap ride every write of that field off `(none yet)` and `## Scope` grants the fourth content write as that literal only; `agents/shaper.md` mode 3 accepts a `_t_` record, takes `**Scope:** directive-only | spec`, and halts before writing prose into a record whose field cites a file. `skills/next/SKILL.md` and `README-agents.md` follow. No existing record was converted: all eleven in this workbench are terminal, and the plan argues why no migration exists.
 Deferred:
 Superseded by:

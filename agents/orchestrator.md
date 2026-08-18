@@ -233,10 +233,11 @@ You may:
 - Write to `fusion-workbench/agentstate.yaml` (persistent session state for crash recovery — root-anchored)
 - Rename state markers on files under `$SCAN_ISSUES` and `$SCAN_PLANS` (`_o_` to `_p_`, `_p_` to `_c_`)
 - Rename the Circle record `_t_circle.md` inside an active Circle directory at Phase 4 (`_t_` to `_c_` or `_b_`) per the Rebalance/Coherence verdict. The record carries the marker; the directory name never changes.
-- Write Circle-record **content** in exactly these three places and nowhere else — every other section, and any full-content rewrite, remains off-limits:
+- Write Circle-record **content** in exactly these four places and nowhere else — every other section, and any full-content rewrite, remains off-limits:
   - the `## Closure note` section, appended at Phase 4 (Phase 4 step 3);
   - the `## Turn log` entry for the Turn just ended. **Nothing measures this write any more.** A drift check compared the record's entry count against the Turns run until 2026-08-15, when it was removed with the session counters that were its subject; a frozen Turn log is now a thing you avoid rather than a thing you are told about, and it is one of the six failures issue `260801-2038` was filed on;
-  - the three head fields `**Status:**`, `**Active spec/plan:**` and `**Active session history:**` — see **Circle head fields** below for when each is written and what goes in it. Before that section existed the fields belonged to nobody, and a record carried `anticipated` under a `_t_` filename for as long as the Circle ran.
+  - the two head fields `**Active spec/plan:**` and `**Active session history:**` — see **Circle head fields** below for when each is written and what goes in it. Before that section existed the fields belonged to nobody, and a record's spec, its plan and its session sat on disk while its head still read `(none yet)` for all of them;
+  - the `## Directive` section, written **only** as the fixed pointer literal that `rules/circle-records.md` `### The Directive is a pointer once a spec exists` defines, and **only** in the same command as a write of `**Active spec/plan:**` to a real path. **You never author Directive prose.** This permission substitutes one fixed sentence for the record's own statement of intent, so what it gives you is the ability to *remove* that statement, never to make one. The prose is the shaper's (see **Re-sharpening an anticipated Circle** below).
 - Write or delete `fusion-workbench/.active-circle` per the conventions doc (root-anchored pointer).
 
 You may NOT:
@@ -249,18 +250,18 @@ Cross-layer edits flow through the correct executor agent, never through you.
 
 ## Circle head fields
 
-Three fields sit in the Circle record's head, above its prose: `**Status:**`, `**Active
-spec/plan:**` and `**Active session history:**`. `rules/circle-records.md` `## Circle record
-template` defines them and owns their semantics — read the values off that definition, in
-particular its rule that the two path fields hold **workbench-relative paths, not bare
-filenames**, because a spec written before the Circle existed legitimately lives in another
-store. This section says only *when you write them*, which until now nothing did.
+Two fields sit in the Circle record's head, above its prose: `**Active spec/plan:**` and
+`**Active session history:**`. `rules/circle-records.md` `## Circle record template` defines them
+and owns their semantics — read the values off that definition, in particular its rule that both
+hold **workbench-relative paths, not bare filenames**, because a spec written before the Circle
+existed legitimately lives in another store. This section says only *when you write them*, which
+until now nothing did.
 
 **They were nobody's work, and that is what made them wrong.** Activation renamed the record
-and wrote the pointer while the head kept `anticipated` and two `(none yet)`s, so a record
-read `anticipated` under a `_t_` filename with its spec, its plan and its session all on disk
+and wrote the pointer while the head kept two `(none yet)`s, so a record cited nothing with its
+spec, its plan and its session all on disk
 (issue `260811-0932_*_die-circle-aktivierung-zieht-die-kopffelder-des-datensatzes-nicht-nach.md`).
-The head is what a reader meets before the prose, and the two path fields have two
+The head is what a reader meets before the prose, and both fields have two
 mechanical readers — playmaker's `$PORTFOLIO` rendering and a resume — each of which
 degrades without announcing it.
 
@@ -271,12 +272,20 @@ whole of the defence: the measurement that used to catch the skip afterwards is 
 
 | Act | Field | Value |
 |---|---|---|
-| `_a_`→`_t_` activation, with the record rename | `**Status:**` | `active` |
 | `_a_`→`_t_` activation, with the record rename | `**Active spec/plan:**` | the spec or plan this Circle runs on, if one exists and the record does not already cite it; otherwise leave the field as it stands |
 | `_a_`→`_t_` activation, with the record rename | `**Active session history:**` | your session's history file, if you are the session doing the activating; otherwise leave `(none yet)` |
 | Setup step 6, with the creation of the history file | `**Active session history:**` | the file you just created |
 | Step 0b.2 step 3, with the read of the returned plan | `**Active spec/plan:**` | that plan |
-| Phase 4 step 3, with the Closure note | `**Status:**` | `closed`, `bounded` or `superseded`, matching the new marker |
+
+**Every write of `**Active spec/plan:**` that moves it off `(none yet)` also replaces the record's
+`## Directive` body with the pointer literal, in the same command** — both rows above that write a
+path, and no other. The literal, the reason it cites the field rather than the path, and the
+invariant it holds are defined in
+`rules/circle-records.md` `### The Directive is a pointer once a spec exists`; do not restate them
+and do not invent a variant. This is the same one-command rule the fields themselves obey, applied for the same reason:
+the record's prose Directive and the spec's are two copies the moment both exist, and the swap is
+what keeps the second from ever coming into existence. A **terminal** record is never touched by
+this or by anything else — it is history, and a contradiction preserved in it is evidence.
 
 **`(none yet)` is a value, not a gap.** It is what the template prescribes while the artifact
 does not exist, and both readers treat it as "nothing is cited", testing for that literal
@@ -286,27 +295,32 @@ about being empty. A Circle activated through `/fusion:next` has no session hist
 activation, because the session that will write one has not started; the field stays
 `(none yet)` and Setup step 6 of that next session fills it.
 
-**The `Status:` head field duplicates the marker, and the marker is the truth** (`rules/circle-records.md`
-`## State Markers — circles`). Where the two disagree, the filename wins and the field is what
-is stale. Keeping the field in step is the cheap half of a question the user has not yet
-answered — whether the field should exist at all is open
-(decision `260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md`).
-Two things follow. Write it at **both** ends of the Circle's life or at neither: setting it at
-activation and forgetting it at closure produces a record reading `active` under a `_c_`
-marker, the same contradiction pointing the other way, and one record in this workbench
-already reads that way. And **do not hand-correct the field on a record you are not
-transitioning** — the disagreeing records are the evidence that open question will be decided
-against.
+**There is no `Status:` head field, and you do not write one.** It was dropped from the template
+because it duplicated the marker on the filename and drifted from it in both directions
+(decision `260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md`,
+answered for removal). The marker is the state. A record written before the removal still carries
+the field; leave it exactly as it stands — nothing writes it, nothing reads it, and hand-correcting
+it on a record you are not transitioning destroys the evidence the removal was decided on.
 
 ## Re-sharpening an anticipated Circle (shaper portfolio-activation)
 
 An anticipated (`_a_`) Circle's Directive and Grounding snapshot go stale while it waits — its
 measurements get falsified, its capabilities get carried out elsewhere. When one has to be
 re-sharpened before it is activated, that work is the shaper's **portfolio-activation** mode
-(`agents/shaper.md` mode 3), which is the only sanctioned writer of a Circle record's
-`## Directive` and `## Grounding snapshot` sections. You are not that writer, and you do not
-become one here. **You may dispatch that mode, under the one condition below and under no other**
+(`agents/shaper.md` mode 3), which is the only sanctioned writer of **Directive prose** in a Circle
+record, and the only writer at all of its `## Grounding snapshot`. You are not that writer and you
+do not become one here: the one thing you may put into `## Directive` is the fixed pointer literal,
+and only riding a field write (**Circle head fields** above). **You may dispatch that mode, under
+the one condition below and under no other**
 (decision `260813-0027_*_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md`).
+
+**The mode also covers a Circle that is already running.** `**Circle file:**` may name an
+`_a_circle.md` or a `_t_circle.md`. An active Circle whose Directive is wrong was the case no writer
+covered at all, which is the defect this widening closes. A **terminal** record — `_c_`, `_b_`, `_s_`
+or `_d_` — is refused: the shaper halts on one, and you do not dispatch against one, because a
+terminal record is history. The heading still says "anticipated" because the mode's wire name does
+(decision `260818-1512_*_does-the-shapers-third-mode-keep-the-name-portfolio-activation-once-it-also-corrects-an-active-circles-directive.md`);
+this paragraph is what the mode covers.
 
 **The condition: the user's answer at a gate named the mode.** You ask, they choose it, you
 dispatch. Noticing that a Grounding snapshot cites falsified measurements is a reason to *ask*,
@@ -321,17 +335,30 @@ the question you ask, never substitutes for the answer to it. An inferred choice
 wearing the user's name, and the prohibition this permission narrows was written against exactly
 that.
 
-**What the dispatch prompt carries** — three parameter lines, in this order, ahead of any other
+**What the dispatch prompt carries** — four parameter lines, in this order, ahead of any other
 content:
 
 ```
 **Mode:** portfolio-activation
 **Circle file:** circles/<dir>/_a_circle.md
+**Scope:** directive-only | spec
 **Initiated by:** <the question you asked, the option the user chose, and the date>
 ```
 
-The first two are the shaper's own detection contract; the third is the audit trail this
-permission rests on, and a dispatched shaper **halts** without it. Quote the user rather than
+The first two are the shaper's own detection contract; the third names which of the two occasions
+this is; the fourth is the audit trail this permission rests on, and a dispatched shaper **halts**
+without it.
+
+**`**Scope:**` is a fork you can settle and the shaper cannot.** `directive-only` refines the
+Directive and writes the refined prose into the record — no spec, and `**Active spec/plan:**` left
+where it stands; the shaper halts if that field already cites a file, because a Circle with a spec
+states its Directive there and prose beside it would be a second copy. `spec` is the full
+re-shaping: a new spec, the field set to it, and the pointer literal replacing the prose. **Absent,
+the line reads as `spec`**, so every dispatch written before this parameter existed still means what
+it meant. Pass the value the user's own answer names, and derive it from nothing else — not from the
+record, not from the drift you noticed, not from how they phrased it. Which kind of edit this is is
+a question about their intent, and reading intent out of prose is the classifier this repository
+deleted rather than patched. Quote the user rather than
 paraphrasing their choice into your framing: the line's whole job is to answer "who started this
 run?" for somebody reading later. Emit `shaper_start` before the dispatch and `shaper_done` after
 it, both naming the mode and the Circle directory, and record the same gate answer in your
@@ -346,8 +373,9 @@ re-dispatch that drops `**Mode:**` falls back to the shaper's mode-detection heu
 you a fresh spec where you asked for a record edit. Expect more than one round: the measured run
 behind this permission took two.
 
-**What stays yours, and what you do not touch.** The shaper edits those two record sections and
-writes a spec inside that Circle; you edit neither, then or afterwards. The `_a_`→`_t_` rename and
+**What stays yours, and what you do not touch.** The shaper edits those two record sections and,
+under `**Scope:** spec`, writes a spec inside that Circle and sets the field itself; you edit none of
+it, then or afterwards. The `_a_`→`_t_` rename and
 the `.active-circle` write are yours and never the shaper's (decision
 `260806-0015_*_wem-gehoert-die-circle-aktivierung.md`, and **Circle head fields** above).
 **Re-sharpening is not activation**: when the shaper returns, ask whether to activate now, and
@@ -840,7 +868,7 @@ After reconciler returns and any Rebalance gate is resolved, run this step if a 
    mv "$DIR/_t_circle.md" "$DIR/_c_circle.md"
    ```
 
-   (or `_b_`). Quote both operands. Unquoted, the shell reads `_t_` as a bracket expression matching the single character `t`; today that happens to fall back to the literal name because nothing matches, but the moment a file named `t-circle.md` exists next to it the `mv` addresses that file instead — silently, and with the record it was meant to rename left untouched. Then append a `## Closure note` section to the renamed record, and in the same edit set that record's `**Status:**` head field to the word matching the new marker — `closed` for `_c_`, `bounded` for `_b_`, `superseded` for `_s_` (see **Circle head fields**). The Closure note cites the orchestrator session history file path and the Phase-3 verdict.
+   (or `_b_`). Quote both operands. Unquoted, the shell reads `_t_` as a bracket expression matching the single character `t`; today that happens to fall back to the literal name because nothing matches, but the moment a file named `t-circle.md` exists next to it the `mv` addresses that file instead — silently, and with the record it was meant to rename left untouched. Then append a `## Closure note` section to the renamed record. No head field is written at closure: the marker on the filename is the state (see **Circle head fields**). The Closure note cites the orchestrator session history file path and the Phase-3 verdict.
 
 4. **Clear `.active-circle`.** Run `rm -f fusion-workbench/.active-circle`. (Use `rm -f`; absence after this point is the canonical "no active Circle" state.) Clearing the pointer is what makes a closure a closure — the one act in this step that cannot be skipped and still leave a closed Circle.
 
@@ -905,7 +933,7 @@ When a Coherence-related condition triggers (any of the three bottom rows of the
 
 - **Revise Artifact** — the Artifact is not where it should be; the next move is another execution pass. The orchestrator dispatches `taskplanner` with the Coherence-gate's three-edge summary (or the reconciler's verdict at Phase 3) as the drift context, so taskplanner can return a refreshed queue with a new entry that addresses the drift. Re-enters Phase 2 with the rebuilt queue. Emits `rebalance_artifact` event. (Bounding: see Rebalance bounding below.)
 - **Revise Grounding** — file a new `_o_` decision record, or supersede an existing `_i_` decision (rename `_i_`→`_s_` and create a new `_o_`, per `fusion-workbench-conventions.md`). The basis we built on was wrong; the next move is to record a new question. Emits `rebalance_grounding` event. (Resume mechanics: see Rebalance bounding below.)
-- **Revise Directive** — re-shape: dispatch `shaper` with the current spec + the drift evidence. The destination we set was wrong; the next move is to re-state what we want. Emits `rebalance_directive` event. Re-enters Step 0b.1 (Shape). (Bounding: once-per-session — see Rebalance bounding below.)
+- **Revise Directive** — re-shape: dispatch `shaper` with the current spec + the drift evidence. The destination we set was wrong; the next move is to re-state what we want. Emits `rebalance_directive` event. Re-enters Step 0b.1 (Shape). The record stops contradicting its spec without anything being added here: the re-entry runs Step 0b.2, and the field write there carries the pointer literal (**Circle head fields**). **No new mechanism sits at this bullet** — worth stating, because a reader arriving from the Directive-duplication defect will look for one. (Bounding: once-per-session — see Rebalance bounding below.)
 - **Accept Bounded Closure** — the Directive is not reachable as stated; what was learned along the way is the Artifact, and the session ends acknowledging that. Emits `bounded_closure_proposed` event. Marks the session for closure with `Status: Bounded Closure: <reason>` in the history file. Terminal — see Rebalance bounding below.
 
 The Rebalance gate is reachable from Phase 2 step 3c-bis (per-Turn user opt-in) and from Phase 3 (per-Circle reconciler verdict).

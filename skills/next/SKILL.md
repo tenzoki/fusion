@@ -208,28 +208,22 @@ MARKER="$(basename "$REC" | sed -nE 's/^_([a-z])_.*/\1/p')"
 
 If `$CDIR` is not a directory, `$REC` is empty, or `$MARKER` is not `a`, halt and report the mismatch. Do not rename, do not write the pointer. A directory holding no record, or more than one, is a workbench-state fault the user must resolve — say which it is.
 
-### 6.2 — Rename the record and set its `**Status:**`
+### 6.2 — Rename the record
 
 Only the record is renamed. The directory name never changes; that stability is the whole point of the marker-on-the-record design (`rules/circle-records.md` `## State Markers — circles`).
 
 ```bash
 mv "$CDIR/_a_circle.md" "$CDIR/_t_circle.md"
 REC="$CDIR/_t_circle.md"
-awk 'BEGIN{h=1} /^## /{h=0} h&&!n&&/^\*\*Status:\*\*/{print "**Status:** active";n=1;next} {print} END{exit n?0:9}' "$REC" > "$REC.tmp"
-case $? in
-  0) mv "$REC.tmp" "$REC" || { rm -f "$REC.tmp"; echo "note: $REC — the rewritten copy could not replace the record; **Status:** is unchanged" >&2; } ;;
-  9) rm -f "$REC.tmp"; echo "note: $REC carries no **Status:** field in its head block, so none was set; the marker on the filename is the state" >&2 ;;
-  *) rm -f "$REC.tmp"; echo "note: $REC — the **Status:** rewrite failed, so the field is unchanged" >&2 ;;
-esac
 ```
 
-Both names are literal arguments to `mv`, not globs — the underscore marker needs no escaping and no special handling here. It is only *pattern matching* against marker names that needs care (see `rules/fusion-workbench-conventions.md` `## Marker globs`). The field is rewritten through a temporary file rather than in place, because `sed -i` takes an argument on BSD and none on GNU; `/fusion:migrate` rewrites record fields the same way for the same reason, and each `rm -f` keeps a failed write from leaving a `.tmp` behind. One `awk` pass rewrites and reports what it did, and each branch says which of the three happened: exit 9 is a head block with no `**Status:**` line, any other non-zero is a failed pass or redirect, 0 is the field set. Nothing re-reads the record afterwards, because a re-read cannot separate a failed write from a missing field — that mismatch is what put the old `grep` here, first in front of the rewrite and then behind it. The pass stops at the first `## ` heading and rewrites only the first match before it, so a `**Status:**` line quoted in a template block further down is neither read nor touched.
+Both names are literal arguments to `mv`, not globs — the underscore marker needs no escaping and no special handling here. It is only *pattern matching* against marker names that needs care (see `rules/fusion-workbench-conventions.md` `## Marker globs`).
 
-**The head fields are written at the act that moves them, and this is that act for one of the three.** `$FUSION_SRC/agents/orchestrator.md` `## Circle head fields` defines all three — when each is written, what value it takes, and why `(none yet)` is a value rather than a gap. Do not restate it here. What this skill can decide, it decides now; what it cannot, it leaves honest:
+**The head fields are written at the act that moves them, and this act moves neither of them.** `$FUSION_SRC/agents/orchestrator.md` `## Circle head fields` defines both — when each is written, what value it takes, and why `(none yet)` is a value rather than a gap. Do not restate it here. The rename is the whole of this step, and both fields are left honest:
 
-- `**Status:**` becomes `active` — the write rides the rename in the same call. The `mv` and the rewrite are two commands, not one atomic act, so an interruption between them still leaves the rename standing alone; what the shape guarantees is that a write which does not land is reported.
+- There is no `**Status:**` field to set. It was dropped from the record template, because it duplicated the marker and drifted from it; the marker on the filename is the state. A record written before the removal still carries the field — leave it exactly as it stands rather than correcting it.
 - `**Active session history:**` stays `(none yet)`. No session is running this Circle yet — the one that will starts at Step 6.5 — so any path written here would name a file that is not on disk, which the field's readers handle worse than the empty value. The orchestrator sets it at its Setup step 6, when it creates the file.
-- `**Active spec/plan:**` is left exactly as it stands. If shaper's portfolio-activation mode already pointed it at a spec, that citation is current; if it reads `(none yet)`, this skill has no way to find the right file and must not guess one.
+- `**Active spec/plan:**` is left exactly as it stands. If shaper's portfolio-activation mode already pointed it at a spec, that citation is current; if it reads `(none yet)`, this skill has no way to find the right file and must not guess one. And because it writes no path here, it never replaces the record's `## Directive` either: the pointer literal rides a write of that field and nothing else (`$FUSION_SRC/rules/circle-records.md` `### The Directive is a pointer once a spec exists`).
 
 ### 6.3 — Write `.active-circle`
 
@@ -261,13 +255,13 @@ The skill's final output must phrase itself as an implicit directive that the or
 
 > *Activated. The Circle now stands at `_t_` and the `.active-circle` pointer names it.*
 >
-> *A fresh orchestrator session begins against this Circle. The orchestrator now runs Setup (which overwrites the dashboard), reads the `## Directive` from the record of Circle `<candidate-dirname>`, takes it as the session Directive, and proceeds with Phase 0 → Phase 1 → Phase 2.*
+> *A fresh orchestrator session begins against this Circle. The orchestrator now runs Setup (which overwrites the dashboard), takes the Directive of Circle `<candidate-dirname>` as the session Directive — out of the record's `## Directive` while that section holds prose, and out of the spec or plan the record's `**Active spec/plan:**` cites once it holds the pointer instead — and proceeds with Phase 0 → Phase 1 → Phase 2.*
 
 That message is itself the directive. The orchestrator's own prompt instructs it to run Setup at the start of work, so emitting this text is sufficient to trigger Setup on the parent thread.
 
 ## Boundaries
 
-The skill's writes are the record rename (`_a_`→`_t_`), the `**Status:**` head field on that same record, the `.active-circle` write, and the dashboard placeholder — all in Step 6, all gated by explicit confirmation. **Step 5b adds no write of its own** — it asks and it dispatches; the backlog operations the user approves there are performed by playmaker on the second dispatch, out of the key it holds and this skill does not. **That one field is the whole of the Circle *content* it writes**: no section of the record is touched, and the two path fields in the head are left to the writers Step 6.2 names. The portfolio file is written by playmaker, not by this skill. Safe to invoke during an active orchestrator session — playmaker reads everything, and its writes are four: the three appended sections on Circle records, the portfolio, its own history log, and the backlog store it maintains under `agents/playmaker.md` `## Two mandates, by dispatch path`. The active Turn loop writes none of the four, so it cannot interfere with the Turn loop's writes. The Step 6 activation branch is short-circuited when a Circle is already active.
+The skill's writes are the record rename (`_a_`→`_t_`), the `.active-circle` write, and the dashboard placeholder — all in Step 6, all gated by explicit confirmation. **Step 5b adds no write of its own** — it asks and it dispatches; the backlog operations the user approves there are performed by playmaker on the second dispatch, out of the key it holds and this skill does not. **It writes no Circle *content* at all**: no section of the record is touched and no head field is set, and both path fields are left to the writers Step 6.2 names. The portfolio file is written by playmaker, not by this skill. Safe to invoke during an active orchestrator session — playmaker reads everything, and its writes are four: the three appended sections on Circle records, the portfolio, its own history log, and the backlog store it maintains under `agents/playmaker.md` `## Two mandates, by dispatch path`. The active Turn loop writes none of the four, so it cannot interfere with the Turn loop's writes. The Step 6 activation branch is short-circuited when a Circle is already active.
 
 ## Tone
 

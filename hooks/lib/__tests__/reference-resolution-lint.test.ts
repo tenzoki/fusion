@@ -554,7 +554,33 @@ function scanHeadingAnchors(
 // onward and once for this repository, and names README on both sides. The record
 // is the citation of `shared/decisions/260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`,
 // whose third constraint the new closing paragraph satisfies. anchors did not move.
-const BASELINE = { paths: 1125, anchors: 139, records: 95 };
+// Re-approved 2026-08-18 — the Circle record's `## Directive` becomes a pointer
+// once `**Active spec/plan:**` cites a file, and gains a writer for the case where
+// it does not (`shared/planning/260818-1512_*_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md`,
+// all seven steps). paths 1125 -> 1133 and anchors 139 -> 145, measured per file by
+// reverting each of the five in turn and rerunning this gate. paths: +2 in
+// `rules/circle-records.md` (the new subsection names `agents/orchestrator.md` and
+// `agents/shaper.md` as the two prompts that carry the writer obligations), +2 in
+// `agents/shaper.md` and +1 net in `agents/orchestrator.md` and +1 in
+// `skills/next/SKILL.md` (each cites the new subsection; the orchestrator's two
+// additions are offset by the deleted `**Status:**` paragraph), +2 in
+// `README-agents.md` (the new `**Scope:**` row cites the two prompts that declare
+// and pass it). anchors: +1 for the subsection's own
+// `agents/orchestrator.md` `## Circle head fields`, +4 for the citations of
+// `### The Directive is a pointer once a spec exists` that class (b) can see, and
+// +1 that is not a new citation at all — `rules/circle-records.md`
+// `## Circle record template` in `agents/orchestrator.md` was always there and was
+// invisible to this gate because a line break fell between the two backtick spans,
+// which the rewrite closed. Two more citations of the new subsection exist and are
+// deliberately NOT in this count: `skills/next/SKILL.md` spells its paths
+// `$FUSION_SRC/...`, which ANCHOR_RE's character class does not admit, the same
+// way that file's pre-existing `## Circle head fields` citation has never been
+// counted. records 95 -> 97, one in each of the two files that names the record
+// this change realises: `shared/decisions/260818-1504_*_...` in
+// `rules/circle-records.md` as the subsection's binding decision, and
+// `shared/decisions/260818-1512_*_...` in `agents/orchestrator.md`, which is where
+// the mode's name is recorded as kept and its residual named.
+const BASELINE = { paths: 1133, anchors: 145, records: 97 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the
