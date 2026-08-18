@@ -36,13 +36,13 @@
   commit/SKILL.md 6233
   curate/SKILL.md 12797
   direct/SKILL.md 11012
-  help/SKILL.md 15162
+  help/SKILL.md 15732
   log-activity/SKILL.md 13559
   memo/SKILL.md 12560
   migrate/SKILL.md 26630
   next/SKILL.md 27030
   setup/SKILL.md 38253
-  total 228765
+  total 229335
 
 [hook-tests lines]
   commit-message-path.test.ts 366
@@ -75,7 +75,7 @@
   portfolio-citation-form-lint.test.ts 171
   provenance-header-lint.test.ts 449
   record-counts-measurement.test.ts 521
-  reference-resolution-lint.test.ts 1026
+  reference-resolution-lint.test.ts 1050
   review-coverage-mandate.test.ts 336
   review-coverage.test.ts 819
   rules-emission-golden.test.ts 1159
@@ -85,4 +85,4 @@
   staging-drift.test.ts 660
   surface-growth-bound.test.ts 628
   turn-budget-lint.test.ts 524
-  total 18379
+  total 18403

@@ -580,7 +580,31 @@ function scanHeadingAnchors(
 // `rules/circle-records.md` as the subsection's binding decision, and
 // `shared/decisions/260818-1512_*_...` in `agents/orchestrator.md`, which is where
 // the mode's name is recorded as kept and its residual named.
-const BASELINE = { paths: 1133, anchors: 145, records: 97 };
+// Re-approved 2026-08-18 — the v10.2 release material: the version-surface bumps and
+// `docs/upgrading-to-v10-2.md`, the migration note for consuming projects, written to the
+// shape of `docs/upgrading-to-v10.md`. paths 1133 -> 1142 and anchors 145 -> 148,
+// measured per file by reverting each of the five edited files in turn and rerunning this
+// gate. Seven of the nine paths and all three anchors are inside the note itself:
+// `rules/circle-records.md` three times, `README.md` once, and `agents/shaper.md`,
+// `README-agents.md` and `docs/upgrading-to-v10.md` once each; the anchors sit on two of
+// the three `rules/circle-records.md` citations and on `README-agents.md`
+// `## Dispatch parameters`. The remaining two paths are the note being NAMED, once from
+// `README.md` and once from `skills/help/SKILL.md`. `install.sh` and
+// `.claude-plugin/plugin.json` carry version-pin bumps only and move nothing.
+// Two things a later reader would otherwise have to re-derive. The five per-file figures
+// sum to 11 against a total of 9, and the excess is interaction rather than error:
+// reverting the note alone also dangles the two citations OF it, so that one revert
+// measures its own seven plus those two leaving scope. And the note carries EIGHT
+// path-shaped spellings for seven resolved — the bare `rules/` on its exempt-surface
+// bullet is a directory, not a file, and is no class-(a) token.
+// One of the three anchors was won rather than written. The note first spelled its
+// `### The Directive is a pointer once a spec exists` citation with a line break between
+// the two backtick spans, and this gate scans line by line, so the citation was invisible
+// — the same defect the Directive-pointer re-approval directly above found standing in
+// `agents/orchestrator.md`. It was reflowed onto one line before this count was taken,
+// which is the whole of the difference between anchors 147 and 148.
+// records did not move.
+const BASELINE = { paths: 1142, anchors: 148, records: 97 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the
