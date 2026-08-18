@@ -1761,3 +1761,17 @@
 {"ts":"2026-08-18T14:05:17","event":"planner_done","detail":"shared/planning/260818-1512_p_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md"}
 {"ts":"2026-08-18T14:05:17","event":"gate_response","detail":"plan approved; step 6 included; mode name kept"}
 {"ts":"2026-08-18T14:05:17","event":"turn_start","turn":1,"detail":"1 ready task, 7 plan steps"}
+{"ts":"2026-08-18T19:24:30","event":"session_start","history_file":"shared/history/260818-2124-orchestrator-session.md","detail":"Setup only; no Directive stated yet; domain=code; no active Circle"}
+{"ts":"2026-08-18T20:10:14","event":"scope_resolved","detail":"mode=custom; 3 tasks; no sub-agent executor needed (workbench records only); gates: none pending"}
+{"ts":"2026-08-18T20:10:14","event":"queue_built","detail":"3 tasks, 0 blocked"}
+{"ts":"2026-08-18T20:10:14","event":"turn_start","turn":1,"detail":"3 ready tasks"}
+{"ts":"2026-08-18T20:17:40","event":"coherence_review","turn":1,"verdict":"ok","detail":"Artifact<->Grounding: no review pass, 0 findings (workbench records have no reviewer agent). Artifact<->Directive: 2 commits, one fulfils the Directive, one refutes its premise and closes instead of repairing. Grounding<->Directive: 0 answered decisions touched, 1 new open decision filed."}
+{"ts":"2026-08-18T20:17:40","event":"turn_end","turn":1,"detail":"3 tasks resolved, 1 issue closed, 2 records filed, 2 commits"}
+{"ts":"2026-08-18T20:36:57","event":"reconciliation","detail":"verdict=review-needed; 2 discrepancies filed against this session's own output; 4 verification requests all held"}
+{"ts":"2026-08-18T20:36:57","event":"rebalance_artifact","turn":1,"detail":"user chose revise Artifact: correct 260818-2227 (Medium) and 260818-2228 (Low)"}
+{"ts":"2026-08-18T20:36:57","event":"turn_start","turn":2,"detail":"2 ready tasks"}
+{"ts":"2026-08-18T20:41:40","event":"turn_end","turn":2,"detail":"2 tasks resolved, 2 issues closed, 1 commit b46756e"}
+{"ts":"2026-08-18T20:52:44","event":"reconciliation","detail":"narrow verification of b46756e: arithmetic reproduces exactly; 2 findings filed (Low)"}
+{"ts":"2026-08-18T20:52:44","event":"turn_start","turn":3,"detail":"3 ready tasks"}
+{"ts":"2026-08-18T20:56:10","event":"turn_end","turn":3,"detail":"2 tasks resolved, 2 issues closed, 1 commit 5ec9dc6"}
+{"ts":"2026-08-18T20:56:10","event":"session_end","detail":"3 Turns, 7 tasks, 4 commits, 5 issues filed and 5 closed, 1 decision filed and left open, 4 human gates"}
