@@ -90,3 +90,17 @@ answered-but-unrealised — its option 3, filtering the uncovered set to commits
 files, is absent from `hooks/lib/review-coverage.ts` at HEAD, which this session's own
 `verdict=uncovered` over `f3a3565` demonstrates. Marker stays `_o_`.
 Log: `shared/history/260818-0814-reconciliation.md`.
+
+---
+Answered: shared/history/260818-2301-orchestrator-session.md — user chose option 2 (2026-08-18), with option 1's honesty applied to it: the orchestrator reads `## Where this Circle stops` aloud at Phase 4, before the closure transition, and asks whether each clause holds; `agents/planner.md` states in that section that the human at this gate is the whole of the enforcement. No parser, no structured field, no new shipped mechanism. Option 3 stays available if option 2 is measured and misses.
+
+**Realisation fork, answered by the user 2026-08-18 in the same session.** Both option texts above
+assume `agents/planner.md` already carries a `## Where this Circle stops` section to amend. It does
+not (`shared/issues/260818-2343_o_the-answered-precondition-decision-names-a-planner-section-that-agents-planner-md-does-not-have.md`).
+Asked which realisation the answer means, the user chose to **add the section to the plan output
+format** and then amend it as option 2 describes, rather than making the Phase-4 step conditional on
+a section a plan may or may not carry. Every plan therefore carries the section, and the Phase-4
+step always has something to read.
+
+---
+Implemented: `agents/planner.md` and `agents/orchestrator.md` — the plan output format gained `## Where this Circle stops`, with a paragraph beside the `**Decidability:**` one stating that nothing reads the section mechanically and naming the measured failure; `### Phase 4 — Portfolio sync` gained step 2b, which reads the section aloud clause by clause and asks the user before the closure rename, emitting the existing `gate_hit` / `gate_response` rather than a new event type. The realisation fork recorded above was taken as the user chose it: the section is part of the template, so the Phase-4 step always has something to read. Cost 2 571 bytes of the 6 640 head-room on `agents/`.

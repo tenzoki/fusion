@@ -862,6 +862,12 @@ After reconciler returns and any Rebalance gate is resolved, run this step if a 
    - User chose **Revise Directive** that re-entered Step 0b.1 — this Circle is being re-shaped, NOT closed. Do NOT touch the marker. Skip this Phase-4 sub-step (the existing Rebalance bounding governs).
    - User chose **Revise Grounding** or **Revise Artifact** — these continue the Circle, no marker change. Skip this sub-step.
 
+2b. **Read the plan's `## Where this Circle stops` back to the user, before the rename.** Resolve the plan in scope: the Circle record's `**Active spec/plan:**` field, else the plan file this session ran on. If no plan is in scope, or the plan carries no such section, do nothing and go to step 3 — no question is put to the user. Otherwise read the section's clauses aloud, one at a time, and ask whether each holds.
+
+   **It is a question, not a check.** You do not parse the clauses, judge them, or decide from their wording whether a condition is met; you put them in front of the user at the one moment they are actionable. Same shape as the plan head's `**Decidability:**` line — the question goes where somebody looks, rather than a checker being built for a question that is mostly undecidable. Emit `gate_hit` with the reason and `gate_response` with the answer; this step has no event type of its own. Carry any clause the user says does not hold into the `## Closure note` at step 3, so the gap outlives the chat.
+
+   **What it does not cover.** A release tagged mid-Circle has already gone out by the time this step runs, and that is the measured case: a plan made its Circle's review pass a precondition of the tag, v10.0.0 was tagged and pushed without the pass, and a post-release reconciliation was what noticed. The step records such a gap; it cannot prevent it. Binding decision: `260817-1613` under `$SCAN_DECISIONS`.
+
 3. **Perform the rename atomically.** Only the record is renamed; the Circle directory keeps its name for its whole lifecycle, so every path into it stays valid. With `DIR` as the Circle directory from step 1:
 
    ```bash
@@ -915,6 +921,7 @@ The orchestrator **must stop and ask the user** before proceeding when any of th
 | Per-Turn Coherence gate returned "Rebalance" (Phase 2 step 3c-bis) | User opted into mid-Turn Rebalance |
 | Per-Circle reconciler verdict is `review-needed` (Phase 3) | Aggregate Coherence not achieved |
 | Per-Circle reconciler verdict is `bounded-closure-proposed` (Phase 3) | Directive judged unreachable |
+| A Circle is about to close and its plan carries `## Where this Circle stops` (Phase 4 step 2b) | The clauses bind nobody mechanically; a human answering them is the whole of the enforcement |
 
 **Interaction pattern at a gate:**
 

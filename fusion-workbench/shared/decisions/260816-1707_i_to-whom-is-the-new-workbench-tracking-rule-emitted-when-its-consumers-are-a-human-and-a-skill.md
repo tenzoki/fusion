@@ -87,3 +87,9 @@ rule emission or this split; `shared/planning/` holds three files, all `_c_`; no
 record answers it. The blocking pair with
 `260816-0711_a_where-does-the-tracked-workbench-split-live-now-that-the-home-it-was-meant-to-move-to-is-gone.md`
 stands unchanged. Marker stays `_o_`. Log: `shared/history/260818-0814-reconciliation.md`.
+
+---
+Answered: shared/history/260818-2301-orchestrator-session.md — user chose option 1 (2026-08-18): `rules/workbench-tracking.md` is emitted to no agent. The conventions file points at it, and the archive step of `/fusion:cleanup` cites it in its own body, which is the positive reason the record asked for: unlike the two existing no-agent rule files, this one has a named non-agent consumer that says so. The move approved in `260816-0711` is thereby unblocked.
+
+---
+Implemented: `rules/workbench-tracking.md` — the file exists, carries a `**Provenance:**` line citing both this record and `260816-0711`, and has **no** `emit_if_exists` line in `bin/fusion-rules`, so it is emitted to no agent as option 1 specifies. Its two consumers are named in its own lede and in the pointer left behind at `rules/fusion-workbench-conventions.md` `### Which of them a tracked workbench tracks`; `skills/archive/SKILL.md` cites it explicitly, which is the positive reason this record asked for and the thing that distinguishes it from the two existing no-agent rule files. The always-on rule set falls 98 874 -> 95 458 bytes per dispatch.

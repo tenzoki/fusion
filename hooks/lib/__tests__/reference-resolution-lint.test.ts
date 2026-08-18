@@ -604,7 +604,32 @@ function scanHeadingAnchors(
 // `agents/orchestrator.md`. It was reflowed onto one line before this count was taken,
 // which is the whole of the difference between anchors 147 and 148.
 // records did not move.
-const BASELINE = { paths: 1142, anchors: 148, records: 97 };
+// Re-approved 2026-08-19 — the move of `### Which of them a tracked workbench tracks` out of
+// `rules/fusion-workbench-conventions.md` into the new `rules/workbench-tracking.md`,
+// realising decisions `shared/decisions/260816-0711_*_...` (the move) and
+// `shared/decisions/260816-1707_*_...` (the emission target it was blocked on).
+// paths 1142 -> 1152 and records 97 -> 101; anchors did not move. Measured per file by
+// reverting each of the five changed files in turn, in a detached worktree at HEAD `52b1d95`
+// holding only their working-tree versions with `agents/*.md` left at HEAD, so none of the
+// movement is attributable to the concurrent `agents/*.md` work, which moves nothing here.
+// Contributions as paths / anchors / records: `rules/workbench-tracking.md` +11 / +1 / +3,
+// `CLAUDE.md` +3 / +1 / +2, `rules/fusion-workbench-conventions.md` +1 / 0 / -1,
+// `skills/archive/SKILL.md` +1 / -2 / 0, `hooks/lib/staging-drift.ts` 0 / 0 / 0.
+// Three things a later reader would otherwise re-derive. First, the per-file paths figures
+// sum to +16 against an actual +10, and the excess is interaction rather than error — the
+// same effect the v10.2 block above names: reverting a file also dangles the citations OF it,
+// so a single revert measures its own tokens plus whatever leaves scope with it, and three of
+// the other four files cite the new rule in a class this gate reads there. anchors and
+// records sum exactly, 0 and +4, which is coincidence and not a second rule.
+// Second, two contributions are NEGATIVE, which is that same interaction seen from the other
+// side and not a mistake. Reverting `rules/fusion-workbench-conventions.md` restores the old
+// subsection, whose body carries the `260811-1534_*_...` decision citation that the pointer
+// replacing it does not, so records reads 102 against the control's 101; and reverting
+// `skills/archive/SKILL.md` restores two citations of the old conventions anchor, so anchors
+// reads 150. Third, `hooks/lib/staging-drift.ts` moves nothing and could not have: its two
+// changed comments repoint from that same anchor to a bare `rules/workbench-tracking.md`, and
+// `hooks/lib/*.ts` is scanned recordsOnly, so classes (a) and (b) are not read there at all.
+const BASELINE = { paths: 1152, anchors: 148, records: 101 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the

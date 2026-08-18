@@ -78,3 +78,6 @@ Retired:
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`). Answer recorded, not yet realised — marker stays `_a_`. `rules/workbench-tracking.md` does not exist and the subsection is still in `rules/fusion-workbench-conventions.md`. The move is blocked on its own prerequisite, the open record `260816-1707_o_to-whom-is-the-new-workbench-tracking-rule-emitted-when-its-consumers-are-a-human-and-a-skill.md`, which is the pairing this pass records rather than treating either as independently stalled.
+
+---
+Implemented: `rules/workbench-tracking.md` — the subsection moved out of `rules/fusion-workbench-conventions.md` verbatim, with a pointer left in its place, exactly as option 2 specifies. The prerequisite this record named, the emission target, was filed and answered as `shared/decisions/260816-1707_*_to-whom-is-the-new-workbench-tracking-rule-emitted-when-its-consumers-are-a-human-and-a-skill.md` (option 1, emitted to no agent) and realised in the same change.

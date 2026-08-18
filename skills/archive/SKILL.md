@@ -8,7 +8,7 @@ allowed-tools: [Bash, Read, Write, Edit, AskUserQuestion]
 
 Move a curated set of workbench artifacts out of the live workbench and into a timestamped archive subfolder. Archives are local, on-disk snapshots — moved, not copied — so the live workbench stays focused.
 
-**Whether git preserves the bytes is the project's decision, not this skill's.** fusion ships no `.gitignore` rule for the workbench, so a consuming project's workbench may be tracked, ignored, or neither (`rules/fusion-workbench-conventions.md` `## Which of them a tracked workbench tracks`). Only where the project tracks it does a past commit still hold what a move relocated. Where it does not, the archive folder is the **only** copy of every artifact this skill moves: Step 7's collision guard prevents an overwrite, and nothing after that prevents a loss.
+**Whether git preserves the bytes is the project's decision, not this skill's.** fusion ships no `.gitignore` rule for the workbench, so a consuming project's workbench may be tracked, ignored, or neither (`rules/workbench-tracking.md`). Only where the project tracks it does a past commit still hold what a move relocated. Where it does not, the archive folder is the **only** copy of every artifact this skill moves: Step 7's collision guard prevents an overwrite, and nothing after that prevents a loss. **This skill reads `rules/workbench-tracking.md`** — that file is the authoring home of the record-versus-live-state split, and what it classifies as a record is what this skill must preserve rather than discard when it decides what to archive.
 
 ## What changed with the Circle-container layout
 
@@ -127,7 +127,7 @@ Each tier is **additive**: tier-2 includes tier-1, tier-3 includes tier-2. The d
 
 ### Rolling the guard event log
 
-`$WORKBENCH/.guard-state/events.jsonl` is the guard's append-only record: every block, halt, cleared halt, advisory override and fail-open the hooks have emitted, across every session, in every Circle. It is classified as **evidence, not telemetry** (`rules/fusion-workbench-conventions.md` `### Which of them a tracked workbench tracks`, and decision `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` under `$SCAN_DECISIONS`), and this roll is the **only** thing that bounds its size.
+`$WORKBENCH/.guard-state/events.jsonl` is the guard's append-only record: every block, halt, cleared halt, advisory override and fail-open the hooks have emitted, across every session, in every Circle. It is classified as **evidence, not telemetry** (`rules/workbench-tracking.md`, and decision `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` under `$SCAN_DECISIONS`), and this roll is the **only** thing that bounds its size.
 
 **There is no line or byte ceiling anywhere, and none may be added** — not here, not in `hooks/lib/events.ts`. Every ceiling expressible in lines or bytes discards the oldest lines first, and the oldest lines are the `guard_block`, `guard_halt` and `halt_cleared` events: 0.6 % of the file when it was measured, and the only lines that record the guard ever enforcing anything. A guard that forgets it halted is a strange guard.
 

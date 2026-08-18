@@ -128,6 +128,10 @@ You may receive work in two forms:
 
 (Every step MUST declare exactly one Executor from the active executor set. See "Executor Agents" above for the set and routing rules. Steps are updated inline by agents per `fusion-workbench-conventions.md`.)
 
+## Where this Circle stops
+
+<The conditions under which this Circle is finished, and any precondition a later act — a release, a tag, a closure — must satisfy first. One clause per condition, each answerable yes or no.>
+
 ## Data Structures
 
 <New types, interfaces, schemas if any>
@@ -152,6 +156,8 @@ You may receive work in two forms:
 ```
 
 (The **Decidability** line is mandatory and is never left empty. It is defined in `rules/critical-stance.md` §4, which also says what to do when the answer is no. The label reads `**Decidability:**` in every project, a `de` one included: it is defined in this shipped template, which is an exempt surface, while the plan body under it follows the artifact language. See `rules/fusion-workbench-conventions.md` `## Project language`.)
+
+(**Nothing reads `## Where this Circle stops` mechanically.** No gate, lint, helper or agent step parses it, and none is planned. Its whole enforcement is a human answering the orchestrator's question at Phase 4, which reads the section back clause by clause before the Circle closes — the same shape the `**Decidability:**` line uses, putting the question where somebody looks instead of building a checker for a question that is mostly undecidable. Write clauses accordingly. Measured: a plan made this Circle's review pass a precondition of the tag, v10.0.0 was tagged and pushed without the pass, and only a post-release reconciliation noticed. Binding decision: `260817-1613` under `$SCAN_DECISIONS`.)
 
 ## Design Principles
 

@@ -82,8 +82,8 @@
  *   - `record` — an authored artifact: the root-anchored `portfolio.md`, a
  *     Circle's `*_circle.md`, or anything under an artifact store. These are
  *     what a staging list is supposed to name.
- *   - `in-flight` — the live-state surfaces `rules/fusion-workbench-conventions.md`
- *     `## Which of them a tracked workbench tracks` groups as "do not track it",
+ *   - `in-flight` — the live-state surfaces `rules/workbench-tracking.md`
+ *     groups as "do not track it",
  *     plus the two tracked-but-machine-written ones and the session's own
  *     history file. Never a fault.
  *   - `unclassified` — everything else under the workbench. Named, with the
