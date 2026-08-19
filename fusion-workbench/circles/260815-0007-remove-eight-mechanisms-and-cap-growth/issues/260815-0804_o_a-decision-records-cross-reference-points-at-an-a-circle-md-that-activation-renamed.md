@@ -47,3 +47,12 @@ Re-point the line to `_t_circle.md`, or to the directory plus the section name, 
 further transition. The second is the durable form and is what a subsequent `_t_`→`_c_` rename will
 otherwise break again in a few Turns. Whether the citation convention for a Circle record should say
 so belongs in `rules/circle-records.md` and is a decision, not this fix.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Worse than filed: the citation is now two renames stale, not one.**
+
+`decisions/260815-0007_i_does-fusion-cleanup-block-…:7` still cites `circles/260815-0007-…/_a_circle.md`. The Circle record is `_c_circle.md` at HEAD, so the citation names a marker two transitions behind (`_a_` → `_t_` → `_c_`), and the citing record itself moved `_a_` → `_i_` since filing.
+
+This is the decision-store half of a class with three live carriers in this store (with `260815-1247_*_the-implemented-decision-records-two-cross-references-…` and, until this pass closed it as moot, the backlog `**Related:**` line). **The correct form is the wildcard**, `_*_circle.md` — `rules/circle-records.md` states both correct globs and `rules/fusion-workbench-conventions.md` `## Marker globs` explains why the underscore makes it safe. No gate reads workbench-to-workbench citations, which is why every instance of this class is found by hand.

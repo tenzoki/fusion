@@ -46,3 +46,24 @@ Superseded by:
 Reconciliation 260731-2324 (reconciler, domain `code`) — **stays `_a_` deliberately; not promoted to `_i_`.** The answer chosen was Option 3, "fusion does not support concurrency", whose realisation is the *absence* of a concurrency mechanism. There is no commit that implements a non-feature, so the `_i_` transition — which the vocabulary defines as "code or data on disk now reflects the decision", cited by hash or `path:line` — has nothing to cite. The surfaces that express the answer (`bin/fusion-session-mark`'s advisory marker, `/fusion:setup` Step 0d's running/stale warning, and the "Single orchestrator per project (advisory)" paragraph in `CLAUDE.md`) all predate this decision and were not written to satisfy it.
 
 Left open as a judgement call for the user rather than resolved by the reconciler, because `_i_` is terminal and promoting on absence-of-evidence is the wrong direction to be wrong in. Two defensible outcomes: promote to `_i_` citing the three pre-existing advisory surfaces as the realisation, or leave `_a_` permanently on the view that a no-op answer never reaches implementation. Nothing downstream is blocked either way — the pre-activation blocker this decision removed on `circles/260719-1536-plane-mirror-integration` is long since cleared (that Circle is `_c_`).
+
+---
+**Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — marker
+unchanged at `_a_`; the 260731-2324 judgement stands and now has a second instance.**
+
+The answer is still the standing answer: fusion is single-active-Circle and has no concurrency
+lock. The three advisory surfaces the earlier note named are all present and none was written for
+this decision — `bin/fusion-session-mark`, `/fusion:setup` Step 0c's running/stale warning, and
+`CLAUDE.md`'s "Single orchestrator per project (advisory)" paragraph. `bin/fusion-commit-lock` is
+a mutex around `git add`/`git commit` and is workbench-anchored, which is real serialisation but of
+one operation, not of sessions; it does not realise this answer either.
+
+The class this record opened now has a second member:
+`shared/decisions/260816-0119_a_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`,
+answered option 1 ("nothing new"). Both are answers whose realisation is an absence, and both are
+therefore uncitable under `rules/fusion-workbench-conventions.md` `### Decision files`. Deciding the
+class once would settle both; deciding them one at a time will not stop a third arriving.
+
+**What binds a deep change.** Nothing in fusion may assume two orchestrators can run safely against
+one workbench. `agentstate.yaml`, `.active-circle` and `orchestrator-events.jsonl` are all
+root-anchored single-writer state, and the only guard is a warning the user may ignore.

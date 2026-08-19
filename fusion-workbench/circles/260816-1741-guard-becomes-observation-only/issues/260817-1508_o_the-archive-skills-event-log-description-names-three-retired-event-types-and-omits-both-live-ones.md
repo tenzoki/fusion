@@ -61,3 +61,26 @@ appears anywhere in the file, and those two are the only kinds the hook can emit
 present-perfect tense at `:130` keeps the sentence historically true, which is why this reads as an
 omission rather than a false claim — the roll it argues for is still correct, and the reason it
 gives no longer describes what the log receives.
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass, third pass) — STAYS `_o_`, and this is now the second miss on the same file.**
+
+```
+skills/archive/SKILL.md:136
+  `$WORKBENCH/.guard-state/events.jsonl` is the guard's append-only record: every block,
+  halt, cleared halt, advisory override and fail-open the hooks have emitted, …
+
+skills/archive/SKILL.md:138
+  … the oldest lines are the `guard_block`, `guard_halt` and `halt_cleared` events …
+
+grep -c 'guard_allow\|guard_advisory' skills/archive/SKILL.md   → 0
+```
+
+Unchanged from the second pass but for a six-line drift (`:130` → `:136`). Neither of the two event types the hook can actually emit appears anywhere in the file.
+
+**`skills/archive/SKILL.md` was edited since the closure and this line was not read.** `06ab15b` ("the archive skill actually reads the rule it was the named consumer of") opened the file two days after the Circle closed and worked in it. That is the second time this Circle's own removal has been carried past this sentence — `1fb3f32` corrected `:94` in the original range and stopped 36 lines short, and `06ab15b` reached the file again from a different direction and stopped short of the same line.
+
+**Live obligation, and it is one sentence.** The remedy the record specifies is unchanged and needs no judgement: the log holds one `guard_allow` per write-tool call, one `guard_advisory` per configuration problem, one `guard_error` per fail-open, and — in a log written before 2026-08-16 — the `guard_block`, `guard_halt` and `halt_cleared` rows nothing writes any more. Drop "advisory override", which was never a type. Leave `:138` and the no-ceiling argument alone; that argument is still sound and `rules/fusion-workbench-conventions.md` already carries the clause that keeps it sound.
+
+The severity reading holds at Low and the cost is unchanged: an agent reading this skill forms the picture backwards — historical enforcement rows and no allow rows, where the truth is the reverse and has been for three releases.

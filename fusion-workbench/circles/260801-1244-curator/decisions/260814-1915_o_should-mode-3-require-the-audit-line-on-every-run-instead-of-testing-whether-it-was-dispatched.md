@@ -77,3 +77,18 @@ direction it fails in. The cost is one line on an invocation that already carrie
 `agents/coder.md` run that measured the unsoundness reached the same conclusion independently. The
 reason it is filed here rather than done is that it changes a contract, and contracts are the user's
 to change.
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Searched for an answer and found none; the question's subject is byte-unchanged.**
+
+**Searched, in this order, and named so the next pass need not repeat it:** every `*.md` under `$SCAN_DECISIONS` (this Circle's store and `shared/`), `$SCAN_PLANS`, `$SCAN_ANALYSES`, and the session histories of the four sessions since this record was filed. No recorded answer, no deferral, no superseding record.
+
+**The subject stands.** `agents/shaper.md:66` still carries the self-test verbatim — *"if you hold `AskUserQuestion` you are running top-level … if you do not hold it you were dispatched"* — and both statements it contradicts still stand, `README-agents.md:97` and `CLAUDE.md:28`. Nothing has measured the interactive-parent direction, which is the one the record calls dangerous, and no session can measure it from inside itself.
+
+**Two things have changed around it, and both strengthen option 1 rather than weakening it.**
+
+1. The record's recommendation rests on removing a dependency on undocumented harness behaviour. Since it was filed, this project has removed eight mechanisms for the related reason that they rested on inferences rather than facts — the write-path classifier, the git branch policy, the protected-path measurement. The self-test is the same shape at prompt level.
+2. Mode 3's contract has since gained a fourth parameter line (`**Scope:** directive-only | spec`, `agents/shaper.md:51`) whose own text says the run *cannot* decide it from what it holds and the dispatcher must state it. That is option 1's argument, already applied once to this same prompt, one parameter over.
+
+**What this record blocks.** Three open defects in this Circle name it as their closing condition or their carrier: `issues/260814-1850_*_the-halt-that-guards-the-audit-trail-rests-on-a-self-test-the-inheritance-model-denies` (explicitly — "answering that decision is what closes this"), `issues/260814-2022_*_initiated-by-carries-quoted-user-dialogue-and-no-surface-bounds-it-to-one-line`, and `issues/260814-2017_*_the-newest-decision-record-carries-no-answered-implemented-footer-block…`, whose subject is this file. It is the highest-leverage unanswered question in this Circle's store.

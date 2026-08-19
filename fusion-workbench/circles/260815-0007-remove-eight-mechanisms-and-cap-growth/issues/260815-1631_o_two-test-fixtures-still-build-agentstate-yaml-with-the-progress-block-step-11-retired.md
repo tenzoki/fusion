@@ -37,3 +37,18 @@ commit that created the module. The next person needing a state fixture copies o
 Replace the three lines in each with the block the schema defines
 (`agents/orchestrator.md:983-986`), e.g. `control:` / `  turn_start_head: "…"`. A fixture asserting
 nothing about the block still costs nothing and stops modelling a retired shape.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Unchanged.**
+
+```
+grep -n 'progress:' hooks/lib/__tests__/review-coverage.test.ts hooks/lib/__tests__/staging-drift.test.ts
+  review-coverage.test.ts:123:  "progress:",
+  staging-drift.test.ts:87:     "progress:",
+```
+
+Both synthetic builders still model the `progress:` block step 11 retired. Both files were edited between the closure and HEAD without the fixtures being brought forward. The schema they should mirror is `control:` at `agents/orchestrator.md:1026-1028`.
+
+No test fails as a result — the two consumers read the git anchor, not the block — which is exactly why it survives: a fixture that models a retired shape is only wrong to a reader, until the day someone derives the real schema from it.

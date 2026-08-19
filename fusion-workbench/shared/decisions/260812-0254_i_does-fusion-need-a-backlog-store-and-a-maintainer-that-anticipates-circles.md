@@ -73,7 +73,7 @@ Option 4 is not decided here. Whether `taskplanner` and the persisted queue reti
 stays open; the backlog is a home for ideas, not for a work queue, and folding the two together
 would answer a removal question by the back door.
 
-This decision is answered together with `260812-0254_a_where-do-a-circles-spec-and-plan-belong-…`;
+This decision is answered together with `260812-0254_*_where-do-a-circles-spec-and-plan-belong-…`;
 they are one design and neither is implementable alone.
 
 ---

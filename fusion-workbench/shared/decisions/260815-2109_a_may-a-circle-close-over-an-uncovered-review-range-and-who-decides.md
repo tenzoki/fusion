@@ -142,3 +142,25 @@ Retired:
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`). Answer recorded, not yet realised — marker stays `_a_`. Option 1 (advisory coverage, gap named in the closure note) is the standing behaviour and was followed at the v10 close. Option 3, filtering the uncovered set to commits touching shipped files, is absent: `hooks/lib/review-coverage.ts` filters the uncovered set only by coverage (`:612`) and mentions no shipped-file predicate anywhere.
+
+---
+**Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — marker
+unchanged at `_a_`; option 1 is in force, option 3 is still absent, and `hooks/lib/review-coverage.ts`
+has been edited since the last check without acquiring it.**
+
+Re-verified at HEAD rather than inherited from the 260817-1836 note, because `hooks/lib/review-coverage.ts`
+is one of the files `2552586..HEAD` touched. It still filters the uncovered set by coverage alone —
+`const uncovered = commits.filter((c) => !covered.has(c.full))` at `:612` — and no predicate anywhere
+in the module distinguishes a commit touching a shipped file from one touching only
+`fusion-workbench/`. `grep -n 'shipped\|non-workbench'` over the file returns nothing.
+
+So the unfiltered number is what every consumer of this helper still reads, and the record's own
+prediction about it has now held on four consecutive passes: an unfiltered count "will be argued with
+every time it fires". Two of those arguments are recorded in this record's own body.
+
+**What binds a deep change.** A Circle may close over an uncovered review range — that is settled, and
+`bin/fusion-review-coverage` reports and never blocks. What is not settled is the number a closure
+note quotes: it includes tracking-file commits a reviewer has nothing to open in, so any rule, gate or
+prose written against it inherits the padding the answer chose to remove and has not. A deep change
+that produces many workbench-only commits will inflate that count in exactly the way option 3 was
+answered to prevent.

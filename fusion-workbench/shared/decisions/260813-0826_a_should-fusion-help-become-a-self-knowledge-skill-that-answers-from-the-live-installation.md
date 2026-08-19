@@ -104,3 +104,30 @@ alongside, not an argument here.
 
 ---
 Answered: shared/analyses/260813-0831-the-seam-between-a-measured-answer-and-a-cited-one.md `## Verdict` — the seam is statable and option 3 is implementable, but this record cut it at the wrong granularity. Classified by *question*, 17 of 47 land in the middle and the split fails `rules/critical-stance.md` §4; classified by *the assertion an answer is made of*, all 17 decompose, the middle is empty, and three named residuals each carry a one-sentence rule. The analysis adds a third tier this record was missing — text quoted from the artifact whose own behaviour it describes — which is what makes "what does the playmaker do" look mixed when it is not. It also parts company with this record's motivation: staleness is the weaker argument and one of its two measurements is a false positive, while the stronger argument, coverage, is one this record never made — 20 of the 47 questions are about the user's own installation, which shipped prose cannot answer at any freshness. Cost: four new guarded call sites, about 72 lines, taking the help body from 119 to roughly 191. Implementation is not yet planned; no Circle carries this.
+
+---
+**Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — marker
+unchanged at `_a_`. Read the answer, not the record: the standing answer is the analysis's re-cut
+seam, not this record's option 3 as worded.**
+
+`skills/help/SKILL.md` is **131 lines** at HEAD, against the 119 the record measured and the ~191 the
+analysis costed. It is still a router into shipped prose. One sentence points the other way —
+`:70` tells the skill to run `bin/fusion-paths <name>` and show the user the result rather than
+guessing from the layout — and that is the whole of the measured half. The four guarded call sites
+the analysis costed are not there: nothing enumerates `agents/*.md` or `skills/*/SKILL.md` for an
+inventory, nothing calls `bin/fusion-rules <agent>` to answer what an agent reads, and nothing reads
+`.claude-plugin/plugin.json` for the version.
+
+The `Answered:` line above is doing more work than a footer usually does and should be read in full
+before this is planned. It records that the analysis **re-cut the seam** this record proposed —
+classify by the assertion an answer is made of, not by the question — and that it **parts company
+with this record's motivation**: staleness is the weaker argument and one of its two measurements is
+a false positive, while the stronger argument is coverage, which this record never made. 20 of 47
+inventoried questions are about the user's own installation and no shipped prose can answer them at
+any freshness.
+
+**What binds a deep change.** `/fusion:help` will describe whatever fusion was at the last time
+someone edited its prose. A deep change that alters the agent roster, the skill surface, the store
+layout or the resolver's keys leaves the in-session help surface wrong until a human rewrites it,
+and there is no gate that notices. The record's own evidence for this is that the skill shipped a
+release behind twice.

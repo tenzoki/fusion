@@ -33,3 +33,34 @@ der richtige Ort. Verschoben wird er hier trotzdem nicht — die Regel verlangt 
 Umverteilung, und ein Umzug bräche die Verweise aus dem Plan und aus dem Sitzungsprotokoll. Wer
 ihn aufnimmt, findet ihn über die Verweise; wer den Circle archiviert, sollte wissen, dass hier
 ein nicht-Circle-eigener Befund mitarchiviert wird.
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03`; the gap is unchanged and the record's own count of it is now stale in the direction that makes it look smaller than it is.**
+
+```
+bin/fusion-paths ontocoder
+  WORKBENCH=…/fusion-workbench
+  OUT_HISTORY=shared/history
+  OUT_ISSUE=shared/issues
+  SCAN_PLANS=shared/planning
+  SCAN_ISSUES=shared/issues
+  SCAN_DECISIONS=shared/decisions
+  SCAN_HISTORY=shared/history
+  exit 0
+```
+
+Seven lines, no `OUT_DECISION`, exit 0 — no error, because the resolver only refuses a key a prompt *names* and cannot value, never a key a prompt fails to name. Two years of releases have not touched this: the defect is in the derivation, not in any one prompt.
+
+**The record's population figure has moved and the shape has not.** It measured six prompts naming `$OUT_DECISION` and ten not. At HEAD:
+
+```
+grep -l 'OUT_DECISION' agents/*.md
+  analyst  consultant  curator  planner  reconciler  orchestrator  shaper
+```
+
+Seven of fifteen. `investigator` left the roster with its fold on 2026-08-15; `curator` and `planner` gained the key. **The eight that still do not name it are `coder`, `ontocoder`, `bugfixer`, `coderev`, `ontorev`, `taskplanner`, `playmaker` and `editor`** — and the record's point survives the arithmetic intact, because that list is still exactly the implementing and reviewing agents, the ones that meet an open question while doing the work. `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing — MANDATORY` binds every one of them and the resolver hands none of them a target.
+
+**Two of the record's own framings need correcting for whoever picks this up.** Its `TASKLIST` key is gone — the persisted work queue was retired on 2026-08-15 — so the emitted set is smaller than the record describes for reasons unrelated to it. And the plan it was found in, `circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_*`, has since closed, so option 2 of its two suggested resolutions ("the plan step changes executor") no longer has a plan step to change. Option 1 — `agents/ontocoder.md` names `$OUT_DECISION` where it today names `$OUT_ISSUE`, and the resolver emits the key by itself — is the only one of the two still available, and it is one line per prompt.
+
+**Origin, restated because it still holds and a reader should not have to re-derive it.** This finding did not arise from this Circle's Directive; it was found beside it. Under the Origin Rule its home is `shared/issues/`. It is deliberately not moved: the rule requires no retrospective redistribution, and a move would break the citations from the plan and the session history. Whoever archives this Circle should know a non-Circle finding is archived with it.

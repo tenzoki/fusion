@@ -41,3 +41,12 @@ Either the count reads six, or the sentence names what it excludes and why. The 
 question — *"Is the Circle record's Dependencies bullet corrected, or left as a historical
 statement?"* — already asks whether this section is edited at all; if the answer is no, this record
 closes as deferred rather than fixed, and the answer to that question is where it belongs.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Unchanged, on a now-terminal record.**
+
+`_c_circle.md:193` still announces "Five artifacts bind this one and are cited rather than copied", and `:195-212` still carries six bullets — `260814-0738`, `260815-0007`, `260813-0910`, `260719-1536`, `260810-0326`, `260812-0254`. The record transitioned `_t_` → `_c_` with the miscount in it and is not editable now.
+
+Worth recording beside it: two of those six citations no longer resolve in the live store. `260813-0910` (the documentation Circle) was archived on 2026-08-17, and the `260812-0254` citation names `shared/issues/` while the record lives in `shared/decisions/` as `_s_`. Neither is this record's subject; both are found by the same read.

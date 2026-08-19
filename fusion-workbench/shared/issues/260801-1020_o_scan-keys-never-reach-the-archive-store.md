@@ -23,3 +23,23 @@ Filed by: analyst, from `shared/analyses/260801-1020-normative-surface-drift-gap
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `bin/fusion-paths` emits no `SCAN_ARCHIVE` or equivalent, and `rules/fusion-workbench-conventions.md` documents `archive/` as a store without stating a read-scope exclusion. Neither candidate resolution was taken. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+**Reconciliation 260819-1400** (reconciler, domain `code`, HEAD `e435f03`; log
+`shared/history/260819-1400-reconciliation-shared-issues.md`). Reproduces, and the premise it was
+filed on has stopped being hypothetical. `grep -in archive bin/fusion-paths` is still empty — no
+`SCAN_*` key resolves into `archive/`, and no decision states the exclusion. What changed is the other
+side: the store is no longer empty. `e59dea2` (260817-1912) ran the archive step for the first time in
+the repository's history and moved real content under
+`fusion-workbench/archive/260817-1907-safe-cleanup-scoped/` — a `MANIFEST.md`, six `shared/planning/`
+records, `shared/decisions/` and `shared/issues/` records, and the rolled guard log. The sibling record
+`260816-1050` drew exactly this distinction ("that record assumes the store fills up over time; this
+one measures that it never has") and is now closed on its own half.
+
+**The severity moves with it.** Until 260817 an agent reading only `$SCAN_*` missed nothing, because
+there was nothing to miss. From `e59dea2` onward every reconciler, curator and analyst pass that asks
+what the project's history says is reading a corpus with a hole in it, and the hole grows with each
+cleanup. One measured consequence already exists: `shared/decisions/260811-1146_i_*.md:7` cross-
+references `shared/issues/260811-1142_*_*.md`, which now lives under `archive/…/shared/issues/` — the
+citation resolves for no reader following it at the path written. Marker stays open; the fix direction
+is unchanged, but it is now a live gap rather than a latent one.

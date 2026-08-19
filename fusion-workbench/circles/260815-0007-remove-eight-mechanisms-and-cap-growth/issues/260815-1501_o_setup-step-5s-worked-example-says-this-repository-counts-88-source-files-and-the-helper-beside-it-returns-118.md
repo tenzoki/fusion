@@ -62,3 +62,21 @@ deleted source files, which is the point the record makes about a hand-written p
 measurement inside a prompt: it decays without anyone touching it, and no gate reads it. The echo
 in `hooks/lib/__tests__/domain-cascade.test.ts:114` (`code_files: 88`) is a fixture and is
 unaffected — it exercises the cascade's arithmetic and does not claim to measure this repository.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Unchanged, and the number has now decayed in the other direction — which is the record's actual thesis, demonstrated a third time.**
+
+`agents/orchestrator.md:187` still reads *"this repository counts 88 files, the consuming project above 108"*. Measured beside it:
+
+```
+bin/fusion-count-sources
+  code_files=98
+  data_files=10
+  counted_by=git-ls-files
+```
+
+The gap has been 30, then 23, and is now 10 — the sentence never moved and the tree moved three times, once toward it and twice away. The `data` clause still states no figure at all, so the worked example illustrates one half of a two-input heuristic.
+
+A hand-written count of a directory every session writes to is wrong the day after it is written; `CLAUDE.md` has twice removed such a figure rather than re-measuring it, and that is the remedy this line wants. The example does not need the number to work — it needs the shape.

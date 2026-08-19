@@ -61,3 +61,26 @@ consumer's field read will meet it, and mark the counted head fields as of their
 (`**Open tasks:** 74 *(as of 2026-08-11; superseded — the records under `shared/issues/` are the
 authority)*`). The HTML comment can stay; the point is that the claim should also exist where a
 field read lands.
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — CLOSED as moot. The file left every scanning consumer's reach.**
+
+```
+bin/fusion-paths taskplanner | grep -i plan
+  SCAN_PLANS=shared/planning
+
+ls shared/planning/
+  260722-1943_c_spec-plane-spec-comment.md
+  260812-1232_c_remove-the-protected-path-half-of-the-compliance-guard.md
+  260812-1720_c_circle-first-placement-and-the-backlog-store.md
+  260818-1512_c_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md
+
+find fusion-workbench -name '260815-1524*'
+  archive/260817-1907-safe-cleanup-scoped/shared/planning/260815-1524_c_retired-tasklist.md
+```
+
+The record's harm was that a `_c_`-marked planning file with no `**Status:**` header sat inside `$SCAN_PLANS`, which every plan-reading consumer scans. It was archived in `e59dea2` on 2026-08-17 and `$SCAN_PLANS` no longer resolves to it. The archived copy still lacks the header and still heads with `**Open tasks:** 74`; that is left exactly as it stands, because a frozen record is evidence rather than a live claim.
+
+---
+Resolved: moot. `260815-1524_c_retired-tasklist.md` was archived out of `shared/planning/` in `e59dea2` on 2026-08-17, so no consumer scanning `$SCAN_PLANS` reaches it. The missing `**Status:**` header was never added; the file simply left the live store.

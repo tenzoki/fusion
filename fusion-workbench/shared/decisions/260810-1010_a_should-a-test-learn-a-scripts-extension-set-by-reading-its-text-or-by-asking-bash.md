@@ -126,3 +126,22 @@ the script's own output satisfies that, since the script computes the value by r
 
 ---
 Answered: shared/history/260810-0844-orchestrator-session.md `## Grounding revision` — recorded at the Rebalance gate, session 260810-0844. Not yet realised in code; the defect record it unblocks stays open until a commit implements it.
+
+---
+**Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — marker
+unchanged at `_a_`; the answer is nine days old and nothing has been built.**
+
+`bin/fusion-count-sources` has no `--print-extensions` mode, and no flag of any kind that emits its
+extension set: `grep -n 'print-extensions\|--print'` over the script is empty.
+`hooks/lib/__tests__/fusion-count-sources.test.ts:114` still defines
+`extensions(varName, src = readFileSync(script))` and still parses the script's text by regex, which
+is precisely the mechanism the answer replaced. Its own header at `:76-108` continues to narrate
+the three rounds of tightening that led here, and `:335-366` still asserts the widened filter's
+behaviour — so the file both records that the approach was abandoned and continues to implement it.
+
+**What binds a deep change.** Until the mode is built, every extension declaration in
+`bin/fusion-count-sources` must keep its variable name as the first token on the line. `export`,
+`declare`, `typeset`, `readonly`, `printf -v`, a leading `:` or `&&`, and an indented or `+=` form
+each leave bash computing one value while the test covers a smaller one, silently and with nothing
+thrown. That is a real constraint on a two-line edit to a working script, and it is the reason the
+answer chose to move the mechanism rather than widen the anchor again.

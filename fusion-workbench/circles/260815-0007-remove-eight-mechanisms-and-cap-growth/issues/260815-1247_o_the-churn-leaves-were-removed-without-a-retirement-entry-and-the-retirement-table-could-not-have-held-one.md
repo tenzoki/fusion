@@ -114,3 +114,12 @@ Three things, and they are separable:
   other three surfaces step 4's and step 5's lists did not name.
 - `shared/issues/260812-0843_o_the-guard-and-its-configuration-must-be-simplified-project-settable-and-defaulted-to-fit-or-not-shipped-to-consumers-at-all.md`
   — the standing question about the whole configuration surface.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Narrowed to one of three items; two are discharged.**
+
+**Discharged.** The unsupportable "no project ever set it" claim is gone from `hooks/lib/config.ts` (`fab8a4b`). The structural impossibility is gone too: `RETIRED_TOP_LEVEL_KEYS` now retires at *container* scope — `guard`, `decisions`, `escalation` — so the table can hold an entry for a whole removed section, which it could not when it keyed on leaves.
+
+**Standing.** `churn` is still not an entry in it. `grep -n 'churn' hooks/lib/config.ts` returns one hit, at `:56`, and it is history prose in the module header, not a retirement entry. So a project whose configuration still declares `churn` is carried through silently — no advisory, no drop notice — which is exactly what `templates/fusion.json`'s `_what` note promises does not happen. One entry in the table closes it.

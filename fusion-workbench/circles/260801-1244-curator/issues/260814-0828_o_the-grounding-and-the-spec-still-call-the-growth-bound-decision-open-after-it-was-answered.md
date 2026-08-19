@@ -58,3 +58,12 @@ read the spec". The planner did read it, filed the choice as
 the user answered option 1 at the plan gate, and step 5 landed at commit `5c843e6` with the
 re-baseline recorded on all four surfaces question 8 of the plan required. Nothing downstream was
 misled. What remains is stale text in one record, not a live risk.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). One of the two surfaces is fixed; the other is terminal and still wrong.**
+
+The spec surface moved as the record's own note said: `planning/260814-0738_c_spec-curator.md:385-392` now reads `- [x]` with *"Answered on 2026-08-14 at an orchestrator gate: option 1"*. The Circle record's `## Grounding snapshot` still opens *"One question is open and is the user's to answer before the planner plans the growth bound"* against `decisions/260814-0738_i_how-is-the-always-on-growth-bound-armed…`, which carries `_i_` — implemented, two states past open.
+
+The record cannot be edited (terminal), so what stays open is the reader-facing half: the Circle record is the first surface anyone opens and it announces an open question that was answered before the Circle closed.

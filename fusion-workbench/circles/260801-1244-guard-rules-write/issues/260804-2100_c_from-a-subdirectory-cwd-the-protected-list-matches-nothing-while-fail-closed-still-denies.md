@@ -223,3 +223,30 @@ und ist das, was diesen Befund offen hält.
 
 Sitzungsprotokoll:
 `circles/260807-0923-guard-misst-statt-orakelt/history/260807-1626-sessionstart-warnt-bei-start-unterhalb-der-projektwurzel.md`
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — CLOSED. The subject is gone, and every one of the three surfaces this record kept alive was deleted rather than corrected.**
+
+Measured at HEAD `e435f03` (v10.3.0), not read off the record:
+
+```
+ls hooks/lib/bash-mutation-guard.ts   → No such file or directory
+ls hooks/lib/project-relative.ts      → No such file or directory
+ls hooks/lib/protected-snapshot.ts    → No such file or directory
+```
+
+The record's title names two clauses and both were already false at the last pass; what kept it `_o_` was the residual named in the 260807-1626 note — *`hooks/lib/project-relative.ts` (`projectRelative`) still resolves the write tools' pre-deny paths against `process.cwd()`*. That file no longer exists. There is no pre-deny: `hooks/guard.ts` is 223 lines, holds no `permissionDecision`, no `"deny"` and no `hookSpecificOutput`, and every path through it writes `{}`.
+
+Three removals took it, in this order, and none of them was aimed at this record:
+
+1. **2026-08-12** — the protected-path half of the guard: the write-tool deny, the before/after fingerprint, the write-back, `guard.protectedPaths` and `rules/protected-path-discipline.md`. That took `protected-snapshot.ts` and the measurement root this record's 260807-1601 note had just moved to `findWorkbenchRoot()`. Plan: `shared/planning/260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md`.
+2. **2026-08-16** — the guard's last verdict, the halt, the escalation module, and with them `isFusionPluginCwd()`, the second of the four cwd-anchored resolutions this record's 260807-1626 note enumerated. Circle: `circles/260816-1741-guard-becomes-observation-only`.
+3. The same release deleted `hooks/lib/project-relative.ts`, the residual itself.
+
+**What survives, and it is not this record's.** `bin/fusion-plugin-cwd` is the one cwd-anchored implementation left, and the SessionStart warning added on 2026-08-05 by the 260807-1626 note is still there and still fires — `hooks/session-start.ts` warns whenever a workbench root is found above the working directory. The warning outlived every mechanism it was a warning about. That is a fact about the tree, not an open defect, and `CLAUDE.md` `## Where to look when something breaks` carries it under the *"SessionStart prints restart this session at the project root"* row.
+
+**Closed as moot rather than as fixed, and the distinction is recorded because it matters to a reader.** Nobody decided the coordinate-space asymmetry; the code that could exhibit it was removed for other reasons. `CLAUDE.md` states exactly this of this record by name — *"The issue that tracked the first, `260804-2100_*_…`, is moot rather than fixed."* If a future change reintroduces a path check that resolves against `process.cwd()`, this record is the measurement to read first: the asymmetry was never argued away, only outlived.
+
+---
+Resolved: the subject was deleted in three steps — the protected-path half of the guard on 2026-08-12 (`hooks/lib/protected-snapshot.ts`), the guard's last verdict and `isFusionPluginCwd()` on 2026-08-16, and `hooks/lib/project-relative.ts` with them. At HEAD `e435f03` none of the three files exists, `hooks/guard.ts` reaches no verdict on any path, and neither clause of the title nor the residual that kept the record open has anything left to hold. Moot rather than fixed.

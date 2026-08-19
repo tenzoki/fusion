@@ -43,3 +43,14 @@ Either the Closure note carries these three corrected rows with the reason, or s
 re-run at the true closing HEAD. Re-running is cheap — the block is reproduced verbatim in
 `history/260815-0729-coder-before-measurement.md` — but it would then need the same treatment for
 whatever the closing commit itself adds, which is the regress the annotation avoids.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Row 11 is discharged; rows 8 and 9 stand.**
+
+**Discharged:** the Closure note now carries the corrected `docs/` figure with its reason — 15 402 bytes, not the 23 534 first recorded, because step 15 added a file after the measurement.
+
+**Standing:** the `skills/` byte row still reads `294 134 B → 220 439 B`. Measured at the true closing HEAD `9306f0a` by summing every `skills/*/SKILL.md` in that tree: **221 336**. The row is 897 bytes low, and no `skills/` *line-count* row exists at all, though the note carries line counts for its other surfaces.
+
+The Circle record is terminal, so neither row is corrected. What this costs is specific rather than general: the four growth bounds armed by this Circle are argued from these measurements, so a later reader re-deriving the head-room from the Closure note starts 897 bytes off on the surface with the largest budget.

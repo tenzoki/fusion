@@ -57,3 +57,12 @@ not a measurement fix.
 **Filed by:** reconciler, session `shared/history/260813-2345-orchestrator-session.md`, Circle
 `260801-1244-curator`. Filed in the Circle's own store per the Origin Rule: the bookkeeping it
 describes is this Circle's Turn log and this session's record of running it.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). All four sub-claims unchanged.**
+
+`shared/history/260813-2345-orchestrator-session.md:32-34` — `## Turns` still reads `(none yet)`. `:191` still says "Review findings: none yet". `:193` still says "Coherence: not yet evaluated for this Turn". And the citation `issues/260814-1210_*_the-proof-run-cannot-be-dispatched-…` at `_c_circle.md:104` still resolves to nothing under any marker — no file carries the stamp `260814-1210`; the record is at `260814-1200`.
+
+The closure commit `4dcfff6` added the per-Turn sections that closed this record's neighbour (`260814-2017`) and touched none of these four.

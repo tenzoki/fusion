@@ -49,3 +49,13 @@ heading"), or bound the head block on `^#` so a record with any heading closes i
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `skills/next/SKILL.md:218` and `:226` still carry the same one-liner and the same prose. Both halves reproduce on a CRLF fixture with no heading: the protection comes from the line guard rather than a heading stop, and the rewritten line loses its carriage return. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: The subject was deleted rather than corrected. `95bebe1` ("feat(circles): the record's
+Directive is a pointer once a spec exists, and prose gains a writer") removed the `**Status:**` head
+field from the Circle-record template, and with it the entire `awk` pass in `/fusion:next`'s activation
+block that both halves of this record are about. At HEAD `e435f03` `skills/next/SKILL.md` contains no
+`awk` at all; section 6.2 is a bare `mv`, and `:224` now states positively that there is no
+`**Status:**` field to set. Neither the overstated heading bound nor the dropped CR has a code path
+left to occur in. Verified by `grep -n awk skills/next/SKILL.md` (no match) and by reading `:215-232`.
+Closed by reconciliation 260819-1400.

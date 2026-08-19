@@ -27,3 +27,21 @@ Step 4 has already read the portfolio (`skills/next/SKILL.md:139`, `cat "$WORKBE
 ## Recommendation
 
 Change step 1 of Step 5b to read the operation lines out of the `## Backlog — ranked` section of the portfolio read in Step 4, and demote the returned report to what it is good at: telling the skill whether this run proposed anything at all. Then state in `agents/playmaker.md` that the four operation lines in `## Backlog — ranked` are a **structured artifact** and therefore exempt from the prose profiles, the way `rules/user-facing-output.md` already exempts dashboard lines and machine-read tables. Without that exemption the two rules genuinely conflict.
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03`. The seam is unchanged; a neighbouring paragraph moved in a way that makes the record's recommendation cheaper, not moot.**
+
+```
+grep -n 'Read the proposals out of the report' skills/next/SKILL.md
+  140: **1. Read the proposals out of the report**, one operation to a line. The four line
+       forms are fixed by the portfolio template in `rules/circle-records.md`
+       `## Backlog — ranked`, and playmaker returns them in the report exactly as it wrote
+       them into the portfolio.
+```
+
+Verbatim as filed. All three unenforced assumptions the record enumerates still stand: nothing obliges the report to carry the lines verbatim beyond one clause in `agents/playmaker.md`, no heading or fence delimits the block, and `**No proposals, no step**` is still decided by failing to find something in free text.
+
+**What did change, and it cuts toward the record rather than against it.** Step 5b has since gained a `**Proposal source:** <portfolio> ## Backlog — ranked, generated <stamp>` line in the second dispatch's prompt block (`skills/next/SKILL.md:157`), and a load-bearing stamp check with it: the second run compares that stamp against the portfolio's own `**Generated:**` header and performs nothing when they disagree. So the skill now *names the portfolio as the authoritative source of the proposals in the very prompt it builds from the report* — while still parsing them out of the report. The record's recommendation is one step from being what the file already claims.
+
+The conflict the record names between `rules/user-facing-output.md` and the telegraphic line forms is also unresolved: no exemption for the four operation lines was written into either file. `rules/user-facing-output.md` still exempts dashboard lines, commit messages and monitor strings and does not name these.

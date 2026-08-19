@@ -57,3 +57,25 @@ and it now has a third store's worth of evidence behind it.
 
 - `issues/260815-0804_o_a-decision-records-cross-reference-points-at-an-a-circle-md-that-activation-renamed.md`
 - `issues/260815-1247_o_the-implemented-decision-records-two-cross-references-were-broken-by-the-commit-that-transitioned-it.md`
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — CLOSED as moot. The entry carrying the broken line left the live store.**
+
+```
+ls shared/backlog/
+  260811-0826_c_observations.md
+  260814-1733_o_attach-the-rule-to-the-act.md
+  260814-1733_p_bounded-executor-dispatches.md
+
+find fusion-workbench -name '*collapse-the-eight-admin*'
+  archive/260817-1907-safe-cleanup-scoped/shared/backlog/
+    260814-2312_c_collapse-the-eight-admin-commands-into-three-entry-points.md
+```
+
+The entry was closed and archived in `e59dea2` on 2026-08-17. The archived copy still spells the stale marker in its `**Related:**` line, and that is correct to leave: an archived record is frozen history, not a live pointer, and nothing enumerates it. No live backlog entry carries the defect.
+
+**Closed as moot rather than as fixed, and the class was not addressed.** Nobody corrected the citation; the file that held it stopped being live. The general defect — a `**Related:**` line written with a literal marker against a record the playmaker will rename by design — is unfixed and has no gate: `hooks/lib/__tests__/reference-resolution-lint.test.ts` scans the *shipped text* and resolves its citations against the workbench, never the workbench against itself. Two sibling records in this same store state the same class from the decision side (`260815-0804_*_a-decision-records-cross-reference-points-at-an-a-circle-md-that-activation-renamed`, `260815-1247_*_the-implemented-decision-records-two-cross-references-were-broken-by-the-commit-that-transitioned-it`) and both stay open, so the class keeps a live carrier.
+
+---
+Resolved: moot. The backlog entry carrying the stale `**Related:**` marker (`260814-2312_*_collapse-the-eight-admin-commands-into-three-entry-points.md`) was closed and archived out of `shared/backlog/` in `e59dea2` on 2026-08-17. No live entry carries the defect. The citation was never corrected and the class stays open on two sibling records in this store.

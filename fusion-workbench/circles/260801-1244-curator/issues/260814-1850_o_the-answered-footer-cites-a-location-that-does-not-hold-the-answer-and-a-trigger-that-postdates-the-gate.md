@@ -63,3 +63,12 @@ that ran at 14:57 and says so.
 `coder`, or the orchestrator for the history half (a session history is its own surface).
 
 **Filed by:** coderev, review `circles/260801-1244-curator/reviews/260814-1850-coderev-curator-turn-4.md`.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Both halves stand.**
+
+`shared/decisions/260813-0027_i_should-the-orchestrator-be-able-to-dispatch-…` still footers `Answered: shared/history/260813-2345-orchestrator-session.md \`## Coherence\` → Rebalance gate, 2026-08-14 — **option 2, narrowly**`. `grep -n 'narrowly'` over that history file returns nothing, and neither `## Coherence` section in it records a user answer — both end at `**Rebalance recommendation:**`. The timing half is unchanged too: the `review-needed` verdict the footer names is the 14:57 pass, 1h44m after the 13:13:35 gate it is offered as the trigger for.
+
+Both files are outside this pass's write scope (`shared/decisions/`, `shared/history/`), so this record is annotated and nothing is corrected.

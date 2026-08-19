@@ -66,3 +66,12 @@ restart the session", which is the workaround this instance used, not a fix for 
 shipped files under the same version number. The installed `8.2.0` and the source `8.2.0` are no
 longer the same bytes. The Turn-3 review names this and declines to file it as belonging to the
 release process rather than to this Circle; recorded here so the observation is not lost.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Documentation half stands; the mechanism half is still unmeasurable from inside a session.**
+
+`grep -rn -i 'two-session\|roster reload' agents/ skills/ rules/ docs/ README*.md CLAUDE.md` returns nothing. The general shape — that an agent built in a session cannot be dispatched by that session — is written down nowhere; the only related instruction is `CLAUDE.md:96`, which tells a developer to `fusion --update` and restart, and is about stale *rules*, not about a roster that has grown a member.
+
+The divergence the record's first note flagged is present again today: the installed copy at `~/.fusion` reads `10.2.0` and this tree reads `10.3.0`. Whether a session's agent roster is still pinned at start cannot be settled by reading the tree; it needs a launched session, which is what makes this record's own subject the obstacle to closing it.

@@ -40,3 +40,31 @@ Stated so the boundary is a decision rather than an oversight:
 The cheapest fix is to stop restating. Replace the sentence at `agents/playmaker.md:229` with a pointer to `## Two mandates, by dispatch path`, which the prompt already does for the other two dispatch sources (`:225`, `:227`, both of which say "Full mandate" and point outward). One statement, one place, nothing for the lint to hold.
 
 If the restatement is wanted for readability, extend case 2 to require the extracted clauses in the dispatch-sources section as well, and add a `must()`-guarded parser for that section so a rename fails loudly rather than vacuously.
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Both halves re-measured at HEAD `e435f03`; nothing moved but the line numbers.**
+
+The mandate sentence still appears three times, verbatim:
+
+```
+grep -n 'ranks, regenerates the portfolio and renames backlog markers' agents/playmaker.md
+  3:   (the frontmatter description)
+  189: ## Two mandates, by dispatch path
+  230: ## Dispatch sources
+```
+
+The record cited `:3`, `:194` and `:229`; the third surface has drifted one line and is otherwise untouched.
+
+The lint still holds two of them:
+
+```
+grep -n 'Dispatch sources' hooks/lib/__tests__/playmaker-backlog-mandate-lint.test.ts
+  (no output)
+```
+
+No case in that file reads `## Dispatch sources`, so the permitted motion the lint's own header describes — rewording the description and the mandate section together — still leaves the third statement behind and still shows green.
+
+**Neither of the record's two remedies was taken.** `:230` is still a restatement rather than a pointer, and case 2 was not extended. Both are still available and the cheaper one is unchanged: `agents/playmaker.md` already points outward for its other two dispatch sources, so replacing the sentence with a pointer costs a line and removes the surface the lint cannot see.
+
+**One thing worth knowing before someone picks the second remedy.** `agents/playmaker.md` sits under the `agents/` growth bound armed on 2026-08-15 (18 000 bytes of head-room, `hooks/lib/__tests__/surface-growth-bound.test.ts`), and the hook-test surface under its own. The pointer remedy *shrinks* the first and touches neither; the extend-the-lint remedy spends from the second. That asymmetry did not exist when this record was written and it argues for the pointer.

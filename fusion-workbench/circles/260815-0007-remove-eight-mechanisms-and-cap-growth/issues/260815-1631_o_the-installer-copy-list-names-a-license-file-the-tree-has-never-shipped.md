@@ -46,3 +46,21 @@ unsupported) is a licensing question, not an installer one. And whether `CLAUDE.
 mirror the list verbatim or stay a summary is the same class as the two stale inventory rows already
 filed at `260815-0803_o_two-claude-md-inventory-rows-went-stale-and-neither-lint-gate-can-see-them.md`
 — cross-referenced, not duplicated.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Primary half stands; the second-enumeration half is discharged.**
+
+```
+install.sh:83-84
+  for item in .claude-plugin agents skills rules hooks bin stilwerk templates docs \\
+              README.md README-agents.md README-hooks.md LICENSE; do
+ls LICENSE  → No such file or directory
+```
+
+**Discharged:** `CLAUDE.md:108` no longer restates the copy list — it now names the loop itself as the authority — so the two-enumerations-disagree half is gone.
+
+**Standing:** the loop still copies a `LICENSE` that has never existed, silently, behind its `[ -e ]` guard, while `.claude-plugin/plugin.json` declares `"license": "MIT"`. That mismatch is the distribution question the record names and no agent may answer it.
+
+**Filed twice.** `circles/260801-1244-guard-rules-write/issues/260805-1839_*_install-sh-will-eine-license-kopieren-die-das-repo-nicht-hat.md` states the same defect from the same measurement ten days earlier, in another Circle, and is also open at this pass. Both are cross-annotated; whoever fixes the line closes both.

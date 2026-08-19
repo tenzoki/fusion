@@ -44,3 +44,24 @@ Add `(reachable alone as `/fusion:cleanup --only claude-md`)` to `skills/curate/
 description, matching its two siblings, and spell the three selectors in `CLAUDE.md:21` rather than
 writing `<step>`. The error path at `:53` is good behaviour and should stay; it just should not be
 the first place a reader learns the name.
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — CLOSED. Both surfaces now spell the substitution, and a third states the trap.**
+
+```
+skills/curate/SKILL.md:2
+  description: The CLAUDE.md step of /fusion:cleanup (reachable alone as
+  `/fusion:cleanup --only claude-md`), kept as its own body rather than a command. …
+
+CLAUDE.md:21
+  … each reachable alone as `/fusion:cleanup --only archive`, `--only claude-md` and
+  `--only log-activity`. **Two of those three selectors are the body's own name and one is
+  not** — the `CLAUDE.md` step's selector is `claude-md`, and `--only curate` is rejected by
+  the selector's error path.
+```
+
+The defect was that a reader told a body is "reachable alone" would derive the selector from the body's own name, which for this one body is wrong. Both surfaces now write the selector literally, and `CLAUDE.md:21` goes further than the record asked: it names the asymmetry as an asymmetry and says what happens to the wrong guess. A reader can no longer arrive at `--only curate` by the derivation the record identified.
+
+---
+Resolved: `skills/curate/SKILL.md:2` and `CLAUDE.md:21` now spell `--only claude-md` literally rather than leaving it to be derived from the body's name, and `CLAUDE.md:21` additionally records that `--only curate` is rejected by the selector's error path. Landed in `3a0408a`.

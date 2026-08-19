@@ -117,3 +117,25 @@ Implemented:
 Deferred:
 Superseded by:
 Retired:
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. No answer recorded, no annotation added to the template, and the class has not grown.**
+
+**Measured at HEAD `e435f03`:**
+
+```
+grep -rn 'Unrealisable' rules/ agents/     → no hits
+grep -n 'Retired:' rules/fusion-workbench-conventions.md
+  :315   the _i_ row — "the body gains a `Retired:` line and the marker does not move"
+  :430   the inline-tracking form
+  :519   the template footer — "set when the implementation is removed; the marker stays _i_"
+```
+
+Option 2 was not taken: no seventh annotation exists. Option 1 was not taken either — `Retired:`'s definition is unchanged and still scoped to a removed *implementation*, so it still does not cover an `_a_` record whose subject was deleted. Option 3 would have renamed the two instances and neither has moved. Option 4, leave them to the reconciler's prose note, is what has happened by default rather than by choice, which is the position the sibling decision `260814-1332` rejected one marker over.
+
+**The class has not grown, which is the record's own tiebreaker.** It named two instances and offered a test: *"If the next two removals produce no further instance, option 4 is the honest choice and this record should be closed rather than answered."* Four days and four releases later — including the whole v10 guard removal, which deleted an escalation module, a halt, a clearing script and a configuration file — the count is still two. Both cited instances are in `shared/decisions/` and are outside this pass's write scope; neither was re-measured here beyond confirming that no `Unrealisable:` annotation was added to either.
+
+**So the input the record asked for now exists and points at option 4.** That is a reading, not a decision, and this pass does not take it: closing a record on the strength of a condition the record itself set is still the user's call, and option 2's argument — that one annotation should answer one question — does not weaken just because the class stayed small.
+
+**One thing that has changed and bears on the choice.** On 2026-08-18 the decision-record head lost its `**Status:**` field, so the filename marker is now the state's only source and the footer block is the only place a transition can be evidenced. That raises the cost of option 4 slightly: a prose note under the footer is now the only thing distinguishing an `_a_` record that is waiting from one that can never move, and there is no longer a head field a reader might have checked instead.

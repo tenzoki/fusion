@@ -61,3 +61,21 @@ The same commit also inverted that lint's `carries the budget in agentstate.yaml
 prompt and did not reach the module the test is about — one phrase in two files, one copy fixed.
 That is the two-copies-drift pattern this project files defects about, arriving inside a single
 commit rather than across releases.
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — CLOSED. Rewritten exactly as the record directed.**
+
+```
+hooks/turn-budget.ts:15-19
+ * something the prompt READS. This is that read: one call at Setup, one line of
+ * output, and the orchestrator holds the answer for the session. It used to
+ * persist it as `progress.max_turns` in `agentstate.yaml`; that field went with
+ * the rest of that file's counters on 2026-08-15, so the resolved budget lives
+ * only in the running session now.
+```
+
+The present-tense claim is gone and the historical half is kept, in the past tense, with the date and the cause. That is the shape the record asked for rather than a deletion — a reader meeting `progress.max_turns` in an old state file still finds out what it was.
+
+---
+Resolved: `hooks/turn-budget.ts:15-19` no longer states that the orchestrator persists the budget in `agentstate.yaml`. The claim is now past-tense and cites the 2026-08-15 removal of that file's counters, and states where the resolved budget lives instead. Landed in `fab8a4b`.

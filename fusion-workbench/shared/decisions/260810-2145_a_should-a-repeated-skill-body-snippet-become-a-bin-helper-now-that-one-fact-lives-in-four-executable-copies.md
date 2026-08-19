@@ -130,3 +130,34 @@ applied to itself: a decision record bundling separable questions cannot be trac
 state is not a single value, and the repair is to split rather than to pick a marker that lies
 in one direction. When the domain-capture call is taken up, split this record — file that half
 as its own decision, and move this one to `_i_` on the source-root half alone.
+
+---
+**Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — marker
+unchanged at `_a_`; the first half holds, the second half's arithmetic has moved, and one citation
+in the note above now dangles.**
+
+*First half, verified.* `bin/fusion-source-root` exists and owns the criterion.
+`grep -rn 'fusion-plugin-cwd' agents/ skills/ rules/` is still empty, and the four skill bodies that
+carried executable copies now carry guarded calls to the helper (`skills/setup/SKILL.md:32-34`,
+`skills/next/SKILL.md:33-35`, `skills/cleanup/SKILL.md:29-33`, `skills/help/SKILL.md:31`). No copy
+has crept back in the eight days since.
+
+*Second half, re-measured.* The record and the note above both say the domain capture sits in
+**four** skill bodies. At HEAD it sits in **three**: `skills/next/SKILL.md:86-90`,
+`skills/direct/SKILL.md:55-59` and `skills/cleanup/SKILL.md:105-110`. The fourth left with a skill
+that was itself removed, not because anyone consolidated the snippet. The three that remain are
+still byte-comparable shell — `next` and `direct` are identical three-line blocks; `cleanup` adds a
+`DOMAIN_SOURCE` line and is therefore already a fourth variant of the same fact rather than a fourth
+copy of one. So the case the second half was filed on has weakened by one copy and sharpened by one
+divergence, and it is still open.
+
+*A citation in the note above no longer resolves.* That note holds the second half open partly on
+"`tasklist.md` task 41". The persisted task list was removed on 2026-08-15 (`dd312eb`), so the
+outstanding work is now carried only by
+`shared/issues/260810-2110_o_the-domain-capture-one-liner-is-now-copied-into-a-fourth-skill-body-and-the-copying-is-the-stated-justification.md`,
+which is still `_o_` at HEAD and whose own title now over-counts by one.
+
+**What binds a deep change.** The source-root half is settled and load-bearing: any new skill body
+that needs to read shipped text calls `bin/fusion-source-root` behind an `[ -x ]` guard and does not
+re-derive the criterion. The domain-capture half is not settled, and a change that adds a fourth
+site for it will be adding to an open record rather than to an undecided one.

@@ -99,3 +99,19 @@ a judgement call renewed at every edit.
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`). Answer recorded, not yet realised — marker stays `_a_`. No `hooks/lib/*.ts` module exports a description, and nothing generates the table. What exists is a row-set lint (`hooks/lib/__tests__/derivable-enumerations-lint.test.ts` section 5) that checks the table names exactly the files that exist, which is detection rather than the generation this answer chose. The only generated block in the file is the domain-cascade paragraph between its BEGIN and END markers at `README-hooks.md:209` and `:234`.
+
+---
+**Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — marker
+unchanged at `_a_`; re-verified after the 260817-1836 pass and nothing has moved.**
+
+No `hooks/lib/*.ts` module exports a `DESCRIPTION` or an equivalent, and nothing generates the lib
+table: `grep -rl 'export const DESCRIPTION' hooks/lib/*.ts` returns zero files, and the only
+generated block in `README-hooks.md` is still the domain-cascade paragraph between its markers at
+`:209`. The row-set lint (`hooks/lib/__tests__/derivable-enumerations-lint.test.ts`) continues to
+check that the table names exactly the files that exist, which is the coverage this record calls
+blind to the failure it is about.
+
+**What binds a deep change.** Every row of the `README-hooks.md` lib table is a hand-written claim
+that no gate reads. A change that redefines what a `hooks/lib/*.ts` module does must edit that row by
+hand or ship a description of the old behaviour — the failure this record was filed on, measured
+twice. Until the answer is realised, the row set is checked and the row text is not.

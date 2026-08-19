@@ -74,3 +74,22 @@ questions, which is the ground option 2 was declined on there.
 
 The residual is filed as its own question rather than settled by stretching the annotation:
 `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_o_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`.
+
+---
+**Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — re-verified;
+marker unchanged at `_a_`, and the record now wants a user decision rather than another pass.**
+
+The ground is still gone and nothing has grown back. At HEAD there is no `skills/circle-stash/`,
+no `skills/circle-pop/`, no stash manifest and no writer of one; `rules/commit-lock.md` is the
+renamed remnant and carries the mutex alone. All three of this record's `**Cross-references:**`
+dangle. The answer — keep both fields, no schema change, record the reason in the manifest schema
+documentation — has no surface left to land on, so `_a_` → `_i_` is unreachable by construction and
+not by anyone's omission.
+
+The residual question this record was parked behind, `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_o_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`,
+is **still `_o_`** at HEAD, four days after it was filed. Its recommendation is option 2 (a
+`Realisation-removed:` annotation, no rename) at low-to-moderate confidence, and its own
+`speculation:` paragraph proposes that if no third instance appears, option 4 — close it, leave the
+two records as they are — is the honest choice. No third instance has appeared: this pass read all
+21 `_a_` records in `shared/decisions/` and found exactly the two already named. That is the
+measurement the record asked for, and it is now available to whoever answers it.

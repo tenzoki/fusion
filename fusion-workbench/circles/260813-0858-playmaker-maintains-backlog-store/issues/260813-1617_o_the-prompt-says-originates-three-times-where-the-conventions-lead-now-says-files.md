@@ -50,3 +50,22 @@ store does not hold. Only the noun is wrong.
   the mandate section, so this touches a linted surface.
 - Nothing grows the always-on rule text: this is `agents/playmaker.md`, which the golden
   measures per emission but which is not itself rule text.
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`, materially narrowed. One of the three sentences is left, and it is the one the record calls the most-read.**
+
+Measured at HEAD `e435f03` across all four sites the record enumerates:
+
+| Site | At HEAD | Acceptance |
+|---|---|---|
+| `:3` frontmatter description | "Never **originates** a backlog entry." | **not met** |
+| `:10` write-narrow paragraph | "never originate a backlog entry" | not met by the letter |
+| `:60` the prohibition | "**Originate a backlog entry.** Filing is the user's act … You reshape ideas the store already holds and never add one to it, **the merge included**" | met in substance |
+| `:112` | "you reshape the ideas it already holds, and you **originate none**" | correct, and correctly left alone |
+
+The acceptance asked for the noun to change — "files" where it says "originates", or "originates an idea". **The noun never changed anywhere.** What changed is that `:60` and `:112` grew the clause that removes the ambiguity: `:60` now says explicitly that the bound covers the merge, and `:112` scopes the verb to *ideas*, which is the thing actually forbidden. A reader of either reaches the right answer without consulting the conventions file.
+
+`:3` and `:10` did not get that clause. `:3` is the sentence a dispatcher reads and the one `playmaker-backlog-mandate-lint.test.ts` case 2 pins against the mandate section, and read literally against the split behaviour the same prompt grants — *"Give each distinct idea its own entry … and file the new entries at `_o_`"*, `agents/playmaker.md` Step 2b item 1 — it is still false.
+
+**Why this stays open rather than closing as substantially-fixed.** The record's own argument is that the sentences a reader meets *first* are the ones that must be right, and the frontmatter description is first by construction. Two of the four sites were repaired by adding context; the two that cannot carry context are the two left. The fix is still the one the record names and still costs one word each.

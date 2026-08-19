@@ -30,3 +30,10 @@ Both branches print a bare path and nothing else. The emission format is one pat
 2. **Move the obligation to the helper.** The helper logs nothing today and has no history file, so this means dropping the history-line requirement. That is a constraint removal and needs a decision, not a patch.
 
 **Why the curator did not simply delete the sentence.** Deleting the history-line requirement would remove a constraint on Tier 1 evidence, which `agents/curator.md` `## Evidence tiers` forbids and the preserve list bars. The curator corrected the actor — the verified falsehood — and left the obligation standing with this record cited beside it. Closing this issue is what lets the qualification come back out of the rule.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). `emit_voice_profile()` is byte-unchanged, and the rule now cites this record beside the qualification.**
+
+`bin/fusion-rules` still emits only the resolved path: on a missing `-de` variant it prints the `-en` one and says nothing about having fallen back. `rules/fusion-workbench-conventions.md:247` now names this very record as the tracker for the unreachable history line — which is the state the record predicted, where closing it is what lets the qualification come back out of the rule. Nothing has moved on the helper side.

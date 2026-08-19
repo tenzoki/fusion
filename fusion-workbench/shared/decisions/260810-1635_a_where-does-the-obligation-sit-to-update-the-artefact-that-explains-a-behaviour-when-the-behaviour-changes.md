@@ -85,3 +85,39 @@ Two things this instance adds to the five already counted, neither of which chan
 `shared/issues/260812-1232_o_thirty-four-of-seventy-four-decision-records-carry-a-status-header-that-contradicts-their-filename-marker.md`,
 re-measured at 35 of 86 on 2026-08-14, and repairing members one at a time moves that measurement
 without closing the record.
+
+---
+**Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — marker
+unchanged at `_a_`. This is the most-cited unrealised answer in the store, and the one whose
+non-realisation costs the most.**
+
+The answer is a programme — identify the claims stated in more than one shipped surface, pick an
+authoring home for each, replace the rest with citations — and no pass has ever executed it as a
+programme. What exists is the same move applied ad hoc, each time by a different session for its own
+reason: `rules/fusion-workbench-conventions.md`'s header table naming the four topics partitioned
+out of it; `README-agents.md` `## Dispatch parameters` as the single roster;
+`rules/commit-lock.md`, `rules/circle-records.md`, `rules/rule-file-provenance.md` and
+`rules/workbench-path-resolution.md` as single authoring homes; `CLAUDE.md` rows that deliberately
+refuse to restate a helper's header. That is the answer working, one surface at a time, with nothing
+tracking which surfaces are left.
+
+The answer is also being *cited as settled* by later records while it is unrealised — this pass
+found `260811-1522_a` resting its own choice on "the general rule adopted there", and the
+`260814-2128` instance recorded above was repaired by applying it. So the rule is in force in
+practice and unrealised on the books, which is the worst of the two states to plan against.
+
+Two things this pass measured that the record should carry. `CLAUDE.md` itself now warns, in the
+`templates/` and `docs/` rows, that an inventory it once held went stale twice in one day
+*invisibly to both lint gates*, and instructs a reader not to restore one — that is the answer
+adopted as a standing instruction on the project's largest prose surface, arrived at by the same
+class of failure this record counts. And `260810-1635`'s own note above still reads
+`**Status:** open` against an `_a_` filename; that is deliberate, per
+`260818-2212_i_should-the-decision-records-status-field-exist-at-all-...`, which says a record
+written before the field left the template keeps it.
+
+**What binds a deep change.** Any change that states a fact on a second shipped surface is adding to
+the class this record was opened on. The answer's rule — one authoring home, citations elsewhere —
+is the standing rule and has no gate behind it, so it holds only for as long as each author applies
+it. A deep change that touches many surfaces at once is the exact shape this record predicts will
+leave stale explanations behind, and it is the single most likely way a future change breaks fusion's
+documentation without breaking its tests.

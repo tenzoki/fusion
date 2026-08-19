@@ -67,3 +67,18 @@ named the `_c_` one. That is a live session-state field a resume reads, not a hi
 so it is in a different class from the other 40 and was fixed on sight. The remaining 40 are
 history files, closed issue records and review files that name the plan under the marker it
 carried at the time — correct as written.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Grown again, from 34 to 55.**
+
+```
+grep -ro '260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth' fusion-workbench/ | wc -l   → 56
+… excluding the two event streams                                                              → 55
+ls circles/260815-0007-…/planning/  →  260815-0029_c_plan-remove-eight-mechanisms-and-cap-growth.md
+```
+
+34 → 41 → 55 citations of a filename that carries `_c_`, none of which resolves. Every reconciliation pass that annotates a record in this store adds more, this one included — which is the record's own point made mechanically.
+
+The record is filed as a class question and not a repair: which of the three citation positions holds — rewrite each to `_*_`, leave literal markers as historical, or require the wildcard at write time. No decision record in any store answers it. Until one does, mass-rewriting 55 citations would be one agent's judgement applied at scale, which is the outcome the record was filed to prevent.

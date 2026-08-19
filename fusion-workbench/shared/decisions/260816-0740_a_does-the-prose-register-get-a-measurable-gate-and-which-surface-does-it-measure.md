@@ -104,3 +104,30 @@ inference is only tested by a corpus at or near the ceiling.
 
 This record stays answered rather than implemented until that measurement exists. It is not
 `_i_`, because option 4's content is precisely a test that has not yet run.
+
+---
+**Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — marker
+unchanged at `_a_`; the first act of option 4 has landed and the second has not, which is exactly
+the state the answer said this record would sit in.**
+
+*The repunctuation happened, at the scope the user set.* `6049d3e` took
+`rules/user-facing-output.md` from **38 em-dashes to 6**, measured at that commit and its parent.
+At HEAD the file carries 6 em-dashes across 2799 words — **2.1 per 1000**, against the stated
+ceiling of 1. So the one file in scope came down by a factor of six and still sits above its own
+ceiling, which is a fact the re-measurement will have to carry rather than discover.
+
+*The measurement that would move this record has not run.* `shared/analyses/` holds only the
+original `260816-0740-rhetorical-register-of-agent-output.md`; no falsification pass against a later
+session's output exists. The record's own closing sentence governs: it is not `_i_`, because option
+4's content is precisely a test that has not yet run.
+
+*The dose warning in the answer stands and has got weaker, not stronger.* The answer already
+cautioned that 2563 repaired words inside a 22 763-word corpus is a weak dose. Since then the
+always-on corpus has **grown** — `rules/workbench-tracking.md` was added in `b200902` and
+`bin/fusion-rules` emits it — so the repaired fraction is smaller today than when the caution was
+written. Whoever re-opens this record must not read a null result as falsifying finding 10.
+
+**What binds a deep change.** No gate measures a prose property, and none is authorised to be built
+until the measurement runs. A change that adds a prose gate now would be answering this record's
+question ahead of the evidence the user's own choice made a precondition. A change that adds prose
+to the always-on set makes the pending measurement weaker and should say so.

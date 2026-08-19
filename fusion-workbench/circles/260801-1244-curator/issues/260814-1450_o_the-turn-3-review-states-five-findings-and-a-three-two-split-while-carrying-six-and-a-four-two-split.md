@@ -48,3 +48,12 @@ to six leaves the same sentence able to go wrong the next time a finding is adde
 **Filed by:** reconciler, session `shared/history/260813-2345-orchestrator-session.md`, Circle
 `260801-1244-curator`. Filed in the Circle's own store per the Origin Rule: the review it describes
 was produced by executing this Circle's Directive.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Both wrong sentences stand verbatim; only an annotation was added beneath them.**
+
+`reviews/260814-1419-coderev-curator-turn-3.md:19` still opens "Five findings"; `:30` still says "Three are filed under `circles/260801-1244-curator/issues/` and two under `shared/issues/`". Counted at HEAD: four under this Circle's `issues/` at that stamp, two under `shared/issues/` — six, split four-two.
+
+A reconciliation note at `:164` records the contradiction and points here, which is the correct handling for a review file (annotate, never rewrite the finding). What keeps the record open is that the two counts a reader meets first are still the wrong ones.

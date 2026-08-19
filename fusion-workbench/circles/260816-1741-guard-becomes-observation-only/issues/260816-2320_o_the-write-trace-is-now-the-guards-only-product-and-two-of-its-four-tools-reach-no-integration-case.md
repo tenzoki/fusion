@@ -71,3 +71,21 @@ Reconciliation 2026-08-17, second Phase-3 pass. **Left OPEN, re-measured at HEAD
 `hooks-wiring.test.ts`, where they are matcher entries rather than integration cases; outside the
 tests they appear in `hooks/guard.ts` and `hooks/tracker.ts` alone. Two of the four tools of the
 guard's only remaining product still reach no integration case. Left open by explicit user decision.
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass, third pass) — STAYS `_o_`. Re-measured at HEAD `e435f03`; the gap is unchanged and the surface around it moved without closing it.**
+
+```
+grep -rn 'NotebookEdit\|MultiEdit\|notebook_path' hooks/lib/__tests__/
+  hooks/lib/__tests__/hooks-wiring.test.ts:70:
+    for (const tool of ["Write", "Edit", "MultiEdit", "NotebookEdit"]) {
+```
+
+One hit, still the `hooks.json` matcher-list assertion rather than a call through the hook. The `notebook_path` branch of `extractFilePath` still has no case, and neither `MultiEdit` nor `NotebookEdit` reaches `guard.ts` in any test.
+
+**`helpers/guard-harness.ts` was edited since the closure and the four cases were not added.** `git diff --stat d0f13fa..HEAD -- hooks/lib/__tests__/helpers/guard-harness.ts` is non-empty, so the file the record names as already holding the cheap remedy — `runWrite` takes a tool name — has been opened and worked in twice since, without anyone reaching for it. That is the second miss on this file.
+
+**Live obligation, and of the eight open records in this Circle it is the one that most directly binds a deep change.** The record's own severity reading is Low and stays Low; what has risen is the consequence of being wrong. Three shipped releases now depend on the `guard_allow` row being the whole product of the write path (`hooks/guard.ts:7-10`, `README-hooks.md:9`, `CLAUDE.md`, `docs/working-model.md:118`), all four tools are named to the user as covered, and two of them have never been through the hook in a test. A change that touches `extractFilePath` or the `answer` call around it will be verified by a suite that exercises `Edit` and Bash and nothing else.
+
+The remedy is still four cases in `guard-bash-integration.test.ts`'s existing describe, asserting the row's `file` — and the hook-test surface still has the head-room this Circle armed for it.

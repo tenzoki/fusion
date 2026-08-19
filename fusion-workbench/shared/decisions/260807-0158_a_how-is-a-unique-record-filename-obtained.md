@@ -175,3 +175,21 @@ Not rewritten here, because the general case is the point rather than this one n
 the suite reads a line citation. Filed as
 `shared/issues/260808-0030_o_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`,
 which names this record as its first measured instance.
+
+---
+**Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — marker
+unchanged at `_a_`; the condition this record set for itself is still unmet, twelve days on.**
+
+`rules/fusion-workbench-conventions.md` `## Filename Patterns` at HEAD carries the artifact-kind
+table, the `<sender>` rule and the `$OUT_MEMO` write-semantics note, and **no citation rule**.
+`grep -rn 'full filename\|cite a record' rules/ CLAUDE.md agents/ skills/` returns only
+`rules/rule-file-provenance.md`'s three citation forms for the `**Provenance:**` header, which is a
+different subject. The one-line rule the answer left standing — cite a record by its full filename,
+marker wildcarded, never by the timestamp alone — is followed in practice throughout the corpus and
+is written down nowhere it can be read as normative.
+
+**What binds a deep change.** The `YYMMDD-HHMM_S_<topic>.md` pattern stands and no minting helper is
+authorised: the premise that it collides was measured false. A change that introduces a second
+resolution, an ordinal suffix or a `bin/fusion-newname` would be re-deciding a settled question, and
+it would lengthen or mix the width of every identifier in a corpus of roughly 1000 records. What is
+open is only the rule text.

@@ -59,3 +59,25 @@ Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answe
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`). Answer recorded, not yet realised — marker stays `_a_`. `rules/user-facing-output.md` carries no rule about rendering workbench-prefixed absolute paths in chat. The one absolute-path mandate in the shipped prompts is a different subject: `agents/orchestrator.md:537` requires absolute pathspecs for `git add` under the commit lock-s directory change.
+
+---
+**Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — marker
+unchanged at `_a_`; re-verified after 260817-1836.**
+
+`rules/user-facing-output.md` still carries no rule about rendering a `$WORKBENCH`-prefixed absolute
+path in chat, and no agent prompt carries one either. The capability the answer chose is present and
+unused, exactly as the record's option 3 said it already was:
+`rules/fusion-workbench-conventions.md:132` states that every emitted path is workbench-relative
+**except `WORKBENCH` itself, which is absolute**, so an agent can render `$WORKBENCH/<relative>`
+today with no new mechanism.
+
+The answer's cost is therefore one paragraph in `rules/user-facing-output.md` and nothing else,
+which makes this the cheapest unrealised answer in the store — and, since that rule file is
+always-on for all sixteen agents, one whose bytes are charged sixteen times a session against the
+12 000-byte always-on growth bound in `hooks/lib/__tests__/rules-emission-golden.test.ts`.
+
+**What binds a deep change.** Stored records keep relative paths — an absolute path in a committed
+record breaks for every clone, and this workbench is git-tracked. Any change that starts emitting
+absolute paths must keep the split between what the user reads and what persists, which is the
+distinction `rules/user-facing-output.md` already draws and the reason option 1 was not chosen
+outright.

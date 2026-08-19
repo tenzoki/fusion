@@ -67,3 +67,34 @@ Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answe
 Implemented:
 Deferred:
 Superseded by:
+
+---
+**Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — marker
+unchanged at `_a_`, and this record can never reach `_i_` under the citation rule as it stands.
+That is a class, not an oversight, and it is the second member.**
+
+*The answer is on disk in the only sense a "nothing new" answer can be.* Option 1 chose the
+reference lint as the whole mechanism, and the lint is present and covers the surface the record
+was worried about: `hooks/lib/__tests__/reference-resolution-lint.test.ts` reads the top-level
+`hooks/*.ts` entrypoints as well as `hooks/lib/*.ts` (`:178`, and `:495-497` records the count
+movement that entry caused). Nothing in fusion rewrites shipped text, which is the answer's other
+clause, and no `bin/` helper was added for the rename obligation.
+
+*Why it stays `_a_`.* Every one of those facts predates the answer or is the *absence* of a change,
+so there is no commit or `path:line` that a reader could resolve as "this is where the answer was
+realised". `rules/fusion-workbench-conventions.md` `### Decision files` defines `Implemented:` as a
+citation of a commit or a path, and a decision to build nothing has neither.
+
+*The class.* This is the same shape as
+`shared/decisions/260719-2141_a_concurrency-worktree-slots-vs-single-active-circle.md`, whose
+reconciliation note of 260731-2324 left the identical judgement to the user: promote on
+pre-existing surfaces, or accept that a no-op answer never reaches implementation. Two records in
+`shared/decisions/` now stand in it. It is **not** the class that
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_o_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`
+asks about — there the ground was removed after the answer; here the answer was never a thing to
+build — and conflating the two would widen that record's question while it is still open.
+
+**What binds a deep change.** The reference lint is the whole mechanism for stale-marker citations
+and is load-bearing by decision, not by accident. A change that renames a record's marker carries
+the grep for the old name itself; a change that removes or narrows the lint removes the only thing
+standing behind this answer.

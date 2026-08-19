@@ -46,3 +46,12 @@ true of the `control:` block, not of the file, which also holds `session:`, `cur
 State the distinction the block actually draws — a number written to *bound behaviour across an
 interruption* is control state; a number written to *report progress* is a tally and is derived —
 and scope the "three surfaces" sentence to the block. No schema change.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Unchanged, all three surfaces.**
+
+`agents/orchestrator.md:1028` still defines `directive_revisions_this_session: <integer; initialised to 0; capped at 1>`. `:1053` still says *"The block is called \`control:\` because it holds no counts"*. `:1062` still says *"none of them is a tally: a git anchor and two pieces of control state"*, and the write point at `:1079` increments the integer.
+
+The distinction the record asks for — a counter that bounds an action is control state, a counter that tallies work done is a count — is defensible and is written down nowhere in the file. Until it is, the block's own explanation contradicts the field two lines above it, and a reader reconciling the two has no basis to prefer either.

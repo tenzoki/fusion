@@ -47,3 +47,39 @@ Widened by step 8 (2026-08-15), still `_o_` and still gate G1's. The `templates/
 Step 8 left the row rather than fixing it, and the judgement is the plan's rather than the executor's: the plan's step 8 states that `CLAUDE.md:51`'s bare-filename spelling puts the row on the narrative side and names this record as the reason. That call was made knowing the row was already stale. What step 8 adds is the current count, so the curator's pass reads the state as it is rather than as step 2 left it.
 
 The row's sibling obligation is done: the *"Where to look when something breaks"* row that spelled `templates/investigator-capture-layout.md` as a path was gate-forced and left in step 8's own commit.
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — CLOSED, and the divergence between what was asked and what happened is the substance of this note. Read it before restoring an inventory anywhere in the Layout table.**
+
+**The two instances are gone, by the opposite remedy to the one this record proposed.** Neither row carries an inventory any more, so neither can go stale:
+
+```
+CLAUDE.md `templates/`  … **The set is deliberately not written here.** Run `ls templates/`,
+  and read the setup skill for where each file goes … An inventory *did* stand here and went
+  stale twice in one day on 2026-08-15, once per removal, invisibly to both lint gates …
+  Do not restore one.
+CLAUDE.md `docs/`  … **The set is deliberately not written here.** Run `ls docs/`. An inventory
+  stood in this row and named three files while the tree held four, invisibly: no lint gate
+  resolves a bare filename here, which is the same hole the `templates/` row above records …
+  Do not restore one.
+```
+
+Landed in the curator pass `e8052e7`. Both rows now carry this record's own diagnosis in their own text, including the reason the gates could not see them, and both close with an instruction not to restore.
+
+**The fix this record asked for was not made, and it is now unbuildable as specified.**
+
+```
+grep -n 'describe(' hooks/lib/__tests__/derivable-enumerations-lint.test.ts
+  the skill roster / agent counts / the always-on rule list / the conditional emission sets /
+  the hooks/lib file table / DEFINITION_SITES / the bin/ helper roster
+```
+
+Seven checks, none for `templates/` and none for `docs/`. The check the record specifies — derive `ls templates/`, parse the backticked filenames out of the row, diff both ways — has nothing left to parse, because the row deliberately holds no filenames. A gate cannot compare an enumeration against the tree when the enumeration was removed on purpose.
+
+**The third instance the record predicted never materialised.** It named `stilwerk/` as "the third inventory row of the same shape". There is no `stilwerk/` row in the Layout table; the directory is described in `## Conventions` prose that names the four profile files as a definition rather than as an inventory of a directory.
+
+**What is closed and what is not.** Closed: the two stale rows, and any live instance of the class. Not closed, and deliberately not carried by a marker: the underlying hole, that a bare filename in a Layout row is path-shaped to no gate and therefore checked by nothing. What holds the line today is prose — two rows that say "do not restore one" — rather than a mechanism. Anyone restoring an inventory to a Layout row reopens exactly this defect with no gate to catch it, and should file it fresh rather than reopen this record, which is terminal.
+
+---
+Resolved: both instances are gone. `CLAUDE.md`'s `templates/` and `docs/` rows no longer carry inventories at all — each states "The set is deliberately not written here", names the command that derives it, records why the two lint gates could not see the old one, and instructs that no inventory be restored (curator pass `e8052e7`). The remedy diverged from the one specified: no check was added to `derivable-enumerations-lint.test.ts`, and with the enumerations removed the specified check has nothing to compare against. The gate hole is unclosed and is held by prose; a restored inventory reopens it and wants a fresh record.

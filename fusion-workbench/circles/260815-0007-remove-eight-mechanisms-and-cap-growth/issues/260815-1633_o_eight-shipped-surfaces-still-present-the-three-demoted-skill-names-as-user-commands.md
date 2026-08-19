@@ -183,3 +183,20 @@ comments this record's 260816-0713 note named, `hooks/lib/events.ts:70` with its
 mirrors and `hooks/lib/__tests__/monitor-warnings-panel.test.ts:508`. The `.gitignore` hit is gone.
 Closing would be wrong while those three sources stand, and the record is right that whether a code
 comment is in scope for a presentational collapse is the question to answer first.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Narrowed to the code-comment class the record's own last note names, and that class is the record's open question.**
+
+Every prose surface the record surveyed is discharged. What stands, measured across the tree excluding the workbench:
+
+```
+CLAUDE.md:21                                   deliberately correct — the lint requires the tokens
+README-agents.md:240,241,247                   deliberately correct — labelled pipeline-step rows
+hooks/lib/events.ts:80                         "What bounds the file instead is /fusion:archive …"
+hooks/dist/lib/events.js:31, events.d.ts:60    compiled mirrors of the above
+hooks/lib/__tests__/monitor-warnings-panel.test.ts:508
+```
+
+Two comment sources and their two compiled mirrors, plus one test comment, now disagree with `rules/fusion-workbench-conventions.md:81`. The record's own question — is a code comment in scope for a *presentational* collapse, when the skill directory it names is still registered and still invocable — is unanswered, and it is a decision rather than a repair. That is what keeps the marker on.

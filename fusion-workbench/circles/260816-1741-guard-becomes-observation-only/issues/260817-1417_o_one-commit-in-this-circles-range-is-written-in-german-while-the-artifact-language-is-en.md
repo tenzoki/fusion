@@ -67,3 +67,15 @@ is still the only German commit message in `3d41d4a..d0f13fa`; the six commits a
 pass (`dbbad70`, `bee46e7`, `01932d6`, `70f17da`, `dcb0784`, `d0f13fa`) are all English, so the
 count stays one of twenty-seven. The commit is on `origin/main` and carries a published tag range,
 so rewriting it is off the table — what stays open is the convention question, not a repair.
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass, third pass) — STAYS `_o_`, and this record should be read as two items with different fates.**
+
+**The repair half is closed by construction and will never reopen.** `9ae7974` is still the only German commit message in the range, and all 38 commits added since (`d0f13fa..e435f03`, spanning v10.0.2 through v10.3.0) are English. The commit is published on `origin/main` under three tags; nothing will rewrite it. There is no repair to perform and no lapse recurring.
+
+**The convention half is a decision misfiled as a defect, and it is what keeps the marker on.** The record's own `## What to do` says so in as many words: *"Nothing to this commit. What is worth deciding is whether anything should catch the next one"* — and then names the two candidate answers without choosing (a one-line commit-message check, or the honest position that the rule in `rules/fusion-workbench-conventions.md` `## Project language` is enough and this was a single lapse). That is `decide and record`, not `go fix it`, which is the exact test `rules/fusion-workbench-conventions.md` `## Issues vs Decisions` applies.
+
+Surfaced under *Misfiled — should be a decision* in `shared/history/260819-1400-reconciliation-circles.md`. **Not moved by this pass**, per the reconciliation rule that a relocation between stores is the user's `mv`: the marker vocabulary changes with the store (`_o_/_p_/_c_/_d_` → `_o_/_a_/_i_/_d_/_s_`), and this Circle's decision store is where it would land under the Origin Rule, since the question arose from this Directive's own commit range.
+
+**One correction to this record's own bookkeeping, and it is the reason a reader misses this item entirely.** Two records in this store carry the stamp `260817-1417`. This one is open; `260817-1417_c_the-release-went-out-over-a-turn-whose-six-shipped-file-commits-no-review-opened.md` is closed. The Circle record's `## Turn log` writes *"Filed as `260817-1417`, closed in Turn 4"*, naming the stamp alone — so a reader resolving that citation lands on the closed record and concludes the stamp is disposed of. The `_b_` record is terminal and is not edited; the ambiguity is recorded here instead, and in the reconciliation log.

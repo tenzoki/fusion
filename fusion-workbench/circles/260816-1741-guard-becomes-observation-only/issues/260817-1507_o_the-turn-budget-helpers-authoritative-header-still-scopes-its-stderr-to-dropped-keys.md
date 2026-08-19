@@ -63,3 +63,22 @@ surfaces that were widened in the same class both did move — `agents/orchestra
 — so this header is the one member of that set left behind. Its own row in `CLAUDE.md` names it as
 the authoritative usage block, which is what makes the narrow scope load-bearing rather than
 cosmetic.
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass, third pass) — STAYS `_o_`. Re-measured at HEAD `e435f03`; the header is byte-for-byte as filed.**
+
+```
+bin/fusion-turn-budget:13-15
+  # Anything the configuration loader had to drop goes to stderr, one line each,
+  # naming the key and why — the loader's standing drop-and-advise behaviour, at
+  # the one call that reads this value.
+```
+
+Still narrower than what the loader returns, and still the surface `CLAUDE.md` designates as authoritative: *"Its own header carries the authoritative usage block — the `KEY=value` line it prints and the exit-code table are spelled there, and this row deliberately does not restate them."*
+
+The two siblings widened by `01932d6` — `agents/orchestrator.md:132` and `skills/setup/SKILL.md:292`, both now reading "every diagnostic the configuration loader returned" — have since been rewritten again in other respects and both kept the widened wording. This header is the one member of the set still describing the old contract, and it is the only one a reader is *sent to*.
+
+**Live obligation, low cost, and the cost of leaving it is asymmetric.** The loop at `hooks/turn-budget.ts:92-94` writes `config.diagnostics` verbatim, every entry whatever its class, and nothing constrains it to drops. A maintainer reading the authoritative header would be entitled to conclude the contract is drops-only; a future narrowing of that loop would then look like it was honouring a documented contract while silencing the retired-file advisory, which is the costliest line the program prints. That is the same mechanism-versus-record gap `260816-2318` recorded and had fixed.
+
+The remedy named in the record is unchanged and is one paragraph: widen `bin/fusion-turn-budget:13-15` and `hooks/turn-budget.ts:52-57` to the antecedent-and-examples shape `agents/orchestrator.md:132` already uses, and name the retired file explicitly as the diagnostic that is not a drop.

@@ -64,3 +64,14 @@ project's answer, and this record does not pick one:
 
 Option 3 is the one that changes the meaning of an existing field, so it belongs to a decision
 record if it is preferred.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). The governing question was answered elsewhere; the structural condition is untouched, and the answer is not implemented.**
+
+`shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` was answered by the user inline on 2026-08-16 as options 3 then 1, which subsumes this record's option 1. It stands `_a_` with an empty `Implemented:` line, and its own 260817-1836 reconciliation records that option 3 is absent from the code: `hooks/lib/review-coverage.ts` filters the uncovered set by coverage alone (`:612`) and names no shipped-file predicate.
+
+Meanwhile `agents/orchestrator.md:602` still tells the reader *"whether a release may go out over an uncovered range is a decision nobody has filed"* — which was true when written and is false now.
+
+**One correction that belongs to whoever picks this up.** Decision `260815-2109` cites this record as `shared/issues/260814-2153_o_…`. No such path exists: this file is in `circles/260801-1244-curator/issues/`. The citation is in the shared decision store, which this pass does not write to.

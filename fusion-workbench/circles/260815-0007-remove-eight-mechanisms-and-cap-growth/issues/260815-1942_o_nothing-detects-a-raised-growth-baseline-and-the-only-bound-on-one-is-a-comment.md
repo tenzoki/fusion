@@ -38,3 +38,14 @@ Worse: the guard's `protectedPaths` half was removed on 2026-08-12, so nothing m
 **What is actually being asked.** Not a lock. A recorded answer to: is a baseline raise meant to be detectable by anything other than a human reading a diff? If yes, the cheap form is a single asserted total per surface next to each map, so that raising an entry fails a second, differently-worded assertion that names the doctrine. If no, say so in the header, because a reader who has just read 25 lines about the two events at which a baseline moves will otherwise assume something enforces them.
 
 **Found by:** coderev, review of `1e29572..9306f0a`, commit `0609945`.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Unchanged, and this is the record a deep change should read first.**
+
+`grep -rn 'AGENT_BASELINE\|SKILL_BASELINE\|TEST_LINE_BASELINE' hooks --include='*.ts'` returns three plain object literals in `hooks/lib/__tests__/surface-growth-bound.test.ts` (declared at `:267`, `:286`, `:310`), each with exactly one reader inside the same file, and the rule that governs when they may move stated as prose comments at `:165-177`. No assertion outside those literals reads them.
+
+So the four growth bounds this Circle armed are enforced against *growth* and not at all against *the baseline being raised*, and a raise is one line in a diff that looks exactly like the shrink it is supposed to be. No decision record in `shared/decisions/` or in any Circle answers the question the record puts: is a baseline raise meant to be detectable by anything other than a human reading a diff.
+
+**Why it binds a deep change.** The bounds are the one mechanism this project built to price additions to its shipped text, and they were built after eight mechanisms were removed for never having caught anything. A bound whose baseline can be raised undetectably is that same class of mechanism.

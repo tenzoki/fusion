@@ -51,3 +51,12 @@ The two ways this costs something are both live. A resumed session verifying fin
 Amend step 9's acceptance bullet to state the criterion that was actually applied, rather than relaxing it to nothing. Something with the shape: the grep returns ordinary English usage **plus** the retirement controls in `hooks/lib/domain-cascade.ts` and the stale-cascade fixtures in its two test files, each of which is required by the reach gate and named here so a future hit outside those three files is still a failure. That keeps the check mechanical and keeps it able to fail.
 
 Not for the executor to decide alone: whether the same treatment is owed to the churn removal is the open question in `260815-1247_o_the-churn-leaves-were-removed-without-a-retirement-entry…`. If a retirement table is going to exist, these three files are its second entry and the acceptance line should cite it instead of enumerating.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Unchanged, and the residue is larger than the record measured.**
+
+`grep -rn 'strategic\|knowledge' agents skills rules bin hooks docs README*.md .claude-plugin` (excluding `node_modules` and `dist`) returns **41 lines** at HEAD, including `hooks/lib/domain-cascade.ts`, `domain-cascade.test.ts` and `domain-cascade-order-lint.test.ts`. Step 9 (`planning/260815-0029_c_…:268`) still carries `[DONE]` beside an acceptance bullet that calls itself mechanical and fails when run.
+
+The residue is deliberate — a retired domain value has to stay nameable for the cascade to reject it — so the defect is in the acceptance criterion, not in the code. A criterion that cannot pass on a correctly completed step is worse than none, because the next reader either re-opens a finished step or learns to disregard the criteria.

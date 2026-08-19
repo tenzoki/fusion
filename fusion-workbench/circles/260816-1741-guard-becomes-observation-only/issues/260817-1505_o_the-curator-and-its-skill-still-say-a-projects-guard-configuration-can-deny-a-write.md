@@ -79,3 +79,24 @@ of that Directive verifies at HEAD. This is why the second pass's Artifact↔Dir
 on completeness, and it is flagged as a user-chosen shortfall rather than as drift — see
 `circles/260816-1741-guard-becomes-observation-only/history/260816-1841-orchestrator-session.md`
 `## Coherence — second pass`.
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass, third pass) — STAYS `_o_`. Both sentences stand verbatim at HEAD `e435f03`, two releases past the Bounded Closure that named this record as the reason for it.**
+
+```
+agents/curator.md:212   … A write denied by the project's guard configuration is a **failed**
+                        entry carrying the denial reason — never an applied one. …
+skills/curate/SKILL.md:110  … A write the project's guard configuration denied is a **failed**
+                        entry, never an applied one. …
+```
+
+Both line numbers are still exact — `git log --oneline d0f13fa..HEAD -- agents/curator.md skills/curate/SKILL.md` is empty. Neither file has been opened since the Circle closed, through v10.0.2, v10.1.0, v10.2.0 and v10.3.0.
+
+Both halves of the premise are still false, re-measured rather than carried over: `hooks/guard.ts` is 223 lines with no `permissionDecision`, no `"deny"` and no `hookSpecificOutput`, and writes `{}` on every path; `guard` is one of the three retired top-level keys the loader names and drops.
+
+**This is the live obligation, singular — the one the Bounded Closure is made of.** The `_b_` closure note states it directly: the Directive's last clause asks that the shipped text say what the guard now is *"in the agent prompts and skill bodies"*, `agents/curator.md` is an agent prompt, `skills/curate/SKILL.md` is a skill body, and neither says it. Every other clause of that Directive verifies at HEAD. Bounded Closure means the Directive was **reachable and deliberately not reached**, not that it was abandoned — the user scoped this out of v10.0.1 knowing what it was, and nothing has taken it since.
+
+**What a reader planning a deep change needs to know.** Four releases have shipped over this sentence. A curator run that meets a genuinely failed write will attribute it to a guard that cannot have caused it, and the two shipped surfaces that describe fusion's own gated normative-edit path are the ones saying it. The remedy is unchanged and is a cut, not a rewrite: drop the guard clause from both, keep the classification it illustrated — a write that did not land is `failed` with the reason, whatever the reason was — and do not substitute a fusion-specific cause, because the failure classes a curator apply can now meet (read-only file, harness permission denial, disk error) are none of fusion's.
+
+**The pair moves together or not at all.** An agent and the skill that drives it disagreeing about what a `failed` entry means is worse than both being wrong in the same way, which is the state today.

@@ -66,3 +66,12 @@ writer of, on a Circle whose orchestrator session is running right now.
 Executor: `coder`.
 
 **Filed by:** coderev, review `circles/260801-1244-curator/reviews/260814-1850-coderev-curator-turn-4.md`.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Substantively unchanged; one sub-claim is now partly false and is corrected here.**
+
+Still no gate row for re-sharpening in `agents/orchestrator.md` `## Human Gate Rules`, and `skills/next/SKILL.md` Step 6 still offers exactly three options — Activate, Pick another, Just look. Phase 4 step 5 (`agents/orchestrator.md:881`) still says nothing about re-sharpening.
+
+**Correction to the record:** it states the section is reachable from no flow step. One flow step now cites it — `agents/orchestrator.md:423` (Step 0b.1) points at it for the clarification-relay pattern. That is a citation for a different purpose, not a route into the mode, so the defect stands; the record's absolute wording does not.

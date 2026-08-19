@@ -51,3 +51,12 @@ The exemption list is designed to grow — its own docstring says a future proje
 Add a small table-driven case beside the comparison, calling `withoutProjectSetKeys` on synthetic strings rather than on either real file: first, middle, last and only entry, plus a key name occurring inside a string value. Each asserts the exact expected output. Five inputs, one `it`, no new dependency, and both branches of `cutTopLevelEntry` reached.
 
 A second, cheaper point worth deciding at the same time: `PROJECT_SET_KEYS` cuts the whole top-level `orchestrator` object, while what the template documents as project-settable is the leaf `orchestrator.maxTurns`. Today `GuardSettings["orchestrator"]` has exactly one member (`hooks/lib/config.ts:222-224`), so the two are the same set and nothing is lost. If a second `orchestrator` leaf is ever added, a top-level cut exempts it silently. Leaf granularity or a comment naming the assumption — either is fine, and the choice belongs with whoever adds that leaf.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Unchanged. The subject was renamed under it and the coverage did not follow.**
+
+Both call sites of `withoutProjectSetKeys` are still inside the single `it("is what this repository's own fusion.json is…")` in `hooks/lib/__tests__/config.test.ts` — `:750` is the anti-vacuity assertion that returns early, `:752` is the one real input shape. `cutTopLevelEntry`'s last-entry branch at `:675-679` (the `// The last entry` comment) is still reached by no test.
+
+The v10 rename `fusion-guard.json` → `fusion.json` moved this helper's subject and rewrote the file around it without adding a table-driven case, which is the second edit to pass over the gap.

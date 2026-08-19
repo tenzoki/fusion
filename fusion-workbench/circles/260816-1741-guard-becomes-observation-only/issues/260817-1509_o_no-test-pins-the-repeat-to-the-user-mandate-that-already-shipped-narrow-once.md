@@ -68,3 +68,19 @@ call, write tool and Bash alike"), pins the per-call advisory channel and not th
 Setup-summary repeat, which is prompt text in `agents/orchestrator.md:132` and
 `skills/setup/SKILL.md:292`. The mandate that already shipped narrow once is still pinned by
 nothing.
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass, third pass) — STAYS `_o_`. Re-measured at HEAD `e435f03`; still pinned by nothing.**
+
+```
+grep -c 'diagnostic\|stderr\|repeat' hooks/lib/__tests__/turn-budget-lint.test.ts   → 0
+```
+
+The lint that exists for this prompt block still says nothing about the obligation to repeat a configuration diagnostic to the user. One test file was added to the suite between the closure and HEAD — `hooks/lib/__tests__/sentence-identifier-containment.test.ts`, on the unrelated question of whether an emitted sentence may carry an identifier its input did not supply — so the surface grew and this gap was not among what the growth bought.
+
+`agents/orchestrator.md` was rewritten substantially in the same range (105 lines) and the widened wording at `:132` survived it, which is the good outcome and also the reason the record is preventive rather than urgent: the text at HEAD is still correct. What is unpinned is that it stays correct.
+
+**Live obligation, lowest priority of the eight, and the honest reason to keep it open is the one the record gives.** The failure mode is not "someone wrote the wrong sentence" but "a mandate written to one member of a set silently excludes the members added later", and the loader is the kind of thing that gains diagnostic classes. Two assertions would hold it — a universal quantifier in both surfaces, and no scoping word (`drop`, `dropped`, `key`) without the universal in front of it — and assertion 2 is the one that would have failed before `01932d6` and passes after.
+
+The record's parenthetical finding also stands unchanged: `agents/orchestrator.md:132` names four diagnostic classes and the loader produces five distinct message templates, the fifth being the container-shape drop at `hooks/lib/config.ts:409`. Behaviour is right because the mandate is universal; the example list is one short.

@@ -35,3 +35,10 @@ And `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing — MA
 The class is not new. One Circle earlier, `circles/260801-1244-curator/issues/260814-1419_o_the-golden-regeneration-history-states-eighteen-agent-blocks-…` records a history entry claiming eighteen agent blocks against a seventeen-block fixture, and its recommended fix is worth reusing here: correct the count, or restate the phrase without one. *"the whole tree"* carries the same instruction as *"the whole tree, 14 files"* and cannot go stale.
 
 **The fix.** At `planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md:180`, change `(whole tree, 14 files)` to `(whole tree, 15 files)` or drop the parenthetical count. Check step 14's and the Closure note's arithmetic against whichever is chosen.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Unchanged, and now inside a closed plan.**
+
+`planning/260815-0029_c_plan-remove-eight-mechanisms-and-cap-growth.md:186` still reads `\`hooks/lib/__tests__/fixtures/plane/\` (whole tree, 14 files)`. The plan carries `_c_` and `**Status:** Complete`, so the miscount is now history rather than an instruction — which does not make it right, and does mean nobody will act on it. What it costs is a reader reconstructing the Plane removal from the plan and coming up one file short.

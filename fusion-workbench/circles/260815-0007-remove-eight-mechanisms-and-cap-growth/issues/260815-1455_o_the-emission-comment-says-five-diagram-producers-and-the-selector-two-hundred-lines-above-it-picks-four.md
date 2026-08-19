@@ -47,3 +47,12 @@ The other three descriptions in the same file were corrected in the same commits
 ## Fix direction
 
 `bin/fusion-rules:408`: "the five producers" → "the four producers", or drop the numeral. Dropping it is the better of the two: the parenthetical adds nothing the selector twenty lines below does not say exactly, and a numeral in a comment describing a list that is maintained elsewhere is a thing that goes stale on a schedule nobody controls. The header block at `:56-60` already names the four agents, which is the place a reader looks.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Unchanged; the numeral drifted one line and not at all in value.**
+
+`bin/fusion-rules:409` still reads `# 1c. Design-diagram agents (the five producers) receive the diagram doctrine:`. Measured by running the helper for every agent and grepping for `design-diagrams.md`, the recipient set is **four**: `planner`, `shaper`, `taskplanner`, `analyst`.
+
+This is one of the four instances `260815-1501_*_four-cardinal-words-still-count-items-the-removals-deleted` enumerates, and it is the instance inside executable text rather than prose — which makes it the cheapest to catch if anyone ever builds the gate that record asks for.

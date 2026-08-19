@@ -143,3 +143,19 @@ Sorgfalt dessen, der löscht.
 
 ---
 Answered: dieser Record, `## Antwort` — Nutzerentscheidung; gelöscht heißt weg, und die Zusatzpflicht liegt bei den Verweisen.
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_a_`. The answer is recorded and nothing on disk realises it.**
+
+`_a_` → `_i_` requires code or data that reflects the decision. Measured at HEAD `e435f03`:
+
+- `grep -rn 'gelöscht\|deleted\|deliberately removed' rules/circle-records.md` returns nothing. The rule file that owns the Circle vocabulary and its transitions says nothing about deletion, and nothing about the reference obligation this answer places.
+- `ls skills/` returns twelve directories and none is a circle-delete. The answer's own closing paragraph left that open — *"ob ein Skill diesen Vorgang unterstützen sollte"* — so its absence is expected rather than a gap.
+- No agent prompt carries the obligation either: the party the answer binds is *whoever deletes*, and no shipped surface tells them.
+
+**The answer's operative half is therefore unwritten.** The decision has two parts. Part one — *gelöscht heißt weg, es gibt keinen Marker dafür* — needs nothing built; it is a statement that the vocabulary deliberately has no case, and the vocabulary already has no case. Part two — *die Verpflichtung liegt bei den Referenzen*, whoever deletes annotates the surviving citations with the fact and the date — is an obligation on a human that appears in no rule file, no prompt and no skill. An obligation recorded only in the decision record that answers it is reachable by nobody who is about to delete a Circle.
+
+**One constraint of the question has since expired.** It rested partly on `docs/plane-setup.md` recommending the throwaway Circle as documented practice ("Push on a throwaway Circle first"). That file went with the Plane mirror on 2026-08-15 and `ls docs/` no longer holds it, so the pattern is no longer documented anywhere. **This does not moot the answer** — the answer is about deletion in general, and a user may delete a Circle for any reason — but it removes the urgency the question was filed with, and a reader should not go looking for that document.
+
+**This pass measured the cost the answer accepts, and it is real.** Six citations from live Circle records were broken by the `260817-1907` archive sweep, which is the neighbouring operation to deletion and preserves the target; deletion preserves nothing. Nothing detected those six. See `shared/history/260819-1400-reconciliation-circles.md` `## Dangling citations`.

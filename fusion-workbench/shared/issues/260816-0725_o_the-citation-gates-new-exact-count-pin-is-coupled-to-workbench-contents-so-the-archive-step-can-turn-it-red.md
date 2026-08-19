@@ -49,3 +49,26 @@ Either way `BASELINE_MESSAGE` should name this third cause beside its two.
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `hooks/lib/__tests__/helpers/citation-scan.ts:148-158` still walks the whole workbench with no archive exclusion and still requires an exact shared-store prefix. The baseline at `reference-resolution-lint.test.ts:536` moved from 1122/139/95 to 1120/139/94, so the pin was re-approved rather than decoupled. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+**Reconciliation 260819-1400** (reconciler, domain `code`, HEAD `e435f03`; log
+`shared/history/260819-1400-reconciliation-shared-issues.md`). Reproduces, and the event it predicted
+has now happened once without tripping the gate. The mechanism is unchanged:
+`hooks/lib/__tests__/helpers/citation-scan.ts` still carries no `archive` exclusion (`grep -n archive`
+empty) and `findRecord` still requires `e.relDir.startsWith("shared/" + store)`, so a record moved into
+`archive/` stops resolving. `BASELINE` has moved again since filing, to
+`{ paths: 1178, anchors: 155, records: 102 }` (`reference-resolution-lint.test.ts:702`).
+
+**What is new is that the archive step fired.** `e59dea2` (260817-1912) moved records out of
+`shared/issues/` into `archive/260817-1907-safe-cleanup-scoped/shared/issues/`, which is precisely the
+housekeeping-turns-the-suite-red scenario this record describes. It did not turn red, and the reason is
+narrow rather than reassuring: the one surviving citation to a moved record sits in
+`shared/decisions/260811-1146_i_*.md:7`, a workbench record, and the lint's scanned surface stops at
+`rules/`, `agents/`, `docs/`, `templates/`, `skills/*/SKILL.md`, the READMEs, `CLAUDE.md`, `bin/` and
+`hooks/lib`. Had that same citation been written into any shipped surface, the archive pass alone would
+have moved the count and failed `npm test` with no text edit behind it.
+
+So the coupling is confirmed by a real trigger, and the gap between "did not fire" and "cannot fire" is
+one citation's location. That raises the confidence in the record rather than lowering its urgency, and
+it pairs with `260812-1720_o_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`:
+the corpus that shields the gate here is the same corpus no gate reads. Marker stays open.

@@ -26,3 +26,18 @@ rather than written into it. Nothing reads either programmatically, which is why
 **Not part of this defect, and named so it is not read as missed:** the same file has no Turn 4
 section and its `**Status:**` still reads `In progress`. Both are the orchestrator's Phase-3 and
 Phase-4 writes and are downstream of this reconciliation pass rather than defects in the file.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Unchanged.**
+
+```
+grep -n '^## Per-Turn Log' shared/history/260814-2306-orchestrator-session.md
+  26
+  178
+```
+
+`:26` is still the `(none yet)` stub sitting above the real Turn sections at `:178`. A reader who stops at the first heading concludes the session logged no Turns.
+
+The file is in `shared/history/`, outside this Circle-store pass's write scope, so it is annotated here and not repaired. It is the same frozen-surface class as `shared/issues/260801-2038`, which the bounded Circle's Turn log cites for the same failure on a different file.

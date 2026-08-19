@@ -81,3 +81,37 @@ Retired: <set when the implementation is removed; the marker stays _i_>
 
 ---
 Answered: user gate, orchestrator session `shared/history/260818-1452-orchestrator-session.md`, 2026-08-18 — keep `portfolio-activation`. The rename would break every citation of the value, in the shaper's own detection contract, in the orchestrator's dispatch permission and in the dispatch-parameter roster, and a mode-detection value that no longer matches its citations fails silently by falling back to the heuristic. The accepted residual is named rather than argued away: after the widening the name describes half of what the mode does, and a reader meeting it for the first time expects it to have to do with activation.
+
+---
+Implemented: `95bebe1` — option 1. The wire value `portfolio-activation` is kept and the prose
+around it widened, which is exactly what the answer chose and what the plan
+`shared/planning/260818-1512_c_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md`
+(`**Status:** Complete`) carried out.
+
+The value survives unchanged at every site the record enumerated: `agents/shaper.md:3`
+(frontmatter description), `:15`, `:28`, `:47` (the detection contract), `:132`;
+`agents/orchestrator.md:305` (the section heading), `:309`, `:315`, `:342` (the dispatch literal),
+`:1218-1219`; `README-agents.md:25`, `:64`, `:65`, `:67`. The mode is widened in the same commit —
+`agents/shaper.md:3` and `README-agents.md:25` now read "an anticipated **or active** Circle's
+Directive", and `agents/shaper.md:47` admits an `_a_` or a `_t_` record while refusing a terminal
+one.
+
+The accepted residual is not merely tolerated but written down where a reader meets it:
+`agents/orchestrator.md:322` states that the heading still says "anticipated" because the mode's
+wire name does, and cites this record by name for the reason. That is the record's own condition —
+"states the residual rather than describing it away" — realised on the shipped surface rather than
+only here.
+
+---
+**Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — `_a_` → `_i_`.**
+
+The realisation and the answer landed in the same session, one day apart from this pass, and no
+step of that session's plan owned the marker transition: the plan's subject was the Directive
+pointer, and this record was a side question the plan had to settle before it could spell a
+parameter value. Verified at HEAD by reading all fourteen sites above; no citation of the value
+dangles, which `hooks/lib/__tests__/reference-resolution-lint.test.ts` class (b) would have caught
+for the section heading in any case.
+
+The `**Status:** open` head field is left exactly as it stands, per
+`260818-2212_i_should-the-decision-records-status-field-exist-at-all-...`: a record written before
+the field left the template keeps it.

@@ -56,3 +56,12 @@ commit hash and could answer `tasks_done` the way it answers `turn`, but `queued
 have no event. Whether the row should point at the event log, or the criterion should be stated
 narrowly for this row, is a design question this record does not pre-empt. The defect is that the
 sentence and the row disagree.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Unchanged.**
+
+`agents/orchestrator.md:1053` still states the criterion — *"it holds no counts … every one of them is **derivable at read time** from a record that cannot silently freeze"* — and `:1059` still derives `progress.tasks_total`/`_done`/`_skipped`/`_errored` from *"the `status` field of the `work_queue` entries in this same file"*. That substitutes four freezable counters for one freezable hand-maintained list in the same file, under a criterion that exists to forbid exactly that.
+
+The live instance is absent only because `agentstate.yaml` is deleted at clean exit; the row is prompt text and is written afresh every session. Three of the four derivation rows point outside the file (git, the event log); this one does not.

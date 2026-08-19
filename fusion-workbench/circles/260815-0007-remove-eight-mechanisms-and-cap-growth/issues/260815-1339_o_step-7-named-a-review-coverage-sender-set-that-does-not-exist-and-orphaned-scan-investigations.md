@@ -77,3 +77,12 @@ Step 8 re-ran the measurement this record asks it to decide from, over the whole
 The "an unnamed key costs nothing at run time" reasoning that kept the arm at step 7 is true and was not the question. What decided it is that the retirement is **not silent**: the ORDER-membership check in `bin/fusion-paths` exits 4 on a prompt naming an unknown key, naming the prompt, the key and both places to add it back, so a future investigating agent fails loudly at its first Setup rather than writing to the workbench root.
 
 `shared/investigations/` stays, `/fusion:setup` still creates it, and `/fusion:archive` still keeps it out of tier scope by safety filter 4. Its prose was corrected in two places that had counted the shared-only kinds: the archive skill's "three kinds need no derivation" is now two, and the resolver rule's "four unconditionally-shared kinds" is now three, with the retirement written up there as the worked case.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Narrowed to fix direction 1; directions 2 and 3 are discharged.**
+
+**Discharged.** `hooks/lib/review-coverage.ts:183` now exports `REVIEW_SENDERS = ["coderev", "ontorev"]`, so the sender set is a declared constant with `conceptrev` absent, and `shared/issues/260811-1145` carries `_c_`. Direction 3 was settled by step 8.
+
+**Standing.** The plan's step-7 bullet at `planning/260815-0029_c_…:250` still instructs *"remove `conceptrev` from the recognised sender set"* — a set that never contained it as a recognised member — and still cites the closing issue under its `_o_` name. The plan is `_c_`, so this is a reader-facing defect in a closed instruction rather than work waiting: someone reconstructing why `REVIEW_SENDERS` looks the way it does is told a removal happened that did not.

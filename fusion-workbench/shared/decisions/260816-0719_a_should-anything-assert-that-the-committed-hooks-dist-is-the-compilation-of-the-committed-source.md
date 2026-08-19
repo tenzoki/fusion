@@ -72,3 +72,26 @@ Retired:
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`). Answer recorded, not yet realised — marker stays `_a_`. No such test exists. `hooks/lib/__tests__/` holds 37 entries at HEAD and none compiles the committed source for comparison against the committed `dist`. The pinned-toolchain and no-shared-tree conditions the answer attached to it are therefore also unbuilt.
+
+---
+**Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — marker
+unchanged at `_a_`; no such test exists, and the range since the last check is itself an instance of
+the exposure.**
+
+Nothing in `hooks/lib/__tests__/` compiles the committed source for comparison against the committed
+`hooks/dist`. The pinned-toolchain and no-shared-tree conditions the answer attached are therefore
+also unbuilt.
+
+The exposure is live rather than theoretical, and `2552586..HEAD` shows its shape: three files under
+`hooks/dist/` were committed in that range (`lib/review-coverage.js`, `lib/staging-drift.js`,
+`lib/staging-drift.d.ts`) alongside their sources, by hand, with nothing asserting the pairing.
+Whether every source change in that range is represented there is exactly the question no gate
+answers — and `npm test` cannot answer it by design, because `hooks/scripts/run-tests.mjs` compiles
+into a staging tree so that concurrent runs do not share build output.
+
+**What binds a deep change.** `hooks/dist/*.js` is the artifact the installer ships and
+`install.sh` defaults to `heads/main`, so **every commit is installable** — the prerequisite decision
+`260816-1707` settled that, and it is what eliminated the release-step check as sufficient. A deep
+change to the hooks must rebuild and commit `hooks/dist` in the same commit as the source, every
+time. A green suite is not evidence that it did, and the last time this slipped, the window between
+`f45f76a` and `71e97f4` shipped a fix that was closed in the repository and absent from the tarball.

@@ -45,3 +45,25 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. No answer recorded anywhere; option 1's behaviour is still what HEAD does, unchanged.**
+
+**Measured at HEAD `e435f03`:**
+
+```
+grep -n 'PATTERNS=' bin/fusion-rules
+  165:  coder|coderev|bugfixer)   PATTERNS="coding" ;;
+  166:  ontocoder|ontorev)        PATTERNS="ontology normative verb" ;;
+  167:  planner)                  PATTERNS="coding ontology" ;;
+  169:                            PATTERNS="" ;;
+```
+
+`analyst` is still in the empty arm at `:168-169`, so no project-local rule file reaches it by filename pattern. Option 2 was not taken. Four tagged releases have shipped over this state — v10.0.x, v10.1.0, v10.2.0, v10.3.0 — each of them, as the record predicted, shipping correct under option 1's behaviour whichever way the question is later decided.
+
+**Searched for an answer and found none:** `$SCAN_DECISIONS` in both stores, `$SCAN_PLANS`, `$SCAN_ANALYSES`, and the session histories since 2026-08-15. `docs/upgrading-to-v9.md` §4 and `skills/help/SKILL.md` §5 still document the manifest workaround, which the record already discounted as documenting rather than deciding.
+
+**The one fact that would settle it is still missing, and the record says what to do about that.** Its recommendation ends: *"If the installed base is likewise zero, this question is moot and should be closed rather than answered."* Inside this repository the number is confirmed zero — `./rules/` has never carried an investigator capture layout. The reachable consuming projects are the same two this project has measured against before (`krk`, `unite-co-creator`), and a single `ls ./rules/investigator-*` on each answers the question outright. That measurement is cheaper than the decision and has not been taken.
+
+Note also that the sibling record `circles/260801-1244-guard-rules-write/issues/260805-2323_*_die-emissionsmessung-auf-der-unite-cocreator-maschine-steht-noch-aus.md` is open on a measurement against one of those same machines. One visit discharges both.

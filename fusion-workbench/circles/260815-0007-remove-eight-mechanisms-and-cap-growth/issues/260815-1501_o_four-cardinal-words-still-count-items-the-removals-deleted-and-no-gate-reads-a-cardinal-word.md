@@ -61,3 +61,17 @@ Three removal steps remain in this Circle's plan and each deletes items from lis
 ## Fix direction
 
 Correct the four words. Whether the class earns a gate is a separate judgement and this record does not decide it — the honest options are a sixth `CLAIMS`-style check keyed on cardinal words (hard to cut cleanly: "two paths", "three surfaces" and "two passes" are all legitimate prose in the same files, so a naive word match would fire constantly), or nothing, on the reading that a spelled-out count is prose and belongs to the curator at gate G1 the way `CLAUDE.md:51` does. If the second is chosen, say so where the digit lint's header explains what it does not cover, so the next reader is not left assuming the block covers counts in general.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Three of four instances stand; one is fixed.**
+
+| Instance | At HEAD |
+|---|---|
+| `README-agents.md:186` "Two side loops feed into the chain" | **stands** — one bullet follows (reconciler), then `## Plugin structure` |
+| `skills/help/SKILL.md:115` | **fixed** — now reads "Two things to configure" |
+| `bin/fusion-rules:409` "(the five producers)" | **stands** — four measured recipients |
+| `bin/fusion-rules:437` "The other fifteen agents" | **stands** — `ls agents/*.md` is 15, so fourteen others |
+
+The class claim is unchanged and is the point of the record: no gate reads a spelled-out cardinal. `derivable-enumerations-lint.test.ts` checks seven enumerations, all of them by parsing a list and diffing it against the tree; a bare English numeral in prose is invisible to every one of them.

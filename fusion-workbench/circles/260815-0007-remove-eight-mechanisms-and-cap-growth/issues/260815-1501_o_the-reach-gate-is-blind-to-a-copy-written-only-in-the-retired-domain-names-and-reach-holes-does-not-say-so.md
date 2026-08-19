@@ -65,3 +65,12 @@ The `covered` entry that comes closest is honest about its own scope — *"A sta
 2. **Record it as a hole.** Add a `REACH.holes` entry with the two probes above and the reason. This is the smaller change and it is honest, but it leaves the likelier-with-time copy — a paragraph written before 2026-08-15 and never re-read — invisible.
 
 Direction 1 is the one the file's own reasoning for `RETIRED_COUNT_NAMES` argues for. Either way `describeReach()` renders into `README-hooks.md` and the byte comparison will force that file to move with it.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Neither fix direction landed.**
+
+`hooks/lib/domain-cascade.ts:722-724` — `DOMAIN_LITERAL_RE` is still built from `DOMAINS` alone. `RETIRED_DOMAINS` still feeds only `parseCascade` (`:451`) and never the detector, so a cascade copy written purely in `strategic`/`knowledge` is invisible to the reach gate. And `REACH.holes` (`:946-982`) still carries its four entries — bare words, table-and-wrapped-lines, paraphrase naming no input, synonym inputs — with no entry for a retired-domain-only copy.
+
+The second half is the one that costs most and is cheapest to fix: a gate that enumerates its own blind spots and omits one is read as complete. One entry in `REACH.holes` discharges it even if the detector is left alone.

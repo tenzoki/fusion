@@ -23,3 +23,12 @@ The `**Initiated by:**` row added by `9f4cdac` defines the value as "the questio
 `**Draft:**` shows what the fix looks like: its row says "(may span lines)" in the *Accepted values* cell and the preamble gives it a termination rule. `**Initiated by:**` needs one clause of the same kind, in whichever direction is intended — either it must fit on one line, or it ends at the next `**<Keyword>:**` line or the end of the parameter block.
 
 The cheapest moment to do this is whenever `260814-1915` is answered, because option 1 of that record deletes the self-test and rewrites both the row and `agents/shaper.md:55`. Doing it earlier is one sentence and costs nothing.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Unchanged on all three surfaces.**
+
+`README-agents.md:53` still bounds exactly two multi-line values by name (`**Draft:**`, `**Confirmed operations:**`) as a closed enumeration; `**Initiated by:**` is not among them and its own row at `:67` states no termination rule and carries no "(may span lines)" marker. `agents/shaper.md:66-68` declares the halt for a missing value and states nothing about where the value ends.
+
+The decision the record hoped would carry the fix — `decisions/260814-1915_*` — is still `_o_`, so the parser question (where does a free-prose parameter value stop) is still unowned.

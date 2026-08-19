@@ -160,3 +160,28 @@ this record's answer was never realised — the record says so itself, in the cl
 made `_a_` → `_i_` conditional on a pin that `f45f76a` deleted the target of.
 
 The residual is filed as its own question: `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_o_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`.
+
+---
+**Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — re-verified;
+marker unchanged at `_a_`, and the record now wants a user decision rather than another pass.**
+
+Nothing has come back. `hooks/lib/state-drift.ts`, `hooks/state-drift.ts`,
+`hooks/lib/__tests__/state-drift-detection-lint.test.ts` and `bin/fusion-state-drift` are all absent
+at HEAD; there is no drift check, no four sentences and no lint to pin, so the `_a_` → `_i_`
+condition this record set for itself cannot be met by any future work short of rebuilding the
+mechanism the user deliberately removed at a one-way-door gate.
+
+One thing the answer left behind is worth separating from the dead half, because it is the part a
+deep change can still trip over. The *general* move the answer chose — pin the text to an approved
+baseline rather than screen it with a blacklist, on `rules/critical-stance.md` §4 — did survive its
+own instance and is in force elsewhere: `hooks/lib/__tests__/reference-resolution-lint.test.ts:702`
+carries `BASELINE = { paths: 1178, anchors: 155, records: 102 }` asserted exactly, with a failure
+message that names re-approval as the expected response. Whether that shape becomes the convention
+is the separate open question `shared/decisions/260816-0711_a_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md`,
+which the user has since answered the other way (probe first, pin as fallback). So this record's
+*instance* is dead and its *principle* is live under another record's name.
+
+The residual question this record was parked behind, `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_o_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`,
+is **still `_o_`** at HEAD. This pass re-measured its population across all 21 `_a_` records in
+`shared/decisions/` and found no third instance beyond this record and
+`260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md`.

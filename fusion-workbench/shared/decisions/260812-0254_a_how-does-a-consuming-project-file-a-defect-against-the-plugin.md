@@ -60,3 +60,24 @@ Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answe
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`). Answer recorded, not yet realised — marker stays `_a_`. `grep -rln plugin-issues agents/ skills/ rules/ bin/ hooks/ *.md` returns nothing, and `ls skills/` holds twelve directories with no such skill. Neither the store nor the skill that writes to it exists.
+
+---
+**Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — marker
+unchanged at `_a_`; re-verified after 260817-1836 and still nothing exists.**
+
+`grep -rln plugin-issues agents/ skills/ rules/ bin/ hooks/ *.md` is empty at HEAD, and `ls skills/`
+holds no such skill. Neither the store nor its writer exists, three days after the last check and
+three days after the user answered.
+
+Two facts sharpen what the delay costs, both from this record's own evidence. The store is where a
+consuming project's observation of a fusion defect would land, and the analysis it cites found that
+in fusion's entire history **one** defect record was filed by a user — read there not as evidence
+that fusion works but as evidence that nothing is listening. Meanwhile the alternative in use is the
+one the record describes: three records carried by hand on 260811, in a directory created for the
+purpose and then deleted, one of them a duplicate caught only because a human read both.
+
+**What binds a deep change.** An agent working in a consuming project still has nowhere to put a
+fusion defect, so any observation a deep change produces in a consumer will be filed into that
+project's own `issues/` store and will not reach here. If the change is one whose failures show up
+downstream rather than in this repository, that is the channel it will be reported through, and it
+does not exist.

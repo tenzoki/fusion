@@ -30,3 +30,12 @@ Nine literal `_o_` citations remain in the changed files:
 **What the pass was and was not obliged to do.** `hooks/lib/__tests__/reference-resolution-lint.test.ts` enforces the wildcard grammar over the plugin's **shipped** text surfaces, and `portfolio-citation-form-lint.test.ts` enforces it in `portfolio.md`. A citation inside a workbench decision record is in neither scope, so nothing required these rewrites at all. That makes this a consistency defect rather than a rule violation — but a pass that applied a convention to nineteen files and skipped nine instances inside them leaves the next reader unable to tell which literals are deliberate.
 
 **The fix.** Star the nine, or state in the run's own record that a literal marker inside a decision record is deliberate and why. Do not widen the lint to the workbench without a decision: that scope was deliberately left out of `260806-0015_*_zitierform-fuer-workbench-records.md`, whose question is about *ausgelieferte Texte*.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). The prediction has come true: seven of the nine have broken.**
+
+All nine literal `_o_` citations are still in place. Seven targets have since moved — two by transition (`260812-1232` decision to `_i_`, `260805-1830` to `_c_`) and five by the `260817-1907` archive sweep, which took `shared/planning/260801-1122` and three `shared/issues/` records out of the live store entirely. Two still resolve. The starred siblings on the same lines all still resolve, which is the whole argument the record made.
+
+The record said "this is about the ones that will break next, not about a break." It is now about seven breaks. Rewriting the nine marker positions to `_*_` is unchanged in cost and is now a repair rather than a precaution.

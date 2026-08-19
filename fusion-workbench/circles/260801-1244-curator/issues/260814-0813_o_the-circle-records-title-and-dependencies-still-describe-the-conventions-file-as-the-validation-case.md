@@ -54,3 +54,10 @@ A Circle record is outside the reconciler's write set. This stays for the orches
 closure write or a shaper pass. The plan's own second open question — whether the hard dependency
 survives on other grounds — is the part this record explicitly declined to settle, and it is still
 unsettled.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Byte-unchanged in all three places.**
+
+`_c_circle.md` line 1 still reads *"…and proves it on fusion's own conventions file"*; the `## Dependencies` prose still calls the partition "the first real exercise of that gate"; the Mermaid edge at `:71` still labels it `"lint gate checks the shards"`. The Circle closed `_c_` with the contradiction in it, and a terminal record is not edited — so this record is the correction, and it is where a reader of that title has to arrive. Nothing in the tree points them here.

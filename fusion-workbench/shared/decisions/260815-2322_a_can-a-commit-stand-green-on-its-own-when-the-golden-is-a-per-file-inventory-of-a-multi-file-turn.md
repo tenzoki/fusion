@@ -77,3 +77,26 @@ Retired: <set when the implementation is removed; the marker stays _i_>
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`). Answer recorded, not yet realised — marker stays `_a_`. The sentence the answer asked for is not in the golden-s failure text. `hooks/lib/__tests__/rules-emission-golden.test.ts` and `hooks/lib/__tests__/helpers/growth-bound.ts` carry no statement that the green unit is the Turn rather than the commit.
+
+---
+**Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — marker
+unchanged at `_a_`; re-verified after 260817-1836 and the sentence is still not written.**
+
+Neither `hooks/lib/__tests__/helpers/growth-bound.ts` nor
+`hooks/lib/__tests__/surface-growth-bound.test.ts` nor
+`hooks/lib/__tests__/rules-emission-golden.test.ts` states that the green unit is the Turn rather
+than the commit. The answer's entire content is one sentence in a failure message, and it has not
+been added in four days.
+
+The cost the record measured is still being paid at the same rate: `hooks/lib/__tests__/fixtures/surface-growth.golden`
+was regenerated again inside the `2552586..HEAD` range (`762656b`, "three baselines re-approved, and
+the third was caused by the note explaining the second"), so a bisect across that range still lands
+on commits failing only the inventory assertion, and every executor dispatched during such a Turn
+still has to be told separately that the red is not theirs.
+
+**What binds a deep change.** A deep change is by definition a multi-commit, multi-file Turn across
+the bounded surfaces, which is the exact shape this record is about: at most one of its commits can
+stand green alone. Anyone bisecting it, or running per-commit CI over it, will meet a failure that
+means nothing and is documented nowhere they will be looking. Regenerate the golden once at Turn
+end, not per commit — the flag guard exists so that a human reads one diff, and making it routine is
+what the answer declined.

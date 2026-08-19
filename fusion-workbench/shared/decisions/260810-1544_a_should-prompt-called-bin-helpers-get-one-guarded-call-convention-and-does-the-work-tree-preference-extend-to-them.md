@@ -48,3 +48,33 @@ after the convention is written down.
 Part (c), whether the work-tree preference extends to helper resolution, is **not** answered here.
 Per this record's own closing paragraph the record splits rather than being marked half
 implemented: file part (c) as its own decision when it is taken up.
+
+---
+**Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — marker
+unchanged at `_a_`, and this is the one record in the `_a_` set whose transition is blocked by a
+missing file rather than by missing work.**
+
+*Part (b) is realised.* The answer chose option 3 — state the convention in prose, enforce nothing —
+and the prose exists on every surface a prompt-called helper is invoked from:
+`agents/orchestrator.md:134`, `:166`, `:602`, `:1107`; `skills/setup/SKILL.md:32`;
+`skills/next/SKILL.md:33`; `skills/cleanup/SKILL.md:29`; `skills/help/SKILL.md:31`; and
+`CLAUDE.md:37`, which states "Every call site guards with `[ -x ]`, per that record's part (b)" and
+cites this record for it. Each site gives the same reason in the same terms — `$FUSION_PLUGIN_ROOT`
+is the installed copy, pinned for the session, so a helper added between releases is absent and a
+bare call is exit 127 — and each reports the absence rather than failing. Nine days on, no unguarded
+`$FUSION_PLUGIN_ROOT/bin/` call has appeared, which is as much as an unenforced convention can be
+asked to demonstrate.
+
+*Part (c) is unanswered and, per this record's own closing instruction, has never been filed.* The
+instruction is explicit: "file part (c) as its own decision when it is taken up." It has been taken
+up three times since — `skills/setup/SKILL.md:34`, `skills/next/SKILL.md:35` and
+`skills/cleanup/SKILL.md:33` each tell their reader that whether the work-tree preference reaches
+helper resolution "is part (c) of decision `260810-1544` and is **unanswered**; do not assume it",
+and `CLAUDE.md:37` says the same. Four shipped surfaces now point at an open question that has no
+record of its own, and this record cannot move to `_i_` while it is the only home for it, because
+`_i_` is terminal and would close a question nobody has decided.
+
+**One user action clears this.** File part (c) as its own decision record — the four citations above
+are its evidence, and the question is already stated in this record's `## Question` — and this record
+then moves to `_i_` on part (b) alone, which is exactly the split its own paragraph at `:15`
+prescribes for a record whose state is not a single value.

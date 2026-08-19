@@ -92,3 +92,12 @@ noisily. The silent one stands.
 The record stays open because its remedy is a contract change, filed as
 `circles/260801-1244-curator/decisions/260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`.
 Answering that decision is what closes this.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Unchanged, and its own stated closing condition is unmet.**
+
+`agents/shaper.md:66` still carries the discriminator verbatim: *"if you hold \`AskUserQuestion\` you are running top-level … if you do not hold it you were dispatched"*. Both inheritance statements it contradicts also stand — `README-agents.md:97` ("inherited from the parent session. Every sub-agent gets the same tool set") and `CLAUDE.md:28` ("the other 14 inherit tools and model from the parent session").
+
+The record says answering `decisions/260814-1915_*_should-mode-3-require-the-audit-line-on-every-run…` is what closes it. That decision is still `_o_` at this pass, re-verified: nothing in ``, `` or any decision store answers it. The silent direction — a dispatched shaper concluding "top-level", waiving the audit line and editing a Circle record with no trail — remains unmeasured.

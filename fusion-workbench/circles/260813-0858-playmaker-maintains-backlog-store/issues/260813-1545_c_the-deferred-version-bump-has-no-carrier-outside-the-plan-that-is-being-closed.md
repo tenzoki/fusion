@@ -64,3 +64,29 @@ is coherent; the incoherence starts if the documentation Circle lands and ships 
 Which of the two — a step added to the documentation Circle's plan when it is written, or a
 standing release record in `shared/` — is the right carrier. Both work; the choice is the user's at
 the point the documentation Circle is planned.
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — CLOSED. The bump was performed, and the condition it was waiting on resolved itself.**
+
+The record's fear was that closing this Circle's plan would silently retire the obligation, because the plan was the only carrier. It did not happen. Measured at HEAD `e435f03`:
+
+```
+git tag | grep 8.2.0        → v8.2.0
+git log -1 --date=short v8.2.0
+  → cb30037 2026-08-14 chore(release): the two pin examples name the release that is about to exist
+grep '"version"' .claude-plugin/plugin.json  → "version": "10.3.0",
+```
+
+v8.2.0 shipped on 2026-08-14, one day after this record was filed, and eleven further releases have gone out since — the tag list runs to `v10.3.0` at HEAD.
+
+**The three acceptance items, each against the tree:**
+
+1. *One live record names the bump as its own acceptance item.* Never written, and it stopped being needed: the bump landed in the ordinary release flow before any carrier was built. The failure this item guarded against did not occur.
+2. *Whoever performs it re-weighs `8.1.0 → 8.2.0` rather than carrying the number forward.* Satisfied by the release that happened — `8.2.0` is what shipped, and `CLAUDE.md` records the curator, this Circle's sibling work, as arriving at v8.2.0.
+3. *The documentation Circle's "What this Circle is not" clause about the four version surfaces is corrected or scoped.* **Moot.** `circles/260813-0910-documentation-matches-shipped-plugin/` reached Bounded Closure and was archived out of the live store on 2026-08-17 (`e59dea2`, `archive/260817-1907-safe-cleanup-scoped/circles/260813-0910-documentation-matches-shipped-plugin/_b_circle.md`). A terminal record inside a frozen store is history and is not edited; the clause it carries describes a premise that was true when it was written.
+
+**One thing this closure does not claim.** The *shape* the record names — an obligation recorded only in the document about to be closed — was never fixed as a class. It is the same shape the Bounded Closure of `circles/260816-1741-guard-becomes-observation-only` re-measured two days later as *"a plan-stated precondition with no mechanism is not a precondition"*. This instance discharged itself; the class did not.
+
+---
+Resolved: the deferred bump was performed. `v8.2.0` was tagged on 2026-08-14 (`cb30037`) and the manifest reads `10.3.0` at HEAD `e435f03`. Acceptance item 3 is moot — `circles/260813-0910-documentation-matches-shipped-plugin/` closed `_b_` and was archived on 2026-08-17 (`e59dea2`), so the clause that would have needed scoping now sits in a frozen store and is not edited.

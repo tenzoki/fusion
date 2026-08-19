@@ -46,3 +46,16 @@ permission-free. If that is what happens, it affects far more than Setup.
 - If no dialogs appear, Step 0g's question is proposed for removal in a decision record rather than deleted
   by an executor: it was put there by an answered decision and leaves the same way.
 - The three-denied-`Bash`-calls observation is either reproduced or recorded as not reproducible.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). **UNDECIDABLE from this tree. The marker stays for that reason and not for lack of trying.**
+
+The record's `## Acceptance` demands a scratch project with no `.claude/` anywhere in its ancestry, run **interactively**, on the then-current Claude Code, recording the version and which tools raised dialogs. None of that is in this repository and nothing in this repository can produce it: an agent pass cannot observe an interactive approval dialog, and a non-interactive run answers a different question.
+
+Searched and not found: `grep -rln 'approval dialog' fusion-workbench/` returns only this record, its source decision `260815-0029_i_…`, the closing issue `shared/issues/260810-0326_c_…`, one history file, and the archived tasklist. No measurement record exists in any store.
+
+Meanwhile the thing the measurement would justify or retire is still shipping: `skills/setup/SKILL.md:194` is `## Step 0g — Offer to seed the project's permission file`, and it asks every fresh project the question this record wants re-grounded.
+
+**What would settle it**, unchanged and still a user action: one scratch project, one interactive Setup, the Claude Code version and the list of tools that raised a dialog written into a record.

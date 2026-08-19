@@ -48,3 +48,21 @@ The same input `260815-1848_o_…` names for the plan-marker case: every commit 
 already in the trailer convention this Circle used throughout. Whether such a check is worth building
 one Circle after eight mechanisms were deleted for never having caught anything is a decision, not a
 repair, and this record does not take it.
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — CLOSED on the instance. The class survives on a named carrier, which is the only reason this may close.**
+
+```
+ls fusion-workbench/agentstate.yaml
+  → No such file or directory
+```
+
+The record's subject is two fields in one session-state file — `current_task` and `work_queue[16]` — that were wrong at HEAD `9306f0a`. That file no longer exists: the orchestrator deletes it on clean exit, and every session writes a fresh one. There is nothing left to be wrong, and nothing a later pass could correct. The stale `P-15` entry cannot reproduce because its carrier is ephemeral by design.
+
+**Why this is not the closure pattern this Circle keeps recording as a failure.** The pattern — an obligation recorded only in the document about to be closed, so closing it retires the obligation — is exactly what this record's own last paragraph guards against, and it named its successor before it needed one. The class question, *should a `Task: P-<n>` commit trailer mechanically imply that task's `status` is `done`*, is carried by `260815-1848_*_step-14-landed-without-its-done-marker-and-the-issue-that-closed-this-for-three-earlier-steps-did-not-hold.md`, which states the same input in the same words for the plan-marker case and stays `_o_` at this pass. Measured: `grep -rln 'Task: P-' hooks --include='*.ts'` returns nothing, so no such check exists anywhere in the tree.
+
+The two supporting facts the record cites also stand and are worth carrying forward with the class: `dd312eb` made `work_queue` the queue's only durable copy, and `f45f76a` deleted the check that compared this file against git. Nothing has replaced either.
+
+---
+Resolved: the instance is gone with its carrier. `fusion-workbench/agentstate.yaml` does not exist at HEAD `e435f03` — the orchestrator deletes it on clean exit — so the stale `current_task` and `work_queue[16]` entries this record measured at `9306f0a` cannot reproduce. The class question it raises is not closed with it: it is carried by `260815-1848_*_step-14-landed-without-its-done-marker…`, which is open at this pass and states the same mechanical input.

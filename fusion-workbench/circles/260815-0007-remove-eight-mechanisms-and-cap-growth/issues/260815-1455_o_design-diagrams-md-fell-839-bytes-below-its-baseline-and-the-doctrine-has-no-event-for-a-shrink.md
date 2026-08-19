@@ -50,3 +50,12 @@ This is a doctrine question before it is an edit, and it should not be settled b
 The question: **does an incidental shrink — a file getting smaller because something was deleted, rather than because the report asked for a cut — re-baseline?** Two defensible answers. Re-cut the entry to 4 834 with a comment naming the removal that produced it, which keeps the report honest and costs a line; or leave every entry frozen between the two named events and accept that a baseline drifts above reality after any removal, which keeps the doctrine simple and makes the report progressively less sensitive with every deletion the project makes. This Circle is a removal Circle and has produced at least one instance already, so the second answer has a visible price.
 
 Whichever is chosen, `ROLES`'s `design-diagrams.md` comment should say that the file *shrank* and that the entry was or was not re-cut for it — the file-set argument standing alone reads as a complete justification when it has answered only half the question.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Unchanged in both halves.**
+
+`wc -c rules/design-diagrams.md` → **4 834**. `hooks/lib/__tests__/rules-emission-golden.test.ts:473` still carries `"design-diagrams.md": 5_673, // 2026-08-05 cut`, and `:292` restates the 5 673 in prose. That is 839 bytes of unearned head-room on the four roles that draw the file.
+
+The doctrine question is still unrecorded: `hooks/lib/__tests__/helpers/growth-bound.ts` names exactly two moments at which a baseline moves — after a cleanup, and at a one-time arming — and an *incidental* shrink is neither. No decision record in any store asks whether one should re-baseline. Until it does, a shrink silently buys future growth, which is the one direction the bounds were built to price.

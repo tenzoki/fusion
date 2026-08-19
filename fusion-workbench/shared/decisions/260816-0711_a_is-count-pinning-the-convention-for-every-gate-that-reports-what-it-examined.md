@@ -73,3 +73,26 @@ Implemented:
 Deferred:
 Superseded by:
 Retired:
+
+---
+**Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — marker
+unchanged at `_a_`. The convention was answered and is written down nowhere.**
+
+`grep -rn 'probe-assertion\|probe assertion\|count-pinning\|count pinning'` over `rules/`,
+`CLAUDE.md`, `README-hooks.md`, `hooks/lib/__tests__/*.ts` and
+`hooks/lib/__tests__/helpers/*.ts` returns **nothing** at HEAD. The chosen convention — assert by
+probe where the claim can be asserted by running the thing, pin counts only where no probe exists —
+exists solely in this record's `Answered:` line and in the session history it cites.
+
+The three gates it was meant to govern are unchanged and still disagree with each other:
+`hooks/lib/__tests__/reference-resolution-lint.test.ts:702` pins exact counts (and the numbers have
+moved since this record was filed — `{ paths: 1178, anchors: 155, records: 102 }` against the 1122 /
+139 / 95 recorded here, three re-approvals in as many days), `hooks/lib/__tests__/domain-cascade.test.ts`
+asserts by probe, and `surface-growth-bound.test.ts` pins a per-file byte inventory behind a flag.
+
+**What binds a deep change.** This record's third constraint is the operative one and it is now
+overdue: *"Three applications exist; a fourth should not land before this is answered, or the answer
+will be inherited from whichever shape the fourth author happened to copy."* The record has been
+answered — but with the answer unwritten, a fourth gate added by a deep change will still inherit its
+shape by copying, and the copy most likely to hand is the count pin, which is the fallback rather
+than the convention.

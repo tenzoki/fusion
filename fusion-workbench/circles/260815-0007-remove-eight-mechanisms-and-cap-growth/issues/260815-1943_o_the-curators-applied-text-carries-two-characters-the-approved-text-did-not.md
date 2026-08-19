@@ -20,3 +20,17 @@ The approved After text in the ledger (`history/260815-1706-curator-run.md`, ent
 **Two ledger-internal citation slips found alongside, both inside `history/260815-1706-curator-run.md` and neither reaching a shipped surface** — L01 attributes the deletion of `templates/plane.config.yaml` to `d0ddabb` when it was `7c12d6a`, and L07 cites `rules/fusion-workbench-conventions.md:294` for a line that stands at `:296` after entry L12's own two-line insertion into the same file. Recorded here rather than filed separately; a workbench record is not a normative surface.
 
 **Found by:** coderev, review of `1e29572..9306f0a`, commit `e8052e7`.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Both halves stand.**
+
+```
+grep -o 'and always did..\{0,3\}' CLAUDE.md | od -c
+  a n d   a l w a y s   d i d . .   E \n
+```
+
+The doubled period is still in `CLAUDE.md` (the trailing space has collapsed into ordinary sentence spacing). And `agents/curator.md:210` still verifies only the **before** text — *"Before applying an entry, re-read its before-text from disk. Where disk and ledger disagree, mark the entry `stale`"* — with no comparison of what was written against the ledger's `**After:**` block.
+
+The two characters are trivial and the mechanism gap is not: a gated pass whose whole value is that the user approved a specific text has no check that the approved text is what landed. A second curator run has been through this file since (`e8052e7`) without the check being added or the characters removed.

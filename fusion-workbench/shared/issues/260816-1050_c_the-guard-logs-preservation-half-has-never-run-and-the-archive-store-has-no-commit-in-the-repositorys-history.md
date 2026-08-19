@@ -89,3 +89,15 @@ This one measures that it never has.
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `fusion-workbench/archive/` is empty on disk, `git log --all -- fusion-workbench/archive` returns no commit, and `.guard-state/events.jsonl` stands at about 18 250 lines, untracked. The roll has still never fired. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: The preservation half has now run, and both measured claims are false at HEAD `e435f03`.
+`e59dea2` ("chore(workbench): the archive pass that had to be narrowed twice before it was safe",
+260817-1912) is the first commit in the repository's history to touch `fusion-workbench/archive/`, and
+it carries the rolled log as a tracked file:
+`fusion-workbench/archive/260817-1907-safe-cleanup-scoped/.guard-state/events-260817-1907.jsonl`,
+18 251 lines, confirmed by `git ls-files`. The live `.guard-state/events.jsonl` restarted at 73 lines,
+which is the roll-and-truncate behaviour the two shipped texts describe. The configuration the
+conventions rule and `.gitignore` assert — live log untracked, evidence preserved in git by the roll —
+is now demonstrated rather than merely stated. Verified by `git log --all -- fusion-workbench/archive`,
+`git ls-files`, and `wc -l` on both files. Closed by reconciliation 260819-1400.

@@ -108,3 +108,24 @@ filed the same defect on 2026-08-16 from session 260815-2147, commit `a19c867`, 
 mechanism, the same reading of why Step 3b steps 4 and 5 do not reach it, and the same citation of
 `260811-0114`. It was not found before this record was written. Both are now cross-annotated; they
 are one defect and want merging, with this record's three-option remedy kept.
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass, third pass) — STAYS `_o_`. Nothing in the protocol moved, and the second pass's own account is confirmed unchanged.**
+
+**Measured at HEAD `e435f03`.** `agents/orchestrator.md` was substantially rewritten between `d0f13fa` and HEAD (105 lines changed), so the file this record's remedy lands in has been open since. None of the three options was taken:
+
+```
+grep -n 'diff --cached\|clean index\|inherited' agents/orchestrator.md   → no hit
+```
+
+Step 3b step 4 still states the staging shape as a list of explicitly named paths and step 5 still closes the parallel-committer race inside the lock. Neither addresses a dirty index inherited from a sub-agent dispatched earlier in the same session, which is this record's case. `git show --name-status --find-renames dbbad70` still returns seven paths and six renames, as the second pass measured.
+
+**Live obligation, and the one with the widest blast radius of the eight.** Two reasons, and neither is about `dbbad70`:
+
+1. **It is a defect in fusion's own commit protocol, not in a run.** The orchestrator's command was correct and the outcome was wrong, so every future session reproduces it whenever a sub-agent stages before the orchestrator commits. Reconcilers stage renames by construction — this very pass performs renames, and does them with plain `mv` **precisely because of this record**.
+2. **It is filed twice and both filings are live.** `shared/issues/260816-0105_*_a-sub-agents-staged-rename-is-absorbed-by-the-orchestrators-next-commit-and-the-staging-list-cannot-prevent-it.md` states the same defect from a different session and a different commit (`a19c867`). Both records still carry `_o_`. The merge the second pass called for has not happened, and it cannot happen here: that record is in the shared store, which this pass does not touch.
+
+**What it needs is a decision, and that is why it will not close by being worked.** The record says so itself — *"Undecided, and deliberately left open rather than proposed as a fix"* — and one of its three options (forbid sub-agents from staging at all) changes what several agent prompts are allowed to do. Whoever takes it should file the decision record first and let the fix follow it, rather than picking an option inside a defect record.
+
+**Nothing here disputes that the repository is intact.** Re-verified at HEAD: `git diff --cached --quiet` and `git diff --quiet` both exit 0 for the paths this Circle touched, and both halves of every one of the four absorbed renames are in the history (`bee46e7` carries the content edits `dbbad70` left behind).

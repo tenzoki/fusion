@@ -17,3 +17,10 @@ The curator prompt is the one prose agent that does not enumerate its long-form 
 **The fix.** Add the `Long-form prose vs short-form` enumeration to `agents/curator.md` `## Output Style`, in the shape the other nine carry: name which of the curator's outputs the writing profile governs (the run file's prose sections, the decision records it files) and which take the chat profile (the gate prompt, the survey report, the chat summary).
 
 **What must not be done instead.** Weakening `rules/user-facing-output.md:11` to say "most prose agents" would remove a constraint to accommodate a defect. The curator declined that explicitly and left the rule alone.
+
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Still the only member of the set without the enumeration.**
+
+`grep -c 'Long-form prose vs short-form' agents/<each>.md`: orchestrator 1, consultant 1, shaper 1, planner 1, analyst 1, playmaker 1, editor 1, **curator 0**. The set shrank from ten to eight when `investigator` and `conceptrev` were retired on 2026-08-15, and curator is still the one gap. `bin/fusion-rules curator` does emit `default-voice-en.yaml`, so the profile arrives and the prompt never says which of its outputs it governs — which is precisely what `rules/user-facing-output.md:11` obliges each long-form agent's prompt to state.

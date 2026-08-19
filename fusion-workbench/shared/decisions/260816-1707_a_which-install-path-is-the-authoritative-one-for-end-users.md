@@ -43,3 +43,27 @@ Retired:
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`). Answer recorded, not yet realised — marker stays `_a_`. The chosen policy is still not written down, which is precisely what this record said a default is not a substitute for. `install.sh:34` reads `REF="${FUSION_REF:-heads/main}"` and its header at `:25-27` documents the tag pin as an option, exactly as before the answer. No sentence in `README.md`, `CLAUDE.md` or `docs/` states that `heads/main` is the standard and the tag an opt-in pin.
+
+---
+**Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — marker
+unchanged at `_a_`; re-verified after 260817-1836, including against an `install.sh` that was edited
+in the meantime.**
+
+`install.sh` is one of the files `2552586..HEAD` touched, so this was re-read rather than inherited.
+`install.sh:34` still reads `REF="${FUSION_REF:-heads/main}"` and its header at `:25` still
+documents the tag pin as an option. `CLAUDE.md:110` states "The default ref is `heads/main`" — which
+is a description of the script, and describing the default is precisely what this record refused to
+accept as a statement of policy. No sentence in `README.md`, `CLAUDE.md` or `docs/` says that
+`heads/main` is the standard and the tag an opt-in pin.
+
+One thing worth separating. The answer's **consequence** is already consumed and recorded: it
+eliminated option 3 of
+`shared/decisions/260816-0719_a_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`,
+whose own `Answered:` line names this record for it. So the decision has done its work as a
+prerequisite; what is unrealised is only the sentence that makes the policy readable by someone who
+was not in the session.
+
+**What binds a deep change.** Every commit on `main` is installable by an end user running the
+documented default. There is no release boundary protecting an intermediate state, so "it will be
+fixed before the tag" is not available as a mitigation for anything a deep change breaks on the
+default path.

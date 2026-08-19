@@ -85,3 +85,36 @@ counters, so nothing measures the Turn log against the events any more — the m
 describes has been replaced by no measurement at all. Part 1 stands unchanged: both surfaces are the
 orchestrator's to write and the reconciler may write neither. No Circle is active this session, so
 only the session-history half applies.
+
+---
+
+**Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — CLOSED. Part 1 was written; part 2's subject was deleted. One residual is named rather than fixed, because it is outside this pass's scope.**
+
+**Part 1 — the missing per-Turn sections — written.**
+
+```
+grep -n '^### Turn' shared/history/260813-2345-orchestrator-session.md
+  102: ### Turn 1
+  131: ### Turn 2
+  186: ### Turn 3, continued (after the resume)
+  316: ### Turn 3 (written retroactively at Phase 4)
+  328: ### Turn 4 (written retroactively at Phase 4)
+  342: ### Turn 5
+  358: ### Turn 6
+```
+
+Every Turn has a section, and the two written at closure say so in their own headings rather than passing themselves off as contemporaneous. The Circle record's `## Turn log` carries Turn 5 (`_c_circle.md:134`) and Turn 6 (`:155`), so the absence this record measured is gone from both surfaces. Landed in the closure commit `4dcfff6`.
+
+**Part 2 — "while the drift check reads clean" — moot.** The check is gone:
+
+```
+ls bin/fusion-state-drift hooks/lib/state-drift.ts
+  → No such file or directory   (both removed in f45f76a, 2026-08-15)
+```
+
+The record's second half is a complaint that a mechanism reported clean over a gap it could not see. That mechanism was removed with the seven others this Circle's successor deleted, so the false reassurance it gave cannot recur. Nothing replaced it: no check reads a session history's Turn sections against the event log, and none is proposed here.
+
+**One residual, named and not touched.** `shared/history/260815-2147-orchestrator-session.md:5` still reads `**Status:** In progress` for a session that ended. That is the same class as this record's part 1 — a history file left mid-state — on a different file, and it lives in `shared/history/`, which this Circle-store pass does not write to. Reported in `shared/history/260819-1400-reconciliation-circles.md` so it is not lost with this closure.
+
+---
+Resolved: part 1 was written by the closure commit `4dcfff6` — `shared/history/260813-2345-orchestrator-session.md` now carries a section for every Turn, the two retroactive ones labelled as such, and the Circle record's `## Turn log` carries Turns 5 and 6. Part 2 is moot: `bin/fusion-state-drift` and `hooks/lib/state-drift.ts`, the check that read clean over the gap, were deleted in `f45f76a` on 2026-08-15 and nothing replaced them. Residual on a different file, `shared/history/260815-2147-orchestrator-session.md:5` (`**Status:** In progress`), reported to the reconciliation log rather than fixed here.
