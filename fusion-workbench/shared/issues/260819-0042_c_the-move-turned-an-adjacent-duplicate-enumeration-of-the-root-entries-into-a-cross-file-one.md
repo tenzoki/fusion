@@ -61,3 +61,6 @@ low confidence.
 
 Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301`. No Circle active, so it is
 filed in the shared store under the Origin Rule.
+
+---
+Resolved: Option 1: the layout tree's discipline sentence now names both landing sites by path, so a new root-anchored surface lands in the tree and in the record-or-live-state split in the same commit, and the obligation is written where the person adding a surface already reads. Two restatements were folded out while doing it: the emission-audience paragraph under the pointer, which the header table already carried verbatim, and the out-of-scope store list in `rules/workbench-tracking.md`, replaced by a citation of the tree. The ten root entries stay enumerated in their two groups, because that enumeration is the classification.

@@ -68,13 +68,11 @@ fusion-workbench/
 
 They are root-anchored because none of them belongs to a unit of work. `agentstate.yaml`, `orchestrator-live.md` and `orchestrator-events.jsonl` are session state, and a session may span Circles. `.guard-state/` counters are project-wide. `.commit-lock/` guards the project's git index, which no single Circle owns. `.session-marker` answers "is an orchestrator already running in this project", which is meaningless scoped to a Circle. This placement is what makes the guarantee "hooks behave unchanged across the layout" structural rather than promised.
 
-The list is exhaustive as written, and it is a list rather than a count on purpose: a count goes stale on the next helper that needs project-wide state, and this one already had. When a `bin/` helper or a hook adds a root-anchored surface, it lands in this tree in the same commit — this document is the definition, and an incomplete tree invites exactly the reasoning-by-omission it exists to prevent.
+The list is exhaustive as written, and it is a list rather than a count on purpose: a count goes stale on the next helper that needs project-wide state, and this one already had. When a `bin/` helper or a hook adds a root-anchored surface, it lands in this tree and in the record-or-live-state split in `rules/workbench-tracking.md`, both in the same commit — this document is the definition, and an incomplete tree invites exactly the reasoning-by-omission it exists to prevent.
 
 ### Which of them a tracked workbench tracks
 
-Whether a consuming project tracks its workbench at all is that project's decision — fusion ships no `.gitignore` rule for it. Which of the root entries above a project that *does* track it should commit, which it should not, and what preserves the evidence in the ones it does not, are authored in `rules/workbench-tracking.md`.
-
-`bin/fusion-rules` emits that file to **no agent**, because no executor agent applies the split. Its two consumers are a human writing a project's `.gitignore`, who reads a file rather than receiving an emission, and the archive step of `/fusion:cleanup`, which cites it in its own body.
+Whether a consuming project tracks its workbench at all is that project's decision — fusion ships no `.gitignore` rule for it. Which of the root entries above a project that *does* track it should commit, which it should not, and what preserves the evidence in the ones it does not, are authored in `rules/workbench-tracking.md`, which `bin/fusion-rules` emits to **no agent**: its two readers are a human writing a project's `.gitignore` and the archive step of `/fusion:cleanup`.
 
 **`shared/` mirrors the Circle's artifact kinds, plus four of its own.** Every kind a Circle can hold has a shared counterpart, because any of them can be produced with no Circle active and must still have a home. `investigations/`, `consult/`, `memos/` and `backlog/` exist only in `shared/`: an investigation studies a failure capture, a consultation answers a question, a memo records a note, and a backlog entry precedes every Directive by construction. None of the four is produced by executing a Directive, so none can originate in a Circle. `investigations/` is **write-frozen** since the `investigator` fold of 2026-08-15: the store and its reports stay, nothing writes there any more, and a failure analysis goes to `$OUT_ANALYSIS` like every other analysis.
 
@@ -525,7 +523,7 @@ Retired: <set when the implementation is removed; the marker stays _i_>
 drifted from it — 39 of 94 records carried a header naming a state their marker did not, a
 ratio that held six days across three hand corrections. The marker on the filename is the
 state and the only source. A record written before the removal still carries the field; leave
-it exactly as it stands — hand-correcting a record you are not transitioning destroys the
+it exactly as it stands, including when you transition it: those drifted headers are the
 evidence the removal was decided on. Binding decision:
 `shared/decisions/260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`.
 

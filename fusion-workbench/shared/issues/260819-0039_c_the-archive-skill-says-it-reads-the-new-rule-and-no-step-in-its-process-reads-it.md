@@ -56,3 +56,6 @@ record against `260816-1707` rather than an edit.
 
 Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301`. No Circle active, so it is
 filed in the shared store under the Origin Rule.
+
+---
+Resolved: fix direction 1, chosen by the user. `skills/archive/SKILL.md` `## Step 1` is now "Resolve paths, read the tracking rule": its bash block resolves the source root through `bin/fusion-source-root` (guarded, falling back to `$FUSION_PLUGIN_ROOT`) and `cat`s `rules/workbench-tracking.md`, and a following sentence instructs the run to read it in full before Step 2, with the one clause on what for and a named failure path if neither root yields the file. `## Process` step 1 points at both halves, so a run following the Process list performs the read rather than inheriting it. Line 11 tightened to say the read happens at Step 1, so the lede and the step agree. Decision `260816-1707` now has the mechanism its positive reason claimed.

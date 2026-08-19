@@ -862,9 +862,9 @@ After reconciler returns and any Rebalance gate is resolved, run this step if a 
    - User chose **Revise Directive** that re-entered Step 0b.1 — this Circle is being re-shaped, NOT closed. Do NOT touch the marker. Skip this Phase-4 sub-step (the existing Rebalance bounding governs).
    - User chose **Revise Grounding** or **Revise Artifact** — these continue the Circle, no marker change. Skip this sub-step.
 
-2b. **Read the plan's `## Where this Circle stops` back to the user, before the rename.** Resolve the plan in scope: the Circle record's `**Active spec/plan:**` field, else the plan file this session ran on. If no plan is in scope, or the plan carries no such section, do nothing and go to step 3 — no question is put to the user. Otherwise read the section's clauses aloud, one at a time, and ask whether each holds.
+2b. **Read the plan's `## Where this Circle stops` back to the user, before the rename.** Resolve the plan in scope: the Circle record's `**Active spec/plan:**` field, else the plan file this session ran on. If no plan is in scope, if the plan carries no such section, or if the section is empty or still holds only its angle-bracket placeholder, do nothing and go to step 3 — no question is put to the user. Otherwise read the section's clauses aloud, one at a time, and ask whether each holds.
 
-   **It is a question, not a check.** You do not parse the clauses, judge them, or decide from their wording whether a condition is met; you put them in front of the user at the one moment they are actionable. Same shape as the plan head's `**Decidability:**` line — the question goes where somebody looks, rather than a checker being built for a question that is mostly undecidable. Emit `gate_hit` with the reason and `gate_response` with the answer; this step has no event type of its own. Carry any clause the user says does not hold into the `## Closure note` at step 3, so the gap outlives the chat.
+   **It is a question, not a check.** You do not parse the clauses, judge them, or decide from their wording whether a condition is met; you put them in front of the user at the one moment they are actionable. Same shape as the plan head's `**Decidability:**` line — the question goes where somebody looks, rather than a checker being built for a question that is mostly undecidable. Emit `gate_hit` once with reason `Circle stop conditions` — that exact string, no other phrasing — and one `gate_response` per clause carrying `holds` or `does not hold`; this step has no event type of its own. The two strings are fixed because `260817-1613` reserves option 3 for the case where this gate is *measured* and misses, and both halves of that measurement — how often the gate fired, how often a clause came back not holding — are then a `grep` over `orchestrator-events.jsonl`, which is append-only across sessions. Carry any clause the user says does not hold into the `## Closure note` at step 3, so the gap outlives the chat.
 
    **What it does not cover.** A release tagged mid-Circle has already gone out by the time this step runs, and that is the measured case: a plan made its Circle's review pass a precondition of the tag, v10.0.0 was tagged and pushed without the pass, and a post-release reconciliation was what noticed. The step records such a gap; it cannot prevent it. Binding decision: `260817-1613` under `$SCAN_DECISIONS`.
 
@@ -1232,7 +1232,7 @@ Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit
 | `task_skipped` | User chose Skip at gate | — |
 | `task_deferred` | User chose Defer at gate | — |
 | `gate_hit` | Human gate triggered | Gate reason |
-| `gate_response` | User responded to gate | Decision (proceed/skip/defer/modify) |
+| `gate_response` | User responded to gate | Decision (proceed/skip/defer/modify); the Phase-4 stop-conditions gate writes `holds`/`does not hold`, one per clause |
 | `commit` | Successful git commit | Short hash, message summary |
 | `revert` | Files reverted after error | File list, reason |
 | `review_start` | Incremental review begins | Agent (coderev/ontorev), file count |

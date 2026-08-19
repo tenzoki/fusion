@@ -50,3 +50,6 @@ files, and it shrinks two of them.
 
 Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301`. No Circle active, so it is
 filed in the shared store under the Origin Rule.
+
+---
+Resolved: The qualifier is gone. The position now reads unconditionally and names the transition case rather than excluding it: leave the field exactly as it stands, including when you transition the record, because the drifted headers are the evidence the removal was decided on. A fourth site carries the old qualifier, `docs/upgrading-to-v10-2.md`, and is filed separately.

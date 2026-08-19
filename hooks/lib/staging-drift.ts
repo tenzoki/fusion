@@ -83,9 +83,8 @@
  *     Circle's `*_circle.md`, or anything under an artifact store. These are
  *     what a staging list is supposed to name.
  *   - `in-flight` — the live-state surfaces `rules/workbench-tracking.md`
- *     groups as "do not track it",
- *     plus the two tracked-but-machine-written ones and the session's own
- *     history file. Never a fault.
+ *     groups as "do not track it", plus the two tracked-but-machine-written
+ *     ones and the session's own history file. Never a fault.
  *   - `unclassified` — everything else under the workbench. Named, with the
  *     statement that it is **not** a record store and that nothing is claimed
  *     about it. The worked case is `stilwerk/`, the four voice profiles
@@ -164,11 +163,10 @@ export const PRESCRIBED_MESSAGE_PATH = "/tmp/fusion-commit-msg-<task-id>.txt";
  *
  * The first five are the "do not track it" group of
  * `rules/workbench-tracking.md`; this repository's own `.gitignore` applies
- * exactly that split, so in
- * a project that follows it they never reach `git status` at all. They are
- * listed anyway because whether the workbench is tracked, and how, is the
- * project's decision — a consumer that tracks `agentstate.yaml` must not be
- * told on every commit that it forgot to stage it.
+ * exactly that split, so in a project that follows it they never reach
+ * `git status` at all. They are listed anyway because whether the workbench is
+ * tracked, and how, is the project's decision — a consumer that tracks
+ * `agentstate.yaml` must not be told on every commit that it forgot to stage it.
  *
  * The last two are the opposite case and the more interesting one: they are
  * TRACKED by that same split, and they are still not a task's records.

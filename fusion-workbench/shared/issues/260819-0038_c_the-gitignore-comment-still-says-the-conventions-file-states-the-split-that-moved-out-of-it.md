@@ -44,3 +44,6 @@ range; the two share a cause.
 
 Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301`. No Circle active, so it is
 filed in the shared store under the Origin Rule.
+
+---
+Resolved: `.gitignore:66` repointed at `rules/workbench-tracking.md`. The reason no gate caught it is worth keeping: the move deliberately retained the old heading as the pointer, so the anchor still resolved and only its content had moved.

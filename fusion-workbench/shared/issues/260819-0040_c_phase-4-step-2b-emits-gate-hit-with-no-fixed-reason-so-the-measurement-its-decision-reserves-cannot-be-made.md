@@ -57,3 +57,6 @@ fixes what two existing events carry.
 
 Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301`. No Circle active, so it is
 filed in the shared store under the Origin Rule.
+
+---
+Resolved: The reason string is fixed at `Circle stop conditions`, that exact phrasing and no other, with one `gate_response` per clause carrying `holds` or `does not hold`. Both halves of the measurement `260817-1613` reserves as the trigger for its option 3 are now a grep over the append-only event log. The `gate_response` row of the Observability table records the second shape; it deliberately does not resolve `260811-2306`, the open question of whether that row's four-value list is closed or illustrative.

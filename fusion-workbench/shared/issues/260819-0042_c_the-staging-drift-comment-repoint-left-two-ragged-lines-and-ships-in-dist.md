@@ -44,3 +44,6 @@ affected.
 
 Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301`. No Circle active, so it is
 filed in the shared store under the Origin Rule.
+
+---
+Resolved: Both paragraphs reflowed to the file's own comment width in `hooks/lib/staging-drift.ts`; `dist/` rebuilt, its diff being the same reflow and nothing else. Comment-only, no code touched.

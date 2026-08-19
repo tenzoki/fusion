@@ -62,8 +62,9 @@ credentials.json
 # decides for itself; fusion ships no rule for it). Tracked does not mean all of it:
 # the root-anchored surfaces split into records, which are kept, and live state, which
 # only ever produces diff noise and — restored by a checkout — a lie about a session
-# that ended. The split and its two consequences for the lifecycle skills are stated in
-# rules/fusion-workbench-conventions.md, "Which of them a tracked workbench tracks".
+# that ended. The split and its two consequences, one binding the lifecycle skills and one
+# binding any command that sweeps the tree, are stated in rules/workbench-tracking.md,
+# which is their authoring home.
 # KEPT: orchestrator-events.jsonl, portfolio.md, .fusion-setup.
 # The guard's own event log (.guard-state/events.jsonl) is a record too, and it is
 # deliberately NOT excepted here: what preserves it is the archive step of

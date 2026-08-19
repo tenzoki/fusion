@@ -55,3 +55,6 @@ that, and a placeholder test is a substring check, not an interpretation of the 
 
 Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301`. No Circle active, so it is
 filed in the shared store under the Origin Rule.
+
+---
+Resolved: Both halves, and they are not equal. The fix is in `agents/orchestrator.md`: Phase 4 step 2b's case split now tiles at four, adding "the section is empty or still holds only its angle-bracket placeholder" to the do-nothing branch, so a stub is never read aloud as a clause. Recognising a stub is a look at the text, not a parse. The `agents/planner.md` declaration that the section is mandatory is unenforced normative text and cannot eliminate a stub; it earns its place by keeping the section from being silently optional, which is what it would have been if a stub and an absent section were treated alike. Same enforcement model as `**Decidability:**`: a human, at the one moment it is actionable.

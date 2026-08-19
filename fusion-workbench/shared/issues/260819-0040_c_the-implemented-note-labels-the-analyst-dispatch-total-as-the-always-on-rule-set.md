@@ -60,3 +60,6 @@ record rather than in this fix.
 
 Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301`. No Circle active, so it is
 filed in the shared store under the Origin Rule.
+
+---
+Resolved: The `Implemented:` footer of `260816-1707_i_*` now names the always-on floor as `CLAUDE.md` defines it, 101 393 -> 97 977 bytes, with a dated correction note recording that the earlier figures were the `[analyst]` block and off by the fixed 2 519-byte offset. The commit message of `b200902` keeps the original wording, being history.

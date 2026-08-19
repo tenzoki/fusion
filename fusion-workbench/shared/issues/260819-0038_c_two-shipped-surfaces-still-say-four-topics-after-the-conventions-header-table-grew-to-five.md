@@ -52,3 +52,6 @@ this repository's auto-loaded context (`CLAUDE.md`).
 
 Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301`. No Circle active, so it is
 filed in the shared store under the Origin Rule.
+
+---
+Resolved: `CLAUDE.md:44` and `README-agents.md:271` now say five topics, and the README enumeration names `workbench-tracking.md`. The closing clause was not written as the record proposed: an "emitted to no agent" qualifier on the fifth would have implied the other four are agent-emitted, and the partition table shows three of the five are not. It now states that three of them are reached by citation rather than emission, which matches the table row for row.

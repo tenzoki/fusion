@@ -645,7 +645,33 @@ function scanHeadingAnchors(
 // And its `fusion-workbench-conventions.md` citation is a bare basename, which is no
 // class-(a) token — that class reads `rules/<name>.md` — so paths stayed at 1152 while a
 // file was named. The anchor still resolves, because class (b) matches on basename.
-const BASELINE = { paths: 1152, anchors: 149, records: 102 };
+// Re-approved 2026-08-19 — one re-approval for THREE tasks that ran concurrently on
+// disjoint file sets, each of which measured its own contribution and none of which wrote
+// this constant: three writers of one number leave the last writer's figure wrong, so the
+// tasks reported and a consolidation pass measured the settled tree once and wrote it here.
+// paths 1152 -> 1156; anchors and records did not move. Measured per file by copying each
+// changed file in turn into a detached worktree at HEAD `5ec26b2` and rerunning this gate.
+// Contributions as paths / anchors / records, by task:
+//   U1 — `skills/archive/SKILL.md` +3 / 0 / 0, `CLAUDE.md` 0 / 0 / 0,
+//        `README-agents.md` 0 / 0 / 0, `.gitignore` 0 / 0 / 0 (not a `surface()` file at all).
+//   U2 — `agents/planner.md` 0 / 0 / 0, `agents/orchestrator.md` 0 / 0 / 0,
+//        `hooks/lib/staging-drift.ts` 0 / 0 / 0 (scanned recordsOnly, so a comment reflow
+//        there cannot move paths or anchors even in principle).
+//   U3 — `rules/fusion-workbench-conventions.md` +1 / 0 / 0 (the new
+//        `rules/workbench-tracking.md` citation in the layout tree's discipline sentence),
+//        `rules/workbench-tracking.md` 0 / 0 / 0.
+// The eight per-file figures sum to +4 against an actual +4: exactly, with no interaction,
+// because no file's added text cites another's. That is the arithmetic the two blocks above
+// warn does NOT generally hold; it holds here and is not a new rule.
+// Why U1's figure is +3 and not the +2 measured while the tasks were still in flight.
+// `skills/archive/SKILL.md` introduced a root variable named `SRC`, which ROOT_VARS does not
+// classify, so its `$SRC/rules/workbench-tracking.md` citation was a VIOLATION and never a
+// resolved path — the dangling-reference test above was red, and the count read 1154. The
+// consolidation renamed the variable to `FUSION_SRC`, the name already declared in ROOT_VARS
+// and already used for this same value in `skills/setup/SKILL.md`, rather than admitting a
+// second name for one thing. The token is now resolved and counted, which is the whole of
+// the difference between 1155 and 1154 in that file.
+const BASELINE = { paths: 1156, anchors: 149, records: 102 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the

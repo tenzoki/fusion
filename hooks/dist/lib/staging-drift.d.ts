@@ -83,9 +83,8 @@
  *     Circle's `*_circle.md`, or anything under an artifact store. These are
  *     what a staging list is supposed to name.
  *   - `in-flight` — the live-state surfaces `rules/workbench-tracking.md`
- *     groups as "do not track it",
- *     plus the two tracked-but-machine-written ones and the session's own
- *     history file. Never a fault.
+ *     groups as "do not track it", plus the two tracked-but-machine-written
+ *     ones and the session's own history file. Never a fault.
  *   - `unclassified` — everything else under the workbench. Named, with the
  *     statement that it is **not** a record store and that nothing is claimed
  *     about it. The worked case is `stilwerk/`, the four voice profiles
