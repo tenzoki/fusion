@@ -299,8 +299,8 @@ activation, because the session that will write one has not started; the field s
 because it duplicated the marker on the filename and drifted from it in both directions
 (decision `260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md`,
 answered for removal). The marker is the state. A record written before the removal still carries
-the field; leave it exactly as it stands — nothing writes it, nothing reads it, and hand-correcting
-it on a record you are not transitioning destroys the evidence the removal was decided on.
+the field; leave it exactly as it stands, including when you transition it — nothing writes it,
+nothing reads it, and those drifted headers are the evidence the removal was decided on.
 
 ## Re-sharpening an anticipated Circle (shaper portfolio-activation)
 
