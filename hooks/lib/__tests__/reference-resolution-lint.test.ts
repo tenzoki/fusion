@@ -671,7 +671,35 @@ function scanHeadingAnchors(
 // and already used for this same value in `skills/setup/SKILL.md`, rather than admitting a
 // second name for one thing. The token is now resolved and counted, which is the whole of
 // the difference between 1155 and 1154 in that file.
-const BASELINE = { paths: 1156, anchors: 149, records: 102 };
+// Re-approved 2026-08-19 — the v10.3 release material: `docs/upgrading-to-v10-3.md`, the
+// migration note for consuming projects, written to the shape of `docs/upgrading-to-v10-2.md`,
+// plus the two surfaces that point at each note (`README.md` `## Install` and the update topic
+// of `skills/help/SKILL.md`) and the dated clause added to the v10.2 note where its statement
+// of the `**Status:**` position kept a qualifier the rule dropped after v10.2.0 shipped
+// (`shared/issues/260819-0756_o_*`, option 1). paths 1156 -> 1178 and anchors 149 -> 155;
+// records did not move, because the note cites fusion's own workbench in prose and names no
+// record path — a consuming project's reader cannot open one.
+// Measured per file by copying each changed file in turn into a detached worktree at HEAD
+// `6b54551` and rerunning this gate. Contributions as paths / anchors / records:
+//   `docs/upgrading-to-v10-3.md`  +17 / +5 / 0 — the note itself. The 17 are
+//        `rules/fusion-workbench-conventions.md` four times, `agents/orchestrator.md` three,
+//        `rules/decision-record-examples.md`, `agents/planner.md` and
+//        `rules/workbench-tracking.md` twice each, `docs/upgrading-to-v10-2.md` twice, and
+//        `bin/fusion-rules` and `docs/upgrading-to-v10.md` once each. The 5 anchors sit on the
+//        three `## Decision Record Template` citations, on `agents/planner.md`
+//        `## Where this Circle stops`, and on `agents/orchestrator.md` `### Phase 4`.
+//   `docs/upgrading-to-v10-2.md`   +3 / +1 / 0 — the dated clause, naming the two files that
+//        carry the unqualified position and the new note.
+//   `README.md`                    +1 / 0 / 0 — the new "Upgrading from v10.2?" paragraph.
+//   `skills/help/SKILL.md`         +1 / 0 / 0 — the new "Coming from a v10.2 install"
+//        paragraph, under the already-classified `$FUSION_SRC`.
+//   `install.sh`                    0 / 0 / 0 — the `FUSION_REF=tags/v10.3.0` example is a
+//        version pin, not a path into the tree.
+// The five per-file figures sum to +22 / +6 against an actual +22 / +6: exactly, with no
+// interaction, because the only file any of the others cites is the new note, and it cites
+// none of them back. That arithmetic does NOT generally hold, per the blocks above; it holds
+// here and is not a new rule.
+const BASELINE = { paths: 1178, anchors: 155, records: 102 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the

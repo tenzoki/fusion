@@ -23,9 +23,11 @@ fusion --uninstall  # remove ~/.fusion and the launcher
 fusion --where      # print the install dir
 ```
 
-Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v10.2.0` to pin a release — every release since v5.5.0 is tagged), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN` (launcher dir, default `~/.local/bin`).
+Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v10.3.0` to pin a release — every release since v5.5.0 is tagged), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN` (launcher dir, default `~/.local/bin`).
 
-**Upgrading from v10.0 or v10.1?** v10.2 changes what a Circle record holds: the `**Status:**` head field leaves the template, and `## Directive` stops carrying prose once the Circle has a spec. Nothing is rewritten for you and no workbench file breaks. `docs/upgrading-to-v10-2.md` names the one case that needs a decision.
+**Upgrading from v10.2?** v10.3 takes the `**Status:**` head field off the decision-record template as well, and adds one question at a Circle closure: the orchestrator reads the plan's `## Where this Circle stops` clauses back to you and asks whether each holds. Nothing is rewritten for you and there is nothing to migrate. `docs/upgrading-to-v10-3.md` is the note.
+
+**Upgrading from v10.0 or v10.1?** v10.2 changes what a Circle record holds: the `**Status:**` head field leaves the template, and `## Directive` stops carrying prose once the Circle has a spec. Nothing is rewritten for you and no workbench file breaks. `docs/upgrading-to-v10-2.md` names the one case that needs a decision, and the v10.3 note above applies as well.
 
 **Upgrading from v9?** v10 removes a file every consuming project has at its root: `fusion-guard.json` is no longer read, and `fusion.json` replaces it. A Turn budget left in the old file is silently not applied, so move it across before deleting anything. `docs/upgrading-to-v10.md` is the two-check migration.
 

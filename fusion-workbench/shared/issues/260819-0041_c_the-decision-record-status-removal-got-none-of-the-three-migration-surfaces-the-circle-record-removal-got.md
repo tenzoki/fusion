@@ -50,3 +50,10 @@ a stated change surface, with the surfaces *outside* it that describe the same f
 
 Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301`. No Circle active, so it is
 filed in the shared store under the Origin Rule.
+
+---
+Resolved: all three surfaces, at the release that made them writable. `docs/upgrading-to-v10-3.md` covers the `**Status:**` removal with its measurement and the unconditional leave-it-alone position, and `README.md` `## Install` and `skills/help/SKILL.md` carry the v10.3 "coming from" paragraph beside the existing ones.
+
+The reason this record stayed open is exactly the reason it can close now. Both available placements were false while the removal sat in no released version: a v10.2 note would have told an installed base it carries a template change it does not, and a note for a version number nobody had chosen would have named a release that might never ship. v10.3.0 is that number, chosen at release-process step 1.
+
+The release-time obligation this record was carrying — does this range change something an installed base has on disk — was discharged by hand here rather than by a mechanism. Whether it becomes a fifth check beside the four version surfaces in `CLAUDE.md` is not settled by this closure and wants a decision record if anyone wants it mechanised.

@@ -32,3 +32,6 @@ Two candidate resolutions:
 
 Found by the executor of task U3 in session `260818-2301`, outside its file set, and reported rather
 than acted on. No Circle active, so it is filed in the shared store under the Origin Rule.
+
+---
+Resolved: option 1. `docs/upgrading-to-v10-2.md:88` keeps its sentence and gains a dated clause — the qualifier was dropped after v10.2.0, the position is now unconditional because transitioning a record is the only case an agent ever meets, and the current wording sits in `agents/orchestrator.md` for the Circle record and `rules/fusion-workbench-conventions.md` `## Decision Record Template` for the decision record. The note stays true about the version it documents, and a reader arriving from the rule no longer meets two shipped sentences with opposite scopes.

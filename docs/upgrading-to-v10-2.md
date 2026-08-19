@@ -85,7 +85,13 @@ Three ways forward, and fusion does not weigh them equally:
    Weigh it against the reason fusion ships no migration: that record is the evidence of the
    contradiction the invariant was written to end, and converting it by hand deletes the
    evidence. It is the same trade the `**Status:**` field poses, where the shipped guidance is
-   likewise to leave a record you are not transitioning exactly as it stands.
+   likewise to leave a record you are not transitioning exactly as it stands. **Added 2026-08-19,
+   after v10.2.0 shipped:** that qualifier is gone. The position is now unconditional — leave the
+   field exactly as it stands, the transition case included, because transitioning a record is the
+   only case an agent ever meets. The current wording is in `agents/orchestrator.md` for the Circle
+   record and in `rules/fusion-workbench-conventions.md` `## Decision Record Template` for the
+   decision record, which lost the same field in v10.3 (`docs/upgrading-to-v10-3.md`). The sentence
+   above is left standing because it describes the guidance as it shipped at v10.2.0.
 
 Terminal Circles — closed, bounded, superseded, deferred — are history and stay as they are.
 Do not convert them.
