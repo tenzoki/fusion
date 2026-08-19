@@ -53,3 +53,8 @@ filed in the shared store under the Origin Rule.
 
 ---
 Resolved: The qualifier is gone. The position now reads unconditionally and names the transition case rather than excluding it: leave the field exactly as it stands, including when you transition the record, because the drifted headers are the evidence the removal was decided on. A fourth site carries the old qualifier, `docs/upgrading-to-v10-2.md`, and is filed separately.
+
+---
+Revised by: `shared/reviews/260819-0832-coderev-turn-2-ten-closures-carried-scope-and-the-baseline-re-approval.md` — the `Resolved:` note above claims more than the edit delivered. It says a fourth site carries the old qualifier and names `docs/upgrading-to-v10-2.md`; there are two, and the second is a shipped agent prompt. `agents/orchestrator.md:303` still reads "hand-correcting it on a record you are not transitioning destroys the evidence the removal was decided on" — the clause this record named as the origin of the phrasing, and the one an agent actually reads at run time. The follow-up filed in `83488e9` named only the migration note, so the prompt was recorded nowhere until the review found it. Now carried by `shared/issues/260819-0821_o_the-status-qualifier-closure-names-one-remaining-site-and-a-shipped-agent-prompt-still-carries-it.md`.
+
+The marker stays `_c_`: the defect this record was filed about, the qualifier in `rules/fusion-workbench-conventions.md`, is genuinely gone. What was wrong is the closure note's account of what remained, and that is what this line corrects rather than the state.

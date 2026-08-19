@@ -183,3 +183,8 @@ written before the removal keeps the field exactly as it stands; hand-correcting
 evidence the removal was decided on, which is the position the Circle precedent
 `260815-2312` took and the constraint the user chose this option under. This defect therefore closes
 on the cause being gone, not on the population being cleaned.
+
+---
+Revised by: `shared/issues/260819-0836_o_the-status-field-closure-answers-one-of-the-defects-two-halves-and-the-templates-footer-stub-stands.md` — the `Resolved:` note above answers the first of this record's two halves and does not mention the second. The `**Status:**` head field is gone, so the marker-versus-header drift cannot recur. The unfilled footer stub this record's own `## The second half` section is about is untouched: `rules/fusion-workbench-conventions.md` `## Decision Record Template` still prescribes the placeholder block, now five lines rather than four, and three live decision records still carry it verbatim at HEAD `83488e9` — including `260818-2212_i_*`, the record that authorised the closure.
+
+The marker stays `_c_`: the removal that the note describes did land, and the second half is now carried by its own record rather than by this one.

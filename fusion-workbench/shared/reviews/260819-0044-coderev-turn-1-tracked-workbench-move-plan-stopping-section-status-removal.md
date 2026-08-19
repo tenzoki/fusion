@@ -218,3 +218,7 @@ adding no mechanism.
 
 **Not a release blocker.** Nothing in this range breaks a flow, loses data, or changes what any hook
 decides. The suite is green and the three realisations do what their decisions approved.
+
+---
+
+**Reconciliation 260819-0840** (reconciler, domain `code`, HEAD `83488e9`). Ten of the eleven findings are closed and verified against disk; the eleventh, the migration-surfaces question, is deliberately open as `shared/issues/260819-0041_o_the-decision-record-status-removal-got-none-of-the-three-migration-surfaces-the-circle-record-removal-got.md`, and the Turn-2 review found its recorded reason contradicted by `install.sh`'s default ref (`shared/issues/260819-0823_o_*`). The four files this review declared not-opened were opened by the Turn-2 pass, so `bin/fusion-review-coverage --since 52b1d95` now returns `verdict=covered, uncovered=0, carried=none` over all five commits. The always-on byte correction this review demanded was applied to the `260816-1707` footer and reproduces exactly: 101 393 → 97 977 at `b200902`, measured over the five unindented `emit_if_exists` files plus the project chat profile.

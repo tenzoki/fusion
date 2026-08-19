@@ -1795,3 +1795,7 @@
 {"ts":"2026-08-18T22:43:35","event":"review_done","turn":1,"agent":"coderev","detail":"10 issues filed (1 High, 6 Medium, 3 Low); range now covered"}
 {"ts":"2026-08-19T05:35:53","event":"turn_end","turn":1,"detail":"4 tasks resolved, 2 commits, 10 issues created by review, 3 issues closed, 4 decisions implemented"}
 {"ts":"2026-08-19T05:35:53","event":"turn_start","turn":2,"detail":"3 tasks over the review findings; disjoint file sets"}
+{"ts":"2026-08-19T06:41:54","event":"review_done","turn":2,"agent":"coderev","detail":"8 findings, none High; range now covered, carried list discharged"}
+{"ts":"2026-08-19T06:41:54","event":"reconciliation","detail":"verdict coherent; one further overstated closure found and filed"}
+{"ts":"2026-08-19T06:41:54","event":"turn_end","turn":2,"detail":"4 tasks resolved, 1 commit, 8 issues created, 11 issues closed"}
+{"ts":"2026-08-19T06:41:54","event":"session_end","detail":"2 Turns, 8 tasks, 5 commits (6 with housekeeping), 24 issues filed, 13 closed, 4 decisions implemented, 5 human gates; coherent"}

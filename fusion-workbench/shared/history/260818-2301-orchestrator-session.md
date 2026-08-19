@@ -1,8 +1,8 @@
 # Orchestrator Session — 260818-2301
 
-**Directive:** (not yet stated — Setup ran ahead of the user's task)
-**Mode:** (not yet resolved)
-**Status:** In progress
+**Directive:** Answer the open decision records, then realise the answers.
+**Mode:** custom
+**Status:** Complete
 
 ## Setup snapshot
 
@@ -125,3 +125,196 @@ tree and again by the orchestrator before committing.
 **Byte movement.** Always-on floor 98 796 → 98 733 (U3's two folds, both net negative).
 `agents/` +766 (head-room 4 069 → 3 303). `skills/` +750 (729 for the read instruction, 21 for the
 rename). No baseline moved; both goldens regenerated after all four tasks landed, never before.
+
+## Coherence
+
+<!-- RECONCILER-OWNED -->
+
+Reconciler, domain `code`, HEAD `83488e9`, range `52b1d95..83488e9`. Full pass:
+`shared/history/260819-0840-reconciliation.md`.
+
+**Verdict:** coherent
+
+**Edges:**
+
+- **Artifact↔Grounding.** 13 load-bearing claims re-derived against disk, all 13 hold; 98 open defect records in `shared/issues/`, 50 of them reviewer-filed. Every marker in the
+  workbench is correct at HEAD: the four decisions marked implemented are implemented, the thirteen
+  closed defects are fixed, and the bystander record a Turn-1 glob renamed stands at `_a_` untouched
+  in both git and the worktree. The always-on floor reproduces to the byte at every commit in the
+  range (101 393 → 97 977 → 98 796 → 98 733), `npm run build` leaves `git status -- hooks/dist`
+  empty, the suite is green at 36 files / 672 tests, and `bin/fusion-review-coverage --since 52b1d95`
+  returns `uncovered=0 verdict=covered carried=none`. The drift is in prose, not state: four of the
+  thirteen `Resolved:` notes claim a guarantee wider than their edit delivered. The Turn-2 review
+  found three (`260819-0821`, `260819-0824`, `260819-0827`); this pass re-did the check on the other
+  ten and found a fourth, `260811-2146_c_*`, closed on the first of its two stated defects with the
+  second — the unfilled footer stub the decision-record template still prescribes — untouched
+  (`260819-0836_o_*`, and a `Revised by:` line on the closed record). The `260816-0711` footer's word
+  "verbatim" is the second wording overstatement, already carried by `260819-0826_o_*`.
+
+- **Artifact↔Directive.** All five commits move toward the Directive; none is orthogonal and none
+  moves away. `b200902` realises `260816-1707`, `260816-0711` and `260817-1613`; `b54ace5` realises
+  `260818-2212`, the third answer; `06ab15b` closes ten of the eleven findings the review of those
+  two commits raised, which is the Directive's own work being finished rather than new work; `5ec26b2`
+  and `83488e9` are the workbench records of the two Turns. The Directive named three answers and
+  three realisations, and the session delivered four realisations — `260816-0711` had been
+  answered-but-unrealised for two days, blocked on `260816-1707`, and was unblocked by answering it.
+
+- **Grounding↔Directive.** 25 active Grounding records (`_o_` + `_a_`) across all stores; 25
+  consistent with the Directive, 0 conflicting. `shared/decisions/` holds **no** open record at HEAD:
+  the three it opened with are the three the session answered and realised. The three remaining open
+  decisions workbench-wide sit in closed Circles
+  (`260814-1915`, `260815-1845`, `260815-2056`) and are outside this Directive's reach. Of the 21
+  answered records in `shared/`, none is realised by any commit in the range; the one that looks like
+  a gap, `260810-2145_a_*`, carries a written-out reason for staying `_a_` and is correct as it stands.
+
+**Rebalance recommendation:** none
+
+The overstated-closure pattern is real, is now four instances across two Turns, and is the standing
+risk this session leaves behind — but it is not a Rebalance case. None of the four options addresses
+it: the Directive was reached, the Grounding is accurate at HEAD, and the Artifact does what the
+decisions decided. The fix is the five open defect records that already carry it, and the check that
+finds this class is a reviewer or a reconciler re-doing the measurement, which is what happened here.
+
+## Budget
+
+| Metric | Count |
+|--------|-------|
+| Turns | 2 |
+| Tasks resolved | 8 (T1–T4, U1–U4) |
+| Tasks skipped/deferred | 0 |
+| Issues created | 24 |
+| Issues resolved | 13 |
+| Decisions answered (`_o_`→`_a_`) | 0 standing — see note |
+| Decisions implemented (`_a_`/`_o_`→`_i_`) | 4 |
+| Commits | 5 |
+| Agent errors | 1 (T3 reported itself blocked on a verification the orchestrator's own parallel dispatch had made unreliable) |
+| Human gates hit | 5 |
+
+Every figure above is derived at write time rather than tallied: commits from
+`git rev-list 52b1d95..HEAD`, Turns from the `turn_start` events since this session's
+`session_start`, the four record rows from the stores by comparing each filename against
+`52b1d95`.
+
+**The answered row reads 0 because it counts standing markers, not transitions.** Three decision
+records did move `_o_` → `_a_` at the user gate, and all three moved on to `_i_` in the same session,
+so no record stands at a marker it did not have at the anchor. The transition happened; the disk no
+longer shows it, and this method reports the disk.
+
+## Per-Turn Log
+
+### Turn 1
+- Tasks: T1, T3 (concurrent), T4, T2
+- Commits: `b200902`, `b54ace5`
+- Review: 11 findings, 10 filed, 1 High
+- Circuit breaker: OK
+- Coherence: review-needed at the per-Turn gate; user chose to continue with the High finding first
+
+### Turn 2
+- Tasks: U1, U2, U3 (concurrent), U4 (consolidation)
+- Commits: `06ab15b`
+- Review: 8 findings, none High, all filed
+- Circuit breaker: OK
+- Coherence: coherent (Phase 3 reconciler)
+
+## Review coverage
+
+**Range:** `52b1d95..83488e9` — 5 commits
+**Covered by:**
+- `shared/reviews/260819-0044-coderev-*.md` — range `52b1d95..b54ace5`, covers 2
+- `shared/reviews/260819-0832-coderev-*.md` — range `b54ace5..83488e9`, covers 3
+
+**Not covered:** none
+**Carried out-of-scope files:** none. The first review declared four (`hooks/dist/lib/staging-drift.js`,
+`.d.ts`, and both goldens); the second was dispatched with them added to its scope and opened all four,
+so the list is discharged rather than merely aged out.
+
+## Remaining Work
+
+`shared/decisions/` holds **no open record**. The three this session was started for are implemented.
+
+`shared/issues/` holds 98 open records, 22 of them filed during this session. The eleven that bear
+directly on this session's own output:
+
+| Record | What it carries |
+|---|---|
+| `260819-0041_o_*` migration surfaces | the release-time check: does this range change something an installed base has on disk |
+| `260819-0821_o_*` | `agents/orchestrator.md:303` still carries the qualifier the rule dropped |
+| `260819-0822_o_*` | the fifth `fusion-source-root` call site drops the diagnostic four siblings carry |
+| `260819-0823_o_*` | the installed-base premise behind leaving the migration gap open is contradicted by `install.sh`'s default ref |
+| `260819-0824_o_*`, `260819-0827_o_*`, `260819-0836_o_*` | three closure notes claiming one degree more than their edit delivered |
+| `260819-0825_o_*`, `260819-0826_o_*`, `260819-0828_o_*` | the fixed gate reason absent from the row a grep-builder reads; a fold phrase the cited tree does not use; the stopping section made mandatory for plans whose only stated reader never runs |
+| `260819-0001_o_*` | an executor reached for `git stash` while a second was dispatched in parallel |
+| `260819-0837_o_*` | a stray zero-byte `Test.txt` at the repo root that `git check-ignore` does not cover |
+
+## Commits
+
+| Hash | Message | Task |
+|------|---------|------|
+| `b200902` | a tracked workbench gets its own rule file, and a plan's stopping condition gets a reader | T1, T3, T4 |
+| `b54ace5` | a decision record states its state once, on its filename | T2 |
+| `5ec26b2` | the Turn-1 record, its review, and twelve defects the pass produced | housekeeping |
+| `06ab15b` | the archive skill actually reads the rule it was the named consumer of | U1–U4 |
+| `83488e9` | the Turn-2 record and the one finding left open on judgement | housekeeping |
+
+## What this session got wrong, collected
+
+Four faults were the orchestrator's own, and three of the four were found by an agent it dispatched
+rather than by itself:
+
+1. **Parallel dispatch on a shared verification.** Two executors, disjoint file sets, both told to run
+   the full suite. Both suites reported the other's in-flight edits. Fixed in Turn 2 by moving the
+   suite run out of the executors entirely.
+2. **A glob that caught a bystander.** `mv 260816-1707_a_*` renamed an unrelated record sharing the
+   timestamp prefix. Reverted; every later transition written out by full filename.
+3. **A wrong claim in a dispatch prompt**, corrected by the executor rather than transcribed.
+4. **Four closure notes claiming more than their edit delivered** — the dominant pattern of the Turn-2
+   review and of the reconciliation, and the successor to Turn 1's dominant pattern. Each is corrected
+   with a `Revised by:` line rather than a rewrite, so the original claim stays readable.
+
+## Session Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant O as Orchestrator
+    participant C as Coder
+    participant CR as Coderev
+    participant R as Reconciler
+
+    O->>U: GATE 3 open decisions
+    U-->>O: all three, recommended option
+    O->>U: GATE realisation fork (planner section absent)
+    U-->>O: add the section to the template
+    Note over O: Turn 1
+    O->>C: T1 move tracked-workbench rule
+    O->>C: T3 stopping section + Phase-4 step
+    C-->>O: T3 blocked (verification unreliable)
+    C-->>O: T1 done, suite green
+    O->>C: T4 missing baseline re-approval note
+    C-->>O: done
+    O->>O: commit b200902
+    O->>C: T2 Status field out of the template
+    C-->>O: done (+819 bytes, reported as growth)
+    O->>O: commit b54ace5
+    O->>CR: review 52b1d95..b54ace5
+    CR-->>O: 11 findings, 1 High
+    O->>U: GATE coherence, High finding
+    U-->>O: continue, High first
+    O->>U: GATE High finding fork
+    U-->>O: make the sentence true
+    Note over O: Turn 2
+    O->>C: U1 archive read + stale surfaces
+    O->>C: U2 agents cluster
+    O->>C: U3 rules wording + migration judgement
+    C-->>O: U1 done
+    C-->>O: U2 done, flags U1 unknown root var
+    C-->>O: U3 blocked, declines to write shared constant
+    O->>C: U4 consolidation
+    C-->>O: done, suite green, one baseline written once
+    O->>O: commit 06ab15b
+    O->>CR: review b54ace5..83488e9 + carried scope
+    CR-->>O: 8 findings, none High
+    O->>R: final reconciliation
+    R-->>O: coherent, one further overstated closure
+    Note over O: Converged
+```
