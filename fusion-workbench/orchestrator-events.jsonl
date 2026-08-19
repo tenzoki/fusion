@@ -1793,3 +1793,5 @@
 {"ts":"2026-08-18T22:43:35","event":"task_done","turn":1,"task":"T2","agent":"coder","detail":"b54ace5"}
 {"ts":"2026-08-18T22:43:35","event":"review_start","turn":1,"agent":"coderev","detail":"range 52b1d95..b54ace5, 20 files"}
 {"ts":"2026-08-18T22:43:35","event":"review_done","turn":1,"agent":"coderev","detail":"10 issues filed (1 High, 6 Medium, 3 Low); range now covered"}
+{"ts":"2026-08-19T05:35:53","event":"turn_end","turn":1,"detail":"4 tasks resolved, 2 commits, 10 issues created by review, 3 issues closed, 4 decisions implemented"}
+{"ts":"2026-08-19T05:35:53","event":"turn_start","turn":2,"detail":"3 tasks over the review findings; disjoint file sets"}
