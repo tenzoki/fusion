@@ -19,13 +19,15 @@ and the permanent-noise shape `hooks/lib/review-coverage.ts`'s own header says i
 Run against the compiled module at HEAD:
 
 ```
-260816-0145-coderev-turn-2.md          sender: "coderev"    measured: true
-260816-01-coderev-topic.md             sender: null         measured: true
-260326-01-ontorev-horizon-review.md    sender: null         measured: true
-260811-1145-conceptrev-y.md            sender: "conceptrev" measured: false
+260816-0145-coderev-turn-2.md                             sender: "coderev"    measured: true
+260816-01-coderev-topic.md                                sender: null         measured: true
+260326-01-ontorev-horizon-review.md                       sender: null         measured: true
+260807-2035-conceptrev-plan-two-language-declarations.md  sender: "conceptrev" measured: false
 ```
 
-The third line is `agents/ontorev.md:102`'s **own worked example**, verbatim.
+The third line is `agents/ontorev.md:102`'s **own worked example**, verbatim. The fourth is a live
+file in `shared/reviews/`; it replaced a synthetic name on 2026-08-19 and the row is unchanged,
+because `reviewSender` and `isMeasuredReview` read the filename and nothing else.
 
 ## The two rules that disagree
 

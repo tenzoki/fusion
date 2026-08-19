@@ -57,7 +57,8 @@ precedent rather than invent a procedure.
 or the single file it needs, into a temporary directory, mutates there, and points the gate at the
 copy. The live working tree is never written by a verification step.
 
-The precedent to cite rather than invent: in the same Turn, the executor of `I:260810-0502-drift-lint`
+The precedent to cite rather than invent: in the same Turn, the executor of the drift-lint task
+(`archive/260817-1907-safe-cleanup-scoped/shared/issues/260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`)
 verified four inversions against mutated copies in a scratch area and never touched the real prompt.
 The safe technique was already being practised beside the unsafe one, in the same session.
 

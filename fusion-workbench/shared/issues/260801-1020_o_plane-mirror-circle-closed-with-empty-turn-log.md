@@ -1,8 +1,8 @@
-Circle 260719-1536-plane-mirror-integration closed coherent with an unfilled Turn log
+The Plane-mirror Circle closed coherent with an unfilled Turn log
 
 ---
 
-`fusion-workbench/circles/260719-1536-plane-mirror-integration/_c_circle.md` carries the marker `_c_` (closed-coherent) and a full Closure note citing six commits `eb9cf59..aefbf39`. Its `## Turn log` section still reads:
+`archive/260817-1907-safe-cleanup-scoped/circles/260719-1536-plane-mirror-integration/_c_circle.md` (live under `circles/` until the archive sweep of 2026-08-17) carries the marker `_c_` (closed-coherent) and a full Closure note citing six commits `eb9cf59..aefbf39`. Its `## Turn log` section still reads:
 
 ```
 (none yet — anticipated; on activation: shaper portfolio-activation refreshes this Grounding

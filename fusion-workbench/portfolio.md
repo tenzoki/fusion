@@ -160,9 +160,10 @@ created, split, merged, closed or deferred.
 
 The live store holds twelve Circle directories, where the previous refresh counted sixteen. The
 difference left through an archive pass, and archived Circles are deliberately absent from every
-section of this file: nothing in the archive store is a portfolio item. One of them,
-`260813-0910-documentation-matches-shipped-plugin`, stood in this section at the previous refresh and
-is gone from it for that reason and not because it was reopened.
+section of this file: nothing in the archive store is a portfolio item. One of them, the
+documentation Circle (`archive/260817-1907-safe-cleanup-scoped/circles/260813-0910-documentation-matches-shipped-plugin/_b_circle.md`),
+stood in this section at the previous refresh and is gone from it for that reason and not because it
+was reopened.
 
 ## Archived (_s_ / _d_)
 

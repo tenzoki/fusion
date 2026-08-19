@@ -3,8 +3,8 @@
 ---
 **Domain:** code
 **Status:** answered
-**Filed by:** orchestrator (on the executor of `R:260810-1918-drift-lint-residuals`)
-**Cross-references:** `shared/issues/260810-1918_c_the-skip-licence-blacklist-misses-every-negation-that-does-not-use-the-word-not.md`; `archive/260817-1907-safe-cleanup-scoped/shared/issues/260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`; `rules/critical-stance.md` §4; queued task `I:260801-2038-frozen-state`
+**Filed by:** orchestrator (on the executor of the drift-lint residuals task of session `shared/history/260810-1646-orchestrator-session.md`)
+**Cross-references:** `shared/issues/260810-1918_c_the-skip-licence-blacklist-misses-every-negation-that-does-not-use-the-word-not.md`; `archive/260817-1907-safe-cleanup-scoped/shared/issues/260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`; `rules/critical-stance.md` §4; the queued frozen-state task, filed as `shared/issues/260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`
 
 ---
 
@@ -55,8 +55,9 @@ question is whether to build it.
 
 ## Constraints
 
-- **Sequencing, and this is why the executor did not simply build it.** The queued task
-  `I:260801-2038-frozen-state` rewrites exactly this prose in `agents/orchestrator.md`. A pin landed
+- **Sequencing, and this is why the executor did not simply build it.** The queued frozen-state task
+  (`shared/issues/260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`)
+  rewrites exactly this prose in `agents/orchestrator.md`. A pin landed
   now would hand that executor a red suite in a file it does not own. Whatever is chosen, the pin
   goes **after** the prompt task, not before.
 - The header's stated limit must stay true after any change. If the pin lands, the header stops
@@ -64,7 +65,7 @@ question is whether to build it.
 
 ## Recommendation
 
-Option 2, after `I:260801-2038-frozen-state` lands. The reasoning is not that the blacklist is bad —
+Option 2, after the frozen-state task lands. The reasoning is not that the blacklist is bad —
 it is measured, witnessed, and honest — but that this project has already made this exact trade once,
 in the guard, and recorded why: an approximation of an undecidable question accumulates patches and
 never converges. The 40 lines are known; the re-approval cost is the price of a decided question, and
@@ -83,7 +84,7 @@ Superseded by:
 ---
 Answered: user decision, session `260810-1646` (`shared/history/260810-1646-orchestrator-session.md`)
 — **option 2, pin the four sentences to an approved baseline, sequenced after
-`I:260801-2038-frozen-state`.**
+the frozen-state task.**
 
 Option 3 (keep both mechanisms) was declined, so the blacklist's fate is not settled by this answer
 and is not to be read into it. The pin is additive for now; whether the eleven patterns come out
@@ -92,7 +93,7 @@ covers rather than in advance.
 
 **Binding on the implementer:**
 
-1. **Sequencing is not advisory.** `I:260801-2038-frozen-state` rewrites exactly these four sentences
+1. **Sequencing is not advisory.** The frozen-state task rewrites exactly these four sentences
    in `agents/orchestrator.md`. The pin lands after that task's change is committed, against the text
    that change leaves behind. A pin landed first would hand that executor a red suite in a file it
    does not own.

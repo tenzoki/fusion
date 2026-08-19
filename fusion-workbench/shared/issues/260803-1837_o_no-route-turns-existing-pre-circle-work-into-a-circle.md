@@ -146,9 +146,10 @@ Verified in this repository at filing time.
 | Promotion, if ever added, runs Circle → `shared/` | `rules/fusion-workbench-conventions.md:85` |
 | A Circle is a container | `rules/fusion-workbench-conventions.md:9` |
 
-Not verified here: the report as received cited two live Circle records
-(`260802-2220-throwaway-plane-bridge-smoke-test`, `260730-1615-phase-header-process-flows`)
-and a spec/plan pair timestamped `260803-1346` / `260803-1524`. None of the five files
+Not verified here: the report as received cited two Circle records it called live — stamped
+`260802-2220` and `260730-1615` in that project, under the slugs *throwaway-plane-bridge-smoke-test*
+and *phase-header-process-flows* — and a spec/plan pair timestamped `260803-1346` / `260803-1524`.
+None of the five files
 exists in this repository's workbench. They belong to the consuming project where the gap
 was found, and the claims resting on them stand unchecked here.
 

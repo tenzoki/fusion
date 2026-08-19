@@ -89,8 +89,9 @@ record.
 ## Immediate state, for whoever picks this up
 
 `circles/260813-0858-playmaker-maintains-backlog-store/_a_circle.md` currently names the
-documentation Circle as a relationship in prose without its directory name
-(`260813-0910-documentation-matches-shipped-plugin`). One line, once a writer exists.
+documentation Circle as a relationship in prose without citing its record
+(`archive/260817-1907-safe-cleanup-scoped/circles/260813-0910-documentation-matches-shipped-plugin/_b_circle.md`, which was live under
+`circles/` when this was written). One line, once a writer exists.
 
 ---
 
@@ -111,7 +112,8 @@ not carried forward from the record:
 says `circles/260813-0858-playmaker-maintains-backlog-store/_a_circle.md`. That record was
 activated on 260813 at 09:33 and is now `_t_circle.md`; it will be `_c_circle.md` after closure.
 The observation is unaffected — its `## Dependencies` section still names the documentation Circle
-in prose without the directory name `260813-0910-documentation-matches-shipped-plugin`, exactly as
+in prose without citing its record
+(`archive/260817-1907-safe-cleanup-scoped/circles/260813-0910-documentation-matches-shipped-plugin/_b_circle.md`), exactly as
 this record says. Cite the record as `*_circle.md` when this is picked up; the marker will have
 moved again by then.
 

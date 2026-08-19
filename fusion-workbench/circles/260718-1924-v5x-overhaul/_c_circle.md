@@ -46,7 +46,7 @@ Spec und Master-Plan liegen im Circle (`planning/`), beide conceptrev-clean. Zeh
 
 **Closed-coherent (`_c_`)** on 2026-07-19. The fusion-side v5.x overhaul is complete: A (coordination analysis), B (context mechanism, v5.1.0), C (editor agent, v5.2.0), D (per-agent prompt revision, v5.3.0), E (docs cleanup + working-model explainer, v5.4.0). Final reconciler verdict **coherent** (`history/260719-1455-reconciliation.md`).
 
-**B-rest severed:** the unite-co-creator reference conversion (a separate repo) is carried forward as its own anticipated Circle rather than blocking this umbrella. See the `_a_` Circle `260719-1536-brest-unite-co-creator-conversion` (filed at closure). Circle B's mechanism itself already shipped in v5.1.0; B-rest is the downstream dogfood proof.
+**B-rest severed:** the unite-co-creator reference conversion (a separate repo) is carried forward as its own anticipated Circle rather than blocking this umbrella. See the `_a_` Circle `archive/260817-1907-safe-cleanup-scoped/circles/260719-1536-brest-unite-co-creator-conversion/_c_circle.md` (filed at closure). Circle B's mechanism itself already shipped in v5.1.0; B-rest is the downstream dogfood proof.
 
 **Release state:** plugin.json at 5.4.0, committed locally on `feature/plane` (unpushed). marketplace bump + publish deferred to the merge to `main`.
 

@@ -180,7 +180,7 @@ The shared build tree appears in neither diagram, which is the constraint decisi
    - Acceptance: a rerun reports zero violations from `scanRecordCitations` over the repair corpus, in both corpus readings.
    - Dependencies: steps 4 and 6.
 
-8. **Repair the 33 `stamp-name` citations that name nothing**
+8. [DONE] **Repair the 33 `stamp-name` citations that name nothing**
    - Executor: `coder`
    - Files: workbench records across the repair corpus, driven by the scanner.
    - Changes: same three treatments as step 7, applied to hits of kind `stamp-name` whose status is `dangling`. These are stamps carrying a dashed name, such as `260812-2116-coder-<slug>`, for which no artifact and no Circle directory exists.

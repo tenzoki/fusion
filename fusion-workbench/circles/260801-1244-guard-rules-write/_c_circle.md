@@ -39,7 +39,7 @@ Two filed issues sit adjacent and are not part of this Circle: `shared/issues/26
 
 ## Dependencies
 
-**`260801-1244-guard-bash-inspection`** — must land first. The dependency is not a compile dependency; the flag builds and runs fine on today's guard. It is a correctness-of-claim dependency. `FUSION_ALLOW_RULES_WRITE` sits on the `Edit` path, and while `mv`, `rm`, `sed -i` and shell redirection reach the same file unguarded, the flag controls the polite route to a door standing open. Shipping this Circle first delivers the appearance of a control, which is worse than an acknowledged absence because it stops anyone looking.
+**`archive/260817-1907-safe-cleanup-scoped/circles/260801-1244-guard-bash-inspection/_c_circle.md`** — must land first. The dependency is not a compile dependency; the flag builds and runs fine on today's guard. It is a correctness-of-claim dependency. `FUSION_ALLOW_RULES_WRITE` sits on the `Edit` path, and while `mv`, `rm`, `sed -i` and shell redirection reach the same file unguarded, the flag controls the polite route to a door standing open. Shipping this Circle first delivers the appearance of a control, which is worse than an acknowledged absence because it stops anyone looking.
 
 Depended on by `260801-1244-curator`, but weakly: the curator is buildable and testable in this repository without the exemption, and needs it only for its rule-file writes to be exercisable in a consuming project.
 
@@ -67,7 +67,7 @@ bias `code`), and this is a change from the previous three runs, which ranked th
 The Circle ranked ahead of it, `260801-1244-rule-provenance-header`, closed coherent at commit
 `060859b`, so the field is now two anticipated Circles rather than three. Both pass the
 code-domain criteria without argument. This Circle's one dependency,
-`260801-1244-guard-bash-inspection`, carries the closed marker. The rival's hard dependency also
+`archive/260817-1907-safe-cleanup-scoped/circles/260801-1244-guard-bash-inspection/_c_circle.md`, carries the closed marker. The rival's hard dependency also
 closed this run, and neither Circle's `## Grounding snapshot` cites an open decision record: the
 shared decision store holds no open record at all, and the three this Circle cites are two
 answered (`shared/decisions/260801-1020_*_where-does-normative-consistency-live.md`,
@@ -76,7 +76,7 @@ answered (`shared/decisions/260801-1020_*_where-does-normative-consistency-live.
 to implemented at the closure). Zero open decisions and zero unmet dependencies on both sides, so
 the ranking turns on unblock value, and there the position reversed.
 
-**Why this now outranks the curator.** Closing `260801-1244-guard-bash-inspection` sealed the
+**Why this now outranks the curator.** Closing `archive/260817-1907-safe-cleanup-scoped/circles/260801-1244-guard-bash-inspection/_c_circle.md` sealed the
 shell route into `rules/`, which was the last unguarded way in. `hooks/config.json` lists
 `rules/**` under `guard.protectedPaths`, and the guard now checks that list on file-mutating
 shell commands as well as on the four write tools. In a consuming project there is therefore no
@@ -97,7 +97,7 @@ sequence rather than a choice.
 
 **Activation notes, which do not change the ranking.** Two sizing cautions carry forward and are
 now better evidenced than when they were first written. This Circle touches the same guard code as
-the Circle that overran (`260801-1244-guard-bash-inspection`: sixteen commits and three Turns
+the Circle that overran (`archive/260817-1907-safe-cleanup-scoped/circles/260801-1244-guard-bash-inspection/_c_circle.md`: sixteen commits and three Turns
 against eight planned steps), and its own acceptance criteria cannot be verified here, because the
 write guard stands down in the plugin's own tree (`hooks/lib/self-detect.ts:18-33`). The Circle
 that closed this run was forecast as the small, bounded, in-repo-verifiable case and still ran

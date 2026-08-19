@@ -106,3 +106,21 @@ Answered: circles/260819-1645-four-constraints-on-deep-change/history/260819-200
 The accepted cost is stated rather than argued away: a `/fusion:cleanup` archive sweep can turn `npm test` red, and so can a newly filed record carrying a bad citation — red, in both cases, for somebody who touched no citation. The user chose this knowing it, against the alternative of making the archive step repair what it breaks.
 
 The measurement this session added to the argument against option 3: the corpus count moved by three tokens between the shaper's run and the planner's, with no citation touched by anyone. A number that drifts on its own is a number that will be re-approved rather than investigated.
+
+---
+**Evidence produced inside this Circle, 2026-08-19, after the answer.** Step 8 accounted for the
+plan's 33 `stamp-name` hits and found 30. The missing three sit in
+`circles/260801-1244-guard-rules-write/decisions/260805-1548_i_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`,
+which **step 4 of this same plan transitioned `_a_` → `_i_`**. An `_i_` decision is in neither corpus
+reading, so the file left the measured set carrying three dead citations, and nothing reported it.
+
+That is this record's own question, demonstrated by the work that answers it rather than argued: a
+marker move in the ordinary course of a Turn took three dangling citations out of the gate's reach,
+silently, and the gate that is about to be armed would have shown green over them. The three are named
+in step 8's history log and were not repaired, being outside the repair corpus.
+
+It is a cost of option 1 as chosen, not a defect in it. A recomputed corpus follows the markers, which
+is what makes it need no baseline; the same property is what lets a record walk out of scope. The
+alternative that would have caught it is not option 3 — a pinned count would have moved too — but a
+corpus predicate that does not narrow as records reach their terminal state. Nobody has proposed one,
+and this note does not.

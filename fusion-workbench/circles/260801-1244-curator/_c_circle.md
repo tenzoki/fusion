@@ -63,11 +63,11 @@ Two issues the gap analysis filed are still open and constrain this work without
 
 **`260801-1244-guard-rules-write`** — soft dependency. The curator is buildable and testable in this repository without it, because the write guard stands down here (`hooks/lib/self-detect.ts:18-33`). The exemption is needed for the agent's rule-file writes and its retirement moves to be exercisable in a consuming project, which is where the acceptance criteria that assert a block have to run.
 
-Transitively this Circle also waits on `260801-1244-guard-bash-inspection`, since the rules-write Circle depends on it.
+Transitively this Circle also waits on `archive/260817-1907-safe-cleanup-scoped/circles/260801-1244-guard-bash-inspection/_c_circle.md`, since the rules-write Circle depends on it.
 
 ```mermaid
 flowchart LR
-  G1["260801-1244-guard-bash-inspection"] --> G2["260801-1244-guard-rules-write"]
+  G1["guard-bash-inspection (archived)"] --> G2["260801-1244-guard-rules-write"]
   G3["260801-1244-rule-provenance-header"] -->|"lint gate checks the shards"| C["260801-1244-curator"]
   G2 -.->|"exemption exercisable<br/>in a consuming project"| C
 ```
@@ -184,7 +184,7 @@ flowchart LR
 Dies ist der einzige geplante Circle im Portfolio. Nach der Code-Heuristik steht er sauber da:
 seine Grounding zitiert keine offene Entscheidung, und alle drei Abhängigkeiten
 (`260801-1244-rule-provenance-header` hart, `260801-1244-guard-rules-write` weich, transitiv
-`260801-1244-guard-bash-inspection`) sind kohärent geschlossen. Der Rang ist damit unstrittig und
+`archive/260817-1907-safe-cleanup-scoped/circles/260801-1244-guard-bash-inspection/_c_circle.md`) sind kohärent geschlossen. Der Rang ist damit unstrittig und
 aussagearm, denn es gibt keinen zweiten Kandidaten. Aktivierbar ist der Circle nicht, und der
 Grund ist seit dem Lauf 260806-2259 gewachsen.
 
@@ -284,7 +284,7 @@ closed.
 
 **What holds.** Capabilities C1 through C3, C6 and C7 remain a coherent remainder. All three
 dependencies are closed coherent: `260801-1244-rule-provenance-header` on 260802,
-`260801-1244-guard-rules-write` on 260805, and transitively `260801-1244-guard-bash-inspection` on
+`260801-1244-guard-rules-write` on 260805, and transitively `archive/260817-1907-safe-cleanup-scoped/circles/260801-1244-guard-bash-inspection/_c_circle.md` on
 260801. The Grounding cites no open decision record.
 
 **Proposed order:** put the shaper on this Circle in portfolio-activation mode for a Directive
@@ -356,7 +356,7 @@ head field pointing at it. All six artifact subdirectories exist, so the houseke
 
 **On the code heuristic it scores clean, and this time the score means something.** All three
 dependencies are closed coherent: `260801-1244-rule-provenance-header` on 260802,
-`260801-1244-guard-rules-write` on 260805, and transitively `260801-1244-guard-bash-inspection` on
+`260801-1244-guard-rules-write` on 260805, and transitively `archive/260817-1907-safe-cleanup-scoped/circles/260801-1244-guard-bash-inspection/_c_circle.md` on
 260801. The Grounding snapshot cites no open decision record. Its one decision,
 `circles/260801-1244-curator/decisions/260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`,
 carries the answered marker: the user chose option 1, a one-time re-baseline at the moment of

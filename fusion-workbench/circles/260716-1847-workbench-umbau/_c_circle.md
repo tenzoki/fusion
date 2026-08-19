@@ -25,7 +25,7 @@ Diese Sitzung (260717-1832) führt beides aus:
 ## Dependencies
 
 - Circle 2 (Plane-Push) — anticipated, durch D4 zurückgestellt, braucht D3. Die Plane-Decisions liegen bis dahin in `shared/`.
-- Circle `260717-1638-marker-format-ohne-glob-metazeichen` (anticipated) hängt am Abschluss dieses Circles: beide fassen Prompts und Skills an; erst schließen, dann die Marker-Umstellung.
+- Circle `archive/260817-1907-safe-cleanup-scoped/circles/260717-1638-marker-format-ohne-glob-metazeichen/_c_circle.md` (anticipated) hängt am Abschluss dieses Circles: beide fassen Prompts und Skills an; erst schließen, dann die Marker-Umstellung.
 
 ## Turn log
 
@@ -49,4 +49,4 @@ Diese Sitzung (260717-1832) führt beides aus:
 - Der zsh-Glob-Fix-Plan `260717-1918[o]` (14 Stellen) wurde beim Abschluss nach `shared/planning/` gehoben — er deklariert eine eigene Directive und ist eigenständige Folgearbeit, nicht Teil dieses geschlossenen Circles.
 - Issues `260717-1903[o]` (zsh-Glob) und `260717-1938[o]` (Branch-Guard-Harness-Lücke) bleiben in `shared/issues/` offen.
 
-**Nachgelagert:** Circle 3 (`260717-1638-marker-format-ohne-glob-metazeichen`) war hinter diesem Abschluss gegated und ist jetzt entsperrt.
+**Nachgelagert:** Circle 3 (`archive/260817-1907-safe-cleanup-scoped/circles/260717-1638-marker-format-ohne-glob-metazeichen/_c_circle.md`) war hinter diesem Abschluss gegated und ist jetzt entsperrt.

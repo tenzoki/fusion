@@ -22,8 +22,8 @@ names in its cross-cutting notes: the domain cascade got a runnable gate, the co
 staging rule and the browser launcher did not, so a regression in any of the three is caught only by
 review.
 
-**Why it was not fixed in the same commit.** The test file belongs to queued task
-`I:260810-1632-pty-case` this session (`260810-1632_*_the-pty-case-in-the-monitor-suite-has-no-path-
+**Why it was not fixed in the same commit.** The test file belongs to the queued pty-case task of
+this session (`260810-1632_*_the-pty-case-in-the-monitor-suite-has-no-path-
 for-a-machine-that-cannot-allocate-one.md`), which reworks `PTY_RUNNER` and `startMonitor` — the two
 places these cases would hook into. Landing both at once would have collided.
 
@@ -32,7 +32,7 @@ established-naming-the-gap.md` (the behaviour this would gate),
 `260810-1632_*_the-pty-case-in-the-monitor-suite-…` (owns the file), history
 `shared/history/260810-2026-coder-monitor-sleep-and-launcher-gap.md`.
 
-**Filed by:** coder, session `260810-1646`, Turn 2, task `R:260810-1918-monitor-residuals`.
+**Filed by:** coder, session `260810-1646`, Turn 2, on the monitor-residuals review task.
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `bin/monitor:1572` and `:1574` still print both browser-gap lines to stderr, and the test harness still starts the monitor with stderr discarded (`hooks/lib/__tests__/monitor-warnings-panel.test.ts:296`, `stdio: "ignore"`), so neither line can be asserted. Only the three pre-existing cases the record names are present; no case for a non-zero-exit launcher shim or an absent launcher was added. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

@@ -59,7 +59,7 @@ Depended on by `260801-1244-curator`, and the direction is hard rather than advi
 
 ## Activation proposal
 
-**Recommended as the next Circle — playmaker run 260801-2044 (trigger: user-fusion-next, portfolio refresh after `260801-1244-guard-bash-inspection` closed coherent).**
+**Recommended as the next Circle — playmaker run 260801-2044 (trigger: user-fusion-next, portfolio refresh after `archive/260817-1907-safe-cleanup-scoped/circles/260801-1244-guard-bash-inspection/_c_circle.md` closed coherent).**
 
 Ranked first of the three anticipated Circles under the code-domain heuristic, and the ranking does not depend on the tie-breakers. The `## Dependencies` section is empty, so the dependencies-closed check passes without argument. The `## Grounding snapshot` cites three decision records and no open ones: D1 (`shared/decisions/260801-1020_*_where-does-normative-consistency-live.md`), D2 (`shared/decisions/260801-1020_*_may-any-fusion-writer-touch-rules.md`), and D3 (`shared/decisions/260801-1020_*_provenance-header-on-rule-files.md`) are all answered and awaiting realisation. Zero open decisions plus zero unmet dependencies is the exact profile the code bias ranks highest. The unblock value is the second reason: this Circle is the only hard prerequisite of `260801-1244-curator`, which carries the substance of the parent Directive, while the sibling `260801-1244-guard-rules-write` became activatable at the same moment and blocks nothing hard.
 
