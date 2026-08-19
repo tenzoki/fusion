@@ -7,10 +7,10 @@
 **Filed by:** reconciler, Phase 3 pass of session `260807-2020`
 **Affects:** `fusion-workbench/shared/reviews/` (the absent document); `agents/coderev.md:69,76,87` (the obligation)
 **Cross-references:**
-`fusion-workbench/shared/issues/260807-2152_c_declared-lang-prefix-matches-so-deutsch-resolves-to-de.md`,
+`fusion-workbench/archive/260817-1907-safe-cleanup-scoped/shared/issues/260807-2152_*_declared-lang-prefix-matches-so-deutsch-resolves-to-de.md`,
 `fusion-workbench/shared/issues/260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md`,
-`fusion-workbench/shared/issues/260807-2154_c_the-artifact-language-is-mechanised-for-nine-agents-and-asserted-for-sixteen.md`,
-`fusion-workbench/shared/issues/260807-2155_c_three-language-claims-outside-the-authoring-home-still-describe-the-single-declaration.md`
+`fusion-workbench/archive/260817-1907-safe-cleanup-scoped/shared/issues/260807-2154_*_the-artifact-language-is-mechanised-for-nine-agents-and-asserted-for-sixteen.md`,
+`fusion-workbench/archive/260817-1907-safe-cleanup-scoped/shared/issues/260807-2155_*_three-language-claims-outside-the-authoring-home-still-describe-the-single-declaration.md`
 (the four findings, each carrying `**Filed by:** coderev`),
 `fusion-workbench/shared/reviews/260807-2154-ontorev-chat-voice-sibling-reference-and-version-bump.md` (the sibling reviewer's pass, which did write one)
 

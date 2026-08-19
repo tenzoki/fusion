@@ -2,7 +2,7 @@
 
 ---
 
-Step S8 of `shared/planning/260807-2024_c_two-language-declarations.md` replaced the same-language
+Step S8 of `archive/260817-1907-safe-cleanup-scoped/shared/planning/260807-2024_*_two-language-declarations.md` replaced the same-language
 filename in both chat profiles with a language-neutral role reference. The corrected files reach
 new consumers only. Every project set up before v6.1.0 keeps a `chat-voice-<lang>.yaml` that still
 names `default-voice-<chat-lang>.yaml` as its long-form sibling — which is exactly the file the
@@ -60,7 +60,7 @@ Option 1 or 2 needs a decision before implementation — the guarded-copy semant
 
 ## Cross-references
 
-- Plan: `fusion-workbench/shared/planning/260807-2024_c_two-language-declarations.md` step S8, Risks row
+- Plan: `fusion-workbench/archive/260817-1907-safe-cleanup-scoped/shared/planning/260807-2024_*_two-language-declarations.md` step S8, Risks row
 - Rule: `rules/agent-setup.md` `## Voice profiles`
 - Rule: `rules/fusion-workbench-conventions.md` `## Project language`
 - Review: `fusion-workbench/shared/reviews/260807-2154-ontorev-chat-voice-sibling-reference-and-version-bump.md`

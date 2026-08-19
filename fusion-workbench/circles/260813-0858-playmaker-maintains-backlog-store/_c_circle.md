@@ -32,7 +32,7 @@ recommended declining the one that hands the write to the playmaker. The user an
 by choosing exactly that option and widening it to full maintenance. The record's own
 recommendation was overruled rather than met, which the record now states in its answered
 line. The defect that follows from the answer is filed as
-`shared/issues/260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`.
+`archive/260817-1907-safe-cleanup-scoped/shared/issues/260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`.
 
 **The surfaces that move together** are enumerated in that issue record under
 `## Surfaces the fix has to reach`, with line citations into `agents/playmaker.md`,
@@ -97,7 +97,7 @@ plus the closed original.
   exists; the ordering is stated as a named relationship so that it is visible from
   whichever of the two records a reader opens first.
 - Binding records, cited rather than copied per the Origin Rule:
-  `shared/issues/260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`
+  `archive/260817-1907-safe-cleanup-scoped/shared/issues/260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`
   and
   `shared/decisions/260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md`.
 
@@ -157,7 +157,7 @@ the direction, so the ordering is unambiguous and this Circle is the head of it.
 
 Its Grounding snapshot was written today against records that are on disk and current: the
 defect record
-`shared/issues/260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`
+`archive/260817-1907-safe-cleanup-scoped/shared/issues/260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`
 carries the surfaces list with line citations, and the decision
 `shared/decisions/260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md` was
 answered by the user in session `shared/history/260813-0806-orchestrator-session.md`. Four

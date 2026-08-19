@@ -154,7 +154,7 @@ was found, and the claims resting on them stand unchecked here.
 
 ## Cross-references
 
-- `shared/issues/260716-1958_c_migration-leaves-circle-record-fields-dangling.md` — the
+- `archive/260817-1907-safe-cleanup-scoped/shared/issues/260716-1958_*_migration-leaves-circle-record-fields-dangling.md` — the
   closed issue that established path-not-filename semantics for this same field, and the
   reason the cross-store case is documented at all.
 - `rules/fusion-workbench-conventions.md` `## Circle record template`, `## Origin Rule

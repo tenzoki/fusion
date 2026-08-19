@@ -45,7 +45,7 @@ already draws for the Circle-record case.
 
 Re-point the two citations. The durable form is the one this project already uses elsewhere and which no
 further transition breaks — the `_*_` stem, as in
-`shared/backlog/260814-1733_c_radical-simplification.md`'s *"Split from
+`archive/260817-1907-safe-cleanup-scoped/shared/backlog/260814-1733_*_radical-simplification.md`'s *"Split from
 `shared/backlog/260811-0826_*_observations.md`"*. Whether that form should be the convention for every
 marker-bearing citation is the open question `260815-0804` defers to `rules/circle-records.md`, and this
 fix does not settle it.

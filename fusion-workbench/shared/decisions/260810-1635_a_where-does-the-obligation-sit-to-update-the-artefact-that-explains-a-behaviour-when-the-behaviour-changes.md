@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** open
 **Filed by:** orchestrator (session `260810-1402`), on the reviewer's recommendation
-**Cross-references:** `shared/reviews/260810-1632-coderev-turn-1-range-430d73a-to-head.md` (the pass that named the pattern); `shared/issues/260809-2252_*_the-tracker-noise-list-still-says-it-excludes-two-metrics-when-only-churn-reads-it.md`; `shared/issues/260809-2258_o_readme-hooks-says-fourteen-ordering-sites-and-the-commit-that-wrote-it-converted-fifteen.md`; `shared/issues/260810-1632_o_the-churn-stand-down-still-asks-cwd-and-the-comment-justifying-that-was-falsified-by-the-same-commit.md`; `shared/issues/260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`
+**Cross-references:** `shared/reviews/260810-1632-coderev-turn-1-range-430d73a-to-head.md` (the pass that named the pattern); `archive/260817-1907-safe-cleanup-scoped/shared/issues/260809-2252_*_the-tracker-noise-list-still-says-it-excludes-two-metrics-when-only-churn-reads-it.md`; `shared/issues/260809-2258_o_readme-hooks-says-fourteen-ordering-sites-and-the-commit-that-wrote-it-converted-fifteen.md`; `shared/issues/260810-1632_o_the-churn-stand-down-still-asks-cwd-and-the-comment-justifying-that-was-falsified-by-the-same-commit.md`; `archive/260817-1907-safe-cleanup-scoped/shared/issues/260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`
 
 ---
 

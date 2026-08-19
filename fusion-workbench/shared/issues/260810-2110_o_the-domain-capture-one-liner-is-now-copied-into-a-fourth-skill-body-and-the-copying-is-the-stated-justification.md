@@ -33,7 +33,7 @@ fall back to `code` and say which happened. All three belong in one place. Two c
    the resolver is for — it resolves *paths*.
 
 Whoever takes this should read
-`shared/issues/260810-2030_*_the-source-root-resolution-is-stated-in-two-skill-bodies-and-has-no-single-home.md`
+`archive/260817-1907-safe-cleanup-scoped/shared/issues/260810-2030_*_the-source-root-resolution-is-stated-in-two-skill-bodies-and-has-no-single-home.md`
 first. That record proposes a `bin/` helper for a different duplicated criterion in the same skills,
 and weighs the cost of adding one against a thin case. Two duplicated criteria make a thicker case
 than either alone, and one design decision should cover both.

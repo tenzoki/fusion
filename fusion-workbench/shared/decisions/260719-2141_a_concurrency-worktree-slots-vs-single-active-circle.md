@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** analyst
-**Cross-references:** shared/analyses/260719-2141-plane-mirror-martin-convergence-feasibility.md (the analysis that raised this), shared/decisions/260719-2141_i_plane-rolle-push-only-vs-bounded-readback-martin.md (the sibling D1-refinement), circles/260719-1536-plane-mirror-integration/_c_circle.md (the Circle this affects), /Users/kai/Dropbox/qboot/projects/F03_digital-leadership/unite-co-creator/MARTIN.md (the workflow — worktree slots `:138-165`)
+**Cross-references:** shared/analyses/260719-2141-plane-mirror-martin-convergence-feasibility.md (the analysis that raised this), archive/260817-1907-safe-cleanup-scoped/shared/decisions/260719-2141_*_plane-rolle-push-only-vs-bounded-readback-martin.md (the sibling D1-refinement), circles/260719-1536-plane-mirror-integration/_c_circle.md (the Circle this affects), /Users/kai/Dropbox/qboot/projects/F03_digital-leadership/unite-co-creator/MARTIN.md (the workflow — worktree slots `:138-165`)
 
 ---
 

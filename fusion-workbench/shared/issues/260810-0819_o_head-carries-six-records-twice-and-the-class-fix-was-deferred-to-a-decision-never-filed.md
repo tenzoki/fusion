@@ -6,7 +6,7 @@
 **Domain:** code
 **Filed by:** reconciler, Phase 3 pass of orchestrator session `260810-0241`
 **Affects:** commits `c923935`, `3df0c17`, `dd50efd`; `fusion-workbench/shared/issues/`; any consumer that reads the workbench out of git rather than off disk
-**Cross-references:** `shared/issues/260807-1941_c_marker-renames-landed-add-only-so-head-carries-each-of-three-records-twice.md` (the same defect, closed 260807 for three records); `shared/history/260810-0819-reconciliation.md`
+**Cross-references:** `archive/260817-1907-safe-cleanup-scoped/shared/issues/260807-1941_*_marker-renames-landed-add-only-so-head-carries-each-of-three-records-twice.md` (the same defect, closed 260807 for three records); `shared/history/260810-0819-reconciliation.md`
 
 ---
 

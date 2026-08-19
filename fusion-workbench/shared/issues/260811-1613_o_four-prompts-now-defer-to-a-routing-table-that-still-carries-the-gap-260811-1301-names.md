@@ -8,7 +8,7 @@
 **Affects:** `agents/coder.md:3,24`, `agents/ontocoder.md:3,7,24`, `agents/planner.md:45`, `README-agents.md:42`, against `agents/orchestrator.md:346-358`
 **Cross-references:**
 `shared/issues/260811-1301_o_the-orchestrators-routing-table-omits-cargo-toml-from-the-build-manifests.md` (the gap, still open);
-`shared/issues/260811-1408_c_the-ontocoder-prompt-still-claims-every-toml-three-times-after-cargo-toml-was-given-to-the-coder.md` and `260811-1411_c_*` (the two records `3b30f5e` closed)
+`archive/260817-1907-safe-cleanup-scoped/shared/issues/260811-1408_*_the-ontocoder-prompt-still-claims-every-toml-three-times-after-cargo-toml-was-given-to-the-coder.md` and `260811-1411_c_*` (the two records `3b30f5e` closed)
 
 ---
 

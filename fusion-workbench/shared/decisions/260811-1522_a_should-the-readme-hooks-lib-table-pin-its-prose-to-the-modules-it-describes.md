@@ -3,8 +3,8 @@
 ---
 **Domain:** code
 **Status:** open
-**Filed by:** coder, while closing `shared/issues/260811-1413_c_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md`
-**Cross-references:** `shared/issues/260811-1413_c_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md` (the drift that raised the question); `hooks/lib/__tests__/derivable-enumerations-lint.test.ts:347` (the lint that watches the table's rows for existence and not for content); `hooks/lib/domain-cascade.ts` `describeReach()` + `README-hooks.md` `## How far the domain-cascade reach gate reaches` (the working precedent); `shared/issues/260811-1141_c_…` (the fix whose four synchronised edits missed the fifth site)
+**Filed by:** coder, while closing `archive/260817-1907-safe-cleanup-scoped/shared/issues/260811-1413_*_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md`
+**Cross-references:** `archive/260817-1907-safe-cleanup-scoped/shared/issues/260811-1413_*_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md` (the drift that raised the question); `hooks/lib/__tests__/derivable-enumerations-lint.test.ts:347` (the lint that watches the table's rows for existence and not for content); `hooks/lib/domain-cascade.ts` `describeReach()` + `README-hooks.md` `## How far the domain-cascade reach gate reaches` (the working precedent); `shared/issues/260811-1141_c_…` (the fix whose four synchronised edits missed the fifth site)
 
 ---
 

@@ -35,7 +35,7 @@ Two settled decisions are inputs rather than options. D2 asked for both halves: 
 - **D2** — `shared/decisions/260801-1020_*_may-any-fusion-writer-touch-rules.md`. The direct input to this Circle: both the exemption and the project-level configuration come from it.
 - **D3** — `shared/decisions/260801-1020_*_provenance-header-on-rule-files.md`. Answered by the spec's D-e and realised in Circle `260801-1244-rule-provenance-header`. Unrelated to this Circle's work; cited so the three open normative decisions are visible from every record in the set.
 
-Two filed issues sit adjacent and are not part of this Circle: `shared/issues/260801-1020_*_guard-protects-rules-but-not-claude-rules.md` and `shared/issues/260801-1156_*_bash-bypasses-the-protected-path-check-entirely.md`. The second is closed by the Circle this one depends on.
+Two filed issues sit adjacent and are not part of this Circle: `shared/issues/260801-1020_*_guard-protects-rules-but-not-claude-rules.md` and `archive/260817-1907-safe-cleanup-scoped/shared/issues/260801-1156_*_bash-bypasses-the-protected-path-check-entirely.md`. The second is closed by the Circle this one depends on.
 
 ## Dependencies
 

@@ -207,7 +207,7 @@ and `.active-circle` is absent. Five artifacts bind this one and are cited rathe
   built rather than only that it went.
 - `shared/issues/260810-0326_*_setup-must-seed-claude-settings-because-the-plugin-settings-json-is-not-a-permission-source.md`
   — the open defect that folding `unlock` into Setup closes.
-- `shared/issues/260812-0254_*_should-the-investigator-get-case-folders-with-a-status-per-case.md`
+- `shared/decisions/260812-0254_*_should-the-investigator-get-case-folders-with-a-status-per-case.md`
   — retired by the investigator fold rather than answered; close it with the fold.
 
 ## Turn log

@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** analyst
-**Cross-references:** `shared/analyses/260816-0740-rhetorical-register-of-agent-output.md` findings 10 and 11; `shared/issues/260816-0740_o_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`; `shared/issues/260816-0740_c_the-gate-contract-never-requires-an-option-to-state-what-it-forecloses.md`; `shared/analyses/260706-1902-user-facing-agents-garbled-language-rootcause.md`; `hooks/lib/__tests__/helpers/growth-bound.ts`
+**Cross-references:** `shared/analyses/260816-0740-rhetorical-register-of-agent-output.md` findings 10 and 11; `shared/issues/260816-0740_o_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`; `archive/260817-1907-safe-cleanup-scoped/shared/issues/260816-0740_*_the-gate-contract-never-requires-an-option-to-state-what-it-forecloses.md`; `shared/analyses/260706-1902-user-facing-agents-garbled-language-rootcause.md`; `hooks/lib/__tests__/helpers/growth-bound.ts`
 
 ---
 

@@ -183,6 +183,53 @@ function basenameMatcher(cited: string): RegExp {
   return new RegExp("^" + segs.join(".*") + tail);
 }
 
+/**
+ * One archive sweep directory, and the bound is the whole point of writing the
+ * pattern out. `/fusion:archive` creates exactly one level — `mkdir -p
+ * "$WORKBENCH/archive/<YYMMDD-HHMM>-<slug>/"` (`skills/archive/SKILL.md`) — and
+ * moves whole subtrees beneath it with the store layout preserved. So a record
+ * that has been archived once sits at `archive/<sweep>/shared/<store>/…`, at a
+ * depth of exactly one sweep, never two. A looser pattern (`archive/.*\/`, or
+ * any leading-prefix tolerance) would let an anchored citation match a file
+ * ANYWHERE under the workbench, which does not make the resolver lenient about
+ * archiving — it makes it a resolver that cannot fail, and turns the gate built
+ * on it into one that cannot go red.
+ */
+const ARCHIVE_SWEEP_RE = /^archive\/[0-9]{6}-[0-9]{4}-[a-z0-9-]+\//;
+
+/**
+ * Does `relDir` sit at `prefix`, either at the workbench root or under one
+ * archive sweep?
+ *
+ * THE COST, stated here because it is paid here. Resolution of the two anchored
+ * branches becomes prefix-TOLERANT rather than exact: a citation whose line
+ * spells the full `archive/<sweep>/shared/issues/…` path and a citation that
+ * spells only `shared/issues/…` produce the same token (`REC_RE` begins its
+ * match at the store prefix either way) and now reach the same record. The
+ * scanner therefore cannot distinguish a citation OF an archived copy from a
+ * citation of a live record that happens to share its basename, and it will
+ * report the archived copy as the resolution of both.
+ *
+ * The alternative that was available and not taken is fix shape 2: teach
+ * `REC_RE` an optional leading `archive/<sweep>/` segment, so the archive
+ * prefix becomes part of the token and the resolution stays exact. That shape
+ * can tell the two apart; it also invalidates every citation already written in
+ * the archive-tolerant form. The user chose shape 1 at a gate on 2026-08-19,
+ * with the loss of exactness stated rather than discovered later — see
+ * `circles/260819-1645-four-constraints-on-deep-change/issues/260819-2213_*_the-citation-grammar-cannot-express-a-record-inside-archive-so-a-corrected-archive-path-still-scans-as-wrong-store.md`,
+ * `## Where the fix belongs` and the answer appended at its foot.
+ *
+ * What this choice does NOT answer, and the record says so too: whether an
+ * archived record should be a citation target at all. Tolerating the prefix
+ * settles "can the grammar express it", not "should archiving end a record's
+ * life as a target" — `skills/archive/SKILL.md` still neither says nor checks.
+ */
+function anchoredUnder(relDir: string, prefix: string): boolean {
+  if (relDir.startsWith(prefix)) return true;
+  const sweep = ARCHIVE_SWEEP_RE.exec(relDir);
+  return sweep !== null && relDir.slice(sweep[0].length).startsWith(prefix);
+}
+
 function findRecord(opts: {
   circleDir?: string;
   shared?: boolean;
@@ -192,8 +239,8 @@ function findRecord(opts: {
   const re = basenameMatcher(opts.citedBase);
   return workbenchIndex().filter((e) => {
     if (!re.test(e.base)) return false;
-    if (opts.circleDir) return e.relDir.startsWith(`circles/${opts.circleDir}/${opts.store}`);
-    if (opts.shared) return e.relDir.startsWith(`shared/${opts.store}`);
+    if (opts.circleDir) return anchoredUnder(e.relDir, `circles/${opts.circleDir}/${opts.store}`);
+    if (opts.shared) return anchoredUnder(e.relDir, `shared/${opts.store}`);
     if (opts.store) return e.relDir.split("/").includes(opts.store);
     return true;
   });

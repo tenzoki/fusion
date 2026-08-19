@@ -4,7 +4,7 @@
 **Domain:** knowledge
 **Status:** answered
 **Filed by:** consultant, from a report by the consuming project `unite-co-creator`, session 260806-1242
-**Cross-references:** `fusion-workbench/shared/issues/260807-0158_*_record-filenames-collide-on-the-minute-and-nothing-prevents-it.md` (the measured defect; marker wildcarded by the reconciler at 260807-1941, because the same session moved it `_o_` → `_c_` and the exact-marker form no longer resolved); `rules/fusion-workbench-conventions.md` `## Filename Patterns` (lines 185-208) and `## Timestamps` (lines 172-174); `bin/fusion-commit-lock` (the precedent)
+**Cross-references:** `fusion-workbench/archive/260817-1907-safe-cleanup-scoped/shared/issues/260807-0158_*_record-filenames-collide-on-the-minute-and-nothing-prevents-it.md` (the measured defect; marker wildcarded by the reconciler at 260807-1941, because the same session moved it `_o_` → `_c_` and the exact-marker form no longer resolved); `rules/fusion-workbench-conventions.md` `## Filename Patterns` (lines 185-208) and `## Timestamps` (lines 172-174); `bin/fusion-commit-lock` (the precedent)
 
 ---
 
@@ -162,7 +162,7 @@ Superseded by: <set when status moves to _s_>
 section still carries the artifact-kind table, the `<sender>` rule and the `$OUT_MEMO`
 write-semantics note, and **no citation rule**. The condition this record set for itself — "moves
 to `_i_` when the rule text lands" — is unmet. It was explicitly scoped out of the language-split
-Directive (`shared/planning/260807-2024_c_two-language-declarations.md` `## Out of Scope`) and
+Directive (`archive/260817-1907-safe-cleanup-scoped/shared/planning/260807-2024_*_two-language-declarations.md` `## Out of Scope`) and
 remains open work from session 260807-1917.
 
 **This record's own cross-reference is now stale, and session 260807-2020 is what staled it.** The

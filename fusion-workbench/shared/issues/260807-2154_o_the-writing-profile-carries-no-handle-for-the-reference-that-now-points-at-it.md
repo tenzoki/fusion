@@ -64,7 +64,7 @@ either profile. This is a robustness gap, not a live fault.
 
 ## Cross-references
 
-- Plan: `fusion-workbench/shared/planning/260807-2024_c_two-language-declarations.md` step S8
+- Plan: `fusion-workbench/archive/260817-1907-safe-cleanup-scoped/shared/planning/260807-2024_*_two-language-declarations.md` step S8
   ("`default-voice-*.yaml` carries no such pointer and is not touched")
 - Rule: `rules/agent-setup.md` `## Voice profiles`
 - Rule: `rules/fusion-workbench-conventions.md` `## Project language`

@@ -7,7 +7,7 @@
 **Active spec/plan:** planning/260805-2353_*_plan-textschicht-gegen-code.md (the record's own `## Directive` and `## Grounding snapshot` are the spec; no separate spec file exists)
 **Active session history:** history/260805-2350-orchestrator-session.md (sole orchestrator session; 5 Turns)
 
-*Status, plan and history fields corrected by the reconciler on 260806-1057 at the final reconciliation before closure — the body still said "anticipated" under the `_t_` marker (the known record-lag pattern, shared issue `shared/issues/260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`). The Turn log below is reconstructed from `orchestrator-events.jsonl` and the history files rather than appended live.*
+*Status, plan and history fields corrected by the reconciler on 260806-1057 at the final reconciliation before closure — the body still said "anticipated" under the `_t_` marker (the known record-lag pattern, shared issue `archive/260817-1907-safe-cleanup-scoped/shared/issues/260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`). The Turn log below is reconstructed from `orchestrator-events.jsonl` and the history files rather than appended live.*
 
 ---
 

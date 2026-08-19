@@ -162,7 +162,7 @@ The shared build tree appears in neither diagram, which is the constraint decisi
    - Acceptance: a rerun of the scan over the same corpus reports zero `stale-marker` hits. Report the before and after counts.
    - Dependencies: none.
 
-6. **Repair the 49 wrong-store citations**
+6. [DONE] **Repair the 49 wrong-store citations**
    - Executor: `coder`
    - Files: workbench records across the repair corpus, driven by the scanner.
    - Changes: for every hit whose status is `wrong-store`, correct the cited path to where the record actually is. The scanner reports the real path on each violation, so this is mechanical. Where a citation resolves to more than one candidate, treat it as step 7's judgement case rather than picking one.

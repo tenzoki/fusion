@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** reconciler
-**Cross-references:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1455_c_turn-3s-reviewers-were-dispatched-on-four-of-the-seven-uncovered-commits-for-the-third-turn-running.md`, `shared/issues/260814-2017_c_turn-5-edited-three-shipped-surfaces-including-an-always-on-rule-file-and-no-review-pass-ever-opened-them.md`, `shared/issues/260814-2153_o_the-commit-that-closes-the-last-reviews-own-high-finding-is-the-one-commit-no-review-opens.md`, `shared/issues/260814-2033_o_a-resume-that-re-enters-at-phase-3-never-asks-whether-the-turn-it-skips-past-was-reviewed.md`, `shared/history/260814-2306-orchestrator-session.md` (three `## Coherence` sections)
+**Cross-references:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1455_c_turn-3s-reviewers-were-dispatched-on-four-of-the-seven-uncovered-commits-for-the-third-turn-running.md`, `circles/260801-1244-curator/issues/260814-2017_*_turn-5-edited-three-shipped-surfaces-including-an-always-on-rule-file-and-no-review-pass-ever-opened-them.md`, `circles/260801-1244-curator/issues/260814-2153_*_the-commit-that-closes-the-last-reviews-own-high-finding-is-the-one-commit-no-review-opens.md`, `circles/260801-1244-curator/issues/260814-2033_*_a-resume-that-re-enters-at-phase-3-never-asks-whether-the-turn-it-skips-past-was-reviewed.md`, `shared/history/260814-2306-orchestrator-session.md` (three `## Coherence` sections)
 
 ---
 

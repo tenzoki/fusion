@@ -8,7 +8,7 @@ The `**Initiated by:**` row added by `9f4cdac` defines the value as "the questio
 **Owner:** `coder` for the one-line statement; folded into whatever answers the open decision if that comes first.
 **Severity:** Low.
 **Affects:** `README-agents.md:55` (the preamble) and `:68` (the new row); `agents/shaper.md:55`, `:57`; `agents/orchestrator.md:333-348`.
-**Cross-references:** `circles/260801-1244-curator/decisions/260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md` (if option 1 is taken, this row is rewritten anyway and the rule lands with it); `circles/260813-0910-documentation-matches-shipped-plugin/issues/260813-2214_c_the-roster-preamble-states-a-value-termination-rule-for-confirmed-operations-that-the-playmaker-…` (the same gap, met once before on `**Confirmed operations:**` and answered by convention rather than by a rule).
+**Cross-references:** `circles/260801-1244-curator/decisions/260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md` (if option 1 is taken, this row is rewritten anyway and the rule lands with it); `archive/260817-1907-safe-cleanup-scoped/circles/260813-0910-documentation-matches-shipped-plugin/issues/260813-2214_*_the-roster-preamble-states-a-value-termination-rule-for-confirmed-operations-that-the-playmaker-…` (the same gap, met once before on `**Confirmed operations:**` and answered by convention rather than by a rule).
 
 **Verified 2026-08-14 at HEAD `41c224c`.**
 

@@ -30,7 +30,7 @@ A fusion-governed project can ask one agent, the `curator`, to reconcile its thr
 | 131 lines in 42 files cite the conventions file, 70 by section | 207 lines in 63 files, 106 by section, none by line number | `grep -rn` over `agents/ skills/ rules/ bin/ hooks/ docs/ templates/ CLAUDE.md README*.md .claude-plugin/`, excluding compiled output |
 | Four sections are named by no prompt | three; `## Issue and Decision Filing` is now cited by `agents/planner.md:65` | `grep` per section name |
 | The workbench is neither tracked nor gitignored | tracked, 1 130 files | `git ls-files fusion-workbench/ \| wc -l` |
-| `shared/issues/260801-1215_*_conventions-file-cites-three-records-that-do-not-resolve.md` is the strongest argument for the reconcile step | closed | marker on the filename |
+| `archive/260817-1907-safe-cleanup-scoped/shared/issues/260801-1215_*_conventions-file-cites-three-records-that-do-not-resolve.md` is the strongest argument for the reconcile step | closed | marker on the filename |
 | The shards are produced by C9 | four already sit in `rules/`, and the per-agent scoping table exists in `bin/fusion-rules` | `ls rules/` |
 | The archive store is an evidence source | 0 files, and no scan key reaches it | `find fusion-workbench/archive -type f` |
 | The decision corpus spans three months | 39 days, 2026-07-06 to 2026-08-13 | earliest and latest filename stamps |
@@ -50,7 +50,7 @@ A fusion-governed project can ask one agent, the `curator`, to reconcile its thr
 **Spec and its prior inputs** (cited where they live, per the Origin Rule, not copied):
 
 - Spec: `circles/260801-1244-curator/planning/260814-0738_*_spec-curator.md`. The single spec the planner works from for this Circle.
-- Earlier spec: `shared/planning/260801-1122_*_spec-normative-consolidation.md`. Covered four Circles, three now closed. It stays as their record and is not retired by this Circle.
+- Earlier spec: `archive/260817-1907-safe-cleanup-scoped/shared/planning/260801-1122_*_spec-normative-consolidation.md`. Covered four Circles, three now closed. It stays as their record and is not retired by this Circle.
 - Gap analysis: `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md`. The measured drift this body of work responds to.
 - Growth analysis: `shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`. The finding that the binding constraint is the rate of addition rather than the size of the system, which is what the growth bound answers.
 - **D1** — `shared/decisions/260801-1020_*_where-does-normative-consistency-live.md`. A writing agent, not a report-only detector.
@@ -211,7 +211,7 @@ der Bearbeitung ins eigene Sitzungsprotokoll zu schreiben, und er hat das Archiv
 Ruhestandsziel ausgeschlossen.
 
 **Ein sechster Punkt betrifft die Motivation, nicht die Zahlen.** Die Grounding führt den
-Befund `shared/issues/260801-1215_*_conventions-file-cites-three-records-that-do-not-resolve.md`
+Befund `archive/260817-1907-safe-cleanup-scoped/shared/issues/260801-1215_*_conventions-file-cites-three-records-that-do-not-resolve.md`
 als „the strongest available argument that the reconcile step is worth doing". Er trägt heute
 den Marker `_c_` und ist geschlossen.
 
@@ -279,7 +279,7 @@ Circle has lost both its first real job and its proof of capability
 (`circles/260805-2005-textschicht-gegen-code-nachziehen/_c_circle.md` `## Dependencies`), and
 decision D-g of the spec is void. The defect record the Grounding calls "the strongest available
 argument that the reconcile step is worth doing",
-`shared/issues/260801-1215_*_conventions-file-cites-three-records-that-do-not-resolve.md`, is
+`archive/260817-1907-safe-cleanup-scoped/shared/issues/260801-1215_*_conventions-file-cites-three-records-that-do-not-resolve.md`, is
 closed.
 
 **What holds.** Capabilities C1 through C3, C6 and C7 remain a coherent remainder. All three

@@ -34,7 +34,7 @@ and in `docs/philosophy.md`. `CLAUDE.md` and the rule files reach the same state
 All three were answered by the user on 2026-08-16 and are recorded in
 `shared/history/260816-1500-orchestrator-session.md` under `## Decisions answered by the user`.
 
-`shared/decisions/260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md`
+`archive/260817-1907-safe-cleanup-scoped/shared/decisions/260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md`
 was re-opened on its own deferral trigger and answered as option 1, retired. The measurement
 the trigger asked for was taken on 2026-08-12 across the reachable consuming projects and came
 back zero: neither `krk` nor `unite-co-creator` declares `decisions` or any `guard.category*`
@@ -225,7 +225,7 @@ heuristic, and both were measured against disk on this run rather than read off 
 
 **Unresolved decisions cited in the Grounding snapshot: zero.** The Grounding cites four decision
 records and every one of them carries the answered marker. The three lineage records that this
-Circle exists to realise, `shared/decisions/260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md`,
+Circle exists to realise, `archive/260817-1907-safe-cleanup-scoped/shared/decisions/260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md`,
 `shared/decisions/260812-1232_*_does-the-escalation-counter-survive-a-block-source-that-ships-inert.md`
 and `shared/decisions/260812-1232_*_does-the-write-guards-fusion-repo-stand-down-survive-the-loss-of-its-subject.md`,
 were answered by the user on 2026-08-16 and are recorded in

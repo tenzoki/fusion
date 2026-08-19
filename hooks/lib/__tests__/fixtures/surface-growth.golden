@@ -61,7 +61,7 @@
   guard-bash-integration.test.ts 417
   guard-project-config-integration.test.ts 423
   guard-state-shape.test.ts 251
-  helpers/citation-scan.ts 574
+  helpers/citation-scan.ts 621
   helpers/growth-bound.ts 123
   helpers/guard-harness.ts 978
   helpers/prompt-blocks.ts 28
@@ -86,4 +86,4 @@
   staging-drift.test.ts 660
   surface-growth-bound.test.ts 628
   turn-budget-lint.test.ts 524
-  total 18850
+  total 18897

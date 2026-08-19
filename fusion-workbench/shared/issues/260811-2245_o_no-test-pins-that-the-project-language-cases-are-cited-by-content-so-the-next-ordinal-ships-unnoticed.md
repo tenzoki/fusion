@@ -7,7 +7,7 @@
 **Filed by:** coder (working `260811-2145`, Turn 4 finding 1)
 **Affects:** `hooks/lib/__tests__/deliverable-language-lint.test.ts`
 **Cross-references:**
-`shared/issues/260811-2145_c_the-deliverable-language-case-is-the-third-bullet-and-two-citing-surfaces-send-the-reader-to-the-fourth.md` (its second acceptance criterion, carried here)
+`archive/260817-1907-safe-cleanup-scoped/shared/issues/260811-2145_*_the-deliverable-language-case-is-the-third-bullet-and-two-citing-surfaces-send-the-reader-to-the-fourth.md` (its second acceptance criterion, carried here)
 
 ---
 

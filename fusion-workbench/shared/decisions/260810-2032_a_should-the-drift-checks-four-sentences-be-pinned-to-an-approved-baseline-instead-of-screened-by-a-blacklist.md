@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** orchestrator (on the executor of `R:260810-1918-drift-lint-residuals`)
-**Cross-references:** `shared/issues/260810-1918_c_the-skip-licence-blacklist-misses-every-negation-that-does-not-use-the-word-not.md`; `shared/issues/260810-0502_c_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`; `rules/critical-stance.md` §4; queued task `I:260801-2038-frozen-state`
+**Cross-references:** `shared/issues/260810-1918_c_the-skip-licence-blacklist-misses-every-negation-that-does-not-use-the-word-not.md`; `archive/260817-1907-safe-cleanup-scoped/shared/issues/260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`; `rules/critical-stance.md` §4; queued task `I:260801-2038-frozen-state`
 
 ---
 
