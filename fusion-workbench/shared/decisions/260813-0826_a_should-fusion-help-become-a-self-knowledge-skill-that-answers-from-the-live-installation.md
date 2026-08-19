@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** orchestrator (raised by the user)
-**Cross-references:** `skills/help/SKILL.md`; `shared/issues/260813-0825_o_the-user-facing-documentation-lags-two-releases-and-still-describes-a-removed-guard.md`; `bin/fusion-source-root`; `bin/fusion-paths`; `bin/fusion-rules`
+**Cross-references:** `skills/help/SKILL.md`; a defect record about the user-facing documentation lagging two releases and still describing a removed guard, cited here at the stamp `260813-0825` — no file with that slug has ever existed and the intended target is not recoverable, measured in `circles/260801-1244-curator/history/260814-1332-curator-run.md` and re-filed as a defect on 2026-08-19; `bin/fusion-source-root`; `bin/fusion-paths`; `bin/fusion-rules`
 
 ---
 
@@ -84,7 +84,7 @@ to the user's questions.
   the drift it exists to remove; it must call the helper and report, never paraphrase.
 - **A `bin/` helper may be absent from an installed copy.** Every prompt-called helper is guarded
   with `[ -x ]` and reports rather than failing (decision
-  `shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention...`,
+  `shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention…`,
   part b). A measuring help skill multiplies those call sites and inherits that obligation at each.
 - **`allowed-tools` is currently `[Read, Bash, Glob]`.** Options 2 and 3 stay inside it; nothing
   here needs a write tool, and the skill must not acquire one.

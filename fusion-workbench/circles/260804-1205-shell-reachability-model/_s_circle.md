@@ -2,7 +2,7 @@
 
 ---
 **Domain:** code
-**Status:** active (parked mid-Turn-1 pending decision `260807-0825`; the record was activated `_a_`→`_t_` on 260806-2313 and this field was corrected by hand on 260807-0825, which is the defect filed at `shared/issues/260802-0920_o_next-skill-activates-a-circle-without-updating-its-status-field.md`)
+**Status:** active (parked mid-Turn-1 pending decision `260807-0825`; the record was activated `_a_`→`_t_` on 260806-2313 and this field was corrected by hand on 260807-0825, which is the defect filed at `shared/issues/260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`)
 **Filed by:** shaper (anticipated-circle mode)
 **Active spec/plan:** circles/260804-1205-shell-reachability-model/planning/260806-2353_*_plan-shell-reachability-model.md
 **Active session history:** shared/history/260806-2158-orchestrator-session.md

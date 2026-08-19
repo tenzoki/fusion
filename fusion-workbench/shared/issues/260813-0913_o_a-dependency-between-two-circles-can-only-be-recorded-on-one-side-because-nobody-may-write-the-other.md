@@ -15,7 +15,7 @@ In session `shared/history/260813-0806-orchestrator-session.md`, two anticipated
 created in sequence:
 
 - `circles/260813-0858-playmaker-maintains-backlog-store/`
-- `circles/260813-0910-documentation-matches-shipped-plugin/`
+- `archive/260817-1907-safe-cleanup-scoped/circles/260813-0910-documentation-matches-shipped-plugin/_b_circle.md`
 
 The second depends on the first: three documents describe the playmaker's backlog role, and that
 role is about to change, so certain paragraphs wait. The documentation Circle's record names the

@@ -6,7 +6,7 @@
 **Domain:** code
 **Filed by:** reconciler, Phase 3 pass of orchestrator session `260810-0241`
 **Affects:** `fusion-workbench/shared/reviews/260810-0512-coderev-turn-1-range-8960e1a-to-head.md:167-179`; any reader who takes the totals table as the count
-**Cross-references:** `shared/issues/260810-0751_o_the-record-about-counting-instances-of-a-shape-gives-three-different-counts.md` (the same class, filed by the Turn 2 reviewer against a Turn 1 record); `shared/reviews/260810-0752-coderev-turn-2-range-ff70d3a-to-head.md:4` (a second count defect in the same cohort, below)
+**Cross-references:** `shared/issues/260810-0751_*_the-record-about-counting-instances-of-a-shape-gives-three-different-counts.md` (the same class, filed by the Turn 2 reviewer against a Turn 1 record); `shared/reviews/260810-0752-coderev-turn-2-range-ff70d3a-to-head.md:4` (a second count defect in the same cohort, below)
 
 ---
 

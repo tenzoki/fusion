@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** closed (coherent)
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** shared/planning/260801-1122_o_spec-normative-consolidation.md (spec, covers all four Circles of this body of work) · planning/260804-1633_*_plan-c5b-remediation-and-ship.md (C5b remediation and ship) · planning/260804-2356_*_plan-ausstieg-kontextsteuer-und-auslieferung.md (Ausstiegsplan) · predecessor planning/260802-1856_*_plan-guard-rules-write.md (steps 1–8 complete, 9/10 superseded)
+**Active spec/plan:** shared/planning/260801-1122_*_spec-normative-consolidation.md (spec, covers all four Circles of this body of work) · planning/260804-1633_*_plan-c5b-remediation-and-ship.md (C5b remediation and ship) · planning/260804-2356_*_plan-ausstieg-kontextsteuer-und-auslieferung.md (Ausstiegsplan) · predecessor planning/260802-1856_*_plan-guard-rules-write.md (steps 1–8 complete, 9/10 superseded)
 **Active session history:** history/260805-2117-orchestrator-session.md (latest; 11 orchestrator sessions total under history/)
 
 *Status, plan and history fields corrected retroactively by the reconciler on 260805-2323 — the record had never been updated after activation (issue `issues/260805-1830_*_der-circle-datensatz-dieses-circles-widerspricht-seinem-eigenen-marker-und-fuehrt-keinen-turn-log.md`, closed by this correction). The Turn log below is likewise reconstructed from the orchestrator session histories rather than appended live.*
@@ -29,7 +29,7 @@ Two settled decisions are inputs rather than options. D2 asked for both halves: 
 
 **Spec and its prior decisions** (cited where they live, per the Origin Rule, not copied):
 
-- Spec: `shared/planning/260801-1122_o_spec-normative-consolidation.md`. C5a, C5b, the constraints block, and `## Circle structure`.
+- Spec: `shared/planning/260801-1122_*_spec-normative-consolidation.md`. C5a, C5b, the constraints block, and `## Circle structure`.
 - Gap analysis: `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md`.
 - **D1** — `shared/decisions/260801-1020_*_where-does-normative-consistency-live.md`. A writing consolidation agent rather than a report-only detector. The reason a fusion agent needs to touch rule files at all.
 - **D2** — `shared/decisions/260801-1020_*_may-any-fusion-writer-touch-rules.md`. The direct input to this Circle: both the exemption and the project-level configuration come from it.
@@ -119,7 +119,7 @@ Closed coherent (`_t_` → `_c_`) on 260805-2359. Phase-3 verdict: **coherent** 
 review-needed flag (stale emission golden after the Step-7 documentation commit) was resolved via
 Rebalance/Revise-Artifact in Turn 3 (commit `24186a4`); with it, all three Coherence edges are
 clean. All twelve spec acceptance criteria verified with per-criterion test citations
-(`shared/planning/260801-1122_o_spec-normative-consolidation.md:309-332`), suite 1551/1551 green
+(`shared/planning/260801-1122_*_spec-normative-consolidation.md:309-332`), suite 1551/1551 green
 against source and against the shipped `dist` artifact. All three plans closed; shipped as
 v5.9.0–v5.9.2 (tags pushed).
 

@@ -177,7 +177,8 @@ reasons from, cited rather than copied:
 
 - `circles/260807-0923-guard-misst-statt-orakelt`: the guard stopped predicting shell writes and
   measured them instead.
-- `circles/260801-1244-guard-bash-inspection`: the Bash inspection surface and its zero-side-effect
+- `archive/260817-1907-safe-cleanup-scoped/circles/260801-1244-guard-bash-inspection/_c_circle.md`
+  (archived by the 260817-1907 sweep): the Bash inspection surface and its zero-side-effect
   property.
 - `circles/260815-0007-remove-eight-mechanisms-and-cap-growth`: the four growth bounds this work
   is measured under, and the precedent that a removal never trips one.
@@ -235,7 +236,8 @@ not a block under the heuristic; it is the input the Circle consumes.
 **Dependencies: all closed.** The `## Dependencies` section names no blocking Circle and cites
 three closed ones as lineage. Each was resolved to an existing directory and each record carries
 the closed-coherent marker: `circles/260807-0923-guard-misst-statt-orakelt`,
-`circles/260801-1244-guard-bash-inspection` and
+`archive/260817-1907-safe-cleanup-scoped/circles/260801-1244-guard-bash-inspection/_c_circle.md`
+(archived since, by the 260817-1907 sweep) and
 `circles/260815-0007-remove-eight-mechanisms-and-cap-growth`. No partial-block flag is raised.
 
 **What changed in the forty minutes before this run, and it is the whole argument for activating

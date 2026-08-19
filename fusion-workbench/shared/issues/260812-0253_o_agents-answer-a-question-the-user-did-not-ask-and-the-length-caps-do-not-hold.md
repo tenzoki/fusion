@@ -21,7 +21,7 @@ offer to fix them.
 
 What he says the answer should have been, and he is right:
 
-    fusion-workbench/circles/260809-2040-.../planning/260811-0753_o_spec-....md
+    fusion-workbench/circles/<circle-dir>/planning/<stamp>_<marker>_spec-<slug>.md
     Abschnitte ### C1 bis ### C4.
 
 **Why this is not a formatting defect.** The reply is competent. The table is correct, the two

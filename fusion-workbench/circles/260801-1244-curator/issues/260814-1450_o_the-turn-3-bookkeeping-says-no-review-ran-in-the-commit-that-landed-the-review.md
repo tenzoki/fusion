@@ -28,8 +28,8 @@ entries each state what `coderev` filed and what it judged. The Turn-3-continued
 run file and says nothing about the six findings or the review's verdict on the Directive.
 
 **4. The Turn-3 entry above it cites a defect record by a stamp that does not exist.**
-`_t_circle.md:104` cites `issues/260814-1210_*_the-proof-run-cannot-be-dispatched-from-the-session-that-built-the-agent.md`.
-The file is `issues/260814-1200_o_the-proof-run-…`. The wildcard is correct and the stamp is off by
+`_t_circle.md:104` cites the proof-run defect record at the stamp `260814-1210`, which no file in
+the workbench has ever carried. The file is `issues/260814-1200_*_the-proof-run-…`. The wildcard is correct and the stamp is off by
 ten minutes, so the citation resolves to nothing under any marker. This one is not a staleness — it
 was wrong when written.
 
@@ -63,6 +63,12 @@ describes is this Circle's Turn log and this session's record of running it.
 
 **Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). All four sub-claims unchanged.**
 
-`shared/history/260813-2345-orchestrator-session.md:32-34` — `## Turns` still reads `(none yet)`. `:191` still says "Review findings: none yet". `:193` still says "Coherence: not yet evaluated for this Turn". And the citation `issues/260814-1210_*_the-proof-run-cannot-be-dispatched-…` at `_c_circle.md:104` still resolves to nothing under any marker — no file carries the stamp `260814-1210`; the record is at `260814-1200`.
+`shared/history/260813-2345-orchestrator-session.md:32-34` — `## Turns` still reads `(none yet)`. `:191` still says "Review findings: none yet". `:193` still says "Coherence: not yet evaluated for this Turn". And the citation at `_c_circle.md:104` still resolves to nothing under any marker — no file carries the stamp `260814-1210`; the record is at `260814-1200`.
 
 The closure commit `4dcfff6` added the per-Turn sections that closed this record's neighbour (`260814-2017`) and touched none of these four.
+
+**Correction 260819-2250 (coder, plan step 7).** The dead citation in sub-claim 4 is gone:
+`_c_circle.md:104` now cites `issues/260814-1200_*_the-proof-run-…`, the record that was always
+meant. Sub-claim 4 is therefore historical and the record's other three sub-claims are untouched,
+which is why the marker does not move here. Log:
+`circles/260819-1645-four-constraints-on-deep-change/history/260819-2250-coder-resolve-the-citations-that-resolve-to-nothing.md`.

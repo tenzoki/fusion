@@ -76,7 +76,7 @@ flowchart LR
 
 - Turn 1 (session 260813-2345): commits f273b9a..5b81f5a, of which 6ba9d77, 44b9967 and 5b81f5a
   carry plan steps 1 to 4; Coherence verdict recorded at the per-Turn gate; session history:
-  shared/history/260813-2345-orchestrator-session.md. Three tasks done, none errored, none skipped.
+  `shared/history/260813-2345-orchestrator-session.md`. Three tasks done, none errored, none skipped.
   Plan step 5, arming the growth bound, was deliberately held for Turn 2 so that no rule-file edit
   arising from the Turn-1 review could land above an already-set baseline. `coderev` filed seven
   defects, all in shipped text and none in behaviour; the severe one is that the curator is absent
@@ -84,7 +84,7 @@ flowchart LR
   unreachable and spec criterion C7 unmet.
 
 - Turn 2 (session 260813-2345): commits 249e606..5c843e6; Coherence verdict recorded at the
-  per-Turn gate; session history: shared/history/260813-2345-orchestrator-session.md. Two tasks
+  per-Turn gate; session history: `shared/history/260813-2345-orchestrator-session.md`. Two tasks
   done. T5 closed all seven Turn-1 defects, the severe one by registering the curator at four sites
   in `agents/orchestrator.md`, verified by a headless smoke dispatch with a control rather than by
   reading. T4 removed a stale derived count from `rules/circle-records.md` and then armed the growth
@@ -95,13 +95,13 @@ flowchart LR
   the project's own decision corpus has not been performed and no curator run file exists.
 
 - Turn 3 (session 260813-2345): commits 7421f51..2a8a2f7; Coherence verdict recorded at the
-  per-Turn gate; session history: shared/history/260813-2345-orchestrator-session.md. One task done,
+  per-Turn gate; session history: `shared/history/260813-2345-orchestrator-session.md`. One task done,
   one blocked. T6 closed the three Turn-2 defects, correcting prose to match the mechanism rather
   than the reverse, with a measured net effect of zero bytes on the always-on corpus. T7, the C11
   proof run, could not start: `Agent(fusion:curator)` is not reachable from the session that built
   the curator, because a session's agent roster is read at start from the installed plugin copy and
   pinned for its whole life. Filed as
-  `issues/260814-1210_*_the-proof-run-cannot-be-dispatched-from-the-session-that-built-the-agent.md`.
+  `issues/260814-1200_*_the-proof-run-cannot-be-dispatched-from-the-session-that-built-the-agent.md`.
   The user chose to update the install and perform C11 in a fresh session; the Circle stays active.
 
 - Turn 3, continued (session 260813-2345, resumed 260814-1311): commits e101761..0301909. T7, the
@@ -132,7 +132,7 @@ flowchart LR
   silently in the dangerous direction.
 
 - Turn 5 (session 260813-2345): commits 9f4cdac..41c224c; session history:
-  shared/history/260813-2345-orchestrator-session.md. One task done, none errored. T10 took the
+  `shared/history/260813-2345-orchestrator-session.md`. One task done, none errored. T10 took the
   four coherence findings the Turn-3 and Turn-4 reviews left. Three of them closed in `9f4cdac`:
   the dispatch roster in `README-agents.md` stopped forbidding a dispatch the mechanism permits,
   the shaper's mode-3 reachability claim in Phase 0b.1 was conditionalised, and the layout tree's
@@ -153,7 +153,7 @@ flowchart LR
   close bounded, which opened Turn 6.
 
 - Turn 6 (session 260813-2345, resumed 260814-2009): commits f0d9d60..d90b794; Coherence verdict
-  `ok` at the per-Turn gate; session history: shared/history/260813-2345-orchestrator-session.md.
+  `ok` at the per-Turn gate; session history: `shared/history/260813-2345-orchestrator-session.md`.
   Three tasks done, none errored. The Turn exists because the Phase-3 verdict came back
   `review-needed` on two High findings and the user chose to revise the Artifact rather than close
   bounded. T11 stopped `hooks/lib/__tests__/config.test.ts` pinning this repository's
@@ -303,8 +303,9 @@ has to invent them.
 260813-0007 rather than replacing them; the three are successive states of one question.
 
 **What changed is the field, not this Circle.** The other anticipated Circle,
-`circles/260813-0910-documentation-matches-shipped-plugin/`, reached Bounded Closure this evening
-with nine of ten plan steps done. This record is now the only Circle in the portfolio that is
+`archive/260817-1907-safe-cleanup-scoped/circles/260813-0910-documentation-matches-shipped-plugin/_b_circle.md`
+(live under `circles/` at the time of this run; archived by the 260817-1907 sweep), reached
+Bounded Closure this evening with nine of ten plan steps done. This record is now the only Circle in the portfolio that is
 neither terminal nor active. Ranking it first therefore says nothing about it: there is no second
 candidate to beat.
 

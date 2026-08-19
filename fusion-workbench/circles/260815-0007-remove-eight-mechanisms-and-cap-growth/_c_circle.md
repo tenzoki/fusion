@@ -197,12 +197,14 @@ and `.active-circle` is absent. Five artifacts bind this one and are cited rathe
 - `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-0007_*_does-fusion-cleanup-block-at-the-claude-md-gate-or-leave-the-ledger.md`
   — the one residual this Circle deliberately left open, in this Circle's own decision store.
   Answer it before planning the `CLAUDE.md` step.
-- `circles/260813-0910-documentation-matches-shipped-plugin/` (`_b_`, Bounded Closure) — every
-  removal here re-opens the surface that Circle worked on, and its own Bounded-Closure Artifact
+- `archive/260817-1907-safe-cleanup-scoped/circles/260813-0910-documentation-matches-shipped-plugin/_b_circle.md`
+  (`_b_`, Bounded Closure; archived by the 260817-1907 sweep, live under `circles/` when this was
+  written) — every removal here re-opens the surface that Circle worked on, and its own Bounded-Closure Artifact
   is the finding that a pass over sixteen agent prompts is not a pass over the plugin. Its
   step 10, verifying `docs/plane-setup.md` against `bin/fusion-plane`, is now moot if the Plane
   mirror goes; check its open record before starting that work.
-- `circles/260719-1536-plane-mirror-integration/` (`_c_`) — the Circle that built the mirror
+- `archive/260817-1907-safe-cleanup-scoped/circles/260719-1536-plane-mirror-integration/_c_circle.md`
+  (`_c_`; archived by the 260817-1907 sweep) — the Circle that built the mirror
   this Circle removes. Read its closure note before deleting, so the removal records what was
   built rather than only that it went.
 - `shared/issues/260810-0326_*_setup-must-seed-claude-settings-because-the-plugin-settings-json-is-not-a-permission-source.md`

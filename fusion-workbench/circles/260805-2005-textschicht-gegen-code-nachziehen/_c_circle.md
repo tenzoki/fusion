@@ -65,7 +65,7 @@ Die letzten beiden teilen eine Wurzel, die die Konventionen bereits benennen und
 
 ### Die Zitierform ist Vorbedingung, nicht Nacharbeit
 
-Der Review ist an dieser Stelle ausdrücklich: „Vorher die Entscheidung zur Zitierform, sonst wird zweimal angefasst." Eine markerlose Form (`260801-1020_*_slug`) würde die ganze Klasse eliminieren. Solange sie nicht gefallen ist, kann der Verweis-Lint auch nicht wissen, welche Form er als gültig akzeptiert. Die Entscheidung steht also **vor** dem Lint und **vor** den 16 mechanischen Korrekturen.
+Der Review ist an dieser Stelle ausdrücklich: „Vorher die Entscheidung zur Zitierform, sonst wird zweimal angefasst." Eine markerlose Form (`260801-1020_*_<slug>`) würde die ganze Klasse eliminieren. Solange sie nicht gefallen ist, kann der Verweis-Lint auch nicht wissen, welche Form er als gültig akzeptiert. Die Entscheidung steht also **vor** dem Lint und **vor** den 16 mechanischen Korrekturen.
 
 Zwei der acht verfallenen Zitate sind mehr als tote Pfade: `hooks/lib/paths.ts:72` behauptet wörtlich, eine Entscheidung sei „deliberately not taken" — sie ist inzwischen gefallen. Diese beiden sind Inhaltskorrekturen, nicht Pfadkorrekturen, und dürfen nicht mit dem mechanischen Rest zusammengeworfen werden.
 
@@ -95,7 +95,7 @@ Der Vollständigkeit halber, damit der Zuschnitt nicht wie ein Scherbenhaufen au
 - Die drei Berichte: siehe Tabelle oben.
 - Der zu korrigierende Befund: `circles/260801-1244-guard-rules-write/issues/260805-1859_*_im-eigenen-repo-laden-alle-agenten-die-regeln-der-installierten-vorversion-nicht-die-quelle.md`
 - Alle 66 Issue-Records: `circles/260801-1244-guard-rules-write/issues/`, Zeitstempel `260805-18*` und `260805-19*`.
-- Die Spec, aus der die Konsolidierungs-Kapazitäten stammen: `shared/planning/260801-1122_o_spec-normative-consolidation.md`
+- Die Spec, aus der die Konsolidierungs-Kapazitäten stammen: `shared/planning/260801-1122_*_spec-normative-consolidation.md`
 
 ## Dependencies
 

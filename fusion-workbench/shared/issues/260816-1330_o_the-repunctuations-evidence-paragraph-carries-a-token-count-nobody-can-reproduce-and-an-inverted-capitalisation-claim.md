@@ -73,4 +73,4 @@ mentions at `:130`, exactly as claimed.
 tracks: the `see` sites are at `:9` and `:12`, not `:9` and `:14`. The finding is unaffected.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The progress note in `260816-0740_o_...em-dash-ceiling...md:82` still carries the unreproducible figure. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The progress note in `260816-0740_*_…em-dash-ceiling…md:82` still carries the unreproducible figure. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

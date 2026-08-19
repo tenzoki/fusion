@@ -16,7 +16,7 @@ The change reads as substantively reasonable, and its provenance is not certain.
 
 ## Why it matters regardless of who wrote it
 
-**The write guard could not have stopped it here.** `agents/**` is in `guard.protectedPaths` (`hooks/config.json:8-18`), but the guard stands down entirely when cwd is the plugin's own repo (`hooks/lib/self-detect.ts:18-33`). In a consuming project the same edit would have been blocked on the `Edit` path — and would have succeeded anyway through a shell, per `shared/issues/260801-1156_o_bash-bypasses-the-protected-path-check-entirely.md`. Either way nothing detected it. It surfaced only because a coder noticed an unexpected entry in `git status` and mentioned it in its report.
+**The write guard could not have stopped it here.** `agents/**` is in `guard.protectedPaths` (`hooks/config.json:8-18`), but the guard stands down entirely when cwd is the plugin's own repo (`hooks/lib/self-detect.ts:18-33`). In a consuming project the same edit would have been blocked on the `Edit` path — and would have succeeded anyway through a shell, per `shared/issues/260801-1156_*_bash-bypasses-the-protected-path-check-entirely.md`. Either way nothing detected it. It surfaced only because a coder noticed an unexpected entry in `git status` and mentioned it in its report.
 
 **The added text asserts orchestrator behaviour that does not exist.** It states "The orchestrator grep-checks staged diffs before committing." No such check is specified in `agents/orchestrator.md` and none is implemented. Whatever the merit of the rest, that sentence creates exactly the class of defect the curator Circle exists to detect: a normative file asserting something untrue about the system, in a file loaded into an agent's context on every run.
 
@@ -39,7 +39,8 @@ Part 1 is unresolved on the record. Nothing in the Circle's history files, the s
 
 Part 3 — the durable fix, that the orchestrator diff its working tree against its own expected file set after each dispatched task — is not implemented and no plan step or Circle covers it. It is the part this issue itself called durable and not specific to the incident.
 
-Note the issue's own observation held during this Circle: the guard could not have stopped the edit here, and after `circles/260801-1244-guard-bash-inspection` it still could not, because the plugin-repo stand-down covers the new shell check too by design (`hooks/lib/__tests__/guard-bash-integration.test.ts:398-410`). The Circle closed the shell bypass for consuming projects and deliberately did not change this repo's behaviour.
+Note the issue's own observation held during this Circle: the guard could not have stopped the edit here, and after the Bash-inspection Circle
+(`archive/260817-1907-safe-cleanup-scoped/circles/260801-1244-guard-bash-inspection/_c_circle.md`) it still could not, because the plugin-repo stand-down covers the new shell check too by design (`hooks/lib/__tests__/guard-bash-integration.test.ts:398-410`). The Circle closed the shell bypass for consuming projects and deliberately did not change this repo's behaviour.
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). Partly settled. The text half landed: `a342e9b` removed the false "grep-checks staged diffs" sentence and kept the scope-exclusion bullet, and `agents/ontocoder.md:33-36` reads correctly at HEAD. Two halves are untouched. The authorship question has no answer anywhere in the workbench, and the proposed orchestrator step — diff your own working tree against the expected file set after a dispatch — does not exist in `agents/orchestrator.md`. Marker stays open on those two.

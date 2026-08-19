@@ -159,7 +159,7 @@ in scope for a *presentational* collapse is a question this record does not answ
 up decides that first; if the answer is no, the record closes on that ground rather than on a sweep.
 
 `.gitignore:69` sits four lines from `.gitignore:67`, the other half of open record
-`shared/issues/260816-0136_p_the-tracked-workbench-splits-declared-scope-reaches-two-legacy-stores-neither-group-classifies.md`.
+`shared/issues/260816-0136_*_the-tracked-workbench-splits-declared-scope-reaches-two-legacy-stores-neither-group-classifies.md`.
 One pass over that comment block discharges both.
 
 **Cross-reference:** `shared/issues/260816-0139_*` filed the empty-table observation and its own

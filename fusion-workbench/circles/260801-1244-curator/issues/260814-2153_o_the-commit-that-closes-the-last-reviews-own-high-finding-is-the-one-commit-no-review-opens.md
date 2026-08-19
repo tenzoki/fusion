@@ -74,4 +74,4 @@ record if it is preferred.
 
 Meanwhile `agents/orchestrator.md:602` still tells the reader *"whether a release may go out over an uncovered range is a decision nobody has filed"* — which was true when written and is false now.
 
-**One correction that belongs to whoever picks this up.** Decision `260815-2109` cites this record as `shared/issues/260814-2153_o_…`. No such path exists: this file is in `circles/260801-1244-curator/issues/`. The citation is in the shared decision store, which this pass does not write to.
+**One correction, and it has since been made.** Decision `260815-2109` cited this record from the wrong store, naming a `shared/issues/` path where this file has only ever been in `circles/260801-1244-curator/issues/`. That citation was corrected on 2026-08-19 by the wrong-store repair pass (`circles/260819-1645-four-constraints-on-deep-change/history/260819-2213-coder-repair-the-wrong-store-citations.md`), so nothing is outstanding here — the note stands as the record of a correction rather than as a request for one. This record's own finding, the uncovered closure commit, is unaffected either way.

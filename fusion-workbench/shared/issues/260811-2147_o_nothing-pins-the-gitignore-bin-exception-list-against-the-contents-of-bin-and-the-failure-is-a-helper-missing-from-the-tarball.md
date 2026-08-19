@@ -7,7 +7,7 @@
 **Filed by:** coderev (Turn 4 review, range `b261d83..951c809`)
 **Affects:** `.gitignore:20-37`, `install.sh` (the consumer of the tracked set)
 **Cross-references:**
-`shared/issues/260810-0510_o_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`, `shared/issues/260811-1614_o_the-drift-checks-turn-row-is-satisfied-by-a-turn-start-alone…md` (the standing theme of gates that do not measure)
+`shared/issues/260810-0510_o_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`, `shared/issues/260811-1614_*_the-drift-checks-turn-row-is-satisfied-by-a-turn-start-alone…md` (the standing theme of gates that do not measure)
 
 ---
 

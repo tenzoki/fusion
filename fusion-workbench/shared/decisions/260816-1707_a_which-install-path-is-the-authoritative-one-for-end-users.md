@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** orchestrator (on the user's answer, as a prerequisite to `260816-0719`)
-**Cross-references:** `shared/decisions/260816-0719_a_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md` (the decision this unblocked); `install.sh`; `CLAUDE.md` `### HTTPS installer` and `## Release process` step 5
+**Cross-references:** `shared/decisions/260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md` (the decision this unblocked); `install.sh`; `CLAUDE.md` `### HTTPS installer` and `## Release process` step 5
 
 ---
 
@@ -58,7 +58,7 @@ accept as a statement of policy. No sentence in `README.md`, `CLAUDE.md` or `doc
 
 One thing worth separating. The answer's **consequence** is already consumed and recorded: it
 eliminated option 3 of
-`shared/decisions/260816-0719_a_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`,
+`shared/decisions/260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`,
 whose own `Answered:` line names this record for it. So the decision has done its work as a
 prerequisite; what is unrealised is only the sentence that makes the policy readable by someone who
 was not in the session.

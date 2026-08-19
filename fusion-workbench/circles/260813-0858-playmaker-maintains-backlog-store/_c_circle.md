@@ -151,7 +151,8 @@ proposed activation timestamp `260813-0926`.
 bias, and it is the only one of the three that is activatable as written today.
 
 Its `## Dependencies` section names no Circle it waits on. The relation it does record runs
-outward: it blocks `circles/260813-0910-documentation-matches-shipped-plugin/`, whose own
+outward: it blocks the documentation Circle
+`archive/260817-1907-safe-cleanup-scoped/circles/260813-0910-documentation-matches-shipped-plugin/_b_circle.md`, whose own
 record cites this directory and states that four passages wait on it. Both records agree on
 the direction, so the ordering is unambiguous and this Circle is the head of it.
 
@@ -209,7 +210,8 @@ exercised whole. That is the largest gap between what was built and what was dem
 first real run is where it gets closed.
 
 Step 9, the version bump to `8.2.0`, is deferred by the user's release decision: one release
-carries this Circle and `circles/260813-0910-documentation-matches-shipped-plugin/` together,
+carries this Circle and
+`archive/260817-1907-safe-cleanup-scoped/circles/260813-0910-documentation-matches-shipped-plugin/_b_circle.md` together,
 because that Circle rewrites four passages describing the behaviour this one replaced. Two of those
 four now contradict shipped behaviour outright, recorded under `## Update 260813-1500` in
 `shared/issues/260813-0825_*`. The bump has no carrier outside the plan being closed here, which is

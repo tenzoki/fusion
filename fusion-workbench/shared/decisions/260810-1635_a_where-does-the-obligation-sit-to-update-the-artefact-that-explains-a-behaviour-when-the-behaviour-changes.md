@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** open
 **Filed by:** orchestrator (session `260810-1402`), on the reviewer's recommendation
-**Cross-references:** `shared/reviews/260810-1632-coderev-turn-1-range-430d73a-to-head.md` (the pass that named the pattern); `archive/260817-1907-safe-cleanup-scoped/shared/issues/260809-2252_*_the-tracker-noise-list-still-says-it-excludes-two-metrics-when-only-churn-reads-it.md`; `shared/issues/260809-2258_o_readme-hooks-says-fourteen-ordering-sites-and-the-commit-that-wrote-it-converted-fifteen.md`; `shared/issues/260810-1632_o_the-churn-stand-down-still-asks-cwd-and-the-comment-justifying-that-was-falsified-by-the-same-commit.md`; `archive/260817-1907-safe-cleanup-scoped/shared/issues/260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`
+**Cross-references:** `shared/reviews/260810-1632-coderev-turn-1-range-430d73a-to-head.md` (the pass that named the pattern); `archive/260817-1907-safe-cleanup-scoped/shared/issues/260809-2252_*_the-tracker-noise-list-still-says-it-excludes-two-metrics-when-only-churn-reads-it.md`; `shared/issues/260809-2258_*_readme-hooks-says-fourteen-ordering-sites-and-the-commit-that-wrote-it-converted-fifteen.md`; `shared/issues/260810-1632_*_the-churn-stand-down-still-asks-cwd-and-the-comment-justifying-that-was-falsified-by-the-same-commit.md`; `archive/260817-1907-safe-cleanup-scoped/shared/issues/260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`
 
 ---
 
@@ -112,7 +112,7 @@ Two things this pass measured that the record should carry. `CLAUDE.md` itself n
 adopted as a standing instruction on the project's largest prose surface, arrived at by the same
 class of failure this record counts. And `260810-1635`'s own note above still reads
 `**Status:** open` against an `_a_` filename; that is deliberate, per
-`260818-2212_i_should-the-decision-records-status-field-exist-at-all-...`, which says a record
+`260818-2212_*_should-the-decision-records-status-field-exist-at-all-…`, which says a record
 written before the field left the template keeps it.
 
 **What binds a deep change.** Any change that states a fact on a second shipped surface is adding to

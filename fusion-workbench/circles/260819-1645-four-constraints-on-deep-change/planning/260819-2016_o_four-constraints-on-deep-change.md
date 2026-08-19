@@ -169,7 +169,7 @@ The shared build tree appears in neither diagram, which is the constraint decisi
    - Acceptance: a rerun reports zero `wrong-store` hits.
    - Dependencies: step 5. The two steps touch overlapping files and a single sequential pass avoids two agents rewriting one record.
 
-7. **Resolve the 62 citations that resolve to nothing**
+7. [DONE] **Resolve the 62 citations that resolve to nothing**
    - Executor: `coder`
    - Files: workbench records across the repair corpus, driven by the scanner.
    - Changes: every remaining `dangling` hit of kind `record`, `bare-record` or `circle-dir` gets exactly one of three treatments, and every treatment ends with the token either gone or resolving.

@@ -5,7 +5,7 @@
 **Domain:** code
 **Filed by:** orchestrator, session 260811-0752, realising an answered decision
 **Affects:** the shipped text surfaces — `agents/*.md`, `skills/*/SKILL.md`, `rules/*.md`, `README*.md`, `CLAUDE.md`
-**Cross-references:** `shared/decisions/260810-1635_a_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md` — the answer this realises; `shared/decisions/260811-1522_a_...` (the same rule applied to the hooks README table); `shared/issues/260811-1712_o_max-turns-is-hardcoded-in-eight-places...` (an instance)
+**Cross-references:** `shared/decisions/260810-1635_a_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md` — the answer this realises; `shared/decisions/260811-1522_*_…` (the same rule applied to the hooks README table); `shared/issues/260811-1712_*_max-turns-is-hardcoded-in-eight-places…` (an instance)
 
 ---
 

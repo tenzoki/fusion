@@ -29,9 +29,9 @@ wildcarded; a hit there means the record still exists and the citation names its
 | `_s_` | 1 | 18 | 13 | 0 |
 | **total** | **12** | **60** | **21** | **38** |
 
-Two further tokens resolve to nothing at all rather than to a moved marker: `260716-1847_o_topic.md`
-(a fabricated example inside a record) and `260430-1900_o_rag-sanitisation.md` (a reference from
-another project). Neither is this defect.
+Two further tokens resolve to nothing at all rather than to a moved marker: a fabricated `topic.md`
+example inside a record, at the stamp `260716-1847`, and a `rag-sanitisation.md` reference from
+another project, at the stamp `260430-1900`. Neither is this defect.
 
 **21 of 60, thirty-five per cent, name a marker their target no longer carries.** The single
 live (`_a_`) record — `circles/260801-1244-curator/_a_circle.md` — carries eight literal

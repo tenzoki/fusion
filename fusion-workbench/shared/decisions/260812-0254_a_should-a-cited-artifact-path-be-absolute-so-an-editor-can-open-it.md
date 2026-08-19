@@ -16,7 +16,7 @@ terminal, ideally by the fusion start script (`pwd`). Aim: allowing editor to di
 file with default text/markdown editor."*
 
 The concrete want is small and daily: a path in a chat reply that can be clicked or pasted and
-opens the file. Today an agent cites `planning/260811-0753_o_spec-....md`, which resolves against a
+opens the file. Today an agent cites `planning/<stamp>_<marker>_spec-<slug>.md`, which resolves against a
 store the reader has to know, or `fusion-workbench/circles/…/planning/…`, which resolves against a
 project root the reader has to be standing in.
 

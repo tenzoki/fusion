@@ -21,7 +21,8 @@ session broke no shipped citation
 Eleven files under `hooks/lib/__tests__/` carry at least one literal-marker record citation. Sweeping
 all of them for citations whose record exists under no marker at all turned up **six that name real
 records that have since moved**, against roughly two dozen that are synthetic fixtures
-(`990101-0101_o_never-existed`, `260510-0930_a_token`, `260716-1910_p_plan-foo`, …). Two of the six
+(stamps such as `990101-0101` and `260510-0930`, which name nothing on disk by design, and
+`260716-1910_p_plan-foo`). Two of the six
 are worth naming because they are ordinary rot, not fixtures:
 
 - `hooks/lib/__tests__/surface-growth-bound.test.ts:147` cites
