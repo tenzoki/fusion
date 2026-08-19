@@ -21,9 +21,9 @@ Nine literal `_o_` citations remain in the changed files:
 | `shared/decisions/260810-1635_a_where-does-the-obligation-sit-…` | `shared/issues/260809-2258_o_readme-hooks-says-fourteen-ordering-sites-…` |
 | `shared/decisions/260810-1635_a_where-does-the-obligation-sit-…` | `shared/issues/260810-1632_o_the-churn-stand-down-still-asks-cwd-…` |
 | `shared/decisions/260810-2145_a_should-a-repeated-skill-body-snippet-…` | `shared/issues/260810-2110_o_the-domain-capture-one-liner-…` |
-| `shared/decisions/260812-1232_o_does-the-escalation-counter-survive-…` | `shared/issues/260812-0843_o_the-guard-and-its-configuration-must-be-simplified-…` |
-| `shared/decisions/260812-1232_o_does-the-escalation-counter-survive-…` | `shared/issues/260812-1232_o_the-four-mechanisms-analysis-says-escalation-…` |
-| `shared/decisions/260812-1232_o_does-the-write-guards-fusion-repo-stand-down-…` | `shared/decisions/260812-1232_o_does-the-escalation-counter-survive-…` |
+| `shared/decisions/260812-1232_*_does-the-escalation-counter-survive-…` | `shared/issues/260812-0843_o_the-guard-and-its-configuration-must-be-simplified-…` |
+| `shared/decisions/260812-1232_*_does-the-escalation-counter-survive-…` | `shared/issues/260812-1232_o_the-four-mechanisms-analysis-says-escalation-…` |
+| `shared/decisions/260812-1232_*_does-the-write-guards-fusion-repo-stand-down-…` | `shared/decisions/260812-1232_o_does-the-escalation-counter-survive-…` |
 
 **The two clearest cases are the ones inside one line.** In `260810-1635_a_…` the pass starred `260809-2252_o_` and `260810-0502_o_` and left `260809-2258_o_` and `260810-1632_o_` literal, all four in the same `**Cross-references:**` line, all four pure pointers with no statement about state. In `260810-2145_a_…` it starred `260810-2030_o_` and left `260810-2110_o_` literal, same line, same shape. Neither pair is distinguished by `rules/circle-records.md`'s test ("a pointer loses nothing, a statement loses its content") — both members of each pair are pointers.
 

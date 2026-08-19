@@ -519,6 +519,7 @@ Process tasks top-to-bottom from the work queue. For each task:
      - Which files to touch
      - What the acceptance criteria are
      - Reference to the source plan/issue file
+     - **No whole-tree git command.** `git stash`, `git checkout .`, `git reset`, `git clean`, `git restore .` rewrite files outside the named scope, including a sibling executor's in-flight edits; measure against HEAD with `git show HEAD:<path>` instead. It binds a lone executor too — no prompt can tell it which it is.
 5. **Verify output.** After the agent returns, read its report — the verification line first, then scope.
    - **Read the `Verification:` line.** `coder`, `ontocoder` and `bugfixer` report in one shape: the exact command run and the exit code it returned. Four cases, and there is no fifth:
      - **`exit 0`** — proceed.
@@ -542,7 +543,7 @@ After each completed task:
 1. **Run validation:** Execute the project's test suite and validation tools as documented in CLAUDE.md. All relevant checks must pass.
 2. **If validation fails:** Attempt self-healing before reverting:
    a. Emit `task_error` event. **REFRESH DASHBOARD** — overwrite `orchestrator-live.md` showing this task as `[ERROR → BUGFIX]`.
-   b. Dispatch `bugfixer` with the validation output and the list of files changed by the task.
+   b. Dispatch `bugfixer` with the validation output and the list of files changed by the task. Its prompt carries the whole-tree git prohibition from Step 3a item 4.
    c. If bugfixer reports success (verification passes): proceed to step 3 (write the message; staging and committing follow at steps 4 and 5). Emit `bugfix_success` event.
    d. If bugfixer reports failure (unable to fix or verification still fails): revert all task changes with `git checkout HEAD -- <files>`. Emit `bugfix_failure` and `revert` events. Mark the task as errored in the history log. **REFRESH DASHBOARD** — overwrite `orchestrator-live.md` showing this task as `[ERROR]`. Continue to the next task.
    e. **Budget:** One bugfixer attempt per task. No retries.

@@ -142,7 +142,7 @@ project (`shared/history/260814-2306-orchestrator-session.md:174`).
 
 **No marker was moved**, for the same reason recorded on
 `shared/decisions/260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md`: the open
-decision `circles/260801-1244-curator/decisions/260814-1332_o_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
+decision `circles/260801-1244-curator/decisions/260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
 owns the question of what marker this state takes, and answering it by renaming a record would
 pre-empt it.
 
@@ -152,7 +152,7 @@ that flag the Grounding↔Directive edge in this Circle's session-end Coherence 
 **Reconciliation 260815-2056 (reconciler, HEAD `bd07ee7`) — the open decision named in the note
 above has been answered, and it does not reach this record. Marker unchanged.**
 
-`circles/260801-1244-curator/decisions/260814-1332_a_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
+`circles/260801-1244-curator/decisions/260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
 was answered by the user at this Circle's Rebalance gate: option 3, a `Retired:` annotation citing
 what removed the implementation, marker stays `_i_`. Twenty-five `_i_` records carry it after this
 pass. This record is not one of them. `Retired:` is defined against a removed *implementation*, and

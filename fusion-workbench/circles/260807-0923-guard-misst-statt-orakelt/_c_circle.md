@@ -95,7 +95,7 @@ offenen Befunde erlöschen mit dem Code, den sie beschreiben, und werden hier ge
 separat abgearbeitet.
 
 **Die bindende Entscheidung:**
-`circles/260804-1205-shell-reachability-model/decisions/260807-0825_a_should-the-guard-predict-shell-writes-or-enforce-them.md`,
+`circles/260804-1205-shell-reachability-model/decisions/260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`,
 Option 3, erweitert um den vollständigen Rückbau.
 
 **Eine Beobachtung aus der Sitzung selbst, als Beleg für die Dringlichkeit.** Während der
@@ -182,7 +182,7 @@ nicht geben muss. Beide sind behoben, beide sind mit dem Beleg dokumentiert.
 
 **Was offen bleibt und bewusst nicht hier gelöst wurde:**
 
-- `decisions/260807-0945_o_integritaet-des-eskalationsspeichers.md` — ein Agent kann seinen
+- `decisions/260807-0945_*_integritaet-des-eskalationsspeichers.md` — ein Agent kann seinen
   eigenen Halt löschen, seit das Zustandsverzeichnis nicht mehr geschützt ist. Braucht ein
   Bedrohungsmodell, das dieser Circle nicht geklärt hat.
 - `issues/260807-1427_o_*` — die Reichweite der Regel-Ausnahme ist nach dem Mechanismuswechsel

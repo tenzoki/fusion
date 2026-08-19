@@ -3,7 +3,7 @@ The monitor's dismiss keys are escaped as text, so a quote in a warning truncate
 ---
 **Domain:** code
 **Filed by:** orchestrator
-**Cross-references:** circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md (found during its step 15, off-repository verification)
+**Cross-references:** circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_*_the-compliance-guard-becomes-observation-only.md (found during its step 15, off-repository verification)
 
 ---
 

@@ -110,7 +110,7 @@ Three things, and they are separable:
 
 ## Related
 
-- `issues/260815-1206_o_three-churn-references-survive-step-4-in-files-the-step-does-not-name.md` — the
+- `issues/260815-1206_*_three-churn-references-survive-step-4-in-files-the-step-does-not-name.md` — the
   other three surfaces step 4's and step 5's lists did not name.
 - `shared/issues/260812-0843_o_the-guard-and-its-configuration-must-be-simplified-project-settable-and-defaulted-to-fit-or-not-shipped-to-consumers-at-all.md`
   — the standing question about the whole configuration surface.

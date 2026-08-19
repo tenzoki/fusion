@@ -43,7 +43,7 @@ Three live records still carry that block verbatim, measured across `shared/deci
 | Marker | Record |
 |---|---|
 | `_i_` | `shared/decisions/260818-0814_i_what-covers-the-plugin-repo-shaped-exempt-surface-record-now-that-the-convention-rule-was-not-chosen.md` |
-| `_a_` | `shared/decisions/260818-1512_a_does-the-shapers-third-mode-keep-the-name-portfolio-activation-once-it-also-corrects-an-active-circles-directive.md` |
+| `_a_` | `shared/decisions/260818-1512_*_does-the-shapers-third-mode-keep-the-name-portfolio-activation-once-it-also-corrects-an-active-circles-directive.md` |
 | `_i_` | `shared/decisions/260818-2212_i_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md` |
 
 Twelve became three because the population moved, not because the mechanism did. The third entry is

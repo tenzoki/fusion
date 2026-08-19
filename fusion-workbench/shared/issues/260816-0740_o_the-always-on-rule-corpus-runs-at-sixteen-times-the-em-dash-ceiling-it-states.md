@@ -20,7 +20,7 @@ analysis.
 this condition.
 **Cross-references:** `shared/analyses/260816-0740-rhetorical-register-of-agent-output.md`
 finding 10 (the measurement and the causal inference);
-`shared/decisions/260816-0740_o_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+`shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
 (whether a gate should hold this after it is fixed);
 `shared/analyses/260706-1902-user-facing-agents-garbled-language-rootcause.md` (the earlier,
 different root cause for the same complaint, since fixed).

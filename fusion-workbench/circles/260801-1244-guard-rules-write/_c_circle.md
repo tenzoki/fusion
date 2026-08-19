@@ -31,11 +31,11 @@ Two settled decisions are inputs rather than options. D2 asked for both halves: 
 
 - Spec: `shared/planning/260801-1122_o_spec-normative-consolidation.md`. C5a, C5b, the constraints block, and `## Circle structure`.
 - Gap analysis: `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md`.
-- **D1** — `shared/decisions/260801-1020_a_where-does-normative-consistency-live.md`. A writing consolidation agent rather than a report-only detector. The reason a fusion agent needs to touch rule files at all.
+- **D1** — `shared/decisions/260801-1020_*_where-does-normative-consistency-live.md`. A writing consolidation agent rather than a report-only detector. The reason a fusion agent needs to touch rule files at all.
 - **D2** — `shared/decisions/260801-1020_*_may-any-fusion-writer-touch-rules.md`. The direct input to this Circle: both the exemption and the project-level configuration come from it.
 - **D3** — `shared/decisions/260801-1020_*_provenance-header-on-rule-files.md`. Answered by the spec's D-e and realised in Circle `260801-1244-rule-provenance-header`. Unrelated to this Circle's work; cited so the three open normative decisions are visible from every record in the set.
 
-Two filed issues sit adjacent and are not part of this Circle: `shared/issues/260801-1020_o_guard-protects-rules-but-not-claude-rules.md` and `shared/issues/260801-1156_*_bash-bypasses-the-protected-path-check-entirely.md`. The second is closed by the Circle this one depends on.
+Two filed issues sit adjacent and are not part of this Circle: `shared/issues/260801-1020_*_guard-protects-rules-but-not-claude-rules.md` and `shared/issues/260801-1156_*_bash-bypasses-the-protected-path-check-entirely.md`. The second is closed by the Circle this one depends on.
 
 ## Dependencies
 
@@ -70,7 +70,7 @@ code-domain criteria without argument. This Circle's one dependency,
 `260801-1244-guard-bash-inspection`, carries the closed marker. The rival's hard dependency also
 closed this run, and neither Circle's `## Grounding snapshot` cites an open decision record: the
 shared decision store holds no open record at all, and the three this Circle cites are two
-answered (`shared/decisions/260801-1020_a_where-does-normative-consistency-live.md`,
+answered (`shared/decisions/260801-1020_*_where-does-normative-consistency-live.md`,
 `shared/decisions/260801-1020_*_may-any-fusion-writer-touch-rules.md`) and one now implemented
 (`shared/decisions/260801-1020_i_provenance-header-on-rule-files.md`, which moved from answered
 to implemented at the closure). Zero open decisions and zero unmet dependencies on both sides, so

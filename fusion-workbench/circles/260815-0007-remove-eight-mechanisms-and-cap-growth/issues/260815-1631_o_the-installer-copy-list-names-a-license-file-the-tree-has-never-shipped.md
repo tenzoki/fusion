@@ -44,7 +44,7 @@ Whether the fix is to add a `LICENSE` file (making `plugin.json`'s declaration t
 entry live) or to drop the entry (making the two lists agree and leaving the declaration
 unsupported) is a licensing question, not an installer one. And whether `CLAUDE.md`'s bullet should
 mirror the list verbatim or stay a summary is the same class as the two stale inventory rows already
-filed at `260815-0803_o_two-claude-md-inventory-rows-went-stale-and-neither-lint-gate-can-see-them.md`
+filed at `260815-0803_*_two-claude-md-inventory-rows-went-stale-and-neither-lint-gate-can-see-them.md`
 — cross-referenced, not duplicated.
 
 

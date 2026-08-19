@@ -82,7 +82,7 @@ Two things this instance adds to the five already counted, neither of which chan
 
 **Note on this record's own header.** `**Status:**` still reads `open` while the filename marker is
 `_a_`. Not corrected here: it is one member of the population measured in
-`shared/issues/260812-1232_o_thirty-four-of-seventy-four-decision-records-carry-a-status-header-that-contradicts-their-filename-marker.md`,
+`shared/issues/260812-1232_*_thirty-four-of-seventy-four-decision-records-carry-a-status-header-that-contradicts-their-filename-marker.md`,
 re-measured at 35 of 86 on 2026-08-14, and repairing members one at a time moves that measurement
 without closing the record.
 

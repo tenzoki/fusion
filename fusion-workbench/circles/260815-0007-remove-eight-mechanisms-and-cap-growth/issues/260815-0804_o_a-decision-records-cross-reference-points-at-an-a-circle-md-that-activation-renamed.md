@@ -12,7 +12,7 @@ resolves to nothing.
 **Domain:** code
 **Filed by:** `coderev`, reviewing `9a7da8e..7c12d6a` (`reviews/260815-0804-coderev-plane-mirror-removal.md`)
 **Owner:** `coder`
-**Affects:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-0007_a_does-fusion-cleanup-block-at-the-claude-md-gate-or-leave-the-ledger.md:7`
+**Affects:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-0007_*_does-fusion-cleanup-block-at-the-claude-md-gate-or-leave-the-ledger.md:7`
 
 **Verified 2026-08-15 at HEAD `7c12d6a`.** The Circle directory holds `_t_circle.md` and no
 `_a_circle.md`.

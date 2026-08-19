@@ -3,7 +3,7 @@ Die Emissionsmessung auf der unite-cocreator-Maschine steht noch aus
 ---
 
 Das zweite Falsifikat von Schritt 6 des Ausstiegsplans
-(`planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md`) verlangt eine
+(`planning/260804-2356_*_plan-ausstieg-kontextsteuer-und-auslieferung.md`) verlangt eine
 Messung von `bin/fusion-rules` gegen `$FUSION_PLUGIN_ROOT` **auf der konsumierenden
 Maschine nach `fusion --update`**, verglichen mit den Zahlen des Emissions-Goldens. Die
 plugin-seitige Hälfte ist grün (simulierter Installationspfad, alle 16 Agenten exakt auf

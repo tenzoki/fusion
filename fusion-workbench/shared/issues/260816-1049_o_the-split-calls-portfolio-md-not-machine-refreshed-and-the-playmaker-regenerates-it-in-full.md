@@ -78,7 +78,7 @@ Two things to check while in there, both one line away:
   trailing sentence. `monitor` does not describe *now*; it has its own reason. The tiling holds, but
   a reader counting the enumerated list gets six of seven.
 - The `.gitignore` block this section points at has its own stale sentence — see
-  `shared/issues/260816-1051_o_the-gitignore-block-still-calls-both-consequences-lifecycle-skill-consequences-and-one-lost-its-consumer.md`.
+  `shared/issues/260816-1051_*_the-gitignore-block-still-calls-both-consequences-lifecycle-skill-consequences-and-one-lost-its-consumer.md`.
   One deliberate pass over both surfaces is worth more than a fifth single-sentence correction.
 
 **Cost:** the always-on core stands at 8 870 bytes of head-room in its 12 000-byte budget

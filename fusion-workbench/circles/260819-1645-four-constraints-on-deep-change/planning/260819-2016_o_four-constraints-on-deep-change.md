@@ -113,7 +113,7 @@ The shared build tree appears in neither diagram, which is the constraint decisi
 
 ## Implementation Steps
 
-1. **Pin the compiler and assert the committed artifact**
+1. [DONE] **Pin the compiler and assert the committed artifact**
    - Executor: `coder`
    - Files: `hooks/package.json`, `hooks/lib/__tests__/committed-dist.test.ts` (new)
    - Changes:
@@ -125,7 +125,7 @@ The shared build tree appears in neither diagram, which is the constraint decisi
    - Cost: about 200 lines on the hook test surface, of 1 877 available.
    - Dependencies: none.
 
-2. **Put all four write tools through the hook**
+2. [DONE] **Put all four write tools through the hook**
    - Executor: `coder`
    - Files: `hooks/lib/__tests__/guard-bash-integration.test.ts`
    - Changes: add `runGuard` to the import list from `./helpers/guard-harness.js`. In the existing describe block, add three cases beside the `Edit` one: `Write` and `MultiEdit` through `runWrite(root, path, "<tool>")`, and `NotebookEdit` through `runGuard(root, "NotebookEdit", { notebook_path: path })`. Each case asserts that exactly one event was written, that its `event` is `guard_allow`, that its `tool` is the tool name the case passed, and that its `file` names the path. Rename the describe from "the Edit write path allows and records" to a name covering four tools.
@@ -134,7 +134,7 @@ The shared build tree appears in neither diagram, which is the constraint decisi
    - Cost: about 70 lines on the hook test surface.
    - Dependencies: none.
 
-3. **State the whole-tree git prohibition at every executor dispatch**
+3. [DONE] **State the whole-tree git prohibition at every executor dispatch**
    - Executor: `coder`
    - Files: `agents/orchestrator.md`
    - Changes: add one bullet to the list under Step 3a item 4 ("Dispatch to executor"), which is where the orchestrator is told what an executor dispatch prompt carries. The bullet says that a whole-tree git command is never an executor's tool, names the forms (`git stash`, `git checkout .`, `git reset`, `git clean`, `git restore .`), and says that a measurement against HEAD uses `git show HEAD:<path>`. Add one clause to the `bugfixer` dispatch at Step 3b item 2b pointing at the same bullet, because the bugfixer writes to the live tree on the same terms and is dispatched from a different place.
@@ -144,7 +144,7 @@ The shared build tree appears in neither diagram, which is the constraint decisi
    - Acceptance: `npm test` is green, including `surface-growth-bound.test.ts`, and the new text carries no store-directory path literal (`path-literal-lint.test.ts`).
    - Dependencies: none.
 
-4. **Write down the deletion and archival annotation form**
+4. [DONE] **Write down the deletion and archival annotation form**
    - Executor: `coder`
    - Files: `rules/circle-records.md`, and the decision record `circles/260801-1244-guard-rules-write/decisions/260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`
    - Changes: add a short section to `rules/circle-records.md` realising the operative half of that decision. It states three things. A deliberately deleted Circle leaves no directory, no record and no marker, and the vocabulary deliberately has no case for it. The obligation sits on the surviving references rather than on the deleted object, because an instruction inside the object cannot survive the object. Whoever deletes annotates every surviving citation with the fact and the date, in a stated literal form that step 7 then reuses.
@@ -154,7 +154,7 @@ The shared build tree appears in neither diagram, which is the constraint decisi
    - Acceptance: `npm test` green, including `provenance-header-lint.test.ts`. If the new text adds a resolvable plugin path or record citation, re-approve `BASELINE` in `reference-resolution-lint.test.ts` in the same commit, which is what that gate's own failure message asks for.
    - Dependencies: none.
 
-5. **Repair the 98 stale-marker citations**
+5. **Repair the 98 stale-marker citations** [DONE]
    - Executor: `coder`
    - Files: workbench records across the repair corpus. Drive the file list from the scanner rather than from a written list.
    - Changes: for every hit whose status is `stale-marker`, rewrite the marker position in the citation to the wildcard `_*_`. This is the form decision `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md` prescribes for a marker that moves, and it is the fix the scanner itself names on each violation. Do not rewrite the citation to the record's current marker: that repair goes stale again on the record's next transition, which is what produced 98 of these.

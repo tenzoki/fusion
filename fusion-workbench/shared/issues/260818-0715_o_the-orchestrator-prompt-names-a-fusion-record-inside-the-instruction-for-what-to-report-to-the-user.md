@@ -59,7 +59,7 @@ being told why a rule exists.
 **Severity:** Low
 **Domain:** code
 **Filed by:** analyst, analysis `260818-0715`
-**Cross-references:** `shared/analyses/260818-0715-preventing-fusion-internal-identifiers-from-reaching-a-consuming-project.md` finding 6 (the criterion this site is measured against), `shared/issues/260817-2110_c_the-hook-sentences-cite-fusions-own-workbench-ids-and-a-fusion-commit-hash-into-a-consuming-projects-session.md` (the incident, a different channel), `shared/issues/260817-2131_o_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md` (the gate, which does not and should not reach this surface)
+**Cross-references:** `shared/analyses/260818-0715-preventing-fusion-internal-identifiers-from-reaching-a-consuming-project.md` finding 6 (the criterion this site is measured against), `shared/issues/260817-2110_c_the-hook-sentences-cite-fusions-own-workbench-ids-and-a-fusion-commit-hash-into-a-consuming-projects-session.md` (the incident, a different channel), `shared/issues/260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md` (the gate, which does not and should not reach this surface)
 
 ---
 **Reconciliation 260818-0814** (reconciler, domain `code`, HEAD `f3a3565`). Still open, and re-read

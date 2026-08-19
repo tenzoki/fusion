@@ -29,7 +29,7 @@ Circle was active. Checked for all seven files in `shared/planning/`, exactly on
 | 260809-1229 | `shared/history/260809-1229-plan-five-severe-guard-defects.md` | no |
 | 260812-1232 | `shared/history/260812-1232-planner-remove-the-protected-path-half.md` | no |
 
-Two further facts bound the migration further. `260801-1122_o_spec-normative-consolidation.md` is
+Two further facts bound the migration further. `260801-1122_*_spec-normative-consolidation.md` is
 cited as the spec by **four** Circles (`curator`, `guard-bash-inspection`, `guard-rules-write`,
 `rule-provenance-header`), so it cannot move into one of them without breaking the other three.
 And `260717-1918`, the only file with a Circle origin, was lifted out of that Circle deliberately
@@ -50,4 +50,4 @@ This defect record is the note that the decision record's own body should carry 
 premise once the gate is answered, so the two do not disagree in the archive.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `shared/decisions/260812-0254_a_where-do-a-circles-spec-and-plan-belong-when-the-circle-exists-before-them.md:81` still states that the existing twelve Circles are migrated, with no correction note. The plan that would have executed it records that its step 12 never ran because the gate answered leave it, so the premise was never overtaken by events either. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `shared/decisions/260812-0254_*_where-do-a-circles-spec-and-plan-belong-when-the-circle-exists-before-them.md:81` still states that the existing twelve Circles are migrated, with no correction note. The plan that would have executed it records that its step 12 never ran because the gate answered leave it, so the premise was never overtaken by events either. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

@@ -96,6 +96,6 @@ exists to reach.
 
 Also seen, in the correction rather than in the original: the resolution note that closed
 `260818-2104` carries a false universal of its own, filed as
-`shared/issues/260818-2227_o_the-correction-note-that-closed-a-fabricated-measurement-carries-a-false-universal-of-its-own.md`.
+`shared/issues/260818-2227_*_the-correction-note-that-closed-a-fabricated-measurement-carries-a-false-universal-of-its-own.md`.
 Filed separately rather than as a line here because it is a different sentence in a different half
 of that file, written by the correcting session rather than by the one this record indicts.

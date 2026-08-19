@@ -42,7 +42,7 @@ is not.
 **Cross-references:**
 - `hooks/guard.ts:90-109`, `:197-208`
 - `hooks/lib/__tests__/helpers/guard-harness.ts:747-755`
-- `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md` `## Testing Strategy`
+- `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_*_the-compliance-guard-becomes-observation-only.md` `## Testing Strategy`
 
 ---
 Reconciliation 2026-08-17, Phase 3. **Left OPEN. Re-measured at HEAD and the gap is unchanged.**
@@ -89,3 +89,10 @@ One hit, still the `hooks.json` matcher-list assertion rather than a call throug
 **Live obligation, and of the eight open records in this Circle it is the one that most directly binds a deep change.** The record's own severity reading is Low and stays Low; what has risen is the consequence of being wrong. Three shipped releases now depend on the `guard_allow` row being the whole product of the write path (`hooks/guard.ts:7-10`, `README-hooks.md:9`, `CLAUDE.md`, `docs/working-model.md:118`), all four tools are named to the user as covered, and two of them have never been through the hook in a test. A change that touches `extractFilePath` or the `answer` call around it will be verified by a suite that exercises `Edit` and Bash and nothing else.
 
 The remedy is still four cases in `guard-bash-integration.test.ts`'s existing describe, asserting the row's `file` — and the hook-test surface still has the head-room this Circle armed for it.
+
+---
+Resolved: the cheapest closure this record named, taken as written. `hooks/lib/__tests__/guard-bash-integration.test.ts` now puts all four write tools through the hook — `Write` and `MultiEdit` via `runWrite(root, path, "<tool>")`, `NotebookEdit` via `runGuard(root, "NotebookEdit", { notebook_path: path })` — and each of the four asserts the event list is exactly one `guard_allow`, that its `tool` is the name the case passed, and that its `file` names the path. The `tool` assertion was added to the pre-existing `Edit` case too, which pins the harness default as a side effect. 16 cases where there were 12.
+
+Asserting `tool` and not only `file` is what makes the four cases worth having: a case asserting `file` alone would still pass if the harness fell back to its default tool name, which is the failure they exist to rule out.
+
+The `notebook_path` branch was demonstrated failing, not only passing: removing it from `extractFilePath` in a detached worktree reddens exactly the new NotebookEdit case, on the `file` assertion at line 198, while its `guard_allow` and `tool` assertions stay green. That is the correct blast radius — the branch's removal costs the row its `file` field and nothing else.

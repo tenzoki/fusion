@@ -23,13 +23,13 @@ staging rule and the browser launcher did not, so a regression in any of the thr
 review.
 
 **Why it was not fixed in the same commit.** The test file belongs to queued task
-`I:260810-1632-pty-case` this session (`260810-1632_o_the-pty-case-in-the-monitor-suite-has-no-path-
+`I:260810-1632-pty-case` this session (`260810-1632_*_the-pty-case-in-the-monitor-suite-has-no-path-
 for-a-machine-that-cannot-allocate-one.md`), which reworks `PTY_RUNNER` and `startMonitor` — the two
 places these cases would hook into. Landing both at once would have collided.
 
 **Cross-references.** `260810-1918_c_the-monitor-launcher-goes-silent-where-the-same-session-
 established-naming-the-gap.md` (the behaviour this would gate),
-`260810-1632_o_the-pty-case-in-the-monitor-suite-…` (owns the file), history
+`260810-1632_*_the-pty-case-in-the-monitor-suite-…` (owns the file), history
 `shared/history/260810-2026-coder-monitor-sleep-and-launcher-gap.md`.
 
 **Filed by:** coder, session `260810-1646`, Turn 2, task `R:260810-1918-monitor-residuals`.

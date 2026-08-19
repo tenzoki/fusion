@@ -6,7 +6,7 @@ The plan's step 3 file list says fourteen fixture files and the tree held fiftee
 **Domain:** data
 **Filed by:** ontorev, review of `9a7da8e..7c12d6a` (structured-data half), review file `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/reviews/260815-0803-ontorev-plane-structured-data-removal.md`
 **Owner:** `coder`
-**Affects:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md:180`
+**Affects:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md:180`
 **Cross-references:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-0751-ontocoder-remove-plane-data-files-and-fixtures.md` `## Findings the plan did not predict` (where the executor recorded it); `circles/260801-1244-curator/issues/260814-1419_o_the-golden-regeneration-history-states-eighteen-agent-blocks-and-five-rule-files-and-the-artefact-has-seventeen-and-three.md` (the same class, one Circle earlier); `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing — MANDATORY`.
 
 ---
@@ -34,7 +34,7 @@ And `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing — MA
 
 The class is not new. One Circle earlier, `circles/260801-1244-curator/issues/260814-1419_o_the-golden-regeneration-history-states-eighteen-agent-blocks-…` records a history entry claiming eighteen agent blocks against a seventeen-block fixture, and its recommended fix is worth reusing here: correct the count, or restate the phrase without one. *"the whole tree"* carries the same instruction as *"the whole tree, 14 files"* and cannot go stale.
 
-**The fix.** At `planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md:180`, change `(whole tree, 14 files)` to `(whole tree, 15 files)` or drop the parenthetical count. Check step 14's and the Closure note's arithmetic against whichever is chosen.
+**The fix.** At `planning/260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md:180`, change `(whole tree, 14 files)` to `(whole tree, 15 files)` or drop the parenthetical count. Check step 14's and the Closure note's arithmetic against whichever is chosen.
 
 
 ---

@@ -13,7 +13,7 @@ more binding than the sentence admits, and has no way to tell which one the auth
 **Filed by:** `coderev`, reviewing `9a7da8e..7c12d6a` (`reviews/260815-0804-coderev-plane-mirror-removal.md`)
 **Owner:** `shaper`, or whoever next edits the record
 **Affects:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/_t_circle.md:190-212`
-**Cross-references:** `issues/260815-0029_o_the-circle-record-cites-the-investigator-case-folder-record-as-an-issue-and-asks-for-a-transition-that-vocabulary-has-no.md` — the sixth bullet is also the one with a wrong store, already filed; `planning/260815-0029_o_plan-…md` `## Open Questions`, second bullet, which leaves open whether this section is edited at all
+**Cross-references:** `issues/260815-0029_*_the-circle-record-cites-the-investigator-case-folder-record-as-an-issue-and-asks-for-a-transition-that-vocabulary-has-no.md` — the sixth bullet is also the one with a wrong store, already filed; `planning/260815-0029_*_plan-…md` `## Open Questions`, second bullet, which leaves open whether this section is edited at all
 
 **Verified 2026-08-15 at HEAD `7c12d6a`.** Six bullets, counted: the armed growth bound
 (`260814-0738`), this Circle's own cleanup-gate decision (`260815-0007`), the bounded documentation

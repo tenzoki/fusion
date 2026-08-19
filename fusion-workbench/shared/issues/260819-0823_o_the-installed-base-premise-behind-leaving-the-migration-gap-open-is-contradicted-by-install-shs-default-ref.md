@@ -2,7 +2,7 @@ The "no released version" premise behind leaving the migration gap open is contr
 
 ---
 
-`260819-0041_o_the-decision-record-status-removal-got-none-of-the-three-migration-surfaces-…` was
+`260819-0041_*_the-decision-record-status-removal-got-none-of-the-three-migration-surfaces-…` was
 deliberately left open. The recorded reason, in
 `shared/history/260818-2301-orchestrator-session.md` and again in `06ab15b`'s commit message, is:
 

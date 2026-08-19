@@ -79,10 +79,10 @@ plan should not spend steps on it.
 (`agents/playmaker.md`, `## Who dispatches playmaker`). Answer 1 gates splitting, merging
 and closing on a confirmation inside the same run, and the Phase 4 dispatch has no
 confirmation channel. Whether such a run performs those operations at all is filed as
-`circles/260813-0858-playmaker-maintains-backlog-store/decisions/260813-0858_o_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md`.
+`circles/260813-0858-playmaker-maintains-backlog-store/decisions/260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md`.
 
 **The store as it stands.** `shared/backlog/` holds one entry,
-`260811-0826_o_observations.md`, a hand-written dump of about a dozen distinct ideas. It is
+`260811-0826_*_observations.md`, a hand-written dump of about a dozen distinct ideas. It is
 the exact input the split behaviour exists for, and it makes a usable acceptance case: a
 run against it should propose a split, obtain confirmation, and leave one entry per idea
 plus the closed original.
@@ -201,7 +201,7 @@ exactly one named writer.
 **Two things this Circle did not do, and neither is a defect in it.**
 
 The end-to-end acceptance run never happened. The plan specified a `/fusion:next` run against
-`shared/backlog/260811-0826_o_observations.md` — propose a split, obtain confirmation, leave one
+`shared/backlog/260811-0826_*_observations.md` — propose a split, obtain confirmation, leave one
 entry per idea plus the closed original. It could not be dispatched from inside a Turn loop, the
 plan terminated it after step 9, and step 9 was deferred. So the capability is proven by tests, by
 the resolver, by two lints and by a review that opened every changed file, and it has never been
@@ -213,7 +213,7 @@ carries this Circle and `circles/260813-0910-documentation-matches-shipped-plugi
 because that Circle rewrites four passages describing the behaviour this one replaced. Two of those
 four now contradict shipped behaviour outright, recorded under `## Update 260813-1500` in
 `shared/issues/260813-0825_*`. The bump has no carrier outside the plan being closed here, which is
-filed as `issues/260813-1545_o_the-deferred-version-bump-has-no-carrier-outside-the-plan-that-is-being-closed.md`.
+filed as `issues/260813-1545_*_the-deferred-version-bump-has-no-carrier-outside-the-plan-that-is-being-closed.md`.
 
 **Turns 1 and 2 did not serve this Directive** and their log entries say so. They repaired a red
 test baseline the user chose to clear first, and found a real product defect: `bin/fusion-plane`

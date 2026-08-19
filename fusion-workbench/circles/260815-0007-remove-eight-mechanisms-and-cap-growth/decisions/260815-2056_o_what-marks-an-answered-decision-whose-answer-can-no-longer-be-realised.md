@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** open
 **Filed by:** reconciler, while applying `260814-1332`'s answer to the `_i_` population
-**Cross-references:** `circles/260801-1244-curator/decisions/260814-1332_a_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md` (the answered sibling this record is the residual of); `shared/decisions/260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md` and `shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md` (the two instances); `rules/fusion-workbench-conventions.md` `## State Markers — decisions` and `## Decision Record Template` (where `Retired:` now sits); `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-1913-reconciliation.md` §5 (where both instances were first measured)
+**Cross-references:** `circles/260801-1244-curator/decisions/260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md` (the answered sibling this record is the residual of); `shared/decisions/260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md` and `shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md` (the two instances); `rules/fusion-workbench-conventions.md` `## State Markers — decisions` and `## Decision Record Template` (where `Retired:` now sits); `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-1913-reconciliation.md` §5 (where both instances were first measured)
 
 ---
 

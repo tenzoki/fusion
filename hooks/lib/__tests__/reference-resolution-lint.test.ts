@@ -699,7 +699,35 @@ function scanHeadingAnchors(
 // interaction, because the only file any of the others cites is the new note, and it cites
 // none of them back. That arithmetic does NOT generally hold, per the blocks above; it holds
 // here and is not a new rule.
-const BASELINE = { paths: 1178, anchors: 155, records: 102 };
+// Re-approved 2026-08-19 — one re-approval for FIVE tasks that ran concurrently on disjoint
+// file sets. Each measured its own contribution and none wrote this constant, by instruction:
+// three writers of one number leave the last writer's figure standing, so the tasks reported
+// and a consolidation pass measured the settled tree once and wrote it here. The two reports
+// that named a starting point disagreed about it — one said 1178, the other 1168 — which is
+// why the figure below was measured against `git show HEAD:` rather than carried forward from
+// either. The committed value was 1178.
+// paths 1178 -> 1179 and records 102 -> 104; anchors did not move.
+// Measured per file by copying each changed file in turn into a detached worktree at HEAD
+// `b6869aa` and rerunning this gate. Contributions as paths / anchors / records:
+//   `rules/circle-records.md`  +1 / 0 / +2 — the whole of the movement, from the new section
+//        on deleting a Circle. Three of its tokens are ones this gate reads: `bin/fusion-rules`
+//        in the paragraph naming who the file is emitted to (class (a)), and two class-(c)
+//        record citations — `shared/history/260819-1400-reconciliation-circles.md`, cited for
+//        the archive sweep that broke six citations, and the binding decision `260805-1548` on
+//        the closing line. `/fusion:archive` and `/fusion:circle-delete` are skill tokens and
+//        no class reads them; `$PORTFOLIO` is a resolver key, not a path.
+//   `agents/orchestrator.md`   0 / 0 / 0 — measured, not assumed.
+//   the modified workbench     0 / 0 / 0 — measured by copying the whole of the changed
+//        `fusion-workbench/` across on its own, including four history files this tree adds.
+//        `surface()` names no workbench path, so a workbench-only task cannot move any count
+//        in principle; the workbench is read only as the index class (c) resolves AGAINST, and
+//        a task that renames a record there would move the count without appearing here.
+//   `hooks/lib/__tests__/*.ts`, `hooks/package.json`  0 / 0 / 0 — not `surface()` files at all.
+//        The two `hooks` walks read files directly in `hooks/` and `hooks/lib/`, so the
+//        `__tests__` subdirectory is never entered, and `package.json` matches no walk.
+// The figures sum to +1 / 0 / +2 against an actual +1 / 0 / +2. That arithmetic does NOT
+// generally hold, per the blocks above; it holds here because only one file moved at all.
+const BASELINE = { paths: 1179, anchors: 155, records: 104 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the

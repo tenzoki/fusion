@@ -114,7 +114,7 @@ flowchart LR
   through its own supported path, and the growth bound armed in T4 held with roughly 11 500 bytes
   remaining. The survey's verdict on the Directive's question is that no living decision record
   supersedes another and that this is structural, filed as
-  `decisions/260814-1332_o_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`.
+  `decisions/260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`.
   Run file: `circles/260801-1244-curator/history/260814-1332-curator-run.md`.
 
 - Turn 4 (session 260813-2345): commits 18173e1..6d433c2; the Rebalance gate that ended Turn 3 chose
@@ -223,7 +223,7 @@ Was fehlt, ist ein neuer Zuschnitt: eine Directive ohne C9, ein neuer Validierun
 Grounding, die auf einer frischen Messung ruht statt auf der vom 260801.
 
 **Eine Reihenfolge, die vor der Neu-Schärfung liegt.** Die offene Entscheidung
-`shared/decisions/260807-1515_o_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md` fragt,
+`shared/decisions/260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md` fragt,
 wie weit die Projektsprache `de` in das durchgehend englische Regelkorpus reicht und was in einem
 Repository gilt, das seine eigenen Regeln ausliefert. Ihr Gegenstand ist genau der Gegenstand
 dieses Circles, nämlich Regeldateien und `CLAUDE.md`. Wer den Zuschnitt vor der Antwort macht,
@@ -413,7 +413,7 @@ recorded as `decisions/260814-1332_o_*`.
 
 **What the Circle carries forward.** 21 open defect records in this Circle's store and two open
 decisions, none of them blocking. The decisions are
-`decisions/260814-1332_o_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`,
+`decisions/260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`,
 which the curator's own proof run raised, and
 `decisions/260814-1915_o_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`,
 which Turn 5 filed rather than closing a finding it had measured unsound. The defect records are they are the ordinary yield of six review passes over a corpus this

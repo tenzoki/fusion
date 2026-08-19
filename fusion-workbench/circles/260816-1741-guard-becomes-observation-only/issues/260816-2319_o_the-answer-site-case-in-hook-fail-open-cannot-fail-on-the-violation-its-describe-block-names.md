@@ -62,7 +62,7 @@ there, because the next person to reorder `guard.ts:202` will see it green.
 **Cross-references:**
 - `hooks/lib/fail-open.ts:127-135`, `:150-157`, `:171-192`
 - `hooks/guard.ts:172-176`, `:202-208`, `:211-223`
-- `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md` step 9, "the integration cases that need a deny are re-pointed onto the surviving `answer` call on the allow path"
+- `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_*_the-compliance-guard-becomes-observation-only.md` step 9, "the integration cases that need a deny are re-pointed onto the surviving `answer` call on the allow path"
 
 ---
 Reconciliation 2026-08-17, Phase 3. **Left OPEN. Nothing was changed, not even the comment.**

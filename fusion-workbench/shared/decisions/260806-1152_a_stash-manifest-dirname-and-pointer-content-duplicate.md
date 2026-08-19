@@ -48,7 +48,7 @@ change, record the reason in the manifest schema documentation — can never be 
 `_a_` → `_i_` is unreachable.
 
 **No marker was moved, and the reason is that an open decision owns exactly this question.**
-`circles/260801-1244-curator/decisions/260814-1332_o_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
+`circles/260801-1244-curator/decisions/260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
 asks what marks a decision whose implementation was deleted with no superseding decision to cite,
 and lists four candidate answers of which two (`_s_` widened, or a new `Retired:` annotation) would
 apply here. Renaming this record now would pre-empt that decision on the weakest evidence tier. This
@@ -62,7 +62,7 @@ that flag the Grounding↔Directive edge in this Circle's session-end Coherence 
 **Reconciliation 260815-2056 (reconciler, HEAD `bd07ee7`) — the open decision named in the note
 above has been answered, and it does not reach this record. Marker unchanged.**
 
-`circles/260801-1244-curator/decisions/260814-1332_a_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
+`circles/260801-1244-curator/decisions/260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
 was answered by the user at this Circle's Rebalance gate: option 3, a `Retired:` annotation citing
 what removed the implementation, marker stays `_i_`. That answer was applied to twenty-five `_i_`
 records in this pass. It is **not** applied here, and the reason is the definition it landed with in

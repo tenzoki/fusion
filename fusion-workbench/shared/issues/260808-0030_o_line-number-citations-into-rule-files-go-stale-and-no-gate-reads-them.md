@@ -8,7 +8,7 @@
 **Affects:** every record that cites a rule file by `file.md:NNN` or "lines N-M"; `hooks/lib/__tests__/reference-resolution-lint.test.ts` (the gate that could catch it and does not)
 **Cross-references:**
 `fusion-workbench/shared/decisions/260807-0158_a_how-is-a-unique-record-filename-obtained.md:7` (the first measured instance, staled by this session),
-`fusion-workbench/shared/issues/260807-2153_o_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md` (two citations staled by this session's own second Turn),
+`fusion-workbench/shared/issues/260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md` (two citations staled by this session's own second Turn),
 `fusion-workbench/shared/decisions/260806-0015_*_zitierform-fuer-workbench-records.md` (the ratified citation form for the *record* class, which solved the analogous problem there)
 
 ---
@@ -25,8 +25,8 @@ Measured in this session, on records that are live rather than historical:
 | Citation | Where it points today | What moved it |
 |---|---|---|
 | `260807-0158_a_how-is-a-unique-record-filename-obtained.md:7` — `## Filename Patterns` "(lines 185-208)" | the section now runs 221-245 | S1 of `shared/planning/260807-2024_c_two-language-declarations.md` grew `## Project language` by ~36 lines |
-| `260807-2153_o_…:` — `bin/fusion-rules:387` (the unconditional emission) | now `:404`; line 387 is `PROJECT_CLAUDE_RULES_DIR=".claude/rules"` | commit `4992ffb` added a 17-line block to `declared_lang()` |
-| `260807-2153_o_…:` — `bin/fusion-rules:464` (the project-rules search layer) | now `:481`; line 464 is a bare comment marker | the same commit |
+| `260807-2153_*_…:` — `bin/fusion-rules:387` (the unconditional emission) | now `:404`; line 387 is `PROJECT_CLAUDE_RULES_DIR=".claude/rules"` | commit `4992ffb` added a 17-line block to `declared_lang()` |
+| `260807-2153_*_…:` — `bin/fusion-rules:464` (the project-rules search layer) | now `:481`; line 464 is a bare comment marker | the same commit |
 
 The second and third are the sharper case: an **open** finding was staled by a **later Turn of the
 same session**, roughly two hours after it was filed. This is not slow rot.

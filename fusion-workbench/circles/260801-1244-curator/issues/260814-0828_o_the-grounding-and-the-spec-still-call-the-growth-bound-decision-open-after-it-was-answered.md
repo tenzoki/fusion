@@ -1,7 +1,7 @@
 The Grounding snapshot and the spec still call the growth-bound decision open after it was answered
 
 ---
-`decisions/260814-0738_a_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`
+`decisions/260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`
 carries the answered marker and an `Answered:` line: the user chose option 1, a one-time
 re-baseline at the moment of arming, at an orchestrator gate on 2026-08-14. The Circle's
 `## Grounding snapshot` and the spec's `## User Decisions Pending` were written minutes before that

@@ -63,6 +63,65 @@ Every transition renames only `<circle-dir>/_S_circle.md`. The directory is neve
 **Terminal-states statement:** `_c_`, `_b_`, `_s_`, `_d_` are terminal — `mv` back to `_a_` or `_t_` is disallowed. If continuation is needed, create a new Circle that cites the terminal one via its `## Dependencies` section. A terminal Circle keeps its directory and all its artifacts in place; closure is not a move.
 
 **Grounding-Stand vs Grounding-Historie parallel:** as with `decisions/`, the marker carries the layer information. `_a_` and `_t_` are Grounding-Stand (current working state); `_c_`, `_b_`, `_s_`, `_d_` are Grounding-Historie (preserved record).
+
+### Deletion is outside the vocabulary, and the annotation sits on the references
+
+**A Circle that somebody deliberately deletes leaves no directory, no record and no marker.**
+Deletion and archival are different operations and stay different. `/fusion:archive` *moves* a
+terminal Circle out of the living store: the record survives, keeps the terminal marker it
+reached, and stays citable at its new path, so a citation of an archived Circle is repaired by
+correcting the path. Deletion preserves nothing, and there is no corrected path to write.
+
+**The vocabulary has no marker for "deliberately removed", and its absence is deliberate rather
+than an oversight.** A seventh letter would be carried by the record, and the record is deleted
+with everything else — a marker on a file that no longer exists holds nothing. Deletion is the one
+way a Circle can end that cannot be represented where every other ending is represented, which is
+why it is written here as prose and not as a row in the table above.
+
+**The obligation therefore sits on the surviving references, not on the deleted object.** Whoever
+deletes a Circle annotates every citation of it that survives elsewhere — in `$PORTFOLIO`, in a
+session history, in another Circle's `## Dependencies`. An instruction placed inside the object
+cannot survive the object: the case this rule comes from had the Circle's own record telling later
+runs not to rank it for activation and not to read its absence as an orphaned state, and both
+instructions went with the file that carried them. The reference is also where the question
+actually arises. A later reader meets a pointer that leads nowhere, and at that point nothing
+distinguishes a deliberate deletion from a loss unless the reference says so.
+
+**The annotation replaces the dead citation; it does not stand beside it.** A path to a deleted
+record resolves to nothing whether or not a sentence next to it explains why, and neither a reader
+nor the citation lint can tell such a path from an accident. So the identity of the deleted Circle
+is carried as its stamp and its slug in separate spans, and no store path is left behind. The
+literal form is:
+
+```
+Deliberately deleted YYMMDD: Circle `<stamp>`, `<directive-slug>`.
+```
+
+Filled in, replacing what stood as a citation of the Circle's directory or of a record inside it:
+
+```
+Deliberately deleted 260805: Circle `260802-2220`, `throwaway-plane-bridge-smoke-test`.
+```
+
+A trailing clause after the full stop is free — say what the Circle was for where the surrounding
+sentence no longer reads without it. **A reader recognises the annotation by the literal opening
+`Deliberately deleted `**, and that is the whole test: an ordinary dead citation carries no such
+prefix, and a repair that corrects a path never writes one.
+
+**Who reads this, and who does not.** `bin/fusion-rules` emits this file to `orchestrator`,
+`playmaker` and `shaper`, so a person deleting a Circle directory by hand reads none of it — and a
+person deleting by hand is exactly the party this obligation binds. The binding decision's own
+closing paragraph left a `/fusion:circle-delete`, which would find the surviving references and
+apply the annotation, as an open question; this section states the form and neither builds that
+skill nor closes that question. Until one exists the obligation rides on the care of whoever
+deletes, which is weaker than every other rule in this file and is stated here rather than papered
+over. The neighbouring operation shows the size of that residual: the `260817-1907` archive sweep
+broke six citations from live Circle records and nothing detected them
+(`shared/history/260819-1400-reconciliation-circles.md`) — and archival is the operation that
+*preserves* its target.
+
+Binding decision: `circles/260801-1244-guard-rules-write/decisions/260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`.
+
 ## Circle record template
 
 The Circle record is `<circle-dir>/_S_circle.md`. Creating a Circle means creating the directory, the record, and the six artifact subdirectories (`planning/`, `issues/`, `decisions/`, `history/`, `reviews/`, `analyses/`) — a Circle without its subdirectories forces the next agent to invent them. Template:

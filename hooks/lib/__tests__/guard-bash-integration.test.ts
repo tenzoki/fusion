@@ -9,6 +9,7 @@ import {
   guardStateWritten,
   readEvents,
   runBash,
+  runGuard,
   runWrite,
   withProject,
 } from "./helpers/guard-harness.js";
@@ -109,7 +110,7 @@ describe("integration harness — preconditions", () => {
 // The write path — the hook's one product.
 // ---------------------------------------------------------------------------
 
-describe("the Edit write path allows and records", () => {
+describe("the write path allows and records, for all four write tools", () => {
   it(
     "allows a file_path and appends exactly one guard_allow naming it",
     () => {
@@ -124,7 +125,77 @@ describe("the Edit write path allows and records", () => {
 
         const events = readEvents(root);
         expect(events.map((e) => e.event)).toEqual(["guard_allow"]);
+        expect(events[0]?.tool).toBe("Edit");
         expect(events[0]?.file).toContain("notes.txt");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  // The three cases below are the other three write tools, and until 2026-08-19
+  // none of them had ever reached this hook in a test (issue `260816-2320`).
+  // `MultiEdit` and `NotebookEdit` appeared under `hooks/lib/__tests__/` in one
+  // place only — the `hooks.json` matcher list asserted in `hooks-wiring.test.ts`
+  // — so the `notebook_path` branch of `extractFilePath` had no case at all,
+  // while three shipped releases told users the trace was the record of what all
+  // four tools did.
+  //
+  // Each case asserts the row's `tool` as well as its `file`. A case asserting
+  // `file` alone would stay green if the payload never carried the tool under
+  // test and `runWrite` fell back to its default name, which is the one failure
+  // these three exist to rule out.
+  it(
+    "records a Write with the tool name it was given",
+    () => {
+      withProject(({ root }) => {
+        expect(
+          runWrite(root, resolve(root, "notes.txt"), "Write").decision,
+        ).toBeUndefined();
+
+        const events = readEvents(root);
+        expect(events.map((e) => e.event)).toEqual(["guard_allow"]);
+        expect(events[0]?.tool).toBe("Write");
+        expect(events[0]?.file).toContain("notes.txt");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "records a MultiEdit with the tool name it was given",
+    () => {
+      withProject(({ root }) => {
+        expect(
+          runWrite(root, resolve(root, "notes.txt"), "MultiEdit").decision,
+        ).toBeUndefined();
+
+        const events = readEvents(root);
+        expect(events.map((e) => e.event)).toEqual(["guard_allow"]);
+        expect(events[0]?.tool).toBe("MultiEdit");
+        expect(events[0]?.file).toContain("notes.txt");
+      });
+    },
+    CASE_TIMEOUT,
+  );
+
+  it(
+    "records a NotebookEdit through the notebook_path branch",
+    () => {
+      // The only tool that reaches the second branch of `extractFilePath`: a
+      // NotebookEdit payload carries `notebook_path` and no `file_path`, so it
+      // goes through `runGuard` rather than `runWrite`. This is the case that
+      // goes red if that branch is removed, which is the deliberate reddening
+      // the plan states for this step.
+      withProject(({ root }) => {
+        const notebook = resolve(root, "analysis.ipynb");
+        expect(
+          runGuard(root, "NotebookEdit", { notebook_path: notebook }).decision,
+        ).toBeUndefined();
+
+        const events = readEvents(root);
+        expect(events.map((e) => e.event)).toEqual(["guard_allow"]);
+        expect(events[0]?.tool).toBe("NotebookEdit");
+        expect(events[0]?.file).toContain("analysis.ipynb");
       });
     },
     CASE_TIMEOUT,

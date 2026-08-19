@@ -54,7 +54,7 @@ fix does not settle it.
 
 - `issues/260815-0804_o_a-decision-records-cross-reference-points-at-an-a-circle-md-that-activation-renamed.md`
   — the same class, on a Circle record.
-- `issues/260815-1247_o_a-backlog-entrys-related-line-points-at-a-marker-the-playmaker-has-since-moved.md`
+- `issues/260815-1247_*_a-backlog-entrys-related-line-points-at-a-marker-the-playmaker-has-since-moved.md`
   — the same class, on the backlog store.
 
 

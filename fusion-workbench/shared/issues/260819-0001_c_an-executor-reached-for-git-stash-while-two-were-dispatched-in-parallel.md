@@ -40,3 +40,8 @@ it was unsafe, and it acted correctly the moment it reconsidered.
 
 Filed by the orchestrator of session `260818-2301` after reading the executor's own report. No Circle
 active, so it goes to the shared store under the Origin Rule.
+
+---
+Resolved: the prohibition is stated at the dispatch, which is the placement the user chose over the executor prompts. `agents/orchestrator.md` Step 3a item 4 gained a bullet naming the five whole-tree forms (`git stash`, `git checkout .`, `git reset`, `git clean`, `git restore .`), saying why they are never an executor's tool — they rewrite files outside the named scope, a sibling's in-flight edits included — and giving `git show HEAD:<path>` as the measurement against HEAD. Step 3b item 2b points the bugfixer dispatch at the same bullet rather than restating it, because the bugfixer writes to the live tree on the same terms and is dispatched from elsewhere. 395 bytes of the 600 the plan allowed.
+
+The residual the user accepted is written into the bullet rather than left implicit: an executor cannot tell from its own prompt whether it runs alone, so the sentence binds a solitary executor where the command would have been harmless. Nothing enforces it — whether a command was run is answerable only from its text, which is the undecidable question this repository deleted a classifier over, and the plan claims no enforcement.

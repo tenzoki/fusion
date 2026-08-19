@@ -5,7 +5,7 @@
 **Domain:** code
 **Filed by:** reconciler, Phase-3 pass `history/260815-1913-reconciliation.md`, HEAD `9306f0a`
 **Owner:** none assigned — this is a class question, not a repair
-**Cross-references:** `rules/fusion-workbench-conventions.md` `## State Markers — issues and planning` (state change is a rename); `issues/260815-1247_o_a-backlog-entrys-related-line-points-at-a-marker-the-playmaker-has-since-moved.md` (same class, one entry); `shared/issues/260812-1720_o_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md` (why no gate sees it)
+**Cross-references:** `rules/fusion-workbench-conventions.md` `## State Markers — issues and planning` (state change is a rename); `issues/260815-1247_*_a-backlog-entrys-related-line-points-at-a-marker-the-playmaker-has-since-moved.md` (same class, one entry); `shared/issues/260812-1720_o_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md` (why no gate sees it)
 
 ---
 
@@ -44,7 +44,7 @@ down:
    `shared/issues/260812-1720_o_…` from the other side.
 
 The same class already has an instance in this Circle at
-`issues/260815-1247_o_a-backlog-entrys-related-line-points-at-a-marker-the-playmaker-has-since-moved.md`,
+`issues/260815-1247_*_a-backlog-entrys-related-line-points-at-a-marker-the-playmaker-has-since-moved.md`,
 filed against one entry rather than thirty-four. Whether it is a defect at all depends on which of
 the three positions holds, which makes it a decision this record does not take.
 

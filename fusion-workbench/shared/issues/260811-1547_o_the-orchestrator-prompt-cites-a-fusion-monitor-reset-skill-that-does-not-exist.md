@@ -8,7 +8,7 @@
 **Affects:** `agents/orchestrator.md:192`
 **Cross-references:**
 `hooks/lib/__tests__/reference-resolution-lint.test.ts` (the gate that would catch this, if it read this citation form);
-`shared/decisions/260811-1534_o_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` (this record's first downstream reader — the claim was copied into a decision record before being checked)
+`shared/decisions/260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` (this record's first downstream reader — the claim was copied into a decision record before being checked)
 
 ---
 

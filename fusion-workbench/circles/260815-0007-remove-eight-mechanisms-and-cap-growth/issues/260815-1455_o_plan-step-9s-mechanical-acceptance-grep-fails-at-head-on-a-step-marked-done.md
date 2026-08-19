@@ -4,7 +4,7 @@
 **Severity:** Medium — the plan's own pass/fail check disagrees with the plan's own state marker, so the next reader either re-opens a correctly finished step or learns to disregard the acceptance lines
 **Domain:** code
 **Filed by:** ontorev (Turn 3 review, range `5d29b6d..518926d`)
-**Affects:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md` step 9, last Changes bullet
+**Affects:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md` step 9, last Changes bullet
 **Cross-references:**
 `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1247_o_the-churn-leaves-were-removed-without-a-retirement-entry-and-the-retirement-table-could-not-have-held-one.md` (same class: a removal that deliberately leaves a named residue, with no place recording that it did);
 `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-1440-coder-step9-domain-values.md`;

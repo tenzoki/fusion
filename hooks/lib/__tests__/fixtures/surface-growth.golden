@@ -21,13 +21,13 @@
   editor.md 14272
   ontocoder.md 13305
   ontorev.md 11295
-  orchestrator.md 150303
+  orchestrator.md 150698
   planner.md 19548
   playmaker.md 38712
   reconciler.md 20006
   shaper.md 28141
   taskplanner.md 14375
-  total 414534
+  total 414929
 
 [skills bytes]
   archive/SKILL.md 24854
@@ -46,6 +46,7 @@
 
 [hook-tests lines]
   commit-message-path.test.ts 366
+  committed-dist.test.ts 253
   config.test.ts 795
   context-manifest.test.ts 476
   deliverable-language-lint.test.ts 141
@@ -57,7 +58,7 @@
   fusion-count-sources.test.ts 443
   fusion-paths.test.ts 879
   glob-nomatch-lint.test.ts 162
-  guard-bash-integration.test.ts 346
+  guard-bash-integration.test.ts 417
   guard-project-config-integration.test.ts 423
   guard-state-shape.test.ts 251
   helpers/citation-scan.ts 574
@@ -75,7 +76,7 @@
   portfolio-citation-form-lint.test.ts 171
   provenance-header-lint.test.ts 449
   record-counts-measurement.test.ts 521
-  reference-resolution-lint.test.ts 1145
+  reference-resolution-lint.test.ts 1173
   review-coverage-mandate.test.ts 336
   review-coverage.test.ts 819
   rules-emission-golden.test.ts 1159
@@ -85,4 +86,4 @@
   staging-drift.test.ts 660
   surface-growth-bound.test.ts 628
   turn-budget-lint.test.ts 524
-  total 18498
+  total 18850

@@ -33,7 +33,7 @@ from; it is wrong that the source satisfies the criterion the sentence above it 
 ## It is not hypothetical
 
 The live file has P-7 and P-8 at `status: "running"` though both landed in Turn 3 (`a17cc8c`,
-`7260bbc`) — see `260815-1631_o_the-work-queue-misstates-three-of-seventeen-tasks-and-is-now-the-only-durable-copy.md`.
+`7260bbc`) — see `260815-1631_*_the-work-queue-misstates-three-of-seventeen-tasks-and-is-now-the-only-durable-copy.md`.
 Derived through this row, `tasks_done` reads 10; the event log holds 12 `task_done` events for
 this session's plan tasks. The freeze the removal set out to end is reachable through the
 replacement it named, and the un-freezable record that would have answered correctly is the one the

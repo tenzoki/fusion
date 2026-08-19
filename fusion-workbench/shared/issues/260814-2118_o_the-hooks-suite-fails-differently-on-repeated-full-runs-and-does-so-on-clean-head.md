@@ -31,7 +31,7 @@ Both harnesses spawn real processes against real directories, so under full-suit
 
 ## Why this is not already covered
 
-`shared/decisions/260811-2009_o_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md` asks the neighbouring question and is still open. That record asks whether the suite is *meant* to run concurrently with itself and who would serialise it if not. This record adds the measurement that answers half of it empirically: run concurrently with itself, it currently produces false failures on unmodified source. The decision record is the place the fix is chosen; cite this one from it.
+`shared/decisions/260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md` asks the neighbouring question and is still open. That record asks whether the suite is *meant* to run concurrently with itself and who would serialise it if not. This record adds the measurement that answers half of it empirically: run concurrently with itself, it currently produces false failures on unmodified source. The decision record is the place the fix is chosen; cite this one from it.
 
 ## What a fix would have to establish
 
@@ -95,7 +95,7 @@ artifact under them is gone.
 ### The other two shapes are unchanged and are other causes
 
 - `fusion-commit-lock.test.ts` — reproduced 4 of 4 under CPU saturation. Genuine wall-clock
-  assumption, already `shared/issues/260810-1135_o_…`. This is the one direction 2 is about.
+  assumption, already `shared/issues/260810-1135_*_…`. This is the one direction 2 is about.
 - A file that never runs (`Errors 1 error`, `48 passed (49)`) — the reconciler already measured
   this with nothing else in flight (`260811-2009`, evidence of 260811-2330: `Error: Worker
   exited unexpectedly` from tinypool). Not the build race and not a timing budget.

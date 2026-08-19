@@ -23,7 +23,7 @@ the tag for the ten minutes the review needed would have cost nothing that
 mattered. The ordering was chosen for a responsiveness that was never asked for.
 
 **This is a reproduction, not a new class.** Open record
-`260810-1205_o_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md`
+`260810-1205_*_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md`
 describes exactly this: a range reaching HEAD and a pushed tag with no reviewer
 having opened it. That record is task 12 in this session's own queue, was
 classified high priority, was ordered behind task 5, and was not reached. The
@@ -57,7 +57,7 @@ reasoning `260801-2038` records about prompt-only fixes.
    loses to task pressure, which is how this happened.
 3. **Accept that a release may go out over an unreviewed range, and say so.**
    That is already an open question and it has a home:
-   `shared/decisions/260810-0710_o_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`
+   `shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`
    is the same shape one layer up. If the answer there is yes, this record closes
    as intended behaviour rather than as a defect.
 

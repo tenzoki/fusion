@@ -95,3 +95,10 @@ into a staging tree so that concurrent runs do not share build output.
 change to the hooks must rebuild and commit `hooks/dist` in the same commit as the source, every
 time. A green suite is not evidence that it did, and the last time this slipped, the window between
 `f45f76a` and `71e97f4` shipped a fix that was closed in the repository and absent from the tarball.
+
+---
+Implemented: `hooks/lib/__tests__/committed-dist.test.ts` — option 2 realised in full, with both conditions this record attached. The toolchain is pinned by an exact literal in `hooks/package.json` (`typescript: 5.9.3`) and asserted first, so a compiler mismatch fails as "the toolchain is not the pinned one" rather than as a wrong answer about the artifact. The comparison extracts HEAD with `git archive` into a `mkdtemp` directory and compiles there, writing nothing under `hooks/dist` and nothing under `hooks/.build-staging` — the shared-tree constraint this record named.
+
+Both halves were demonstrated failing rather than only passing. Reverting `hooks/dist` one commit with the source untouched reddens exactly the artifact case, naming `staging-drift.d.ts` and `.js`, while the toolchain case stays green; running from a copy with no git repository reddens cases 2 and 3 with `git rev-parse HEAD failed (exit 128)` and git's own text, never a skip.
+
+One correction to the plan's premise, found by measurement: `hooks/package-lock.json` is gitignored and untracked, so it is a local-consistency leg rather than the pin. What carries the pin is the committed literal. Each leg reports its own sentence when its file is absent, and the fix text names `npm install` for the fresh-clone case where `npm ci` has no lock to read.

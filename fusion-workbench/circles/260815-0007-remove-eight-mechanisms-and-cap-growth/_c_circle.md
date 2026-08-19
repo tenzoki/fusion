@@ -145,7 +145,7 @@ Eight names are two entry points and six components. `skills/cleanup/SKILL.md` S
 already read and execute `archive` (tier-1), `revise-claude-md` (full three-pass) and
 `log-activity` inline, so a user who types `/fusion:cleanup` never types those three.
 `skills/setup/SKILL.md` mentions `unlock` nowhere, while
-`shared/issues/260810-0326_o_setup-must-seed-claude-settings-because-the-plugin-settings-json-is-not-a-permission-source.md`
+`shared/issues/260810-0326_*_setup-must-seed-claude-settings-because-the-plugin-settings-json-is-not-a-permission-source.md`
 already asks Setup to seed the file `unlock` writes. `cadence` is read-only on every input and
 writes only its own digest, which makes it a reading command mis-grouped with the other seven.
 Three visible names remain: `setup`, `cleanup`, `cadence`.

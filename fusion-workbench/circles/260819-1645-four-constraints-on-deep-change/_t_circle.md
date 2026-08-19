@@ -106,7 +106,7 @@ never a baseline edit, authored in `hooks/lib/__tests__/helpers/growth-bound.ts`
 **One decision is open and blocks the test half of constraint 4.** What defines the gate's corpus,
 and what happens when an ordinary marker move puts a new record into it, is unanswered. The
 question and its options are filed at
-`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_o_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`.
+`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`.
 The same coupling is already a live defect for the existing lint
 (`shared/issues/260816-0725_*_the-citation-gates-new-exact-count-pin-is-coupled-to-workbench-contents-so-the-archive-step-can-turn-it-red.md`),
 so this Circle would otherwise reproduce a known failure in a second place.
@@ -152,7 +152,7 @@ Every decision the Grounding cites was resolved against the store on this run.
 `circles/260801-1244-guard-rules-write/decisions/260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`
 all carry the answered marker. An answered-and-unrealised decision is the input this Circle consumes,
 not a block on it. The one open record is
-`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_o_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`,
+`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`,
 which the Grounding names under `### One decision is open` as the block on the test half of
 constraint 4.
 

@@ -38,7 +38,7 @@ was filed by this Circle's Turn 5.
 still ends with the last line of its `## Recommendation` paragraph. No `---` separator and no
 `Answered: / Implemented: / Deferred: / Superseded by:` block. Read at HEAD, not inferred.
 
-The contrast case is on disk beside it: `circles/260801-1244-curator/decisions/260814-1332_o_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
+The contrast case is on disk beside it: `circles/260801-1244-curator/decisions/260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
 closes with the separator and all four empty lines, which is the shape this record asks for. None of
 the four commits since the record was filed touched either decision file.
 
