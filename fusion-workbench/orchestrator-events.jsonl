@@ -1775,3 +1775,21 @@
 {"ts":"2026-08-18T20:52:44","event":"turn_start","turn":3,"detail":"3 ready tasks"}
 {"ts":"2026-08-18T20:56:10","event":"turn_end","turn":3,"detail":"2 tasks resolved, 2 issues closed, 1 commit 5ec9dc6"}
 {"ts":"2026-08-18T20:56:10","event":"session_end","detail":"3 Turns, 7 tasks, 4 commits, 5 issues filed and 5 closed, 1 decision filed and left open, 4 human gates"}
+{"ts":"2026-08-18T21:01:12","event":"session_start","history_file":"shared/history/260818-2301-orchestrator-session.md","detail":"Setup complete; directive not yet stated"}
+{"ts":"2026-08-18T21:42:45","event":"gate_hit","agent":"user","detail":"3 open decision records put to the user: 260816-1707, 260817-1613, 260818-2212"}
+{"ts":"2026-08-18T21:42:45","event":"gate_response","agent":"user","detail":"all three answered with the record recommendation; markers _o_ -> _a_"}
+{"ts":"2026-08-18T21:48:13","event":"scope_resolved","detail":"mode custom; 3 tasks; executor coder; realises 3 answered decisions plus the unblocked 260816-0711"}
+{"ts":"2026-08-18T21:48:13","event":"queue_built","detail":"3 tasks, 1 blocked (T2 on T1)"}
+{"ts":"2026-08-18T21:48:25","event":"turn_start","turn":1,"detail":"2 ready tasks (T1, T3); T2 blocked on T1"}
+{"ts":"2026-08-18T21:48:25","event":"task_start","turn":1,"task":"T1","agent":"coder","detail":"rules/workbench-tracking.md"}
+{"ts":"2026-08-18T21:49:14","event":"task_start","turn":1,"task":"T3","agent":"coder","detail":"agents/planner.md + agents/orchestrator.md"}
+{"ts":"2026-08-18T22:01:13","event":"task_error","turn":1,"task":"T3","agent":"coder","detail":"edits complete; verification inconclusive (exit 1) because T1 was editing the same test corpus concurrently — re-run pending on a settled tree"}
+{"ts":"2026-08-18T22:13:25","event":"commit","turn":1,"detail":"b200902 — tracked-workbench rule file, plan stopping condition, baseline re-approval note"}
+{"ts":"2026-08-18T22:13:25","event":"task_done","turn":1,"task":"T1","agent":"coder","detail":"b200902"}
+{"ts":"2026-08-18T22:13:25","event":"task_done","turn":1,"task":"T3","agent":"coder","detail":"b200902"}
+{"ts":"2026-08-18T22:13:25","event":"task_done","turn":1,"task":"T4","agent":"coder","detail":"b200902"}
+{"ts":"2026-08-18T22:13:25","event":"task_start","turn":1,"task":"T2","agent":"coder","detail":"decision-record template Status field"}
+{"ts":"2026-08-18T22:43:35","event":"commit","turn":1,"detail":"b54ace5 — Status field leaves the decision-record template"}
+{"ts":"2026-08-18T22:43:35","event":"task_done","turn":1,"task":"T2","agent":"coder","detail":"b54ace5"}
+{"ts":"2026-08-18T22:43:35","event":"review_start","turn":1,"agent":"coderev","detail":"range 52b1d95..b54ace5, 20 files"}
+{"ts":"2026-08-18T22:43:35","event":"review_done","turn":1,"agent":"coderev","detail":"10 issues filed (1 High, 6 Medium, 3 Low); range now covered"}
