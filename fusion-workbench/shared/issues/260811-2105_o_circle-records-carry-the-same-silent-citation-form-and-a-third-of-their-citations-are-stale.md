@@ -34,7 +34,7 @@ example inside a record, at the stamp `260716-1847`, and a `rag-sanitisation.md`
 another project, at the stamp `260430-1900`. Neither is this defect.
 
 **21 of 60, thirty-five per cent, name a marker their target no longer carries.** The single
-live (`_a_`) record — `circles/260801-1244-curator/_a_circle.md` — carries eight literal
+live (`_a_`) record — `circles/260801-1244-curator/_*_circle.md` — carries eight literal
 citations, three of them stale, *and* four already in the wildcard form. The form is not
 uniformly wrong; it is inconsistent inside one file, which is what a silent template produces.
 
@@ -99,7 +99,7 @@ portfolio and asked for a report rather than a widening.
 No Circle is active, and the finding is about the record format itself rather than about the
 subject of any Circle.
 
-Also seen: 260817-1613 by reconciler — two live instances in `circles/260816-1741-guard-becomes-observation-only/_t_circle.md`, both due before that Circle's `_t_` → terminal transition makes them permanent: `:7` `**Active spec/plan:**` names `planning/260816-1915_p_…` and the plan is `_c_`, which is the silently-degrading pointer field this record names; `:167` names `decisions/260816-1742_o_…` and that record is `_i_`. Both were written in the literal-marker form; the same file's other five citations use the ratified `_*_` wildcard and all resolve.
+Also seen: 260817-1613 by reconciler — two live instances in `circles/260816-1741-guard-becomes-observation-only/_*_circle.md`, both due before that Circle's `_t_` → terminal transition makes them permanent: `:7` `**Active spec/plan:**` names `planning/260816-1915_p_…` and the plan is `_c_`, which is the silently-degrading pointer field this record names; `:167` names `decisions/260816-1742_o_…` and that record is `_i_`. Both were written in the literal-marker form; the same file's other five citations use the ratified `_*_` wildcard and all resolve.
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `rules/circle-records.md` `## Circle record template` still carries no citation-form rule; the wildcard convention exists only for the portfolio template. A reconciler addendum on the record dated 260817-1613 found two further live stale citations. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

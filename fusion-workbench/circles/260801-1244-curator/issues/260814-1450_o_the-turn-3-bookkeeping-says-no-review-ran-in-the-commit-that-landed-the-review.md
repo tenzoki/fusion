@@ -23,7 +23,7 @@ being *added* by the commit whose own message reads "Six findings, none in behav
 diff adds `circles/260801-1244-curator/reviews/260814-1419-coderev-curator-turn-3.md`.
 
 **3. The Circle's Turn-log entry for the same Turn names no review at all.**
-`circles/260801-1244-curator/_t_circle.md:107-118`, added by the same commit. Turn 1's and Turn 2's
+`circles/260801-1244-curator/_*_circle.md:107-118`, added by the same commit. Turn 1's and Turn 2's
 entries each state what `coderev` filed and what it judged. The Turn-3-continued entry ends at the
 run file and says nothing about the six findings or the review's verdict on the Directive.
 

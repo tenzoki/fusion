@@ -69,7 +69,7 @@ four constraints.**
    **Bounded-Closure propagation** under `## Warnings`.
 
    *Activation proposal appended to*
-   `circles/260819-1645-four-constraints-on-deep-change/_a_circle.md`. Renaming the record and writing
+   `circles/260819-1645-four-constraints-on-deep-change/_*_circle.md`. Renaming the record and writing
    `.active-circle` are not this agent's writes; `/fusion:next` or the orchestrator commits them.
 
 ## Backlog — ranked

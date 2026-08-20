@@ -88,7 +88,7 @@ record.
 
 ## Immediate state, for whoever picks this up
 
-`circles/260813-0858-playmaker-maintains-backlog-store/_a_circle.md` currently names the
+`circles/260813-0858-playmaker-maintains-backlog-store/_*_circle.md` currently names the
 documentation Circle as a relationship in prose without citing its record
 (`archive/260817-1907-safe-cleanup-scoped/circles/260813-0910-documentation-matches-shipped-plugin/_b_circle.md`, which was live under
 `circles/` when this was written). One line, once a writer exists.
@@ -125,3 +125,13 @@ predicted, now observed on the pair it was filed about.
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/shaper.md:28` still forbids touching an existing Circle in anticipated mode, `agents/orchestrator.md` contains the word Dependencies zero times, and the playmaker-s write set is still the three appended sections. The concrete instance is now permanently broken: `circles/260813-0858-playmaker-maintains-backlog-store/_c_circle.md:95-96` still says the sibling directory name is to be added by the orchestrator once it exists, and the Circle closed without it. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+**Citation correction 260820-0530** (coder, plan step 8c). The closing section's citation of the
+playmaker Circle's record was starred, which is what the 260813-1545 note above asked for. That note
+therefore now reports a spelling the body no longer carries: it says the closing section *says*
+`…/_a_circle.md`, and it does not. The note is left standing rather than rewritten, because the
+citation it quotes is its own subject and starring it would delete the finding. What has changed is
+only which section carries the marker: the body is a pointer and is starred, the note is a quotation
+of what the pointer used to spell and stays literal. The record has since closed, so the note's
+"it will be `_c_circle.md` after closure" has come true.

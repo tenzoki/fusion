@@ -7,7 +7,7 @@ moving the validation case from capability C9 (reconcile, compact, partition and
 record still describe the old scope and now contradict the Directive above them.
 
 ---
-**Where.** `circles/260801-1244-curator/_a_circle.md`:
+**Where.** `circles/260801-1244-curator/_*_circle.md`:
 
 - Line 1, the title: "The curator reconciles the three normative surfaces, and proves it on
   fusion's own conventions file". The proof is now the decision corpus: 82 records, none marked
@@ -39,7 +39,7 @@ contradicts itself, not a Circle that is mis-scoped.
 **Reconciliation, 2026-08-14 (reconciler, verified at HEAD `18173e1`). Still open, both spots
 unchanged.**
 
-`circles/260801-1244-curator/_t_circle.md` line 1 still reads "…and proves it on fusion's own
+`circles/260801-1244-curator/_*_circle.md` line 1 still reads "…and proves it on fusion's own
 conventions file", and `## Dependencies` still justifies the hard dependency on
 `260801-1244-rule-provenance-header` by the shards a partition would produce. The embedded Mermaid
 edge label still carries the same reasoning.
