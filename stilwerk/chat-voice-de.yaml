@@ -9,7 +9,7 @@ description: "Knapper, direkter Chat-Stil auf Deutsch. Klartext statt Kürzel, D
 # Geltungsbereich: nur Kurzform im Chat. Strukturierte Artefakte (Dashboard-
 # Zeilen, Commit-Messages, Monitor-Strings, Tabellen, ID-Listen) sind
 # ausgenommen — sie bleiben knapp und maschinenlesbar. Für Langform-Prosa gilt
-# das Langform-Schreibprofil, nicht dieses.
+# das Langform-Schreibprofil ("the long-form writing profile"), nicht dieses.
 scope: short-form
 
 whitelist:
