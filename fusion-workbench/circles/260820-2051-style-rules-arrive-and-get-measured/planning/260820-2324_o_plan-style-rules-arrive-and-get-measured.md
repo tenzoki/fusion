@@ -323,7 +323,7 @@ and no step performs it.
 - **Dependencies:** steps 1, 2, 5 and 6
 - **Closes:** the profile share of `shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
 
-### 8. The workbench copies are refreshed by the mechanism, not by hand
+### 8. [DONE] The workbench copies are refreshed by the mechanism, not by hand
 
 - **Executor:** coder
 - **Files:** `fusion-workbench/stilwerk/*.yaml` and `fusion-workbench/.asset-provenance`, both written by
@@ -341,6 +341,31 @@ and no step performs it.
   4. `bin/fusion-prose-metric $(bin/fusion-rules coder)` now shows the chat profile row at or under its
      ceiling.
 - **Dependencies:** steps 3 and 7
+- **Note (the match was produced by the mechanism):** the four workbench copies and
+  `fusion-workbench/.asset-provenance` were written by the shell blocks of `skills/setup/SKILL.md`
+  Step 0d and Step 0e, extracted and run verbatim in this repository, with `$FUSION_SRC` substituted by
+  the path `bin/fusion-source-root` printed. No `cp` outside those blocks and no editor touched a
+  profile. The run, in order:
+  1. The source root resolved to the work tree, `/Users/k1/Projects/productive/fusion`, not to the
+     install copy at `/Users/k1/.fusion`. That is the one behaviour step 3 built this comparison to have,
+     and it is what makes an unreleased profile revision reach this repository's own workbench.
+  2. Step 0d copied nothing, because all four files were present, and stamped nothing, because only a
+     file that run copies is stamped. It created `fusion-workbench/.asset-provenance` empty.
+  3. The Step 0e classification block printed `case0-unclassifiable` for all four profiles, which is the
+     predicted result for a workbench that predates the record.
+  4. The offer was accepted, so the replace loop and the stamp loop ran over all four. The provenance
+     file then carried four lines, and `shasum -a 256 -c .asset-provenance` run inside the workbench
+     reported `OK` on every one.
+  5. Re-running the classification block printed `case1-equal` four times and the stamp loop rewrote
+     nothing, the checksum of the provenance file being identical before and after. That is criterion 4
+     of step 3 observed on a real workbench rather than a scratch one.
+- **Acceptance observed:** (1) `diff -r stilwerk fusion-workbench/stilwerk` exits 0 with no output.
+  (2) `shasum -a 256 -c .asset-provenance` reports `OK` for all four. (3) `git status --porcelain` scoped
+  to the two directories lists the four workbench copies modified and the provenance file new, and
+  `stilwerk/` itself clean, so what landed is exactly step 7's committed output. (4) The chat profile row
+  of `bin/fusion-prose-metric $(bin/fusion-rules coder)` moved from 2 em-dashes in 617 prose words
+  (3.2 per 1000, over) to 0 in 628 (0.0 per 1000, ok). The corpus total moved from 172 to 170 and stays
+  over, which the four remaining repair steps address.
 
 ### 9. `rules/agent-setup.md` reaches its ceiling
 

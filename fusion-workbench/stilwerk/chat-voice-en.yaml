@@ -1,14 +1,14 @@
 # Chat Voice (English)
 # Short-form chat style: gate prompts, AskUserQuestion text, status reports,
 # brief replies. Complements rules/user-facing-output.md with language-specific
-# anti-patterns. NOT for long-form prose — that uses the long-form writing
+# anti-patterns. NOT for long-form prose: that uses the long-form writing
 # profile.
 
 name: "Chat Voice (English)"
 description: "Terse, direct chat style in English. Plain words over codes, second person, no AI stock phrases, no em-dash chains. Short-form companion to the long-form writing profile."
 
 # Scope: short-form chat only. Structured artifacts (dashboard lines, commit
-# messages, monitor strings, tables, ID lists) are exempt — they stay terse and
+# messages, monitor strings, tables, ID lists) are exempt: they stay terse and
 # machine-readable. Long-form prose uses the long-form writing profile, not
 # this one.
 scope: short-form
@@ -18,7 +18,7 @@ whitelist:
     name: "Action first"
     instruction: |
       Open with what the reader does: decide, type, confirm, wait. Reason
-      comes after. If there is nothing to do, say so plainly: "Done — nothing
+      comes after. If there is nothing to do, say so plainly: "Done: nothing
       for you to do."
 
   - id: C02
@@ -37,10 +37,11 @@ whitelist:
   - id: C04
     name: "Terse without sentence-length targets"
     instruction: |
-      Keep it short: gate prompts up to 8 lines, chat replies up to 12 lines.
-      Do not enforce sentence-length bands; short sentences are normal and
-      welcome in chat. Details go to the end or to a file, not the opening
-      lines.
+      Keep it short. The line caps for a gate prompt and for a chat reply are
+      stated in rules/user-facing-output.md, section "## Length", and are not
+      restated here. Do not enforce sentence-length bands; short sentences are
+      normal and welcome in chat. Details go to the end or to a file, not the
+      opening lines.
 
   - id: C05
     name: "Sketch structure instead of narrating it"
@@ -82,7 +83,7 @@ blacklist:
     instruction: |
       Avoid em-dashes for parenthetical asides, in chat too. Use commas,
       parentheses, colons, or two separate sentences. The telegraphic-with-
-      parentheses pattern (clause — jargon aside — clause — compressed reason)
+      parentheses pattern (clause, jargon aside, clause, compressed reason)
       is the most common AI tell in gate prompts and AskUserQuestion options.
     examples:
       - "Opt 1 — yes, but with the (a) choice for the 13 — else the trail reads wrong."
