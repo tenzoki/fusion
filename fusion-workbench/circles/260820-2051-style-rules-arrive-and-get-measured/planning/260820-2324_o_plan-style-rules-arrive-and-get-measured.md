@@ -303,7 +303,7 @@ and no step performs it.
 - **Dependencies:** none
 - **Closes:** item 2 of `shared/issues/260807-2154_*_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md`; item 1 stays open under the decision above.
 
-### 7. The four profiles are repunctuated
+### 7. [DONE] The four profiles are repunctuated
 
 - **Executor:** ontocoder
 - **Files:** the four files under `stilwerk/`
