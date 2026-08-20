@@ -874,7 +874,13 @@ function scanHeadingAnchors(
 // `.asset-provenance` tree line and a paragraph, and `rules/workbench-tracking.md` gained the same
 // entry on the record side of its split; neither text names a plugin path, a heading or a record,
 // and `fusion-workbench/…` is not a plugin-tree spelling. Confirmed individually by the same revert.
-const BASELINE = { paths: 1244, anchors: 161, records: 115 };
+// Re-approved 2026-08-21 — `emit_voice_profile` in `bin/fusion-rules` gained the comment that carries
+// its new stderr fallback notice (step 4 of the same Circle). paths 1244 -> 1247, anchors 161 -> 162,
+// records unchanged. All four tokens sit in that one comment: `rules/critical-stance.md`,
+// `hooks/lib/__tests__/rules-emission-golden.test.ts`, and `rules/fusion-workbench-conventions.md`
+// carrying `## Project language`. No scanner, exemption or class changed; attributed by restoring
+// `bin/fusion-rules` alone to HEAD and re-running this gate, which was green at the old numbers.
+const BASELINE = { paths: 1247, anchors: 162, records: 115 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the

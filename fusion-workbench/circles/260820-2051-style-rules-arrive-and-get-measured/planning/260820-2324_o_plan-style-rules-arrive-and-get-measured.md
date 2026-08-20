@@ -240,7 +240,7 @@ and no step performs it.
   and the distribution half of
   `shared/issues/260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`
 
-### 4. The voice-profile fallback becomes visible to the agent told to record it
+### 4. [DONE] The voice-profile fallback becomes visible to the agent told to record it
 
 - **Executor:** coder
 - **Files:** `bin/fusion-rules` (`emit_voice_profile`), `hooks/lib/__tests__/rules-voice-profile.test.ts`

@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from "vitest";
-import { execFileSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
@@ -116,19 +116,28 @@ function makeProject(opts: { claudeMd?: string; profiles?: string[] }): string {
   return dir;
 }
 
-/** Raw non-empty stdout lines of `bin/fusion-rules <agent>`, run in `cwd`. */
-function runRules(agent: string, cwd: string): string[] {
-  const stdout = execFileSync(fusionRules, [agent], {
+/**
+ * Both streams of `bin/fusion-rules <agent>`, run in `cwd`. Stderr gets a channel
+ * of its own: the notice is the one thing the helper says that is not a path.
+ */
+function runRulesBoth(agent: string, cwd: string): { out: string[]; err: string } {
+  const r = spawnSync(fusionRules, [agent], {
     cwd,
     encoding: "utf-8",
     // Discipline 1: never inherit the developer's installed copy.
     env: { ...process.env, FUSION_PLUGIN_ROOT: pluginRoot },
-    stdio: ["ignore", "pipe", "pipe"],
   });
-  return stdout
+  expect(r.status, r.stderr).toBe(0);
+  const out = r.stdout
     .split("\n")
     .map((l) => l.trim())
     .filter((l) => l.length > 0);
+  return { out, err: r.stderr };
+}
+
+/** Raw non-empty stdout lines of `bin/fusion-rules <agent>`, run in `cwd`. */
+function runRules(agent: string, cwd: string): string[] {
+  return runRulesBoth(agent, cwd).out;
 }
 
 /**
@@ -313,6 +322,30 @@ describe("bin/fusion-rules voice-profile emission", () => {
     it("resolves both families to en when that lone declaration is en", () => {
       const dir = makeProject({ claudeMd: "**Artifact language:** en\n" });
       expect(profilePaths("planner", dir)).toEqual([CHAT_EN, WRITE_EN]);
+    });
+  });
+
+  // The fallback says so on stderr, so the agent can tell it from a project
+  // that declared `en`. Both cases assert stdout too: it carries no trace, and
+  // that is what keeps the golden fixture still.
+  describe("the fallback notice", () => {
+    it("names the family and both variants, once, for the family that fell back", () => {
+      const dir = makeProject({
+        claudeMd: "**Language:** de\n**Artifact language:** de\n",
+        profiles: ALL_PROFILES.filter((p) => p !== "chat-voice-de.yaml"),
+      });
+      const { out, err } = runRulesBoth("planner", dir);
+      expect(out.filter((l) => l.startsWith("./"))).toEqual([CHAT_EN, WRITE_DE]);
+      expect(err.split("\n").filter((l) => l.length > 0)).toEqual([
+        "fusion-rules: voice profile chat-voice: requested variant de is absent, resolved to en",
+      ]);
+    });
+
+    it("stays silent when `en` was declared and the en variant is what resolved", () => {
+      const dir = makeProject({ claudeMd: "**Language:** en\n" });
+      const { out, err } = runRulesBoth("coder", dir);
+      expect(out.filter((l) => l.startsWith("./"))).toEqual([CHAT_EN]);
+      expect(err).toBe("");
     });
   });
 });

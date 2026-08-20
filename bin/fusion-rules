@@ -312,6 +312,22 @@ emit_voice_profile() {
   #
   # This function resolves no language of its own. Which declaration governs a
   # family is the call site's decision, and it is visible there.
+  #
+  # THE FALLBACK ANNOUNCES ITSELF ON STANDARD ERROR, and only that branch does.
+  # Stdout is one path per line, so a fallback and a project that declared `en`
+  # arrive there identically: an agent instructed to record the fallback could
+  # not detect the event it was told to record. The notice makes it DETECTABLE,
+  # which is what a mechanism change owes. It does not make the recording
+  # happen: whether the agent then writes the history line stays an
+  # instruction-following obligation, and this project has documented such
+  # obligations as overridable under load (`rules/critical-stance.md`, the
+  # closing note of §4). Do not read this notice as compliance.
+  #
+  # Stdout is untouched in every case — the emission contract and the byte
+  # identity `hooks/lib/__tests__/rules-emission-golden.test.ts` holds are why
+  # the signal goes to the other stream rather than into a new line format.
+  # English, per `rules/fusion-workbench-conventions.md` `## Project language`:
+  # CLI operator strings are an exempt surface.
   local stem="$1"
   local lang_code="$2"
   local stilwerk_dir="./fusion-workbench/stilwerk"
@@ -322,7 +338,11 @@ emit_voice_profile() {
   fi
   if [ "$lang_code" != "en" ]; then
     local fallback="$stilwerk_dir/${stem}-en.yaml"
-    [ -f "$fallback" ] && printf '%s\n' "$fallback"
+    if [ -f "$fallback" ]; then
+      printf '%s\n' "$fallback"
+      printf 'fusion-rules: voice profile %s: requested variant %s is absent, resolved to en\n' \
+        "$stem" "$lang_code" >&2
+    fi
   fi
   return 0
 }

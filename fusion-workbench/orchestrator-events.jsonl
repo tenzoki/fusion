@@ -1836,3 +1836,5 @@
 {"ts":"2026-08-20T21:59:41","event":"task_done","turn":1,"task":"P-2","agent":"analyst","detail":"b22525d protocol registered; threshold 5.0/1000; exclusion made symmetric to stop the gate branch being forced"}
 {"ts":"2026-08-20T21:59:41","event":"commit","turn":1,"task":"P-2","detail":"b22525d"}
 {"ts":"2026-08-20T21:59:41","event":"task_start","turn":1,"task":"P-3","agent":"coder","detail":"Setup stamps copied assets and offers a refresh"}
+{"ts":"2026-08-20T22:26:12","event":"task_done","turn":1,"task":"P-3","agent":"coder","detail":"dc78da2 setup stamps assets and offers refresh; npm test exit 0; skills/ head-room 1595, hook tests 82"}
+{"ts":"2026-08-20T22:26:12","event":"commit","turn":1,"task":"P-3","detail":"dc78da2"}
