@@ -1822,3 +1822,8 @@
 {"ts":"2026-08-20T18:25:08","event":"session_end","detail":"2 Turns, 18 executor tasks, 17 commits, v10.4.0 released; 25 issues filed, 22 closed, 4 decisions implemented, 11 human gates"}
 {"ts":"2026-08-20T19:04:14","event":"session_start","history_file":"shared/history/260820-2103-orchestrator-session.md","detail":"Directive not yet stated; mode unresolved; domain code"}
 {"ts":"2026-08-20T19:59:39","event":"commit","agent":"orchestrator","detail":"c4a68e0 — Circle 260820-2051 activated (_a_ -> _t_), one defect filed at activation"}
+{"ts":"2026-08-20T20:42:12","event":"scope_resolved","detail":"mode custom; 5 pipeline tasks; agents shaper, analyst, planner, taskplanner, coder; autonomous run, user away"}
+{"ts":"2026-08-20T20:42:12","event":"shaper_start","agent":"shaper","detail":"solution concept for the style-defect record set, Circle 260820-2051"}
+{"ts":"2026-08-20T20:58:46","event":"shaper_done","agent":"shaper","detail":"spec at circles/260820-2051-.../planning/260820-2249_o_spec-...md; 10 capabilities over 3 root causes; 6 preference questions returned"}
+{"ts":"2026-08-20T20:58:46","event":"task_done","task":"S-1","agent":"shaper","detail":"spec written; 4 load-bearing figures independently re-measured by orchestrator and all 4 reproduce"}
+{"ts":"2026-08-20T20:58:46","event":"task_start","task":"S-2","agent":"analyst","detail":"critical assessment of the spec, including the 6 preference questions"}

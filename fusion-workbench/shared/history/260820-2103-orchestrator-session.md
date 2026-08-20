@@ -78,6 +78,34 @@ here. Both were written — a new record because that record's acceptance criter
 while this defect stands, and an `Also seen:` line on it so the pair is readable from either side.
 The filing rule asks for one or the other; the departure is deliberate and recorded here.
 
+## Autonomous run — the user's instruction
+
+At 22:05 the user asked for the whole pipeline to run unattended while they were away for two to
+three hours: shaper studies the style-defect records and produces a solution concept, analyst
+assesses it, the orchestrator applies corrections autonomously, planner plans it, and the
+orchestrator then drives the implementation to a successful Circle close.
+
+### The gate conflict, and how it was resolved
+
+A dispatched shaper holds no `AskUserQuestion` and returns its clarification questions instead.
+`agents/orchestrator.md` Step 0b.1 says not to answer a round on the user's behalf. With the user
+away, both cannot hold. The resolution, stated to the user before they left and recorded here:
+
+- Questions the workbench records already settle are answered from the records, and marked as the
+  orchestrator's answers rather than the user's.
+- Genuine preference questions are decided toward whichever option preserves the most future
+  choice, and each gets a decision record the user can review.
+- A coherent close is reported only if reached. If the Directive proves unreachable, the Circle
+  takes Bounded Closure with its reasons, not a flattering close.
+
+### Test baseline before any change
+
+`npm test` in `hooks/` at HEAD `a5b73da`: 40 files, 716 tests, all passing, 69 s. Recorded so that
+any red in this run is attributable to this run. Note that
+`shared/issues/260814-2118_*_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md`
+reports run-to-run variation on clean HEAD, so a single green run is a baseline rather than a
+guarantee.
+
 ## Turns
 
 (none yet)
