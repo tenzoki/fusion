@@ -39,3 +39,9 @@ cd hooks && grep -c '^// Re-approved' lib/__tests__/reference-resolution-lint.te
 Either state the count as measured, or drop the count and keep the property — that the sibling's pin
 is a number somebody re-approves and this gate has none. The property is what the paragraph needs;
 the count is what will go stale again on the sibling's next re-approval.
+
+---
+**Reconciliation 260820-0830** (reconciler, domain `code`, HEAD `04db0b0`) — **still open,
+reproduces.** `hooks/lib/__tests__/workbench-citation-lint.test.ts:34` still reads "re-approved four
+times"; `grep -c 're-approved' hooks/lib/__tests__/reference-resolution-lint.test.ts` returns **14**.
+Marker unchanged.

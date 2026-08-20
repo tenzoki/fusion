@@ -166,3 +166,18 @@ Implemented: `rules/circle-records.md:67` `### Deletion is outside the vocabular
 The annotation is a stated literal, `Deliberately deleted YYMMDD: Circle \`<stamp>\`, \`<directive-slug>\`.`, and it **replaces** the dead citation rather than standing beside it: a surviving path resolves to nothing whatever sentence accompanies it, and neither a reader nor the citation gate can tell such a path from an accident. Stamp and slug sit in separate spans so no store path is left behind, and the spelling is chosen against the parser so the form itself contributes to no count.
 
 The reachability residual this record's closing paragraph raised is stated in the new section rather than closed: `rules/circle-records.md` is emitted to `orchestrator`, `playmaker` and `shaper` only, so a human deleting a Circle by hand reads none of it, and a `/fusion:circle-delete` skill remains an open question.
+
+---
+**Reconciliation 260820-0830** (reconciler, domain `code`, HEAD `04db0b0`) — **marker stays `_i_`;
+the implementation is on disk and the record's own citations are not.** The `Implemented:` block
+above resolves: `rules/circle-records.md:67` carries the section, `:97` the literal form and `:103`
+the worked example, and the example annotates the very Circle this record was filed about. Verified
+line by line.
+
+What this pass found beside it: three `stamp-name` citations in this record are dangling at HEAD —
+two on line 7 and one on line 14. One of them is the deleted Circle itself, which the new annotation
+form was written for and was not applied to; the other two name files in another repository, which
+the record says on the same line and which the scanner cannot see. They went unrepaired because the
+`_a_` → `_i_` transition in `ad7ffed` took this record out of the citation gate's corpus in the same
+commit that armed the work. Filed as
+`circles/260819-1645-four-constraints-on-deep-change/issues/260820-0906_*_the-deletion-annotation-form-was-not-applied-to-the-surviving-reference-of-the-circle-it-uses-as-its-worked-example.md`.

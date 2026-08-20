@@ -41,3 +41,13 @@ Keep the literal and the independent walk, and add one assertion beside them: th
 equals the helper's `GATE_KINDS`. That needs `GATE_KINDS` exported, which it is not today. The two
 views stay independent for the token-for-token comparison, which is what the comment is protecting,
 and the list itself stops being a copy nobody compares.
+
+---
+**Reconciliation 260820-0830** (reconciler, domain `code`, HEAD `04db0b0`) — **still open,
+reproduces; the two are in agreement today and nothing holds them there.**
+`hooks/lib/__tests__/reference-resolution-lint.test.ts:1203-1210` declares a five-element literal,
+and `GATE_KINDS` at `hooks/lib/__tests__/helpers/citation-scan.ts:443-449` carries the same five in
+the same order. The comment at `:1199-1202` states the restatement is deliberate and gives the
+reason. So the defect is not a present divergence but the absence of anything that would report the
+next one — which is precisely the condition under which it was already stale for two steps. Marker
+unchanged.

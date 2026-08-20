@@ -53,3 +53,16 @@ the front of its line while there.
 
 ---
 Resolved: the plan is `_c_` and reads `**Status:** Complete`. Step 10 carries a struck marker naming the decision that removed it, so a later reader does not read an unmarked step as pending work.
+
+---
+**Reconciliation 260820-0830** (reconciler, domain `code`, HEAD `04db0b0`) — **closure confirmed on
+two of its three items; the third was outstanding and has been done by this pass.** The plan is
+`_c_`, reads `**Status:** Complete`, and step 10 carries the struck marker naming the decision that
+removed it. The fix direction's third item — "Move step 5's `[DONE]` to the front of its line while
+there" — had not been done: step 5 still read the marker after its title, against
+`rules/fusion-workbench-conventions.md` `## Inline State Tracking` → `### Planning files`. It now
+reads `5. [DONE] **Repair the 98 stale-marker citations**`. Marker stays `_c_`; the `Resolved:` note
+above is left unedited, since it records what was decided then.
+
+The pattern is worth one line for whoever reads this next: the closure note named the two items the
+review's finding text emphasised and dropped the one it mentioned in a trailing clause.

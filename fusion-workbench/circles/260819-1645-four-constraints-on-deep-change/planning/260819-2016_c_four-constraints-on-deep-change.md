@@ -154,7 +154,7 @@ The shared build tree appears in neither diagram, which is the constraint decisi
    - Acceptance: `npm test` green, including `provenance-header-lint.test.ts`. If the new text adds a resolvable plugin path or record citation, re-approve `BASELINE` in `reference-resolution-lint.test.ts` in the same commit, which is what that gate's own failure message asks for.
    - Dependencies: none.
 
-5. **Repair the 98 stale-marker citations** [DONE]
+5. [DONE] **Repair the 98 stale-marker citations**
    - Executor: `coder`
    - Files: workbench records across the repair corpus. Drive the file list from the scanner rather than from a written list.
    - Changes: for every hit whose status is `stale-marker`, rewrite the marker position in the citation to the wildcard `_*_`. This is the form decision `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md` prescribes for a marker that moves, and it is the fix the scanner itself names on each violation. Do not rewrite the citation to the record's current marker: that repair goes stale again on the record's next transition, which is what produced 98 of these.
@@ -256,3 +256,57 @@ Steps 3, 4 and 10 change shipped text and are verified by the gates that already
 ## Notes on executor routing
 
 Every step routes to `coder`, and that is a result rather than an oversight. The Circle changes TypeScript tests, one build manifest, three shipped Markdown surfaces and a set of workbench prose records. Nothing here is ontology, manifest, schema or fixture data, so `ontocoder` has no step: `hooks/package.json` is build configuration, which the routing table assigns to `coder` by role rather than by extension. No step produces a strategic deliverable, so `analyst` has none either. The one judgement call is the citation repair in steps 5 through 8, which edits Markdown records rather than code. It routes to `coder` because the work is driven by a scanner's output and verified by rerunning that scanner to zero, which is a code-shaped task, and because the records it edits document the project's own history rather than its data.
+
+## Reconciliation Log
+
+**Reconciliation 260820-0830** (reconciler, domain `code`, HEAD `04db0b0`, working tree clean).
+Scope: this Circle's stores plus the four records elsewhere that the range `b91c01c..04db0b0`
+transitioned. Every claim below was checked against the tree, not against the step's own report.
+
+**Status confirmed Complete; nine steps done, step 10 struck.** All nine live steps verified on
+disk:
+
+| Step | Claim | Verified at |
+|---|---|---|
+| 1 | compiler pinned, committed artifact asserted | `hooks/package.json:17` (`"typescript": "5.9.3"`), `hooks/lib/__tests__/committed-dist.test.ts` — 3 cases, green in 3.7 s |
+| 2 | four write tools through the hook | `hooks/lib/__tests__/guard-bash-integration.test.ts:113` describe, cases at `:165` and `:182`; `notebook_path` branch live at `hooks/guard.ts:104` |
+| 3 | whole-tree git prohibition at every dispatch | `agents/orchestrator.md:522` (new bullet, 324 bytes) and `:546` (bugfixer clause); 395 bytes total, against the 600 the step allowed |
+| 4 | deletion and archival annotation form | `rules/circle-records.md:67` section, literal at `:97`, worked example at `:103` |
+| 5–8 | citation repair over the wider corpus | 195 corpus files scanned at HEAD, **0 violations** |
+| 9 | blocking workbench citation gate | `hooks/lib/__tests__/workbench-citation-lint.test.ts` — 8 cases, green; corpus is a marker predicate with no baseline and no count |
+
+**One inline marker was corrected by this pass.** Step 5 carried its `[DONE]` after the title where
+the other eight carry it before, against `rules/fusion-workbench-conventions.md` `## Inline State
+Tracking` → `### Planning files`. It now reads `5. [DONE] **Repair the 98 stale-marker citations**`.
+The defect record that named it (`260820-0805_*_the-plan-is-still-status-draft-under-the-open-marker-with-nine-of-its-ten-steps-done.md`)
+was closed on the Status and marker alone; this was the third item of its own fix direction and had
+not been done.
+
+**Three stated measurements in this plan do not reproduce at HEAD, and each is already filed.**
+
+- `## Current State` calls `hooks/package-lock.json` one of "the two places that matter" for the
+  pin. It is gitignored and `git ls-files hooks/package-lock.json` returns nothing, so it is a
+  local-consistency leg and not the pin. Filed as `260820-0805_*_the-plan-names-a-gitignored-lockfile-as-one-of-the-two-places-the-compiler-is-pinned.md`.
+- The same paragraph states that a grep over the 36 emitted files finds no `node:` reference.
+  Re-measured here: `git grep -c 'node:' b91c01c -- hooks/dist` returns **18 hits across 11 files**.
+  The conclusion (that `@types/node` does not reach the emit) is unaffected; the measurement is
+  wrong. Filed as `260820-0805_*_the-plans-node-types-residual-states-a-grep-result-that-does-not-reproduce.md`.
+  Note for whoever takes that record: the review states 17 hits across 10 files, which is also not
+  what reproduces here — re-measure rather than copying either figure.
+- Step 4's budget line says writing to `rules/circle-records.md` costs no budget. True of step 4's
+  file and false of step 9's, which spent 987 bytes of the always-on rule core. The always-on set
+  measures **99 720 bytes** today (`bin/fusion-rules coder | xargs wc -c`). Filed as
+  `260820-0805_*_the-step-that-spent-the-always-on-rule-budget-reported-green-without-the-figure-its-siblings-report.md`.
+
+**What no step in this plan exercised.** No commit in `b91c01c..04db0b0` changed a file under
+`hooks/dist` — the last commit that did is `06ab15b`, before the range opened. So step 1's gate has
+never gone red on a real change in this Circle, and its recorded demonstration ("revert `hooks/dist`
+one commit") is not re-runnable at HEAD in the form it is written, because there is nothing one
+commit back to revert to. The mechanism was re-verified independently by this pass instead:
+extracting HEAD with `git archive` into a temp tree, compiling with the pinned `tsc` (exit 0), and
+comparing produced an identical 36-file set, and perturbing one byte of the temp copy's
+`dist/guard.js` made the comparison differ. The gate is sound; only the demonstration is historical.
+
+**Gates re-run by this pass, all green:** `committed-dist`, `workbench-citation-lint`,
+`guard-bash-integration`, `reference-resolution-lint`, `rules-emission-golden`,
+`surface-growth-bound`. The full suite was not run (out of scope for this dispatch).

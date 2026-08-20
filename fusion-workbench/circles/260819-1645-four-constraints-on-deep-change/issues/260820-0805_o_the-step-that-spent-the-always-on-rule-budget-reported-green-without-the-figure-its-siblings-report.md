@@ -42,3 +42,13 @@ makes the next author's decision, on the surface where the decision is most expe
 
 Add the figure to the step's `## Head-room` section, which already reports the hook-test surface's,
 and qualify the plan's sentence to the file it was measured against.
+
+---
+**Reconciliation 260820-0830** (reconciler, domain `code`, HEAD `04db0b0`) — **still open;
+the reporting gap is what reproduces, not a red bound.** `rules-emission-golden.test.ts` and
+`surface-growth-bound.test.ts` were both re-run by this pass and are green (15 and 12 cases). The
+always-on set measures **99 720 bytes** at HEAD, by `bin/fusion-rules coder | xargs wc -c` — the one
+command that gives the whole floor in this repository, because `coder` draws no conditional rule.
+The record's point stands: the step reported green without the head-room figure its siblings report,
+and the plan's "writing there costs no budget" was true of step 4's file and false of step 9's.
+Marker unchanged.

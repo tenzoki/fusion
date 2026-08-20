@@ -274,3 +274,45 @@ correct.
    constant.
 4. **Cleanup, in any order** — findings 2, 3, 5, 6, 12 and 13. Six text repairs and one exported
    constant.
+
+---
+
+## Reconciliation annotation — 260820-0830
+
+Added by the reconciler (domain `code`, HEAD `04db0b0`). Findings are not rewritten; this block
+records which of them were re-checked against the tree and what the re-check returned.
+
+**Confirmed still reproducing, marker unchanged (8):** findings 1, 2, 3, 4, 5, 6, 12, 13. Each
+carries the evidence in its own record's `Reconciliation 260820-0830` block.
+
+**Confirmed resolved (5):** findings 7, 8, 9, 10, 11. All five records are `_c_` and the fixes are on
+disk — four decisions at `_i_` with resolving `Implemented:` citations, five defects at `_c_` with
+`Resolved:` footers, the plan at `_c_` reading `**Status:** Complete`, and the Circle record's
+`**Active spec/plan:**` field starred.
+
+**One correction to a re-check, not to a finding.** Finding 3 states that `git grep -c 'node:'
+b91c01c -- hooks/dist` returns 17 hits across 10 files. Re-run here it returns **18 across 11**. The
+finding stands — the plan's claim of zero is wrong either way — but the number in this table does not
+reproduce, which puts it in the same class as the three measurements the finding itself is about.
+
+**Two findings were closed short of their own fix direction, one of them materially.** Finding 9's
+record asked for three things and its closure did two; the third (step 5's inline marker position)
+was done by this pass. Finding 11's record asked for the three per-task surfaces to be brought
+current; commit and review events were backfilled, no `task_start` or `task_done` event was ever
+written for this session, and `agentstate.yaml`'s `current_task.source_file` re-dangled at the plan
+transition one commit later. Filed as
+`circles/260819-1645-four-constraints-on-deep-change/issues/260820-0906_*_the-three-per-task-surfaces-disagree-with-each-other-and-one-field-re-dangled-at-the-plan-transition.md`.
+
+**On finding 4, which the dispatch asked to be judged for closure.** It reproduces and it is latent:
+neither `stashes/` nor `.migration-v2-backup/` exists in this workbench, so no frozen copy tree is
+being scanned today. The opposite direction of the same constant is not covered by it and was filed
+separately —
+`circles/260819-1645-four-constraints-on-deep-change/issues/260820-0906_*_the-citation-gates-corpus-has-no-planning-clause-so-an-open-plan-is-a-live-surface-outside-the-gate.md`.
+
+**Coverage.** `bin/fusion-review-coverage` reports `verdict=uncovered`, `uncovered=1` over
+`b91c01c..HEAD`: this review's range ends at `bbfc912` and `04db0b0` is not opened by any review.
+That commit touches `fusion-workbench/` only. Under the standing answer to
+`shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
+coverage is advisory and the gap is named in the closure note; under the same record's second
+answered option, which is recorded and unrealised, a commit touching no shipped file would not be
+counted uncovered at all.

@@ -40,3 +40,10 @@ answer explicitly did not settle. Deciding that one may remove the need for this
 
 Filed by the orchestrator of session `260819-2006` from step 7's report. It arose from this Circle's
 Directive, so it stays in the Circle's store under the Origin Rule.
+
+---
+**Reconciliation 260820-0830** (reconciler, domain `code`, HEAD `04db0b0`) — **still open,
+reproduces.** `circleDirs()` at `hooks/lib/__tests__/helpers/citation-scan.ts:286-294` reads
+`<workbench>/circles` and nothing else; it has no archive prefix and no call to `anchoredUnder`,
+which is at `:367`. The latency the record claims also holds: the corpus scan at HEAD reports zero
+violations over 195 files, so nothing is red on this today. Marker unchanged.

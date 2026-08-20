@@ -42,3 +42,12 @@ git diff --stat b91c01c bbfc912 -- hooks/dist ->  no output
 Rewrite the parenthetical to say what was actually established — that no `.d.ts` under `hooks/dist`
 carries an `import(` type, and that every `node:` occurrence is a runtime import in an emitted
 `.js` rather than a type reference. Keep the conclusion; it is sound.
+
+---
+**Reconciliation 260820-0830** (reconciler, domain `code`, HEAD `04db0b0`) — **still open,
+reproduces, and the counter-measurement in the review does not reproduce either.** Re-run here:
+`git grep -c 'node:' b91c01c -- hooks/dist` returns **18 hits across 11 files** (`config.js`,
+`events.js`, `git.js` and eight more). The review states 17 across 10. The plan's claim that a grep
+over the 36 emitted files finds no `node:` reference is false on any of the three counts, and the
+conclusion it supports — that `@types/node` does not reach the emit — is unaffected. Whoever takes
+this record should re-measure rather than copy either figure. Marker unchanged.

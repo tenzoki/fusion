@@ -76,3 +76,11 @@ compute it once (in `beforeAll`, or as a module-level helper both cases call), s
 `prepared`, and have case 3 assert it is null first with a message saying the artifact comparison is
 not evaluable until the toolchain is the pinned one. That is one field and two lines, and it makes
 the three cases a chain rather than three independent assertions over one shared compile.
+
+---
+**Reconciliation 260820-0830** (reconciler, domain `code`, HEAD `04db0b0`) — **still open,
+reproduces.** `hooks/lib/__tests__/committed-dist.test.ts` carries three `it()` cases — the toolchain
+assertion at `:177`, the compile at `:209` and the artifact comparison at `:217` — and the compile
+itself runs in `beforeAll` at `:100`. Neither of the last two consults the toolchain result, so a
+compiler mismatch reaches the artifact comparison and its remedy text. The file was re-run by this
+pass and is green in 3.7 s. Marker unchanged.

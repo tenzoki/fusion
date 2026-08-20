@@ -54,3 +54,17 @@ that skill's line as the shared reason rather than restating it. Anchoring the t
 would be the narrower change but the wrong one: the anchors would have to enumerate `shared/` and
 `circles/<dir>/`, which is a second copy of the layout, and the layout has exactly one authoring
 home.
+
+---
+**Reconciliation 260820-0830** (reconciler, domain `code`, HEAD `04db0b0`) — **still open,
+reproduces; latent rather than live, and this pass measured which.** `markdownFilesUnder`
+(`hooks/lib/__tests__/helpers/citation-scan.ts:752-761`) is a plain recursive walk with no exclusion
+of dot-directories, and `corpusFiles()` in the gate excludes `archive/` alone. `OPEN_ISSUE_RE` and
+`LIVE_DECISION_RE` are both `(?:^|\/)`-anchored, so a record under `stashes/` or
+`.migration-v2-backup/` would match. **Neither directory exists in this workbench today**, so
+nothing is currently mis-scanned; the exposure is to a project that carries one, or to this one
+after a future migration. `skills/log-activity/SKILL.md:89` is the precedent the record cites and it
+holds — that surface names four such directories. Marker unchanged.
+
+This pass measured the opposite direction of the same defect and filed it separately, because the
+fix is a different clause: `260820-0906_*_the-citation-gates-corpus-has-no-planning-clause-so-an-open-plan-is-a-live-surface-outside-the-gate.md`.

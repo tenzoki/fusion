@@ -47,3 +47,9 @@ armed budget. `README-hooks.md` is named in that test's own "what no bound cover
 One clause in `### Rebuilding after TS changes` naming the gate and what it prints. One row in the
 `CLAUDE.md` table, whose symptom column is "`npm test` goes red on a citation in a record I did not
 edit" and whose cause column names the gate, the corpus and the two remedies its message carries.
+
+---
+**Reconciliation 260820-0830** (reconciler, domain `code`, HEAD `04db0b0`) — **still open,
+reproduces.** `grep -rln 'committed-dist\|workbench-citation-lint' README.md README-hooks.md
+CLAUDE.md docs/` returns nothing. Two gates that can redden `npm test` for somebody who touched no
+code and no citation are named on no surface a reader would reach first. Marker unchanged.

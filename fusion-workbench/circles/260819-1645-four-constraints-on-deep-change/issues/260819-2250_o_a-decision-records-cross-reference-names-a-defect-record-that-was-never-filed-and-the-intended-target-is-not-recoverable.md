@@ -56,3 +56,14 @@ Neither is a mechanical repair, which is why this is filed rather than done.
 - `shared/analyses/260813-0831-the-seam-between-a-measured-answer-and-a-cited-one.md:234` — the
   same dead path, in an analysis that is outside the repair corpus and was not touched by this
   step. It will need the same treatment whenever that surface is repaired.
+
+---
+**Reconciliation 260820-0830** (reconciler, domain `code`, HEAD `04db0b0`) — **still open, reproduces
+in both places the record names.** `shared/decisions/260813-0826_*_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md:7`
+carries the repaired form: the stamp, the description and the finding that no such file exists, with
+no path. `shared/analyses/260813-0831-the-seam-between-a-measured-answer-and-a-cited-one.md:234`
+still spells the dead path, as the record predicted. Neither of the two closure conditions has been
+met — nobody has named the intended record and nobody has re-measured the documentation-lag claim.
+The dispatch asked whether the target is covered by any repair corpus: it is not. The analysis sits
+outside the citation gate's corpus (no `analyses/` clause), and the token is spelled with a
+`fusion-workbench/` prefix, so no scanner reads it either. Marker unchanged.
