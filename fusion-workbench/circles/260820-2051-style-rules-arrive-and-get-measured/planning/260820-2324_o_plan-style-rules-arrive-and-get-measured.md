@@ -164,7 +164,7 @@ and no step performs it.
   5. Running it on a file with no em-dash prints a zero row rather than failing.
 - **Dependencies:** none
 
-### 2. The measurement protocol, and the pre-repair window captured before anything is repaired
+### 2. [DONE] The measurement protocol, and the pre-repair window captured before anything is repaired
 
 - **Executor:** analyst
 - **Files:** one new analysis document in this Circle's analysis store,

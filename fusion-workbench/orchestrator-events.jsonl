@@ -1830,3 +1830,6 @@
 {"ts":"2026-08-20T21:31:57","event":"planner_done","agent":"planner","detail":"plan at circles/260820-2051-.../planning/260820-2324_o_plan-...md; 18 steps + 1 review gate; 14 coder, 3 ontocoder, 1 analyst"}
 {"ts":"2026-08-20T21:31:57","event":"queue_built","detail":"19 entries, 0 blocked at start; forced order step2<7,9 and step3<8"}
 {"ts":"2026-08-20T21:31:57","event":"turn_start","turn":1,"detail":"Turn 1 of max 12; head c866d81"}
+{"ts":"2026-08-20T21:48:28","event":"task_done","turn":1,"task":"P-1","agent":"coder","detail":"fac97f4 bin/fusion-prose-metric; npm test exit 0, 716 tests; corrected one cell of the spec's metric table"}
+{"ts":"2026-08-20T21:48:28","event":"commit","turn":1,"task":"P-1","detail":"fac97f4"}
+{"ts":"2026-08-20T21:48:28","event":"task_start","turn":1,"task":"P-2","agent":"analyst","detail":"measurement protocol and pre-repair window, must precede every repair commit"}
