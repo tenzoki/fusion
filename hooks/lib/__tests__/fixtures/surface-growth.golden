@@ -37,12 +37,12 @@
   curate/SKILL.md 12797
   direct/SKILL.md 11012
   help/SKILL.md 16236
-  log-activity/SKILL.md 13559
+  log-activity/SKILL.md 13564
   memo/SKILL.md 12560
   migrate/SKILL.md 26630
   next/SKILL.md 27030
   setup/SKILL.md 38253
-  total 230723
+  total 230728
 
 [hook-tests lines]
   commit-message-path.test.ts 366
@@ -62,7 +62,7 @@
   guard-bash-integration.test.ts 417
   guard-project-config-integration.test.ts 423
   guard-state-shape.test.ts 251
-  helpers/citation-scan.ts 832
+  helpers/citation-scan.ts 857
   helpers/growth-bound.ts 123
   helpers/guard-harness.ts 978
   helpers/prompt-blocks.ts 28
@@ -77,7 +77,7 @@
   portfolio-citation-form-lint.test.ts 171
   provenance-header-lint.test.ts 449
   record-counts-measurement.test.ts 521
-  reference-resolution-lint.test.ts 1173
+  reference-resolution-lint.test.ts 1238
   review-coverage-mandate.test.ts 336
   review-coverage.test.ts 819
   rules-emission-golden.test.ts 1159
@@ -87,4 +87,5 @@
   staging-drift.test.ts 660
   surface-growth-bound.test.ts 628
   turn-budget-lint.test.ts 524
-  total 19276
+  workbench-citation-lint.test.ts 241
+  total 19607

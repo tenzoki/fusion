@@ -352,6 +352,8 @@ The second form is preferred wherever the task is counting or enumerating: it re
 
 This applies to every marker in every vocabulary — `_o_`, `_a_`, `_t_`, `_c_`, `_i_`, `_p_`, `_b_`, `_s_`, `_d_` — anywhere a filename carrying one is matched by a glob, in any agent prompt or skill body.
 
+**And a record that states something *about* a citation names file and line, or fences the verbatim form.** A pointer and a statement about one are the same characters, and no reader — human or gate — can tell them apart; `rules/circle-records.md` `### Citation form in the portfolio` says to star the first and leave the letter on the second, which leaves the second spelling an address that dies at its target's next transition. So do not spell it: name the citing line (`shared/issues/260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md:24`) and let the reader open it. A fenced code block is the exception, for where the spelling itself is the datum — a verbatim transcript — and the citation gate exempts a fence for exactly that. Binding: `circles/260819-1645-four-constraints-on-deep-change/issues/260820-0530_*_twenty-six-citations-in-the-corpus-are-statements-rather-than-pointers-and-no-exemption-expresses-that.md`.
+
 ## Circle records
 
 The Circle state vocabulary (`_a_` anticipated, `_t_` active, `_c_` closed-coherent, `_b_`

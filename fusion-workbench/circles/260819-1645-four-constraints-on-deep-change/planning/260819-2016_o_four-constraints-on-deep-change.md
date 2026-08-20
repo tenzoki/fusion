@@ -190,7 +190,7 @@ The shared build tree appears in neither diagram, which is the constraint decisi
 
    **--- USER GATE. Steps 9 and 10 do not start until decisions `260819-1645` and `260819-2016` are answered. ---**
 
-9. **Arm the blocking workbench citation gate**
+9. [DONE] **Arm the blocking workbench citation gate**
    - Executor: `coder`
    - Files: `hooks/lib/__tests__/workbench-citation-lint.test.ts` (new)
    - Changes: the second caller of `scanRecordCitations`, over the corpus the user's answer defines. Follow the shape of `reference-resolution-lint.test.ts`, which is the first caller: build the file list, scan each file's lines, collect violations, and assert. Two cases at minimum. One asserts the violation list is empty, with `report(violations)` as the failure message so a reader learns which citation is dead and where. One asserts `WORKBENCH_PRESENT`, so a workbench that is absent fails loudly rather than passing an empty scan.
@@ -201,7 +201,7 @@ The shared build tree appears in neither diagram, which is the constraint decisi
    - Cost: about 200 lines on the hook test surface. With steps 1 and 2, the three additions come to roughly 470 lines of the 1 877 available.
    - Dependencies: steps 5, 6 and 7, plus step 8 under decision `260819-2016` options 2 and 3, plus the user's answers.
 
-10. **Make the archive step annotate the citations it orphans**
+10. [STRUCK — corpus decision 260819-1645 answered option 1; this step does not exist] **Make the archive step annotate the citations it orphans**
     - Executor: `coder`
     - Files: `skills/archive/SKILL.md`
     - **Conditional: this step runs only if the user answers decision `260819-1645` with option 2.** Under options 1 and 3 it does not exist, and archiving stays a way to redden the suite.

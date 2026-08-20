@@ -107,7 +107,7 @@ The topic is **not** a per-invocation user argument in the standard flow. It is
    too coarse.
 3. **Circle slug keywords** — otherwise, `resolvedTopics` is the set of keyword
    tokens in the active Circle's slug: the directory name with the `YYMMDD-HHMM-`
-   stamp stripped, split on `-`. A Circle `260718-1924-ontology-refactor` yields
+   stamp stripped, split on `-`. A Circle `YYMMDD-HHMM-ontology-refactor` yields
    `{ontology, refactor}`, matching any unit tagged `ontology` or `refactor`.
 4. **No active Circle** — `resolvedTopics` is empty; only `[always]` units match.
 

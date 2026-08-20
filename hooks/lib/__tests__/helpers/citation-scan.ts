@@ -410,18 +410,43 @@ function findRecord(opts: {
 // --- the per-token walk -----------------------------------------------------
 
 export type CitationKind =
-  /** the four the gate resolves */
+  /** the five the gate resolves */
   | "record"
   | "bare-record"
   | "circle-record"
   | "circle-dir"
-  /** a stamp plus a dashed name, no store prefix — decidable, gate does not read it */
+  /** a stamp plus a dashed name, no store prefix — decidable by prefix */
   | "stamp-name"
-  /** a stamp alone — the residual */
+  /** a stamp alone — the residual, and the only kind the gate does not read */
   | "stamp-bare";
 
-/** The kinds the gate judges. Everything else is measurement-only. */
-const GATE_KINDS: CitationKind[] = ["record", "bare-record", "circle-record", "circle-dir"];
+/**
+ * The kinds the gate judges. Everything else is measurement-only, and since
+ * 2026-08-20 "everything else" is one kind: `stamp-bare`.
+ *
+ * `stamp-name` joined the list under decision
+ * `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-2016_*_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md`
+ * (option 2), so that the repair scope and the gate scope coincide instead of
+ * diverging by 33 tokens. A `stamp-name` token is a stamp plus a dashed name
+ * (`260812-2116-coder-<slug>`), which this parser's own header calls decidable
+ * by prefix. `stamp-bare` stays out and is not a candidate for joining: a bare
+ * timestamp carries no store, no kind and no slug, so the question it fails is
+ * "which of these is meant", which no mechanism reading the token can answer
+ * (`rules/critical-stance.md` §4).
+ *
+ * BOTH callers share this list — the shipped-text lint in
+ * `hooks/lib/__tests__/reference-resolution-lint.test.ts` and the workbench
+ * gate in `hooks/lib/__tests__/workbench-citation-lint.test.ts`. Adding a kind
+ * here therefore moves the first one's pinned counts, and that re-approval
+ * belongs in the same commit as the widening.
+ */
+const GATE_KINDS: CitationKind[] = [
+  "record",
+  "bare-record",
+  "circle-record",
+  "circle-dir",
+  "stamp-name",
+];
 
 export type CitationStatus =
   /** resolves to exactly one file (or one Circle directory) */

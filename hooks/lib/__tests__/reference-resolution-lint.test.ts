@@ -727,7 +727,48 @@ function scanHeadingAnchors(
 //        `__tests__` subdirectory is never entered, and `package.json` matches no walk.
 // The figures sum to +1 / 0 / +2 against an actual +1 / 0 / +2. That arithmetic does NOT
 // generally hold, per the blocks above; it holds here because only one file moved at all.
-const BASELINE = { paths: 1179, anchors: 155, records: 104 };
+// Re-approved 2026-08-20 — the `stamp-name` class enters `GATE_KINDS`, realising decision
+// `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-2016_*_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md`
+// (option 2). This is a widening of WHAT the gate reads, not an edit to the surface it reads:
+// no shipped file gained a citation, and the movement is entirely tokens that were already
+// resolving in the measuring view and were filtered out of the gate's count on their way past.
+// records 104 -> 107; paths and anchors did not move.
+// Measured by enumerating every `stamp-name` hit over `surface()` after the widening, rather
+// than by reverting files, because the cause is one constant and no file is attributable:
+//   `docs/upgrading-to-v10.md:41`      `260816-1741-guard-becomes-observation-only`
+//   `docs/upgrading-to-v9.md:31`       `260815-0007-remove-eight-mechanisms-and-cap-growth`
+//   `skills/cadence/SKILL.md:136`      `260731-2208-orchestrator-session`
+// Eight further `stamp-name` tokens on the surface are `exempt` and so contribute nothing:
+// seven announced illustrations and one inside a fence. That ratio — three real citations
+// against eight illustrations — is why the widening cost a two-token repair rather than the
+// unbounded one the decision's own recommendation feared.
+// The two it did cost were both dangling and both illustrations that a real stamp made look
+// like pointers. `rules/context-manifest.md:110` named a Circle `260718-1924-ontology-refactor`
+// that has never existed, spelled with the real stamp of `260718-1924-v5x-overhaul`; it now
+// reads `YYMMDD-HHMM-ontology-refactor`, which the surrounding paragraph already uses and
+// which produces no token at all. `skills/log-activity/SKILL.md:86` illustrates stamp parsing
+// with `260408-1523-topic.md`, where the digits ARE the illustration, so it gained the `e.g.`
+// the announced-illustration exemption reads. Neither repair moved any count: both tokens were
+// violations, and a violation was never in the resolved figure.
+// SECOND CAUSE, same commit — the convention line the same plan step adds to
+// `rules/fusion-workbench-conventions.md`: a record that states something ABOUT a citation
+// names file and line, or fences the verbatim form. It is the third leg of the recurrence
+// answer at the foot of
+// `circles/260819-1645-four-constraints-on-deep-change/issues/260820-0530_*_twenty-six-citations-in-the-corpus-are-statements-rather-than-pointers-and-no-exemption-expresses-that.md`
+// — the gate catches, the failure message teaches, the convention reaches whoever reads first.
+// paths 1179 -> 1180, anchors 155 -> 156, records 107 -> 109, all of it that one paragraph:
+// one class-(a) path (`rules/circle-records.md`), one anchor into it
+// (`### Citation form in the portfolio`), and two class-(c) records — the issue above, and the
+// `260812-1720` lint-scope defect used as the worked example of naming a citing line.
+// The two causes are disjoint and sum exactly (+1 / +1 / +5 against an actual +1 / +1 / +5),
+// because the widening touches no file's text and the convention line adds no `stamp-name`
+// token. That arithmetic does NOT generally hold; it holds here for that reason.
+// WHAT DID NOT MOVE, measured rather than assumed: the new gate itself,
+// `hooks/lib/__tests__/workbench-citation-lint.test.ts`, contributes zero. `surface()` walks
+// `hooks/` and `hooks/lib/` file by file and never enters `__tests__`, so the dozen record
+// citations in that file's header are read by no class here — which is also why the second
+// caller cannot pin its own corpus through this baseline.
+const BASELINE = { paths: 1180, anchors: 156, records: 109 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the
@@ -1119,9 +1160,16 @@ describe.runIf(WORKBENCH_PRESENT)("citation scan: the measuring view and the gat
   // The extraction gave the class-(c) parser a second caller, and the risk it
   // introduces is one-directional: a token class added for the MEASUREMENT
   // reaching the GATE would fail the suite on prose the gate never judged. The
-  // two cases below pin the boundary from each side.
+  // cases below pin the boundary from each side.
+  //
+  // The boundary MOVED on 2026-08-20. `stamp-name` used to sit on the
+  // measurement side and now sits on the gate's, under decision
+  // `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-2016_*_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md`
+  // (option 2). `stamp-bare` is what is left on the measurement side, and it is
+  // the residual by argument rather than by accident: the question it fails is
+  // "which of these is meant", not "does this exist".
 
-  it("a store-prefixless stamp is a scan token and is invisible to the gate", () => {
+  it("a store-prefixless bare stamp is a scan token and is invisible to the gate", () => {
     const line = L("the 260812-1720 plan, and the 990101-0101 stamp that names nothing");
     expect(scanRecordCitations("fixture.md", line)).toEqual({ violations: [], resolved: 0 });
     const hits = scanCitationTokens("fixture.md", line);
@@ -1131,17 +1179,34 @@ describe.runIf(WORKBENCH_PRESENT)("citation scan: the measuring view and the gat
     expect(hits[1].status).toBe("dangling");
   });
 
-  it("a stamp carrying a name resolves in the scan and still never reaches the gate", () => {
+  it("a stamp carrying a name resolves in the scan and now reaches the gate too", () => {
     const anyCircle = [...circleDirs()][0];
     const line = L(`the ${anyCircle} Circle answered it`);
     expect(scanCitationTokens("fixture.md", line).map((h) => [h.kind, h.status])).toEqual([
       ["stamp-name", "resolved"],
     ]);
-    expect(scanRecordCitations("fixture.md", line)).toEqual({ violations: [], resolved: 0 });
+    expect(scanRecordCitations("fixture.md", line)).toEqual({ violations: [], resolved: 1 });
+  });
+
+  it("a stamp carrying a name that names nothing is a violation, not a measurement", () => {
+    const line = L("the 990101-0101-no-such-thing log said so");
+    const { violations } = scanRecordCitations("fixture.md", line);
+    expect(violations.map((v) => v.token)).toEqual(["990101-0101-no-such-thing"]);
   });
 
   it("over the whole shipped surface, the gate's verdict is the scan's, token for token", () => {
-    const GATE: CitationKind[] = ["record", "bare-record", "circle-dir"];
+    // Deliberately a literal restatement of the helper's own GATE_KINDS rather
+    // than an import: the point of this case is that the two views agree about
+    // WHICH kinds the gate reads, and a shared constant would make them agree
+    // by construction. Five since the `stamp-name` widening; `stamp-bare` is
+    // the one kind outside.
+    const GATE: CitationKind[] = [
+      "record",
+      "bare-record",
+      "circle-record",
+      "circle-dir",
+      "stamp-name",
+    ];
     let gateResolved = 0;
     let gateViolations = 0;
     let scanResolved = 0;
