@@ -1819,3 +1819,4 @@
 {"ts":"2026-08-20T09:17:24","event":"task_done","turn":2,"agent":"coder","detail":"F2 citation gate corpus both directions"}
 {"ts":"2026-08-20T09:17:24","event":"task_done","turn":2,"agent":"coder","detail":"F3 plan-format gate"}
 {"ts":"2026-08-20T09:17:24","event":"task_done","turn":2,"agent":"coder","detail":"F4 text defects and consolidation"}
+{"ts":"2026-08-20T18:25:08","event":"session_end","detail":"2 Turns, 18 executor tasks, 17 commits, v10.4.0 released; 25 issues filed, 22 closed, 4 decisions implemented, 11 human gates"}

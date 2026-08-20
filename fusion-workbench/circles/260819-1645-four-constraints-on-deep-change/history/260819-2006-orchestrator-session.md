@@ -3,7 +3,7 @@
 **Directive:** See the Circle record's `## Directive` — four ways a deep change to fusion can go wrong unobserved are closed after this Circle.
 **Circle:** 260819-1645-four-constraints-on-deep-change
 **Mode:** plan (to be produced)
-**Status:** In progress
+**Status:** Complete
 
 ## Setup snapshot
 
@@ -96,3 +96,109 @@ store is for. Convening a Rebalance over them would revise nothing.
 **`## Turn log` and `## Turns` are empty and that is not drift.** Phase 4 has not run, and both are
 written at the Turn boundary. The Circle record's head fields and its `## Directive` pointer literal
 were checked against `rules/circle-records.md` and are correct as they stand.
+
+## Budget
+
+| Metric | Count |
+|--------|-------|
+| Turns | 2 |
+| Executor tasks resolved | 18 |
+| Commits | 17 |
+| Issues created | 25 (22 in the Circle store, 3 in `shared/`) |
+| Issues resolved | 22 (20 in the Circle store, 2 in `shared/`) |
+| Decisions implemented | 3 in the Circle store, 1 in `shared/` |
+| Agent errors | 1 (a dispatch died at a usage limit before doing anything and was re-sent) |
+| Human gates hit | 11 |
+
+Derived rather than tallied: commits from `git rev-list b91c01c..HEAD`, Turns from the `turn_start`
+events since this session's `session_start`, the record rows by comparing each filename against
+`b91c01c`. **The `fusion-paths` reading alone would have under-reported them**: the Circle closed
+before the count was taken, so `$SCAN_ISSUES` resolves to `shared/` only and the Circle's own store —
+where most of the session's records live — had to be measured separately and is stated separately
+above.
+
+## Review coverage
+
+**Range:** `b91c01c..02439f3` — 17 commits.
+**Covered by:** `circles/260819-1645-four-constraints-on-deep-change/reviews/260820-0805-coderev-four-constraints-on-deep-change.md`, range `b91c01c..bbfc912`.
+
+**Not covered — seven, named rather than counted:**
+
+- `02439f3` chore(release): version 10.4.0
+- `30d6f0a` feat(rules): three answered decisions are realised
+- `66477e3` fix(workbench): the archive filter's consequence is gone
+- `5faed26` chore(circles): the four-constraints Circle closes coherent
+- `ac01c90` fix(hooks): the Circle closes its own findings instead of leaving them
+- `8e7cae7` chore(circles): the reconciliation before closure
+- `04db0b0` chore(circles): the Circle's own tracking catches up
+
+Six of the seven land after the review ran; the seventh is the tracking commit the review itself
+asked for. **A release went out over them**, which is advisory under `shared/decisions/260815-2109_a_*`
+and is named here rather than left to be discovered — the same shape as the defect
+`shared/issues/260810-1618_o_*` records for a previous release.
+
+**Carried out-of-scope files:** the Circle review declared 101 workbench records not-opened, verified
+as a class by re-running the scanner and sampled at three files. That list is carried forward by
+`bin/fusion-review-coverage` and is the next review's scope.
+
+## What this session got wrong
+
+Four faults were the orchestrator's, and three were found by an agent it dispatched:
+
+1. **A count taken from a summary instead of from disk.** The reconciliation dispatch said two
+   decisions, seven defects and eleven open records; the tree held four, ten and ten.
+2. **"The tree is clean" written without asking the suite.** Appending three answers renamed three
+   decision records and left ten citations of their old markers standing. The gate armed the day
+   before caught it, and the obligation to follow a rename into its citations is one an answered
+   decision already assigns to the renaming party.
+3. **An inference stated as fact, twice.** That the three new gates could redden a consuming
+   project's suite — they cannot, and the executor checked three ways — and that a project-local
+   pattern arm would move the emission golden, which measures in a neutral directory.
+4. **A commit message sent through the shell with `-m`.** The apostrophe in `Circle's` ended the
+   string. Nothing was committed, the lock released cleanly, and the message went to a file as the
+   rule requires.
+
+## Session Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant O as Orchestrator
+    participant C as Coder
+    participant CR as Coderev
+    participant R as Reconciler
+    participant PM as Playmaker
+
+    Note over O: Turn 1
+    O->>C: S1..S5 concurrently, disjoint files
+    C-->>O: five done, one blocked on a shared verification
+    O->>C: consolidation (one baseline, both goldens)
+    O->>C: S6 wrong-store citations
+    C-->>O: 40 corrected, all still wrong — grammar cannot say "archive"
+    O->>U: GATE which fix shape
+    U-->>O: tolerate the prefix
+    O->>C: S6b..S8c grammar, repairs, the class it exposed
+    C-->>O: gate would be blind to the form the repair adopted
+    O->>U: GATE grammar first or arm now
+    U-->>O: grammar first
+    O->>C: S9a fence exemption, S9b rewrite 24, S9 arm the gate
+    C-->>O: armed, demonstrated red three ways
+    O->>CR: review b91c01c..bbfc912
+    CR-->>O: 13 findings, six are the Circle's own tracking
+    Note over O: Turn 2
+    O->>C: F1..F4 close the Circle's own findings
+    C-->>O: twelve of fourteen closed
+    O->>R: reconciliation before closure
+    R-->>O: coherent; the gate caught the reconciliation itself
+    O->>U: GATE close, or finish first
+    U-->>O: finish it
+    O->>PM: portfolio after _t_ -> _c_
+    PM-->>O: no candidate; found a defect in its own step order
+    O->>U: GATE three open decisions
+    U-->>O: A1, B3, C1
+    O->>C: realise all three
+    C-->>O: done — and the tree was not clean at dispatch
+    O->>C: v10.4.0 release material
+    C-->>O: the headline was wrong; gates cannot reach a consumer
+    Note over O: v10.4.0 tagged, both repos pushed
+```
