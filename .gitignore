@@ -38,6 +38,7 @@ bin/*
 !bin/fusion-review-coverage
 !bin/fusion-staging-drift
 !bin/fusion-turn-budget
+!bin/fusion-prose-metric
 *.exe
 # Generated protobuf (rebuild from .proto)
 *.pb.go

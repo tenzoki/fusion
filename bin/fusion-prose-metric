@@ -1,0 +1,286 @@
+#!/usr/bin/env bash
+# fusion-prose-metric — count a file's em-dashes in its own prose voice, and
+# report the rate against the one-per-1000-prose-words ceiling.
+#
+# Usage:
+#   fusion-prose-metric <file> [<file> ...]
+#   fusion-prose-metric $(fusion-rules coder)     # the always-on corpus
+#
+# Output on stdout: a column header, one row per file, and one total row.
+#
+#   file                                     em-dash   words  /1000  permit  verdict
+#   rules/agent-setup.md                          15     502   29.9       0  over
+#   rules/user-facing-output.md                    1    2248    0.4       2  ok
+#   total (2 files)                               16    2750    5.8       2  over
+#
+#   em-dash  prose em-dashes (see "What prose means" below)
+#   words    prose words, excluding the same regions
+#   /1000    em-dash * 1000 / words, one decimal
+#   permit   int(words / 1000) — the count permitted at one per 1000
+#   verdict  `ok` when em-dash <= permit, `over` otherwise
+#
+# Exit codes:
+#   0  every named file was measured. `over` in the verdict column is still a 0.
+#   1  usage error: no file was named.
+#   2  at least one named file could not be read. The readable ones were
+#      measured and their rows and total are on stdout; each unreadable path is
+#      named on stderr and appears in no row.
+#
+# ---------------------------------------------------------------------------
+# It reports and it never gates
+#
+# No exit code of this program carries a prose verdict, and nothing here is
+# wired into `npm test`. A file 30x over the ceiling exits 0, the same as a file
+# under it. The precedent is the pair of reporting programs that already carry
+# this rule, bin/fusion-staging-drift and bin/fusion-review-coverage, whose
+# headers give the reason (issue 260810-0710): a check that hands its verdict to
+# an exit code teaches its reader to ignore that code. The verdict column is for
+# a human, and the decision about what to do with an `over` belongs to whoever
+# reads it.
+#
+# ---------------------------------------------------------------------------
+# What prose means
+#
+# The measurement this replaces was `grep -o '—' <file> | wc -l` over a whole
+# file, quoted inside a completed analysis. It counted a file's exhibits of the
+# fault as instances of the fault: rules/user-facing-output.md read 6 em-dashes
+# and failed its own ceiling, where 4 were quoted anti-examples it displays as
+# faults and 2 were code-span mentions of the character in the clause that
+# states the ceiling. The file has one em-dash in its own voice.
+#
+# So a *prose* em-dash is one that is not in any of four regions, and prose
+# words exclude the same four regions, so that a file full of exhibits is not
+# also credited with the words its exhibits are made of:
+#
+#   1. a fenced code block, ``` or ~~~, opening fence and closing fence
+#      included, indented up to 3 spaces, closed by a fence of the same
+#      character and at least the same length;
+#   2. an inline code span, `like this`, delimiters included, matched
+#      left-to-right on equal-length backtick runs;
+#   3. a block-quote line, `>` after up to 3 spaces of indent — the whole line,
+#      not just the marker;
+#   4. in a YAML file (.yaml / .yml), the subtree of an `examples:`,
+#      `anti_examples:`, `anti-examples:`, `example:` or `anti_example:` key.
+#      The subtree runs from that key line to the next non-blank line indented
+#      no further than the key. This is what makes a voice profile measurable
+#      at all: chat-voice-de.yaml carries 6 em-dashes of which 4 are the
+#      anti-example strings it exists to forbid.
+#
+# Two limits, stated rather than discovered. An indented (4-space) code block is
+# NOT excluded — the corpus uses fences throughout, and a 4-space rule would
+# swallow the continuation lines of every nested list. A code span that opens on
+# one line and closes on another is not matched, because the scan is per line;
+# its backticks stay literal and its content counts as prose.
+#
+# ---------------------------------------------------------------------------
+# Only the em-dash
+#
+# `—` U+2014 EM DASH is counted. `–` U+2013 EN DASH is not, and neither is `-`
+# U+002D. That is a deliberate narrowing and not an oversight: the fault the
+# corpus is measured for is the em-dash parenthetical, the en-dash is a numeric
+# range in this repository's prose, and a metric that counted both would report
+# a number no ceiling was ever stated against. A German profile forbidding `–`
+# is a separate rule with a separate reading, and this program does not serve it.
+#
+# ---------------------------------------------------------------------------
+# Why fencedContentLines() is not reused
+#
+# hooks/lib/__tests__/helpers/citation-scan.ts already exempts fenced content,
+# built for the citation lint when a record quoting somebody else's bad citation
+# became a violation itself. It is the right idea and it is the wrong body of
+# code to call from here, for three reasons:
+#
+#   - it is test-scoped: it lives under __tests__/helpers/, it is not compiled
+#     into hooks/dist/, and nothing outside the vitest run can import it. A bin/
+#     helper that reached into it would make a shipped executable depend on a
+#     test fixture, and would pull node into a program that needs awk;
+#   - it is line-level: it answers "is this line inside a fence", which cannot
+#     express an inline code span, since a span is a region within a line;
+#   - it covers one of this program's four exclusions, and the other three are
+#     the ones that move the corpus numbers most.
+#
+# So the fence rule is implemented twice in this repository, here and there.
+# That duplication is known, is recorded, and is accepted deliberately rather
+# than overlooked: the alternative is a shared module that a test helper and a
+# bash script both reach, which is a larger change than either caller earns.
+# If the two ever disagree about a fence, this file is not the authority for
+# the citation lint and that file is not the authority for this metric.
+#
+# ---------------------------------------------------------------------------
+# The hand count this replaces
+#
+# The spec's `## The metric` table was produced by hand. From here on the
+# authority is this program. Measured against that table over the six files
+# `fusion-rules coder` emits, all six em-dash counts and five of the six word
+# counts reproduce exactly. The sixth is chat-voice-de.yaml, where the table
+# reads 882 prose words and this program reads 617. 882 is that file's raw
+# `wc -w`: the hand count excluded the example subtrees from the em-dash count
+# and did not exclude them from the word count, against the rule the same
+# paragraph states. 617 is the count under the stated rule, and the rate moves
+# from 2.3 to 3.2 per 1000. No verdict changes.
+
+set -eu
+
+# Every awk run is LC_ALL=C, so `substr`/`length` are byte-oriented on every
+# machine and the numbers do not move with the caller's locale. The counting is
+# self-consistent either way (the em-dash search and the substring arithmetic
+# use the same units), but `printf "%.1f"` is not: under a German locale the
+# rate column prints `29,9`.
+usage() {
+  cat >&2 <<'USAGE'
+usage: fusion-prose-metric <file> [<file> ...]
+Counts prose em-dashes and prose words per file; see the header of this script
+for what "prose" excludes. Reports only; the exit code carries no verdict.
+USAGE
+}
+
+if [ "$#" -eq 0 ]; then
+  usage
+  exit 1
+fi
+
+case "${1:-}" in
+  -h|--help) usage; exit 1 ;;
+esac
+
+# --- stage 1: measure each file --------------------------------------------
+#
+# One awk run per file, so the per-file state (fence, YAML subtree) needs no
+# reset logic and an empty file still produces its row. Each run prints exactly
+# one line: "<em-dash> <words>".
+
+measure_awk='
+function count_em(s,   n, p) {
+  n = 0
+  while ((p = index(s, EM)) > 0) { n++; s = substr(s, p + length(EM)) }
+  return n
+}
+
+# Drop inline code spans, delimiters included. Left to right: a run of N
+# backticks opens a span that the next run of exactly N backticks closes. An
+# opening run with no equal-length partner on the line is literal text.
+function strip_spans(s,   out, i, n, c, run, j, k, found) {
+  out = ""; i = 1; n = length(s)
+  while (i <= n) {
+    c = substr(s, i, 1)
+    if (c != "`") { out = out c; i++; continue }
+    run = 0
+    while (i + run <= n && substr(s, i + run, 1) == "`") run++
+    j = i + run; found = 0
+    while (j <= n) {
+      if (substr(s, j, 1) == "`") {
+        k = 0
+        while (j + k <= n && substr(s, j + k, 1) == "`") k++
+        if (k == run) { found = 1; break }
+        j += k
+      } else j++
+    }
+    if (found) i = j + run
+    else { out = out substr(s, i, run); i += run }
+  }
+  return out
+}
+
+function indent_of(s,   i) { i = 0; while (substr(s, i + 1, 1) == " ") i++; return i }
+
+BEGIN { EM = "—"; in_fence = 0; fence_char = ""; fence_len = 0; yaml_skip = -1 }
+
+{
+  line = $0
+  sub(/\r$/, "", line)
+
+  # (4) YAML example / anti-example subtree, by indentation.
+  if (YAML && yaml_skip >= 0) {
+    if (line ~ /^[ \t]*$/) next
+    if (indent_of(line) > yaml_skip) next
+    yaml_skip = -1
+  }
+
+  # (1) fenced code block, fences included.
+  if (match(line, /^ {0,3}(```+|~~~+)/)) {
+    marker = substr(line, RSTART, RLENGTH); sub(/^ */, "", marker)
+    this_char = substr(marker, 1, 1); this_len = length(marker)
+    if (!in_fence) {
+      in_fence = 1; fence_char = this_char; fence_len = this_len; next
+    } else if (this_char == fence_char && this_len >= fence_len) {
+      in_fence = 0; next
+    }
+  }
+  if (in_fence) next
+
+  # (3) block-quote line, whole line.
+  if (line ~ /^ {0,3}>/) next
+
+  if (YAML && line ~ /^ *(- +)?(examples|anti_examples|anti-examples|example|anti_example) *:/) {
+    yaml_skip = indent_of(line)
+    if (line ~ /^ *- /) yaml_skip += 2
+    next
+  }
+
+  # (2) inline code spans.
+  prose = strip_spans(line)
+
+  em += count_em(prose)
+  parts = split(prose, tok, /[ \t]+/)
+  for (i = 1; i <= parts; i++) if (tok[i] != "") words++
+}
+
+END { printf "%d %d\n", em, words }
+'
+
+rows=''
+unreadable=0
+
+for path in "$@"; do
+  if [ ! -f "$path" ] || [ ! -r "$path" ]; then
+    printf 'fusion-prose-metric: cannot read: %s\n' "$path" >&2
+    unreadable=1
+    continue
+  fi
+  case "$path" in
+    *.yaml|*.yml) is_yaml=1 ;;
+    *)            is_yaml=0 ;;
+  esac
+  counts="$(LC_ALL=C awk -v YAML="$is_yaml" "$measure_awk" "$path")"
+  rows="$rows$counts $path
+"
+done
+
+# --- stage 2: format the table ----------------------------------------------
+#
+# The name column is sized to the longest path actually given, so the table
+# stays narrow for relative paths and stays aligned for absolute ones.
+
+printf '%s' "$rows" | LC_ALL=C awk '
+{
+  em[NR] = $1; words[NR] = $2
+  name = $3
+  for (i = 4; i <= NF; i++) name = name " " $i
+  file[NR] = name
+  if (length(name) > width) width = length(name)
+  total_em += $1; total_words += $2
+}
+function rate(e, w) { return w > 0 ? e * 1000 / w : 0 }
+END {
+  if (NR == 0) { print "no file measured"; exit }
+  label = "total (" NR " file" (NR == 1 ? "" : "s") ")"
+  if (length(label) > width) width = length(label)
+  if (width < 20) width = 20
+
+  fmt = "%-" width "s  %7d  %6d  %5.1f  %6d  %s\n"
+  printf "%-" width "s  %7s  %6s  %5s  %6s  %s\n", "file", "em-dash", "words", "/1000", "permit", "verdict"
+  for (i = 1; i <= NR; i++) {
+    permit = int(words[i] / 1000)
+    printf fmt, file[i], em[i], words[i], rate(em[i], words[i]), permit,
+      (em[i] <= permit ? "ok" : "over")
+  }
+  total_permit = int(total_words / 1000)
+  printf fmt, label, total_em, total_words, rate(total_em, total_words), total_permit,
+    (total_em <= total_permit ? "ok" : "over")
+}
+'
+
+if [ "$unreadable" -eq 1 ]; then
+  exit 2
+fi
+exit 0

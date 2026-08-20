@@ -137,7 +137,7 @@ acceptance criteria, and what it depends on. The "Closes" line names the records
 be able to walk to a terminal marker once the step's acceptance holds; the walk itself is Phase 3 work
 and no step performs it.
 
-### 1. The counting rule becomes a committed program
+### 1. [DONE] The counting rule becomes a committed program
 
 - **Executor:** coder
 - **Files:** `bin/fusion-prose-metric` (new), `CLAUDE.md` (one Layout row)

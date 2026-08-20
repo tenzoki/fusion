@@ -840,7 +840,15 @@ function scanHeadingAnchors(
 // the release material is read from an install that has none. The same Turn also bumped
 // `.claude-plugin/plugin.json` and the `FUSION_REF` example in `install.sh`; neither is a scanned
 // surface for class (a), and the version strings carry no path.
-const BASELINE = { paths: 1223, anchors: 160, records: 112 };
+// Re-approved 2026-08-20 — `bin/fusion-prose-metric` is new and CLAUDE.md's Layout table gained its
+// row (step 1 of `circles/260820-2051-style-rules-arrive-and-get-measured`). paths 1223 -> 1235,
+// records 112 -> 113, anchors unchanged. Every token is an addition to shipped PROSE, the helper's
+// header and the row, and no scanner, exemption or class changed. Attributed by removing each of the
+// two in turn and re-running: the header carries 7 paths (`bin/fusion-staging-drift`,
+// `bin/fusion-review-coverage`, `rules/user-facing-output.md`,
+// `hooks/lib/__tests__/helpers/citation-scan.ts`, `hooks/dist/`, `__tests__/helpers/`, `bin/`), the
+// row those same four cited files plus its own `bin/…` key, and 1 record, the ceiling decision.
+const BASELINE = { paths: 1235, anchors: 160, records: 113 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the
