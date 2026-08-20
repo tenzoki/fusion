@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** circles/260819-1645-four-constraints-on-deep-change/planning/260819-2016_o_four-constraints-on-deep-change.md
+**Active spec/plan:** circles/260819-1645-four-constraints-on-deep-change/planning/260819-2016_*_four-constraints-on-deep-change.md
 **Active session history:** circles/260819-1645-four-constraints-on-deep-change/history/260819-2006-orchestrator-session.md
 
 ---

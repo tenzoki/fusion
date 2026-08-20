@@ -158,3 +158,8 @@ carry it instead, and only together:
    in the shape `BASELINE_MESSAGE` already uses in the sibling lint.
 3. **The convention is where it is read beforehand**, one line in `rules/fusion-workbench-conventions.md`:
    a record that states something about a citation names file and line, or fences the verbatim form.
+
+---
+Resolved: all three legs of the answer landed. The fenced-code exemption in `b6ed978` freed two of the twenty-six, both `grep` commands already inside fences the scanner could not see. The remaining twenty-four were rewritten in `0d4e0f2` — fourteen as prose naming file and line, ten into fences cut to the transcript rather than the paragraph — and the corpus reached zero violations in both readings with no allowlist and no new exemption. The failure message and the convention line landed in `bbfc912`.
+
+The measured cost of the option chosen, against the one declined: twelve citations are now unjudged, where a file allowlist over the same two files would have taken those twelve plus the twenty-four live citations those files still carry.

@@ -1803,3 +1803,13 @@
 {"ts":"2026-08-19T18:36:02","event":"queue_built","detail":"9 tasks (step 10 struck by the corpus answer), 4 blocked"}
 {"ts":"2026-08-19T18:36:02","event":"turn_start","turn":1,"detail":"5 independent steps dispatched concurrently on disjoint file sets"}
 {"ts":"2026-08-19T20:06:23","event":"commit","turn":1,"detail":"ad7ffed — steps 1-5 plus consolidation"}
+{"ts":"2026-08-20T06:21:03","event":"commit","turn":1,"detail":"ad7ffed"}
+{"ts":"2026-08-20T06:21:03","event":"commit","turn":1,"detail":"4aae336"}
+{"ts":"2026-08-20T06:21:03","event":"commit","turn":1,"detail":"86a9db8"}
+{"ts":"2026-08-20T06:21:03","event":"commit","turn":1,"detail":"6e72cc2"}
+{"ts":"2026-08-20T06:21:03","event":"commit","turn":1,"detail":"4bf15fa"}
+{"ts":"2026-08-20T06:21:03","event":"commit","turn":1,"detail":"46133dc"}
+{"ts":"2026-08-20T06:21:03","event":"commit","turn":1,"detail":"b6ed978"}
+{"ts":"2026-08-20T06:21:03","event":"commit","turn":1,"detail":"0d4e0f2"}
+{"ts":"2026-08-20T06:21:03","event":"commit","turn":1,"detail":"bbfc912"}
+{"ts":"2026-08-20T06:21:03","event":"review_done","turn":1,"agent":"coderev","detail":"range b91c01c..bbfc912, 13 findings, none High; range now covered"}

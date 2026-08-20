@@ -124,3 +124,8 @@ is what makes it need no baseline; the same property is what lets a record walk 
 alternative that would have caught it is not option 3 — a pinned count would have moved too — but a
 corpus predicate that does not narrow as records reach their terminal state. Nobody has proposed one,
 and this note does not.
+
+---
+Implemented: `hooks/lib/__tests__/workbench-citation-lint.test.ts`, landed in `bbfc912`. The corpus is a written marker predicate rather than the word "open", justified from `rules/fusion-workbench-conventions.md` `## State Markers — decisions`: open and answered together are Grounding-Stand, which is what an active-Grounding pass filters on. The gate asserts zero violations recomputed on every run and carries **no baseline and no count of any kind**, which is option 1 as answered; its vacuity guard is a positive file count, so an empty scan fails rather than passes.
+
+The cost this record accepted arrived on the first transition after arming. Closing this Circle's own plan reddened the gate on two citations that spelled the plan's exact marker — one in this Circle's record head, one in the sibling decision — and both were starred rather than exempted. That is the coupling working as chosen: a marker move reddens the suite for whoever moves it, and the remedy is the citation.

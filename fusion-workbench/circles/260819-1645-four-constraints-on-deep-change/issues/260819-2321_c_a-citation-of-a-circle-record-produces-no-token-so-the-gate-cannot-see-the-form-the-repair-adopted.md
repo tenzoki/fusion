@@ -53,3 +53,8 @@ The alternative that was available and not taken was to arm today over what the 
 and carry the blind spot as a named defect. That would have closed this Circle on the first clause of
 its Directive while the second — that a blocking test holds the live surfaces there — did not reach
 twenty-eight of the repairs it had just made.
+
+---
+Resolved: `CIRCLE_REC_RE` and the `circle-record` kind, landed in `46133dc`. The form is a separate pattern rather than a widening of `REC_RE`, and the reason is structural: a store record's basename carries a stamp and a slug and `REC_RE` is anchored on that stamp, while a Circle record carries neither, so widening would have loosened the anchor for every store form to admit one that never had it.
+
+All thirty archive-path Circle-record citations outside `archive/` tokenise and resolve, checked one at a time, and the twenty-eight this record was filed about sit inside them. The gate can now see the form the repair adopted, which is what the user's "grammar first, then arm" answer was for.

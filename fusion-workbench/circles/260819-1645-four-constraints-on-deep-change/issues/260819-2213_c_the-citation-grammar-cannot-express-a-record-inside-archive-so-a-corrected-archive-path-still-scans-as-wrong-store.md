@@ -101,3 +101,8 @@ a citation target at all, which `skills/archive/SKILL.md` neither says nor check
 by this choice. Tolerating the prefix answers "can the grammar express it", not "should archiving end a
 record's life as a target". That question stays open and wants a decision record of its own if anyone
 wants it settled.
+
+---
+Resolved: fix shape 1, landed in `4aae336`. `anchoredUnder` and `unsweep` in `hooks/lib/__tests__/helpers/citation-scan.ts` let the two anchored branches of `findRecord()` resolve a record under exactly one archive sweep. Measured by joining every token before against after on file, line and token: forty-two citations moved from `wrong-store` to `resolved`, twenty-one from `dangling` to `stale-marker`, and nothing else moved. All forty this record was filed about resolve.
+
+The prefix tolerance the answer accepted is stated at the branch rather than only here, and the second half of the twenty-one — citations of an archived record carrying a marker the archived copy does not have — became step 7's work rather than a residual.
